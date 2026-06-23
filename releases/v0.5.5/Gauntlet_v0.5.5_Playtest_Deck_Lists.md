@@ -1,6 +1,8 @@
-# Gauntlet v0.5.3 Playtest Deck Lists
+# Gauntlet v0.5.5 Playtest Deck Lists
 
-**Date:** June 20, 2026
+**Date:** June 21, 2026
+
+**Copyright:** Gauntlet v0.5.5 © 2026 Tymon Scott. All rights reserved. Playtest copy.
 
 Each deck contains 30 cards and no more than 60 points. Territories are listed in order from the deck owner's Heartland toward the center.
 
@@ -11,7 +13,7 @@ Each deck contains 30 cards and no more than 60 points. Territories are listed i
 **Cards:** 30  
 **Points:** 60  
 **Territories:** King's Road, High Ground, Supply Depot  
-**Status:** v0.5.3 full-budget print list: one Rallying Cry is upgraded to Redemption; otherwise based on the previously simulation-tested list.
+**Status:** v0.5.5 full-budget print list: one Rallying Cry is upgraded to Redemption; otherwise based on the previously simulation-tested list.
 
 | Qty | Card | Cost each |
 |---:|---|---:|
@@ -44,7 +46,7 @@ Each deck contains 30 cards and no more than 60 points. Territories are listed i
 **Cards:** 30  
 **Points:** 60  
 **Territories:** High Ground, Command Tent, Ruined Storehouse  
-**Status:** v0.5.3 full-budget print list: a second Palisade Wall replaces one Rallying Cry; otherwise based on Bastion Coalition v2.
+**Status:** v0.5.5 full-budget print list: a second Palisade Wall replaces one Rallying Cry; otherwise based on Bastion Coalition v2.
 
 | Qty | Card | Cost each |
 |---:|---|---:|
@@ -76,7 +78,7 @@ Each deck contains 30 cards and no more than 60 points. Territories are listed i
 **Cards:** 30  
 **Points:** 60  
 **Territories:** Exposed Flank, Field Hospital, King's Road  
-**Status:** v0.5.3 full-budget print list: Counterintelligence replaces one Rallying Cry; otherwise based on the previously simulation-tested list.
+**Status:** v0.5.5 full-budget print list: Counterintelligence replaces one Rallying Cry; otherwise based on the previously simulation-tested list.
 
 | Qty | Card | Cost each |
 |---:|---|---:|
@@ -110,7 +112,7 @@ Each deck contains 30 cards and no more than 60 points. Territories are listed i
 **Cards:** 30  
 **Points:** 60  
 **Territories:** Watchtower, Supply Depot, Arena: Spoils of War  
-**Status:** v0.5.3 trial list: Attrition replaces Court Martial at equal cost.
+**Status:** v0.5.5 trial list: Attrition replaces Court Martial at equal cost.
 
 | Qty | Card | Cost each |
 |---:|---|---:|

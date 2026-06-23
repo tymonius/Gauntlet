@@ -1,6 +1,6 @@
 {
-  "version": "v0.5.3",
-  "date": "June 20, 2026",
+  "version": "v0.5.6",
+  "date": "June 21, 2026",
   "status": "Pre-release playtest edition",
   "deck_construction": {
     "minimum_cards": 30,
@@ -19,6 +19,11 @@
     "replayed": "Graveyard unless an effect says otherwise",
     "unused_battle_draw": "discard pile",
     "incomplete_draw": "Draw as many as possible after reshuffling the discard pile."
+  },
+  "heartland_last_stand": {
+    "homeland_advantage": true,
+    "battle_total_bonus": 1,
+    "rule": "When defending in your own Heartland, you have Homeland Advantage and gain +1 to your battle total."
   },
   "version_history": [
     {
@@ -65,20 +70,51 @@
         "Attrition's Battle effect now sends the opponent's full initial three-card battle draw to the Graveyard after a loss.",
         "Standardized Heartland terminology and synchronized card wording with the v0.5.2 lifecycle."
       ]
+    },
+    {
+      "version": "v0.5.4",
+      "name": "Last Stand Patch",
+      "changes": [
+        "Added Last Stand: a player defending in their own Heartland has Homeland Advantage and gains +1 to their battle total.",
+        "Clarified that Heartlands are not Territories and cannot be controlled or receive Territory effects unless a card explicitly says otherwise.",
+        "Updated Heartland cards, player aids, and the winning-game rules section."
+      ]
+    },
+    {
+      "version": "v0.5.5",
+      "name": "Human Playtest Errata",
+      "changes": [
+        "Reworked Conscription's Battle effect so it functions within battle-draw timing.",
+        "Clarified Watchtower only reveals attacker hand commitments made during the normal commitment step.",
+        "Reworked Fortifications' Battle effect into an immediate defensive +1 and optional extra retreat after a loss.",
+        "Rewrote Embargo so canceled cards return to the appropriate source destination rather than always entering hand.",
+        "No pacing-system rule was added in this patch; Foothold and other anti-stalemate options remain under consideration."
+      ]
+    },
+    {
+      "version": "v0.5.6",
+      "name": "Asset Bank Patch",
+      "changes": [
+        "Renamed the persistent Asset area to the Asset bank and standardized the language of banking an Asset.",
+        "Asset bank limit now equals the number of Territories a player controls; occupied Territories do not count until captured.",
+        "If a player controls more Assets than their current Asset bank limit, they immediately discard Assets until within the limit.",
+        "Clarified Action-card destinations: Actions that are not banked as Assets, discarded after resolving, or placed as Overlays/Territories are played as Conditions and discarded when directed by their text.",
+        "Updated affected card wording to identify when cards are banked as Assets or played as Conditions."
+      ]
     }
   ],
   "cards": [
     {
       "name": "Arcane Knowledge",
       "cost": 5,
-      "action": "Place Arcane Knowledge in your Assets area. Once per turn during a battle, Arcane Knowledge may use the eligible Battle effect of one other card you played in that battle.",
+      "action": "Bank Arcane Knowledge as an Asset. Once per turn during a battle, Arcane Knowledge may use the eligible Battle effect of one other card you played in that battle.",
       "battle": "Arcane Knowledge may use the eligible Battle effect of one other card you played in this battle.",
       "reminder": "It cannot use cancellation, special-reveal, battle-ending, follow-up-battle, source-dependent, or card-lifecycle effects."
     },
     {
       "name": "Armistice",
       "cost": 4,
-      "action": "Place Armistice in your Conditions area. For the rest of this turn and throughout your opponent's next turn, neither player may initiate a battle. Discard Armistice at the end of that turn.",
+      "action": "Play Armistice as a Condition. For the rest of this turn and throughout your opponent's next turn, neither player may initiate a battle. Discard Armistice at the end of that turn.",
       "battle": "Resolve effects that cancel Battle cards first. If Armistice remains in play, end the battle immediately without a winner. The attacker returns to the Territory they entered from. Other unresolved Battle effects do not resolve. Place all other Battle cards still in play in their owners' discard piles, and place Armistice in your Graveyard.",
       "reminder": "The attacker's return is not a retreat. Effects that already resolved are not undone."
     },
@@ -91,49 +127,49 @@
     {
       "name": "Assimilation",
       "cost": 4,
-      "action": "Place Assimilation in your Conditions area. If you win your next battle this turn as the attacker on a Territory your opponent controls, immediately capture that Territory instead of occupying it. If another effect would delay capture, reduce that delay by one round instead. Discard Assimilation at the end of the turn.",
+      "action": "Play Assimilation as a Condition. If you win your next battle this turn as the attacker on a Territory your opponent controls, immediately capture that Territory instead of occupying it. If another effect would delay capture, reduce that delay by one round instead. Discard Assimilation at the end of the turn.",
       "battle": "If you win this battle as the attacker on a Territory your opponent controls, immediately capture that Territory instead of occupying it. This effect overrides effects that would delay capture.",
       "reminder": "Against Protracted Siege, the Action restores the normal capture schedule; the Battle effect captures immediately."
     },
     {
       "name": "Attrition",
       "cost": 3,
-      "action": "Place Attrition in your Assets area. Whenever your opponent loses a battle against you, each card they played from their battle draw goes to their Graveyard instead of their discard pile.",
+      "action": "Bank Attrition as an Asset. Whenever your opponent loses a battle against you, each card they played from their battle draw goes to their Graveyard instead of their discard pile.",
       "battle": "If your opponent loses this battle, place every card from their initial battle draw in their Graveyard.",
       "reminder": "The initial battle draw is the first three cards drawn. This includes cards already discarded. Ignore additional and replacement cards; if fewer than three were drawn, affect all of them."
     },
     {
       "name": "Blockade",
       "cost": 4,
-      "action": "Place Blockade in your opponent's Conditions area. At the beginning of each of their turns, after their normal draw, if they have more than one card in hand, they discard one at random. When they win a battle, discard Blockade.",
-      "battle": "Your opponent may discard one card from their hand. If they do not, each card they played from their battle draw has no effect during this battle. If they lose, place Blockade in their Conditions area instead of its normal destination.",
+      "action": "Play Blockade as a Condition affecting your opponent. At the beginning of each of their turns, after their normal draw, if they have more than one card in hand, they discard one at random. When they win a battle, discard Blockade.",
+      "battle": "Your opponent may discard one card from their hand. If they do not, each card they played from their battle draw has no effect during this battle. If they lose, play Blockade as a Condition affecting them instead of its normal destination.",
       "reminder": "A player may have only one Blockade Condition."
     },
     {
       "name": "Brothers in Arms",
       "cost": 4,
-      "action": "Place Brothers in Arms in your Assets area. Whenever you play both a card from your hand and a card from your battle draw in the same battle, gain advantage. If you win, place the hand-origin card in your discard pile instead of your Graveyard.",
+      "action": "Bank Brothers in Arms as an Asset. Whenever you play both a card from your hand and a card from your battle draw in the same battle, gain advantage. If you win, place the hand-origin card in your discard pile instead of your Graveyard.",
       "battle": "If Brothers in Arms was played from your hand and you also play a card from your battle draw - or vice versa - gain advantage. The other card cannot be canceled or have its Battle effect ignored.",
       "reminder": "Brothers in Arms counts as one of the pair, but it can still be canceled."
     },
     {
       "name": "Capital Gains",
       "cost": 2,
-      "action": "As an additional cost to play Capital Gains, discard one other card from your hand. Place Capital Gains in your Conditions area. At the beginning of your next turn, draw three cards instead of your normal draw, then discard Capital Gains.",
+      "action": "As an additional cost to play Capital Gains, discard one other card from your hand. Play Capital Gains as a Condition. At the beginning of your next turn, draw three cards instead of your normal draw, then discard Capital Gains.",
       "battle": "After this battle, if you won, draw two cards. If you lost, discard one card from your hand.",
       "reminder": "You cannot play the Action if you have no other card to discard."
     },
     {
       "name": "Capital Punishment",
       "cost": 4,
-      "action": "Choose one opposing Asset. If you defeat that opponent in battle this turn, place the chosen Asset in its owner's Graveyard.",
+      "action": "Play Capital Punishment as a Condition. Choose one opposing Asset. If you defeat that opponent in battle this turn, place the chosen Asset in its owner's Graveyard. Discard Capital Punishment at the end of the turn.",
       "battle": "Choose one opposing Battle card. That card has no effect; place it in its owner's Graveyard immediately."
     },
     {
       "name": "Conscription",
       "cost": 3,
-      "action": "Draw one card. You may immediately play one card from your hand whose Action places it in your Assets area.",
-      "battle": "Reveal Conscription before the other Battle cards. You may commit one additional card from your hand face down."
+      "action": "Draw one card. You may immediately play one card from your hand whose Action banks it as an Asset.",
+      "battle": "Draw one additional battle card. You may play one additional card from your battle draw in this battle."
     },
     {
       "name": "Contraband",
@@ -145,38 +181,38 @@
     {
       "name": "Counterintelligence",
       "cost": 2,
-      "action": "Place Counterintelligence in your Assets area. Opposing effects cannot look at, reveal, or require you to reveal your hand, battle draw, face-down Battle cards, or face-down Territories. This does not prevent revelation required by the normal rules of battle or Territory exploration.",
+      "action": "Bank Counterintelligence as an Asset. Opposing effects cannot look at, reveal, or require you to reveal your hand, battle draw, face-down Battle cards, or face-down Territories. This does not prevent revelation required by the normal rules of battle or Territory exploration.",
       "battle": "Add +1 to your battle total. Until the normal reveal, opposing effects cannot look at or reveal your face-down Battle cards."
     },
     {
       "name": "Court Martial",
       "cost": 3,
-      "action": "Place Court Martial in your opponent's Conditions area. After their next battle, discard Court Martial. If they lost that battle, they must retreat one additional tile.",
+      "action": "Play Court Martial as a Condition affecting your opponent. After their next battle, discard Court Martial. If they lost that battle, they must retreat one additional tile.",
       "battle": "Your opponent gains disadvantage during this battle. If they lose, they must retreat one additional tile.",
       "reminder": "The additional retreat is forced."
     },
     {
       "name": "Decoys",
       "cost": 3,
-      "action": "Place Decoys in your Assets area. If an opposing effect would cause one or more of your other Assets to leave play, you may discard Decoys. If you do, choose one affected Asset; it remains in play.",
+      "action": "Bank Decoys as an Asset. If an opposing effect would cause one or more of your other Assets to leave play, you may discard Decoys. If you do, choose one affected Asset; it remains in play.",
       "battle": "Opposing effects that cancel Battle cards must target Decoys before they can target your other Battle cards."
     },
     {
       "name": "Embargo",
       "cost": 2,
-      "action": "Place Embargo in your opponent's Conditions area. At the beginning of their next turn, after their normal draw, they discard one card from their hand at random. Then discard Embargo.",
-      "battle": "Choose one opposing Battle card. That card has no effect; return it to its owner's hand immediately."
+      "action": "Play Embargo as a Condition affecting your opponent. At the beginning of their next turn, after their normal draw, they discard one card from their hand at random. Then discard Embargo.",
+      "battle": "Choose one opposing Battle card. That card has no effect. If it was committed from hand, return it to its owner's hand. If it was played from a battle draw, place it in its owner's discard pile."
     },
     {
       "name": "Entrenchment",
       "cost": 2,
-      "action": "Place Entrenchment in your Assets area. When your opponent advances onto a Territory adjacent to your token, their movement ends and they cannot play an Action card after movement that turn.",
+      "action": "Bank Entrenchment as an Asset. When your opponent advances onto a Territory adjacent to your token, their movement ends and they cannot play an Action card after movement that turn.",
       "battle": "If you are the defender, your opponent gains disadvantage during this battle."
     },
     {
       "name": "Fealty",
       "cost": 2,
-      "action": "Place Fealty in your Assets area. Opposing card effects cannot give you disadvantage.",
+      "action": "Bank Fealty as an Asset. Opposing card effects cannot give you disadvantage.",
       "battle": "Ignore one disadvantage affecting you during this battle. If you have no disadvantage, add +1 to your battle total instead."
     },
     {
@@ -189,14 +225,14 @@
     {
       "name": "Fortifications",
       "cost": 3,
-      "action": "Place Fortifications in your Assets area. When defending, you may play up to two cards from your battle draw instead of one.",
-      "battle": "If you are the defender, draw one additional battle card before choosing which battle-drawn card to play.",
-      "reminder": "The Battle effect increases selection only; an active Fortifications Asset sets the maximum at two battle-drawn cards."
+      "action": "Bank Fortifications as an Asset. When defending, you may play up to two cards from your battle draw instead of one.",
+      "battle": "If you are the defender, gain +1 to your battle total. If you lose this battle, you may retreat one additional space.",
+      "reminder": "The Action effect increases defensive battle-draw plays; the Battle effect is an immediate defensive stand and fallback."
     },
     {
       "name": "Illegal Occupation",
       "cost": 3,
-      "action": "Place Illegal Occupation in your Assets area. While your opponent occupies a Territory you control without controlling it, their Assets are inactive.",
+      "action": "Bank Illegal Occupation as an Asset. While your opponent occupies a Territory you control without controlling it, their Assets are inactive.",
       "battle": "If you are counterattacking an opponent occupying a Territory you control, their Assets are inactive during this battle and you gain advantage."
     },
     {
@@ -215,7 +251,7 @@
     {
       "name": "Liberation",
       "cost": 4,
-      "action": "Place Liberation in your Assets area. Whenever you win a counterattack against an opponent occupying a Territory you control, draw one card and you may immediately play one additional Action card.",
+      "action": "Bank Liberation as an Asset. Whenever you win a counterattack against an opponent occupying a Territory you control, draw one card and you may immediately play one additional Action card.",
       "battle": "If you win a counterattack against an opponent occupying a Territory you control, after that battle fully resolves, you may advance one tile. If this begins another battle, gain advantage during that battle."
     },
     {
@@ -229,7 +265,7 @@
     {
       "name": "Militias",
       "cost": 3,
-      "action": "Place Militias in your Assets area. During battles on a Territory you control, your opponent gains disadvantage.",
+      "action": "Bank Militias as an Asset. During battles on a Territory you control, your opponent gains disadvantage.",
       "battle": "Your opponent gains disadvantage. If this battle is on a Territory you control, they gain double disadvantage instead."
     },
     {
@@ -254,22 +290,22 @@
     {
       "name": "Palisade Wall",
       "cost": 2,
-      "action": "Place Palisade Wall in your Conditions area. During the next battle in which you are the defender, your opponent's Assets are inactive. Discard Palisade Wall after that battle.",
+      "action": "Play Palisade Wall as a Condition. During the next battle in which you are the defender, your opponent's Assets are inactive. Discard Palisade Wall after that battle.",
       "battle": "If you are the defender, choose one opposing Battle card committed from hand. That card has no effect during this battle. If your opponent committed no card from hand, gain advantage instead.",
       "reminder": "The chosen card remains played and goes to its normal destination after battle."
     },
     {
       "name": "Patriotism",
       "cost": 3,
-      "action": "Place Patriotism in your Assets area. During battles on a Territory you control, the first +1 or advantage granted by one of your Battle cards is doubled.",
+      "action": "Bank Patriotism as an Asset. During battles on a Territory you control, the first +1 or advantage granted by one of your Battle cards is doubled.",
       "battle": "If you are defending a Territory you control, gain advantage, and your Homeland Advantage cannot be disabled during this battle.",
       "reminder": "+1 becomes +2; advantage becomes double advantage. The Action applies only once per battle."
     },
     {
       "name": "Protracted Siege",
       "cost": 4,
-      "action": "Place Protracted Siege in your Assets area. Whenever your opponent occupies a Territory you control, they do not capture it at the beginning of their next turn. If they still occupy it at the beginning of the following turn, they capture it normally.",
-      "battle": "If you are defending a Territory you control and lose, place Protracted Siege in your opponent's Conditions area instead of its normal destination. They do not capture the Territory occupied during this battle at the beginning of their next turn. If they still occupy it at the beginning of the following turn, they capture it normally, then discard Protracted Siege. If they cease occupying it first, discard Protracted Siege."
+      "action": "Bank Protracted Siege as an Asset. Whenever your opponent occupies a Territory you control, they do not capture it at the beginning of their next turn. If they still occupy it at the beginning of the following turn, they capture it normally.",
+      "battle": "If you are defending a Territory you control and lose, play Protracted Siege as a Condition affecting your opponent instead of its normal destination. They do not capture the Territory occupied during this battle at the beginning of their next turn. If they still occupy it at the beginning of the following turn, they capture it normally, then discard Protracted Siege. If they cease occupying it first, discard Protracted Siege."
     },
     {
       "name": "Rallying Cry",
@@ -280,21 +316,21 @@
     {
       "name": "Redemption",
       "cost": 2,
-      "action": "Place Redemption in your Conditions area. The next time an opposing effect causes one or more of your cards to enter your discard pile, choose one of those cards and return it to your hand after that effect resolves. Then discard Redemption.",
+      "action": "Play Redemption as a Condition. The next time an opposing effect causes one or more of your cards to enter your discard pile, choose one of those cards and return it to your hand after that effect resolves. Then discard Redemption.",
       "battle": "If an opposing effect causes one other Battle card you played to have no effect and enter your discard pile, return that card to your hand after the battle instead."
     },
     {
       "name": "Reinforcements",
       "cost": 2,
-      "action": "Place Reinforcements in your Conditions area. During your next turn, you may play one additional Action card. Discard Reinforcements at the end of that turn.",
+      "action": "Play Reinforcements as a Condition. During your next turn, you may play one additional Action card. Discard Reinforcements at the end of that turn.",
       "battle": "After the other Battle cards are revealed, draw one additional battle card. You may immediately play it face up if its Battle effect can still resolve."
     },
     {
       "name": "Resistance",
       "cost": 3,
-      "action": "Place Resistance in your Assets area. When counterattacking an opponent occupying a Territory you control, draw two additional battle cards before choosing which battle-drawn card to play.",
-      "battle": "If you are counterattacking an opponent occupying a Territory you control, gain advantage. If you win, place Resistance in your Assets area instead of its normal destination.",
-      "reminder": "If your Assets area is full, you may discard one Asset to make room; otherwise Resistance goes to its normal destination."
+      "action": "Bank Resistance as an Asset. When counterattacking an opponent occupying a Territory you control, draw two additional battle cards before choosing which battle-drawn card to play.",
+      "battle": "If you are counterattacking an opponent occupying a Territory you control, gain advantage. If you win, bank Resistance as an Asset instead of its normal destination.",
+      "reminder": "If your Asset bank is at its limit, you may discard one Asset to make room; otherwise Resistance goes to its normal destination."
     },
     {
       "name": "Revolution",
@@ -306,21 +342,21 @@
     {
       "name": "Rousing Speech",
       "cost": 2,
-      "action": "Place Rousing Speech in your Assets area. Whenever your opponent places a new card in their Assets area, you may draw one card, then discard one card.",
+      "action": "Bank Rousing Speech as an Asset. Whenever your opponent banks a new Asset, you may draw one card, then discard one card.",
       "battle": "If your opponent has more face-up Assets than you, gain advantage.",
       "reminder": "Turning an existing Asset face up does not trigger Rousing Speech."
     },
     {
       "name": "Sabotage",
       "cost": 2,
-      "action": "Choose one opposing Asset. Turn it face down until the start of your next turn.",
+      "action": "Play Sabotage as a Condition attached to one opposing Asset. Turn that Asset face down until the start of your next turn, then discard Sabotage.",
       "battle": "Choose one opposing Battle card. That card has no effect; place it in its owner's discard pile immediately."
     },
     {
       "name": "Scorched Earth",
       "cost": 4,
-      "action": "Place Scorched Earth in your opponent's Conditions area. After their next battle, if they won, discard Scorched Earth. If they lost, they choose one Asset they control and discard it, and they cannot play Assets during their next turn. Discard Scorched Earth at the end of that turn.",
-      "battle": "If your opponent loses this battle, they choose one Asset they control and discard it. Place Scorched Earth in their Conditions area instead of its normal destination. They cannot play Assets during their next turn. Discard Scorched Earth at the end of that turn."
+      "action": "Play Scorched Earth as a Condition affecting your opponent. After their next battle, if they won, discard Scorched Earth. If they lost, they choose one Asset they control and discard it, and they cannot bank Assets during their next turn. Discard Scorched Earth at the end of that turn.",
+      "battle": "If your opponent loses this battle, they choose one Asset they control and discard it. Play Scorched Earth as a Condition affecting them instead of its normal destination. They cannot bank Assets during their next turn. Discard Scorched Earth at the end of that turn."
     },
     {
       "name": "Scouting Report",
@@ -337,7 +373,7 @@
     {
       "name": "Shock and Awe",
       "cost": 5,
-      "action": "Place Shock and Awe in your Conditions area. If you win your next battle this turn as the attacker on a Territory your opponent controls, immediately capture that Territory instead of occupying it, then you may advance one additional tile. If another effect would delay the capture, reduce that delay by one round instead; you may advance only if the Territory is captured. Discard Shock and Awe at the end of the turn.",
+      "action": "Play Shock and Awe as a Condition. If you win your next battle this turn as the attacker on a Territory your opponent controls, immediately capture that Territory instead of occupying it, then you may advance one additional tile. If another effect would delay the capture, reduce that delay by one round instead; you may advance only if the Territory is captured. Discard Shock and Awe at the end of the turn.",
       "battle": "If you win this battle as the attacker on a Territory your opponent controls, immediately capture that Territory instead of occupying it, then you may advance one additional tile. This capture overrides effects that would delay it. If the advance begins another battle, gain advantage during that battle.",
       "reminder": "Shock and Awe can cause only one additional advance per turn."
     },
@@ -351,32 +387,32 @@
     {
       "name": "Spies",
       "cost": 1,
-      "action": "Place Spies in your Assets area. Your opponent keeps their hand face up.",
+      "action": "Bank Spies as an Asset. Your opponent keeps their hand face up.",
       "battle": "Reveal Spies before the other Battle cards. Your opponent reveals every card committed from hand and their entire battle draw, then finalizes their battle-draw selection face up. You may then change your own battle-draw selection. If you replace Spies, place it in your Graveyard immediately."
     },
     {
       "name": "Stand Ground",
       "cost": 2,
-      "action": "Until the start of your next turn, your token cannot be moved by opposing card effects.",
+      "action": "Play Stand Ground as a Condition. Until the start of your next turn, your token cannot be moved by opposing card effects. Then discard Stand Ground.",
       "battle": "If you are the defender, gain advantage."
     },
     {
       "name": "Strategic Withdrawal",
       "cost": 3,
-      "action": "Return one Asset you control to your hand. If you do, gain one additional movement this turn.",
+      "action": "Return one Asset you control from your Asset bank to your hand. If you do, gain one additional movement this turn.",
       "battle": "If you lose this battle, after completing the required retreat, you may voluntarily withdraw one additional tile. If you do, return one other card you played during this battle to your hand instead of placing it in its normal destination.",
       "reminder": "The additional withdrawal is voluntary and can trigger Refuge."
     },
     {
       "name": "Supplies",
       "cost": 1,
-      "action": "Place Supplies in your Conditions area. At the beginning of your next turn, draw two additional cards, then discard Supplies.",
+      "action": "Play Supplies as a Condition. At the beginning of your next turn, draw two additional cards, then discard Supplies.",
       "battle": "After this battle, draw two cards, then discard one card."
     },
     {
       "name": "Tariffs",
       "cost": 3,
-      "action": "Draw two cards. You may immediately play one additional Action card. Skip your normal draw at the beginning of your next turn.",
+      "action": "Play Tariffs as a Condition. Draw two cards. You may immediately play one additional Action card. At the beginning of your next turn, skip your normal draw, then discard Tariffs.",
       "battle": "Your opponent may discard one card from their hand. If they do not, add +1 to your battle total.",
       "reminder": "Multiple Tariffs may chain, but the skipped-draw penalty does not stack."
     },
@@ -389,26 +425,26 @@
     {
       "name": "Treason",
       "cost": 5,
-      "action": "Place Treason in your opponent's Conditions area. During their next battle, after Battle cards are revealed, choose one eligible card they committed from hand. That card has no effect; place it in its owner's discard pile immediately. Treason uses that card's Battle effect for you. Then discard Treason.",
+      "action": "Play Treason as a Condition affecting your opponent. During their next battle, after Battle cards are revealed, choose one eligible card they committed from hand. That card has no effect; place it in its owner's discard pile immediately. Treason uses that card's Battle effect for you. Then discard Treason.",
       "battle": "Choose one eligible opposing non-cancellation Battle card. That card has no effect; place it in its owner's discard pile immediately. Treason uses that card's Battle effect for you."
     },
     {
       "name": "Tyranny",
       "cost": 4,
-      "action": "Place Tyranny in your Assets area. Once per battle, the first opposing Battle card that would add to your opponent's battle total or grant them advantage has those portions of its effect ignored.",
+      "action": "Bank Tyranny as an Asset. Once per battle, the first opposing Battle card that would add to your opponent's battle total or grant them advantage has those portions of its effect ignored.",
       "battle": "During this battle, opposing Battle cards cannot add to your opponent's battle total or grant them advantage.",
       "reminder": "Other portions of an affected card still resolve."
     },
     {
       "name": "Valor",
       "cost": 2,
-      "action": "Place Valor in your Assets area. Whenever you lose a battle, draw one card after retreating.",
+      "action": "Bank Valor as an Asset. Whenever you lose a battle, draw one card after retreating.",
       "battle": "After the battle dice are rolled, if your total is lower than your opponent's, you may reroll your die. You must use the new result."
     },
     {
       "name": "War Crimes",
       "cost": 4,
-      "action": "Place War Crimes in your Assets area. Whenever your opponent loses a battle against you, they cannot benefit from effects they control that trigger because they lost or retreated. Cards they played during that battle must go to their Graveyard unless an opposing effect moves them elsewhere.",
+      "action": "Bank War Crimes as an Asset. Whenever your opponent loses a battle against you, they cannot benefit from effects they control that trigger because they lost or retreated. Cards they played during that battle must go to their Graveyard unless an opposing effect moves them elsewhere.",
       "battle": "If your opponent loses this battle, they cannot benefit from effects they control that trigger because they lost or retreated. Cards they played during this battle must go to their Graveyard unless an opposing effect moves them elsewhere. They must retreat one additional tile.",
       "reminder": "The additional retreat is forced and does not trigger Refuge."
     },
@@ -466,7 +502,7 @@
     },
     {
       "name": "Watchtower",
-      "text": "When the defender controls this Territory, any card the attacker commits from hand is placed face up instead of face down."
+      "text": "When the defender controls this Territory, any card the attacker commits from hand during the battle commitment step is placed face up instead of face down. Cards played from the battle draw are not hand commitments."
     },
     {
       "name": "Supply Depot",
@@ -561,7 +597,7 @@
         "High Ground",
         "Supply Depot"
       ],
-      "status": "v0.5.3 full-budget print list: one Rallying Cry is upgraded to Redemption; otherwise based on the previously simulation-tested list.",
+      "status": "v0.5.6 full-budget print list: one Rallying Cry is upgraded to Redemption; otherwise based on the previously simulation-tested list.",
       "card_count": 30,
       "point_total": 60
     },
@@ -604,7 +640,7 @@
         "Command Tent",
         "Ruined Storehouse"
       ],
-      "status": "v0.5.3 full-budget print list: a second Palisade Wall replaces one Rallying Cry; otherwise based on Bastion Coalition v2.",
+      "status": "v0.5.6 full-budget print list: a second Palisade Wall replaces one Rallying Cry; otherwise based on Bastion Coalition v2.",
       "card_count": 30,
       "point_total": 60
     },
@@ -647,7 +683,7 @@
         "Field Hospital",
         "King's Road"
       ],
-      "status": "v0.5.3 full-budget print list: Counterintelligence replaces one Rallying Cry; otherwise based on the previously simulation-tested list.",
+      "status": "v0.5.6 full-budget print list: Counterintelligence replaces one Rallying Cry; otherwise based on the previously simulation-tested list.",
       "card_count": 30,
       "point_total": 60
     },
@@ -690,9 +726,27 @@
         "Supply Depot",
         "Arena: Spoils of War"
       ],
-      "status": "v0.5.3 trial list: Attrition replaces Court Martial at equal cost.",
+      "status": "v0.5.6 trial list: Attrition replaces Court Martial at equal cost.",
       "card_count": 30,
       "point_total": 60
     }
+  },
+  "asset_bank": {
+    "terminology": "Players bank Assets in their Asset bank.",
+    "limit": "A player's Asset bank limit equals the number of Territories they control.",
+    "occupied_territories": "Occupied Territories do not count until captured.",
+    "heartlands": "Heartlands are not Territories and do not increase the Asset bank limit.",
+    "limit_decrease": "If the limit decreases below the number of Assets a player controls, they immediately choose and discard Assets until within the limit."
+  },
+  "action_destinations": {
+    "banked_asset": "Action text that says to bank the card as an Asset places it in the player's Asset bank, subject to the Asset bank limit.",
+    "condition": "Action text with an ongoing or delayed effect that is not banked as an Asset, discarded after resolving, or placed as an Overlay or Territory is played as a Condition and remains until its card text directs it to be discarded.",
+    "one_shot": "One-shot Actions resolve and are discarded unless their text says otherwise."
+  },
+  "copyright": {
+    "notice": "Copyright © 2026 Tymon Scott. All rights reserved.",
+    "owner": "Tymon Scott",
+    "use": "Provided for private review, playtesting, and development reference only. No license is granted except personal printing for Gauntlet playtesting and feedback.",
+    "feedback": "Submitting feedback grants Tymon Scott permission to use, adapt, and incorporate that feedback into Gauntlet without compensation or obligation."
   }
 }
