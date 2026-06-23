@@ -1,0 +1,698 @@
+{
+  "version": "v0.5.3",
+  "date": "June 20, 2026",
+  "status": "Pre-release playtest edition",
+  "deck_construction": {
+    "minimum_cards": 30,
+    "maximum_points": 60,
+    "opening_hand": 3,
+    "hand_limit": 3,
+    "territories": 3,
+    "maximum_arenas": 1,
+    "unique_cards": [
+      "Manifest Destiny"
+    ]
+  },
+  "battle_card_lifecycle": {
+    "hand_origin": "Graveyard",
+    "battle_draw_origin": "discard pile",
+    "replayed": "Graveyard unless an effect says otherwise",
+    "unused_battle_draw": "discard pile",
+    "incomplete_draw": "Draw as many as possible after reshuffling the discard pile."
+  },
+  "version_history": [
+    {
+      "version": "v0.4.0",
+      "name": "Legacy Ruleset",
+      "changes": [
+        "Last coherent pre-overhaul ruleset.",
+        "Movement rolls and the earlier breaching/capture framework remained in use."
+      ]
+    },
+    {
+      "version": "v0.5.0",
+      "name": "Core Rules Overhaul",
+      "changes": [
+        "Removed movement rolls.",
+        "Added advance, hold, and voluntary withdrawal.",
+        "Added occupation and one-turn counterattack capture window.",
+        "Rebuilt the battle sequence around a hand commitment plus a three-card battle draw.",
+        "Introduced Assets, Conditions, Overlays, and the current Territory framework."
+      ]
+    },
+    {
+      "version": "v0.5.1",
+      "name": "Initial Balance Patch",
+      "changes": [
+        "Adjusted provisional card costs after initial simulation.",
+        "Introduced recommended well-rounded playtest decks."
+      ]
+    },
+    {
+      "version": "v0.5.2",
+      "name": "Deck Flow Patch",
+      "changes": [
+        "Cards committed from hand during battle go to the Graveyard.",
+        "Cards played from the battle draw normally go to the discard pile.",
+        "Added the incomplete-draw rule."
+      ]
+    },
+    {
+      "version": "v0.5.3",
+      "name": "Attrition Patch",
+      "changes": [
+        "Reworked Attrition around changing the destination of an opponent's battle-draw cards after a loss.",
+        "Attrition's Battle effect now sends the opponent's full initial three-card battle draw to the Graveyard after a loss.",
+        "Standardized Heartland terminology and synchronized card wording with the v0.5.2 lifecycle."
+      ]
+    }
+  ],
+  "cards": [
+    {
+      "name": "Arcane Knowledge",
+      "cost": 5,
+      "action": "Place Arcane Knowledge in your Assets area. Once per turn during a battle, Arcane Knowledge may use the eligible Battle effect of one other card you played in that battle.",
+      "battle": "Arcane Knowledge may use the eligible Battle effect of one other card you played in this battle.",
+      "reminder": "It cannot use cancellation, special-reveal, battle-ending, follow-up-battle, source-dependent, or card-lifecycle effects."
+    },
+    {
+      "name": "Armistice",
+      "cost": 4,
+      "action": "Place Armistice in your Conditions area. For the rest of this turn and throughout your opponent's next turn, neither player may initiate a battle. Discard Armistice at the end of that turn.",
+      "battle": "Resolve effects that cancel Battle cards first. If Armistice remains in play, end the battle immediately without a winner. The attacker returns to the Territory they entered from. Other unresolved Battle effects do not resolve. Place all other Battle cards still in play in their owners' discard piles, and place Armistice in your Graveyard.",
+      "reminder": "The attacker's return is not a retreat. Effects that already resolved are not undone."
+    },
+    {
+      "name": "Assassins",
+      "cost": 4,
+      "action": "Look at your opponent's hand. Choose one card and place it in their discard pile.",
+      "battle": "Choose one opposing Battle card committed from hand. That card has no effect; place it in its owner's Graveyard immediately. If your opponent committed no card from hand, they gain disadvantage during this battle."
+    },
+    {
+      "name": "Assimilation",
+      "cost": 4,
+      "action": "Place Assimilation in your Conditions area. If you win your next battle this turn as the attacker on a Territory your opponent controls, immediately capture that Territory instead of occupying it. If another effect would delay capture, reduce that delay by one round instead. Discard Assimilation at the end of the turn.",
+      "battle": "If you win this battle as the attacker on a Territory your opponent controls, immediately capture that Territory instead of occupying it. This effect overrides effects that would delay capture.",
+      "reminder": "Against Protracted Siege, the Action restores the normal capture schedule; the Battle effect captures immediately."
+    },
+    {
+      "name": "Attrition",
+      "cost": 3,
+      "action": "Place Attrition in your Assets area. Whenever your opponent loses a battle against you, each card they played from their battle draw goes to their Graveyard instead of their discard pile.",
+      "battle": "If your opponent loses this battle, place every card from their initial battle draw in their Graveyard.",
+      "reminder": "The initial battle draw is the first three cards drawn. This includes cards already discarded. Ignore additional and replacement cards; if fewer than three were drawn, affect all of them."
+    },
+    {
+      "name": "Blockade",
+      "cost": 4,
+      "action": "Place Blockade in your opponent's Conditions area. At the beginning of each of their turns, after their normal draw, if they have more than one card in hand, they discard one at random. When they win a battle, discard Blockade.",
+      "battle": "Your opponent may discard one card from their hand. If they do not, each card they played from their battle draw has no effect during this battle. If they lose, place Blockade in their Conditions area instead of its normal destination.",
+      "reminder": "A player may have only one Blockade Condition."
+    },
+    {
+      "name": "Brothers in Arms",
+      "cost": 4,
+      "action": "Place Brothers in Arms in your Assets area. Whenever you play both a card from your hand and a card from your battle draw in the same battle, gain advantage. If you win, place the hand-origin card in your discard pile instead of your Graveyard.",
+      "battle": "If Brothers in Arms was played from your hand and you also play a card from your battle draw - or vice versa - gain advantage. The other card cannot be canceled or have its Battle effect ignored.",
+      "reminder": "Brothers in Arms counts as one of the pair, but it can still be canceled."
+    },
+    {
+      "name": "Capital Gains",
+      "cost": 2,
+      "action": "As an additional cost to play Capital Gains, discard one other card from your hand. Place Capital Gains in your Conditions area. At the beginning of your next turn, draw three cards instead of your normal draw, then discard Capital Gains.",
+      "battle": "After this battle, if you won, draw two cards. If you lost, discard one card from your hand.",
+      "reminder": "You cannot play the Action if you have no other card to discard."
+    },
+    {
+      "name": "Capital Punishment",
+      "cost": 4,
+      "action": "Choose one opposing Asset. If you defeat that opponent in battle this turn, place the chosen Asset in its owner's Graveyard.",
+      "battle": "Choose one opposing Battle card. That card has no effect; place it in its owner's Graveyard immediately."
+    },
+    {
+      "name": "Conscription",
+      "cost": 3,
+      "action": "Draw one card. You may immediately play one card from your hand whose Action places it in your Assets area.",
+      "battle": "Reveal Conscription before the other Battle cards. You may commit one additional card from your hand face down."
+    },
+    {
+      "name": "Contraband",
+      "cost": 3,
+      "action": "Choose one card in your discard pile and return it to your hand.",
+      "battle": "When Contraband is revealed, choose one card in your discard pile whose Battle effect can still resolve. Place Contraband in your Graveyard and play the chosen card in its place.",
+      "reminder": "The replayed card follows its own Battle text and normally enters the Graveyard after battle."
+    },
+    {
+      "name": "Counterintelligence",
+      "cost": 2,
+      "action": "Place Counterintelligence in your Assets area. Opposing effects cannot look at, reveal, or require you to reveal your hand, battle draw, face-down Battle cards, or face-down Territories. This does not prevent revelation required by the normal rules of battle or Territory exploration.",
+      "battle": "Add +1 to your battle total. Until the normal reveal, opposing effects cannot look at or reveal your face-down Battle cards."
+    },
+    {
+      "name": "Court Martial",
+      "cost": 3,
+      "action": "Place Court Martial in your opponent's Conditions area. After their next battle, discard Court Martial. If they lost that battle, they must retreat one additional tile.",
+      "battle": "Your opponent gains disadvantage during this battle. If they lose, they must retreat one additional tile.",
+      "reminder": "The additional retreat is forced."
+    },
+    {
+      "name": "Decoys",
+      "cost": 3,
+      "action": "Place Decoys in your Assets area. If an opposing effect would cause one or more of your other Assets to leave play, you may discard Decoys. If you do, choose one affected Asset; it remains in play.",
+      "battle": "Opposing effects that cancel Battle cards must target Decoys before they can target your other Battle cards."
+    },
+    {
+      "name": "Embargo",
+      "cost": 2,
+      "action": "Place Embargo in your opponent's Conditions area. At the beginning of their next turn, after their normal draw, they discard one card from their hand at random. Then discard Embargo.",
+      "battle": "Choose one opposing Battle card. That card has no effect; return it to its owner's hand immediately."
+    },
+    {
+      "name": "Entrenchment",
+      "cost": 2,
+      "action": "Place Entrenchment in your Assets area. When your opponent advances onto a Territory adjacent to your token, their movement ends and they cannot play an Action card after movement that turn.",
+      "battle": "If you are the defender, your opponent gains disadvantage during this battle."
+    },
+    {
+      "name": "Fealty",
+      "cost": 2,
+      "action": "Place Fealty in your Assets area. Opposing card effects cannot give you disadvantage.",
+      "battle": "Ignore one disadvantage affecting you during this battle. If you have no disadvantage, add +1 to your battle total instead."
+    },
+    {
+      "name": "Fog of War",
+      "cost": 2,
+      "action": "Place Fog of War over one revealed Territory. During the next battle fought there, each player randomly selects from their battle draw instead of choosing. After that battle, discard Fog of War.",
+      "battle": "Your opponent randomly selects from their battle draw instead of choosing during this battle.",
+      "reminder": "Randomly select the number of battle-drawn cards that player is currently allowed to play."
+    },
+    {
+      "name": "Fortifications",
+      "cost": 3,
+      "action": "Place Fortifications in your Assets area. When defending, you may play up to two cards from your battle draw instead of one.",
+      "battle": "If you are the defender, draw one additional battle card before choosing which battle-drawn card to play.",
+      "reminder": "The Battle effect increases selection only; an active Fortifications Asset sets the maximum at two battle-drawn cards."
+    },
+    {
+      "name": "Illegal Occupation",
+      "cost": 3,
+      "action": "Place Illegal Occupation in your Assets area. While your opponent occupies a Territory you control without controlling it, their Assets are inactive.",
+      "battle": "If you are counterattacking an opponent occupying a Territory you control, their Assets are inactive during this battle and you gain advantage."
+    },
+    {
+      "name": "Insurrection",
+      "cost": 4,
+      "action": "Discard your hand. Each player shuffles their discard pile into their deck. Draw three cards, then you may immediately play one additional Action card.",
+      "battle": "If you are the attacker, gain advantage. If you are counterattacking an opponent occupying a Territory you control, gain double advantage instead."
+    },
+    {
+      "name": "Invasion",
+      "cost": 4,
+      "action": "Gain two additional movements this turn. Movements granted by Invasion may be used only to advance.",
+      "battle": "If you are the attacker, draw one additional battle card. You may play that card in addition to your other Battle cards.",
+      "reminder": "Unused movement is lost when a battle begins. If the additional Battle card is not played, discard it normally."
+    },
+    {
+      "name": "Liberation",
+      "cost": 4,
+      "action": "Place Liberation in your Assets area. Whenever you win a counterattack against an opponent occupying a Territory you control, draw one card and you may immediately play one additional Action card.",
+      "battle": "If you win a counterattack against an opponent occupying a Territory you control, after that battle fully resolves, you may advance one tile. If this begins another battle, gain advantage during that battle."
+    },
+    {
+      "name": "Manifest Destiny",
+      "cost": 5,
+      "unique": true,
+      "action": "Insert Manifest Destiny face down between your Heartland and the Territory nearest your Heartland. It becomes a new blank Territory you control.",
+      "battle": "If you win as the attacker on an enemy-controlled Territory, insert Manifest Destiny face down between the contested Territory and the space from which you attacked. It becomes a new blank Territory you control instead of going to its normal destination.",
+      "reminder": "Manifest Destiny is a permanent Territory, not an Overlay. Maximum one copy per deck."
+    },
+    {
+      "name": "Militias",
+      "cost": 3,
+      "action": "Place Militias in your Assets area. During battles on a Territory you control, your opponent gains disadvantage.",
+      "battle": "Your opponent gains disadvantage. If this battle is on a Territory you control, they gain double disadvantage instead."
+    },
+    {
+      "name": "Monetary Crisis",
+      "cost": 2,
+      "action": "Each player discards their hand, then draws two cards.",
+      "battle": "After this battle, each player discards down to one card."
+    },
+    {
+      "name": "Necromancy",
+      "cost": 5,
+      "action": "Return one non-Necromancy card from your Graveyard to your hand. Place Necromancy in your Graveyard instead of your discard pile.",
+      "battle": "After this battle, return one non-Necromancy card from your Graveyard to your hand."
+    },
+    {
+      "name": "New Recruits",
+      "cost": 1,
+      "action": "Discard one other card from your hand, then draw two cards.",
+      "battle": "Add +1 to your battle total.",
+      "reminder": "You cannot play the Action if you have no other card to discard."
+    },
+    {
+      "name": "Palisade Wall",
+      "cost": 2,
+      "action": "Place Palisade Wall in your Conditions area. During the next battle in which you are the defender, your opponent's Assets are inactive. Discard Palisade Wall after that battle.",
+      "battle": "If you are the defender, choose one opposing Battle card committed from hand. That card has no effect during this battle. If your opponent committed no card from hand, gain advantage instead.",
+      "reminder": "The chosen card remains played and goes to its normal destination after battle."
+    },
+    {
+      "name": "Patriotism",
+      "cost": 3,
+      "action": "Place Patriotism in your Assets area. During battles on a Territory you control, the first +1 or advantage granted by one of your Battle cards is doubled.",
+      "battle": "If you are defending a Territory you control, gain advantage, and your Homeland Advantage cannot be disabled during this battle.",
+      "reminder": "+1 becomes +2; advantage becomes double advantage. The Action applies only once per battle."
+    },
+    {
+      "name": "Protracted Siege",
+      "cost": 4,
+      "action": "Place Protracted Siege in your Assets area. Whenever your opponent occupies a Territory you control, they do not capture it at the beginning of their next turn. If they still occupy it at the beginning of the following turn, they capture it normally.",
+      "battle": "If you are defending a Territory you control and lose, place Protracted Siege in your opponent's Conditions area instead of its normal destination. They do not capture the Territory occupied during this battle at the beginning of their next turn. If they still occupy it at the beginning of the following turn, they capture it normally, then discard Protracted Siege. If they cease occupying it first, discard Protracted Siege."
+    },
+    {
+      "name": "Rallying Cry",
+      "cost": 1,
+      "action": "Draw one card.",
+      "battle": "Add +1 to your battle total."
+    },
+    {
+      "name": "Redemption",
+      "cost": 2,
+      "action": "Place Redemption in your Conditions area. The next time an opposing effect causes one or more of your cards to enter your discard pile, choose one of those cards and return it to your hand after that effect resolves. Then discard Redemption.",
+      "battle": "If an opposing effect causes one other Battle card you played to have no effect and enter your discard pile, return that card to your hand after the battle instead."
+    },
+    {
+      "name": "Reinforcements",
+      "cost": 2,
+      "action": "Place Reinforcements in your Conditions area. During your next turn, you may play one additional Action card. Discard Reinforcements at the end of that turn.",
+      "battle": "After the other Battle cards are revealed, draw one additional battle card. You may immediately play it face up if its Battle effect can still resolve."
+    },
+    {
+      "name": "Resistance",
+      "cost": 3,
+      "action": "Place Resistance in your Assets area. When counterattacking an opponent occupying a Territory you control, draw two additional battle cards before choosing which battle-drawn card to play.",
+      "battle": "If you are counterattacking an opponent occupying a Territory you control, gain advantage. If you win, place Resistance in your Assets area instead of its normal destination.",
+      "reminder": "If your Assets area is full, you may discard one Asset to make room; otherwise Resistance goes to its normal destination."
+    },
+    {
+      "name": "Revolution",
+      "cost": 4,
+      "action": "Each player discards their hand, then draws cards equal to the number of cards the other player discarded.",
+      "battle": "After all rerolls, you may exchange the two final selected die results. Each player keeps their own modifiers.",
+      "reminder": "If both players use Revolution, the exchanges cancel."
+    },
+    {
+      "name": "Rousing Speech",
+      "cost": 2,
+      "action": "Place Rousing Speech in your Assets area. Whenever your opponent places a new card in their Assets area, you may draw one card, then discard one card.",
+      "battle": "If your opponent has more face-up Assets than you, gain advantage.",
+      "reminder": "Turning an existing Asset face up does not trigger Rousing Speech."
+    },
+    {
+      "name": "Sabotage",
+      "cost": 2,
+      "action": "Choose one opposing Asset. Turn it face down until the start of your next turn.",
+      "battle": "Choose one opposing Battle card. That card has no effect; place it in its owner's discard pile immediately."
+    },
+    {
+      "name": "Scorched Earth",
+      "cost": 4,
+      "action": "Place Scorched Earth in your opponent's Conditions area. After their next battle, if they won, discard Scorched Earth. If they lost, they choose one Asset they control and discard it, and they cannot play Assets during their next turn. Discard Scorched Earth at the end of that turn.",
+      "battle": "If your opponent loses this battle, they choose one Asset they control and discard it. Place Scorched Earth in their Conditions area instead of its normal destination. They cannot play Assets during their next turn. Discard Scorched Earth at the end of that turn."
+    },
+    {
+      "name": "Scouting Report",
+      "cost": 1,
+      "action": "Look at the top card of your opponent's deck, one random card from their hand, or one face-down Territory.",
+      "battle": "Reveal Scouting Report before the other Battle cards. Look at one face-down opposing Battle card. You may replace Scouting Report with one unplayed card from your battle draw. If you do, place Scouting Report in your Graveyard immediately and place the replacement face down."
+    },
+    {
+      "name": "Sedition",
+      "cost": 3,
+      "action": "Your opponent chooses one Asset they control and discards it.",
+      "battle": "Your opponent chooses one face-up Asset they control. It is inactive during this battle. If they have no face-up Assets, add +1 to your battle total."
+    },
+    {
+      "name": "Shock and Awe",
+      "cost": 5,
+      "action": "Place Shock and Awe in your Conditions area. If you win your next battle this turn as the attacker on a Territory your opponent controls, immediately capture that Territory instead of occupying it, then you may advance one additional tile. If another effect would delay the capture, reduce that delay by one round instead; you may advance only if the Territory is captured. Discard Shock and Awe at the end of the turn.",
+      "battle": "If you win this battle as the attacker on a Territory your opponent controls, immediately capture that Territory instead of occupying it, then you may advance one additional tile. This capture overrides effects that would delay it. If the advance begins another battle, gain advantage during that battle.",
+      "reminder": "Shock and Awe can cause only one additional advance per turn."
+    },
+    {
+      "name": "Siege Weaponry",
+      "cost": 5,
+      "action": "Place Siege Weaponry face up over the nearest revealed enemy-controlled Territory ahead of you that has a printed effect. While it remains face up, that Territory's printed effect is inactive. The next time you attack there, discard Siege Weaponry if you lose. If you win, or if you capture that Territory without a battle, turn Siege Weaponry face down and leave it there.",
+      "battle": "If you are attacking on an enemy-controlled Territory, place Siege Weaponry face up over it. That Territory's printed effect is inactive during this battle. If you win, turn Siege Weaponry face down and leave it there instead of placing it in its normal destination.",
+      "reminder": "Face-down Siege Weaponry is an active Ruins Overlay and remains until specifically repaired."
+    },
+    {
+      "name": "Spies",
+      "cost": 1,
+      "action": "Place Spies in your Assets area. Your opponent keeps their hand face up.",
+      "battle": "Reveal Spies before the other Battle cards. Your opponent reveals every card committed from hand and their entire battle draw, then finalizes their battle-draw selection face up. You may then change your own battle-draw selection. If you replace Spies, place it in your Graveyard immediately."
+    },
+    {
+      "name": "Stand Ground",
+      "cost": 2,
+      "action": "Until the start of your next turn, your token cannot be moved by opposing card effects.",
+      "battle": "If you are the defender, gain advantage."
+    },
+    {
+      "name": "Strategic Withdrawal",
+      "cost": 3,
+      "action": "Return one Asset you control to your hand. If you do, gain one additional movement this turn.",
+      "battle": "If you lose this battle, after completing the required retreat, you may voluntarily withdraw one additional tile. If you do, return one other card you played during this battle to your hand instead of placing it in its normal destination.",
+      "reminder": "The additional withdrawal is voluntary and can trigger Refuge."
+    },
+    {
+      "name": "Supplies",
+      "cost": 1,
+      "action": "Place Supplies in your Conditions area. At the beginning of your next turn, draw two additional cards, then discard Supplies.",
+      "battle": "After this battle, draw two cards, then discard one card."
+    },
+    {
+      "name": "Tariffs",
+      "cost": 3,
+      "action": "Draw two cards. You may immediately play one additional Action card. Skip your normal draw at the beginning of your next turn.",
+      "battle": "Your opponent may discard one card from their hand. If they do not, add +1 to your battle total.",
+      "reminder": "Multiple Tariffs may chain, but the skipped-draw penalty does not stack."
+    },
+    {
+      "name": "The Black Edict",
+      "cost": 4,
+      "action": "Each player chooses one Asset they control to keep and discards the rest.",
+      "battle": "All Assets are inactive during this battle."
+    },
+    {
+      "name": "Treason",
+      "cost": 5,
+      "action": "Place Treason in your opponent's Conditions area. During their next battle, after Battle cards are revealed, choose one eligible card they committed from hand. That card has no effect; place it in its owner's discard pile immediately. Treason uses that card's Battle effect for you. Then discard Treason.",
+      "battle": "Choose one eligible opposing non-cancellation Battle card. That card has no effect; place it in its owner's discard pile immediately. Treason uses that card's Battle effect for you."
+    },
+    {
+      "name": "Tyranny",
+      "cost": 4,
+      "action": "Place Tyranny in your Assets area. Once per battle, the first opposing Battle card that would add to your opponent's battle total or grant them advantage has those portions of its effect ignored.",
+      "battle": "During this battle, opposing Battle cards cannot add to your opponent's battle total or grant them advantage.",
+      "reminder": "Other portions of an affected card still resolve."
+    },
+    {
+      "name": "Valor",
+      "cost": 2,
+      "action": "Place Valor in your Assets area. Whenever you lose a battle, draw one card after retreating.",
+      "battle": "After the battle dice are rolled, if your total is lower than your opponent's, you may reroll your die. You must use the new result."
+    },
+    {
+      "name": "War Crimes",
+      "cost": 4,
+      "action": "Place War Crimes in your Assets area. Whenever your opponent loses a battle against you, they cannot benefit from effects they control that trigger because they lost or retreated. Cards they played during that battle must go to their Graveyard unless an opposing effect moves them elsewhere.",
+      "battle": "If your opponent loses this battle, they cannot benefit from effects they control that trigger because they lost or retreated. Cards they played during this battle must go to their Graveyard unless an opposing effect moves them elsewhere. They must retreat one additional tile.",
+      "reminder": "The additional retreat is forced and does not trigger Refuge."
+    },
+    {
+      "name": "Witchcraft",
+      "cost": 3,
+      "action": "Return one other card from your Graveyard to your discard pile.",
+      "battle": "When Witchcraft is revealed, choose one non-Witchcraft card in your Graveyard whose eligible Battle effect can still resolve. Witchcraft uses that Battle effect for this battle. Leave the chosen card in your Graveyard."
+    }
+  ],
+  "territories": [
+    {
+      "name": "Quicksand",
+      "text": "If a player begins their Movement phase on this Territory, they cannot voluntarily withdraw or move more than one tile that turn. Forced movement is unaffected."
+    },
+    {
+      "name": "Poisonous Gas",
+      "text": "During a battle on this Territory, each player may play no more than one card and must place one card from their battle draw in their Graveyard. A battle-draw card played during that battle satisfies this requirement."
+    },
+    {
+      "name": "Difficult Terrain",
+      "text": "When a player enters this Territory, their movement ends for the turn. A player who starts their turn here or enters it during their turn cannot play an Action card after movement that turn."
+    },
+    {
+      "name": "Garrison",
+      "text": "When defending this Territory, its controller draws four battle cards instead of three."
+    },
+    {
+      "name": "Disrupted Supply Lines",
+      "text": "While a player is on this Territory, they may have no more than one face-up Asset. Turn their other Assets face down and inactive until they leave."
+    },
+    {
+      "name": "Ruined Storehouse",
+      "text": "When drawing at the beginning of their turn, a player on this Territory may draw the top card of their discard pile instead of their deck."
+    },
+    {
+      "name": "Field Hospital",
+      "text": "After a battle on this Territory, its controller may place one card they played that would enter their Graveyard in their discard pile instead."
+    },
+    {
+      "name": "Exposed Flank",
+      "text": "When this Territory's controller counterattacks an opponent occupying it, that opponent cannot commit a card from hand during the battle."
+    },
+    {
+      "name": "High Ground",
+      "text": "The defender in a battle on this Territory gains advantage."
+    },
+    {
+      "name": "Fortified Pass",
+      "text": "When this Territory's controller defends it, the attacker's Assets are inactive for that battle."
+    },
+    {
+      "name": "Insurgency",
+      "text": "While an opponent occupies this Territory without controlling it, their Assets are inactive."
+    },
+    {
+      "name": "Watchtower",
+      "text": "When the defender controls this Territory, any card the attacker commits from hand is placed face up instead of face down."
+    },
+    {
+      "name": "Supply Depot",
+      "text": "At the beginning of their turn, a player occupying and controlling this Territory draws two cards instead of one."
+    },
+    {
+      "name": "Old Battlefield",
+      "text": "After a battle on this Territory, its controller may place one unplayed card from their battle draw in their Graveyard instead of their discard pile."
+    },
+    {
+      "name": "Refuge",
+      "text": "When a player voluntarily withdraws onto this Territory, they draw one card."
+    },
+    {
+      "name": "Command Tent",
+      "text": "If you start your turn occupying and controlling this Territory, you may play one Action card before movement and one Action card after movement. If Command Tent is face down, you may reveal it at the start of your turn without using either Action opportunity."
+    },
+    {
+      "name": "Monastery",
+      "text": "While this Territory's controller occupies it, cards cannot leave either player's Graveyard. During battles here, Witchcraft, Necromancy, and Arcane Knowledge have no effect."
+    },
+    {
+      "name": "Training Grounds",
+      "text": "When defending this Territory, its controller may discard their entire battle draw and draw the same number of replacement cards. They must use the replacement draw."
+    },
+    {
+      "name": "King's Road",
+      "text": "When a player starts their turn on this Territory, they have two movements during that turn's Movement phase instead of one."
+    },
+    {
+      "name": "Toll Bridge",
+      "text": "To advance from this Territory, a player must discard one card from their hand."
+    },
+    {
+      "name": "Smuggler's Pass",
+      "text": "While occupying and controlling this Territory, a player may, instead of playing an Action card, place one card from their hand face down next to it. The stored card does not count toward their hand limit. At the beginning of a later turn while they control this Territory, they may return it to their hand. Only one card may be stored here. If control changes, discard it."
+    },
+    {
+      "name": "Arena: Spoils of War",
+      "text": "Homeland Advantage does not apply, and tied battle rolls are rerolled. After the battle, the winner may add one unplayed card from their battle draw to their hand instead of discarding it."
+    },
+    {
+      "name": "Arena: No Quarter",
+      "text": "Homeland Advantage does not apply, and tied battle rolls are rerolled. The loser retreats two tiles instead of one."
+    },
+    {
+      "name": "Arena: Single Combat",
+      "text": "Homeland Advantage does not apply, and tied battle rolls are rerolled. Neither player's Assets apply during the battle."
+    },
+    {
+      "name": "Arena: Grand Melee",
+      "text": "Homeland Advantage does not apply, and tied battle rolls are rerolled. Each player draws four battle cards instead of three and may play up to two of them."
+    }
+  ],
+  "recommended_decks": {
+    "Vanguard Coalition": {
+      "subtitle": "Flexible combined-arms offense",
+      "cards": [
+        "Rallying Cry",
+        "Rallying Cry",
+        "Rallying Cry",
+        "Redemption",
+        "Scouting Report",
+        "Scouting Report",
+        "Scouting Report",
+        "New Recruits",
+        "New Recruits",
+        "New Recruits",
+        "New Recruits",
+        "Supplies",
+        "Stand Ground",
+        "Stand Ground",
+        "Entrenchment",
+        "Fealty",
+        "Sabotage",
+        "Sabotage",
+        "Embargo",
+        "Counterintelligence",
+        "Conscription",
+        "Fortifications",
+        "Strategic Withdrawal",
+        "Valor",
+        "Invasion",
+        "Assimilation",
+        "Shock and Awe",
+        "Court Martial",
+        "Reinforcements",
+        "Rousing Speech"
+      ],
+      "territories": [
+        "King's Road",
+        "High Ground",
+        "Supply Depot"
+      ],
+      "status": "v0.5.3 full-budget print list: one Rallying Cry is upgraded to Redemption; otherwise based on the previously simulation-tested list.",
+      "card_count": 30,
+      "point_total": 60
+    },
+    "Bastion Coalition": {
+      "subtitle": "Defensive control with a finisher",
+      "cards": [
+        "Rallying Cry",
+        "Rallying Cry",
+        "Rallying Cry",
+        "Palisade Wall",
+        "Scouting Report",
+        "Scouting Report",
+        "Scouting Report",
+        "New Recruits",
+        "New Recruits",
+        "New Recruits",
+        "New Recruits",
+        "Stand Ground",
+        "Stand Ground",
+        "Entrenchment",
+        "Palisade Wall",
+        "Fortifications",
+        "Fealty",
+        "Sabotage",
+        "Sabotage",
+        "Shock and Awe",
+        "Court Martial",
+        "Counterintelligence",
+        "Embargo",
+        "Strategic Withdrawal",
+        "Redemption",
+        "Valor",
+        "Assimilation",
+        "Invasion",
+        "Rousing Speech",
+        "Reinforcements"
+      ],
+      "territories": [
+        "High Ground",
+        "Command Tent",
+        "Ruined Storehouse"
+      ],
+      "status": "v0.5.3 full-budget print list: a second Palisade Wall replaces one Rallying Cry; otherwise based on Bastion Coalition v2.",
+      "card_count": 30,
+      "point_total": 60
+    },
+    "Reclamation Front": {
+      "subtitle": "Counterattack and territorial recovery",
+      "cards": [
+        "Rallying Cry",
+        "Rallying Cry",
+        "Rallying Cry",
+        "Counterintelligence",
+        "Scouting Report",
+        "Scouting Report",
+        "Scouting Report",
+        "New Recruits",
+        "New Recruits",
+        "New Recruits",
+        "New Recruits",
+        "Supplies",
+        "Stand Ground",
+        "Stand Ground",
+        "Entrenchment",
+        "Resistance",
+        "Liberation",
+        "Illegal Occupation",
+        "Patriotism",
+        "Strategic Withdrawal",
+        "Redemption",
+        "Valor",
+        "Sabotage",
+        "Embargo",
+        "Fealty",
+        "Assimilation",
+        "Invasion",
+        "Court Martial",
+        "Reinforcements",
+        "Rousing Speech"
+      ],
+      "territories": [
+        "Exposed Flank",
+        "Field Hospital",
+        "King's Road"
+      ],
+      "status": "v0.5.3 full-budget print list: Counterintelligence replaces one Rallying Cry; otherwise based on the previously simulation-tested list.",
+      "card_count": 30,
+      "point_total": 60
+    },
+    "Shadow Directorate": {
+      "subtitle": "Information warfare and attrition",
+      "cards": [
+        "Rallying Cry",
+        "Rallying Cry",
+        "Rallying Cry",
+        "Rallying Cry",
+        "Scouting Report",
+        "Scouting Report",
+        "Scouting Report",
+        "New Recruits",
+        "New Recruits",
+        "New Recruits",
+        "New Recruits",
+        "Sabotage",
+        "Sabotage",
+        "Embargo",
+        "Assassins",
+        "Monetary Crisis",
+        "Sedition",
+        "Counterintelligence",
+        "Stand Ground",
+        "Stand Ground",
+        "Entrenchment",
+        "Fealty",
+        "Valor",
+        "Strategic Withdrawal",
+        "Conscription",
+        "Fortifications",
+        "Rousing Speech",
+        "Assimilation",
+        "Invasion",
+        "Attrition"
+      ],
+      "territories": [
+        "Watchtower",
+        "Supply Depot",
+        "Arena: Spoils of War"
+      ],
+      "status": "v0.5.3 trial list: Attrition replaces Court Martial at equal cost.",
+      "card_count": 30,
+      "point_total": 60
+    }
+  }
+}
