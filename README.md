@@ -1,16 +1,16 @@
-# Gauntlet v0.5.5 Print-and-Play Package
+# Gauntlet v0.5.6 Print-and-Play Package
 
-Generated June 21, 2026. GitHub-ready document revision with copyright notices and landscape-oriented Territory card text.
+Generated June 21, 2026. Asset Bank Patch release with copyright notices and landscape-oriented Territory card text.
 
 ## Files
 
-- `Gauntlet_v0.5.5_Complete_Playtest_Guide.docx` - editable canonical guide.
-- `Gauntlet_v0.5.5_Complete_Playtest_Guide.pdf` - print-ready guide.
-- `Gauntlet_v0.5.5_Four_Deck_Playtest_Set.pdf` - four complete 30-card decks, twelve Territories, four Heartlands, and eight player aids.
-- `Gauntlet_v0.5.5_Master_Card_Pool.pdf` - one copy of all 54 main-deck cards, all 25 Territories, and two Heartlands.
-- `Gauntlet_v0.5.5_Playtest_Forms.pdf` - four game record sheets.
-- `Gauntlet_v0.5.5_Canonical_Data.json` - editable structured source data.
-- `Gauntlet_v0.5.5_Playtest_Deck_Lists.md` - deck manifests.
+- `Gauntlet_v0.5.6_Complete_Playtest_Guide.docx` - editable canonical guide.
+- `Gauntlet_v0.5.6_Complete_Playtest_Guide.pdf` - print-ready guide.
+- `Gauntlet_v0.5.6_Four_Deck_Playtest_Set.pdf` - four complete 30-card decks, twelve Territories, four Heartlands, and eight player aids.
+- `Gauntlet_v0.5.6_Master_Card_Pool.pdf` - one copy of all 54 main-deck cards, all 25 Territories, and two Heartlands.
+- `Gauntlet_v0.5.6_Playtest_Forms.pdf` - four game record sheets.
+- `Gauntlet_v0.5.6_Canonical_Data.json` - editable structured source data.
+- `Gauntlet_v0.5.6_Playtest_Deck_Lists.md` - deck manifests.
 - `COPYRIGHT.md` - copyright and permitted-use notice.
 - `CONTRIBUTING.md` - feedback/contribution terms.
 
@@ -20,7 +20,7 @@ Card sheets use exact 2.5 x 3.5 inch poker-card fronts in a 3 x 3 US Letter layo
 
 Territory cards are still cut to standard poker-card size, but their text is printed in landscape orientation so the card can face the controlling player on the board.
 
-The Four-Deck Playtest Set is organized deck-by-deck and labels every card at the bottom for sorting. The Shadow Directorate is the v0.5.5 Attrition trial list; Attrition replaces Court Martial at equal cost.
+The Four-Deck Playtest Set is organized deck-by-deck and labels every card at the bottom for sorting. The Shadow Directorate is the v0.5.6 Attrition trial list; Attrition replaces Court Martial at equal cost.
 
 ## Rules changes incorporated
 
@@ -32,6 +32,9 @@ The Four-Deck Playtest Set is organized deck-by-deck and labels every card at th
 - Attrition uses the locked three-card Battle effect.
 - Last Stand: Heartland defenders have Homeland Advantage and gain +1.
 - Human playtest errata for Conscription, Watchtower, Fortifications, and Embargo.
+- Asset bank terminology: players bank Assets in the Asset bank.
+- Asset bank limit equals the number of Territories controlled.
+- Action destination clarification: delayed or ongoing Actions that are not banked as Assets are played as Conditions and discarded when directed by card text.
 
 ## Copyright and use
 
