@@ -35,10 +35,23 @@ function createBattleReadyGame(): GameState {
     board: {
       ...game.board,
       spaces: game.board.spaces.map((space) => {
-        if (space.id === 'space-1') return { ...space, occupant: 'player_2' as const };
+        if (space.id === 'space-1') return { ...space, controller: 'player_2' as const, occupant: 'player_2' as const };
         if (space.id === 'player_2-heartland') return { ...space, occupant: undefined };
         return space;
       }),
+    },
+  };
+}
+
+function createUncontrolledDefenseBattleReadyGame(): GameState {
+  const game = createBattleReadyGame();
+  return {
+    ...game,
+    board: {
+      ...game.board,
+      spaces: game.board.spaces.map((space) => (
+        space.id === 'space-1' ? { ...space, controller: 'player_1' as const } : space
+      )),
     },
   };
 }
@@ -93,7 +106,7 @@ describe('applyGameAction', () => {
     expect(state.phase).toBe('action_after_movement');
   });
 
-  it('starts a battle when moving into an occupied enemy space', () => {
+  it('starts a battle with defender tie policy when defender controls the space', () => {
     const { state } = applyGameAction(createBattleReadyGame(), { type: 'move_player', playerId: 'player_1', toSpaceId: 'space-1' });
 
     expect(state.phase).toBe('battle');
@@ -101,7 +114,7 @@ describe('applyGameAction', () => {
       stage: 'hand_commit',
       location: 'space-1',
       attackerOrigin: 'player_1-heartland',
-      tieWinner: 'attacker',
+      tiePolicy: 'defender',
       attacker: { playerId: 'player_1', passedHandCommit: false, passedBattleDrawPlay: false },
       defender: { playerId: 'player_2', passedHandCommit: false, passedBattleDrawPlay: false },
     });
@@ -148,14 +161,27 @@ describe('applyGameAction', () => {
     expect(resolved.board.spaces[1].capturePendingBy).toBeUndefined();
   });
 
-  it('uses the explicit attacker-wins-ties policy', () => {
+  it('defender wins ties when defending a controlled space', () => {
     const p2Selected = advanceToDice(createBattleReadyGame());
     const p1Rolled = applyGameAction(p2Selected, { type: 'roll_battle_die', playerId: 'player_1', value: 4 }).state;
     const p2Rolled = applyGameAction(p1Rolled, { type: 'roll_battle_die', playerId: 'player_2', value: 4 }).state;
-    const resolved = applyGameAction(p2Rolled, { type: 'resolve_battle', playerId: 'player_1' }).state;
+    const resolved = applyGameAction(p2Rolled, { type: 'resolve_battle', playerId: 'player_2' }).state;
 
-    expect(resolved.board.spaces[1].occupant).toBe('player_1');
-    expect(resolved.players.player_1.occupiedSpaceId).toBe('space-1');
+    expect(resolved.battle).toBeUndefined();
+    expect(resolved.board.spaces[1].occupant).toBe('player_2');
+    expect(resolved.players.player_2.occupiedSpaceId).toBe('space-1');
+  });
+
+  it('rerolls ties when the defender does not control the space', () => {
+    const p2Selected = advanceToDice(createUncontrolledDefenseBattleReadyGame());
+    const p1Rolled = applyGameAction(p2Selected, { type: 'roll_battle_die', playerId: 'player_1', value: 4 }).state;
+    const p2Rolled = applyGameAction(p1Rolled, { type: 'roll_battle_die', playerId: 'player_2', value: 4 }).state;
+    const reroll = applyGameAction(p2Rolled, { type: 'resolve_battle', playerId: 'player_1' }).state;
+
+    expect(reroll.battle?.stage).toBe('dice');
+    expect(reroll.battle?.tiePolicy).toBe('reroll');
+    expect(reroll.battle?.attacker.diceRoll).toBeUndefined();
+    expect(reroll.battle?.defender.diceRoll).toBeUndefined();
   });
 
   it('applies banked Fortifications during battle resolution', () => {
