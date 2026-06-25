@@ -124,6 +124,10 @@ function tiePolicyForDefense(space: BoardSpaceState, defenderId: PlayerID): Batt
   return space.controller === defenderId ? 'defender' : 'reroll';
 }
 
+function isWatchtower(space: BoardSpaceState): boolean {
+  return space.revealed && (space.territoryId === 'territory-watchtower' || space.territoryId === 'watchtower');
+}
+
 function revealBattleCards(game: GameState): void {
   if (!game.battle) return;
 
@@ -296,6 +300,7 @@ function movePlayer(game: GameState, action: Extract<GameAction, { type: 'move_p
 
   if (destination.occupant && destination.occupant !== action.playerId) {
     const defenderId = destination.occupant;
+    const watchtowerVisibleTo = isWatchtower(destination) && destination.controller === defenderId ? [defenderId] : undefined;
     player.movementRemaining -= 1;
     game.phase = 'battle';
     game.priorityPlayer = action.playerId;
@@ -307,6 +312,7 @@ function movePlayer(game: GameState, action: Extract<GameAction, { type: 'move_p
       attacker: createBattleParticipant(action.playerId),
       defender: createBattleParticipant(defenderId),
       tiePolicy: tiePolicyForDefense(destination, defenderId),
+      attackerHandCommitVisibleTo: watchtowerVisibleTo,
       effectsResolved: [],
     };
 
@@ -336,7 +342,14 @@ function commitBattleHandCard(game: GameState, action: Extract<GameAction, { typ
   if (!player.zones.hand.includes(action.cardId)) throw new GameActionError(`${player.name} does not have that card in hand.`);
 
   player.zones.hand = player.zones.hand.filter((cardId) => cardId !== action.cardId);
-  participant.handCommit = { cardId: action.cardId, owner: action.playerId, origin: 'hand', faceDown: true, canceled: false };
+  participant.handCommit = {
+    cardId: action.cardId,
+    owner: action.playerId,
+    origin: 'hand',
+    faceDown: true,
+    canceled: false,
+    visibleTo: action.playerId === game.battle.attacker.playerId ? game.battle.attackerHandCommitVisibleTo : undefined,
+  };
   applyBattleSetupEffects(participant);
   player.hasPlayedBattleThisTurn = true;
 

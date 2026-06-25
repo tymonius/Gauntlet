@@ -21,6 +21,7 @@ export interface BattlePlayedCard {
   origin: CardOrigin;
   faceDown: boolean;
   canceled: boolean;
+  visibleTo?: PlayerID[];
 }
 
 export interface BattleParticipantState {
@@ -47,6 +48,7 @@ export interface BattleState {
   attacker: BattleParticipantState;
   defender: BattleParticipantState;
   tiePolicy: BattleTiePolicy;
+  attackerHandCommitVisibleTo?: PlayerID[];
   winner?: PlayerID;
   loser?: PlayerID;
   effectsResolved: string[];
