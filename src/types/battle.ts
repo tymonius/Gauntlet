@@ -40,6 +40,15 @@ export interface BattleParticipantState {
   retreated: boolean;
 }
 
+export interface BattleCardTargetOption {
+  sourceCardId: CardID;
+  sourceOwner: PlayerID;
+  sourceOrigin: CardOrigin;
+  targetCardId: CardID;
+  targetOwner: PlayerID;
+  targetOrigin: CardOrigin;
+}
+
 export interface BattleState {
   id: string;
   stage: BattleStage;
@@ -76,6 +85,7 @@ export interface PublicBattleView {
   attacker: PublicBattleParticipantView;
   defender: PublicBattleParticipantView;
   tiePolicy: BattleTiePolicy;
+  validBattleCardTargets?: BattleCardTargetOption[];
   winner?: PlayerID;
   loser?: PlayerID;
 }

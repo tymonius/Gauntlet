@@ -3,6 +3,7 @@ import type { GameState } from '../types';
 import { initializeGame } from './initialize';
 import { applyGameAction } from './reducer';
 import { createValidSetup } from './test-helpers';
+import { toPrivateGameView, toPublicGameView } from './views';
 
 function createBattleReadyGame(): GameState {
   const game = initializeGame(createValidSetup({
@@ -56,6 +57,23 @@ function advanceToResolution(): GameState {
 }
 
 describe('battle cancellation effects', () => {
+  it('exposes valid Embargo targets to the Embargo player only', () => {
+    const readyToResolve = advanceToResolution();
+
+    expect(toPrivateGameView(readyToResolve, 'player_1').battle?.validBattleCardTargets).toEqual([
+      {
+        sourceCardId: 'card-embargo',
+        sourceOwner: 'player_1',
+        sourceOrigin: 'hand',
+        targetCardId: 'card-valor',
+        targetOwner: 'player_2',
+        targetOrigin: 'hand',
+      },
+    ]);
+    expect(toPrivateGameView(readyToResolve, 'player_2').battle?.validBattleCardTargets).toBeUndefined();
+    expect(toPublicGameView(readyToResolve).battle?.validBattleCardTargets).toBeUndefined();
+  });
+
   it('cancels a chosen opposing hand-committed battle card and returns it to hand', () => {
     const resolved = applyGameAction(advanceToResolution(), {
       type: 'resolve_battle',
