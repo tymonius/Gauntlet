@@ -23,8 +23,8 @@ function firstCancelableOpposingCard(context: Parameters<EffectHandler['applies'
     .find((played) => played && !played.canceled);
 }
 
-export const homelandAdvantageHandler: EffectHandler = {
-  id: 'homeland_advantage',
+export const heartlandDefenseBonusHandler: EffectHandler = {
+  id: 'heartland_defense_bonus',
   timing: ['before_battle_resolution'],
   applies(context) {
     if (!context.battle) return false;
@@ -38,15 +38,17 @@ export const homelandAdvantageHandler: EffectHandler = {
       modifiers: [
         {
           playerId: context.battle.defender.playerId,
-          source: 'homeland_advantage',
+          source: 'heartland_defense_bonus',
           amount: 1,
-          reason: 'Homeland Advantage: +1 while defending your own Heartland.',
+          reason: 'Heartland Defense: +1 while defending your Heartland.',
         },
       ],
-      logMessages: ['Homeland Advantage gave the defender +1.'],
+      logMessages: ['Heartland Defense gave the defender +1.'],
     };
   },
 };
+
+export const homelandAdvantageHandler = heartlandDefenseBonusHandler;
 
 export const fortificationsAssetHandler: EffectHandler = {
   id: 'fortifications_asset',
@@ -156,7 +158,7 @@ export const tradeBanBattleHandler: EffectHandler = {
 
 export const baseBattleEffectHandlers: EffectHandler[] = [
   tradeBanBattleHandler,
-  homelandAdvantageHandler,
+  heartlandDefenseBonusHandler,
   fortificationsAssetHandler,
   fortificationsBattleHandler,
   valorBattleHandler,
