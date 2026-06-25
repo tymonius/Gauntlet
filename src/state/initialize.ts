@@ -9,6 +9,7 @@ import type {
   PlayerState,
   TerritoryID,
 } from '../types';
+import { assertValidGameSetup } from './validation';
 
 export interface PlayerSetupInput {
   id: PlayerID;
@@ -141,6 +142,8 @@ function createInitialLog(gameId: GameID, players: [PlayerSetupInput, PlayerSetu
 }
 
 export function initializeGame(input: InitializeGameInput): GameState {
+  assertValidGameSetup(input);
+
   const gameId = input.id ?? `game-${Date.now()}`;
   const openingHandSize = input.openingHandSize ?? 3;
   const random = input.random ?? Math.random;
