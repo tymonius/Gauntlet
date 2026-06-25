@@ -1,6 +1,9 @@
 import type {
   BattlePlayedCard,
   BattleState,
+  BoardState,
+  GameEvent,
+  GameState,
   PrivateGameView,
   PrivatePlayerView,
   PublicBattleParticipantView,
@@ -44,10 +47,12 @@ export function toPublicPlayerView(player: PlayerState): PublicPlayerView {
 }
 
 export function toPrivatePlayerView(player: PlayerState): PrivatePlayerView {
+  const publicView = toPublicPlayerView(player);
+
   return {
-    ...toPublicPlayerView(player),
+    ...publicView,
     zones: {
-      ...toPublicPlayerView(player).zones,
+      ...publicView.zones,
       deck: hidden(player.zones.deck),
       hand: visible(player.zones.hand),
     },
@@ -58,7 +63,7 @@ export function toPrivatePlayerView(player: PlayerState): PrivatePlayerView {
   };
 }
 
-export function toPublicBoardView(board: PublicGameView['board']): PublicBoardView {
+export function toPublicBoardView(board: BoardState): PublicBoardView {
   return {
     layout: board.layout,
     spaces: board.spaces.map((space) => ({
@@ -104,15 +109,15 @@ export function toPublicBattleView(battle: BattleState, viewer?: PlayerID): Publ
   };
 }
 
-function visibleLogFor(game: PublicGameView, viewer?: PlayerID) {
-  return game.log.filter((event) => {
+function visibleLogFor(events: GameEvent[], viewer?: PlayerID): GameEvent[] {
+  return events.filter((event) => {
     if (event.visibility === 'public') return true;
     if (event.visibility === 'system') return viewer === undefined;
     return viewer !== undefined && event.visibleTo?.includes(viewer);
   });
 }
 
-export function toPublicGameView(game: PrivateGameView | PublicGameView): PublicGameView {
+export function toPublicGameView(game: GameState): PublicGameView {
   return {
     id: game.id,
     version: game.version,
@@ -121,26 +126,26 @@ export function toPublicGameView(game: PrivateGameView | PublicGameView): Public
     activePlayer: game.activePlayer,
     priorityPlayer: game.priorityPlayer,
     players: Object.fromEntries(
-      Object.entries(game.players).map(([id, player]) => [id, toPublicPlayerView(player as PlayerState)]),
+      Object.entries(game.players).map(([id, player]) => [id, toPublicPlayerView(player)]),
     ),
     board: toPublicBoardView(game.board),
-    battle: game.battle ? toPublicBattleView(game.battle as BattleState) : undefined,
-    log: visibleLogFor(game),
+    battle: game.battle ? toPublicBattleView(game.battle) : undefined,
+    log: visibleLogFor(game.log),
     winner: game.winner,
   };
 }
 
-export function toPrivateGameView(game: PrivateGameView | PublicGameView, viewer: PlayerID): PrivateGameView {
+export function toPrivateGameView(game: GameState, viewer: PlayerID): PrivateGameView {
   return {
     ...toPublicGameView(game),
     viewer,
     players: Object.fromEntries(
       Object.entries(game.players).map(([id, player]) => [
         id,
-        id === viewer ? toPrivatePlayerView(player as PlayerState) : toPublicPlayerView(player as PlayerState),
+        id === viewer ? toPrivatePlayerView(player) : toPublicPlayerView(player),
       ]),
     ),
-    battle: game.battle ? toPublicBattleView(game.battle as BattleState, viewer) : undefined,
-    log: visibleLogFor(game, viewer),
+    battle: game.battle ? toPublicBattleView(game.battle, viewer) : undefined,
+    log: visibleLogFor(game.log, viewer),
   };
 }
