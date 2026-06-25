@@ -1,3 +1,8 @@
+import {
+  EffectRegistry,
+  baseBattleEffectHandlers,
+  totalModifiersFor,
+} from '../effects';
 import type {
   BattleParticipantState,
   BattlePlayedCard,
@@ -308,6 +313,24 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
   const battle = game.battle;
   if (action.playerId !== battle.attacker.playerId && action.playerId !== battle.defender.playerId) throw new GameActionError(`${action.playerId} cannot resolve a battle they are not in.`);
 
+  const effectRegistry = new EffectRegistry(baseBattleEffectHandlers);
+  const effectResult = effectRegistry.resolve({
+    game,
+    battle,
+    timing: 'before_battle_resolution',
+    actor: action.playerId,
+    location: battle.location,
+  });
+
+  const attackerEffectModifiers = totalModifiersFor(effectResult.modifiers, battle.attacker.playerId);
+  const defenderEffectModifiers = totalModifiersFor(effectResult.modifiers, battle.defender.playerId);
+  battle.attacker.modifiers += attackerEffectModifiers;
+  battle.defender.modifiers += defenderEffectModifiers;
+
+  for (const message of effectResult.logMessages ?? []) {
+    appendPublicLog(game, undefined, 'effect_resolved', message);
+  }
+
   const attackerTotal = (battle.attacker.diceRoll ?? 0) + battle.attacker.modifiers;
   const defenderTotal = (battle.defender.diceRoll ?? 0) + battle.defender.modifiers;
   const winner = attackerTotal > defenderTotal
@@ -357,7 +380,7 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
     player.zones.discard.push(...participant.battleDraw);
   }
 
-  appendPublicLog(game, winner, 'battle_resolved', `${winnerState.name} won the battle.`, { winner, loser, attackerTotal, defenderTotal, tieWinner: battle.tieWinner });
+  appendPublicLog(game, winner, 'battle_resolved', `${winnerState.name} won the battle.`, { winner, loser, attackerTotal, defenderTotal, tieWinner: battle.tieWinner, modifiers: effectResult.modifiers ?? [] });
   game.battle = undefined;
   game.phase = 'action_after_movement';
   game.priorityPlayer = game.activePlayer;
