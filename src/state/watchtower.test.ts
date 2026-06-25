@@ -53,7 +53,7 @@ function createWatchtowerBattleReadyGame(): GameState {
 }
 
 describe('Watchtower reveal information', () => {
-  it('reveals the attacker hand commitment only to the defending Watchtower controller', () => {
+  it('places the attacker hand commitment face up when the defender controls Watchtower', () => {
     const battleStarted = applyGameAction(createWatchtowerBattleReadyGame(), { type: 'move_player', playerId: 'player_1', toSpaceId: 'space-1' }).state;
     const committed = applyGameAction(battleStarted, { type: 'commit_battle_hand_card', playerId: 'player_1', cardId: 'p1-card-1' }).state;
 
@@ -63,7 +63,7 @@ describe('Watchtower reveal information', () => {
 
     expect(defenderView.battle?.attacker.handCommit).toMatchObject({ cardId: 'p1-card-1' });
     expect(attackerView.battle?.attacker.handCommit).toMatchObject({ cardId: 'p1-card-1' });
-    expect(publicView.battle?.attacker.handCommit).toEqual({ faceDown: true });
+    expect(publicView.battle?.attacker.handCommit).toMatchObject({ cardId: 'p1-card-1', faceDown: false });
   });
 
   it('does not reveal attacker battle-draw plays early', () => {
@@ -75,8 +75,10 @@ describe('Watchtower reveal information', () => {
     const p1Played = applyGameAction(p2Drew, { type: 'play_battle_draw_card', playerId: 'player_1', cardId: 'p1-battle-1' }).state;
 
     const defenderView = toPrivateGameView(p1Played, 'player_2');
+    const publicView = toPublicGameView(p1Played);
 
     expect(defenderView.battle?.attacker.handCommit).toMatchObject({ cardId: 'p1-card-1' });
     expect(defenderView.battle?.attacker.battleDrawPlayed).toEqual([{ faceDown: true }]);
+    expect(publicView.battle?.attacker.battleDrawPlayed).toEqual([{ faceDown: true }]);
   });
 });
