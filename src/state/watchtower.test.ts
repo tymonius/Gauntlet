@@ -61,8 +61,8 @@ describe('Watchtower reveal information', () => {
     const attackerView = toPrivateGameView(committed, 'player_1');
     const publicView = toPublicGameView(committed);
 
-    expect(defenderView.battle?.attacker.handCommit).toMatchObject({ cardId: 'p1-card-1' });
-    expect(attackerView.battle?.attacker.handCommit).toMatchObject({ cardId: 'p1-card-1' });
+    expect(defenderView.battle?.attacker.handCommit).toMatchObject({ cardId: 'p1-card-1', faceDown: false });
+    expect(attackerView.battle?.attacker.handCommit).toMatchObject({ cardId: 'p1-card-1', faceDown: false });
     expect(publicView.battle?.attacker.handCommit).toMatchObject({ cardId: 'p1-card-1', faceDown: false });
   });
 
@@ -77,7 +77,7 @@ describe('Watchtower reveal information', () => {
     const defenderView = toPrivateGameView(p1Played, 'player_2');
     const publicView = toPublicGameView(p1Played);
 
-    expect(defenderView.battle?.attacker.handCommit).toMatchObject({ cardId: 'p1-card-1' });
+    expect(defenderView.battle?.attacker.handCommit).toMatchObject({ cardId: 'p1-card-1', faceDown: false });
     expect(defenderView.battle?.attacker.battleDrawPlayed).toEqual([{ faceDown: true }]);
     expect(publicView.battle?.attacker.battleDrawPlayed).toEqual([{ faceDown: true }]);
   });
