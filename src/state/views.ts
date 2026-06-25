@@ -109,7 +109,7 @@ export function toPublicBattleView(battle: BattleState, viewer?: PlayerID): Publ
     attackerOrigin: battle.attackerOrigin,
     attacker: toPublicBattleParticipantView(battle.attacker, viewer),
     defender: toPublicBattleParticipantView(battle.defender, viewer),
-    tieWinner: battle.tieWinner,
+    tiePolicy: battle.tiePolicy,
     winner: battle.winner,
     loser: battle.loser,
   };
