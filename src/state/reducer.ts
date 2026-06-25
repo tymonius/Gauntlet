@@ -27,9 +27,7 @@ function cloneGameState(game: GameState): GameState {
 }
 
 function requirePlayerTurn(game: GameState, playerId: PlayerID): void {
-  if (game.activePlayer !== playerId) {
-    throw new GameActionError(`It is not ${playerId}'s turn.`);
-  }
+  if (game.activePlayer !== playerId) throw new GameActionError(`It is not ${playerId}'s turn.`);
 }
 
 function requirePlayer(game: GameState, playerId: PlayerID) {
@@ -45,7 +43,7 @@ function findSpace(game: GameState, spaceId: SpaceID): BoardSpaceState {
 }
 
 function appendPublicLog(game: GameState, actor: PlayerID | undefined, type: string, message: string, payload?: unknown): void {
-  const event: GameEvent = {
+  game.log.push({
     id: `${game.id}-event-${game.log.length + 1}`,
     turn: game.turn,
     actor,
@@ -53,9 +51,7 @@ function appendPublicLog(game: GameState, actor: PlayerID | undefined, type: str
     message,
     payload,
     visibility: 'public',
-  };
-
-  game.log.push(event);
+  } satisfies GameEvent);
 }
 
 function nextPlayerId(game: GameState): PlayerID {
@@ -65,14 +61,14 @@ function nextPlayerId(game: GameState): PlayerID {
 }
 
 function phaseAllowsAction(game: GameState, allowed: GamePhase[]): void {
-  if (!allowed.includes(game.phase)) {
-    throw new GameActionError(`Action is not allowed during phase ${game.phase}.`);
-  }
+  if (!allowed.includes(game.phase)) throw new GameActionError(`Action is not allowed during phase ${game.phase}.`);
 }
 
 function createBattleParticipant(playerId: PlayerID): BattleParticipantState {
   return {
     playerId,
+    passedHandCommit: false,
+    passedBattleDrawPlay: false,
     battleDraw: [],
     battleDrawPlayed: [],
     rerollsRemaining: 0,
@@ -88,12 +84,45 @@ function getBattleParticipant(game: GameState, playerId: PlayerID): BattlePartic
   throw new GameActionError(`${playerId} is not a participant in this battle.`);
 }
 
-function bothParticipants(
-  game: GameState,
-  predicate: (participant: BattleParticipantState) => boolean,
-): boolean {
+function bothParticipants(game: GameState, predicate: (participant: BattleParticipantState) => boolean): boolean {
   if (!game.battle) return false;
   return predicate(game.battle.attacker) && predicate(game.battle.defender);
+}
+
+function hasCompletedHandCommit(participant: BattleParticipantState): boolean {
+  return participant.passedHandCommit || participant.handCommit !== undefined;
+}
+
+function hasCompletedBattleDrawPlay(participant: BattleParticipantState): boolean {
+  return participant.passedBattleDrawPlay || participant.battleDrawPlayed.length > 0;
+}
+
+function revealBattleCards(game: GameState): void {
+  if (!game.battle) return;
+
+  for (const side of [game.battle.attacker, game.battle.defender]) {
+    if (side.handCommit) side.handCommit.faceDown = false;
+    side.battleDrawPlayed = side.battleDrawPlayed.map((played): BattlePlayedCard => ({ ...played, faceDown: false }));
+  }
+
+  game.battle.stage = 'dice';
+  appendPublicLog(game, undefined, 'battle_cards_revealed', 'Battle cards were revealed.');
+}
+
+function findRetreatSpace(game: GameState, loser: PlayerID): BoardSpaceState | undefined {
+  if (!game.battle) return undefined;
+
+  const battle = game.battle;
+  const location = findSpace(game, battle.location);
+  const attackerOrigin = findSpace(game, battle.attackerOrigin);
+  const directionFromAttacker = location.index > attackerOrigin.index ? 1 : -1;
+  const retreatIndex = loser === battle.attacker.playerId
+    ? attackerOrigin.index
+    : location.index + directionFromAttacker;
+
+  const retreatSpace = game.board.spaces.find((space) => space.index === retreatIndex);
+  if (!retreatSpace || retreatSpace.occupant) return undefined;
+  return retreatSpace;
 }
 
 function drawCards(game: GameState, action: Extract<GameAction, { type: 'draw_card' }>): ApplyGameActionResult {
@@ -102,19 +131,13 @@ function drawCards(game: GameState, action: Extract<GameAction, { type: 'draw_ca
 
   const player = requirePlayer(game, action.playerId);
   const count = action.count ?? 1;
-
-  if (!Number.isInteger(count) || count < 1) {
-    throw new GameActionError('Draw count must be a positive integer.');
-  }
+  if (!Number.isInteger(count) || count < 1) throw new GameActionError('Draw count must be a positive integer.');
 
   const drawnCards = player.zones.deck.slice(0, count);
   player.zones.deck = player.zones.deck.slice(drawnCards.length);
   player.zones.hand = [...player.zones.hand, ...drawnCards];
 
-  appendPublicLog(game, action.playerId, 'draw_card', `${player.name} drew ${drawnCards.length} card${drawnCards.length === 1 ? '' : 's'}.`, {
-    count: drawnCards.length,
-  });
-
+  appendPublicLog(game, action.playerId, 'draw_card', `${player.name} drew ${drawnCards.length} card${drawnCards.length === 1 ? '' : 's'}.`, { count: drawnCards.length });
   if (game.phase === 'turn_start') game.phase = 'action_before_movement';
 
   return { state: game, result: { drawnCards } };
@@ -126,21 +149,11 @@ function revealSpace(game: GameState, action: Extract<GameAction, { type: 'revea
 
   const player = requirePlayer(game, action.playerId);
   const space = findSpace(game, action.spaceId);
-
-  if (space.controller !== action.playerId) {
-    throw new GameActionError(`${player.name} cannot reveal a space they do not control.`);
-  }
-
-  if (space.revealed) {
-    throw new GameActionError('That space is already revealed.');
-  }
+  if (space.controller !== action.playerId) throw new GameActionError(`${player.name} cannot reveal a space they do not control.`);
+  if (space.revealed) throw new GameActionError('That space is already revealed.');
 
   space.revealed = true;
-  appendPublicLog(game, action.playerId, 'reveal_space', `${player.name} revealed ${space.territoryId ?? space.id}.`, {
-    spaceId: space.id,
-    territoryId: space.territoryId,
-  });
-
+  appendPublicLog(game, action.playerId, 'reveal_space', `${player.name} revealed ${space.territoryId ?? space.id}.`, { spaceId: space.id, territoryId: space.territoryId });
   return { state: game };
 }
 
@@ -149,20 +162,13 @@ function movePlayer(game: GameState, action: Extract<GameAction, { type: 'move_p
   phaseAllowsAction(game, ['movement']);
 
   const player = requirePlayer(game, action.playerId);
-
-  if (player.movementRemaining < 1) {
-    throw new GameActionError(`${player.name} has no movement remaining.`);
-  }
+  if (player.movementRemaining < 1) throw new GameActionError(`${player.name} has no movement remaining.`);
 
   const origin = game.board.spaces.find((space) => space.occupant === action.playerId);
   if (!origin) throw new GameActionError(`${player.name} does not occupy a board space.`);
 
   const destination = findSpace(game, action.toSpaceId);
-  const distance = Math.abs(destination.index - origin.index);
-
-  if (distance !== 1) {
-    throw new GameActionError('Basic movement currently only allows moving to an adjacent space.');
-  }
+  if (Math.abs(destination.index - origin.index) !== 1) throw new GameActionError('Basic movement currently only allows moving to an adjacent space.');
 
   if (destination.occupant && destination.occupant !== action.playerId) {
     const defenderId = destination.occupant;
@@ -173,16 +179,14 @@ function movePlayer(game: GameState, action: Extract<GameAction, { type: 'move_p
       id: `${game.id}-battle-${game.turn}`,
       stage: 'hand_commit',
       location: destination.id,
+      attackerOrigin: origin.id,
       attacker: createBattleParticipant(action.playerId),
       defender: createBattleParticipant(defenderId),
+      tieWinner: 'attacker',
       effectsResolved: [],
     };
 
-    appendPublicLog(game, action.playerId, 'battle_started', `${player.name} started a battle.`, {
-      fromSpaceId: origin.id,
-      toSpaceId: destination.id,
-      defender: defenderId,
-    });
+    appendPublicLog(game, action.playerId, 'battle_started', `${player.name} started a battle.`, { fromSpaceId: origin.id, toSpaceId: destination.id, defender: defenderId });
     return { state: game };
   }
 
@@ -191,88 +195,52 @@ function movePlayer(game: GameState, action: Extract<GameAction, { type: 'move_p
   player.occupiedSpaceId = destination.id;
   player.movementRemaining -= 1;
 
-  if (destination.controller && destination.controller !== action.playerId) {
-    destination.capturePendingBy = action.playerId;
-  }
+  if (destination.controller && destination.controller !== action.playerId) destination.capturePendingBy = action.playerId;
 
-  appendPublicLog(game, action.playerId, 'move_player', `${player.name} moved to ${destination.id}.`, {
-    fromSpaceId: origin.id,
-    toSpaceId: destination.id,
-  });
-
+  appendPublicLog(game, action.playerId, 'move_player', `${player.name} moved to ${destination.id}.`, { fromSpaceId: origin.id, toSpaceId: destination.id });
   game.phase = 'action_after_movement';
   return { state: game };
 }
 
 function commitBattleHandCard(game: GameState, action: Extract<GameAction, { type: 'commit_battle_hand_card' }>): ApplyGameActionResult {
   phaseAllowsAction(game, ['battle']);
-  if (!game.battle || game.battle.stage !== 'hand_commit') {
-    throw new GameActionError('Battle hand commitments are not currently open.');
-  }
+  if (!game.battle || game.battle.stage !== 'hand_commit') throw new GameActionError('Battle hand commitments are not currently open.');
 
   const player = requirePlayer(game, action.playerId);
   const participant = getBattleParticipant(game, action.playerId);
-
-  if (participant.handCommit) throw new GameActionError(`${player.name} has already committed a hand card.`);
+  if (hasCompletedHandCommit(participant)) throw new GameActionError(`${player.name} has already made a hand commitment choice.`);
   if (!player.zones.hand.includes(action.cardId)) throw new GameActionError(`${player.name} does not have that card in hand.`);
 
   player.zones.hand = player.zones.hand.filter((cardId) => cardId !== action.cardId);
-  participant.handCommit = {
-    cardId: action.cardId,
-    owner: action.playerId,
-    origin: 'hand',
-    faceDown: true,
-    canceled: false,
-  };
+  participant.handCommit = { cardId: action.cardId, owner: action.playerId, origin: 'hand', faceDown: true, canceled: false };
   player.hasPlayedBattleThisTurn = true;
 
   appendPublicLog(game, action.playerId, 'commit_battle_hand_card', `${player.name} committed a card from hand face down.`);
-
-  if (bothParticipants(game, (candidate) => candidate.handCommit !== undefined)) {
-    game.battle.stage = 'battle_draw';
-  }
-
+  if (bothParticipants(game, hasCompletedHandCommit)) game.battle.stage = 'battle_draw';
   return { state: game };
 }
 
 function passBattleHandCommit(game: GameState, action: Extract<GameAction, { type: 'pass_battle_hand_commit' }>): ApplyGameActionResult {
   phaseAllowsAction(game, ['battle']);
-  if (!game.battle || game.battle.stage !== 'hand_commit') {
-    throw new GameActionError('Battle hand commitments are not currently open.');
-  }
+  if (!game.battle || game.battle.stage !== 'hand_commit') throw new GameActionError('Battle hand commitments are not currently open.');
 
   const player = requirePlayer(game, action.playerId);
   const participant = getBattleParticipant(game, action.playerId);
+  if (hasCompletedHandCommit(participant)) throw new GameActionError(`${player.name} has already made a hand commitment choice.`);
 
-  if (participant.handCommit) throw new GameActionError(`${player.name} has already committed a hand card.`);
-
-  participant.handCommit = {
-    cardId: '__pass__',
-    owner: action.playerId,
-    origin: 'hand',
-    faceDown: false,
-    canceled: true,
-  };
-
+  participant.passedHandCommit = true;
   appendPublicLog(game, action.playerId, 'pass_battle_hand_commit', `${player.name} passed their hand commitment.`);
-
-  if (bothParticipants(game, (candidate) => candidate.handCommit !== undefined)) {
-    game.battle.stage = 'battle_draw';
-  }
-
+  if (bothParticipants(game, hasCompletedHandCommit)) game.battle.stage = 'battle_draw';
   return { state: game };
 }
 
 function drawBattleCards(game: GameState, action: Extract<GameAction, { type: 'draw_battle_cards' }>): ApplyGameActionResult {
   phaseAllowsAction(game, ['battle']);
-  if (!game.battle || game.battle.stage !== 'battle_draw') {
-    throw new GameActionError('Battle draw is not currently open.');
-  }
+  if (!game.battle || game.battle.stage !== 'battle_draw') throw new GameActionError('Battle draw is not currently open.');
 
   const player = requirePlayer(game, action.playerId);
   const participant = getBattleParticipant(game, action.playerId);
   const count = action.count ?? 3;
-
   if (!Number.isInteger(count) || count < 1) throw new GameActionError('Battle draw count must be a positive integer.');
   if (participant.battleDraw.length > 0) throw new GameActionError(`${player.name} has already drawn battle cards.`);
 
@@ -280,50 +248,40 @@ function drawBattleCards(game: GameState, action: Extract<GameAction, { type: 'd
   player.zones.deck = player.zones.deck.slice(battleDrawnCards.length);
   participant.battleDraw = battleDrawnCards;
 
-  appendPublicLog(game, action.playerId, 'draw_battle_cards', `${player.name} drew ${battleDrawnCards.length} battle card${battleDrawnCards.length === 1 ? '' : 's'}.`, {
-    count: battleDrawnCards.length,
-  });
-
-  if (bothParticipants(game, (candidate) => candidate.battleDraw.length > 0)) {
-    game.battle.stage = 'battle_play_selection';
-  }
-
+  appendPublicLog(game, action.playerId, 'draw_battle_cards', `${player.name} drew ${battleDrawnCards.length} battle card${battleDrawnCards.length === 1 ? '' : 's'}.`, { count: battleDrawnCards.length });
+  if (bothParticipants(game, (candidate) => candidate.battleDraw.length > 0)) game.battle.stage = 'battle_play_selection';
   return { state: game, result: { battleDrawnCards } };
 }
 
 function playBattleDrawCard(game: GameState, action: Extract<GameAction, { type: 'play_battle_draw_card' }>): ApplyGameActionResult {
   phaseAllowsAction(game, ['battle']);
-  if (!game.battle || game.battle.stage !== 'battle_play_selection') {
-    throw new GameActionError('Battle draw card selection is not currently open.');
-  }
+  if (!game.battle || game.battle.stage !== 'battle_play_selection') throw new GameActionError('Battle draw card selection is not currently open.');
 
   const player = requirePlayer(game, action.playerId);
   const participant = getBattleParticipant(game, action.playerId);
-
-  if (participant.battleDrawPlayed.length > 0) throw new GameActionError(`${player.name} has already played a battle-draw card.`);
+  if (hasCompletedBattleDrawPlay(participant)) throw new GameActionError(`${player.name} has already made a battle-draw play choice.`);
   if (!participant.battleDraw.includes(action.cardId)) throw new GameActionError(`${player.name} did not draw that battle card.`);
 
   participant.battleDraw = participant.battleDraw.filter((cardId) => cardId !== action.cardId);
-  participant.battleDrawPlayed.push({
-    cardId: action.cardId,
-    owner: action.playerId,
-    origin: 'battle_draw',
-    faceDown: true,
-    canceled: false,
-  });
+  participant.battleDrawPlayed.push({ cardId: action.cardId, owner: action.playerId, origin: 'battle_draw', faceDown: true, canceled: false });
   player.hasPlayedBattleThisTurn = true;
 
   appendPublicLog(game, action.playerId, 'play_battle_draw_card', `${player.name} selected a battle-draw card face down.`);
+  if (bothParticipants(game, hasCompletedBattleDrawPlay)) revealBattleCards(game);
+  return { state: game };
+}
 
-  if (bothParticipants(game, (candidate) => candidate.battleDrawPlayed.length > 0)) {
-    for (const side of [game.battle.attacker, game.battle.defender]) {
-      if (side.handCommit && side.handCommit.cardId !== '__pass__') side.handCommit.faceDown = false;
-      side.battleDrawPlayed = side.battleDrawPlayed.map((played): BattlePlayedCard => ({ ...played, faceDown: false }));
-    }
-    game.battle.stage = 'dice';
-    appendPublicLog(game, undefined, 'battle_cards_revealed', 'Battle cards were revealed.');
-  }
+function passBattleDrawPlay(game: GameState, action: Extract<GameAction, { type: 'pass_battle_draw_play' }>): ApplyGameActionResult {
+  phaseAllowsAction(game, ['battle']);
+  if (!game.battle || game.battle.stage !== 'battle_play_selection') throw new GameActionError('Battle draw card selection is not currently open.');
 
+  const player = requirePlayer(game, action.playerId);
+  const participant = getBattleParticipant(game, action.playerId);
+  if (hasCompletedBattleDrawPlay(participant)) throw new GameActionError(`${player.name} has already made a battle-draw play choice.`);
+
+  participant.passedBattleDrawPlay = true;
+  appendPublicLog(game, action.playerId, 'pass_battle_draw_play', `${player.name} played no battle-draw card.`);
+  if (bothParticipants(game, hasCompletedBattleDrawPlay)) revealBattleCards(game);
   return { state: game };
 }
 
@@ -334,17 +292,12 @@ function rollBattleDie(game: GameState, action: Extract<GameAction, { type: 'rol
   const player = requirePlayer(game, action.playerId);
   const participant = getBattleParticipant(game, action.playerId);
   const value = action.value ?? Math.floor(Math.random() * 6) + 1;
-
   if (!Number.isInteger(value) || value < 1 || value > 6) throw new GameActionError('Battle die value must be an integer from 1 to 6.');
   if (participant.diceRoll !== undefined) throw new GameActionError(`${player.name} has already rolled.`);
 
   participant.diceRoll = value;
   appendPublicLog(game, action.playerId, 'roll_battle_die', `${player.name} rolled a ${value}.`, { value });
-
-  if (bothParticipants(game, (candidate) => candidate.diceRoll !== undefined)) {
-    game.battle.stage = 'resolution';
-  }
-
+  if (bothParticipants(game, (candidate) => candidate.diceRoll !== undefined)) game.battle.stage = 'resolution';
   return { state: game };
 }
 
@@ -353,50 +306,61 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
   if (!game.battle || game.battle.stage !== 'resolution') throw new GameActionError('Battle is not ready to resolve.');
 
   const battle = game.battle;
-  if (action.playerId !== battle.attacker.playerId && action.playerId !== battle.defender.playerId) {
-    throw new GameActionError(`${action.playerId} cannot resolve a battle they are not in.`);
-  }
+  if (action.playerId !== battle.attacker.playerId && action.playerId !== battle.defender.playerId) throw new GameActionError(`${action.playerId} cannot resolve a battle they are not in.`);
 
   const attackerTotal = (battle.attacker.diceRoll ?? 0) + battle.attacker.modifiers;
   const defenderTotal = (battle.defender.diceRoll ?? 0) + battle.defender.modifiers;
-  const winner = attackerTotal >= defenderTotal ? battle.attacker.playerId : battle.defender.playerId;
+  const winner = attackerTotal > defenderTotal
+    ? battle.attacker.playerId
+    : attackerTotal < defenderTotal
+      ? battle.defender.playerId
+      : battle.tieWinner === 'attacker'
+        ? battle.attacker.playerId
+        : battle.defender.playerId;
   const loser = winner === battle.attacker.playerId ? battle.defender.playerId : battle.attacker.playerId;
   const location = findSpace(game, battle.location);
+  const attackerOrigin = findSpace(game, battle.attackerOrigin);
   const winnerState = requirePlayer(game, winner);
   const loserState = requirePlayer(game, loser);
-  const attackerOrigin = game.board.spaces.find((space) => space.occupant === battle.attacker.playerId);
+  const loserParticipant = getBattleParticipant(game, loser);
+  const retreatSpace = findRetreatSpace(game, loser);
 
   battle.winner = winner;
   battle.loser = loser;
+  loserParticipant.retreated = true;
 
   if (winner === battle.attacker.playerId) {
-    if (attackerOrigin) attackerOrigin.occupant = undefined;
+    attackerOrigin.occupant = undefined;
     location.occupant = winner;
     winnerState.occupiedSpaceId = location.id;
-    loserState.occupiedSpaceId = undefined;
     location.capturePendingBy = winner;
+
+    if (retreatSpace) {
+      retreatSpace.occupant = loser;
+      loserState.occupiedSpaceId = retreatSpace.id;
+    } else {
+      loserState.occupiedSpaceId = undefined;
+    }
+  } else {
+    attackerOrigin.occupant = battle.attacker.playerId;
+    winnerState.occupiedSpaceId = location.id;
+    if (retreatSpace) {
+      retreatSpace.occupant = loser;
+      loserState.occupiedSpaceId = retreatSpace.id;
+    }
   }
 
   for (const participant of [battle.attacker, battle.defender]) {
     const player = requirePlayer(game, participant.playerId);
-    if (participant.handCommit && participant.handCommit.cardId !== '__pass__') {
-      player.zones.graveyard.push(participant.handCommit.cardId);
-    }
+    if (participant.handCommit) player.zones.graveyard.push(participant.handCommit.cardId);
     player.zones.discard.push(...participant.battleDrawPlayed.map((played) => played.cardId));
     player.zones.discard.push(...participant.battleDraw);
   }
 
-  appendPublicLog(game, winner, 'battle_resolved', `${winnerState.name} won the battle.`, {
-    winner,
-    loser,
-    attackerTotal,
-    defenderTotal,
-  });
-
+  appendPublicLog(game, winner, 'battle_resolved', `${winnerState.name} won the battle.`, { winner, loser, attackerTotal, defenderTotal, tieWinner: battle.tieWinner });
   game.battle = undefined;
   game.phase = 'action_after_movement';
   game.priorityPlayer = game.activePlayer;
-
   return { state: game };
 }
 
@@ -405,7 +369,6 @@ function endTurn(game: GameState, action: Extract<GameAction, { type: 'end_turn'
 
   const endingPlayer = requirePlayer(game, action.playerId);
   const nextPlayer = nextPlayerId(game);
-
   endingPlayer.actionsRemaining = 0;
   endingPlayer.movementRemaining = 0;
 
@@ -419,9 +382,7 @@ function endTurn(game: GameState, action: Extract<GameAction, { type: 'end_turn'
   game.priorityPlayer = nextPlayer;
   game.turn += 1;
   game.phase = 'turn_start';
-
   appendPublicLog(game, action.playerId, 'end_turn', `${endingPlayer.name} ended their turn.`);
-
   return { state: game };
 }
 
@@ -443,6 +404,8 @@ export function applyGameAction(game: GameState, action: GameAction): ApplyGameA
       return drawBattleCards(next, action);
     case 'play_battle_draw_card':
       return playBattleDrawCard(next, action);
+    case 'pass_battle_draw_play':
+      return passBattleDrawPlay(next, action);
     case 'roll_battle_die':
       return rollBattleDie(next, action);
     case 'resolve_battle':
