@@ -88,7 +88,7 @@ function revealPlayedCardToViewer(
 
 function playedCards(participant: BattleParticipantState): BattlePlayedCard[] {
   return [participant.handCommit, ...participant.battleDrawPlayed]
-    .filter((card): card is BattlePlayedCard => Boolean(card) && !card.canceled);
+    .filter((card): card is BattlePlayedCard => card !== undefined && !card.canceled);
 }
 
 function validBattleCardTargetsForViewer(battle: BattleState, viewer?: PlayerID): BattleCardTargetOption[] | undefined {
@@ -102,7 +102,7 @@ function validBattleCardTargetsForViewer(battle: BattleState, viewer?: PlayerID)
       : undefined;
   if (!viewerParticipant) return undefined;
 
-  const opponent = viewerParticipant === battle.attacker ? battle.defender : battle.attacker;
+  const opponent = viewerParticipant.playerId === battle.attacker.playerId ? battle.defender : battle.attacker;
   const embargoCards = playedCards(viewerParticipant).filter((card) => card.cardId === 'card-embargo');
   if (embargoCards.length === 0) return undefined;
 
