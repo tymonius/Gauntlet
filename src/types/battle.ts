@@ -26,6 +26,7 @@ export interface BattleParticipantState {
   playerId: PlayerID;
   passedHandCommit: boolean;
   passedBattleDrawPlay: boolean;
+  hasDrawnBattleCards: boolean;
   handCommit?: BattlePlayedCard;
   battleDraw: CardID[];
   battleDrawPlayed: BattlePlayedCard[];
