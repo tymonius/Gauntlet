@@ -4,7 +4,7 @@ import { EffectRegistry, totalModifiersFor } from './registry';
 import {
   fortificationsAssetHandler,
   fortificationsBattleHandler,
-  homelandAdvantageHandler,
+  heartlandDefenseBonusHandler,
   valorBattleHandler,
 } from './battle';
 
@@ -14,7 +14,7 @@ function battleState(overrides: Partial<BattleState> = {}): BattleState {
     stage: 'resolution',
     location: 'space-1',
     attackerOrigin: 'player_1-heartland',
-    tieWinner: 'attacker',
+    tiePolicy: 'defender',
     effectsResolved: [],
     attacker: {
       playerId: 'player_1',
@@ -83,7 +83,7 @@ describe('battle effect handlers', () => {
   it('applies heartland defense bonus', () => {
     const battle = battleState();
     const game = gameState(battle);
-    const result = new EffectRegistry([homelandAdvantageHandler]).resolve({ game, battle, timing: 'before_battle_resolution' });
+    const result = new EffectRegistry([heartlandDefenseBonusHandler]).resolve({ game, battle, timing: 'before_battle_resolution' });
     expect(totalModifiersFor(result.modifiers, 'player_2')).toBe(1);
   });
 
