@@ -43,22 +43,43 @@ function createBattleReadyGame(): GameState {
   };
 }
 
+function advanceToResolution(): GameState {
+  const battleStarted = applyGameAction(createBattleReadyGame(), { type: 'move_player', playerId: 'player_1', toSpaceId: 'space-1' }).state;
+  const p1Committed = applyGameAction(battleStarted, { type: 'commit_battle_hand_card', playerId: 'player_1', cardId: 'card-embargo' }).state;
+  const p2Committed = applyGameAction(p1Committed, { type: 'commit_battle_hand_card', playerId: 'player_2', cardId: 'card-valor' }).state;
+  const p1Drew = applyGameAction(p2Committed, { type: 'draw_battle_cards', playerId: 'player_1' }).state;
+  const p2Drew = applyGameAction(p1Drew, { type: 'draw_battle_cards', playerId: 'player_2' }).state;
+  const p1Passed = applyGameAction(p2Drew, { type: 'pass_battle_draw_play', playerId: 'player_1' }).state;
+  const p2Passed = applyGameAction(p1Passed, { type: 'pass_battle_draw_play', playerId: 'player_2' }).state;
+  const p1Rolled = applyGameAction(p2Passed, { type: 'roll_battle_die', playerId: 'player_1', value: 5 }).state;
+  return applyGameAction(p1Rolled, { type: 'roll_battle_die', playerId: 'player_2', value: 4 }).state;
+}
+
 describe('battle cancellation effects', () => {
-  it('cancels an opposing hand-committed battle card and returns it to hand', () => {
-    const battleStarted = applyGameAction(createBattleReadyGame(), { type: 'move_player', playerId: 'player_1', toSpaceId: 'space-1' }).state;
-    const p1Committed = applyGameAction(battleStarted, { type: 'commit_battle_hand_card', playerId: 'player_1', cardId: 'card-embargo' }).state;
-    const p2Committed = applyGameAction(p1Committed, { type: 'commit_battle_hand_card', playerId: 'player_2', cardId: 'card-valor' }).state;
-    const p1Drew = applyGameAction(p2Committed, { type: 'draw_battle_cards', playerId: 'player_1' }).state;
-    const p2Drew = applyGameAction(p1Drew, { type: 'draw_battle_cards', playerId: 'player_2' }).state;
-    const p1Passed = applyGameAction(p2Drew, { type: 'pass_battle_draw_play', playerId: 'player_1' }).state;
-    const p2Passed = applyGameAction(p1Passed, { type: 'pass_battle_draw_play', playerId: 'player_2' }).state;
-    const p1Rolled = applyGameAction(p2Passed, { type: 'roll_battle_die', playerId: 'player_1', value: 5 }).state;
-    const p2Rolled = applyGameAction(p1Rolled, { type: 'roll_battle_die', playerId: 'player_2', value: 4 }).state;
-    const resolved = applyGameAction(p2Rolled, { type: 'resolve_battle', playerId: 'player_1' }).state;
+  it('cancels a chosen opposing hand-committed battle card and returns it to hand', () => {
+    const resolved = applyGameAction(advanceToResolution(), {
+      type: 'resolve_battle',
+      playerId: 'player_1',
+      battleCardTargets: [
+        {
+          sourceCardId: 'card-embargo',
+          sourceOwner: 'player_1',
+          targetCardId: 'card-valor',
+          targetOwner: 'player_2',
+        },
+      ],
+    }).state;
 
     expect(resolved.board.spaces[1].occupant).toBe('player_1');
     expect(resolved.players.player_1.zones.graveyard).toContain('card-embargo');
     expect(resolved.players.player_2.zones.hand).toContain('card-valor');
     expect(resolved.players.player_2.zones.graveyard).not.toContain('card-valor');
+  });
+
+  it('does not auto-cancel if Embargo has no chosen target', () => {
+    const resolved = applyGameAction(advanceToResolution(), { type: 'resolve_battle', playerId: 'player_1' }).state;
+
+    expect(resolved.players.player_2.zones.hand).not.toContain('card-valor');
+    expect(resolved.players.player_2.zones.graveyard).toContain('card-valor');
   });
 });
