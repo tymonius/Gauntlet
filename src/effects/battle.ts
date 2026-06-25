@@ -1,5 +1,5 @@
 import type { BattleParticipantState, CardID, GameState, PlayerID } from '../types';
-import type { EffectHandler } from './types';
+import type { BattleCardTarget, EffectHandler } from './types';
 
 function participantHasCard(participant: BattleParticipantState, cardId: CardID): boolean {
   return participant.handCommit?.cardId === cardId && !participant.handCommit.canceled
@@ -20,11 +20,34 @@ function hasCondition(game: GameState, playerId: PlayerID, cardId: CardID): bool
   return game.players[playerId]?.zones.conditions.includes(cardId) ?? false;
 }
 
-function firstCancelableOpposingCard(context: Parameters<EffectHandler['applies']>[0], owner: PlayerID) {
+function getParticipant(context: Parameters<EffectHandler['applies']>[0], playerId: PlayerID): BattleParticipantState | undefined {
   if (!context.battle) return undefined;
-  const opponent = context.battle.attacker.playerId === owner ? context.battle.defender : context.battle.attacker;
-  return [opponent.handCommit, ...opponent.battleDrawPlayed]
-    .find((played) => played && !played.canceled);
+  if (context.battle.attacker.playerId === playerId) return context.battle.attacker;
+  if (context.battle.defender.playerId === playerId) return context.battle.defender;
+  return undefined;
+}
+
+function opposingParticipant(context: Parameters<EffectHandler['applies']>[0], owner: PlayerID): BattleParticipantState | undefined {
+  if (!context.battle) return undefined;
+  return context.battle.attacker.playerId === owner ? context.battle.defender : context.battle.attacker;
+}
+
+function findPlayedTarget(participant: BattleParticipantState, target: BattleCardTarget) {
+  return [participant.handCommit, ...participant.battleDrawPlayed]
+    .find((played) => played?.cardId === target.targetCardId && played.owner === target.targetOwner && !played.canceled);
+}
+
+function selectedEmbargoTarget(context: Parameters<EffectHandler['resolve']>[0], sourceOwner: PlayerID): BattleCardTarget | undefined {
+  const target = context.battleCardTargets?.find((candidate) => (
+    candidate.sourceCardId === 'card-embargo'
+    && candidate.sourceOwner === sourceOwner
+  ));
+  if (!target || target.targetOwner === sourceOwner) return undefined;
+
+  const opponent = opposingParticipant(context, sourceOwner);
+  if (!opponent || opponent.playerId !== target.targetOwner) return undefined;
+
+  return findPlayedTarget(opponent, target) ? target : undefined;
 }
 
 function battleDrawCardsFor(participant: BattleParticipantState): CardID[] {
@@ -150,13 +173,13 @@ export const tradeBanBattleHandler: EffectHandler = {
     const cancellations = [context.battle.attacker, context.battle.defender]
       .filter((participant) => participantHasCard(participant, 'card-embargo'))
       .flatMap((participant) => {
-        const target = firstCancelableOpposingCard(context, participant.playerId);
+        const target = selectedEmbargoTarget(context, participant.playerId);
         if (!target) return [];
         return [{
-          cardId: target.cardId,
-          owner: target.owner,
+          cardId: target.targetCardId,
+          owner: target.targetOwner,
           source: 'card-embargo',
-          reason: 'Embargo cancels one opposing played card.',
+          reason: 'Embargo cancels the chosen opposing Battle card.',
         }];
       });
 

@@ -1,4 +1,5 @@
 import type { CardID, PlayerID, SpaceID } from '../types';
+import type { BattleCardTarget } from '../effects';
 
 export type GameAction =
   | DrawCardAction
@@ -68,6 +69,7 @@ export interface RollBattleDieAction {
 export interface ResolveBattleAction {
   type: 'resolve_battle';
   playerId: PlayerID;
+  battleCardTargets?: BattleCardTarget[];
 }
 
 export interface EndTurnAction {

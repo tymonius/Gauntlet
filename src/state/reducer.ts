@@ -192,6 +192,7 @@ function applyResolutionEffects(game: GameState, action: Extract<GameAction, { t
     timing: 'before_battle_resolution',
     actor: action.playerId,
     location: battle.location,
+    battleCardTargets: action.battleCardTargets,
   });
 
   const canceledSet = applyCancellations(game, effectResult.cancellations ?? []);
