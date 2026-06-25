@@ -1,4 +1,6 @@
 import type {
+  BattleCardTargetOption,
+  BattleParticipantState,
   BattlePlayedCard,
   BattleState,
   BoardState,
@@ -84,6 +86,39 @@ function revealPlayedCardToViewer(
   return { faceDown: true };
 }
 
+function playedCards(participant: BattleParticipantState): BattlePlayedCard[] {
+  return [participant.handCommit, ...participant.battleDrawPlayed]
+    .filter((card): card is BattlePlayedCard => Boolean(card) && !card.canceled);
+}
+
+function validBattleCardTargetsForViewer(battle: BattleState, viewer?: PlayerID): BattleCardTargetOption[] | undefined {
+  if (!viewer) return undefined;
+  if (battle.stage !== 'dice' && battle.stage !== 'resolution') return undefined;
+
+  const viewerParticipant = battle.attacker.playerId === viewer
+    ? battle.attacker
+    : battle.defender.playerId === viewer
+      ? battle.defender
+      : undefined;
+  if (!viewerParticipant) return undefined;
+
+  const opponent = viewerParticipant === battle.attacker ? battle.defender : battle.attacker;
+  const embargoCards = playedCards(viewerParticipant).filter((card) => card.cardId === 'card-embargo');
+  if (embargoCards.length === 0) return undefined;
+
+  const opposingCards = playedCards(opponent);
+  if (opposingCards.length === 0) return undefined;
+
+  return embargoCards.flatMap((source) => opposingCards.map((target) => ({
+    sourceCardId: source.cardId,
+    sourceOwner: source.owner,
+    sourceOrigin: source.origin,
+    targetCardId: target.cardId,
+    targetOwner: target.owner,
+    targetOrigin: target.origin,
+  })));
+}
+
 function toPublicBattleParticipantView(
   participant: BattleState['attacker'],
   viewer?: PlayerID,
@@ -112,6 +147,7 @@ export function toPublicBattleView(battle: BattleState, viewer?: PlayerID): Publ
     attacker: toPublicBattleParticipantView(battle.attacker, viewer),
     defender: toPublicBattleParticipantView(battle.defender, viewer),
     tiePolicy: battle.tiePolicy,
+    validBattleCardTargets: validBattleCardTargetsForViewer(battle, viewer),
     winner: battle.winner,
     loser: battle.loser,
   };
