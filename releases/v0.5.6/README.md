@@ -1,4 +1,4 @@
-# Gauntlet v0.5.6 Print-and-Play Package
+# Gauntlet v0.5.6 Asset Bank Patch Print-and-Play Package
 
 Generated June 21, 2026. Asset Bank Patch release with copyright notices and landscape-oriented Territory card text.
 
