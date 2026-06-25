@@ -14,6 +14,7 @@ import type {
   SpaceID,
 } from '../types';
 import type { ActionResult, GameAction } from './actions';
+import { drawFromDeck } from './draw';
 
 export class GameActionError extends Error {
   constructor(message: string) {
@@ -74,8 +75,11 @@ function createBattleParticipant(playerId: PlayerID): BattleParticipantState {
     playerId,
     passedHandCommit: false,
     passedBattleDrawPlay: false,
+    hasDrawnBattleCards: false,
     battleDraw: [],
     battleDrawPlayed: [],
+    battleDrawCount: 3,
+    battleDrawPlayLimit: 1,
     rerollsRemaining: 0,
     modifiers: 0,
     retreated: false,
@@ -99,7 +103,19 @@ function hasCompletedHandCommit(participant: BattleParticipantState): boolean {
 }
 
 function hasCompletedBattleDrawPlay(participant: BattleParticipantState): boolean {
-  return participant.passedBattleDrawPlay || participant.battleDrawPlayed.length > 0;
+  return participant.passedBattleDrawPlay || participant.battleDrawPlayed.length >= participant.battleDrawPlayLimit || participant.battleDraw.length === 0;
+}
+
+function playedCardIds(participant: BattleParticipantState): string[] {
+  return [participant.handCommit?.cardId, ...participant.battleDrawPlayed.map((played) => played.cardId)]
+    .filter((cardId): cardId is string => Boolean(cardId));
+}
+
+function applyBattleSetupEffects(participant: BattleParticipantState): void {
+  if (playedCardIds(participant).includes('card-conscription')) {
+    participant.battleDrawCount = Math.max(participant.battleDrawCount, 4);
+    participant.battleDrawPlayLimit = Math.max(participant.battleDrawPlayLimit, 2);
+  }
 }
 
 function revealBattleCards(game: GameState): void {
@@ -112,6 +128,10 @@ function revealBattleCards(game: GameState): void {
 
   game.battle.stage = 'dice';
   appendPublicLog(game, undefined, 'battle_cards_revealed', 'Battle cards were revealed.');
+}
+
+function maybeRevealAfterBattleDrawPlay(game: GameState): void {
+  if (bothParticipants(game, hasCompletedBattleDrawPlay)) revealBattleCards(game);
 }
 
 function findRetreatSpace(game: GameState, loser: PlayerID): BoardSpaceState | undefined {
@@ -153,16 +173,17 @@ function drawCards(game: GameState, action: Extract<GameAction, { type: 'draw_ca
 
   const player = requirePlayer(game, action.playerId);
   const count = action.count ?? 1;
-  if (!Number.isInteger(count) || count < 1) throw new GameActionError('Draw count must be a positive integer.');
+  const result = drawFromDeck(player, { count });
+  player.zones.hand = [...player.zones.hand, ...result.drawnCards];
 
-  const drawnCards = player.zones.deck.slice(0, count);
-  player.zones.deck = player.zones.deck.slice(drawnCards.length);
-  player.zones.hand = [...player.zones.hand, ...drawnCards];
-
-  appendPublicLog(game, action.playerId, 'draw_card', `${player.name} drew ${drawnCards.length} card${drawnCards.length === 1 ? '' : 's'}.`, { count: drawnCards.length });
+  appendPublicLog(game, action.playerId, 'draw_card', `${player.name} drew ${result.drawnCards.length} card${result.drawnCards.length === 1 ? '' : 's'}.`, {
+    count: result.drawnCards.length,
+    reshuffled: result.reshuffled,
+    exhausted: result.exhausted,
+  });
   if (game.phase === 'turn_start') game.phase = 'action_before_movement';
 
-  return { state: game, result: { drawnCards } };
+  return { state: game, result: { drawnCards: result.drawnCards } };
 }
 
 function revealSpace(game: GameState, action: Extract<GameAction, { type: 'reveal_space' }>): ApplyGameActionResult {
@@ -235,6 +256,7 @@ function commitBattleHandCard(game: GameState, action: Extract<GameAction, { typ
 
   player.zones.hand = player.zones.hand.filter((cardId) => cardId !== action.cardId);
   participant.handCommit = { cardId: action.cardId, owner: action.playerId, origin: 'hand', faceDown: true, canceled: false };
+  applyBattleSetupEffects(participant);
   player.hasPlayedBattleThisTurn = true;
 
   appendPublicLog(game, action.playerId, 'commit_battle_hand_card', `${player.name} committed a card from hand face down.`);
@@ -262,17 +284,22 @@ function drawBattleCards(game: GameState, action: Extract<GameAction, { type: 'd
 
   const player = requirePlayer(game, action.playerId);
   const participant = getBattleParticipant(game, action.playerId);
-  const count = action.count ?? 3;
+  const count = action.count ?? participant.battleDrawCount;
   if (!Number.isInteger(count) || count < 1) throw new GameActionError('Battle draw count must be a positive integer.');
-  if (participant.battleDraw.length > 0) throw new GameActionError(`${player.name} has already drawn battle cards.`);
+  if (participant.hasDrawnBattleCards) throw new GameActionError(`${player.name} has already drawn battle cards.`);
 
-  const battleDrawnCards = player.zones.deck.slice(0, count);
-  player.zones.deck = player.zones.deck.slice(battleDrawnCards.length);
-  participant.battleDraw = battleDrawnCards;
+  const result = drawFromDeck(player, { count });
+  participant.battleDraw = result.drawnCards;
+  participant.hasDrawnBattleCards = true;
 
-  appendPublicLog(game, action.playerId, 'draw_battle_cards', `${player.name} drew ${battleDrawnCards.length} battle card${battleDrawnCards.length === 1 ? '' : 's'}.`, { count: battleDrawnCards.length });
-  if (bothParticipants(game, (candidate) => candidate.battleDraw.length > 0)) game.battle.stage = 'battle_play_selection';
-  return { state: game, result: { battleDrawnCards } };
+  appendPublicLog(game, action.playerId, 'draw_battle_cards', `${player.name} drew ${result.drawnCards.length} battle card${result.drawnCards.length === 1 ? '' : 's'}.`, {
+    count: result.drawnCards.length,
+    requested: count,
+    reshuffled: result.reshuffled,
+    exhausted: result.exhausted,
+  });
+  if (bothParticipants(game, (candidate) => candidate.hasDrawnBattleCards)) game.battle.stage = 'battle_play_selection';
+  return { state: game, result: { battleDrawnCards: result.drawnCards } };
 }
 
 function playBattleDrawCard(game: GameState, action: Extract<GameAction, { type: 'play_battle_draw_card' }>): ApplyGameActionResult {
@@ -281,15 +308,16 @@ function playBattleDrawCard(game: GameState, action: Extract<GameAction, { type:
 
   const player = requirePlayer(game, action.playerId);
   const participant = getBattleParticipant(game, action.playerId);
-  if (hasCompletedBattleDrawPlay(participant)) throw new GameActionError(`${player.name} has already made a battle-draw play choice.`);
+  if (hasCompletedBattleDrawPlay(participant)) throw new GameActionError(`${player.name} has already made all allowed battle-draw play choices.`);
   if (!participant.battleDraw.includes(action.cardId)) throw new GameActionError(`${player.name} did not draw that battle card.`);
 
   participant.battleDraw = participant.battleDraw.filter((cardId) => cardId !== action.cardId);
   participant.battleDrawPlayed.push({ cardId: action.cardId, owner: action.playerId, origin: 'battle_draw', faceDown: true, canceled: false });
+  applyBattleSetupEffects(participant);
   player.hasPlayedBattleThisTurn = true;
 
   appendPublicLog(game, action.playerId, 'play_battle_draw_card', `${player.name} selected a battle-draw card face down.`);
-  if (bothParticipants(game, hasCompletedBattleDrawPlay)) revealBattleCards(game);
+  maybeRevealAfterBattleDrawPlay(game);
   return { state: game };
 }
 
@@ -299,11 +327,11 @@ function passBattleDrawPlay(game: GameState, action: Extract<GameAction, { type:
 
   const player = requirePlayer(game, action.playerId);
   const participant = getBattleParticipant(game, action.playerId);
-  if (hasCompletedBattleDrawPlay(participant)) throw new GameActionError(`${player.name} has already made a battle-draw play choice.`);
+  if (participant.passedBattleDrawPlay) throw new GameActionError(`${player.name} has already passed their battle-draw play choice.`);
 
   participant.passedBattleDrawPlay = true;
-  appendPublicLog(game, action.playerId, 'pass_battle_draw_play', `${player.name} played no battle-draw card.`);
-  if (bothParticipants(game, hasCompletedBattleDrawPlay)) revealBattleCards(game);
+  appendPublicLog(game, action.playerId, 'pass_battle_draw_play', `${player.name} played no more battle-draw cards.`);
+  maybeRevealAfterBattleDrawPlay(game);
   return { state: game };
 }
 
@@ -342,14 +370,10 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
   const canceledSet = applyCancellations(game, effectResult.cancellations ?? []);
   const activeModifiers = (effectResult.modifiers ?? [])
     .filter((modifier) => !canceledSet.has(`${modifier.playerId}:${String(modifier.source)}`));
-  const attackerEffectModifiers = totalModifiersFor(activeModifiers, battle.attacker.playerId);
-  const defenderEffectModifiers = totalModifiersFor(activeModifiers, battle.defender.playerId);
-  battle.attacker.modifiers += attackerEffectModifiers;
-  battle.defender.modifiers += defenderEffectModifiers;
+  battle.attacker.modifiers += totalModifiersFor(activeModifiers, battle.attacker.playerId);
+  battle.defender.modifiers += totalModifiersFor(activeModifiers, battle.defender.playerId);
 
-  for (const message of effectResult.logMessages ?? []) {
-    appendPublicLog(game, undefined, 'effect_resolved', message);
-  }
+  for (const message of effectResult.logMessages ?? []) appendPublicLog(game, undefined, 'effect_resolved', message);
 
   const attackerTotal = (battle.attacker.diceRoll ?? 0) + battle.attacker.modifiers;
   const defenderTotal = (battle.defender.diceRoll ?? 0) + battle.defender.modifiers;
