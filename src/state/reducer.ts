@@ -300,7 +300,7 @@ function movePlayer(game: GameState, action: Extract<GameAction, { type: 'move_p
 
   if (destination.occupant && destination.occupant !== action.playerId) {
     const defenderId = destination.occupant;
-    const watchtowerVisibleTo = isWatchtower(destination) && destination.controller === defenderId ? [defenderId] : undefined;
+    const watchtowerMakesAttackerHandCommitFaceUp = isWatchtower(destination) && destination.controller === defenderId;
     player.movementRemaining -= 1;
     game.phase = 'battle';
     game.priorityPlayer = action.playerId;
@@ -312,7 +312,7 @@ function movePlayer(game: GameState, action: Extract<GameAction, { type: 'move_p
       attacker: createBattleParticipant(action.playerId),
       defender: createBattleParticipant(defenderId),
       tiePolicy: tiePolicyForDefense(destination, defenderId),
-      attackerHandCommitVisibleTo: watchtowerVisibleTo,
+      attackerHandCommitVisibleTo: watchtowerMakesAttackerHandCommitFaceUp ? [defenderId] : undefined,
       effectsResolved: [],
     };
 
@@ -341,19 +341,20 @@ function commitBattleHandCard(game: GameState, action: Extract<GameAction, { typ
   if (hasCompletedHandCommit(participant)) throw new GameActionError(`${player.name} has already made a hand commitment choice.`);
   if (!player.zones.hand.includes(action.cardId)) throw new GameActionError(`${player.name} does not have that card in hand.`);
 
+  const isAttackerHandCommit = action.playerId === game.battle.attacker.playerId;
+  const isFaceUpWatchtowerCommit = isAttackerHandCommit && Boolean(game.battle.attackerHandCommitVisibleTo);
   player.zones.hand = player.zones.hand.filter((cardId) => cardId !== action.cardId);
   participant.handCommit = {
     cardId: action.cardId,
     owner: action.playerId,
     origin: 'hand',
-    faceDown: true,
+    faceDown: !isFaceUpWatchtowerCommit,
     canceled: false,
-    visibleTo: action.playerId === game.battle.attacker.playerId ? game.battle.attackerHandCommitVisibleTo : undefined,
   };
   applyBattleSetupEffects(participant);
   player.hasPlayedBattleThisTurn = true;
 
-  appendPublicLog(game, action.playerId, 'commit_battle_hand_card', `${player.name} committed a card from hand face down.`);
+  appendPublicLog(game, action.playerId, 'commit_battle_hand_card', `${player.name} committed a card from hand ${isFaceUpWatchtowerCommit ? 'face up' : 'face down'}.`);
   if (bothParticipants(game, hasCompletedHandCommit)) game.battle.stage = 'battle_draw';
   return { state: game };
 }
