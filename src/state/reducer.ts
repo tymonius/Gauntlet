@@ -12,6 +12,7 @@ import type {
   GamePhase,
   GameState,
   PlayerID,
+  PlayerState,
   SpaceID,
 } from '../types';
 import type { ActionResult, GameAction } from './actions';
@@ -199,6 +200,52 @@ function applyResolutionEffects(game: GameState, action: Extract<GameAction, { t
   for (const message of effectResult.logMessages ?? []) appendPublicLog(game, undefined, 'effect_resolved', message);
 
   return { activeModifiers, cancellations: effectResult.cancellations ?? [] };
+}
+
+function applyPostResolutionEffects(game: GameState, action: Extract<GameAction, { type: 'resolve_battle' }>) {
+  if (!game.battle) return { destinationOverrides: [] };
+  const battle = game.battle;
+
+  if (battle.effectsResolved.includes('after_battle_resolution')) return { destinationOverrides: [] };
+
+  const effectRegistry = new EffectRegistry(baseBattleEffectHandlers);
+  const effectResult = effectRegistry.resolve({
+    game,
+    battle,
+    timing: 'after_battle_resolution',
+    actor: action.playerId,
+    location: battle.location,
+  });
+
+  battle.effectsResolved.push('after_battle_resolution');
+  for (const message of effectResult.logMessages ?? []) appendPublicLog(game, undefined, 'effect_resolved', message);
+
+  return { destinationOverrides: effectResult.destinationOverrides ?? [] };
+}
+
+function pushCardToDestination(player: PlayerState, cardId: string, destination: 'discard' | 'graveyard' | 'hand' | 'removed'): void {
+  switch (destination) {
+    case 'discard':
+      player.zones.discard.push(cardId);
+      break;
+    case 'graveyard':
+      player.zones.graveyard.push(cardId);
+      break;
+    case 'hand':
+      player.zones.hand.push(cardId);
+      break;
+    case 'removed':
+      player.zones.removed.push(cardId);
+      break;
+  }
+}
+
+function destinationOverrideFor(
+  overrides: NonNullable<ReturnType<EffectRegistry['resolve']>['destinationOverrides']>,
+  owner: PlayerID,
+  cardId: string,
+): 'discard' | 'graveyard' | 'hand' | 'removed' | undefined {
+  return overrides.find((override) => override.owner === owner && override.cardId === cardId)?.destination;
 }
 
 function drawCards(game: GameState, action: Extract<GameAction, { type: 'draw_card' }>): ApplyGameActionResult {
@@ -443,17 +490,42 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
     }
   }
 
+  const { destinationOverrides } = applyPostResolutionEffects(game, action);
+
   for (const participant of [battle.attacker, battle.defender]) {
     const player = requirePlayer(game, participant.playerId);
     if (participant.handCommit) {
       if (participant.handCommit.canceled) player.zones.hand.push(participant.handCommit.cardId);
       else player.zones.graveyard.push(participant.handCommit.cardId);
     }
-    player.zones.discard.push(...participant.battleDrawPlayed.map((played) => played.cardId));
-    player.zones.discard.push(...participant.battleDraw);
+
+    for (const played of participant.battleDrawPlayed) {
+      pushCardToDestination(
+        player,
+        played.cardId,
+        destinationOverrideFor(destinationOverrides, participant.playerId, played.cardId) ?? 'discard',
+      );
+    }
+
+    for (const cardId of participant.battleDraw) {
+      pushCardToDestination(
+        player,
+        cardId,
+        destinationOverrideFor(destinationOverrides, participant.playerId, cardId) ?? 'discard',
+      );
+    }
   }
 
-  appendPublicLog(game, winner, 'battle_resolved', `${winnerState.name} won the battle.`, { winner, loser, attackerTotal, defenderTotal, tiePolicy: battle.tiePolicy, modifiers: activeModifiers, cancellations });
+  appendPublicLog(game, winner, 'battle_resolved', `${winnerState.name} won the battle.`, {
+    winner,
+    loser,
+    attackerTotal,
+    defenderTotal,
+    tiePolicy: battle.tiePolicy,
+    modifiers: activeModifiers,
+    cancellations,
+    destinationOverrides,
+  });
   game.battle = undefined;
   game.phase = 'action_after_movement';
   game.priorityPlayer = game.activePlayer;
