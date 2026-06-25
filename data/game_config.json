@@ -1,0 +1,65 @@
+{
+  "version": "0.5.6",
+  "deck_construction": {
+    "minimum_cards": 30,
+    "maximum_points": 60,
+    "opening_hand": 3,
+    "hand_limit": 3,
+    "territories": 3,
+    "maximum_arenas": 1,
+    "unique_cards": ["Manifest Destiny"]
+  },
+  "turn_sequence": [
+    "capture_check",
+    "draw",
+    "action_before_movement",
+    "movement",
+    "action_after_movement_if_unused",
+    "cleanup"
+  ],
+  "battle_sequence": [
+    "reveal_contested_territory",
+    "commit_optional_hand_battle_card",
+    "initial_battle_draw_3",
+    "select_optional_battle_draw_card",
+    "special_reveal",
+    "normal_reveal",
+    "cancel_effects",
+    "other_effects",
+    "roll_dice",
+    "rerolls",
+    "revolution_exchange",
+    "modifiers",
+    "determine_winner",
+    "retreat_occupy",
+    "after_battle_effects",
+    "card_destinations"
+  ],
+  "zones": [
+    "deck",
+    "hand",
+    "discard",
+    "graveyard",
+    "asset_bank",
+    "conditions",
+    "overlays",
+    "battle_hand_row",
+    "battle_draw_row"
+  ],
+  "default_destinations": {
+    "resolved_action": "discard",
+    "asset_action": "asset_bank",
+    "condition_action": "condition_area",
+    "overlay_action": "overlay",
+    "hand_origin_battle": "graveyard",
+    "battle_draw_origin_battle": "discard",
+    "unused_battle_draw": "discard",
+    "replayed_battle": "graveyard",
+    "expired_condition": "discard",
+    "removed_asset": "discard"
+  },
+  "heartland_last_stand": {
+    "homeland_advantage": true,
+    "battle_total_bonus": 1
+  }
+}
