@@ -93,6 +93,8 @@ function toPublicBattleParticipantView(
     handCommit: revealPlayedCardToViewer(participant.handCommit, viewer),
     battleDrawCount: participant.battleDraw.length,
     battleDrawPlayed: participant.battleDrawPlayed.map((card) => revealPlayedCardToViewer(card, viewer)!),
+    battleDrawLimit: participant.battleDrawCount,
+    battleDrawPlayLimit: participant.battleDrawPlayLimit,
     diceRoll: participant.diceRoll,
     modifiers: participant.modifiers,
     retreated: participant.retreated,
