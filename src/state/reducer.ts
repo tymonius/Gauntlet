@@ -130,6 +130,23 @@ function findRetreatSpace(game: GameState, loser: PlayerID): BoardSpaceState | u
   return retreatSpace;
 }
 
+function applyCancellations(game: GameState, cancellations: NonNullable<ReturnType<EffectRegistry['resolve']>['cancellations']>): Set<string> {
+  const canceled = new Set<string>();
+  if (!game.battle) return canceled;
+
+  for (const cancellation of cancellations) {
+    const participant = getBattleParticipant(game, cancellation.owner);
+    const candidates = [participant.handCommit, ...participant.battleDrawPlayed];
+    const target = candidates.find((played) => played?.cardId === cancellation.cardId && !played.canceled);
+    if (!target) continue;
+
+    target.canceled = true;
+    canceled.add(`${target.owner}:${target.cardId}`);
+  }
+
+  return canceled;
+}
+
 function drawCards(game: GameState, action: Extract<GameAction, { type: 'draw_card' }>): ApplyGameActionResult {
   requirePlayerTurn(game, action.playerId);
   phaseAllowsAction(game, ['turn_start', 'action_before_movement', 'action_after_movement']);
@@ -322,8 +339,11 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
     location: battle.location,
   });
 
-  const attackerEffectModifiers = totalModifiersFor(effectResult.modifiers, battle.attacker.playerId);
-  const defenderEffectModifiers = totalModifiersFor(effectResult.modifiers, battle.defender.playerId);
+  const canceledSet = applyCancellations(game, effectResult.cancellations ?? []);
+  const activeModifiers = (effectResult.modifiers ?? [])
+    .filter((modifier) => !canceledSet.has(`${modifier.playerId}:${String(modifier.source)}`));
+  const attackerEffectModifiers = totalModifiersFor(activeModifiers, battle.attacker.playerId);
+  const defenderEffectModifiers = totalModifiersFor(activeModifiers, battle.defender.playerId);
   battle.attacker.modifiers += attackerEffectModifiers;
   battle.defender.modifiers += defenderEffectModifiers;
 
@@ -375,12 +395,15 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
 
   for (const participant of [battle.attacker, battle.defender]) {
     const player = requirePlayer(game, participant.playerId);
-    if (participant.handCommit) player.zones.graveyard.push(participant.handCommit.cardId);
+    if (participant.handCommit) {
+      if (participant.handCommit.canceled) player.zones.hand.push(participant.handCommit.cardId);
+      else player.zones.graveyard.push(participant.handCommit.cardId);
+    }
     player.zones.discard.push(...participant.battleDrawPlayed.map((played) => played.cardId));
     player.zones.discard.push(...participant.battleDraw);
   }
 
-  appendPublicLog(game, winner, 'battle_resolved', `${winnerState.name} won the battle.`, { winner, loser, attackerTotal, defenderTotal, tieWinner: battle.tieWinner, modifiers: effectResult.modifiers ?? [] });
+  appendPublicLog(game, winner, 'battle_resolved', `${winnerState.name} won the battle.`, { winner, loser, attackerTotal, defenderTotal, tieWinner: battle.tieWinner, modifiers: activeModifiers, cancellations: effectResult.cancellations ?? [] });
   game.battle = undefined;
   game.phase = 'action_after_movement';
   game.priorityPlayer = game.activePlayer;

@@ -26,6 +26,7 @@ export class EffectRegistry {
 
 export function mergeEffectResults(results: EffectResult[]): EffectResult {
   return {
+    cancellations: results.flatMap((result) => result.cancellations ?? []),
     modifiers: results.flatMap((result) => result.modifiers ?? []),
     destinationOverrides: results.flatMap((result) => result.destinationOverrides ?? []),
     logMessages: results.flatMap((result) => result.logMessages ?? []),
