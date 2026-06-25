@@ -23,6 +23,13 @@ function firstCancelableOpposingCard(context: Parameters<EffectHandler['applies'
     .find((played) => played && !played.canceled);
 }
 
+function battleDrawCardsFor(participant: BattleParticipantState): CardID[] {
+  return [
+    ...participant.battleDrawPlayed.map((played) => played.cardId),
+    ...participant.battleDraw,
+  ];
+}
+
 export const heartlandDefenseBonusHandler: EffectHandler = {
   id: 'heartland_defense_bonus',
   timing: ['before_battle_resolution'],
@@ -156,10 +163,38 @@ export const tradeBanBattleHandler: EffectHandler = {
   },
 };
 
+export const attritionBattleHandler: EffectHandler = {
+  id: 'attrition_battle',
+  timing: ['after_battle_resolution'],
+  applies(context) {
+    if (!context.battle?.winner || !context.battle.loser) return false;
+    return hasPlayedCard(context, context.battle.winner, 'card-attrition');
+  },
+  resolve(context) {
+    if (!context.battle?.winner || !context.battle.loser) return {};
+
+    const loser = context.battle.attacker.playerId === context.battle.loser
+      ? context.battle.attacker
+      : context.battle.defender;
+    const cards = battleDrawCardsFor(loser);
+
+    return {
+      destinationOverrides: cards.map((cardId) => ({
+        cardId,
+        owner: loser.playerId,
+        destination: 'graveyard' as const,
+        reason: 'Attrition Battle: opponent\'s battle-drawn cards go to the Graveyard after they lose.',
+      })),
+      logMessages: cards.length > 0 ? ['Attrition sent the losing opponent\'s battle-drawn cards to the Graveyard.'] : [],
+    };
+  },
+};
+
 export const baseBattleEffectHandlers: EffectHandler[] = [
   tradeBanBattleHandler,
   heartlandDefenseBonusHandler,
   fortificationsAssetHandler,
   fortificationsBattleHandler,
   valorBattleHandler,
+  attritionBattleHandler,
 ];
