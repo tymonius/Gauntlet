@@ -2,8 +2,8 @@ import type { BattleParticipantState, CardID, GameState, PlayerID } from '../typ
 import type { EffectHandler } from './types';
 
 function participantHasCard(participant: BattleParticipantState, cardId: CardID): boolean {
-  return participant.handCommit?.cardId === cardId
-    || participant.battleDrawPlayed.some((played) => played.cardId === cardId);
+  return participant.handCommit?.cardId === cardId && !participant.handCommit.canceled
+    || participant.battleDrawPlayed.some((played) => played.cardId === cardId && !played.canceled);
 }
 
 function hasPlayedCard(context: Parameters<EffectHandler['applies']>[0], playerId: PlayerID, cardId: CardID): boolean {
@@ -14,6 +14,13 @@ function hasPlayedCard(context: Parameters<EffectHandler['applies']>[0], playerI
 
 function hasBankedAsset(game: GameState, playerId: PlayerID, cardId: CardID): boolean {
   return game.players[playerId]?.zones.assetBank.includes(cardId) ?? false;
+}
+
+function firstCancelableOpposingCard(context: Parameters<EffectHandler['applies']>[0], owner: PlayerID) {
+  if (!context.battle) return undefined;
+  const opponent = context.battle.attacker.playerId === owner ? context.battle.defender : context.battle.attacker;
+  return [opponent.handCommit, ...opponent.battleDrawPlayed]
+    .find((played) => played && !played.canceled);
 }
 
 export const homelandAdvantageHandler: EffectHandler = {
@@ -116,7 +123,39 @@ export const valorBattleHandler: EffectHandler = {
   },
 };
 
+export const tradeBanBattleHandler: EffectHandler = {
+  id: 'trade_ban_battle',
+  timing: ['before_battle_resolution'],
+  applies(context) {
+    if (!context.battle) return false;
+    return hasPlayedCard(context, context.battle.attacker.playerId, 'card-embargo')
+      || hasPlayedCard(context, context.battle.defender.playerId, 'card-embargo');
+  },
+  resolve(context) {
+    if (!context.battle) return {};
+
+    const cancellations = [context.battle.attacker, context.battle.defender]
+      .filter((participant) => participantHasCard(participant, 'card-embargo'))
+      .flatMap((participant) => {
+        const target = firstCancelableOpposingCard(context, participant.playerId);
+        if (!target) return [];
+        return [{
+          cardId: target.cardId,
+          owner: target.owner,
+          source: 'card-embargo',
+          reason: 'Embargo cancels one opposing played card.',
+        }];
+      });
+
+    return {
+      cancellations,
+      logMessages: cancellations.map((cancel) => `Embargo canceled ${cancel.cardId}.`),
+    };
+  },
+};
+
 export const baseBattleEffectHandlers: EffectHandler[] = [
+  tradeBanBattleHandler,
   homelandAdvantageHandler,
   fortificationsAssetHandler,
   fortificationsBattleHandler,
