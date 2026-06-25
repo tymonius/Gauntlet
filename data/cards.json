@@ -1,0 +1,131 @@
+[
+  {
+    "id": "card-embargo",
+    "name": "Embargo",
+    "type": "ActionBattle",
+    "cost": 2,
+    "unique": false,
+    "version": "0.5.6",
+    "action": {
+      "text": "Play Embargo as a Condition affecting one opponent. The next time that opponent plays a card, cancel that card and discard Embargo.",
+      "default_destination": "condition_area"
+    },
+    "battle": {
+      "text": "Cancel one opposing played card. The canceled card returns to its origin: hand if played from hand, discard if played from the battle draw.",
+      "default_destination_by_origin": {
+        "hand": "graveyard",
+        "battle_draw": "discard",
+        "replayed": "graveyard"
+      }
+    },
+    "tags": ["condition", "cancel_or_ignore", "destination"],
+    "effect": {
+      "kind": "embargo",
+      "status": "stub"
+    }
+  },
+  {
+    "id": "card-conscription",
+    "name": "Conscription",
+    "type": "ActionBattle",
+    "cost": 2,
+    "unique": false,
+    "version": "0.5.6",
+    "action": {
+      "text": "Draw one card.",
+      "default_destination": "discard"
+    },
+    "battle": {
+      "text": "Draw +1 battle card. You may play +1 card from your battle draw.",
+      "default_destination_by_origin": {
+        "hand": "graveyard",
+        "battle_draw": "discard",
+        "replayed": "graveyard"
+      }
+    },
+    "tags": ["draw", "extra_play"],
+    "effect": {
+      "kind": "conscription",
+      "status": "stub",
+      "draw_bonus": 1,
+      "extra_battle_draw_play": 1
+    }
+  },
+  {
+    "id": "card-fortifications",
+    "name": "Fortifications",
+    "type": "ActionBattle",
+    "cost": 2,
+    "unique": false,
+    "version": "0.5.6",
+    "action": {
+      "text": "Bank Fortifications as an Asset. When defending, gain +1 to your battle total.",
+      "default_destination": "asset_bank"
+    },
+    "battle": {
+      "text": "If you are defending, gain +1. If you lose, you may retreat +1 space.",
+      "default_destination_by_origin": {
+        "hand": "graveyard",
+        "battle_draw": "discard",
+        "replayed": "graveyard"
+      }
+    },
+    "tags": ["asset", "defense", "retreat"],
+    "effect": {
+      "kind": "fortifications",
+      "status": "stub",
+      "defender_bonus": 1,
+      "retreat_bonus_if_lost": 1
+    }
+  },
+  {
+    "id": "card-attrition",
+    "name": "Attrition",
+    "type": "ActionBattle",
+    "cost": 3,
+    "unique": false,
+    "version": "0.5.6",
+    "action": {
+      "text": "Bank Attrition as an Asset. If your opponent loses a battle this turn, that opponent's battle-draw card in the lost battle goes to their Graveyard.",
+      "default_destination": "asset_bank"
+    },
+    "battle": {
+      "text": "If your opponent loses this battle, place every card from their initial battle draw in their Graveyard.",
+      "default_destination_by_origin": {
+        "hand": "graveyard",
+        "battle_draw": "discard",
+        "replayed": "graveyard"
+      }
+    },
+    "tags": ["asset", "draw", "graveyard"],
+    "effect": {
+      "kind": "attrition",
+      "status": "stub"
+    }
+  },
+  {
+    "id": "card-assimilation",
+    "name": "Assimilation",
+    "type": "ActionBattle",
+    "cost": 4,
+    "unique": false,
+    "version": "0.5.6",
+    "action": {
+      "text": "Play Assimilation as a Condition. If you win your next battle this turn as the attacker on a Territory your opponent controls, immediately capture that Territory instead of occupying it. Discard Assimilation at the end of the turn.",
+      "default_destination": "condition_area"
+    },
+    "battle": {
+      "text": "If you win this battle as the attacker on a Territory your opponent controls, immediately capture that Territory instead of occupying it.",
+      "default_destination_by_origin": {
+        "hand": "graveyard",
+        "battle_draw": "discard",
+        "replayed": "graveyard"
+      }
+    },
+    "tags": ["condition", "capture"],
+    "effect": {
+      "kind": "assimilation",
+      "status": "stub"
+    }
+  }
+]

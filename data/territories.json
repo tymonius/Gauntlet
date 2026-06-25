@@ -1,0 +1,57 @@
+[
+  {
+    "id": "territory-watchtower",
+    "name": "Watchtower",
+    "type": "Territory",
+    "version": "0.5.6",
+    "text": "When the defender controls this Territory, any card the attacker commits from hand during the battle commitment step is placed face up instead of face down. Cards played from the battle draw are not hand commitments.",
+    "effect": {
+      "kind": "watchtower",
+      "status": "stub"
+    }
+  },
+  {
+    "id": "territory-poisonous-gas",
+    "name": "Poisonous Gas",
+    "type": "Territory",
+    "version": "0.5.6",
+    "text": "During a battle on this Territory, each player may play no more than one card and must place one card from their battle draw in their Graveyard. A battle-draw card played during that battle satisfies this requirement.",
+    "effect": {
+      "kind": "poisonous_gas",
+      "status": "stub"
+    }
+  },
+  {
+    "id": "territory-garrison",
+    "name": "Garrison",
+    "type": "Territory",
+    "version": "0.5.6",
+    "text": "When defending this Territory, its controller may support a counterattack.",
+    "effect": {
+      "kind": "garrison",
+      "status": "stub"
+    }
+  },
+  {
+    "id": "territory-command-tent",
+    "name": "Command Tent",
+    "type": "Territory",
+    "version": "0.5.6",
+    "text": "If you start your turn occupying and controlling this Territory, you may play one Action card before movement and one Action card after movement. If Command Tent is face down, you may reveal it at the start of your turn without using either Action opportunity.",
+    "effect": {
+      "kind": "command_tent",
+      "status": "stub"
+    }
+  },
+  {
+    "id": "territory-monastery",
+    "name": "Monastery",
+    "type": "Territory",
+    "version": "0.5.6",
+    "text": "While this Territory's controller occupies it, cards cannot leave either player's Graveyard. During battles here, Witchcraft, Necromancy, and Arcane Knowledge have no effect.",
+    "effect": {
+      "kind": "monastery",
+      "status": "stub"
+    }
+  }
+]
