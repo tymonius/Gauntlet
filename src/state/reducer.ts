@@ -6,6 +6,7 @@ import {
 import type {
   BattleParticipantState,
   BattlePlayedCard,
+  BattleTiePolicy,
   BoardSpaceState,
   GameEvent,
   GamePhase,
@@ -118,6 +119,10 @@ function applyBattleSetupEffects(participant: BattleParticipantState): void {
   }
 }
 
+function tiePolicyForDefense(space: BoardSpaceState, defenderId: PlayerID): BattleTiePolicy {
+  return space.controller === defenderId ? 'defender' : 'reroll';
+}
+
 function revealBattleCards(game: GameState): void {
   if (!game.battle) return;
 
@@ -165,6 +170,35 @@ function applyCancellations(game: GameState, cancellations: NonNullable<ReturnTy
   }
 
   return canceled;
+}
+
+function applyResolutionEffects(game: GameState, action: Extract<GameAction, { type: 'resolve_battle' }>) {
+  if (!game.battle) return { activeModifiers: [], cancellations: [] };
+  const battle = game.battle;
+
+  if (battle.effectsResolved.includes('before_battle_resolution')) {
+    return { activeModifiers: [], cancellations: [] };
+  }
+
+  const effectRegistry = new EffectRegistry(baseBattleEffectHandlers);
+  const effectResult = effectRegistry.resolve({
+    game,
+    battle,
+    timing: 'before_battle_resolution',
+    actor: action.playerId,
+    location: battle.location,
+  });
+
+  const canceledSet = applyCancellations(game, effectResult.cancellations ?? []);
+  const activeModifiers = (effectResult.modifiers ?? [])
+    .filter((modifier) => !canceledSet.has(`${modifier.playerId}:${String(modifier.source)}`));
+  battle.attacker.modifiers += totalModifiersFor(activeModifiers, battle.attacker.playerId);
+  battle.defender.modifiers += totalModifiersFor(activeModifiers, battle.defender.playerId);
+  battle.effectsResolved.push('before_battle_resolution');
+
+  for (const message of effectResult.logMessages ?? []) appendPublicLog(game, undefined, 'effect_resolved', message);
+
+  return { activeModifiers, cancellations: effectResult.cancellations ?? [] };
 }
 
 function drawCards(game: GameState, action: Extract<GameAction, { type: 'draw_card' }>): ApplyGameActionResult {
@@ -225,7 +259,7 @@ function movePlayer(game: GameState, action: Extract<GameAction, { type: 'move_p
       attackerOrigin: origin.id,
       attacker: createBattleParticipant(action.playerId),
       defender: createBattleParticipant(defenderId),
-      tieWinner: 'attacker',
+      tiePolicy: tiePolicyForDefense(destination, defenderId),
       effectsResolved: [],
     };
 
@@ -358,32 +392,24 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
   const battle = game.battle;
   if (action.playerId !== battle.attacker.playerId && action.playerId !== battle.defender.playerId) throw new GameActionError(`${action.playerId} cannot resolve a battle they are not in.`);
 
-  const effectRegistry = new EffectRegistry(baseBattleEffectHandlers);
-  const effectResult = effectRegistry.resolve({
-    game,
-    battle,
-    timing: 'before_battle_resolution',
-    actor: action.playerId,
-    location: battle.location,
-  });
-
-  const canceledSet = applyCancellations(game, effectResult.cancellations ?? []);
-  const activeModifiers = (effectResult.modifiers ?? [])
-    .filter((modifier) => !canceledSet.has(`${modifier.playerId}:${String(modifier.source)}`));
-  battle.attacker.modifiers += totalModifiersFor(activeModifiers, battle.attacker.playerId);
-  battle.defender.modifiers += totalModifiersFor(activeModifiers, battle.defender.playerId);
-
-  for (const message of effectResult.logMessages ?? []) appendPublicLog(game, undefined, 'effect_resolved', message);
+  const { activeModifiers, cancellations } = applyResolutionEffects(game, action);
 
   const attackerTotal = (battle.attacker.diceRoll ?? 0) + battle.attacker.modifiers;
   const defenderTotal = (battle.defender.diceRoll ?? 0) + battle.defender.modifiers;
+
+  if (attackerTotal === defenderTotal && battle.tiePolicy === 'reroll') {
+    battle.attacker.diceRoll = undefined;
+    battle.defender.diceRoll = undefined;
+    battle.stage = 'dice';
+    appendPublicLog(game, undefined, 'battle_tie_reroll', 'The battle was tied. Both players reroll.', { attackerTotal, defenderTotal });
+    return { state: game };
+  }
+
   const winner = attackerTotal > defenderTotal
     ? battle.attacker.playerId
     : attackerTotal < defenderTotal
       ? battle.defender.playerId
-      : battle.tieWinner === 'attacker'
-        ? battle.attacker.playerId
-        : battle.defender.playerId;
+      : battle.defender.playerId;
   const loser = winner === battle.attacker.playerId ? battle.defender.playerId : battle.attacker.playerId;
   const location = findSpace(game, battle.location);
   const attackerOrigin = findSpace(game, battle.attackerOrigin);
@@ -427,7 +453,7 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
     player.zones.discard.push(...participant.battleDraw);
   }
 
-  appendPublicLog(game, winner, 'battle_resolved', `${winnerState.name} won the battle.`, { winner, loser, attackerTotal, defenderTotal, tieWinner: battle.tieWinner, modifiers: activeModifiers, cancellations: effectResult.cancellations ?? [] });
+  appendPublicLog(game, winner, 'battle_resolved', `${winnerState.name} won the battle.`, { winner, loser, attackerTotal, defenderTotal, tiePolicy: battle.tiePolicy, modifiers: activeModifiers, cancellations });
   game.battle = undefined;
   game.phase = 'action_after_movement';
   game.priorityPlayer = game.activePlayer;
