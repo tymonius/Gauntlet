@@ -13,6 +13,7 @@ export type BattleStage =
   | 'cleanup';
 
 export type CardOrigin = 'hand' | 'battle_draw' | 'replayed';
+export type BattleTiePolicy = 'reroll' | 'defender';
 
 export interface BattlePlayedCard {
   cardId: CardID;
@@ -45,7 +46,7 @@ export interface BattleState {
   attackerOrigin: SpaceID;
   attacker: BattleParticipantState;
   defender: BattleParticipantState;
-  tieWinner: 'attacker' | 'defender';
+  tiePolicy: BattleTiePolicy;
   winner?: PlayerID;
   loser?: PlayerID;
   effectsResolved: string[];
@@ -72,7 +73,7 @@ export interface PublicBattleView {
   attackerOrigin: SpaceID;
   attacker: PublicBattleParticipantView;
   defender: PublicBattleParticipantView;
-  tieWinner: 'attacker' | 'defender';
+  tiePolicy: BattleTiePolicy;
   winner?: PlayerID;
   loser?: PlayerID;
 }
