@@ -7,6 +7,8 @@ This module contains the first pure state-layer helpers for digital Gauntlet.
 - `initialize.ts` creates an authoritative `GameState` from two player setups.
 - `validation.ts` checks setup shape before game creation.
 - `views.ts` converts authoritative state into public and player-private views.
+- `actions.ts` defines the first digital action commands.
+- `reducer.ts` applies actions immutably to authoritative game state.
 
 ## Hidden information rule
 
