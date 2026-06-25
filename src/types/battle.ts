@@ -24,6 +24,8 @@ export interface BattlePlayedCard {
 
 export interface BattleParticipantState {
   playerId: PlayerID;
+  passedHandCommit: boolean;
+  passedBattleDrawPlay: boolean;
   handCommit?: BattlePlayedCard;
   battleDraw: CardID[];
   battleDrawPlayed: BattlePlayedCard[];
@@ -37,8 +39,10 @@ export interface BattleState {
   id: string;
   stage: BattleStage;
   location: SpaceID;
+  attackerOrigin: SpaceID;
   attacker: BattleParticipantState;
   defender: BattleParticipantState;
+  tieWinner: 'attacker' | 'defender';
   winner?: PlayerID;
   loser?: PlayerID;
   effectsResolved: string[];
@@ -46,6 +50,8 @@ export interface BattleState {
 
 export interface PublicBattleParticipantView {
   playerId: PlayerID;
+  passedHandCommit: boolean;
+  passedBattleDrawPlay: boolean;
   handCommit?: BattlePlayedCard | { faceDown: true };
   battleDrawCount: number;
   battleDrawPlayed: Array<BattlePlayedCard | { faceDown: true }>;
@@ -58,8 +64,10 @@ export interface PublicBattleView {
   id: string;
   stage: BattleStage;
   location: SpaceID;
+  attackerOrigin: SpaceID;
   attacker: PublicBattleParticipantView;
   defender: PublicBattleParticipantView;
+  tieWinner: 'attacker' | 'defender';
   winner?: PlayerID;
   loser?: PlayerID;
 }
