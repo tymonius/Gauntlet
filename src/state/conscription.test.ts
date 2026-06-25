@@ -69,7 +69,8 @@ describe('Conscription battle effect', () => {
 
   it('supports partial battle draws when most cards are in the graveyard', () => {
     const game = createBattleReadyGame();
-    game.players.player_1.zones.deck = ['card-conscription', 'p1-card-2', 'p1-card-3', 'only-battle-card'];
+    game.players.player_1.zones.deck = ['only-battle-card'];
+    game.players.player_1.zones.discard = [];
     game.players.player_1.zones.graveyard = ['dead-1', 'dead-2', 'dead-3'];
 
     const battleStarted = applyGameAction(game, { type: 'move_player', playerId: 'player_1', toSpaceId: 'space-1' }).state;
