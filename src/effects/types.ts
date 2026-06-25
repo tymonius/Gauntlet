@@ -9,6 +9,13 @@ export type EffectTiming =
   | 'after_battle_resolution'
   | 'card_destination';
 
+export interface BattleCardTarget {
+  sourceCardId: CardID;
+  sourceOwner: PlayerID;
+  targetCardId: CardID;
+  targetOwner: PlayerID;
+}
+
 export interface EffectContext {
   game: GameState;
   timing: EffectTiming;
@@ -16,6 +23,7 @@ export interface EffectContext {
   sourceCardId?: CardID;
   battle?: BattleState;
   location?: SpaceID;
+  battleCardTargets?: BattleCardTarget[];
 }
 
 export interface BattleModifier {
