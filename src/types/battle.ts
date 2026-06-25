@@ -29,6 +29,8 @@ export interface BattleParticipantState {
   handCommit?: BattlePlayedCard;
   battleDraw: CardID[];
   battleDrawPlayed: BattlePlayedCard[];
+  battleDrawCount: number;
+  battleDrawPlayLimit: number;
   diceRoll?: number;
   rerollsRemaining: number;
   modifiers: number;
@@ -55,6 +57,8 @@ export interface PublicBattleParticipantView {
   handCommit?: BattlePlayedCard | { faceDown: true };
   battleDrawCount: number;
   battleDrawPlayed: Array<BattlePlayedCard | { faceDown: true }>;
+  battleDrawLimit: number;
+  battleDrawPlayLimit: number;
   diceRoll?: number;
   modifiers: number;
   retreated: boolean;
