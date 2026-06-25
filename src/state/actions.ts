@@ -8,6 +8,7 @@ export type GameAction =
   | PassBattleHandCommitAction
   | DrawBattleCardsAction
   | PlayBattleDrawCardAction
+  | PassBattleDrawPlayAction
   | RollBattleDieAction
   | ResolveBattleAction
   | EndTurnAction;
@@ -51,6 +52,11 @@ export interface PlayBattleDrawCardAction {
   type: 'play_battle_draw_card';
   playerId: PlayerID;
   cardId: CardID;
+}
+
+export interface PassBattleDrawPlayAction {
+  type: 'pass_battle_draw_play';
+  playerId: PlayerID;
 }
 
 export interface RollBattleDieAction {
