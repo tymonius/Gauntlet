@@ -25,6 +25,13 @@ export interface BattleModifier {
   reason: string;
 }
 
+export interface CardCancellation {
+  cardId: CardID;
+  owner: PlayerID;
+  source: CardID | SpaceID | string;
+  reason: string;
+}
+
 export interface DestinationOverride {
   cardId: CardID;
   owner: PlayerID;
@@ -33,6 +40,7 @@ export interface DestinationOverride {
 }
 
 export interface EffectResult {
+  cancellations?: CardCancellation[];
   modifiers?: BattleModifier[];
   destinationOverrides?: DestinationOverride[];
   logMessages?: string[];
