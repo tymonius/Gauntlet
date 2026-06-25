@@ -158,6 +158,38 @@ describe('applyGameAction', () => {
     expect(resolved.players.player_1.occupiedSpaceId).toBe('space-1');
   });
 
+  it('applies banked Fortifications during battle resolution', () => {
+    const game = createBattleReadyGame();
+    game.players.player_2.zones.assetBank.push('card-fortifications');
+    const p2Selected = advanceToDice(game);
+    const p1Rolled = applyGameAction(p2Selected, { type: 'roll_battle_die', playerId: 'player_1', value: 4 }).state;
+    const p2Rolled = applyGameAction(p1Rolled, { type: 'roll_battle_die', playerId: 'player_2', value: 4 }).state;
+    const resolved = applyGameAction(p2Rolled, { type: 'resolve_battle', playerId: 'player_2' }).state;
+
+    expect(resolved.board.spaces[0].occupant).toBe('player_1');
+    expect(resolved.board.spaces[1].occupant).toBe('player_2');
+    expect(resolved.log.some((event) => event.type === 'effect_resolved')).toBe(true);
+  });
+
+  it('applies Valor during battle resolution', () => {
+    const game = createBattleReadyGame();
+    game.players.player_1.zones.hand[0] = 'card-valor';
+
+    const battleStarted = applyGameAction(game, { type: 'move_player', playerId: 'player_1', toSpaceId: 'space-1' }).state;
+    const p1Committed = applyGameAction(battleStarted, { type: 'commit_battle_hand_card', playerId: 'player_1', cardId: 'card-valor' }).state;
+    const p2PassedHand = applyGameAction(p1Committed, { type: 'pass_battle_hand_commit', playerId: 'player_2' }).state;
+    const p1Drew = applyGameAction(p2PassedHand, { type: 'draw_battle_cards', playerId: 'player_1' }).state;
+    const p2Drew = applyGameAction(p1Drew, { type: 'draw_battle_cards', playerId: 'player_2' }).state;
+    const p1PassedPlay = applyGameAction(p2Drew, { type: 'pass_battle_draw_play', playerId: 'player_1' }).state;
+    const p2PassedPlay = applyGameAction(p1PassedPlay, { type: 'pass_battle_draw_play', playerId: 'player_2' }).state;
+    const p1Rolled = applyGameAction(p2PassedPlay, { type: 'roll_battle_die', playerId: 'player_1', value: 3 }).state;
+    const p2Rolled = applyGameAction(p1Rolled, { type: 'roll_battle_die', playerId: 'player_2', value: 4 }).state;
+    const resolved = applyGameAction(p2Rolled, { type: 'resolve_battle', playerId: 'player_1' }).state;
+
+    expect(resolved.board.spaces[1].occupant).toBe('player_1');
+    expect(resolved.players.player_1.zones.graveyard).toContain('card-valor');
+  });
+
   it('ends the active player turn', () => {
     const game = initializeGame(createValidSetup());
     const { state } = applyGameAction(game, { type: 'end_turn', playerId: 'player_1' });
