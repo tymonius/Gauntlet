@@ -88,6 +88,8 @@ function toPublicBattleParticipantView(
 ): PublicBattleParticipantView {
   return {
     playerId: participant.playerId,
+    passedHandCommit: participant.passedHandCommit,
+    passedBattleDrawPlay: participant.passedBattleDrawPlay,
     handCommit: revealPlayedCardToViewer(participant.handCommit, viewer),
     battleDrawCount: participant.battleDraw.length,
     battleDrawPlayed: participant.battleDrawPlayed.map((card) => revealPlayedCardToViewer(card, viewer)!),
@@ -102,8 +104,10 @@ export function toPublicBattleView(battle: BattleState, viewer?: PlayerID): Publ
     id: battle.id,
     stage: battle.stage,
     location: battle.location,
+    attackerOrigin: battle.attackerOrigin,
     attacker: toPublicBattleParticipantView(battle.attacker, viewer),
     defender: toPublicBattleParticipantView(battle.defender, viewer),
+    tieWinner: battle.tieWinner,
     winner: battle.winner,
     loser: battle.loser,
   };
