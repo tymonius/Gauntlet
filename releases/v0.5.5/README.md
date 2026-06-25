@@ -1,6 +1,6 @@
-# Gauntlet v0.5.5 Print-and-Play Package
+# Gauntlet v0.5.5 Human Playtest Errata Print-and-Play Package
 
-Generated June 21, 2026. GitHub-ready document revision with copyright notices and landscape-oriented Territory card text.
+Generated June 21, 2026. Human Playtest Errata release with copyright notices and landscape-oriented Territory card text.
 
 ## Files
 
