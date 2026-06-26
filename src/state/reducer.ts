@@ -1,4 +1,4 @@
-import { cardCanBePlayedAt } from '../cards';
+import { cardCanBePlayedAt, destinationForCardPlay } from '../cards';
 import {
   EffectRegistry,
   baseBattleEffectHandlers,
@@ -135,6 +135,47 @@ function requireCardPlayable(cardId: string, timing: 'battle_hand_commit' | 'bat
   }
 }
 
+function pushCardToDestination(player: PlayerState, cardId: string, destination: 'discard' | 'graveyard' | 'hand' | 'removed'): void {
+  switch (destination) {
+    case 'discard':
+      player.zones.discard.push(cardId);
+      break;
+    case 'graveyard':
+      player.zones.graveyard.push(cardId);
+      break;
+    case 'hand':
+      player.zones.hand.push(cardId);
+      break;
+    case 'removed':
+      player.zones.removed.push(cardId);
+      break;
+  }
+}
+
+function pushActionCardToDestination(player: PlayerState, cardId: string): string {
+  const destination = destinationForCardPlay(cardId, 'hand');
+  switch (destination) {
+    case 'asset_bank':
+      player.zones.assetBank.push(cardId);
+      return 'Asset Bank';
+    case 'condition':
+      player.zones.conditions.push(cardId);
+      return 'Conditions';
+    case 'discard':
+      player.zones.discard.push(cardId);
+      return 'discard';
+    case 'graveyard':
+      player.zones.graveyard.push(cardId);
+      return 'Graveyard';
+    case 'hand':
+      player.zones.hand.push(cardId);
+      return 'hand';
+    case 'removed':
+      player.zones.removed.push(cardId);
+      return 'removed';
+  }
+}
+
 function revealBattleCards(game: GameState): void {
   if (!game.battle) return;
 
@@ -235,23 +276,6 @@ function applyPostResolutionEffects(game: GameState, action: Extract<GameAction,
   return { destinationOverrides: effectResult.destinationOverrides ?? [] };
 }
 
-function pushCardToDestination(player: PlayerState, cardId: string, destination: 'discard' | 'graveyard' | 'hand' | 'removed'): void {
-  switch (destination) {
-    case 'discard':
-      player.zones.discard.push(cardId);
-      break;
-    case 'graveyard':
-      player.zones.graveyard.push(cardId);
-      break;
-    case 'hand':
-      player.zones.hand.push(cardId);
-      break;
-    case 'removed':
-      player.zones.removed.push(cardId);
-      break;
-  }
-}
-
 function destinationOverrideFor(
   overrides: NonNullable<ReturnType<EffectRegistry['resolve']>['destinationOverrides']>,
   owner: PlayerID,
@@ -290,6 +314,30 @@ function revealSpace(game: GameState, action: Extract<GameAction, { type: 'revea
 
   space.revealed = true;
   appendPublicLog(game, action.playerId, 'reveal_space', `${player.name} revealed ${space.territoryId ?? space.id}.`, { spaceId: space.id, territoryId: space.territoryId });
+  return { state: game };
+}
+
+function playActionCard(game: GameState, action: Extract<GameAction, { type: 'play_action_card' }>): ApplyGameActionResult {
+  requirePlayerTurn(game, action.playerId);
+  phaseAllowsAction(game, ['action_before_movement', 'action_after_movement']);
+
+  const player = requirePlayer(game, action.playerId);
+  if (!player.zones.hand.includes(action.cardId)) throw new GameActionError(`${player.name} does not have that card in hand.`);
+  if (!cardCanBePlayedAt(action.cardId, 'action', 'hand')) throw new GameActionError(`${action.cardId} cannot be played as an Action card.`);
+  if (player.actionsRemaining < 1) throw new GameActionError(`${player.name} has no actions remaining.`);
+  if (player.hasPlayedActionThisTurn || player.hasPlayedBattleThisTurn) throw new GameActionError(`${player.name} has already played a card this turn.`);
+
+  player.zones.hand = player.zones.hand.filter((cardId) => cardId !== action.cardId);
+  const destination = pushActionCardToDestination(player, action.cardId);
+  player.actionsRemaining -= 1;
+  player.hasPlayedActionThisTurn = true;
+
+  appendPublicLog(game, action.playerId, 'play_action_card', `${player.name} played ${action.cardId} as an Action.`, {
+    cardId: action.cardId,
+    targets: action.targets ?? [],
+    destination,
+  });
+
   return { state: game };
 }
 
@@ -586,6 +634,8 @@ export function applyGameAction(game: GameState, action: GameAction): ApplyGameA
       return drawCards(next, action);
     case 'reveal_space':
       return revealSpace(next, action);
+    case 'play_action_card':
+      return playActionCard(next, action);
     case 'move_player':
       return movePlayer(next, action);
     case 'commit_battle_hand_card':

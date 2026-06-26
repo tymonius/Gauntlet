@@ -43,10 +43,10 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   },
   'card-fortifications': {
     cardId: 'card-fortifications',
-    timings: ['battle_hand_commit', 'battle_draw_play'],
+    timings: ['action', 'battle_hand_commit', 'battle_draw_play'],
     allowedOrigins: ['hand', 'battle_draw'],
     defaultDestinationByOrigin: {
-      hand: 'graveyard',
+      hand: 'asset_bank',
       battle_draw: 'discard',
     },
   },
@@ -69,4 +69,8 @@ export function cardCanBePlayedAt(cardId: CardID, timing: CardPlayTiming, origin
   const rule = getCardPlayRule(cardId);
   if (!rule) return true;
   return rule.timings.includes(timing) && rule.allowedOrigins.includes(origin);
+}
+
+export function destinationForCardPlay(cardId: CardID, origin: CardPlayOrigin): CardDestination {
+  return getCardPlayRule(cardId)?.defaultDestinationByOrigin[origin] ?? 'discard';
 }
