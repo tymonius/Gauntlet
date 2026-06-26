@@ -6,4 +6,5 @@ export * from './draw';
 export { applyGameAction } from './apply';
 export { GameActionError } from './reducer';
 export type { ApplyGameActionResult } from './reducer';
+export * from './pipeline';
 export * from './win';
