@@ -1,13 +1,13 @@
 import type { GameAction } from './actions';
 import {
-  applyGameAction as applyGameActionWithoutWinEvaluation,
+  applyGameAction as applyGameActionWithoutAutomation,
   type ApplyGameActionResult,
 } from './reducer';
-import { evaluateWinConditions } from './win';
+import { runPostActionAutomationPipeline } from './pipeline';
 import type { GameState } from '../types';
 
 export function applyGameAction(game: GameState, action: GameAction): ApplyGameActionResult {
-  const result = applyGameActionWithoutWinEvaluation(game, action);
-  evaluateWinConditions(result.state);
+  const result = applyGameActionWithoutAutomation(game, action);
+  runPostActionAutomationPipeline(result.state);
   return result;
 }
