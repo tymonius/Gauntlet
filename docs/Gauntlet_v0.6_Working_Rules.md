@@ -474,16 +474,121 @@ Once per turn, when an opponent loses a battle they initiated against you, you m
 
 ### Arcane / Magic
 
-**Working identity:** Rituals, transformation, Witchcraft, Graveyard interaction, and rule-bending.
+**Working identity:** Rituals, sacrifice, forbidden knowledge, transformation, heavy Graveyard play, and rule-bending.
+
+Arcane treats the Graveyard as raw material rather than final loss. Its alternate victory path is a public, interruptible Ritual made up of three different Rites that can be completed in any order.
 
 Current direction:
 
 - Final faction name unresolved; Magic may be too generic.
-- Victory name should include **Ritual**.
-- Some complexity is acceptable if the faction is intentionally advanced and internally coherent.
 - Symbol: pentagram or pentacle.
 - Some cards will have the **Arcane** trait. Arcane cards may be neutral, faction-specific, or otherwise available through deck construction.
 - The Arcane trait is distinct from the Arcane faction and should be visibly marked because other rules, including Inquisition's Heresy ability, may reference it.
+- The faction currently does not use a separate resource. Ritual progress and Graveyard access are the main faction systems.
+
+#### Ritual
+
+Arcane has three Rites. The Rites may be completed in any order.
+
+During your Action phase after movement, instead of playing an Action card, you may begin one incomplete Rite by paying that Rite's beginning cost.
+
+You may not begin a Rite while another Rite is begun but incomplete.
+
+A Rite cannot be completed on the same turn it is begun. You may complete only one Rite per turn.
+
+If a Rite is interrupted, it resets and is no longer begun. Any costs paid to begin that Rite are not returned unless the Rite says otherwise. After an interrupted Rite resets, you may later begin any incomplete Rite, including the same Rite or a different Rite.
+
+After completing a Rite, you may begin another incomplete Rite later that same turn only if you have an available Action opportunity and no Rite is currently begun but incomplete.
+
+When you complete your first Rite, unlock **Invocation**.
+
+When you complete your second Rite, unlock **Transmutation**.
+
+When you complete your third Rite, you immediately win by **Ritual**.
+
+#### Bound Cards
+
+Some Rites bind cards.
+
+Cards bound to a Rite are placed face-up near your Graveyard. Bound cards are not in your hand, deck, discard pile, Graveyard, Asset bank, or in play. They cannot be played or affected by other effects unless a rule specifically refers to bound cards.
+
+#### First Ritual Unlock: Invocation
+
+Once per turn, when you play an Arcane card, you may move one card from your Graveyard to your discard pile.
+
+#### Second Ritual Unlock: Transmutation
+
+Once per turn, before dice are rolled in a battle involving you, you may send one card from your hand to your Graveyard. Add that card's deckbuilding value to your battle total.
+
+Sending a card to the Graveyard for Transmutation is not committing a card from hand and is not playing a battle-drawn card.
+
+Supplemental cards cannot be used for Transmutation.
+
+#### Third Ritual Unlock: Ritual Victory
+
+When you complete your third Rite, you immediately win by **Ritual**.
+
+#### Rite of Echoes
+
+Name provisional.
+
+During your Action phase after movement, instead of playing an Action card, you may begin this Rite by choosing one card in your Graveyard and placing it face-up near your Graveyard. Then choose one card from your hand that has the same title as at least one other card in your constructed deck and place it face-up on top of the selected Graveyard card. Those cards are bound to this Rite.
+
+Complete this Rite the next time, on a later turn, that you play another card with the same title as the bound hand card during battle.
+
+When this Rite is completed, move the selected Graveyard card to your discard pile. Send the bound hand card to your Graveyard. The card played to complete this Rite resolves normally and goes to its normal destination.
+
+If you lose a battle after beginning this Rite and before completing it, this Rite is interrupted. Send both bound cards to your Graveyard and reset this Rite.
+
+#### Rite of Blood
+
+Name provisional.
+
+During your Action phase after movement, instead of playing an Action card, you may begin this Rite by choosing one card from your hand and sending it to your Graveyard.
+
+Complete this Rite the next time, on a later turn, that you win a battle without committing a card from hand and without playing a battle-drawn card.
+
+Using Transmutation during that battle does not prevent this Rite from being completed.
+
+If you lose a battle after beginning this Rite and before completing it, this Rite is interrupted and resets.
+
+#### Rite of Crossing
+
+Name provisional.
+
+During your Action phase after movement, instead of playing an Action card, you may begin this Rite only if you won a battle this turn that caused you to occupy an enemy Territory.
+
+To begin this Rite, send one Arcane card from your hand to your Graveyard. If you have no Arcane cards in hand, you may reveal your hand and send one Arcane card from your discard pile to your Graveyard instead.
+
+Complete this Rite at the beginning of your next turn, after resolving captures, if you still occupy or control that enemy Territory.
+
+If you no longer occupy or control that enemy Territory before this Rite is complete, this Rite is interrupted and resets.
+
+A Territory is an enemy Territory if it began the game on your opponent's side of the Gauntlet. Heartlands are not Territories and do not count.
+
+#### Alchemist
+
+**Style:** sacrifice, transmutation, and turning loss into fuel.
+
+**Ability name TBD**  
+The first time on your turn that you send a card from your hand to your Graveyard as part of a Rite, Transmutation, or Arcane ability, draw one card.
+
+If this happens during a battle, draw after the battle resolves.
+
+#### Spirit Walker
+
+**Style:** ritual protection, Graveyard contact, and keeping a Rite alive through sacrifice.
+
+**Ability name TBD**  
+The first time on your turn that you lose a battle and a begun Rite would be interrupted, you may send one Arcane card from your hand to your Graveyard. If you do, that Rite is not interrupted.
+
+This ability cannot prevent a Rite from being interrupted because you no longer occupy or control a Territory required by that Rite.
+
+#### Arcane development notes
+
+- Names for the faction, Rites, Ritual unlock abilities, and leader abilities remain provisional.
+- Rite names currently use Rite of Echoes, Rite of Blood, and Rite of Crossing as placeholders.
+- Card migration, Arcane-specific card text, and Arcane trait markings are intentionally deferred.
 
 ### Financiers
 
@@ -612,6 +717,21 @@ Random faction inclusion in a starter product is possible but may be commerciall
 - Does Heresy give Inquisition a meaningful anti-Arcane edge without making Arcane unplayable?
 - Does Purification occur often enough to matter, but rarely enough that conquest still matters?
 
+### Arcane
+
+- Are the three Rites comparably difficult to begin and complete?
+- Is one begun-but-incomplete Rite at a time the correct limit?
+- Is the interruption rule clear and fair, especially after a Rite has already consumed cards?
+- Does Rite of Echoes create interesting duplicate/card-copy deckbuilding without becoming fiddly?
+- Is Rite of Blood too difficult before Transmutation is unlocked?
+- Does Transmutation make Rite of Blood satisfyingly achievable without trivializing it?
+- Is Rite of Crossing sufficiently interactive through the occupation/counterattack window?
+- Does Invocation create enough Graveyard play without undoing Graveyard pressure too easily?
+- Is Transmutation's battle bonus too swingy when sacrificing high-value cards?
+- Are Alchemist and Spirit Walker comparably strong?
+- Does Arcane feel like a heavy Graveyard/Ritual faction without becoming solitaire?
+- Does the Arcane versus Inquisition matchup create tension rather than a hard counter?
+
 ---
 
 ## 14. Open Questions Before v0.6 Release
@@ -624,6 +744,7 @@ Random faction inclusion in a starter product is possible but may be commerciall
 - Should resource tracks be printed directly on leader cards?
 - How should official decklists be formatted for each leader?
 - How should the Arcane trait be marked on cards before the final icon/faction-symbol system is resolved?
+- What final names should be used for the Arcane faction, its Rites, its Ritual unlock abilities, and its leader abilities?
 
 ---
 
