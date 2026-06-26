@@ -10,6 +10,7 @@ export type GameAction =
   | DrawCardAction
   | RevealSpaceAction
   | PlayActionCardAction
+  | ResolveAssetBankDiscardAction
   | MovePlayerAction
   | CommitBattleHandCardAction
   | PassBattleHandCommitAction
@@ -37,6 +38,12 @@ export interface PlayActionCardAction {
   playerId: PlayerID;
   cardId: CardID;
   targets?: ActionCardTarget[];
+}
+
+export interface ResolveAssetBankDiscardAction {
+  type: 'resolve_asset_bank_discard';
+  playerId: PlayerID;
+  cardIds: CardID[];
 }
 
 export interface MovePlayerAction {
