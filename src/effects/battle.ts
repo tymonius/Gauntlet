@@ -1,4 +1,5 @@
 import type { BattleParticipantState, CardID, GameState, PlayerID } from '../types';
+import { validateEmbargoTargets } from './embargo';
 import type { BattleCardTarget, EffectHandler } from './types';
 
 function participantHasCard(participant: BattleParticipantState, cardId: CardID): boolean {
@@ -18,13 +19,6 @@ function hasBankedAsset(game: GameState, playerId: PlayerID, cardId: CardID): bo
 
 function hasCondition(game: GameState, playerId: PlayerID, cardId: CardID): boolean {
   return game.players[playerId]?.zones.conditions.includes(cardId) ?? false;
-}
-
-function getParticipant(context: Parameters<EffectHandler['applies']>[0], playerId: PlayerID): BattleParticipantState | undefined {
-  if (!context.battle) return undefined;
-  if (context.battle.attacker.playerId === playerId) return context.battle.attacker;
-  if (context.battle.defender.playerId === playerId) return context.battle.defender;
-  return undefined;
 }
 
 function opposingParticipant(context: Parameters<EffectHandler['applies']>[0], owner: PlayerID): BattleParticipantState | undefined {
@@ -169,6 +163,8 @@ export const tradeBanBattleHandler: EffectHandler = {
   },
   resolve(context) {
     if (!context.battle) return {};
+
+    validateEmbargoTargets(context);
 
     const cancellations = [context.battle.attacker, context.battle.defender]
       .filter((participant) => participantHasCard(participant, 'card-embargo'))

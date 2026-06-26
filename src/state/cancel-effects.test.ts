@@ -94,10 +94,38 @@ describe('battle cancellation effects', () => {
     expect(resolved.players.player_2.zones.graveyard).not.toContain('card-valor');
   });
 
-  it('does not auto-cancel if Embargo has no chosen target', () => {
-    const resolved = applyGameAction(advanceToResolution(), { type: 'resolve_battle', playerId: 'player_1' }).state;
+  it('rejects missing Embargo targets when a legal target exists', () => {
+    expect(() => applyGameAction(advanceToResolution(), { type: 'resolve_battle', playerId: 'player_1' }))
+      .toThrow('Embargo requires a target.');
+  });
 
-    expect(resolved.players.player_2.zones.hand).not.toContain('card-valor');
-    expect(resolved.players.player_2.zones.graveyard).toContain('card-valor');
+  it('rejects Embargo targets owned by the same player', () => {
+    expect(() => applyGameAction(advanceToResolution(), {
+      type: 'resolve_battle',
+      playerId: 'player_1',
+      battleCardTargets: [
+        {
+          sourceCardId: 'card-embargo',
+          sourceOwner: 'player_1',
+          targetCardId: 'card-embargo',
+          targetOwner: 'player_1',
+        },
+      ],
+    })).toThrow('Invalid Embargo target.');
+  });
+
+  it('rejects non-played Embargo targets', () => {
+    expect(() => applyGameAction(advanceToResolution(), {
+      type: 'resolve_battle',
+      playerId: 'player_1',
+      battleCardTargets: [
+        {
+          sourceCardId: 'card-embargo',
+          sourceOwner: 'player_1',
+          targetCardId: 'missing-card',
+          targetOwner: 'player_2',
+        },
+      ],
+    })).toThrow('Invalid Embargo target.');
   });
 });
