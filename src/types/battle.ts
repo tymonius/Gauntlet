@@ -49,6 +49,12 @@ export interface BattleCardTargetOption {
   targetOrigin: CardOrigin;
 }
 
+export interface BattlePlayOption {
+  action: 'commit_battle_hand_card' | 'play_battle_draw_card' | 'pass_battle_hand_commit' | 'pass_battle_draw_play';
+  cardId?: CardID;
+  origin?: 'hand' | 'battle_draw';
+}
+
 export interface BattleState {
   id: string;
   stage: BattleStage;
@@ -86,6 +92,7 @@ export interface PublicBattleView {
   defender: PublicBattleParticipantView;
   tiePolicy: BattleTiePolicy;
   validBattleCardTargets?: BattleCardTargetOption[];
+  legalBattlePlays?: BattlePlayOption[];
   winner?: PlayerID;
   loser?: PlayerID;
 }
