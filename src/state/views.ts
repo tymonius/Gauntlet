@@ -123,8 +123,13 @@ function validBattleCardTargetsForViewer(battle: BattleState, viewer?: PlayerID)
   })));
 }
 
+function hasPendingAssetBankDiscard(game: GameState): boolean {
+  return Object.keys(game.pendingAssetBankDiscards ?? {}).length > 0;
+}
+
 function legalActionPlaysForViewer(game: GameState, viewer?: PlayerID): LegalActionPlayOption[] | undefined {
   if (!viewer) return undefined;
+  if (hasPendingAssetBankDiscard(game)) return undefined;
   if (game.activePlayer !== viewer) return undefined;
   if (game.phase !== 'action_before_movement' && game.phase !== 'action_after_movement') return undefined;
 
@@ -145,6 +150,7 @@ function legalActionPlaysForViewer(game: GameState, viewer?: PlayerID): LegalAct
 }
 
 function legalBattlePlaysForViewer(game: GameState, battle: BattleState, viewer?: PlayerID): BattlePlayOption[] | undefined {
+  if (hasPendingAssetBankDiscard(game)) return undefined;
   const viewerParticipant = battleParticipantForViewer(battle, viewer);
   const player = viewer ? game.players[viewer] : undefined;
   if (!viewerParticipant || !player) return undefined;
@@ -230,6 +236,7 @@ export function toPublicGameView(game: GameState): PublicGameView {
     ),
     board: toPublicBoardView(game.board),
     battle: game.battle ? toPublicBattleView(game, game.battle) : undefined,
+    pendingAssetBankDiscards: game.pendingAssetBankDiscards,
     log: visibleLogFor(game.log),
     winner: game.winner,
   };

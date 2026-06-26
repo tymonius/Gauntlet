@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { initializeGame } from './initialize';
 import { applyGameAction, GameActionError } from './reducer';
 import { createValidSetup } from './test-helpers';
+import { toPrivateGameView } from './views';
 
 function createAssetGame() {
   return initializeGame(createValidSetup({
@@ -50,7 +51,7 @@ describe('Asset Bank enforcement', () => {
     expect(played.players.player_1.zones.discard).not.toContain('card-fortifications');
   });
 
-  it('discards down to the current Asset Bank limit at end of turn', () => {
+  it('creates a pending discard choice instead of auto-discarding overflow Assets', () => {
     const game = createAssetGame();
     const overLimit = {
       ...game,
@@ -70,7 +71,61 @@ describe('Asset Bank enforcement', () => {
 
     const ended = applyGameAction(overLimit, { type: 'end_turn', playerId: 'player_1' }).state;
 
-    expect(ended.players.player_1.zones.assetBank).toEqual(['card-fortifications']);
-    expect(ended.players.player_1.zones.discard).toContain('asset-extra');
+    expect(ended.players.player_1.zones.assetBank).toEqual(['card-fortifications', 'asset-extra']);
+    expect(ended.players.player_1.zones.discard).not.toContain('asset-extra');
+    expect(ended.pendingAssetBankDiscards?.player_1).toEqual({
+      playerId: 'player_1',
+      limit: 1,
+      discardCount: 1,
+      options: ['card-fortifications', 'asset-extra'],
+    });
+    expect(toPrivateGameView(ended, 'player_1').pendingAssetBankDiscards?.player_1?.options).toEqual(['card-fortifications', 'asset-extra']);
+  });
+
+  it('resolves pending Asset Bank discard choices using the selected card', () => {
+    const game = createAssetGame();
+    const overLimit = {
+      ...game,
+      phase: 'action_after_movement' as const,
+      players: {
+        ...game.players,
+        player_1: {
+          ...game.players.player_1,
+          controlledTerritories: ['p1-territory-1'],
+          zones: {
+            ...game.players.player_1.zones,
+            assetBank: ['card-fortifications', 'asset-extra'],
+          },
+        },
+      },
+    };
+    const pending = applyGameAction(overLimit, { type: 'end_turn', playerId: 'player_1' }).state;
+    const resolved = applyGameAction(pending, { type: 'resolve_asset_bank_discard', playerId: 'player_1', cardIds: ['asset-extra'] }).state;
+
+    expect(resolved.players.player_1.zones.assetBank).toEqual(['card-fortifications']);
+    expect(resolved.players.player_1.zones.discard).toContain('asset-extra');
+    expect(resolved.pendingAssetBankDiscards).toBeUndefined();
+  });
+
+  it('blocks other game actions while Asset Bank discard choices are pending', () => {
+    const game = createAssetGame();
+    const overLimit = {
+      ...game,
+      phase: 'action_after_movement' as const,
+      players: {
+        ...game.players,
+        player_1: {
+          ...game.players.player_1,
+          controlledTerritories: ['p1-territory-1'],
+          zones: {
+            ...game.players.player_1.zones,
+            assetBank: ['card-fortifications', 'asset-extra'],
+          },
+        },
+      },
+    };
+    const pending = applyGameAction(overLimit, { type: 'end_turn', playerId: 'player_1' }).state;
+
+    expect(() => applyGameAction(pending, { type: 'draw_card', playerId: 'player_2' })).toThrow(GameActionError);
   });
 });

@@ -9,9 +9,11 @@ import type {
   BattlePlayedCard,
   BattleTiePolicy,
   BoardSpaceState,
+  CardID,
   GameEvent,
   GamePhase,
   GameState,
+  PendingAssetBankDiscard,
   PlayerID,
   PlayerState,
   SpaceID,
@@ -146,21 +148,54 @@ function requireAssetBankCapacity(player: PlayerState): void {
   }
 }
 
-function enforceAssetBankLimit(game: GameState, player: PlayerState): void {
-  const limit = assetBankLimit(player);
-  if (player.zones.assetBank.length <= limit) return;
-
-  const discarded = player.zones.assetBank.slice(limit);
-  player.zones.assetBank = player.zones.assetBank.slice(0, limit);
-  player.zones.discard.push(...discarded);
-  appendPublicLog(game, player.id, 'asset_bank_discard_down', `${player.name} discarded down to their Asset Bank limit.`, {
-    limit,
-    discarded,
-  });
+function pendingAssetBankDiscardCount(game: GameState): number {
+  return Object.keys(game.pendingAssetBankDiscards ?? {}).length;
 }
 
-function enforceAllAssetBankLimits(game: GameState): void {
-  for (const player of Object.values(game.players)) enforceAssetBankLimit(game, player);
+function requireNoPendingAssetBankDiscards(game: GameState): void {
+  if (pendingAssetBankDiscardCount(game) > 0) {
+    throw new GameActionError('Resolve pending Asset Bank discard choices first.');
+  }
+}
+
+function updateAssetBankDiscardRequirement(game: GameState, player: PlayerState): void {
+  const limit = assetBankLimit(player);
+  const discardCount = Math.max(player.zones.assetBank.length - limit, 0);
+
+  if (discardCount === 0) {
+    if (game.pendingAssetBankDiscards) {
+      delete game.pendingAssetBankDiscards[player.id];
+      if (Object.keys(game.pendingAssetBankDiscards).length === 0) game.pendingAssetBankDiscards = undefined;
+    }
+    return;
+  }
+
+  game.pendingAssetBankDiscards = {
+    ...(game.pendingAssetBankDiscards ?? {}),
+    [player.id]: {
+      playerId: player.id,
+      limit,
+      discardCount,
+      options: [...player.zones.assetBank],
+    } satisfies PendingAssetBankDiscard,
+  };
+  game.priorityPlayer = player.id;
+}
+
+function updateAllAssetBankDiscardRequirements(game: GameState): void {
+  for (const player of Object.values(game.players)) updateAssetBankDiscardRequirement(game, player);
+}
+
+function removeChosenCards(source: CardID[], chosen: CardID[]): CardID[] {
+  const remaining = [...source];
+
+  for (const cardId of chosen) {
+    const index = remaining.indexOf(cardId);
+    if (index < 0) throw new GameActionError(`${cardId} is not available to discard from the Asset Bank.`);
+    remaining.splice(index, 1);
+  }
+
+  return remaining;
 }
 
 function pushCardToDestination(player: PlayerState, cardId: string, destination: 'discard' | 'graveyard' | 'hand' | 'removed'): void {
@@ -323,6 +358,7 @@ function destinationOverrideFor(
 }
 
 function drawCards(game: GameState, action: Extract<GameAction, { type: 'draw_card' }>): ApplyGameActionResult {
+  requireNoPendingAssetBankDiscards(game);
   requirePlayerTurn(game, action.playerId);
   phaseAllowsAction(game, ['turn_start', 'action_before_movement', 'action_after_movement']);
 
@@ -342,6 +378,7 @@ function drawCards(game: GameState, action: Extract<GameAction, { type: 'draw_ca
 }
 
 function revealSpace(game: GameState, action: Extract<GameAction, { type: 'reveal_space' }>): ApplyGameActionResult {
+  requireNoPendingAssetBankDiscards(game);
   requirePlayerTurn(game, action.playerId);
   phaseAllowsAction(game, ['turn_start', 'action_before_movement', 'movement', 'action_after_movement']);
 
@@ -356,6 +393,7 @@ function revealSpace(game: GameState, action: Extract<GameAction, { type: 'revea
 }
 
 function playActionCard(game: GameState, action: Extract<GameAction, { type: 'play_action_card' }>): ApplyGameActionResult {
+  requireNoPendingAssetBankDiscards(game);
   requirePlayerTurn(game, action.playerId);
   phaseAllowsAction(game, ['action_before_movement', 'action_after_movement']);
 
@@ -379,7 +417,29 @@ function playActionCard(game: GameState, action: Extract<GameAction, { type: 'pl
   return { state: game };
 }
 
+function resolveAssetBankDiscard(game: GameState, action: Extract<GameAction, { type: 'resolve_asset_bank_discard' }>): ApplyGameActionResult {
+  const player = requirePlayer(game, action.playerId);
+  const pending = game.pendingAssetBankDiscards?.[action.playerId];
+  if (!pending) throw new GameActionError(`${player.name} does not have a pending Asset Bank discard choice.`);
+  if (action.cardIds.length !== pending.discardCount) {
+    throw new GameActionError(`${player.name} must discard exactly ${pending.discardCount} Asset${pending.discardCount === 1 ? '' : 's'}.`);
+  }
+
+  const remainingAssetBank = removeChosenCards(player.zones.assetBank, action.cardIds);
+  player.zones.assetBank = remainingAssetBank;
+  player.zones.discard.push(...action.cardIds);
+  appendPublicLog(game, action.playerId, 'asset_bank_discard_down', `${player.name} discarded down to their Asset Bank limit.`, {
+    limit: pending.limit,
+    discarded: action.cardIds,
+  });
+
+  updateAssetBankDiscardRequirement(game, player);
+  if (pendingAssetBankDiscardCount(game) === 0) game.priorityPlayer = game.activePlayer;
+  return { state: game };
+}
+
 function movePlayer(game: GameState, action: Extract<GameAction, { type: 'move_player' }>): ApplyGameActionResult {
+  requireNoPendingAssetBankDiscards(game);
   requirePlayerTurn(game, action.playerId);
   phaseAllowsAction(game, ['movement']);
 
@@ -427,6 +487,7 @@ function movePlayer(game: GameState, action: Extract<GameAction, { type: 'move_p
 }
 
 function commitBattleHandCard(game: GameState, action: Extract<GameAction, { type: 'commit_battle_hand_card' }>): ApplyGameActionResult {
+  requireNoPendingAssetBankDiscards(game);
   phaseAllowsAction(game, ['battle']);
   if (!game.battle || game.battle.stage !== 'hand_commit') throw new GameActionError('Battle hand commitments are not currently open.');
 
@@ -455,6 +516,7 @@ function commitBattleHandCard(game: GameState, action: Extract<GameAction, { typ
 }
 
 function passBattleHandCommit(game: GameState, action: Extract<GameAction, { type: 'pass_battle_hand_commit' }>): ApplyGameActionResult {
+  requireNoPendingAssetBankDiscards(game);
   phaseAllowsAction(game, ['battle']);
   if (!game.battle || game.battle.stage !== 'hand_commit') throw new GameActionError('Battle hand commitments are not currently open.');
 
@@ -469,6 +531,7 @@ function passBattleHandCommit(game: GameState, action: Extract<GameAction, { typ
 }
 
 function drawBattleCards(game: GameState, action: Extract<GameAction, { type: 'draw_battle_cards' }>): ApplyGameActionResult {
+  requireNoPendingAssetBankDiscards(game);
   phaseAllowsAction(game, ['battle']);
   if (!game.battle || game.battle.stage !== 'battle_draw') throw new GameActionError('Battle draw is not currently open.');
 
@@ -493,6 +556,7 @@ function drawBattleCards(game: GameState, action: Extract<GameAction, { type: 'd
 }
 
 function playBattleDrawCard(game: GameState, action: Extract<GameAction, { type: 'play_battle_draw_card' }>): ApplyGameActionResult {
+  requireNoPendingAssetBankDiscards(game);
   phaseAllowsAction(game, ['battle']);
   if (!game.battle || game.battle.stage !== 'battle_play_selection') throw new GameActionError('Battle draw card selection is not currently open.');
 
@@ -513,6 +577,7 @@ function playBattleDrawCard(game: GameState, action: Extract<GameAction, { type:
 }
 
 function passBattleDrawPlay(game: GameState, action: Extract<GameAction, { type: 'pass_battle_draw_play' }>): ApplyGameActionResult {
+  requireNoPendingAssetBankDiscards(game);
   phaseAllowsAction(game, ['battle']);
   if (!game.battle || game.battle.stage !== 'battle_play_selection') throw new GameActionError('Battle draw card selection is not currently open.');
 
@@ -527,6 +592,7 @@ function passBattleDrawPlay(game: GameState, action: Extract<GameAction, { type:
 }
 
 function rollBattleDie(game: GameState, action: Extract<GameAction, { type: 'roll_battle_die' }>): ApplyGameActionResult {
+  requireNoPendingAssetBankDiscards(game);
   phaseAllowsAction(game, ['battle']);
   if (!game.battle || game.battle.stage !== 'dice') throw new GameActionError('Battle dice are not currently open.');
 
@@ -543,6 +609,7 @@ function rollBattleDie(game: GameState, action: Extract<GameAction, { type: 'rol
 }
 
 function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'resolve_battle' }>): ApplyGameActionResult {
+  requireNoPendingAssetBankDiscards(game);
   phaseAllowsAction(game, ['battle']);
   if (!game.battle || game.battle.stage !== 'resolution') throw new GameActionError('Battle is not ready to resolve.');
 
@@ -626,7 +693,7 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
     }
   }
 
-  enforceAllAssetBankLimits(game);
+  updateAllAssetBankDiscardRequirements(game);
   appendPublicLog(game, winner, 'battle_resolved', `${winnerState.name} won the battle.`, {
     winner,
     loser,
@@ -639,17 +706,18 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
   });
   game.battle = undefined;
   game.phase = 'action_after_movement';
-  game.priorityPlayer = game.activePlayer;
+  if (pendingAssetBankDiscardCount(game) === 0) game.priorityPlayer = game.activePlayer;
   return { state: game };
 }
 
 function endTurn(game: GameState, action: Extract<GameAction, { type: 'end_turn' }>): ApplyGameActionResult {
+  requireNoPendingAssetBankDiscards(game);
   requirePlayerTurn(game, action.playerId);
 
   const endingPlayer = requirePlayer(game, action.playerId);
   const nextPlayer = nextPlayerId(game);
   expireTurnLongConditions(game, endingPlayer);
-  enforceAllAssetBankLimits(game);
+  updateAllAssetBankDiscardRequirements(game);
   endingPlayer.actionsRemaining = 0;
   endingPlayer.movementRemaining = 0;
 
@@ -660,7 +728,7 @@ function endTurn(game: GameState, action: Extract<GameAction, { type: 'end_turn'
   nextPlayerState.hasPlayedBattleThisTurn = false;
 
   game.activePlayer = nextPlayer;
-  game.priorityPlayer = nextPlayer;
+  if (pendingAssetBankDiscardCount(game) === 0) game.priorityPlayer = nextPlayer;
   game.turn += 1;
   game.phase = 'turn_start';
   appendPublicLog(game, action.playerId, 'end_turn', `${endingPlayer.name} ended their turn.`);
@@ -677,6 +745,8 @@ export function applyGameAction(game: GameState, action: GameAction): ApplyGameA
       return revealSpace(next, action);
     case 'play_action_card':
       return playActionCard(next, action);
+    case 'resolve_asset_bank_discard':
+      return resolveAssetBankDiscard(next, action);
     case 'move_player':
       return movePlayer(next, action);
     case 'commit_battle_hand_card':
