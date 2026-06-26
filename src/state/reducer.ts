@@ -198,6 +198,59 @@ function removeChosenCards(source: CardID[], chosen: CardID[]): CardID[] {
   return remaining;
 }
 
+function removeControlledTerritory(player: PlayerState, territoryId: string): void {
+  player.controlledTerritories = player.controlledTerritories.filter((id) => id !== territoryId);
+}
+
+function addControlledTerritory(player: PlayerState, territoryId: string): void {
+  if (!player.controlledTerritories.includes(territoryId)) player.controlledTerritories.push(territoryId);
+}
+
+function updateCaptureStatusForOccupiedSpace(space: BoardSpaceState, occupant: PlayerID): void {
+  if (space.kind !== 'territory' || !space.controller || !space.territoryId) return;
+
+  if (space.controller === occupant) {
+    delete space.capturePendingBy;
+    return;
+  }
+
+  space.capturePendingBy = occupant;
+}
+
+function confirmPendingCapturesFor(game: GameState, playerId: PlayerID): void {
+  const capturingPlayer = requirePlayer(game, playerId);
+
+  for (const space of game.board.spaces) {
+    if (space.kind !== 'territory' || !space.territoryId) continue;
+    if (space.capturePendingBy !== playerId) continue;
+
+    if (space.occupant !== playerId) {
+      delete space.capturePendingBy;
+      continue;
+    }
+
+    const previousController = space.controller;
+    if (previousController === playerId) {
+      delete space.capturePendingBy;
+      continue;
+    }
+
+    if (previousController) removeControlledTerritory(requirePlayer(game, previousController), space.territoryId);
+    addControlledTerritory(capturingPlayer, space.territoryId);
+    space.controller = playerId;
+    delete space.capturePendingBy;
+
+    appendPublicLog(game, playerId, 'territory_captured', `${capturingPlayer.name} captured ${space.territoryId}.`, {
+      spaceId: space.id,
+      territoryId: space.territoryId,
+      previousController,
+      controller: playerId,
+    });
+  }
+
+  updateAllAssetBankDiscardRequirements(game);
+}
+
 function pushCardToDestination(player: PlayerState, cardId: string, destination: 'discard' | 'graveyard' | 'hand' | 'removed'): void {
   switch (destination) {
     case 'discard':
@@ -362,6 +415,9 @@ function drawCards(game: GameState, action: Extract<GameAction, { type: 'draw_ca
   requirePlayerTurn(game, action.playerId);
   phaseAllowsAction(game, ['turn_start', 'action_before_movement', 'action_after_movement']);
 
+  if (game.phase === 'turn_start') confirmPendingCapturesFor(game, action.playerId);
+  requireNoPendingAssetBankDiscards(game);
+
   const player = requirePlayer(game, action.playerId);
   const count = action.count ?? 1;
   const result = drawFromDeck(player, { count });
@@ -381,6 +437,9 @@ function revealSpace(game: GameState, action: Extract<GameAction, { type: 'revea
   requireNoPendingAssetBankDiscards(game);
   requirePlayerTurn(game, action.playerId);
   phaseAllowsAction(game, ['turn_start', 'action_before_movement', 'movement', 'action_after_movement']);
+
+  if (game.phase === 'turn_start') confirmPendingCapturesFor(game, action.playerId);
+  requireNoPendingAssetBankDiscards(game);
 
   const player = requirePlayer(game, action.playerId);
   const space = findSpace(game, action.spaceId);
@@ -479,7 +538,7 @@ function movePlayer(game: GameState, action: Extract<GameAction, { type: 'move_p
   player.occupiedSpaceId = destination.id;
   player.movementRemaining -= 1;
 
-  if (destination.controller && destination.controller !== action.playerId) destination.capturePendingBy = action.playerId;
+  updateCaptureStatusForOccupiedSpace(destination, action.playerId);
 
   appendPublicLog(game, action.playerId, 'move_player', `${player.name} moved to ${destination.id}.`, { fromSpaceId: origin.id, toSpaceId: destination.id });
   game.phase = 'action_after_movement';
@@ -650,20 +709,24 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
     attackerOrigin.occupant = undefined;
     location.occupant = winner;
     winnerState.occupiedSpaceId = location.id;
-    location.capturePendingBy = winner;
+    updateCaptureStatusForOccupiedSpace(location, winner);
 
     if (retreatSpace) {
       retreatSpace.occupant = loser;
       loserState.occupiedSpaceId = retreatSpace.id;
+      updateCaptureStatusForOccupiedSpace(retreatSpace, loser);
     } else {
       loserState.occupiedSpaceId = undefined;
     }
   } else {
     attackerOrigin.occupant = battle.attacker.playerId;
+    updateCaptureStatusForOccupiedSpace(attackerOrigin, battle.attacker.playerId);
     winnerState.occupiedSpaceId = location.id;
+    updateCaptureStatusForOccupiedSpace(location, winner);
     if (retreatSpace) {
       retreatSpace.occupant = loser;
       loserState.occupiedSpaceId = retreatSpace.id;
+      updateCaptureStatusForOccupiedSpace(retreatSpace, loser);
     }
   }
 
@@ -718,6 +781,7 @@ function endTurn(game: GameState, action: Extract<GameAction, { type: 'end_turn'
   const nextPlayer = nextPlayerId(game);
   expireTurnLongConditions(game, endingPlayer);
   updateAllAssetBankDiscardRequirements(game);
+  if (pendingAssetBankDiscardCount(game) > 0) return { state: game };
   endingPlayer.actionsRemaining = 0;
   endingPlayer.movementRemaining = 0;
 
@@ -728,9 +792,11 @@ function endTurn(game: GameState, action: Extract<GameAction, { type: 'end_turn'
   nextPlayerState.hasPlayedBattleThisTurn = false;
 
   game.activePlayer = nextPlayer;
-  if (pendingAssetBankDiscardCount(game) === 0) game.priorityPlayer = nextPlayer;
+  game.priorityPlayer = nextPlayer;
   game.turn += 1;
   game.phase = 'turn_start';
+  confirmPendingCapturesFor(game, nextPlayer);
+  if (pendingAssetBankDiscardCount(game) === 0) game.priorityPlayer = nextPlayer;
   appendPublicLog(game, action.playerId, 'end_turn', `${endingPlayer.name} ended their turn.`);
   return { state: game };
 }
