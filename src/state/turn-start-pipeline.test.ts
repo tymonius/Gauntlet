@@ -63,14 +63,15 @@ describe('turn-start pipeline', () => {
   });
 
   it('stops at turn start if capture confirmation creates a required Asset Bank discard choice', () => {
+    const threatened = withPlayerOneThreateningEnemyTerritory();
     const loadedBank: GameState = {
-      ...withPlayerOneThreateningEnemyTerritory(),
+      ...threatened,
       players: {
-        ...withPlayerOneThreateningEnemyTerritory().players,
+        ...threatened.players,
         player_2: {
-          ...withPlayerOneThreateningEnemyTerritory().players.player_2,
+          ...threatened.players.player_2,
           zones: {
-            ...withPlayerOneThreateningEnemyTerritory().players.player_2.zones,
+            ...threatened.players.player_2.zones,
             assetBank: ['asset-1', 'asset-2', 'asset-3'],
           },
         },
