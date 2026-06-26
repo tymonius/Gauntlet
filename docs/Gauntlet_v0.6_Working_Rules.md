@@ -592,14 +592,153 @@ This ability cannot prevent a Rite from being interrupted because you no longer 
 
 ### Financiers
 
-**Working identity:** Treasury, investment, ownership, Capital, and delayed payoff.
+**Working identity:** Treasury, investment, ownership, Capital, leverage, and delayed payoff.
 
-Current direction:
+Financiers win through ownership, leverage, and controlled economic expansion. They convert board presence into purchasing power, purchasing power into Deeds, and Deeds into income and victory.
 
-- Treasury rules need definition.
-- Capital likely relates to printed deckbuilding value.
-- The faction needs real board presence and should not become a disconnected economy minigame.
+Financiers do not need to conquer the Gauntlet by force, but they are strongly rewarded for occupying and controlling key Territories before buying them.
+
+#### Resource: Capital
+
+Financiers track **Capital** as a number.
+
+Capital may be gained, spent, and lost. Capital cannot be reduced below 0.
+
+#### Capital Limit
+
+Your Capital limit equals:
+
+> the number of Territories you control + the total deckbuilding value of cards in your Treasury
+
+Heartlands are not Territories and do not count toward your Capital limit.
+
+You may gain Capital above your Capital limit during your turn. At the end of your turn, if your Capital is greater than your Capital limit, reduce it to your Capital limit.
+
+#### Treasury
+
+Cards in your Treasury represent stored assets, collateral, and financial infrastructure.
+
+During your Action phase after movement, instead of playing an Action card, you may place one card from your hand face-up into your Treasury.
+
+Cards in your Treasury are not in your hand, deck, discard pile, Graveyard, Asset bank, or in play. They cannot be played or affected unless a rule or card specifically refers to the Treasury.
+
+Each card in your Treasury increases your Capital limit by its deckbuilding value.
+
+#### Deeds
+
+Each Territory has one **Deed**.
+
+A Deed may be unowned or owned by a Financier player. In a Financier mirror match, a Deed owned by one Financier may be bought out by the opposing Financier.
+
+Heartlands do not have Deeds.
+
+#### Buying a Deed
+
+During your Action phase after movement, instead of playing an Action card, you may buy one Deed by spending Capital.
+
+If you buy an unowned Deed, you become that Deed's owner.
+
+If you buy a Deed owned by an opposing Financier, the Deed transfers to you. The previous owner no longer receives income from that Deed, and it no longer counts toward their faction victory.
+
+#### Deed Cost
+
+Deed cost is calculated as follows:
+
+> Deed cost = Deeds you currently own + 1 + position modifier + buyout premium
+
+Minimum cost: 1 Capital.
+
+#### Position Modifier
+
+Use the Territory's current state from the buyer's perspective.
+
+| Territory state | Modifier |
+|---|---:|
+| You control the Territory | -1 |
+| You occupy the Territory, but it is not yet controlled by you | 0 |
+| You neither control nor occupy the Territory | +1 |
+
+#### Buyout Premium
+
+If the Deed is unowned, the buyout premium is 0.
+
+If the Deed is owned by an opposing Financier, the buyout premium equals the number of Deeds that opposing Financier currently owns.
+
+#### Deed Income
+
+At the start of your turn, after resolving captures, gain 1 Capital for each Deed you own.
+
+#### Financier Victory: Controlling Interest
+
+When you own the Deeds to all Territories in the Gauntlet, you immediately win by **Controlling Interest**.
+
+Heartlands are not Territories and do not require Deeds.
+
+#### Play the Market
+
+During your Action phase after movement, instead of playing an Action card, you may discard one card from your hand and roll one die.
+
+| Roll | Result |
+|---:|---|
+| 1 | Market Crash: send that card to your Graveyard and gain 0 Capital. |
+| 2-3 | Gain 1 Capital. |
+| 4-5 | Gain Capital equal to that card's deckbuilding value. |
+| 6 | Gain Capital equal to twice that card's deckbuilding value. |
+
+#### Subsidize
+
+Before dice are rolled in a battle involving you, you may spend Capital to Subsidize the battle.
+
+The first +1 bonus costs 1 Capital. The second +1 bonus costs 2 additional Capital. The third +1 bonus costs 3 additional Capital, and so on.
+
+| Battle bonus | Total Capital cost |
+|---:|---:|
+| +1 | 1 |
+| +2 | 3 |
+| +3 | 6 |
+| +4 | 10 |
+
+There is no fixed maximum Subsidize bonus, but each additional bonus becomes more expensive than the last.
+
+#### Banker
+
+**Style:** leverage, collateral, and financing acquisitions before enough Capital is available.
+
+**Line of Credit**  
+The first time on your turn that you would buy or buy out a Deed, you may use one card from your hand or Treasury as collateral for that purchase.
+
+Collateral contributes Capital equal to that card's deckbuilding value, but Line of Credit may not fund more than half of the Deed purchase cost.
+
+If the collateral card comes from your hand, reveal it, then discard it after the purchase.
+
+If the collateral card comes from your Treasury, move it to your discard pile after the purchase.
+
+Unused collateral value is lost. It does not become Capital.
+
+Line of Credit may only be used for Deed purchases and Deed buyouts.
+
+#### Executive
+
+**Style:** acquisition, hostile expansion, and converting battlefield wins into immediate control.
+
+**Hostile Takeover**  
+During your Action phase after movement, instead of playing an Action card, if you won a battle this turn that caused you to occupy an enemy Territory, you may buy that Territory's Deed.
+
+For cost purposes, treat that Territory as occupied by you, but not controlled by you.
+
+If the Deed is unowned, you buy it normally.
+
+If the Deed is owned by an opposing Financier, you may buy it out. The normal buyout premium applies.
+
+If you buy or buy out the Deed this way, you immediately control that Territory.
+
+#### Financier development notes
+
 - Symbol: coin.
+- Cards used as Line of Credit collateral go to the discard pile for now.
+- If Banker accelerates too quickly, Line of Credit collateral may need to go to the Graveyard instead of the discard pile.
+- If Financier mirrors stall, the buyout premium may need to be reduced.
+- Card migration and Financier-specific card text are intentionally deferred.
 
 ### Intelligence
 
@@ -731,6 +870,20 @@ Random faction inclusion in a starter product is possible but may be commerciall
 - Are Alchemist and Spirit Walker comparably strong?
 - Does Arcane feel like a heavy Graveyard/Ritual faction without becoming solitaire?
 - Does the Arcane versus Inquisition matchup create tension rather than a hard counter?
+
+### Financiers
+
+- Does Capital accumulate quickly enough for the faction to feel functional before the game is already decided?
+- Does Deed income create too much midgame snowballing?
+- Is the Capital limit formula easy to track without tokens?
+- Does Treasury create meaningful planning without becoming a disconnected setup minigame?
+- Is the Deed cost formula intuitive in normal games and Financier mirrors?
+- Does the buyout premium keep Financier mirrors interactive without causing stalls?
+- Is Play the Market too swingy, too weak, or too efficient?
+- Does progressive Subsidize prevent unlimited Capital dumping without feeling arbitrary?
+- Are Banker and Executive comparably strong and fun?
+- Is Line of Credit balanced with collateral going to discard, or should collateral go to the Graveyard?
+- Does Hostile Takeover create too much immediate-control snowballing?
 
 ---
 
