@@ -1,3 +1,4 @@
+import { cardCanBePlayedAt } from '../cards';
 import {
   EffectRegistry,
   baseBattleEffectHandlers,
@@ -126,6 +127,12 @@ function tiePolicyForDefense(space: BoardSpaceState, defenderId: PlayerID): Batt
 
 function isWatchtower(space: BoardSpaceState): boolean {
   return space.revealed && (space.territoryId === 'territory-watchtower' || space.territoryId === 'watchtower');
+}
+
+function requireCardPlayable(cardId: string, timing: 'battle_hand_commit' | 'battle_draw_play', origin: 'hand' | 'battle_draw'): void {
+  if (!cardCanBePlayedAt(cardId, timing, origin)) {
+    throw new GameActionError(`${cardId} cannot be played from ${origin} during ${timing}.`);
+  }
 }
 
 function revealBattleCards(game: GameState): void {
@@ -341,6 +348,7 @@ function commitBattleHandCard(game: GameState, action: Extract<GameAction, { typ
   const participant = getBattleParticipant(game, action.playerId);
   if (hasCompletedHandCommit(participant)) throw new GameActionError(`${player.name} has already made a hand commitment choice.`);
   if (!player.zones.hand.includes(action.cardId)) throw new GameActionError(`${player.name} does not have that card in hand.`);
+  requireCardPlayable(action.cardId, 'battle_hand_commit', 'hand');
 
   const isAttackerHandCommit = action.playerId === game.battle.attacker.playerId;
   const isFaceUpWatchtowerCommit = isAttackerHandCommit && Boolean(game.battle.attackerHandCommitVisibleTo);
@@ -406,6 +414,7 @@ function playBattleDrawCard(game: GameState, action: Extract<GameAction, { type:
   const participant = getBattleParticipant(game, action.playerId);
   if (hasCompletedBattleDrawPlay(participant)) throw new GameActionError(`${player.name} has already made all allowed battle-draw play choices.`);
   if (!participant.battleDraw.includes(action.cardId)) throw new GameActionError(`${player.name} did not draw that battle card.`);
+  requireCardPlayable(action.cardId, 'battle_draw_play', 'battle_draw');
 
   participant.battleDraw = participant.battleDraw.filter((cardId) => cardId !== action.cardId);
   participant.battleDrawPlayed.push({ cardId: action.cardId, owner: action.playerId, origin: 'battle_draw', faceDown: true, canceled: false });
