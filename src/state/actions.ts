@@ -1,9 +1,15 @@
 import type { CardID, PlayerID, SpaceID } from '../types';
 import type { BattleCardTarget } from '../effects';
 
+export type ActionCardTarget =
+  | { kind: 'player'; playerId: PlayerID }
+  | { kind: 'space'; spaceId: SpaceID }
+  | { kind: 'card'; cardId: CardID; owner: PlayerID };
+
 export type GameAction =
   | DrawCardAction
   | RevealSpaceAction
+  | PlayActionCardAction
   | MovePlayerAction
   | CommitBattleHandCardAction
   | PassBattleHandCommitAction
@@ -24,6 +30,13 @@ export interface RevealSpaceAction {
   type: 'reveal_space';
   playerId: PlayerID;
   spaceId: SpaceID;
+}
+
+export interface PlayActionCardAction {
+  type: 'play_action_card';
+  playerId: PlayerID;
+  cardId: CardID;
+  targets?: ActionCardTarget[];
 }
 
 export interface MovePlayerAction {
