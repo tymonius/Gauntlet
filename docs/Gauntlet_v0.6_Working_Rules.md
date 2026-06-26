@@ -403,16 +403,74 @@ The following factions are planned for v0.6 development but are not yet rules-co
 
 ### Inquisition
 
-**Working identity:** Conviction, condemnation, suppression, purging enemy power, and turning enemy losses into punishment.
+**Working identity:** Conviction, condemnation, suppression, purging enemy power, and turning enemy losses into permanent punishment.
 
-Current direction:
+Inquisition should pressure every opponent by making played cards and committed choices more permanent. It should have a special anti-Arcane edge, but it must not become only an anti-Arcane faction.
 
-- Resource: Conviction.
-- Both leaders should be able to spend Conviction to send cards to the Graveyard.
-- Inquisition must not be only anti-Magic; it needs relevant play against all factions.
+#### Resource: Conviction
+
+Inquisition uses **Conviction**.
+
+- Maximum Conviction: **4**.
+- Conviction cannot be reduced below 0.
+- The first time each turn one or more opposing cards enter the Graveyard after a battle involving you, gain **1 Conviction**, up to your maximum.
+- This normal Conviction gain can happen only once per turn.
+
+#### Condemnation
+
+In battles involving you, opposing battle-drawn cards that are played are placed in their owner's Graveyard after the battle instead of the discard pile.
+
+Cards committed from hand already go to the Graveyard. Unplayed battle-drawn cards are discarded normally.
+
+#### Heresy
+
+Whenever your opponent plays an **Arcane** card, gain **1 Conviction**.
+
+This Conviction gain does not count toward your normal once-per-turn Conviction gain limit. You still cannot exceed your maximum Conviction.
+
+An **Arcane card** is any card with the Arcane trait. A card does not need to belong to the Arcane faction to be an Arcane card. Arcane cards should be visibly marked as Arcane in future card layouts.
+
+#### Purge
+
+Instead of playing an Action card during your Action step, you may spend Conviction to **Purge** one eligible opposing card.
+
+Current provisional Purge menu:
+
+| Cost | Purge effect |
+|---:|---|
+| **1 Conviction** | Send the top card of your opponent's discard pile to their Graveyard. |
+| **2 Conviction** | Choose one opposing Asset or Condition and send it to its owner's Graveyard. |
+| **3 Conviction** | Your opponent chooses one card from their hand and sends it to their Graveyard. |
+| **4 Conviction** | Look at your opponent's hand. Choose one card from it and send it to their Graveyard. |
+
+The Purge menu is provisional. Costs, targets, and frequency should be watched carefully in testing.
+
+#### Inquisition Victory: Purification
+
+At the beginning of your opponent's turn, after they attempt their normal start-of-turn draw, if they draw no cards because both their deck and discard pile are empty, you win by **Purification**.
+
+Purification does not trigger from failed battle draws or failed card-effect draws. The Graveyard is never reshuffled.
+
+#### Grand Inquisitor
+
+**Style:** institutional judgment, suppression, and decisive Purges after victory.
+
+**Final Judgment**  
+Once per turn, after you win a battle, you may immediately Purge. This Purge does not use your Action opportunity. Reduce its Conviction cost by 1, to a minimum of 1.
+
+#### Witch Hunter
+
+**Style:** pursuit, retaliation, and punishing failed attacks.
+
+**Relentless Pursuit**  
+Once per turn, when an opponent loses a battle they initiated against you, you may spend **2 Conviction**. If you do, their turn ends immediately. Then you may move one space toward their Heartland. If this movement begins a battle, resolve it immediately. You are the attacker. Neither player may play an Action before that battle.
+
+#### Inquisition development notes
+
 - Symbol: wide-brimmed hat with buckle.
 - Avoid real-world religious symbols.
 - Do not use scales; reserve scales for a possible future Legal faction.
+- Card migration, Inquisition-specific card text, and renamed Inquisition cards are intentionally deferred.
 
 ### Arcane / Magic
 
@@ -424,6 +482,8 @@ Current direction:
 - Victory name should include **Ritual**.
 - Some complexity is acceptable if the faction is intentionally advanced and internally coherent.
 - Symbol: pentagram or pentacle.
+- Some cards will have the **Arcane** trait. Arcane cards may be neutral, faction-specific, or otherwise available through deck construction.
+- The Arcane trait is distinct from the Arcane faction and should be visibly marked because other rules, including Inquisition's Heresy ability, may reference it.
 
 ### Financiers
 
@@ -464,6 +524,8 @@ Working faction symbols:
 Faction symbols are intended primarily for leader cards, reference cards, faction sheets, deck dividers, and similar components. Regular playable cards do not currently need faction symbols if card legality is defined through faction sheets, official deck lists, canonical data, or rules.
 
 Neutral cards should not have **Advanced** printed on them. Advanced status is a behind-the-scenes classification, not a player-facing card label.
+
+Arcane is currently being treated as a card trait rather than only a faction symbol. Cards with the Arcane trait should be visibly marked in some form, but the broader faction-symbol/icon system remains unresolved.
 
 ---
 
@@ -539,6 +601,17 @@ Random faction inclusion in a starter product is possible but may be commerciall
 - Are Ambassador and Senator comparably strong?
 - Is nine Proposals manageable, or should the list be trimmed after testing?
 
+### Inquisition
+
+- Is maximum Conviction 4 correct?
+- Does Condemnation make Purification feasible without making normal battles feel punitive or hopeless?
+- Is the 1-Conviction top-discard Purge too efficient, too weak, or too arbitrary?
+- Are the 2-, 3-, and 4-Conviction Purge targets appropriately priced?
+- Does Grand Inquisitor's discounted post-battle Purge create too much double-Purge pressure?
+- Is Witch Hunter's Relentless Pursuit cost and timing clear enough?
+- Does Heresy give Inquisition a meaningful anti-Arcane edge without making Arcane unplayable?
+- Does Purification occur often enough to matter, but rarely enough that conquest still matters?
+
 ---
 
 ## 14. Open Questions Before v0.6 Release
@@ -550,6 +623,7 @@ Random faction inclusion in a starter product is possible but may be commerciall
 - Should the v0.6 package include printable leader/reference cards?
 - Should resource tracks be printed directly on leader cards?
 - How should official decklists be formatted for each leader?
+- How should the Arcane trait be marked on cards before the final icon/faction-symbol system is resolved?
 
 ---
 
