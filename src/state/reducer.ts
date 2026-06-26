@@ -135,6 +135,34 @@ function requireCardPlayable(cardId: string, timing: 'battle_hand_commit' | 'bat
   }
 }
 
+function assetBankLimit(player: PlayerState): number {
+  return player.controlledTerritories.length;
+}
+
+function requireAssetBankCapacity(player: PlayerState): void {
+  const limit = assetBankLimit(player);
+  if (player.zones.assetBank.length >= limit) {
+    throw new GameActionError(`${player.name}'s Asset Bank is full.`);
+  }
+}
+
+function enforceAssetBankLimit(game: GameState, player: PlayerState): void {
+  const limit = assetBankLimit(player);
+  if (player.zones.assetBank.length <= limit) return;
+
+  const discarded = player.zones.assetBank.slice(limit);
+  player.zones.assetBank = player.zones.assetBank.slice(0, limit);
+  player.zones.discard.push(...discarded);
+  appendPublicLog(game, player.id, 'asset_bank_discard_down', `${player.name} discarded down to their Asset Bank limit.`, {
+    limit,
+    discarded,
+  });
+}
+
+function enforceAllAssetBankLimits(game: GameState): void {
+  for (const player of Object.values(game.players)) enforceAssetBankLimit(game, player);
+}
+
 function pushCardToDestination(player: PlayerState, cardId: string, destination: 'discard' | 'graveyard' | 'hand' | 'removed'): void {
   switch (destination) {
     case 'discard':
@@ -156,6 +184,7 @@ function pushActionCardToDestination(player: PlayerState, cardId: string): strin
   const destination = destinationForCardPlay(cardId, 'hand');
   switch (destination) {
     case 'asset_bank':
+      requireAssetBankCapacity(player);
       player.zones.assetBank.push(cardId);
       return 'Asset Bank';
     case 'condition':
@@ -597,6 +626,7 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
     }
   }
 
+  enforceAllAssetBankLimits(game);
   appendPublicLog(game, winner, 'battle_resolved', `${winnerState.name} won the battle.`, {
     winner,
     loser,
@@ -619,6 +649,7 @@ function endTurn(game: GameState, action: Extract<GameAction, { type: 'end_turn'
   const endingPlayer = requirePlayer(game, action.playerId);
   const nextPlayer = nextPlayerId(game);
   expireTurnLongConditions(game, endingPlayer);
+  enforceAllAssetBankLimits(game);
   endingPlayer.actionsRemaining = 0;
   endingPlayer.movementRemaining = 0;
 
