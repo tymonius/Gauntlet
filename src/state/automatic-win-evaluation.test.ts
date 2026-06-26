@@ -35,11 +35,16 @@ describe('automatic win evaluation', () => {
           ...game.players.player_1,
           occupiedSpaceId: 'space-5',
         },
+        player_2: {
+          ...game.players.player_2,
+          occupiedSpaceId: undefined,
+        },
       },
       board: {
         ...game.board,
         spaces: game.board.spaces.map((space) => {
           if (space.id === 'player_1-heartland') return { ...space, occupant: undefined };
+          if (space.id === 'player_2-heartland') return { ...space, occupant: undefined };
           if (space.id === 'space-5') return { ...space, occupant: 'player_1' };
           return space;
         }),
