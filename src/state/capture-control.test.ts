@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
+import type { GameState } from '../types';
 import { initializeGame } from './initialize';
 import { applyGameAction } from './reducer';
 import { createValidSetup } from './test-helpers';
 
-function createCaptureGame() {
+function createCaptureGame(): GameState {
   return initializeGame(createValidSetup({
     players: [
       {
@@ -22,12 +23,12 @@ function createCaptureGame() {
   }));
 }
 
-function withPlayerOneThreateningEnemyTerritory() {
+function withPlayerOneThreateningEnemyTerritory(): GameState {
   const game = createCaptureGame();
 
   return {
     ...game,
-    phase: 'movement' as const,
+    phase: 'movement',
     players: {
       ...game.players,
       player_1: {
@@ -39,7 +40,7 @@ function withPlayerOneThreateningEnemyTerritory() {
       ...game.board,
       spaces: game.board.spaces.map((space) => {
         if (space.id === 'player_1-heartland') return { ...space, occupant: undefined };
-        if (space.id === 'space-3') return { ...space, occupant: 'player_1' as const };
+        if (space.id === 'space-3') return { ...space, occupant: 'player_1' };
         return space;
       }),
     },
@@ -78,11 +79,11 @@ describe('Territory capture and control flow', () => {
 
   it('clears a pending capture when the original controller retakes the Territory', () => {
     const game = createCaptureGame();
-    const retakeReady = {
+    const retakeReady: GameState = {
       ...game,
-      activePlayer: 'player_2' as const,
-      priorityPlayer: 'player_2' as const,
-      phase: 'movement' as const,
+      activePlayer: 'player_2',
+      priorityPlayer: 'player_2',
+      phase: 'movement',
       players: {
         ...game.players,
         player_2: {
@@ -94,8 +95,8 @@ describe('Territory capture and control flow', () => {
         ...game.board,
         spaces: game.board.spaces.map((space) => {
           if (space.id === 'player_2-heartland') return { ...space, occupant: undefined };
-          if (space.id === 'space-5') return { ...space, occupant: 'player_2' as const };
-          if (space.id === 'space-4') return { ...space, capturePendingBy: 'player_1' as const };
+          if (space.id === 'space-5') return { ...space, occupant: 'player_2' };
+          if (space.id === 'space-4') return { ...space, capturePendingBy: 'player_1' };
           return space;
         }),
       },
@@ -110,7 +111,7 @@ describe('Territory capture and control flow', () => {
 
   it('creates an Asset Bank discard choice when capture reduces the losing player\'s bank limit', () => {
     const game = withPlayerOneThreateningEnemyTerritory();
-    const loadedBank = {
+    const loadedBank: GameState = {
       ...game,
       players: {
         ...game.players,
