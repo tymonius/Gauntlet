@@ -1,4 +1,4 @@
-import { cardCanBePlayedAt } from '../cards';
+import { cardCanBePlayedAt, destinationForCardPlay, getCardPlayRule } from '../cards';
 import type {
   BattleCardTargetOption,
   BattleParticipantState,
@@ -8,6 +8,7 @@ import type {
   BoardState,
   GameEvent,
   GameState,
+  LegalActionPlayOption,
   PrivateGameView,
   PrivatePlayerView,
   PublicBattleParticipantView,
@@ -122,6 +123,27 @@ function validBattleCardTargetsForViewer(battle: BattleState, viewer?: PlayerID)
   })));
 }
 
+function legalActionPlaysForViewer(game: GameState, viewer?: PlayerID): LegalActionPlayOption[] | undefined {
+  if (!viewer) return undefined;
+  if (game.activePlayer !== viewer) return undefined;
+  if (game.phase !== 'action_before_movement' && game.phase !== 'action_after_movement') return undefined;
+
+  const player = game.players[viewer];
+  if (!player || player.actionsRemaining < 1 || player.hasPlayedActionThisTurn || player.hasPlayedBattleThisTurn) return undefined;
+
+  const options = player.zones.hand
+    .filter((cardId) => cardCanBePlayedAt(cardId, 'action', 'hand'))
+    .map((cardId): LegalActionPlayOption => ({
+      action: 'play_action_card',
+      cardId,
+      origin: 'hand',
+      destination: destinationForCardPlay(cardId, 'hand'),
+      requiresTarget: getCardPlayRule(cardId)?.requiresTarget ?? false,
+    }));
+
+  return options.length > 0 ? options : undefined;
+}
+
 function legalBattlePlaysForViewer(game: GameState, battle: BattleState, viewer?: PlayerID): BattlePlayOption[] | undefined {
   const viewerParticipant = battleParticipantForViewer(battle, viewer);
   const player = viewer ? game.players[viewer] : undefined;
@@ -224,6 +246,7 @@ export function toPrivateGameView(game: GameState, viewer: PlayerID): PrivateGam
       ]),
     ),
     battle: game.battle ? toPublicBattleView(game, game.battle, viewer) : undefined,
+    legalActionPlays: legalActionPlaysForViewer(game, viewer),
     log: visibleLogFor(game.log, viewer),
   };
 }

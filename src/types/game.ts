@@ -1,6 +1,6 @@
 import type { BoardState, PublicBoardView } from './board';
 import type { BattleState, PublicBattleView } from './battle';
-import type { GameID, PlayerID } from './ids';
+import type { CardID, GameID, PlayerID } from './ids';
 import type { PlayerState, PrivatePlayerView, PublicPlayerView } from './player';
 
 export type GamePhase =
@@ -38,6 +38,14 @@ export interface GameState {
   winner?: PlayerID;
 }
 
+export interface LegalActionPlayOption {
+  action: 'play_action_card';
+  cardId: CardID;
+  origin: 'hand';
+  destination: 'discard' | 'graveyard' | 'hand' | 'removed' | 'condition' | 'asset_bank';
+  requiresTarget: boolean;
+}
+
 export interface PublicGameView {
   id: GameID;
   version: string;
@@ -48,6 +56,7 @@ export interface PublicGameView {
   players: Record<PlayerID, PublicPlayerView>;
   board: PublicBoardView;
   battle?: PublicBattleView;
+  legalActionPlays?: LegalActionPlayOption[];
   log: GameEvent[];
   winner?: PlayerID;
 }
