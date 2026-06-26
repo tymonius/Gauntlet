@@ -24,6 +24,13 @@ export interface GameEvent {
   visibleTo?: PlayerID[];
 }
 
+export interface PendingAssetBankDiscard {
+  playerId: PlayerID;
+  limit: number;
+  discardCount: number;
+  options: CardID[];
+}
+
 export interface GameState {
   id: GameID;
   version: string;
@@ -34,6 +41,7 @@ export interface GameState {
   players: Record<PlayerID, PlayerState>;
   board: BoardState;
   battle?: BattleState;
+  pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[];
   winner?: PlayerID;
 }
@@ -57,6 +65,7 @@ export interface PublicGameView {
   board: PublicBoardView;
   battle?: PublicBattleView;
   legalActionPlays?: LegalActionPlayOption[];
+  pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[];
   winner?: PlayerID;
 }
