@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
-import type { CardID, GameAction, GameState, PlayerID, SpaceID } from '../types';
+import type { CardID, GameState, PlayerID, SpaceID } from '../types';
+import type { GameAction } from '../state';
 import { applyGameAction, initializeGame, toPrivateGameView } from '../state';
 
 const defaultDecks = {
