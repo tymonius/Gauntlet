@@ -1,6 +1,8 @@
+import { cardCanBePlayedAt } from '../cards';
 import type {
   BattleCardTargetOption,
   BattleParticipantState,
+  BattlePlayOption,
   BattlePlayedCard,
   BattleState,
   BoardState,
@@ -91,16 +93,17 @@ function playedCards(participant: BattleParticipantState): BattlePlayedCard[] {
     .filter((card): card is BattlePlayedCard => card !== undefined && !card.canceled);
 }
 
-function validBattleCardTargetsForViewer(battle: BattleState, viewer?: PlayerID): BattleCardTargetOption[] | undefined {
+function battleParticipantForViewer(battle: BattleState, viewer?: PlayerID): BattleParticipantState | undefined {
   if (!viewer) return undefined;
-  if (battle.stage !== 'dice' && battle.stage !== 'resolution') return undefined;
+  if (battle.attacker.playerId === viewer) return battle.attacker;
+  if (battle.defender.playerId === viewer) return battle.defender;
+  return undefined;
+}
 
-  const viewerParticipant = battle.attacker.playerId === viewer
-    ? battle.attacker
-    : battle.defender.playerId === viewer
-      ? battle.defender
-      : undefined;
+function validBattleCardTargetsForViewer(battle: BattleState, viewer?: PlayerID): BattleCardTargetOption[] | undefined {
+  const viewerParticipant = battleParticipantForViewer(battle, viewer);
   if (!viewerParticipant) return undefined;
+  if (battle.stage !== 'dice' && battle.stage !== 'resolution') return undefined;
 
   const opponent = viewerParticipant.playerId === battle.attacker.playerId ? battle.defender : battle.attacker;
   const embargoCards = playedCards(viewerParticipant).filter((card) => card.cardId === 'card-embargo');
@@ -117,6 +120,36 @@ function validBattleCardTargetsForViewer(battle: BattleState, viewer?: PlayerID)
     targetOwner: target.owner,
     targetOrigin: target.origin,
   })));
+}
+
+function legalBattlePlaysForViewer(game: GameState, battle: BattleState, viewer?: PlayerID): BattlePlayOption[] | undefined {
+  const viewerParticipant = battleParticipantForViewer(battle, viewer);
+  const player = viewer ? game.players[viewer] : undefined;
+  if (!viewerParticipant || !player) return undefined;
+
+  if (battle.stage === 'hand_commit') {
+    if (viewerParticipant.passedHandCommit || viewerParticipant.handCommit) return undefined;
+    return [
+      ...player.zones.hand
+        .filter((cardId) => cardCanBePlayedAt(cardId, 'battle_hand_commit', 'hand'))
+        .map((cardId): BattlePlayOption => ({ action: 'commit_battle_hand_card', cardId, origin: 'hand' })),
+      { action: 'pass_battle_hand_commit' },
+    ];
+  }
+
+  if (battle.stage === 'battle_play_selection') {
+    const playSlotsRemaining = Math.max(viewerParticipant.battleDrawPlayLimit - viewerParticipant.battleDrawPlayed.length, 0);
+    const playableCards = playSlotsRemaining > 0
+      ? viewerParticipant.battleDraw
+        .filter((cardId) => cardCanBePlayedAt(cardId, 'battle_draw_play', 'battle_draw'))
+        .map((cardId): BattlePlayOption => ({ action: 'play_battle_draw_card', cardId, origin: 'battle_draw' }))
+      : [];
+
+    if (viewerParticipant.passedBattleDrawPlay || playableCards.length === 0 && playSlotsRemaining === 0) return undefined;
+    return [...playableCards, { action: 'pass_battle_draw_play' }];
+  }
+
+  return undefined;
 }
 
 function toPublicBattleParticipantView(
@@ -138,7 +171,7 @@ function toPublicBattleParticipantView(
   };
 }
 
-export function toPublicBattleView(battle: BattleState, viewer?: PlayerID): PublicBattleView {
+export function toPublicBattleView(game: GameState, battle: BattleState, viewer?: PlayerID): PublicBattleView {
   return {
     id: battle.id,
     stage: battle.stage,
@@ -148,6 +181,7 @@ export function toPublicBattleView(battle: BattleState, viewer?: PlayerID): Publ
     defender: toPublicBattleParticipantView(battle.defender, viewer),
     tiePolicy: battle.tiePolicy,
     validBattleCardTargets: validBattleCardTargetsForViewer(battle, viewer),
+    legalBattlePlays: legalBattlePlaysForViewer(game, battle, viewer),
     winner: battle.winner,
     loser: battle.loser,
   };
@@ -173,7 +207,7 @@ export function toPublicGameView(game: GameState): PublicGameView {
       Object.entries(game.players).map(([id, player]) => [id, toPublicPlayerView(player)]),
     ),
     board: toPublicBoardView(game.board),
-    battle: game.battle ? toPublicBattleView(game.battle) : undefined,
+    battle: game.battle ? toPublicBattleView(game, game.battle) : undefined,
     log: visibleLogFor(game.log),
     winner: game.winner,
   };
@@ -189,7 +223,7 @@ export function toPrivateGameView(game: GameState, viewer: PlayerID): PrivateGam
         id === viewer ? toPrivatePlayerView(player) : toPublicPlayerView(player),
       ]),
     ),
-    battle: game.battle ? toPublicBattleView(game.battle, viewer) : undefined,
+    battle: game.battle ? toPublicBattleView(game, game.battle, viewer) : undefined,
     log: visibleLogFor(game.log, viewer),
   };
 }
