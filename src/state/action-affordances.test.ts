@@ -22,7 +22,7 @@ function createActionReadyGame() {
     ],
   }));
 
-  return applyGameAction(game, { type: 'draw_card', playerId: 'player_1', count: 3 }).state;
+  return { ...game, phase: 'action_before_movement' as const };
 }
 
 describe('legal Action play affordances', () => {
