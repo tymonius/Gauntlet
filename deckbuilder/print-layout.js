@@ -81,6 +81,11 @@ function readDeckFromPage() {
 }
 
 function buildPrintDocument(deck) {
+  const printableCards = [
+    ...deck.cards.map(cardToPrintHtml),
+    ...deck.territories.map(territoryToPrintHtml)
+  ].join("");
+
   return `<!doctype html>
 <html>
 <head>
@@ -95,12 +100,10 @@ function buildPrintDocument(deck) {
     .deck-summary { break-after: page; padding: 0.15in; }
     .summary { font-family: Arial, sans-serif; font-size: 10pt; margin-bottom: 0.15in; }
     .decklist { columns: 2; font-family: Arial, sans-serif; font-size: 9.5pt; margin-bottom: 0.2in; }
-    .section-title { display: none; }
-    .card-grid { display: grid; grid-template-columns: repeat(3, 2.5in); grid-auto-rows: 3.5in; gap: 0.04in; align-items: start; justify-content: center; }
-    .territory-grid { display: grid; grid-template-columns: repeat(2, 3.5in); grid-auto-rows: 2.5in; gap: 0.04in; align-items: start; justify-content: center; }
-    .card-section + .card-section { break-before: page; margin-top: 0; }
-    .print-card { --card-text-size: 7.2pt; --card-label-size: 6.1pt; width: 2.5in; height: 3.5in; overflow: hidden; border: 1px solid #1f1a14; border-radius: 0.1in; padding: 0.08in; display: flex; flex-direction: column; break-inside: avoid; page-break-inside: avoid; }
-    .print-card.territory { --card-text-size: 8.2pt; --card-label-size: 6.2pt; width: 3.5in; height: 2.5in; }
+    .card-grid { display: grid; grid-template-columns: repeat(3, 2.5in); grid-auto-rows: 3.5in; gap: 0; align-items: start; justify-content: center; }
+    .print-card { --card-text-size: 7.2pt; --card-label-size: 6.1pt; position: relative; width: 2.5in; height: 3.5in; overflow: hidden; border: 1px solid #1f1a14; border-radius: 0; padding: 0.08in; display: flex; flex-direction: column; break-inside: avoid; page-break-inside: avoid; }
+    .print-card.territory { --card-text-size: 8.2pt; --card-label-size: 6.2pt; padding: 0; display: block; }
+    .territory-inner { position: absolute; top: 0; left: 2.5in; width: 3.5in; height: 2.5in; transform-origin: top left; transform: rotate(90deg); padding: 0.08in; display: flex; flex-direction: column; overflow: hidden; }
     .card-header { display: flex; justify-content: space-between; align-items: start; gap: 0.06in; border-bottom: 1px solid #1f1a14; padding-bottom: 0.04in; margin-bottom: 0.05in; min-height: 0.27in; }
     .card-name { font-weight: bold; font-size: 9.4pt; line-height: 1.05; }
     .territory .card-name { font-size: 11pt; }
@@ -121,24 +124,19 @@ function buildPrintDocument(deck) {
     <div class="decklist">${deck.cardEntries.map(entry => `${entry.qty}x ${escapeHtml(entry.name)} ${escapeHtml(costOnly(entry.costSummary))}`).join("<br>")}<br><br><strong>Territories</strong><br>${deck.territories.map(territory => escapeHtml(territory.name)).join("<br>")}</div>
   </section>
   <section class="card-section">
-    <h2 class="section-title">Main deck cards</h2>
-    <div class="card-grid">${deck.cards.map(cardToPrintHtml).join("")}</div>
-  </section>
-  <section class="card-section">
-    <h2 class="section-title">Territories</h2>
-    <div class="territory-grid">${deck.territories.map(territoryToPrintHtml).join("")}</div>
+    <div class="card-grid">${printableCards}</div>
   </section>
   <script>
     function fitPrintCards() {
-      document.querySelectorAll('.print-card').forEach(card => {
-        let textSize = card.classList.contains('territory') ? 8.2 : 7.2;
-        let labelSize = card.classList.contains('territory') ? 6.2 : 6.1;
-        const minTextSize = card.classList.contains('territory') ? 5.4 : 4.8;
-        while (card.scrollHeight > card.clientHeight && textSize > minTextSize) {
+      document.querySelectorAll('.fit-target').forEach(target => {
+        let textSize = target.classList.contains('territory-inner') ? 8.2 : 7.2;
+        let labelSize = target.classList.contains('territory-inner') ? 6.2 : 6.1;
+        const minTextSize = target.classList.contains('territory-inner') ? 5.4 : 4.8;
+        while (target.scrollHeight > target.clientHeight && textSize > minTextSize) {
           textSize -= 0.2;
           labelSize = Math.max(4.6, labelSize - 0.15);
-          card.style.setProperty('--card-text-size', textSize.toFixed(1) + 'pt');
-          card.style.setProperty('--card-label-size', labelSize.toFixed(1) + 'pt');
+          target.style.setProperty('--card-text-size', textSize.toFixed(1) + 'pt');
+          target.style.setProperty('--card-label-size', labelSize.toFixed(1) + 'pt');
         }
       });
     }
@@ -152,7 +150,7 @@ function buildPrintDocument(deck) {
 }
 
 function cardToPrintHtml(card) {
-  return `<article class="print-card">
+  return `<article class="print-card fit-target">
     <div class="card-header"><span class="card-name">${escapeHtml(card.name)}</span><span class="card-cost">${escapeHtml(costOnly(card.costSummary))}</span></div>
     <div class="label">Action</div>
     <div class="text">${escapeHtml(card.action || "—")}</div>
@@ -164,8 +162,10 @@ function cardToPrintHtml(card) {
 
 function territoryToPrintHtml(territory) {
   return `<article class="print-card territory">
-    <div class="card-header"><span class="card-name">${escapeHtml(territory.name)}</span><span class="card-cost">Territory</span></div>
-    <div class="text">${escapeHtml(territory.text || "")}</div>
+    <div class="territory-inner fit-target">
+      <div class="card-header"><span class="card-name">${escapeHtml(territory.name)}</span><span class="card-cost">Territory</span></div>
+      <div class="text">${escapeHtml(territory.text || "")}</div>
+    </div>
   </article>`;
 }
 
