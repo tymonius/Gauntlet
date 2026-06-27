@@ -95,9 +95,9 @@ function buildPrintDocument(deck) {
     .deck-summary { break-after: page; padding: 0.15in; }
     .summary { font-family: Arial, sans-serif; font-size: 10pt; margin-bottom: 0.15in; }
     .decklist { columns: 2; font-family: Arial, sans-serif; font-size: 9.5pt; margin-bottom: 0.2in; }
-    .section-title { font-family: Arial, sans-serif; font-size: 10pt; margin: 0 0 0.06in; break-after: avoid; }
-    .card-grid { display: grid; grid-template-columns: repeat(3, 2.5in); grid-auto-rows: 3.5in; gap: 0.065in 0.08in; align-items: start; justify-content: center; }
-    .territory-grid { display: grid; grid-template-columns: repeat(2, 3.5in); grid-auto-rows: 2.5in; gap: 0.08in 0.065in; align-items: start; justify-content: center; }
+    .section-title { display: none; }
+    .card-grid { display: grid; grid-template-columns: repeat(3, 2.5in); grid-auto-rows: 3.5in; gap: 0.04in; align-items: start; justify-content: center; }
+    .territory-grid { display: grid; grid-template-columns: repeat(2, 3.5in); grid-auto-rows: 2.5in; gap: 0.04in; align-items: start; justify-content: center; }
     .card-section + .card-section { break-before: page; margin-top: 0; }
     .print-card { --card-text-size: 7.2pt; --card-label-size: 6.1pt; width: 2.5in; height: 3.5in; overflow: hidden; border: 1px solid #1f1a14; border-radius: 0.1in; padding: 0.08in; display: flex; flex-direction: column; break-inside: avoid; page-break-inside: avoid; }
     .print-card.territory { --card-text-size: 8.2pt; --card-label-size: 6.2pt; width: 3.5in; height: 2.5in; }
@@ -110,7 +110,7 @@ function buildPrintDocument(deck) {
     .territory .text { line-height: 1.16; }
     .territory .card-header { border-bottom-style: double; }
     .reminder { font-size: calc(var(--card-text-size) - 0.4pt); line-height: 1.1; font-style: italic; margin-top: auto; color: #554b40; }
-    @page { size: letter; margin: 0.12in; }
+    @page { size: letter; margin: 0.1in; }
   </style>
 </head>
 <body>
