@@ -742,13 +742,170 @@ If you buy or buy out the Deed this way, you immediately control that Territory.
 
 ### Intelligence
 
-**Working identity:** hidden information, infiltration, sabotage, and Special Operation.
+**Working identity:** information, preparation, hidden objectives, tactical disruption, and winning through a coordinated **Special Operation**.
 
-Current direction:
+Intelligence wins by seeing the battlefield before anyone else, manipulating hidden choices, and completing coordinated Missions at decisive moments. Its systems should remain card-native and use existing hidden zones such as hands, battle commitments, battle draws, face-down Territories, and unrevealed information. Intelligence should not require hidden maps, private grids, written notes, extra mission decks, or repeated board-state checking.
 
-- Alternate victory should be called **Special Operation**.
-- Must avoid annoying constant checking and interruption.
+#### Resource: Intel
+
+Intelligence uses **Intel**.
+
+- Starting Intel: **0**.
+- Intel cannot be reduced below 0.
+- Intel currently has no maximum.
+- Intel may be spent on Surveillance, Interference, aborting Missions, completing the Special Operation, and leader abilities.
+
+#### Operation Progress
+
+Intelligence tracks **Operation Progress** as a number.
+
+- Starting Operation Progress: **0**.
+- Operation Progress cannot be reduced below 0 unless a later rule or card specifically says otherwise.
+- Completing normal Missions increases Operation Progress.
+- Operation Progress determines when the Special Operation may be started and whether it remains viable.
+
+#### Intelligence Cards and Missions
+
+Some Intelligence cards have normal card text and a **Mission** requirement.
+
+An Intelligence card may be used normally, or it may be started as a Mission if it is in your hand.
+
+Mission cards are not a separate deck. They are normal playable Intelligence cards with Mission text.
+
+During your Action phase after movement, instead of playing an Action card, you may place one Intelligence card from your hand face-down near your leader card as your **Active Mission**.
+
+You may look at your Active Mission at any time.
+
+You may have only one Active Mission at a time.
+
+You cannot have an Active Mission and a Special Operation at the same time.
+
+A Mission cannot be completed on the same turn it is started.
+
+A Mission requirement only counts if it is satisfied while that Mission is active.
+
+#### Completing a Mission
+
+During your Action phase after movement, instead of playing an Action card, if your Active Mission's Mission requirement has been satisfied, reveal and complete it.
+
+When you complete a normal Mission:
+
+- Increase your Operation Progress by **1**.
+- Gain Intel equal to that Mission card's deckbuilding value.
+- Discard the completed Mission card.
+
+#### Aborting a Mission
+
+During your Action phase after movement, instead of playing an Action card, you may reveal your Active Mission and spend Intel equal to its deckbuilding value to **abort** it.
+
+If you do, discard the Mission card.
+
+Aborting a Mission is a controlled withdrawal. It is not a failed Mission.
+
+#### Failed Missions
+
+If a Mission fails, reveal it and send it to your Graveyard.
+
+Failure should be reserved for opponent disruption, game-state compromise, or specific rules that say a Mission fails. Normal voluntary abandonment is handled by aborting the Mission.
+
+#### Intelligence Victory: Special Operation
+
+The Special Operation is the Intelligence alternate victory condition.
+
+You may start the Special Operation only if your Operation Progress is greater than the number of Territories your opponent controls.
+
+Heartlands are not Territories and do not count.
+
+During your Action phase after movement, instead of playing an Action card, if your Operation Progress is greater than the number of Territories your opponent controls, you have no Active Mission, and you have an Intelligence card in hand, you may place one Intelligence card from your hand face-down near your leader card as your **Special Operation**.
+
+An already Active Mission cannot become your Special Operation. The Special Operation must be started separately.
+
+The Special Operation uses the card's Mission requirement, but it is not a normal Mission. Completing the Special Operation does not increase Operation Progress, does not gain Intel, and does not trigger abilities that care about completing a Mission.
+
+If you have started the Special Operation and your Operation Progress is no longer greater than the number of Territories your opponent controls, your Special Operation fails. Reveal it and send it to your Graveyard.
+
+During your Action phase after movement, instead of playing an Action card, if your Special Operation's Mission requirement has been satisfied and your Operation Progress is still greater than the number of Territories your opponent controls, reveal the Special Operation.
+
+To complete the Special Operation, spend Intel equal to:
+
+> number of Territories in the Gauntlet - the Special Operation card's deckbuilding value
+
+Minimum cost: 1 Intel.
+
+If you do, you immediately win by **Special Operation**.
+
+#### Battle Commitment Order
+
+Intelligence requires the battle commitment order to be explicit.
+
+Hand-card commitment:
+
+1. Attacker may commit one card from hand face-down, or pass.
+2. Defender may commit one card from hand face-down, or pass.
+
+Battle draw:
+
+1. Attacker draws battle cards and chooses one battle-drawn card to play face-down, or passes if allowed.
+2. Defender draws battle cards and chooses one battle-drawn card to play face-down, or passes if allowed.
+
+Then face-down battle cards are revealed and the battle resolves normally.
+
+#### Surveillance
+
+Once per battle, when your opponent commits or plays a face-down card in a battle involving you, you may spend **1 Intel** to look at that card before the battle proceeds.
+
+Surveillance may be used after the opponent makes a face-down hand commitment or after the opponent chooses a face-down battle-drawn card.
+
+If you are defending, you may use Surveillance after the attacker commits or passes a hand card and before you decide whether to commit a hand card. You may also use Surveillance after the attacker chooses a battle-drawn card and before you choose your own battle-drawn card.
+
+If you are attacking, you may use Surveillance after the defender commits a hand card and before the battle-draw step begins. You may also use Surveillance after the defender chooses a battle-drawn card and before cards are revealed.
+
+Each Intelligence player may use Surveillance once per battle. In an Intelligence mirror match, both players may use Surveillance once per battle.
+
+#### Interference
+
+After using Surveillance to look at an opponent's face-down battle card, you may spend **2 additional Intel** to interfere with that card.
+
+The interfered card is removed from the battle. The opponent may choose another legal card from the same source, if able.
+
+- If the interfered card was committed from hand, return it to its owner's hand.
+- If the interfered card was played from battle draw, return it to that battle draw. It is no longer the played card.
+- If the opponent does not or cannot choose another legal card from that source, they play no card from that source in this battle.
+- Unplayed battle-drawn cards are discarded normally during battle cleanup.
+
+Interference does not destroy the card it affects. Intelligence disrupts the current battle plan; it does not send cards to the Graveyard by default.
+
+Interference does not create an additional response window. If Interference causes a replacement card to be chosen, the opposing Intelligence player may use Surveillance on that replacement only if they have not already used Surveillance this battle.
+
+#### Ranger
+
+**Style:** fieldcraft, terrain expertise, movement, and operating in hostile ground.
+
+**Fieldcraft**  
+Once per turn, when a revealed Territory effect would affect you, your movement, or a battle involving you, you may spend **1 Intel** to ignore that Territory effect until the end of the current turn.
+
+Fieldcraft does not ignore ownership, occupation, capture, Heartland rules, Homeland Advantage, or Asset bank limits.
+
+#### Spymaster
+
+**Style:** planning, command-and-control, operation tempo, and keeping the mission pipeline moving.
+
+**Mission Control**  
+Once per turn, after you complete a normal Mission, you may immediately start a new Mission from your hand without using your Action opportunity.
+
+A Mission started this way cannot be completed this turn.
+
+Mission Control cannot be used to start the Special Operation.
+
+#### Intelligence development notes
+
 - Symbol: eye.
+- Mission cards should remain normal playable Intelligence cards, not a separate Mission deck.
+- Mission requirements should reward tactical, Gauntlet-native situations rather than generic progress chores.
+- Missions should usually involve hidden information, movement, enemy Territory, battle commitments, battle draw, Surveillance, Interference, terrain, timing, or withdrawal.
+- Mission requirements should generally be achievable within one or two turns if pursued, but disruptable if the opponent reads the plan.
+- Higher-value Intelligence cards should generally have harder or riskier Mission requirements because completed Missions grant Intel equal to deckbuilding value and high-value Special Operation cards reduce the final Intel cost.
+- Card migration, Intelligence-specific card text, and exact Mission requirements are intentionally deferred.
 
 ---
 
@@ -885,6 +1042,23 @@ Random faction inclusion in a starter product is possible but may be commerciall
 - Is Line of Credit balanced with collateral going to discard, or should collateral go to the Graveyard?
 - Does Hostile Takeover create too much immediate-control snowballing?
 
+### Intelligence
+
+- Does Intelligence feel like information, preparation, timing, and disruption rather than a disconnected hidden-information minigame?
+- Does starting at 0 Intel make the faction too slow, or does it correctly make Intel a reward for successful preparation?
+- Is no Intel maximum correct, or does Intelligence hoard too much Intel before the Special Operation?
+- Is one Active Mission at a time the right limit?
+- Is the rule that a Mission cannot be completed on the turn it is started sufficient to prevent burst turns?
+- Are Mission requirements tactical and fun once Intelligence cards are designed?
+- Is Operation Progress greater than opponent-controlled Territories the right Special Operation readiness requirement?
+- Does the Special Operation failure rule create enough board counterplay after the Special Operation begins?
+- Is the final Intel cost formula for Special Operation too high, too low, or too dependent on card value?
+- Does Surveillance once per battle create interesting choices about which face-down card to inspect?
+- Does Interference feel disruptive without feeling destructive or too close to Inquisition?
+- Do Intelligence mirror matches remain manageable with both players having one Surveillance per battle?
+- Is Ranger's Fieldcraft useful enough without ignoring too much of the board state?
+- Is Spymaster's Mission Control strong and interesting without shortcutting the Special Operation?
+
 ---
 
 ## 14. Open Questions Before v0.6 Release
@@ -898,6 +1072,7 @@ Random faction inclusion in a starter product is possible but may be commerciall
 - How should official decklists be formatted for each leader?
 - How should the Arcane trait be marked on cards before the final icon/faction-symbol system is resolved?
 - What final names should be used for the Arcane faction, its Rites, its Ritual unlock abilities, and its leader abilities?
+- What exact Mission requirements should Intelligence cards use, and how should Mission difficulty scale with deckbuilding value?
 
 ---
 
