@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { mkdir, writeFile } from 'node:fs/promises';
 import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
 import type { CardID, GameState, PlayerID, SpaceID } from '../types';
@@ -8,6 +9,23 @@ import { applyGameAction, initializeGame, toPrivateGameView } from '../state';
 interface GuidedOption {
   label: string;
   action: GameAction;
+}
+
+interface SessionLogEntry {
+  index: number;
+  command: string;
+  action?: GameAction;
+  result: 'applied' | 'error' | 'utility' | 'unknown' | 'quit';
+  error?: string;
+  before: Pick<GameState, 'turn' | 'phase' | 'activePlayer' | 'priorityPlayer' | 'winner'>;
+  after?: Pick<GameState, 'turn' | 'phase' | 'activePlayer' | 'priorityPlayer' | 'winner'>;
+}
+
+interface SessionLog {
+  startedAt: string;
+  endedAt?: string;
+  entries: SessionLogEntry[];
+  finalState?: GameState;
 }
 
 const defaultDecks = {
@@ -53,6 +71,38 @@ function createDevGame(): GameState {
       },
     ],
   });
+}
+
+function snapshot(game: GameState): SessionLogEntry['before'] {
+  return {
+    turn: game.turn,
+    phase: game.phase,
+    activePlayer: game.activePlayer,
+    priorityPlayer: game.priorityPlayer,
+    winner: game.winner,
+  };
+}
+
+function recordLogEntry(log: SessionLog, entry: Omit<SessionLogEntry, 'index'>): void {
+  log.entries.push({ index: log.entries.length + 1, ...entry });
+}
+
+function safeTimestamp(date = new Date()): string {
+  return date.toISOString().replace(/[:.]/g, '-');
+}
+
+async function saveSessionLog(log: SessionLog, game: GameState): Promise<string> {
+  const endedAt = new Date().toISOString();
+  const completeLog: SessionLog = {
+    ...log,
+    endedAt,
+    finalState: game,
+  };
+  const directory = 'playtest-logs';
+  await mkdir(directory, { recursive: true });
+  const path = `${directory}/gauntlet-cli-${safeTimestamp(new Date(log.startedAt))}.json`;
+  await writeFile(path, JSON.stringify(completeLog, null, 2));
+  return path;
 }
 
 function activeViewer(game: GameState): PlayerID {
@@ -148,7 +198,6 @@ function buildGuidedOptions(game: GameState): GuidedOption[] {
 
   if (game.pendingAssetBankDiscards?.[playerId]) {
     const pending = game.pendingAssetBankDiscards[playerId];
-    // Simple first pass: expose one-card discard options when only one card is required.
     if (pending.discardCount === 1) {
       for (const cardId of pending.options) {
         options.push({
@@ -255,7 +304,7 @@ function printState(game: GameState): GuidedOption[] {
   printPendingChoices(game);
   printBattle(game, viewer);
   printGuidedOptions(options);
-  console.log('\nEnter a choice number, or use: help, state, details, draw [n], reveal <space>, action <card>, discard-assets <card...>, move <space>, commit <card>, pass-hand, battle-draw [n], play-battle <card>, pass-battle, roll <1-6>, resolve, end, quit');
+  console.log('\nEnter a choice number, or use: help, state, details, save-log, draw [n], reveal <space>, action <card>, discard-assets <card...>, move <space>, commit <card>, pass-hand, battle-draw [n], play-battle <card>, pass-battle, roll <1-6>, resolve, end, quit');
   return options;
 }
 
@@ -298,11 +347,12 @@ function parseAction(command: string, game: GameState, guidedOptions: GuidedOpti
 }
 
 function printHelp(): void {
-  console.log(`\nMinimal Gauntlet dev runner\n\nPreferred use:\n  Enter a listed choice number.\n\nManual examples:\n  draw\n  reveal space-1\n  action card-fortifications\n  move space-1\n  pass-hand\n  battle-draw\n  play-battle card-valor\n  roll 6\n  resolve\n  discard-assets card-fortifications\n  end\n\nUtility commands:\n  state   Reprint summary and choices\n  details Show full player zones\n  help    Show this help\n  quit    Exit\n\nThe runner always acts as the current priority player. It is intentionally rough and exists to expose engine/rules gaps during local playtesting.\n`);
+  console.log(`\nMinimal Gauntlet dev runner\n\nPreferred use:\n  Enter a listed choice number.\n\nManual examples:\n  draw\n  reveal space-1\n  action card-fortifications\n  move space-1\n  pass-hand\n  battle-draw\n  play-battle card-valor\n  roll 6\n  resolve\n  discard-assets card-fortifications\n  end\n\nUtility commands:\n  state    Reprint summary and choices\n  details  Show full player zones\n  save-log Save the current playtest log to playtest-logs/\n  help     Show this help\n  quit     Exit and auto-save the log\n\nThe runner always acts as the current priority player. It is intentionally rough and exists to expose engine/rules gaps during local playtesting.\n`);
 }
 
 async function main(): Promise<void> {
   let game = createDevGame();
+  const log: SessionLog = { startedAt: new Date().toISOString(), entries: [] };
   const rl = createInterface({ input, output });
 
   printHelp();
@@ -311,36 +361,55 @@ async function main(): Promise<void> {
   while (game.phase !== 'game_over') {
     const line = await rl.question('\ngauntlet> ');
     const command = line.trim();
+    const before = snapshot(game);
 
     if (command === '' || command === 'state') {
       guidedOptions = printState(game);
+      recordLogEntry(log, { command: command || 'state', result: 'utility', before, after: snapshot(game) });
       continue;
     }
     if (command === 'details') {
       printPlayerDetails(game);
+      recordLogEntry(log, { command, result: 'utility', before, after: snapshot(game) });
       continue;
     }
     if (command === 'help') {
       printHelp();
+      recordLogEntry(log, { command, result: 'utility', before, after: snapshot(game) });
       continue;
     }
-    if (command === 'quit' || command === 'exit') break;
+    if (command === 'save-log') {
+      const path = await saveSessionLog(log, game);
+      console.log(`Saved playtest log to ${path}`);
+      recordLogEntry(log, { command, result: 'utility', before, after: snapshot(game) });
+      continue;
+    }
+    if (command === 'quit' || command === 'exit') {
+      recordLogEntry(log, { command, result: 'quit', before, after: snapshot(game) });
+      break;
+    }
 
     const action = parseAction(command, game, guidedOptions);
     if (!action) {
       console.log(`Unknown command or choice: ${command}`);
+      recordLogEntry(log, { command, result: 'unknown', before, after: snapshot(game) });
       continue;
     }
 
     try {
       game = applyGameAction(game, action).state;
+      recordLogEntry(log, { command, action, result: 'applied', before, after: snapshot(game) });
       guidedOptions = printState(game);
     } catch (error) {
-      console.error(error instanceof Error ? error.message : error);
+      const message = error instanceof Error ? error.message : String(error);
+      console.error(message);
+      recordLogEntry(log, { command, action, result: 'error', error: message, before, after: snapshot(game) });
     }
   }
 
   if (game.winner) console.log(`\n${game.winner} wins.`);
+  const path = await saveSessionLog(log, game);
+  console.log(`Saved playtest log to ${path}`);
   rl.close();
 }
 
