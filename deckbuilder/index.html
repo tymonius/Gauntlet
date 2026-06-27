@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gauntlet v0.5 Deckbuilder</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div>
+      <p class="eyebrow">Gauntlet playtest tool</p>
+      <h1>v0.5 Deckbuilder</h1>
+      <p class="lede">Build, validate, save, load, and export pre-faction Gauntlet decks.</p>
+    </div>
+    <div class="status-card" aria-live="polite">
+      <span class="status-label">Data</span>
+      <strong id="dataStatus">Loading...</strong>
+    </div>
+  </header>
+
+  <noscript>
+    <section class="panel warning-panel">
+      This deckbuilder requires JavaScript.
+    </section>
+  </noscript>
+
+  <main class="app-shell" hidden>
+    <section class="panel setup-panel" aria-labelledby="setupHeading">
+      <div>
+        <h2 id="setupHeading">Deck setup</h2>
+        <p id="versionSummary" class="muted"></p>
+      </div>
+      <div class="setup-grid">
+        <label>
+          Deck name
+          <input id="deckName" type="text" placeholder="Untitled deck" maxlength="80" />
+        </label>
+        <label>
+          Version
+          <select id="versionSelect"></select>
+        </label>
+        <div class="button-row setup-actions">
+          <button id="newDeckButton" type="button" class="secondary">New</button>
+          <button id="saveDeckButton" type="button">Save</button>
+          <button id="copyDeckButton" type="button" class="secondary">Copy list</button>
+          <button id="downloadJsonButton" type="button" class="secondary">Export JSON</button>
+          <button id="printDeckButton" type="button" class="secondary">Print / PDF</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="dashboard" aria-label="Deck validation summary">
+      <article class="metric-card">
+        <span>Main deck</span>
+        <strong><span id="cardCount">0</span> / <span id="minimumCards">30</span></strong>
+      </article>
+      <article class="metric-card">
+        <span>Points</span>
+        <strong><span id="pointTotal">0</span> / <span id="maximumPoints">60</span></strong>
+      </article>
+      <article class="metric-card">
+        <span>Territories</span>
+        <strong><span id="territoryCount">0</span> / <span id="territoryRequirement">3</span></strong>
+      </article>
+      <article class="metric-card validation-card" id="validityCard">
+        <span>Status</span>
+        <strong id="validityText">Invalid</strong>
+      </article>
+    </section>
+
+    <section class="content-grid">
+      <section class="panel available-panel" aria-labelledby="availableHeading">
+        <div class="panel-heading">
+          <div>
+            <h2 id="availableHeading">Available cards</h2>
+            <p class="muted">Pre-faction v0.5 decks may use any main-deck card.</p>
+          </div>
+          <span id="availableCount" class="pill"></span>
+        </div>
+
+        <div class="filters">
+          <label>
+            Search cards
+            <input id="cardSearch" type="search" placeholder="Name or card text" />
+          </label>
+          <label>
+            Cost
+            <select id="costFilter">
+              <option value="all">All costs</option>
+            </select>
+          </label>
+          <label>
+            Sort
+            <select id="sortSelect">
+              <option value="name">Name</option>
+              <option value="cost-asc">Cost low to high</option>
+              <option value="cost-desc">Cost high to low</option>
+            </select>
+          </label>
+        </div>
+
+        <div id="availableCards" class="card-list" aria-live="polite"></div>
+      </section>
+
+      <section class="panel deck-panel" aria-labelledby="deckHeading">
+        <div class="panel-heading">
+          <div>
+            <h2 id="deckHeading">Current deck</h2>
+            <p class="muted">Use + and - to adjust quantities. Territories are selected separately.</p>
+          </div>
+          <button id="clearMainDeckButton" type="button" class="danger secondary">Clear cards</button>
+        </div>
+        <div id="deckCards" class="deck-list empty-state">No main-deck cards yet.</div>
+      </section>
+    </section>
+
+    <section class="content-grid lower-grid">
+      <section class="panel territories-panel" aria-labelledby="territoriesHeading">
+        <div class="panel-heading">
+          <div>
+            <h2 id="territoriesHeading">Territories</h2>
+            <p class="muted">Choose exactly three different Territories. Maximum one Arena.</p>
+          </div>
+          <button id="clearTerritoriesButton" type="button" class="danger secondary">Clear Territories</button>
+        </div>
+        <div id="territoryList" class="territory-grid"></div>
+      </section>
+
+      <section class="panel side-panel" aria-labelledby="validationHeading">
+        <h2 id="validationHeading">Validation</h2>
+        <ul id="validationList" class="validation-list"></ul>
+
+        <hr />
+
+        <h2>Saved decks</h2>
+        <div class="saved-controls">
+          <select id="savedDeckSelect"></select>
+          <div class="button-row">
+            <button id="loadDeckButton" type="button" class="secondary">Load</button>
+            <button id="deleteDeckButton" type="button" class="danger secondary">Delete</button>
+          </div>
+        </div>
+
+        <hr />
+
+        <h2>Import deck JSON</h2>
+        <p class="muted">Paste a deck exported from this tool.</p>
+        <textarea id="importJson" rows="5" placeholder="Paste exported deck JSON here"></textarea>
+        <button id="importJsonButton" type="button" class="secondary full-width">Import JSON</button>
+      </section>
+    </section>
+  </main>
+
+  <template id="cardTemplate">
+    <article class="card-row">
+      <div class="card-main">
+        <div class="card-title-line">
+          <h3></h3>
+          <span class="cost-pill"></span>
+        </div>
+        <p class="card-text action-text"></p>
+        <p class="card-text battle-text"></p>
+        <p class="card-text reminder-text"></p>
+      </div>
+      <div class="card-actions">
+        <button type="button" class="add-card-button">Add</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
