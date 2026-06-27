@@ -97,13 +97,17 @@ function buildPrintDocument(deck) {
     .decklist { columns: 2; font-family: Arial, sans-serif; font-size: 9.5pt; margin-bottom: 0.2in; }
     .section-title { font-family: Arial, sans-serif; font-size: 10pt; margin: 0 0 0.06in; break-after: avoid; }
     .card-grid { display: grid; grid-template-columns: repeat(3, 2.5in); grid-auto-rows: 3.5in; gap: 0.065in 0.08in; align-items: start; justify-content: center; }
+    .territory-grid { display: grid; grid-template-columns: repeat(2, 3.5in); grid-auto-rows: 2.5in; gap: 0.08in 0.065in; align-items: start; justify-content: center; }
     .card-section + .card-section { break-before: page; margin-top: 0; }
     .print-card { --card-text-size: 7.2pt; --card-label-size: 6.1pt; width: 2.5in; height: 3.5in; overflow: hidden; border: 1px solid #1f1a14; border-radius: 0.1in; padding: 0.08in; display: flex; flex-direction: column; break-inside: avoid; page-break-inside: avoid; }
+    .print-card.territory { --card-text-size: 8.2pt; --card-label-size: 6.2pt; width: 3.5in; height: 2.5in; }
     .card-header { display: flex; justify-content: space-between; align-items: start; gap: 0.06in; border-bottom: 1px solid #1f1a14; padding-bottom: 0.04in; margin-bottom: 0.05in; min-height: 0.27in; }
     .card-name { font-weight: bold; font-size: 9.4pt; line-height: 1.05; }
+    .territory .card-name { font-size: 11pt; }
     .card-cost { font-family: Arial, sans-serif; font-weight: bold; font-size: 8pt; white-space: nowrap; }
     .label { font-family: Arial, sans-serif; font-weight: bold; font-size: var(--card-label-size); text-transform: uppercase; letter-spacing: 0.035em; margin-top: 0.035in; }
     .text { font-size: var(--card-text-size); line-height: 1.12; overflow-wrap: break-word; }
+    .territory .text { line-height: 1.16; }
     .territory .card-header { border-bottom-style: double; }
     .reminder { font-size: calc(var(--card-text-size) - 0.4pt); line-height: 1.1; font-style: italic; margin-top: auto; color: #554b40; }
     @page { size: letter; margin: 0.12in; }
@@ -122,14 +126,15 @@ function buildPrintDocument(deck) {
   </section>
   <section class="card-section">
     <h2 class="section-title">Territories</h2>
-    <div class="card-grid">${deck.territories.map(territoryToPrintHtml).join("")}</div>
+    <div class="territory-grid">${deck.territories.map(territoryToPrintHtml).join("")}</div>
   </section>
   <script>
     function fitPrintCards() {
       document.querySelectorAll('.print-card').forEach(card => {
-        let textSize = 7.2;
-        let labelSize = 6.1;
-        while (card.scrollHeight > card.clientHeight && textSize > 4.8) {
+        let textSize = card.classList.contains('territory') ? 8.2 : 7.2;
+        let labelSize = card.classList.contains('territory') ? 6.2 : 6.1;
+        const minTextSize = card.classList.contains('territory') ? 5.4 : 4.8;
+        while (card.scrollHeight > card.clientHeight && textSize > minTextSize) {
           textSize -= 0.2;
           labelSize = Math.max(4.6, labelSize - 0.15);
           card.style.setProperty('--card-text-size', textSize.toFixed(1) + 'pt');
