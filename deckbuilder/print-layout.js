@@ -88,7 +88,11 @@ function buildPrintDocument(deck) {
   const printableCards = [
     ...deck.cards.map(cardToPrintHtml),
     ...deck.territories.map(territoryToPrintHtml)
-  ].join("");
+  ];
+
+  const cardPages = chunk(printableCards, 9)
+    .map(pageCards => `<section class="card-page"><div class="card-grid">${pageCards.join("")}</div></section>`)
+    .join("");
 
   return `<!doctype html>
 <html>
@@ -101,10 +105,12 @@ function buildPrintDocument(deck) {
     h1 { font-size: 22pt; margin: 0 0 0.06in; }
     h2 { font-size: 12pt; margin: 0 0 0.08in; break-after: avoid; }
     p { margin: 0 0 0.08in; }
-    .deck-summary { break-after: page; padding: 0.15in; }
+    .deck-summary { break-after: page; page-break-after: always; padding: 0.15in; }
     .summary { font-size: 10pt; margin-bottom: 0.15in; }
     .decklist { columns: 2; font-size: 9.5pt; margin-bottom: 0.2in; }
-    .card-grid { display: grid; grid-template-columns: repeat(3, 2.5in); grid-auto-rows: 3.5in; gap: 0; align-items: start; justify-content: center; }
+    .card-page { break-after: page; page-break-after: always; height: 10.5in; overflow: hidden; }
+    .card-page:last-of-type { break-after: auto; page-break-after: auto; }
+    .card-grid { display: grid; grid-template-columns: repeat(3, 2.5in); grid-template-rows: repeat(3, 3.5in); gap: 0; align-items: start; justify-content: center; height: 10.5in; overflow: hidden; }
     .print-card { --card-text-size: 7.1pt; --card-label-size: 7.2pt; position: relative; width: 2.5in; height: 3.5in; overflow: hidden; border: 1px solid #111; border-radius: 0; background: #fff; break-inside: avoid; page-break-inside: avoid; }
     .main-card { display: grid; grid-template-rows: 0.38in 1fr 0.16in; }
     .card-header { position: relative; display: flex; align-items: center; min-height: 0.38in; padding: 0.05in 0.46in 0.05in 0.1in; background: #d7d7d7 !important; border-bottom: 1px solid #111; box-shadow: inset 0 0 0 999px #d7d7d7; -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact; }
@@ -140,9 +146,7 @@ function buildPrintDocument(deck) {
     <h2>Deck list</h2>
     <div class="decklist">${deck.cardEntries.map(entry => `${entry.qty}x ${escapeHtml(entry.name)} (${escapeHtml(entry.cost)})`).join("<br>")}<br><br><strong>Territories</strong><br>${deck.territories.map(territory => escapeHtml(territory.name)).join("<br>")}</div>
   </section>
-  <section class="card-section">
-    <div class="card-grid">${printableCards}</div>
-  </section>
+  ${cardPages}
   <script>
     function fitPrintCards() {
       document.querySelectorAll('.fit-target').forEach(target => {
@@ -208,6 +212,14 @@ function stripLabel(text, label) {
 function costNumber(value) {
   const match = String(value).match(/(\d+)\s*pts?/i);
   return match ? match[1] : "";
+}
+
+function chunk(items, size) {
+  const pages = [];
+  for (let index = 0; index < items.length; index += size) {
+    pages.push(items.slice(index, index + size));
+  }
+  return pages;
 }
 
 function escapeHtml(value) {
