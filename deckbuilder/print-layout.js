@@ -90,9 +90,7 @@ function buildPrintDocument(deck) {
     ...deck.territories.map(territoryToPrintHtml)
   ];
 
-  const cardPages = chunk(printableCards, 9)
-    .map(pageCards => `<section class="card-page">${pageCards.map((cardHtml, index) => `<div class="card-slot card-slot-${index}">${cardHtml}</div>`).join("")}</section>`)
-    .join("");
+  const cardPages = chunk(printableCards, 9).map(cardPageToTableHtml).join("");
 
   return `<!doctype html>
 <html>
@@ -108,18 +106,10 @@ function buildPrintDocument(deck) {
     .deck-summary { break-after: page; page-break-after: always; padding: 0.15in; }
     .summary { font-size: 10pt; margin-bottom: 0.15in; }
     .decklist { columns: 2; font-size: 9.5pt; margin-bottom: 0.2in; }
-    .card-page { position: relative; width: 7.5in; height: 10.5in; margin: 0 auto; overflow: hidden; break-after: page; page-break-after: always; }
+    .card-page { display: block; break-after: page; page-break-after: always; }
     .card-page:last-of-type { break-after: auto; page-break-after: auto; }
-    .card-slot { position: absolute; width: 2.5in; height: 3.5in; overflow: visible; }
-    .card-slot-0 { left: 0; top: 0; }
-    .card-slot-1 { left: 2.5in; top: 0; }
-    .card-slot-2 { left: 5in; top: 0; }
-    .card-slot-3 { left: 0; top: 3.5in; }
-    .card-slot-4 { left: 2.5in; top: 3.5in; }
-    .card-slot-5 { left: 5in; top: 3.5in; }
-    .card-slot-6 { left: 0; top: 7in; }
-    .card-slot-7 { left: 2.5in; top: 7in; }
-    .card-slot-8 { left: 5in; top: 7in; }
+    .card-table { border-collapse: collapse; border-spacing: 0; table-layout: fixed; width: 7.5in; height: 10.5in; margin: 0 auto; padding: 0; }
+    .card-table td { width: 2.5in; height: 3.5in; min-width: 2.5in; max-width: 2.5in; min-height: 3.5in; max-height: 3.5in; padding: 0; margin: 0; border: 0; vertical-align: top; overflow: hidden; }
     .print-card { --card-text-size: 7.1pt; --card-label-size: 7.2pt; position: relative; width: 2.5in; height: 3.5in; overflow: hidden; border: 1px solid #111; border-radius: 0; background: #fff; }
     .main-card { display: grid; grid-template-rows: 0.38in 1fr 0.16in; }
     .card-header { position: relative; display: flex; align-items: center; min-height: 0.38in; padding: 0.05in 0.46in 0.05in 0.1in; background: #d7d7d7 !important; border-bottom: 1px solid #111; box-shadow: inset 0 0 0 999px #d7d7d7; -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact; }
@@ -177,6 +167,19 @@ function buildPrintDocument(deck) {
   <\/script>
 </body>
 </html>`;
+}
+
+function cardPageToTableHtml(pageCards) {
+  const rows = [];
+  for (let rowIndex = 0; rowIndex < 3; rowIndex += 1) {
+    const cells = [];
+    for (let columnIndex = 0; columnIndex < 3; columnIndex += 1) {
+      const cardIndex = rowIndex * 3 + columnIndex;
+      cells.push(`<td>${pageCards[cardIndex] || ""}</td>`);
+    }
+    rows.push(`<tr>${cells.join("")}</tr>`);
+  }
+  return `<section class="card-page"><table class="card-table"><tbody>${rows.join("")}</tbody></table></section>`;
 }
 
 function cardToPrintHtml(card) {
