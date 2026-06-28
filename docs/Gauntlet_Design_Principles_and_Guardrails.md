@@ -9,7 +9,7 @@ This is not a rules document. It is a design reference. Its job is to help evalu
 
 ## 1. Core Identity
 
-Gauntlet is a tactical card-and-territory game about advancing across a contested battlefield, capturing ground, managing limited cards, and defeating the opponent in their Heartland.
+Gauntlet is a tactical card-and-territory game about running the Gauntlet: advancing across a contested battlefield, capturing ground, managing limited cards, surviving counterattacks, and creating decisive breakthrough pressure.
 
 The core experience should emphasize:
 
@@ -23,6 +23,8 @@ The core experience should emphasize:
 - Distinct strategic styles without overwhelming the rules engine.
 
 The game should feel tense, interactive, and positional. A player should usually feel that where they are on the Gauntlet matters.
+
+Heartlands are important rules endpoints and final defensive positions, but the player-facing identity should center on the Gauntlet itself.
 
 ---
 
@@ -55,11 +57,21 @@ A card belongs with a faction if it represents how that faction tries to win, no
 Examples:
 
 - Military wins through conquest, battlefield momentum, and operational force.
-- Diplomats win through Terms, Influence, concessions, legitimacy, and pressure.
+- Diplomats win through Terms, concessions, legitimacy, treaty pressure, and political consequences.
 - Inquisition wins through Conviction, condemnation, suppression, and purging enemy power.
-- Magic/Arcane wins through ritual, transformation, Witchcraft, Graveyard interaction, and rule-bending.
+- Arcane wins through ritual, transformation, Witchcraft, Graveyard interaction, and rule-bending.
 - Financiers win through Treasury, investment, ownership, Capital, and delayed payoff.
 - Intelligence wins through hidden information, infiltration, sabotage, and Special Operation.
+
+### Parallel Progress principle
+
+Both players should usually be able to make meaningful progress toward at least one victory condition at the same time.
+
+Base Gauntlet can become a pure tug-of-war: when one player advances, the other player is often only losing ground. Faction victory conditions should reduce that problem by creating overlapping clocks and parallel forms of progress.
+
+A faction victory condition should not merely confirm that a player is already winning the normal board-position race. It should let that faction make productive progress even when the opponent is also making productive progress.
+
+The goal is for both players to feel late into the game that they are doing something meaningful and could still win.
 
 ---
 
@@ -145,7 +157,7 @@ Faction symbols are locked for reference and identity purposes, but are not curr
 | Military | Crossed swords |
 | Diplomats | Laurel |
 | Inquisition | Wide-brimmed buckle hat |
-| Magic/Arcane | Pentagram |
+| Arcane | Pentagram |
 | Financiers | Coin |
 | Intelligence | Eye |
 
@@ -188,6 +200,8 @@ A card may have:
 - Neutral or advanced-neutral status.
 - Future compatibility with factions added later.
 
+Before moving a neutral card into a faction, ask whether it provides important shared counterplay, emergency defense, pacing correction, comeback tools, or interaction that other factions still need.
+
 ---
 
 ## 6. Victory Design Principles
@@ -200,11 +214,45 @@ Faction-specific victories, where used, should be:
 - Visible.
 - Interactive.
 - Disruptable.
-- Tied to the board or existing game state.
+- Tied to the board, battles, cards, resources, or existing game state.
 - Not sudden hidden wins.
 - Not dependent on the opponent voluntarily enabling the faction.
+- Not merely win-more versions of normal conquest.
 
 Not every faction needs an alternate victory condition. Military, as the baseline conquest faction, should go all-in on the normal Conquest/Heartland victory rather than using a separate alternate win condition.
+
+### Alternate victory progress
+
+Alternate victories should create parallel progress, but they should still be tied to Gauntlet events.
+
+Good alternate victory progress should come from things like:
+
+- Movement.
+- Battles.
+- Occupation.
+- Capture.
+- Counterattacks.
+- Card commitments.
+- Battle draw.
+- Territory position.
+- Accepted or refused Terms.
+- Cards entering or leaving the Graveyard.
+- Visible faction resources.
+- Revealed or contestable board states.
+
+Alternate victories should not become disconnected solitaire systems. They should create pressure the opponent can see, understand, race, disrupt, or answer through normal play.
+
+### Avoid win-more conditions
+
+A faction victory condition should not require that faction to already be succeeding at the normal conquest path unless conquest is that faction's actual identity.
+
+If an alternate victory requires the player to already have superior board position, it risks becoming a win-more condition rather than a real alternative path.
+
+The test is:
+
+> Can this faction make progress toward its victory condition while the opponent is making progress toward theirs?
+
+If not, the condition should be revised.
 
 ---
 
@@ -258,18 +306,18 @@ Military should not simply be “normal Gauntlet, but better.” Its identity sh
 ## 8. Diplomats Principles
 
 **Symbol:** Laurel.  
-**Mechanic:** Terms and Influence.  
-**Status:** Terms engine is promising but still under active design. Diplomatic victory condition needs significant work.
+**Mechanic:** Terms, Influence, Treaty Articles.  
+**Victory:** Peace Treaty.
 
 ### Diplomatic identity
 
 Diplomats should make conflict politically costly.
 
-They should not win by avoiding the game. They should still contest the board, pressure Territories, and create difficult decisions.
+They should not win by avoiding the game. They should still contest battles, pressure positions, and create difficult decisions, but their alternate victory should let them win while under military pressure rather than requiring them to reverse the board first.
 
 A good Diplomat turn should often feel like:
 
-> Accept Terms and give the Diplomat controlled progress, or refuse Terms and fight under diplomatic disadvantage.
+> Accept Terms and give the Diplomat controlled treaty progress, or refuse Terms and risk letting the Diplomat vindicate the Proposal through battle.
 
 ### Terms terminology
 
@@ -281,6 +329,8 @@ Use **Terms** wherever natural:
 
 Use **Proposal** only when referring to a specific selectable option from the Proposal list, or where the plural “Terms” would be awkward.
 
+Use **Treaty Article** for a Proposal that has been ratified toward Peace Treaty.
+
 ### Core Terms structure
 
 Before any battle involving the Diplomat, whether attacking or defending, the Diplomat may offer Terms by choosing one Proposal.
@@ -291,12 +341,16 @@ If they accept Terms:
 
 - Resolve the Proposal’s accepted effect.
 - No battle occurs.
+- The chosen Proposal is ratified as a Treaty Article if it has not already been ratified.
 
 If they refuse Terms:
 
 - Resolve the Proposal’s refused effect.
 - The battle occurs normally.
-- If the Diplomat wins the resulting battle, the Diplomat gains 1 Influence.
+- If the Diplomat wins the resulting battle, the chosen Proposal is ratified as a Treaty Article if it has not already been ratified.
+- If the Diplomat loses the resulting battle, the Diplomat loses Influence as normal.
+
+A Proposal can be ratified only once, but it may still be offered again later.
 
 ### Terms guardrails
 
@@ -348,32 +402,42 @@ Influence should not depend entirely on the opponent accepting Terms.
 The Proposal list is under revision. Current candidates include:
 
 - Orderly Withdrawal.
-- Prisoner Exchange.
+- De-escalation.
+- Capitulation.
 - Open Channels.
-- Safe Conduct.
-- Mediation.
-- Sanctions or another Asset/economic pressure Proposal.
+- Mutual Disarmament.
+- Prisoner Exchange.
+- Rebuilding Pact.
 - Ultimatum.
-- Recognition.
+- Diplomatic Recognition.
 
 Important pending revision:
 
-- The old “Mutual Disarmament” version needs work.
-- “Battle card” terminology should be avoided unless explicitly defined.
 - Accepted effects that avoid battle cannot refer to battle-drawn cards because battle draw has not happened yet.
 - Refusal effects should be on the Diplomat’s side.
+- Proposals should create meaningful accept/refuse choices rather than obvious traps.
 
 ### Diplomatic victory
 
-The Diplomatic victory condition is unresolved.
+Peace Treaty is the Diplomatic victory condition.
+
+The current direction:
+
+> At the start of your turn, after resolving any captures, if you have ratified five different Proposals as Treaty Articles, you win by Peace Treaty.
+
+A Proposal is ratified as a Treaty Article when either:
+
+- the opponent accepts Terms for that Proposal, or
+- the opponent refuses Terms for that Proposal and the Diplomat wins the resulting battle.
 
 Known constraints:
 
 - No Accord markers.
 - Should use existing game state where possible.
 - Should not be shut off by the opponent always refusing Terms.
-- Should not be merely “worse conquest.”
-- Should require both political progress and meaningful board presence.
+- Should not require the Diplomat to already be winning the normal conquest path.
+- Should allow the Diplomat to make progress while the opponent makes board progress.
+- Should remain tied to battles, Terms, accepted settlements, and vindicated refusals.
 
 ---
 
@@ -412,18 +476,19 @@ This needs careful timing review.
 
 ### Design risks
 
-Inquisition should not become only an anti-Magic faction.
+Inquisition should not become only an anti-Arcane faction.
 
 It needs a functional game plan against all factions.
 
+Purification creates a parallel clock through card attrition, but it must not make the opponent feel like playing the game simply destroys their ability to keep playing.
+
 ---
 
-## 10. Magic / Arcane Principles
+## 10. Arcane Principles
 
-**Working name:** Magic is probably too generic. Better names are needed.  
-**Possible names:** Arcane, Dark Arts, or something stronger.  
+**Working name:** Arcane.  
 **Symbol:** Pentagram.  
-**Victory direction:** Something with “Ritual” in the name.
+**Victory direction:** Ritual.
 
 ### Identity
 
@@ -451,6 +516,8 @@ Possible directions:
 - Ritual of Ascendance.
 - The Great Ritual.
 - Rite of Completion.
+
+Rites may require battle or board interaction, but Ritual as a whole should not require Arcane to already have superior board position.
 
 ### Design risks
 
@@ -493,6 +560,8 @@ Financiers are currently under-supported by existing cards.
 
 The faction needs more cards that interact with Treasury, Capital, Deeds, interest, debt, and purchase timing.
 
+Controlling Interest should create a parallel ownership clock without becoming a disconnected accounting minigame or requiring the Financier to be winning normal conquest.
+
 ---
 
 ## 12. Intelligence Principles
@@ -510,98 +579,12 @@ It should feel clever, elusive, and difficult to pin down, but not annoying or o
 
 The Intelligence victory should be called **Special Operation**.
 
-The exact win condition remains under development.
+It is acceptable for Special Operation to become harder or more expensive when Intelligence loses board position, as long as it does not become impossible and does not require Intelligence to erase the opponent's board progress before making its own progress.
+
+The key distinction from the old tug-of-war problem is that the opponent's progress may increase pressure or cost, but Intelligence progress should not be automatically erased merely because the opponent is also advancing.
 
 ### Design risks
 
 Intelligence is already strongly supported by the existing card pool.
 
 The main risk is creating a faction that causes too much checking, interruption, or hand manipulation.
-
-Hidden information should create meaningful choices, not constant procedural friction.
-
----
-
-## 13. Naming and Terminology Principles
-
-Good Gauntlet terminology should be:
-
-- Natural to say aloud.
-- Clear in rules text.
-- Distinct from existing card types and phases.
-- Thematic without being too ornate.
-- Reusable across cards and rules.
-
-Avoid singular terms that sound awkward, such as “one Term.”
-
-For Diplomats:
-
-- Use “Terms” broadly.
-- Use “Proposal” for a specific item from the Proposal list.
-
-For Military:
-
-- Use “Command” for the resource.
-- Use “Orders” for leader-specific spend options.
-
----
-
-## 14. Current Open Questions
-
-### Global
-
-- How much complexity should remain in v0.5.7 default core decks?
-- Which advanced cards stay in the master pool but out of starter play?
-- How should faction legality be represented in canonical data and deck lists?
-
-### Military
-
-- Is “Military” the final faction name, or should it become Vanguard, Legion, War Council, etc.?
-- Are the current Orders balanced?
-- Does Fortify capturing immediately create healthy pacing?
-
-### Diplomats
-
-- What is the final Proposal list?
-- What is the Diplomatic victory condition?
-- How much Influence should the Diplomat be able to store?
-- Which Proposals should cost Influence?
-- How does the Terms engine avoid slowing the game?
-
-### Inquisition
-
-- What exactly can Conviction be spent on?
-- How does Purification work without excessive tracking?
-- How does Witch Hunter timing work?
-
-### Magic / Arcane
-
-- What is the faction’s final name?
-- What is the Ritual victory condition?
-- How are Witchcraft, Graveyard use, and ritual progress templated?
-
-### Financiers
-
-- How exactly does Treasury work?
-- How do Deeds work without new markers?
-- How can the opponent disrupt economic progress?
-
-### Intelligence
-
-- What is the Special Operation win condition?
-- How is infiltration tracked without new markers?
-- How much hidden-information manipulation is too much?
-
----
-
-## 15. Working Summary
-
-Gauntlet should not solve complexity by deleting everything interesting.
-
-Instead:
-
-> Keep the core game clean, and give complex effects a clear home where their complexity becomes thematic and legible.
-
-The core game should prove that the territory duel works.
-
-Factions should prove that Gauntlet can support different methods of winning without collapsing into stalemate or rules overload.
