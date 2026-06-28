@@ -91,7 +91,7 @@ function buildPrintDocument(deck) {
   ];
 
   const cardPages = chunk(printableCards, 9)
-    .map(pageCards => `<section class="card-page"><div class="card-grid">${pageCards.join("")}</div></section>`)
+    .map(pageCards => `<section class="card-page">${pageCards.map((cardHtml, index) => `<div class="card-slot card-slot-${index}">${cardHtml}</div>`).join("")}</section>`)
     .join("");
 
   return `<!doctype html>
@@ -108,10 +108,19 @@ function buildPrintDocument(deck) {
     .deck-summary { break-after: page; page-break-after: always; padding: 0.15in; }
     .summary { font-size: 10pt; margin-bottom: 0.15in; }
     .decklist { columns: 2; font-size: 9.5pt; margin-bottom: 0.2in; }
-    .card-page { break-after: page; page-break-after: always; height: 10.5in; overflow: hidden; }
+    .card-page { position: relative; width: 7.5in; height: 10.5in; margin: 0 auto; overflow: hidden; break-after: page; page-break-after: always; }
     .card-page:last-of-type { break-after: auto; page-break-after: auto; }
-    .card-grid { display: grid; grid-template-columns: repeat(3, 2.5in); grid-template-rows: repeat(3, 3.5in); gap: 0; align-items: start; justify-content: center; height: 10.5in; overflow: hidden; }
-    .print-card { --card-text-size: 7.1pt; --card-label-size: 7.2pt; position: relative; width: 2.5in; height: 3.5in; overflow: hidden; border: 1px solid #111; border-radius: 0; background: #fff; break-inside: avoid; page-break-inside: avoid; }
+    .card-slot { position: absolute; width: 2.5in; height: 3.5in; overflow: visible; }
+    .card-slot-0 { left: 0; top: 0; }
+    .card-slot-1 { left: 2.5in; top: 0; }
+    .card-slot-2 { left: 5in; top: 0; }
+    .card-slot-3 { left: 0; top: 3.5in; }
+    .card-slot-4 { left: 2.5in; top: 3.5in; }
+    .card-slot-5 { left: 5in; top: 3.5in; }
+    .card-slot-6 { left: 0; top: 7in; }
+    .card-slot-7 { left: 2.5in; top: 7in; }
+    .card-slot-8 { left: 5in; top: 7in; }
+    .print-card { --card-text-size: 7.1pt; --card-label-size: 7.2pt; position: relative; width: 2.5in; height: 3.5in; overflow: hidden; border: 1px solid #111; border-radius: 0; background: #fff; }
     .main-card { display: grid; grid-template-rows: 0.38in 1fr 0.16in; }
     .card-header { position: relative; display: flex; align-items: center; min-height: 0.38in; padding: 0.05in 0.46in 0.05in 0.1in; background: #d7d7d7 !important; border-bottom: 1px solid #111; box-shadow: inset 0 0 0 999px #d7d7d7; -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact; }
     .card-name { font-weight: 800; font-size: 12.6pt; line-height: 1.02; }
