@@ -130,7 +130,7 @@ function buildPrintDocument(deck) {
     .territory-body { padding: 0.08in 0.1in; overflow: hidden; }
     .territory .text { font-size: var(--card-text-size); line-height: 1.12; }
     .territory-footer { display: flex; justify-content: space-between; align-items: center; padding: 0.035in 0.06in; background: #d7d7d7 !important; border-top: 1px solid #111; box-shadow: inset 0 0 0 999px #d7d7d7; font-size: 5.3pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact; }
-    @page { size: letter; margin: 0.1in; }
+    @page { size: letter; margin: 0.22in 0.1in 0.04in 0.1in; }
   </style>
 </head>
 <body>
