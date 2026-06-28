@@ -96,6 +96,7 @@ function buildPrintDocument(deck) {
 <html>
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>${escapeHtml(deck.deckName)} — ${escapeHtml(deck.version)}</title>
   <style>
     * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact; }
@@ -103,6 +104,9 @@ function buildPrintDocument(deck) {
     h1 { font-size: 22pt; margin: 0 0 0.06in; }
     h2 { font-size: 12pt; margin: 0 0 0.08in; break-after: avoid; }
     p { margin: 0 0 0.08in; }
+    .manual-print-bar { position: sticky; top: 0; z-index: 20; display: none; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 16px; background: #1f1a14; color: #fff; font-size: 14px; box-shadow: 0 2px 12px rgba(0,0,0,0.25); }
+    .manual-print-bar.ready { display: flex; }
+    .manual-print-bar button { appearance: none; border: 0; border-radius: 999px; padding: 10px 16px; font-weight: 700; background: #fff; color: #1f1a14; }
     .deck-summary { break-after: page; page-break-after: always; padding: 0.15in; }
     .summary { font-size: 10pt; margin-bottom: 0.15in; }
     .decklist { columns: 2; font-size: 9.5pt; margin-bottom: 0.2in; }
@@ -136,9 +140,11 @@ function buildPrintDocument(deck) {
     .territory .text { font-size: var(--card-text-size); line-height: 1.12; }
     .territory-footer { display: flex; justify-content: space-between; align-items: center; padding: 0.035in 0.06in; background: #d7d7d7 !important; border-top: 1px solid #111; box-shadow: inset 0 0 0 999px #d7d7d7; font-size: 5.3pt; -webkit-print-color-adjust: exact; print-color-adjust: exact; color-adjust: exact; }
     @page { size: letter; margin: 0.25in 0.1in 0.04in 0.1in; }
+    @media print { .manual-print-bar { display: none !important; } }
   </style>
 </head>
 <body>
+  <div class="manual-print-bar" id="manualPrintBar"><span id="printReadyText">Preparing print view...</span><button id="manualPrintButton" type="button">Open print dialog</button></div>
   <section class="deck-summary">
     <h1>${escapeHtml(deck.deckName)}</h1>
     <p class="summary">${escapeHtml(deck.version)} · ${escapeHtml(deck.cardCount)}/${escapeHtml(deck.minimumCards)} main-deck cards · ${escapeHtml(deck.pointTotal)}/${escapeHtml(deck.maximumPoints)} points · ${escapeHtml(deck.territoryCount)}/${escapeHtml(deck.territoryRequirement)} Territories · ${deck.valid ? "Valid" : "Invalid"}</p>
@@ -147,6 +153,14 @@ function buildPrintDocument(deck) {
   </section>
   ${cardPages}
   <script>
+    function isMobilePrintPreview() {
+      return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent);
+    }
+
+    function nextFrame() {
+      return new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    }
+
     function fitPrintCards() {
       document.querySelectorAll('.fit-target').forEach(target => {
         let textSize = target.classList.contains('territory-inner') ? 8 : 7.1;
@@ -160,10 +174,29 @@ function buildPrintDocument(deck) {
         }
       });
     }
-    window.addEventListener('load', () => {
+
+    async function preparePrintView() {
+      if (document.fonts?.ready) {
+        try { await document.fonts.ready; } catch (error) {}
+      }
       fitPrintCards();
-      setTimeout(() => window.print(), 300);
+      document.body.offsetHeight;
+      await nextFrame();
+      await nextFrame();
+
+      if (isMobilePrintPreview()) {
+        document.getElementById('printReadyText').textContent = 'Print view is ready.';
+        document.getElementById('manualPrintBar').classList.add('ready');
+      } else {
+        setTimeout(() => window.print(), 300);
+      }
+    }
+
+    document.getElementById('manualPrintButton').addEventListener('click', () => {
+      window.print();
     });
+
+    window.addEventListener('load', preparePrintView);
   <\/script>
 </body>
 </html>`;
