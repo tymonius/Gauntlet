@@ -254,12 +254,14 @@ If the opponent accepts Terms:
 
 - No battle occurs.
 - Resolve the Proposal's accepted effect.
+- The chosen Proposal is ratified as a Treaty Article if it has not already been ratified.
 
 If the opponent refuses Terms:
 
 - Resolve the Proposal's refused effect, if any.
 - The battle occurs normally.
 - Apply Loss of Face after the battle.
+- If the Diplomat wins the resulting battle, the chosen Proposal is ratified as a Treaty Article if it has not already been ratified.
 
 A Proposal cannot be offered if its accepted effect would leave both players on the same space.
 
@@ -271,11 +273,20 @@ When Terms are refused, resolve the battle normally.
 - If the Diplomat loses the resulting battle, the Diplomat loses **1 Influence**.
 - Influence cannot be reduced below 0.
 
+### Treaty Articles
+
+Each Proposal may be ratified once as a **Treaty Article**.
+
+A Proposal is ratified as a Treaty Article when either:
+
+- the opponent accepts Terms for that Proposal, or
+- the opponent refuses Terms for that Proposal and the Diplomat wins the resulting battle.
+
+A Proposal that has already been ratified may still be offered again, but it does not count again toward Peace Treaty.
+
 ### Diplomatic Victory: Peace Treaty
 
-At the start of your turn, after resolving any captures, if you have at least **8 Influence** and control at least **one enemy Territory**, you win.
-
-A Territory is an enemy Territory if it began the game on your opponent's side of the Gauntlet. Heartlands are not Territories and do not count.
+At the start of your turn, after resolving any captures, if you have ratified at least **five different Proposals** as Treaty Articles, you win by **Peace Treaty**.
 
 ### Proposal Order
 
@@ -552,15 +563,15 @@ If you lose a battle after beginning this Rite and before completing it, this Ri
 
 ### Rite of Crossing
 
-During your Action phase after movement, instead of playing an Action card, you may begin this Rite only if you won a battle this turn that caused you to occupy an enemy Territory.
+During your Action phase after movement, instead of playing an Action card, you may begin this Rite only if you won a battle this turn that caused you to occupy a Territory your opponent controlled immediately before that battle.
 
 To begin this Rite, send one Arcane card from your hand to your Graveyard. If you have no Arcane cards in hand, you may reveal your hand and send one Arcane card from your discard pile to your Graveyard instead.
 
-Complete this Rite at the beginning of your next turn, after resolving captures, if you still occupy or control that enemy Territory.
+Complete this Rite at the beginning of your next turn, after resolving captures, if you still occupy or control that Territory.
 
-If you no longer occupy or control that enemy Territory before this Rite is complete, this Rite is interrupted and resets.
+If you no longer occupy or control that Territory before this Rite is complete, this Rite is interrupted and resets.
 
-A Territory is an enemy Territory if it began the game on your opponent's side of the Gauntlet. Heartlands are not Territories and do not count.
+Heartlands are not Territories and do not count.
 
 ### Alchemist
 
@@ -904,6 +915,7 @@ Mission Control cannot be used to start the Special Operation.
 - Missions should usually involve hidden information, movement, enemy Territory, battle commitments, battle draw, Surveillance, Interference, terrain, timing, or withdrawal.
 - Mission requirements should generally be achievable within one or two turns if pursued, but disruptable if the opponent reads the plan.
 - Higher-value Intelligence cards should generally have harder or riskier Mission requirements because completed Missions grant Intel equal to deckbuilding value and high-value Special Operation cards reduce the final Intel cost.
+- Special Operation may become harder or more expensive as Intelligence loses board position, but it should not become impossible.
 - Card migration, Intelligence-specific card text, and exact Mission requirements are still in progress.
 
 ---
@@ -970,8 +982,9 @@ A later commercial product may divide that material into starter products and ex
 
 ### Diplomats
 
-- Is 8 Influence the right Peace Treaty threshold?
-- Is one controlled enemy Territory enough for Peace Treaty?
+- Is five ratified Treaty Articles the right Peace Treaty threshold?
+- Does ratifying Proposals through accepted Terms or refused-and-vindicated Terms create good incentives?
+- Does Peace Treaty remain viable while the Diplomat is losing board position?
 - Does Loss of Face sufficiently prevent Influence from becoming a ticking clock?
 - Are De-escalation and Capitulation distinct enough in play?
 - Is Rebuilding Pact too generous when refused?
@@ -999,7 +1012,7 @@ A later commercial product may divide that material into starter products and ex
 - Does Rite of Echoes create interesting duplicate/card-copy deckbuilding without becoming fiddly?
 - Is Rite of Blood too difficult before Transmutation is unlocked?
 - Does Transmutation make Rite of Blood satisfyingly achievable without trivializing it?
-- Is Rite of Crossing sufficiently interactive through the occupation/counterattack window?
+- Does Rite of Crossing work cleanly when it can use any Territory the opponent controlled immediately before the battle?
 - Does Invocation create enough Graveyard play without undoing Graveyard pressure too easily?
 - Is Transmutation's battle bonus too swingy when sacrificing high-value cards?
 - Are Alchemist and Spirit Walker comparably strong?
@@ -1031,6 +1044,7 @@ A later commercial product may divide that material into starter products and ex
 - Is Operation Progress greater than opponent-controlled Territories the right Special Operation readiness requirement?
 - Does the Special Operation failure rule create enough board counterplay after the Special Operation begins?
 - Is the final Intel cost formula for Special Operation too high, too low, or too dependent on card value?
+- Does Special Operation remain harder under board pressure without becoming impossible?
 - Does Surveillance once per battle create interesting choices about which face-down card to inspect?
 - Does Interference feel disruptive without feeling destructive or too close to Inquisition?
 - Do Intelligence mirror matches remain manageable with both players having one Surveillance per battle?
