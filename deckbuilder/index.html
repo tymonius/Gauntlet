@@ -58,14 +58,37 @@
       </div>
     </section>
 
-    <section class="panel validation-top-panel" aria-labelledby="validationHeading">
+    <section class="panel deck-management-panel" aria-labelledby="deckManagementHeading">
       <div class="panel-heading">
         <div>
-          <h2 id="validationHeading">Validation</h2>
-          <p class="muted">Deck construction issues and warnings appear here.</p>
+          <h2 id="deckManagementHeading">Deck management</h2>
+          <p class="muted">Validation, saved decks, and JSON import.</p>
         </div>
       </div>
-      <ul id="validationList" class="validation-list"></ul>
+      <div class="deck-management-grid">
+        <section class="deck-management-section" aria-labelledby="validationHeading">
+          <h3 id="validationHeading">Validation</h3>
+          <ul id="validationList" class="validation-list"></ul>
+        </section>
+
+        <section class="deck-management-section" aria-labelledby="savedDecksHeading">
+          <h3 id="savedDecksHeading">Saved decks</h3>
+          <div class="saved-controls">
+            <select id="savedDeckSelect"></select>
+            <div class="button-row">
+              <button id="loadDeckButton" type="button" class="secondary">Load</button>
+              <button id="deleteDeckButton" type="button" class="danger secondary">Delete</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="deck-management-section" aria-labelledby="importHeading">
+          <h3 id="importHeading">Import deck JSON</h3>
+          <p class="muted">Paste a deck exported from this tool.</p>
+          <textarea id="importJson" rows="4" placeholder="Paste exported deck JSON here"></textarea>
+          <button id="importJsonButton" type="button" class="secondary full-width">Import JSON</button>
+        </section>
+      </div>
     </section>
 
     <section class="dashboard" aria-label="Deck validation summary">
@@ -144,24 +167,6 @@
             <button id="clearMainDeckButton" type="button" class="danger secondary">Clear cards</button>
           </div>
           <div id="deckCards" class="deck-list empty-state">No main-deck cards yet.</div>
-        </section>
-
-        <section class="panel side-panel" aria-labelledby="savedDecksHeading">
-          <h2 id="savedDecksHeading">Saved decks</h2>
-          <div class="saved-controls">
-            <select id="savedDeckSelect"></select>
-            <div class="button-row">
-              <button id="loadDeckButton" type="button" class="secondary">Load</button>
-              <button id="deleteDeckButton" type="button" class="danger secondary">Delete</button>
-            </div>
-          </div>
-
-          <hr />
-
-          <h2>Import deck JSON</h2>
-          <p class="muted">Paste a deck exported from this tool.</p>
-          <textarea id="importJson" rows="5" placeholder="Paste exported deck JSON here"></textarea>
-          <button id="importJsonButton" type="button" class="secondary full-width">Import JSON</button>
         </section>
       </div>
     </section>
