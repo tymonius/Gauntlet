@@ -89,8 +89,8 @@
     add.textContent = owned ? `Add (${owned})` : "Add";
     add.addEventListener("click", event => {
       event.stopPropagation();
-      addCard(card.name);
       state.selectedAvailableCard = card.name;
+      addCard(card.name);
     });
     actions.append(add);
 
@@ -149,8 +149,8 @@
     `;
 
     previewElement.querySelector("#previewAddCardButton")?.addEventListener("click", () => {
-      addCard(card.name);
       state.selectedAvailableCard = card.name;
+      addCard(card.name);
     });
   }
 
