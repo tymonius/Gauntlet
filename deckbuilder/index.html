@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="layout-columns.css" />
   <link rel="stylesheet" href="metric-cleanup.css" />
+  <link rel="stylesheet" href="validation-top.css" />
   <link rel="stylesheet" href="territory-cleanup.css" />
   <link rel="stylesheet" href="territory-browser.css" />
   <link rel="stylesheet" href="card-browser.css" />
@@ -55,6 +56,16 @@
           <button id="printDeckButton" type="button" class="secondary">Print / PDF</button>
         </div>
       </div>
+    </section>
+
+    <section class="panel validation-top-panel" aria-labelledby="validationHeading">
+      <div class="panel-heading">
+        <div>
+          <h2 id="validationHeading">Validation</h2>
+          <p class="muted">Deck construction issues and warnings appear here.</p>
+        </div>
+      </div>
+      <ul id="validationList" class="validation-list"></ul>
     </section>
 
     <section class="dashboard" aria-label="Deck validation summary">
@@ -135,13 +146,8 @@
           <div id="deckCards" class="deck-list empty-state">No main-deck cards yet.</div>
         </section>
 
-        <section class="panel side-panel" aria-labelledby="validationHeading">
-          <h2 id="validationHeading">Validation</h2>
-          <ul id="validationList" class="validation-list"></ul>
-
-          <hr />
-
-          <h2>Saved decks</h2>
+        <section class="panel side-panel" aria-labelledby="savedDecksHeading">
+          <h2 id="savedDecksHeading">Saved decks</h2>
           <div class="saved-controls">
             <select id="savedDeckSelect"></select>
             <div class="button-row">
