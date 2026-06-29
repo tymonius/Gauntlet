@@ -4,6 +4,10 @@ Gauntlet is a two-player tactical card-and-territory game about advancing across
 
 The game is currently in pre-release physical playtesting.
 
+## Playtest tools
+
+- [Gauntlet v0.5 Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder/) — build, validate, save, randomize, export, and print pre-faction v0.5 playtest decks.
+
 ## Game overview
 
 Players begin on opposite sides of a line of Territories. Each player builds a deck of cards and controls several starting Territories. On each turn, players draw cards, play Actions, bank Assets, move across the Gauntlet, contest Territories, and fight battles.
