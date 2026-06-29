@@ -7,6 +7,29 @@
 
   const PRINT_FONT_STACK = '"Noto Sans", Arial, Helvetica, sans-serif';
 
+  const PRINT_COSMETIC_CSS = `
+.card-header{padding-right:.44in!important;}
+.cost-circle{
+  top:.06in!important;
+  right:.14in!important;
+  width:.28in!important;
+  height:.28in!important;
+  min-width:.28in!important;
+  min-height:.28in!important;
+  border:1.25px solid #111!important;
+  border-radius:50%!important;
+  padding:0!important;
+  font-family:${PRINT_FONT_STACK}!important;
+  font-size:10.6pt!important;
+  font-weight:900!important;
+  line-height:1!important;
+  display:flex!important;
+  align-items:center!important;
+  justify-content:center!important;
+  text-align:center!important;
+}
+`;
+
   function standardizePrintFonts(html) {
     let next = html;
 
@@ -23,6 +46,10 @@
       "body{font-family:Arial,Helvetica,sans-serif;",
       `body{font-family:${PRINT_FONT_STACK};`
     );
+
+    if (!next.includes("/* print cosmetic overrides */")) {
+      next = next.replace("</style>", `/* print cosmetic overrides */\n${PRINT_COSMETIC_CSS}\n</style>`);
+    }
 
     return next;
   }
