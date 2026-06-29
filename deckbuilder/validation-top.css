@@ -5,15 +5,29 @@
 
 .deck-management-grid {
   display: grid;
-  grid-template-columns: minmax(18rem, 1.2fr) minmax(16rem, 0.8fr) minmax(18rem, 1fr);
-  gap: 1rem;
-  align-items: start;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0;
+  align-items: stretch;
 }
 
 .deck-management-section {
   display: grid;
+  align-content: start;
   gap: 0.45rem;
   min-width: 0;
+  padding: 0 1rem;
+}
+
+.deck-management-section:first-child {
+  padding-left: 0;
+}
+
+.deck-management-section:last-child {
+  padding-right: 0;
+}
+
+.deck-management-section + .deck-management-section {
+  border-left: 1px solid var(--border);
 }
 
 .deck-management-section h2,
@@ -23,8 +37,8 @@
 
 .deck-management-section .validation-list {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  gap: 0.45rem 0.75rem;
+  grid-template-columns: 1fr;
+  gap: 0.45rem;
   margin: 0;
 }
 
@@ -40,5 +54,18 @@
 @media (max-width: 1100px) {
   .deck-management-grid {
     grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+
+  .deck-management-section,
+  .deck-management-section:first-child,
+  .deck-management-section:last-child {
+    padding: 0;
+  }
+
+  .deck-management-section + .deck-management-section {
+    border-left: 0;
+    border-top: 1px solid var(--border);
+    padding-top: 1rem;
   }
 }
