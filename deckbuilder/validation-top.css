@@ -1,0 +1,20 @@
+.validation-top-panel {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.validation-top-panel .panel-heading {
+  margin-bottom: 0;
+}
+
+.validation-top-panel .validation-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
+  gap: 0.45rem 0.75rem;
+  margin: 0;
+}
+
+.validation-top-panel .validation-list:empty::before {
+  content: "No validation messages.";
+  color: var(--muted);
+}
