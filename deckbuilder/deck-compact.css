@@ -2,6 +2,25 @@
   gap: 0.45rem;
 }
 
+.compact-deck-section-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0.25rem 0 0.05rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.compact-deck-section-divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+
 .compact-deck-row {
   border: 1px solid var(--border);
   border-radius: 12px;
@@ -19,6 +38,11 @@
   background: #fff8ee;
   box-shadow: 0 8px 18px rgba(78, 41, 18, 0.1);
   transform: translateY(-1px);
+}
+
+.compact-deck-territory-row {
+  background: #fff6e8;
+  border-color: rgba(122, 66, 26, 0.35);
 }
 
 .compact-deck-main {
