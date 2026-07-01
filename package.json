@@ -7,7 +7,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "dev:cli": "tsx src/cli/dev-runner.ts"
+    "dev:cli": "tsx src/cli/dev-runner.ts",
+    "dev:gui": "tsx src/gui/dev-server.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
