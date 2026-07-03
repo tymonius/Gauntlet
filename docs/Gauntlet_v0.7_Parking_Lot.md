@@ -5,6 +5,78 @@
 
 ---
 
+## Engineer Faction / Overlay-Centered Faction
+
+### Concept
+
+A future **Engineer** faction may use Overlays as a cornerstone of its gameplay.
+
+The faction identity would be built around reshaping the Gauntlet itself rather than primarily conquering ground, negotiating around battles, exhausting the opponent, completing rites, buying leverage, or operating through hidden missions.
+
+Possible identity statement:
+
+> Engineers win by modifying the ground itself.
+
+### Overlay Direction
+
+Engineers could make Overlays a core system rather than an occasional faction-card tool.
+
+Potential Engineer interactions:
+
+- Place Overlays on Territories.
+- Upgrade existing Overlays.
+- Repair damaged or disabled Overlays.
+- Move, dismantle, or replace Overlays.
+- Build connected infrastructure across multiple Territories.
+- Turn contested ground into functional routes, fortifications, or resource nodes.
+
+Possible Engineer Overlay concepts:
+
+| Overlay | Concept |
+|---|---|
+| Bridge | Easier movement across or through a Territory |
+| Barricade | Makes entry, battle, or capture harder for the opponent |
+| Supply Depot | Supports draw, recovery, banking, or repeat use from a Territory |
+| Workshop | Upgrades, repairs, or repositions other Overlays |
+| Minefield | Punishes entering, retreating through, or fighting on a Territory |
+| Fortress | Makes a Territory harder to capture, possibly with upkeep |
+| Roadworks | Enables extra movement from or into a Territory |
+| Demolition Charges | Sacrifice to remove an Overlay or force withdrawal |
+
+### Possible Victory Direction
+
+The Engineer alternate victory should probably involve infrastructure, not merely control.
+
+Possible directions:
+
+- **Infrastructure Network:** win by controlling or occupying Territories containing Engineer Overlays in enough different positions.
+- **Connected Route:** win by completing a connected chain of Engineer Overlays across the Gauntlet.
+- **Built Environment:** win by having a specified number of upgraded or active Overlays in play at the start of your turn.
+
+The strongest version is probably some kind of connected route or infrastructure network, because it makes Engineers care about space, position, and board shape.
+
+### Design Guardrails
+
+Do not add Engineers to v0.6.
+
+Use Overlays sparingly in v0.6 so the future Engineer faction retains a distinct mechanical identity.
+
+Other factions may still receive occasional Overlays when the effect is clearly factional and board-local, such as Diplomats placing a Demilitarized Zone. However, avoid giving every faction broad buildable infrastructure unless the effect strongly belongs to that faction rather than to Engineers.
+
+When considering an Overlay for a non-Engineer faction, ask:
+
+- Does this effect need to exist on a specific Territory?
+- Does it create visible board-state counterplay?
+- Is it clearly an expression of this faction's identity?
+- Would it be cleaner as an Asset, Condition, Territory, or normal card?
+- Are we accidentally designing an Engineer card?
+
+### Current Decision
+
+Park Engineers for v0.7 or later. Do not implement in the v0.6 faction framework.
+
+---
+
 ## Day/Night Cycle Module
 
 ### Concept
