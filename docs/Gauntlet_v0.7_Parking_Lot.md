@@ -19,6 +19,8 @@ Possible identity statement:
 
 ### Overlay Direction
 
+Overlays should remain a normal Gauntlet card type that any faction may use when an effect is board-local and visible. Engineers would not own Overlays as an exclusive mechanic; they would specialize in Overlays and interact with them more deeply than other factions.
+
 Engineers could make Overlays a core system rather than an occasional faction-card tool.
 
 Potential Engineer interactions:
@@ -59,17 +61,17 @@ The strongest version is probably some kind of connected route or infrastructure
 
 Do not add Engineers to v0.6.
 
-Use Overlays sparingly in v0.6 so the future Engineer faction retains a distinct mechanical identity.
+Do not avoid Overlays in v0.6 merely to reserve the card type for Engineers. Other factions should be allowed to use Overlays when the effect is clearly factional, board-local, and more legible on a Territory than as an Asset, Condition, Territory, or normal card.
 
-Other factions may still receive occasional Overlays when the effect is clearly factional and board-local, such as Diplomats placing a Demilitarized Zone. However, avoid giving every faction broad buildable infrastructure unless the effect strongly belongs to that faction rather than to Engineers.
+Engineers should be protected through depth and specialization, not exclusivity. A non-Engineer faction might place one or two specific Overlays; Engineers should be the faction that upgrades, repairs, moves, chains, dismantles, and wins through Overlay infrastructure.
 
-When considering an Overlay for a non-Engineer faction, ask:
+When considering an Overlay for any faction, ask:
 
 - Does this effect need to exist on a specific Territory?
 - Does it create visible board-state counterplay?
 - Is it clearly an expression of this faction's identity?
 - Would it be cleaner as an Asset, Condition, Territory, or normal card?
-- Are we accidentally designing an Engineer card?
+- Is this a normal board-local faction effect, or does it require Engineer-level infrastructure depth?
 
 ### Current Decision
 
