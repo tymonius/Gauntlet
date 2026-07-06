@@ -117,6 +117,41 @@ Revision note:
 - If Assimilation does not cause an immediate capture, it follows its normal destination.
 - This makes the capture shortcut powerful but costly, and prevents immediate capture from being too clean or reusable.
 
+### 5. Attrition
+
+Cost: 3
+
+Current classification: Advanced Neutral / Watchlist
+
+Likely faction: Inquisition / Military watchlist
+
+Action: Bank Attrition as an Asset. Whenever your opponent loses a battle against you, each card they played from their battle draw goes to their Graveyard instead of their discard pile.
+
+Battle: If your opponent loses this battle, place every card from their initial battle draw in their Graveyard.
+
+Reminder: The initial battle draw is the first battle-draw amount before additional or replacement cards; if fewer cards were drawn, affect all of them.
+
+Decision: Keep as Advanced Neutral / Watchlist.
+
+Status: Keep concept; watch closely.
+
+Neutral-removal check:
+
+- Attrition is thematically close to Inquisition, but it overlaps heavily with Inquisition's built-in Condemnation.
+- It is not cleanly Military because it grinds down the opponent's card economy rather than accelerating conquest, capture, or breakthrough pressure.
+- Keeping it as Advanced Neutral preserves a shared attrition tool without making Inquisition's core pressure redundant.
+
+Faction-mechanic check:
+
+- As an Inquisition card, current Attrition may stack too harshly with Condemnation.
+- As a Military card, current Attrition points toward exhaustion rather than conquest.
+- The Battle effect is the more distinctive piece because it can hit the entire initial battle draw, not only the played battle-drawn card.
+
+Revision note:
+
+- If Attrition later becomes an Inquisition faction card, rework it so it does not merely duplicate Condemnation.
+- Watch whether the Asset version is too punishing in long games or too efficient as a neutral card-denial engine.
+
 ## Next Card
 
-5. Attrition
+6. Blockade
