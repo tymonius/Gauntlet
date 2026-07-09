@@ -39,6 +39,7 @@ Safe v0.6-level work may include:
 - Clarifying what **withdraw** means when the withdrawing player is attacking or defending.
 - Swapping the names of **Orderly Withdrawal** and **De-escalation** if the names better fit the current effects.
 - Recording possible future Diplomat cards, such as **Demilitarized Zone**, for the faction-card pass.
+- Recording possible **Sanctions** cards, such as **Blockade**, for the faction-card pass.
 
 Do not fully rewrite the Terms economy or rebalance all Proposals for v0.6.
 
@@ -66,6 +67,32 @@ The Diplomat should want Terms refused only when they believe they can win the r
 
 ---
 
+## Sanctions Direction
+
+Diplomats may have a **Sanctions** subtheme.
+
+Sanctions represent coercive diplomatic pressure that follows rejected Terms. They should not just be generic hand destruction or resource denial; they should be tied to the negotiation loop.
+
+Possible Sanctions pattern:
+
+- The Diplomat offers Terms.
+- If the opponent refuses, the Diplomat may impose or escalate Sanctions.
+- Sanctions create an ongoing penalty, restriction, or pressure point.
+- If the opponent later accepts Terms, lifting one or more Sanctions may be part of the settlement.
+
+**Blockade** is the first candidate for this treatment.
+
+Blockade direction:
+
+- Reframe as a Diplomat faction card rather than advanced neutral.
+- It may be played when Terms are rejected.
+- It may be discarded as a condition or consequence of Terms being accepted.
+- Its hand-pressure and battle-draw suppression should feel like sanctioned pressure rather than Inquisition-style punishment or Financier-style market control.
+
+Future question: determine whether **Financiers** can also impose Sanctions. If they can, Financier Sanctions should probably come from economic leverage, Deeds, Capital, or Treasury pressure rather than diplomatic legitimacy or rejected Terms.
+
+---
+
 ## Open v0.6.1 Questions
 
 - Should Proposal costs always be paid as staked Influence?
@@ -75,6 +102,8 @@ The Diplomat should want Terms refused only when they believe they can win the r
 - Should there be a cap on Influence?
 - Should Demilitarized Zone be a Proposal, a faction card, or both?
 - Should Diplomats have more Overlay-based faction cards?
+- How many Sanctions cards should Diplomats have?
+- Can Financiers also impose Sanctions, and if so, what distinguishes economic Sanctions from diplomatic Sanctions?
 - Are nine Proposals too many once each Proposal has a stronger accept/refuse fork?
 
 ---
