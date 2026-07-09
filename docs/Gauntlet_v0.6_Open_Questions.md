@@ -6,14 +6,20 @@ This file is for questions that should not be treated as final decisions yet. Wh
 
 ---
 
-## Highest-priority audit items
+## Recently closed audit items
 
 ### Card review log merge
 
-- Merge `docs/Gauntlet_v0.6_Card_Review_Log_Addendum_2026-07-09.md` into `docs/Gauntlet_v0.6_Card_Review_Log.md`.
-- Correct Assimilation in the main log from Military faction card to Advanced Neutral / Watchlist.
-- Add Insurrection to the main log.
-- Mark Invasion as tabled pending audit completion.
+**Status:** Closed.
+
+- Assimilation corrected in the main card review log from Military faction card to Advanced Neutral / Watchlist.
+- Insurrection added to the main card review log.
+- Invasion marked as tabled pending audit completion.
+- The dated addendum remains as an audit artifact but no longer needs to be treated as the active correction layer.
+
+---
+
+## Highest-priority audit items
 
 ### Invasion
 
@@ -87,6 +93,7 @@ Before moving any neutral card into a faction, answer:
 
 ## Repo/process questions
 
-- Create or verify a complete repo file inventory. Current connector access does not expose a direct directory-listing action, so file inventory must be built from known paths, commit history, and fetched files unless a better listing method is available.
-- Decide whether addendum files should be merged into main source files immediately or retained as dated audit checkpoints.
+- Continue repo file inventory for `.github/workflows`, `src` subfolders, and any release-package binary file names still truncated in screenshots.
+- Decide whether addendum files should remain as dated audit artifacts or be removed after the audit stabilizes.
 - Decide whether the v0.6 Working Rules should absorb low-risk items from `Gauntlet_v0.6_Rules_Cleanup.md` so there is only one active rules source.
+- Decide whether prior conversation leads should be promoted from `Gauntlet_v0.6_Conversation_Audit_Leads.md` into durable design docs, parked for v0.7, or closed as already documented.
