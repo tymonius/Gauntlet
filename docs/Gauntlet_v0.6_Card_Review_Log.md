@@ -227,6 +227,23 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
+### 14. Decoys
+
+**v0.6 classification:** Core Neutral  
+**v0.6 cost:** 3
+
+**v0.6 rule direction:** Keep as neutral protection against Asset removal and Battle-card cancellation.
+
+**Release notes:**
+
+- Keep neutral as shared protection.
+- Do not move to Intelligence just because of deception flavor.
+- The Action side protects one affected Asset by discarding Decoys, so it is a limited shield rather than permanent protection.
+- Clarify whether Decoys protects only against **cancel** effects or also against **no effect / ignored** effects.
+- Current recommendation: keep it limited to cancellation so it does not blunt every hard answer.
+
+---
+
 ## Next Card
 
-14. Decoys
+15. Embargo
