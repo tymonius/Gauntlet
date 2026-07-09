@@ -79,6 +79,69 @@ Park Engineers for v0.7 or later. Do not implement in the v0.6 faction framework
 
 ---
 
+## Multiplayer / Four-Player Variants
+
+### Concept
+
+A future v0.7+ module may support four-player Gauntlet.
+
+This should not be added to v0.6. It should be explored only after the six-faction framework is stable.
+
+### 2v2 Dual-Lane Prototype
+
+Prior discussion explored a four-player variant with a two-tile-wide / 12-Territory Gauntlet and two players on each side.
+
+Possible prototype:
+
+- 6 columns x 2 rows.
+- Two players per team.
+- Alternating individual turns.
+- Orthogonal movement.
+- Team-controlled Territories.
+- Each player has their own deck, hand, discard pile, Graveyard, and Asset bank.
+- Team victory may require two breakthroughs or another shared-team win condition.
+
+Design questions:
+
+- Does each player control one lane, or can players cross lanes freely?
+- Are Territories controlled by individual players or by the team?
+- Do Asset bank limits count individual control or team control?
+- Can one teammate defend or counterattack on the other's lane?
+- How do faction alternate victories work in team play?
+
+### Cross-Board / Central Arena Prototype
+
+Prior discussion also explored a cross-shaped board where multiple lanes meet at a central Arena.
+
+Possible directions:
+
+- Large cross layout with four approaches meeting in the center.
+- Smaller cross layout with fewer total Territories.
+- A central Arena card or central contested Territory where the lanes connect.
+- Players can potentially route around each other or enter another player's lane.
+
+Design question:
+
+- The cross variant may make it easier for players to get around blockers or create openings into Heartlands, but it may also increase rules load and board-state ambiguity.
+
+### Free-for-All / Arena Variant
+
+Prior discussion treated free-for-all as a separate design problem, possibly under a **Gauntlet: Arena** style variant.
+
+Open questions:
+
+- Should alliances be allowed?
+- If alliances are allowed, are they binding or purely table-talk?
+- Does FFA need a different victory structure from normal breakthrough?
+- How do kingmaking and runaway leader problems get controlled?
+- Are faction alternate victories viable in FFA?
+
+### Current Decision
+
+Park all multiplayer variants for v0.7 or later. Do not implement in the v0.6 faction framework.
+
+---
+
 ## Day/Night Cycle Module
 
 ### Concept
