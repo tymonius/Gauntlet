@@ -152,6 +152,44 @@ Revision note:
 - If Attrition later becomes an Inquisition faction card, rework it so it does not merely duplicate Condemnation.
 - Watch whether the Asset version is too punishing in long games or too efficient as a neutral card-denial engine.
 
+### 6. Blockade
+
+Cost: 4
+
+Current classification: Advanced Neutral / Watchlist
+
+Likely faction: Financiers / Inquisition watchlist
+
+Action: Play Blockade as a Condition affecting your opponent. At the beginning of each of their turns, after their normal draw, if they have more than one card in hand, they discard one at random. When they win a battle, discard Blockade.
+
+Battle: Your opponent may discard one card from their hand. If they do not, each card they played from their battle draw has no effect during this battle. If they lose, play Blockade as a Condition affecting them instead of its normal destination.
+
+Reminder: A player may have only one Blockade Condition.
+
+Decision: Diplomat faction card.
+
+Status: Keep concept; rework around rejected Terms and accepted settlement.
+
+Neutral-removal check:
+
+- Blockade is not merely generic resource denial if framed as sanctions after refused negotiation.
+- As a neutral card, it is a high-complexity control tool that can feel disconnected from faction identity.
+- As a Diplomat card, it gives Diplomats coercive leverage: refuse Terms, risk sanctions; accept Terms later, potentially lift sanctions.
+
+Faction-mechanic check:
+
+- Blockade should interact with Terms rather than operate as a standalone neutral punishment.
+- It should be playable or become stronger when the opponent rejects Terms.
+- It may be discarded as a condition or consequence of the opponent accepting Terms.
+- This creates a negotiation fork without requiring the full v0.6.1 Terms economy overhaul.
+
+Revision direction:
+
+- Treat Blockade as part of a possible **Sanctions** family of Diplomat cards.
+- Explore whether Sanctions are a broader Diplomat subtheme: coercive diplomatic pressure created by refused Terms and relieved through accepted Terms.
+- Consider later whether Financiers can also impose Sanctions, likely through economic leverage rather than diplomatic legitimacy.
+- Exact Blockade wording should be developed during the Diplomat faction-card pass and revisited in the v0.6.1 Diplomat overhaul.
+
 ## Next Card
 
-6. Blockade
+7. Brothers in Arms
