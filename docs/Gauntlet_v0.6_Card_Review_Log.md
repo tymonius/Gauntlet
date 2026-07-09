@@ -293,6 +293,39 @@ Revision note:
 - Clarify that the Battle effect chooses an active opposing Battle card.
 - Watch whether cost 4 is enough for broad access to hard cancellation plus immediate Graveyard placement.
 
+### 10. Conscription
+
+Cost: 3
+
+Current classification: Core Neutral
+
+Likely faction: none
+
+Action: Draw one card. You may immediately play one card from your hand whose Action banks it as an Asset.
+
+Battle: If committed from hand before the battle draw step, increase your battle-draw amount by 1 and increase the number of battle-drawn cards you may play by 1.
+
+Decision: Core Neutral.
+
+Status: Keep concept; maybe rename later if the Military flavor of the name becomes misleading.
+
+Neutral-removal check:
+
+- Conscription is mechanically broader than Military even though the name is Military-flavored.
+- It supports the shared Asset bank and battle-draw systems, so keeping it neutral helps the core game run smoothly.
+- Multiple factions can use the Action to deploy Assets or the Battle effect to increase battle-draw flexibility.
+
+Faction-mechanic check:
+
+- Military likes the battle commitment angle, but does not need exclusive access to this effect.
+- Financiers may use it to deploy bankable Assets.
+- Arcane, Inquisition, and Intelligence may all value larger battle draws without the effect becoming faction-specific.
+
+Revision note:
+
+- Consider a broader name such as **Mobilization**, **Call-Up**, or **Mustering** if Conscription feels too Military-specific.
+- Mechanically, keep the card neutral.
+
 ## Next Card
 
-10. Conscription
+11. Contraband
