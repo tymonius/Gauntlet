@@ -326,6 +326,42 @@ Revision note:
 - Consider a broader name such as **Mobilization**, **Call-Up**, or **Mustering** if Conscription feels too Military-specific.
 - Mechanically, keep the card neutral.
 
+### 11. Contraband
+
+Cost: 3
+
+Current classification: Core Neutral
+
+Likely faction: none
+
+Action: Choose one card in your discard pile and return it to your hand.
+
+Battle: When Contraband is revealed, choose one card in your discard pile whose Battle effect can still resolve. Place Contraband in your Graveyard and play the chosen card in its place.
+
+Reminder: The replayed card follows its own Battle text and normally enters the Graveyard after battle.
+
+Decision: Core Neutral.
+
+Status: Keep concept; clarify replay timing if needed.
+
+Neutral-removal check:
+
+- Core neutral needs some recovery tools so games do not become too brittle after useful cards enter the discard pile.
+- Contraband recovers from the discard pile, not the Graveyard, so it does not intrude too heavily on Arcane's Graveyard identity.
+- The effect is broad utility rather than a faction-specific engine.
+
+Faction-mechanic check:
+
+- Intelligence and Financiers may like the smuggling/black-market flavor, but the mechanics are generic recovery.
+- Arcane can use the recursion, but it does not retrieve from the Graveyard.
+- Military and Inquisition can use it as tactical reuse without making it feel faction-owned.
+
+Revision note:
+
+- Preserve discard-pile recovery as neutral.
+- Do not let Contraband retrieve from the Graveyard.
+- Clarify that the chosen card is played in Contraband's place and follows its own destination rules.
+
 ## Next Card
 
-11. Contraband
+12. Counterintelligence
