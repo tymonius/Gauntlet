@@ -244,6 +244,23 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
+### 15. Disruption (renamed from Embargo)
+
+**v0.6 classification:** Core Neutral  
+**v0.6 cost:** 2
+
+**v0.6 rule direction:** Keep the old Embargo mechanics as neutral soft cancellation / light hand disruption, but rename the card to **Disruption** so **Embargo** can be reserved for a Diplomat Sanctions card.
+
+**Release notes:**
+
+- Preserve as the cheaper shared soft-cancel counterpart to Capital Punishment.
+- Maintain the destination distinction: hand-committed cards return to hand; battle-drawn cards go to discard.
+- Keep neutral despite the disruption/control flavor.
+- Reserve the name **Embargo** for a future Diplomat Sanctions card, likely tied to rejected Terms and accepted settlement.
+- Watch whether the Action side's random discard feels too similar to Sanctions/Blockade.
+
+---
+
 ## Next Card
 
-15. Embargo
+16. Entrenchment
