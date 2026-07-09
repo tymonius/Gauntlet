@@ -8,6 +8,13 @@ Purpose: record card-by-card **v0.6 release decisions**. These decisions superse
 
 This document is not a history of the old card file. It records what each reviewed card should become for v0.6. Notes marked for later review are follow-up items, but the listed classification, faction placement, cost, and rule direction should be treated as the working v0.6 card rule going forward.
 
+## Review rules
+
+- Do not mark a card as logged unless this file has actually been updated.
+- For every faction-lock recommendation, evaluate both neutral-pool impact and interaction/duplication with that faction's mechanics.
+- Before moving a neutral card into a faction, ask whether it provides shared counterplay, emergency defense, pacing correction, comeback tools, or interaction that other factions still need.
+- If a card is tabled, it is not decided and should not be treated as reviewed.
+
 ## Reviewed Cards
 
 ### 1. Arcane Knowledge
@@ -23,6 +30,7 @@ This document is not a history of the old card file. It records what each review
 - It does not count as playing, committing, revealing, copying, or changing the destination of the referenced card.
 - It should not use cancellation, special-reveal, battle-ending, follow-up-battle, source-dependent, or card-lifecycle effects.
 - It does not duplicate Ritual progress, Invocation, or Transmutation.
+- Wording needs refinement.
 
 ---
 
@@ -38,6 +46,7 @@ This document is not a history of the old card file. It records what each review
 - Armistice is Diplomat-adjacent thematically, but Diplomats already have Terms as their dedicated battle-avoidance system.
 - Keeping Armistice neutral preserves shared counterplay and a universal way to stop a battle or pause escalation.
 - Watch for stall potential during testing.
+- Watch for weird interactions with refused Terms, Loss of Face, and battle-result-dependent Proposal effects if Armistice is ever made Diplomat-specific.
 
 ---
 
@@ -53,22 +62,25 @@ This document is not a history of the old card file. It records what each review
 - The harshness is intentional and supported by the card's cost.
 - More destructive than normal Intelligence Interference, so it should probably require an appropriately difficult Mission.
 - Create the Mission requirement later during the Intelligence faction-card pass.
+- Watch density with Spies, Scouting Report, Sabotage, Treason, and future Special Operation mechanics.
 
 ---
 
 ### 4. Assimilation
 
-**v0.6 classification:** Military faction card  
+**v0.6 classification:** Advanced Neutral / Watchlist  
 **v0.6 cost:** 4
 
-**v0.6 rule direction:** Keep as Military capture acceleration. Assimilation rewards winning as the attacker on opponent-controlled ground.
+**v0.6 rule direction:** Keep as neutral capture acceleration and shared anti-siege / anti-stalemate breakthrough. Do not lock to Military for v0.6.
 
 **Release notes:**
 
+- Assimilation is Military-compatible, but it provides a shared breakthrough tool that other factions may need.
 - If Assimilation causes an immediate capture, send Assimilation to the Graveyard after the capture resolves.
 - If Assimilation does not cause an immediate capture, it follows its normal destination.
 - This makes the capture shortcut powerful but costly.
 - Watch total immediate-capture density if Military can combine Assimilation with Commandant/Fortify and other capture shortcuts.
+- If every faction later receives its own reliable anti-stalemate / breakthrough tool, Assimilation can be revisited.
 
 ---
 
@@ -349,6 +361,33 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
-## Next Card
+### 21. Insurrection
 
-21. Insurrection
+**v0.6 classification:** Advanced Neutral / Watchlist  
+**v0.6 cost:** 4
+
+**v0.6 rule direction:** Keep the global reshuffle / chaotic reset concept as an advanced neutral card. Do not lock to Military or Inquisition for v0.6.
+
+**Release notes:**
+
+- The Action side remains a disruptive reset: discard your hand, each player shuffles their discard pile into their deck, draw three cards, then you may immediately play one additional Action card.
+- The Battle side rewards either attacking pressure or insurgent counterattack pressure: attacker gains advantage; counterattacking an opponent occupying your Territory gives double advantage.
+- The effect is chaotic by design and should stay out of core starter decks.
+- It is Military-compatible because it can support attack tempo, and Inquisition-compatible because it can reshape deck/discard pressure, but it is not cleanly owned by either faction.
+- Watch whether the reshuffle undermines Inquisition Purification or Arcane Graveyard pressure too strongly.
+
+---
+
+## Tabled Cards
+
+### 22. Invasion
+
+**Current status:** Tabled until the project audit is completed.
+
+**Reason for table:** Invasion may be too redundant with Military's Command / Orders package if faction-locked, but it may be useful as a neutral shared offensive tempo tool. Do not log a final v0.6 decision until the audit is complete.
+
+---
+
+## Next Step
+
+Complete the v0.6 project audit before resuming card review at **Invasion**.
