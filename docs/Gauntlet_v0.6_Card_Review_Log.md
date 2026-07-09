@@ -225,6 +225,41 @@ Revision note:
 - Clarify **the other card** and **hand-origin card** terminology once final battle-card lifecycle language is locked.
 - Keep the reminder that Brothers in Arms itself can still be canceled.
 
+### 8. Capital Gains
+
+Cost: 2
+
+Current classification: Faction Candidate
+
+Likely faction: Financiers
+
+Action: As an additional cost to play Capital Gains, discard one other card from your hand. Play Capital Gains as a Condition. At the beginning of your next turn, draw three cards instead of your normal draw, then discard Capital Gains.
+
+Battle: After this battle, if you won, draw two cards. If you lost, discard one card from your hand.
+
+Reminder: You cannot play the Action if you have no other card to discard.
+
+Decision: Financiers faction card.
+
+Status: Keep concept; likely increase cost to 3.
+
+Neutral-removal check:
+
+- Capital Gains is not merely neutral card draw; it has a Financier-shaped risk/reward structure of paying now for delayed payoff.
+- Removing it from neutral is acceptable because broad access to efficient card draw would be too generically attractive.
+- As a Financier card, the payoff fits investment, leverage, and delayed return.
+
+Faction-mechanic check:
+
+- Fits Financiers thematically, but current text is card-economy oriented rather than Capital/Treasury/Deed oriented.
+- Later wording should connect more directly to Capital, Treasury, Deeds, or investment timing.
+- The Battle effect may be too efficient at cost 2 because winning draws two cards with no additional resource tie-in.
+
+Revision note:
+
+- Consider increasing Capital Gains from cost 2 to cost 3.
+- Rework later so its payoff interacts with Capital, Treasury, Deeds, or other Financier infrastructure rather than remaining pure generic draw.
+
 ## Next Card
 
-8. Capital Gains
+9. Capital Punishment
