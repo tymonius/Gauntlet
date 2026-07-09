@@ -24,24 +24,81 @@
 ### Root
 
 - `README.md` — general project overview and repository structure.
+- `.gitignore`
+- `package.json`
+- `tsconfig.json`
+- `vitest.config.ts`
 
 ### `/docs`
 
-- `docs/Gauntlet_v0.6_Working_Rules.md` — primary v0.6 rules framework.
-- `docs/Gauntlet_v0.6_Card_Review_Log.md` — main card review log through Illegal Occupation.
-- `docs/Gauntlet_Design_Principles_and_Guardrails.md` — design principles and card/faction guardrails.
-- `docs/Gauntlet_v0.6_Rules_Cleanup.md` — withdrawal cleanup, Diplomat proposal name cleanup, Assimilation destination cleanup, and v0.6.1 hold items.
-- `docs/Gauntlet_v0.6.1_Diplomat_Overhaul_Notes.md` — parked v0.6.1 Diplomat overhaul notes.
-- `docs/Gauntlet_v0.6_Project_Index.md` — project source-of-truth index created during this audit.
-- `docs/Gauntlet_v0.6_Open_Questions.md` — open question tracker created during this audit.
-- `docs/Gauntlet_v0.6_Card_Review_Log_Addendum_2026-07-09.md` — audit addendum for Assimilation, Insurrection, and Invasion.
+- `docs/Game_Design_Glossary.md`
+- `docs/Gauntlet_Design_Principles_and_Guardrails.md`
+- `docs/Gauntlet_v0.6.1_Diplomat_Overhaul_Notes.md`
+- `docs/Gauntlet_v0.6_Card_Migration_Worksheet.md`
+- `docs/Gauntlet_v0.6_Card_Review_Log.md`
+- `docs/Gauntlet_v0.6_Card_Review_Log_Addendum_2026-07-09.md`
+- `docs/Gauntlet_v0.6_Conversation_Audit_Leads.md`
+- `docs/Gauntlet_v0.6_Leader_Archetype_and_Visual_Notes.md`
+- `docs/Gauntlet_v0.6_Open_Questions.md`
+- `docs/Gauntlet_v0.6_Project_Audit.md`
+- `docs/Gauntlet_v0.6_Project_Index.md`
+- `docs/Gauntlet_v0.6_Rules_Cleanup.md`
+- `docs/Gauntlet_v0.6_Working_Rules.md`
+- `docs/Gauntlet_v0.7_Parking_Lot.md`
+- `docs/Gauntlet_Repo_Inventory.md`
+- `docs/v0.5.7_rules_clarifications.md`
+
+### `/data`
+
+- `data/README.md`
+- `data/cards.json`
+- `data/game_config.json`
+- `data/recommended_decks.json`
+- `data/schema.md`
+- `data/territories.json`
+
+### `/deckbuilder`
+
+- `deckbuilder/README.md`
+- `deckbuilder/app.js`
+- `deckbuilder/card-browser.css`
+- `deckbuilder/card-browser.js`
+- `deckbuilder/deck-compact.css`
+- `deckbuilder/deck-compact.js`
+- `deckbuilder/index.html`
+- `deckbuilder/layout-columns.css`
+- `deckbuilder/metric-cleanup.css`
+- `deckbuilder/print-cost-align.js`
+- `deckbuilder/print-font-standard.js`
+- `deckbuilder/print-layout.js`
+- `deckbuilder/print-state-source.js`
+- `deckbuilder/random-deck.js`
+- `deckbuilder/styles.css`
+- `deckbuilder/territory-browser.css`
+- `deckbuilder/territory-browser.js`
+- `deckbuilder/territory-cleanup.css`
+- `deckbuilder/validation-top.css`
 
 ### `/releases`
 
-- `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json` — current canonical pre-v0.6 card order and baseline text.
-- `releases/v0.5.6/Gauntlet_v0.5.6_Canonical_Data.json` — prior canonical data used earlier in card review.
+- `releases/v0.5.6/README.md`
+- `releases/v0.5.6/CONTRIBUTING.md`
+- `releases/v0.5.6/COPYRIGHT.md`
+- `releases/v0.5.6/Gauntlet_v0.5.6_Canonical_Data.json`
+- `releases/v0.5.6/Gauntlet_v0.5.6_Playtest_Deck_Lists.md`
+- `releases/v0.5.6/Gauntlet_v0.5.6_Release_Notes.md`
+- `releases/v0.5.6/build_gauntlet_v056.py`
+- `releases/v0.5.7/README.md`
+- `releases/v0.5.7/CONTRIBUTING.md`
+- `releases/v0.5.7/COPYRIGHT.md`
+- `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`
+- `releases/v0.5.7/Gauntlet_v0.5.7_Playtest_Deck_Lists.md`
 
-**Inventory limitation:** The current GitHub connector exposes file fetches by known path but not a direct repository tree/listing action. A complete file inventory still needs to be built from known paths, commit history, and any available repository browser/listing method.
+### `/src`
+
+- `src/README.md`
+
+**Inventory limitation:** The current GitHub connector exposes file fetches by known path but not a direct repository tree/listing action. A complete file inventory still needs to be built from known paths, commit history, screenshots, and any available repository browser/listing method.
 
 ---
 
@@ -49,7 +106,7 @@
 
 ### v0.6 faction framework
 
-The v0.6 Working Rules already document six factions:
+The v0.6 Working Rules document six factions:
 
 - Military — Command, Orders, direct conquest pressure.
 - Diplomats — Terms, Influence, Treaty Articles, Peace Treaty.
@@ -60,15 +117,28 @@ The v0.6 Working Rules already document six factions:
 
 Status: **Documented/current**.
 
+### Current leader framework
+
+The v0.6 Working Rules document the current leader roster and leader abilities:
+
+- Military: General / Commandant.
+- Diplomats: Ambassador / Senator.
+- Inquisition: Grand Inquisitor / Witch Hunter.
+- Arcane: Alchemist / Spirit Walker.
+- Financiers: Banker / Executive.
+- Intelligence: Ranger / Spymaster.
+
+Status: **Documented/current** for mechanics. Visual/archetype notes are now separately documented.
+
 ### Core design guardrails
 
-The design principles already document that core teaches Gauntlet, factions express different ways of winning Gauntlet, and before moving a neutral card into a faction we must check whether other factions still need the shared tool.
+The design principles and current card review process now document that core teaches Gauntlet, factions express different ways of winning Gauntlet, and before moving a neutral card into a faction we must check whether other factions still need the shared tool.
 
 Status: **Documented/current**.
 
 ### Diplomat v0.6.1 overhaul
 
-The v0.6.1 Diplomat overhaul notes already document:
+The v0.6.1 Diplomat overhaul notes document:
 
 - Terms / Influence staking model.
 - Loss of Face replacement or redesign.
@@ -78,68 +148,77 @@ The v0.6.1 Diplomat overhaul notes already document:
 
 Status: **Documented/current**.
 
+### Multiplayer / v0.7 leads
+
+The v0.7 Parking Lot now records:
+
+- 2v2 dual-lane prototype.
+- Cross-board / central Arena prototype.
+- FFA / Arena variant.
+
+Status: **Documented/current as v0.7+ parking-lot material**.
+
+### Leader archetype and visual notes
+
+Leader archetype and visual design notes have been promoted to `docs/Gauntlet_v0.6_Leader_Archetype_and_Visual_Notes.md`.
+
+Status: **Documented/current as non-rules art-direction material**.
+
 ---
 
 ## Documented/stale or conflicting items
 
 ### Assimilation
 
-Main card review log currently says Assimilation is a Military faction card. Later review direction says Assimilation should stay Neutral because it is a shared anti-siege / anti-stalemate breakthrough tool.
+Older main card review log entry classified Assimilation as Military. The current main card review log now corrects Assimilation to Advanced Neutral / Watchlist.
 
-Status: **Documented/stale**.
-
-Resolution recorded in dated addendum:
-
-- `docs/Gauntlet_v0.6_Card_Review_Log_Addendum_2026-07-09.md`
-
-Still needed:
-
-- Merge the addendum correction into the main card review log.
+Status: **Resolved**.
 
 ### Card review checkpoint
 
-Main card review log currently ends with Next Card: Insurrection. Later conversation states Insurrection was decided and should be logged.
+Older main card review log ended with Next Card: Insurrection. The current main card review log now records Insurrection and tables Invasion.
 
-Status: **Documented/stale / behind**.
-
-Resolution recorded in dated addendum:
-
-- Insurrection = Advanced Neutral / Watchlist.
-- Invasion = tabled until audit complete.
-
-Still needed:
-
-- Merge into main card review log.
+Status: **Resolved**.
 
 ---
 
-## Conversation-only leads to verify
-
-These items came from prior conversation memory and should be checked against repo docs before being treated as final.
+## Conversation-only leads now captured
 
 ### Insurrection preference
 
 Prior discussion favored the chaotic global reshuffle version of Insurrection.
 
-Status: **Conversation-only lead, now captured in addendum**.
+Status: **Captured in main card review log**.
 
 ### Invasion concern
 
 Invasion may be redundant if locked to Military because Military already has Command / Orders that advance, modify attacks, and chain battle momentum.
 
-Status: **Conversation-only lead, now captured in open questions and addendum**.
+Status: **Captured in main card review log and open questions; tabled pending audit completion**.
 
 ### Assassins Mission hook
 
 Assassins was approved as Intelligence, harsh by design, and should receive an appropriately difficult Mission hook later.
 
-Status: **Documented/current in card review log, but Mission remains WIP**.
+Status: **Captured in card review log, but Mission requirement remains WIP**.
 
-### Engineers / Overlay note
+### Original faction naming / stale labels
 
-A prior commit indicates Engineers may later specialize in Overlays but should not monopolize the card type. This affects Fog of War and future Overlay cards.
+Earlier references used Magic and Spy. Current labels are Arcane and Spymaster.
 
-Status: **Partly documented in Fog of War card review note; future faction idea remains WIP**.
+Status: **Captured in conversation audit leads and leader visual notes**.
+
+### Deckbuilder split-mode requirement
+
+Prior conversation called for separate v0.5 and v0.6+ tool modes because pre-faction and faction versions differ substantially.
+
+Status: **Captured in conversation audit leads; partly documented in deckbuilder README**.
+
+### Starter product packaging idea
+
+Prior conversation suggested a later starter product might include core plus Military plus maybe one other faction, while a complete game would include the full card pool with enough multiples.
+
+Status: **Captured in conversation audit leads as product lead, not a v0.6 rules decision**.
 
 ---
 
@@ -147,20 +226,20 @@ Status: **Partly documented in Fog of War card review note; future faction idea 
 
 ### Repo inventory
 
-- Build a complete file inventory from repository contents if a directory listing becomes available.
-- Until then, continue using known paths and commit history.
-
-### Card review consistency
-
-- Merge Assimilation correction into main card review log.
-- Merge Insurrection into main card review log.
-- Keep Invasion tabled until audit is complete.
-- Continue card review only after the audit backlog is stable.
+- Continue source subdirectory inventories:
+  - `.github/workflows/`
+  - `src/cards/`
+  - `src/cli/`
+  - `src/effects/`
+  - `src/gui/`
+  - `src/state/`
+  - `src/types/`
+- Confirm exact full filenames for truncated release-package zip/pdf names if needed.
+- Older release folders v0.3.0 through v0.5.5 are intentionally deferred unless later needed.
 
 ### Faction docs
 
-- Confirm whether all leader archetype/name/design notes are documented somewhere durable.
-- Confirm whether future factions such as Engineers or Legal are intended to remain speculative only.
+- Confirm whether future factions such as Engineers or Legal should remain speculative only.
 - Confirm whether faction symbols are final for v0.6 or still working.
 
 ### Diplomat docs
@@ -173,13 +252,22 @@ Status: **Partly documented in Fog of War card review note; future faction idea 
 - Review whether v0.6 card decisions are reflected only in the review log or also need to be pushed into canonical v0.6 data.
 - Once review decisions are complete, create or update v0.6 canonical card data rather than relying on v0.5.7 metadata.
 
+### Conversation audit
+
+- Continue checking prior Gauntlet-related memory against repo docs.
+- Promote any durable rules decisions to Working Rules, Card Review Log, Open Questions, v0.7 Parking Lot, or another durable doc as appropriate.
+- Keep speculative leads in `Conversation_Audit_Leads.md` until verified or closed.
+
 ---
 
 ## Current audit checkpoint
 
-- Project index created.
-- Open questions tracker created.
-- Audit tracker created.
-- Card review addendum created for Assimilation / Insurrection / Invasion.
-- Main card review log still needs addendum merge.
+- Project index created and updated.
+- Open questions tracker created and updated.
+- Audit tracker created and updated.
+- Repo inventory created and updated through visible root, docs, data, deckbuilder, v0.5.6/v0.5.7 release listings, and src top-level listing.
+- Main card review log merged through Insurrection.
 - Invasion remains tabled.
+- Multiplayer/v0.7 leads added to v0.7 Parking Lot.
+- Leader archetype / visual notes created.
+- Continue audit before resuming card review at Invasion.
