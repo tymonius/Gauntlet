@@ -312,6 +312,25 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
+### 19. Fortifications
+
+**v0.6 classification:** Core Neutral  
+**v0.6 cost:** 3
+
+**v0.6 rule direction:** Keep as neutral defensive infrastructure / improved defensive battle draw.
+
+**Release notes:**
+
+- Keep neutral as shared defense.
+- Does not need to become Military because it supports holding ground rather than accelerating conquest.
+- Useful counterweight against Military and other aggressive decks.
+- The Action side remains defensive: when defending, you may play up to two cards from your battle draw instead of one.
+- The Battle side gives +1 while defending.
+- If you still lose the battle, the additional withdrawal is voluntary.
+- Use final v0.6 movement terminology to clarify that this is a voluntary additional withdrawal, not a forced retreat.
+
+---
+
 ## Next Card
 
-19. Fortifications
+20. Illegal Occupation
