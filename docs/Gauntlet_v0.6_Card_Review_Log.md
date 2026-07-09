@@ -261,6 +261,22 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
+### 16. Entrenchment
+
+**v0.6 classification:** Core Neutral  
+**v0.6 cost:** 2
+
+**v0.6 rule direction:** Keep as neutral defensive positioning / anti-advance pressure.
+
+**Release notes:**
+
+- Keep neutral as a shared defensive posture card.
+- Useful counterweight against aggressive conquest decks.
+- It does not need to become Military because it is defensive rather than conquest acceleration.
+- Clarify whether the Asset triggers only when an opponent moves onto a Territory adjacent to your token, or also when entering your occupied Territory to initiate battle.
+
+---
+
 ## Next Card
 
-16. Entrenchment
+17. Fealty
