@@ -13,9 +13,11 @@ This file is the starting point for future Gauntlet development sessions. At the
 3. **`docs/Gauntlet_Design_Principles_and_Guardrails.md`** — design principles used to evaluate proposed changes.
 4. **`docs/Gauntlet_v0.6_Open_Questions.md`** — unresolved issues, contradictions, and tabled decisions.
 5. **`docs/Gauntlet_v0.6_Project_Audit.md`** — audit trail comparing repo documentation against prior conversation decisions.
-6. **`docs/Gauntlet_v0.6_Rules_Cleanup.md`** — low-risk v0.6 cleanup items unless superseded by the working rules.
-7. **`docs/Gauntlet_v0.6.1_Diplomat_Overhaul_Notes.md`** — parked Diplomat overhaul concepts for v0.6.1.
-8. **`releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`** — current canonical pre-v0.6 card order and card text baseline for review.
+6. **`docs/Gauntlet_v0.6_Conversation_Audit_Leads.md`** — prior-conversation leads that still need verification or later incorporation.
+7. **`docs/Gauntlet_Repo_Inventory.md`** — working inventory of repo files and fetched/inspected sources.
+8. **`docs/Gauntlet_v0.6_Rules_Cleanup.md`** — low-risk v0.6 cleanup items unless superseded by the working rules.
+9. **`docs/Gauntlet_v0.6.1_Diplomat_Overhaul_Notes.md`** — parked Diplomat overhaul concepts for v0.6.1.
+10. **`releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`** — current canonical pre-v0.6 card order and card text baseline for review.
 
 ---
 
@@ -25,10 +27,14 @@ This file is the starting point for future Gauntlet development sessions. At the
 
 **Do not resume card review until:**
 
-- Assimilation is corrected in the card review log.
-- Insurrection is recorded in the card review log.
-- Invasion is explicitly tabled pending audit completion.
-- The audit backlog is reviewed for undocumented faction concepts, especially Diplomat overhaul items and faction-mechanic interaction risks.
+- The audit backlog is reviewed for undocumented faction concepts, especially Diplomat overhaul items, faction-mechanic interaction risks, leader/archetype notes, and multiplayer/v0.7 ideas.
+- The remaining needed repo inventories are completed or explicitly deferred.
+
+Already completed:
+
+- Assimilation corrected in the main card review log.
+- Insurrection recorded in the main card review log.
+- Invasion explicitly tabled pending audit completion.
 
 ---
 
@@ -48,7 +54,7 @@ This file is the starting point for future Gauntlet development sessions. At the
 
 ## Current checkpoint
 
-- Last fully documented reviewed card: **Illegal Occupation**.
-- Current card to log: **Insurrection**.
+- Last fully documented reviewed card: **Insurrection**.
 - Next card after audit: **Invasion**.
 - Invasion is tabled until the audit is complete.
+- Current work: continue audit, repo inventory, and conversation-lead verification before resuming card review.
