@@ -165,12 +165,77 @@ Visible entries:
 - `v0.5.6/`
 - `v0.5.7/`
 
-Fetched files so far:
+### `/releases/v0.5.6`
 
+Visible/listed entries:
+
+- `CONTRIBUTING.md`
+- `COPYRIGHT.md`
+- `Gauntlet_v0.5.6_Canonical_Data.json`
+- `Gauntlet_v0.5.6_Complete_Playtest_Guide.docx`
+- `Gauntlet_v0.5.6_Complete_Playtest_Guide.pdf`
+- `Gauntlet_v0.5.6_Four_Deck_Playtest_Set.pdf`
+- `Gauntlet_v0.5.6_Master_Card_Pool.pdf`
+- `Gauntlet_v0.5.6_Playtest_Deck_Lists.md`
+- `Gauntlet_v0.5.6_Playtest_Forms.pdf`
+- `Gauntlet_v0.5.6_Print_and_Play_Package...` (visible in screenshot but exact full filename not yet confirmed)
+- `Gauntlet_v0.5.6_Release_Notes.md`
+- `README.md`
+- `build_gauntlet_v056.py`
+
+Fetched text files:
+
+- `releases/v0.5.6/CONTRIBUTING.md`
+- `releases/v0.5.6/COPYRIGHT.md`
 - `releases/v0.5.6/Gauntlet_v0.5.6_Canonical_Data.json`
-- `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`
+- `releases/v0.5.6/Gauntlet_v0.5.6_Playtest_Deck_Lists.md`
+- `releases/v0.5.6/Gauntlet_v0.5.6_Release_Notes.md`
+- `releases/v0.5.6/README.md`
+- `releases/v0.5.6/build_gauntlet_v056.py`
 
-Pending release subdirectory inventories:
+Binary/generated files listed but not text-fetched:
+
+- `Gauntlet_v0.5.6_Complete_Playtest_Guide.docx`
+- `Gauntlet_v0.5.6_Complete_Playtest_Guide.pdf`
+- `Gauntlet_v0.5.6_Four_Deck_Playtest_Set.pdf`
+- `Gauntlet_v0.5.6_Master_Card_Pool.pdf`
+- `Gauntlet_v0.5.6_Playtest_Forms.pdf`
+- `Gauntlet_v0.5.6_Print_and_Play_Package...`
+
+### `/releases/v0.5.7`
+
+Visible/listed entries:
+
+- `CONTRIBUTING.md`
+- `COPYRIGHT.md`
+- `Gauntlet_v0.5.7_Canonical_Data.json`
+- `Gauntlet_v0.5.7_Complete_Playtest_Guide.docx`
+- `Gauntlet_v0.5.7_Complete_Playtest_Guide.pdf`
+- `Gauntlet_v0.5.7_Four_Deck_Playtest_Set.pdf`
+- `Gauntlet_v0.5.7_Master_Card_Pool.pdf`
+- `Gauntlet_v0.5.7_Playtest_Deck_Lists.md`
+- `Gauntlet_v0.5.7_Playtest_Forms.pdf`
+- `Gauntlet_v0.5.7_Print_and_Play_Package...` (visible in screenshot but exact full filename not yet confirmed)
+- `README.md`
+
+Fetched text files:
+
+- `releases/v0.5.7/CONTRIBUTING.md`
+- `releases/v0.5.7/COPYRIGHT.md`
+- `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`
+- `releases/v0.5.7/Gauntlet_v0.5.7_Playtest_Deck_Lists.md`
+- `releases/v0.5.7/README.md`
+
+Binary/generated files listed but not text-fetched:
+
+- `Gauntlet_v0.5.7_Complete_Playtest_Guide.docx`
+- `Gauntlet_v0.5.7_Complete_Playtest_Guide.pdf`
+- `Gauntlet_v0.5.7_Four_Deck_Playtest_Set.pdf`
+- `Gauntlet_v0.5.7_Master_Card_Pool.pdf`
+- `Gauntlet_v0.5.7_Playtest_Forms.pdf`
+- `Gauntlet_v0.5.7_Print_and_Play_Package...`
+
+Older release folders intentionally not inventoried in detail for this audit unless later needed:
 
 - `releases/v0.3.0/`
 - `releases/v0.3.1/`
@@ -178,8 +243,6 @@ Pending release subdirectory inventories:
 - `releases/v0.5.3/`
 - `releases/v0.5.4/`
 - `releases/v0.5.5/`
-- `releases/v0.5.6/`
-- `releases/v0.5.7/`
 
 ---
 
