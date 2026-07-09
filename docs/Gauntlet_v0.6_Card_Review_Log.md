@@ -331,6 +331,24 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
+### 20. Illegal Occupation
+
+**v0.6 classification:** Core Neutral  
+**v0.6 cost:** 3
+
+**v0.6 rule direction:** Keep as neutral anti-occupation / counterattack-window pressure. Keep the name **Illegal Occupation** for now.
+
+**Release notes:**
+
+- Keep neutral because the occupation/counterattack window is a core game structure.
+- Punishes opponents who occupy a Territory you control before they control it.
+- Useful shared counterweight against Military-style conquest acceleration.
+- The Action side makes the occupying opponent's Assets inactive while they occupy a Territory you control without controlling it.
+- The Battle side applies when you are counterattacking an opponent occupying a Territory you control: their Assets are inactive during the battle and you gain advantage.
+- Keep the current name for v0.6 unless later testing creates a strong reason to rename it.
+
+---
+
 ## Next Card
 
-20. Illegal Occupation
+21. Insurrection
