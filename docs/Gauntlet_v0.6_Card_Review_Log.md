@@ -211,6 +211,22 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
+### 13. Court Martial
+
+**v0.6 classification:** Core Neutral  
+**v0.6 cost:** 3
+
+**v0.6 rule direction:** Keep as neutral battle discipline / forced-retreat pressure.
+
+**Release notes:**
+
+- Keep neutral despite the Military-flavored name.
+- It does not need to become Military because it does not directly accelerate capture or conquest.
+- It does not need to become Inquisition because it does not interact with Graveyard punishment, Condemnation, Purge, or Conviction.
+- Clarify forced additional retreat behavior if retreat paths are blocked or limited.
+
+---
+
 ## Next Card
 
-13. Court Martial
+14. Decoys
