@@ -260,6 +260,39 @@ Revision note:
 - Consider increasing Capital Gains from cost 2 to cost 3.
 - Rework later so its payoff interacts with Capital, Treasury, Deeds, or other Financier infrastructure rather than remaining pure generic draw.
 
+### 9. Capital Punishment
+
+Cost: 4
+
+Current classification: Advanced Neutral / Watchlist
+
+Likely faction: Inquisition watchlist
+
+Action: Play Capital Punishment as a Condition. Choose one opposing Asset. If you defeat that opponent in battle this turn, place the chosen Asset in its owner's Graveyard. Discard Capital Punishment at the end of the turn.
+
+Battle: Choose one opposing Battle card. That card has no effect; place it in its owner's Graveyard immediately.
+
+Decision: Keep as Advanced Neutral / Watchlist.
+
+Status: Keep concept; preserve hard cancellation as expensive shared access.
+
+Neutral-removal check:
+
+- Hard cancellation should not be faction-exclusive.
+- An expensive card may give any faction access to a strong answer that blanks a Battle card and sends it to the Graveyard.
+- Keeping Capital Punishment neutral preserves broad counterplay against high-impact Battle cards without making every cheap cancel equally severe.
+
+Faction-mechanic check:
+
+- Capital Punishment is thematically Inquisition-adjacent because it condemns cards to the Graveyard.
+- It should remain on the Inquisition watchlist, but not move to Inquisition by default.
+- Inquisition can still specialize in Graveyard punishment through Condemnation and other faction cards, while expensive neutral hard cancellation remains available to everyone.
+
+Revision note:
+
+- Clarify that the Battle effect chooses an active opposing Battle card.
+- Watch whether cost 4 is enough for broad access to hard cancellation plus immediate Graveyard placement.
+
 ## Next Card
 
-9. Capital Punishment
+10. Conscription
