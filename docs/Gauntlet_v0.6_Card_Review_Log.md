@@ -6,6 +6,8 @@ Source order: canonical v0.5.7 card order from releases/v0.5.7/Gauntlet_v0.5.7_C
 
 Purpose: record card-by-card v0.6 migration decisions using exact current card text.
 
+Field note: **Current classification** and **Cost** preserve the canonical v0.5.7 source data unless a revision note says otherwise. **Review direction** records the current migration decision from this review and supersedes any old `likely_faction` value in the source data.
+
 ## Reviewed Cards
 
 ### 1. Arcane Knowledge
@@ -14,7 +16,7 @@ Cost: 5
 
 Current classification: Faction Candidate
 
-Likely faction: Arcane / Magic
+Review direction: Arcane faction card.
 
 Action: Bank Arcane Knowledge as an Asset. Once per turn during a battle, Arcane Knowledge may use the eligible Battle effect of one other card you played in that battle.
 
@@ -41,7 +43,7 @@ Cost: 4
 
 Current classification: Advanced Neutral / Watchlist
 
-Likely faction: Diplomats watchlist
+Review direction: Advanced Neutral / Watchlist; Diplomat-adjacent but not a Diplomat faction card for v0.6.
 
 Action: Play Armistice as a Condition. For the rest of this turn and throughout your opponent's next turn, neither player may initiate a battle. Discard Armistice at the end of that turn.
 
@@ -65,7 +67,7 @@ Cost: 4
 
 Current classification: Faction Candidate
 
-Likely faction: Intelligence
+Review direction: Intelligence faction card.
 
 Action: Look at your opponent's hand. Choose one card and place it in their discard pile.
 
@@ -87,7 +89,7 @@ Cost: 4
 
 Current classification: Faction Candidate
 
-Likely faction: Military
+Review direction: Military faction card.
 
 Action: Play Assimilation as a Condition. If you win your next battle this turn as the attacker on a Territory your opponent controls, immediately capture that Territory instead of occupying it. If another effect would delay capture, reduce that delay by one round instead. Discard Assimilation at the end of the turn.
 
@@ -123,7 +125,7 @@ Cost: 3
 
 Current classification: Advanced Neutral / Watchlist
 
-Likely faction: Inquisition / Military watchlist
+Review direction: Advanced Neutral / Watchlist; Inquisition-adjacent but not an Inquisition faction card by default.
 
 Action: Bank Attrition as an Asset. Whenever your opponent loses a battle against you, each card they played from their battle draw goes to their Graveyard instead of their discard pile.
 
@@ -158,7 +160,7 @@ Cost: 4
 
 Current classification: Advanced Neutral / Watchlist
 
-Likely faction: Financiers / Inquisition watchlist
+Review direction: Diplomat faction card; first candidate for a possible Sanctions family. Future question: whether Financiers can also impose economic Sanctions.
 
 Action: Play Blockade as a Condition affecting your opponent. At the beginning of each of their turns, after their normal draw, if they have more than one card in hand, they discard one at random. When they win a battle, discard Blockade.
 
@@ -196,7 +198,7 @@ Cost: 4
 
 Current classification: Faction Candidate
 
-Likely faction: Military
+Review direction: Military faction card.
 
 Action: Bank Brothers in Arms as an Asset. Whenever you play both a card from your hand and a card from your battle draw in the same battle, gain advantage. If you win, place the hand-origin card in your discard pile instead of your Graveyard.
 
@@ -231,7 +233,7 @@ Cost: 2
 
 Current classification: Faction Candidate
 
-Likely faction: Financiers
+Review direction: Financiers faction card; likely revise to cost 3.
 
 Action: As an additional cost to play Capital Gains, discard one other card from your hand. Play Capital Gains as a Condition. At the beginning of your next turn, draw three cards instead of your normal draw, then discard Capital Gains.
 
@@ -266,7 +268,7 @@ Cost: 4
 
 Current classification: Advanced Neutral / Watchlist
 
-Likely faction: Inquisition watchlist
+Review direction: Advanced Neutral / Watchlist; Inquisition-adjacent but preserved as expensive shared hard cancellation.
 
 Action: Play Capital Punishment as a Condition. Choose one opposing Asset. If you defeat that opponent in battle this turn, place the chosen Asset in its owner's Graveyard. Discard Capital Punishment at the end of the turn.
 
@@ -299,7 +301,7 @@ Cost: 3
 
 Current classification: Core Neutral
 
-Likely faction: none
+Review direction: Core Neutral.
 
 Action: Draw one card. You may immediately play one card from your hand whose Action banks it as an Asset.
 
@@ -332,7 +334,7 @@ Cost: 3
 
 Current classification: Core Neutral
 
-Likely faction: none
+Review direction: Core Neutral.
 
 Action: Choose one card in your discard pile and return it to your hand.
 
@@ -362,6 +364,40 @@ Revision note:
 - Do not let Contraband retrieve from the Graveyard.
 - Clarify that the chosen card is played in Contraband's place and follows its own destination rules.
 
+### 12. Counterintelligence
+
+Cost: 2
+
+Current classification: Core Neutral
+
+Review direction: Core Neutral; important shared counterplay against reveal, look, and surveillance effects.
+
+Action: Bank Counterintelligence as an Asset. Opposing effects cannot look at, reveal, or require you to reveal your hand, battle draw, face-down Battle cards, or face-down Territories. This does not prevent revelation required by the normal rules of battle or Territory exploration.
+
+Battle: Add +1 to your battle total. Until the normal reveal, opposing effects cannot look at or reveal your face-down Battle cards.
+
+Decision: Core Neutral.
+
+Status: Keep concept; important shared counterplay.
+
+Neutral-removal check:
+
+- Counterintelligence is Intelligence-adjacent by name, but mechanically it is the shared defense against Intelligence-style reveal and look effects.
+- If only Intelligence had access to anti-reveal protection, other factions could be too exposed to surveillance and disruption.
+- Keeping it neutral preserves hidden-information counterplay for all factions.
+
+Faction-mechanic check:
+
+- Intelligence should be better at gathering and manipulating hidden information, but should not be the only faction able to protect hidden information.
+- This gives every faction a way to say no to surveillance without preventing normal required battle or Territory reveals.
+- Watch whether the Asset version over-suppresses Intelligence if Intelligence relies too heavily on reveal/look effects.
+
+Revision note:
+
+- Keep as neutral anti-surveillance / anti-reveal protection.
+- Make sure it does not block normal required reveals from battle or Territory exploration.
+- Watch whether cost 2 remains correct once Intelligence Missions and faction cards are finalized.
+
 ## Next Card
 
-12. Counterintelligence
+13. Court Martial
