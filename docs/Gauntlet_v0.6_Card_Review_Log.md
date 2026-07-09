@@ -2,401 +2,214 @@
 
 Status: Working review log.
 
-Source order: canonical v0.5.7 card order from releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json.
+Source order: canonical v0.5.7 card order from `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`.
 
-Purpose: record card-by-card v0.6 migration decisions using exact current card text.
+Purpose: record card-by-card **v0.6 release decisions**. These decisions supersede older `classification` and `likely_faction` metadata from v0.5.7.
 
-Field note: **Current classification** and **Cost** preserve the canonical v0.5.7 source data unless a revision note says otherwise. **Review direction** records the current migration decision from this review and supersedes any old `likely_faction` value in the source data.
+This document is not a history of the old card file. It records what each reviewed card should become for v0.6. Notes marked for later review are follow-up items, but the listed classification, faction placement, cost, and rule direction should be treated as the working v0.6 card rule going forward.
 
 ## Reviewed Cards
 
 ### 1. Arcane Knowledge
 
-Cost: 5
+**v0.6 classification:** Arcane faction card  
+**v0.6 cost:** 5
 
-Current classification: Faction Candidate
+**v0.6 rule direction:** Keep the core concept: Arcane Knowledge uses the eligible Battle effect of another card you played in the same battle.
 
-Review direction: Arcane faction card.
+**Release notes:**
 
-Action: Bank Arcane Knowledge as an Asset. Once per turn during a battle, Arcane Knowledge may use the eligible Battle effect of one other card you played in that battle.
+- Clarify that using another card's Battle effect resolves only that effect.
+- It does not count as playing, committing, revealing, copying, or changing the destination of the referenced card.
+- It should not use cancellation, special-reveal, battle-ending, follow-up-battle, source-dependent, or card-lifecycle effects.
+- It does not duplicate Ritual progress, Invocation, or Transmutation.
 
-Battle: Arcane Knowledge may use the eligible Battle effect of one other card you played in this battle.
-
-Reminder: It cannot use cancellation, special-reveal, battle-ending, follow-up-battle, source-dependent, or card-lifecycle effects.
-
-Decision: Arcane faction card.
-
-Status: Keep concept; reword later for clarity.
-
-Faction-mechanic check:
-
-- Does not duplicate Ritual progress.
-- Does not duplicate Invocation.
-- Does not duplicate Transmutation.
-- Should not count as playing the copied card when it uses another card's Battle effect.
-
-Rewording note: Clarify that using another card's Battle effect resolves only that effect and does not count as playing, committing, revealing, or changing the destination of the copied card.
+---
 
 ### 2. Armistice
 
-Cost: 4
+**v0.6 classification:** Advanced Neutral / Watchlist  
+**v0.6 cost:** 4
 
-Current classification: Advanced Neutral / Watchlist
+**v0.6 rule direction:** Keep as an advanced neutral emergency brake and battle-ending tool. Do not move to Diplomats for v0.6.
 
-Review direction: Advanced Neutral / Watchlist; Diplomat-adjacent but not a Diplomat faction card for v0.6.
-
-Action: Play Armistice as a Condition. For the rest of this turn and throughout your opponent's next turn, neither player may initiate a battle. Discard Armistice at the end of that turn.
-
-Battle: Resolve effects that cancel Battle cards first. If Armistice remains in play, end the battle immediately without a winner. The attacker returns to the Territory they entered from. Other unresolved Battle effects do not resolve. Place all other Battle cards still in play in their owners' discard piles, and place Armistice in your Graveyard.
-
-Reminder: The attacker's return is not a retreat. Effects that already resolved are not undone.
-
-Decision: Keep as Advanced Neutral / Watchlist.
-
-Status: Keep concept. Do not move to Diplomats for v0.6.
-
-Neutral-removal check:
+**Release notes:**
 
 - Armistice is Diplomat-adjacent thematically, but Diplomats already have Terms as their dedicated battle-avoidance system.
-- Removing Armistice from neutral would remove a useful shared emergency brake and battle-ending tool.
-- Keep available as advanced neutral unless testing shows it undermines faction identity or causes stalls.
+- Keeping Armistice neutral preserves shared counterplay and a universal way to stop a battle or pause escalation.
+- Watch for stall potential during testing.
+
+---
 
 ### 3. Assassins
 
-Cost: 4
+**v0.6 classification:** Intelligence faction card  
+**v0.6 cost:** 4
 
-Current classification: Faction Candidate
+**v0.6 rule direction:** Keep harsh by design. Assassins remains targeted hand knowledge, disruption, and pre-battle threat.
 
-Review direction: Intelligence faction card.
+**Release notes:**
 
-Action: Look at your opponent's hand. Choose one card and place it in their discard pile.
-
-Battle: Choose one opposing Battle card committed from hand. That card has no effect; place it in its owner's Graveyard immediately. If your opponent committed no card from hand, they gain disadvantage during this battle.
-
-Decision: Intelligence faction card.
-
-Status: Keep harsh by design; create a Mission for it later.
-
-Faction-mechanic check:
-
-- Fits Intelligence as targeted hand knowledge, disruption, and pre-battle threat.
-- More destructive than normal Intelligence Interference, so it should remain expensive and should probably have an appropriately difficult Mission requirement.
 - The harshness is intentional and supported by the card's cost.
+- More destructive than normal Intelligence Interference, so it should probably require an appropriately difficult Mission.
+- Create the Mission requirement later during the Intelligence faction-card pass.
+
+---
 
 ### 4. Assimilation
 
-Cost: 4
+**v0.6 classification:** Military faction card  
+**v0.6 cost:** 4
 
-Current classification: Faction Candidate
+**v0.6 rule direction:** Keep as Military capture acceleration. Assimilation rewards winning as the attacker on opponent-controlled ground.
 
-Review direction: Military faction card.
-
-Action: Play Assimilation as a Condition. If you win your next battle this turn as the attacker on a Territory your opponent controls, immediately capture that Territory instead of occupying it. If another effect would delay capture, reduce that delay by one round instead. Discard Assimilation at the end of the turn.
-
-Battle: If you win this battle as the attacker on a Territory your opponent controls, immediately capture that Territory instead of occupying it. This effect overrides effects that would delay capture.
-
-Reminder: Against Protracted Siege, the Action restores the normal capture schedule; the Battle effect captures immediately.
-
-Decision: Military faction card.
-
-Status: Keep concept; revise destination when the capture effect succeeds.
-
-Neutral-removal check:
-
-- Immediate capture is a core Military pressure tool.
-- Keeping this as neutral would give every faction broad access to bypassing the counterattack window.
-- Removing it from neutral is acceptable because other factions should not all share Military's strongest conquest acceleration tools.
-
-Faction-mechanic check:
-
-- Fits Military's conquest and battlefield momentum identity.
-- Does not exactly duplicate Commandant's Fortify: Assimilation rewards winning as the attacker on opponent-controlled ground, while Fortify rewards winning while already occupying enemy ground.
-- Watch total immediate-capture density if Military can combine Assimilation with Commandant/Fortify and other capture shortcuts.
-
-Revision note:
+**Release notes:**
 
 - If Assimilation causes an immediate capture, send Assimilation to the Graveyard after the capture resolves.
 - If Assimilation does not cause an immediate capture, it follows its normal destination.
-- This makes the capture shortcut powerful but costly, and prevents immediate capture from being too clean or reusable.
+- This makes the capture shortcut powerful but costly.
+- Watch total immediate-capture density if Military can combine Assimilation with Commandant/Fortify and other capture shortcuts.
+
+---
 
 ### 5. Attrition
 
-Cost: 3
+**v0.6 classification:** Advanced Neutral / Watchlist  
+**v0.6 cost:** 3
 
-Current classification: Advanced Neutral / Watchlist
+**v0.6 rule direction:** Keep as advanced neutral for now. It remains a shared attrition tool rather than becoming an Inquisition faction card by default.
 
-Review direction: Advanced Neutral / Watchlist; Inquisition-adjacent but not an Inquisition faction card by default.
+**Release notes:**
 
-Action: Bank Attrition as an Asset. Whenever your opponent loses a battle against you, each card they played from their battle draw goes to their Graveyard instead of their discard pile.
-
-Battle: If your opponent loses this battle, place every card from their initial battle draw in their Graveyard.
-
-Reminder: The initial battle draw is the first battle-draw amount before additional or replacement cards; if fewer cards were drawn, affect all of them.
-
-Decision: Keep as Advanced Neutral / Watchlist.
-
-Status: Keep concept; watch closely.
-
-Neutral-removal check:
-
-- Attrition is thematically close to Inquisition, but it overlaps heavily with Inquisition's built-in Condemnation.
-- It is not cleanly Military because it grinds down the opponent's card economy rather than accelerating conquest, capture, or breakthrough pressure.
-- Keeping it as Advanced Neutral preserves a shared attrition tool without making Inquisition's core pressure redundant.
-
-Faction-mechanic check:
-
-- As an Inquisition card, current Attrition may stack too harshly with Condemnation.
-- As a Military card, current Attrition points toward exhaustion rather than conquest.
-- The Battle effect is the more distinctive piece because it can hit the entire initial battle draw, not only the played battle-drawn card.
-
-Revision note:
-
-- If Attrition later becomes an Inquisition faction card, rework it so it does not merely duplicate Condemnation.
+- Attrition is Inquisition-adjacent, but it overlaps heavily with Inquisition's built-in Condemnation.
+- It is not cleanly Military because it grinds down card economy rather than accelerating conquest, capture, or breakthrough pressure.
+- The Battle effect is the distinctive piece because it can hit the entire initial battle draw, not only the played battle-drawn card.
 - Watch whether the Asset version is too punishing in long games or too efficient as a neutral card-denial engine.
+- If Attrition later becomes an Inquisition card, rework it so it does not merely duplicate Condemnation.
+
+---
 
 ### 6. Blockade
 
-Cost: 4
+**v0.6 classification:** Diplomat faction card  
+**v0.6 cost:** 4
 
-Current classification: Advanced Neutral / Watchlist
+**v0.6 rule direction:** Rework Blockade as a Diplomat **Sanctions** card. It should be tied to rejected Terms and accepted settlement rather than functioning as generic neutral hand/resource denial.
 
-Review direction: Diplomat faction card; first candidate for a possible Sanctions family. Future question: whether Financiers can also impose economic Sanctions.
+**Release notes:**
 
-Action: Play Blockade as a Condition affecting your opponent. At the beginning of each of their turns, after their normal draw, if they have more than one card in hand, they discard one at random. When they win a battle, discard Blockade.
-
-Battle: Your opponent may discard one card from their hand. If they do not, each card they played from their battle draw has no effect during this battle. If they lose, play Blockade as a Condition affecting them instead of its normal destination.
-
-Reminder: A player may have only one Blockade Condition.
-
-Decision: Diplomat faction card.
-
-Status: Keep concept; rework around rejected Terms and accepted settlement.
-
-Neutral-removal check:
-
-- Blockade is not merely generic resource denial if framed as sanctions after refused negotiation.
-- As a neutral card, it is a high-complexity control tool that can feel disconnected from faction identity.
-- As a Diplomat card, it gives Diplomats coercive leverage: refuse Terms, risk sanctions; accept Terms later, potentially lift sanctions.
-
-Faction-mechanic check:
-
+- Treat Blockade as the first candidate for a possible Sanctions family of Diplomat cards.
 - Blockade should interact with Terms rather than operate as a standalone neutral punishment.
 - It should be playable or become stronger when the opponent rejects Terms.
 - It may be discarded as a condition or consequence of the opponent accepting Terms.
-- This creates a negotiation fork without requiring the full v0.6.1 Terms economy overhaul.
-
-Revision direction:
-
-- Treat Blockade as part of a possible **Sanctions** family of Diplomat cards.
-- Explore whether Sanctions are a broader Diplomat subtheme: coercive diplomatic pressure created by refused Terms and relieved through accepted Terms.
+- The ongoing pressure should feel like coercive diplomatic sanctions: refuse Terms, risk sanctions; accept Terms later, potentially lift sanctions.
+- Keep a safety valve, likely tied to the affected player winning a battle against the Diplomat.
 - Consider later whether Financiers can also impose Sanctions, likely through economic leverage rather than diplomatic legitimacy.
-- Exact Blockade wording should be developed during the Diplomat faction-card pass and revisited in the v0.6.1 Diplomat overhaul.
+- Exact wording should be developed during the Diplomat faction-card pass and revisited in the v0.6.1 Diplomat overhaul.
+
+---
 
 ### 7. Brothers in Arms
 
-Cost: 4
+**v0.6 classification:** Military faction card  
+**v0.6 cost:** 4
 
-Current classification: Faction Candidate
+**v0.6 rule direction:** Keep as Military battle coordination and tactical commitment. It rewards playing both a hand-origin card and a battle-draw card in the same battle.
 
-Review direction: Military faction card.
-
-Action: Bank Brothers in Arms as an Asset. Whenever you play both a card from your hand and a card from your battle draw in the same battle, gain advantage. If you win, place the hand-origin card in your discard pile instead of your Graveyard.
-
-Battle: If Brothers in Arms was played from your hand and you also play a card from your battle draw - or vice versa - gain advantage. The other card cannot be canceled or have its Battle effect ignored.
-
-Reminder: Brothers in Arms counts as one of the pair, but it can still be canceled.
-
-Decision: Military faction card.
-
-Status: Keep concept; watch cancellation-proofing.
-
-Neutral-removal check:
-
-- Brothers in Arms is a battle-efficiency and coordinated-commitment card, not a shared defensive answer or universal counterplay tool.
-- Removing it from neutral is acceptable because other factions do not need broad access to Military's tactical battle superiority.
-- It strengthens Military's identity as the faction most rewarded for committing to and winning battles.
-
-Faction-mechanic check:
+**Release notes:**
 
 - Fits Military's battle coordination, battlefield momentum, and direct-pressure identity.
 - Does not duplicate Assimilation: Assimilation accelerates capture, while Brothers in Arms improves battle commitment and protects the payoff of committing from both sources.
-- Watch interaction with Intelligence, because cancellation-proofing can reduce the value of disruption.
-
-Revision note:
-
+- Watch interaction with Intelligence because cancellation-proofing can reduce the value of disruption.
 - Clarify **the other card** and **hand-origin card** terminology once final battle-card lifecycle language is locked.
 - Keep the reminder that Brothers in Arms itself can still be canceled.
 
+---
+
 ### 8. Capital Gains
 
-Cost: 2
+**v0.6 classification:** Financiers faction card  
+**v0.6 cost:** 3
 
-Current classification: Faction Candidate
+**v0.6 rule direction:** Keep the investment/payoff concept, but treat the cost increase to 3 as the working v0.6 decision.
 
-Review direction: Financiers faction card; likely revise to cost 3.
-
-Action: As an additional cost to play Capital Gains, discard one other card from your hand. Play Capital Gains as a Condition. At the beginning of your next turn, draw three cards instead of your normal draw, then discard Capital Gains.
-
-Battle: After this battle, if you won, draw two cards. If you lost, discard one card from your hand.
-
-Reminder: You cannot play the Action if you have no other card to discard.
-
-Decision: Financiers faction card.
-
-Status: Keep concept; likely increase cost to 3.
-
-Neutral-removal check:
+**Release notes:**
 
 - Capital Gains is not merely neutral card draw; it has a Financier-shaped risk/reward structure of paying now for delayed payoff.
-- Removing it from neutral is acceptable because broad access to efficient card draw would be too generically attractive.
-- As a Financier card, the payoff fits investment, leverage, and delayed return.
-
-Faction-mechanic check:
-
-- Fits Financiers thematically, but current text is card-economy oriented rather than Capital/Treasury/Deed oriented.
-- Later wording should connect more directly to Capital, Treasury, Deeds, or investment timing.
-- The Battle effect may be too efficient at cost 2 because winning draws two cards with no additional resource tie-in.
-
-Revision note:
-
-- Consider increasing Capital Gains from cost 2 to cost 3.
+- Broad access to efficient card draw would be too generically attractive, so this should be a Financier card.
+- The prior cost of 2 was likely too efficient because the Battle effect could draw two cards after a win with no Capital/Treasury/Deed requirement.
 - Rework later so its payoff interacts with Capital, Treasury, Deeds, or other Financier infrastructure rather than remaining pure generic draw.
+
+---
 
 ### 9. Capital Punishment
 
-Cost: 4
+**v0.6 classification:** Advanced Neutral / Watchlist  
+**v0.6 cost:** 4
 
-Current classification: Advanced Neutral / Watchlist
+**v0.6 rule direction:** Keep as expensive shared hard cancellation. Do not make hard cancellation faction-exclusive.
 
-Review direction: Advanced Neutral / Watchlist; Inquisition-adjacent but preserved as expensive shared hard cancellation.
+**Release notes:**
 
-Action: Play Capital Punishment as a Condition. Choose one opposing Asset. If you defeat that opponent in battle this turn, place the chosen Asset in its owner's Graveyard. Discard Capital Punishment at the end of the turn.
-
-Battle: Choose one opposing Battle card. That card has no effect; place it in its owner's Graveyard immediately.
-
-Decision: Keep as Advanced Neutral / Watchlist.
-
-Status: Keep concept; preserve hard cancellation as expensive shared access.
-
-Neutral-removal check:
-
-- Hard cancellation should not be faction-exclusive.
-- An expensive card may give any faction access to a strong answer that blanks a Battle card and sends it to the Graveyard.
+- Any faction may pay for access to a severe answer that blanks a Battle card and sends it to the Graveyard.
 - Keeping Capital Punishment neutral preserves broad counterplay against high-impact Battle cards without making every cheap cancel equally severe.
-
-Faction-mechanic check:
-
-- Capital Punishment is thematically Inquisition-adjacent because it condemns cards to the Graveyard.
-- It should remain on the Inquisition watchlist, but not move to Inquisition by default.
-- Inquisition can still specialize in Graveyard punishment through Condemnation and other faction cards, while expensive neutral hard cancellation remains available to everyone.
-
-Revision note:
-
+- Capital Punishment is Inquisition-adjacent because it condemns cards to the Graveyard, but Inquisition should not monopolize all hard cancellation.
+- Inquisition can still specialize in Graveyard punishment through Condemnation and other faction cards.
 - Clarify that the Battle effect chooses an active opposing Battle card.
 - Watch whether cost 4 is enough for broad access to hard cancellation plus immediate Graveyard placement.
 
+---
+
 ### 10. Conscription
 
-Cost: 3
+**v0.6 classification:** Core Neutral  
+**v0.6 cost:** 3
 
-Current classification: Core Neutral
+**v0.6 rule direction:** Keep as a neutral core-system enabler for Asset deployment and battle-draw flexibility.
 
-Review direction: Core Neutral.
-
-Action: Draw one card. You may immediately play one card from your hand whose Action banks it as an Asset.
-
-Battle: If committed from hand before the battle draw step, increase your battle-draw amount by 1 and increase the number of battle-drawn cards you may play by 1.
-
-Decision: Core Neutral.
-
-Status: Keep concept; maybe rename later if the Military flavor of the name becomes misleading.
-
-Neutral-removal check:
+**Release notes:**
 
 - Conscription is mechanically broader than Military even though the name is Military-flavored.
 - It supports the shared Asset bank and battle-draw systems, so keeping it neutral helps the core game run smoothly.
 - Multiple factions can use the Action to deploy Assets or the Battle effect to increase battle-draw flexibility.
-
-Faction-mechanic check:
-
-- Military likes the battle commitment angle, but does not need exclusive access to this effect.
-- Financiers may use it to deploy bankable Assets.
-- Arcane, Inquisition, and Intelligence may all value larger battle draws without the effect becoming faction-specific.
-
-Revision note:
-
 - Consider a broader name such as **Mobilization**, **Call-Up**, or **Mustering** if Conscription feels too Military-specific.
 - Mechanically, keep the card neutral.
 
+---
+
 ### 11. Contraband
 
-Cost: 3
+**v0.6 classification:** Core Neutral  
+**v0.6 cost:** 3
 
-Current classification: Core Neutral
+**v0.6 rule direction:** Keep as neutral discard-pile recovery and tactical reuse.
 
-Review direction: Core Neutral.
-
-Action: Choose one card in your discard pile and return it to your hand.
-
-Battle: When Contraband is revealed, choose one card in your discard pile whose Battle effect can still resolve. Place Contraband in your Graveyard and play the chosen card in its place.
-
-Reminder: The replayed card follows its own Battle text and normally enters the Graveyard after battle.
-
-Decision: Core Neutral.
-
-Status: Keep concept; clarify replay timing if needed.
-
-Neutral-removal check:
+**Release notes:**
 
 - Core neutral needs some recovery tools so games do not become too brittle after useful cards enter the discard pile.
 - Contraband recovers from the discard pile, not the Graveyard, so it does not intrude too heavily on Arcane's Graveyard identity.
-- The effect is broad utility rather than a faction-specific engine.
-
-Faction-mechanic check:
-
-- Intelligence and Financiers may like the smuggling/black-market flavor, but the mechanics are generic recovery.
-- Arcane can use the recursion, but it does not retrieve from the Graveyard.
-- Military and Inquisition can use it as tactical reuse without making it feel faction-owned.
-
-Revision note:
-
 - Preserve discard-pile recovery as neutral.
 - Do not let Contraband retrieve from the Graveyard.
 - Clarify that the chosen card is played in Contraband's place and follows its own destination rules.
 
+---
+
 ### 12. Counterintelligence
 
-Cost: 2
+**v0.6 classification:** Core Neutral  
+**v0.6 cost:** 2
 
-Current classification: Core Neutral
+**v0.6 rule direction:** Keep as neutral anti-surveillance / anti-reveal protection and important shared counterplay.
 
-Review direction: Core Neutral; important shared counterplay against reveal, look, and surveillance effects.
-
-Action: Bank Counterintelligence as an Asset. Opposing effects cannot look at, reveal, or require you to reveal your hand, battle draw, face-down Battle cards, or face-down Territories. This does not prevent revelation required by the normal rules of battle or Territory exploration.
-
-Battle: Add +1 to your battle total. Until the normal reveal, opposing effects cannot look at or reveal your face-down Battle cards.
-
-Decision: Core Neutral.
-
-Status: Keep concept; important shared counterplay.
-
-Neutral-removal check:
+**Release notes:**
 
 - Counterintelligence is Intelligence-adjacent by name, but mechanically it is the shared defense against Intelligence-style reveal and look effects.
-- If only Intelligence had access to anti-reveal protection, other factions could be too exposed to surveillance and disruption.
-- Keeping it neutral preserves hidden-information counterplay for all factions.
-
-Faction-mechanic check:
-
 - Intelligence should be better at gathering and manipulating hidden information, but should not be the only faction able to protect hidden information.
 - This gives every faction a way to say no to surveillance without preventing normal required battle or Territory reveals.
-- Watch whether the Asset version over-suppresses Intelligence if Intelligence relies too heavily on reveal/look effects.
-
-Revision note:
-
-- Keep as neutral anti-surveillance / anti-reveal protection.
 - Make sure it does not block normal required reveals from battle or Territory exploration.
 - Watch whether cost 2 remains correct once Intelligence Missions and faction cards are finalized.
+
+---
 
 ## Next Card
 
