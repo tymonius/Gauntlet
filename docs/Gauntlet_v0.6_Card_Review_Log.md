@@ -277,6 +277,22 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
+### 17. Fealty
+
+**v0.6 classification:** Core Neutral  
+**v0.6 cost:** 2
+
+**v0.6 rule direction:** Keep as neutral disadvantage protection / battle stabilization. Keep the name **Fealty**.
+
+**Release notes:**
+
+- Keep neutral as shared counterplay against disadvantage.
+- Fealty is acceptable as the final card name despite its loyalty/oath flavor.
+- The Action side protects against opposing card effects that give disadvantage.
+- The Battle side either ignores one disadvantage affecting you or gives +1 if no disadvantage is affecting you.
+
+---
+
 ## Next Card
 
-17. Fealty
+18. Fog of War
