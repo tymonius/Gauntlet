@@ -293,6 +293,25 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
+### 18. Fog of War
+
+**v0.6 classification:** Intelligence faction Overlay  
+**v0.6 cost:** 2
+
+**v0.6 rule direction:** Keep as Intelligence battlefield-confusion Overlay / forced-random-selection effect.
+
+**Release notes:**
+
+- Move from Advanced Neutral / Watchlist to Intelligence.
+- The Action side places a temporary Overlay on a revealed Territory.
+- The Overlay affects the next battle fought there, then is discarded.
+- Preserve the symmetrical Action effect: both players randomly select from battle draw during that battle.
+- Preserve the Battle side's one-sided disruption.
+- Clarify that random selection happens after all effects determine how many battle-drawn cards the affected player may play.
+- This is fine for v0.6 even though Engineers may later specialize in Overlays; Engineers should not monopolize the card type.
+
+---
+
 ## Next Card
 
-18. Fog of War
+19. Fortifications
