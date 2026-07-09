@@ -190,6 +190,41 @@ Revision direction:
 - Consider later whether Financiers can also impose Sanctions, likely through economic leverage rather than diplomatic legitimacy.
 - Exact Blockade wording should be developed during the Diplomat faction-card pass and revisited in the v0.6.1 Diplomat overhaul.
 
+### 7. Brothers in Arms
+
+Cost: 4
+
+Current classification: Faction Candidate
+
+Likely faction: Military
+
+Action: Bank Brothers in Arms as an Asset. Whenever you play both a card from your hand and a card from your battle draw in the same battle, gain advantage. If you win, place the hand-origin card in your discard pile instead of your Graveyard.
+
+Battle: If Brothers in Arms was played from your hand and you also play a card from your battle draw - or vice versa - gain advantage. The other card cannot be canceled or have its Battle effect ignored.
+
+Reminder: Brothers in Arms counts as one of the pair, but it can still be canceled.
+
+Decision: Military faction card.
+
+Status: Keep concept; watch cancellation-proofing.
+
+Neutral-removal check:
+
+- Brothers in Arms is a battle-efficiency and coordinated-commitment card, not a shared defensive answer or universal counterplay tool.
+- Removing it from neutral is acceptable because other factions do not need broad access to Military's tactical battle superiority.
+- It strengthens Military's identity as the faction most rewarded for committing to and winning battles.
+
+Faction-mechanic check:
+
+- Fits Military's battle coordination, battlefield momentum, and direct-pressure identity.
+- Does not duplicate Assimilation: Assimilation accelerates capture, while Brothers in Arms improves battle commitment and protects the payoff of committing from both sources.
+- Watch interaction with Intelligence, because cancellation-proofing can reduce the value of disruption.
+
+Revision note:
+
+- Clarify **the other card** and **hand-origin card** terminology once final battle-card lifecycle language is locked.
+- Keep the reminder that Brothers in Arms itself can still be canceled.
+
 ## Next Card
 
-7. Brothers in Arms
+8. Capital Gains
