@@ -378,16 +378,23 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
-## Tabled Cards
-
 ### 22. Invasion
 
-**Current status:** Tabled until the project audit is completed.
+**v0.6 classification:** Advanced Neutral / Watchlist  
+**v0.6 cost:** 4
 
-**Reason for table:** Invasion may be too redundant with Military's Command / Orders package if faction-locked, but it may be useful as a neutral shared offensive tempo tool. Do not log a final v0.6 decision until the audit is complete.
+**v0.6 rule direction:** Keep as advanced neutral offensive tempo. Do not lock to Military for v0.6.
+
+**Release notes:**
+
+- Invasion is Military-compatible, but it duplicates Military's Command / Orders identity too directly if faction-locked.
+- Keeping it neutral preserves a shared offensive tempo tool for non-Military factions.
+- Keep out of starter core because it bends both movement and battle-draw expectations.
+- Watch Military stacking with Onward, Rally, Rout, leader abilities, and other attack-tempo cards.
+- If Military access to Invasion creates explosive overrun turns, restrict, redesign, or reconsider its neutral availability.
 
 ---
 
 ## Next Step
 
-Complete the v0.6 project audit before resuming card review at **Invasion**.
+Continue card review at **Liberation**.
