@@ -1,19 +1,15 @@
 # Gauntlet v0.6 Working Rules
 
-**Status:** Working rules draft for the v0.6 six-faction release  
-**Purpose:** Keep locked and provisional v0.6 rules decisions in one place while faction rules, leader cards, faction cards, supplemental cards, and deck construction are developed.
+**Status:** Working rules draft for the v0.6 six-faction release.  
+**Purpose:** Keep current v0.6 rules decisions in one active document while cards, Missions, faction packages, reference materials, and canonical data are completed.
 
-This is not yet a final v0.6 release rulebook. It is a living working document for organizing the rules framework that will become the v0.6 release.
+This is not yet a final release rulebook. Unless changed here, the v0.5.7 core rules and clarifications remain the pre-faction baseline.
 
 ---
 
-## 1. v0.6 Release Goals
+## 1. Release scope
 
-v0.6 is the faction framework release.
-
-The release should let players run the Gauntlet with six distinct factions while preserving the core game: advance through contested Territories, fight battles, occupy ground, survive counterattacks, capture Territories, and break through before the opponent does.
-
-The v0.6 release includes six playable factions:
+v0.6 is the faction-framework release. It adds six playable factions while preserving the core game: advance through contested Territories, fight battles, occupy ground, survive counterattacks, capture Territories, and break through before the opponent does.
 
 | Faction | Core identity |
 |---|---|
@@ -26,274 +22,226 @@ The v0.6 release includes six playable factions:
 
 The release should:
 
-- Preserve the core movement, battle, occupation, capture, and normal breakthrough victory system.
-- Keep the emphasis on running the Gauntlet rather than on Heartland language as the primary player-facing hook.
-- Treat Heartlands as rules endpoints and final defensive positions, not as cards or headline components.
-- Clarify deck construction and supplemental cards.
-- Remove unnecessary Heartland cards.
-- Introduce faction leaders as deck-adjacent supplemental cards.
-- Support faction-specific resources, progress systems, and alternate victory paths.
-- Keep faction systems visible, interactive, and testable.
-- Ensure every faction remains grounded in the same core Gauntlet systems rather than becoming a disconnected minigame.
-- Avoid new board-state markers unless they are clearly worth the added complexity.
+- preserve movement, battle, occupation, capture, and normal breakthrough victory;
+- keep the player-facing emphasis on running the Gauntlet;
+- treat Heartlands as rules endpoints rather than cards or headline components;
+- introduce leaders and faction references as supplemental cards;
+- keep faction progress visible, interactive, and connected to normal play;
+- avoid unnecessary markers and disconnected minigames.
 
 ---
 
-## 2. Deck Construction
+## 2. Deck construction
 
-A deck consists only of playable cards.
+A legal deck contains:
 
-A legal deck must contain:
+- at least **30 playable cards**;
+- no more than **60 total deckbuilding value**.
 
-- At least **30 playable cards**.
-- A total deckbuilding value of no more than **60**.
+Playable cards are cards that may be drawn, played, revealed, banked, discarded, sent to the Graveyard, or otherwise used during normal gameplay. They may include Action cards, Battle cards, Territory cards, faction cards, Assets, Conditions, and Overlays.
 
-Playable cards include cards that may be drawn, played, revealed, banked, discarded, sent to the Graveyard, or otherwise used as part of normal gameplay.
+Leader cards, faction references, rules references, resource trackers, Proposal lists, Order lists, and other supplemental cards do not count toward deck size or deckbuilding value.
 
-Playable cards may include, as applicable:
-
-- Action cards.
-- Battle cards.
-- Territory cards.
-- Faction cards that enter the deck.
-- Conditions.
-- Assets.
-- Overlays, if retained.
-
-Leader cards, faction reference cards, rules reference cards, resource trackers, Proposal lists, Order lists, and other supplemental cards do not count toward the 30-card minimum or the 60-value cap.
-
-Most optimized decks are expected to use the 30-card minimum unless a player has a strategic reason to include additional low-cost cards.
+Most optimized decks are expected to use the 30-card minimum unless a strategy benefits from additional low-cost cards.
 
 ---
 
-## 3. Supplemental Cards
+## 3. Supplemental cards
 
-Supplemental Cards are cards kept with a deck for setup, tracking, or reference. They are not part of the playable deck.
+Supplemental cards are kept with a deck for setup, tracking, or reference. They:
 
-Supplemental Cards include:
+- do not count toward deck size;
+- have no deckbuilding value;
+- are not shuffled into the deck;
+- are not cards in play;
+- cannot be drawn, played, discarded, banked, captured, revealed, sent to the Graveyard, or affected unless a rule specifically says otherwise.
 
-- Leader cards.
-- Faction reference cards.
-- Turn order reference cards.
-- Battle order reference cards.
-- Resource trackers.
-- Proposal lists.
-- Order lists.
-- Setup aids.
+Examples include:
 
-Supplemental Cards:
+- leader cards;
+- faction reference cards;
+- turn and battle references;
+- resource trackers;
+- Proposal and Order lists;
+- setup aids.
 
-- Do not count toward deck size.
-- Have no deckbuilding cost.
-- Are not shuffled into the deck.
-- Are not considered cards in play.
-- Cannot be drawn, played, discarded, banked, captured, revealed, sent to the Graveyard, or affected by card effects unless a rule specifically says otherwise.
-
-Supplemental Cards may be kept with a constructed deck because they define how that deck functions. A player may build a deck around a chosen leader and keep that leader card and any required reference cards with the deck.
-
-Supplemental Cards do not need to use the standard Gauntlet card back. They may be double-sided and may contain different reference information on each side.
-
-Examples:
-
-| Front | Back |
-|---|---|
-| Turn Order | Battle Order |
-| Asset Bank Rules | Occupation and Capture Rules |
-| Diplomat Terms Rules | Diplomat Proposals |
-| Military Command Rules | Military Orders |
+Supplemental cards may be double-sided and do not need the normal card back.
 
 ---
 
-## 4. Leader Cards
+## 4. Leader cards
 
-During deck construction, choose one faction leader for your deck.
+During deck construction, choose one leader for the deck's faction.
 
-A Leader Card:
+A Leader Card is a supplemental card placed near the play area during setup. It may include:
 
-- Is a Supplemental Card.
-- Does not count toward deck size.
-- Has no deckbuilding cost.
-- Is not shuffled into the deck.
-- Is placed near your play area during setup.
-- Is not considered a card in play.
-- Cannot be affected by card effects unless a rule specifically says otherwise.
-
-Leader Cards should function as faction dashboards.
-
-A Leader Card may include:
-
-- Faction name and symbol.
-- Leader name.
-- Faction resource.
-- Resource tracker.
-- Core faction ability.
-- Leader ability.
-- Faction victory condition, if any.
-- Setup reminders.
-- References to required faction reference cards.
+- faction name and symbol;
+- leader name;
+- resource track;
+- core faction ability;
+- leader ability;
+- faction victory condition;
+- setup reminders;
+- references to other required supplemental cards.
 
 ---
 
-## 5. Heartlands
+## 5. Core rules carried forward
 
-Heartlands are not cards.
+Unless changed here or by a later v0.6 decision:
 
-Heartlands are part of the Gauntlet layout and represent each player's final defensive position and normal conquest victory endpoint.
+- movement does not use movement rolls;
+- a player may enter enemy ground and occupy it before capture;
+- the defender receives a normal opportunity to counterattack occupied ground;
+- if the Territory is not retaken, it is captured at the start of the occupying player's next turn;
+- a player may play one Action or Battle card per turn unless an effect says otherwise;
+- hand limit is 3;
+- battles use the v0.5.7 sequence and card-destination rules;
+- cards committed from hand normally go to the Graveyard;
+- cards played from battle draw normally go to discard;
+- partial draws are legal;
+- the Graveyard is never reshuffled.
+
+### Homeland Advantage
+
+A defender has Homeland Advantage while defending any space they control. If battle totals are tied, that defender wins.
+
+If neither player resolves a tied battle through Homeland Advantage, both players reroll. Cards already played remain in effect.
+
+### Heartland defense
+
+While defending your own Heartland, gain **+1 to your battle total**. This is separate from and stacks with Homeland Advantage.
+
+---
+
+## 6. Withdrawal
+
+When a player **withdraws**, move that player one space away from the opposing player and toward their own Heartland, if able.
+
+- If the attacker withdraws, the attacker returns to the space they entered from, if able.
+- If the defender withdraws, the defender leaves the battle space and moves one space toward their own Heartland, if able. The attacker remains in or occupies the battle space.
+- If both players withdraw, move the attacker first, then the defender. If one cannot withdraw, the other still withdraws if able.
+- Withdrawal is not retreat unless a rule specifically says otherwise.
+- A specific instruction that a player remains in or occupies the battle space overrides the general withdrawal procedure.
+
+---
+
+## 7. Heartlands
+
+Heartlands are board endpoints and final defensive positions. They are not cards and are not Territories.
 
 Heartlands:
 
-- Are not Territories.
-- Are not included in any deck.
-- Are not shuffled, revealed, controlled, occupied as Territories, banked, discarded, or sent to the Graveyard.
-- Cannot receive Territory effects or Overlays unless a rule specifically says otherwise.
-- Do not count for effects that count Territories.
-- Do not count toward Asset bank limits.
+- are not included in decks;
+- are not shuffled, revealed, controlled, or occupied as Territories;
+- cannot be banked, discarded, or sent to the Graveyard;
+- cannot receive Territory effects or Overlays unless a rule specifically says otherwise;
+- do not count for effects that count Territories;
+- do not count toward Asset-bank limits;
+- do not have Deeds.
 
-There should be no Heartland cards in v0.6.
-
----
-
-## 6. Existing Core Rules Carried Forward
-
-Unless changed by this working document or a later v0.6 rule, the v0.5.6 core rules remain the baseline.
-
-Core assumptions carried forward:
-
-- Players run the Gauntlet by advancing through contested Territories toward the opponent's side.
-- Movement does not use movement rolls.
-- A player may enter enemy ground and occupy it before capture.
-- The opponent receives a normal opportunity to counterattack occupied ground.
-- If occupied ground is not retaken, it is captured at the start of the occupying player's next turn.
-- Heartland defense uses Homeland Advantage.
-- Battles use the v0.5 battle sequence.
-- A player may play one Action or Battle card per turn unless a card or rule says otherwise.
-- Hand limit remains 3 unless changed by a card or rule.
-- The Asset bank uses the v0.5.6 Asset bank rules.
+There are no Heartland cards in v0.6.
 
 ---
 
-## 7. Asset Bank Baseline
+## 8. Assets, Conditions, and Overlays
 
-The Asset bank remains a core scaling system.
+### Asset bank
 
-- A player's Asset bank limit equals the number of Territories they control.
-- Occupied Territories do not count toward the Asset bank limit until captured.
-- Heartlands are not Territories and do not count toward the Asset bank limit.
-- If a player's Asset bank limit decreases below the number of Assets they have banked, they immediately discard down to the new limit.
-- To bank an Asset, follow the card's timing and rules.
+A player's Asset-bank limit equals the number of Territories they control.
 
-Actions that remain in play but are not banked Assets, discarded Actions, Territories, or Overlays are treated as **Conditions** unless a later rule defines a different category.
+- Occupied Territories do not count until captured.
+- Heartlands do not count.
+- If the limit falls below the number of banked Assets, the player immediately chooses and discards enough Assets to reach the new limit.
+- To bank an Asset, follow that card's timing and rules.
+
+### Persistent-effect categories
+
+- **Assets** belong to a player and compete for Asset-bank capacity.
+- **Overlays** belong visibly to a specific Territory.
+- **Conditions** are reserved for persistent timing that neither an Asset nor an Overlay represents cleanly.
+
+During the post-review card cleanup:
+
+- prefer an Asset for a player-owned effect that remains available until used;
+- prefer an Overlay for a board-local effect attached to a Territory;
+- resolve and discard immediately when no persistent component is needed;
+- keep a Condition only when its timing genuinely requires a separate persistent card.
+
+Any conversion must preserve pacing, counterplay, Asset pressure, and board-state clarity.
 
 ---
 
-## 8. Military Faction — Working v0.6 Rules
+# Faction rules
 
-**Faction identity:** conquest, battlefield momentum, operational force, and direct pressure.
+## 9. Military
 
-Military is the baseline conquest faction. Military wins by running the Gauntlet, pressing battles, capturing ground, and breaking through by normal victory.
+**Identity:** conquest, battlefield momentum, operational force, and direct pressure.  
+**Victory:** normal breakthrough victory.  
+**Resource:** Command.
 
-### Resource: Command
-
-Military uses **Command**.
-
-- Maximum Command: **2**.
-- The first time each turn you win a battle, gain **1 Command**, up to your maximum.
-- Command may be spent on Orders.
+Military may have up to **2 Command**. The first time each turn the Military player wins a battle, gain 1 Command, up to the maximum. Command is spent on Orders.
 
 ### General
 
 **Style:** attack, forward pressure, tempo.
 
-#### Orders
-
-**Onward** — Spend 1 Command.  
-Move one additional space this turn. This movement may initiate a battle.
-
-**Rally** — Spend 1 Command.  
-Before dice are rolled in a battle you initiated, add +1 to your battle total.
-
-**Rout** — Spend 2 Command.  
-After you win a battle you initiated, move one space toward the opponent's Heartland. This movement may initiate another battle.
+- **Onward — 1 Command:** Move one additional space this turn. This movement may initiate a battle.
+- **Rally — 1 Command:** Before dice are rolled in a battle you initiated, add +1 to your battle total.
+- **Rout — 2 Command:** After you win a battle you initiated, move one space toward the opponent's Heartland. This movement may initiate another battle.
 
 ### Commandant
 
 **Style:** defense, counterattack, holding captured ground.
 
-#### Orders
-
-**Entrench** — Spend 1 Command.  
-Before dice are rolled in a battle you did not initiate, add +1 to your battle total.
-
-**Repel** — Spend 1 Command.  
-After you win a battle you did not initiate, the defeated opponent retreats one additional space, if able.
-
-**Fortify** — Spend 2 Command.  
-After you win a battle while occupying an enemy Territory, capture that Territory immediately.
+- **Entrench — 1 Command:** Before dice are rolled in a battle you did not initiate, add +1 to your battle total.
+- **Repel — 1 Command:** After you win a battle you did not initiate, the defeated opponent retreats one additional space, if able.
+- **Fortify — 2 Command:** After you win a battle while occupying an enemy Territory, capture that Territory immediately.
 
 ---
 
-## 9. Diplomats Faction — Working v0.6 Rules
+## 10. Diplomats
 
-**Faction identity:** negotiation, legitimacy, concessions, political leverage, and converting battlefield conflict into a Peace Treaty.
+**Identity:** negotiation, legitimacy, concessions, political leverage, and converting conflict into a Peace Treaty.  
+**Resource:** Influence. Influence cannot be reduced below 0.
 
-Diplomats use Terms before battles to create negotiated alternatives to combat. Diplomats can gain and lose Influence based on whether their negotiations are accepted, refused, vindicated, or discredited.
+### Terms
 
-### Resource: Influence
+Before any battle involving the Diplomat, whether attacking or defending, the Diplomat may offer **Terms** by choosing one Proposal. The opponent accepts or refuses.
 
-Diplomats use **Influence**.
+If Terms are accepted:
 
-Influence cannot be reduced below 0.
+- no battle occurs;
+- resolve the accepted effect;
+- ratify that Proposal as a Treaty Article if it has not already been ratified.
 
-### Core Mechanic: Terms
+If Terms are refused:
 
-Before any battle involving the Diplomat, whether the Diplomat is attacking or defending, the Diplomat may offer **Terms** by choosing one Proposal.
-
-The opponent must either accept Terms or refuse Terms.
-
-If the opponent accepts Terms:
-
-- No battle occurs.
-- Resolve the Proposal's accepted effect.
-- The chosen Proposal is ratified as a Treaty Article if it has not already been ratified.
-
-If the opponent refuses Terms:
-
-- Resolve the Proposal's refused effect, if any.
-- The battle occurs normally.
-- Apply Loss of Face after the battle.
-- If the Diplomat wins the resulting battle, the chosen Proposal is ratified as a Treaty Article if it has not already been ratified.
+- resolve the refused effect, if any;
+- fight the battle normally;
+- apply Loss of Face;
+- if the Diplomat wins, ratify that Proposal if it has not already been ratified.
 
 A Proposal cannot be offered if its accepted effect would leave both players on the same space.
 
 ### Loss of Face
 
-When Terms are refused, resolve the battle normally.
+After refused Terms:
 
-- If the Diplomat wins the resulting battle, the Diplomat gains **1 Influence**, unless the Proposal says otherwise.
-- If the Diplomat loses the resulting battle, the Diplomat loses **1 Influence**.
-- Influence cannot be reduced below 0.
+- if the Diplomat wins, gain 1 Influence unless the Proposal says otherwise;
+- if the Diplomat loses, lose 1 Influence;
+- Influence cannot fall below 0.
 
-### Treaty Articles
+### Treaty Articles and Peace Treaty
 
-Each Proposal may be ratified once as a **Treaty Article**.
+Each Proposal may be ratified once as a Treaty Article. A ratified Proposal may still be offered again but cannot count again.
 
-A Proposal is ratified as a Treaty Article when either:
+At the start of the Diplomat's turn, after captures, if at least **five different Proposals** are ratified, the Diplomat wins by **Peace Treaty**.
 
-- the opponent accepts Terms for that Proposal, or
-- the opponent refuses Terms for that Proposal and the Diplomat wins the resulting battle.
+### Proposal order
 
-A Proposal that has already been ratified may still be offered again, but it does not count again toward Peace Treaty.
-
-### Diplomatic Victory: Peace Treaty
-
-At the start of your turn, after resolving any captures, if you have ratified at least **five different Proposals** as Treaty Articles, you win by **Peace Treaty**.
-
-### Proposal Order
-
-Proposals should be listed in the following order for testing and reference:
-
-1. Orderly Withdrawal
-2. De-escalation
+1. De-escalation
+2. Orderly Withdrawal
 3. Capitulation
 4. Open Channels
 5. Mutual Disarmament
@@ -302,777 +250,459 @@ Proposals should be listed in the following order for testing and reference:
 8. Ultimatum
 9. Diplomatic Recognition
 
-### Proposals
+### 1. De-escalation
 
-#### 1. Orderly Withdrawal
+**Cost:** 0 Influence.
 
-**Cost:** 0 Influence
+**Accepted:** Both players withdraw. You gain 1 Influence. No battle occurs.
 
-**If Terms are accepted:**  
-Both players withdraw. You gain 1 Influence. No battle occurs.
+**Refused:** Draw one card. The battle occurs normally.
 
-**If Terms are refused:**  
-You draw one card. The battle occurs normally.
+### 2. Orderly Withdrawal
 
-#### 2. De-escalation
-
-**Cost:** 0 Influence  
+**Cost:** 0 Influence.  
 **Requirement:** You must be attacking.
 
-**If Terms are accepted:**  
-You withdraw one space. The opponent remains in or occupies the battle space. The opponent draws one card. You gain 2 Influence. No battle occurs.
+**Accepted:** You withdraw. The opponent remains in or occupies the battle space. The opponent draws one card. You gain 2 Influence. No battle occurs.
 
-**If Terms are refused:**  
-You gain 1 Influence. The battle occurs normally.
+**Refused:** Gain 1 Influence. The battle occurs normally.
 
-#### 3. Capitulation
+### 3. Capitulation
 
-**Cost:** 0 Influence  
+**Cost:** 0 Influence.  
 **Requirement:** You must be defending.
 
-**If Terms are accepted:**  
-You withdraw one space. The opponent remains in or occupies the battle space. You draw one card and gain 1 Influence. No battle occurs.
+**Accepted:** You withdraw. The opponent remains in or occupies the battle space. Draw one card and gain 1 Influence. No battle occurs.
 
-**If Terms are refused:**  
-If you lose the resulting battle, draw two cards.
+**Refused:** If you lose the battle, draw two cards.
 
-#### 4. Open Channels
+### 4. Open Channels
 
-**Cost:** 0 Influence  
+**Cost:** 0 Influence.  
 **Requirement:** You must have at least one card in hand.
 
-**If Terms are accepted:**  
-Each player reveals their hand. Then both players withdraw. You gain 1 Influence. No battle occurs.
+**Accepted:** Each player reveals their hand. Then both players withdraw. Gain 1 Influence. No battle occurs.
 
-**If Terms are refused:**  
-You may reveal your hand. If you do, during this battle's battle draw, draw one additional card before choosing which battle-draw card to play.
+**Refused:** You may reveal your hand. If you do, draw one additional card during this battle's battle draw before choosing which battle-drawn card to play.
 
-#### 5. Mutual Disarmament
+### 5. Mutual Disarmament
 
-**Cost:** 0 Influence  
+**Cost:** 0 Influence.  
 **Requirement:** Both players must have at least one card in hand.
 
-**If Terms are accepted:**  
-Each player discards one card from hand. Then both players withdraw. You gain 1 Influence. No battle occurs.
+**Accepted:** Each player discards one card from hand. Then both players withdraw. Gain 1 Influence. No battle occurs.
 
-**If Terms are refused:**  
-You may discard one card from hand. If you do, during this battle's battle draw, draw one additional card before choosing which battle-draw card to play.
+**Refused:** You may discard one card from hand. If you do, draw one additional card during this battle's battle draw before choosing which battle-drawn card to play.
 
-#### 6. Prisoner Exchange
+### 6. Prisoner Exchange
 
-**Cost:** 0 Influence
+**Cost:** 0 Influence.
 
-**If Terms are accepted:**  
-Each player may move one card from their Graveyard to their discard pile. Then both players withdraw. You gain 1 Influence. No battle occurs.
+**Accepted:** Each player may move one card from their Graveyard to their discard pile. Then both players withdraw. Gain 1 Influence. No battle occurs.
 
-**If Terms are refused:**  
-If you lose the resulting battle, you may move one card from your Graveyard to your discard pile.
+**Refused:** If you lose the battle, you may move one card from your Graveyard to your discard pile.
 
-#### 7. Rebuilding Pact
+### 7. Rebuilding Pact
 
-**Cost:** 1 Influence  
+**Cost:** 1 Influence.  
 **Requirement:** You must have a card in hand that can be banked as an Asset.
 
-**If Terms are accepted:**  
-Each player may bank one Asset from hand without using an Action. Then both players withdraw. You gain 1 Influence. No battle occurs.
+**Accepted:** Each player may bank one Asset from hand without using an Action. Then both players withdraw. Gain 1 Influence. No battle occurs.
 
-**If Terms are refused:**  
-After the battle, you may bank one Asset from hand without using an Action.
+**Refused:** After the battle, you may bank one Asset from hand without using an Action.
 
-#### 8. Ultimatum
+### 8. Ultimatum
 
-**Cost:** 1 Influence
+**Cost:** 1 Influence.
 
-**If Terms are accepted:**  
-The opponent withdraws one space. You remain in or occupy the battle space. No battle occurs.
+**Accepted:** The opponent withdraws. You remain in or occupy the battle space. No battle occurs.
 
-**If Terms are refused:**  
-If you win the resulting battle, gain 3 Influence instead of 1.
+**Refused:** If you win the battle, gain 3 Influence instead of 1.
 
-#### 9. Diplomatic Recognition
+### 9. Diplomatic Recognition
 
-**Cost:** 2 Influence  
+**Cost:** 2 Influence.  
 **Requirement:** You must be defending a counterattack while occupying an enemy Territory.
 
-**If Terms are accepted:**  
-Capture that Territory immediately. The opponent withdraws one space, then draws two cards. No battle occurs.
+**Accepted:** Capture that Territory immediately. The opponent withdraws, then draws two cards. No battle occurs.
 
-**If Terms are refused:**  
-The battle occurs normally. If you win the resulting battle, capture that Territory immediately and gain no Influence from refused Terms.
+**Refused:** Fight normally. If you win, capture that Territory immediately and gain no Influence from refused Terms.
 
 ### Ambassador
 
 **Style:** cooperative diplomacy, successful negotiation, soft value.
 
-**Good Offices**  
-Once per turn, after your opponent accepts Terms you offered, draw one card.
+**Good Offices:** Once per turn, after the opponent accepts Terms you offered, draw one card.
+
+The ability name remains provisional.
 
 ### Senator
 
 **Style:** institutional resilience, legitimacy, preserving political standing through sacrifice.
 
-**Political Capital**  
-Once per turn, when you would lose Influence, you may choose one card from your hand and send it to your Graveyard. If you do, lose 1 less Influence.
+**Political Capital:** Once per turn, when you would lose Influence, you may send one card from your hand to your Graveyard. If you do, lose 1 less Influence.
 
 ---
 
-## 10. Inquisition Faction — Working v0.6 Rules
+## 11. Inquisition
 
-**Faction identity:** Conviction, condemnation, suppression, purging enemy power, and turning enemy losses into permanent punishment.
+**Identity:** Conviction, condemnation, suppression, purging enemy power, and turning enemy losses into permanent punishment.  
+**Resource:** Conviction. Maximum 4; cannot fall below 0.
 
-Inquisition pressures opponents by making played cards and committed choices more costly. It has a special anti-Arcane edge, but it should not become only an anti-Arcane faction.
-
-### Resource: Conviction
-
-Inquisition uses **Conviction**.
-
-- Maximum Conviction: **4**.
-- Conviction cannot be reduced below 0.
-- The first time each turn one or more opposing cards enter the Graveyard after a battle involving you, gain **1 Conviction**, up to your maximum.
-- This normal Conviction gain can happen only once per turn.
+The first time each turn one or more opposing cards enter the Graveyard after a battle involving you, gain 1 Conviction, up to the maximum.
 
 ### Condemnation
 
-In battles involving you, opposing battle-drawn cards that are played are placed in their owner's Graveyard after the battle instead of the discard pile.
-
-Cards committed from hand already go to the Graveyard. Unplayed battle-drawn cards are discarded normally.
+In battles involving you, opposing battle-drawn cards that are played go to their owner's Graveyard after the battle instead of discard. Hand commitments already go to the Graveyard. Unplayed battle-drawn cards are discarded normally.
 
 ### Heresy
 
-Whenever your opponent plays an **Arcane** card, gain **1 Conviction**.
+Whenever the opponent plays a card with the **Arcane** trait, gain 1 Conviction. This does not count toward the normal once-per-turn gain limit, but cannot exceed the maximum.
 
-This Conviction gain does not count toward your normal once-per-turn Conviction gain limit. You still cannot exceed your maximum Conviction.
-
-An **Arcane card** is any card with the Arcane trait. A card does not need to belong to the Arcane faction to be an Arcane card. Arcane cards should be visibly marked as Arcane in future card layouts.
+The Arcane trait is distinct from Arcane faction allegiance.
 
 ### Purge
 
-Instead of playing an Action card during your Action step, you may spend Conviction to **Purge** one eligible opposing card.
+Instead of playing an Action card during the Action step, spend Conviction to choose one eligible Purge:
 
-Current provisional Purge menu:
-
-| Cost | Purge effect |
+| Cost | Effect |
 |---:|---|
-| **1 Conviction** | Send the top card of your opponent's discard pile to their Graveyard. |
-| **2 Conviction** | Choose one opposing Asset or Condition and send it to its owner's Graveyard. |
-| **3 Conviction** | Your opponent chooses one card from their hand and sends it to their Graveyard. |
-| **4 Conviction** | Look at your opponent's hand. Choose one card from it and send it to their Graveyard. |
+| 1 | Send the top card of the opponent's discard pile to their Graveyard. |
+| 2 | Choose one opposing Asset or Condition and send it to its owner's Graveyard. |
+| 3 | The opponent chooses one card from hand and sends it to their Graveyard. |
+| 4 | Look at the opponent's hand. Choose one card and send it to their Graveyard. |
 
-The Purge menu is provisional. Costs, targets, and frequency should be watched carefully in testing.
+The menu remains provisional for balance testing.
 
-### Inquisition Victory: Purification
+### Purification
 
-At the beginning of your opponent's turn, after they attempt their normal start-of-turn draw, if they draw no cards because both their deck and discard pile are empty, you win by **Purification**.
+At the beginning of the opponent's turn, after their normal start-of-turn draw attempt, if they draw no cards because both deck and discard are empty, you win by **Purification**.
 
-Purification does not trigger from failed battle draws or failed card-effect draws. The Graveyard is never reshuffled.
+Purification does not trigger from failed battle draws or card-effect draws.
 
 ### Grand Inquisitor
 
-**Style:** institutional judgment, suppression, and decisive Purges after victory.
-
-**Final Judgment**  
-Once per turn, after you win a battle, you may immediately Purge. This Purge does not use your Action opportunity. Reduce its Conviction cost by 1, to a minimum of 1.
+**Final Judgment:** Once per turn, after you win a battle, you may immediately Purge without using the Action opportunity. Reduce that Purge's Conviction cost by 1, minimum 1.
 
 ### Witch Hunter
 
-**Style:** pursuit, retaliation, and punishing failed attacks.
-
-**Relentless Pursuit**  
-Once per turn, when an opponent loses a battle they initiated against you, you may spend **2 Conviction**. If you do, their turn ends immediately. Then you may move one space toward their Heartland. If this movement begins a battle, resolve it immediately. You are the attacker. Neither player may play an Action before that battle.
-
-### Inquisition development notes
-
-- Symbol: wide-brimmed hat with buckle.
-- Avoid real-world religious symbols.
-- Do not use scales; reserve scales for a possible future Legal faction.
-- Card migration, Inquisition-specific card text, and renamed Inquisition cards are still in progress.
+**Relentless Pursuit:** Once per turn, when an opponent loses a battle they initiated against you, you may spend 2 Conviction. If you do, their turn ends immediately. Then move one space toward their Heartland. If this begins a battle, resolve it immediately; you are the attacker and neither player may play an Action before that battle.
 
 ---
 
-## 11. Arcane Faction — Working v0.6 Rules
+## 12. Arcane
 
-**Faction identity:** Rites, sacrifice, forbidden knowledge, transformation, Graveyard play, and rule-bending.
+**Identity:** Rites, sacrifice, forbidden knowledge, transformation, Graveyard play, and rule-bending.  
+**Victory:** complete three public, interruptible Rites.
 
-Arcane turns loss and sacrifice into power. Its alternate victory path is a public, interruptible Ritual made up of three Rites.
+### Arcane trait
 
-### Arcane Trait
+Cards with the **Arcane** trait may be neutral or faction-specific. The trait must be visibly marked because other rules may reference it.
 
-Some cards have the **Arcane** trait.
+### Ritual structure
 
-Arcane cards may be neutral, faction-specific, or otherwise available through deck construction. The Arcane trait is distinct from the Arcane faction and should be visibly marked because other rules, including Inquisition's Heresy ability, may reference it.
+During the Action phase after movement, instead of playing an Action card, begin one incomplete Rite by paying its beginning cost.
 
-### Ritual
+- Only one Rite may be begun but incomplete at a time.
+- A Rite cannot be completed on the turn it begins.
+- Only one Rite may be completed per turn.
+- If interrupted, the Rite resets and paid costs are not returned unless the Rite says otherwise.
+- Completing the first Rite unlocks **Invocation**.
+- Completing the second unlocks **Transmutation**.
+- Completing the third immediately wins by **Ritual**.
 
-Arcane has three Rites.
+### Bound cards
 
-During your Action phase after movement, instead of playing an Action card, you may begin one incomplete Rite by paying that Rite's beginning cost.
+Cards bound to a Rite are placed face-up near the Graveyard. They are outside every normal zone and cannot be played or affected unless a rule specifically refers to bound cards.
 
-You may not begin a Rite while another Rite is begun but incomplete.
-
-A Rite cannot be completed on the same turn it is begun. You may complete only one Rite per turn.
-
-If a Rite is interrupted, it resets and is no longer begun. Any costs paid to begin that Rite are not returned unless the Rite says otherwise. After an interrupted Rite resets, you may later begin any incomplete Rite.
-
-When you complete your first Rite, unlock **Invocation**.
-
-When you complete your second Rite, unlock **Transmutation**.
-
-When you complete your third Rite, you immediately win by **Ritual**.
-
-### Bound Cards
-
-Some Rites bind cards.
-
-Cards bound to a Rite are placed face-up near your Graveyard. Bound cards are not in your hand, deck, discard pile, Graveyard, Asset bank, or in play. They cannot be played or affected by other effects unless a rule specifically refers to bound cards.
-
-### First Ritual Unlock: Invocation
+### Invocation
 
 Once per turn, when you play an Arcane card, you may move one card from your Graveyard to your discard pile.
 
-### Second Ritual Unlock: Transmutation
+### Transmutation
 
-Once per turn, before dice are rolled in a battle involving you, you may send one card from your hand to your Graveyard. Add that card's deckbuilding value to your battle total.
+Once per turn, before dice are rolled in a battle involving you, you may send one card from hand to the Graveyard. Add its deckbuilding value to your battle total.
 
-Sending a card to the Graveyard for Transmutation is not committing a card from hand and is not playing a battle-drawn card.
-
-Supplemental cards cannot be used for Transmutation.
-
-### Third Ritual Unlock: Ritual Victory
-
-When you complete your third Rite, you immediately win by **Ritual**.
+This is neither a hand commitment nor a battle-drawn play. Supplemental cards cannot be used.
 
 ### Rite of Echoes
 
-During your Action phase after movement, instead of playing an Action card, you may begin this Rite by choosing one card in your Graveyard and placing it face-up near your Graveyard. Then choose one card from your hand that has the same title as at least one other card in your constructed deck and place it face-up on top of the selected Graveyard card. Those cards are bound to this Rite.
+To begin, bind one chosen card from your Graveyard and one card from hand whose title matches at least one other card in your constructed deck.
 
-Complete this Rite the next time, on a later turn, that you play another card with the same title as the bound hand card during battle.
+Complete the Rite on a later turn when you play another card with that title during battle.
 
-When this Rite is completed, move the selected Graveyard card to your discard pile. Send the bound hand card to your Graveyard. The card played to complete this Rite resolves normally and goes to its normal destination.
+On completion:
 
-If you lose a battle after beginning this Rite and before completing it, this Rite is interrupted. Send both bound cards to your Graveyard and reset this Rite.
+- move the selected Graveyard card to discard;
+- send the bound hand card to the Graveyard;
+- the completing card resolves normally and follows its normal destination.
+
+If you lose a battle before completion, send both bound cards to the Graveyard and reset the Rite.
 
 ### Rite of Blood
 
-During your Action phase after movement, instead of playing an Action card, you may begin this Rite by choosing one card from your hand and sending it to your Graveyard.
+To begin, send one card from hand to the Graveyard.
 
-Complete this Rite the next time, on a later turn, that you win a battle without committing a card from hand and without playing a battle-drawn card.
+Complete the Rite on a later turn when you win a battle without committing from hand and without playing a battle-drawn card. Using Transmutation does not prevent completion.
 
-Using Transmutation during that battle does not prevent this Rite from being completed.
-
-If you lose a battle after beginning this Rite and before completing it, this Rite is interrupted and resets.
+If you lose a battle before completion, reset the Rite.
 
 ### Rite of Crossing
 
-During your Action phase after movement, instead of playing an Action card, you may begin this Rite only if you won a battle this turn that caused you to occupy a Territory your opponent controlled immediately before that battle.
+You may begin this Rite only if you won a battle this turn that caused you to occupy a Territory the opponent controlled immediately before that battle.
 
-To begin this Rite, send one Arcane card from your hand to your Graveyard. If you have no Arcane cards in hand, you may reveal your hand and send one Arcane card from your discard pile to your Graveyard instead.
+To begin, send one Arcane card from hand to the Graveyard. If none is in hand, reveal your hand and send one Arcane card from discard to the Graveyard instead.
 
-Complete this Rite at the beginning of your next turn, after resolving captures, if you still occupy or control that Territory.
+At the beginning of your next turn, after captures, complete the Rite if you still occupy or control that Territory. Otherwise it is interrupted and resets.
 
-If you no longer occupy or control that Territory before this Rite is complete, this Rite is interrupted and resets.
-
-Heartlands are not Territories and do not count.
+Heartlands do not count.
 
 ### Alchemist
 
-**Style:** sacrifice, transmutation, and turning loss into fuel.
-
-**Ability name TBD**  
-The first time on your turn that you send a card from your hand to your Graveyard as part of a Rite, Transmutation, or Arcane ability, draw one card.
-
-If this happens during a battle, draw after the battle resolves.
+**Ability name TBD:** The first time on your turn that you send a card from hand to the Graveyard as part of a Rite, Transmutation, or Arcane ability, draw one card. If this happens during battle, draw after battle resolves.
 
 ### Spirit Walker
 
-**Style:** ritual protection, Graveyard contact, and keeping a Rite alive through sacrifice.
+**Ability name TBD:** The first time on your turn that you lose a battle and a begun Rite would be interrupted, you may send one Arcane card from hand to the Graveyard. If you do, that Rite is not interrupted.
 
-**Ability name TBD**  
-The first time on your turn that you lose a battle and a begun Rite would be interrupted, you may send one Arcane card from your hand to your Graveyard. If you do, that Rite is not interrupted.
-
-This ability cannot prevent a Rite from being interrupted because you no longer occupy or control a Territory required by that Rite.
-
-### Arcane development notes
-
-- Symbol: pentagram or pentacle.
-- Rite names currently use Rite of Echoes, Rite of Blood, and Rite of Crossing as working names.
-- Card migration, Arcane-specific card text, and Arcane trait markings are still in progress.
+This cannot prevent interruption caused by losing occupation or control required by a Rite.
 
 ---
 
-## 12. Financiers Faction — Working v0.6 Rules
+## 13. Financiers
 
-**Faction identity:** Treasury, investment, ownership, Capital, leverage, and delayed payoff.
+**Identity:** Treasury, investment, ownership, Capital, leverage, and delayed payoff.  
+**Resource:** Capital. Capital cannot fall below 0.
 
-Financiers win through ownership, leverage, and controlled economic expansion. They convert board presence into purchasing power, purchasing power into Deeds, and Deeds into income and victory.
+### Capital limit
 
-Financiers do not need to conquer the Gauntlet by force, but they are strongly rewarded for occupying and controlling key Territories before buying them.
+Capital limit equals:
 
-### Resource: Capital
+> Territories you control + total deckbuilding value of cards in your Treasury
 
-Financiers track **Capital** as a number.
-
-Capital may be gained, spent, and lost. Capital cannot be reduced below 0.
-
-### Capital Limit
-
-Your Capital limit equals:
-
-> the number of Territories you control + the total deckbuilding value of cards in your Treasury
-
-Heartlands are not Territories and do not count toward your Capital limit.
-
-You may gain Capital above your Capital limit during your turn. At the end of your turn, if your Capital is greater than your Capital limit, reduce it to your Capital limit.
+Heartlands do not count. Capital may temporarily exceed the limit during the turn, but excess is lost at end of turn.
 
 ### Treasury
 
-Cards in your Treasury represent stored assets, collateral, and financial infrastructure.
+During the Action phase after movement, instead of playing an Action card, place one card from hand face-up in the Treasury.
 
-During your Action phase after movement, instead of playing an Action card, you may place one card from your hand face-up into your Treasury.
-
-Cards in your Treasury are not in your hand, deck, discard pile, Graveyard, Asset bank, or in play. They cannot be played or affected unless a rule or card specifically refers to the Treasury.
-
-Each card in your Treasury increases your Capital limit by its deckbuilding value.
+Treasury cards are outside every normal zone and cannot be played or affected unless a rule specifically refers to Treasury. Each contributes its deckbuilding value to the Capital limit.
 
 ### Deeds
 
-Each Territory has one **Deed**.
+Each Territory has one Deed. A Deed may be unowned or owned by a Financier. Heartlands have no Deeds.
 
-A Deed may be unowned or owned by a Financier player. In a Financier mirror match, a Deed owned by one Financier may be bought out by the opposing Financier.
+During the Action phase after movement, instead of playing an Action card, buy one Deed by spending Capital. An opposing Financier's Deed may be bought out and transferred.
 
-Heartlands do not have Deeds.
+### Deed cost
 
-### Buying a Deed
-
-During your Action phase after movement, instead of playing an Action card, you may buy one Deed by spending Capital.
-
-If you buy an unowned Deed, you become that Deed's owner.
-
-If you buy a Deed owned by an opposing Financier, the Deed transfers to you. The previous owner no longer receives income from that Deed, and it no longer counts toward their faction victory.
-
-### Deed Cost
-
-Deed cost is calculated as follows:
-
-> Deed cost = Deeds you currently own + 1 + position modifier + buyout premium
+> Deed cost = Deeds you own + 1 + position modifier + buyout premium
 
 Minimum cost: 1 Capital.
 
-### Position Modifier
-
-Use the Territory's current state from the buyer's perspective.
-
-| Territory state | Modifier |
+| Territory state from buyer's perspective | Modifier |
 |---|---:|
-| You control the Territory | -1 |
-| You occupy the Territory, but it is not yet controlled by you | 0 |
-| You neither control nor occupy the Territory | +1 |
+| You control it | -1 |
+| You occupy but do not control it | 0 |
+| You neither control nor occupy it | +1 |
 
-### Buyout Premium
+Buyout premium is 0 for an unowned Deed. For a Deed owned by an opposing Financier, the premium equals the number of Deeds that opponent owns.
 
-If the Deed is unowned, the buyout premium is 0.
+### Income and victory
 
-If the Deed is owned by an opposing Financier, the buyout premium equals the number of Deeds that opposing Financier currently owns.
+At the start of your turn, after captures, gain 1 Capital per Deed you own.
 
-### Deed Income
-
-At the start of your turn, after resolving captures, gain 1 Capital for each Deed you own.
-
-### Financier Victory: Controlling Interest
-
-When you own the Deeds to all Territories in the Gauntlet, you immediately win by **Controlling Interest**.
-
-Heartlands are not Territories and do not require Deeds.
+When you own the Deeds to all Territories in the Gauntlet, immediately win by **Controlling Interest**.
 
 ### Play the Market
 
-During your Action phase after movement, instead of playing an Action card, you may discard one card from your hand and roll one die.
+During the Action phase after movement, instead of playing an Action card, discard one card from hand and roll:
 
 | Roll | Result |
 |---:|---|
-| 1 | Market Crash: send that card to your Graveyard and gain 0 Capital. |
-| 2-3 | Gain 1 Capital. |
-| 4-5 | Gain Capital equal to that card's deckbuilding value. |
-| 6 | Gain Capital equal to twice that card's deckbuilding value. |
+| 1 | Send the card to the Graveyard; gain 0 Capital. |
+| 2–3 | Gain 1 Capital. |
+| 4–5 | Gain Capital equal to the card's value. |
+| 6 | Gain Capital equal to twice the card's value. |
 
 ### Subsidize
 
-Before dice are rolled in a battle involving you, you may spend Capital to add to your battle total.
+Before dice are rolled in a battle involving you, spend Capital for a battle bonus:
 
-Subsidize uses progressive cost:
-
-| Bonus | Total Capital cost |
+| Bonus | Total cost |
 |---:|---:|
 | +1 | 1 |
 | +2 | 3 |
 | +3 | 6 |
 | +4 | 10 |
 
-There is no fixed maximum Subsidize bonus, but each additional +1 costs more than the last.
+The progression may continue without a fixed maximum; each additional +1 costs more than the last.
 
 ### Banker
 
-**Style:** leverage, collateral, and financing acquisitions before enough Capital is available.
+**Line of Credit:** The first time on your turn that you would buy or buy out a Deed, you may use one card from hand or Treasury as collateral.
 
-**Line of Credit**  
-The first time on your turn that you would buy or buy out a Deed, you may use one card from your hand or Treasury as collateral for that purchase.
-
-Collateral contributes Capital toward that purchase equal to the card's deckbuilding value, but Line of Credit may not fund more than half of the Deed purchase cost.
-
-If the collateral card came from your hand, reveal it, then discard it after the purchase.
-
-If the collateral card came from your Treasury, move it to your discard pile after the purchase.
-
-Unused collateral value is lost. It does not become Capital.
-
-Line of Credit may be used only for Deed purchases and buyouts. It cannot be used to Subsidize.
+- Collateral contributes Capital equal to its deckbuilding value.
+- It cannot fund more than half the purchase cost.
+- Hand collateral is revealed and discarded after purchase.
+- Treasury collateral moves to discard after purchase.
+- Unused value is lost.
+- It applies only to Deed purchases and buyouts, not Subsidize.
 
 ### Executive
 
-**Style:** acquisition, hostile expansion, and converting battlefield wins into immediate control.
+**Hostile Takeover:** During the Action phase after movement, instead of playing an Action card, if you won a battle this turn that caused you to occupy an enemy Territory, you may buy that Territory's Deed.
 
-**Hostile Takeover**  
-During your Action phase after movement, instead of playing an Action card, if you won a battle this turn that caused you to occupy an enemy Territory, you may buy that Territory's Deed.
-
-For cost purposes, treat that Territory as occupied by you, but not controlled by you.
-
-If the Deed is unowned, you buy it normally.
-
-If the Deed is owned by an opposing Financier, you may buy it out. The normal buyout premium applies.
-
-If you buy or buy out the Deed this way, you immediately control that Territory.
-
-### Financier development notes
-
-- Symbol: coin.
-- Cards used as Line of Credit collateral go to the discard pile for now.
-- If Banker accelerates too quickly, Line of Credit collateral may need to go to the Graveyard instead of the discard pile.
-- If Financier mirrors stall, the buyout premium may need to be reduced.
-- Card migration and Financier-specific card text are still in progress.
+Treat it as occupied but not controlled for cost. Normal buyout premiums apply. If the purchase succeeds, immediately control that Territory.
 
 ---
 
-## 13. Intelligence Faction — Working v0.6 Rules
+## 14. Intelligence
 
-**Faction identity:** information, preparation, hidden objectives, tactical disruption, and winning through a coordinated **Special Operation**.
+**Identity:** information, preparation, hidden objectives, tactical disruption, and a coordinated Special Operation.  
+**Resources:** Intel and Operation Progress.
 
-Intelligence wins by seeing the battlefield before anyone else, manipulating hidden choices, and completing coordinated Missions at decisive moments. Intelligence uses existing hidden zones such as hands, battle commitments, battle draws, face-down Territories, and unrevealed information.
+Intel starts at 0, cannot fall below 0, and currently has no maximum.
 
-### Resource: Intel
+Operation Progress starts at 0 and cannot fall below 0 unless a rule says otherwise.
 
-Intelligence uses **Intel**.
+### Missions
 
-- Starting Intel: **0**.
-- Intel cannot be reduced below 0.
-- Intel currently has no maximum.
-- Intel may be spent on Surveillance, Interference, aborting Missions, completing the Special Operation, and leader abilities.
+Some Intelligence cards include a Mission requirement. The card may be used normally or started as a Mission from hand.
 
-### Operation Progress
+During the Action phase after movement, instead of playing an Action card, place one Intelligence card from hand face-down near the leader as the **Active Mission**.
 
-Intelligence tracks **Operation Progress** as a number.
-
-- Starting Operation Progress: **0**.
-- Operation Progress cannot be reduced below 0 unless a later rule or card specifically says otherwise.
-- Completing normal Missions increases Operation Progress.
-- Operation Progress determines when the Special Operation may be started and whether it remains viable.
-
-### Intelligence Cards and Missions
-
-Some Intelligence cards have normal card text and a **Mission** requirement.
-
-An Intelligence card may be used normally, or it may be started as a Mission if it is in your hand.
-
-Mission cards are normal playable Intelligence cards with Mission text.
-
-During your Action phase after movement, instead of playing an Action card, you may place one Intelligence card from your hand face-down near your leader card as your **Active Mission**.
-
-You may look at your Active Mission at any time.
-
-You may have only one Active Mission at a time.
-
-You cannot have an Active Mission and a Special Operation at the same time.
-
-A Mission cannot be completed on the same turn it is started.
-
-A Mission requirement only counts if it is satisfied while that Mission is active.
+- You may look at it at any time.
+- You may have only one Active Mission.
+- You cannot have an Active Mission and Special Operation simultaneously.
+- A Mission cannot complete on the turn it begins.
+- Its requirement counts only while active.
 
 ### Completing a Mission
 
-During your Action phase after movement, instead of playing an Action card, if your Active Mission's Mission requirement has been satisfied, reveal and complete it.
+During the Action phase after movement, instead of playing an Action card, reveal and complete an Active Mission whose requirement has been satisfied.
 
-When you complete a normal Mission:
+- Increase Operation Progress by 1.
+- Gain Intel equal to the Mission card's deckbuilding value.
+- Discard the Mission card.
 
-- Increase your Operation Progress by **1**.
-- Gain Intel equal to that Mission card's deckbuilding value.
-- Discard the completed Mission card.
+### Aborting and failing
 
-### Aborting a Mission
+During the Action phase after movement, instead of playing an Action card, reveal the Active Mission and spend Intel equal to its value to abort it; discard it.
 
-During your Action phase after movement, instead of playing an Action card, you may reveal your Active Mission and spend Intel equal to its deckbuilding value to **abort** it.
+Aborting is not failure. A Mission fails only through opponent disruption, compromised game state, or an effect that specifically causes failure. Reveal a failed Mission and send it to the Graveyard.
 
-If you do, discard the Mission card.
+### Special Operation
 
-Aborting a Mission is a controlled withdrawal. It is not a failed Mission.
+You may start the Special Operation only if Operation Progress is greater than the number of Territories the opponent controls.
 
-### Failed Missions
+During the Action phase after movement, instead of playing an Action card, if:
 
-If a Mission fails, reveal it and send it to your Graveyard.
+- Operation Progress is greater than opposing controlled Territories;
+- you have no Active Mission;
+- you have an Intelligence card in hand;
 
-Failure should be reserved for opponent disruption, game-state compromise, or specific rules that say a Mission fails. Normal voluntary abandonment is handled by aborting the Mission.
+place one Intelligence card from hand face-down near the leader as the **Special Operation**.
 
-### Intelligence Victory: Special Operation
+It uses that card's Mission requirement but is not a normal Mission. It does not grant Operation Progress or Intel and does not trigger normal-Mission abilities.
 
-The Special Operation is the Intelligence alternate victory condition.
+If Operation Progress ceases to exceed opposing controlled Territories, the Special Operation fails; reveal it and send it to the Graveyard.
 
-You may start the Special Operation only if your Operation Progress is greater than the number of Territories your opponent controls.
+During the Action phase after movement, instead of playing an Action card, if the Special Operation requirement is satisfied and readiness remains valid, reveal it and spend Intel equal to:
 
-Heartlands are not Territories and do not count.
+> Territories in the Gauntlet - Special Operation card value
 
-During your Action phase after movement, instead of playing an Action card, if your Operation Progress is greater than the number of Territories your opponent controls, you have no Active Mission, and you have an Intelligence card in hand, you may place one Intelligence card from your hand face-down near your leader card as your **Special Operation**.
+Minimum cost: 1 Intel. If paid, immediately win by **Special Operation**.
 
-An already Active Mission cannot become your Special Operation. The Special Operation must be started separately.
+### Battle commitment order
 
-The Special Operation uses the card's Mission requirement, but it is not a normal Mission. Completing the Special Operation does not increase Operation Progress, does not gain Intel, and does not trigger abilities that care about completing a Mission.
+Hand commitments:
 
-If you have started the Special Operation and your Operation Progress is no longer greater than the number of Territories your opponent controls, your Special Operation fails. Reveal it and send it to your Graveyard.
-
-During your Action phase after movement, instead of playing an Action card, if your Special Operation's Mission requirement has been satisfied and your Operation Progress is still greater than the number of Territories your opponent controls, reveal the Special Operation.
-
-To complete the Special Operation, spend Intel equal to:
-
-> number of Territories in the Gauntlet - the Special Operation card's deckbuilding value
-
-Minimum cost: 1 Intel.
-
-If you do, you immediately win by **Special Operation**.
-
-### Battle Commitment Order
-
-Intelligence requires the battle commitment order to be explicit.
-
-Hand-card commitment:
-
-1. Attacker may commit one card from hand face-down, or pass.
-2. Defender may commit one card from hand face-down, or pass.
+1. attacker commits one card face-down or passes;
+2. defender commits one card face-down or passes.
 
 Battle draw:
 
-1. Attacker draws battle cards and chooses one battle-drawn card to play face-down, or passes if allowed.
-2. Defender draws battle cards and chooses one battle-drawn card to play face-down, or passes if allowed.
+1. attacker draws and chooses one battle-drawn card face-down or passes if allowed;
+2. defender draws and chooses one battle-drawn card face-down or passes if allowed.
 
-Then face-down battle cards are revealed and the battle resolves normally.
+Then reveal and resolve normally.
 
 ### Surveillance
 
-Once per battle, when your opponent commits or plays a face-down card in a battle involving you, you may spend **1 Intel** to look at that card before the battle proceeds.
+Once per battle, when the opponent commits or plays a face-down Battle card in a battle involving you, spend 1 Intel to look at it before the battle proceeds.
 
-Surveillance may be used after the opponent makes a face-down hand commitment or after the opponent chooses a face-down battle-drawn card.
-
-If you are defending, you may use Surveillance after the attacker commits or passes a hand card and before you decide whether to commit a hand card. You may also use Surveillance after the attacker chooses a battle-drawn card and before you choose your own battle-drawn card.
-
-If you are attacking, you may use Surveillance after the defender commits a hand card and before the battle-draw step begins. You may also use Surveillance after the defender chooses a battle-drawn card and before cards are revealed.
-
-Each Intelligence player may use Surveillance once per battle. In an Intelligence mirror match, both players may use Surveillance once per battle.
+- A defending Intelligence player may inspect the attacker's hand commitment before deciding their own, and may inspect the attacker's chosen battle-drawn card before choosing their own.
+- An attacking Intelligence player may inspect the defender's hand commitment before battle draw, and the defender's chosen battle-drawn card before reveal.
+- Each Intelligence player may use Surveillance once per battle, including in mirror matches.
 
 ### Interference
 
-After using Surveillance to look at an opponent's face-down battle card, you may spend **2 additional Intel** to interfere with that card.
+After Surveillance reveals an opposing face-down Battle card, spend 2 additional Intel to remove it from the battle. The opponent may choose another legal card from the same source, if able.
 
-The interfered card is removed from the battle. The opponent may choose another legal card from the same source, if able.
+- A hand commitment returns to hand.
+- A battle-drawn card returns to that battle draw and is no longer the played card.
+- If no replacement is chosen, the opponent plays no card from that source.
+- Unplayed battle-drawn cards are discarded normally.
 
-- If the interfered card was committed from hand, return it to its owner's hand.
-- If the interfered card was played from battle draw, return it to that battle draw. It is no longer the played card.
-- If the opponent does not or cannot choose another legal card from that source, they play no card from that source in this battle.
-- Unplayed battle-drawn cards are discarded normally during battle cleanup.
-
-Interference does not destroy the card it affects. Intelligence disrupts the current battle plan; it does not send cards to the Graveyard by default.
-
-Interference does not create an additional response window. If Interference causes a replacement card to be chosen, the opposing Intelligence player may use Surveillance on that replacement only if they have not already used Surveillance this battle.
+Interference disrupts rather than destroys. It does not create an additional response window.
 
 ### Ranger
 
-**Style:** fieldcraft, terrain expertise, movement, and operating in hostile ground.
+**Fieldcraft:** Once per turn, when a revealed Territory effect would affect you, your movement, or a battle involving you, spend 1 Intel to ignore that Territory effect until end of turn.
 
-**Fieldcraft**  
-Once per turn, when a revealed Territory effect would affect you, your movement, or a battle involving you, you may spend **1 Intel** to ignore that Territory effect until the end of the current turn.
-
-Fieldcraft does not ignore ownership, occupation, capture, Heartland rules, Homeland Advantage, or Asset bank limits.
+Fieldcraft does not ignore ownership, occupation, capture, Heartland rules, Homeland Advantage, or Asset-bank limits.
 
 ### Spymaster
 
-**Style:** planning, command-and-control, operation tempo, and keeping the mission pipeline moving.
+**Mission Control:** Once per turn, after completing a normal Mission, immediately start a new Mission from hand without using the Action opportunity.
 
-**Mission Control**  
-Once per turn, after you complete a normal Mission, you may immediately start a new Mission from your hand without using your Action opportunity.
-
-A Mission started this way cannot be completed this turn.
-
-Mission Control cannot be used to start the Special Operation.
-
-### Intelligence development notes
-
-- Symbol: eye.
-- Mission requirements should reward tactical Gauntlet situations rather than generic progress chores.
-- Missions should usually involve hidden information, movement, enemy Territory, battle commitments, battle draw, Surveillance, Interference, terrain, timing, or withdrawal.
-- Mission requirements should generally be achievable within one or two turns if pursued, but disruptable if the opponent reads the plan.
-- Higher-value Intelligence cards should generally have harder or riskier Mission requirements because completed Missions grant Intel equal to deckbuilding value and high-value Special Operation cards reduce the final Intel cost.
-- Special Operation may become harder or more expensive as Intelligence loses board position, but it should not become impossible.
-- Card migration, Intelligence-specific card text, and exact Mission requirements are still in progress.
+It cannot complete that turn and cannot be used to start the Special Operation.
 
 ---
 
-## 14. Faction Symbols
+## 15. Faction symbols and card legality
 
-Working faction symbols:
-
-| Faction | Symbol |
+| Faction | Working symbol |
 |---|---|
 | Military | Crossed swords |
 | Diplomats | Laurel |
-| Inquisition | Wide-brimmed hat with buckle |
+| Inquisition | Wide-brimmed buckle hat |
 | Arcane | Pentagram or pentacle |
 | Financiers | Coin |
 | Intelligence | Eye |
 
-Faction symbols are intended primarily for leader cards, reference cards, faction sheets, deck dividers, and similar components. Regular playable cards do not currently need faction symbols if card legality is defined through faction sheets, official deck lists, canonical data, or rules.
+Faction symbols are intended primarily for leader cards, references, faction sheets, deck dividers, and similar components. Regular-card legality is defined through faction materials, deckbuilding rules, official lists, and canonical data.
 
-Neutral cards should not have **Advanced** printed on them. Advanced status is a behind-the-scenes classification, not a player-facing card label.
+The Arcane trait is mechanically relevant and should be visibly marked.
 
-Arcane is currently being treated as a card trait rather than only a faction symbol. Cards with the Arcane trait should be visibly marked in some form, but the broader faction-symbol/icon system remains unresolved.
-
----
-
-## 15. Product and Release Structure Notes
-
-The rules define a deck. Product packaging defines what cards a buyer receives.
-
-For v0.6 playtesting, the intended release scope includes:
-
-- The core card pool.
-- Six playable factions.
-- Faction cards for Military, Diplomats, Inquisition, Arcane, Financiers, and Intelligence.
-- Two leader cards for each faction.
-- Faction reference cards or sheets for each faction.
-- General reference cards.
-- Suggested decklists for each leader or faction.
-
-A later commercial product may divide that material into starter products and expansion packs, but the v0.6 rules framework should assume all six factions are part of the release.
+Starter eligibility, complexity, and watchlist status are development metadata, not printed card identities.
 
 ---
 
-## 16. v0.6 Playtest Watchlist
+## 16. Product and release structure
 
-### Global
+For v0.6 playtesting, the intended package includes:
 
-- Does the 30-card / 60-value deck rule create meaningful deckbuilding choices?
-- Are most legal decks simply 30 cards, and is that desirable?
-- Are supplemental cards physically and rules-wise distinct enough from playable cards?
-- Does removing Heartland cards reduce confusion?
-- Does the Asset bank still speed the game and improve scaling without making comebacks impossible?
-- Do all six factions still feel like they are playing Gauntlet?
-- Does each alternate victory create visible pressure and meaningful counterplay?
-- Does moving a card out of the neutral pool remove a shared tool that other factions still need?
+- the neutral card pool;
+- all six factions;
+- faction cards;
+- two leaders per faction;
+- faction references and resource tracks;
+- general rules references;
+- suggested decks.
 
-### Military
-
-- Is Command max 2 correct?
-- Are General and Commandant comparably strong?
-- Does Military feel like the standard conquest faction without being bland?
-- Does Rout create too many chain-battle turns?
-- Does Fortify bypass the counterattack window too often?
-
-### Diplomats
-
-- Is five ratified Treaty Articles the right Peace Treaty threshold?
-- Does ratifying Proposals through accepted Terms or refused-and-vindicated Terms create good incentives?
-- Does Peace Treaty remain viable while the Diplomat is losing board position?
-- Does Loss of Face sufficiently prevent Influence from becoming a ticking clock?
-- Are De-escalation and Capitulation distinct enough in play?
-- Is Rebuilding Pact too generous when refused?
-- Is Ultimatum's 3-Influence refusal payoff too swingy?
-- Is Diplomatic Recognition fair as a capture shortcut?
-- Are Ambassador and Senator comparably strong?
-- Is nine Proposals manageable, or should the list be trimmed after testing?
-
-### Inquisition
-
-- Is maximum Conviction 4 correct?
-- Does Condemnation make Purification feasible without making normal battles feel punitive or hopeless?
-- Is the 1-Conviction top-discard Purge too efficient, too weak, or too arbitrary?
-- Are the 2-, 3-, and 4-Conviction Purge targets appropriately priced?
-- Does Grand Inquisitor's discounted post-battle Purge create too much double-Purge pressure?
-- Is Witch Hunter's Relentless Pursuit cost and timing clear enough?
-- Does Heresy give Inquisition a meaningful anti-Arcane edge without making Arcane unplayable?
-- Does Purification occur often enough to matter, but rarely enough that conquest still matters?
-
-### Arcane
-
-- Are the three Rites comparably difficult to begin and complete?
-- Is one begun-but-incomplete Rite at a time the correct limit?
-- Is the interruption rule clear and fair, especially after a Rite has already consumed cards?
-- Does Rite of Echoes create interesting duplicate/card-copy deckbuilding without becoming fiddly?
-- Is Rite of Blood too difficult before Transmutation is unlocked?
-- Does Transmutation make Rite of Blood satisfyingly achievable without trivializing it?
-- Does Rite of Crossing work cleanly when it can use any Territory the opponent controlled immediately before the battle?
-- Does Invocation create enough Graveyard play without undoing Graveyard pressure too easily?
-- Is Transmutation's battle bonus too swingy when sacrificing high-value cards?
-- Are Alchemist and Spirit Walker comparably strong?
-- Does Arcane feel like a heavy Graveyard/Ritual faction without becoming solitaire?
-- Does the Arcane versus Inquisition matchup create tension rather than a hard counter?
-
-### Financiers
-
-- Does Capital accumulate quickly enough for the faction to feel functional before the game is already decided?
-- Does Deed income create too much midgame snowballing?
-- Is the Capital limit formula easy to track?
-- Does Treasury create meaningful planning without becoming a disconnected setup minigame?
-- Is the Deed cost formula intuitive in normal games and Financier mirrors?
-- Does the buyout premium keep Financier mirrors interactive without causing stalls?
-- Is Play the Market too swingy, too weak, or too efficient?
-- Does progressive Subsidize prevent unlimited Capital dumping without feeling arbitrary?
-- Are Banker and Executive comparably strong and fun?
-- Is Line of Credit balanced with collateral going to discard, or should collateral go to the Graveyard?
-- Does Hostile Takeover create too much immediate-control snowballing?
-
-### Intelligence
-
-- Does Intelligence feel like information, preparation, timing, and disruption rather than a disconnected hidden-information minigame?
-- Does starting at 0 Intel make the faction too slow, or does it correctly make Intel a reward for successful preparation?
-- Is no Intel maximum correct, or does Intelligence hoard too much Intel before the Special Operation?
-- Is one Active Mission at a time the right limit?
-- Is the rule that a Mission cannot be completed on the turn it is started sufficient to prevent burst turns?
-- Are Mission requirements tactical and fun once Intelligence cards are designed?
-- Is Operation Progress greater than opponent-controlled Territories the right Special Operation readiness requirement?
-- Does the Special Operation failure rule create enough board counterplay after the Special Operation begins?
-- Is the final Intel cost formula for Special Operation too high, too low, or too dependent on card value?
-- Does Special Operation remain harder under board pressure without becoming impossible?
-- Does Surveillance once per battle create interesting choices about which face-down card to inspect?
-- Does Interference feel disruptive without feeling destructive or too close to Inquisition?
-- Do Intelligence mirror matches remain manageable with both players having one Surveillance per battle?
-- Is Ranger's Fieldcraft useful enough without ignoring too much of the board state?
-- Is Spymaster's Mission Control strong and interesting without shortcutting the Special Operation?
+Commercial packaging may later divide the pool into starter products and expansions, but that is separate from the v0.6 rules framework.
 
 ---
 
-## 17. Open Questions Before v0.6 Release
+## 17. Working principle
 
-- Should faction cards be fully separated from the neutral/core pool before v0.6?
-- Which high-complexity neutral cards should become faction cards, advanced neutral cards, or be cut from starter play?
-- Which neutral cards provide important shared counterplay that all factions should retain access to?
-- Should the v0.6 package include printable leader/reference cards?
-- Should resource tracks be printed directly on leader cards?
-- How should official decklists be formatted for each leader?
-- How should the Arcane trait be marked on cards before the final icon/faction-symbol system is resolved?
-- What final names should be used for Arcane Rites, Ritual unlock abilities, and leader abilities?
-- What exact Mission requirements should Intelligence cards use, and how should Mission difficulty scale with deckbuilding value?
+The core game should still be recognizably Gauntlet: advancing through contested Territories, winning battles, occupying ground, surviving counterattacks, capturing Territories, and creating decisive breakthrough pressure.
 
----
+Factions should change how players pursue and contest those goals, not replace the game with disconnected systems.
 
-## 18. Working Principle
+Testing questions and unresolved design decisions are maintained in:
 
-v0.6 should make all six factions feel real without making the core game unrecognizable.
-
-The core game should still be about running the Gauntlet: advancing through contested Territories, winning battles, occupying ground, surviving counterattacks, capturing Territories, and creating decisive breakthrough pressure.
-
-Heartlands remain important rules endpoints, but the main player-facing identity of the game should be the Gauntlet itself.
-
-Factions should change how players pursue those goals, not replace the game with disconnected minigames.
+- `Gauntlet_v0.6_Open_Questions.md`;
+- `Gauntlet_Playtest_Targets_and_Metrics.md`.
