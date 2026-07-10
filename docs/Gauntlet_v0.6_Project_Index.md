@@ -47,6 +47,7 @@ Already completed:
 - Protracted Siege reviewed and recorded as a cost-4 Advanced Neutral Territory Overlay that delays a scheduled capture.
 - Rallying Cry reviewed and recorded as a cost-1 Core Neutral card with both effects unchanged.
 - Redemption reviewed and recorded as a cost-2 Core Neutral card whose Action banks it as an Asset until voluntarily used.
+- Reinforcements reviewed and recorded as a cost-2 Core Neutral card whose Action banks it as an Asset that can be discarded during the player's turn for one additional Action.
 - A post-review Condition reduction pass was added to the rules-cleanup plan, prioritizing Assets, Overlays, or immediate resolution where cleaner.
 - Leader archetype / visual design notes promoted to their own durable file.
 - Leader production design bible added as `docs/Gauntlet_v0.6_Leader_Design_Bible.md`.
@@ -72,6 +73,6 @@ Already completed:
 
 ## Current checkpoint
 
-- Last fully documented reviewed card: **Redemption**.
-- Next card: **Reinforcements**.
+- Last fully documented reviewed card: **Reinforcements**.
+- Next card: **Resistance**.
 - Current work: continue card review while preserving any major audit discoveries in the appropriate repo document.
