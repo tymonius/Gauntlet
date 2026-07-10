@@ -1,69 +1,127 @@
 # Gauntlet
 
-Gauntlet is a two-player tactical card-and-territory game about advancing across a contested battlefield, capturing ground, managing limited cards, and defeating the opponent in their Heartland.
+Gauntlet is a two-player tactical card-and-territory game about advancing across a contested battlefield, capturing ground, managing limited cards, surviving counterattacks, and breaking through the opponent's final position.
 
-The game is currently in pre-release physical playtesting.
+The project is in private pre-release development and physical playtesting.
+
+## Current status
+
+- **Latest completed pre-faction playtest line:** v0.5.7
+- **Active development line:** v0.6
+- **v0.6 focus:** six factions, two leaders per faction, faction resources, alternate victory paths, card-pool migration, and faction playtesting
+- **Current card-review checkpoint:** completed through **Sabotage**; next card is **Scorched Earth**
+
+The six developing factions are:
+
+| Faction | Identity |
+|---|---|
+| Military | conquest, battlefield momentum, and Orders |
+| Diplomats | Terms, Influence, concessions, and Peace Treaty |
+| Inquisition | Conviction, condemnation, Purge, and Purification |
+| Arcane | Rites, sacrifice, transformation, and Ritual victory |
+| Financiers | Capital, Treasury, Deeds, and Controlling Interest |
+| Intelligence | Intel, Missions, Surveillance, and Special Operation |
 
 ## Playtest tools
 
-- [Gauntlet v0.5 Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder/) — build, validate, save, randomize, export, and print pre-faction v0.5 playtest decks.
+- [Gauntlet v0.5 Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder/) — build, validate, save, randomize, export, and print pre-faction v0.5 decks.
+
+The current deckbuilder is versioned for the v0.5 line. A separate v0.6+ rules/data mode is planned after the faction card pool and canonical data stabilize.
 
 ## Game overview
 
-Players begin on opposite sides of a line of Territories. Each player builds a deck of cards and controls several starting Territories. On each turn, players draw cards, play Actions, bank Assets, move across the Gauntlet, contest Territories, and fight battles.
+Players begin on opposite sides of a short line of Territories called the Gauntlet. Each player constructs a deck and selects Territories. During play, they draw cards, play Actions, bank Assets, move, contest ground, fight battles, occupy enemy Territories, survive counterattacks, and capture positions.
 
-The standard victory condition is to advance into the opponent’s Heartland and win the final battle there.
+The universal victory condition is to reach and defeat the opponent in their Heartland. v0.6 factions add distinct ways of creating pressure and, for most factions, visible alternate victory paths.
 
 Gauntlet is designed around:
 
-- Tactical movement and territorial control
-- Hidden card commitments during battle
-- Public board pressure and private hand management
-- Reversible but meaningful battlefield progress
-- Distinct card strategies and future faction identities
+- tactical movement and territorial control;
+- hidden hand commitments and battle draws;
+- public board pressure and private card management;
+- occupation, counterattack, and delayed capture;
+- meaningful but reversible progress;
+- Asset-bank capacity linked to Territory control;
+- strategic asymmetry without replacing the core positional game.
 
-## Core concepts
+## Repository map
 
-### Territories
+### `releases/`
 
-Territories form the battlefield. Controlling Territories matters because they provide positioning, strategic effects, and, in later versions, determine the size of a player’s Asset bank.
+Immutable historical playtest packages. Each version folder may contain canonical data, rules, printable cards, deck lists, feedback forms, release notes, and build scripts.
 
-### Battles
+Use the highest completed version for the latest released physical playtest baseline. Do not edit an old release folder to represent later rules.
 
-When opposing players contest the same space, they fight a battle. Players may commit cards from hand, draw battle cards, reveal effects, roll dice, and compare totals. The loser retreats and the winner occupies the space.
+### `docs/`
 
-### Assets
+Active design, rules, testing, setting, and production documentation.
 
-Some Action cards may be banked as Assets. Assets remain in play and provide ongoing effects. A player’s Asset bank represents the support structure behind their campaign.
+Start with:
 
-### Heartlands
+- `docs/Gauntlet_v0.6_Project_Index.md` — current source-of-truth map and checkpoint;
+- `docs/Gauntlet_v0.6_Working_Rules.md` — active v0.6 rules framework;
+- `docs/Gauntlet_v0.6_Card_Metadata.md` — card allegiance, starter eligibility, complexity, and watchlist metadata;
+- `docs/Gauntlet_v0.6_Card_Review_Log.md` — consolidated migration decisions;
+- `docs/Gauntlet_v0.6_Open_Questions.md` — unresolved current decisions;
+- `docs/Gauntlet_Design_Principles_and_Guardrails.md` — design constraints;
+- `docs/Gauntlet_Playtest_Targets_and_Metrics.md` — pacing and telemetry standards.
 
-Each player’s Heartland is their final defensive position. A player wins by defeating the opponent in their Heartland.
+`docs/Archive/` contains completed audits and superseded historical records. Archived files provide provenance but do not override active documents or canonical release data.
 
-## Repository structure
+### `deckbuilder/`
 
-Archived playtest releases are stored in the releases/ folder.
+Static browser deckbuilder for the v0.5 pre-faction ruleset. It supports card filtering, duplicate cards, Territory selection, validation, local saves, JSON import/export, text export, random deck generation, and browser print-to-PDF.
 
-Each version folder contains the print-and-play files, rule documents, deck lists, forms, release notes, and supporting data for that specific playtest version.
+### `data/`
 
-To find the most recent playtest package, use the highest-numbered version folder unless a release note says otherwise.
+Early machine-readable starter data and schema work for digital development. It is not the authoritative source for v0.5.7 or v0.6.
 
-## Status
+### `src/`
 
-Gauntlet is actively changing through playtesting. Rules, card text, costs, terminology, and components may change between versions.
+Framework-neutral TypeScript rules-engine scaffolding, including state, legal actions, hidden-information views, battle and turn flow, Asset-bank enforcement, occupation/capture logic, CLI development tools, and a local browser GUI.
 
-Older versions are retained for comparison, testing history, and version tracking.
+The digital prototype is not yet a complete implementation of the full v0.5.7 card pool or developing v0.6 factions.
+
+### `.github/workflows/`
+
+Automation and repository workflows.
+
+## Development workflow
+
+1. Treat released canonical data as authoritative for its matching version.
+2. Treat active v0.6 documents as the working source of truth until canonical v0.6 data exists.
+3. Record approved decisions in the repository rather than relying on chat history.
+4. Keep rules, testing rationale, lore, production art direction, and digital implementation status in their designated documents.
+5. Move completed audits and superseded working records into `docs/Archive/` when they remain useful for provenance.
+
+## Running digital tools locally
+
+From the repository root:
+
+```bash
+python3 -m http.server 8000
+```
+
+Then open the deckbuilder at:
+
+```text
+http://localhost:8000/deckbuilder/
+```
+
+For the TypeScript development tools:
+
+```bash
+npm install
+npm run typecheck
+npm test
+npm run dev:cli
+npm run dev:gui
+```
 
 ## Copyright and use
 
 Copyright © 2026 Tymon Scott. All rights reserved.
 
-Gauntlet is currently an unpublished playtest project. The materials in this repository are provided for private review and playtesting only. They may not be copied, redistributed, sold, republished, or used to create commercial derivative works without written permission.
+Gauntlet is an unpublished playtest project. Repository materials are provided for private review and playtesting only. They may not be copied, redistributed, sold, republished, or used to create commercial derivative works without written permission.
 
-Submitting comments, suggestions, issues, or playtest feedback does not transfer ownership of Gauntlet. Feedback may be used, adapted, or incorporated into the game without compensation or obligation.
-
-## Development roadmap
-
-The current v0.5 series focuses on validating the core game: movement, battles, captures, card flow, Assets, Territories, and playtest pacing.
-
-A future v0.6 series is planned to focus on factions, faction leaders, faction-specific playstyles, and alternate victory conditions.
+Submitted comments, corrections, suggestions, and playtest feedback may be used or adapted in future versions without compensation, attribution, or obligation.
