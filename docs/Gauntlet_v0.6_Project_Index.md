@@ -36,7 +36,8 @@ Already completed:
 - Insurrection recorded in the main card review log.
 - Invasion reviewed and recorded as Advanced Neutral / Watchlist.
 - Liberation reviewed and recorded as Advanced Neutral / Watchlist with revised Battle direction mirroring Invasion from the counterattack side.
-- Card 24 reviewed and parked / cut from active v0.6.
+- Manifest Destiny's current permanent-Territory effect rejected; the card name is retained for redesign.
+- New Frontier reserved as a separate future card name.
 - Leader archetype / visual design notes promoted to their own durable file.
 - Leader production design bible added as `docs/Gauntlet_v0.6_Leader_Design_Bible.md`.
 - Generated character design sheets logged in `docs/Gauntlet_v0.6_Character_Design_Sheet_Log.md`.
@@ -61,6 +62,7 @@ Already completed:
 
 ## Current checkpoint
 
-- Last fully documented reviewed card: **Card 24**.
+- Last card reviewed: **Manifest Destiny**.
+- Manifest Destiny remains in the redesign queue; its current permanent-Territory effect is rejected, but the name is retained.
 - Next card: **Militias**.
 - Current work: continue card review while preserving any major audit discoveries in the appropriate repo document.
