@@ -58,6 +58,7 @@ Use **TBD** where the card has been faction-placed but starter-deck suitability 
 | 39 | Scorched Earth | Neutral | No | Advanced | Persistent Ruins stacking, printed-effect suppression, and limited removal |
 | 40 | Scouting Report | Neutral | No | Advanced | Extra battle-drawn play, special-reveal sequencing, and Intelligence information stacking |
 | 41 | Sedition | Neutral | Yes | Basic | Neutral Asset-removal density |
+| 42 | Shock and Awe | Military | No | Advanced | Immediate-capture density, Command exhaustion, leader-Order overlap, and chained movement |
 
 ## Review workflow going forward
 
