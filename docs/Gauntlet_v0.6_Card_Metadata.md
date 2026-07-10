@@ -51,6 +51,7 @@ Use **TBD** where the card has been faction-placed but starter-deck suitability 
 | 32 | Rallying Cry | Neutral | Yes | Basic | None |
 | 33 | Redemption | Neutral | Yes | Basic | None |
 | 34 | Reinforcements | Neutral | Yes | Basic | Action-economy and late-battle timing |
+| 35 | Resistance | Neutral | No | Advanced | Counterattack stacking and occupation-delay pressure |
 
 ## Review workflow going forward
 
