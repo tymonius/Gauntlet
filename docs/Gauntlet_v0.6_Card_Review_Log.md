@@ -498,6 +498,25 @@ A tabled card is not decided. Do not call a decision logged until the repository
 
 ---
 
+### 40. Scouting Report
+
+**Cost:** 1  
+**Direction:** Keep Neutral as finite shared reconnaissance with a high-skill Battle replacement effect.
+
+**Action:** Look at the top card of your opponent's deck, one random card from their hand, or one face-down Territory.
+
+**Battle:** Reveal Scouting Report before the other Battle cards. Look at one face-down opposing Battle card. Then you may place one unplayed card from your battle draw face down in Scouting Report's place. If you do, place Scouting Report in your Graveyard immediately.
+
+**Reminder:** The replacement counts as a battle-drawn play and follows its normal destination. It is played in addition to any other battle-drawn card you already played. Looking at a card with Scouting Report is not Surveillance.
+
+- Keep Neutral so all factions retain limited information access while Intelligence keeps repeatable resource-powered Surveillance and Interference.
+- If Scouting Report was committed from hand, replacing it may produce an additional battle-drawn play.
+- If it was itself played from battle draw, the effect exchanges it for another unplayed card from the same draw.
+- Not starter-eligible; Advanced complexity.
+- Watch special-reveal sequencing, extra battle-drawn plays, and information stacking in Intelligence decks.
+
+---
+
 ## Next card
 
-Continue review at **Scouting Report**.
+Continue review at **Sedition**.
