@@ -433,6 +433,27 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
+### 25. Militias
+
+**v0.6 classification:** Military faction card  
+**v0.6 cost:** 3
+
+**v0.6 rule direction:** Keep Militias as a defensive Military card, especially aligned with the Commandant. Preserve the Battle effect, but limit the Asset to the first qualifying battle each turn so it does not create a passive disadvantage wall across every battle on controlled ground.
+
+**Working v0.6 Action direction:** Bank Militias as an Asset. During the first battle each turn on a Territory you control, your opponent gains disadvantage.
+
+**Working v0.6 Battle direction:** Your opponent gains disadvantage. If this battle is on a Territory you control, they gain double disadvantage instead.
+
+**Release notes:**
+
+- Militias is not needed as a shared neutral defensive tool because neutral already has Entrenchment, Fealty, Fortifications, and Illegal Occupation.
+- The card fits Military's defensive, counterattack, and hold-the-ground identity without adding another movement or capture shortcut.
+- The first-battle limit prevents one banked Asset from penalizing every battle in a long turn or chain.
+- Militias remains mechanically distinct from Entrench, which adds +1 to the Military player; Fortifications, which improves defensive battle-card access; and Illegal Occupation, which targets the occupation/counterattack window.
+- Watch defensive stacking with Commandant Orders, Fortifications, Patriotism, Homeland Advantage, and multiple copies of Militias.
+
+---
+
 ## Next Step
 
-Continue card review at **Militias**.
+Continue card review at **Monetary Crisis**.
