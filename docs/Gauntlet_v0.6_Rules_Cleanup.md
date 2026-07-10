@@ -62,6 +62,28 @@ This keeps the immediate-capture shortcut powerful while making the capture acce
 
 ---
 
+## Condition Reduction Pass
+
+After the card-by-card v0.6 review is complete, audit every card and rule that creates a **Condition** and remove as many Conditions as practical.
+
+Preferred replacements:
+
+- Use an **Asset** when the effect belongs to a player, remains available until used, and should compete for Asset-bank space.
+- Use an **Overlay** when the effect belongs visibly to a specific Territory.
+- Resolve and discard the card immediately when no persistent component is necessary.
+- Keep a Condition only when neither an Asset nor Overlay cleanly represents the effect and the persistent timing is genuinely necessary.
+
+Goals:
+
+- Reduce loose cards sitting beside the board without a clear home.
+- Make persistent effects easier to read at a glance.
+- Reduce forgotten triggers and unclear ownership.
+- Prefer optional, visible use over forced “the next time” triggers where appropriate.
+
+Do not convert effects mechanically just to eliminate the word **Condition**. Any conversion must preserve pacing, counterplay, Asset-bank pressure, and board-state clarity.
+
+---
+
 ## v0.6.1 Hold
 
 Do not use this cleanup pass to overhaul the Diplomat economy.
