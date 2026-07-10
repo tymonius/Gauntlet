@@ -14,11 +14,12 @@ This file is the starting point for future Gauntlet development sessions. At the
 4. **`docs/Gauntlet_v0.6_Open_Questions.md`** — unresolved issues, contradictions, and tabled decisions.
 5. **`docs/Gauntlet_v0.6_Project_Audit.md`** — audit trail comparing repo documentation against prior conversation decisions.
 6. **`docs/Gauntlet_v0.6_Conversation_Audit_Leads.md`** — prior-conversation leads that still need verification or later incorporation.
-7. **`docs/Gauntlet_v0.6_Leader_Archetype_and_Visual_Notes.md`** — leader archetype and visual direction notes; not rules text.
-8. **`docs/Gauntlet_Repo_Inventory.md`** — working inventory of repo files and fetched/inspected sources.
-9. **`docs/Gauntlet_v0.6_Rules_Cleanup.md`** — low-risk v0.6 cleanup items unless superseded by the working rules.
-10. **`docs/Gauntlet_v0.6.1_Diplomat_Overhaul_Notes.md`** — parked Diplomat overhaul concepts for v0.6.1.
-11. **`releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`** — current canonical pre-v0.6 card order and card text baseline for review.
+7. **`docs/Gauntlet_v0.6_Leader_Design_Bible.md`** — production-facing visual direction for all twelve v0.6 faction leaders, including illustration direction, 3D miniature silhouettes, faction-pair contrast, and guardrails.
+8. **`docs/Gauntlet_v0.6_Leader_Archetype_and_Visual_Notes.md`** — leader archetype and visual direction notes; not rules text.
+9. **`docs/Gauntlet_Repo_Inventory.md`** — working inventory of repo files and fetched/inspected sources.
+10. **`docs/Gauntlet_v0.6_Rules_Cleanup.md`** — low-risk v0.6 cleanup items unless superseded by the working rules.
+11. **`docs/Gauntlet_v0.6.1_Diplomat_Overhaul_Notes.md`** — parked Diplomat overhaul concepts for v0.6.1.
+12. **`releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`** — current canonical pre-v0.6 card order and card text baseline for review.
 
 ---
 
@@ -34,6 +35,7 @@ Already completed:
 - Insurrection recorded in the main card review log.
 - Invasion reviewed and recorded as Advanced Neutral / Watchlist.
 - Leader archetype / visual design notes promoted to their own durable file.
+- Leader production design bible added as `docs/Gauntlet_v0.6_Leader_Design_Bible.md`.
 - Multiplayer v0.7 leads added to the v0.7 Parking Lot.
 
 ---
@@ -49,6 +51,7 @@ Already completed:
 7. For faction-lock recommendations, always evaluate:
    - neutral-pool impact, and
    - duplication or strange interaction with the destination faction's mechanics.
+8. When adding or materially modifying files, update this project index in the same work session.
 
 ---
 
