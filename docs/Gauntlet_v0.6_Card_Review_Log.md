@@ -496,6 +496,28 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
+### 28. New Recruits
+
+**v0.6 classification:** Core Neutral  
+**v0.6 cost:** 1
+
+**v0.6 rule direction:** Keep both effects unchanged as foundational neutral hand filtering and a simple Battle bonus.
+
+**Working v0.6 Action direction:** Discard one other card from your hand, then draw two cards.
+
+**Working v0.6 Battle direction:** Add +1 to your battle total.
+
+**Release notes:**
+
+- New Recruits is a basic consistency tool that every faction can use and does not belong mechanically to Military despite the name.
+- The Action is hand filtering rather than card advantage: playing New Recruits and discarding another card consumes two cards, then draws two replacements.
+- The Battle effect is intentionally modest, reliable, and suitable for the starter pool.
+- Keep cost 1 so it remains a useful low-cost deckbuilding piece.
+- Retain the reminder that the Action cannot be played without another card to discard, at least while it remains an introductory Core Neutral card.
+- Watch whether it becomes an automatic inclusion in most decks, but do not change it preemptively.
+
+---
+
 ## Next Step
 
-Continue card review at **New Recruits**.
+Continue card review at **Palisade Wall**.
