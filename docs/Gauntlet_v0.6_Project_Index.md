@@ -45,6 +45,7 @@ Already completed:
 - Palisade Wall reviewed and recorded as a cost-2 Core Neutral defensive counterplay card.
 - Patriotism reviewed and recorded as a cost-3 Military faction card; Homeland Advantage protection removed and only one copy may be banked at a time.
 - Protracted Siege reviewed and recorded as a cost-4 Advanced Neutral Territory Overlay that delays a scheduled capture.
+- Rallying Cry reviewed and recorded as a cost-1 Core Neutral card with both effects unchanged.
 - Leader archetype / visual design notes promoted to their own durable file.
 - Leader production design bible added as `docs/Gauntlet_v0.6_Leader_Design_Bible.md`.
 - Generated character design sheets logged in `docs/Gauntlet_v0.6_Character_Design_Sheet_Log.md`.
@@ -69,6 +70,6 @@ Already completed:
 
 ## Current checkpoint
 
-- Last fully documented reviewed card: **Protracted Siege**.
-- Next card: **Rallying Cry**.
+- Last fully documented reviewed card: **Rallying Cry**.
+- Next card: **Redemption**.
 - Current work: continue card review while preserving any major audit discoveries in the appropriate repo document.
