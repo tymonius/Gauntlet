@@ -75,6 +75,34 @@ Use `Gauntlet_v0.6_Card_Metadata.md` for allegiance, starter eligibility, comple
 
 ---
 
-## Next Step
+### 38. Sabotage
 
-Continue card review at **Sabotage**.
+**v0.6 cost:** 2
+
+**v0.6 rule direction:** Keep Sabotage Neutral as shared temporary Asset suppression and Battle-card cancellation. Remove the Action's attached Condition; the target Asset's face-down state already tracks the temporary effect.
+
+**Working v0.6 Action direction:** Choose one face-up opposing Asset. Turn it face down until the start of your next turn.
+
+**Working v0.6 Battle direction:** Cancel one active opposing Battle card. Place it in its owner's discard pile immediately.
+
+**Reminder:** If there are no active opposing Battle cards, Sabotage has no effect.
+
+**Release notes:**
+
+- Keep Neutral because temporary Asset suppression and direct cancellation are important shared counterplay rather than uniquely Intelligence functions.
+- Intelligence already has Surveillance and Interference as its dedicated pre-reveal disruption system, so faction-locking Sabotage would create unnecessary overlap.
+- The Action no longer remains in play as a Condition; Sabotage resolves and enters its normal destination immediately.
+- Requiring a face-up Asset prevents selecting an already inactive target.
+- Use the rules term **cancel** so Decoys and other cancellation-specific effects interact consistently.
+- The discard destination places Sabotage between Disruption's softer cancellation and Capital Punishment's Graveyard placement.
+- The card is starter-eligible and Basic complexity.
+- Watch total neutral cancellation density and overlap with Disruption and Intelligence Interference.
+- Keep cost 2.
+
+---
+
+## Paused Checkpoint
+
+Card review is paused after **Sabotage** while the comprehensive conversation/export audit is completed.
+
+When card review resumes, continue at **Scorched Earth**.
