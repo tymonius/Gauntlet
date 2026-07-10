@@ -57,6 +57,7 @@ Use **TBD** where the card has been faction-placed but starter-deck suitability 
 | 38 | Sabotage | Neutral | Yes | Basic | Neutral cancellation density and overlap with Disruption and Intelligence Interference |
 | 39 | Scorched Earth | Neutral | No | Advanced | Persistent Ruins stacking, printed-effect suppression, and limited removal |
 | 40 | Scouting Report | Neutral | No | Advanced | Extra battle-drawn play, special-reveal sequencing, and Intelligence information stacking |
+| 41 | Sedition | Neutral | Yes | Basic | Neutral Asset-removal density |
 
 ## Review workflow going forward
 
