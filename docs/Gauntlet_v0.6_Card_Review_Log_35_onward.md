@@ -28,6 +28,30 @@ Use `Gauntlet_v0.6_Card_Metadata.md` for allegiance, starter eligibility, comple
 
 ---
 
+### 36. Revolution
+
+**v0.6 cost:** 4
+
+**v0.6 rule direction:** Keep Revolution Neutral as a deliberately destabilizing hand-economy reversal and battle-result reversal card. Preserve both effects with a minor Battle wording clarification.
+
+**Working v0.6 Action direction:** Each player discards their hand, then draws cards equal to the number of cards the other player discarded.
+
+**Working v0.6 Battle direction:** After all rerolls, you may exchange the players' final selected die results. Each player retains their own modifiers.
+
+**Reminder:** If both players use Revolution to exchange the results, no exchange occurs.
+
+**Release notes:**
+
+- Keep Neutral because neither effect belongs cleanly to a faction engine or directly advances a faction victory condition.
+- The Action can function as either a comeback tool or severe hand attack depending on the relative hand sizes.
+- The Battle effect exchanges only the final selected die results; modifiers remain with their original players.
+- The card is not starter-eligible because it requires understanding hand inversion, selected dice, reroll timing, retained modifiers, and simultaneous use.
+- Treat it as Advanced complexity.
+- Watch extreme hand swings, repeated recovery loops, battle-result reversal frequency, and simultaneous-use timing.
+- Keep cost 4.
+
+---
+
 ## Next Step
 
-Continue card review at **Revolution**.
+Continue card review at **Rousing Speech**.
