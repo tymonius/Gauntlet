@@ -561,6 +561,28 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
+### 31. Protracted Siege
+
+**v0.6 classification:** Advanced Neutral / Watchlist  
+**v0.6 cost:** 4
+
+**v0.6 rule direction:** Keep Protracted Siege as shared capture-delay counterplay, but make each copy an expendable Territory Overlay rather than a persistent global Asset or a Condition. Multiple copies may be used during the same occupation.
+
+**Working v0.6 Action direction:** Bank Protracted Siege as an Asset. When your opponent occupies a Territory you control, you may move Protracted Siege from your Asset bank onto that Territory as an Overlay. When they would capture that Territory at the start of their turn, you may discard Protracted Siege. If you do, they do not capture it. If they cease occupying the Territory, discard Protracted Siege.
+
+**Working v0.6 Battle direction:** If you are defending a Territory you control and lose, place Protracted Siege over that Territory as an Overlay instead of placing it in its normal destination. When your opponent would capture that Territory at the start of their turn, you may discard Protracted Siege. If you do, they do not capture it. If they cease occupying the Territory, discard Protracted Siege.
+
+**Release notes:**
+
+- Keep Advanced Neutral because an extra counterattack window is useful shared comeback and anti-overextension counterplay, but it is too pacing-sensitive for the core starter pool.
+- Each Overlay delays one scheduled start-of-turn capture and is then discarded; immediate-capture effects such as Assimilation or Fortify are not affected unless they explicitly use the normal start-of-turn capture schedule.
+- Multiple Protracted Siege Overlays may occupy the same Territory. Each copy can be discarded separately to delay a later scheduled capture.
+- Do not impose a one-copy or once-per-occupation restriction. Building around several cost-4 copies is a legitimate, expensive deckbuilding strategy with meaningful opportunity cost.
+- Moving the Action copy from the Asset bank to the Territory frees the Asset-bank slot and makes the delayed capture visible on the board.
+- Watch for excessive game length when several copies are combined with strong counterattack or alternate-victory strategies, but test the strategy before restricting it.
+
+---
+
 ## Next Step
 
-Continue card review at **Protracted Siege**.
+Continue card review at **Rallying Cry**.
