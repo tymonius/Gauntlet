@@ -517,6 +517,22 @@ A tabled card is not decided. Do not call a decision logged until the repository
 
 ---
 
+### 41. Sedition
+
+**Cost:** 3  
+**Direction:** Keep Neutral as simple shared permanent Asset removal with opponent choice.
+
+**Action:** Your opponent chooses and discards one Asset they control.
+
+**Battle:** Your opponent chooses one face-up Asset they control. It is inactive during this battle. If they control no face-up Assets, add +1 to your battle total.
+
+- The Action is milder than Inquisition Purge because the opponent chooses the Asset and it goes to discard rather than the Graveyard.
+- Keep Neutral so every faction retains access to straightforward permanent Asset removal.
+- Starter-eligible; Basic complexity.
+- Watch total Neutral Asset-removal density alongside Sabotage and other anti-Asset cards.
+
+---
+
 ## Next card
 
-Continue review at **Sedition**.
+Continue review at **Shock and Awe**.
