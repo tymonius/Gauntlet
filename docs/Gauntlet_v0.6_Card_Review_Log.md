@@ -581,6 +581,26 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
+### 32. Rallying Cry
+
+**v0.6 classification:** Core Neutral  
+**v0.6 cost:** 1
+
+**v0.6 rule direction:** Keep both effects unchanged as a foundational neutral cycling and Battle-bonus card.
+
+**Working v0.6 Action direction:** Draw one card.
+
+**Working v0.6 Battle direction:** Add +1 to your battle total.
+
+**Release notes:**
+
+- Rallying Cry is a universal low-cost card despite its Military-flavored name.
+- The Action replaces Rallying Cry rather than generating card advantage and consumes the player's Action opportunity.
+- It remains distinct from New Recruits: Rallying Cry is simpler and can be played as the only card in hand, while New Recruits provides stronger filtering but requires another card to discard.
+- Keep cost 1 and retain it in the starter pool.
+
+---
+
 ## Next Step
 
-Continue card review at **Rallying Cry**.
+Continue card review at **Redemption**.
