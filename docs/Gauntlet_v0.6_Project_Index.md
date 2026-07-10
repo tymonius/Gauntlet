@@ -28,63 +28,60 @@ This file is the starting point for future Gauntlet development sessions. At the
 
 ## Current active workflow
 
-**Current phase:** v0.6 card review, with audit consolidation continuing when needed.
+**Current phase:** Comprehensive audit of prior ChatGPT Gauntlet conversations against repository documentation. Card review is paused.
 
-Before resuming in a new chat, read this index, the card metadata registry, and both detailed card review-log files.
+Before resuming in a new chat, read this index, the project audit, the conversation audit leads, and the relevant card-review files.
+
+Audit classifications:
+
+- Already documented/current.
+- Documented but stale or conflicting.
+- Conversation-only; needs repository entry.
+- Work in progress / parking lot.
+- Rejected; do not revive.
+
+Priority conversations:
+
+1. Gauntlet Card Review.
+2. Gauntlet Game Development pt2.
+3. Digital Gauntlet Playtesting.
+4. Faction Leader Archetypes.
+5. Asset Bank Rule Impact.
+6. Gauntlet Game Development.
+7. Deckbuilder Tool Design.
+8. Gauntlet Lore Development — separate lore from rules.
 
 Already completed:
 
-- Assimilation corrected in the main card review log.
-- Insurrection recorded as Neutral, not starter-eligible, Advanced, with reset/disruption concerns on the watchlist.
-- Invasion recorded as Neutral, not starter-eligible, Advanced, with Military tempo stacking on the watchlist.
-- Liberation recorded as Neutral, not starter-eligible, Advanced, with revised Battle direction mirroring Invasion from the counterattack side.
-- Manifest Destiny's current permanent-Territory effect rejected; the card name is retained for redesign.
-- New Frontier reserved as a separate future card name.
-- Militias reviewed and recorded as a Military faction card with its Asset limited to the first qualifying battle each turn.
-- Monetary Crisis reviewed and recorded as a cost-2 Financier faction card with its Battle effect assigned to battle cleanup.
-- Necromancy reviewed and recorded as a cost-5 Arcane faction card with the Arcane trait; the non-Necromancy targeting restriction was removed.
-- New Recruits reviewed as Neutral, starter-eligible, Basic, cost 1, with both effects unchanged.
-- Palisade Wall reviewed as Neutral, starter-eligible, Basic defensive counterplay.
-- Patriotism reviewed and recorded as a cost-3 Military faction card; Homeland Advantage protection removed and only one copy may be banked at a time.
-- Protracted Siege reviewed as Neutral, not starter-eligible, Advanced, with excessive game length on the watchlist.
-- Rallying Cry reviewed as Neutral, starter-eligible, Basic, cost 1, with both effects unchanged.
-- Redemption reviewed as Neutral, starter-eligible, Basic, cost 2, with an Action that banks it until voluntarily used.
-- Reinforcements reviewed as Neutral, starter-eligible, Basic, cost 2, with an Action that banks it and may be discarded during the player's turn for one additional Action.
-- Resistance reviewed as Neutral, not starter-eligible, Advanced, cost 3, with counterattack stacking and occupation-delay pressure on the watchlist.
-- Revolution reviewed as Neutral, not starter-eligible, Advanced, cost 4, with extreme hand swings and battle-result reversal on the watchlist.
-- Rousing Speech reviewed as Neutral, starter-eligible, Basic, cost 2, with no initial watchlist concern.
+- Card review completed through Sabotage.
+- Sabotage recorded as Neutral, starter-eligible, Basic, cost 2; its Action no longer creates a Condition and its Battle effect uses standardized cancellation wording.
+- Resistance recorded as Neutral, not starter-eligible, Advanced, cost 3, with counterattack stacking and occupation-delay pressure on the watchlist.
+- Revolution recorded as Neutral, not starter-eligible, Advanced, cost 4, with extreme hand swings and battle-result reversal on the watchlist.
+- Rousing Speech recorded as Neutral, starter-eligible, Basic, cost 2, with no initial watchlist concern.
 - Card metadata was split into four independent fields: allegiance, starter eligibility, complexity, and watchlist concern. The old combined Core Neutral and Advanced Neutral / Watchlist labels are deprecated.
 - A post-review Condition reduction pass was added to the rules-cleanup plan, prioritizing Assets, Overlays, or immediate resolution where cleaner.
-- Leader archetype / visual design notes promoted to their own durable file.
-- Leader production design bible added as `docs/Gauntlet_v0.6_Leader_Design_Bible.md`.
-- Generated character design sheets logged in `docs/Gauntlet_v0.6_Character_Design_Sheet_Log.md`.
-- Multiplayer v0.7 leads added to the v0.7 Parking Lot.
+- Manifest Destiny's current permanent-Territory effect was rejected; the card name is retained for redesign.
+- New Frontier is reserved as a separate future card name.
+- Leader production design bible and generated character-design-sheet log were added.
+- Multiplayer v0.7 leads were added to the v0.7 Parking Lot.
 
 ---
 
 ## Session protocol
 
 1. Read this index.
-2. Read the card metadata registry and both detailed card review logs.
-3. State the current checkpoint before doing design work.
-4. Treat chat as workspace only; treat `/docs` and canonical release data as project memory.
-5. Do not say a card decision is logged unless the metadata registry and active detailed review log have both been updated where applicable.
-6. For card review, fetch the current card text from canonical data before analyzing it.
-7. For each card, decide separately:
-   - allegiance,
-   - starter eligibility,
-   - complexity,
-   - watchlist concern,
-   - cost and detailed rule direction.
-8. For faction-lock recommendations, always evaluate:
-   - neutral-pool impact, and
-   - duplication or strange interaction with the destination faction's mechanics.
-9. When adding or materially modifying files, update this project index in the same work session.
+2. During the audit, compare conversation findings against the source-of-truth hierarchy rather than treating old conversation text as automatically current.
+3. Classify each finding using the five audit classifications above.
+4. Keep lore findings separate from rules and mechanics.
+5. Treat chat as workspace only; treat `/docs` and canonical release data as project memory.
+6. Do not say an audit finding or card decision is logged unless the relevant repository file has actually been updated.
+7. When the audit is complete, return to card review at **Scorched Earth**.
+8. When adding or materially modifying files, update this project index in the same work session.
 
 ---
 
 ## Current checkpoint
 
-- Last fully documented reviewed card: **Rousing Speech**.
-- Next card: **Sabotage**.
-- Current work: continue card review using the separated metadata format while preserving major audit discoveries in the appropriate repo document.
+- Last fully documented reviewed card: **Sabotage**.
+- Card review resume point: **Scorched Earth**.
+- Current work: obtain a manageable subset of the ChatGPT export and complete the comprehensive conversation-to-repository audit.
