@@ -477,6 +477,27 @@ A tabled card is not decided. Do not call a decision logged until the repository
 
 ---
 
+### 39. Scorched Earth
+
+**Cost:** 3  
+**Direction:** Fully redesign as a Neutral defensive-denial card that converts into a persistent Ruins Overlay when the defender loses and is forced from controlled ground.
+
+**Action:** Bank Scorched Earth as an Asset. After you lose a battle while defending a Territory you control and are required to retreat from it, you may place Scorched Earth face up on that Territory as a Ruins Overlay.
+
+**Battle:** If you lose this battle while defending a Territory you control and are required to retreat from it, place Scorched Earth face up on that Territory as a Ruins Overlay instead of placing it in its normal destination.
+
+**Ruins Overlay:** That Territory's printed effect is inactive while Scorched Earth remains there.
+
+**Reminder:** Ruins Overlays remain until removed by an effect. There is no universal Repair action in v0.6.
+
+- Remove the v0.5.7 Asset-discard and Asset-banking prohibition mechanics entirely.
+- Keep Neutral because scorched-earth retreat is shared advanced territorial counterplay rather than an Inquisition engine.
+- Not starter-eligible; Advanced complexity.
+- Watch repeated Ruins stacking, persistent printed-effect suppression, and the limited availability of removal.
+- Reserve **Repair** as an Engineer faction capability for v0.7 or later rather than a universal core action.
+
+---
+
 ## Next card
 
-Continue review at **Scorched Earth**.
+Continue review at **Scouting Report**.
