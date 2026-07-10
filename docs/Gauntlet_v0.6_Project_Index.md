@@ -34,6 +34,7 @@ Already completed:
 - Assimilation corrected in the main card review log.
 - Insurrection recorded in the main card review log.
 - Invasion reviewed and recorded as Advanced Neutral / Watchlist.
+- Liberation reviewed and recorded as Advanced Neutral / Watchlist with revised Battle direction mirroring Invasion from the counterattack side.
 - Leader archetype / visual design notes promoted to their own durable file.
 - Leader production design bible added as `docs/Gauntlet_v0.6_Leader_Design_Bible.md`.
 - Multiplayer v0.7 leads added to the v0.7 Parking Lot.
@@ -57,6 +58,6 @@ Already completed:
 
 ## Current checkpoint
 
-- Last fully documented reviewed card: **Invasion**.
-- Next card: **Liberation**.
+- Last fully documented reviewed card: **Liberation**.
+- Next card: **Manifest Destiny**.
 - Current work: continue card review while preserving any major audit discoveries in the appropriate repo document.
