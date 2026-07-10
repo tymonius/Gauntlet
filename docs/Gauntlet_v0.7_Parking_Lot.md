@@ -27,7 +27,7 @@ Potential Engineer interactions:
 
 - Place Overlays on Territories.
 - Upgrade existing Overlays.
-- Repair damaged or disabled Overlays.
+- Repair damaged or disabled Territories and Overlays.
 - Move, dismantle, or replace Overlays.
 - Build connected infrastructure across multiple Territories.
 - Turn contested ground into functional routes, fortifications, or resource nodes.
@@ -44,6 +44,20 @@ Possible Engineer Overlay concepts:
 | Fortress | Makes a Territory harder to capture, possibly with upkeep |
 | Roadworks | Enables extra movement from or into a Territory |
 | Demolition Charges | Sacrifice to remove an Overlay or force withdrawal |
+
+### Repair
+
+**Repair is reserved as an Engineer faction capability.** It is not a universal v0.6 Action.
+
+Ruins Overlays such as Scorched Earth may remain indefinitely unless a specific card or future Engineer effect removes them. This preserves a distinctive Engineer role without preventing other factions from creating board-local Overlays.
+
+Future testing should decide whether Repair is:
+
+- a repeatable faction action;
+- an Engineer resource expenditure;
+- a leader ability;
+- a family of Engineer cards;
+- or some combination of those systems.
 
 ### Possible Victory Direction
 
@@ -75,7 +89,7 @@ When considering an Overlay for any faction, ask:
 
 ### Current Decision
 
-Park Engineers for v0.7 or later. Do not implement in the v0.6 faction framework.
+Park Engineers for v0.7 or later. Do not implement them in the v0.6 faction framework. Do not create a universal Repair action before the Engineer faction is designed.
 
 ---
 
