@@ -53,6 +53,7 @@ Use **TBD** where the card has been faction-placed but starter-deck suitability 
 | 34 | Reinforcements | Neutral | Yes | Basic | Action-economy and late-battle timing |
 | 35 | Resistance | Neutral | No | Advanced | Counterattack stacking and occupation-delay pressure |
 | 36 | Revolution | Neutral | No | Advanced | Extreme hand swings, battle reversal, and simultaneous-use timing |
+| 37 | Rousing Speech | Neutral | Yes | Basic | None |
 
 ## Review workflow going forward
 
