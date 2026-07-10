@@ -622,6 +622,27 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
+### 34. Reinforcements
+
+**v0.6 classification:** Core Neutral  
+**v0.6 cost:** 2
+
+**v0.6 rule direction:** Keep Reinforcements as a shared action-economy and late-battle flexibility card. Convert the Action from a next-turn Condition into a banked Asset that may be expended during the player's turn.
+
+**Working v0.6 Action direction:** Bank Reinforcements as an Asset. During your turn, you may discard Reinforcements to play one additional Action card.
+
+**Working v0.6 Battle direction:** After all other Battle cards are revealed, draw one additional battle card. You may immediately play it face up in addition to your other Battle cards if its Battle effect can still resolve.
+
+**Release notes:**
+
+- Keep Core Neutral because both effects modify fundamental systems shared by every faction.
+- The Asset may be discarded at the point the player wants to use the additional Action; it is not restricted to the start of the turn.
+- Holding Reinforcements occupies Asset-bank capacity until it is used.
+- The late-drawn Battle card can be played only if its Battle effect can still resolve at that point in the battle sequence.
+- Keep cost 2.
+
+---
+
 ## Next Step
 
-Continue card review at **Reinforcements**.
+Continue card review at **Resistance**.
