@@ -42,6 +42,7 @@ Already completed:
 - Monetary Crisis reviewed and recorded as a cost-2 Financier faction card with its Battle effect assigned to battle cleanup.
 - Necromancy reviewed and recorded as a cost-5 Arcane faction card with the Arcane trait; the non-Necromancy targeting restriction was removed.
 - New Recruits reviewed and recorded as a cost-1 Core Neutral card with both effects unchanged.
+- Palisade Wall reviewed and recorded as a cost-2 Core Neutral defensive counterplay card.
 - Leader archetype / visual design notes promoted to their own durable file.
 - Leader production design bible added as `docs/Gauntlet_v0.6_Leader_Design_Bible.md`.
 - Generated character design sheets logged in `docs/Gauntlet_v0.6_Character_Design_Sheet_Log.md`.
@@ -66,6 +67,6 @@ Already completed:
 
 ## Current checkpoint
 
-- Last fully documented reviewed card: **New Recruits**.
-- Next card: **Palisade Wall**.
+- Last fully documented reviewed card: **Palisade Wall**.
+- Next card: **Patriotism**.
 - Current work: continue card review while preserving any major audit discoveries in the appropriate repo document.
