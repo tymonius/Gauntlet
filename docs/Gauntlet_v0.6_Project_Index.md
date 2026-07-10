@@ -51,6 +51,7 @@ Already completed:
 - Redemption reviewed as Neutral, starter-eligible, Basic, cost 2, with an Action that banks it until voluntarily used.
 - Reinforcements reviewed as Neutral, starter-eligible, Basic, cost 2, with an Action that banks it and may be discarded during the player's turn for one additional Action.
 - Resistance reviewed as Neutral, not starter-eligible, Advanced, cost 3, with counterattack stacking and occupation-delay pressure on the watchlist.
+- Revolution reviewed as Neutral, not starter-eligible, Advanced, cost 4, with extreme hand swings and battle-result reversal on the watchlist.
 - Card metadata was split into four independent fields: allegiance, starter eligibility, complexity, and watchlist concern. The old combined Core Neutral and Advanced Neutral / Watchlist labels are deprecated.
 - A post-review Condition reduction pass was added to the rules-cleanup plan, prioritizing Assets, Overlays, or immediate resolution where cleaner.
 - Leader archetype / visual design notes promoted to their own durable file.
@@ -83,6 +84,6 @@ Already completed:
 
 ## Current checkpoint
 
-- Last fully documented reviewed card: **Resistance**.
-- Next card: **Revolution**.
+- Last fully documented reviewed card: **Revolution**.
+- Next card: **Rousing Speech**.
 - Current work: continue card review using the separated metadata format while preserving major audit discoveries in the appropriate repo document.
