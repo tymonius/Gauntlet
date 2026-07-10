@@ -75,11 +75,12 @@ Completed changes include:
 
 ### Card review
 
-- Last reviewed card: **Scouting Report**.
-- Next card: **Sedition**.
+- Last reviewed card: **Sedition**.
+- Next card: **Shock and Awe**.
 - Scorched Earth is a cost-3 Neutral Ruins Overlay card; its former Asset-destruction and bank-lock effects were removed.
 - **Repair** is reserved for the future Engineer faction rather than becoming a universal v0.6 action.
 - Scouting Report remains Neutral at cost 1 and explicitly permits an additional battle-drawn play when replaced from a hand commitment.
+- Sedition remains Neutral at cost 3 as basic opponent-selected permanent Asset removal.
 - The review log is consolidated into one file.
 - Card metadata uses separate fields for allegiance, starter eligibility, complexity, and watchlist concern.
 - After migration, complete the Condition reduction pass and create canonical v0.6 data.
@@ -127,4 +128,4 @@ Current faction rules are in the Working Rules. Balance, names, Missions, card p
 
 ## Immediate next step
 
-Continue v0.6 card review at **Sedition**.
+Continue v0.6 card review at **Shock and Awe**.
