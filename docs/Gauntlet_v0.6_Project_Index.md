@@ -39,6 +39,7 @@ Already completed:
 - Manifest Destiny's current permanent-Territory effect rejected; the card name is retained for redesign.
 - New Frontier reserved as a separate future card name.
 - Militias reviewed and recorded as a Military faction card with its Asset limited to the first qualifying battle each turn.
+- Monetary Crisis reviewed and recorded as a cost-2 Financier faction card with its Battle effect assigned to battle cleanup.
 - Leader archetype / visual design notes promoted to their own durable file.
 - Leader production design bible added as `docs/Gauntlet_v0.6_Leader_Design_Bible.md`.
 - Generated character design sheets logged in `docs/Gauntlet_v0.6_Character_Design_Sheet_Log.md`.
@@ -63,6 +64,6 @@ Already completed:
 
 ## Current checkpoint
 
-- Last fully documented reviewed card: **Militias**.
-- Next card: **Monetary Crisis**.
+- Last fully documented reviewed card: **Monetary Crisis**.
+- Next card: **Necromancy**.
 - Current work: continue card review while preserving any major audit discoveries in the appropriate repo document.
