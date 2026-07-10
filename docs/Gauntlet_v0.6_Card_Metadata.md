@@ -55,7 +55,7 @@ Use **TBD** where the card has been faction-placed but starter-deck suitability 
 | 36 | Revolution | Neutral | No | Advanced | Extreme hand swings, battle reversal, and simultaneous-use timing |
 | 37 | Rousing Speech | Neutral | Yes | Basic | None |
 | 38 | Sabotage | Neutral | Yes | Basic | Neutral cancellation density and overlap with Disruption and Intelligence Interference |
-| 39 | Scorched Earth | Neutral | No | Advanced | Persistent Ruins stacking, printed-effect suppression, and limited removal |
+| 39 | Scorched Earth | Neutral | No | Advanced | Repeated Ruins replacement, Graveyard interactions, and limited removal |
 | 40 | Scouting Report | Neutral | No | Advanced | Extra battle-drawn play, special-reveal sequencing, and Intelligence information stacking |
 | 41 | Sedition | Neutral | Yes | Basic | Neutral Asset-removal density |
 | 42 | Shock and Awe | Military | No | Advanced | Immediate-capture density, Command exhaustion, leader-Order overlap, and chained movement |
