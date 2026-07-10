@@ -518,6 +518,28 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
+### 29. Palisade Wall
+
+**v0.6 classification:** Core Neutral  
+**v0.6 cost:** 2
+
+**v0.6 rule direction:** Preserve both defensive effects as shared neutral counterplay. Clarify that the Battle effect targets an active opposing Battle card committed from hand.
+
+**Working v0.6 Action direction:** Play Palisade Wall as a Condition. During the next battle in which you are the defender, your opponent's Assets are inactive. Discard Palisade Wall after that battle.
+
+**Working v0.6 Battle direction:** If you are the defender, choose one active opposing Battle card committed from hand. That card has no effect during this battle. If there is no active opposing Battle card committed from hand, gain advantage instead.
+
+**Release notes:**
+
+- Palisade Wall provides broadly useful defense against developed Asset engines and powerful hand commitments, so it should remain available to every faction.
+- Do not move it to Military or reserve it for a future Engineer faction merely because of its construction theme.
+- It is narrower than Disruption because it requires defending and can target only a hand-committed card, but the affected card remains played and follows its normal destination.
+- It is less severe and less flexible than Capital Punishment, which can target any opposing Battle card and sends it directly to the Graveyard.
+- The fallback advantage prevents the Battle effect from becoming dead when the opponent commits no active card from hand.
+- Keep the reminder that the chosen card remains played and follows its normal destination after battle.
+
+---
+
 ## Next Step
 
-Continue card review at **Palisade Wall**.
+Continue card review at **Patriotism**.
