@@ -1,91 +1,137 @@
 # Gauntlet v0.6 Open Questions
 
-**Status:** Active tracker for unresolved v0.6 questions, contradictions, and tabled design decisions.
+**Status:** Active tracker for unresolved v0.6 design and production decisions.  
+**Purpose:** Keep only questions that can still change the v0.6 rules, cards, faction packages, testing plan, or release materials.
 
-This file is for questions that should not be treated as final decisions yet. When an item is decided, move the result into the relevant source-of-truth file and remove or close the item here.
-
----
-
-## Recently closed audit items
-
-### Card review log merge
-
-**Status:** Closed.
-
-- Assimilation corrected in the main card review log from Military faction card to Advanced Neutral / Watchlist.
-- Insurrection added to the main card review log.
-- The dated addendum remains as an audit artifact but no longer needs to be treated as the active correction layer.
-
-### Invasion
-
-**Status:** Closed.
-
-- Invasion reviewed and recorded in the main card review log as Advanced Neutral / Watchlist.
-- It should not be faction-locked to Military for v0.6 because it duplicates Military's Command / Orders identity too directly.
-- Keep watching Military stacking with Onward, Rally, Rout, leader abilities, and other attack-tempo cards.
+Closed audit items, historical rationale, and post-v0.6 concepts belong in their dedicated documents rather than here.
 
 ---
 
-## Card migration review guardrails
+## Card migration and canonical data
 
-Before moving any neutral card into a faction, answer:
+- Complete card review beginning with **Scorched Earth**.
+- Decide final wording for reviewed cards whose direction is approved but text remains provisional.
+- Finish Intelligence Mission requirements, including an appropriately difficult Mission for **Assassins**.
+- Decide which cards receive the **Arcane** trait.
+- Complete the post-review Condition reduction pass:
+  - prefer Assets for player-owned persistent effects;
+  - prefer Overlays for Territory-local effects;
+  - resolve and discard immediately when persistence is unnecessary;
+  - retain Conditions only where neither alternative represents the timing cleanly.
+- Create canonical v0.6 card, Territory, faction, leader, deckbuilding, and recommended-deck data once migration is stable enough.
+
+Before faction-locking any neutral card, continue asking:
 
 1. What shared tool leaves the neutral pool?
 2. Do other factions still need that tool for counterplay, pacing, emergency defense, comeback potential, or basic interaction?
-3. Does the destination faction already do this through its core mechanic?
-4. Does the card duplicate, bypass, or create strange rules interactions with that faction's mechanic?
-5. Should the card instead remain Advanced Neutral, be renamed, be split into neutral and faction versions, or be redesigned?
+3. Does the destination faction already perform the same job through its core mechanic?
+4. Does the card duplicate, bypass, or create strange interactions with that mechanic?
 
 ---
 
-## Faction-system audit items
+## Military
 
-### Diplomats
-
-- v0.6 keeps the current Terms / Influence / Peace Treaty framework stable.
-- The full economy and Proposal overhaul is parked for v0.6.1.
-- Sanctions are a candidate Diplomat faction-card family, especially for Blockade / Embargo-like effects.
-- Open question: should Sanctions also exist for Financiers through economic leverage, or should Diplomat Sanctions remain distinct?
-- Open question: should Demilitarized Zone be a Proposal, a faction card, an Overlay, or some combination?
-
-### Military
-
-- Watch whether Military receives too many ways to bypass normal capture timing.
-- Watch Command max 2.
-- Watch Rout chain-battle turns.
-- Watch Fortify immediate capture.
-- Watch overlap with neutral cards such as Assimilation and Invasion.
-
-### Inquisition
-
-- Watch Condemnation plus Attrition / Insurrection / hard-cancel effects.
-- Watch whether Purification is viable without making ordinary battles feel hopeless.
-- Watch anti-Arcane Heresy pressure so Arcane is pressured but not hard-countered.
-
-### Arcane
-
-- Track which cards need the Arcane trait.
-- Check whether Insurrection-style reshuffle effects undercut Arcane Graveyard pressure too much.
-- Final names for Rites, Invocation, Transmutation, and leader abilities are still open.
-
-### Financiers
-
-- Watch Capital accumulation speed, Deed income snowballing, and buyout premiums.
-- Decide whether collateral from Line of Credit should go to discard or Graveyard.
-- Consider whether Sanctions-like cards belong partly in Financiers via economic pressure.
-
-### Intelligence
-
-- Mission requirements need to be written for Intelligence cards.
-- Assassins needs a difficult Mission hook later.
-- Watch Intelligence card density around reveal, hand knowledge, cancellation, Sabotage, Treason, Scouting Report, and Special Operation.
-- Watch whether Interference stays disruptive rather than destructive and avoids overlapping too much with Inquisition.
+- Is maximum Command 2 correct?
+- Are General and Commandant comparably strong?
+- Does Rout create excessive chain-battle turns?
+- Does Fortify bypass the normal counterattack window too often?
+- Does Military receive too many capture-timing shortcuts when combined with neutral cards such as Assimilation and Invasion?
 
 ---
 
-## Repo/process questions
+## Diplomats
 
-- Continue repo file inventory for `.github/workflows`, `src` subfolders, and any release-package binary file names still truncated in screenshots.
-- Decide whether addendum files should remain as dated audit artifacts or be removed after the audit stabilizes.
-- Decide whether the v0.6 Working Rules should absorb low-risk items from `Gauntlet_v0.6_Rules_Cleanup.md` so there is only one active rules source.
-- Decide whether prior conversation leads should be promoted from `Gauntlet_v0.6_Conversation_Audit_Leads.md` into durable design docs, parked for v0.7, or closed as already documented.
+The current Terms / Influence / Peace Treaty framework remains the v0.6 baseline. The larger economy redesign is parked in `Gauntlet_v0.6.1_Diplomat_Overhaul_Notes.md`.
+
+Open v0.6 and production questions:
+
+- Replace **Good Offices** with a stronger Ambassador ability name.
+- Determine the final form of the Sanctions card family.
+- Decide whether Sanctions remain distinctly Diplomatic or whether Financiers receive a separate economic-pressure implementation.
+- Decide whether **Demilitarized Zone** is a Proposal, faction card, Overlay, or later concept.
+- Test the five-Article Peace Treaty threshold and the nine-Proposal reference load.
+- Test whether Ambassador and Senator are comparably strong.
+
+---
+
+## Inquisition
+
+- Is maximum Conviction 4 correct?
+- Are Purge costs and targets appropriately priced?
+- Does Condemnation make Purification viable without making ordinary battles hopeless?
+- Does Heresy pressure Arcane without creating a hard-counter matchup?
+- Does Grand Inquisitor create excessive post-battle Purge pressure?
+- Is Witch Hunter's Relentless Pursuit timing and cost clear and fair?
+- Watch overlap with Attrition, Insurrection, and hard-cancellation effects.
+
+---
+
+## Arcane
+
+- Finalize names for Rites, Invocation, Transmutation, and both leader abilities.
+- Are the three Rites comparably difficult to begin and complete?
+- Is one begun-but-incomplete Rite at a time the correct limit?
+- Does Rite of Echoes create worthwhile duplicate-card deckbuilding without excessive handling?
+- Is Rite of Blood viable before Transmutation and satisfying afterward?
+- Does Rite of Crossing resolve cleanly through occupation and control changes?
+- Are Invocation and Transmutation powerful enough without undoing Graveyard pressure or creating excessive battle swings?
+- Are Alchemist and Spirit Walker comparably strong?
+
+---
+
+## Financiers
+
+- Is Capital accumulation fast enough without becoming a runaway engine?
+- Is the Capital-limit formula easy to track?
+- Does Treasury create planning rather than disconnected setup?
+- Are Deed cost and buyout premiums intuitive and interactive, including mirror matches?
+- Is Play the Market appropriately swingy?
+- Is progressive Subsidize understandable and balanced?
+- Should Line of Credit collateral remain discard-bound or go to the Graveyard?
+- Does Hostile Takeover create too much immediate-control snowballing?
+- Are Banker and Executive comparably strong?
+
+---
+
+## Intelligence
+
+- Write and calibrate Mission requirements for Intelligence faction cards.
+- Ensure higher-value cards receive appropriately difficult or risky Missions.
+- Test whether one Active Mission at a time is the correct limit.
+- Test whether Operation Progress greater than opposing Territories is the correct Special Operation readiness threshold.
+- Test Special Operation failure and final Intel-cost formulas under both strong and weak board positions.
+- Decide whether Intel needs a maximum.
+- Ensure Surveillance and Interference remain disruptive rather than destructive.
+- Watch density around reveal, hand knowledge, cancellation, Sabotage, Treason, Scouting Report, and Special Operation.
+- Test Ranger and Spymaster for comparable strength and distinct play.
+
+---
+
+## Cross-faction testing
+
+- Do all six factions remain recognizably engaged with movement, battle, occupation, capture, and breakthrough?
+- Do alternate victories create visible parallel pressure rather than solitaire progress?
+- Are paired leaders comparably strong within each faction?
+- Does the Territory-scaled Asset bank accelerate games without making comebacks implausible?
+- Does any matchup routinely remove the losing player's ability to make meaningful decisions?
+
+Use `Gauntlet_Playtest_Targets_and_Metrics.md` for the quantitative and qualitative data to collect.
+
+---
+
+## Product and release planning
+
+- Should the v0.6 playtest package include printable leader cards, faction reference cards, resource trackers, and suggested decks for every leader?
+- Should resource tracks appear directly on leader cards or on separate faction references?
+- How should official leader and faction decklists be formatted?
+- A future starter product may contain the neutral core, Military, and perhaps one additional faction, while a complete product contains the full card pool with sufficient multiples. This remains a product lead, not a v0.6 rules decision.
+
+---
+
+## Resolution protocol
+
+When a question is decided:
+
+1. write the decision into the relevant active source of truth;
+2. remove it from this file or replace it with a clearly labeled watchlist item;
+3. update the Project Index if the source hierarchy or active checkpoint changes.
