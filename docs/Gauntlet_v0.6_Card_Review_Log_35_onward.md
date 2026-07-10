@@ -52,6 +52,29 @@ Use `Gauntlet_v0.6_Card_Metadata.md` for allegiance, starter eligibility, comple
 
 ---
 
+### 37. Rousing Speech
+
+**v0.6 cost:** 2
+
+**v0.6 rule direction:** Keep Rousing Speech Neutral as shared Asset-development catch-up and anti-snowball support. Preserve both effects with minor wording cleanup.
+
+**Working v0.6 Action direction:** Bank Rousing Speech as an Asset. Whenever your opponent banks an Asset, you may draw one card, then discard one card.
+
+**Working v0.6 Battle direction:** If your opponent has more face-up Assets than you do, gain advantage.
+
+**Reminder:** Turning an existing Asset face up does not count as banking an Asset.
+
+**Release notes:**
+
+- Keep Neutral because it provides shared catch-up against stronger Asset development rather than advancing a specific faction engine.
+- The Action filters rather than generates card advantage and depends on the opponent continuing to bank Assets.
+- The Battle effect is a simple visible-board comparison.
+- The card is starter-eligible and Basic complexity.
+- No initial watchlist concern; multiple copies already consume Asset-bank capacity.
+- Keep cost 2.
+
+---
+
 ## Next Step
 
-Continue card review at **Rousing Speech**.
+Continue card review at **Sabotage**.
