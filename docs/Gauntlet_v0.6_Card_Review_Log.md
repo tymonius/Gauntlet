@@ -454,6 +454,27 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
+### 26. Monetary Crisis
+
+**v0.6 classification:** Financiers faction card  
+**v0.6 cost:** 2
+
+**v0.6 rule direction:** Keep the current symmetrical hand-reset design. Clarify that the Battle effect resolves during normal battle cleanup rather than redesigning it as an immediate effect.
+
+**Working v0.6 Action direction:** Each player discards their hand, then draws two cards.
+
+**Working v0.6 Battle direction:** During battle cleanup, each player discards down to one card.
+
+**Release notes:**
+
+- The Battle effect naturally belongs to battle cleanup because it modifies hand state as part of resolving the completed battle; unlike Liberation's old effect, it does not begin movement or another battle sequence.
+- Keep the Treasury interaction implicit. Financiers may protect value in their Treasury before triggering the crisis, but Treasury cards cannot be played normally and therefore are stored infrastructure rather than preserved tactical cards.
+- The printed effects remain symmetrical, so cost 2 is appropriate; the Financier gains asymmetry through preparation and Treasury use rather than an additional printed benefit.
+- The card is not required as shared neutral counterplay. Neutral already has lighter hand cycling and disruption.
+- Watch whether repeated cheap hand resets become too oppressive, particularly against factions that need to hold cards for Missions, Terms, Rites, or planned battle sequences.
+
+---
+
 ## Next Step
 
-Continue card review at **Monetary Crisis**.
+Continue card review at **Necromancy**.
