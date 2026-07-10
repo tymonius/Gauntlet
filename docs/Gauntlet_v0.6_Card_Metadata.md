@@ -54,6 +54,7 @@ Use **TBD** where the card has been faction-placed but starter-deck suitability 
 | 35 | Resistance | Neutral | No | Advanced | Counterattack stacking and occupation-delay pressure |
 | 36 | Revolution | Neutral | No | Advanced | Extreme hand swings, battle reversal, and simultaneous-use timing |
 | 37 | Rousing Speech | Neutral | Yes | Basic | None |
+| 38 | Sabotage | Neutral | Yes | Basic | Neutral cancellation density and overlap with Disruption and Intelligence Interference |
 
 ## Review workflow going forward
 
