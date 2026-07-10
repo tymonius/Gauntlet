@@ -415,6 +415,24 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
+### 24. Manifest Destiny
+
+**v0.6 classification:** Parked / Cut from active v0.6  
+**v0.6 cost:** N/A while parked
+
+**v0.6 rule direction:** Remove from the active v0.6 card pool. Park the permanent board-expansion concept for a later board-modification, scenario, or Engineer-adjacent design pass.
+
+**Release notes:**
+
+- The current card permanently inserts a new blank Territory, which changes the shape and length of the Gauntlet rather than merely interacting with the existing board.
+- Permanent Territory insertion creates too many cross-system questions for v0.6, especially with Asset bank limits, Financier Deeds, Intelligence Special Operation thresholds, Territory counts, breakthrough distance, and pacing.
+- The card is not needed as shared counterplay, emergency defense, pacing correction, comeback support, or basic interaction.
+- The concept is closer to later board-modification design space than to the current six-faction v0.6 release.
+- The name **Manifest Destiny** should be retired even if the underlying board-expansion concept returns later.
+- Possible future names include Expansion, Frontier Claim, New Frontier, Forward Settlement, Claim the Ground, Surveyed Territory, or Outpost.
+
+---
+
 ## Next Step
 
-Continue card review at **Manifest Destiny**.
+Continue card review at **Militias**.
