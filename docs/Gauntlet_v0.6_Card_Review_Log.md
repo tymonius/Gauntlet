@@ -417,19 +417,19 @@ This document is not a history of the old card file. It records what each review
 
 ### 24. Manifest Destiny
 
-**v0.6 classification:** Parked / Cut from active v0.6  
-**v0.6 cost:** N/A while parked
+**v0.6 classification:** Redesign required / name retained  
+**v0.6 cost:** TBD
 
-**v0.6 rule direction:** Remove from the active v0.6 card pool. Park the permanent board-expansion concept for a later board-modification, scenario, or Engineer-adjacent design pass.
+**v0.6 rule direction:** Reject the current permanent-Territory insertion effect, but retain **Manifest Destiny** as a card name and redesign the card rather than cutting the name from Gauntlet.
 
 **Release notes:**
 
-- The current card permanently inserts a new blank Territory, which changes the shape and length of the Gauntlet rather than merely interacting with the existing board.
+- The current effect permanently inserts a new blank Territory, which changes the shape and length of the Gauntlet rather than merely interacting with the existing board.
 - Permanent Territory insertion creates too many cross-system questions for v0.6, especially with Asset bank limits, Financier Deeds, Intelligence Special Operation thresholds, Territory counts, breakthrough distance, and pacing.
-- The card is not needed as shared counterplay, emergency defense, pacing correction, comeback support, or basic interaction.
-- The concept is closer to later board-modification design space than to the current six-faction v0.6 release.
-- The name **Manifest Destiny** should be retired even if the underlying board-expansion concept returns later.
-- Possible future names include Expansion, Frontier Claim, New Frontier, Forward Settlement, Claim the Ground, Surveyed Territory, or Outpost.
+- The problem is the current mechanic, not the card name.
+- Keep **Manifest Destiny** in the redesign queue for a new effect that better fits v0.6 systems and pacing.
+- **New Frontier** is also a strong card name and should be reserved for a separate future card rather than used as a replacement name for Manifest Destiny.
+- The permanent board-expansion concept may still return later in a scenario, board-modification, or Engineer-adjacent design pass under a different implementation.
 
 ---
 
