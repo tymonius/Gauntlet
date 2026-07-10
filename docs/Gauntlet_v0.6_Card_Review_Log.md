@@ -540,6 +540,27 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
+### 30. Patriotism
+
+**v0.6 classification:** Military faction card  
+**v0.6 cost:** 3
+
+**v0.6 rule direction:** Keep Patriotism as a defensive Military Asset and Battle card. Remove the clause protecting Homeland Advantage, and limit each player to one banked Patriotism at a time.
+
+**Working v0.6 Action direction:** Bank Patriotism as an Asset. You may have only one Patriotism banked at a time. During battles on a Territory you control, the first +1 or advantage granted by one of your Battle cards is doubled.
+
+**Working v0.6 Battle direction:** If you are defending a Territory you control, gain advantage.
+
+**Release notes:**
+
+- Patriotism fits Military, especially the Commandant's hold-the-ground identity, and is not required as shared neutral defense.
+- Remove the Homeland Advantage protection because the only current effects disabling Homeland Advantage are Arena Territory rules, making the clause narrow and unnecessarily exceptional.
+- The one-copy bank limit prevents multiple Patriotism Assets from creating unclear or escalating doubling interactions.
+- The Asset doubles only a +1 or advantage granted by one of your Battle cards; it does not double Homeland Advantage, the Heartland-defense bonus, an Order, or an opposing disadvantage.
+- Preserve the reminder that +1 becomes +2, advantage becomes double advantage, and the Action effect applies only once per battle.
+
+---
+
 ## Next Step
 
-Continue card review at **Patriotism**.
+Continue card review at **Protracted Siege**.
