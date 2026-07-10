@@ -475,6 +475,27 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
+### 27. Necromancy
+
+**v0.6 classification:** Arcane faction card; Arcane trait  
+**v0.6 cost:** 5
+
+**v0.6 rule direction:** Keep direct Graveyard-to-hand recovery as a premium Arcane effect. Remove the restriction preventing Necromancy from returning another Necromancy card.
+
+**Working v0.6 Action direction:** Return one card from your Graveyard to your hand. Place Necromancy in your Graveyard instead of your discard pile.
+
+**Working v0.6 Battle direction:** During battle cleanup, return one card from your Graveyard to your hand.
+
+**Release notes:**
+
+- Direct Graveyard-to-hand recovery is a clear Arcane specialty and is not needed in the neutral pool; neutral already has discard-pile recovery through Contraband.
+- The non-Necromancy restriction is unnecessary. Using one Necromancy to recover another normally exchanges which copy is in hand and which is in the Graveyard, producing no net card advantage.
+- A two-copy recursion loop still consumes the player's Action, occupies two cost-5 deck slots, and does not by itself advance a Rite.
+- Keep cost 5 because the card can recover the best eligible card in the Graveyard and its Battle effect does not require winning.
+- Watch interactions with Invocation, Transmutation, Rite costs, and Arcane Knowledge, but treat those as thematic synergies rather than automatic problems.
+
+---
+
 ## Next Step
 
-Continue card review at **Necromancy**.
+Continue card review at **New Recruits**.
