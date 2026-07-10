@@ -9,7 +9,7 @@ The project is in private pre-release development and physical playtesting.
 - **Latest completed pre-faction playtest line:** v0.5.7
 - **Active development line:** v0.6
 - **v0.6 focus:** six factions, two leaders per faction, faction resources, alternate victory paths, card-pool migration, and faction playtesting
-- **Current card-review checkpoint:** completed through **Scouting Report**; next card is **Sedition**
+- **Current card-review checkpoint:** completed through **Sedition**; next card is **Shock and Awe**
 
 The six developing factions are:
 
