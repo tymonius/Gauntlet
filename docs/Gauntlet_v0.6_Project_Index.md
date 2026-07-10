@@ -19,7 +19,7 @@ Read this file first when resuming v0.6 work.
 
 ### Design rationale and testing
 
-7. **`Gauntlet_Design_Principles_and_Guardrails.md`** — design constraints for core rules, factions, cards, complexity, and components.
+7. **`Gauntlet_Design_Principles_and_Guardrails.md`** — current design constraints for core rules, factions, cards, complexity, components, pacing, and digital work.
 8. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — why the v0.5 rebuild occurred and which older systems are not current.
 9. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing benchmarks, simulation conclusions, telemetry, and human-playtest questions.
 10. **`Gauntlet_v0.6.1_Diplomat_Overhaul_Notes.md`** — Diplomat changes explicitly held for v0.6.1.
@@ -28,7 +28,7 @@ Read this file first when resuming v0.6 work.
 ### Digital development
 
 12. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, rules engine, CLI, GUI, telemetry, and remote-play roadmap.
-13. **`../deckbuilder/README.md`** — current v0.5 deckbuilder behavior and versioned upgrade path.
+13. **`../deckbuilder/README.md`** — current v0.5 deckbuilder behavior, consolidated implementation structure, and versioned upgrade path.
 14. **`../src/README.md`** — current TypeScript engine and development-interface status.
 15. **`../data/README.md`** — starter-data scope and source-of-truth warning.
 
@@ -47,6 +47,27 @@ Current archived records include:
 - completed 2026-07-10 conversation audit;
 - early leader archetype notes;
 - character design sheet generation log.
+
+---
+
+## Repository cleanup status
+
+The consolidation pass is complete.
+
+Completed changes include:
+
+- created `docs/Archive/` with an archive policy;
+- moved the completed conversation audit and historical visual-development records into the archive;
+- removed obsolete audit trackers, conversation-lead trackers, migration worksheets, correction addenda, and connector inventory files;
+- consolidated the card-review continuation into one active Card Review Log;
+- absorbed Withdrawal and Condition-reduction rules into the Working Rules and removed the cleanup sidecar;
+- rewrote Open Questions to contain only active unresolved work;
+- rewrote the Design Principles to use current metadata and faction language;
+- updated the root README and this Project Index as the repository navigation layer;
+- consolidated the deckbuilder's incremental CSS files into `components.css`;
+- consolidated the deckbuilder's browser, randomization, and print scripts into `features.js`;
+- retained `/data` and `/src` because they are active digital-development scaffolds, with their non-authoritative status clearly documented;
+- left versioned `/releases` packages unchanged as historical release snapshots.
 
 ---
 
@@ -75,7 +96,7 @@ Current faction rules are in the Working Rules. Balance, names, Missions, card p
 
 ### Digital work
 
-- The v0.5 browser deckbuilder is functional.
+- The v0.5 browser deckbuilder is functional and now has a consolidated five-file implementation: README, HTML, two CSS files, and two JavaScript files.
 - The TypeScript engine, CLI, and browser GUI are development scaffolds, not a complete digital edition.
 - The next digital target must be chosen explicitly: complete v0.5.7 first or create a separate v0.6-development mode.
 - Do not silently migrate saved decks across the v0.5/v0.6 boundary.
@@ -103,4 +124,4 @@ Current faction rules are in the Working Rules. Balance, names, Missions, card p
 
 ## Immediate next step
 
-Resume v0.6 card review at **Scorched Earth** after the repository-cleanup pass is accepted.
+Resume v0.6 card review at **Scorched Earth** when directed.
