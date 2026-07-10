@@ -395,6 +395,26 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
+### 23. Liberation
+
+**v0.6 classification:** Advanced Neutral / Watchlist  
+**v0.6 cost:** 4
+
+**v0.6 rule direction:** Keep as advanced neutral counterattack / comeback tempo. Do not lock to Military for v0.6. Redesign the Battle side to mirror Invasion from the defensive counterattack side rather than creating post-battle movement.
+
+**Working v0.6 Battle direction:** If you are counterattacking an opponent occupying a Territory you control, draw one additional battle card. You may play that card in addition to your other Battle cards.
+
+**Release notes:**
+
+- Liberation is Military-compatible, but as a faction-locked Military card it would overlap too much with Command, Rout, Repel, Fortify, and other momentum tools.
+- Keep neutral because counterattacking an opponent who occupies your Territory is a core Gauntlet system and non-Military factions need shared comeback / anti-overextension tools.
+- The old Battle side reached past the battle into post-battle movement and possible chain-battle timing, which was confusing and too close to Military Rout.
+- The new Battle direction intentionally mirrors Invasion: Invasion rewards proactive attacking tempo, while Liberation rewards reactive counterattack tempo.
+- Watch whether the Action side plus revised Battle side makes Liberation too efficient as a neutral recovery engine.
+- Keep out of starter core because it modifies battle-draw expectations and is tied to occupation/counterattack timing.
+
+---
+
 ## Next Step
 
-Continue card review at **Liberation**.
+Continue card review at **Manifest Destiny**.
