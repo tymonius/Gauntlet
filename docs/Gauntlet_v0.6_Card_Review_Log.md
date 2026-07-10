@@ -601,6 +601,27 @@ This document is not a history of the old card file. It records what each review
 
 ---
 
+### 33. Redemption
+
+**v0.6 classification:** Core Neutral  
+**v0.6 cost:** 2
+
+**v0.6 rule direction:** Keep Redemption as shared protection against discard-pile disruption. Bank the Action as an Asset that remains available until voluntarily used.
+
+**Working v0.6 Action direction:** Bank Redemption as an Asset. Whenever an opposing effect places one or more of your other cards in your discard pile, you may discard Redemption. If you do, return one of those cards to your hand after that effect resolves.
+
+**Working v0.6 Battle direction:** If an opposing effect causes one other Battle card you played to have no effect and places it in your discard pile, return that card to your hand after the battle instead.
+
+**Release notes:**
+
+- Keep Core Neutral because every faction needs access to protection against soft discard and cancellation effects.
+- Banking Redemption lets the player hold the protection until a worthwhile target appears rather than forcing it to trigger on the next qualifying event.
+- The Action cannot save Redemption itself because it refers to another card.
+- Redemption protects only cards entering the discard pile; it does not answer effects that place cards in the Graveyard.
+- Keep cost 2.
+
+---
+
 ## Next Step
 
-Continue card review at **Redemption**.
+Continue card review at **Reinforcements**.
