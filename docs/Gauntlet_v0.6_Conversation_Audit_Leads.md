@@ -1,26 +1,21 @@
 # Gauntlet v0.6 Conversation Audit Leads
 
-**Status:** Audit leads from prior Gauntlet conversations.  
-**Purpose:** Preserve important discussion points that may not yet be fully reflected in the repo.
+**Status:** Post-audit list of remaining work-in-progress and future leads.  
+**Purpose:** Preserve verified conversation-derived ideas that are not final rules while avoiding duplication of decisions already promoted elsewhere.
 
-These are not automatically final rules. Treat them as leads to verify against source documents, card review decisions, and current design direction.
+The complete 2026-07-10 source audit is documented in:
+
+- `docs/Gauntlet_Conversation_Audit_2026-07-10.md`
+
+Items already promoted to a current source-of-truth document are not unresolved merely because they originated in conversation.
 
 ---
 
-## v0.6 faction framework leads
+## 1. Closed and documented leads
 
-### Faction and leader naming evolution
+### Current faction and leader names
 
-Earlier faction framing used:
-
-- Military — General / Commandant
-- Diplomats — Ambassador / Senator
-- Inquisition — Grand Inquisitor / Witch Hunter
-- Magic — Alchemist / Spirit Walker or Shaman
-- Financiers — Banker / Executive
-- Intelligence — Ranger or Spy
-
-Current v0.6 framing is:
+Current roster:
 
 - Military — General / Commandant
 - Diplomats — Ambassador / Senator
@@ -29,208 +24,247 @@ Current v0.6 framing is:
 - Financiers — Banker / Executive
 - Intelligence — Ranger / Spymaster
 
-Status: **Documented/current** in the Working Rules for current names. This lead preserves the older naming history so stale references like Magic or Spy can be normalized rather than accidentally revived.
+Older labels such as Magic and Spy are historical only.
 
-### Parallel Progress principle
+**Status:** Documented/current in Working Rules and leader documents.
 
-Prior discussion approved the principle that factions should create parallel progress: both players should usually be able to make meaningful progress toward at least one victory condition at the same time.
+### Parallel Progress
 
-Status: **Documented/current** in design principles and working rules, but continue enforcing during faction and card review.
+Both players should usually be able to make meaningful progress toward at least one visible victory path at the same time.
 
-### Diplomats victory direction
+**Status:** Documented/current in Design Principles and Working Rules.
 
-Prior discussion favored Diplomats winning through ratified Proposals / Peace Treaty without requiring an enemy-Territory condition.
+### Neutral-pool and faction-interaction checks
 
-Status: **Documented/current** in the v0.6 Working Rules.
+Before faction-locking a card, assess:
 
-### Military role
+- whether other factions lose needed shared counterplay or pacing tools;
+- whether the card duplicates, bypasses, or creates strange interactions with the proposed faction mechanic.
 
-Prior discussion accepted Military as the baseline conquest faction rather than giving every faction an equally conquest-focused identity.
+**Status:** Documented/current in the card-review protocol.
 
-Status: **Documented/current** in the v0.6 Working Rules.
+### Assassins Mission hook
 
-### Arcane Rite of Crossing
+Assassins remains Intelligence and harsh by design. Its Mission should be appropriately difficult.
 
-Prior discussion favored Rite of Crossing using any Territory the opponent controlled immediately before the battle, rather than a narrower or more awkward enemy-Territory requirement.
+**Status:** Card classification documented/current; Mission design remains WIP.
 
-Status: **Documented/current** in the v0.6 Working Rules.
+### Deckbuilder version modes
 
----
+The deckbuilder should use a shared UI shell with separate versioned rules/data modes. v0.5 decks should not silently migrate into v0.6.
 
-## Deck construction / product structure leads
+**Status:** Documented/current in deckbuilder README and Digital Prototype Roadmap.
 
-### Deck construction and supplemental cards
+### Asset-bank purpose and risk
 
-Prior discussion clarified:
+The Territory-scaled Asset bank is intended to accelerate games and connect progress to infrastructure. It may also amplify snowballing.
 
-- a deck is at least 30 playable cards;
-- deck value cap is 60;
-- leaders, reference cards, Proposal lists, Order lists, resource trackers, and similar cards are supplemental cards;
-- supplemental cards do not count toward deck size or deck value.
+**Status:** Documented/current in Working Rules and Playtest Targets.
 
-Status: **Documented/current** in the v0.6 Working Rules.
+### Multiplayer variants
 
-### Starter product / card-pool packaging
+- 2v2 dual-lane Gauntlet
+- cross-board / central Arena
+- free-for-all / Arena variant
 
-Prior discussion suggested the complete game will eventually ship the full card pool with enough multiples. A starter pack might include the core pool plus Military and maybe one other faction.
+**Status:** Documented/current as v0.7+ parking-lot material.
 
-Status: **Conversation-only / product lead**. Not a v0.6 rules decision. Current v0.6 Working Rules intentionally assume all six factions are part of the v0.6 playtest release.
+### Engineers and Legal faction reservations
 
----
+- Engineers may specialize in Overlays later without owning them exclusively.
+- Scales remain reserved for a possible future Legal faction rather than Inquisition.
 
-## Digital tooling / deckbuilder leads
+**Status:** Documented/current as future design material.
 
-### Standalone browser deckbuilder requirements
+### Leader visual direction
 
-Prior discussion requested a standalone browser deckbuilder with:
+Historical/fictional archetypes and production designs have been promoted to dedicated leader documents.
 
-- card database;
-- faction and leader selection;
-- Territory picker;
-- deck size and value tracking;
-- saved decks;
-- load/edit support;
-- print-ready PDF/export path.
+**Status:** Documented/current as art direction, not rules.
 
-Status: **Partly documented/current**. The current deckbuilder covers the v0.5 pre-faction tool; v0.6+ faction/leader mode is still future implementation.
+### Lore direction
 
-### Separate v0.5 and v0.6+ tool modes
+Shared-civilization institutional framing, early-modern material culture, and rejected direct colonial analogues are now preserved.
 
-Prior discussion concluded that the deckbuilder/tooling likely needs separate modes because v0.5.6-0.5.7 are pre-faction while v0.6+ changes significantly with factions and leaders.
+**Status:** Documented/current as WIP lore direction in `Gauntlet_Lore_Development_Notes.md`.
 
-Status: **Documented/current** in `deckbuilder/README.md` as intended upgrade path.
+### Playtest metrics
 
-### v0.5.7 mode expectations
+Turn terminology, pacing targets, card-economy telemetry, Asset-bank monitoring, and qualitative questions are now centralized.
 
-For v0.5.7 mode:
+**Status:** Documented/current in `Gauntlet_Playtest_Targets_and_Metrics.md`.
 
-- no factions or leaders;
-- all normal cards are available;
-- validate deck size, point total, Territory rules, and unique cards;
-- saved decks should be tagged by game version;
-- old decks should not auto-migrate across v0.5 to v0.6.
+### Core redesign history
 
-Status: **Mostly documented/current** in `deckbuilder/README.md` and current deckbuilder code. Needs explicit v0.6+ mode planning later.
+The reason for the v0.5 rebuild and the status of round limits, breach, Foothold, card destinations, and other old directions are now centralized.
 
----
+**Status:** Documented/current in `Gauntlet_Development_History_and_Superseded_Directions.md`.
 
-## Asset bank / pacing leads
+### Digital prototype architecture
 
-### Asset bank goal
+Canonical data, deckbuilder, rules engine, CLI, GUI, current limitations, and next implementation sequence are now centralized.
 
-Prior discussion framed the v0.5.6 Asset bank change as intended to:
-
-- shorten games;
-- improve power scaling as players progress;
-- avoid excessive snowballing;
-- preserve comeback possibility.
-
-Status: **Documented/current** in v0.6 Working Rules and playtest watchlist, but continue watching.
-
-### Asset bank minimum-2 variant
-
-A prior simulation discussion suggested a softer test variant: Asset bank limit equals Territories controlled, minimum 2.
-
-Status: **Work-in-progress / not adopted**. Do not treat as current v0.6 rule unless explicitly revived.
+**Status:** Documented/current in `Gauntlet_Digital_Prototype_Roadmap.md`.
 
 ---
 
-## Multiplayer / v0.7 leads
+## 2. Active v0.6 work-in-progress leads
 
-### 4-player 2v2 concept
+### Intelligence Missions
 
-Prior discussion explored a v0.7 4-player variant with a two-tile-wide / 12-tile Gauntlet and two players on each side.
+Still needed:
 
-Possible prototype lead:
+- Mission text for Assassins;
+- Mission requirements for other Intelligence faction cards;
+- difficulty calibration against card value;
+- Special Operation viability and counterplay testing.
 
-- 6-column x 2-row board;
-- alternating individual turns;
-- orthogonal movement;
-- team-controlled Territories;
-- each player has own deck, hand, discard, Graveyard, and Asset bank;
-- team victory after two breakthroughs.
+Do not invent final Missions from older generic suggestions without reviewing current Intelligence rules.
 
-Status: **Conversation-only / v0.7+ lead**. Not yet captured in the v0.7 Parking Lot and should be added later if still desired.
+### Diplomat naming and v0.6.1 overhaul
 
-### Cross-board / central Arena variant
+Still open:
 
-Prior discussion explored a 4-player cross variant where lanes meet at a central Arena, with both large-cross and small-cross layouts considered.
+- replacement for `Good Offices` as an ability name;
+- final Sanctions family structure;
+- Demilitarized Zone form;
+- Influence staking and Loss of Face redesign for v0.6.1;
+- Proposal recalibration.
 
-Status: **Conversation-only / v0.7+ lead**. Not currently v0.6 scope.
+### Faction and leader balance
 
-### FFA / Arena variant
+Still requires human testing:
 
-Prior discussion treated free-for-all as likely separate from 2v2, possibly under a `Gauntlet: Arena` style variant. Alliances were discussed as a possible issue but not decided.
+- General versus Commandant;
+- Ambassador versus Senator;
+- Grand Inquisitor versus Witch Hunter;
+- Alchemist versus Spirit Walker;
+- Banker versus Executive;
+- Ranger versus Spymaster.
 
-Status: **Conversation-only / v0.7+ lead**. Not currently v0.6 scope.
+### Canonical v0.6 data
 
----
+Current v0.6 card decisions are still distributed across working rules, metadata, and review logs. Canonical v0.6 data should be created after the migration is sufficiently stable.
 
-## Future faction leads
+### Condition reduction
 
-### Engineers / Overlays
-
-Engineers as an Overlay-centered faction are documented in the v0.7 Parking Lot. The current principle is that Engineers may specialize in Overlays later, but other factions should not be barred from using Overlays in v0.6 when appropriate.
-
-Status: **Documented/current** as v0.7+ parking-lot material.
-
-### Legal / Scales reservation
-
-Prior discussion noted that scales should be reserved for a possible future Legal faction and not used for Inquisition.
-
-Status: **Documented/current** in Inquisition development notes within the v0.6 Working Rules.
+After card review, audit every Condition and replace it with an Asset, Overlay, or immediate resolution where that preserves the intended effect more cleanly.
 
 ---
 
-## Card review process leads
+## 3. Product and tooling leads
 
-### Neutral-pool impact check
+### Starter packaging
 
-Prior card review identified that moving a card out of Neutral must consider whether other factions lose important shared counterplay, emergency defense, pacing correction, comeback tools, or interaction.
+A future starter product may include the neutral core plus Military and perhaps one additional faction, while a full product may include the complete pool with sufficient multiples.
 
-Status: **Documented/current** in design guardrails and now repeated in the open questions tracker.
+**Status:** Product lead only. Not a v0.6 rules or release-content decision.
 
-### Faction-mechanic interaction check
+### v0.6 deckbuilder mode
 
-Prior card review identified that a faction-lock recommendation must check whether the card duplicates, bypasses, or creates strange interactions with that faction's mechanics.
+Still needed:
 
-Status: **Documented/current** in project index and open questions tracker.
+- faction selector;
+- leader selector;
+- legality filtering;
+- faction reference and supplemental-card support;
+- v0.6 validation rules;
+- v0.6 print/export layouts.
 
----
+### Digital rules target
 
-## Playtest / data collection leads
+Choose explicitly between:
 
-Prior playtest-form design emphasized tracking:
+- completing a faithful v0.5.7 digital implementation first; or
+- creating a separate v0.6-development mode.
 
-- version;
-- decks;
-- winner and ending;
-- elapsed time;
-- player-turn count;
-- battles and captures;
-- reshuffles;
-- final Graveyards;
-- enjoyment, agency, pacing, replay interest;
-- rules questions;
-- most/least valuable card or Territory;
-- whether a player felt unable to act;
-- whether the winner was apparent long before the end.
+Do not allow placeholder `0.5.6-dev` examples to become an accidental long-term target.
 
-Status: **Partly documented/current**. Release contributing notes request version, decks, winner, elapsed time, player-turn count, fun/slow/confusing/unfair notes, and interactions requiring rulings. The richer form metrics should be preserved for future digital logging or playtest-form updates.
+### Playtest data collection
+
+Future digital builds should capture the metrics in `Gauntlet_Playtest_Targets_and_Metrics.md`, but telemetry should follow correct rules implementation rather than precede it.
 
 ---
 
-## Leader archetype / visual design leads
+## 4. v0.7+ and optional-module leads
 
-Prior discussion began matching leaders to historical or fictional archetypes to shape character design. This is not rules text, but it affects faction art direction, symbols, leader names, and component design.
+### Multiplayer
 
-Status: **Conversation-only lead now promoted to `docs/Gauntlet_v0.6_Leader_Archetype_and_Visual_Notes.md`.**
+Questions remain about:
+
+- lane crossing;
+- team versus individual Territory control;
+- defending for teammates;
+- Asset-bank limits in team play;
+- breakthrough count;
+- alternate victories in teams and FFA;
+- alliances and kingmaking.
+
+### Engineers
+
+Potential future depth:
+
+- Overlay movement, upgrading, repair, dismantling, and chaining;
+- connected infrastructure;
+- infrastructure-based victory.
+
+### Day/Night
+
+Optional future module only. Needs testing for:
+
+- faction or leader affiliation;
+- modest bonuses without dead turns;
+- first-player balance;
+- whether it speeds decisions or encourages waiting.
+
+### Possible Legal faction
+
+Only a symbolic and thematic reservation currently exists. No faction framework is approved.
 
 ---
 
-## Current next audit tasks
+## 5. Lore leads
 
-1. Add the 4-player / multiplayer variant ideas to the v0.7 Parking Lot if still desired.
-2. Continue repo inventory for `.github/workflows` and `src` subfolders.
-3. Decide whether leader visual/archetype notes should stay v0.6-adjacent or move to a broader art-direction document.
-4. Continue checking prior conversation leads against the actual repo before resuming card review at Invasion.
+The setting should continue one decision at a time.
+
+Open questions include:
+
+- what overarching authority collapsed;
+- when and how it collapsed;
+- whether factions are at open war, proxy conflict, or institutional competition;
+- the geographic scale of a normal Gauntlet;
+- the public status of Arcane practice;
+- the legal, religious, and political character of the Inquisition;
+- the place of towns, communities, and non-faction populations;
+- the degree of supernatural certainty.
+
+These remain WIP and should not be answered wholesale in one lore pass.
+
+---
+
+## 6. Do-not-revive reminders
+
+Do not treat the following as current merely because they appear in old conversations:
+
+- Magic or Spy as current faction/leader names;
+- round limit as the normal core ending;
+- breach or exhaustion markers;
+- Foothold as a current rule;
+- minimum-2 Asset capacity as adopted;
+- all played Battle cards going to the Graveyard;
+- Active Effects terminology;
+- Heartland cards;
+- direct Old World / New World analogue;
+- Age of Claims as canon;
+- ancient roads or a universal legendary prize as mandatory setting cosmology;
+- old card classifications superseded by current review logs.
+
+---
+
+## 7. Next use of this file
+
+Use this file only for unresolved or future leads. When an item becomes approved:
+
+1. write it into the relevant durable source;
+2. update its status here or remove it from the unresolved sections;
+3. update the Project Index when the source hierarchy or active checkpoint changes.
