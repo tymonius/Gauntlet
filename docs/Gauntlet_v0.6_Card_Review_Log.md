@@ -533,6 +533,26 @@ A tabled card is not decided. Do not call a decision logged until the repository
 
 ---
 
+### 42. Shock and Awe
+
+**Cost:** 5  
+**Direction:** Move to Military as a premium all-in breakthrough card that combines immediate capture with one follow-up advance and consumes all available Command.
+
+**Action:** Bank Shock and Awe as an Asset. After you win a battle you initiated on a Territory your opponent controls, after gaining any Command from that battle, you may discard Shock and Awe and lose all Command. If you do, capture that Territory immediately instead of occupying it, then you may advance one space.
+
+**Battle:** If you win this battle as the attacker on a Territory your opponent controls, after gaining any Command from this battle, lose all Command. Capture that Territory immediately instead of occupying it, then you may advance one space.
+
+**Reminder:** Immediate capture bypasses effects that would delay the normal capture. Shock and Awe can cause only one additional advance per turn.
+
+- Remove the v0.5.7 follow-up-battle advantage rider.
+- Convert the Action from a same-turn Condition into a prepared Asset.
+- Losing all Command occurs after any Command gained from the qualifying battle, preventing the same victory from feeding Rout or Fortify.
+- The card remains usable at 0 Command; stored Command increases its opportunity cost rather than becoming an eligibility requirement.
+- Not starter-eligible; Advanced complexity.
+- Watch immediate-capture density, leader-Order overlap, and chained movement with Onward, Rout, Invasion, and other Military effects.
+
+---
+
 ## Next card
 
-Continue review at **Shock and Awe**.
+Continue review at **Siege Weaponry**.
