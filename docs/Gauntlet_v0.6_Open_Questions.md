@@ -14,23 +14,15 @@ This file is for questions that should not be treated as final decisions yet. Wh
 
 - Assimilation corrected in the main card review log from Military faction card to Advanced Neutral / Watchlist.
 - Insurrection added to the main card review log.
-- Invasion marked as tabled pending audit completion.
 - The dated addendum remains as an audit artifact but no longer needs to be treated as the active correction layer.
-
----
-
-## Highest-priority audit items
 
 ### Invasion
 
-**Status:** Tabled.
+**Status:** Closed.
 
-Questions:
-
-- Should Invasion remain Neutral as a shared offensive tempo tool?
-- If Invasion becomes Military, does it duplicate Command / Orders too directly?
-- If Invasion remains Neutral, can Military stack it with Onward, Rally, Rout, or leader abilities too efficiently?
-- Should Invasion be Core Neutral, Advanced Neutral / Watchlist, or redesigned?
+- Invasion reviewed and recorded in the main card review log as Advanced Neutral / Watchlist.
+- It should not be faction-locked to Military for v0.6 because it duplicates Military's Command / Orders identity too directly.
+- Keep watching Military stacking with Onward, Rally, Rout, leader abilities, and other attack-tempo cards.
 
 ---
 
