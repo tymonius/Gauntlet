@@ -24,18 +24,15 @@ This file is the starting point for future Gauntlet development sessions. At the
 
 ## Current active workflow
 
-**Current phase:** v0.6 project audit and source consolidation.
+**Current phase:** v0.6 card review, with audit consolidation continuing when needed.
 
-**Do not resume card review until:**
-
-- The audit backlog is reviewed for undocumented faction concepts, especially Diplomat overhaul items, faction-mechanic interaction risks, leader/archetype notes, and multiplayer/v0.7 ideas.
-- The remaining needed repo inventories are completed or explicitly deferred.
+Before resuming in a new chat, read this index and the card review log.
 
 Already completed:
 
 - Assimilation corrected in the main card review log.
 - Insurrection recorded in the main card review log.
-- Invasion explicitly tabled pending audit completion.
+- Invasion reviewed and recorded as Advanced Neutral / Watchlist.
 - Leader archetype / visual design notes promoted to their own durable file.
 - Multiplayer v0.7 leads added to the v0.7 Parking Lot.
 
@@ -57,7 +54,6 @@ Already completed:
 
 ## Current checkpoint
 
-- Last fully documented reviewed card: **Insurrection**.
-- Next card after audit: **Invasion**.
-- Invasion is tabled until the audit is complete.
-- Current work: continue audit, repo inventory, and conversation-lead verification before resuming card review.
+- Last fully documented reviewed card: **Invasion**.
+- Next card: **Liberation**.
+- Current work: continue card review while preserving any major audit discoveries in the appropriate repo document.
