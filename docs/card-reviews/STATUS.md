@@ -1,10 +1,10 @@
 # Gauntlet v0.6 Card Review Status
 
-**Last approved card:** 52 — Valor  
-**Next card:** 53 — War Crimes  
+**Last approved card:** 53 — War Crimes  
+**Next card:** 54 — Witchcraft  
 **Consolidated rollup coverage:** Cards 1–47, through Supplies  
-**Standalone reviews since rollup:** 48 — Tariffs; 49 — Sequestration; 50 — Treason; 51 — Tyranny; 52 — Valor  
-**Next standalone review file:** `053-war-crimes.md`
+**Standalone reviews since rollup:** 48 — Tariffs; 49 — Sequestration; 50 — Treason; 51 — Tyranny; 52 — Valor; 53 — War Crimes  
+**Next standalone review file:** `054-witchcraft.md`
 
 ## Active workflow
 
