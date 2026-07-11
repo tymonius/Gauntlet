@@ -75,11 +75,12 @@ Completed changes include:
 
 ### Card review
 
-- Last mechanically reviewed card: **Siege Weaponry**.
-- Resolve its title, then continue at **Spies**.
+- Last mechanically reviewed card: **Spies**.
+- Next card: **Stand Ground**.
 - Scorched Earth remains a cost-3 Neutral Ruins Overlay card; its former Asset-destruction and bank-lock effects were removed.
 - Siege Weaponry is Neutral at cost 4, deploys from the Asset bank onto an adjacent enemy Territory before movement, suppresses its printed effect for the turn, and becomes Ruins after successful capture or battle victory.
 - **Bombardment** is the leading replacement title; **Siege Weaponry** may be reserved for a future Engineer card.
+- Spies is an Intelligence card at cost 2. Its Asset exposes the opponent's hand; its Battle effect reveals only the opponent's actual hand commitment and chosen battle-drawn card before allowing the Spies player to change their own battle-drawn selection.
 - A Territory is either ruined or not. Placing a new Ruins Overlay on an already ruined Territory sends the existing Overlay to its owner's Graveyard and replaces it.
 - **Repair** is reserved for the future Engineer faction rather than becoming a universal v0.6 action.
 - Scouting Report remains Neutral at cost 1 and explicitly permits an additional battle-drawn play when replaced from a hand commitment.
@@ -133,4 +134,4 @@ Current faction rules are in the Working Rules. Balance, names, Missions, card p
 
 ## Immediate next step
 
-Resolve the title of **Siege Weaponry**, then continue v0.6 card review at **Spies**.
+Continue v0.6 card review at **Stand Ground**.
