@@ -1,7 +1,7 @@
 # Gauntlet v0.6 Territory Review Status
 
-**Last approved Territory:** 14 — Old Battlefield  
-**Next Territory:** 15 — Refuge  
+**Last approved Territory:** 15 — Refuge  
+**Next Territory:** 16 — Command Tent  
 **Source order:** `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`
 
 ## Active workflow
