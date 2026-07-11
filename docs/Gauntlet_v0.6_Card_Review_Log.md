@@ -610,6 +610,24 @@ A tabled card is not decided. Do not call a decision logged until the repository
 
 ---
 
+### 46. Strategic Withdrawal
+
+**Cost:** 3  
+**Direction:** Keep Neutral as shared tactical disengagement, Asset recovery, and card preservation.
+
+**Action:** Return a banked Asset to your hand. If you do, gain one additional movement this turn.
+
+**Battle:** If you lose this battle, after retreating, you may withdraw one additional space. If you do, return one other card you played in this battle to your hand instead of placing it in its normal destination.
+
+- The additional withdrawal uses the general withdrawal rules; interactions that trigger from withdrawal apply without a card-specific reminder.
+- The card returned from the battle may have been committed from hand or played from battle draw, but it cannot be Strategic Withdrawal itself.
+- If the player cannot complete the additional withdrawal, they do not return a card.
+- Keep Neutral because tactical disengagement and resource preservation are broadly useful rather than faction-defining.
+- Not starter-eligible; Advanced complexity.
+- Watch movement stacking, repeatable recovery, and retreat-versus-withdrawal sequencing.
+
+---
+
 ## Next card
 
-Continue review at **Strategic Withdrawal**.
+Continue review at **Supplies**.
