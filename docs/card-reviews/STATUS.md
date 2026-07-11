@@ -1,10 +1,10 @@
 # Gauntlet v0.6 Card Review Status
 
-**Last approved card:** 50 — Treason  
-**Next card:** 51 — Tyranny  
+**Last approved card:** 51 — Tyranny  
+**Next card:** 52 — Valor  
 **Consolidated rollup coverage:** Cards 1–47, through Supplies  
-**Standalone reviews since rollup:** 48 — Tariffs; 49 — Sequestration; 50 — Treason  
-**Next standalone review file:** `051-tyranny.md`
+**Standalone reviews since rollup:** 48 — Tariffs; 49 — Sequestration; 50 — Treason; 51 — Tyranny  
+**Next standalone review file:** `052-valor.md`
 
 ## Active workflow
 
@@ -28,5 +28,6 @@
 - Fully redesign **Manifest Destiny**.
 - Design the future Inquisition card **The Black Edict** during the faction-card pass.
 - Define general handling for copied or appropriated effects that have impossible targets or source-dependent text.
+- Define **negated** consistently in the general rules as a card having no effect.
 - Integrate finalized cross-card rules such as Ruins and voluntary Asset removal into the Working Rules after card migration or at the next appropriate rules rollup.
 - Audit faction cost curves and identify or design faction capstones after the full review.
