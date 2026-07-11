@@ -573,6 +573,25 @@ A tabled card is not decided. Do not call a decision logged until the repository
 
 ---
 
+### 44. Spies
+
+**Cost:** 2  
+**Direction:** Intelligence faction card. Preserve persistent hand exposure as a faction-defining Asset and narrow the Battle effect to the opponent's actual selections rather than their entire battle draw.
+
+**Action:** Bank Spies as an Asset. Your opponent keeps their hand face up.
+
+**Battle:** Reveal Spies before the other Battle cards. Your opponent reveals their hand commitment and chosen battle-drawn card. You may then change your own battle-drawn selection. If Spies was your battle-drawn selection and you replace it, place Spies in your Graveyard immediately.
+
+**Reminder:** Revealing cards with Spies is not Surveillance. The opponent does not reveal unplayed cards from their battle draw.
+
+- Raise cost from 1 to 2 because persistent full-hand information is too efficient at 1 and frees Intelligence to spend Intel on hidden battle-drawn cards and Interference.
+- Keep Intelligence; Neutral already has Scouting Report as limited shared reconnaissance.
+- Not starter-eligible; Advanced complexity.
+- Watch persistent perfect information, special-reveal timing, post-reveal reselection, and information stacking with Surveillance, Interference, Assassins, Scouting Report, and Treason.
+- A Mission requirement may be added during the Intelligence faction-deck pass.
+
+---
+
 ## Next card
 
-Resolve the title of **Siege Weaponry**, then continue review at **Spies**.
+Continue review at **Stand Ground**.
