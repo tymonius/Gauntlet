@@ -628,6 +628,22 @@ A tabled card is not decided. Do not call a decision logged until the repository
 
 ---
 
+### 47. Supplies
+
+**Cost:** 1  
+**Direction:** Keep Neutral as basic delayed draw and battle filtering. Convert the temporary Condition into a one-use Asset.
+
+**Action:** Bank Supplies as an Asset. At the beginning of your turn, discard Supplies and draw two additional cards.
+
+**Battle:** After this battle, draw two cards, then discard one card.
+
+- Do not specify "next turn"; because the Action is played after the beginning of the current turn, the next eligible beginning-of-turn trigger is implicit.
+- The Asset occupies bank capacity and remains exposed to Asset interaction before resolving.
+- Starter-eligible; Basic complexity.
+- Watch low-cost deck smoothing and automatic-inclusion pressure.
+
+---
+
 ## Next card
 
-Continue review at **Supplies**.
+Continue review at **Tariffs**.
