@@ -41,11 +41,11 @@
 
 ## Approved core-rule amendment
 
-During your Action step, instead of playing an Action card, you may discard one banked Asset you control.
+Whenever you could play an Action card during your turn, you may instead discard one banked Asset you control.
 
-- This uses the normal Action opportunity.
+- This uses that Action opportunity.
 - It is not playing an Action card.
-- An effect that permits an additional Action-card play cannot be used to discard an Asset this way.
+- An effect granting an additional Action-card play may instead be used to discard a banked Asset.
 - A card may prohibit or delay its own voluntary removal, as Tariffs does.
 
 This amendment is authoritative from this review and should be integrated into `../Gauntlet_v0.6_Working_Rules.md` at the next rules rollup.
@@ -66,6 +66,7 @@ Tariffs expresses the Financiers' leverage and delayed-payoff identity without d
 - The player may choose how long to carry the liability rather than having it expire automatically.
 - Prohibiting same-turn voluntary removal guarantees that the borrowed value cannot be taken and erased immediately.
 - Excluding Tariffs from its own additional Action-card play prevents chaining multiple copies through the printed bonus.
+- Allowing any Action opportunity to be exchanged for voluntary Asset removal keeps the rule consistent and permits Tariffs' bonus to clear a different Asset.
 - Cost 3 remains appropriate for immediate draw and tempo balanced by persistent skipped draws and later removal cost.
 
 ## Follow-up
