@@ -9,7 +9,7 @@ The project is in private pre-release development and physical playtesting.
 - **Latest completed pre-faction playtest line:** v0.5.7
 - **Active development line:** v0.6
 - **v0.6 focus:** six factions, two leaders per faction, faction resources, alternate victory paths, card-pool migration, and faction playtesting
-- **Current card-review checkpoint:** completed through **Supplies**; next card is **Tariffs**
+- **Live card-review checkpoint:** `docs/card-reviews/STATUS.md`
 
 The six developing factions are:
 
@@ -58,10 +58,12 @@ Active design, rules, testing, setting, and production documentation.
 
 Start with:
 
-- `docs/Gauntlet_v0.6_Project_Index.md` — current source-of-truth map and checkpoint;
+- `docs/Gauntlet_v0.6_Project_Index.md` — current source-of-truth map and milestone checkpoint;
+- `docs/card-reviews/STATUS.md` — live card-review checkpoint;
+- `docs/card-reviews/` — small standalone card-review records and template;
 - `docs/Gauntlet_v0.6_Working_Rules.md` — active v0.6 rules framework;
-- `docs/Gauntlet_v0.6_Card_Metadata.md` — card allegiance, starter eligibility, complexity, and watchlist metadata;
-- `docs/Gauntlet_v0.6_Card_Review_Log.md` — consolidated migration decisions;
+- `docs/Gauntlet_v0.6_Card_Metadata.md` — consolidated card metadata rollup;
+- `docs/Gauntlet_v0.6_Card_Review_Log.md` — consolidated migration-decision rollup;
 - `docs/Gauntlet_v0.6_Open_Questions.md` — unresolved current decisions;
 - `docs/Gauntlet_Design_Principles_and_Guardrails.md` — design constraints;
 - `docs/Gauntlet_Playtest_Targets_and_Metrics.md` — pacing and telemetry standards.
@@ -90,9 +92,11 @@ Automation and repository workflows.
 
 1. Treat released canonical data as authoritative for its matching version.
 2. Treat active v0.6 documents as the working source of truth until canonical v0.6 data exists.
-3. Record approved decisions in the repository rather than relying on chat history.
-4. Keep rules, testing rationale, lore, production art direction, and digital implementation status in their designated documents.
-5. Move completed audits and superseded working records into `docs/Archive/` when they remain useful for provenance.
+3. Record each newly approved card in a small standalone file under `docs/card-reviews/` and update `STATUS.md`.
+4. Roll new card files into the consolidated Review Log and Metadata registry in batches rather than after every card.
+5. Reserve README and Project Index updates for material milestones, source-hierarchy changes, and batch checkpoints.
+6. Keep rules, testing rationale, lore, production art direction, and digital implementation status in their designated documents.
+7. Move completed audits and superseded working records into `docs/Archive/` when they remain useful for provenance.
 
 ## Running digital tools locally
 
