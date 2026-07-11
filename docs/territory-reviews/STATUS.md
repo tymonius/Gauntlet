@@ -1,7 +1,7 @@
 # Gauntlet v0.6 Territory Review Status
 
-**Last approved Territory:** 6 — Ruined Storehouse  
-**Next Territory:** 7 — Field Hospital  
+**Last approved Territory:** 7 — Field Hospital  
+**Next Territory:** 8 — Exposed Flank  
 **Source order:** `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`
 
 ## Active workflow
