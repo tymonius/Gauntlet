@@ -94,7 +94,9 @@ Unless changed here or by a later v0.6 decision:
 - a player may enter enemy ground and occupy it before capture;
 - the defender receives a normal opportunity to counterattack occupied ground;
 - if the Territory is not retaken, it is captured at the start of the occupying player's next turn;
-- a player may play one Action or Battle card per turn unless an effect says otherwise;
+- during their turn, a player may play one Action card, either before or after movement, unless an effect says otherwise;
+- during each battle, each player may commit up to one Battle card from hand unless an effect says otherwise; this is separate from the Action-card limit;
+- battle-drawn card plays are governed separately by the battle rules and card effects;
 - hand limit is 3;
 - battles use the v0.5.7 sequence and card-destination rules;
 - cards committed from hand normally go to the Graveyard;
