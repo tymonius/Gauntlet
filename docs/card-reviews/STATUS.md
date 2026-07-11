@@ -1,9 +1,10 @@
 # Gauntlet v0.6 Card Review Status
 
-**Last approved card:** 47 — Supplies  
-**Next card:** 48 — Tariffs  
+**Last approved card:** 48 — Tariffs  
+**Next card:** 49 — The Black Edict  
 **Consolidated rollup coverage:** Cards 1–47, through Supplies  
-**Next standalone review file:** `048-tariffs.md`
+**Standalone reviews since rollup:** 48 — Tariffs  
+**Next standalone review file:** `049-the-black-edict.md`
 
 ## Active workflow
 
@@ -13,9 +14,13 @@
 - Do not update the root README after each card.
 - Update the Project Index only for a batch checkpoint or material source-hierarchy change.
 
+## Approved rule amendments awaiting rollup
+
+- During the Action step, instead of playing an Action card, a player may discard one banked Asset they control. This uses the normal Action opportunity, is not an Action-card play, and cannot be used through an additional Action-card play.
+
 ## Current unresolved items carried forward
 
 - Resolve whether **Siege Weaponry** is renamed **Bombardment**.
 - Fully redesign **Manifest Destiny**.
-- Integrate finalized cross-card rules such as Ruins into the Working Rules after card migration.
+- Integrate finalized cross-card rules such as Ruins and voluntary Asset removal into the Working Rules after card migration or at the next appropriate rules rollup.
 - Audit faction cost curves and identify or design faction capstones after the full review.
