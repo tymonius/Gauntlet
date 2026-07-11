@@ -83,7 +83,7 @@ Completed changes include:
 - Spies is an Intelligence card at cost 2. Its Asset exposes the opponent's hand; its Battle effect reveals only the opponent's actual hand commitment and chosen battle-drawn card before allowing the Spies player to change their own battle-drawn selection.
 - Stand Ground remains Neutral at cost 2. Its Action is now a prepared one-use Asset that can be discarded to ignore the movement portion of one opposing card effect; it does not prevent normal required retreat or voluntary movement.
 - Strategic Withdrawal remains Neutral at cost 3. Its Action returns a banked Asset to hand for additional movement; its Battle effect trades an additional withdrawal after a loss for recovering one other card played in that battle.
-- Supplies remains Neutral at cost 1. Its Action is now a one-use Asset that resolves at the beginning of its controller's turn without explicitly saying "next turn"; its Battle effect remains draw two, then discard one after battle.
+- Supplies remains Neutral at cost 1. Its Action is now a stored one-use Asset that may remain banked until its controller chooses, at the beginning of a future turn, to discard it and draw two additional cards; its Battle effect remains draw two, then discard one after battle.
 - A Territory is either ruined or not. Placing a new Ruins Overlay on an already ruined Territory sends the existing Overlay to its owner's Graveyard and replaces it.
 - **Repair** is reserved for the future Engineer faction rather than becoming a universal v0.6 action.
 - Scouting Report remains Neutral at cost 1 and explicitly permits an additional battle-drawn play when replaced from a hand commitment.
