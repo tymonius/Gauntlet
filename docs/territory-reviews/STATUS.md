@@ -1,7 +1,7 @@
 # Gauntlet v0.6 Territory Review Status
 
-**Last approved Territory:** 3 — Difficult Terrain  
-**Next Territory:** 4 — Garrison  
+**Last approved Territory:** 4 — Garrison  
+**Next Territory:** 5 — Disrupted Supply Lines  
 **Source order:** `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`
 
 ## Active workflow
