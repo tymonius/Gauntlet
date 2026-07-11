@@ -62,6 +62,7 @@ Use **TBD** where the card has been faction-placed but starter-deck suitability 
 | 43 | Siege Weaponry | Neutral | No | Advanced | Persistent Territory suppression, Ruins replacement, and matchup dependence |
 | 44 | Spies | Intelligence | No | Advanced | Persistent hand exposure, special-reveal sequencing, post-reveal reselection, and Surveillance overlap |
 | 45 | Stand Ground | Neutral | Yes | Basic | Forced-movement boundary with required retreat and voluntary withdrawal |
+| 46 | Strategic Withdrawal | Neutral | No | Advanced | Movement stacking, card recovery, and retreat-versus-withdrawal sequencing |
 
 ## Review workflow going forward
 
