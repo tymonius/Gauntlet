@@ -9,7 +9,7 @@ The project is in private pre-release development and physical playtesting.
 - **Latest completed pre-faction playtest line:** v0.5.7
 - **Active development line:** v0.6
 - **v0.6 focus:** six factions, two leaders per faction, faction resources, alternate victory paths, card-pool migration, and faction playtesting
-- **Current card-review checkpoint:** completed through **Stand Ground**; next card is **Strategic Withdrawal**
+- **Current card-review checkpoint:** completed through **Strategic Withdrawal**; next card is **Supplies**
 
 The six developing factions are:
 
