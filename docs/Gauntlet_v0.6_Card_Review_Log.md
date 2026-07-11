@@ -592,6 +592,24 @@ A tabled card is not decided. Do not call a decision logged until the repository
 
 ---
 
+### 45. Stand Ground
+
+**Cost:** 2  
+**Direction:** Keep Neutral as a simple prepared defense against opposing forced movement. Convert the temporary Condition into an expendable Asset.
+
+**Action:** Bank Stand Ground as an Asset. When an opposing card effect would move you, you may discard Stand Ground. If you do, ignore that effect's movement.
+
+**Battle:** If you are the defender, gain advantage.
+
+**Reminder:** Other parts of the opposing effect still resolve. Stand Ground does not prevent the normal retreat required after losing a battle or prevent voluntary movement or withdrawal.
+
+- Keep Neutral because resistance to forced movement is basic shared positional counterplay rather than a Military-exclusive function.
+- The Asset may be prepared in advance, occupies Asset-bank capacity, remains vulnerable to Asset interaction, and stops only one opposing movement effect.
+- Starter-eligible; Basic complexity.
+- Watch the boundary between opposing forced movement, normal required retreat, and voluntary withdrawal.
+
+---
+
 ## Next card
 
-Continue review at **Stand Ground**.
+Continue review at **Strategic Withdrawal**.
