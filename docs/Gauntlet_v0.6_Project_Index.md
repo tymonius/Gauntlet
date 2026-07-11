@@ -75,16 +75,18 @@ Completed changes include:
 
 ### Card review
 
-- Last reviewed card: **Shock and Awe**.
-- Next card: **Siege Weaponry**.
-- Scorched Earth is a cost-3 Neutral Ruins Overlay card; its former Asset-destruction and bank-lock effects were removed.
+- Last reviewed card: **Siege Weaponry**.
+- Next card: **Spies**.
+- Scorched Earth remains a cost-3 Neutral Ruins Overlay card; its former Asset-destruction and bank-lock effects were removed.
+- Siege Weaponry remains Neutral at cost 5 and converts successful offensive deployment into a face-up Ruins Overlay.
+- A Territory is either ruined or not. Placing a new Ruins Overlay on an already ruined Territory sends the existing Overlay to its owner's Graveyard and replaces it.
 - **Repair** is reserved for the future Engineer faction rather than becoming a universal v0.6 action.
 - Scouting Report remains Neutral at cost 1 and explicitly permits an additional battle-drawn play when replaced from a hand commitment.
 - Sedition remains Neutral at cost 3 as basic opponent-selected permanent Asset removal.
 - Shock and Awe is a cost-5 Military card that consumes all Command after the qualifying victory, captures immediately, and permits one additional advance.
 - The review log is consolidated into one file.
 - Card metadata uses separate fields for allegiance, starter eligibility, complexity, and watchlist concern.
-- After migration, complete the Condition reduction pass and create canonical v0.6 data.
+- After migration, complete the Condition reduction pass, integrate finalized cross-card rules such as Ruins into the Working Rules, and create canonical v0.6 data.
 
 ### Factions
 
@@ -129,4 +131,4 @@ Current faction rules are in the Working Rules. Balance, names, Missions, card p
 
 ## Immediate next step
 
-Continue v0.6 card review at **Siege Weaponry**.
+Continue v0.6 card review at **Spies**.
