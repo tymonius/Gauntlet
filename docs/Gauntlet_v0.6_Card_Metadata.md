@@ -60,6 +60,7 @@ Use **TBD** where the card has been faction-placed but starter-deck suitability 
 | 41 | Sedition | Neutral | Yes | Basic | Neutral Asset-removal density |
 | 42 | Shock and Awe | Military | No | Advanced | Immediate-capture density, Command exhaustion, leader-Order overlap, and chained movement |
 | 43 | Siege Weaponry | Neutral | No | Advanced | Persistent Territory suppression, Ruins replacement, and matchup dependence |
+| 44 | Spies | Intelligence | No | Advanced | Persistent hand exposure, special-reveal sequencing, post-reveal reselection, and Surveillance overlap |
 
 ## Review workflow going forward
 
