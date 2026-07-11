@@ -1,7 +1,7 @@
 # Gauntlet v0.6 Territory Review Status
 
-**Last approved Territory:** 11 — Insurgency  
-**Next Territory:** 12 — Watchtower  
+**Last approved Territory:** 12 — Watchtower  
+**Next Territory:** 13 — Supply Depot  
 **Source order:** `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`
 
 ## Active workflow
