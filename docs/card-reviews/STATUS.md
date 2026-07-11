@@ -16,7 +16,7 @@
 
 ## Approved rule amendments awaiting rollup
 
-- During the Action step, instead of playing an Action card, a player may discard one banked Asset they control. This uses the normal Action opportunity, is not an Action-card play, and cannot be used through an additional Action-card play.
+- Whenever a player could play an Action card during their turn, they may instead discard one banked Asset they control. This uses that Action opportunity and is not an Action-card play. An additional Action-card play may be exchanged for voluntary Asset removal unless a card says otherwise.
 
 ## Current unresolved items carried forward
 
