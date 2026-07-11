@@ -1,6 +1,8 @@
 # Gauntlet v0.6 Card Metadata
 
-**Status:** Authoritative development metadata for reviewed v0.6 cards.
+**Status:** Consolidated metadata rollup through card 47, **Supplies**.
+
+For cards approved after Supplies, the standalone files in `card-reviews/` are authoritative until the next batch rollup. `card-reviews/STATUS.md` records the live checkpoint.
 
 This file replaces the combined labels **Core Neutral** and **Advanced Neutral / Watchlist** with separate metadata fields. Those older labels in the detailed card review log are legacy shorthand and do not define gameplay categories.
 
@@ -67,12 +69,11 @@ Use **TBD** where the card has been faction-placed but starter-deck suitability 
 
 ## Review workflow going forward
 
-For each card, decide and record these items separately:
+For each newly approved card:
 
-1. Allegiance.
-2. Starter eligibility.
-3. Complexity.
-4. Any specific watchlist concern.
-5. Cost and final rule direction in the detailed card review log.
+1. record all metadata and wording in a standalone file under `card-reviews/`;
+2. update `card-reviews/STATUS.md`;
+3. do not rewrite this registry after every card;
+4. roll new entries into this file after every five approved cards, at the end of a review session, or before a release checkpoint.
 
 Do not use **Core Neutral** or **Advanced Neutral** as card classes going forward.
