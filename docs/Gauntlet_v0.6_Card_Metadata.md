@@ -61,6 +61,7 @@ Use **TBD** where the card has been faction-placed but starter-deck suitability 
 | 42 | Shock and Awe | Military | No | Advanced | Immediate-capture density, Command exhaustion, leader-Order overlap, and chained movement |
 | 43 | Siege Weaponry | Neutral | No | Advanced | Persistent Territory suppression, Ruins replacement, and matchup dependence |
 | 44 | Spies | Intelligence | No | Advanced | Persistent hand exposure, special-reveal sequencing, post-reveal reselection, and Surveillance overlap |
+| 45 | Stand Ground | Neutral | Yes | Basic | Forced-movement boundary with required retreat and voluntary withdrawal |
 
 ## Review workflow going forward
 
