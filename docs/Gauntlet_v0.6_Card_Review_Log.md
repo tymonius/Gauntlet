@@ -555,18 +555,18 @@ A tabled card is not decided. Do not call a decision logged until the repository
 
 ### 43. Siege Weaponry
 
-**Cost:** 5  
-**Direction:** Keep Neutral as expensive shared offensive Territory denial. Convert the Action into a prepared Asset and standardize all resulting damage as a face-up Ruins Overlay.
+**Cost:** 4  
+**Direction:** Keep Neutral as shared offensive Territory denial. The title is under review; **Bombardment** is the leading replacement so **Siege Weaponry** can be reserved for a future Engineer card.
 
-**Action:** Bank Siege Weaponry as an Asset. When you enter a revealed enemy-controlled Territory with a printed effect, you may move Siege Weaponry from your Asset bank beside that Territory before resolving its printed effect. That printed effect is inactive for the rest of this turn. If you capture that Territory without a battle or win the resulting battle, place Siege Weaponry face up on it as a Ruins Overlay. Otherwise, place Siege Weaponry in your discard pile after the battle, or at the end of the turn if no battle occurs.
+**Action:** Bank Siege Weaponry as an Asset. Before moving, you may place it face up on an adjacent enemy-controlled Territory. That Territory's printed effect is inactive for the rest of this turn. If you win a battle there this turn or capture it without a battle, Siege Weaponry becomes a Ruins Overlay. Otherwise, place it in your discard pile at the end of the turn.
 
-**Battle:** If you are attacking on a revealed enemy-controlled Territory with a printed effect, that Territory's printed effect is inactive during this battle. If you win, place Siege Weaponry face up on that Territory as a Ruins Overlay instead of placing it in its normal destination.
+**Battle:** If you are attacking on an enemy-controlled Territory, that Territory's printed effect is inactive during this battle. If you win, place Siege Weaponry face up on that Territory as a Ruins Overlay instead of placing it in its normal destination.
 
 **Ruins Overlay:** A ruined Territory's printed effect is inactive. A Territory is either ruined or not; it cannot be doubly ruined. If a Ruins Overlay is placed on a Territory that already has one, place the existing Ruins Overlay in its owner's Graveyard, then place the new one. Ruins remain until removed by an effect.
 
 - Remove the v0.5.7 face-up/face-down state change; active Ruins remain face up.
-- Do not prohibit playing Siege Weaponry on an already ruined Territory. The replacement rule resolves the resulting state without protecting players from an inefficient strategic choice.
-- Keep Neutral because permanent offensive Territory-effect suppression is useful shared counterplay, while Military already receives more direct conquest tools.
+- Do not prohibit playing the card on an already ruined Territory or a Territory whose printed effect is irrelevant. The replacement and duration rules resolve those choices without protecting players from inefficient strategy.
+- Keep Neutral because offensive Territory-effect suppression is useful shared counterplay, while Military already receives more direct conquest tools.
 - Not starter-eligible; Advanced complexity.
 - Watch persistent Territory suppression, Ruins replacement and Graveyard interactions, and matchups where disabling one printed effect is disproportionately valuable.
 - Repair remains reserved for the future Engineer faction; there is no universal Repair action in v0.6.
@@ -575,4 +575,4 @@ A tabled card is not decided. Do not call a decision logged until the repository
 
 ## Next card
 
-Continue review at **Spies**.
+Resolve the title of **Siege Weaponry**, then continue review at **Spies**.
