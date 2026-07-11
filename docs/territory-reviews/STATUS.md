@@ -1,7 +1,7 @@
 # Gauntlet v0.6 Territory Review Status
 
-**Last approved Territory:** 5 — Disrupted Supply Lines  
-**Next Territory:** 6 — Ruined Storehouse  
+**Last approved Territory:** 6 — Ruined Storehouse  
+**Next Territory:** 7 — Field Hospital  
 **Source order:** `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`
 
 ## Active workflow
