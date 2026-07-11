@@ -85,9 +85,10 @@ Completed changes include:
 - Scouting Report remains Neutral at cost 1 and explicitly permits an additional battle-drawn play when replaced from a hand commitment.
 - Sedition remains Neutral at cost 3 as basic opponent-selected permanent Asset removal.
 - Shock and Awe is a cost-5 Military card that consumes all Command after the qualifying victory, captures immediately, and permits one additional advance.
+- Do not inflate individual card costs merely to populate the 5-cost tier. After the full card review, audit the cost curve and identify or design faction capstones while constructing the faction decks.
 - The review log is consolidated into one file.
 - Card metadata uses separate fields for allegiance, starter eligibility, complexity, and watchlist concern.
-- After migration, complete the Condition reduction pass, integrate finalized cross-card rules such as Ruins into the Working Rules, and create canonical v0.6 data.
+- After migration, complete the Condition reduction pass, integrate finalized cross-card rules such as Ruins into the Working Rules, audit faction cost curves and capstones, and create canonical v0.6 data.
 
 ### Factions
 
