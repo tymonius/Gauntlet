@@ -27,14 +27,13 @@ This audit will not increase the cost of an existing reviewed card.
 
 The reviewed pool contains 54 cards:
 
-- 37 Neutral;
+- 38 Neutral;
 - 4 Military;
 - 4 Intelligence;
 - 3 Financiers;
 - 2 Arcane;
 - 2 Inquisition;
-- 1 Diplomat;
-- 1 unassigned card, Manifest Destiny.
+- 1 Diplomat.
 
 ### Entire reviewed pool by cost
 
@@ -44,8 +43,8 @@ The reviewed pool contains 54 cards:
 | 2 | 16 |
 | 3 | 14 |
 | 4 | 12 |
-| 5 | 4 |
-| TBD | 1 |
+| 5 | 5 |
+| **Total** | **54** |
 
 ### Current Neutral pool by cost
 
@@ -55,10 +54,10 @@ The reviewed pool contains 54 cards:
 | 2 | 13 |
 | 3 | 9 |
 | 4 | 8 |
-| 5 | 0 |
-| **Total** | **37** |
+| 5 | 1 |
+| **Total** | **38** |
 
-The Neutral pool's current average cost is approximately 2.49. Because a typical optimized deck contains 30 cards under a 60-point cap, an actual deck generally needs an average cost of 2.0 or less. The pool may average above 2 because players select among premium alternatives, but the Neutral distribution still needs more low-cost variety.
+The Neutral pool's current average cost is approximately 2.55. Because a typical optimized deck contains 30 cards under a 60-point cap, an actual deck generally needs an average cost of 2.0 or less. The pool may average above 2 because players select among premium alternatives, but the Neutral distribution still needs more low-cost variety.
 
 ## Cost-tier rubric
 
@@ -138,8 +137,8 @@ Record approved cost reductions and unchanged costs, then recalculate the full-p
 
 Evaluate round-number targets after the cost audit. The leading provisional target is **50 unique Neutral cards** because:
 
-- 40 would permit very few additions after the current 37 and would not adequately diversify the low-cost foundation;
-- 50 creates room for approximately 13 additions before accounting for any allegiance changes;
+- 40 would permit only two additions after the current 38 and would not adequately diversify the low-cost foundation;
+- 50 creates room for 12 additions;
 - a 50-card Neutral pool is easy to communicate, inventory, package, and divide into functional categories;
 - it provides meaningful choice relative to a 30-card constructed deck without becoming unwieldy.
 
@@ -162,13 +161,30 @@ This is a starting hypothesis to test after existing-card repricing:
 | 1 | 10–12 |
 | 2 | 18–20 |
 | 3 | 11–13 |
-| 4 | 5–7 |
-| 5 | 0–2 |
+| 4 | 6–8 |
+| 5 | 1 |
 | **Total** | **50** |
 
 The exact distribution should emerge from the card-strength audit. It should not be imposed before individual card values are coherent.
 
 ## Approved audit decisions
+
+### Neutral cost-5 capstone
+
+#### Manifest Destiny
+
+**Cost:** 5  
+**Allegiance:** Neutral  
+**Complexity:** Advanced  
+**Unique:** Maximum one copy per deck
+
+> **Action:** As an additional cost to play Manifest Destiny, place every other card in your hand in your Graveyard. Then place banked Assets you control in your Graveyard until you have placed at least three cards in your Graveyard this way, including at least one Asset. Add Manifest Destiny to your end of the Gauntlet. It becomes a blank Territory under your control.
+>
+> **Battle:** If you win this battle as the attacker on a Territory your opponent controls, insert Manifest Destiny between the contested Territory and the space from which you attacked. It becomes a blank Territory under your control instead of entering its normal destination.
+
+> **Reminder:** Manifest Destiny is a normal Territory after it enters the Gauntlet. It may be occupied, captured, controlled, and affected normally.
+
+Manifest Destiny is the lone Neutral cost-5 card. Its Action permits deliberate expansion only through a severe permanent sacrifice that requires established infrastructure. Its Battle effect charges a different price: the player must win an offensive battle on enemy-controlled ground. Once added, it is a fully normal Territory for movement, battle, control, Asset-bank capacity, Deeds, and effects that count or affect Territories. Its unique deckbuilding restriction and highly visible, permanent alteration of board geometry justify the capstone cost.
 
 ### Neutral cost-4 board-position and capture cluster
 
@@ -224,8 +240,9 @@ The exact distribution should emerge from the card-strength audit. It should not
 | Stand Ground | 2 | **2** | Its Action can negate forced movement at a critical moment, while its Battle mode grants full advantage whenever defending. That immediate battle ceiling exceeds a baseline cost-1 modifier. |
 | Valor | 2 | **2** | Its Asset can repeatedly draw cards after losses, and its Battle mode grants a conditional reroll. The persistent comeback engine has a meaningfully higher ceiling than cost-1 utility. |
 
-The following reductions must be rolled into the consolidated Card Review Log and future canonical v0.6 data at the cost-audit migration checkpoint:
+The following reductions and redesign must be rolled into the consolidated Card Review Log and future canonical v0.6 data at the cost-audit migration checkpoint:
 
+- Manifest Destiny: assigned Neutral, cost 5, and fully redesigned as the unique Territory-expansion capstone;
 - Liberation: 4 to 3;
 - Protracted Siege: 4 to 3;
 - Insurrection: 4 to 3;
