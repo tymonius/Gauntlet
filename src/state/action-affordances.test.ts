@@ -34,7 +34,7 @@ describe('legal Action play affordances', () => {
         action: 'play_action_card',
         cardId: 'card-attrition',
         origin: 'hand',
-        destination: 'condition',
+        destination: 'asset_bank',
         requiresTarget: false,
       },
       {
