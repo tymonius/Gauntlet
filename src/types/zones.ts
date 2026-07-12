@@ -6,7 +6,6 @@ export type ZoneName =
   | 'discard'
   | 'graveyard'
   | 'asset_bank'
-  | 'conditions'
   | 'overlays'
   | 'battle_hand_commit'
   | 'battle_draw'
@@ -31,6 +30,5 @@ export interface PrivateZones {
   discard: CardID[];
   graveyard: CardID[];
   assetBank: CardID[];
-  conditions: CardID[];
   removed: CardID[];
 }
