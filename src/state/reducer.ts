@@ -275,9 +275,6 @@ function pushActionCardToDestination(player: PlayerState, cardId: string): strin
       requireAssetBankCapacity(player);
       player.zones.assetBank.push(cardId);
       return 'Asset Bank';
-    case 'condition':
-      player.zones.conditions.push(cardId);
-      return 'Conditions';
     case 'discard':
       player.zones.discard.push(cardId);
       return 'discard';
@@ -291,15 +288,6 @@ function pushActionCardToDestination(player: PlayerState, cardId: string): strin
       player.zones.removed.push(cardId);
       return 'removed';
   }
-}
-
-function expireTurnLongConditions(game: GameState, player: PlayerState): void {
-  const expiring = player.zones.conditions.filter((cardId) => cardId === 'card-attrition');
-  if (expiring.length === 0) return;
-
-  player.zones.conditions = player.zones.conditions.filter((cardId) => cardId !== 'card-attrition');
-  player.zones.discard.push(...expiring);
-  appendPublicLog(game, player.id, 'conditions_expired', `${player.name}'s turn-long Conditions expired.`, { cards: expiring });
 }
 
 function revealBattleCards(game: GameState): void {
@@ -779,7 +767,6 @@ function endTurn(game: GameState, action: Extract<GameAction, { type: 'end_turn'
 
   const endingPlayer = requirePlayer(game, action.playerId);
   const nextPlayer = nextPlayerId(game);
-  expireTurnLongConditions(game, endingPlayer);
   updateAllAssetBankDiscardRequirements(game);
   if (pendingAssetBankDiscardCount(game) > 0) return { state: game };
   endingPlayer.actionsRemaining = 0;
