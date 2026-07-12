@@ -35,7 +35,7 @@ function createAttritionBattleReadyGame(): GameState {
         ...game.players.player_1,
         zones: {
           ...game.players.player_1.zones,
-          conditions: ['card-attrition'],
+          assetBank: ['card-attrition'],
         },
       },
       player_2: {
@@ -54,15 +54,15 @@ function createAttritionBattleReadyGame(): GameState {
   };
 }
 
-describe('Attrition Action condition', () => {
-  it('expires at end of turn after being available for battles that turn', () => {
+describe('Attrition Action Asset', () => {
+  it('remains banked after the turn ends', () => {
     const actionPhase = applyGameAction(createAttritionActionSetup(), { type: 'draw_card', playerId: 'player_1' }).state;
     const played = applyGameAction(actionPhase, { type: 'play_action_card', playerId: 'player_1', cardId: 'card-attrition' }).state;
     const ended = applyGameAction(played, { type: 'end_turn', playerId: 'player_1' }).state;
 
-    expect(played.players.player_1.zones.conditions).toContain('card-attrition');
-    expect(ended.players.player_1.zones.conditions).not.toContain('card-attrition');
-    expect(ended.players.player_1.zones.discard).toContain('card-attrition');
+    expect(played.players.player_1.zones.assetBank).toContain('card-attrition');
+    expect(ended.players.player_1.zones.assetBank).toContain('card-attrition');
+    expect(ended.players.player_1.zones.discard).not.toContain('card-attrition');
   });
 
   it("sends the losing opponent's played battle-drawn card to the Graveyard", () => {
