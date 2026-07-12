@@ -77,7 +77,7 @@ Possible Sanctions pattern:
 
 - The Diplomat offers Terms.
 - If the opponent refuses, the Diplomat may impose or escalate Sanctions.
-- Sanctions create an ongoing penalty, restriction, or pressure point.
+- Sanctions create an ongoing penalty, restriction, or pressure point represented by an Asset, Territory Overlay, or explicit card-specific tracking.
 - If the opponent later accepts Terms, lifting one or more Sanctions may be part of the settlement.
 
 **Blockade** is the first candidate for this treatment.
@@ -86,7 +86,8 @@ Blockade direction:
 
 - Reframe as a Diplomat faction card rather than advanced neutral.
 - It may be played when Terms are rejected.
-- It may be discarded as a condition or consequence of Terms being accepted.
+- Its persistent form must use the v0.6 Asset/Overlay object model rather than reviving Conditions.
+- Accepted Terms or another explicit consequence may remove it.
 - Its hand-pressure and battle-draw suppression should feel like sanctioned pressure rather than Inquisition-style punishment or Financier-style market control.
 
 Future question: determine whether **Financiers** can also impose Sanctions. If they can, Financier Sanctions should probably come from economic leverage, Deeds, Capital, or Treasury pressure rather than diplomatic legitimacy or rejected Terms.
