@@ -168,6 +168,27 @@ This is a starting hypothesis to test after existing-card repricing:
 
 The exact distribution should emerge from the card-strength audit. It should not be imposed before individual card values are coherent.
 
+## Provisional audit findings
+
+The following entries are proposals only and are not approved cost changes.
+
+### Neutral cost-4 board-position and capture cluster
+
+| Card | Current | Provisional recommendation | Reasoning summary |
+|---|---:|---:|---|
+| Assimilation | 4 | **Keep 4** | Immediate capture bypasses the normal counterattack window. Both modes can convert one battle win directly into permanent control, making this a legitimate premium effect. |
+| Invasion | 4 | **Keep 4** | Two additional forward movements can radically compress the board, while the Battle mode grants both an additional draw and an additional play as attacker. Either mode creates major offensive tempo. |
+| Liberation | 4 | **Reduce to 3** | Its value is restricted to counterattacking an occupier. Even when strong, it is reactive, board-state dependent, and unavailable in ordinary attacks or defenses. It fits the strong strategic tier better than the premium tier. |
+| Protracted Siege | 4 | **Reduce to 3** | The revised Overlay delays only one scheduled start-of-turn capture and then expires. It can preserve a counterattack window, but it does not retake the Territory or prevent immediate-capture effects. |
+| Siege Weaponry | 4 | **Keep 4** | It can suppress a strategically important Territory before attack and convert successful conquest into persistent Ruins. The combination of pre-battle denial and lasting board alteration justifies premium cost despite its positional requirements. |
+
+### Comparison within the cluster
+
+- **Assimilation** and **Invasion** create immediate offensive breakthroughs and deserve to remain premium.
+- **Siege Weaponry** creates persistent strategic board change rather than a one-turn modifier and also remains premium.
+- **Liberation** is powerful only in the counterattack window and should not cost the same as cards that generate proactive breakthrough pressure.
+- **Protracted Siege** buys time rather than control. Its revised one-delay Overlay is materially weaker than immediate capture, extra movement, or permanent Ruins.
+
 ## Immediate next step
 
-Establish benchmark cards for each cost tier, then begin the Neutral comparison by functional cluster while considering only unchanged costs or reductions.
+Review and approve, reject, or modify the five provisional recommendations in the first cost-4 cluster. Then continue with the remaining Neutral cost-4 cards: Armistice, Capital Punishment, Insurrection, Revolution, Sequestration, and Arcane Knowledge.
