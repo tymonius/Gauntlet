@@ -6,12 +6,22 @@
 ## Goals
 
 1. Compare cards against one another by actual gameplay strength, flexibility, repeatability, timing, and deckbuilding opportunity cost.
-2. Reassign costs where the current values do not form coherent power tiers.
+2. Reduce costs where the current values do not form coherent power tiers.
 3. Decide the intended number of unique Neutral cards in the complete v0.6 pool.
 4. Identify shared mechanical gaps that should be filled by new Neutral cards.
 5. Add primarily lower-cost cards until the Neutral pool approaches a healthy deckbuilding curve without turning cheap cards into mandatory filler.
 
 No cost change is approved merely by appearing in this audit. Proposed changes become authoritative only after explicit review and approval.
+
+## Cost-direction constraint
+
+This audit will not increase the cost of an existing reviewed card.
+
+- An existing cost may remain unchanged or be reduced.
+- The current printed/reviewed cost functions as that card's ceiling during this pass.
+- A card that appears unusually efficient at its current cost should be treated as a benchmark, watchlist item, or wording/balance question rather than repriced upward.
+- The low-cost shortage should be solved through justified downward adjustments and genuinely low-cost new designs, not by making existing cards more expensive.
+- Complexity alone never justifies a higher cost.
 
 ## Current baseline
 
@@ -122,7 +132,7 @@ Compare faction cards both to Neutral benchmarks and to the value created by the
 
 ### Pass 4 — lock revised cost curve
 
-Record approved cost changes and recalculate the full-pool and Neutral distributions.
+Record approved cost reductions and unchanged costs, then recalculate the full-pool and Neutral distributions.
 
 ### Pass 5 — choose Neutral pool size
 
@@ -160,4 +170,4 @@ The exact distribution should emerge from the card-strength audit. It should not
 
 ## Immediate next step
 
-Establish benchmark cards for each cost tier, then begin the Neutral comparison by functional cluster rather than source order.
+Establish benchmark cards for each cost tier, then begin the Neutral comparison by functional cluster while considering only unchanged costs or reductions.
