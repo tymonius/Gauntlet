@@ -1,7 +1,7 @@
 # Gauntlet v0.6 Territory Review Status
 
-**Last approved Territory:** 17 — Monastery  
-**Next Territory:** 18 — Training Grounds  
+**Last approved Territory:** 18 — Training Grounds  
+**Next Territory:** 19 — King's Road  
 **Source order:** `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`
 
 ## Active workflow
