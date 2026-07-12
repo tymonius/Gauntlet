@@ -232,38 +232,39 @@ Military may have up to **2 Command**. The first time each turn the Military pla
 ## 10. Diplomats
 
 **Identity:** negotiation, legitimacy, concessions, political leverage, and converting conflict into a Peace Treaty.  
-**Resource:** Influence. Influence cannot be reduced below 0.
+**Resource:** Influence. Influence starts at 0 and cannot fall below 0.
 
 ### Terms
 
-Before any battle involving the Diplomat, whether attacking or defending, the Diplomat may offer **Terms** by choosing one Proposal. The opponent accepts or refuses.
+Before any battle involving the Diplomat, whether attacking or defending, the Diplomat may offer **Terms** by choosing one Proposal whose requirements are met.
+
+To offer a Proposal, the Diplomat must be able to **stake** Influence equal to its cost. Remove that Influence from the Diplomat's available Influence until the Terms resolve. A zero-cost Proposal requires no stake.
 
 If Terms are accepted:
 
 - no battle occurs;
-- resolve the accepted effect;
-- ratify that Proposal as a Treaty Article if it has not already been ratified.
+- resolve the Proposal's accepted effect;
+- ratify that Proposal as a Treaty Article if it has not already been ratified;
+- return the staked Influence to the Diplomat.
 
 If Terms are refused:
 
-- resolve the refused effect, if any;
+- resolve the Proposal's refused effect, if any;
 - fight the battle normally;
-- apply Loss of Face;
-- if the Diplomat wins, ratify that Proposal if it has not already been ratified.
+- if the Diplomat wins, the Proposal is **imposed**;
+- if the Proposal is imposed, ratify it as a Treaty Article if it has not already been ratified and return the staked Influence;
+- if the imposed Proposal is newly ratified, gain 1 Influence unless the Proposal says otherwise;
+- if the Diplomat does not win, do not ratify the Proposal and lose the staked Influence.
+
+If a refused battle ends without a winner, the Diplomat did not win for purposes of Terms.
+
+A Proposal that has already been ratified may still be offered for its tactical effects. It cannot count toward Peace Treaty again and does not grant the default 1 Influence when imposed again unless a rule specifically says otherwise.
 
 A Proposal cannot be offered if its accepted effect would leave both players on the same space.
 
-### Loss of Face
-
-After refused Terms:
-
-- if the Diplomat wins, gain 1 Influence unless the Proposal says otherwise;
-- if the Diplomat loses, lose 1 Influence;
-- Influence cannot fall below 0.
-
 ### Treaty Articles and Peace Treaty
 
-Each Proposal may be ratified once as a Treaty Article. A ratified Proposal may still be offered again but cannot count again.
+Each Proposal may be ratified once as a **Treaty Article**.
 
 At the start of the Diplomat's turn, after captures, if at least **five different Proposals** are ratified, the Diplomat wins by **Peace Treaty**.
 
@@ -283,60 +284,61 @@ At the start of the Diplomat's turn, after captures, if at least **five differen
 
 **Cost:** 0 Influence.
 
-**Accepted:** Both players withdraw. You gain 1 Influence. No battle occurs.
+**Accepted:** Both players withdraw. The opponent draws one card.
 
-**Refused:** Draw one card. The battle occurs normally.
+**Refused:** Draw one card.
 
 ### 2. Orderly Withdrawal
 
 **Cost:** 0 Influence.  
 **Requirement:** You must be attacking.
 
-**Accepted:** You withdraw. The opponent remains in or occupies the battle space. The opponent draws one card. You gain 2 Influence. No battle occurs.
+**Accepted:** You withdraw. The opponent remains in or occupies the battle space. The opponent draws one card.
 
-**Refused:** Gain 1 Influence. The battle occurs normally.
+**Refused:** Gain +1 to your battle total in the resulting battle.
 
 ### 3. Capitulation
 
 **Cost:** 0 Influence.  
 **Requirement:** You must be defending.
 
-**Accepted:** You withdraw. The opponent remains in or occupies the battle space. Draw one card and gain 1 Influence. No battle occurs.
+**Accepted:** You withdraw. The opponent remains in or occupies the battle space. The opponent draws one card.
 
-**Refused:** If you lose the battle, draw two cards.
+**Refused:** If you lose the resulting battle, draw two cards.
 
 ### 4. Open Channels
 
 **Cost:** 0 Influence.  
 **Requirement:** You must have at least one card in hand.
 
-**Accepted:** Each player reveals their hand. Then both players withdraw. Gain 1 Influence. No battle occurs.
+**Accepted:** Each player reveals their hand. Then both players withdraw. The opponent draws one card.
 
-**Refused:** You may reveal your hand. If you do, draw one additional card during this battle's battle draw before choosing which battle-drawn card to play.
+**Refused:** Look at the opponent's hand. During this battle's battle draw, draw one additional card before choosing which battle-drawn card to play.
 
 ### 5. Mutual Disarmament
 
 **Cost:** 0 Influence.  
 **Requirement:** Both players must have at least one card in hand.
 
-**Accepted:** Each player discards one card from hand. Then both players withdraw. Gain 1 Influence. No battle occurs.
+**Accepted:** Each player discards one card from hand. Then the opponent draws one card. Both players withdraw.
 
-**Refused:** You may discard one card from hand. If you do, draw one additional card during this battle's battle draw before choosing which battle-drawn card to play.
+**Refused:** You may discard one card from hand. If you do, during this battle's battle draw, draw one additional card before choosing which battle-drawn card to play.
 
 ### 6. Prisoner Exchange
 
-**Cost:** 0 Influence.
+**Cost:** 0 Influence.  
+**Requirement:** Each player must have at least one card in their Graveyard.
 
-**Accepted:** Each player may move one card from their Graveyard to their discard pile. Then both players withdraw. Gain 1 Influence. No battle occurs.
+**Accepted:** Each player may move one card from their Graveyard to their discard pile. Then both players withdraw.
 
-**Refused:** If you lose the battle, you may move one card from your Graveyard to your discard pile.
+**Refused:** If you lose the resulting battle, you may move one card from your Graveyard to your discard pile.
 
 ### 7. Rebuilding Pact
 
 **Cost:** 1 Influence.  
 **Requirement:** You must have a card in hand that can be banked as an Asset.
 
-**Accepted:** Each player may bank one Asset from hand without using an Action. Then both players withdraw. Gain 1 Influence. No battle occurs.
+**Accepted:** Each player may bank one Asset from hand without using an Action. Then both players withdraw.
 
 **Refused:** After the battle, you may bank one Asset from hand without using an Action.
 
@@ -344,18 +346,18 @@ At the start of the Diplomat's turn, after captures, if at least **five differen
 
 **Cost:** 1 Influence.
 
-**Accepted:** The opponent withdraws. You remain in or occupy the battle space. No battle occurs.
+**Accepted:** The opponent withdraws. You remain in or occupy the battle space.
 
-**Refused:** If you win the battle, gain 3 Influence instead of 1.
+**Refused:** Gain +1 to your battle total in the resulting battle. If you win, gain 2 Influence instead of the default 1 Influence for imposing a newly ratified Proposal.
 
 ### 9. Diplomatic Recognition
 
 **Cost:** 2 Influence.  
-**Requirement:** You must be defending a counterattack while occupying an enemy Territory.
+**Requirement:** You must be defending a counterattack while occupying a Territory the opponent controlled immediately before you occupied it.
 
-**Accepted:** Capture that Territory immediately. The opponent withdraws, then draws two cards. No battle occurs.
+**Accepted:** Capture that Territory immediately. The opponent withdraws, then draws two cards.
 
-**Refused:** Fight normally. If you win, capture that Territory immediately and gain no Influence from refused Terms.
+**Refused:** Fight normally. If you win, capture that Territory immediately. Gain no Influence for imposing this Proposal.
 
 ### Ambassador
 
@@ -367,9 +369,9 @@ The ability name remains provisional.
 
 ### Senator
 
-**Style:** institutional resilience, legitimacy, preserving political standing through sacrifice.
+**Style:** institutional resilience, legitimacy, and preserving political standing through sacrifice.
 
-**Political Capital:** Once per turn, when you would lose Influence, you may send one card from your hand to your Graveyard. If you do, lose 1 less Influence.
+**Political Capital:** Once per turn, when you would lose staked Influence because you did not win the battle after refused Terms, you may send one card from your hand to your Graveyard. If you do, recover 1 of that staked Influence instead of losing it.
 
 ---
 
