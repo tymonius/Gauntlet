@@ -2,7 +2,7 @@ import type { CardID } from '../types';
 
 export type CardPlayTiming = 'action' | 'battle_hand_commit' | 'battle_draw_play';
 export type CardPlayOrigin = 'hand' | 'battle_draw';
-export type CardDestination = 'discard' | 'graveyard' | 'hand' | 'removed' | 'condition' | 'asset_bank';
+export type CardDestination = 'discard' | 'graveyard' | 'hand' | 'removed' | 'asset_bank';
 
 export interface CardPlayRule {
   cardId: CardID;
@@ -18,7 +18,7 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
     timings: ['action', 'battle_hand_commit', 'battle_draw_play'],
     allowedOrigins: ['hand', 'battle_draw'],
     defaultDestinationByOrigin: {
-      hand: 'condition',
+      hand: 'asset_bank',
       battle_draw: 'discard',
     },
   },
