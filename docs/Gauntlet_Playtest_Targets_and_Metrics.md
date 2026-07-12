@@ -143,7 +143,9 @@ Record, where practical:
 For each faction, record relevant progress and resource history:
 
 - Command gained/spent and Orders used;
-- Terms offered, accepted, refused, and ratified;
+- Diplomat Terms by Proposal, including accepted, refused, imposed, failed, and repeated already-ratified offers;
+- Treaty Articles ratified, the turn each was ratified, and Peace Treaty attempts or victories;
+- Influence staked, returned, lost, and gained, including Senator prevention and Proposal-specific overrides;
 - Conviction gained/spent and Purges used;
 - Rites begun, interrupted, and completed;
 - Capital, Treasury, Deeds, purchases, and buyouts;
@@ -165,6 +167,9 @@ After a human game, ask both players:
 - Did Asset-bank contraction feel fair?
 - Were faction goals visible and understandable?
 - Did alternate victory progress remain interactive?
+- For Diplomat games, did accepting and refusing each feel reasonable in some situations?
+- For Diplomat games, did Proposal costs feel like meaningful political risk rather than a routine payment?
+- For Diplomat games, did Peace Treaty pressure remain credible while the Diplomat was losing ground?
 - Which card, Territory, leader ability, or faction mechanic felt most valuable?
 - Which felt least valuable or least worth remembering?
 - Which interaction required a ruling?
@@ -197,5 +202,6 @@ Do not rely on averages alone. A mixture of many short games and a few extreme s
 2. Measure whether the Asset bank still accelerates games without making comebacks functionally impossible.
 3. Verify that the current battle-card lifecycle prevents endgame deck collapse in human play.
 4. Compare General and Commandant, and then both leaders within every other faction.
-5. Confirm that alternate victories create visible parallel pressure and do not encourage disengagement from the Gauntlet.
-6. Use the digital prototype to automate telemetry only after its rules implementation matches the selected physical ruleset.
+5. Test the revised Diplomat staking model Proposal by Proposal, including acceptance rates, imposed outcomes, failed stakes, and repeated offers.
+6. Confirm that alternate victories create visible parallel pressure and do not encourage disengagement from the Gauntlet.
+7. Use the digital prototype to automate telemetry only after its rules implementation matches the selected physical ruleset.
