@@ -132,10 +132,11 @@ Before adding a marker, ask whether the state can instead be represented by:
 
 - Use an **Asset** for a player-owned persistent effect that should compete for Asset-bank capacity.
 - Use an **Overlay** for an effect attached visibly to a specific Territory.
-- Use a **Condition** only when neither category represents the timing cleanly.
 - Resolve and discard immediately when persistence is unnecessary.
+- Use explicit card-specific self-tracking only when an Asset, Overlay, or immediate effect cannot represent the timing cleanly.
+- Do not create or revive a general Condition category.
 
-Do not convert effects merely to eliminate terminology. Preserve pacing, counterplay, and clarity.
+Do not convert effects merely to eliminate terminology. Preserve pacing, counterplay, and clarity while using the approved v0.6 object model.
 
 ---
 
