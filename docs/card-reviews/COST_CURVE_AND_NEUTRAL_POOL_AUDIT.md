@@ -41,8 +41,8 @@ The reviewed pool contains 54 cards:
 | Cost | Cards |
 |---:|---:|
 | 1 | 4 |
-| 2 | 16 |
-| 3 | 17 |
+| 2 | 19 |
+| 3 | 14 |
 | 4 | 12 |
 | 5 | 4 |
 | TBD | 1 |
@@ -52,13 +52,13 @@ The reviewed pool contains 54 cards:
 | Cost | Cards |
 |---:|---:|
 | 1 | 4 |
-| 2 | 13 |
-| 3 | 12 |
+| 2 | 16 |
+| 3 | 9 |
 | 4 | 8 |
 | 5 | 0 |
 | **Total** | **37** |
 
-The Neutral pool's current average cost is approximately 2.65. Because a typical optimized deck contains 30 cards under a 60-point cap, an actual deck generally needs an average cost of 2.0 or less. The pool may average above 2 because players select among premium alternatives, but the current Neutral distribution remains too top-heavy to provide enough varied low-cost foundations.
+The Neutral pool's current average cost is approximately 2.57. Because a typical optimized deck contains 30 cards under a 60-point cap, an actual deck generally needs an average cost of 2.0 or less. The pool may average above 2 because players select among premium alternatives, but the current Neutral distribution remains too top-heavy to provide enough varied low-cost foundations.
 
 ## Cost-tier rubric
 
@@ -201,30 +201,19 @@ The exact distribution should emerge from the card-strength audit. It should not
 | Resistance | 3 | **3** | The Asset repeatedly improves counterattack battle draws, while the Battle mode grants advantage and may bank itself after a counterattack victory. The repeatability and self-banking ceiling justify cost 3 despite the positional restriction. |
 | Strategic Withdrawal | 3 | **2** | Its Action requires returning one of your own Assets before granting movement. Its Battle mode requires losing, moving farther backward, and surrendering more position to recover another card. Both modes exchange existing resources or board position rather than creating straightforward advantage. |
 
-The Liberation, Protracted Siege, Insurrection, Illegal Occupation, and Strategic Withdrawal reductions must be rolled into the consolidated Card Review Log and future canonical v0.6 data at the next cost-audit migration checkpoint.
+### Neutral cost-3 card-economy and disruption cluster
 
-## Provisional audit findings
-
-The following entries are proposals only and are not approved cost changes.
-
-### Remaining Neutral cost-3 card-economy and disruption cluster
-
-| Card | Current | Provisional recommendation | Reasoning summary |
+| Card | Previous | Approved | Reasoning summary |
 |---|---:|---:|---|
-| Attrition | 3 | **Keep 3** | Its Asset repeatedly converts an opponent's played battle-drawn cards into permanent Graveyard losses after defeats, while its Battle mode can condemn an entire initial battle draw. The long-game denial ceiling justifies cost 3. |
-| Conscription | 3 | **Keep 3** | Its Action replaces itself and banks another Asset without another Action opportunity, while its hand-committed Battle mode increases both draw quantity and play allowance. Both modes produce meaningful card or action efficiency. |
-| Contraband | 3 | **Keep 3** | Its Action retrieves any chosen discard card to hand, while its Battle mode converts into the best eligible Battle effect available in discard. Reliable selection and tactical flexibility justify cost 3. |
-| Decoys | 3 | **Reduce to 2** | Both modes are narrow reactive protection. The Asset must be sacrificed to preserve one other Asset from removal, and the Battle effect matters only against cancellation. It protects value rather than creating it. |
-| Scorched Earth | 3 | **Reduce to 2** | The revised effect requires losing while defending controlled ground and retreating before it creates persistent Ruins. The lasting suppression is meaningful, but it is purchased with a battle loss and lost position. |
-| Sedition | 3 | **Reduce to 2** | The Action permanently removes an Asset, but the opponent chooses which one. The Battle mode only suppresses an opponent-chosen Asset for one battle, or grants +1 when no face-up Asset exists. Its opponent-selected and conditional effects fit cost 2. |
+| Attrition | 3 | **3** | Its Asset repeatedly converts an opponent's played battle-drawn cards into permanent Graveyard losses after defeats, while its Battle mode can condemn an entire initial battle draw. The long-game denial ceiling justifies cost 3. |
+| Conscription | 3 | **3** | Its Action replaces itself and banks another Asset without another Action opportunity, while its hand-committed Battle mode increases both draw quantity and play allowance. Both modes produce meaningful card or action efficiency. |
+| Contraband | 3 | **3** | Its Action retrieves any chosen discard card to hand, while its Battle mode converts into the best eligible Battle effect available in discard. Reliable selection and tactical flexibility justify cost 3. |
+| Decoys | 3 | **2** | Both modes are narrow reactive protection. The Asset must be sacrificed to preserve one other Asset from removal, and the Battle effect matters only against cancellation. It protects value rather than creating it. |
+| Scorched Earth | 3 | **2** | The revised effect requires losing while defending controlled ground and retreating before it creates persistent Ruins. The lasting suppression is meaningful, but it is purchased with a battle loss and lost position. |
+| Sedition | 3 | **2** | The Action permanently removes an Asset, but the opponent chooses which one. The Battle mode only suppresses an opponent-chosen Asset for one battle, or grants +1 when no face-up Asset exists. Its opponent-selected and conditional effects fit cost 2. |
 
-### Comparison within the cluster
-
-- Attrition, Conscription, and Contraband offer repeatable denial, meaningful action efficiency, or reliable access to a chosen card or effect.
-- Decoys has an important defensive role but only responds to specific opposing interaction and must sacrifice itself.
-- Scorched Earth creates lasting board denial, but only after its player has already lost the relevant battle and Territory position.
-- Sedition is useful shared Asset interaction, but its opponent-selected targeting substantially limits both modes.
+The Liberation, Protracted Siege, Insurrection, Illegal Occupation, Strategic Withdrawal, Decoys, Scorched Earth, and Sedition reductions must be rolled into the consolidated Card Review Log and future canonical v0.6 data at the next cost-audit migration checkpoint.
 
 ## Immediate next step
 
-Review and approve, reject, or modify the six provisional recommendations in the remaining Neutral cost-3 cluster. After that, audit the current Neutral cost-2 cards for possible reductions to cost 1.
+Audit the current Neutral cost-2 cards for possible reductions to cost 1.
