@@ -4,7 +4,7 @@ import { applyGameAction, GameActionError } from './reducer';
 import { createValidSetup } from './test-helpers';
 
 describe('Action card framework', () => {
-  it('plays Attrition as an Action into Conditions and spends the action', () => {
+  it('plays Attrition as an Action into the Asset Bank and spends the action', () => {
     const game = initializeGame(createValidSetup({
       players: [
         {
@@ -25,7 +25,7 @@ describe('Action card framework', () => {
     const played = applyGameAction(actionPhase, { type: 'play_action_card', playerId: 'player_1', cardId: 'card-attrition' }).state;
 
     expect(played.players.player_1.zones.hand).not.toContain('card-attrition');
-    expect(played.players.player_1.zones.conditions).toContain('card-attrition');
+    expect(played.players.player_1.zones.assetBank).toContain('card-attrition');
     expect(played.players.player_1.actionsRemaining).toBe(0);
     expect(played.players.player_1.hasPlayedActionThisTurn).toBe(true);
   });
