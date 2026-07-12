@@ -9,16 +9,20 @@ Closed audit items, historical rationale, and post-v0.6 concepts belong in their
 
 ## Card migration and canonical data
 
-- Complete card review beginning with **Scorched Earth**.
-- Decide final wording for reviewed cards whose direction is approved but text remains provisional.
+The 54-card playable-card review, 25-card Territory review, and current non-faction Condition cleanup are complete. Conditions are retired as a v0.6 game concept.
+
+Remaining blockers before canonical v0.6 data can be authoritative:
+
+- Fully redesign **Manifest Destiny**.
+- Decide whether **Siege Weaponry** is renamed **Bombardment**.
+- Finalize **Blockade / Sanctions** during the Diplomat faction-card pass.
+- Finalize **Capital Gains** around Financier infrastructure.
+- Finalize Witchcraft's eligible copied-effect wording.
+- Define copied or appropriated effects with impossible targets or source-dependent text.
 - Finish Intelligence Mission requirements, including an appropriately difficult Mission for **Assassins**.
-- Decide which cards receive the **Arcane** trait.
-- Complete the post-review Condition reduction pass:
-  - prefer Assets for player-owned persistent effects;
-  - prefer Overlays for Territory-local effects;
-  - resolve and discard immediately when persistence is unnecessary;
-  - retain Conditions only where neither alternative represents the timing cleanly.
-- Create canonical v0.6 card, Territory, faction, leader, deckbuilding, and recommended-deck data once migration is stable enough.
+- Complete faction packages, cost-curve audits, and any needed capstones.
+- Decide final Arcane-trait assignments beyond the currently approved cards.
+- Create canonical v0.6 card, Territory, faction, leader, deckbuilding, and recommended-deck data after these decisions are stable.
 
 Before faction-locking any neutral card, continue asking:
 
