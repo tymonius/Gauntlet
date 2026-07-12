@@ -1,7 +1,7 @@
 # Gauntlet v0.6 Territory Review Status
 
-**Last approved Territory:** 21 — Smuggler's Pass  
-**Next Territory:** 22 — Arena: Spoils of War  
+**Last approved Territory:** 22 — Arena: Spoils of War  
+**Next Territory:** 23 — Arena: No Quarter  
 **Source order:** `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`
 
 ## Active workflow
