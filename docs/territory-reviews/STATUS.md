@@ -1,7 +1,7 @@
 # Gauntlet v0.6 Territory Review Status
 
-**Last approved Territory:** 23 — Arena: No Quarter  
-**Next Territory:** 24 — Arena: Single Combat  
+**Last approved Territory:** 24 — Arena: Single Combat  
+**Next Territory:** 25 — Arena: Grand Melee  
 **Source order:** `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`
 
 ## Active workflow
