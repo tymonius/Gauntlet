@@ -40,7 +40,6 @@ export function toPublicPlayerView(player: PlayerState): PublicPlayerView {
       discard: visible(player.zones.discard),
       graveyard: visible(player.zones.graveyard),
       assetBank: visible(player.zones.assetBank),
-      conditions: visible(player.zones.conditions),
       removed: visible(player.zones.removed),
     },
     controlledTerritoryCount: player.controlledTerritories.length,
