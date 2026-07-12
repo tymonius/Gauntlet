@@ -35,6 +35,24 @@ Any conversion must preserve pacing, counterplay, visibility, and the intended c
 - The owner is also prevented from initiating battles.
 - Prohibiting voluntary discard prevents the owner from benefiting from peace through the opponent's turn and then switching it off before acting.
 
+### Assimilation
+
+**Cost:** 4  
+**Representation:** Prepared single-use Asset  
+**Complexity:** Advanced  
+**Watchlist:** Immediate-capture density and overlap with other capture shortcuts
+
+> **Action:** Bank Assimilation as an Asset. After you win a battle you initiated on a Territory your opponent controls, you may place Assimilation in your Graveyard. If you do, capture that Territory immediately instead of occupying it.
+
+> **Battle:** If you win this battle as the attacker on a Territory your opponent controls, capture that Territory immediately instead of occupying it. Place Assimilation in your Graveyard after the capture resolves.
+
+**Rationale:**
+
+- The Asset cleanly replaces the old same-turn Condition while keeping the effect visible and interactable.
+- Holding the opportunity across turns is stronger than the old one-turn setup, but it occupies Asset-bank capacity and remains vulnerable to suppression and removal.
+- Sending Assimilation to the Graveyard preserves the premium, non-repeatable character of immediate capture.
+- Assimilation remains distinct from Shock and Awe because it grants only immediate capture and no follow-up movement.
+
 ## Already resolved before this audit
 
 The following v0.5.7 Condition uses were removed or converted during card review:
@@ -52,11 +70,10 @@ The following v0.5.7 Condition uses were removed or converted during card review
 
 ## Pending review now
 
-1. **Assimilation**
-2. **Capital Punishment**
-3. **Court Martial**
-4. **Disruption** (source card: Embargo)
-5. **Palisade Wall**
+1. **Capital Punishment**
+2. **Court Martial**
+3. **Disruption** (source card: Embargo)
+4. **Palisade Wall**
 
 ## Deferred until faction-card redesign
 
