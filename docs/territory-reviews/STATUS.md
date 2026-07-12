@@ -8,10 +8,11 @@
 
 All 25 v0.5.7 Territories and Arenas have been reviewed for v0.6.
 
+The general rules governing active and suppressed Territory text are approved in `GENERAL_RULES.md`.
+
 ## Next-phase workflow
 
-- Consolidate finalized Territory wording into the v0.6 rules and canonical data.
-- Resolve the general rule governing when a Territory effect is active while its controller does or does not occupy it.
+- Consolidate finalized Territory wording and the approved general Territory rules into the v0.6 rules and canonical data.
 - Audit Territory interactions with Ruins Overlays and effects that suppress printed Territory text.
 - Verify Arena wording against the finalized tie and Homeland Advantage rules.
 - Retain identified playtest watchlist items for targeted testing.
