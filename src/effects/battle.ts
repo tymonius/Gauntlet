@@ -17,10 +17,6 @@ function hasBankedAsset(game: GameState, playerId: PlayerID, cardId: CardID): bo
   return game.players[playerId]?.zones.assetBank.includes(cardId) ?? false;
 }
 
-function hasCondition(game: GameState, playerId: PlayerID, cardId: CardID): boolean {
-  return game.players[playerId]?.zones.conditions.includes(cardId) ?? false;
-}
-
 function opposingParticipant(context: Parameters<EffectHandler['applies']>[0], owner: PlayerID): BattleParticipantState | undefined {
   if (!context.battle) return undefined;
   return context.battle.attacker.playerId === owner ? context.battle.defender : context.battle.attacker;
@@ -213,12 +209,12 @@ export const attritionBattleHandler: EffectHandler = {
   },
 };
 
-export const attritionConditionHandler: EffectHandler = {
-  id: 'attrition_condition',
+export const attritionAssetHandler: EffectHandler = {
+  id: 'attrition_asset',
   timing: ['after_battle_resolution'],
   applies(context) {
     if (!context.battle?.winner || !context.battle.loser) return false;
-    return hasCondition(context.game, context.battle.winner, 'card-attrition');
+    return hasBankedAsset(context.game, context.battle.winner, 'card-attrition');
   },
   resolve(context) {
     if (!context.battle?.winner || !context.battle.loser) return {};
@@ -233,9 +229,9 @@ export const attritionConditionHandler: EffectHandler = {
         cardId,
         owner: loser.playerId,
         destination: 'graveyard' as const,
-        reason: 'Attrition Action: opponent\'s played battle-drawn card goes to the Graveyard after they lose.',
+        reason: 'Attrition Asset: opponent\'s played battle-drawn cards go to the Graveyard after they lose.',
       })),
-      logMessages: cards.length > 0 ? ['Attrition condition sent the losing opponent\'s played battle-drawn card to the Graveyard.'] : [],
+      logMessages: cards.length > 0 ? ['Attrition Asset sent the losing opponent\'s played battle-drawn cards to the Graveyard.'] : [],
     };
   },
 };
@@ -247,5 +243,5 @@ export const baseBattleEffectHandlers: EffectHandler[] = [
   fortificationsBattleHandler,
   valorBattleHandler,
   attritionBattleHandler,
-  attritionConditionHandler,
+  attritionAssetHandler,
 ];
