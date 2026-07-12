@@ -31,7 +31,7 @@ function createBattleReadyGame(): GameState {
         ...game.players.player_1,
         zones: {
           ...game.players.player_1.zones,
-          conditions: ['card-attrition'],
+          assetBank: [...game.players.player_1.zones.assetBank, 'card-attrition'],
         },
       },
       player_2: {
@@ -50,7 +50,7 @@ function createBattleReadyGame(): GameState {
   };
 }
 
-describe('Action Attrition condition', () => {
+describe('Action Attrition Asset', () => {
   it('sends only the losing opponent played battle-draw card to Graveyard', () => {
     const battleStarted = applyGameAction(createBattleReadyGame(), { type: 'move_player', playerId: 'player_1', toSpaceId: 'space-1' }).state;
     const p1PassedHand = applyGameAction(battleStarted, { type: 'pass_battle_hand_commit', playerId: 'player_1' }).state;
@@ -65,10 +65,10 @@ describe('Action Attrition condition', () => {
 
     expect(resolved.players.player_2.zones.graveyard).toEqual(['p2-battle-1']);
     expect(resolved.players.player_2.zones.discard).toEqual(['p2-battle-2', 'p2-battle-3']);
-    expect(resolved.players.player_1.zones.conditions).toContain('card-attrition');
+    expect(resolved.players.player_1.zones.assetBank).toContain('card-attrition');
   });
 
-  it('does nothing if the Attrition condition owner loses', () => {
+  it('does nothing if the Attrition Asset owner loses', () => {
     const battleStarted = applyGameAction(createBattleReadyGame(), { type: 'move_player', playerId: 'player_1', toSpaceId: 'space-1' }).state;
     const p1PassedHand = applyGameAction(battleStarted, { type: 'pass_battle_hand_commit', playerId: 'player_1' }).state;
     const p2PassedHand = applyGameAction(p1PassedHand, { type: 'pass_battle_hand_commit', playerId: 'player_2' }).state;

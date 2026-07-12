@@ -45,16 +45,23 @@ Before faction-locking any neutral card, continue asking:
 
 ## Diplomats
 
-The current Terms / Influence / Peace Treaty framework remains the v0.6 baseline. The larger economy redesign is parked in `Gauntlet_v0.6.1_Diplomat_Overhaul_Notes.md`.
+The staking, imposition, and Treaty Article framework is now the v0.6 baseline. The active rationale and design direction are in `Gauntlet_v0.6_Diplomat_Design_Notes.md`.
 
 Open v0.6 and production questions:
 
+- Is starting at 0 Influence correct, or does it delay paid Proposals too much?
+- Is the five-Article Peace Treaty threshold correct?
+- Are nine Proposals manageable as a supplemental reference?
+- Are accepted effects attractive enough that refusal is not automatic?
+- Are refused effects dangerous enough without making Terms one-sided?
+- Do Rebuilding Pact, Ultimatum, and Diplomatic Recognition justify their Influence stakes?
+- Should any accepted Proposal explicitly generate Influence?
+- Are repeated already-ratified Proposals tactically useful without enabling Influence farming?
 - Replace **Good Offices** with a stronger Ambassador ability name.
-- Determine the final form of the Sanctions card family.
+- Test whether Ambassador and Senator are comparably strong under the staking model.
+- Determine the final form and size of the Sanctions card family.
 - Decide whether Sanctions remain distinctly Diplomatic or whether Financiers receive a separate economic-pressure implementation.
 - Decide whether **Demilitarized Zone** is a Proposal, faction card, Overlay, or later concept.
-- Test the five-Article Peace Treaty threshold and the nine-Proposal reference load.
-- Test whether Ambassador and Senator are comparably strong.
 
 ---
 

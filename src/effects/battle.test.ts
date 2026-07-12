@@ -56,13 +56,13 @@ function gameState(battle = battleState()): GameState {
     players: {
       player_1: {
         id: 'player_1', name: 'Player One',
-        zones: { deck: [], hand: [], discard: [], graveyard: [], assetBank: [], conditions: [], removed: [] },
+        zones: { deck: [], hand: [], discard: [], graveyard: [], assetBank: [], removed: [] },
         controlledTerritories: [], actionsRemaining: 1, movementRemaining: 0,
         hasPlayedActionThisTurn: false, hasPlayedBattleThisTurn: false,
       },
       player_2: {
         id: 'player_2', name: 'Player Two',
-        zones: { deck: [], hand: [], discard: [], graveyard: [], assetBank: [], conditions: [], removed: [] },
+        zones: { deck: [], hand: [], discard: [], graveyard: [], assetBank: [], removed: [] },
         controlledTerritories: [], actionsRemaining: 1, movementRemaining: 0,
         hasPlayedActionThisTurn: false, hasPlayedBattleThisTurn: false,
       },

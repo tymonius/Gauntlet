@@ -30,7 +30,7 @@ No canonical v0.6 data exists yet. Active v0.6 documents govern development unti
 13. **`Gauntlet_Design_Principles_and_Guardrails.md`** — current design constraints for core rules, factions, cards, complexity, components, pacing, and digital work.
 14. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — why the v0.5 rebuild occurred and which older systems are not current.
 15. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing benchmarks, simulation conclusions, telemetry, and human-playtest questions.
-16. **`Gauntlet_v0.6.1_Diplomat_Overhaul_Notes.md`** — Diplomat changes explicitly held for v0.6.1.
+16. **`Gauntlet_v0.6_Diplomat_Design_Notes.md`** — active rationale, implementation guidance, Sanctions direction, and testing questions for the integrated v0.6 Diplomat framework.
 17. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, Day/Night, and other post-v0.6 concepts.
 
 ### Digital development
@@ -66,7 +66,7 @@ No canonical v0.6 data exists yet. Active v0.6 documents govern development unti
 Remaining exact-text or design blockers:
 
 - Manifest Destiny requires a full redesign.
-- Blockade / Sanctions requires its Diplomat implementation.
+- Blockade / Sanctions requires its Diplomat implementation under the integrated Terms and staking framework.
 - Capital Gains requires its Financier-infrastructure redesign.
 - Siege Weaponry may be renamed Bombardment.
 - Witchcraft needs final copied-effect eligibility wording.
@@ -92,7 +92,8 @@ The Working Rules now include:
 - general Territory activation and suppression;
 - Ruins replacement and persistence;
 - the definition of negated;
-- the anti-recursion rule for effects that resolve other Battle effects.
+- the anti-recursion rule for effects that resolve other Battle effects;
+- the revised Diplomat Influence-staking, imposition, Treaty Article, Proposal, and Senator rules as part of v0.6.
 
 ### Factions
 
@@ -105,7 +106,7 @@ The six working factions are:
 - Financiers — Banker / Executive;
 - Intelligence — Ranger / Spymaster.
 
-Current faction rules are in the Working Rules. Balance, names, Missions, card packages, and several thresholds remain under active testing or development.
+Current faction rules are in the Working Rules. The revised Diplomat framework is part of the initial v0.6 baseline rather than a deferred v0.6.1 overhaul. Balance, names, Missions, card packages, and several thresholds remain under active testing or development.
 
 ### Digital work
 
