@@ -354,7 +354,6 @@ const html = `<!doctype html>
             zone('Discard', player.zones.discard) +
             zone('Graveyard', player.zones.graveyard) +
             zone('Asset Bank ' + player.zones.assetBank.length + '/' + player.controlledTerritories.length, player.zones.assetBank) +
-            zone('Conditions', player.zones.conditions) +
             zone('Territories', player.controlledTerritories) +
           '</div>' +
         '</article>';
