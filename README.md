@@ -8,8 +8,11 @@ The project is in private pre-release development and physical playtesting.
 
 - **Latest completed pre-faction playtest line:** v0.5.7
 - **Active development line:** v0.6
-- **v0.6 focus:** six factions, two leaders per faction, faction resources, alternate victory paths, card-pool migration, and faction playtesting
-- **Live card-review checkpoint:** `docs/card-reviews/STATUS.md`
+- **v0.6 focus:** six factions, two leaders per faction, faction resources, alternate victory paths, canonical-data production, and faction playtesting
+- **Playable-card review:** complete for all 54 v0.5.7 source cards
+- **Territory review:** complete for all 25 v0.5.7 Territories and Arenas
+- **Conditions:** retired as a v0.6 game concept; persistent effects now use Assets, Overlays, or immediate/self-tracking resolution
+- **Live checkpoint:** `docs/Gauntlet_v0.6_Project_Index.md`
 
 The six developing factions are:
 
@@ -26,7 +29,7 @@ The six developing factions are:
 
 - [Gauntlet v0.5 Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder/) — build, validate, save, randomize, export, and print pre-faction v0.5 decks.
 
-The current deckbuilder is versioned for the v0.5 line. A separate v0.6+ rules/data mode is planned after the faction card pool and canonical data stabilize.
+The current deckbuilder is versioned for the v0.5 line. A separate v0.6+ rules/data mode is planned after the remaining exact card text and faction packages stabilize enough to create canonical v0.6 data.
 
 ## Game overview
 
@@ -59,11 +62,13 @@ Active design, rules, testing, setting, and production documentation.
 Start with:
 
 - `docs/Gauntlet_v0.6_Project_Index.md` — current source-of-truth map and milestone checkpoint;
-- `docs/card-reviews/STATUS.md` — live card-review checkpoint;
-- `docs/card-reviews/` — small standalone card-review records and template;
 - `docs/Gauntlet_v0.6_Working_Rules.md` — active v0.6 rules framework;
-- `docs/Gauntlet_v0.6_Card_Metadata.md` — consolidated card metadata rollup;
-- `docs/Gauntlet_v0.6_Card_Review_Log.md` — consolidated migration-decision rollup;
+- `docs/card-reviews/STATUS.md` — consolidated playable-card checkpoint and exact-text blockers;
+- `docs/Gauntlet_v0.6_Card_Review_Log.md` — decisions for all 54 reviewed playable cards;
+- `docs/Gauntlet_v0.6_Card_Metadata.md` — card allegiance, complexity, starter, and watchlist metadata;
+- `docs/card-reviews/CONDITION_AUDIT.md` — former Condition conversions and retirement rationale;
+- `docs/territory-reviews/STATUS.md` — Territory-review checkpoint;
+- `docs/territory-reviews/GENERAL_RULES.md` — Territory activation and suppression rules;
 - `docs/Gauntlet_v0.6_Open_Questions.md` — unresolved current decisions;
 - `docs/Gauntlet_Design_Principles_and_Guardrails.md` — design constraints;
 - `docs/Gauntlet_Playtest_Targets_and_Metrics.md` — pacing and telemetry standards.
@@ -82,7 +87,7 @@ Early machine-readable starter data and schema work for digital development. It 
 
 Framework-neutral TypeScript rules-engine scaffolding, including state, legal actions, hidden-information views, battle and turn flow, Asset-bank enforcement, occupation/capture logic, CLI development tools, and a local browser GUI.
 
-The digital prototype is not yet a complete implementation of the full v0.5.7 card pool or developing v0.6 factions.
+The digital prototype's Condition zone has been removed, but the prototype is not yet a complete implementation of the full v0.5.7 card pool or developing v0.6 factions.
 
 ### `.github/workflows/`
 
@@ -92,11 +97,12 @@ Automation and repository workflows.
 
 1. Treat released canonical data as authoritative for its matching version.
 2. Treat active v0.6 documents as the working source of truth until canonical v0.6 data exists.
-3. Record each newly approved card in a small standalone file under `docs/card-reviews/` and update `STATUS.md`.
-4. Roll new card files into the consolidated Review Log and Metadata registry in batches rather than after every card.
+3. Record approved decisions in the relevant active review or rules source.
+4. Roll standalone decisions into the consolidated Review Log and Metadata registry at material checkpoints.
 5. Reserve README and Project Index updates for material milestones, source-hierarchy changes, and batch checkpoints.
 6. Keep rules, testing rationale, lore, production art direction, and digital implementation status in their designated documents.
 7. Move completed audits and superseded working records into `docs/Archive/` when they remain useful for provenance.
+8. Do not create canonical v0.6 data by silently resolving open design questions.
 
 ## Running digital tools locally
 
