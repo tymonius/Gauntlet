@@ -73,4 +73,4 @@ As a Neutral Arcane-trait card, Arcane Knowledge can trigger anti-Arcane mechani
 
 - Rewrite Witchcraft's final copied-effect eligibility wording during the comprehensive copied-effect rules pass.
 - Test Arcane Knowledge in non-Arcane decks and in Arcane decks with Invocation, Transmutation, Necromancy, and Rites.
-- Roll the name swap and cards 48–54 into the consolidated Review Log and Metadata registry at the next batch checkpoint.
+- The name swap and cards 48–54 are now integrated into the consolidated Review Log and Metadata registry.
