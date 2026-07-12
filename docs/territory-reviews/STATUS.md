@@ -1,7 +1,7 @@
 # Gauntlet v0.6 Territory Review Status
 
-**Last approved Territory:** 20 — Toll Bridge  
-**Next Territory:** 21 — Smuggler's Pass  
+**Last approved Territory:** 21 — Smuggler's Pass  
+**Next Territory:** 22 — Arena: Spoils of War  
 **Source order:** `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`
 
 ## Active workflow
