@@ -53,6 +53,25 @@ Any conversion must preserve pacing, counterplay, visibility, and the intended c
 - Sending Assimilation to the Graveyard preserves the premium, non-repeatable character of immediate capture.
 - Assimilation remains distinct from Shock and Awe because it grants only immediate capture and no follow-up movement.
 
+### Capital Punishment
+
+**Cost:** 4  
+**Representation:** Immediate post-victory Action; no persistent object  
+**Complexity:** Basic  
+**Watchlist:** Hard-removal density and post-battle Action combinations
+
+> **Action:** If you won a battle this turn, choose one opposing Asset and place it in its owner's Graveyard.
+
+> **Battle:** Choose one active opposing Battle card. It has no effect during this battle. During battle cleanup, if you won, place the chosen card in its owner's Graveyard instead of its normal destination.
+
+**Rationale:**
+
+- The Action removes the old marked-target Condition and uses the battle victory itself as the prerequisite.
+- Preserving the Action opportunity until after movement and winning a battle creates the intended setup cost without persistent tracking.
+- The Battle effect must negate immediately so it can help determine the winner; victory gates only the permanent Graveyard destination.
+- If the player loses, the chosen card still has no effect during the battle but follows its normal destination during cleanup.
+- The victory rider matters primarily for battle-drawn cards, because hand commitments normally enter the Graveyard already.
+
 ## Already resolved before this audit
 
 The following v0.5.7 Condition uses were removed or converted during card review:
@@ -70,10 +89,9 @@ The following v0.5.7 Condition uses were removed or converted during card review
 
 ## Pending review now
 
-1. **Capital Punishment**
-2. **Court Martial**
-3. **Disruption** (source card: Embargo)
-4. **Palisade Wall**
+1. **Court Martial**
+2. **Disruption** (source card: Embargo)
+3. **Palisade Wall**
 
 ## Deferred until faction-card redesign
 
