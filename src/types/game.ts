@@ -50,7 +50,7 @@ export interface LegalActionPlayOption {
   action: 'play_action_card';
   cardId: CardID;
   origin: 'hand';
-  destination: 'discard' | 'graveyard' | 'hand' | 'removed' | 'condition' | 'asset_bank';
+  destination: 'discard' | 'graveyard' | 'hand' | 'removed' | 'asset_bank';
   requiresTarget: boolean;
 }
 
