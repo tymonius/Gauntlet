@@ -1,7 +1,7 @@
 # Gauntlet v0.6 Cost Curve and Neutral Pool Audit
 
 **Status:** Active working audit  
-**Scope:** All 54 reviewed playable cards, with a focused second pass on the size, cost curve, and mechanical coverage of the Neutral pool.
+**Scope:** The reviewed v0.6 playable-card pool, with a focused second pass on the size, cost curve, and mechanical coverage of the Neutral pool.
 
 ## Goals
 
@@ -23,11 +23,11 @@ This audit will not increase the cost of an existing reviewed card.
 - The low-cost shortage should be solved through justified downward adjustments and genuinely low-cost new designs, not by making existing cards more expensive.
 - Complexity alone never justifies a higher cost.
 
-## Current baseline after approved reductions
+## Current baseline after approved reductions and additions
 
-The reviewed pool contains 54 cards:
+The approved pool currently contains 58 cards:
 
-- 38 Neutral;
+- 42 Neutral;
 - 4 Military;
 - 4 Intelligence;
 - 3 Financiers;
@@ -35,29 +35,29 @@ The reviewed pool contains 54 cards:
 - 2 Inquisition;
 - 1 Diplomat.
 
-### Entire reviewed pool by cost
+### Entire approved pool by cost
 
 | Cost | Cards |
 |---:|---:|
-| 1 | 7 |
+| 1 | 11 |
 | 2 | 16 |
 | 3 | 14 |
 | 4 | 12 |
 | 5 | 5 |
-| **Total** | **54** |
+| **Total** | **58** |
 
 ### Current Neutral pool by cost
 
 | Cost | Cards |
 |---:|---:|
-| 1 | 7 |
+| 1 | 11 |
 | 2 | 13 |
 | 3 | 9 |
 | 4 | 8 |
 | 5 | 1 |
-| **Total** | **38** |
+| **Total** | **42** |
 
-The Neutral pool's current average cost is approximately 2.55. Because a typical optimized deck contains 30 cards under a 60-point cap, an actual deck generally needs an average cost of 2.0 or less. The pool may average above 2 because players select among premium alternatives, but the Neutral distribution still needs more low-cost variety.
+The Neutral pool's current average cost is approximately 2.40. Because a typical optimized deck contains 30 cards under a 60-point cap, an actual deck generally needs an average cost of 2.0 or less. The pool may average above 2 because players select among premium alternatives, but the Neutral distribution still needs more cost-2 and cost-3 variety.
 
 ## Cost-tier rubric
 
@@ -135,14 +135,14 @@ Record approved cost reductions and unchanged costs, then recalculate the full-p
 
 ### Pass 5 — choose Neutral pool size
 
-Evaluate round-number targets after the cost audit. The leading provisional target is **50 unique Neutral cards** because:
+The approved planning target is **50 unique Neutral cards** because:
 
-- 40 would permit only two additions after the current 38 and would not adequately diversify the low-cost foundation;
-- 50 creates room for 12 additions;
+- 40 would permit only minimal expansion beyond the original reviewed pool and would not adequately diversify the low-cost foundation;
+- 50 creates enough room to fill shared mechanical gaps;
 - a 50-card Neutral pool is easy to communicate, inventory, package, and divide into functional categories;
 - it provides meaningful choice relative to a 30-card constructed deck without becoming unwieldy.
 
-This is a provisional planning target, not yet an approved final count.
+Eight additional Neutral cards remain to reach 50.
 
 ### Pass 6 — mechanical gap analysis
 
@@ -150,22 +150,20 @@ New Neutral cards should fill shared game-function gaps rather than duplicate fa
 
 ### Pass 7 — design additions toward the target curve
 
-After revised costs are known, create only enough new cards to reach the chosen Neutral count and improve the cost curve. Favor cost 1 and cost 2, but do not force effects downward merely to satisfy a numerical target.
+Create only enough new cards to reach the approved Neutral count and improve the cost curve. Do not force effects downward merely to satisfy a numerical target.
 
-## Preliminary target shape for a 50-card Neutral pool
+## Approved target shape for the 50-card Neutral pool
 
-This is a starting hypothesis to test after existing-card repricing:
-
-| Cost | Approximate target |
+| Cost | Final target |
 |---:|---:|
-| 1 | 10–12 |
-| 2 | 18–20 |
-| 3 | 11–13 |
-| 4 | 6–8 |
+| 1 | 11 |
+| 2 | 19 |
+| 3 | 11 |
+| 4 | 8 |
 | 5 | 1 |
 | **Total** | **50** |
 
-The exact distribution should emerge from the card-strength audit. It should not be imposed before individual card values are coherent.
+The remaining additions should therefore consist of six cost-2 cards and two cost-3 cards.
 
 ## Approved audit decisions
 
@@ -185,6 +183,58 @@ The exact distribution should emerge from the card-strength audit. It should not
 > **Reminder:** Manifest Destiny is a normal Territory after it enters the Gauntlet. It may be occupied, captured, controlled, and affected normally.
 
 Manifest Destiny is the lone Neutral cost-5 card. Its Action permits deliberate expansion only through a severe permanent sacrifice that requires established infrastructure. Its Battle effect charges a different price: the player must win an offensive battle on enemy-controlled ground. Once added, it is a fully normal Territory for movement, battle, control, Asset-bank capacity, Deeds, and effects that count or affect Territories. Its unique deckbuilding restriction and highly visible, permanent alteration of board geometry justify the capstone cost.
+
+### New Neutral cost-1 foundation cards
+
+#### Forced March
+
+**Cost:** 1  
+**Allegiance:** Neutral  
+**Complexity:** Basic
+
+> **Action:** Play only before movement. Gain one additional movement this turn. This additional movement cannot initiate a battle.
+>
+> **Battle:** If you are the attacker, add +1 to your battle total.
+
+Forced March supplies inexpensive movement without duplicating Military's ability to turn extra movement directly into another attack.
+
+#### Pathfinders
+
+**Cost:** 1  
+**Allegiance:** Neutral  
+**Complexity:** Basic
+
+> **Action:** Choose one face-up Territory. Its printed effect is inactive during your movement this turn.
+>
+> **Battle:** If this battle is on a face-up Territory with an active printed effect, add +1 to your battle total.
+
+Pathfinders gives all decks narrow terrain navigation and interaction without broadly suppressing Territories outside the player's movement.
+
+#### Contingency Plan
+
+**Cost:** 1  
+**Allegiance:** Neutral  
+**Complexity:** Basic
+
+> **Action:** Bank Contingency Plan as an Asset. If you discard Contingency Plan because your Asset-bank limit decreased, draw one card.
+>
+> **Battle:** If your opponent controls more Territories than you, add +1 to your battle total.
+
+Contingency Plan softens territorial snowballing without preventing the normal loss of Asset capacity or preserving the Asset itself.
+
+#### Reserves
+
+**Cost:** 1  
+**Allegiance:** Neutral  
+**Complexity:** Basic
+
+> **Action:** Draw one card, then place one card from your hand on top of your deck.
+>
+> **Battle:** During battle cleanup, you may place one unplayed card from your battle draw on top of your deck instead of placing it in your discard pile.
+
+Reserves provides selection and preservation rather than raw card advantage while reinforcing the distinction between hand cards, battle-drawn cards, and their normal destinations.
+
+Together, the four additions complete the Neutral cost-1 tier at 11 cards. They cover movement, terrain navigation, Asset-capacity resilience, and card smoothing without directly accelerating faction victory systems.
 
 ### Neutral cost-4 board-position and capture cluster
 
@@ -214,7 +264,7 @@ Manifest Destiny is the lone Neutral cost-5 card. Its Action permits deliberate 
 | Court Martial | 3 | **3** | The Asset stores an optional extra retreat for a strategically important victory, while the Battle mode combines disadvantage with additional forced movement. Its two useful modes and board displacement justify cost 3. |
 | Fortifications | 3 | **3** | The Asset repeatedly increases defensive battle-drawn play allowance, and the Battle mode supplies an immediate bonus plus fallback movement. It is strong, repeatable defensive infrastructure. |
 | Illegal Occupation | 3 | **2** | Both modes function only while the opponent occupies a Territory you control without controlling it. Its effect can be potent during that narrow window, but its floor is low and it cannot help in ordinary attacks or defenses. |
-| Resistance | 3 | **3** | The Asset repeatedly improves counterattack battle draws, while the Battle mode grants advantage and may bank itself after a counterattack victory. The repeatability and self-banking ceiling justify cost 3 despite the positional restriction. |
+| Resistance | 3 | **3** | Its Asset repeatedly improves counterattack battle draws, while the Battle mode grants advantage and may bank itself after a counterattack victory. The repeatability and self-banking ceiling justify cost 3 despite the positional restriction. |
 | Strategic Withdrawal | 3 | **2** | Its Action requires returning one of your own Assets before granting movement. Its Battle mode requires losing, moving farther backward, and surrendering more position to recover another card. Both modes exchange existing resources or board position rather than creating straightforward advantage. |
 
 ### Neutral cost-3 card-economy and disruption cluster
@@ -240,9 +290,13 @@ Manifest Destiny is the lone Neutral cost-5 card. Its Action permits deliberate 
 | Stand Ground | 2 | **2** | Its Action can negate forced movement at a critical moment, while its Battle mode grants full advantage whenever defending. That immediate battle ceiling exceeds a baseline cost-1 modifier. |
 | Valor | 2 | **2** | Its Asset can repeatedly draw cards after losses, and its Battle mode grants a conditional reroll. The persistent comeback engine has a meaningfully higher ceiling than cost-1 utility. |
 
-The following reductions and redesign must be rolled into the consolidated Card Review Log and future canonical v0.6 data at the cost-audit migration checkpoint:
+The following reductions, redesign, and additions must be rolled into the consolidated Card Review Log and future canonical v0.6 data at the cost-audit migration checkpoint:
 
 - Manifest Destiny: assigned Neutral, cost 5, and fully redesigned as the unique Territory-expansion capstone;
+- Forced March: new Neutral cost-1 card;
+- Pathfinders: new Neutral cost-1 card;
+- Contingency Plan: new Neutral cost-1 card;
+- Reserves: new Neutral cost-1 card;
 - Liberation: 4 to 3;
 - Protracted Siege: 4 to 3;
 - Insurrection: 4 to 3;
@@ -279,4 +333,4 @@ The following entries are proposals only and are not approved cost changes.
 
 ## Immediate next step
 
-Review and approve, reject, or modify the six provisional recommendations in the Neutral cost-2 interaction and tempo cluster. Then audit the final current cost-2 cards: Strategic Withdrawal, Scorched Earth, Sedition, and Rousing Speech, and confirm the existing cost-1 cards.
+Design and review the six new Neutral cost-2 cards. They should fill shared mechanical gaps without duplicating faction engines or the completed cost-1 foundation. After that, design the final two Neutral cost-3 cards and close the 50-card Neutral pool.
