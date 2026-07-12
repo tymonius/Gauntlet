@@ -1,6 +1,6 @@
 # Gauntlet v0.6 Condition Audit
 
-**Status:** Current non-faction Condition cleanup complete  
+**Status:** Complete and consolidated  
 **Source baseline:** `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`
 
 ## Project direction
@@ -146,8 +146,9 @@ The following v0.5.7 Condition uses were removed or converted during card review
 - **Blockade / Sanctions** — exact Diplomat implementation remains unresolved.
 - **Capital Gains** — payoff must first be reconnected to Financier infrastructure.
 
-## Next steps
+## Consolidation result
 
-- Roll these approvals into the consolidated Card Review Log, Metadata registry, Working Rules, and v0.6 canonical data.
-- Remove the Condition zone and Condition terminology from the rules and implementation.
-- Resolve Blockade / Sanctions and Capital Gains during their respective faction redesign passes.
+- All approved conversions are included in the consolidated Card Review Log and Metadata registry.
+- The Working Rules state that Conditions do not exist in v0.6 and define Assets, Overlays, voluntary Asset removal, Territory activation, and Ruins.
+- The TypeScript state model, reducer, card destinations, views, CLI, GUI, and affected tests no longer use a Condition zone.
+- No canonical v0.6 dataset was created during this pass because unresolved exact card text and incomplete faction packages would make it falsely authoritative.
