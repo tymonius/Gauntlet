@@ -48,7 +48,7 @@ Whenever you could play an Action card during your turn, you may instead discard
 - An effect granting an additional Action-card play may instead be used to discard a banked Asset.
 - A card may prohibit or delay its own voluntary removal, as Tariffs does.
 
-This amendment is authoritative from this review and should be integrated into `../Gauntlet_v0.6_Working_Rules.md` at the next rules rollup.
+This amendment is integrated into `../Gauntlet_v0.6_Working_Rules.md`.
 
 ## Assessment
 
@@ -71,5 +71,4 @@ Tariffs expresses the Financiers' leverage and delayed-payoff identity without d
 
 ## Follow-up
 
-- Integrate the approved voluntary Asset-discard rule into the Working Rules at the next rules rollup.
 - Test whether multiple banked Tariffs remain attractive despite the inability to chain them directly and the need to remove each separately.
