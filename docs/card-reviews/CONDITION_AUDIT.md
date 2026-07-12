@@ -3,18 +3,39 @@
 **Status:** Active post-review cleanup pass  
 **Source baseline:** `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`
 
-## Guiding rule
+## Project direction
 
-Conditions are not being removed mechanically. Prefer:
+Retire **Conditions** as a game concept in v0.6. Every former Condition must become:
 
-- an **Asset** for a player-owned persistent effect that should compete for Asset-bank capacity;
+- an **Asset** for a player-owned persistent effect;
 - an **Overlay** for an effect attached to a Territory;
-- immediate resolution when no persistent component is needed;
-- a **Condition** only when neither Asset nor Overlay represents the timing and ownership cleanly.
+- an immediate or self-tracking effect when persistence does not require a separate game object; or
+- a redesigned effect that no longer needs Condition handling.
 
 Any conversion must preserve pacing, counterplay, visibility, and the intended cost of persistence.
 
-## Already resolved
+## Approved during this audit
+
+### Armistice
+
+**Cost:** 4  
+**Representation:** Renewable temporary Asset  
+**Complexity:** Advanced  
+**Watchlist:** Global battle suppression, alternate-win stalling, and draw-engine support
+
+> **Action:** Bank Armistice as an Asset. While Armistice is active, neither player can initiate a battle. At the beginning of each of your turns, after your normal draw, discard two cards from your hand or discard Armistice. Armistice cannot be voluntarily discarded at any other time.
+
+**Battle effect direction:** Preserve the previously approved battle-ending effect. Resolve cancellation first; if Armistice remains active, end the battle without a winner, return the attacker to the space they entered from, stop unresolved Battle effects, place the other Battle cards still in play in their owners' discard piles, and place Armistice in its owner's Graveyard.
+
+**Rationale:**
+
+- Asset status gives the ceasefire a visible, interactable game object and makes it compete for Asset-bank capacity.
+- Other Assets already constrain opposing play, but Armistice is exceptional in globally preventing a core action and therefore remains Advanced and watchlisted.
+- Two-card upkeep is deliberately greater than the normal one-card draw, so indefinite peace requires sustained card-economy investment rather than an arbitrary duration limit.
+- The owner is also prevented from initiating battles.
+- Prohibiting voluntary discard prevents the owner from benefiting from peace through the opponent's turn and then switching it off before acting.
+
+## Already resolved before this audit
 
 The following v0.5.7 Condition uses were removed or converted during card review:
 
@@ -31,12 +52,11 @@ The following v0.5.7 Condition uses were removed or converted during card review
 
 ## Pending review now
 
-1. **Armistice**
-2. **Assimilation**
-3. **Capital Punishment**
-4. **Court Martial**
-5. **Disruption** (source card: Embargo)
-6. **Palisade Wall**
+1. **Assimilation**
+2. **Capital Punishment**
+3. **Court Martial**
+4. **Disruption** (source card: Embargo)
+5. **Palisade Wall**
 
 ## Deferred until faction-card redesign
 
@@ -45,9 +65,9 @@ The following v0.5.7 Condition uses were removed or converted during card review
 
 ## Workflow
 
-Review the six current candidates in source order. For each card:
+Review the remaining current candidates in source order. For each card:
 
-1. decide whether Condition remains the cleanest representation;
-2. if not, choose Asset, Overlay, or immediate resolution;
-3. preserve the previously approved card identity and balance direction;
-4. log the approved result here and in the consolidated card sources at rollup.
+1. choose Asset, Overlay, immediate resolution, or a full redesign;
+2. preserve the previously approved card identity and balance direction where doing so remains sound;
+3. log the approved result here;
+4. roll the result into the consolidated card sources at the next migration checkpoint.
