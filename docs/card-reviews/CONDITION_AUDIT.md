@@ -1,6 +1,6 @@
 # Gauntlet v0.6 Condition Audit
 
-**Status:** Active post-review cleanup pass  
+**Status:** Current non-faction Condition cleanup complete  
 **Source baseline:** `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`
 
 ## Project direction
@@ -108,6 +108,24 @@ Any conversion must preserve pacing, counterplay, visibility, and the intended c
 - It remains meaningfully weaker than targeted hand disruption such as Assassins.
 - The Battle effect preserves the previously approved soft-cancellation identity and standard canceled-card destinations.
 
+### Palisade Wall
+
+**Cost:** 2  
+**Representation:** Optional single-use Asset  
+**Complexity:** Basic  
+**Watchlist:** Defensive Asset suppression and overlap with Fortified Pass
+
+> **Action:** Bank Palisade Wall as an Asset. When a battle begins in which you are the defender, you may discard Palisade Wall. If you do, your opponent's banked Assets are inactive during that battle.
+
+> **Battle:** If you are the defender, choose one active opposing Battle card committed from hand. It has no effect during this battle. If there is no such card, gain advantage instead.
+
+**Rationale:**
+
+- The optional Asset trigger removes the old next-battle Condition and lets the controller reserve the effect for a meaningful defense.
+- The threat is visible and interactable, allowing the opponent to plan around or remove it.
+- Discarding Palisade Wall when the battle begins makes its use explicit and prevents post-result decisions.
+- The Battle effect preserves the previously approved defensive hand-commitment disruption.
+
 ## Already resolved before this audit
 
 The following v0.5.7 Condition uses were removed or converted during card review:
@@ -123,20 +141,13 @@ The following v0.5.7 Condition uses were removed or converted during card review
 - **Tariffs** — temporary Asset with delayed penalty.
 - **Treason** — expendable Asset.
 
-## Pending review now
-
-1. **Palisade Wall**
-
 ## Deferred until faction-card redesign
 
 - **Blockade / Sanctions** — exact Diplomat implementation remains unresolved.
 - **Capital Gains** — payoff must first be reconnected to Financier infrastructure.
 
-## Workflow
+## Next steps
 
-Review the remaining current candidates in source order. For each card:
-
-1. choose Asset, Overlay, immediate resolution, or a full redesign;
-2. preserve the previously approved card identity and balance direction where doing so remains sound;
-3. log the approved result here;
-4. roll the result into the consolidated card sources at the next migration checkpoint.
+- Roll these approvals into the consolidated Card Review Log, Metadata registry, Working Rules, and v0.6 canonical data.
+- Remove the Condition zone and Condition terminology from the rules and implementation.
+- Resolve Blockade / Sanctions and Capital Gains during their respective faction redesign passes.
