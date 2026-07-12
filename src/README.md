@@ -33,13 +33,15 @@ The prototype has progressed beyond initial state scaffolding. Current conversat
 - battle-card reveal, cancellation, and destination handling;
 - Homeland Advantage and separate Heartland defense;
 - Action-card play windows;
-- Assets and Conditions;
+- Assets and Asset-bank persistence;
 - Territory-scaled Asset-bank capacity;
 - player-selected discard-down when capacity contracts;
 - occupation, counterattack, capture, and control changes;
 - centralized win-condition evaluation;
 - guided CLI sessions and JSON logs;
 - local browser GUI development flow.
+
+The former Condition zone has been removed from the v0.6-development state model. Persistent playable-card effects must now use Assets, Territory Overlays, or card-specific immediate/self-tracking resolution.
 
 ## Development commands
 
@@ -60,6 +62,7 @@ The current CLI and GUI are development harnesses, not a complete digital releas
 - Example sessions still initialize small `0.5.6-dev` decks with placeholder card IDs.
 - The full v0.5.7 card and Territory pool is not yet guaranteed to be executable.
 - v0.6 faction systems and current card-review decisions are not yet represented by canonical v0.6 digital data.
+- Only a small subset of reviewed card effects is automated; some new Asset and Overlay conversions still require implementation.
 - Some unusual effects may be approximated, unimplemented, or require manual resolution.
 - Local GUI functionality does not yet imply remote multiplayer, persistence, matchmaking, or production security.
 
