@@ -23,7 +23,7 @@ This audit will not increase the cost of an existing reviewed card.
 - The low-cost shortage should be solved through justified downward adjustments and genuinely low-cost new designs, not by making existing cards more expensive.
 - Complexity alone never justifies a higher cost.
 
-## Current baseline
+## Current baseline after approved reductions
 
 The reviewed pool contains 54 cards:
 
@@ -42,8 +42,8 @@ The reviewed pool contains 54 cards:
 |---:|---:|
 | 1 | 4 |
 | 2 | 14 |
-| 3 | 16 |
-| 4 | 15 |
+| 3 | 18 |
+| 4 | 13 |
 | 5 | 4 |
 | TBD | 1 |
 
@@ -53,12 +53,12 @@ The reviewed pool contains 54 cards:
 |---:|---:|
 | 1 | 4 |
 | 2 | 11 |
-| 3 | 11 |
-| 4 | 11 |
+| 3 | 13 |
+| 4 | 9 |
 | 5 | 0 |
 | **Total** | **37** |
 
-The Neutral pool's average cost is approximately 2.78. Because a typical optimized deck contains 30 cards under a 60-point cap, an actual deck generally needs an average cost of 2.0 or less. The pool may average above 2 because players select among premium alternatives, but the current Neutral distribution is too top-heavy to provide enough varied low-cost foundations.
+The Neutral pool's current average cost is approximately 2.73. Because a typical optimized deck contains 30 cards under a 60-point cap, an actual deck generally needs an average cost of 2.0 or less. The pool may average above 2 because players select among premium alternatives, but the current Neutral distribution remains too top-heavy to provide enough varied low-cost foundations.
 
 ## Cost-tier rubric
 
@@ -168,27 +168,42 @@ This is a starting hypothesis to test after existing-card repricing:
 
 The exact distribution should emerge from the card-strength audit. It should not be imposed before individual card values are coherent.
 
+## Approved audit decisions
+
+### Neutral cost-4 board-position and capture cluster
+
+| Card | Previous | Approved | Reasoning summary |
+|---|---:|---:|---|
+| Assimilation | 4 | **4** | Immediate capture bypasses the normal counterattack window. Both modes can convert one battle win directly into permanent control, making this a legitimate premium effect. |
+| Invasion | 4 | **4** | Two additional forward movements can radically compress the board, while the Battle mode grants both an additional draw and an additional play as attacker. Either mode creates major offensive tempo. |
+| Liberation | 4 | **3** | Its value is restricted to counterattacking an occupier. Even when strong, it is reactive, board-state dependent, and unavailable in ordinary attacks or defenses. |
+| Protracted Siege | 4 | **3** | The revised Overlay delays only one scheduled start-of-turn capture and then expires. It preserves a counterattack window but does not retake the Territory or prevent immediate capture. |
+| Siege Weaponry | 4 | **4** | It can suppress a strategically important Territory before attack and convert successful conquest into persistent Ruins. The combination of pre-battle denial and lasting board alteration justifies premium cost. |
+
+The Liberation and Protracted Siege reductions must be rolled into the consolidated Card Review Log and future canonical v0.6 data at the next cost-audit migration checkpoint.
+
 ## Provisional audit findings
 
 The following entries are proposals only and are not approved cost changes.
 
-### Neutral cost-4 board-position and capture cluster
+### Remaining Neutral cost-4 disruption and reset cluster
 
 | Card | Current | Provisional recommendation | Reasoning summary |
 |---|---:|---:|---|
-| Assimilation | 4 | **Keep 4** | Immediate capture bypasses the normal counterattack window. Both modes can convert one battle win directly into permanent control, making this a legitimate premium effect. |
-| Invasion | 4 | **Keep 4** | Two additional forward movements can radically compress the board, while the Battle mode grants both an additional draw and an additional play as attacker. Either mode creates major offensive tempo. |
-| Liberation | 4 | **Reduce to 3** | Its value is restricted to counterattacking an occupier. Even when strong, it is reactive, board-state dependent, and unavailable in ordinary attacks or defenses. It fits the strong strategic tier better than the premium tier. |
-| Protracted Siege | 4 | **Reduce to 3** | The revised Overlay delays only one scheduled start-of-turn capture and then expires. It can preserve a counterattack window, but it does not retake the Territory or prevent immediate-capture effects. |
-| Siege Weaponry | 4 | **Keep 4** | It can suppress a strategically important Territory before attack and convert successful conquest into persistent Ruins. The combination of pre-battle denial and lasting board alteration justifies premium cost despite its positional requirements. |
+| Armistice | 4 | **Keep 4** | Its Action can globally prevent battles across an opposing turn, and its Battle effect can terminate a battle without a winner. Asset capacity and severe upkeep constrain it, but the scale of the denial remains premium. |
+| Capital Punishment | 4 | **Keep 4** | It offers targeted permanent Asset removal after a victory or immediate Battle-card negation with potential Graveyard placement. The targeting, permanence, and two strong modes distinguish it from lower-cost soft cancellation. |
+| Insurrection | 4 | **Reduce to 3** | Its Action is a strong hand mulligan and discard-recycling effect that preserves the Action opportunity, but it also reshuffles the opponent's discard and does not create direct board progress. Its Battle mode is positional rather than universally premium. |
+| Revolution | 4 | **Keep 4** | The Battle effect can reverse final die results after rerolls and turn a likely loss into a win. The Action can also cause major hand swings. Its high-impact uncertainty belongs at the premium tier. |
+| Sequestration | 4 | **Keep 4** | Its Action can reset entire Asset engines while allowing only one Asset per player to survive, and its Battle mode shuts off all banked Assets. The scale of the reset is genuinely premium. |
+| Arcane Knowledge | 4 | **Keep 4** | It provides flexible access to the strongest eligible Battle effect already in the Graveyard while leaving that card available for future copies. Its setup burden is real, but its toolbox ceiling and repeatability justify premium cost. |
 
 ### Comparison within the cluster
 
-- **Assimilation** and **Invasion** create immediate offensive breakthroughs and deserve to remain premium.
-- **Siege Weaponry** creates persistent strategic board change rather than a one-turn modifier and also remains premium.
-- **Liberation** is powerful only in the counterattack window and should not cost the same as cards that generate proactive breakthrough pressure.
-- **Protracted Siege** buys time rather than control. Its revised one-delay Overlay is materially weaker than immediate capture, extra movement, or permanent Ruins.
+- Armistice, Revolution, and Sequestration can alter the rules or strategic state of an entire turn, battle, or engine.
+- Capital Punishment provides targeted permanent removal rather than temporary suppression or soft cancellation.
+- Arcane Knowledge is narrower without a prepared Graveyard but can function as repeated access to a deck's best spent Battle effects.
+- Insurrection is flexible and strong, but its Action is primarily a reset and filtering tool and its Battle effect remains conditional on offensive position.
 
 ## Immediate next step
 
-Review and approve, reject, or modify the five provisional recommendations in the first cost-4 cluster. Then continue with the remaining Neutral cost-4 cards: Armistice, Capital Punishment, Insurrection, Revolution, Sequestration, and Arcane Knowledge.
+Review and approve, reject, or modify the six provisional recommendations in the remaining Neutral cost-4 cluster. Then proceed to the Neutral cost-3 cards.
