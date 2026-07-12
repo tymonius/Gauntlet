@@ -22,7 +22,6 @@ export interface PublicPlayerView {
     discard: PublicZoneView;
     graveyard: PublicZoneView;
     assetBank: PublicZoneView;
-    conditions: PublicZoneView;
     removed: PublicZoneView;
   };
   controlledTerritoryCount: number;
