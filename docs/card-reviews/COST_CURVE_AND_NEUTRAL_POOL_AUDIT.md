@@ -40,8 +40,8 @@ The reviewed pool contains 54 cards:
 
 | Cost | Cards |
 |---:|---:|
-| 1 | 4 |
-| 2 | 19 |
+| 1 | 7 |
+| 2 | 16 |
 | 3 | 14 |
 | 4 | 12 |
 | 5 | 4 |
@@ -51,14 +51,14 @@ The reviewed pool contains 54 cards:
 
 | Cost | Cards |
 |---:|---:|
-| 1 | 4 |
-| 2 | 16 |
+| 1 | 7 |
+| 2 | 13 |
 | 3 | 9 |
 | 4 | 8 |
 | 5 | 0 |
 | **Total** | **37** |
 
-The Neutral pool's current average cost is approximately 2.57. Because a typical optimized deck contains 30 cards under a 60-point cap, an actual deck generally needs an average cost of 2.0 or less. The pool may average above 2 because players select among premium alternatives, but the Neutral distribution still provides too little variety at cost 1.
+The Neutral pool's current average cost is approximately 2.49. Because a typical optimized deck contains 30 cards under a 60-point cap, an actual deck generally needs an average cost of 2.0 or less. The pool may average above 2 because players select among premium alternatives, but the Neutral distribution still needs more low-cost variety.
 
 ## Cost-tier rubric
 
@@ -212,6 +212,18 @@ The exact distribution should emerge from the card-strength audit. It should not
 | Scorched Earth | 3 | **2** | The revised effect requires losing while defending controlled ground and retreating before it creates persistent Ruins. The lasting suppression is meaningful, but it is purchased with a battle loss and lost position. |
 | Sedition | 3 | **2** | The Action permanently removes an Asset, but the opponent chooses which one. The Battle mode only suppresses an opponent-chosen Asset for one battle, or grants +1 when no face-up Asset exists. Its opponent-selected and conditional effects fit cost 2. |
 
+### Neutral cost-2 protection and comeback cluster
+
+| Card | Previous | Approved | Reasoning summary |
+|---|---:|---:|---|
+| Counterintelligence | 2 | **1** | Its Action is narrow protection against information and reveal effects. Its Battle mode supplies the normal cost-1 +1 floor plus similarly narrow hidden-information protection. |
+| Fealty | 2 | **1** | Its Action only counters disadvantage effects, while its Battle mode either answers one disadvantage or falls back to the normal cost-1 +1. It is useful glue rather than a strategic engine. |
+| Redemption | 2 | **1** | Both modes are one-shot and reactive, work only when an opposing effect sends another card to discard, and do nothing against Graveyard placement or the player's own costs. |
+| Rousing Speech | 2 | **2** | Its Asset can generate repeated filtering across multiple opposing Asset plays, while its Battle mode grants advantage when behind in face-up Assets. Its repeatable ceiling exceeds ordinary cost-1 glue. |
+| Decoys | 2 | **2** | Although reactive, it can preserve a premium Asset from removal and can force cancellation away from another important Battle card. Its protection can preserve substantially more than one point of value. |
+| Stand Ground | 2 | **2** | Its Action can negate forced movement at a critical moment, while its Battle mode grants full advantage whenever defending. That immediate battle ceiling exceeds a baseline cost-1 modifier. |
+| Valor | 2 | **2** | Its Asset can repeatedly draw cards after losses, and its Battle mode grants a conditional reroll. The persistent comeback engine has a meaningfully higher ceiling than cost-1 utility. |
+
 The following reductions must be rolled into the consolidated Card Review Log and future canonical v0.6 data at the cost-audit migration checkpoint:
 
 - Liberation: 4 to 3;
@@ -221,31 +233,33 @@ The following reductions must be rolled into the consolidated Card Review Log an
 - Strategic Withdrawal: 3 to 2;
 - Decoys: 3 to 2;
 - Scorched Earth: 3 to 2;
-- Sedition: 3 to 2.
+- Sedition: 3 to 2;
+- Counterintelligence: 2 to 1;
+- Fealty: 2 to 1;
+- Redemption: 2 to 1.
 
 ## Provisional audit findings
 
 The following entries are proposals only and are not approved cost changes.
 
-### Neutral cost-2 protection and comeback cluster
+### Neutral cost-2 interaction and tempo cluster
 
 | Card | Current | Provisional recommendation | Reasoning summary |
 |---|---:|---:|---|
-| Counterintelligence | 2 | **Reduce to 1** | Its Action is narrow protection against information and reveal effects. Its Battle mode supplies the normal cost-1 +1 floor plus similarly narrow hidden-information protection. |
-| Fealty | 2 | **Reduce to 1** | Its Action only counters disadvantage effects, while its Battle mode either answers one disadvantage or falls back to the normal cost-1 +1. It is useful glue rather than a strategic engine. |
-| Redemption | 2 | **Reduce to 1** | Both modes are one-shot and reactive, work only when an opposing effect sends another card to discard, and do nothing against Graveyard placement or the player's own costs. |
-| Rousing Speech | 2 | **Keep 2** | Its Asset can generate repeated filtering across multiple opposing Asset plays, while its Battle mode grants advantage when behind in face-up Assets. Its repeatable ceiling exceeds ordinary cost-1 glue. |
-| Decoys | 2 | **Keep 2** | Although reactive, it can preserve a premium Asset from removal and can force cancellation away from another important Battle card. Its protection can preserve substantially more than one point of value. |
-| Stand Ground | 2 | **Keep 2** | Its Action can negate forced movement at a critical moment, while its Battle mode grants full advantage whenever defending. That immediate battle ceiling exceeds a baseline cost-1 modifier. |
-| Valor | 2 | **Keep 2** | Its Asset can repeatedly draw cards after losses, and its Battle mode grants a conditional reroll. The persistent comeback engine has a meaningfully higher ceiling than cost-1 utility. |
+| Disruption | 2 | **Keep 2** | Random hand discard is reliable Action pressure, while the Battle mode cancels any active opposing Battle card. Its broad target range and immediate interaction are stronger than cost-1 utility. |
+| Entrenchment | 2 | **Keep 2** | Its Asset can repeatedly halt opposing movement and deny a post-movement Action, while its Battle mode imposes disadvantage whenever defending. The persistent positional pressure justifies cost 2. |
+| Palisade Wall | 2 | **Keep 2** | Its expendable Asset can shut off all opposing banked Assets during a defensive battle, while its Battle mode negates a hand commitment or grants advantage. Either mode can materially swing a battle. |
+| Reinforcements | 2 | **Keep 2** | Its Asset stores an additional Action play, while its Battle mode draws after reveal and may play the new card in addition to normal Battle cards. Both modes create meaningful action or card-play tempo. |
+| Sabotage | 2 | **Keep 2** | Its Action suppresses a chosen Asset through the opponent's next turn, while its Battle mode cancels an active opposing Battle card and sends it to discard. Its targeted disruption is broadly useful. |
+| Illegal Occupation | 2 | **Keep 2** | Its trigger is narrow, but while live it can deactivate an opponent's entire Asset bank and its Battle mode also grants advantage. The situational ceiling is too high for cost 1. |
 
 ### Comparison within the cluster
 
-- Counterintelligence and Fealty pair narrow persistent protection with the same +1 Battle floor already established at cost 1.
-- Redemption is even narrower and expendable, making cost 1 the natural tier.
-- Rousing Speech and Valor can generate value repeatedly across several turns or battles.
-- Decoys can preserve a higher-value engine card, while Stand Ground can directly prevent decisive displacement or grant advantage.
+- Disruption and Sabotage provide broad, immediate cancellation or suppression rather than narrow protection.
+- Entrenchment creates repeatable movement and Action denial.
+- Palisade Wall and Reinforcements can materially change the number or effectiveness of cards participating in a battle.
+- Illegal Occupation is narrow but can completely suppress an established Asset engine during the critical counterattack window.
 
 ## Immediate next step
 
-Review and approve, reject, or modify the seven provisional recommendations in the Neutral cost-2 protection and comeback cluster. Then audit the remaining cost-2 cards and confirm the existing cost-1 cards.
+Review and approve, reject, or modify the six provisional recommendations in the Neutral cost-2 interaction and tempo cluster. Then audit the final current cost-2 cards: Strategic Withdrawal, Scorched Earth, Sedition, and Rousing Speech, and confirm the existing cost-1 cards.
