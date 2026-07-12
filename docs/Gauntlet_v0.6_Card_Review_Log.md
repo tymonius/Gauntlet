@@ -1,649 +1,614 @@
 # Gauntlet v0.6 Card Review Log
 
-**Status:** Active consolidated migration log.  
+**Status:** Consolidated migration log through all 54 v0.5.7 playable cards.  
 **Source order:** `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`.
 
-This file records the active v0.6 cost, wording direction, rationale, and follow-up work for each reviewed card. `Gauntlet_v0.6_Card_Metadata.md` is authoritative for the separate fields **allegiance**, **starter eligibility**, **complexity**, and **watchlist concern**.
+This file records the current v0.6 cost, allegiance direction, approved wording, and remaining exact-text work. `Gauntlet_v0.6_Card_Metadata.md` is authoritative for starter eligibility, complexity, and watchlist fields.
 
-Older labels such as **Core Neutral** and **Advanced Neutral / Watchlist** may appear in historical commits, but they are not current gameplay classes.
-
-## Review protocol
-
-For each card:
-
-1. fetch the exact v0.5.7 text and cost;
-2. assess its effect on the neutral pool;
-3. assess overlap or strange interactions with candidate faction mechanics;
-4. decide allegiance, starter eligibility, complexity, watchlist concern, cost, and rule direction separately;
-5. update this log and the metadata registry only after approval.
-
-A tabled card is not decided. Do not call a decision logged until the repository update succeeds.
+Conditions are retired in v0.6. Former Condition effects have been converted to Assets, Overlays, immediate effects, or deferred redesigns.
 
 ---
 
 ## Reviewed cards
 
-### 1. Arcane Knowledge
+### 1. Witchcraft
 
+**v0.5.7 source name:** Arcane Knowledge  
 **Cost:** 5  
-**Direction:** Arcane faction card. Preserve the concept of using the eligible Battle effect of another card played in the same battle.
+**Allegiance:** Arcane
 
-- Resolves only the referenced effect; it does not count as replaying, recommitting, revealing, copying, or changing that card's destination.
-- Exclude cancellation, special-reveal, battle-ending, follow-up-battle, source-dependent, and card-lifecycle effects.
-- It should not duplicate Ritual progress, Invocation, or Transmutation.
-- Final eligibility wording remains to be written.
+> **Action:** Bank Witchcraft as an Asset. Once per turn during a battle, Witchcraft may use the eligible Battle effect of one other card you played in that battle.
+>
+> **Battle:** Witchcraft may use the eligible Battle effect of one other card you played in this battle.
+
+Final eligible-effect wording remains unresolved. General anti-recursion rules prohibit selecting an effect that would itself resolve another Battle effect.
 
 ---
 
 ### 2. Armistice
 
 **Cost:** 4  
-**Direction:** Keep Neutral as a shared emergency brake and battle-ending tool.
+**Allegiance:** Neutral
 
-- Do not faction-lock to Diplomats; Terms already provide their dedicated battle-avoidance system.
-- Exclude from starter decks and watch for stalling and unusual Terms interactions.
+> **Action:** Bank Armistice as an Asset. While Armistice is active, neither player can initiate a battle. At the beginning of each of your turns, after your normal draw, discard two cards from your hand or discard Armistice. Armistice cannot be voluntarily discarded at any other time.
+
+**Battle direction:** Resolve cancellation first. If Armistice remains active, end the battle without a winner, return the attacker to the space they entered from, stop unresolved Battle effects, put the other Battle cards still in play in their owners' discard piles, and put Armistice in its owner's Graveyard.
 
 ---
 
 ### 3. Assassins
 
 **Cost:** 4  
-**Direction:** Intelligence faction card. Keep its harsh targeted-information and disruption identity.
+**Allegiance:** Intelligence
 
-- Its Mission should be appropriately difficult.
-- Watch density with Spies, Scouting Report, Sabotage, Treason, Interference, and Special Operation.
+Preserve targeted hand disruption and severe hand-commitment punishment. Its Intelligence Mission requirement must be appropriately difficult. Watch disruption density with Spies, Scouting Report, Sabotage, Treason, Surveillance, Interference, and Special Operation.
 
 ---
 
 ### 4. Assimilation
 
 **Cost:** 4  
-**Direction:** Keep Neutral as shared capture acceleration and anti-stalemate breakthrough.
+**Allegiance:** Neutral
 
-- If Assimilation causes immediate capture, send it to the Graveyard after capture resolves.
-- Otherwise it follows its normal destination.
-- Watch cumulative immediate-capture density with Commandant/Fortify and future shortcuts.
+> **Action:** Bank Assimilation as an Asset. After you win a battle you initiated on a Territory your opponent controls, you may place Assimilation in your Graveyard. If you do, capture that Territory immediately instead of occupying it.
+>
+> **Battle:** If you win this battle as the attacker on a Territory your opponent controls, capture that Territory immediately instead of occupying it. Place Assimilation in your Graveyard after the capture resolves.
+
+Assimilation grants immediate capture only; it does not grant follow-up movement.
 
 ---
 
 ### 5. Attrition
 
 **Cost:** 3  
-**Direction:** Keep Neutral as a shared card-economy pressure tool rather than defaulting it to Inquisition.
+**Allegiance:** Neutral
 
-- The Battle effect's distinctive value is pressuring the full initial battle draw.
-- Watch long-game denial and overlap with Condemnation.
+Keep as shared card-economy pressure rather than faction-locking it to Inquisition. Its Asset punishes opposing played battle-drawn cards after losses; its Battle effect pressures the opponent's full initial battle draw. Watch long-game denial and overlap with Condemnation.
 
 ---
 
 ### 6. Blockade
 
 **Cost:** 4  
-**Direction:** Rework as a Diplomat **Sanctions** card.
+**Allegiance:** Diplomats
 
-- Tie it to rejected Terms and accepted settlement rather than generic neutral denial.
-- Preserve a safety valve, likely through later acceptance or winning against the Diplomat.
-- Exact text belongs to the Diplomat faction-card pass and v0.6.1 overhaul.
+Rework as a **Sanctions** card tied to refused Terms and accepted settlement rather than generic delayed hand denial. Exact implementation remains deferred to the Diplomat faction-card pass.
 
 ---
 
 ### 7. Brothers in Arms
 
 **Cost:** 4  
-**Direction:** Military faction card rewarding simultaneous use of a hand-origin card and a battle-drawn card.
+**Allegiance:** Military
 
-- Keep it distinct from capture acceleration.
-- Clarify hand-origin terminology and cancellation interaction.
-- Brothers in Arms itself remains cancellable.
+Reward using a hand-origin Battle card and a battle-drawn card in the same battle. Keep it distinct from capture acceleration. Final text must clarify hand-origin terminology and cancellation interaction; Brothers in Arms itself remains cancellable.
 
 ---
 
 ### 8. Capital Gains
 
-**Cost:** 3  
-**Direction:** Financiers faction card; preserve investment/payoff structure.
+**Cost:** 3 provisional  
+**Allegiance:** Financiers
 
-- Rework pure card draw so the payoff connects to Capital, Treasury, Deeds, or other Financier infrastructure.
-- Cost 3 is the current direction.
+Preserve an investment-and-payoff structure, but redesign the payoff around Capital, Treasury, Deeds, or other Financier infrastructure rather than generic delayed card draw. Exact text remains unresolved.
 
 ---
 
 ### 9. Capital Punishment
 
 **Cost:** 4  
-**Direction:** Keep Neutral as expensive shared hard cancellation.
+**Allegiance:** Neutral
 
-- Target one active opposing Battle card and send it to the Graveyard.
-- Inquisition should not monopolize every severe answer.
-- Watch whether cost 4 sufficiently prices universal hard cancellation.
+> **Action:** If you won a battle this turn, choose one opposing Asset and place it in its owner's Graveyard.
+>
+> **Battle:** Choose one active opposing Battle card. It has no effect during this battle. During battle cleanup, if you won, place the chosen card in its owner's Graveyard instead of its normal destination.
+
+If the Capital Punishment player loses, the chosen card remains ineffective during the battle but follows its normal destination.
 
 ---
 
 ### 10. Conscription
 
 **Cost:** 3  
-**Direction:** Keep Neutral as a core Asset-deployment and battle-draw enabler.
+**Allegiance:** Neutral
 
-- Mechanically broader than Military despite the name.
-- A broader future name such as Mobilization, Call-Up, or Mustering may be considered.
+Keep as shared Asset deployment and battle-draw support. The Battle effect increases both initial battle-draw amount and battle-drawn play allowance when committed from hand before battle draw.
 
 ---
 
 ### 11. Contraband
 
 **Cost:** 3  
-**Direction:** Keep Neutral as discard-pile recovery and tactical reuse.
+**Allegiance:** Neutral
 
-- It must not retrieve from the Graveyard.
-- Clarify that the retrieved card is played in Contraband's place and follows its own destination rules.
+Keep as discard-pile recovery and tactical reuse. It cannot retrieve from the Graveyard. A retrieved Battle card is played in Contraband's place and follows its own destination rules.
 
 ---
 
 ### 12. Counterintelligence
 
 **Cost:** 2  
-**Direction:** Keep Neutral as shared protection against surveillance, reveal, and look effects.
+**Allegiance:** Neutral
 
-- It must not block normal required battle or Territory reveals.
-- Recheck cost after Intelligence Missions and faction cards are finalized.
+Keep as shared protection against look and reveal effects. It does not block revelation required by ordinary battle or Territory rules. Recheck cost after Intelligence is finalized.
 
 ---
 
 ### 13. Court Martial
 
 **Cost:** 3  
-**Direction:** Keep Neutral as battle-discipline and forced-retreat pressure.
+**Allegiance:** Neutral
 
-- Clarify additional retreat when paths are blocked or limited.
+> **Action:** Bank Court Martial as an Asset. During battle cleanup, after an opponent loses a battle against you and completes their normal retreat, you may discard Court Martial. If you do, they retreat one additional space, if able.
+>
+> **Battle:** Your opponent gains disadvantage during this battle. If they lose, after completing their normal retreat, they retreat one additional space, if able.
 
 ---
 
 ### 14. Decoys
 
 **Cost:** 3  
-**Direction:** Keep Neutral as shared protection against Asset removal and Battle-card cancellation.
+**Allegiance:** Neutral
 
-- Limit protection to cancellation rather than every effect that causes another card to have no effect.
+Keep as shared protection against Asset removal and Battle-card cancellation. Limit Battle protection to cancellation rather than every effect that makes another card ineffective.
 
 ---
 
 ### 15. Disruption
 
+**v0.5.7 source name:** Embargo  
 **Cost:** 2  
-**Direction:** Keep the former Embargo mechanics as Neutral soft cancellation and light hand disruption; rename the card **Disruption**.
+**Allegiance:** Neutral
 
-- A canceled hand commitment returns to hand.
-- A canceled battle-drawn card goes to discard.
-- Reserve **Embargo** for a future Diplomat Sanctions card.
+> **Action:** Your opponent discards one card from their hand at random.
+>
+> **Battle:** Cancel one active opposing Battle card. A canceled hand commitment returns to its owner's hand; a canceled battle-drawn card goes to its owner's discard pile.
+
+The title **Embargo** is reserved for a future Diplomat Sanctions card.
 
 ---
 
 ### 16. Entrenchment
 
 **Cost:** 2  
-**Direction:** Keep Neutral as shared defensive positioning and anti-advance pressure.
+**Allegiance:** Neutral
 
-- Clarify whether the Asset triggers only on adjacent entry or also when an opponent enters the player's occupied space to initiate battle.
+Keep as defensive positioning and anti-advance pressure. Final text must resolve whether the Asset triggers only on adjacent entry or also when the opponent enters the controller's occupied space to initiate battle.
 
 ---
 
 ### 17. Fealty
 
 **Cost:** 2  
-**Direction:** Keep Neutral as disadvantage protection and battle stabilization. Retain the name **Fealty**.
+**Allegiance:** Neutral
 
-- Action protects against opposing disadvantage effects.
-- Battle ignores one disadvantage, or grants +1 if none applies.
+Keep as disadvantage protection and battle stabilization. The Action protects against opposing disadvantage effects; the Battle effect ignores one disadvantage or grants +1 if none applies.
 
 ---
 
 ### 18. Fog of War
 
 **Cost:** 2  
-**Direction:** Intelligence faction Overlay creating battlefield confusion and forced random selection.
+**Allegiance:** Intelligence
 
-- The Action places a temporary Overlay on a revealed Territory and affects the next battle there.
-- Preserve symmetrical random selection for the Overlay and one-sided disruption for the Battle effect.
-- Random selection occurs after effects determine how many battle-drawn cards may be played.
+Use a temporary Territory Overlay for the Action and one-sided random battle-draw selection for the Battle effect. Random selection occurs after effects determine how many battle-drawn cards may be played.
 
 ---
 
 ### 19. Fortifications
 
 **Cost:** 3  
-**Direction:** Keep Neutral as shared defensive infrastructure and improved defensive battle access.
+**Allegiance:** Neutral
 
-- Action allows up to two battle-drawn plays while defending.
-- Battle gives +1 while defending; if the player still loses, any additional withdrawal is voluntary.
+Keep as shared defensive infrastructure. The Asset permits up to two battle-drawn plays while defending. The Battle effect gives +1 while defending and may allow an additional voluntary withdrawal after a loss.
 
 ---
 
 ### 20. Illegal Occupation
 
 **Cost:** 3  
-**Direction:** Keep Neutral as shared pressure against occupation before capture.
+**Allegiance:** Neutral
 
-- Action makes the occupier's Assets inactive while they occupy but do not control the Territory.
-- Battle applies during a counterattack, suppressing those Assets and granting advantage.
-- Retain the current name for v0.6.
+Keep as pressure against occupation before capture. The Asset makes an opponent's Assets inactive while they occupy but do not control one of your Territories. The Battle effect applies during a counterattack and also grants advantage.
 
 ---
 
 ### 21. Insurrection
 
 **Cost:** 4  
-**Direction:** Keep Neutral as a chaotic global reset and situational battle-pressure card.
+**Allegiance:** Neutral
 
-- Action: discard your hand; each player shuffles discard into deck; draw three; then you may immediately play one additional Action.
-- Battle: attacker gains advantage; a counterattacker retaking their own Territory gains double advantage.
-- Exclude from starter decks and watch interaction with Arcane Graveyard pressure and Inquisition Purification.
+Keep as a chaotic global hand/deck reset and situational offensive battle card. Exclude from starter decks and watch interactions with Arcane Graveyard pressure and Inquisition Purification.
 
 ---
 
 ### 22. Invasion
 
 **Cost:** 4  
-**Direction:** Keep Neutral as shared offensive tempo rather than faction-locking it to Military.
+**Allegiance:** Neutral
 
-- Military already expresses this job through Command and Orders.
-- Exclude from starter decks.
-- Watch stacking with Onward, Rally, Rout, and other attack-tempo effects.
+Keep as shared offensive tempo rather than Military-exclusive. Watch stacking with Onward, Rally, Rout, and other attack-tempo effects.
 
 ---
 
 ### 23. Liberation
 
 **Cost:** 4  
-**Direction:** Keep Neutral as counterattack and comeback tempo. Redesign the Battle effect to mirror Invasion from the defensive side.
+**Allegiance:** Neutral
 
-**Battle direction:** If you are counterattacking an opponent occupying a Territory you control, draw one additional battle card. You may play it in addition to your other Battle cards.
+Keep as counterattack and comeback tempo.
 
-- Avoid post-battle movement that duplicates Military Rout.
-- Exclude from starter decks and watch efficiency with other occupation answers.
+> **Battle direction:** If you are counterattacking an opponent occupying a Territory you control, draw one additional battle card. You may play it in addition to your other Battle cards.
+
+Avoid post-battle movement that duplicates Military Rout.
 
 ---
 
 ### 24. Manifest Destiny
 
 **Cost:** TBD  
-**Direction:** Retain the name but fully redesign the current effect.
+**Allegiance:** TBD
 
-- Reject permanent insertion of a new blank Territory into the Gauntlet.
-- The current mechanic disrupts board geometry, Asset limits, Deeds, Special Operation thresholds, pacing, and breakthrough distance.
-- Reserve **New Frontier** as a separate future card name.
+Retain the title but fully redesign the effect. Do not insert a permanent blank Territory into the Gauntlet; that mechanic disrupts board geometry, Asset limits, Deeds, Special Operation thresholds, pacing, and breakthrough distance.
 
 ---
 
 ### 25. Militias
 
 **Cost:** 3  
-**Direction:** Military faction card supporting defense, counterattack, and holding ground.
+**Allegiance:** Military
 
-**Action direction:** Bank Militias as an Asset. During the first battle each turn on a Territory you control, your opponent gains disadvantage.
-
-**Battle direction:** Your opponent gains disadvantage. If this battle is on a Territory you control, they gain double disadvantage instead.
-
-- Watch stacking with Commandant Orders, Fortifications, Patriotism, and Homeland Advantage.
+> **Action direction:** Bank Militias as an Asset. During the first battle each turn on a Territory you control, your opponent gains disadvantage.
+>
+> **Battle direction:** Your opponent gains disadvantage. If this battle is on a Territory you control, they gain double disadvantage instead.
 
 ---
 
 ### 26. Monetary Crisis
 
 **Cost:** 2  
-**Direction:** Financiers faction card retaining symmetrical hand-reset effects.
+**Allegiance:** Financiers
 
-**Action direction:** Each player discards their hand, then draws two cards.
+> **Action direction:** Each player discards their hand, then draws two cards.
+>
+> **Battle direction:** During battle cleanup, each player discards down to one card.
 
-**Battle direction:** During battle cleanup, each player discards down to one card.
-
-- Financiers gain asymmetry through Treasury preparation rather than extra printed benefit.
-- Watch repeated cheap resets against factions that must retain planned cards.
+Financiers create asymmetry through Treasury preparation rather than an additional printed benefit.
 
 ---
 
 ### 27. Necromancy
 
 **Cost:** 5  
-**Direction:** Arcane faction card with the Arcane trait; premium direct Graveyard-to-hand recovery.
+**Allegiance:** Arcane  
+**Trait:** Arcane
 
-**Action direction:** Return one card from your Graveyard to your hand. Place Necromancy in your Graveyard instead of discard.
+> **Action direction:** Return one card from your Graveyard to your hand. Place Necromancy in your Graveyard instead of discard.
+>
+> **Battle direction:** During battle cleanup, return one card from your Graveyard to your hand.
 
-**Battle direction:** During battle cleanup, return one card from your Graveyard to your hand.
-
-- Remove the restriction against retrieving another Necromancy.
-- Watch Rite, Invocation, Transmutation, and Arcane Knowledge interactions.
+Remove the restriction against retrieving another Necromancy.
 
 ---
 
 ### 28. New Recruits
 
 **Cost:** 1  
-**Direction:** Keep Neutral with both effects unchanged.
+**Allegiance:** Neutral
 
-**Action:** Discard one other card from your hand, then draw two cards.
-
-**Battle:** Add +1 to your battle total.
-
-- Starter-eligible basic filtering; watch only for automatic-inclusion pressure.
+> **Action:** Discard one other card from your hand, then draw two cards.
+>
+> **Battle:** Add +1 to your battle total.
 
 ---
 
 ### 29. Palisade Wall
 
 **Cost:** 2  
-**Direction:** Keep Neutral as shared defensive counterplay.
+**Allegiance:** Neutral
 
-**Action direction:** During the next battle in which you defend, the opponent's Assets are inactive. The post-review Condition pass must determine the cleanest persistent representation.
-
-**Battle direction:** If defending, choose one active opposing Battle card committed from hand. It has no effect during this battle. If no such card exists, gain advantage instead.
-
-- The affected card remains played and follows its normal destination.
+> **Action:** Bank Palisade Wall as an Asset. When a battle begins in which you are the defender, you may discard Palisade Wall. If you do, your opponent's banked Assets are inactive during that battle.
+>
+> **Battle:** If you are the defender, choose one active opposing Battle card committed from hand. It has no effect during this battle. If there is no such card, gain advantage instead.
 
 ---
 
 ### 30. Patriotism
 
 **Cost:** 3  
-**Direction:** Military faction card supporting defense on controlled Territory.
+**Allegiance:** Military
 
-**Action direction:** Bank Patriotism as an Asset. You may have only one banked Patriotism. During battles on a Territory you control, double the first +1 or advantage granted by one of your Battle cards.
+> **Action direction:** Bank Patriotism as an Asset. You may have only one banked Patriotism. During battles on a Territory you control, double the first +1 or advantage granted by one of your Battle cards.
+>
+> **Battle direction:** If defending a Territory you control, gain advantage.
 
-**Battle direction:** If defending a Territory you control, gain advantage.
-
-- The Asset does not double Homeland Advantage, Heartland defense, Orders, or opposing disadvantage.
-- Remove the obsolete Homeland Advantage protection clause.
+The Asset does not double Homeland Advantage, Heartland defense, Orders, or opposing disadvantage.
 
 ---
 
 ### 31. Protracted Siege
 
 **Cost:** 4  
-**Direction:** Keep Neutral as visible, expendable capture-delay counterplay using a Territory Overlay.
+**Allegiance:** Neutral
 
-**Action direction:** Bank as an Asset. When the opponent occupies a Territory you control, you may move Protracted Siege onto it as an Overlay. When normal start-of-turn capture would occur, discard the Overlay instead and prevent that capture. Discard it if the opponent ceases occupying the Territory.
-
-**Battle direction:** If you defend a Territory you control and lose, place Protracted Siege there as the same Overlay instead of its normal destination.
-
-- Each copy delays one scheduled capture only.
-- Immediate-capture effects bypass it unless they use the normal schedule.
-- Watch excessive game length; do not impose a one-copy restriction before testing.
+Use a visible, expendable Territory Overlay. Each copy delays one scheduled start-of-turn capture only, then is discarded. Immediate-capture effects bypass it unless they explicitly use the normal schedule.
 
 ---
 
 ### 32. Rallying Cry
 
 **Cost:** 1  
-**Direction:** Keep Neutral with both effects unchanged.
+**Allegiance:** Neutral
 
-**Action:** Draw one card.
-
-**Battle:** Add +1 to your battle total.
-
-- Starter-eligible basic cycling and battle support.
+> **Action:** Draw one card.
+>
+> **Battle:** Add +1 to your battle total.
 
 ---
 
 ### 33. Redemption
 
 **Cost:** 2  
-**Direction:** Keep Neutral as shared protection against discard-pile disruption. Bank the Action as an Asset until voluntarily used.
+**Allegiance:** Neutral
 
-**Action:** Bank Redemption as an Asset. Whenever an opposing effect places one or more of your other cards in your discard pile, you may discard Redemption. If you do, return one of those cards to your hand after that effect resolves.
+> **Action direction:** Bank Redemption as an Asset. When an opposing effect places one or more of your other cards in your discard pile, you may discard Redemption to return one of those cards to your hand after the effect resolves.
 
-**Battle:** If an opposing effect causes one other Battle card you played to have no effect and places it in your discard pile, return that card to your hand after the battle instead.
-
-- Redemption cannot save itself and does not protect cards entering the Graveyard.
+The Battle effect similarly recovers one other negated Battle card that entered discard. Redemption cannot save itself or protect cards entering the Graveyard.
 
 ---
 
 ### 34. Reinforcements
 
 **Cost:** 2  
-**Direction:** Keep Neutral as shared Action economy and late-battle flexibility.
+**Allegiance:** Neutral
 
-**Action:** Bank Reinforcements as an Asset. During your turn, you may discard Reinforcements to play one additional Action card.
-
-**Battle:** After all other Battle cards are revealed, draw one additional battle card. You may immediately play it face up in addition to your other Battle cards if its Battle effect can still resolve.
-
-- The Asset may be expended at the point the extra Action is used, not only at turn start.
-- Watch action stacking and late-battle timing.
+> **Action:** Bank Reinforcements as an Asset. During your turn, you may discard Reinforcements to play one additional Action card.
+>
+> **Battle:** After all other Battle cards are revealed, draw one additional battle card. You may immediately play it face up in addition to your other Battle cards if its Battle effect can still resolve.
 
 ---
 
 ### 35. Resistance
 
 **Cost:** 3  
-**Direction:** Keep Neutral as repeatable shared counterattack support.
+**Allegiance:** Neutral
 
-**Action:** Bank Resistance as an Asset. When you counterattack an opponent occupying a Territory you control, draw two additional cards as part of your initial battle draw.
-
-**Battle:** If you are counterattacking an opponent occupying a Territory you control, gain advantage. If you win, bank Resistance after the battle instead of placing it in its normal destination.
-
-**Reminder:** If your Asset bank is full, you may discard one Asset to make room. Otherwise, place Resistance in its normal destination.
-
-- Not starter-eligible; Advanced complexity.
-- Watch stacking with Liberation, Protracted Siege, Illegal Occupation, and multiple Resistance Assets.
-- Do not impose a one-copy restriction before testing.
+Keep as repeatable counterattack support. The Asset increases initial battle draw during counterattacks. The Battle effect grants advantage and may bank Resistance after a counterattack victory, subject to Asset capacity.
 
 ---
 
 ### 36. Revolution
 
 **Cost:** 4  
-**Direction:** Keep Neutral as a destabilizing hand-economy and battle-result reversal card.
+**Allegiance:** Neutral
 
-**Action:** Each player discards their hand, then draws cards equal to the number of cards the other player discarded.
+> **Action:** Each player discards their hand, then draws cards equal to the number of cards the other player discarded.
+>
+> **Battle:** After all rerolls, you may exchange the players' final selected die results. Each player retains their own modifiers.
 
-**Battle:** After all rerolls, you may exchange the players' final selected die results. Each player retains their own modifiers.
-
-**Reminder:** If both players use Revolution to exchange the results, no exchange occurs.
-
-- Not starter-eligible; Advanced complexity.
-- Watch extreme hand swings, repeated recovery, battle reversal frequency, and simultaneous-use timing.
+If both players exchange results, no exchange occurs.
 
 ---
 
 ### 37. Rousing Speech
 
 **Cost:** 2  
-**Direction:** Keep Neutral as shared Asset-development catch-up and anti-snowball support.
+**Allegiance:** Neutral
 
-**Action:** Bank Rousing Speech as an Asset. Whenever your opponent banks an Asset, you may draw one card, then discard one card.
+> **Action:** Bank Rousing Speech as an Asset. Whenever your opponent banks an Asset, you may draw one card, then discard one card.
+>
+> **Battle:** If your opponent has more face-up Assets than you do, gain advantage.
 
-**Battle:** If your opponent has more face-up Assets than you do, gain advantage.
-
-**Reminder:** Turning an existing Asset face up does not count as banking an Asset.
-
-- Starter-eligible; Basic complexity.
-- No initial watchlist concern.
+Turning an existing Asset face up does not count as banking it.
 
 ---
 
 ### 38. Sabotage
 
 **Cost:** 2  
-**Direction:** Keep Neutral as shared temporary Asset suppression and Battle-card cancellation. Remove the Action's attached Condition.
+**Allegiance:** Neutral
 
-**Action:** Choose one face-up opposing Asset. Turn it face down until the start of your next turn.
+> **Action:** Choose one face-up opposing Asset. Turn it face down until the start of your next turn.
+>
+> **Battle:** Cancel one active opposing Battle card. Place it in its owner's discard pile immediately.
 
-**Battle:** Cancel one active opposing Battle card. Place it in its owner's discard pile immediately.
-
-**Reminder:** If there are no active opposing Battle cards, Sabotage has no effect.
-
-- The Action resolves and enters its normal destination immediately; the target Asset's face-down state tracks the duration.
-- Intelligence already has Surveillance and Interference, so faction-locking Sabotage would create unnecessary overlap.
-- Starter-eligible; Basic complexity.
-- Watch total Neutral cancellation density.
+The Action resolves and enters its normal destination immediately; the target Asset's face-down state tracks the duration.
 
 ---
 
 ### 39. Scorched Earth
 
 **Cost:** 3  
-**Direction:** Fully redesign as a Neutral defensive-denial card that converts into a persistent Ruins Overlay when the defender loses and is forced from controlled ground.
+**Allegiance:** Neutral
 
-**Action:** Bank Scorched Earth as an Asset. After you lose a battle while defending a Territory you control and are required to retreat from it, you may place Scorched Earth face up on that Territory as a Ruins Overlay.
-
-**Battle:** If you lose this battle while defending a Territory you control and are required to retreat from it, place Scorched Earth face up on that Territory as a Ruins Overlay instead of placing it in its normal destination.
-
-**Ruins Overlay:** That Territory's printed effect is inactive while Scorched Earth remains there.
-
-**Reminder:** A Territory is either ruined or not; it cannot be doubly ruined. If a Ruins Overlay is placed on a Territory that already has one, place the existing Ruins Overlay in its owner's Graveyard, then place the new one. Ruins remain until removed by an effect. There is no universal Repair action in v0.6.
-
-- Remove the v0.5.7 Asset-discard and Asset-banking prohibition mechanics entirely.
-- Keep Neutral because scorched-earth retreat is shared advanced territorial counterplay rather than an Inquisition engine.
-- Not starter-eligible; Advanced complexity.
-- Watch repeated Ruins replacement, Graveyard interactions, persistent printed-effect suppression, and limited removal.
-- Reserve **Repair** as an Engineer faction capability for v0.7 or later rather than a universal core action.
+Convert into a persistent Ruins Overlay when its controller loses while defending controlled ground and must retreat. The ruined Territory's printed effect is inactive until the Overlay is removed. There is no universal Repair action in v0.6.
 
 ---
 
 ### 40. Scouting Report
 
 **Cost:** 1  
-**Direction:** Keep Neutral as finite shared reconnaissance with a high-skill Battle replacement effect.
+**Allegiance:** Neutral
 
-**Action:** Look at the top card of your opponent's deck, one random card from their hand, or one face-down Territory.
-
-**Battle:** Reveal Scouting Report before the other Battle cards. Look at one face-down opposing Battle card. Then you may place one unplayed card from your battle draw face down in Scouting Report's place. If you do, place Scouting Report in your Graveyard immediately.
-
-**Reminder:** The replacement counts as a battle-drawn play and follows its normal destination. It is played in addition to any other battle-drawn card you already played. Looking at a card with Scouting Report is not Surveillance.
-
-- Keep Neutral so all factions retain limited information access while Intelligence keeps repeatable resource-powered Surveillance and Interference.
-- If Scouting Report was committed from hand, replacing it may produce an additional battle-drawn play.
-- If it was itself played from battle draw, the effect exchanges it for another unplayed card from the same draw.
-- Not starter-eligible; Advanced complexity.
-- Watch special-reveal sequencing, extra battle-drawn plays, and information stacking in Intelligence decks.
+Keep finite shared reconnaissance. Its Battle effect reveals before other Battle cards, inspects one opposing face-down Battle card, and may replace Scouting Report with an unplayed card from its battle draw. The replacement counts as a battle-drawn play.
 
 ---
 
 ### 41. Sedition
 
 **Cost:** 3  
-**Direction:** Keep Neutral as simple shared permanent Asset removal with opponent choice.
+**Allegiance:** Neutral
 
-**Action:** Your opponent chooses and discards one Asset they control.
-
-**Battle:** Your opponent chooses one face-up Asset they control. It is inactive during this battle. If they control no face-up Assets, add +1 to your battle total.
-
-- The Action is milder than Inquisition Purge because the opponent chooses the Asset and it goes to discard rather than the Graveyard.
-- Keep Neutral so every faction retains access to straightforward permanent Asset removal.
-- Starter-eligible; Basic complexity.
-- Watch total Neutral Asset-removal density alongside Sabotage and other anti-Asset cards.
+> **Action:** Your opponent chooses and discards one Asset they control.
+>
+> **Battle:** Your opponent chooses one face-up Asset they control. It is inactive during this battle. If they control no face-up Assets, add +1 to your battle total.
 
 ---
 
 ### 42. Shock and Awe
 
 **Cost:** 5  
-**Direction:** Move to Military as a premium all-in breakthrough card that combines immediate capture with one follow-up advance and consumes all available Command.
+**Allegiance:** Military
 
-**Action:** Bank Shock and Awe as an Asset. After you win a battle you initiated on a Territory your opponent controls, after gaining any Command from that battle, you may discard Shock and Awe and lose all Command. If you do, capture that Territory immediately instead of occupying it, then you may advance one space.
-
-**Battle:** If you win this battle as the attacker on a Territory your opponent controls, after gaining any Command from this battle, lose all Command. Capture that Territory immediately instead of occupying it, then you may advance one space.
-
-**Reminder:** Immediate capture bypasses effects that would delay the normal capture. Shock and Awe can cause only one additional advance per turn.
-
-- Remove the v0.5.7 follow-up-battle advantage rider.
-- Convert the Action from a same-turn Condition into a prepared Asset.
-- Losing all Command occurs after any Command gained from the qualifying battle, preventing the same victory from feeding Rout or Fortify.
-- The card remains usable at 0 Command; stored Command increases its opportunity cost rather than becoming an eligibility requirement.
-- Not starter-eligible; Advanced complexity.
-- Watch immediate-capture density, leader-Order overlap, and chained movement with Onward, Rout, Invasion, and other Military effects.
+Use a prepared Asset for an all-in immediate capture and one follow-up advance after winning an initiated battle on an enemy-controlled Territory. The effect consumes all Command after any Command gained from that battle.
 
 ---
 
 ### 43. Siege Weaponry
 
 **Cost:** 4  
-**Direction:** Keep Neutral as shared offensive Territory denial. The title is under review; **Bombardment** is the leading replacement so **Siege Weaponry** can be reserved for a future Engineer card.
+**Allegiance:** Neutral
 
-**Action:** Bank Siege Weaponry as an Asset. Before moving, you may place it face up on an adjacent enemy-controlled Territory. That Territory's printed effect is inactive for the rest of this turn. If you win a battle there this turn or capture it without a battle, Siege Weaponry becomes a Ruins Overlay. Otherwise, place it in your discard pile at the end of the turn.
-
-**Battle:** If you are attacking on an enemy-controlled Territory, that Territory's printed effect is inactive during this battle. If you win, place Siege Weaponry face up on that Territory as a Ruins Overlay instead of placing it in its normal destination.
-
-**Ruins Overlay:** A ruined Territory's printed effect is inactive. A Territory is either ruined or not; it cannot be doubly ruined. If a Ruins Overlay is placed on a Territory that already has one, place the existing Ruins Overlay in its owner's Graveyard, then place the new one. Ruins remain until removed by an effect.
-
-- Remove the v0.5.7 face-up/face-down state change; active Ruins remain face up.
-- Do not prohibit playing the card on an already ruined Territory or a Territory whose printed effect is irrelevant. The replacement and duration rules resolve those choices without protecting players from inefficient strategy.
-- Keep Neutral because offensive Territory-effect suppression is useful shared counterplay, while Military already receives more direct conquest tools.
-- Not starter-eligible; Advanced complexity.
-- Watch persistent Territory suppression, Ruins replacement and Graveyard interactions, and matchups where disabling one printed effect is disproportionately valuable.
-- Repair remains reserved for the future Engineer faction; there is no universal Repair action in v0.6.
+Keep as shared offensive Territory denial that can become a Ruins Overlay after successful conquest. **Bombardment** is the leading replacement title so **Siege Weaponry** may be reserved for a future Engineer card.
 
 ---
 
 ### 44. Spies
 
 **Cost:** 2  
-**Direction:** Intelligence faction card. Preserve persistent hand exposure as a faction-defining Asset and narrow the Battle effect to the opponent's actual selections rather than their entire battle draw.
+**Allegiance:** Intelligence
 
-**Action:** Bank Spies as an Asset. Your opponent keeps their hand face up.
+> **Action:** Bank Spies as an Asset. Your opponent keeps their hand face up.
 
-**Battle:** Reveal Spies before the other Battle cards. Your opponent reveals their hand commitment and chosen battle-drawn card. You may then change your own battle-drawn selection. If Spies was your battle-drawn selection and you replace it, place Spies in your Graveyard immediately.
-
-**Reminder:** Revealing cards with Spies is not Surveillance. The opponent does not reveal unplayed cards from their battle draw.
-
-- Raise cost from 1 to 2 because persistent full-hand information is too efficient at 1 and frees Intelligence to spend Intel on hidden battle-drawn cards and Interference.
-- Keep Intelligence; Neutral already has Scouting Report as limited shared reconnaissance.
-- Not starter-eligible; Advanced complexity.
-- Watch persistent perfect information, special-reveal timing, post-reveal reselection, and information stacking with Surveillance, Interference, Assassins, Scouting Report, and Treason.
-- A Mission requirement may be added during the Intelligence faction-deck pass.
+The Battle effect reveals before other Battle cards, exposes the opponent's actual hand commitment and selected battle-drawn card, and permits the Spies player to change their own battle-drawn selection. It does not reveal the opponent's entire battle draw.
 
 ---
 
 ### 45. Stand Ground
 
 **Cost:** 2  
-**Direction:** Keep Neutral as a simple prepared defense against opposing forced movement. Convert the temporary Condition into an expendable Asset.
+**Allegiance:** Neutral
 
-**Action:** Bank Stand Ground as an Asset. When an opposing card effect would move you, you may discard Stand Ground. If you do, ignore that effect's movement.
+> **Action:** Bank Stand Ground as an Asset. When an opposing card effect would move you, you may discard Stand Ground. If you do, ignore that effect's movement.
+>
+> **Battle:** If you are the defender, gain advantage.
 
-**Battle:** If you are the defender, gain advantage.
-
-**Reminder:** Other parts of the opposing effect still resolve. Stand Ground does not prevent the normal retreat required after losing a battle or prevent voluntary movement or withdrawal.
-
-- Keep Neutral because resistance to forced movement is basic shared positional counterplay rather than a Military-exclusive function.
-- The Asset may be prepared in advance, occupies Asset-bank capacity, remains vulnerable to Asset interaction, and stops only one opposing movement effect.
-- Starter-eligible; Basic complexity.
-- Watch the boundary between opposing forced movement, normal required retreat, and voluntary withdrawal.
+It does not prevent normal required retreat or voluntary movement and withdrawal.
 
 ---
 
 ### 46. Strategic Withdrawal
 
 **Cost:** 3  
-**Direction:** Keep Neutral as shared tactical disengagement, Asset recovery, and card preservation.
+**Allegiance:** Neutral
 
-**Action:** Return a banked Asset to your hand. If you do, gain one additional movement this turn.
-
-**Battle:** If you lose this battle, after retreating, you may withdraw one additional space. If you do, return one other card you played in this battle to your hand instead of placing it in its normal destination.
-
-- The additional withdrawal uses the general withdrawal rules; interactions that trigger from withdrawal apply without a card-specific reminder.
-- The card returned from the battle may have been committed from hand or played from battle draw, but it cannot be Strategic Withdrawal itself.
-- If the player cannot complete the additional withdrawal, they do not return a card.
-- Keep Neutral because tactical disengagement and resource preservation are broadly useful rather than faction-defining.
-- Not starter-eligible; Advanced complexity.
-- Watch movement stacking, repeatable recovery, and retreat-versus-withdrawal sequencing.
+> **Action:** Return a banked Asset to your hand. If you do, gain one additional movement this turn.
+>
+> **Battle:** If you lose this battle, after retreating, you may withdraw one additional space. If you do, return one other card you played in this battle to your hand instead of placing it in its normal destination.
 
 ---
 
 ### 47. Supplies
 
 **Cost:** 1  
-**Direction:** Keep Neutral as basic stored draw and battle filtering. Convert the temporary Condition into a one-use Asset that its controller may retain until needed.
+**Allegiance:** Neutral
 
-**Action:** Bank Supplies as an Asset. At the beginning of your turn, you may discard Supplies. If you do, draw two additional cards.
-
-**Battle:** After this battle, draw two cards, then discard one card.
-
-- Supplies may remain banked indefinitely until its controller chooses to use it at the beginning of a future turn.
-- The Asset occupies bank capacity and remains exposed to Asset interaction while stored.
-- Starter-eligible; Basic complexity.
-- Watch low-cost deck smoothing and automatic-inclusion pressure.
+> **Action:** Bank Supplies as an Asset. At the beginning of your turn, you may discard Supplies. If you do, draw two additional cards.
+>
+> **Battle:** After this battle, draw two cards, then discard one card.
 
 ---
 
-## Next card
+### 48. Tariffs
 
-Continue review at **Tariffs**.
+**Cost:** 3  
+**Allegiance:** Financiers
+
+> **Action:** Bank Tariffs as an Asset. Draw two cards. You may immediately play one additional Action card other than Tariffs.
+>
+> **Asset:** While Tariffs is banked, skip your normal draw. You cannot voluntarily discard Tariffs during the turn it is banked.
+>
+> **Battle:** Your opponent may discard one card from their hand. If they do not, add +1 to your battle total.
+
+---
+
+### 49. Sequestration
+
+**v0.5.7 source name:** The Black Edict  
+**Cost:** 4  
+**Allegiance:** Neutral
+
+> **Action:** Each player chooses one banked Asset they control to keep, if able, and discards the rest.
+>
+> **Battle:** All banked Assets are inactive during this battle.
+
+**The Black Edict** is reserved for a future purpose-built Inquisition card.
+
+---
+
+### 50. Treason
+
+**Cost:** 5  
+**Allegiance:** Intelligence
+
+> **Action:** Bank Treason as an Asset. During a battle involving you, after all Battle cards are revealed but before their effects resolve, you may discard Treason. If you do, choose one opposing Battle card. That card has no effect for its owner; place it in its owner's discard pile. Instead, resolve it as if you had played it.
+>
+> **Battle:** Reveal Treason before the other Battle cards. After they are revealed, choose one opposing Battle card. That card has no effect for its owner; place it in its owner's discard pile. Instead, resolve it as if you had played it.
+
+General copied-effect handling for impossible targets and source-dependent text remains unresolved.
+
+---
+
+### 51. Tyranny
+
+**Cost:** 4  
+**Allegiance:** Inquisition
+
+> **Action:** Bank Tyranny as an Asset. In each battle, after Battle cards are revealed, your opponent chooses one of their Battle cards that would add to their battle total or grant them advantage. That card is negated.
+>
+> **Battle:** During this battle, all opposing Battle cards that would add to your opponent's battle total or grant them advantage are negated.
+
+---
+
+### 52. Valor
+
+**Cost:** 2  
+**Allegiance:** Neutral
+
+> **Action:** Bank Valor as an Asset. Whenever you lose a battle, after resolving any required retreat, draw one card.
+>
+> **Battle:** After the battle dice are rolled, if your battle total is lower than your opponent's, you may reroll your battle die. You must use the new result.
+
+---
+
+### 53. War Crimes
+
+**Cost:** 3  
+**Allegiance:** Inquisition
+
+> **Action:** Bank War Crimes as an Asset. After your opponent loses a battle against you, you may discard War Crimes. If you do, none of their cards or abilities can trigger because of that loss or any resulting retreat. They retreat one additional space.
+>
+> **Battle:** If your opponent loses this battle, none of their cards or abilities can trigger because of that loss or any resulting retreat. They retreat one additional space.
+
+---
+
+### 54. Arcane Knowledge
+
+**v0.5.7 source name:** Witchcraft  
+**Cost:** 4  
+**Allegiance:** Neutral  
+**Trait:** Arcane
+
+> **Action:** Return a card from your Graveyard to your discard pile.
+>
+> **Battle:** When Arcane Knowledge is revealed, choose a card in your Graveyard with a Battle effect that can resolve in this battle. Resolve that effect as if you had played it. Leave the chosen card in your Graveyard.
+
+---
+
+## Consolidated cross-card rules
+
+- Gauntlet does not use Conditions in v0.6.
+- Whenever a player could play an Action card during their turn, they may instead discard one banked Asset they control. This uses that Action opportunity and is not an Action-card play. An additional Action-card play may be exchanged for voluntary Asset removal unless a card says otherwise.
+- A card effect that resolves another card's Battle effect cannot select a Battle effect that would itself resolve another card's Battle effect.
+- A negated card has no effect and follows its normal destination unless an effect says otherwise.
+- A Territory can have only one Ruins Overlay; a new Ruins Overlay replaces the old one and sends the old Overlay to its owner's Graveyard.
+
+## Remaining exact-text blockers
+
+- Fully redesign Manifest Destiny.
+- Finalize Blockade / Sanctions.
+- Finalize Capital Gains around Financier infrastructure.
+- Resolve whether Siege Weaponry is renamed Bombardment.
+- Finalize Witchcraft's eligible copied-effect wording.
+- Define copied or appropriated effects with impossible targets or source-dependent text.
+- Complete Intelligence Mission requirements and faction-package construction.
