@@ -146,7 +146,6 @@ function printPlayerDetails(game: GameState): void {
     console.log(`    discard: ${formatList(player.zones.discard)}`);
     console.log(`    graveyard: ${formatList(player.zones.graveyard)}`);
     console.log(`    assets: ${formatList(player.zones.assetBank)} / limit ${player.controlledTerritories.length}`);
-    console.log(`    conditions: ${formatList(player.zones.conditions)}`);
     console.log(`    territories: ${formatList(player.controlledTerritories)}`);
     console.log(`    occupied: ${player.occupiedSpaceId ?? '-'}`);
   }
