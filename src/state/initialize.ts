@@ -67,7 +67,6 @@ function createPlayerState(
       discard: [],
       graveyard: [],
       assetBank: [],
-      conditions: [],
       removed: [],
     },
     controlledTerritories: [...input.territories],
