@@ -12,7 +12,6 @@ function player(deck: string[], discard: string[] = [], graveyard: string[] = []
       discard,
       graveyard,
       assetBank: [],
-      conditions: [],
       removed: [],
     },
     controlledTerritories: [],
