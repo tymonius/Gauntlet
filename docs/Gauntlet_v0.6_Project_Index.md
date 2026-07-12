@@ -8,93 +8,91 @@ Read this file first when resuming v0.6 work.
 
 ## Active source hierarchy
 
-### Rules and cards
+### Rules, cards, and Territories
 
-1. **`Gauntlet_v0.6_Working_Rules.md`** — current v0.6 rules framework, faction mechanics, leaders, resources, alternate victories, withdrawal, persistent-effect categories, and product scope.
-2. **`card-reviews/STATUS.md`** — authoritative live card-review checkpoint.
-3. **`card-reviews/`** — standalone approved card reviews beginning with card 48; these are authoritative until the next batch rollup.
-4. **`Gauntlet_v0.6_Card_Metadata.md`** — consolidated card allegiance, starter eligibility, complexity, and watchlist rollup.
-5. **`Gauntlet_v0.6_Card_Review_Log.md`** — consolidated card-by-card migration decisions and wording direction through the latest rollup boundary.
-6. **`Gauntlet_v0.6_Open_Questions.md`** — unresolved current rules, card, faction, testing, and release questions.
-7. **`../releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`** — authoritative pre-v0.6 card order and source text for migration.
-8. **`v0.5.7_rules_clarifications.md`** — physical-rules clarifications discovered through digital implementation.
+1. **`Gauntlet_v0.6_Working_Rules.md`** — current v0.6 rules framework, faction mechanics, leaders, resources, alternate victories, Assets, Overlays, Territory activation, Ruins, and product scope.
+2. **`card-reviews/STATUS.md`** — authoritative live playable-card checkpoint and unresolved card blockers.
+3. **`Gauntlet_v0.6_Card_Review_Log.md`** — consolidated decisions and wording direction for all 54 v0.5.7 playable cards.
+4. **`Gauntlet_v0.6_Card_Metadata.md`** — consolidated allegiance, starter eligibility, complexity, and watchlists for all 54 reviewed cards.
+5. **`card-reviews/CONDITION_AUDIT.md`** — detailed provenance for retiring Conditions and converting former Condition effects.
+6. **`card-reviews/`** — standalone detailed review provenance, including cards 48–54.
+7. **`territory-reviews/STATUS.md`** — authoritative Territory-review checkpoint.
+8. **`territory-reviews/GENERAL_RULES.md`** — approved general Territory activation and suppression rules.
+9. **`territory-reviews/`** — standalone reviews for all 25 v0.5.7 Territories and Arenas.
+10. **`Gauntlet_v0.6_Open_Questions.md`** — unresolved current rules, card, faction, testing, and release questions.
+11. **`../releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`** — authoritative pre-v0.6 source order and text for migration.
+12. **`v0.5.7_rules_clarifications.md`** — physical-rules clarifications discovered through digital implementation.
+
+No canonical v0.6 data exists yet. Active v0.6 documents govern development until the remaining exact-text and faction-package blockers are resolved and a canonical release dataset is created.
 
 ### Design rationale and testing
 
-9. **`Gauntlet_Design_Principles_and_Guardrails.md`** — current design constraints for core rules, factions, cards, complexity, components, pacing, and digital work.
-10. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — why the v0.5 rebuild occurred and which older systems are not current.
-11. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing benchmarks, simulation conclusions, telemetry, and human-playtest questions.
-12. **`Gauntlet_v0.6.1_Diplomat_Overhaul_Notes.md`** — Diplomat changes explicitly held for v0.6.1.
-13. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, Day/Night, and other post-v0.6 concepts.
+13. **`Gauntlet_Design_Principles_and_Guardrails.md`** — current design constraints for core rules, factions, cards, complexity, components, pacing, and digital work.
+14. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — why the v0.5 rebuild occurred and which older systems are not current.
+15. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing benchmarks, simulation conclusions, telemetry, and human-playtest questions.
+16. **`Gauntlet_v0.6.1_Diplomat_Overhaul_Notes.md`** — Diplomat changes explicitly held for v0.6.1.
+17. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, Day/Night, and other post-v0.6 concepts.
 
 ### Digital development
 
-14. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, rules engine, CLI, GUI, telemetry, and remote-play roadmap.
-15. **`../deckbuilder/README.md`** — current v0.5 deckbuilder behavior, consolidated implementation structure, and versioned upgrade path.
-16. **`../src/README.md`** — current TypeScript engine and development-interface status.
-17. **`../data/README.md`** — starter-data scope and source-of-truth warning.
+18. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, rules engine, CLI, GUI, telemetry, and remote-play roadmap.
+19. **`../deckbuilder/README.md`** — current v0.5 deckbuilder behavior and versioned upgrade path.
+20. **`../src/README.md`** — current TypeScript engine and development-interface status.
+21. **`../data/README.md`** — starter-data scope and source-of-truth warning.
 
 ### Setting and production
 
-18. **`Gauntlet_Lore_Development_Notes.md`** — current WIP setting direction, open questions, and rejected premises.
-19. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — active production-facing leader and miniature direction.
-20. **`Game_Design_Glossary.md`** — shared design terminology.
+22. **`Gauntlet_Lore_Development_Notes.md`** — current WIP setting direction, open questions, and rejected premises.
+23. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — active production-facing leader and miniature direction.
+24. **`Game_Design_Glossary.md`** — shared design terminology.
 
 ### Historical archive
 
 `Archive/` contains completed audits and superseded historical records that remain useful for provenance. Archive material does not override active rules, canonical data, or current design documents.
 
-Current archived records include:
-
-- completed 2026-07-10 conversation audit;
-- early leader archetype notes;
-- character design sheet generation log.
-
----
-
-## Repository and workflow status
-
-The consolidation pass is complete. A lightweight per-card workflow is now active.
-
-Completed changes include:
-
-- created `docs/Archive/` with an archive policy;
-- moved completed audits and historical visual-development records into the archive;
-- removed obsolete audit trackers, conversation-lead trackers, migration worksheets, correction addenda, and connector inventory files;
-- consolidated earlier card-review work into one Review Log and Metadata registry through card 47;
-- introduced `docs/card-reviews/` so future approved cards can be logged in small standalone files;
-- made `docs/card-reviews/STATUS.md` the live checkpoint;
-- set batch rollups for every five approved cards, the end of a review session, or a release checkpoint;
-- stopped requiring README, Project Index, consolidated-log, and metadata rewrites after every individual card;
-- absorbed Withdrawal and Condition-reduction rules into the Working Rules and removed the cleanup sidecar;
-- rewrote Open Questions to contain only active unresolved work;
-- rewrote the Design Principles to use current metadata and faction language;
-- consolidated the deckbuilder's incremental CSS files into `components.css`;
-- consolidated the deckbuilder's browser, randomization, and print scripts into `features.js`;
-- retained `/data` and `/src` because they are active digital-development scaffolds, with their non-authoritative status clearly documented;
-- left versioned `/releases` packages unchanged as historical release snapshots.
-
 ---
 
 ## Current development checkpoint
 
-### Card review
+### Playable cards
 
-- Last mechanically reviewed card: **Supplies**.
-- Next card: **Tariffs**.
-- Consolidated rollup coverage: cards 1–47, through Supplies.
-- Beginning with Tariffs, approved reviews are recorded in `docs/card-reviews/` and rolled up in batches.
-- Scorched Earth remains a cost-3 Neutral Ruins Overlay card; its former Asset-destruction and bank-lock effects were removed.
-- Siege Weaponry is Neutral at cost 4, deploys from the Asset bank onto an adjacent enemy Territory before movement, suppresses its printed effect for the turn, and becomes Ruins after successful capture or battle victory.
-- **Bombardment** is the leading replacement title; **Siege Weaponry** may be reserved for a future Engineer card.
-- Spies is an Intelligence card at cost 2. Its Asset exposes the opponent's hand; its Battle effect reveals only the opponent's actual hand commitment and chosen battle-drawn card before allowing the Spies player to change their own battle-drawn selection.
-- Stand Ground remains Neutral at cost 2. Its Action is now a prepared one-use Asset that can be discarded to ignore the movement portion of one opposing card effect; it does not prevent normal required retreat or voluntary movement.
-- Strategic Withdrawal remains Neutral at cost 3. Its Action returns a banked Asset to hand for additional movement; its Battle effect trades an additional withdrawal after a loss for recovering one other card played in that battle.
-- Supplies remains Neutral at cost 1. Its Action is a stored one-use Asset that may remain banked until its controller chooses, at the beginning of a future turn, to discard it and draw two additional cards; its Battle effect remains draw two, then discard one after battle.
-- A Territory is either ruined or not. Placing a new Ruins Overlay on an already ruined Territory sends the existing Overlay to its owner's Graveyard and replaces it.
-- **Repair** is reserved for the future Engineer faction rather than becoming a universal v0.6 action.
-- Do not inflate individual card costs merely to populate the 5-cost tier. After the full card review, audit the cost curve and identify or design faction capstones while constructing the faction decks.
-- After migration, complete the Condition reduction pass, integrate finalized cross-card rules such as Ruins into the Working Rules, audit faction cost curves and capstones, and create canonical v0.6 data.
+- All **54** v0.5.7 playable cards have been mechanically reviewed for v0.6.
+- The consolidated Card Review Log and Metadata registry now cover cards 1–54.
+- The Arcane Knowledge / Witchcraft name swap is integrated into both rollups.
+- Conditions are retired as a v0.6 game concept.
+- Former Condition effects have been converted to Assets, Overlays, immediate effects, or deferred faction redesigns.
+- The Condition audit is complete for current non-faction cards.
+
+Remaining exact-text or design blockers:
+
+- Manifest Destiny requires a full redesign.
+- Blockade / Sanctions requires its Diplomat implementation.
+- Capital Gains requires its Financier-infrastructure redesign.
+- Siege Weaponry may be renamed Bombardment.
+- Witchcraft needs final copied-effect eligibility wording.
+- General impossible-target and source-dependent copied-effect handling remains unresolved.
+- Intelligence Mission requirements and faction packages remain incomplete.
+- Faction cost curves and capstone needs still require audit.
+
+### Territories
+
+- All **25** v0.5.7 Territories and Arenas have been reviewed.
+- General face-up, face-down, control, occupation, suppression, and Ruins rules are consolidated into the Working Rules.
+- Current targeted watchlists include Old Battlefield value, Grand Melee stacking, and Monastery's Arcane pressure.
+- Faction-specific Territories are tabled for later consideration and are not part of the current v0.6 baseline.
+
+### Core rules consolidation
+
+The Working Rules now include:
+
+- independent Action-card and Battle hand-commitment limits;
+- voluntary Asset removal using an Action opportunity;
+- no Condition zone or Condition card category;
+- Asset and Overlay persistence;
+- general Territory activation and suppression;
+- Ruins replacement and persistence;
+- the definition of negated;
+- the anti-recursion rule for effects that resolve other Battle effects.
 
 ### Factions
 
@@ -111,9 +109,11 @@ Current faction rules are in the Working Rules. Balance, names, Missions, card p
 
 ### Digital work
 
-- The v0.5 browser deckbuilder is functional and has six tracked files: README, HTML, two CSS files, and two JavaScript files.
-- The TypeScript engine, CLI, and browser GUI are development scaffolds, not a complete digital edition.
-- The next digital target must be chosen explicitly: complete v0.5.7 first or create a separate v0.6-development mode.
+- The TypeScript state model, reducer, public/private views, CLI, and browser GUI no longer contain a Condition zone.
+- The small implemented Attrition persistent effect now uses the Asset Bank rather than Conditions.
+- Tests and Action destination previews were updated for the Asset conversion.
+- The engine, CLI, and GUI remain development scaffolds, not a complete v0.6 digital edition.
+- The next digital target must still be chosen explicitly: complete v0.5.7 first or create a separate v0.6-development mode.
 - Do not silently migrate saved decks across the v0.5/v0.6 boundary.
 
 ### Lore and production
@@ -128,17 +128,17 @@ Current faction rules are in the Working Rules. Balance, names, Missions, card p
 
 1. Treat chat as workspace; write durable decisions into the repository.
 2. Use released canonical data for its matching version.
-3. For card review, fetch exact v0.5.7 source text before analysis.
+3. For migration questions, fetch exact v0.5.7 source text before analysis.
 4. Before faction-locking a card, assess both neutral-pool impact and interaction with the destination faction's mechanics.
-5. After approval, create or update one standalone card file and update `card-reviews/STATUS.md`.
-6. Roll standalone reviews into the consolidated Review Log and Metadata registry after every five approved cards, at session end, or before a release checkpoint.
-7. Do not update the root README after each card; update this Project Index only for material milestones or rollups.
-8. Keep rules, testing rationale, lore, production direction, and implementation state in their designated documents.
-9. Remove or archive temporary worksheets, addenda, trackers, and continuation files once their information is consolidated.
-10. Do not claim a decision is logged until the repository update succeeds.
+5. Record approved decisions in the relevant standalone or consolidated source.
+6. Update rollups and this Project Index at material milestones rather than after every minor discussion.
+7. Keep rules, testing rationale, lore, production direction, and implementation state in their designated documents.
+8. Remove or archive temporary worksheets, addenda, trackers, and continuation files once their information is consolidated.
+9. Do not claim a decision is logged until the repository update succeeds.
+10. Do not create canonical v0.6 data by silently resolving open design questions.
 
 ---
 
 ## Immediate next step
 
-Continue v0.6 card review at **Tariffs** using `card-reviews/TEMPLATE.md` and record the approved decision as `card-reviews/048-tariffs.md`.
+Resolve the remaining exact-text blockers and complete the six faction card packages. Once those are stable, create the first canonical v0.6 dataset and use it to drive the deckbuilder and digital-development mode.
