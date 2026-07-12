@@ -1,20 +1,25 @@
 # Gauntlet v0.6 Territory Review Status
 
 **Last approved Territory:** 25 — Arena: Grand Melee  
-**Next phase:** Territory consolidation and rules audit  
+**Review status:** Complete for all 25 v0.5.7 Territories and Arenas  
+**Rules consolidation:** Complete  
 **Source order:** `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`
 
-## Review status
+## Consolidated rules
 
-All 25 v0.5.7 Territories and Arenas have been reviewed for v0.6.
+The approved general rules in `GENERAL_RULES.md` are now included in `../Gauntlet_v0.6_Working_Rules.md`:
 
-The general rules governing active and suppressed Territory text are approved in `GENERAL_RULES.md`.
+- a face-up Territory's printed effect is active unless its text says otherwise;
+- control and occupation matter only when the effect refers to them;
+- a face-down Territory has no active printed effect;
+- suppression makes all printed Territory text inactive for the stated duration;
+- Ruins Overlays suppress printed text, replace existing Ruins, and remain until removed;
+- there is no universal Repair action in v0.6.
 
-## Next-phase workflow
+## Remaining work
 
-- Consolidate finalized Territory wording and the approved general Territory rules into the v0.6 rules and canonical data.
-- Audit Territory interactions with Ruins Overlays and effects that suppress printed Territory text.
-- Verify Arena wording against the finalized tie and Homeland Advantage rules.
+- Transfer finalized Territory wording into canonical v0.6 data after the remaining card and faction-package blockers are resolved.
+- Verify Arena wording during final canonical-data QA against tie, Homeland Advantage, battle-draw, and battle-cleanup rules.
 - Retain identified playtest watchlist items for targeted testing.
 
 ## Current playtest watchlist
