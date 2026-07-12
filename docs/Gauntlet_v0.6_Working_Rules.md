@@ -38,7 +38,7 @@ A legal deck contains:
 - at least **30 playable cards**;
 - no more than **60 total deckbuilding value**.
 
-Playable cards are cards that may be drawn, played, revealed, banked, discarded, sent to the Graveyard, or otherwise used during normal gameplay. They may include Action cards, Battle cards, Territory cards, faction cards, Assets, Conditions, and Overlays.
+Playable cards are cards that may be drawn, played, revealed, banked, discarded, sent to the Graveyard, or otherwise used during normal gameplay. They may include Action cards, Battle cards, Territory cards, faction cards, Assets, and Overlays.
 
 Leader cards, faction references, rules references, resource trackers, Proposal lists, Order lists, and other supplemental cards do not count toward deck size or deckbuilding value.
 
@@ -114,6 +114,16 @@ If neither player resolves a tied battle through Homeland Advantage, both player
 
 While defending your own Heartland, gain **+1 to your battle total**. This is separate from and stacks with Homeland Advantage.
 
+### Negated cards
+
+A **negated** card has no effect. Unless the negating effect says otherwise, it remains played and follows its normal destination.
+
+### Effects that resolve other Battle effects
+
+A card effect that resolves another card's Battle effect cannot select a Battle effect that would itself resolve another card's Battle effect.
+
+This prevents recursive chains across cards such as Arcane Knowledge, Witchcraft, Treason, and future copied- or appropriated-effect cards.
+
 ---
 
 ## 6. Withdrawal
@@ -146,7 +156,7 @@ There are no Heartland cards in v0.6.
 
 ---
 
-## 8. Assets, Conditions, and Overlays
+## 8. Assets, Overlays, and Territory effects
 
 ### Asset bank
 
@@ -157,20 +167,37 @@ A player's Asset-bank limit equals the number of Territories they control.
 - If the limit falls below the number of banked Assets, the player immediately chooses and discards enough Assets to reach the new limit.
 - To bank an Asset, follow that card's timing and rules.
 
-### Persistent-effect categories
+### Voluntary Asset removal
+
+Whenever a player could play an Action card during their turn, they may instead discard one banked Asset they control.
+
+- This uses that Action opportunity.
+- It is not playing an Action card.
+- An effect granting an additional Action-card play may instead be used to discard a banked Asset.
+- A card may prohibit or delay its own voluntary removal.
+
+### Persistent playable-card effects
+
+Gauntlet does not use Conditions in v0.6.
 
 - **Assets** belong to a player and compete for Asset-bank capacity.
-- **Overlays** belong visibly to a specific Territory.
-- **Conditions** are reserved for persistent timing that neither an Asset nor an Overlay represents cleanly.
+- **Overlays** belong visibly to a specific Territory and do not occupy an Asset-bank slot unless a rule specifically says otherwise.
+- Effects that need neither form of persistence resolve immediately or use explicit self-tracking text.
 
-During the post-review card cleanup:
+### Active Territory text
 
-- prefer an Asset for a player-owned effect that remains available until used;
-- prefer an Overlay for a board-local effect attached to a Territory;
-- resolve and discard immediately when no persistent component is needed;
-- keep a Condition only when its timing genuinely requires a separate persistent card.
+A face-up Territory's printed effect is active unless its text states otherwise. Control and occupation matter only when the effect specifically refers to them. A face-down Territory has no active printed effect.
 
-Any conversion must preserve pacing, counterplay, Asset pressure, and board-state clarity.
+If an Overlay or card effect suppresses a Territory's printed effect, treat all of that printed effect as inactive for the stated duration.
+
+### Ruins Overlays
+
+A Ruins Overlay makes that Territory's printed effect inactive while the Overlay remains there.
+
+- A Territory is either ruined or not; it cannot be doubly ruined.
+- If a Ruins Overlay is placed on a Territory that already has one, place the existing Ruins Overlay in its owner's Graveyard, then place the new one.
+- Ruins remain until removed by an effect.
+- There is no universal Repair action in v0.6.
 
 ---
 
@@ -370,7 +397,7 @@ Instead of playing an Action card during the Action step, spend Conviction to ch
 | Cost | Effect |
 |---:|---|
 | 1 | Send the top card of the opponent's discard pile to their Graveyard. |
-| 2 | Choose one opposing Asset or Condition and send it to its owner's Graveyard. |
+| 2 | Choose one opposing Asset and send it to its owner's Graveyard. |
 | 3 | The opponent chooses one card from hand and sends it to their Graveyard. |
 | 4 | Look at the opponent's hand. Choose one card and send it to their Graveyard. |
 
