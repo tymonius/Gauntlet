@@ -90,6 +90,24 @@ Any conversion must preserve pacing, counterplay, visibility, and the intended c
 - Resolving the additional retreat after the normal retreat keeps sequencing clear and preserves ordinary retreat resolution.
 - The effect applies only after the opponent loses a battle against the controller, preventing unrelated battles from consuming it.
 
+### Disruption
+
+**Cost:** 2  
+**Representation:** Immediate Action; no persistent object  
+**Complexity:** Basic  
+**Watchlist:** Neutral hand-disruption and cancellation density
+
+> **Action:** Your opponent discards one card from their hand at random.
+
+> **Battle:** Cancel one active opposing Battle card. A canceled hand commitment returns to its owner's hand; a canceled battle-drawn card goes to its owner's discard pile.
+
+**Rationale:**
+
+- Immediate random discard removes the delayed next-turn trigger and its associated upkeep reminder.
+- The Action still costs both the card and the player's Action opportunity, while the opponent—not the player—determines no target because the discard is random.
+- It remains meaningfully weaker than targeted hand disruption such as Assassins.
+- The Battle effect preserves the previously approved soft-cancellation identity and standard canceled-card destinations.
+
 ## Already resolved before this audit
 
 The following v0.5.7 Condition uses were removed or converted during card review:
@@ -107,8 +125,7 @@ The following v0.5.7 Condition uses were removed or converted during card review
 
 ## Pending review now
 
-1. **Disruption** (source card: Embargo)
-2. **Palisade Wall**
+1. **Palisade Wall**
 
 ## Deferred until faction-card redesign
 
