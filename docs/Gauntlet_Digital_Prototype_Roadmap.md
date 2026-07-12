@@ -54,7 +54,7 @@ Framework-neutral TypeScript state and reducer logic for:
 - battles;
 - card commitment and battle draw;
 - card destinations;
-- Actions, Assets, Conditions, and Overlays;
+- Actions, Assets, and Overlays;
 - occupation and capture;
 - Asset-bank limits;
 - win-condition evaluation.
@@ -96,7 +96,7 @@ The `/data` folder contains early machine-readable starter records and schema no
 
 The `/src` tree contains framework-neutral engine scaffolding and testable state logic.
 
-Implemented conversation milestones include:
+Implemented development milestones include:
 
 - authoritative and public/private state views;
 - setup validation and initialization;
@@ -107,7 +107,7 @@ Implemented conversation milestones include:
 - card cancellation and destination handling;
 - initial specific Battle effects;
 - Action-card framework and legal Action affordances;
-- Conditions and Asset-bank enforcement;
+- Asset-bank enforcement and persistent Assets;
 - player-selected Asset-bank discard-down;
 - Territory occupation, capture, and control changes;
 - centralized win-condition evaluation;
@@ -115,6 +115,8 @@ Implemented conversation milestones include:
 - guided CLI;
 - CLI session logging;
 - browser development GUI.
+
+The former Condition zone has been removed from the state model, reducers, public/private views, CLI, GUI, and affected tests. Persistent v0.6 effects must use Assets, Territory Overlays, immediate resolution, or explicit card-specific self-tracking.
 
 The root package scripts currently expose:
 
@@ -143,9 +145,12 @@ For a released ruleset, the matching canonical release data should control card 
 
 For v0.6 development:
 
-- approved card-review decisions live in the card review log and metadata registry until canonical v0.6 data is created;
+- approved card-review decisions live in the Card Review Log and Metadata registry until canonical v0.6 data is created;
+- approved Territory wording and general rules live in the Territory review files and Working Rules;
 - the digital engine must not invent final v0.6 text from stale v0.5 records;
 - a v0.6 digital mode should not be declared current until its data and rules implementation are synchronized with the v0.6 working sources.
+
+No canonical v0.6 dataset exists yet because several exact card texts, Intelligence Missions, and faction packages remain unresolved.
 
 ### Saved deck compatibility
 
@@ -188,8 +193,8 @@ Prioritize:
 2. card destinations;
 3. movement, occupation, and capture;
 4. Asset-bank limits;
-5. common Actions, Assets, and Conditions;
-6. Territory effects;
+5. common Actions and Assets;
+6. Territory effects and Overlays;
 7. faction resources and victory systems;
 8. unusual card exceptions.
 
@@ -223,6 +228,16 @@ Digital implementation exposed several rules that required explicit physical cla
 - Watchtower reveals the attacker's normal hand commitment to both players.
 - canceled hand commitments return to hand; canceled battle-drawn cards go to discard.
 
+v0.6 development has also clarified:
+
+- Action-card plays and Battle hand commitments use independent allowances;
+- voluntary Asset removal uses an Action opportunity;
+- Conditions do not exist in v0.6;
+- Territory printed effects are governed by face-up state and their own text;
+- Ruins are Territory Overlays and only one may occupy a Territory;
+- negated cards have no effect but normally retain their destination;
+- effects that resolve another Battle effect cannot recurse through another such effect.
+
 Continue treating digital implementation as a rules-clarity test. Any ambiguity found by code should be resolved in physical rules documentation, not only buried in engine behavior.
 
 ---
@@ -237,17 +252,21 @@ Continue treating digital implementation as a rules-clarity test. Any ambiguity 
 - Framework-neutral engine direction.
 - CLI and GUI development entry points.
 - v0.5.7 physical rules clarifications discovered through implementation.
+- Full v0.6 playable-card and Territory review checkpoints.
+- Condition retirement in the active rules and development state model.
+- Current `/src` implementation status and limitations in `src/README.md`.
 
-### Documented/stale
+### Documented/stale or transitional
 
-- `data/README.md` still describes the project mainly as a starter data folder.
-- `src/README.md` describes only the earliest types/state scaffold and does not reflect the CLI, GUI, Action framework, capture flow, Asset-bank enforcement, or win evaluation.
+- `/data` remains starter scaffolding rather than current v0.6 canonical data.
 - Development examples still identify themselves as `0.5.6-dev` even though v0.5.7 is the latest pre-faction release and v0.6 development is active.
+- The implemented card subset still uses some v0.5 IDs and behavior that must be replaced or versioned before a v0.6-development mode is authoritative.
 
 ### Work-in-progress
 
 - full current card/Territory implementation;
 - full v0.5.7 synchronization;
+- canonical v0.6 data;
 - v0.6 faction implementation;
 - persistent game save/load;
 - remote multiplayer;
@@ -258,9 +277,9 @@ Continue treating digital implementation as a rules-clarity test. Any ambiguity 
 
 ## 8. Next implementation sequence
 
-1. Inventory the actual `/src` modules and tests and update source documentation.
-2. Choose the next supported digital rules target explicitly: complete v0.5.7 or begin a separate v0.6-dev mode.
-3. Replace placeholder development decks with validated canonical deck data for that mode.
+1. Choose the next supported digital rules target explicitly: complete v0.5.7 or begin a separate v0.6-development mode.
+2. Resolve the remaining v0.6 exact-text and faction-package blockers before treating any v0.6 data as canonical.
+3. Replace placeholder development decks with validated canonical deck data for the chosen mode.
 4. Run an end-to-end guided game through the GUI and log every missing or incorrect interaction.
 5. Implement the remaining common Territory and card effects in priority order.
 6. Add clear placeholders or manual-resolution hooks for effects not yet automated.
@@ -282,6 +301,7 @@ A digital build is ready for meaningful remote or local playtesting when it can:
 - handle partial draws and destinations;
 - resolve occupation, counterattack, capture, and Heartland victory;
 - enforce Asset-bank capacity and discard choices;
+- represent persistent effects through Assets and Overlays without a Condition zone;
 - identify every unimplemented effect before it matters;
 - save a reproducible log;
 - complete a full game without direct state editing.
