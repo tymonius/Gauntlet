@@ -1,19 +1,23 @@
 # Gauntlet v0.6 Territory Review Status
 
-**Last approved Territory:** 24 — Arena: Single Combat  
-**Next Territory:** 25 — Arena: Grand Melee  
+**Last approved Territory:** 25 — Arena: Grand Melee  
+**Next phase:** Territory consolidation and rules audit  
 **Source order:** `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`
 
-## Active workflow
+## Review status
 
-- Record each approved Territory in a small standalone file in this directory.
-- Update this status file after each approval.
-- Review standard Territories first, then Arenas.
-- Roll finalized Territory wording into the v0.6 rules and canonical data at the next appropriate migration checkpoint.
+All 25 v0.5.7 Territories and Arenas have been reviewed for v0.6.
 
-## Current unresolved items
+## Next-phase workflow
 
-- Confirm the general rule governing when a Territory effect is active while its controller does or does not occupy it.
+- Consolidate finalized Territory wording into the v0.6 rules and canonical data.
+- Resolve the general rule governing when a Territory effect is active while its controller does or does not occupy it.
 - Audit Territory interactions with Ruins Overlays and effects that suppress printed Territory text.
-- Check Arena wording against the finalized tie and Homeland Advantage rules.
-- Playtest whether Old Battlefield provides enough value outside dedicated Graveyard strategies.
+- Verify Arena wording against the finalized tie and Homeland Advantage rules.
+- Retain identified playtest watchlist items for targeted testing.
+
+## Current playtest watchlist
+
+- Whether Old Battlefield provides enough value outside dedicated Graveyard strategies.
+- Grand Melee combinations that substantially increase battle-draw size or battle-drawn play allowances.
+- Arcane-faction pressure from Monastery and final Arcane-trait assignment.
