@@ -72,6 +72,24 @@ Any conversion must preserve pacing, counterplay, visibility, and the intended c
 - If the player loses, the chosen card still has no effect during the battle but follows its normal destination during cleanup.
 - The victory rider matters primarily for battle-drawn cards, because hand commitments normally enter the Graveyard already.
 
+### Court Martial
+
+**Cost:** 3  
+**Representation:** Optional single-use Asset  
+**Complexity:** Basic  
+**Watchlist:** Retreat stacking and board-edge interactions
+
+> **Action:** Bank Court Martial as an Asset. During battle cleanup, after an opponent loses a battle against you and completes their normal retreat, you may discard Court Martial. If you do, they retreat one additional space, if able.
+
+> **Battle:** Your opponent gains disadvantage during this battle. If they lose, after completing their normal retreat, they retreat one additional space, if able.
+
+**Rationale:**
+
+- The optional trigger lets the controller hold Court Martial for a strategically important loss instead of expiring after the opponent's next battle regardless of result.
+- The banked Asset is visible and interactable, making the threat legible to both players.
+- Resolving the additional retreat after the normal retreat keeps sequencing clear and preserves ordinary retreat resolution.
+- The effect applies only after the opponent loses a battle against the controller, preventing unrelated battles from consuming it.
+
 ## Already resolved before this audit
 
 The following v0.5.7 Condition uses were removed or converted during card review:
@@ -89,9 +107,8 @@ The following v0.5.7 Condition uses were removed or converted during card review
 
 ## Pending review now
 
-1. **Court Martial**
-2. **Disruption** (source card: Embargo)
-3. **Palisade Wall**
+1. **Disruption** (source card: Embargo)
+2. **Palisade Wall**
 
 ## Deferred until faction-card redesign
 
