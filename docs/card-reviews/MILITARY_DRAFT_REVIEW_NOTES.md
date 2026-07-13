@@ -39,26 +39,43 @@ The replacement Overlay must represent something that makes physical and themati
 
 ---
 
-## Current Overlay directions
+## Preferred Overlay direction
 
-### War Camp
+### Encampment
 
-A persistent camp on a controlled Territory. While occupying it, the Military player may remain and muster Command instead of advancing. This directly expresses momentum versus consolidation and has plausible use for both leaders.
+Encampment is a persistent military installation attached to a Territory rather than to the army's continued occupation of it.
 
-Possible concept:
+Preferred functional direction:
 
-> **Overlay:** At the beginning of your turn, if you occupy this Territory, you may gain 1 Command. If you do, you cannot advance this turn. When you cease to occupy or control this Territory, place War Camp in its owner's Graveyard.
+> **Action:** Play only if you captured a Territory this turn. Place Encampment on that Territory as an Overlay.
+>
+> **Overlay:** At the end of your turn, if you occupy this Territory, gain 1 Command.
+>
+> When an opponent gains control of this Territory, place Encampment in its owner's Graveyard.
+>
+> **Battle:** During battle cleanup, if you won this battle while defending a Territory you control, place Encampment on that Territory as an Overlay instead of placing it in its normal destination.
 
-The name and exact effect remain unresolved.
+This direction is preferred because:
 
-### Siegeworks
+- the Overlay remains for a physically and thematically intuitive reason;
+- leaving the Territory does not dismantle the camp;
+- returning to and ending a turn on the Territory can provide Command again;
+- temporary enemy occupation does not immediately remove it, preserving the normal counterattack window;
+- it disappears only when the opponent actually gains control of the Territory;
+- ending the turn there rather than continuing forward directly expresses momentum versus consolidation.
 
-Persistent works placed on an enemy-controlled Territory to support repeated assaults. They would remain across turns until the siege succeeds, the Military abandons the position, or another defined removal condition occurs.
+Cost remains unresolved, with cost 3 currently the leading starting point.
 
-This is more General-leaning and risks overlap with Invasion, Siege Weaponry, and battle-draw support, but it has strong physical logic as an Overlay.
+Primary balance concern: unrestricted placement on any controlled rear Territory would allow passive Command farming. Restricting the Action to a Territory captured that turn keeps Encampment tied to newly secured ground. The Battle form gives the Commandant a defensive route to establish one while still allowing the General to use the Action after capture.
+
+### Secondary Overlay direction: Siegeworks
+
+Persistent works placed on an enemy-controlled Territory to support repeated assaults remain a possible alternative or future Military design.
+
+This direction is more General-leaning and risks overlap with Invasion, Siege Weaponry, and battle-draw support, but it has strong physical logic as an Overlay.
 
 ---
 
 ## Next step
 
-Choose and refine the persistent Overlay direction before returning to the remaining open Military card slots. The first twelve-card draft should not be treated as a near-final package.
+Refine Encampment's placement condition, cost, and Battle wording, then return to Standing Orders, Field Command, Brothers in Arms, and the remaining open Military card slots. The first twelve-card draft should not be treated as a near-final package.
