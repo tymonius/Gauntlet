@@ -17,7 +17,7 @@ Read this file first when resuming v0.6 work.
 5. **`Gauntlet_v0.6_Card_Metadata.md`** — consolidated allegiance, starter eligibility, complexity, and watchlists for all 66 approved playable-card designs.
 6. **`Gauntlet_v0.6_Card_Review_Log.md`** — migration provenance for all 54 v0.5.7 source cards. It does not override the Neutral Card Pool where Neutral costs or exact text differ.
 7. **`card-reviews/CONDITION_AUDIT.md`** — detailed provenance for retiring Conditions and converting former Condition effects.
-8. **`card-reviews/`** — standalone detailed review provenance, including the approved Neutral cost-2 and cost-3 addition records.
+8. **`card-reviews/`** — standalone detailed review provenance, including the approved Neutral additions and current faction-card audits.
 9. **`territory-reviews/STATUS.md`** — authoritative Territory-review checkpoint.
 10. **`territory-reviews/GENERAL_RULES.md`** — approved general Territory activation and suppression rules.
 11. **`territory-reviews/`** — standalone reviews for all 25 v0.5.7 Territories and Arenas.
@@ -32,23 +32,24 @@ No canonical v0.6 data exists yet. Active v0.6 documents govern development unti
 15. **`Gauntlet_Design_Principles_and_Guardrails.md`** — current design constraints for core rules, factions, cards, complexity, components, pacing, and digital work.
 16. **`Gauntlet_v0.6_Faction_Card_Design_Guide.md`** — active construction and review standard for faction card pools, including creative strategy, open-ended synergy, no-grandfathering, leader integration, the twelve-card package target, premium-leaning cost baseline, anti-patterns, and package approval criteria.
 17. **`Gauntlet_v0.6_Military_Design_Notes.md`** — active Military faction brief covering momentum versus consolidation, Command discipline, combined arms, maneuver, prepared operations, intended weaknesses, and inherited-candidate evaluation.
-18. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — why the v0.5 rebuild occurred and which older systems are not current.
-19. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing benchmarks, simulation conclusions, telemetry, and human-playtest questions.
-20. **`Gauntlet_v0.6_Diplomat_Design_Notes.md`** — active rationale, implementation guidance, Sanctions direction, and testing questions for the integrated v0.6 Diplomat framework.
-21. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, Day/Night, and other post-v0.6 concepts.
+18. **`card-reviews/MILITARY_INHERITED_CANDIDATE_AUDIT.md`** — completed audit of Brothers in Arms, Militias, Patriotism, and Shock and Awe; recommendations await explicit approval before registry changes.
+19. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — why the v0.5 rebuild occurred and which older systems are not current.
+20. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing benchmarks, simulation conclusions, telemetry, and human-playtest questions.
+21. **`Gauntlet_v0.6_Diplomat_Design_Notes.md`** — active rationale, implementation guidance, Sanctions direction, and testing questions for the integrated v0.6 Diplomat framework.
+22. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, Day/Night, and other post-v0.6 concepts.
 
 ### Digital development
 
-22. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, rules engine, CLI, GUI, telemetry, and remote-play roadmap.
-23. **`../deckbuilder/README.md`** — current v0.5 deckbuilder behavior and versioned upgrade path.
-24. **`../src/README.md`** — current TypeScript engine and development-interface status.
-25. **`../data/README.md`** — starter-data scope and source-of-truth warning.
+23. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, rules engine, CLI, GUI, telemetry, and remote-play roadmap.
+24. **`../deckbuilder/README.md`** — current v0.5 deckbuilder behavior and versioned upgrade path.
+25. **`../src/README.md`** — current TypeScript engine and development-interface status.
+26. **`../data/README.md`** — starter-data scope and source-of-truth warning.
 
 ### Setting and production
 
-26. **`Gauntlet_Lore_Development_Notes.md`** — current WIP setting direction, open questions, and rejected premises.
-27. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — active production-facing leader and miniature direction.
-28. **`Game_Design_Glossary.md`** — shared design terminology.
+27. **`Gauntlet_Lore_Development_Notes.md`** — current WIP setting direction, open questions, and rejected premises.
+28. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — active production-facing leader and miniature direction.
+29. **`Game_Design_Glossary.md`** — shared design terminology.
 
 ### Historical archive
 
@@ -126,7 +127,7 @@ Faction package construction and review should follow `Gauntlet_v0.6_Faction_Car
 - at least one optional, game-defining cost-5 statement card per faction;
 - permission to deviate from the default curve or include additional premium cards when the completed strategic vocabulary is stronger, more varied, and more fun as a result.
 
-Military's active design brief is now established in `Gauntlet_v0.6_Military_Design_Notes.md`. Its core tension is momentum versus consolidation, supported by Command discipline, combined arms, maneuver, prepared operations, and force preservation. The inherited Military cards remain unapproved candidates pending individual audit.
+Military's active design brief is established in `Gauntlet_v0.6_Military_Design_Notes.md`. The inherited-candidate audit found that none of the four cards passes unchanged. Brothers in Arms and Shock and Awe contain promising concepts that may justify full redesigns; Militias and Patriotism are recommended for retirement in their current forms. These recommendations are not yet registry changes.
 
 ### Digital work
 
@@ -163,4 +164,4 @@ Military's active design brief is now established in `Gauntlet_v0.6_Military_Des
 
 ## Immediate next step
 
-Audit **Brothers in Arms**, **Militias**, **Patriotism**, and **Shock and Awe** individually against `Gauntlet_v0.6_Faction_Card_Design_Guide.md` and `Gauntlet_v0.6_Military_Design_Notes.md`, preserving only ideas that earn places in the final twelve-card Military package. Once all six faction packages are stable, create the first canonical v0.6 dataset and use it to drive the deckbuilder and digital-development mode.
+Review and approve or revise the inherited Military audit recommendations. If approved, update the card registry and Military notes, then redesign **Brothers in Arms** and **Shock and Awe** before drafting additional Military cards. Once all six faction packages are stable, create the first canonical v0.6 dataset and use it to drive the deckbuilder and digital-development mode.
