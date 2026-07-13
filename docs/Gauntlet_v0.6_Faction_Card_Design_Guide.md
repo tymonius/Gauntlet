@@ -222,6 +222,21 @@ Faction identity is partly defined by what the faction cannot do easily.
 
 Faction cards may create conditional or expensive ways to compensate for a weakness, but the pool should not erase every limitation of the faction or allow it to outperform specialists in unrelated areas.
 
+### 3.7 No grandfathering of existing cards
+
+A card's historical inclusion, prior faction designation, reviewed status, name, cost, or partial wording gives it no protected place in a finished faction pool.
+
+When a faction package is built, every existing candidate must be evaluated under this guide on the same basis as a new proposal. A candidate may be:
+
+- retained substantially as written;
+- revised, repriced, or renamed;
+- rebuilt around only its strongest underlying idea;
+- reassigned if it does not actually express the faction;
+- deferred to a later release;
+- removed entirely.
+
+Historical review records should preserve provenance, but provenance does not establish release eligibility. A card should not be kept merely to fill a pool-size target, a cost slot, or an inherited list.
+
 ---
 
 ## 4. Leader integration
