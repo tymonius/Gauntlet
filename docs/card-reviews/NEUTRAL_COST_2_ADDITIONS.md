@@ -1,9 +1,9 @@
 # Gauntlet v0.6 Neutral Cost-2 Additions
 
-**Status:** Active design worksheet  
-**Purpose:** Review the six proposed Neutral cost-2 cards needed to move the Neutral pool from 42 to 48 cards.
+**Status:** Approved design record  
+**Purpose:** Record the six approved Neutral cost-2 cards that move the Neutral pool from 42 to 48 cards.
 
-The package is not yet approved as a whole. Individual wording decisions may be approved during review.
+All six cards below are approved for v0.6. They must be migrated into the consolidated Card Review Log and future canonical v0.6 data at the card-audit migration checkpoint.
 
 ## 1. Advance Guard
 
@@ -63,7 +63,7 @@ The package is not yet approved as a whole. Individual wording decisions may be 
 >
 > **Battle:** You may discard one banked Asset you control. If you do, gain advantage.
 
-**Approved wording decision:** The Battle effect grants **advantage**, not +2. Advantage is materially weaker than +2 but is the better cost-2 effect: flexible in any battle, interactive with disadvantage, and appropriately priced by the required Asset sacrifice.
+The Battle effect grants **advantage**, not +2. Advantage is materially weaker than +2 but is the better cost-2 effect: flexible in any battle, interactive with disadvantage, and appropriately priced by the required Asset sacrifice.
 
 **Role:** Converts outdated or expendable infrastructure into immediate card or battle value without entering Financier-specific investment space.
 
@@ -90,6 +90,14 @@ The package is not yet approved as a whole. Individual wording decisions may be 
 | Requisition | Asset conversion |
 | Salvage | Discard and battle-draw recovery |
 
-## Next review step
+## Result
 
-Approve, reject, or revise the six cards individually, then migrate approved additions into the main cost-curve audit and consolidated Card Review Log.
+The approved Neutral pool now contains 48 cards:
+
+- 11 cost-1;
+- 19 cost-2;
+- 9 cost-3;
+- 8 cost-4;
+- 1 cost-5.
+
+The final two additions should both be cost-3 cards, bringing the completed Neutral pool to 50 cards with the approved 11 / 19 / 11 / 8 / 1 curve.
