@@ -39,39 +39,35 @@ The replacement Overlay must represent something that makes physical and themati
 
 ---
 
-## Preferred Overlay direction
+## Approved Overlay direction
 
 ### Encampment
 
-Encampment is a persistent military installation attached to a Territory rather than to the army's continued occupation of it.
+**Cost:** 2  
+**Card form:** Territory Overlay
 
-Approved functional direction:
-
-> **Action:** Place Encampment as an Overlay on the Territory you currently occupy and control.
+> **Action:** Place Encampment as an Overlay on the revealed Territory you currently occupy and control.
 >
 > **Overlay:** At the end of your turn, if you occupy and control this Territory, gain 1 Command.
 >
 > When an opponent gains control of this Territory, place Encampment in its owner's Graveyard.
 >
-> **Battle:** During battle cleanup, if you won this battle while defending a Territory you control, place Encampment on that Territory as an Overlay instead of placing it in its normal destination.
+> **Battle:** During battle cleanup, if you won this battle while defending a revealed Territory you control, place Encampment on that Territory as an Overlay instead of placing it in its normal destination.
 
-The Battle effect is approved: Encampment contributes no immediate battle strength, but a successful defense establishes the camp on the defended Territory.
+The Action, Overlay, Battle effect, and cost-2 starting value are approved as the current Military design direction. Final templating remains subject to the completed v0.6 card-text pass.
 
-This direction is preferred because:
+Encampment follows the universal Overlay rules:
 
-- establishing the camp requires the player to be physically present on a Territory they control;
-- the Overlay remains for a physically and thematically intuitive reason;
+- the active Encampment supersedes the underlying Territory's printed effect;
+- lower Overlays, if any, are dormant while Encampment remains exposed;
 - leaving the Territory does not dismantle the camp;
 - returning to and ending a turn on the Territory can provide Command again;
-- temporary enemy occupation does not immediately remove it, preserving the normal counterattack window;
-- it disappears only when the opponent actually gains control of the Territory;
-- ending the turn there rather than continuing forward directly expresses momentum versus consolidation.
+- temporary enemy occupation does not immediately remove it;
+- it disappears only when the opponent gains control of the Territory.
 
-Players may establish and control multiple Encampments. No explicit per-player or per-Territory copy restriction is currently intended beyond the normal rules governing Overlays and duplicate cards.
+Players may establish and control multiple Encampments. No explicit per-player or per-Territory copy restriction is intended beyond the normal rules governing Overlays and duplicate cards.
 
-Cost remains unresolved, with cost 3 currently the leading starting point.
-
-The principal balance question is not the number of Encampments in play, but how often a player can realistically end turns on their controlled Encampment Territories while still advancing. Because Command is capped at 2 and each trigger requires presence on the specific Territory at the end of the turn, multiple camps create a network of possible rally points rather than simultaneous passive income.
+Cost 2 reflects that Encampment replaces rather than supplements the Territory's printed effect. Its value therefore depends on both repeatable Command access and the opportunity cost of converting that Territory into a rally point.
 
 ### Secondary Overlay direction: Siegeworks
 
@@ -83,4 +79,4 @@ This direction is more General-leaning and risks overlap with Invasion, Siege We
 
 ## Next step
 
-Resolve Encampment's cost, then return to Standing Orders, Field Command, Brothers in Arms, and the remaining open Military card slots. The first twelve-card draft should not be treated as a near-final package.
+Return to Standing Orders, Field Command, Brothers in Arms, and the remaining open Military card slots. The first twelve-card draft should not be treated as a near-final package.
