@@ -32,24 +32,25 @@ No canonical v0.6 data exists yet. Active v0.6 documents govern development unti
 15. **`Gauntlet_Design_Principles_and_Guardrails.md`** — current design constraints for core rules, factions, cards, complexity, components, pacing, and digital work.
 16. **`Gauntlet_v0.6_Faction_Card_Design_Guide.md`** — active construction and review standard for faction card pools, including creative strategy, open-ended synergy, no-grandfathering, leader integration, the twelve-card package target, premium-leaning cost baseline, anti-patterns, and package approval criteria.
 17. **`Gauntlet_v0.6_Military_Design_Notes.md`** — active Military faction brief covering momentum versus consolidation, Command discipline, combined arms, maneuver, prepared operations, intended weaknesses, and inherited-candidate evaluation.
-18. **`card-reviews/MILITARY_INHERITED_CANDIDATE_AUDIT.md`** — completed audit of Brothers in Arms, Militias, Patriotism, and Shock and Awe; recommendations await explicit approval before registry changes.
-19. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — why the v0.5 rebuild occurred and which older systems are not current.
-20. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing benchmarks, simulation conclusions, telemetry, and human-playtest questions.
-21. **`Gauntlet_v0.6_Diplomat_Design_Notes.md`** — active rationale, implementation guidance, Sanctions direction, and testing questions for the integrated v0.6 Diplomat framework.
-22. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, Day/Night, and other post-v0.6 concepts.
+18. **`Gauntlet_v0.6_Military_Card_Pool_Draft.md`** — first complete twelve-card Military package draft, including Battlefield Promotion, the Bridgehead Overlay, rebuilt inherited concepts, proposed costs, provisional wording, and package watchlists. No card in the draft is yet approved exact text.
+19. **`card-reviews/MILITARY_INHERITED_CANDIDATE_AUDIT.md`** — completed audit of Brothers in Arms, Militias, Patriotism, and Shock and Awe; recommendations await explicit approval before registry changes.
+20. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — why the v0.5 rebuild occurred and which older systems are not current.
+21. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing benchmarks, simulation conclusions, telemetry, and human-playtest questions.
+22. **`Gauntlet_v0.6_Diplomat_Design_Notes.md`** — active rationale, implementation guidance, Sanctions direction, and testing questions for the integrated v0.6 Diplomat framework.
+23. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, Day/Night, and other post-v0.6 concepts.
 
 ### Digital development
 
-23. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, rules engine, CLI, GUI, telemetry, and remote-play roadmap.
-24. **`../deckbuilder/README.md`** — current v0.5 deckbuilder behavior and versioned upgrade path.
-25. **`../src/README.md`** — current TypeScript engine and development-interface status.
-26. **`../data/README.md`** — starter-data scope and source-of-truth warning.
+24. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, rules engine, CLI, GUI, telemetry, and remote-play roadmap.
+25. **`../deckbuilder/README.md`** — current v0.5 deckbuilder behavior and versioned upgrade path.
+26. **`../src/README.md`** — current TypeScript engine and development-interface status.
+27. **`../data/README.md`** — starter-data scope and source-of-truth warning.
 
 ### Setting and production
 
-27. **`Gauntlet_Lore_Development_Notes.md`** — current WIP setting direction, open questions, and rejected premises.
-28. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — active production-facing leader and miniature direction.
-29. **`Game_Design_Glossary.md`** — shared design terminology.
+28. **`Gauntlet_Lore_Development_Notes.md`** — current WIP setting direction, open questions, and rejected premises.
+29. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — active production-facing leader and miniature direction.
+30. **`Game_Design_Glossary.md`** — shared design terminology.
 
 ### Historical archive
 
@@ -127,7 +128,7 @@ Faction package construction and review should follow `Gauntlet_v0.6_Faction_Car
 - at least one optional, game-defining cost-5 statement card per faction;
 - permission to deviate from the default curve or include additional premium cards when the completed strategic vocabulary is stronger, more varied, and more fun as a result.
 
-Military's active design brief is established in `Gauntlet_v0.6_Military_Design_Notes.md`. The inherited-candidate audit found that none of the four cards passes unchanged. Brothers in Arms and Shock and Awe contain promising concepts that may justify full redesigns; Militias and Patriotism are recommended for retirement in their current forms. These recommendations are not yet registry changes.
+Military's active design brief is established in `Gauntlet_v0.6_Military_Design_Notes.md`. The first complete Military package draft now contains twelve cards at a provisional **1 / 2 / 4 / 4 / 1** curve, 38 total unique-card value, and 3.17 average cost. It includes the user-selected name **Battlefield Promotion**, the **Bridgehead** Territory Overlay, rebuilt versions of Brothers in Arms, Militias, and Shock and Awe, and eight additional concepts. Patriotism remains excluded. No draft Military card is yet approved.
 
 ### Digital work
 
@@ -164,4 +165,4 @@ Military's active design brief is established in `Gauntlet_v0.6_Military_Design_
 
 ## Immediate next step
 
-Review and approve or revise the inherited Military audit recommendations. If approved, update the card registry and Military notes, then redesign **Brothers in Arms** and **Shock and Awe** before drafting additional Military cards. Once all six faction packages are stable, create the first canonical v0.6 dataset and use it to drive the deckbuilder and digital-development mode.
+Review the twelve-card Military draft card by card, beginning with **Battlefield Promotion**, **Bridgehead**, **Brothers in Arms**, and **Shock and Awe**. Resolve duplicated delayed-movement roles, Command density, leader skew, and exact timing before any Military card is promoted into the approved registry or canonical pool.
