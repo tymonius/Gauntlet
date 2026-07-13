@@ -1,7 +1,7 @@
 # Gauntlet v0.6 Open Questions
 
 **Status:** Active tracker for unresolved v0.6 design and production decisions.  
-**Purpose:** Keep only questions that can still change the v0.6 rules, cards, faction packages, testing plan, or release materials.
+**Purpose:** Keep only questions that can still change the v0.6 rules, faction cards, faction packages, testing plan, or release materials.
 
 Closed audit items, historical rationale, and post-v0.6 concepts belong in their dedicated documents rather than here.
 
@@ -9,18 +9,19 @@ Closed audit items, historical rationale, and post-v0.6 concepts belong in their
 
 ## Card migration and canonical data
 
-The 54-card playable-card review, 25-card Territory review, and current non-faction Condition cleanup are complete. Conditions are retired as a v0.6 game concept.
+The 54-card playable-source review, 12-card Neutral expansion, 50-card Neutral pool, 25-card Territory review, and current non-faction Condition cleanup are complete. Conditions are retired as a v0.6 game concept.
+
+The final Neutral curve is 11 / 19 / 11 / 8 / 1. `Gauntlet_v0.6_Neutral_Card_Pool.md` is authoritative for current Neutral costs and exact text.
 
 Remaining blockers before canonical v0.6 data can be authoritative:
 
-- Fully redesign **Manifest Destiny**.
 - Decide whether **Siege Weaponry** is renamed **Bombardment**.
 - Finalize **Blockade / Sanctions** during the Diplomat faction-card pass.
 - Finalize **Capital Gains** around Financier infrastructure.
 - Finalize Witchcraft's eligible copied-effect wording.
 - Define copied or appropriated effects with impossible targets or source-dependent text.
 - Finish Intelligence Mission requirements, including an appropriately difficult Mission for **Assassins**.
-- Complete faction packages, cost-curve audits, and any needed capstones.
+- Complete faction packages, faction cost-curve audits, and any needed faction capstones.
 - Decide final Arcane-trait assignments beyond the currently approved cards.
 - Create canonical v0.6 card, Territory, faction, leader, deckbuilding, and recommended-deck data after these decisions are stable.
 
@@ -31,6 +32,15 @@ Before faction-locking any neutral card, continue asking:
 3. Does the destination faction already perform the same job through its core mechanic?
 4. Does the card duplicate, bypass, or create strange interactions with that mechanic?
 
+### Closed Neutral-pool decisions
+
+- The Neutral pool contains exactly 50 cards.
+- Manifest Destiny is the Unique Neutral cost-5 capstone.
+- Resourcefulness is the cost-1-card build-around.
+- Counterworks provides one-use Overlay prevention and temporary suppression.
+- Neutral may place specific Overlays, prevent one placement, and temporarily suppress an Overlay in a defined window.
+- Repair, permanent dismantling, movement, upgrading, recurrence, connected infrastructure, and Overlay-network victory progress remain reserved for the future Engineer faction.
+
 ---
 
 ## Military
@@ -39,7 +49,8 @@ Before faction-locking any neutral card, continue asking:
 - Are General and Commandant comparably strong?
 - Does Rout create excessive chain-battle turns?
 - Does Fortify bypass the normal counterattack window too often?
-- Does Military receive too many capture-timing shortcuts when combined with neutral cards such as Assimilation and Invasion?
+- Does Military receive too many capture-timing shortcuts when combined with Neutral cards such as Assimilation and Invasion?
+- What should the final eight-card Military package and cost curve be?
 
 ---
 
@@ -62,6 +73,7 @@ Open v0.6 and production questions:
 - Determine the final form and size of the Sanctions card family.
 - Decide whether Sanctions remain distinctly Diplomatic or whether Financiers receive a separate economic-pressure implementation.
 - Decide whether **Demilitarized Zone** is a Proposal, faction card, Overlay, or later concept.
+- What should the final eight-card Diplomat package and cost curve be?
 
 ---
 
@@ -74,6 +86,8 @@ Open v0.6 and production questions:
 - Does Grand Inquisitor create excessive post-battle Purge pressure?
 - Is Witch Hunter's Relentless Pursuit timing and cost clear and fair?
 - Watch overlap with Attrition, Insurrection, and hard-cancellation effects.
+- Design the future Inquisition card **The Black Edict**.
+- What should the final eight-card Inquisition package and cost curve be?
 
 ---
 
@@ -87,6 +101,9 @@ Open v0.6 and production questions:
 - Does Rite of Crossing resolve cleanly through occupation and control changes?
 - Are Invocation and Transmutation powerful enough without undoing Graveyard pressure or creating excessive battle swings?
 - Are Alchemist and Spirit Walker comparably strong?
+- Finalize Witchcraft's copied-effect eligibility wording.
+- Decide final Arcane-trait assignments.
+- What should the final eight-card Arcane package and cost curve be?
 
 ---
 
@@ -101,6 +118,8 @@ Open v0.6 and production questions:
 - Should Line of Credit collateral remain discard-bound or go to the Graveyard?
 - Does Hostile Takeover create too much immediate-control snowballing?
 - Are Banker and Executive comparably strong?
+- Finalize Capital Gains around Capital, Treasury, Deeds, or other Financier infrastructure.
+- What should the final eight-card Financier package and cost curve be?
 
 ---
 
@@ -115,6 +134,7 @@ Open v0.6 and production questions:
 - Ensure Surveillance and Interference remain disruptive rather than destructive.
 - Watch density around reveal, hand knowledge, cancellation, Sabotage, Treason, Scouting Report, and Special Operation.
 - Test Ranger and Spymaster for comparable strength and distinct play.
+- What should the final eight-card Intelligence package and cost curve be?
 
 ---
 
@@ -125,6 +145,8 @@ Open v0.6 and production questions:
 - Are paired leaders comparably strong within each faction?
 - Does the Territory-scaled Asset bank accelerate games without making comebacks implausible?
 - Does any matchup routinely remove the losing player's ability to make meaningful decisions?
+- Does Resourcefulness create healthy low-cost archetypes without producing excessive card advantage?
+- Does Counterworks provide enough Overlay counterplay without weakening future Engineer identity?
 
 Use `Gauntlet_Playtest_Targets_and_Metrics.md` for the quantitative and qualitative data to collect.
 
@@ -135,7 +157,7 @@ Use `Gauntlet_Playtest_Targets_and_Metrics.md` for the quantitative and qualitat
 - Should the v0.6 playtest package include printable leader cards, faction reference cards, resource trackers, and suggested decks for every leader?
 - Should resource tracks appear directly on leader cards or on separate faction references?
 - How should official leader and faction decklists be formatted?
-- A future starter product may contain the neutral core, Military, and perhaps one additional faction, while a complete product contains the full card pool with sufficient multiples. This remains a product lead, not a v0.6 rules decision.
+- A future starter product may contain the Neutral pool, Military, and perhaps one additional faction, while a complete product contains the full card pool with sufficient multiples. This remains a product lead, not a v0.6 rules decision.
 
 ---
 
