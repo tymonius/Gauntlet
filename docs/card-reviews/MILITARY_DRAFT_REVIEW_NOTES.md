@@ -45,7 +45,7 @@ The replacement Overlay must represent something that makes physical and themati
 
 Encampment is a persistent military installation attached to a Territory rather than to the army's continued occupation of it.
 
-Preferred functional direction:
+Approved functional direction:
 
 > **Action:** Place Encampment as an Overlay on the Territory you currently occupy and control.
 >
@@ -54,6 +54,8 @@ Preferred functional direction:
 > When an opponent gains control of this Territory, place Encampment in its owner's Graveyard.
 >
 > **Battle:** During battle cleanup, if you won this battle while defending a Territory you control, place Encampment on that Territory as an Overlay instead of placing it in its normal destination.
+
+The Battle effect is approved: Encampment contributes no immediate battle strength, but a successful defense establishes the camp on the defended Territory.
 
 This direction is preferred because:
 
@@ -81,4 +83,4 @@ This direction is more General-leaning and risks overlap with Invasion, Siege We
 
 ## Next step
 
-Refine Encampment's cost and Battle wording, then return to Standing Orders, Field Command, Brothers in Arms, and the remaining open Military card slots. The first twelve-card draft should not be treated as a near-final package.
+Resolve Encampment's cost, then return to Standing Orders, Field Command, Brothers in Arms, and the remaining open Military card slots. The first twelve-card draft should not be treated as a near-final package.
