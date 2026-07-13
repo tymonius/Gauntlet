@@ -30,23 +30,24 @@ No canonical v0.6 data exists yet. Active v0.6 documents govern development unti
 ### Design rationale and testing
 
 15. **`Gauntlet_Design_Principles_and_Guardrails.md`** — current design constraints for core rules, factions, cards, complexity, components, pacing, and digital work.
-16. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — why the v0.5 rebuild occurred and which older systems are not current.
-17. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing benchmarks, simulation conclusions, telemetry, and human-playtest questions.
-18. **`Gauntlet_v0.6_Diplomat_Design_Notes.md`** — active rationale, implementation guidance, Sanctions direction, and testing questions for the integrated v0.6 Diplomat framework.
-19. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, Day/Night, and other post-v0.6 concepts.
+16. **`Gauntlet_v0.6_Faction_Card_Design_Guide.md`** — active construction and review standard for faction card pools, including creative strategy, open-ended synergy, leader integration, anti-patterns, and package approval criteria.
+17. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — why the v0.5 rebuild occurred and which older systems are not current.
+18. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing benchmarks, simulation conclusions, telemetry, and human-playtest questions.
+19. **`Gauntlet_v0.6_Diplomat_Design_Notes.md`** — active rationale, implementation guidance, Sanctions direction, and testing questions for the integrated v0.6 Diplomat framework.
+20. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, Day/Night, and other post-v0.6 concepts.
 
 ### Digital development
 
-20. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, rules engine, CLI, GUI, telemetry, and remote-play roadmap.
-21. **`../deckbuilder/README.md`** — current v0.5 deckbuilder behavior and versioned upgrade path.
-22. **`../src/README.md`** — current TypeScript engine and development-interface status.
-23. **`../data/README.md`** — starter-data scope and source-of-truth warning.
+21. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, rules engine, CLI, GUI, telemetry, and remote-play roadmap.
+22. **`../deckbuilder/README.md`** — current v0.5 deckbuilder behavior and versioned upgrade path.
+23. **`../src/README.md`** — current TypeScript engine and development-interface status.
+24. **`../data/README.md`** — starter-data scope and source-of-truth warning.
 
 ### Setting and production
 
-24. **`Gauntlet_Lore_Development_Notes.md`** — current WIP setting direction, open questions, and rejected premises.
-25. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — active production-facing leader and miniature direction.
-26. **`Game_Design_Glossary.md`** — shared design terminology.
+25. **`Gauntlet_Lore_Development_Notes.md`** — current WIP setting direction, open questions, and rejected premises.
+26. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — active production-facing leader and miniature direction.
+27. **`Game_Design_Glossary.md`** — shared design terminology.
 
 ### Historical archive
 
@@ -116,6 +117,8 @@ The six working factions are:
 
 Current faction rules are in the Working Rules. The revised Diplomat framework is part of the initial v0.6 baseline rather than a deferred v0.6.1 overhaul. Balance, names, Missions, card packages, and several thresholds remain under active testing or development.
 
+Faction package construction and review should follow `Gauntlet_v0.6_Faction_Card_Design_Guide.md` so that each pool supports creative strategies, open-ended interactions, leader-dependent interpretation, varied deck construction, and fun rather than a prescribed archetype.
+
 ### Digital work
 
 - The TypeScript state model, reducer, public/private views, CLI, and browser GUI no longer contain a Condition zone.
@@ -151,4 +154,4 @@ Current faction rules are in the Working Rules. The revised Diplomat framework i
 
 ## Immediate next step
 
-Complete the six faction card packages and remaining faction-card exact-text blockers. Once those are stable, create the first canonical v0.6 dataset and use it to drive the deckbuilder and digital-development mode.
+Complete the six faction card packages and remaining faction-card exact-text blockers using `Gauntlet_v0.6_Faction_Card_Design_Guide.md` as the governing construction and review standard. Once those are stable, create the first canonical v0.6 dataset and use it to drive the deckbuilder and digital-development mode.
