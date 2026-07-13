@@ -25,9 +25,9 @@ This audit will not increase the cost of an existing reviewed card.
 
 ## Current baseline after approved reductions and additions
 
-The approved pool currently contains 58 cards:
+The approved pool currently contains 64 cards:
 
-- 42 Neutral;
+- 48 Neutral;
 - 4 Military;
 - 4 Intelligence;
 - 3 Financiers;
@@ -40,24 +40,24 @@ The approved pool currently contains 58 cards:
 | Cost | Cards |
 |---:|---:|
 | 1 | 11 |
-| 2 | 16 |
+| 2 | 22 |
 | 3 | 14 |
 | 4 | 12 |
 | 5 | 5 |
-| **Total** | **58** |
+| **Total** | **64** |
 
 ### Current Neutral pool by cost
 
 | Cost | Cards |
 |---:|---:|
 | 1 | 11 |
-| 2 | 13 |
+| 2 | 19 |
 | 3 | 9 |
 | 4 | 8 |
 | 5 | 1 |
-| **Total** | **42** |
+| **Total** | **48** |
 
-The Neutral pool's current average cost is approximately 2.40. Because a typical optimized deck contains 30 cards under a 60-point cap, an actual deck generally needs an average cost of 2.0 or less. The pool may average above 2 because players select among premium alternatives, but the Neutral distribution still needs more cost-2 and cost-3 variety.
+The Neutral pool's current average cost is approximately 2.35. Because a typical optimized deck contains 30 cards under a 60-point cap, an actual deck generally needs an average cost of 2.0 or less. The pool may average above 2 because players select among premium alternatives. The remaining two additions should strengthen the cost-3 strategic tier rather than add more low-cost volume.
 
 ## Cost-tier rubric
 
@@ -142,7 +142,7 @@ The approved planning target is **50 unique Neutral cards** because:
 - a 50-card Neutral pool is easy to communicate, inventory, package, and divide into functional categories;
 - it provides meaningful choice relative to a 30-card constructed deck without becoming unwieldy.
 
-Eight additional Neutral cards remain to reach 50.
+Two additional Neutral cards remain to reach 50.
 
 ### Pass 6 — mechanical gap analysis
 
@@ -150,7 +150,7 @@ New Neutral cards should fill shared game-function gaps rather than duplicate fa
 
 ### Pass 7 — design additions toward the target curve
 
-Create only enough new cards to reach the approved Neutral count and improve the cost curve. Do not force effects downward merely to satisfy a numerical target.
+Create the final two cost-3 cards to reach the approved Neutral count and complete the curve. Do not create filler merely to satisfy the numerical target.
 
 ## Approved target shape for the 50-card Neutral pool
 
@@ -163,7 +163,7 @@ Create only enough new cards to reach the approved Neutral count and improve the
 | 5 | 1 |
 | **Total** | **50** |
 
-The remaining additions should therefore consist of six cost-2 cards and two cost-3 cards.
+The remaining additions should therefore consist of two cost-3 cards.
 
 ## Approved audit decisions
 
@@ -236,6 +236,82 @@ Reserves provides selection and preservation rather than raw card advantage whil
 
 Together, the four additions complete the Neutral cost-1 tier at 11 cards. They cover movement, terrain navigation, Asset-capacity resilience, and card smoothing without directly accelerating faction victory systems.
 
+### New Neutral cost-2 functional cards
+
+#### Advance Guard
+
+**Cost:** 2  
+**Allegiance:** Neutral  
+**Complexity:** Basic
+
+> **Action:** Gain one additional movement this turn. If you use that movement to initiate a battle, you cannot commit a Battle card from your hand to that battle.
+>
+> **Battle:** If you are the attacker and did not commit a Battle card from your hand, gain advantage.
+
+Advance Guard provides risk-reward offensive movement between Forced March and premium attack-tempo cards.
+
+#### Consolidation
+
+**Cost:** 2  
+**Allegiance:** Neutral  
+**Complexity:** Basic
+
+> **Action:** Play only if you captured a Territory this turn. Draw two cards.
+>
+> **Battle:** During battle cleanup, if you won as the attacker on a Territory your opponent controls, draw one card.
+
+Consolidation rewards completing the normal occupation-and-capture sequence without accelerating capture itself.
+
+#### Foothold
+
+**Cost:** 2  
+**Allegiance:** Neutral  
+**Complexity:** Basic
+
+> **Action:** Bank Foothold as an Asset. After you win a battle as the defender while occupying a Territory you do not control, you may discard Foothold. If you do, draw two cards.
+>
+> **Battle:** If you are defending a Territory you occupy but do not control, gain advantage. During battle cleanup, if you won, draw one card.
+
+Foothold supports the occupier during the opponent's counterattack window, filling the opposite side of the existing counterattack-support package.
+
+#### Tactical Planning
+
+**Cost:** 2  
+**Allegiance:** Neutral  
+**Complexity:** Basic
+
+> **Action:** Draw two cards, then place one card from your hand on the bottom of your deck.
+>
+> **Battle:** If Tactical Planning was committed from your hand, draw one additional card for your initial battle draw. This does not increase the number of cards you may play from that draw.
+
+Tactical Planning supplies reliable hand and battle-draw selection without increasing Battle play allowance.
+
+#### Requisition
+
+**Cost:** 2  
+**Allegiance:** Neutral  
+**Complexity:** Basic
+
+> **Action:** Discard one banked Asset you control. If you do, draw two cards.
+>
+> **Battle:** You may discard one banked Asset you control. If you do, gain advantage.
+
+Requisition converts expendable infrastructure into immediate value. Advantage, rather than +2, keeps the Battle mode interactive and appropriately scaled for cost 2.
+
+#### Salvage
+
+**Cost:** 2  
+**Allegiance:** Neutral  
+**Complexity:** Advanced
+
+> **Action:** Return one card from your discard pile to your hand, then discard one card from your hand.
+>
+> **Battle:** During battle cleanup, if you won, you may put one unplayed card from your battle draw into your hand instead of your discard pile. If you do, discard one card from your hand.
+
+Salvage provides exact recovery as an exchange and remains below Contraband's unrestricted retrieval and copied-effect ceiling.
+
+Together, the six additions complete the Neutral cost-2 tier at 19 cards. They cover risk-reward movement, capture payoff, occupation defense, card selection, Asset conversion, and discard recovery without directly advancing faction-specific resources or victory conditions.
+
 ### Neutral cost-4 board-position and capture cluster
 
 | Card | Previous | Approved | Reasoning summary |
@@ -297,6 +373,12 @@ The following reductions, redesign, and additions must be rolled into the consol
 - Pathfinders: new Neutral cost-1 card;
 - Contingency Plan: new Neutral cost-1 card;
 - Reserves: new Neutral cost-1 card;
+- Advance Guard: new Neutral cost-2 card;
+- Consolidation: new Neutral cost-2 card;
+- Foothold: new Neutral cost-2 card;
+- Tactical Planning: new Neutral cost-2 card;
+- Requisition: new Neutral cost-2 card;
+- Salvage: new Neutral cost-2 card;
 - Liberation: 4 to 3;
 - Protracted Siege: 4 to 3;
 - Insurrection: 4 to 3;
@@ -333,4 +415,4 @@ The following entries are proposals only and are not approved cost changes.
 
 ## Immediate next step
 
-Design and review the six new Neutral cost-2 cards. They should fill shared mechanical gaps without duplicating faction engines or the completed cost-1 foundation. After that, design the final two Neutral cost-3 cards and close the 50-card Neutral pool.
+Design and review the final two Neutral cost-3 cards. After the Neutral pool reaches 50, return to the remaining existing-card cost confirmations and then migrate the approved audit results into the consolidated Card Review Log and future v0.6 canonical data.
