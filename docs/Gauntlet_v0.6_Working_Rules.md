@@ -184,15 +184,25 @@ Gauntlet does not use Conditions in v0.6.
 - **Overlays** belong visibly to a specific Territory and do not occupy an Asset-bank slot unless a rule specifically says otherwise.
 - Effects that need neither form of persistence resolve immediately or use explicit self-tracking text.
 
+### Overlays
+
+An Overlay is placed over a revealed Territory. Overlays cannot be placed on Heartlands unless a rule specifically says otherwise.
+
+- Only the top exposed Overlay is active. It supersedes the printed effect of the card immediately beneath it.
+- If the card immediately beneath the active Overlay is another Overlay, that lower Overlay is dormant and its printed effect is inactive.
+- Lower Overlays remain in place, but their effects and expiration timers pause until they are exposed again.
+- Changing control of a Territory does not remove or rearrange its Overlays.
+- When the top Overlay is removed, the next exposed Overlay becomes active; if none remains, the Territory's printed effect becomes active again.
+- A removed Overlay follows the destination stated by its effect, or its normal card destination if none is stated.
+- Specific card text may override these rules.
+
 ### Active Territory text
 
-A face-up Territory's printed effect is active unless its text states otherwise. Control and occupation matter only when the effect specifically refers to them. A face-down Territory has no active printed effect.
-
-If an Overlay or card effect suppresses a Territory's printed effect, treat all of that printed effect as inactive for the stated duration.
+A face-up Territory's printed effect is active only while no exposed Overlay supersedes it, unless a rule specifically says otherwise. Control and occupation matter only when the effect specifically refers to them. A face-down Territory has no active printed effect.
 
 ### Ruins Overlays
 
-A Ruins Overlay makes that Territory's printed effect inactive while the Overlay remains there.
+A Ruins Overlay makes that Territory's printed effect inactive while the Overlay remains exposed there.
 
 - A Territory is either ruined or not; it cannot be doubly ruined.
 - If a Ruins Overlay is placed on a Territory that already has one, place the existing Ruins Overlay in its owner's Graveyard, then place the new one.
