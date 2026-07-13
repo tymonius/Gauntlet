@@ -47,58 +47,53 @@ Players may establish and control multiple Encampments. No explicit per-player o
 
 Cost 2 reflects that Encampment replaces rather than supplements the Territory's printed effect. Its value therefore depends on both repeatable Command access and the opportunity cost of converting that Territory into a rally point.
 
----
-
-## Current candidates for review
-
 ### Standing Orders
 
-**Proposed cost:** 2  
+**Cost:** 2  
 **Role:** Prepared access to one Order, including a 2-Command Order
 
 > **Action:** Bank Standing Orders as an Asset. When you use an Order, you may discard Standing Orders. If you do, reduce that Order's Command cost by 1.
 >
 > **Battle:** Reduce the Command cost of one Order you use during this battle by 1.
 
-This replaces the first-pass future-Command debt mechanic. It is shorter, creates no tracking debt, works on either player's turn when prepared, and can help access Rout or Fortify rather than interacting only with the 1-Command Orders.
+Standing Orders is approved as the current design direction. It is a tactical discount rather than Command generation. It can make a 1-Command Order free or permit Rout or Fortify with only 1 Command, but the player must still satisfy the Order's normal timing and conditions.
 
-Standing Orders should be evaluated as a tactical discount, not Command generation. It still requires the player to possess any remaining Command and satisfy the chosen Order's normal timing and conditions.
+This supersedes the first-pass future-Command debt mechanic. Final templating remains subject to timing review, especially for post-victory Orders.
 
 ### Field Command
 
-**Proposed cost:** 3  
+**Cost:** 3  
 **Role:** Combine the two different 1-Command Orders available to the chosen leader
 
 > **Action:** Bank Field Command as an Asset. After you use a 1-Command Order, you may discard Field Command. If you do, you may use your leader's other 1-Command Order once this turn at its next legal timing without spending Command.
 >
 > **Battle:** After you use a 1-Command Order during this battle, you may use your leader's other 1-Command Order once this turn at its next legal timing without spending Command. If you do, place Field Command in your Graveyard after that Order resolves.
 
-Field Command does not merely discount an Order. It creates a leader-specific sequence:
+Field Command is approved as the current design direction. It does not merely discount an Order; it creates a leader-specific sequence:
 
 - General: Onward and Rally;
 - Commandant: Entrench and Repel.
 
-Cost 3 is the current proposal rather than the first-pass cost 4. The card supplies only one additional Command of value, requires the first Order to be funded normally, and still depends on legal timing. The Commandant sequence is more automatic, while the General sequence offers greater initiative and positioning flexibility; this leader asymmetry requires testing.
+Cost 3 reflects that the card supplies one additional 1-Command Order, requires the first Order to be funded normally, and still depends on legal timing. The Commandant sequence is more automatic, while the General sequence offers greater initiative and positioning flexibility; this asymmetry remains a playtest question rather than a blocker.
+
+---
+
+## Unresolved design seed
 
 ### Brothers in Arms
 
-**Proposed cost:** 4  
-**Role:** High-commitment combined-arms tactical burst
+The name and combined-arms concept remain available, but no current effect is approved.
 
-> **Action:** Bank Brothers in Arms as an Asset. After your Battle cards are revealed, if you have an active card committed from hand and an active card played from battle draw, you may discard Brothers in Arms. Choose one active card from each source. Resolve one chosen card's Battle effect one additional time. During battle cleanup, place both chosen cards in your Graveyard instead of their normal destinations.
->
-> **Battle:** If Brothers in Arms and at least one active card you played from the other source are active, choose one such card. Resolve that card's Battle effect one additional time. During battle cleanup, place Brothers in Arms and the chosen card in your Graveyard instead of their normal destinations.
+The cost-4 proposal that repeated another Battle effect is set aside because:
 
-The first-pass preservation wager is discarded. This version makes combined arms produce a memorable, concentrated payoff while permanently consuming both participating cards.
+- repeating card text risks feeling more Arcane than Military;
+- interactions with premium Battle effects become difficult to bound;
+- it produces rules and balance complexity disproportionate to the clarity of the military fantasy;
+- the trigger still rewards a common high-commitment battle pattern rather than clearly creating a new decision.
 
-The proposal must follow the general anti-recursion rule: it cannot repeat a Battle effect that itself resolves another Battle effect. Final wording must also clarify that the selected effect must be capable of resolving in the current battle.
+The earlier preservation wager also remains rejected because it overlapped Battlefield Promotion, encouraged destination bookkeeping, and did not create a sufficiently memorable payoff.
 
-Primary watchlist:
-
-- extreme interactions with Reinforcements, Conscription, Capital Punishment, Invasion, Assimilation, Revolution, and similar premium Battle effects;
-- whether repeating one effect is too Arcane in character despite the narrow combined-arms requirement;
-- whether both selected cards entering the Graveyard provides sufficient risk at cost 4;
-- whether the Action form becomes an automatic premium Asset.
+Any future Brothers in Arms proposal should be simpler, should preserve ordinary counterplay, and should make coordinating hand commitment with battle draw into a deliberate choice rather than an automatic bonus. The release slot remains open; the name is not guaranteed a place in the final pool.
 
 ---
 
@@ -112,11 +107,15 @@ The replacement Overlay must represent something that makes physical and themati
 
 ### First-pass Standing Orders debt wording
 
-The version that made a 1-Command Order free and canceled the next Command gain is superseded by the simpler discount proposal. It created delayed tracking, awkward stacking, and inconsistent value depending on whether another Command gain occurred.
+The version that made a 1-Command Order free and canceled the next Command gain is superseded by the approved discount design. It created delayed tracking, awkward stacking, and inconsistent value depending on whether another Command gain occurred.
 
 ### First-pass Brothers in Arms preservation wager
 
-The version that returned one paired card to hand after victory and sent both to the Graveyard after defeat is superseded. It overlapped Battlefield Promotion, encouraged destination bookkeeping, and did not create a sufficiently memorable combined-arms payoff.
+The version that returned one paired card to hand after victory and sent both to the Graveyard after defeat is rejected. It overlapped Battlefield Promotion, encouraged destination bookkeeping, and did not create a sufficiently memorable combined-arms payoff.
+
+### Brothers in Arms repeated-effect proposal
+
+The proposal that repeated one Battle effect after coordinating a hand commitment and battle-drawn card is not approved and is set aside pending a substantially cleaner concept.
 
 ### Bridgehead Overlay
 
@@ -134,4 +133,4 @@ This direction is more General-leaning and risks overlap with Invasion, Siege We
 
 ## Next step
 
-Review the revised Standing Orders, Field Command, and Brothers in Arms candidates. Approve, revise, or reject them before creating additional Military slots. The first twelve-card draft remains superseded design provenance rather than a near-final package.
+Develop the next Military candidate from a concrete, evocative battlefield decision rather than trying to force Brothers in Arms into the package. Battlefield Promotion still requires cost approval and exact timing review; the remaining Military slots are open.
