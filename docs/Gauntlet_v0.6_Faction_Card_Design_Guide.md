@@ -10,7 +10,7 @@ This document should be used alongside:
 - `card-reviews/COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md` for current cost-tier expectations;
 - the active card metadata and review records for approved cards and unresolved wording.
 
-Exact card text belongs in the appropriate active faction-pool or card source once approved. This guide defines how proposed faction cards should be evaluated; it does not itself approve individual cards, pool sizes, or cost curves.
+Exact card text belongs in the appropriate active faction-pool or card source once approved. This guide defines how proposed faction cards and completed packages should be evaluated and records the working v0.6 package-size and cost-profile baseline.
 
 ---
 
@@ -173,7 +173,7 @@ A technically balanced card that is routine, procedural, redundant, or joyless s
 
 ## 3. Pool-level construction principles
 
-These principles apply to the faction package as a whole, regardless of its eventual size or exact cost distribution.
+These principles apply to the faction package as a whole.
 
 ### 3.1 Build strategic threads, not card cycles
 
@@ -236,6 +236,39 @@ When a faction package is built, every existing candidate must be evaluated unde
 - removed entirely.
 
 Historical review records should preserve provenance, but provenance does not establish release eligibility. A card should not be kept merely to fill a pool-size target, a cost slot, or an inherited list.
+
+### 3.8 Working v0.6 pool size and cost profile
+
+Each v0.6 faction package targets **12 unique playable cards**. Across six factions, the release therefore targets 72 faction designs in addition to the 50-card Neutral pool.
+
+A candidate counts toward the twelve-card package only after it passes this guide. The number is a release target, not permission to preserve or invent filler.
+
+Faction pools should deliberately lean more expensive than the Neutral pool. The Neutral pool provides universal fundamentals, low-cost connective tissue, basic counterplay, movement, smoothing, and positional tools. Faction cards more often embody specialized strategies, stronger character, build-arounds, and game-shaping effects.
+
+Higher faction costs must still reflect power, reliability, flexibility, or strategic impact. Complexity, novelty, faction identity, or flavor alone do not justify a higher cost.
+
+The default planning curve for a twelve-card faction package is:
+
+| Cost | Cards |
+|---:|---:|
+| 1 | 1 |
+| 2 | 3 |
+| 3 | 4 |
+| 4 | 3 |
+| 5 | 1 |
+| **Total** | **12** |
+
+This curve has 36 total unique-card value and a 3.0 average cost. It is a planning baseline, not a rigid quota.
+
+A finished faction may deviate when needed to feel complete, varied, and fun. In particular:
+
+- each faction must have access to at least one **cost-5 statement card** capable of defining a game or inspiring a major strategy;
+- a faction may have more than one cost-5 card when they represent genuinely different ambitions rather than an obvious combined package;
+- a faction may include as many other high-cost cards as its completed strategic vocabulary requires;
+- low-cost faction cards should express identity economically without becoming mandatory resource generation, consistency, or engine repair;
+- card quality, strategic completeness, and meaningful choice override exact curve symmetry across factions.
+
+A cost-5 statement card is not automatically Unique and should not be required for the faction to function. It should be optional, ambitious, distinctly factional, and supported by meaningful commitment, risk, timing, or counterplay.
 
 ---
 
@@ -378,11 +411,13 @@ Use the following sequence when building or revising a faction package.
 
 A faction pool is ready for release-level testing only when:
 
+- it contains twelve cards that individually earned their places under this guide;
 - it supports multiple credible strategies and hybrids;
 - neither leader has one obvious required construction;
 - no card is required for the faction's baseline mechanics to function;
 - low-cost cards provide choices rather than automatic efficiency;
-- high-cost cards create ambitious plans without becoming universal capstones;
+- it contains at least one optional, game-defining cost-5 statement card;
+- high-cost cards create distinct ambitious plans rather than one mandatory premium package;
 - cards interact meaningfully with both faction and Neutral tools;
 - major payoffs involve visible commitment, risk, or counterplay;
 - the pool preserves the faction's intended weaknesses;
