@@ -47,9 +47,9 @@ Encampment is a persistent military installation attached to a Territory rather 
 
 Preferred functional direction:
 
-> **Action:** Play only if you captured a Territory this turn. Place Encampment on that Territory as an Overlay.
+> **Action:** Place Encampment as an Overlay on the Territory you currently occupy and control.
 >
-> **Overlay:** At the end of your turn, if you occupy this Territory, gain 1 Command.
+> **Overlay:** At the end of your turn, if you occupy and control this Territory, gain 1 Command.
 >
 > When an opponent gains control of this Territory, place Encampment in its owner's Graveyard.
 >
@@ -57,6 +57,7 @@ Preferred functional direction:
 
 This direction is preferred because:
 
+- establishing the camp requires the player to be physically present on a Territory they control;
 - the Overlay remains for a physically and thematically intuitive reason;
 - leaving the Territory does not dismantle the camp;
 - returning to and ending a turn on the Territory can provide Command again;
@@ -66,7 +67,7 @@ This direction is preferred because:
 
 Cost remains unresolved, with cost 3 currently the leading starting point.
 
-Primary balance concern: unrestricted placement on any controlled rear Territory would allow passive Command farming. Restricting the Action to a Territory captured that turn keeps Encampment tied to newly secured ground. The Battle form gives the Commandant a defensive route to establish one while still allowing the General to use the Action after capture.
+Primary balance concerns are repeatable Command generation from a protected rear Territory and multiple Encampments creating easy Command access across the Gauntlet. These may be addressed through cost, a one-Encampment limit, or package-level Command density rather than by requiring the Territory to have been captured that turn.
 
 ### Secondary Overlay direction: Siegeworks
 
@@ -78,4 +79,4 @@ This direction is more General-leaning and risks overlap with Invasion, Siege We
 
 ## Next step
 
-Refine Encampment's placement condition, cost, and Battle wording, then return to Standing Orders, Field Command, Brothers in Arms, and the remaining open Military card slots. The first twelve-card draft should not be treated as a near-final package.
+Refine Encampment's cost, copy or placement limits, and Battle wording, then return to Standing Orders, Field Command, Brothers in Arms, and the remaining open Military card slots. The first twelve-card draft should not be treated as a near-final package.
