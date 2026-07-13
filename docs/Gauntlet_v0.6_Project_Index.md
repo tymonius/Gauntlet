@@ -30,7 +30,7 @@ No canonical v0.6 data exists yet. Active v0.6 documents govern development unti
 ### Design rationale and testing
 
 15. **`Gauntlet_Design_Principles_and_Guardrails.md`** — current design constraints for core rules, factions, cards, complexity, components, pacing, and digital work.
-16. **`Gauntlet_v0.6_Faction_Card_Design_Guide.md`** — active construction and review standard for faction card pools, including creative strategy, open-ended synergy, leader integration, anti-patterns, and package approval criteria.
+16. **`Gauntlet_v0.6_Faction_Card_Design_Guide.md`** — active construction and review standard for faction card pools, including creative strategy, open-ended synergy, no-grandfathering, leader integration, the twelve-card package target, premium-leaning cost baseline, anti-patterns, and package approval criteria.
 17. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — why the v0.5 rebuild occurred and which older systems are not current.
 18. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing benchmarks, simulation conclusions, telemetry, and human-playtest questions.
 19. **`Gauntlet_v0.6_Diplomat_Design_Notes.md`** — active rationale, implementation guidance, Sanctions direction, and testing questions for the integrated v0.6 Diplomat framework.
@@ -80,8 +80,8 @@ Remaining exact-text or design blockers:
 - Siege Weaponry may be renamed Bombardment.
 - Witchcraft needs final copied-effect eligibility wording.
 - General impossible-target and source-dependent copied-effect handling remains unresolved.
-- Intelligence Mission requirements and faction packages remain incomplete.
-- Faction cost curves and capstone needs still require audit.
+- Intelligence Mission requirements and all six faction packages remain incomplete.
+- Each completed faction package still requires its faction-specific curve, premium-card, synergy, and leader-integration audit.
 
 ### Territories
 
@@ -117,7 +117,13 @@ The six working factions are:
 
 Current faction rules are in the Working Rules. The revised Diplomat framework is part of the initial v0.6 baseline rather than a deferred v0.6.1 overhaul. Balance, names, Missions, card packages, and several thresholds remain under active testing or development.
 
-Faction package construction and review should follow `Gauntlet_v0.6_Faction_Card_Design_Guide.md` so that each pool supports creative strategies, open-ended interactions, leader-dependent interpretation, varied deck construction, and fun rather than a prescribed archetype.
+Faction package construction and review should follow `Gauntlet_v0.6_Faction_Card_Design_Guide.md`. The current v0.6 baseline is:
+
+- **12 unique playable cards per faction**;
+- no grandfathered release slots for previously faction-designated cards;
+- a premium-leaning default curve of **1 / 3 / 4 / 3 / 1** at costs 1–5;
+- at least one optional, game-defining cost-5 statement card per faction;
+- permission to deviate from the default curve or include additional premium cards when the completed strategic vocabulary is stronger, more varied, and more fun as a result.
 
 ### Digital work
 
@@ -154,4 +160,4 @@ Faction package construction and review should follow `Gauntlet_v0.6_Faction_Car
 
 ## Immediate next step
 
-Complete the six faction card packages and remaining faction-card exact-text blockers using `Gauntlet_v0.6_Faction_Card_Design_Guide.md` as the governing construction and review standard. Once those are stable, create the first canonical v0.6 dataset and use it to drive the deckbuilder and digital-development mode.
+Define Military's overlapping strategic threads and intended weaknesses, then audit every existing Military candidate under `Gauntlet_v0.6_Faction_Card_Design_Guide.md` before designing or approving any of the twelve final package cards. Once all six faction packages are stable, create the first canonical v0.6 dataset and use it to drive the deckbuilder and digital-development mode.
