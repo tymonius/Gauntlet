@@ -65,9 +65,11 @@ This direction is preferred because:
 - it disappears only when the opponent actually gains control of the Territory;
 - ending the turn there rather than continuing forward directly expresses momentum versus consolidation.
 
+Players may establish and control multiple Encampments. No explicit per-player or per-Territory copy restriction is currently intended beyond the normal rules governing Overlays and duplicate cards.
+
 Cost remains unresolved, with cost 3 currently the leading starting point.
 
-Primary balance concerns are repeatable Command generation from a protected rear Territory and multiple Encampments creating easy Command access across the Gauntlet. These may be addressed through cost, a one-Encampment limit, or package-level Command density rather than by requiring the Territory to have been captured that turn.
+The principal balance question is not the number of Encampments in play, but how often a player can realistically end turns on their controlled Encampment Territories while still advancing. Because Command is capped at 2 and each trigger requires presence on the specific Territory at the end of the turn, multiple camps create a network of possible rally points rather than simultaneous passive income.
 
 ### Secondary Overlay direction: Siegeworks
 
@@ -79,4 +81,4 @@ This direction is more General-leaning and risks overlap with Invasion, Siege We
 
 ## Next step
 
-Refine Encampment's cost, copy or placement limits, and Battle wording, then return to Standing Orders, Field Command, Brothers in Arms, and the remaining open Military card slots. The first twelve-card draft should not be treated as a near-final package.
+Refine Encampment's cost and Battle wording, then return to Standing Orders, Field Command, Brothers in Arms, and the remaining open Military card slots. The first twelve-card draft should not be treated as a near-final package.
