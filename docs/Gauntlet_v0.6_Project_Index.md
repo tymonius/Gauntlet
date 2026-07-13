@@ -11,44 +11,46 @@ Read this file first when resuming v0.6 work.
 ### Rules, cards, and Territories
 
 1. **`Gauntlet_v0.6_Working_Rules.md`** — current v0.6 rules framework, faction mechanics, leaders, resources, alternate victories, Assets, Overlays, Territory activation, Ruins, and product scope.
-2. **`card-reviews/STATUS.md`** — authoritative live playable-card checkpoint and unresolved card blockers.
-3. **`Gauntlet_v0.6_Card_Review_Log.md`** — consolidated decisions and wording direction for all 54 v0.5.7 playable cards.
-4. **`Gauntlet_v0.6_Card_Metadata.md`** — consolidated allegiance, starter eligibility, complexity, and watchlists for all 54 reviewed cards.
-5. **`card-reviews/CONDITION_AUDIT.md`** — detailed provenance for retiring Conditions and converting former Condition effects.
-6. **`card-reviews/`** — standalone detailed review provenance, including cards 48–54.
-7. **`territory-reviews/STATUS.md`** — authoritative Territory-review checkpoint.
-8. **`territory-reviews/GENERAL_RULES.md`** — approved general Territory activation and suppression rules.
-9. **`territory-reviews/`** — standalone reviews for all 25 v0.5.7 Territories and Arenas.
-10. **`Gauntlet_v0.6_Open_Questions.md`** — unresolved current rules, card, faction, testing, and release questions.
-11. **`../releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`** — authoritative pre-v0.6 source order and text for migration.
-12. **`v0.5.7_rules_clarifications.md`** — physical-rules clarifications discovered through digital implementation.
+2. **`Gauntlet_v0.6_Neutral_Card_Pool.md`** — authoritative working names, costs, complexity, traits, uniqueness, and exact text for all 50 Neutral cards.
+3. **`card-reviews/STATUS.md`** — authoritative live playable-card checkpoint and unresolved card blockers.
+4. **`card-reviews/COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`** — completed Neutral pool-size, cost-curve, repricing, and addition audit.
+5. **`Gauntlet_v0.6_Card_Metadata.md`** — consolidated allegiance, starter eligibility, complexity, and watchlists for all 66 approved playable-card designs.
+6. **`Gauntlet_v0.6_Card_Review_Log.md`** — migration provenance for all 54 v0.5.7 source cards. It does not override the Neutral Card Pool where Neutral costs or exact text differ.
+7. **`card-reviews/CONDITION_AUDIT.md`** — detailed provenance for retiring Conditions and converting former Condition effects.
+8. **`card-reviews/`** — standalone detailed review provenance, including the approved Neutral cost-2 and cost-3 addition records.
+9. **`territory-reviews/STATUS.md`** — authoritative Territory-review checkpoint.
+10. **`territory-reviews/GENERAL_RULES.md`** — approved general Territory activation and suppression rules.
+11. **`territory-reviews/`** — standalone reviews for all 25 v0.5.7 Territories and Arenas.
+12. **`Gauntlet_v0.6_Open_Questions.md`** — unresolved current rules, faction-card, testing, and release questions.
+13. **`../releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`** — authoritative historical pre-v0.6 source order and text for migration only.
+14. **`v0.5.7_rules_clarifications.md`** — physical-rules clarifications discovered through digital implementation.
 
-No canonical v0.6 data exists yet. Active v0.6 documents govern development until the remaining exact-text and faction-package blockers are resolved and a canonical release dataset is created.
+No canonical v0.6 data exists yet. Active v0.6 documents govern development until the remaining faction exact-text and package blockers are resolved and a canonical release dataset is created.
 
 ### Design rationale and testing
 
-13. **`Gauntlet_Design_Principles_and_Guardrails.md`** — current design constraints for core rules, factions, cards, complexity, components, pacing, and digital work.
-14. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — why the v0.5 rebuild occurred and which older systems are not current.
-15. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing benchmarks, simulation conclusions, telemetry, and human-playtest questions.
-16. **`Gauntlet_v0.6_Diplomat_Design_Notes.md`** — active rationale, implementation guidance, Sanctions direction, and testing questions for the integrated v0.6 Diplomat framework.
-17. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, Day/Night, and other post-v0.6 concepts.
+15. **`Gauntlet_Design_Principles_and_Guardrails.md`** — current design constraints for core rules, factions, cards, complexity, components, pacing, and digital work.
+16. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — why the v0.5 rebuild occurred and which older systems are not current.
+17. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing benchmarks, simulation conclusions, telemetry, and human-playtest questions.
+18. **`Gauntlet_v0.6_Diplomat_Design_Notes.md`** — active rationale, implementation guidance, Sanctions direction, and testing questions for the integrated v0.6 Diplomat framework.
+19. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, Day/Night, and other post-v0.6 concepts.
 
 ### Digital development
 
-18. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, rules engine, CLI, GUI, telemetry, and remote-play roadmap.
-19. **`../deckbuilder/README.md`** — current v0.5 deckbuilder behavior and versioned upgrade path.
-20. **`../src/README.md`** — current TypeScript engine and development-interface status.
-21. **`../data/README.md`** — starter-data scope and source-of-truth warning.
+20. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, rules engine, CLI, GUI, telemetry, and remote-play roadmap.
+21. **`../deckbuilder/README.md`** — current v0.5 deckbuilder behavior and versioned upgrade path.
+22. **`../src/README.md`** — current TypeScript engine and development-interface status.
+23. **`../data/README.md`** — starter-data scope and source-of-truth warning.
 
 ### Setting and production
 
-22. **`Gauntlet_Lore_Development_Notes.md`** — current WIP setting direction, open questions, and rejected premises.
-23. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — active production-facing leader and miniature direction.
-24. **`Game_Design_Glossary.md`** — shared design terminology.
+24. **`Gauntlet_Lore_Development_Notes.md`** — current WIP setting direction, open questions, and rejected premises.
+25. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — active production-facing leader and miniature direction.
+26. **`Game_Design_Glossary.md`** — shared design terminology.
 
 ### Historical archive
 
-`Archive/` contains completed audits and superseded historical records that remain useful for provenance. Archive material does not override active rules, canonical data, or current design documents.
+`Archive/` contains completed audits and superseded historical records that remain useful for provenance. Archive material does not override active rules, current exact-text documents, canonical data, or current design documents.
 
 ---
 
@@ -57,15 +59,21 @@ No canonical v0.6 data exists yet. Active v0.6 documents govern development unti
 ### Playable cards
 
 - All **54** v0.5.7 playable cards have been mechanically reviewed for v0.6.
-- The consolidated Card Review Log and Metadata registry now cover cards 1–54.
-- The Arcane Knowledge / Witchcraft name swap is integrated into both rollups.
+- **12 new Neutral cards** have been approved.
+- The project therefore contains **66 approved playable-card designs**.
+- The Neutral pool is complete at **50 unique cards**.
+- The final Neutral curve is **11 cost-1 / 19 cost-2 / 11 cost-3 / 8 cost-4 / 1 cost-5**.
+- The Neutral pool has 119 total unique deckbuilding value and a 2.38 average cost.
+- **Manifest Destiny** is finalized as the Unique Neutral cost-5 Territory-expansion capstone.
+- **Resourcefulness** is the final low-cost-card build-around.
+- **Counterworks** provides narrow Neutral Overlay prevention and temporary suppression.
+- Repair, permanent dismantling, movement, upgrading, recurrence, connected infrastructure, and Overlay-network victory progress remain reserved for the future Engineer faction.
+- The Arcane Knowledge / Witchcraft name swap is integrated into the metadata and exact-text sources.
 - Conditions are retired as a v0.6 game concept.
 - Former Condition effects have been converted to Assets, Overlays, immediate effects, or deferred faction redesigns.
-- The Condition audit is complete for current non-faction cards.
 
 Remaining exact-text or design blockers:
 
-- Manifest Destiny requires a full redesign.
 - Blockade / Sanctions requires its Diplomat implementation under the integrated Terms and staking framework.
 - Capital Gains requires its Financier-infrastructure redesign.
 - Siege Weaponry may be renamed Bombardment.
@@ -129,17 +137,18 @@ Current faction rules are in the Working Rules. The revised Diplomat framework i
 
 1. Treat chat as workspace; write durable decisions into the repository.
 2. Use released canonical data for its matching version.
-3. For migration questions, fetch exact v0.5.7 source text before analysis.
-4. Before faction-locking a card, assess both neutral-pool impact and interaction with the destination faction's mechanics.
-5. Record approved decisions in the relevant standalone or consolidated source.
-6. Update rollups and this Project Index at material milestones rather than after every minor discussion.
-7. Keep rules, testing rationale, lore, production direction, and implementation state in their designated documents.
-8. Remove or archive temporary worksheets, addenda, trackers, and continuation files once their information is consolidated.
-9. Do not claim a decision is logged until the repository update succeeds.
-10. Do not create canonical v0.6 data by silently resolving open design questions.
+3. For v0.6 Neutral card questions, use `Gauntlet_v0.6_Neutral_Card_Pool.md` first.
+4. For migration provenance, use the Card Review Log and standalone reviews.
+5. Before faction-locking a card, assess both neutral-pool impact and interaction with the destination faction's mechanics.
+6. Record approved decisions in the relevant active source.
+7. Update rollups and this Project Index at material milestones rather than after every minor discussion.
+8. Keep rules, testing rationale, lore, production direction, and implementation state in their designated documents.
+9. Remove or archive temporary worksheets, addenda, trackers, and continuation files once their information is consolidated.
+10. Do not claim a decision is logged until the repository update succeeds.
+11. Do not create canonical v0.6 data by silently resolving open design questions.
 
 ---
 
 ## Immediate next step
 
-Resolve the remaining exact-text blockers and complete the six faction card packages. Once those are stable, create the first canonical v0.6 dataset and use it to drive the deckbuilder and digital-development mode.
+Complete the six faction card packages and remaining faction-card exact-text blockers. Once those are stable, create the first canonical v0.6 dataset and use it to drive the deckbuilder and digital-development mode.
