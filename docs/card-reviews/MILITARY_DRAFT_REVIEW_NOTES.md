@@ -78,20 +78,20 @@ Cost 3 reflects that the card supplies one additional 1-Command Order, requires 
 
 ### Reserve Force
 
-**Proposed cost:** 3  
+**Cost:** unresolved; 3 is the current starting point  
 **Role:** Delayed commitment and a prepared additional Battle card
 
 > **Action:** Bank Reserve Force as an Asset and place one other Battle card from your hand face down beneath it. After Battle cards are revealed in a battle involving you, you may discard Reserve Force. If you do, play the stored card face up as an additional Battle card, if its Battle effect can still resolve. During battle cleanup, place the stored card in your Graveyard instead of its normal destination. If Reserve Force leaves play before the stored card is deployed, place the stored card in your Graveyard.
 >
 > **Battle:** After all Battle cards are revealed, you may replace Reserve Force with one Battle card from your hand whose Battle effect can still resolve. If you do, place Reserve Force in your Graveyard and play the chosen card face up. If you do not, place Reserve Force in your discard pile during battle cleanup instead of its normal destination.
 
-The Reserve Force concept is liked and provisionally retained. Its Battle effect may be played either as the player's hand commitment or from battle draw. Reserve Force serves as a provisional commitment: after seeing all revealed Battle cards, the player may replace it with a more appropriate Battle card from hand.
+The Reserve Force Action and Battle directions are approved. Its Battle effect may be played either as the player's hand commitment or from battle draw. Reserve Force serves as a provisional commitment: after seeing all revealed Battle cards, the player may replace it with a more appropriate Battle card from hand.
 
 If Reserve Force is replaced, using its effect sends it to the Graveyard regardless of whether it came from hand or battle draw. If it is not replaced, it goes to discard regardless of source. A hand-committed Reserve Force therefore avoids its normal Graveyard destination only when the player declines to use the replacement effect.
 
 The Action mode provides the more reliable prepared version. It consumes an Action opportunity, Asset slot, and second card from hand; exposes the preparation to Asset disruption; and sends the stored card to the Graveyard whether it is deployed or the Reserve Force is destroyed.
 
-Cost 3 remains provisional. Final review should test whether the hidden stored card creates acceptable handling, whether the Battle mode offers too much post-reveal flexibility, and whether the discard fallback makes Reserve Force too safe as a hand commitment.
+Cost remains unresolved, with 3 as the current starting point. Playtesting should examine whether the hidden stored card creates acceptable handling, whether the Battle mode offers too much post-reveal flexibility, and whether the discard fallback makes Reserve Force too safe as a hand commitment.
 
 ---
 
@@ -150,4 +150,4 @@ This direction is more General-leaning and risks overlap with Invasion, Siege We
 
 ## Next step
 
-Review Reserve Force's cost and handling, then develop the next Military candidate from a concrete, evocative battlefield decision. Battlefield Promotion still requires cost approval and exact timing review; the remaining Military slots are open.
+Develop the next Military candidate from a concrete, evocative battlefield decision. Battlefield Promotion still requires cost approval and exact timing review; Reserve Force still requires cost approval; the remaining Military slots are open.
