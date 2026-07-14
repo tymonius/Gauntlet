@@ -76,6 +76,23 @@ Field Command is approved as the current design direction. It does not merely di
 
 Cost 3 reflects that the card supplies one additional 1-Command Order, requires the first Order to be funded normally, and still depends on legal timing. The Commandant sequence is more automatic, while the General sequence offers greater initiative and positioning flexibility; this asymmetry remains a playtest question rather than a blocker.
 
+### Reserve Force
+
+**Proposed cost:** 3  
+**Role:** Delayed commitment and a prepared additional Battle card
+
+> **Action:** Bank Reserve Force as an Asset and place one other Battle card from your hand face down beneath it. After Battle cards are revealed in a battle involving you, you may discard Reserve Force. If you do, play the stored card face up as an additional Battle card, if its Battle effect can still resolve. During battle cleanup, place the stored card in your Graveyard instead of its normal destination. If Reserve Force leaves play before the stored card is deployed, place the stored card in your Graveyard.
+>
+> **Battle:** If you did not commit a Battle card from hand to this battle, after all Battle cards are revealed, you may play one Battle card from your hand face up in addition to your other Battle cards, if its Battle effect can still resolve.
+
+The Reserve Force concept is liked and provisionally retained. The Battle effect is specifically intended to let the player pass on the initial hand commitment, see the revealed battle, and then decide whether to commit a card from hand. It is not merely a hand-card substitution effect.
+
+The Battle mode therefore works only when Reserve Force is played from battle draw or otherwise becomes active without being the player's hand commitment. Passing on the hand commitment is a deliberate gamble: if Reserve Force does not appear, the player fights without a hand card.
+
+The Action mode provides the more reliable prepared version. It consumes an Action opportunity, Asset slot, and second card from hand; exposes the preparation to Asset disruption; and sends the stored card to the Graveyard whether it is deployed or the Reserve Force is destroyed.
+
+Cost 3 remains provisional. Final review should test whether the hidden stored card creates acceptable handling and whether the Battle mode's delayed hand commitment is too reliable when combined with enlarged battle draws.
+
 ---
 
 ## Unresolved design seed
@@ -133,4 +150,4 @@ This direction is more General-leaning and risks overlap with Invasion, Siege We
 
 ## Next step
 
-Develop the next Military candidate from a concrete, evocative battlefield decision rather than trying to force Brothers in Arms into the package. Battlefield Promotion still requires cost approval and exact timing review; the remaining Military slots are open.
+Review Reserve Force's cost and handling, then develop the next Military candidate from a concrete, evocative battlefield decision. Battlefield Promotion still requires cost approval and exact timing review; the remaining Military slots are open.
