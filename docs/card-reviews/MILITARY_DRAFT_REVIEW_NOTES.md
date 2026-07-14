@@ -93,6 +93,33 @@ The Action mode provides the more reliable prepared version. It consumes an Acti
 
 Playtesting should still examine whether the hidden stored card creates acceptable handling, whether the Battle mode offers too much post-reveal flexibility, and whether the discard fallback makes Reserve Force too safe as a hand commitment.
 
+### Give Chase
+
+**Proposed cost:** 3  
+**Role:** Dangerous pursuit and cumulative battle fatigue
+
+> **Action:** Play only after you win a battle you initiated. Move one space toward the opponent's Heartland. This movement may initiate a battle. If it does, you cannot commit a Battle card from hand or use Orders during that battle. During your initial battle draw, draw one fewer card for each battle beyond the first that you already fought this turn. This may reduce your battle draw to zero. Place Give Chase in your Graveyard after this movement.
+>
+> **Battle:** During battle cleanup, if you win this battle and initiated it, after the opponent retreats, move one space toward their Heartland. This movement may initiate a battle. If it does, you cannot commit a Battle card from hand or use Orders during that battle. During your initial battle draw, draw one fewer card for each battle beyond the first that you already fought this turn. This may reduce your battle draw to zero. Place Give Chase in your Graveyard after this movement.
+
+Give Chase is liked as the current direction, with cost 3 as the proposed value. It offers one improvised pursuit after an offensive victory, but the follow-up battle cannot use a hand commitment or Orders.
+
+The battle-draw penalty counts all prior additional battles that turn, regardless of what caused them. The first battle of the turn is ignored when calculating the reduction:
+
+- Give Chase after the first battle: no battle-draw reduction;
+- Give Chase after a second battle caused by Rout, Invasion, another Give Chase, or any other effect: draw one fewer card;
+- Give Chase after a third battle: draw two fewer cards;
+- and so on.
+
+This preserves a strong first pursuit while making extended operations progressively less supported. It also prevents Rout or another movement effect from resetting the Give Chase chain merely because the preceding battle came from a different source.
+
+Primary watchlist:
+
+- whether the Action and Battle forms should use identical destination timing;
+- whether no hand commitment, no Orders, and cumulative draw reduction are collectively too restrictive;
+- interaction with effects that increase initial battle draw;
+- whether the card should be approved at cost 3 after exact wording review.
+
 ---
 
 ## Unresolved design seed
@@ -150,4 +177,4 @@ This direction is more General-leaning and risks overlap with Invasion, Siege We
 
 ## Next step
 
-Develop the next Military candidate from a concrete, evocative battlefield decision. Battlefield Promotion still requires cost approval and exact timing review; the remaining Military slots are open.
+Review Give Chase's exact wording and cost-3 value, then continue developing open Military slots. Battlefield Promotion still requires cost approval and exact timing review.
