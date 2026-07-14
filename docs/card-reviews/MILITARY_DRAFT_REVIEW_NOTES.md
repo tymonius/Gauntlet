@@ -119,6 +119,25 @@ Primary playtest watchlist:
 - whether no hand commitment, no Orders, and cumulative draw reduction are collectively too restrictive;
 - interaction with effects that increase initial battle draw.
 
+### Hold the Line
+
+**Cost:** 4  
+**Role:** Concentrated defense at the risk of immediate territorial loss
+
+> **Action:** Bank Hold the Line as an Asset. When a battle begins in which you are defending a Territory you control, before Battle cards are committed, you may place Hold the Line in your Graveyard. If you do, after all Battle cards are revealed, draw two additional battle cards and immediately play up to one of them face up, in addition to your other Battle cards, if its Battle effect can still resolve. If you lose, after you retreat, your opponent captures that Territory immediately.
+>
+> **Battle:** If you are defending a Territory you control, after all Battle cards are revealed, draw two additional battle cards and immediately play up to one of them face up, in addition to your other Battle cards, if its Battle effect can still resolve. If you lose, after you retreat, your opponent captures that Territory immediately. During battle cleanup, place Hold the Line in your Graveyard instead of its normal destination.
+
+Hold the Line's name, Action, Battle effect, and cost-4 value are approved. It lets the Military player concentrate additional defense on controlled ground by surrendering the normal counterattack window if the defense fails.
+
+The card does not apply while defending a Heartland, because Heartlands are not Territories. This preserves **Last Stand** as the established name for the special battle defending a Heartland.
+
+Primary playtest watchlist:
+
+- whether drawing two and choosing up to one is sufficiently powerful at cost 4;
+- whether immediate capture after defeat creates the intended visible risk without becoming too punishing;
+- interaction with effects that enlarge or modify battle draw.
+
 ---
 
 ## Unresolved design seed
