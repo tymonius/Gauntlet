@@ -83,11 +83,11 @@ Cost 3 reflects that the card supplies one additional 1-Command Order, requires 
 
 > **Action:** Bank Reserve Force as an Asset and place one other Battle card from your hand face down beneath it. After Battle cards are revealed in a battle involving you, you may discard Reserve Force. If you do, play the stored card face up as an additional Battle card, if its Battle effect can still resolve. During battle cleanup, place the stored card in your Graveyard instead of its normal destination. If Reserve Force leaves play before the stored card is deployed, place the stored card in your Graveyard.
 >
-> **Battle:** After all Battle cards are revealed, you may replace Reserve Force with one Battle card from your hand whose Battle effect can still resolve. If you do, place Reserve Force in your discard pile and play the chosen card face up. If you do not, place Reserve Force in your discard pile during battle cleanup instead of its normal destination.
+> **Battle:** After all Battle cards are revealed, you may replace Reserve Force with one Battle card from your hand whose Battle effect can still resolve. If you do, place Reserve Force in your Graveyard and play the chosen card face up. If you do not, place Reserve Force in your discard pile during battle cleanup instead of its normal destination.
 
 The Reserve Force concept is liked and provisionally retained. Its Battle effect may be played either as the player's hand commitment or from battle draw. Reserve Force serves as a provisional commitment: after seeing all revealed Battle cards, the player may replace it with a more appropriate Battle card from hand.
 
-If Reserve Force is not replaced, it goes to discard regardless of whether it came from hand or battle draw. A hand-committed Reserve Force therefore avoids the normal Graveyard destination, but contributes no other Battle effect unless exchanged.
+If Reserve Force is replaced, using its effect sends it to the Graveyard regardless of whether it came from hand or battle draw. If it is not replaced, it goes to discard regardless of source. A hand-committed Reserve Force therefore avoids its normal Graveyard destination only when the player declines to use the replacement effect.
 
 The Action mode provides the more reliable prepared version. It consumes an Action opportunity, Asset slot, and second card from hand; exposes the preparation to Asset disruption; and sends the stored card to the Graveyard whether it is deployed or the Reserve Force is destroyed.
 
