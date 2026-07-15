@@ -193,7 +193,7 @@ function renderPurgeReference() {
 
 function renderTracker() {
   const steps = [1, 2, 3, 4].map(value => `
-    <div class="conviction-step ${value === 4 ? 'maximum' : ''}" style="bottom:${(value * 0.60).toFixed(2)}in">
+    <div class="conviction-step ${value === 4 ? 'maximum' : ''}" style="top:${(3.50 - value * 0.55).toFixed(2)}in">
       <span class="conviction-number">${value}</span>
       <span class="conviction-label">${value === 4 ? 'Maximum Conviction' : 'Conviction'}</span>
     </div>`).join('');
