@@ -1,0 +1,133 @@
+name: Repair Diplomat Against Latest Main
+
+on:
+  push:
+    branches:
+      - agent/finalize-definitive-diplomat-guide
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Diplomat branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/finalize-definitive-diplomat-guide
+          fetch-depth: 0
+
+      - name: Rebuild on latest main
+        shell: bash
+        run: |
+          set -euo pipefail
+          OLD_HEAD="$(git rev-parse HEAD)"
+          git fetch origin main
+          git reset --hard origin/main
+
+          git checkout "$OLD_HEAD" -- \
+            README.md \
+            deckbuilder-v0.6/README.md \
+            deckbuilder-v0.6/app.js \
+            docs/Gauntlet_v0.6_Card_Metadata.md \
+            docs/Gauntlet_v0.6_Open_Questions.md \
+            docs/Gauntlet_v0.6_Working_Rules.md \
+            docs/card-reviews/STATUS.md \
+            faction-sheets/README.md \
+            releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md \
+            releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.docx \
+            releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.pdf
+
+          rm -f \
+            docs/Gauntlet_v0.6_Diplomat_Card_Pool.md \
+            docs/Gauntlet_v0.6_Diplomat_Design_Notes.md \
+            docs/Gauntlet_v0.6_Diplomat_Supplemental_Cards.md \
+            .github/workflows/repair-diplomat-latest.yml \
+            .github/diplomat-latest-trigger
+
+          python3 - <<'PY'
+          from pathlib import Path
+
+          p = Path('docs/Gauntlet_v0.6_Project_Index.md')
+          text = p.read_text()
+
+          def replace_once(old, new):
+              global text
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'Expected one Project Index match, found {count}: {old[:100]!r}')
+              text = text.replace(old, new, 1)
+
+          replace_once(
+              '5. **`Gauntlet_v0.6_Diplomat_Card_Pool.md`** — authoritative exact text and audit for all 12 Diplomat cards.',
+              '5. **`../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`** — definitive Diplomat faction source: rules, Ambassador, Senator, Influence, Terms, Proposals / Treaty Articles, references, tracker, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are release-formatted editions.',
+          )
+          replace_once(
+              'For Military and Inquisition, the definitive faction guides above override earlier development records and split package documents, which have been removed from the active repository.',
+              'For Military, Diplomats, and Inquisition, the definitive faction guides above override earlier development records and split package documents, which have been removed from the active repository.',
+          )
+          replace_once(
+              '21. **`Gauntlet_v0.6_Diplomat_Design_Notes.md`** — Diplomat rationale and testing priorities.\n22. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing, telemetry, and human-playtest standards.\n23. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — historical rationale and retired systems.\n24. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, and other post-v0.6 concepts.',
+              '21. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing, telemetry, and human-playtest standards.\n22. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — historical rationale and retired systems.\n23. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, and other post-v0.6 concepts.',
+          )
+          replace_once(
+              'Completed-package drafts and sidecars remain provenance only where retained. Military development notes, drafts, audits, selection notes, and approval sidecars were removed after consolidation. The split Inquisition card-pool, design-note, supplemental-component, and working-guide documents were likewise removed after consolidation into the definitive Inquisition guide.',
+              'Completed-package drafts and sidecars remain provenance only where retained. Military development notes, drafts, audits, selection notes, and approval sidecars were removed after consolidation. The split Diplomat pool, design-note, and supplemental-component documents and the split Inquisition pool, design-note, supplemental-component, and working-guide documents were likewise removed after consolidation into their definitive guides.',
+          )
+          replace_once(
+              '25. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, engine, interface, telemetry, and remote-play roadmap.\n26. **`../deckbuilder/README.md`** — stable v0.5 deckbuilder.\n27. **`../deckbuilder-v0.6/README.md`** — v0.6 development deckbuilder scope, live-source behavior, omissions, and next implementation steps.\n28. **`../src/README.md`** — TypeScript engine and interface status.\n29. **`../data/README.md`** — starter-data scope and source warning.',
+              '24. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, engine, interface, telemetry, and remote-play roadmap.\n25. **`../deckbuilder/README.md`** — stable v0.5 deckbuilder.\n26. **`../deckbuilder-v0.6/README.md`** — v0.6 development deckbuilder scope, live-source behavior, omissions, and next implementation steps.\n27. **`../src/README.md`** — TypeScript engine and interface status.\n28. **`../data/README.md`** — starter-data scope and source warning.',
+          )
+          replace_once(
+              '30. **`Gauntlet_Lore_Development_Notes.md`** — current incremental setting direction.\n31. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — leader art and miniature direction.\n32. **`Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`** — Ambassador, Senator, Proposal / Treaty Article cards, references, and tracker.\n33. **`../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`** — definitive Inquisition source and release-guide package.\n34. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions.\n35. **`../images/`** — leader portraits and matching production sketches.\n36. **`Game_Design_Glossary.md`** — shared terminology.',
+              '29. **`Gauntlet_Lore_Development_Notes.md`** — current incremental setting direction.\n30. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — leader art and miniature direction.\n31. **`../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`** — definitive Diplomat source and release-guide package.\n32. **`../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`** — definitive Inquisition source and release-guide package.\n33. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions.\n34. **`../images/`** — leader portraits and matching production sketches.\n35. **`Game_Design_Glossary.md`** — shared terminology.',
+          )
+          replace_once(
+              '- The supplemental set uses both leaders, nine Proposal / Treaty Article cards, references, and the sliding Influence tracker.',
+              '- The supplemental set uses both leaders, nine Proposal / Treaty Article cards, references, and the sliding Influence tracker.\n- `../faction-sheets/diplomat.html` is the printable card-and-component package derived from the definitive guide.\n- `../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md` is the definitive Diplomat source.\n- The adjacent release files are `Gauntlet_v0.6_Diplomat_Faction_Guide.pdf` and `Gauntlet_v0.6_Diplomat_Faction_Guide.docx`.',
+          )
+          replace_once(
+              '- The definitive Military and Inquisition guide packages are under `releases/v0.6/faction-guides/` in Markdown, DOCX, and PDF formats.',
+              '- The definitive Military, Diplomat, and Inquisition guide packages are under `releases/v0.6/faction-guides/` in Markdown, DOCX, and PDF formats.',
+          )
+          replace_once(
+              'Continue Arcane, Financier, or Intelligence design while playtesting the completed Military, Diplomat, and Inquisition packages. In parallel, use the consolidated Territory pool to add Territory selection and supplemental-component manifests to the development deckbuilder so it can validate complete decks and generate the correct print package without creating premature canonical release data.',
+              'Continue Arcane, Financier, or Intelligence design while playtesting the completed Military, Diplomat, and Inquisition packages. In parallel, use the consolidated Territory pool to add Territory selection and supplemental-component manifests to the development deckbuilder so it can validate complete decks and generate the correct print package without creating premature canonical release data. Reopen a definitive faction package only when testing reveals a strategic, balance, wording, or production failure.',
+          )
+
+          p.write_text(text)
+
+          stale = [
+              'Gauntlet_v0.6_Diplomat_Card_Pool.md',
+              'Gauntlet_v0.6_Diplomat_Design_Notes.md',
+              'Gauntlet_v0.6_Diplomat_Supplemental_Cards.md',
+          ]
+          active = [
+              Path('README.md'),
+              Path('deckbuilder-v0.6/README.md'),
+              Path('deckbuilder-v0.6/app.js'),
+              Path('docs/Gauntlet_v0.6_Card_Metadata.md'),
+              Path('docs/Gauntlet_v0.6_Open_Questions.md'),
+              Path('docs/Gauntlet_v0.6_Project_Index.md'),
+              Path('docs/Gauntlet_v0.6_Working_Rules.md'),
+              Path('docs/card-reviews/STATUS.md'),
+              Path('faction-sheets/README.md'),
+          ]
+          for path in active:
+              body = path.read_text()
+              for needle in stale:
+                  if needle in body:
+                      raise SystemExit(f'Stale active reference in {path}: {needle}')
+          PY
+
+          node --check deckbuilder-v0.6/app.js
+          npm install
+          npm run typecheck
+          npm test
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Finalize definitive Diplomat faction guide package"
+          git push --force origin HEAD:agent/finalize-definitive-diplomat-guide
