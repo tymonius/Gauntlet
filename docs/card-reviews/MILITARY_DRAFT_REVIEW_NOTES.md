@@ -176,6 +176,25 @@ Primary playtest watchlist:
 - whether the Action form becomes routine infrastructure despite requiring a successful unsupported battle;
 - timing relative to the faction's normal first-victory Command gain and post-victory Orders.
 
+### Countercharge
+
+**Cost:** 4  
+**Role:** Convert a defensive victory into an immediate offensive reversal
+
+> **Action:** Bank Countercharge as an Asset. After you win a battle you did not initiate, you may place Countercharge in your Graveyard. If you do, after your opponent retreats, move one space toward their Heartland. This movement may initiate a battle.
+>
+> **Battle:** During battle cleanup, if you win this battle and did not initiate it, after your opponent retreats, move one space toward their Heartland. This movement may initiate a battle. Place Countercharge in your Graveyard after this movement.
+
+Countercharge's Action, Battle effect, and cost-4 value are approved. It turns a successful defense into an unrestricted follow-up attack, including during the opponent's turn. The countercharging player initiates the new battle and is therefore the attacker.
+
+Unlike Give Chase, Countercharge does not restrict hand commitment, Orders, or battle draw in the follow-up battle. Its defensive trigger and cost-4 value are intended to pay for that stronger reversal of initiative.
+
+Primary playtest watchlist:
+
+- whether unrestricted out-of-turn follow-up battles create timing or turn-structure problems;
+- whether the visible Action form discourages attacks too strongly;
+- interaction with effects that trigger after a defensive victory or at the end of the active player's turn.
+
 ---
 
 ## Unresolved design seed
