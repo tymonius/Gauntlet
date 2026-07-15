@@ -59,9 +59,10 @@ Completed-package drafts and sidecars remain provenance only and do not override
 34. **`Gauntlet_v0.6_Military_Faction_Guide.md`** — canonical player-facing Military faction-guide source for v0.6 release assembly.
 35. **`Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`** — Ambassador, Senator, Proposal / Treaty Article cards, references, and sliding Influence tracker.
 36. **`Gauntlet_v0.6_Inquisition_Supplemental_Cards.md`** — Grand Inquisitor, Witch Hunter, references, and sliding Conviction tracker.
-37. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions.
-38. **`../images/`** — leader portraits and matching production sketches.
-39. **`Game_Design_Glossary.md`** — shared terminology.
+37. **`Gauntlet_v0.6_Inquisition_Faction_Guide.md`** — canonical player-facing Inquisition faction-guide source for v0.6 release assembly.
+38. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions.
+39. **`../images/`** — leader portraits and matching production sketches.
+40. **`Game_Design_Glossary.md`** — shared terminology.
 
 ### Historical archive
 
@@ -121,6 +122,7 @@ Completed-package drafts and sidecars remain provenance only and do not override
 - Player-facing card text has received a dedicated concision pass without mechanical changes.
 - The supplemental set uses either leader, two single-sided references, and one shared sliding 0–4 Conviction tracker. No token or marker is used.
 - `../faction-sheets/inquisition.html` is the two-sheet printable package using the existing portraits under `images/`.
+- `Gauntlet_v0.6_Inquisition_Faction_Guide.md` is the canonical player-facing faction-guide source and uses the Grand Inquisitor and Witch Hunter sketches under `../images/sketches/` for release layout.
 
 ### Remaining blockers
 
@@ -160,7 +162,7 @@ The TypeScript engine, CLI, and GUI remain development scaffolds. Do not silentl
 - The Leader Design Bible is the visual source of truth.
 - `images/` contains portraits and production sketches for all twelve leaders.
 - Military, Diplomat, and Inquisition printable packages are under `faction-sheets/`.
-- The canonical Military faction-guide source is complete and ready for v0.6 release-PDF assembly.
+- The canonical Military and Inquisition faction-guide sources are complete and ready for v0.6 release-PDF assembly.
 - Military, Diplomat, and Inquisition resources use sliding leader-over-tracker components; Inquisition uses no token.
 
 ---
