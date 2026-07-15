@@ -16,7 +16,8 @@ Completed:
 - all 25 Territory and Arena reviews;
 - Condition retirement;
 - twelve-card Military, Diplomat, and Inquisition packages;
-- Military, Diplomat, and Inquisition supplemental-component specifications and printable sheets.
+- Military, Diplomat, and Inquisition supplemental-component specifications and printable sheets;
+- definitive Military faction guide in Markdown, DOCX, and PDF formats.
 
 Remaining blockers:
 
@@ -44,7 +45,7 @@ Remaining blockers:
 
 ## Military
 
-Authoritative sources: `Gauntlet_v0.6_Military_Card_Pool.md`, `Gauntlet_v0.6_Military_Design_Notes.md`, and `Gauntlet_v0.6_Military_Supplemental_Cards.md`.
+Definitive source: `../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`. The adjacent PDF and DOCX are the release-formatted editions. Earlier split Military pool, design, supplemental, selection, and approval documents have been consolidated and removed.
 
 Open questions:
 
@@ -162,7 +163,7 @@ Open questions:
 
 ## Cross-faction testing
 
-- Do all factions remain engaged with movement, battle, occupation, capture, and breakthrough?
+- Do all factions remain engaged with movement, battle, occupation, capture, and running the Gauntlet?
 - Do alternate victories create visible interactive pressure?
 - Are paired leaders comparably strong?
 - Does the Territory-scaled Asset bank accelerate games without killing comebacks?

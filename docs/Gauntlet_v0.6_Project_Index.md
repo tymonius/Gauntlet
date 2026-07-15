@@ -12,61 +12,57 @@ Read this file first when resuming v0.6 work.
 
 1. **`Gauntlet_v0.6_Working_Rules.md`** — current v0.6 rules framework, faction mechanics, leaders, resources, alternate victories, Assets, Overlays, Territories, and product scope.
 2. **`Gauntlet_v0.6_Neutral_Card_Pool.md`** — authoritative names, costs, metadata, and exact text for all 50 Neutral cards.
-3. **`Gauntlet_v0.6_Military_Card_Pool.md`** — authoritative exact text and audit for all 12 Military cards.
+3. **`../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`** — definitive Military faction source: Military rules, General, Commandant, Orders, Command tracker, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are the release-formatted editions.
 4. **`Gauntlet_v0.6_Diplomat_Card_Pool.md`** — authoritative exact text and audit for all 12 Diplomat cards.
 5. **`Gauntlet_v0.6_Inquisition_Card_Pool.md`** — authoritative exact text and audit for all 12 Inquisition cards.
 6. **`card-reviews/STATUS.md`** — live playable-card checkpoint and unresolved blockers.
 7. **`Gauntlet_v0.6_Card_Metadata.md`** — consolidated allegiance, starter, complexity, uniqueness, and watchlist metadata for 95 current playable designs.
 8. **`card-reviews/COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`** — completed Neutral pool audit.
-9. **`card-reviews/MILITARY_V0.6_RELEASE_SELECTION.md`** — completed Military selection audit.
-10. **`Gauntlet_v0.6_Card_Review_Log.md`** — migration provenance for all 54 v0.5.7 source cards.
-11. **`card-reviews/CONDITION_AUDIT.md`** — Condition retirement and conversion provenance.
-12. **`card-reviews/`** — detailed historical reviews and approval sidecars.
-13. **`territory-reviews/STATUS.md`** — Territory-review checkpoint.
-14. **`territory-reviews/GENERAL_RULES.md`** — Territory activation and suppression rules.
-15. **`territory-reviews/`** — reviews for all 25 v0.5.7 Territories and Arenas.
-16. **`Gauntlet_v0.6_Open_Questions.md`** — unresolved rules, card, testing, and release decisions.
-17. **`../releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`** — historical pre-v0.6 canonical source.
-18. **`v0.5.7_rules_clarifications.md`** — physical-rules clarifications from digital implementation.
+9. **`Gauntlet_v0.6_Card_Review_Log.md`** — migration provenance for all 54 v0.5.7 source cards.
+10. **`card-reviews/CONDITION_AUDIT.md`** — Condition retirement and conversion provenance.
+11. **`card-reviews/`** — detailed historical reviews and approval sidecars for unfinished or unconsolidated packages.
+12. **`territory-reviews/STATUS.md`** — Territory-review checkpoint.
+13. **`territory-reviews/GENERAL_RULES.md`** — Territory activation and suppression rules.
+14. **`territory-reviews/`** — reviews for all 25 v0.5.7 Territories and Arenas.
+15. **`Gauntlet_v0.6_Open_Questions.md`** — unresolved rules, card, testing, and release decisions.
+16. **`../releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`** — historical pre-v0.6 canonical source.
+17. **`v0.5.7_rules_clarifications.md`** — physical-rules clarifications from digital implementation.
 
-No canonical v0.6 data exists yet. Active v0.6 documents govern until the remaining three faction packages, exact-text blockers, Intelligence Missions, copied-effect rules, and package testing are resolved.
+No canonical v0.6 data exists yet. Active v0.6 documents govern until the remaining three faction packages, exact-text blockers, Intelligence Missions, copied-effect rules, and package testing are resolved. For Military, the definitive faction guide above overrides earlier development records and split Military documents, which have been removed from the active repository.
 
 ### Design rationale and testing
 
-19. **`Gauntlet_Design_Principles_and_Guardrails.md`** — core design constraints.
-20. **`Gauntlet_v0.6_Faction_Card_Design_Guide.md`** — faction-pool construction and approval standard.
-21. **`Gauntlet_v0.6_Military_Design_Notes.md`** — Military rationale and testing priorities.
-22. **`Gauntlet_v0.6_Diplomat_Design_Notes.md`** — Diplomat rationale and testing priorities.
-23. **`Gauntlet_v0.6_Inquisition_Design_Notes.md`** — Inquisition rationale and testing priorities.
-24. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing, telemetry, and human-playtest standards.
-25. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — historical rationale and retired systems.
-26. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, and other post-v0.6 concepts.
+18. **`Gauntlet_Design_Principles_and_Guardrails.md`** — core design constraints.
+19. **`Gauntlet_v0.6_Faction_Card_Design_Guide.md`** — faction-pool construction and approval standard.
+20. **`Gauntlet_v0.6_Diplomat_Design_Notes.md`** — Diplomat rationale and testing priorities.
+21. **`Gauntlet_v0.6_Inquisition_Design_Notes.md`** — Inquisition rationale and testing priorities.
+22. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing, telemetry, and human-playtest standards.
+23. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — historical rationale and retired systems.
+24. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, and other post-v0.6 concepts.
 
-Completed-package drafts and sidecars remain provenance only and do not override active pool documents or design notes.
+Completed-package drafts and sidecars remain provenance only where retained. Military development notes, drafts, audits, selection notes, and approval sidecars were removed after their contents were consolidated into the definitive faction guide.
 
 ### Digital development
 
-27. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, engine, interface, telemetry, and remote-play roadmap.
-28. **`../deckbuilder/README.md`** — current v0.5 deckbuilder.
-29. **`../src/README.md`** — TypeScript engine and interface status.
-30. **`../data/README.md`** — starter-data scope and source warning.
+25. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, engine, interface, telemetry, and remote-play roadmap.
+26. **`../deckbuilder/README.md`** — current v0.5 deckbuilder.
+27. **`../src/README.md`** — TypeScript engine and interface status.
+28. **`../data/README.md`** — starter-data scope and source warning.
 
 ### Setting and production
 
-31. **`Gauntlet_Lore_Development_Notes.md`** — current incremental setting direction.
-32. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — leader art and miniature direction.
-33. **`Gauntlet_v0.6_Military_Supplemental_Cards.md`** — General, Commandant, and sliding Command tracker.
-34. **`Gauntlet_v0.6_Military_Faction_Guide.md`** — canonical player-facing Military faction-guide source for v0.6 release assembly.
-35. **`Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`** — Ambassador, Senator, Proposal / Treaty Article cards, references, and sliding Influence tracker.
-36. **`Gauntlet_v0.6_Inquisition_Supplemental_Cards.md`** — Grand Inquisitor, Witch Hunter, references, and sliding Conviction tracker.
-37. **`Gauntlet_v0.6_Inquisition_Faction_Guide.md`** — canonical player-facing Inquisition faction-guide source for v0.6 release assembly.
-38. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions.
-39. **`../images/`** — leader portraits and matching production sketches.
-40. **`Game_Design_Glossary.md`** — shared terminology.
+29. **`Gauntlet_Lore_Development_Notes.md`** — current incremental setting direction.
+30. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — leader art and miniature direction.
+31. **`Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`** — Ambassador, Senator, Proposal / Treaty Article cards, references, and sliding Influence tracker.
+32. **`Gauntlet_v0.6_Inquisition_Supplemental_Cards.md`** — Grand Inquisitor, Witch Hunter, references, and sliding Conviction tracker.
+33. **`Gauntlet_v0.6_Inquisition_Faction_Guide.md`** — canonical player-facing Inquisition faction-guide source for v0.6 release assembly.
+34. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions.
+35. **`../images/`** — leader portraits and matching production sketches.
+36. **`Game_Design_Glossary.md`** — shared terminology.
 
 ### Historical archive
 
-`Archive/` contains completed audits and superseded records. Archive material never overrides active rules, exact-text pools, canonical data, or current design documents.
+`Archive/` contains completed audits and superseded records that remain useful. Archive material never overrides active rules, definitive faction guides, exact-text pools, canonical data, or current design documents.
 
 ---
 
@@ -97,8 +93,9 @@ Completed-package drafts and sidecars remain provenance only and do not override
 - **Shock and Awe** is the Unique cost-5 statement card.
 - **War Crimes** is Military; **Standing Orders** is deferred.
 - The supplemental set uses either leader plus one shared sliding Command tracker.
-- `../faction-sheets/military.html` is the printable package.
-- `Gauntlet_v0.6_Military_Faction_Guide.md` is the canonical player-facing faction-guide source and uses the General and Commandant sketches under `../images/sketches/` for release layout.
+- `../faction-sheets/military.html` is the printable card-and-component package derived from the definitive guide.
+- `../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md` is the definitive Military source.
+- The adjacent release files are `Gauntlet_v0.6_Military_Faction_Guide.pdf` and `Gauntlet_v0.6_Military_Faction_Guide.docx`.
 
 ### Diplomat checkpoint
 
@@ -162,7 +159,7 @@ The TypeScript engine, CLI, and GUI remain development scaffolds. Do not silentl
 - The Leader Design Bible is the visual source of truth.
 - `images/` contains portraits and production sketches for all twelve leaders.
 - Military, Diplomat, and Inquisition printable packages are under `faction-sheets/`.
-- The canonical Military and Inquisition faction-guide sources are complete and ready for v0.6 release-PDF assembly.
+- The definitive Military guide package is under `releases/v0.6/faction-guides/military/` in Markdown, DOCX, and PDF formats.
 - Military, Diplomat, and Inquisition resources use sliding leader-over-tracker components; Inquisition uses no token.
 
 ---
@@ -171,12 +168,12 @@ The TypeScript engine, CLI, and GUI remain development scaffolds. Do not silentl
 
 1. Treat chat as workspace; write durable decisions into the repository.
 2. Use released canonical data for its matching version.
-3. Use completed exact-text pool documents before migration provenance.
+3. Use definitive faction guides and completed exact-text pool documents before migration provenance.
 4. Assess Neutral-pool impact before faction-locking a shared card.
 5. Record approved decisions in the relevant active source.
 6. Update rollups at material checkpoints.
 7. Keep rules, rationale, lore, production, and implementation in their designated documents.
-8. Archive superseded working records once consolidated.
+8. Archive or remove superseded working records once consolidated.
 9. Do not claim a decision is logged until the repository update succeeds.
 10. Do not create canonical v0.6 data by silently resolving open questions.
 
@@ -184,4 +181,4 @@ The TypeScript engine, CLI, and GUI remain development scaffolds. Do not silentl
 
 ## Immediate next step
 
-Begin or continue Arcane, Financier, or Intelligence design while adding Military, Diplomat, and Inquisition to playtesting and print-legibility review. Reopen a completed roster only when testing reveals a strategic, balance, wording, or production failure.
+Begin or continue Arcane, Financier, or Intelligence design while adding Military, Diplomat, and Inquisition to playtesting and print-legibility review. Reopen Military only when testing reveals a strategic, balance, wording, or production failure in the definitive faction guide or its derived components.
