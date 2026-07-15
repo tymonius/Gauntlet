@@ -32,7 +32,7 @@ Likewise, this folder does not create canonical v0.6 data. It reads the active M
 - `docs/Gauntlet_v0.6_Neutral_Card_Pool.md`
 - `releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`
 - `docs/Gauntlet_v0.6_Diplomat_Card_Pool.md`
-- `docs/Gauntlet_v0.6_Inquisition_Card_Pool.md`
+- `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`
 
 This keeps the development tool synchronized while the remaining faction packages and cross-card rules are unresolved.
 

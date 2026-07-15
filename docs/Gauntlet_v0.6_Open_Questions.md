@@ -17,7 +17,7 @@ Completed:
 - Condition retirement;
 - twelve-card Military, Diplomat, and Inquisition packages;
 - Military, Diplomat, and Inquisition supplemental-component specifications and printable sheets;
-- definitive Military faction guide in Markdown, DOCX, and PDF formats.
+- definitive Military and Inquisition faction guides in Markdown, DOCX, and PDF formats.
 
 Remaining blockers:
 
@@ -89,7 +89,7 @@ Open questions:
 
 ## Inquisition
 
-Authoritative sources: `Gauntlet_v0.6_Inquisition_Card_Pool.md`, `Gauntlet_v0.6_Inquisition_Design_Notes.md`, and `Gauntlet_v0.6_Inquisition_Supplemental_Cards.md`.
+Definitive source: `../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`. The adjacent PDF and DOCX are release-formatted editions. Earlier split Inquisition pool, design, supplemental, and working-guide documents have been consolidated and removed.
 
 Closed production decisions:
 

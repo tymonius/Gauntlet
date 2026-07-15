@@ -19,13 +19,13 @@ The 95 current designs comprise 50 Neutral, 12 Military, 12 Diplomat, 12 Inquisi
 1. `../Gauntlet_v0.6_Neutral_Card_Pool.md`
 2. `../../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md` — definitive Military rules and exact card pool
 3. `../Gauntlet_v0.6_Diplomat_Card_Pool.md`
-4. `../Gauntlet_v0.6_Inquisition_Card_Pool.md`
+4. `../../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` — definitive Inquisition rules and exact card pool
 5. `../Gauntlet_v0.6_Card_Metadata.md`
 6. `COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`
 7. `../Gauntlet_v0.6_Card_Review_Log.md`
 8. `CONDITION_AUDIT.md`
 
-Definitive faction guides and completed exact-text pool documents override migration records and historical sidecars where they differ. Military's former split pool, design-note, supplemental, selection, and approval files have been consolidated into the definitive guide and removed.
+Definitive faction guides and completed exact-text pool documents override migration records and historical sidecars where they differ. Military's former split files and Inquisition's former split pool, design-note, supplemental, and working-guide files have been consolidated into their definitive guides and removed.
 
 ---
 
@@ -80,6 +80,7 @@ The Working Rules include:
 - **Divine Mercy, Tyranny, and Burning at the Stake** are the primary balance watchlist.
 - Player-facing card text has received a concision pass without mechanical changes.
 - The physical package uses a sliding 0–4 Conviction tracker beneath the selected leader. No token or marker is used.
+- The definitive source is `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`, with matching release DOCX and PDF.
 
 ---
 

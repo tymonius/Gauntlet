@@ -15,7 +15,10 @@ const SOURCES = {
   },
   inquisition: {
     label: "Inquisition",
-    path: "../docs/Gauntlet_v0.6_Inquisition_Card_Pool.md"
+    path: "../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md",
+    start: "## 6. Canonical Inquisition card pool",
+    end: "## 7. Card-pool summary",
+    headingLevel: 3
   }
 };
 
@@ -236,7 +239,8 @@ function parseCardPool(markdown, faction, source) {
     if (end >= 0) section = section.slice(0, end);
   }
 
-  const headings = [...section.matchAll(/^##\s+(.+)$/gm)];
+  const headingLevel = source.headingLevel || 2;
+  const headings = [...section.matchAll(new RegExp(`^#{${headingLevel}}\\s+(.+)$`, "gm"))];
   const cards = [];
 
   headings.forEach((match, index) => {
