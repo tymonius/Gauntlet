@@ -36,6 +36,15 @@ jobs:
               raise SystemExit('Diplomat transformation marker not found')
           raw = workflow.split(marker, 1)[1].split('\n          PY', 1)[0]
           script = '\n'.join(line[10:] if line.startswith('          ') else line for line in raw.splitlines())
+          needle = 'replace_once(js, old_fit, new_fit)'
+          replacement = """p = Path(js)
+text = p.read_text()
+start = text.index('function fitCards() {')
+end = text.index('\\n\\nrenderSheets();', start)
+p.write_text(text[:start] + new_fit + text[end:])"""
+          if needle not in script:
+              raise SystemExit('fitCards replacement call not found')
+          script = script.replace(needle, replacement, 1)
           exec(compile(script, 'render-diplomat-sheets', 'exec'))
           PY
           status=$?
