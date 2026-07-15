@@ -56,11 +56,12 @@ Completed-package drafts and sidecars remain provenance only and do not override
 31. **`Gauntlet_Lore_Development_Notes.md`** — current incremental setting direction.
 32. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — leader art and miniature direction.
 33. **`Gauntlet_v0.6_Military_Supplemental_Cards.md`** — General, Commandant, and sliding Command tracker.
-34. **`Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`** — Ambassador, Senator, Proposal / Treaty Article cards, references, and sliding Influence tracker.
-35. **`Gauntlet_v0.6_Inquisition_Supplemental_Cards.md`** — Grand Inquisitor, Witch Hunter, references, and sliding Conviction tracker.
-36. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions.
-37. **`../images/`** — leader portraits and matching production sketches.
-38. **`Game_Design_Glossary.md`** — shared terminology.
+34. **`Gauntlet_v0.6_Military_Faction_Guide.md`** — canonical player-facing Military faction-guide source for v0.6 release assembly.
+35. **`Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`** — Ambassador, Senator, Proposal / Treaty Article cards, references, and sliding Influence tracker.
+36. **`Gauntlet_v0.6_Inquisition_Supplemental_Cards.md`** — Grand Inquisitor, Witch Hunter, references, and sliding Conviction tracker.
+37. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions.
+38. **`../images/`** — leader portraits and matching production sketches.
+39. **`Game_Design_Glossary.md`** — shared terminology.
 
 ### Historical archive
 
@@ -96,6 +97,7 @@ Completed-package drafts and sidecars remain provenance only and do not override
 - **War Crimes** is Military; **Standing Orders** is deferred.
 - The supplemental set uses either leader plus one shared sliding Command tracker.
 - `../faction-sheets/military.html` is the printable package.
+- `Gauntlet_v0.6_Military_Faction_Guide.md` is the canonical player-facing faction-guide source and uses the General and Commandant sketches under `../images/sketches/` for release layout.
 
 ### Diplomat checkpoint
 
@@ -158,6 +160,7 @@ The TypeScript engine, CLI, and GUI remain development scaffolds. Do not silentl
 - The Leader Design Bible is the visual source of truth.
 - `images/` contains portraits and production sketches for all twelve leaders.
 - Military, Diplomat, and Inquisition printable packages are under `faction-sheets/`.
+- The canonical Military faction-guide source is complete and ready for v0.6 release-PDF assembly.
 - Military, Diplomat, and Inquisition resources use sliding leader-over-tracker components; Inquisition uses no token.
 
 ---
