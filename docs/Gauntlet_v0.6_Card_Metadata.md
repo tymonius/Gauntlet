@@ -1,8 +1,10 @@
 # Gauntlet v0.6 Card Metadata
 
-**Status:** Consolidated metadata rollup through 66 approved playable-card designs: 54 reviewed v0.5.7 source cards and 12 new Neutral cards.
+**Status:** Consolidated metadata rollup through 73 current playable-card designs: 50 Neutral cards, 12 Military cards, and 11 retained non-Military faction source designs awaiting completed packages.
 
-`card-reviews/STATUS.md` records the live checkpoint. `Gauntlet_v0.6_Neutral_Card_Pool.md` is authoritative for the names, costs, complexity, traits, uniqueness, and exact text of the 50 Neutral cards. The consolidated Card Review Log and standalone reviews remain provenance for migration decisions.
+`card-reviews/STATUS.md` records the live checkpoint. `Gauntlet_v0.6_Neutral_Card_Pool.md` and `Gauntlet_v0.6_Military_Card_Pool.md` are authoritative for the names, costs, complexity, uniqueness, and exact text of their completed pools. The consolidated Card Review Log, source registry below, and standalone reviews remain migration and design provenance.
+
+The 54-row source registry preserves the v0.5.7 migration record. It is not itself a count of current playable designs: Militias and Patriotism are retained below as retired source entries, while nine newly created Military cards appear only in the active Military package table.
 
 This file replaces the combined labels **Core Neutral** and **Advanced Neutral / Watchlist** with separate metadata fields. Those older labels in historical source material do not define gameplay categories.
 
@@ -13,9 +15,9 @@ This file replaces the combined labels **Core Neutral** and **Advanced Neutral /
 - **Complexity** — teaching and rules-load rating: **Basic** or **Advanced**.
 - **Watchlist** — a specific balance, pacing, wording, or interaction concern to test. A watchlist entry does not make a card illegal or Advanced by itself.
 
-Use **TBD** where the card has been faction-placed but starter-deck suitability has not yet been decided.
+Use **TBD** where starter-deck suitability has not yet been decided. A dash in the source registry indicates a retired migration entry that is not playable in the current v0.6 pool.
 
-## Reviewed-card registry
+## Reviewed source-card registry
 
 | # | Card | Allegiance | Starter eligible | Complexity | Watchlist |
 |---:|---|---|---|---|---|
@@ -25,7 +27,7 @@ Use **TBD** where the card has been faction-placed but starter-deck suitability 
 | 4 | Assimilation | Neutral | No | Advanced | Immediate-capture density and overlap with capture shortcuts |
 | 5 | Attrition | Neutral | No | Advanced | Long-game card denial and Inquisition overlap |
 | 6 | Blockade | Diplomats | No | Advanced | Sanctions redesign pending |
-| 7 | Brothers in Arms | Military | TBD | Advanced | Cancellation-proofing interactions |
+| 7 | Brothers in Arms | Military | TBD | Advanced | Post-draw commitment reliability and third-card clarity |
 | 8 | Capital Gains | Financiers | TBD | Advanced | Faction-infrastructure redesign and cost |
 | 9 | Capital Punishment | Neutral | No | Basic | Hard-removal density and post-battle Action combinations |
 | 10 | Conscription | Neutral | Yes | Basic | None |
@@ -43,12 +45,12 @@ Use **TBD** where the card has been faction-placed but starter-deck suitability 
 | 22 | Invasion | Neutral | No | Advanced | Military tempo stacking |
 | 23 | Liberation | Neutral | No | Advanced | Counterattack efficiency and extra-play timing |
 | 24 | Manifest Destiny | Neutral | No | Advanced | Unique board expansion, severe sacrifice, and board-geometry interactions |
-| 25 | Militias | Military | TBD | Basic | Defensive stacking |
+| 25 | Militias | — | — | — | Retired; not included in the v0.6 Military release pool |
 | 26 | Monetary Crisis | Financiers | TBD | Advanced | Repeated hand resets |
 | 27 | Necromancy | Arcane | TBD | Advanced | Recursion and Arcane-system interactions |
 | 28 | New Recruits | Neutral | Yes | Basic | Possible automatic inclusion |
 | 29 | Palisade Wall | Neutral | Yes | Basic | Defensive Asset suppression and overlap with Fortified Pass |
-| 30 | Patriotism | Military | TBD | Advanced | Defensive stacking and doubling interactions |
+| 30 | Patriotism | — | — | — | Retired; not included in the v0.6 Military release pool |
 | 31 | Protracted Siege | Neutral | No | Advanced | Capture-delay pacing and Overlay timing |
 | 32 | Rallying Cry | Neutral | Yes | Basic | None |
 | 33 | Redemption | Neutral | Yes | Basic | None |
@@ -60,7 +62,7 @@ Use **TBD** where the card has been faction-placed but starter-deck suitability 
 | 39 | Scorched Earth | Neutral | No | Advanced | Repeated Ruins replacement, Graveyard interactions, and limited removal |
 | 40 | Scouting Report | Neutral | No | Advanced | Extra battle-drawn play, special-reveal sequencing, and Intelligence information stacking |
 | 41 | Sedition | Neutral | Yes | Basic | Neutral Asset-removal density |
-| 42 | Shock and Awe | Military | No | Advanced | Immediate-capture density, Command exhaustion, leader-Order overlap, and chained movement |
+| 42 | Shock and Awe | Military | No | Advanced | Post-reveal commitment, failure retreat, and Breakthrough-versus-Consolidate balance |
 | 43 | Siege Weaponry | Neutral | No | Advanced | Persistent Territory suppression, Ruins replacement, matchup dependence, and possible title change |
 | 44 | Spies | Intelligence | No | Advanced | Persistent hand exposure, special-reveal sequencing, reselection, and Surveillance overlap |
 | 45 | Stand Ground | Neutral | Yes | Basic | Forced-movement boundary with required retreat and voluntary withdrawal |
@@ -71,7 +73,7 @@ Use **TBD** where the card has been faction-placed but starter-deck suitability 
 | 50 | Treason | Intelligence | No | Advanced | Copied-effect timing, cancellation interactions, source-dependent effects, and Surveillance/Interference |
 | 51 | Tyranny | Inquisition | No | Advanced | Repeatable suppression, opponent-selected targets, multi-part Battle cards, and negation timing |
 | 52 | Valor | Neutral | Yes | Basic | Multiple-copy stacking and repeated loss-trigger draws |
-| 53 | War Crimes | Inquisition | No | Advanced | Loss-trigger suppression, forced-retreat stacking, matchup dependence, and comeback-card interactions |
+| 53 | War Crimes | Military | No | Advanced | Long-game card denial, extra retreat, and sacrifice of normal victory exploitation |
 | 54 | Arcane Knowledge | Neutral | No | Advanced | Graveyard toolbox flexibility, premium Battle effects, and copied-effect chains |
 | 55 | Forced March | Neutral | Yes | Basic | Movement stacking and attack-limit tracking |
 | 56 | Pathfinders | Neutral | Yes | Basic | Territory-suppression timing during movement |
@@ -82,20 +84,44 @@ Use **TBD** where the card has been faction-placed but starter-deck suitability 
 | 61 | Foothold | Neutral | Yes | Basic | Occupation-defense stacking and repeated draw |
 | 62 | Tactical Planning | Neutral | Yes | Basic | Battle-draw selection density |
 | 63 | Requisition | Neutral | Yes | Basic | Sacrificial-Asset efficiency and advantage stacking |
-| 64 | Salvage | Neutral | No | Advanced | Exact recovery loops and battle-cleanup hand limit interactions |
+| 64 | Salvage | Neutral | No | Advanced | Exact recovery loops and battle-cleanup hand-limit interactions |
 | 65 | Resourcefulness | Neutral | No | Advanced | Repeated card advantage, multiple-copy incentives, and extra-Action chains |
 | 66 | Counterworks | Neutral | No | Advanced | Overlay replacement timing and cards that would become Overlays |
 
-## Name, trait, and uniqueness notes
+## Active Military package metadata
+
+This table is authoritative over the Military-related migration rows above.
+
+| ID | Card | Cost | Starter eligible | Complexity | Unique | Watchlist |
+|---|---|---:|---|---|---|---|
+| M1 | Unbroken Ranks | 1 | TBD | Basic | No | Access to 2-Command post-victory Orders |
+| M2 | Battlefield Promotion | 2 | TBD | Basic | No | Conditional preservation and repeated card advantage |
+| M3 | Encampment | 2 | TBD | Advanced | No | Repeatable Command, Overlay opportunity cost, and control changes |
+| M4 | Rearguard | 2 | TBD | Advanced | No | Pursuit timing and returning already-played cards to hand |
+| M5 | Brothers in Arms | 2 | TBD | Advanced | No | Post-draw commitment and prevention of a third Battle-card play |
+| M6 | Field Command | 3 | TBD | Advanced | No | Repel timing and leader-sequence asymmetry |
+| M7 | Reserve Force | 3 | TBD | Advanced | No | Hidden storage, replacement timing, and post-reveal flexibility |
+| M8 | Give Chase | 3 | TBD | Advanced | No | Chain-battle fatigue and movement-effect interactions |
+| M9 | Hold the Line | 4 | TBD | Advanced | No | Defensive reliability versus immediate-capture failure penalty |
+| M10 | Countercharge | 4 | TBD | Advanced | No | Unrestricted out-of-turn battles and turn structure |
+| M11 | War Crimes | 4 | No | Advanced | No | Graveyard conversion, retreat stacking, and long-game denial |
+| M12 | Shock and Awe | 5 | No | Advanced | Yes | Post-reveal commitment and Breakthrough-versus-Consolidate balance |
+
+## Name, trait, allegiance, and uniqueness notes
 
 - The v0.5.7 card **Arcane Knowledge** is named **Witchcraft** in v0.6.
 - The v0.5.7 card **Witchcraft** is named **Arcane Knowledge** in v0.6.
 - **Arcane Knowledge** (#54) has the **Arcane** trait despite Neutral allegiance. Trait and allegiance are separate fields.
 - **Manifest Destiny** is Neutral, cost 5, Advanced, and Unique: maximum one copy per deck.
+- **Shock and Awe** is Military, cost 5, Advanced, and Unique: maximum one copy per deck.
+- **War Crimes** is Military rather than Inquisition.
+- **Militias** and **Patriotism** are retired migration entries and are not playable in the current v0.6 pool.
 
 ## Current rollup state
 
-- The 54-card source review is complete.
+- The 54-card source migration review is complete.
 - The twelve-card Neutral expansion is complete.
 - The Neutral pool contains exactly 50 unique cards with the final 11 / 19 / 11 / 8 / 1 cost curve.
-- Remaining card work concerns faction exact-text blockers, faction-package construction, faction cost curves and capstones, copied-effect rules, and canonical-data production.
+- The Military pool contains exactly 12 unique cards with the current 1 / 4 / 3 / 3 / 1 cost curve.
+- The current project contains 73 playable-card designs: 50 Neutral, 12 Military, and 11 retained cards assigned to the five unfinished factions.
+- Remaining card work concerns the other five faction packages, faction exact-text blockers, Intelligence Missions, copied-effect rules, package playtesting, and canonical-data production.
