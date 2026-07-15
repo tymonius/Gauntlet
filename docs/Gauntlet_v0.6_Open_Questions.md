@@ -74,6 +74,7 @@ Open questions:
 - Is the five-Article Peace Treaty threshold correct?
 - Are nine double-sided Proposal / Treaty Article cards manageable and legible?
 - Are accepted effects attractive enough that refusal is not automatic?
+- Do Trade Concessions and Nonbinding Resolution provide enough replacement draw for out-of-turn Diplomat interactions without creating excessive card advantage?
 - Does accepted Influence growth snowball too quickly?
 - Are Proposal stakes correctly distributed?
 - Does uncapped Leverage create memorable commitments rather than deterministic battles?

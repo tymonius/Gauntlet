@@ -11,7 +11,7 @@ Use this document with:
 - `Gauntlet_v0.6_Diplomat_Design_Notes.md` for identity, strategic rationale, weaknesses, and package evaluation;
 - `Gauntlet_v0.6_Neutral_Card_Pool.md` for shared cards and interaction checks.
 
-This file supersedes earlier Blockade text, provisional Sanctions notes, and individual card drafts wherever current Diplomat costs or exact text differ. Those materials remain design provenance only.
+This file supersedes earlier Sanctions: Blockade text, provisional Sanctions notes, and individual card drafts wherever current Diplomat costs or exact text differ. Those materials remain design provenance only.
 
 ---
 
@@ -21,9 +21,9 @@ This file supersedes earlier Blockade text, provisional Sanctions notes, and ind
 |---:|---|
 | 1 | Clemency |
 | 2 | Trade Concessions; Safe Conduct; Neutral Observers |
-| 3 | Good Faith; Demilitarized Zone; Diplomatic Latitude; Nonbinding Resolution; Censure |
-| 4 | Gunboat Diplomacy; Embargo |
-| 5 | Blockade |
+| 3 | Good Faith; Demilitarized Zone; Diplomatic Latitude; Nonbinding Resolution; Sanctions: Censure |
+| 4 | Gunboat Diplomacy; Sanctions: Embargo |
+| 5 | Sanctions: Blockade |
 | **Total** | **12 cards** |
 
 - **Total unique-card value:** 35
@@ -41,12 +41,12 @@ This file supersedes earlier Blockade text, provisional Sanctions notes, and ind
 **Complexity:** Basic  
 **Primary threads:** Negotiated recovery; opponent choice; Influence development
 
-> **Action:** Choose one card in the opponent's Graveyard. The opponent chooses one:
+> **Action:** Choose a card in the opponent's Graveyard. They choose one:
 >
-> - move that card to their discard pile; if they do, gain 1 Influence; or
-> - leave that card in their Graveyard; if they do, draw one card.
+> - Move it to their discard pile; you gain 1 Influence.
+> - Leave it there; you draw one card.
 
-Clemency offers the recovery of a specific valuable card rather than generic recursion. The opponent decides whether that recovery is worth granting Influence.
+Clemency offers recovery of a specific valuable card rather than generic recursion. The opponent decides whether that recovery is worth granting Influence.
 
 ---
 
@@ -58,20 +58,20 @@ Clemency offers the recovery of a specific valuable card rather than generic rec
 **Complexity:** Advanced  
 **Primary threads:** Acceptance incentives; material concessions; concession-for-strength exchanges
 
-> When you offer Terms, before the opponent accepts or refuses, you may reveal Trade Concessions from your hand and set it aside.
+> When you offer Terms, before the opponent accepts or refuses, you may reveal this from hand and set it aside.
 >
 > **Accepted:** The opponent chooses one available option:
 >
-> - draw two cards; or
-> - bank one Asset from their hand without using an Action.
+> - Draw two cards.
+> - Bank an Asset from hand without using an Action.
 >
-> Then discard Trade Concessions.
+> Then discard this and draw one card.
 >
-> **Refused:** Return Trade Concessions to your hand before the resulting battle.
+> **Refused:** Return this to your hand before battle.
 >
-> **Battle:** The opponent draws one card. Gain +2 to your battle total.
+> **Battle:** The opponent draws one card. Gain +2 battle total.
 
-The accepted form gives the opponent a substantial tailored reason to advance the Treaty. The Battle form preserves the card's floor by exchanging a smaller concession for immediate strength.
+The accepted form gives the opponent a tailored incentive while replacing the Diplomat's spent interaction card. Refusal returns it, and the Battle form exchanges a smaller concession for immediate strength.
 
 ## Safe Conduct
 
@@ -80,11 +80,11 @@ The accepted form gives the opponent a substantial tailored reason to advance th
 **Card form:** Asset  
 **Primary threads:** Political insurance; visible preparation; diplomacy under pressure
 
-> **Action:** Bank Safe Conduct as an Asset.
+> **Action:** Bank this as an Asset.
 >
-> When you would lose a battle following refused Terms, you may discard Safe Conduct. If you do, withdraw instead. The opponent remains in or occupies the battle space, and the battle ends without a winner.
+> When you would lose a battle following refused Terms, you may discard this to withdraw instead. The opponent remains in or occupies the battle space, and the battle ends without a winner.
 
-Safe Conduct returns the Proposal stake because the battle ends without a winner. It does not return any Influence already spent through Leverage, impose or ratify the Proposal, or preserve the battlefield position.
+Safe Conduct returns the Proposal stake because the battle ends without a winner. It does not return Influence spent through Leverage, impose or ratify the Proposal, or preserve the battlefield position.
 
 ## Neutral Observers
 
@@ -93,11 +93,11 @@ Safe Conduct returns the Proposal stake because the battle ends without a winner
 **Card form:** Asset  
 **Primary threads:** Public accountability; commitment order; information advantage
 
-> **Action:** Bank Neutral Observers as an Asset.
+> **Action:** Bank this as an Asset.
 >
-> After Terms are refused, before either player commits a Battle card from hand, you may discard Neutral Observers. Your opponent must first either commit a Battle card from hand face up or decline to commit. Then you may commit normally.
+> After Terms are refused, before either player commits from hand, you may discard this. The opponent first commits a Battle card from hand face up or declines to commit; then you commit normally.
 
-Neutral Observers changes procedure rather than battle totals. The opponent remains free to commit or pass, but must make that choice publicly before the Diplomat commits.
+Neutral Observers changes procedure rather than battle totals. The opponent remains free to commit or pass but must choose publicly before the Diplomat commits.
 
 ---
 
@@ -110,15 +110,15 @@ Neutral Observers changes procedure rather than battle totals. The opponent rema
 **Card form:** Asset  
 **Primary threads:** Credible concessions; card valuation; acceptance pressure
 
-> **Action:** Bank Good Faith as an Asset.
+> **Action:** Bank this as an Asset.
 >
-> When you offer Terms, before the opponent accepts or refuses, you may discard Good Faith. If you do, draw one card, then reveal one card from your hand and set it aside as the offered card.
+> When you offer Terms, before the opponent accepts or refuses, you may discard this to draw one card, then reveal a card from hand and set it aside.
 >
-> **Accepted:** Send the offered card to your Graveyard.
+> **Accepted:** Put that card in your Graveyard.
 >
-> **Refused:** Return the offered card to your hand before the resulting battle.
+> **Refused:** Return it to your hand before battle.
 
-Good Faith turns a visible card into the substance of the offer: acceptance permanently removes it, while refusal returns it as a known resource for the battle.
+Good Faith makes a visible card the substance of the offer: acceptance permanently removes it, while refusal returns it as a known battle resource.
 
 ## Demilitarized Zone
 
@@ -127,19 +127,19 @@ Good Faith turns a visible card into the substance of the offer: acceptance perm
 **Card form:** Territory Overlay  
 **Primary threads:** Negotiated positioning; mutual restraint; remilitarization pressure
 
-> After Terms you offered are accepted and the Proposal's accepted effect resolves, you may play Demilitarized Zone on the battle Territory without using an Action. Each player still on that Territory withdraws.
+> After your Terms are accepted and the Proposal's Accepted effect resolves, you may play this on the battle Territory without using an Action. Each player still there withdraws.
 >
-> Neither player may enter this Territory during the turn Demilitarized Zone is placed.
+> Neither player may enter this Territory during the turn this is placed.
 >
-> To enter this Territory while it is unoccupied, discard one card.
+> To enter it while unoccupied, discard one card.
 >
-> This Territory cannot be captured or change control while Demilitarized Zone remains.
+> It cannot be captured or change control while this remains.
 >
-> At the start of your turn, before captures, if you are on this Territory, discard one card or withdraw.
+> At the start of your turn, before captures, if you occupy it, discard one card or withdraw.
 >
-> After the first battle fought on this Territory, discard Demilitarized Zone.
+> After the first battle here, discard this.
 
-Demilitarized Zone clears the disputed space and freezes its control without making it permanently impassable. The state-based entry cost requires no marker or memory of who entered first.
+Demilitarized Zone clears the disputed space and freezes its control without making it permanently impassable. The state-based entry cost requires no marker or memory.
 
 ## Diplomatic Latitude
 
@@ -147,15 +147,15 @@ Demilitarized Zone clears the disputed space and freezes its control without mak
 **Complexity:** Advanced  
 **Primary threads:** Proposal selection; controlled choice; sequencing flexibility
 
-> When you offer Terms, you may reveal Diplomatic Latitude from your hand and choose two eligible Proposals with the same Influence Stake instead of one. Stake that amount once.
+> When you offer Terms, you may reveal this from hand and offer two eligible Proposals with the same Influence Stake instead of one. Stake that amount once.
 >
-> **Accepted:** The opponent chooses one of those Proposals to be accepted. The other has no effect and is not ratified.
+> **Accepted:** The opponent chooses which Proposal is accepted.
 >
-> **Refused:** Choose one of those Proposals before resolving its refused effect. The chosen Proposal is the one that may be imposed; the other has no effect and is not ratified.
+> **Refused:** Choose one Proposal before resolving its Refused effect. Only it may be imposed.
 >
-> After the Terms resolve, discard Diplomatic Latitude.
+> The other Proposal does not resolve or become ratified. After Terms resolve, discard this.
 
-The opponent chooses the negotiated settlement; the Diplomat chooses the consequence of rejection. Only one Proposal can resolve or be ratified.
+The opponent chooses the negotiated settlement; the Diplomat chooses the consequence of rejection. Only one Proposal resolves or becomes ratified.
 
 ## Nonbinding Resolution
 
@@ -163,36 +163,33 @@ The opponent chooses the negotiated settlement; the Diplomat chooses the consequ
 **Complexity:** Advanced  
 **Primary threads:** Alternate political progress; acceptance incentives; opponent choice
 
-> When you offer Terms, before the opponent accepts or refuses, you may reveal Nonbinding Resolution from your hand and set it aside.
+> When you offer Terms, before the opponent accepts or refuses, you may reveal this from hand and set it aside.
 >
-> **Accepted:** Before the Proposal would be ratified, if it has not already been ratified, the opponent chooses one:
+> **Accepted:** If the Proposal is unratified, the opponent chooses one before ratification:
 >
-> - ratify it normally; or
-> - do not ratify it, and you gain 2 Influence.
+> - Ratify it normally.
+> - Leave it unratified; you gain 2 Influence.
 >
-> After the accepted Terms resolve, discard Nonbinding Resolution.
+> After Terms resolve, discard this, then draw one card.
 >
-> **Refused:** Discard Nonbinding Resolution, then draw one card before the resulting battle.
+> **Refused:** Discard this, then draw one card before battle.
 
-If the opponent chooses normal ratification, the shared accepted-Terms rule grants Influence equal to that Proposal's listed stake. The alternative grants 2 Influence but no Treaty Article.
+Normal ratification grants the Proposal's accepted newly-ratified Influence reward. The alternative grants 2 Influence but no Treaty Article. Either outcome replaces Nonbinding Resolution in hand.
 
-## Censure
+## Sanctions: Censure
 
 **Cost:** 3  
 **Complexity:** Advanced  
 **Card form:** Asset  
 **Primary threads:** Sanctions; Action efficiency; negotiated relief
 
-> After an opponent refuses Terms you offered, you may bank Censure from your hand without using an Action.
+> After an opponent refuses your Terms, you may bank this from hand without using an Action.
 >
-> While Censure is banked, the first time each turn that opponent plays an Action card, they choose one:
+> While banked, the first time each turn that opponent plays an Action card, they choose: discard one card, or you draw one card.
 >
-> - discard one card; or
-> - you draw one card.
->
-> After that opponent accepts Terms you offered, discard Censure.
+> After they accept your Terms, discard this.
 
-Censure pressures unilateral Action-card play without preventing it. The sanctioned opponent chooses the immediate cost and may later negotiate relief by accepting Terms.
+Sanctions: Censure pressures unilateral Action-card play without preventing it. The sanctioned opponent chooses the immediate cost and may later negotiate relief.
 
 ---
 
@@ -204,52 +201,49 @@ Censure pressures unilateral Action-card play without preventing it. The sanctio
 **Complexity:** Advanced  
 **Primary threads:** Coercive diplomacy; visible threats; fifth-Article pressure
 
-> When you offer Terms, before the opponent accepts or refuses, you may reveal Gunboat Diplomacy from your hand.
+> When you offer Terms, before the opponent accepts or refuses, you may reveal this from hand.
 >
-> **Accepted:** Discard Gunboat Diplomacy.
+> **Accepted:** Discard this.
 >
-> **Refused:** Play Gunboat Diplomacy face up in the resulting battle without counting against the number of Battle cards you may play from hand.
+> **Refused:** Play this face up in the resulting battle as an additional Battle card from hand.
 >
-> **Battle:** Gain +2 to your battle total. After the battle, discard Gunboat Diplomacy instead of sending it to the Graveyard.
+> **Battle:** Gain +2 battle total. After the battle, discard this.
 
-Gunboat Diplomacy makes the threat visible before the opponent decides. Refusal deploys it in addition to the Diplomat's normal hand commitment and any Influence later spent through Leverage; acceptance stands the force down.
+Gunboat Diplomacy makes the threat visible before the opponent decides. Refusal deploys it in addition to the Diplomat's normal hand commitment and any later Leverage; acceptance stands the force down.
 
-## Embargo
+## Sanctions: Embargo
 
 **Cost:** 4  
 **Complexity:** Advanced  
 **Card form:** Asset  
 **Primary threads:** Sanctions; Asset pressure; negotiated relief
 
-> After an opponent refuses Terms you offered, you may bank Embargo from your hand without using an Action.
+> After an opponent refuses your Terms, you may bank this from hand without using an Action.
 >
-> While Embargo is banked, that opponent's Asset-bank limit is reduced by 1, to a minimum of 0.
+> While banked, that opponent's Asset-bank limit is reduced by 1, to a minimum of 0.
 >
-> After that opponent accepts Terms you offered, discard Embargo.
+> After they accept your Terms, discard this.
 
-Embargo consumes one of the Diplomat's own Asset slots while reducing the sanctioned opponent's capacity. If the reduced limit is below the opponent's current bank, the normal Asset-limit rule applies immediately.
+Sanctions: Embargo consumes one of the Diplomat's Asset slots while reducing the sanctioned opponent's capacity. The normal Asset-limit rule applies immediately if necessary.
 
 ---
 
 # Cost 5
 
-## Blockade
+## Sanctions: Blockade
 
 **Cost:** 5  
 **Complexity:** Advanced  
 **Card form:** Territory Overlay  
 **Primary threads:** Sanctions; territorial pressure; movement taxation
 
-> After an opponent refuses Terms you offered, after the resulting battle, you may play Blockade on a revealed Territory they control without using an Action.
+> After the battle following an opponent's refusal of your Terms, you may play this on a revealed Territory they control without using an Action.
 >
-> The first time each turn that opponent enters or leaves this Territory, they choose one:
+> The first time each turn they enter or leave this Territory, they choose: discard one card, or you gain 1 Influence.
 >
-> - discard one card; or
-> - you gain 1 Influence.
->
-> Discard Blockade after that opponent accepts Terms you offered or loses control of this Territory.
+> Discard this after they accept your Terms or lose control of this Territory.
 
-Blockade is the package's cost-5 statement card. It suppresses one Territory's printed effect and creates lasting localized pressure, but never prevents movement.
+Sanctions: Blockade is the package's cost-5 statement card. It suppresses one Territory's printed effect and creates lasting localized pressure but never prevents movement.
 
 ---
 
@@ -271,7 +265,7 @@ The package supports overlapping approaches rather than named subpackages:
 The package is evaluated against the shared Diplomat economy:
 
 - accepted newly ratified paid Proposals grow Influence by their listed stake;
-- refused battles allow uncapped Leverage before dice;
+- refused battles allow all available Influence to be spent through Leverage before dice;
 - staked Influence cannot also be spent through Leverage;
 - lost stakes may be partially or fully preserved by the Senator through card sacrifice.
 
@@ -281,9 +275,9 @@ Faction cards should expand the decisions around that economy rather than become
 
 The three formal Sanctions are intentionally independent:
 
-- **Censure** pressures Action efficiency;
-- **Embargo** pressures Asset capacity;
-- **Blockade** pressures movement through a specific Territory.
+- **Sanctions: Censure** pressures Action efficiency;
+- **Sanctions: Embargo** pressures Asset capacity;
+- **Sanctions: Blockade** pressures movement through a specific Territory.
 
 None requires another Sanction card. All can be relieved by later accepted Terms, including acceptance of an already-ratified Proposal.
 
@@ -294,9 +288,10 @@ None requires another Sanction card. All can be relieved by later accepted Terms
 ### Initial watchlist
 
 - whether Gunboat Diplomacy becomes an automatic inclusion, especially when stacked with Leverage;
-- whether Embargo is excessively punishing against a full Asset bank;
+- whether Sanctions: Embargo is excessively punishing against a full Asset bank;
 - whether Safe Conduct returns high stakes too reliably after large Leverage spends;
 - whether Demilitarized Zone creates productive standoffs rather than excessive delay;
 - whether opponents rationally choose ratification rather than granting 2 Influence through Nonbinding Resolution;
 - whether multiple copies of persistent Sanctions create excessive stacking;
-- whether card-based Influence gains push uncapped Leverage beyond the intended practical range.
+- whether card-based Influence gains push Leverage beyond the intended practical range;
+- whether Trade Concessions and Nonbinding Resolution provide enough card replacement for the faction's out-of-turn interactions without producing excessive draw.

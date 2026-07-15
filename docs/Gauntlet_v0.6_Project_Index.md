@@ -104,9 +104,9 @@ Completed-package drafts and sidecars remain provenance only and do not override
 
 - Curve: **1 / 3 / 5 / 2 / 1**.
 - Total value: 35; average: 2.92.
-- Roster: **Clemency; Trade Concessions; Safe Conduct; Neutral Observers; Good Faith; Demilitarized Zone; Diplomatic Latitude; Nonbinding Resolution; Censure; Gunboat Diplomacy; Embargo; Blockade**.
-- **Blockade** is the cost-5 statement card.
-- **Censure, Embargo, and Blockade** are the formal Sanctions.
+- Roster: **Clemency; Trade Concessions; Safe Conduct; Neutral Observers; Good Faith; Demilitarized Zone; Diplomatic Latitude; Nonbinding Resolution; Sanctions: Censure; Gunboat Diplomacy; Sanctions: Embargo; Sanctions: Blockade**.
+- **Sanctions: Blockade** is the cost-5 statement card.
+- **Sanctions: Censure, Sanctions: Embargo, and Sanctions: Blockade** are the formal Sanctions.
 - **Recognition of Claims** is archived.
 - The supplemental set uses both leaders, nine Proposal / Treaty Article cards, references, and the sliding Influence tracker.
 

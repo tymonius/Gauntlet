@@ -229,10 +229,10 @@ The twelve-card package is approved for exact-text implementation and initial te
 | 3 | Demilitarized Zone | Symmetric territorial disengagement and remilitarization cost |
 | 3 | Diplomatic Latitude | Opponent chooses accepted settlement; Diplomat chooses refused consequence |
 | 3 | Nonbinding Resolution | Choice between Treaty progress and Influence |
-| 3 | Censure | Action-efficiency sanction |
+| 3 | Sanctions: Censure | Action-efficiency sanction |
 | 4 | Gunboat Diplomacy | Visible military threat supporting refusal pressure and fifth-Article battles |
-| 4 | Embargo | Asset-capacity sanction |
-| 5 | Blockade | Territory-local movement sanction and package statement card |
+| 4 | Sanctions: Embargo | Asset-capacity sanction |
+| 5 | Sanctions: Blockade | Territory-local movement sanction and package statement card |
 
 The curve is **1 / 3 / 5 / 2 / 1**, with total deckbuilding value **35** and average value **2.92**.
 
@@ -251,9 +251,9 @@ The cards form overlapping strategic threads rather than named packages:
 
 The Diplomat package contains three formal Sanctions, each pressuring a different object:
 
-- **Censure** pressures Action-card efficiency;
-- **Embargo** reduces Asset-bank capacity;
-- **Blockade** taxes movement through one Territory.
+- **Sanctions: Censure** pressures Action-card efficiency;
+- **Sanctions: Embargo** reduces Asset-bank capacity;
+- **Sanctions: Blockade** taxes movement through one Territory.
 
 All three:
 
@@ -263,7 +263,7 @@ All three:
 - can be lifted by later accepted Terms, including acceptance of an already-ratified Proposal;
 - function independently and do not require a dedicated Sanctions package.
 
-Blockade is removed if the sanctioned opponent loses control of its Territory. Embargo and Censure remain player-directed sanctions until accepted Terms remove them.
+Sanctions: Blockade is removed if the sanctioned opponent loses control of its Territory. Sanctions: Embargo and Sanctions: Censure remain player-directed sanctions until accepted Terms remove them.
 
 If Financiers also receive Sanctions, their version should arise from Deeds, Capital, Treasury, credit, or market pressure rather than diplomatic legitimacy.
 
@@ -308,6 +308,7 @@ It may be reconsidered only if testing reveals that the package lacks meaningful
 - Is the five-Article Peace Treaty threshold correct?
 - Are nine double-sided Proposal / Treaty Article cards manageable and readable?
 - Are accepted effects attractive enough that refusal is not automatic even though paid acceptance also grows Influence?
+- Do Trade Concessions and Nonbinding Resolution provide enough replacement draw for out-of-turn Diplomat interactions without creating excessive card advantage?
 - Does accepted Influence equal to the listed stake create healthy progression or excessive snowballing?
 - Are the 0 / 1 / 2 Proposal tiers correctly assigned?
 - Does allowing all available Influence to be spent through Leverage produce memorable commitments rather than deterministic non-decisions?
@@ -318,7 +319,7 @@ It may be reconsidered only if testing reveals that the package lacks meaningful
 - Are Ambassador and Senator comparably strong across the same twelve-card pool?
 - Is Political Capital's one-card-per-Influence exchange appropriately costly?
 - Does Gunboat Diplomacy become an automatic inclusion when combined with Leverage?
-- Is Embargo excessively punishing against a full Asset bank, especially for Financiers?
+- Is Sanctions: Embargo excessively punishing against a full Asset bank, especially for Financiers?
 - Does Safe Conduct deny too many opposing win/loss triggers while returning the stake?
 - Does Demilitarized Zone create productive standoffs rather than excessive delay?
 - Do opponents rationally choose ratification rather than granting 2 Influence through Nonbinding Resolution?

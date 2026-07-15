@@ -66,8 +66,8 @@ The Working Rules include:
 ### Diplomats
 
 - Curve: **1 / 3 / 5 / 2 / 1**; total 35; average 2.92.
-- **Blockade** is the cost-5 statement card.
-- **Censure, Embargo, and Blockade** are the Sanctions.
+- **Sanctions: Blockade** is the cost-5 statement card.
+- **Sanctions: Censure, Sanctions: Embargo, and Sanctions: Blockade** are the Sanctions.
 - **Cordiality** is the Ambassador ability.
 - **Recognition of Claims** is archived.
 

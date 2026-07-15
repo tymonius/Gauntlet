@@ -300,94 +300,94 @@ At the start of the Diplomat's turn, after captures, if at least **five differen
 
 ### 1. De-escalation
 
-**Influence Stake:** 0.
+**Influence Stake:** 0
 
-**Accepted:** Both players withdraw. The opponent draws one card.
-
-**Refused:** Draw one card.
+> **Accepted:** Both players withdraw. The opponent draws one card.
+>
+> **Refused:** Draw one card.
 
 ### 2. Orderly Withdrawal
 
-**Influence Stake:** 0.  
+**Influence Stake:** 0  
 **Requirement:** You must be attacking.
 
-**Accepted:** You withdraw. The opponent remains in or occupies the battle space. The opponent draws one card.
-
-**Refused:** Gain +1 to your battle total in the resulting battle.
+> **Accepted:** You withdraw. The opponent remains in or occupies the battle space, then draws one card.
+>
+> **Refused:** Gain +1 battle total.
 
 ### 3. Capitulation
 
-**Influence Stake:** 0.  
+**Influence Stake:** 0  
 **Requirement:** You must be defending.
 
-**Accepted:** You withdraw. The opponent remains in or occupies the battle space. The opponent draws one card.
-
-**Refused:** If you lose the resulting battle, draw two cards.
+> **Accepted:** You withdraw. The opponent remains in or occupies the battle space, then draws one card.
+>
+> **Refused:** If you lose, draw two cards.
 
 ### 4. Open Channels
 
-**Influence Stake:** 1.  
-**Requirement:** You must have at least one card in hand.
+**Influence Stake:** 1  
+**Requirement:** You must have a card in hand.
 
-**Accepted:** Each player reveals their hand. Then both players withdraw. The opponent draws one card.
-
-**Refused:** Look at the opponent's hand. During this battle's battle draw, draw one additional card before choosing which battle-drawn card to play.
+> **Accepted:** Both players reveal their hands, then withdraw. The opponent draws one card.
+>
+> **Refused:** Look at the opponent's hand. During battle draw, draw one additional card before choosing your battle-drawn card.
 
 ### 5. Mutual Disarmament
 
-**Influence Stake:** 1.  
-**Requirement:** Both players must have at least one card in hand.
+**Influence Stake:** 1  
+**Requirement:** Both players must have a card in hand.
 
-**Accepted:** Each player discards one card from hand. Then the opponent draws one card. Both players withdraw.
-
-**Refused:** You may discard one card from hand. If you do, during this battle's battle draw, draw one additional card before choosing which battle-drawn card to play.
+> **Accepted:** Each player discards one card from hand. The opponent draws one card, then both players withdraw.
+>
+> **Refused:** You may discard one card from hand. If you do, during battle draw, draw one additional card before choosing your battle-drawn card.
 
 ### 6. Prisoner Exchange
 
-**Influence Stake:** 1.  
-**Requirement:** Each player must have at least one card in their Graveyard.
+**Influence Stake:** 1  
+**Requirement:** Each player must have a card in their Graveyard.
 
-**Accepted:** Each player may move one card from their Graveyard to their discard pile. Then both players withdraw.
-
-**Refused:** If you lose the resulting battle, you may move one card from your Graveyard to your discard pile.
+> **Accepted:** Each player may move one card from their Graveyard to their discard pile. Then both players withdraw.
+>
+> **Refused:** If you lose, you may move one card from your Graveyard to your discard pile.
 
 ### 7. Rebuilding Pact
 
-**Influence Stake:** 1.  
+**Influence Stake:** 1  
 **Requirement:** You must have a card in hand that can be banked as an Asset.
 
-**Accepted:** Each player may bank one Asset from hand without using an Action. Then both players withdraw.
-
-**Refused:** After the battle, you may bank one Asset from hand without using an Action.
+> **Accepted:** Each player may bank one Asset from hand without using an Action. Then both players withdraw.
+>
+> **Refused:** After the battle, you may bank one Asset from hand without using an Action.
 
 ### 8. Ultimatum
 
-**Influence Stake:** 2.
+**Influence Stake:** 2
 
-**Accepted:** The opponent withdraws. You remain in or occupy the battle space.
-
-**Refused:** Gain +1 to your battle total in the resulting battle. If you win, gain 2 Influence instead of the default 1 Influence for imposing a newly ratified Proposal.
+> **Accepted:** The opponent withdraws. You remain in or occupy the battle space.
+>
+> **Refused:** Gain +1 battle total. If you win and newly ratify this Proposal, gain 2 Influence instead of 1.
 
 ### 9. Diplomatic Recognition
 
-**Influence Stake:** 2.  
-**Requirement:** You must be defending a counterattack while occupying a Territory the opponent controlled immediately before you occupied it.
+**Influence Stake:** 2  
+**Requirement:** You must be defending a counterattack on a Territory you occupy that the opponent controlled immediately before you occupied it.
 
-**Accepted:** Capture that Territory immediately. The opponent withdraws, then draws two cards.
-
-**Refused:** Fight normally. If you win, capture that Territory immediately. Gain no Influence for imposing this Proposal.
+> **Accepted:** Capture that Territory immediately. The opponent withdraws, then draws two cards.
+>
+> **Refused:** If you win, capture that Territory immediately, but gain no Influence for imposing this Proposal.
 
 ### Ambassador
 
 **Style:** cooperative diplomacy, successful negotiation, soft value.
 
-**Cordiality:** Once per turn, after the opponent accepts Terms you offered, draw one card.
+**Cordiality:** Once per turn, after the opponent accepts your Terms, draw one card.
 
 ### Senator
 
 **Style:** institutional resilience, legitimacy, and preserving political standing through sacrifice.
 
-**Political Capital:** Once per turn, when you would lose staked Influence because you lost the battle after refused Terms, you may send up to that many cards from your hand to your Graveyard. Recover 1 of that staked Influence for each card sent this way; lose the rest.
+**Political Capital:** Once per turn, when you would lose staked Influence after losing a battle following refused Terms, you may send up to that many cards from hand to your Graveyard. Recover 1 staked Influence per card sent; lose the rest.
 
 ### Faction cards and supplemental components
 

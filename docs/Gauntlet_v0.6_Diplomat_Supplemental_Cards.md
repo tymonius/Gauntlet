@@ -33,11 +33,11 @@ The nine Proposal cards begin Proposal side up. When a Proposal is newly ratifie
 
 Both Leader Cards include the following shared text:
 
-> **Setup:** Place your Influence Tracker beneath this card and set it to 1. Place your nine Proposal cards Proposal side up.
+> **Setup:** Set Influence to 1. Place your nine Proposal cards Proposal side up.
 >
-> **Leverage:** Before dice are rolled in a battle following refused Terms, you may spend any amount of available Influence. Gain +1 to your battle total for each Influence spent.
+> **Leverage:** Before dice in a battle following refused Terms, you may spend any amount of available Influence. Gain +1 battle total per Influence spent.
 >
-> **Peace Treaty:** At the start of your turn, after captures, if five different Proposals are ratified as Treaty Articles, you win.
+> **Peace Treaty:** At the start of your turn, after captures, if five different Proposals are ratified, you win.
 
 A Diplomat may have up to **10 Influence**. Influence cannot fall below 0. Any Influence gained beyond 10 is lost.
 
@@ -53,13 +53,13 @@ When an outcome returns or recovers staked Influence, raise the tracker by that 
 **Card type:** Supplemental Leader Card  
 **Player-facing phrase:** *Words first. War last.*
 
-> **Setup:** Place your Influence Tracker beneath this card and set it to 1. Place your nine Proposal cards Proposal side up.
+> **Setup:** Set Influence to 1. Place your nine Proposal cards Proposal side up.
 >
-> **Leverage:** Before dice are rolled in a battle following refused Terms, you may spend any amount of available Influence. Gain +1 to your battle total for each Influence spent.
+> **Leverage:** Before dice in a battle following refused Terms, you may spend any amount of available Influence. Gain +1 battle total per Influence spent.
 >
-> **Cordiality:** Once per turn, after the opponent accepts Terms you offered, draw one card.
+> **Cordiality:** Once per turn, after the opponent accepts your Terms, draw one card.
 >
-> **Peace Treaty:** At the start of your turn, after captures, if five different Proposals are ratified as Treaty Articles, you win.
+> **Peace Treaty:** At the start of your turn, after captures, if five different Proposals are ratified, you win.
 
 ### Production direction
 
@@ -76,13 +76,13 @@ When an outcome returns or recovers staked Influence, raise the tracker by that 
 **Card type:** Supplemental Leader Card  
 **Player-facing phrase:** *Procedure endures.*
 
-> **Setup:** Place your Influence Tracker beneath this card and set it to 1. Place your nine Proposal cards Proposal side up.
+> **Setup:** Set Influence to 1. Place your nine Proposal cards Proposal side up.
 >
-> **Leverage:** Before dice are rolled in a battle following refused Terms, you may spend any amount of available Influence. Gain +1 to your battle total for each Influence spent.
+> **Leverage:** Before dice in a battle following refused Terms, you may spend any amount of available Influence. Gain +1 battle total per Influence spent.
 >
-> **Political Capital:** Once per turn, when you would lose staked Influence because you lost the battle after refused Terms, you may send up to that many cards from your hand to your Graveyard. Recover 1 of that staked Influence for each card sent this way; lose the rest.
+> **Political Capital:** Once per turn, when you would lose staked Influence after losing a battle following refused Terms, you may send up to that many cards from hand to your Graveyard. Recover 1 staked Influence per card sent; lose the rest.
 >
-> **Peace Treaty:** At the start of your turn, after captures, if five different Proposals are ratified as Treaty Articles, you win.
+> **Peace Treaty:** At the start of your turn, after captures, if five different Proposals are ratified, you win.
 
 ### Production direction
 
@@ -162,45 +162,45 @@ A Treaty Article side remains fully usable because already-ratified Proposals ma
 **Influence Stake:** 0  
 **Requirement:** You must be attacking.
 
-> **Accepted:** You withdraw. The opponent remains in or occupies the battle space. The opponent draws one card.
+> **Accepted:** You withdraw. The opponent remains in or occupies the battle space, then draws one card.
 >
-> **Refused:** Gain +1 to your battle total in the resulting battle.
+> **Refused:** Gain +1 battle total.
 
 ### 3. Capitulation
 
 **Influence Stake:** 0  
 **Requirement:** You must be defending.
 
-> **Accepted:** You withdraw. The opponent remains in or occupies the battle space. The opponent draws one card.
+> **Accepted:** You withdraw. The opponent remains in or occupies the battle space, then draws one card.
 >
-> **Refused:** If you lose the resulting battle, draw two cards.
+> **Refused:** If you lose, draw two cards.
 
 ### 4. Open Channels
 
 **Influence Stake:** 1  
-**Requirement:** You must have at least one card in hand.
+**Requirement:** You must have a card in hand.
 
-> **Accepted:** Each player reveals their hand. Then both players withdraw. The opponent draws one card.
+> **Accepted:** Both players reveal their hands, then withdraw. The opponent draws one card.
 >
-> **Refused:** Look at the opponent's hand. During this battle's battle draw, draw one additional card before choosing which battle-drawn card to play.
+> **Refused:** Look at the opponent's hand. During battle draw, draw one additional card before choosing your battle-drawn card.
 
 ### 5. Mutual Disarmament
 
 **Influence Stake:** 1  
-**Requirement:** Both players must have at least one card in hand.
+**Requirement:** Both players must have a card in hand.
 
-> **Accepted:** Each player discards one card from hand. Then the opponent draws one card. Both players withdraw.
+> **Accepted:** Each player discards one card from hand. The opponent draws one card, then both players withdraw.
 >
-> **Refused:** You may discard one card from hand. If you do, during this battle's battle draw, draw one additional card before choosing which battle-drawn card to play.
+> **Refused:** You may discard one card from hand. If you do, during battle draw, draw one additional card before choosing your battle-drawn card.
 
 ### 6. Prisoner Exchange
 
 **Influence Stake:** 1  
-**Requirement:** Each player must have at least one card in their Graveyard.
+**Requirement:** Each player must have a card in their Graveyard.
 
 > **Accepted:** Each player may move one card from their Graveyard to their discard pile. Then both players withdraw.
 >
-> **Refused:** If you lose the resulting battle, you may move one card from your Graveyard to your discard pile.
+> **Refused:** If you lose, you may move one card from your Graveyard to your discard pile.
 
 ### 7. Rebuilding Pact
 
@@ -217,16 +217,16 @@ A Treaty Article side remains fully usable because already-ratified Proposals ma
 
 > **Accepted:** The opponent withdraws. You remain in or occupy the battle space.
 >
-> **Refused:** Gain +1 to your battle total in the resulting battle. If you win, gain 2 Influence instead of the default 1 Influence for imposing a newly ratified Proposal.
+> **Refused:** Gain +1 battle total. If you win and newly ratify this Proposal, gain 2 Influence instead of 1.
 
 ### 9. Diplomatic Recognition
 
 **Influence Stake:** 2  
-**Requirement:** You must be defending a counterattack while occupying a Territory the opponent controlled immediately before you occupied it.
+**Requirement:** You must be defending a counterattack on a Territory you occupy that the opponent controlled immediately before you occupied it.
 
 > **Accepted:** Capture that Territory immediately. The opponent withdraws, then draws two cards.
 >
-> **Refused:** Fight normally. If you win, capture that Territory immediately. Gain no Influence for imposing this Proposal.
+> **Refused:** If you win, capture that Territory immediately, but gain no Influence for imposing this Proposal.
 
 ---
 
@@ -236,29 +236,27 @@ A Treaty Article side remains fully usable because already-ratified Proposals ma
 
 > **Before a battle involving you:**
 >
-> 1. Choose one eligible Proposal.
-> 2. Lower your Influence Tracker by its listed Stake. That Influence is staked and unavailable until the Terms resolve.
+> 1. Choose an eligible Proposal.
+> 2. Lower Influence by its listed Stake.
 > 3. The opponent accepts or refuses.
 >
-> **Accepted:** No battle occurs. Resolve the Accepted effect. If the Proposal is newly ratified, flip it to its Treaty Article side. Return the stake on the tracker. If newly ratified, gain Influence equal to the Proposal's listed Stake.
+> **Accepted:** No battle occurs. Resolve the Accepted effect and return the stake. If newly ratified, flip the Proposal and gain Influence equal to its Stake.
 >
-> **Refused:** Resolve the Refused effect and fight. Before dice, you may use Leverage.
+> **Refused:** Resolve the Refused effect, then battle. Before dice, you may use Leverage.
 >
-> - **You win:** Impose the Proposal. If newly ratified, flip it. Return the stake. If newly ratified, gain 1 Influence unless the Proposal says otherwise.
-> - **You lose:** Do not ratify. The tracker already reflects the lost stake. Political Capital may recover part or all of it.
-> - **No winner:** Do not ratify. Return the stake on the tracker.
+> - **You win:** Impose the Proposal and return the stake. If newly ratified, flip it and gain 1 Influence unless stated otherwise.
+> - **You lose:** Do not ratify it. Lose the stake.
+> - **No winner:** Do not ratify it. Return the stake.
 
 ### Side B — Influence and Treaty Articles
 
-> **Influence:** Track available Influence from 0 to 10 by sliding your Leader Card over the Influence Tracker.
+> **Influence:** Track available Influence from 0 to 10. Excess gains are lost.
 >
-> **Staking:** Lower the tracker by the offered Proposal's listed Stake. Only available Influence may be staked or spent.
+> **Staking:** Lower the tracker by the Proposal's Stake. That Influence is unavailable until Terms resolve.
 >
 > **Leverage:** Before dice in a battle following refused Terms, spend any amount of available Influence for +1 battle total each.
 >
-> **Accepted newly ratified Proposal:** Return the stake and gain additional Influence equal to the listed Stake.
->
-> **Already-ratified Proposal:** May be offered again, but cannot count again or generate either normal newly-ratified Influence reward.
+> **Treaty Articles:** A ratified Proposal may be offered again, but cannot be ratified again or grant normal newly-ratified Influence rewards.
 >
 > **Peace Treaty:** At the start of your turn, after captures, five different Treaty Articles win the game.
 
