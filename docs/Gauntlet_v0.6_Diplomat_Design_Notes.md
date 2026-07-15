@@ -2,7 +2,8 @@
 
 **Status:** Active v0.6 design rationale and implementation notes.  
 **Rules source of truth:** `Gauntlet_v0.6_Working_Rules.md`.  
-**Card source of truth:** `Gauntlet_v0.6_Diplomat_Card_Pool.md`.
+**Card source of truth:** `Gauntlet_v0.6_Diplomat_Card_Pool.md`.  
+**Supplemental-component source of truth:** `Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`.
 
 ---
 
@@ -10,7 +11,7 @@
 
 The revised Diplomat framework is part of the initial **v0.6 faction release**. It is no longer deferred to v0.6.1.
 
-The earlier framework—generic Loss of Face, direct Influence rewards on most accepted Terms, and an Influence-based Peace Treaty threshold—is obsolete. Diplomat faction cards, leaders, reference components, starter decks, canonical data, and digital implementation should be designed against the revised model from the beginning.
+The earlier framework—generic Loss of Face, an Influence-based Peace Treaty threshold, and loosely distributed Influence rewards—is obsolete. Diplomat faction cards, leaders, Proposal cards, reference components, starter decks, canonical data, and digital implementation should use the staking, acceptance-growth, Leverage, and Treaty Article model from the beginning.
 
 ---
 
@@ -20,7 +21,7 @@ Diplomats convert conflict into legitimacy through three linked systems:
 
 1. **Proposals** create an accept-or-refuse decision before battle.
 2. **Treaty Articles** are the public progress track toward Peace Treaty.
-3. **Influence** is political capital risked to offer stronger Proposals and used by faction cards or leaders.
+3. **Influence** is political capital gained through agreement, imposition, bargains, and pressure; staked to offer stronger Proposals; spent through Leverage; and risked when negotiations fail.
 
 The key distinction is:
 
@@ -28,17 +29,21 @@ The key distinction is:
 
 Peace Treaty is achieved by ratifying five different Proposals as Treaty Articles. Influence is not part of the victory check.
 
+Diplomats begin with **1 Influence**. This gives immediate access to the cost-1 Proposal tier or one point of Leverage without making the two strongest Proposals immediately available.
+
 ---
 
-## Influence staking and Terms outcomes
+## Influence stakes and Terms outcomes
 
-To offer a Proposal, the Diplomat must be able to stake Influence equal to its cost.
+Each Proposal lists an **Influence Stake** of 0, 1, or 2.
+
+To offer a Proposal, the Diplomat must place its listed stake on that Proposal card. Staked Influence is removed from the Diplomat's available Influence until the Terms resolve and cannot be spent through Leverage or another effect.
 
 | Outcome | Treaty result | Influence result |
 |---|---|---|
-| Opponent accepts | Ratify the Proposal if it is not already ratified | Return the stake; gain only Influence specifically granted by an effect |
+| Opponent accepts | Ratify the Proposal if it is not already ratified | Return the stake; if newly ratified, gain Influence equal to the listed stake |
 | Opponent refuses and the Diplomat wins | Impose and ratify the Proposal if it is not already ratified | Return the stake; if newly ratified, gain 1 Influence unless the Proposal says otherwise |
-| Opponent refuses and the Diplomat loses | Do not ratify the Proposal | Lose the stake |
+| Opponent refuses and the Diplomat loses | Do not ratify the Proposal | Lose the stake, subject to Political Capital |
 | Opponent refuses and the battle ends without a winner | Do not ratify the Proposal | Return the stake |
 
 A Proposal is **imposed** when the opponent refuses it and the Diplomat wins the resulting battle.
@@ -46,10 +51,43 @@ A Proposal is **imposed** when the opponent refuses it and the Diplomat wins the
 An already-ratified Proposal may still be offered for its tactical effects, but it:
 
 - cannot count toward Peace Treaty again;
+- does not generate Influence from normal accepted-Terms ratification again;
 - does not generate the default 1 Influence for imposition again;
 - may still generate Influence if a card, leader, or Proposal explicitly says so.
 
 This replaces generic **Loss of Face**. Political failure is proportional to the amount of Influence risked, but only an actual loss forfeits the stake. A no-winner result produces no Treaty progress and returns the stake.
+
+### Why accepted Terms generate Influence
+
+Acceptance now does more than safely ratify an Article. When a paid Proposal is newly accepted, the Diplomat returns the stake and gains additional Influence equal to that stake.
+
+This gives Proposal stakes three jobs:
+
+1. define which negotiations the Diplomat is politically capable of offering;
+2. define how much Influence is at risk if refusal leads to defeat;
+3. define how much political capital successful peaceful ratification generates.
+
+The reward applies only to newly ratified Proposals. Repeated acceptance of an existing Treaty Article cannot farm Influence.
+
+---
+
+## Leverage
+
+**Leverage** is a shared Diplomat rule:
+
+> Before dice are rolled in a battle following refused Terms, you may spend any amount of available Influence. Gain +1 to your battle total for each Influence spent.
+
+Leverage turns Influence into an active tactical resource rather than merely a Proposal threshold or failure buffer.
+
+Its restrictions are essential:
+
+- it is available only in a battle following refused Terms;
+- staked Influence is unavailable and cannot be spent twice;
+- the amount is chosen before dice are rolled;
+- spent Influence is lost whether the battle is won, lost, or ends without a winner;
+- it has no fixed per-battle cap.
+
+Uncapped spending creates an intentional late-game possibility: a Diplomat may cash out several turns of political capital to impose a critical Article, especially the fifth. That should feel like a climactic commitment, not ordinary generic combat superiority.
 
 ---
 
@@ -57,10 +95,10 @@ This replaces generic **Loss of Face**. Political failure is proportional to the
 
 The opponent should have a serious reason to consider either response:
 
-- **Accept:** concede one Treaty Article, but receive a controlled settlement, avoid battle risk, and deny the Diplomat the default Influence reward for imposition.
-- **Refuse:** preserve a chance to stop ratification, but risk the ordinary battle result, a stronger refused effect, Article ratification, and additional Diplomat Influence.
+- **Accept:** concede one Treaty Article, receive a controlled settlement, avoid battle and Leverage risk, and allow a newly accepted paid Proposal to increase the Diplomat's Influence.
+- **Refuse:** preserve a chance to stop ratification, but risk the ordinary battle result, a stronger refused effect, Article imposition, the default imposition reward, Sanctions, and any Influence the Diplomat commits through Leverage.
 
-A one-Influence difference is not sufficient by itself. The accepted and refused effects must create the real decision.
+The Influence difference is meaningful, but the Proposal's accepted and refused effects must still create the real decision. Terms should not reduce to a mathematical choice between two resource payouts.
 
 Accepted Terms should usually give the opponent one or more of:
 
@@ -70,7 +108,7 @@ Accepted Terms should usually give the opponent one or more of:
 - Asset development;
 - mutual information or controlled disarmament;
 - avoidance of a dangerous battle;
-- denial of extra Diplomat Influence.
+- avoidance of Leverage and post-refusal Sanctions.
 
 Refused Terms should usually give the Diplomat one or more of:
 
@@ -80,29 +118,34 @@ Refused Terms should usually give the Diplomat one or more of:
 - a battle bonus;
 - recovery even after losing;
 - a unilateral version of the negotiated benefit;
-- additional Influence if the Proposal is imposed.
-
-Accepted Terms should not routinely grant Influence. Acceptance already advances Peace Treaty.
+- additional Influence if the Proposal is imposed;
+- access to Leverage and refusal-triggered faction cards.
 
 ---
 
 ## Proposal structure
 
-The v0.6 Proposal order is:
+The v0.6 Proposal order and Influence stakes are:
 
-1. De-escalation
-2. Orderly Withdrawal
-3. Capitulation
-4. Open Channels
-5. Mutual Disarmament
-6. Prisoner Exchange
-7. Rebuilding Pact
-8. Ultimatum
-9. Diplomatic Recognition
+| Order | Proposal | Influence Stake | Tier |
+|---:|---|---:|---|
+| 1 | De-escalation | 0 | Basic battlefield settlement |
+| 2 | Orderly Withdrawal | 0 | Basic battlefield settlement |
+| 3 | Capitulation | 0 | Basic battlefield settlement |
+| 4 | Open Channels | 1 | Structured agreement |
+| 5 | Mutual Disarmament | 1 | Structured agreement |
+| 6 | Prisoner Exchange | 1 | Structured agreement |
+| 7 | Rebuilding Pact | 1 | Structured agreement |
+| 8 | Ultimatum | 2 | Coercive demand |
+| 9 | Diplomatic Recognition | 2 | Coercive demand |
 
-The first six are basic, zero-cost political tools. Rebuilding Pact and Ultimatum require a one-Influence stake. Diplomatic Recognition requires a two-Influence stake and a narrow occupation/counterattack state.
+The three zero-stake Proposals preserve an always-available Terms floor. They involve direct withdrawal, de-escalation, or capitulation rather than broader institutional exchange.
 
-The full current text belongs in the Working Rules and faction reference materials rather than being duplicated here.
+The four one-stake Proposals require reciprocal information, disarmament, recovery, or material development. They are the main engine for accepted-Terms Influence growth.
+
+The two two-stake Proposals demand major unilateral positional concessions. Their higher stake increases both the failure risk and the peaceful-ratification reward.
+
+The full current text belongs in the Working Rules and the Proposal / Treaty Article supplemental cards rather than being duplicated here.
 
 ---
 
@@ -116,11 +159,15 @@ This creates an intended final showdown:
 
 - at four Articles, acceptance becomes increasingly unlikely;
 - the Diplomat must create a sufficiently dangerous offer or win the refused battle;
+- accumulated Influence may be spent through Leverage to force the issue;
+- doing so weakens the Diplomat's ability to offer paid Terms afterward if the attempt fails;
 - the opponent receives a final race window before Peace Treaty resolves.
 
 ---
 
 ## Leader direction
+
+Both leaders use the same nine Proposals, accepted-Terms rewards, Leverage rule, and twelve-card faction pool.
 
 ### Ambassador
 
@@ -130,7 +177,7 @@ The Ambassador rewards negotiated settlement rather than military imposition.
 
 > Once per turn, after the opponent accepts Terms you offered, draw one card.
 
-Acceptance advances Peace Treaty without generating default Influence, so Cordiality supplies soft value without replacing the core faction decision.
+Accepted paid Terms may now also generate Influence equal to their stake. Cordiality adds soft card value rather than changing that shared economy or accelerating Treaty Articles beyond normal ratification.
 
 ### Senator
 
@@ -138,9 +185,33 @@ The Senator represents institutional resilience and the ability to absorb politi
 
 **Political Capital:**
 
-> Once per turn, when you would lose staked Influence because you lost the battle after refused Terms, you may send one card from your hand to your Graveyard. If you do, recover 1 of that staked Influence instead of losing it.
+> Once per turn, when you would lose staked Influence because you lost the battle after refused Terms, you may send up to that many cards from your hand to your Graveyard. Recover 1 of that staked Influence for each card sent this way; lose the rest.
 
-This replaces the older ability that reduced generic Loss of Face. The wording now follows the win / loss / no-winner Terms structure.
+The Senator may therefore:
+
+- send one card to preserve a one-Influence stake;
+- send one card to preserve half of a two-Influence stake;
+- send two cards to preserve the entire two-Influence stake;
+- decline to preserve any Influence.
+
+With a hand limit of three, full recovery of Diplomatic Recognition's stake is intentionally severe. Political Capital does not recover Influence already spent through Leverage and does not change the battle result or ratify the failed Proposal.
+
+---
+
+## Supplemental components
+
+The approved Diplomat supplemental set is:
+
+- one selected Leader Card: Ambassador or Senator;
+- nine double-sided Proposal / Treaty Article cards;
+- one double-sided Diplomat Reference card;
+- Influence tokens.
+
+Proposal cards begin Proposal side up and flip when newly ratified. Both sides repeat the full Proposal rules because an already-ratified Article may still be offered.
+
+Influence stakes are placed directly on the offered Proposal card. This makes political risk visible and clearly separates available Influence from staked Influence.
+
+The authoritative exact component specification is `Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`.
 
 ---
 
@@ -233,17 +304,20 @@ It may be reconsidered only if testing reveals that the package lacks meaningful
 
 ## Active test questions
 
-- Is starting at 0 Influence correct, or does it delay access to paid Proposals too much?
-- Is five different Treaty Articles the correct Peace Treaty threshold?
-- Are nine Proposals manageable as a supplemental reference?
-- Are the accepted effects and faction-card incentives attractive enough that refusal is not automatic?
-- Are the refused effects dangerous enough without making Terms coercively one-sided?
-- Do Rebuilding Pact, Ultimatum, and Diplomatic Recognition justify their stakes?
-- Are repeated already-ratified Proposals tactically useful without enabling Influence farming?
+- Is beginning with 1 Influence correct?
+- Is the five-Article Peace Treaty threshold correct?
+- Are nine double-sided Proposal / Treaty Article cards manageable and readable?
+- Are accepted effects attractive enough that refusal is not automatic even though paid acceptance also grows Influence?
+- Does accepted Influence equal to the listed stake create healthy progression or excessive snowballing?
+- Are the 0 / 1 / 2 Proposal tiers correctly assigned?
+- Does uncapped Leverage produce memorable commitments rather than deterministic non-decisions?
+- What are the average, upper-quartile, and maximum Influence totals held and spent in one battle?
+- Are repeated already-ratified Proposals tactically useful without enabling card-specific Influence farming?
 - Are Ambassador and Senator comparably strong across the same twelve-card pool?
-- Does Gunboat Diplomacy become an automatic inclusion?
+- Is Political Capital's one-card-per-Influence exchange appropriately costly?
+- Does Gunboat Diplomacy become an automatic inclusion when combined with Leverage?
 - Is Embargo excessively punishing against a full Asset bank, especially for Financiers?
-- Does Safe Conduct deny too many opposing win/loss triggers?
+- Does Safe Conduct deny too many opposing win/loss triggers while returning the stake?
 - Does Demilitarized Zone create productive standoffs rather than excessive delay?
 - Do opponents rationally choose ratification rather than granting 2 Influence through Nonbinding Resolution?
 - Do multiple copies of persistent Sanctions create excessive stacking?
@@ -252,4 +326,4 @@ It may be reconsidered only if testing reveals that the package lacks meaningful
 
 ## Versioning consequence
 
-The first public v0.6 rules and faction materials should contain this framework and card package. **v0.6.1** is reserved for changes discovered after v0.6 testing: balance adjustments, wording corrections, leader tuning, Proposal recalibration, card-package substitutions, and other genuine patch work.
+The first public v0.6 rules and faction materials should contain this framework, card package, and supplemental component set. **v0.6.1** is reserved for changes discovered after v0.6 testing: balance adjustments, wording corrections, leader tuning, Proposal recalibration, card-package substitutions, and other genuine patch work.

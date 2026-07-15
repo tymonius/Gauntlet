@@ -5,7 +5,8 @@
 
 Use this document with:
 
-- `Gauntlet_v0.6_Working_Rules.md` for Terms, Proposals, Treaty Articles, Peace Treaty, Influence, leaders, battle timing, Assets, Overlays, and Territory rules;
+- `Gauntlet_v0.6_Working_Rules.md` for Terms, Proposals, Treaty Articles, Peace Treaty, Influence, Leverage, leaders, battle timing, Assets, Overlays, and Territory rules;
+- `Gauntlet_v0.6_Diplomat_Supplemental_Cards.md` for the Leader Cards, Proposal / Treaty Article cards, Terms reference, and Influence components;
 - `Gauntlet_v0.6_Faction_Card_Design_Guide.md` for package standards;
 - `Gauntlet_v0.6_Diplomat_Design_Notes.md` for identity, strategic rationale, weaknesses, and package evaluation;
 - `Gauntlet_v0.6_Neutral_Card_Pool.md` for shared cards and interaction checks.
@@ -83,7 +84,7 @@ The accepted form gives the opponent a substantial tailored reason to advance th
 >
 > When you would lose a battle following refused Terms, you may discard Safe Conduct. If you do, withdraw instead. The opponent remains in or occupies the battle space, and the battle ends without a winner.
 
-Safe Conduct preserves the staked Influence because the revised Terms rule returns the stake when a battle ends without a winner. It does not impose or ratify the Proposal and still concedes the battlefield position.
+Safe Conduct returns the Proposal stake because the battle ends without a winner. It does not return any Influence already spent through Leverage, impose or ratify the Proposal, or preserve the battlefield position.
 
 ## Neutral Observers
 
@@ -146,7 +147,7 @@ Demilitarized Zone clears the disputed space and freezes its control without mak
 **Complexity:** Advanced  
 **Primary threads:** Proposal selection; controlled choice; sequencing flexibility
 
-> When you offer Terms, you may reveal Diplomatic Latitude from your hand and choose two eligible Proposals with the same Influence cost instead of one. Stake that cost once.
+> When you offer Terms, you may reveal Diplomatic Latitude from your hand and choose two eligible Proposals with the same Influence Stake instead of one. Stake that amount once.
 >
 > **Accepted:** The opponent chooses one of those Proposals to be accepted. The other has no effect and is not ratified.
 >
@@ -173,7 +174,7 @@ The opponent chooses the negotiated settlement; the Diplomat chooses the consequ
 >
 > **Refused:** Discard Nonbinding Resolution, then draw one card before the resulting battle.
 
-Nonbinding Resolution lets the opponent accept the settlement without necessarily advancing Peace Treaty, but the alternative grants the Diplomat substantial leverage for later paid Proposals.
+If the opponent chooses normal ratification, the shared accepted-Terms rule grants Influence equal to that Proposal's listed stake. The alternative grants 2 Influence but no Treaty Article.
 
 ## Censure
 
@@ -211,7 +212,7 @@ Censure pressures unilateral Action-card play without preventing it. The sanctio
 >
 > **Battle:** Gain +2 to your battle total. After the battle, discard Gunboat Diplomacy instead of sending it to the Graveyard.
 
-Gunboat Diplomacy makes the threat visible before the opponent decides. Refusal deploys it in addition to the Diplomat's normal hand commitment; acceptance stands the force down.
+Gunboat Diplomacy makes the threat visible before the opponent decides. Refusal deploys it in addition to the Diplomat's normal hand commitment and any Influence later spent through Leverage; acceptance stands the force down.
 
 ## Embargo
 
@@ -265,6 +266,17 @@ The package supports overlapping approaches rather than named subpackages:
 - territorial settlement and restraint;
 - political resilience under failed Terms.
 
+### Shared Influence interactions
+
+The package is evaluated against the shared Diplomat economy:
+
+- accepted newly ratified paid Proposals grow Influence by their listed stake;
+- refused battles allow uncapped Leverage before dice;
+- staked Influence cannot also be spent through Leverage;
+- lost stakes may be partially or fully preserved by the Senator through card sacrifice.
+
+Faction cards should expand the decisions around that economy rather than become mandatory Influence generators or universal battle multipliers.
+
 ### Sanctions
 
 The three formal Sanctions are intentionally independent:
@@ -281,9 +293,10 @@ None requires another Sanction card. All can be relieved by later accepted Terms
 
 ### Initial watchlist
 
-- whether Gunboat Diplomacy becomes an automatic inclusion;
+- whether Gunboat Diplomacy becomes an automatic inclusion, especially when stacked with Leverage;
 - whether Embargo is excessively punishing against a full Asset bank;
-- whether Safe Conduct denies too many opposing win/loss triggers;
+- whether Safe Conduct returns high stakes too reliably after large Leverage spends;
 - whether Demilitarized Zone creates productive standoffs rather than excessive delay;
 - whether opponents rationally choose ratification rather than granting 2 Influence through Nonbinding Resolution;
-- whether multiple copies of persistent Sanctions create excessive stacking.
+- whether multiple copies of persistent Sanctions create excessive stacking;
+- whether card-based Influence gains push uncapped Leverage beyond the intended practical range.

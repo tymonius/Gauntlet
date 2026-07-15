@@ -9,23 +9,24 @@ Closed audit items, historical rationale, and post-v0.6 concepts belong in their
 
 ## Card migration and canonical data
 
-The 54-card playable-source review, 12-card Neutral expansion, 50-card Neutral pool, 25-card Territory review, current non-faction Condition cleanup, and twelve-card Military package are complete. Conditions are retired as a v0.6 game concept.
+The 54-card playable-source review, 12-card Neutral expansion, 50-card Neutral pool, 25-card Territory review, current non-faction Condition cleanup, twelve-card Military package, and twelve-card Diplomat package are complete. Conditions are retired as a v0.6 game concept.
 
 The final Neutral curve is 11 / 19 / 11 / 8 / 1. `Gauntlet_v0.6_Neutral_Card_Pool.md` is authoritative for current Neutral costs and exact text.
 
 The current Military curve is 1 / 4 / 3 / 3 / 1. `Gauntlet_v0.6_Military_Card_Pool.md` is authoritative for current Military costs and exact text.
 
+The current Diplomat curve is 1 / 3 / 5 / 2 / 1. `Gauntlet_v0.6_Diplomat_Card_Pool.md` is authoritative for current Diplomat card costs and exact text. `Gauntlet_v0.6_Diplomat_Supplemental_Cards.md` is authoritative for the Leader Cards, Proposal / Treaty Article cards, Terms reference, and Influence components.
+
 Remaining blockers before canonical v0.6 data can be authoritative:
 
 - Decide whether **Siege Weaponry** is renamed **Bombardment**.
-- Finalize **Blockade / Sanctions** during the Diplomat faction-card pass.
 - Finalize **Capital Gains** around Financier infrastructure.
 - Finalize Witchcraft's eligible copied-effect wording.
 - Define copied or appropriated effects with impossible targets or source-dependent text.
 - Finish Intelligence Mission requirements, including an appropriately difficult Mission for **Assassins**.
-- Complete the Diplomat, Inquisition, Arcane, Financier, and Intelligence twelve-card packages and audit each final curve and cost-5 statement card.
+- Complete the Inquisition, Arcane, Financier, and Intelligence twelve-card packages and audit each final curve and cost-5 statement card.
 - Decide final Arcane-trait assignments beyond the currently approved cards.
-- Playtest and physically template the completed Military package.
+- Playtest and physically template the completed Military and Diplomat packages.
 - Create canonical v0.6 card, Territory, faction, leader, deckbuilding, and recommended-deck data after these decisions are stable.
 
 Before faction-locking any Neutral card, continue asking:
@@ -64,6 +65,22 @@ Before faction-locking any Neutral card, continue asking:
 - Militias and Patriotism are retired from the v0.6 playable pool.
 - Standing Orders is deferred; Brothers in Arms occupies the final release slot.
 
+### Closed Diplomat-package and framework decisions
+
+- The Diplomat release pool contains exactly 12 cards.
+- The curve is **1 / 3 / 5 / 2 / 1**, with 35 total unique-card value and a 2.92 average cost.
+- The three formal Sanctions are Censure, Embargo, and Blockade.
+- Recognition of Claims is archived outside the release package.
+- Diplomats begin with 1 Influence.
+- Proposals use listed Influence Stakes rather than ordinary costs.
+- Proposal stakes are distributed 3 / 4 / 2 across stakes 0 / 1 / 2.
+- Accepted newly ratified Proposals return the stake and generate additional Influence equal to that stake.
+- Refused and imposed newly ratified Proposals normally return the stake and generate 1 Influence unless the Proposal says otherwise.
+- Leverage may spend any amount of available Influence before dice in a battle following refused Terms for +1 battle total per Influence.
+- Cordiality is the final Ambassador ability name.
+- Political Capital may trade up to one hand card per staked Influence recovered.
+- The supplemental set uses two Leader Cards, nine double-sided Proposal / Treaty Article cards, one double-sided Diplomat Reference, and Influence tokens.
+
 ---
 
 ## Military
@@ -91,24 +108,27 @@ Open balance, timing, and production questions:
 
 ## Diplomats
 
-The staking, imposition, and Treaty Article framework is now the v0.6 baseline. The active rationale and design direction are in `Gauntlet_v0.6_Diplomat_Design_Notes.md`.
+The staking, accepted-ratification growth, imposition, Leverage, and Treaty Article framework is the v0.6 baseline. The active rationale is in `Gauntlet_v0.6_Diplomat_Design_Notes.md`; playable-card exact text is in `Gauntlet_v0.6_Diplomat_Card_Pool.md`; and player-facing supplemental components are in `Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`.
 
-Open v0.6 and production questions:
+Open balance, timing, and production questions:
 
-- Is starting at 0 Influence correct, or does it delay paid Proposals too much?
+- Is beginning with 1 Influence correct?
 - Is the five-Article Peace Treaty threshold correct?
-- Are nine Proposals manageable as a supplemental reference?
-- Are accepted effects attractive enough that refusal is not automatic?
-- Are refused effects dangerous enough without making Terms one-sided?
-- Do Rebuilding Pact, Ultimatum, and Diplomatic Recognition justify their Influence stakes?
-- Should any accepted Proposal explicitly generate Influence?
-- Are repeated already-ratified Proposals tactically useful without enabling Influence farming?
-- Replace **Good Offices** with a stronger Ambassador ability name.
-- Test whether Ambassador and Senator are comparably strong under the staking model.
-- Determine the final form and size of the Sanctions card family.
-- Decide whether Sanctions remain distinctly Diplomatic or whether Financiers receive a separate economic-pressure implementation.
-- Decide whether **Demilitarized Zone** is a Proposal, faction card, Overlay, or later concept.
-- Which twelve Diplomat cards earn places in the final package, and does its completed curve need to deviate from the planning baseline?
+- Are nine double-sided Proposal / Treaty Article cards manageable and legible?
+- Are accepted effects attractive enough that refusal is not automatic even though paid acceptance also grows Influence?
+- Does accepted Influence equal to the listed stake create healthy progression or excessive snowballing?
+- Are Open Channels, Mutual Disarmament, Prisoner Exchange, and Rebuilding Pact correctly placed at stake 1?
+- Are Ultimatum and Diplomatic Recognition correctly placed at stake 2?
+- Does uncapped Leverage produce memorable commitments rather than deterministic battles?
+- Does Leverage make Gunboat Diplomacy or other battle bonuses automatic inclusions?
+- What are the average, upper-quartile, and maximum Influence totals held and spent in one battle?
+- Are repeated already-ratified Proposals tactically useful without enabling card-specific Influence farming?
+- Are Ambassador and Senator comparably strong under the same economy and card pool?
+- Is Political Capital's one-card-per-Influence exchange appropriately costly with the three-card hand limit?
+- Does Safe Conduct return high stakes too safely after significant Leverage spending?
+- Does Nonbinding Resolution create meaningful ratification-versus-Influence decisions at every Proposal tier?
+- Do repeated Sanctions and Blockade-based Influence gains push Leverage beyond its intended practical range?
+- Do the full Leader Card and reference texts fit standard cards legibly?
 
 ---
 
@@ -183,6 +203,7 @@ Open v0.6 and production questions:
 - Does Resourcefulness create healthy low-cost archetypes without producing excessive card advantage?
 - Does Counterworks provide enough Overlay counterplay without weakening future Engineer identity?
 - Does the completed Military package preserve enough counterattack windows and comeback potential against every other faction?
+- Does the Diplomat's uncapped Leverage preserve a meaningful direct-combat weakness outside refused Terms?
 
 Use `Gauntlet_Playtest_Targets_and_Metrics.md` for the quantitative and qualitative data to collect.
 
