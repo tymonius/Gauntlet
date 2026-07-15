@@ -11,7 +11,9 @@ const SOURCES = {
   },
   diplomats: {
     label: "Diplomats",
-    path: "../docs/Gauntlet_v0.6_Diplomat_Card_Pool.md"
+    path: "../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md",
+    start: "# 6. Canonical card pool",
+    end: "# 7. Card-pool summary"
   },
   inquisition: {
     label: "Inquisition",

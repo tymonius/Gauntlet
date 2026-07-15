@@ -11,7 +11,7 @@ The project is in private pre-release development and physical playtesting.
 - **v0.6 focus:** six factions, two leaders per faction, faction resources, alternate victory paths, canonical-data production, and faction playtesting
 - **Playable-card review:** complete for all 54 v0.5.7 source cards
 - **Completed faction pools:** Military, Diplomats, and Inquisition
-- **Definitive faction guides:** Military and Inquisition are packaged in Markdown, DOCX, and PDF under `releases/v0.6/faction-guides/`
+- **Definitive faction guides:** Military, Diplomats, and Inquisition are packaged in Markdown, DOCX, and PDF under `releases/v0.6/faction-guides/`
 - **Territory review:** complete for all 25 v0.5.7 Territories and Arenas
 - **Conditions:** retired as a v0.6 game concept; persistent effects now use Assets, Overlays, or immediate/self-tracking resolution
 - **v0.6 deckbuilder:** initial development scaffold is live and reads the active Neutral, Military, Diplomat, and Inquisition source documents
@@ -66,6 +66,14 @@ The definitive Military package is:
 
 The Markdown file is the definitive Military source. The DOCX and PDF are matching release-formatted editions prepared for insertion into the complete v0.6 release guide.
 
+The definitive Diplomat package is:
+
+- `releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`
+- `releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.docx`
+- `releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.pdf`
+
+The Markdown file is the definitive Diplomat source. The DOCX and PDF are matching release-formatted editions prepared for insertion into the complete v0.6 release guide.
+
 The definitive Inquisition package is:
 
 - `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`
@@ -84,8 +92,7 @@ Start with:
 - `docs/Gauntlet_v0.6_Working_Rules.md` — active v0.6 rules framework;
 - `docs/Gauntlet_v0.6_Neutral_Card_Pool.md` — authoritative working Neutral exact text;
 - `releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md` — definitive Military rules, leaders, components, strategy, and exact card pool;
-- `docs/Gauntlet_v0.6_Diplomat_Card_Pool.md` — authoritative working Diplomat exact text;
-- `docs/Gauntlet_v0.6_Diplomat_Supplemental_Cards.md` — Ambassador, Senator, Proposal / Treaty Article cards, reference, and sliding Influence Tracker;
+- `releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md` — definitive Diplomat rules, leaders, Influence, Terms, Proposals / Treaty Articles, components, strategy, and exact card pool;
 - `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` — definitive Inquisition rules, leaders, components, strategy, and exact card pool;
 - `docs/card-reviews/STATUS.md` — consolidated playable-card checkpoint and exact-text blockers;
 - `docs/Gauntlet_v0.6_Card_Review_Log.md` — decisions for all 54 reviewed playable cards;
@@ -103,7 +110,7 @@ Start with:
 
 Browser-printable working sheets for v0.6 faction cards and supplemental components. Military and Inquisition have complete two-sheet packages; Diplomats have a four-sheet package with duplex Proposal / Treaty Article faces. See `faction-sheets/README.md` for rendered links and instructions.
 
-The Military and Inquisition sheets are derived production files governed by their definitive faction guides.
+The Military, Diplomat, and Inquisition sheets are derived production files governed by their definitive faction guides.
 
 ### `images/`
 
