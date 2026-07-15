@@ -1,0 +1,226 @@
+[
+  {
+    "name": "Clemency",
+    "fontSize": 7.2,
+    "labelSize": 6.6,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Trade Concessions",
+    "fontSize": 7.2,
+    "labelSize": 6.6,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Safe Conduct",
+    "fontSize": 7.2,
+    "labelSize": 6.6,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Neutral Observers",
+    "fontSize": 7.2,
+    "labelSize": 6.6,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Good Faith",
+    "fontSize": 7.2,
+    "labelSize": 6.6,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Demilitarized Zone",
+    "fontSize": 7.2,
+    "labelSize": 6.6,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Diplomatic Latitude",
+    "fontSize": 7.2,
+    "labelSize": 6.6,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Nonbinding Resolution",
+    "fontSize": 7.2,
+    "labelSize": 6.6,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Sanctions: Censure",
+    "fontSize": 7.2,
+    "labelSize": 6.6,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Gunboat Diplomacy",
+    "fontSize": 7.2,
+    "labelSize": 6.6,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Sanctions: Embargo",
+    "fontSize": 7.2,
+    "labelSize": 6.6,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Sanctions: Blockade",
+    "fontSize": 7.2,
+    "labelSize": 6.6,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Diplomat Reference — Offering Terms",
+    "fontSize": 5.8,
+    "labelSize": 5.5,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Diplomat Reference — Influence and Treaty",
+    "fontSize": 5.8,
+    "labelSize": 5.5,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Proposal 1: De-escalation",
+    "fontSize": 6.9,
+    "labelSize": 6.25,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Proposal 2: Orderly Withdrawal",
+    "fontSize": 6.9,
+    "labelSize": 6.25,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Proposal 3: Capitulation",
+    "fontSize": 6.9,
+    "labelSize": 6.25,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Proposal 4: Open Channels",
+    "fontSize": 6.9,
+    "labelSize": 6.25,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Proposal 5: Mutual Disarmament",
+    "fontSize": 6.9,
+    "labelSize": 6.25,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Proposal 6: Prisoner Exchange",
+    "fontSize": 6.9,
+    "labelSize": 6.25,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Proposal 7: Rebuilding Pact",
+    "fontSize": 6.9,
+    "labelSize": 6.25,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Proposal 8: Ultimatum",
+    "fontSize": 6.9,
+    "labelSize": 6.25,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Proposal 9: Diplomatic Recognition",
+    "fontSize": 6.9,
+    "labelSize": 6.25,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Treaty Article 3: Capitulation",
+    "fontSize": 6.9,
+    "labelSize": 6.25,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Treaty Article 2: Orderly Withdrawal",
+    "fontSize": 6.9,
+    "labelSize": 6.25,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Treaty Article 1: De-escalation",
+    "fontSize": 6.9,
+    "labelSize": 6.25,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Treaty Article 6: Prisoner Exchange",
+    "fontSize": 6.9,
+    "labelSize": 6.25,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Treaty Article 5: Mutual Disarmament",
+    "fontSize": 6.9,
+    "labelSize": 6.25,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Treaty Article 4: Open Channels",
+    "fontSize": 6.9,
+    "labelSize": 6.25,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Treaty Article 9: Diplomatic Recognition",
+    "fontSize": 6.9,
+    "labelSize": 6.25,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Treaty Article 8: Ultimatum",
+    "fontSize": 6.9,
+    "labelSize": 6.25,
+    "fits": true,
+    "overflow": 0
+  },
+  {
+    "name": "Treaty Article 7: Rebuilding Pact",
+    "fontSize": 6.9,
+    "labelSize": 6.25,
+    "fits": true,
+    "overflow": 0
+  }
+]

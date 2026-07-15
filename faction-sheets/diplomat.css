@@ -59,8 +59,8 @@ body {
 .sheet:last-of-type { break-after: auto; }
 
 .print-card {
-  --body-size: 6.25pt;
-  --label-size: 5.9pt;
+  --body-size: 7.2pt;
+  --label-size: 6.6pt;
   position: relative;
   width: var(--card-width);
   height: var(--card-height);
@@ -73,21 +73,21 @@ body {
   page-break-inside: avoid;
 }
 
-.faction-card { padding: 0.075in; }
+.faction-card { padding: 0.068in 0.074in 0.066in; }
 
 .card-header {
   display: grid;
   grid-template-columns: 1fr auto;
   align-items: start;
-  gap: 0.05in;
-  padding-bottom: 0.04in;
-  margin-bottom: 0.045in;
+  gap: 0.045in;
+  padding-bottom: 0.033in;
+  margin-bottom: 0.032in;
   border-bottom: 1.1pt solid var(--gold);
 }
 
 .card-name {
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 9.4pt;
+  font-size: 9.25pt;
   font-weight: 700;
   line-height: 1.02;
   letter-spacing: 0.01em;
@@ -110,15 +110,15 @@ body {
 }
 
 .card-meta {
-  margin: -0.01in 0 0.035in;
-  font-size: 5.5pt;
+  margin: -0.006in 0 0.028in;
+  font-size: 5.35pt;
   font-weight: bold;
   letter-spacing: 0.075em;
   text-transform: uppercase;
   color: var(--diplomat-blue);
 }
 
-.effect { margin-bottom: 0.04in; }
+.effect { margin-bottom: 0.028in; line-height: 1.1; }
 .effect:last-child { margin-bottom: 0; }
 
 .effect-label {
@@ -134,7 +134,7 @@ body {
   display: inline;
   font-family: Georgia, 'Times New Roman', serif;
   font-size: var(--body-size);
-  line-height: 1.14;
+  line-height: 1.1;
 }
 
 .leader-card {
@@ -148,11 +148,18 @@ body {
   flex: 0 0 1.27in;
   overflow: hidden;
   border-bottom: 2pt solid var(--gold);
-  background-color: #8f938f;
-  background-repeat: no-repeat;
-  background-size: 220% auto;
-  background-position: 58% 3%;
+  background: #8f938f;
 }
+
+.leader-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 24%;
+  display: block;
+}
+
+.leader-card[data-card-name="Senator"] .leader-art img { object-position: center 20%; }
 
 .leader-art::after {
   content: '';
@@ -213,8 +220,8 @@ body {
   border: 0.65pt solid rgba(184,150,80,0.75);
   background: rgba(255,255,255,0.065);
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 5.25pt;
-  line-height: 1.11;
+  font-size: 5.35pt;
+  line-height: 1.1;
 }
 
 .leader-rule:last-child { margin-bottom: 0; }
@@ -306,8 +313,8 @@ body {
   border-left: 2pt solid var(--wax);
   background: rgba(135,63,60,0.07);
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 5.65pt;
-  line-height: 1.13;
+  font-size: 5.8pt;
+  line-height: 1.12;
 }
 
 .requirement strong {
@@ -322,7 +329,7 @@ body {
   margin-bottom: 0.052in;
   font-family: Georgia, 'Times New Roman', serif;
   font-size: var(--body-size);
-  line-height: 1.15;
+  line-height: 1.12;
 }
 
 .proposal-effect:last-child { margin-bottom: 0; }
@@ -379,8 +386,8 @@ body {
 .reference-block {
   margin-bottom: 0.045in;
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 5.45pt;
-  line-height: 1.13;
+  font-size: var(--body-size);
+  line-height: 1.12;
 }
 
 .reference-step strong,
@@ -399,7 +406,7 @@ body {
 .reference-list li {
   margin: 0 0 0.025in;
   font-family: Georgia, 'Times New Roman', serif;
-  font-size: 5.35pt;
+  font-size: var(--body-size);
   line-height: 1.12;
 }
 

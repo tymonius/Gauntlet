@@ -46,7 +46,7 @@ function renderFactionCard(card) {
       <span class="effect-text"> ${escapeHtml(text)}</span>
     </div>`).join('');
 
-  return `<article class="print-card faction-card fit-card">
+  return `<article class="print-card faction-card fit-card" data-card-name="${escapeHtml(card.name)}">
     <div class="card-header">
       <div class="card-name">${escapeHtml(card.name)}</div>
       <div class="card-cost">${card.cost}</div>
@@ -57,8 +57,9 @@ function renderFactionCard(card) {
 }
 
 function renderLeaderCard(leader) {
-  return `<article class="print-card leader-card">
-    <div class="leader-art" style="background-image:url('${escapeHtml(leader.image)}')" role="img" aria-label="${escapeHtml(leader.name)}">
+  return `<article class="print-card leader-card" data-card-name="${escapeHtml(leader.name)}">
+    <div class="leader-art">
+      <img src="${escapeHtml(leader.image)}" alt="${escapeHtml(leader.name)}">
       <div class="leader-faction">Diplomat Leader</div>
       <div class="leader-title">${escapeHtml(leader.name.toUpperCase())}</div>
     </div>
@@ -73,7 +74,7 @@ function renderLeaderCard(leader) {
 }
 
 function renderProposal(proposal, treaty = false) {
-  return `<article class="print-card proposal-card ${treaty ? 'treaty' : ''} fit-card">
+  return `<article class="print-card proposal-card ${treaty ? 'treaty' : ''} fit-card" data-card-name="${escapeHtml(treaty ? `Treaty Article ${proposal.number}: ${proposal.name}` : `Proposal ${proposal.number}: ${proposal.name}`)}">
     <div class="proposal-banner">${treaty ? 'Ratified Treaty Article' : 'Proposal'}</div>
     <div class="proposal-title-row">
       <div>
@@ -92,7 +93,7 @@ function renderProposal(proposal, treaty = false) {
 }
 
 function renderReferenceA() {
-  return `<article class="print-card reference-card fit-card">
+  return `<article class="print-card reference-card fit-card" data-card-name="Diplomat Reference — Offering Terms">
     <div class="reference-heading">DIPLOMAT REFERENCE</div>
     <div class="reference-subtitle">Side A — Offering Terms</div>
     <div class="fit-content">
@@ -106,7 +107,7 @@ function renderReferenceA() {
 }
 
 function renderReferenceB() {
-  return `<article class="print-card reference-card fit-card">
+  return `<article class="print-card reference-card fit-card" data-card-name="Diplomat Reference — Influence and Treaty">
     <div class="reference-heading">INFLUENCE & TREATY</div><div class="reference-subtitle">Side B — Resource and Victory</div>
     <div class="fit-content"><div class="reference-block"><strong>Influence:</strong> Track available Influence from 0 to 10. Excess gains are lost.</div><div class="reference-block"><strong>Staking:</strong> Lower the tracker by the Proposal’s Stake. That Influence is unavailable until Terms resolve.</div><div class="reference-block"><strong>Leverage:</strong> Before dice in a battle following refused Terms, spend any amount of available Influence for +1 battle total each.</div><div class="reference-block"><strong>Treaty Articles:</strong> A ratified Proposal may be offered again, but cannot be ratified again or grant normal newly-ratified Influence rewards.</div><div class="reference-block"><strong>Peace Treaty:</strong> At the start of your turn, after captures, five different Treaty Articles win the game.</div></div>
     <div class="pair-key">Reference side B • Pair with Reference side A</div>
@@ -119,7 +120,7 @@ function renderTracker() {
     return `<div class="influence-step" style="bottom:${(value * 0.30).toFixed(2)}in"><span class="influence-number">${value}</span><span class="influence-label">Influence</span></div>`;
   }).join('');
 
-  return `<article class="print-card tracker-card" aria-label="Diplomat Influence tracker">
+  return `<article class="print-card tracker-card" data-card-name="Diplomat Influence Tracker" aria-label="Diplomat Influence tracker">
     <div class="tracker-heading">DIPLOMAT INFLUENCE</div>
     <div class="tracker-crest">❧</div>
     <div class="tracker-note">Slide your Leader Card until its lower edge aligns with your current Influence. Fully cover this card at 0. Maximum 10.</div>
@@ -155,24 +156,40 @@ function renderSheets() {
 }
 
 function fitCards() {
+  const results = [];
   document.querySelectorAll('.fit-card').forEach(card => {
     const content = card.querySelector('.fit-content');
-    let bodySize = card.classList.contains('proposal-card') ? 6.15 : 6.25;
-    let labelSize = 5.9;
-    const minBody = card.classList.contains('reference-card') ? 4.25 : 4.05;
+    const isProposal = card.classList.contains('proposal-card');
+    const isReference = card.classList.contains('reference-card');
+    let bodySize = isReference ? 5.8 : (isProposal ? 6.9 : 7.2);
+    let labelSize = isReference ? 5.5 : (isProposal ? 6.25 : 6.6);
+    const minBody = isReference ? 4.8 : (isProposal ? 5.25 : 5.5);
+
+    card.style.setProperty('--body-size', `${bodySize.toFixed(2)}pt`);
+    card.style.setProperty('--label-size', `${labelSize.toFixed(2)}pt`);
+
     while (card.scrollHeight > card.clientHeight && bodySize > minBody) {
-      bodySize -= 0.14;
-      labelSize = Math.max(3.9, labelSize - 0.11);
+      bodySize = Math.max(minBody, bodySize - 0.1);
+      labelSize = Math.max(isReference ? 4.6 : 5.1, labelSize - 0.08);
       card.style.setProperty('--body-size', `${bodySize.toFixed(2)}pt`);
       card.style.setProperty('--label-size', `${labelSize.toFixed(2)}pt`);
-      if (card.classList.contains('reference-card')) {
+      if (isReference) {
         card.querySelectorAll('.reference-step, .reference-block, .reference-list li').forEach(node => {
-          node.style.fontSize = `${Math.max(4.15, bodySize - 0.55).toFixed(2)}pt`;
+node.style.fontSize = `${bodySize.toFixed(2)}pt`;
         });
       }
     }
+
     if (card.scrollHeight > card.clientHeight && content) content.style.lineHeight = '1.02';
+    results.push({
+      name: card.dataset.cardName,
+      fontSize: Number(bodySize.toFixed(2)),
+      labelSize: Number(labelSize.toFixed(2)),
+      fits: card.scrollHeight <= card.clientHeight,
+      overflow: card.scrollHeight - card.clientHeight
+    });
   });
+  window.__cardFitResults = results;
 }
 
 renderSheets();
