@@ -10,61 +10,61 @@ Read this file first when resuming v0.6 work.
 
 ### Rules, cards, and Territories
 
-1. **`Gauntlet_v0.6_Working_Rules.md`** — current v0.6 rules framework, faction mechanics, leaders, resources, alternate victories, Assets, Overlays, Territory activation, Ruins, and product scope.
-2. **`Gauntlet_v0.6_Neutral_Card_Pool.md`** — authoritative working names, costs, complexity, traits, uniqueness, and exact text for all 50 Neutral cards.
-3. **`Gauntlet_v0.6_Military_Card_Pool.md`** — authoritative working names, costs, complexity, uniqueness, exact text, package audit, and playtest watchlist for all 12 Military cards.
-4. **`Gauntlet_v0.6_Diplomat_Card_Pool.md`** — authoritative working names, costs, complexity, playable forms, exact text, package notes, and playtest watchlist for all 12 Diplomat cards.
-5. **`Gauntlet_v0.6_Inquisition_Card_Pool.md`** — authoritative working Inquisition names, costs, complexity, traits, uniqueness, exact text, package audit, and playtest watchlist for all 12 Inquisition cards.
-6. **`card-reviews/STATUS.md`** — authoritative live playable-card checkpoint and unresolved card blockers.
-7. **`Gauntlet_v0.6_Card_Metadata.md`** — consolidated allegiance, starter eligibility, complexity, uniqueness, and watchlists for the current 95 playable-card designs and retired migration entries.
-8. **`card-reviews/COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`** — completed Neutral pool-size, cost-curve, repricing, and addition audit.
-9. **`card-reviews/MILITARY_V0.6_RELEASE_SELECTION.md`** — completed Military roster selection, final cost profile, and Standing Orders cut decision.
-10. **`Gauntlet_v0.6_Card_Review_Log.md`** — migration provenance for all 54 v0.5.7 source cards. It does not override completed exact-text pool documents.
-11. **`card-reviews/CONDITION_AUDIT.md`** — detailed provenance for retiring Conditions and converting former Condition effects.
-12. **`card-reviews/`** — standalone detailed review provenance, including approved Neutral additions, package approval sidecars, inherited-candidate audits, and historical draft review.
-13. **`territory-reviews/STATUS.md`** — authoritative Territory-review checkpoint.
-14. **`territory-reviews/GENERAL_RULES.md`** — approved general Territory activation and suppression rules.
-15. **`territory-reviews/`** — standalone reviews for all 25 v0.5.7 Territories and Arenas.
-16. **`Gauntlet_v0.6_Open_Questions.md`** — unresolved current rules, faction-card, testing, and release questions.
-17. **`../releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`** — authoritative historical pre-v0.6 source order and text for migration only.
-18. **`v0.5.7_rules_clarifications.md`** — physical-rules clarifications discovered through digital implementation.
+1. **`Gauntlet_v0.6_Working_Rules.md`** — current v0.6 rules framework, faction mechanics, leaders, resources, alternate victories, Assets, Overlays, Territories, and product scope.
+2. **`Gauntlet_v0.6_Neutral_Card_Pool.md`** — authoritative names, costs, metadata, and exact text for all 50 Neutral cards.
+3. **`Gauntlet_v0.6_Military_Card_Pool.md`** — authoritative exact text and audit for all 12 Military cards.
+4. **`Gauntlet_v0.6_Diplomat_Card_Pool.md`** — authoritative exact text and audit for all 12 Diplomat cards.
+5. **`Gauntlet_v0.6_Inquisition_Card_Pool.md`** — authoritative exact text and audit for all 12 Inquisition cards.
+6. **`card-reviews/STATUS.md`** — live playable-card checkpoint and unresolved blockers.
+7. **`Gauntlet_v0.6_Card_Metadata.md`** — consolidated allegiance, starter, complexity, uniqueness, and watchlist metadata for 95 current playable designs.
+8. **`card-reviews/COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`** — completed Neutral pool audit.
+9. **`card-reviews/MILITARY_V0.6_RELEASE_SELECTION.md`** — completed Military selection audit.
+10. **`Gauntlet_v0.6_Card_Review_Log.md`** — migration provenance for all 54 v0.5.7 source cards.
+11. **`card-reviews/CONDITION_AUDIT.md`** — Condition retirement and conversion provenance.
+12. **`card-reviews/`** — detailed historical reviews and approval sidecars.
+13. **`territory-reviews/STATUS.md`** — Territory-review checkpoint.
+14. **`territory-reviews/GENERAL_RULES.md`** — Territory activation and suppression rules.
+15. **`territory-reviews/`** — reviews for all 25 v0.5.7 Territories and Arenas.
+16. **`Gauntlet_v0.6_Open_Questions.md`** — unresolved rules, card, testing, and release decisions.
+17. **`../releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`** — historical pre-v0.6 canonical source.
+18. **`v0.5.7_rules_clarifications.md`** — physical-rules clarifications from digital implementation.
 
-No canonical v0.6 data exists yet. Active v0.6 documents govern development until the remaining three faction packages, exact-text blockers, Intelligence Missions, copied-effect rules, and package testing are resolved.
+No canonical v0.6 data exists yet. Active v0.6 documents govern until the remaining three faction packages, exact-text blockers, Intelligence Missions, copied-effect rules, and package testing are resolved.
 
 ### Design rationale and testing
 
-19. **`Gauntlet_Design_Principles_and_Guardrails.md`** — current design constraints for core rules, factions, cards, complexity, components, pacing, and digital work.
-20. **`Gauntlet_v0.6_Faction_Card_Design_Guide.md`** — active construction and review standard for faction card pools, including creative strategy, open-ended synergy, no-grandfathering, leader integration, the twelve-card package target, premium-leaning cost baseline, anti-patterns, and package approval criteria.
-21. **`Gauntlet_v0.6_Military_Design_Notes.md`** — finalized Military identity, strategic threads, leader integration, intended weaknesses, Neutral boundaries, completed-package rationale, and testing priorities.
-22. **`Gauntlet_v0.6_Diplomat_Design_Notes.md`** — active Diplomat rationale, Influence economy, Proposal tiers, Leverage, leaders, Sanctions, component model, and testing priorities.
-23. **`Gauntlet_v0.6_Inquisition_Design_Notes.md`** — finalized Inquisition identity, strategic threads, leader integration, intended weaknesses, deck-size counterplay, package rationale, and testing priorities.
-24. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing benchmarks, simulation conclusions, telemetry, and human-playtest questions.
-25. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — why the v0.5 rebuild occurred and which older systems are not current.
-26. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, Day/Night, and other post-v0.6 concepts.
+19. **`Gauntlet_Design_Principles_and_Guardrails.md`** — core design constraints.
+20. **`Gauntlet_v0.6_Faction_Card_Design_Guide.md`** — faction-pool construction and approval standard.
+21. **`Gauntlet_v0.6_Military_Design_Notes.md`** — Military rationale and testing priorities.
+22. **`Gauntlet_v0.6_Diplomat_Design_Notes.md`** — Diplomat rationale and testing priorities.
+23. **`Gauntlet_v0.6_Inquisition_Design_Notes.md`** — Inquisition rationale and testing priorities.
+24. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing, telemetry, and human-playtest standards.
+25. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — historical rationale and retired systems.
+26. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, and other post-v0.6 concepts.
 
-Completed-package drafts, inherited-candidate audits, release-selection notes, and individual approval sidecars remain provenance only and do not override the active exact-text pool documents or design notes.
+Completed-package drafts and sidecars remain provenance only and do not override active pool documents or design notes.
 
 ### Digital development
 
-27. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, rules engine, CLI, GUI, telemetry, and remote-play roadmap.
-28. **`../deckbuilder/README.md`** — current v0.5 deckbuilder behavior and versioned upgrade path.
-29. **`../src/README.md`** — current TypeScript engine and development-interface status.
-30. **`../data/README.md`** — starter-data scope and source-of-truth warning.
+27. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, engine, interface, telemetry, and remote-play roadmap.
+28. **`../deckbuilder/README.md`** — current v0.5 deckbuilder.
+29. **`../src/README.md`** — TypeScript engine and interface status.
+30. **`../data/README.md`** — starter-data scope and source warning.
 
 ### Setting and production
 
-31. **`Gauntlet_Lore_Development_Notes.md`** — current WIP setting direction, open questions, and rejected premises.
-32. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — active production-facing leader and miniature direction.
-33. **`Gauntlet_v0.6_Military_Supplemental_Cards.md`** — authoritative General, Commandant, and sliding Military Command tracker component specification.
-34. **`Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`** — authoritative Ambassador, Senator, Proposal / Treaty Article, Terms reference, and 0–10 sliding Influence Tracker specification.
-35. **`Gauntlet_v0.6_Inquisition_Supplemental_Cards.md`** — authoritative Grand Inquisitor, Witch Hunter, Inquisition Doctrine, Purge Reference, and Conviction Tracker specification.
-36. **`../faction-sheets/README.md`** — working v0.6 browser-printable faction-sheet sources and printing instructions.
-37. **`../images/`** — current v0.6 leader portraits, with matching production sketches under `images/sketches/`.
-38. **`Game_Design_Glossary.md`** — shared design terminology.
+31. **`Gauntlet_Lore_Development_Notes.md`** — current incremental setting direction.
+32. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — leader art and miniature direction.
+33. **`Gauntlet_v0.6_Military_Supplemental_Cards.md`** — General, Commandant, and sliding Command tracker.
+34. **`Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`** — Ambassador, Senator, Proposal / Treaty Article cards, references, and sliding Influence tracker.
+35. **`Gauntlet_v0.6_Inquisition_Supplemental_Cards.md`** — Grand Inquisitor, Witch Hunter, references, and sliding Conviction tracker.
+36. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions.
+37. **`../images/`** — leader portraits and matching production sketches.
+38. **`Game_Design_Glossary.md`** — shared terminology.
 
 ### Historical archive
 
-`Archive/` contains completed audits and superseded historical records that remain useful for provenance. Archive material and superseded faction drafts do not override active rules, exact-text pool documents, canonical data, or current design documents.
+`Archive/` contains completed audits and superseded records. Archive material never overrides active rules, exact-text pools, canonical data, or current design documents.
 
 ---
 
@@ -72,150 +72,93 @@ Completed-package drafts, inherited-candidate audits, release-selection notes, a
 
 ### Playable cards
 
-- All **54** v0.5.7 playable source cards have migration-review records.
-- **12 new Neutral cards** have been approved.
-- The Neutral pool is complete at **50 unique cards**.
-- The Military pool is complete at **12 unique cards**.
-- The Diplomat pool is complete at **12 unique cards**.
-- The Inquisition pool is complete at **12 unique cards**.
-- Militias and Patriotism are retired from the current playable pool.
-- The project contains **95 current playable-card designs**: 50 Neutral, 12 Military, 12 Diplomat, 12 Inquisition, and 9 retained source designs assigned to Arcane, Financiers, and Intelligence.
+- All **54** v0.5.7 playable source cards have migration records.
+- The Neutral pool is complete at **50** cards.
+- Military, Diplomats, and Inquisition are complete at **12** cards each.
+- Militias and Patriotism are retired.
+- The project contains **95 current playable designs**: 50 Neutral, 12 Military, 12 Diplomat, 12 Inquisition, and 9 retained source designs assigned to Arcane, Financiers, and Intelligence.
 
-Neutral checkpoint:
+### Neutral checkpoint
 
-- Final curve: **11 cost-1 / 19 cost-2 / 11 cost-3 / 8 cost-4 / 1 cost-5**.
-- Total unique-card value: 119.
-- Average cost: 2.38.
-- **Manifest Destiny** is the Unique Neutral cost-5 Territory-expansion capstone.
-- **Resourcefulness** is the final low-cost-card build-around.
-- **Counterworks** provides narrow Neutral Overlay prevention and temporary suppression.
-- Repair, permanent dismantling, movement, upgrading, recurrence, connected infrastructure, and Overlay-network victory progress remain reserved for the future Engineer faction.
+- Curve: **11 / 19 / 11 / 8 / 1**.
+- Total value: 119; average: 2.38.
+- **Manifest Destiny** is the Unique cost-5 capstone.
+- **Resourcefulness** is the low-cost build-around.
+- **Counterworks** provides narrow shared Overlay counterplay.
+- Deep Overlay infrastructure remains reserved for Engineers.
 
-Military checkpoint:
+### Military checkpoint
 
-- Final selected curve: **1 cost-1 / 4 cost-2 / 3 cost-3 / 3 cost-4 / 1 cost-5**.
-- Total unique-card value: 35.
-- Average cost: 2.92.
-- Selected roster: **Unbroken Ranks; Battlefield Promotion; Encampment; Rearguard; Brothers in Arms; Field Command; Reserve Force; Give Chase; Hold the Line; Countercharge; War Crimes; Shock and Awe**.
+- Curve: **1 / 4 / 3 / 3 / 1**.
+- Total value: 35; average: 2.92.
+- Roster: **Unbroken Ranks; Battlefield Promotion; Encampment; Rearguard; Brothers in Arms; Field Command; Reserve Force; Give Chase; Hold the Line; Countercharge; War Crimes; Shock and Awe**.
 - **Shock and Awe** is the Unique cost-5 statement card.
-- **War Crimes** is Military rather than Inquisition.
-- **Standing Orders** is deferred and not in the release pool.
-- The General, Commandant, and shared sliding Command tracker are specified in `Gauntlet_v0.6_Military_Supplemental_Cards.md`.
-- `../faction-sheets/military.html` provides the current two-sheet printable Military package.
-- The package remains subject to playtesting, physical-card templating, and playtest-driven balance or wording changes before canonical data is frozen.
+- **War Crimes** is Military; **Standing Orders** is deferred.
+- The supplemental set uses either leader plus one shared sliding Command tracker.
+- `../faction-sheets/military.html` is the printable package.
 
-Diplomat checkpoint:
+### Diplomat checkpoint
 
-- Final selected curve: **1 cost-1 / 3 cost-2 / 5 cost-3 / 2 cost-4 / 1 cost-5**.
-- Total unique-card value: 35.
-- Average cost: 2.92.
-- Selected roster: **Clemency; Trade Concessions; Safe Conduct; Neutral Observers; Good Faith; Demilitarized Zone; Diplomatic Latitude; Nonbinding Resolution; Censure; Gunboat Diplomacy; Embargo; Blockade**.
+- Curve: **1 / 3 / 5 / 2 / 1**.
+- Total value: 35; average: 2.92.
+- Roster: **Clemency; Trade Concessions; Safe Conduct; Neutral Observers; Good Faith; Demilitarized Zone; Diplomatic Latitude; Nonbinding Resolution; Censure; Gunboat Diplomacy; Embargo; Blockade**.
 - **Blockade** is the cost-5 statement card.
-- **Censure**, **Embargo**, and **Blockade** are the three independent Sanctions.
-- **Recognition of Claims** is archived and not in the release pool.
-- Diplomats begin with 1 Influence, may have up to 10, and use the 3 / 4 / 2 Proposal-stake structure at stakes 0 / 1 / 2.
-- The Ambassador, Senator, Proposal / Treaty Article cards, reference, and 0–10 sliding Influence Tracker are specified in `Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`.
-- `../faction-sheets/diplomat.html` provides the current four-sheet printable Diplomat package, including duplex Proposal / Treaty Article faces.
-- The package remains subject to playtesting, physical-card templating, and playtest-driven balance or wording changes before canonical data is frozen.
+- **Censure, Embargo, and Blockade** are the formal Sanctions.
+- **Recognition of Claims** is archived.
+- The supplemental set uses both leaders, nine Proposal / Treaty Article cards, references, and the sliding Influence tracker.
 
-Inquisition checkpoint:
+### Inquisition checkpoint
 
-- Final selected curve: **1 cost-1 / 3 cost-2 / 4 cost-3 / 2 cost-4 / 2 cost-5**.
-- Total unique-card value: 37.
-- Average cost: 3.08.
-- Selected roster: **Accusation; Confession; Penance; Divine Mercy; No Martyrs; Excommunication; Guilt by Association; Act of Faith; Tyranny; Burning at the Stake; Heresy; Hellfire**.
-- **Heresy** has the Arcane trait and permits one additional copied-effect layer before the chain must stop.
-- **Hellfire** divides Conviction between battle strength and direct Purification pressure.
+- Curve: **1 / 3 / 4 / 2 / 2**.
+- Total value: 37; average: 3.08.
+- Roster: **Accusation; Confession; Penance; Divine Mercy; No Martyrs; Excommunication; Guilt by Association; Act of Faith; Tyranny; Burning at the Stake; Heresy; Hellfire**.
+- **Heresy** has the Arcane trait and permits one bounded additional copied-effect layer.
+- **Hellfire** divides Conviction between battle strength and Purification pressure.
 - **Divine Mercy, Tyranny, and Burning at the Stake** are the primary balance watchlist.
-- The 1-Conviction Purge retains the top-discard option and adds an alternative that may condemn up to two cards with combined value 2 or less.
-- The Grand Inquisitor, Witch Hunter, Inquisition Doctrine, Purge Reference, and 0–4 Conviction tracker are specified in `Gauntlet_v0.6_Inquisition_Supplemental_Cards.md`.
-- `../faction-sheets/inquisition.html` provides the current two-sheet printable Inquisition package using the existing portraits under `images/`.
-- The package remains subject to playtesting, print-legibility review, and playtest-driven balance or wording changes before canonical data is frozen.
+- The 1-Conviction Purge retains top-discard removal and adds a combined-value-2 option.
+- Player-facing card text has received a dedicated concision pass without mechanical changes.
+- The supplemental set uses either leader, two single-sided references, and one shared sliding 0–4 Conviction tracker. No token or marker is used.
+- `../faction-sheets/inquisition.html` is the two-sheet printable package using the existing portraits under `images/`.
 
-Other integrated card decisions:
+### Remaining blockers
 
-- The Arcane Knowledge / Witchcraft name swap is integrated into metadata and exact-text sources.
-- Conditions are retired as a v0.6 game concept.
-- Former Condition effects have been converted to Assets, Overlays, immediate effects, or deferred faction redesigns.
+- Redesign **Capital Gains** around Financier infrastructure.
+- Decide whether **Siege Weaponry** becomes **Bombardment**.
+- Finalize Witchcraft copied-effect eligibility.
+- Define impossible-target and source-dependent copied effects generally.
+- Complete Intelligence Mission requirements.
+- Complete Arcane, Financier, and Intelligence card packages.
+- Playtest and physically review all completed packages before canonical v0.6 data is created.
 
-Remaining exact-text or design blockers:
-
-- Capital Gains requires its Financier-infrastructure redesign.
-- Siege Weaponry may be renamed Bombardment.
-- Witchcraft needs final copied-effect eligibility wording.
-- General impossible-target and source-dependent copied-effect handling remains unresolved.
-- Intelligence Mission requirements remain incomplete.
-- The Arcane, Financier, and Intelligence packages remain incomplete.
-- Each completed package still requires playtesting and physical legibility review before canonical v0.6 data is created.
-
-### Territories
+### Territories and core rules
 
 - All **25** v0.5.7 Territories and Arenas have been reviewed.
-- General face-up, face-down, control, occupation, Overlay replacement, suppression, and Ruins rules are consolidated into the Working Rules.
-- Current targeted watchlists include Old Battlefield value, Grand Melee stacking, and Monastery's Arcane pressure.
-- Faction-specific Territories are tabled for later consideration and are not part of the current v0.6 baseline.
-
-### Core rules consolidation
-
-The Working Rules now include:
-
-- independent Action-card and Battle hand-commitment limits;
-- voluntary Asset removal using an Action opportunity;
-- no Condition zone or Condition card category;
-- Asset and Overlay persistence;
-- the universal rule that the top exposed Overlay supersedes the printed effect immediately beneath it;
-- dormant lower Overlays whose effects and expiration timers pause until exposed again;
-- general Territory activation and suppression;
-- Ruins replacement and persistence;
-- the definition of negated;
-- bounded handling for effects that resolve other Battle effects, including Heresy's explicit one-level exception;
-- the revised Diplomat starting Influence, 10-Influence maximum, slider-based staking, accepted-ratification rewards, Leverage, Treaty Article, and Senator rules;
-- the Inquisition Blasphemy name, revised 1-Conviction Purge, faction-card pointer, and supplemental-component pointer.
+- Territory activation, suppression, Overlays, dormant lower Overlays, and Ruins are consolidated in the Working Rules.
+- Current Territory watchlists include Old Battlefield, Grand Melee, and Monastery.
+- The Working Rules include independent Action and hand-commitment limits, voluntary Asset removal, no Conditions, Asset/Overlay persistence, negation, bounded copied-effect handling, revised Diplomat rules, and the current Inquisition rules.
 
 ### Factions
 
-The six working factions are:
+- Military — General / Commandant
+- Diplomats — Ambassador / Senator
+- Inquisition — Grand Inquisitor / Witch Hunter
+- Arcane — Alchemist / Spirit Walker
+- Financiers — Banker / Executive
+- Intelligence — Ranger / Spymaster
 
-- Military — General / Commandant;
-- Diplomats — Ambassador / Senator;
-- Inquisition — Grand Inquisitor / Witch Hunter;
-- Arcane — Alchemist / Spirit Walker;
-- Financiers — Banker / Executive;
-- Intelligence — Ranger / Spymaster.
-
-Current faction rules are in the Working Rules. The completed Military, Diplomat, and Inquisition packages remain active v0.6 baselines. Balance, names, Missions, the three remaining card packages, and several thresholds remain under active testing or development.
-
-Faction package construction and review should follow `Gauntlet_v0.6_Faction_Card_Design_Guide.md`. The current v0.6 baseline is:
-
-- **12 unique playable cards per faction**;
-- no grandfathered release slots for previously faction-designated cards;
-- a premium-leaning default curve of **1 / 3 / 4 / 3 / 1** at costs 1–5;
-- at least one optional, game-defining cost-5 statement card per faction;
-- permission to deviate from the default curve or include additional premium cards when the completed strategic vocabulary is stronger, more varied, and more fun as a result.
-
-Military, Diplomat, and Inquisition are the completed faction card packages. Their active exact text, design notes, and supplemental-component specifications are listed in the source hierarchy above.
+Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a planning baseline rather than a quota, and include at least one optional cost-5 statement card.
 
 ### Digital work
 
-- The TypeScript state model, reducer, public/private views, CLI, and browser GUI no longer contain a Condition zone.
-- The small implemented Attrition persistent effect now uses the Asset Bank rather than Conditions.
-- Tests and Action destination previews were updated for the Asset conversion.
-- The engine, CLI, and GUI remain development scaffolds, not a complete v0.6 digital edition.
-- The next digital target must still be chosen explicitly: complete v0.5.7 first or create a separate v0.6-development mode.
-- Do not silently migrate saved decks across the v0.5/v0.6 boundary.
+The TypeScript engine, CLI, and GUI remain development scaffolds. Do not silently migrate v0.5 saved decks into v0.6.
 
 ### Lore and production
 
-- Lore remains intentionally incremental and non-canonical beyond the current direction document.
-- The Leader Design Bible is the active visual source of truth.
-- `images/` contains top-level portraits and matching production sketches for all twelve current v0.6 faction leaders.
-- The Military supplemental set is General or Commandant plus one shared tracker placed beneath the selected leader; the leader slides upward to show 1 or 2 Command.
-- The Military printable faction sheet is available under `faction-sheets/` and uses the existing General and Commandant image assets.
-- The Diplomat supplemental set is Ambassador or Senator, one shared 0–10 sliding Influence Tracker, nine double-sided Proposal / Treaty Article cards, and one double-sided reference card.
-- The Diplomat printable faction sheet is available under `faction-sheets/` and includes mirrored Treaty Article backs for long-edge duplex printing.
-- The Inquisition supplemental set is Grand Inquisitor or Witch Hunter, two single-sided rules references, and one 0–4 Conviction tracker with a marker.
-- The Inquisition printable faction sheet is available under `faction-sheets/` and uses `images/grand inquisitor.png` and `images/witch hunter.png`.
-- Earlier archetype and generated-sheet records are archived.
+- Lore remains incremental and non-canonical beyond the active notes.
+- The Leader Design Bible is the visual source of truth.
+- `images/` contains portraits and production sketches for all twelve leaders.
+- Military, Diplomat, and Inquisition printable packages are under `faction-sheets/`.
+- Military, Diplomat, and Inquisition resources use sliding leader-over-tracker components; Inquisition uses no token.
 
 ---
 
@@ -223,18 +166,17 @@ Military, Diplomat, and Inquisition are the completed faction card packages. The
 
 1. Treat chat as workspace; write durable decisions into the repository.
 2. Use released canonical data for its matching version.
-3. For completed v0.6 card pools, use the matching active exact-text pool document first.
-4. For migration provenance, use the Card Review Log and standalone reviews.
-5. Before faction-locking a card, assess both Neutral-pool impact and interaction with the destination faction's mechanics.
-6. Record approved decisions in the relevant active source.
-7. Update rollups and this Project Index at material milestones rather than after every minor discussion.
-8. Keep rules, testing rationale, lore, production direction, and implementation state in their designated documents.
-9. Remove or archive temporary worksheets, addenda, trackers, and continuation files once their information is consolidated.
-10. Do not claim a decision is logged until the repository update succeeds.
-11. Do not create canonical v0.6 data by silently resolving open design questions.
+3. Use completed exact-text pool documents before migration provenance.
+4. Assess Neutral-pool impact before faction-locking a shared card.
+5. Record approved decisions in the relevant active source.
+6. Update rollups at material checkpoints.
+7. Keep rules, rationale, lore, production, and implementation in their designated documents.
+8. Archive superseded working records once consolidated.
+9. Do not claim a decision is logged until the repository update succeeds.
+10. Do not create canonical v0.6 data by silently resolving open questions.
 
 ---
 
 ## Immediate next step
 
-Begin or continue the Arcane, Financier, or Intelligence package while adding Military, Diplomat, and Inquisition to package-level playtesting and print-legibility review. Reopen a completed roster only if testing reveals a clear strategic, balance, wording, or production failure.
+Begin or continue Arcane, Financier, or Intelligence design while adding Military, Diplomat, and Inquisition to playtesting and print-legibility review. Reopen a completed roster only when testing reveals a strategic, balance, wording, or production failure.
