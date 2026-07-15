@@ -65,16 +65,16 @@ The Print / PDF control opens a browser-printable Letter-size package and then o
 - one printable card face for every playable-card copy in the deck;
 - the selected three Territories in landscape-reading orientation;
 - every required one-sided faction tracker and reference card;
-- all nine Diplomat Proposal fronts and nine horizontally mirrored Treaty Article backs when Diplomats are selected;
+- all nine Diplomat Proposal fronts and nine Treaty Article backs when Diplomats are selected;
 - standardized Noto Sans typography and 2.5 × 3.5-inch cut lines.
 
 Faction packages currently render as follows:
 
 - **Military:** selected Leader Card and shared Command Tracker;
-- **Diplomats:** selected Leader Card, Influence Tracker, both Reference faces, nine Proposal fronts, and nine Treaty Article backs;
+- **Diplomats:** selected Leader Card, Influence Tracker, double-sided Reference card, nine Proposal fronts, and nine Treaty Article backs;
 - **Inquisition:** selected Leader Card, Conviction Tracker, Inquisition Doctrine, and Purge Reference.
 
-The two Diplomat Proposal/Treaty pages are arranged for long-edge duplex alignment. The two Diplomat Reference faces remain separate printable faces that may be sleeved or mounted back-to-back.
+All duplex pairs use identical 7.5 × 10.5-inch page boxes. Back-side card positions are mirrored horizontally so they align after long-edge duplex printing. The Diplomat Reference sides are placed in the same centered card position on consecutive front/back pages. Print at Actual Size / 100%, disable browser headers and footers, and choose **Flip on long edge**.
 
 ## Next implementation steps
 
