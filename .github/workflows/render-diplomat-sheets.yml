@@ -1,0 +1,211 @@
+name: Render Diplomat sheets
+
+on:
+  push:
+    branches:
+      - agent/polish-diplomat-faction-sheets
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/polish-diplomat-faction-sheets
+          fetch-depth: 0
+
+      - name: Apply production polish
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              p = Path(path)
+              text = p.read_text()
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"Expected one match in {path}, found {count}: {old[:100]!r}")
+              p.write_text(text.replace(old, new, 1))
+
+          js = 'faction-sheets/diplomat.js'
+          css = 'faction-sheets/diplomat.css'
+
+          replace_once(js,
+              '  return `<article class="print-card faction-card fit-card">',
+              '  return `<article class="print-card faction-card fit-card" data-card-name="${escapeHtml(card.name)}">')
+
+          replace_once(js,
+              "  return `<article class=\"print-card leader-card\">\n    <div class=\"leader-art\" style=\"background-image:url('${escapeHtml(leader.image)}')\" role=\"img\" aria-label=\"${escapeHtml(leader.name)}\">",
+              "  return `<article class=\"print-card leader-card\" data-card-name=\"${escapeHtml(leader.name)}\">\n    <div class=\"leader-art\">\n      <img src=\"${escapeHtml(leader.image)}\" alt=\"${escapeHtml(leader.name)}\">")
+
+          replace_once(js,
+              '  return `<article class="print-card proposal-card ${treaty ? \'treaty\' : \'\'} fit-card">',
+              '  return `<article class="print-card proposal-card ${treaty ? \'treaty\' : \'\'} fit-card" data-card-name="${escapeHtml(treaty ? `Treaty Article ${proposal.number}: ${proposal.name}` : `Proposal ${proposal.number}: ${proposal.name}`)}">')
+
+          replace_once(js,
+              '  return `<article class="print-card reference-card fit-card">\n    <div class="reference-heading">DIPLOMAT REFERENCE</div>',
+              '  return `<article class="print-card reference-card fit-card" data-card-name="Diplomat Reference — Offering Terms">\n    <div class="reference-heading">DIPLOMAT REFERENCE</div>')
+
+          replace_once(js,
+              '  return `<article class="print-card reference-card fit-card">\n    <div class="reference-heading">INFLUENCE & TREATY</div>',
+              '  return `<article class="print-card reference-card fit-card" data-card-name="Diplomat Reference — Influence and Treaty">\n    <div class="reference-heading">INFLUENCE & TREATY</div>')
+
+          replace_once(js,
+              '  return `<article class="print-card tracker-card" aria-label="Diplomat Influence tracker">',
+              '  return `<article class="print-card tracker-card" data-card-name="Diplomat Influence Tracker" aria-label="Diplomat Influence tracker">')
+
+          old_fit = '''function fitCards() {
+  document.querySelectorAll('.fit-card').forEach(card => {
+    const content = card.querySelector('.fit-content');
+    let bodySize = card.classList.contains('proposal-card') ? 6.15 : 6.25;
+    let labelSize = 5.9;
+    const minBody = card.classList.contains('reference-card') ? 4.25 : 4.05;
+    while (card.scrollHeight > card.clientHeight && bodySize > minBody) {
+      bodySize -= 0.14;
+      labelSize = Math.max(3.9, labelSize - 0.11);
+      card.style.setProperty('--body-size', `${bodySize.toFixed(2)}pt`);
+      card.style.setProperty('--label-size', `${labelSize.toFixed(2)}pt`);
+      if (card.classList.contains('reference-card')) {
+        card.querySelectorAll('.reference-step, .reference-block, .reference-list li').forEach(node => {
+          node.style.fontSize = `${Math.max(4.15, bodySize - 0.55).toFixed(2)}pt`;
+        });
+      }
+    }
+    if (card.scrollHeight > card.clientHeight && content) content.style.lineHeight = '1.02';
+  });
+}'''
+          new_fit = '''function fitCards() {
+  const results = [];
+  document.querySelectorAll('.fit-card').forEach(card => {
+    const content = card.querySelector('.fit-content');
+    const isProposal = card.classList.contains('proposal-card');
+    const isReference = card.classList.contains('reference-card');
+    let bodySize = isReference ? 5.8 : (isProposal ? 6.9 : 7.2);
+    let labelSize = isReference ? 5.5 : (isProposal ? 6.25 : 6.6);
+    const minBody = isReference ? 4.8 : (isProposal ? 5.25 : 5.5);
+
+    card.style.setProperty('--body-size', `${bodySize.toFixed(2)}pt`);
+    card.style.setProperty('--label-size', `${labelSize.toFixed(2)}pt`);
+
+    while (card.scrollHeight > card.clientHeight && bodySize > minBody) {
+      bodySize = Math.max(minBody, bodySize - 0.1);
+      labelSize = Math.max(isReference ? 4.6 : 5.1, labelSize - 0.08);
+      card.style.setProperty('--body-size', `${bodySize.toFixed(2)}pt`);
+      card.style.setProperty('--label-size', `${labelSize.toFixed(2)}pt`);
+      if (isReference) {
+        card.querySelectorAll('.reference-step, .reference-block, .reference-list li').forEach(node => {
+          node.style.fontSize = `${bodySize.toFixed(2)}pt`;
+        });
+      }
+    }
+
+    if (card.scrollHeight > card.clientHeight && content) content.style.lineHeight = '1.02';
+    results.push({
+      name: card.dataset.cardName,
+      fontSize: Number(bodySize.toFixed(2)),
+      labelSize: Number(labelSize.toFixed(2)),
+      fits: card.scrollHeight <= card.clientHeight,
+      overflow: card.scrollHeight - card.clientHeight
+    });
+  });
+  window.__cardFitResults = results;
+}'''
+          replace_once(js, old_fit, new_fit)
+
+          replace_once(css, '  --body-size: 6.25pt;\n  --label-size: 5.9pt;', '  --body-size: 7.2pt;\n  --label-size: 6.6pt;')
+          replace_once(css, '.faction-card { padding: 0.075in; }', '.faction-card { padding: 0.068in 0.074in 0.066in; }')
+          replace_once(css, '  gap: 0.05in;\n  padding-bottom: 0.04in;\n  margin-bottom: 0.045in;', '  gap: 0.045in;\n  padding-bottom: 0.033in;\n  margin-bottom: 0.032in;')
+          replace_once(css, '  font-size: 9.4pt;', '  font-size: 9.25pt;')
+          replace_once(css, '  margin: -0.01in 0 0.035in;\n  font-size: 5.5pt;', '  margin: -0.006in 0 0.028in;\n  font-size: 5.35pt;')
+          replace_once(css, '.effect { margin-bottom: 0.04in; }', '.effect { margin-bottom: 0.028in; line-height: 1.1; }')
+          replace_once(css, '  line-height: 1.14;', '  line-height: 1.1;')
+
+          replace_once(css,
+              '''.leader-art {
+  position: relative;
+  height: 1.27in;
+  flex: 0 0 1.27in;
+  overflow: hidden;
+  border-bottom: 2pt solid var(--gold);
+  background-color: #8f938f;
+  background-repeat: no-repeat;
+  background-size: 220% auto;
+  background-position: 58% 3%;
+}''',
+              '''.leader-art {
+  position: relative;
+  height: 1.27in;
+  flex: 0 0 1.27in;
+  overflow: hidden;
+  border-bottom: 2pt solid var(--gold);
+  background: #8f938f;
+}
+
+.leader-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 24%;
+  display: block;
+}
+
+.leader-card[data-card-name="Senator"] .leader-art img { object-position: center 20%; }''')
+
+          replace_once(css, '  font-size: 5.25pt;\n  line-height: 1.11;', '  font-size: 5.35pt;\n  line-height: 1.1;')
+          replace_once(css, '  font-size: 5.65pt;\n  line-height: 1.13;', '  font-size: 5.8pt;\n  line-height: 1.12;')
+          replace_once(css, '  line-height: 1.15;', '  line-height: 1.12;')
+          replace_once(css, '  font-size: 5.45pt;\n  line-height: 1.13;', '  font-size: var(--body-size);\n  line-height: 1.12;')
+          replace_once(css, '  font-size: 5.35pt;\n  line-height: 1.12;', '  font-size: var(--body-size);\n  line-height: 1.12;')
+          PY
+
+      - name: Remove temporary workflow from final tree
+        run: rm .github/workflows/render-diplomat-sheets.yml
+
+      - name: Validate JavaScript
+        run: node --check faction-sheets/diplomat.js
+
+      - name: Install browser renderer
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Render sheets and collect diagnostics
+        run: |
+          python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
+          cat > /tmp/render-diplomat.mjs <<'JS'
+          import { chromium } from 'playwright';
+          import fs from 'node:fs';
+
+          const browser = await chromium.launch({ headless: true });
+          const page = await browser.newPage({ viewport: { width: 1100, height: 1400 }, deviceScaleFactor: 2 });
+          await page.goto('http://127.0.0.1:8000/faction-sheets/diplomat.html', { waitUntil: 'networkidle' });
+          await page.emulateMedia({ media: 'print' });
+          await page.waitForFunction(() => Array.isArray(window.__cardFitResults));
+          fs.mkdirSync('rendered-diplomat', { recursive: true });
+          const sheets = page.locator('.sheet');
+          for (let i = 0; i < await sheets.count(); i += 1) {
+            await sheets.nth(i).screenshot({ path: `rendered-diplomat/page-${i + 1}.png` });
+          }
+          const fits = await page.evaluate(() => window.__cardFitResults);
+          fs.writeFileSync('rendered-diplomat/fit-report.json', JSON.stringify(fits, null, 2));
+          await page.pdf({ path: 'rendered-diplomat/diplomat-sheets.pdf', format: 'Letter', printBackground: true, margin: { top: '0', right: '0', bottom: '0', left: '0' } });
+          await browser.close();
+          JS
+          node /tmp/render-diplomat.mjs
+
+      - name: Commit polished sources
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add faction-sheets/diplomat.js faction-sheets/diplomat.css .github/workflows/render-diplomat-sheets.yml
+          git commit -m "Polish Diplomat faction sheet layout"
+          git push origin HEAD:agent/polish-diplomat-faction-sheets
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: diplomat-sheet-render
+          path: rendered-diplomat/
