@@ -1,2 +1,3 @@
 Materialize and verify the definitive Inquisition faction guide package on this branch.
 Synchronize after enabling the standard pull-request workflow.
+Capture the exact consolidation assertion if the source transition fails.
