@@ -1,4 +1,5 @@
 name: Materialize definitive Inquisition guide
+# Second push activates this newly added workflow.
 
 on:
   push:
