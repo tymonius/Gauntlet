@@ -9,13 +9,15 @@ Closed audit items, historical rationale, and post-v0.6 concepts belong in their
 
 ## Card migration and canonical data
 
-The 54-card playable-source review, 12-card Neutral expansion, 50-card Neutral pool, 25-card Territory review, current non-faction Condition cleanup, twelve-card Military package, and twelve-card Diplomat package are complete. Conditions are retired as a v0.6 game concept.
+The 54-card playable-source review, 12-card Neutral expansion, 50-card Neutral pool, 25-card Territory review, current non-faction Condition cleanup, and twelve-card Military, Diplomat, and Inquisition packages are complete. Conditions are retired as a v0.6 game concept.
 
 The final Neutral curve is 11 / 19 / 11 / 8 / 1. `Gauntlet_v0.6_Neutral_Card_Pool.md` is authoritative for current Neutral costs and exact text.
 
 The current Military curve is 1 / 4 / 3 / 3 / 1. `Gauntlet_v0.6_Military_Card_Pool.md` is authoritative for current Military costs and exact text.
 
 The current Diplomat curve is 1 / 3 / 5 / 2 / 1. `Gauntlet_v0.6_Diplomat_Card_Pool.md` is authoritative for current Diplomat card costs and exact text. `Gauntlet_v0.6_Diplomat_Supplemental_Cards.md` is authoritative for the Leader Cards, Proposal / Treaty Article cards, Terms reference, and Influence components.
+
+The current Inquisition curve is 1 / 3 / 4 / 2 / 2. `Gauntlet_v0.6_Inquisition_Card_Pool.md` is authoritative for current Inquisition card costs and exact text. `Gauntlet_v0.6_Inquisition_Supplemental_Cards.md` is authoritative for the Leader Cards, doctrine and Purge references, and Conviction tracker.
 
 Remaining blockers before canonical v0.6 data can be authoritative:
 
@@ -24,9 +26,9 @@ Remaining blockers before canonical v0.6 data can be authoritative:
 - Finalize Witchcraft's eligible copied-effect wording.
 - Define copied or appropriated effects with impossible targets or source-dependent text.
 - Finish Intelligence Mission requirements, including an appropriately difficult Mission for **Assassins**.
-- Complete the Inquisition, Arcane, Financier, and Intelligence twelve-card packages and audit each final curve and cost-5 statement card.
+- Complete the Arcane, Financier, and Intelligence twelve-card packages and audit each final curve and cost-5 statement card.
 - Decide final Arcane-trait assignments beyond the currently approved cards.
-- Playtest and physically template the completed Military and Diplomat packages.
+- Playtest the completed Military, Diplomat, and Inquisition packages and verify their physical-card legibility.
 - Create canonical v0.6 card, Territory, faction, leader, deckbuilding, and recommended-deck data after these decisions are stable.
 
 Before faction-locking any Neutral card, continue asking:
@@ -81,6 +83,17 @@ Before faction-locking any Neutral card, continue asking:
 - Political Capital may trade up to one hand card per staked Influence recovered.
 - The supplemental set uses two Leader Cards, nine double-sided Proposal / Treaty Article cards, one double-sided Diplomat Reference, and Influence tokens.
 
+### Closed Inquisition-package and component decisions
+
+- The Inquisition release pool contains exactly 12 cards.
+- The curve is **1 / 3 / 4 / 2 / 2**, with 37 total unique-card value and a 3.08 average cost.
+- The selected roster is Accusation, Confession, Penance, Divine Mercy, No Martyrs, Excommunication, Guilt by Association, Act of Faith, Tyranny, Burning at the Stake, Heresy, and Hellfire.
+- The Arcane-trait trigger is named **Blasphemy**.
+- The 1-Conviction Purge retains its top-discard option and may instead condemn up to two discard cards with combined value 2 or less.
+- Heresy is an Inquisition card with the Arcane trait and permits one additional copied-effect layer before the chain must stop.
+- The supplemental set uses Grand Inquisitor or Witch Hunter, one Inquisition Doctrine reference, one Purge Reference, one 0–4 Conviction tracker, and one marker.
+- The seventeen card faces fit on two ordinary 9-up print sheets with one unused slot and no duplex alignment.
+
 ---
 
 ## Military
@@ -134,15 +147,28 @@ Open balance, timing, and production questions:
 
 ## Inquisition
 
-- Is maximum Conviction 4 correct?
-- Are Purge costs and targets appropriately priced?
-- Does Condemnation make Purification viable without making ordinary battles hopeless?
-- Does Heresy pressure Arcane without creating a hard-counter matchup?
+The completed card package and exact text are consolidated in `Gauntlet_v0.6_Inquisition_Card_Pool.md`. The active rationale is in `Gauntlet_v0.6_Inquisition_Design_Notes.md`; player-facing supplemental components are in `Gauntlet_v0.6_Inquisition_Supplemental_Cards.md`; and the current printable package is under `faction-sheets/inquisition.html`.
+
+Open balance, timing, and production questions:
+
+- Is maximum Conviction 4 correct across both leaders and all package archetypes?
+- Are the four Purge costs and targets appropriately priced?
+- Is the revised 1-Conviction Purge enough to answer oversized low-cost decks without making compact decks too vulnerable?
+- Does Condemnation make Purification credible without making ordinary battles hopeless?
+- Does Blasphemy pressure Arcane-trait-heavy decks without creating a hard-counter matchup?
 - Does Grand Inquisitor create excessive post-battle Purge pressure?
-- Is Witch Hunter's Relentless Pursuit timing and cost clear and fair?
-- Watch overlap with Attrition, Insurrection, and hard-cancellation effects.
-- Design the future Inquisition card **The Black Edict**.
-- Which twelve Inquisition cards earn places in the final package, and does its completed curve need to deviate from the planning baseline?
+- Is Witch Hunter's Relentless Pursuit timing and 2-Conviction cost clear and fair?
+- Does Divine Mercy become an automatic inclusion because of its cost-2 Battle bonus and Conviction conversion?
+- Is Tyranny too universally useful despite its cost and Asset-mode Conviction requirement?
+- Is Burning at the Stake too punishing against compact premium decks?
+- Does Heresy produce memorable appropriation without creating impossible-target, source-dependent, or copied-effect disputes?
+- Does Hellfire create meaningful division between battle strength and Purification pressure?
+- Does No Martyrs remain useful across the completed faction ecosystem without invalidating profitable-loss strategies?
+- Are Grand Inquisitor and Witch Hunter comparably strong with the same twelve-card pool?
+- Is the two-reference-card structure faster and clearer than placing the complete faction rules on each Leader Card?
+- Is the 0–4 Conviction tracker stable and legible with a single marker?
+- Do all seventeen Inquisition card faces remain legible at standard card size?
+- Watch overlap with Attrition, Insurrection, hard-cancellation effects, and future defeat-trigger cards.
 
 ---
 
@@ -204,6 +230,8 @@ Open balance, timing, and production questions:
 - Does Counterworks provide enough Overlay counterplay without weakening future Engineer identity?
 - Does the completed Military package preserve enough counterattack windows and comeback potential against every other faction?
 - Does the Diplomat's uncapped Leverage preserve a meaningful direct-combat weakness outside refused Terms?
+- Does the Inquisition's permanent card denial leave opponents meaningful tactical and deckbuilding counterplay?
+- Is conventional breakthrough reliably the Inquisition's better response to oversized low-value decks?
 
 Use `Gauntlet_Playtest_Targets_and_Metrics.md` for the quantitative and qualitative data to collect.
 
@@ -211,9 +239,8 @@ Use `Gauntlet_Playtest_Targets_and_Metrics.md` for the quantitative and qualitat
 
 ## Product and release planning
 
-- Should the v0.6 playtest package include printable leader cards, faction reference cards, resource trackers, and suggested decks for every leader?
-- Should resource tracks appear directly on leader cards or on separate faction references?
 - How should official leader and faction decklists be formatted?
+- What marker formats should Arcane, Financiers, and Intelligence use after their systems and supplemental components are finalized?
 - A future starter product may contain the Neutral pool, Military, and perhaps one additional faction, while a complete product contains the full card pool with sufficient multiples. This remains a product lead, not a v0.6 rules decision.
 
 ---
