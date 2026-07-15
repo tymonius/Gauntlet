@@ -1,0 +1,1 @@
+Temporary trigger for the asserted Diplomat exact-text transformation.
