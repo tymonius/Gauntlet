@@ -29,7 +29,7 @@ Military requires no separate Orders card, Command token, or first-victory marke
 
 Both Military Leader Cards include:
 
-> **Command:** You may have up to 2 Command. The first time each turn you win a battle, gain 1 Command. Spend Command to use Orders.
+> **Command:** Maximum 2. The first time each turn you win a battle, gain 1. Spend Command to use Orders.
 
 The Leader Card also identifies the faction, leader name, and the three Orders available to that leader.
 
@@ -41,7 +41,7 @@ The Leader Card also identifies the faction, leader name, and the three Orders a
 **Card type:** Supplemental Leader Card  
 **Player-facing phrase:** *Forward. Again.*
 
-> **Command:** You may have up to 2 Command. The first time each turn you win a battle, gain 1 Command. Spend Command to use Orders.
+> **Command:** Maximum 2. The first time each turn you win a battle, gain 1. Spend Command to use Orders.
 
 ### Orders
 
@@ -65,7 +65,7 @@ The Leader Card also identifies the faction, leader name, and the three Orders a
 **Card type:** Supplemental Leader Card  
 **Player-facing phrase:** *We hold. They break.*
 
-> **Command:** You may have up to 2 Command. The first time each turn you win a battle, gain 1 Command. Spend Command to use Orders.
+> **Command:** Maximum 2. The first time each turn you win a battle, gain 1. Spend Command to use Orders.
 
 ### Orders
 
@@ -88,6 +88,10 @@ The Leader Card also identifies the faction, leader name, and the three Orders a
 **Card type:** Supplemental resource tracker  
 **Format:** Standard 2.5 × 3.5-inch card, designed to sit directly beneath either Military Leader Card.
 
+### Printed instruction
+
+> Place beneath your Leader Card. Cover this card at 0 Command. Slide the Leader upward until its bottom edge reaches the current Command line.
+
 ### Use
 
 The selected Leader Card slides vertically over the Command Tracker:
@@ -105,7 +109,7 @@ The tracker should include:
 - a clear **Military Command** title;
 - a lower **1 Command** registration line;
 - an upper **2 Full Command** registration line;
-- subtle instructions indicating that the Leader Card's bottom edge aligns with the current value;
+- the compact printed instruction above;
 - Military blue, brass, and restrained field-map or command-standard visual language.
 
 The tracker should not repeat the full Command rule or the leader-specific Orders. Those remain on the selected Leader Card.
@@ -129,4 +133,4 @@ The tracker should not repeat the full Command rule or the leader-specific Order
 - the Commandant Leader Card;
 - one shared Military Command Tracker.
 
-The source renders standard 2.5 × 3.5-inch cards on Letter-size 3 × 3 sheets. The leader and tracker cards are supplemental open-information components and do not use the normal playable-card back.
+The source renders standard 2.5 × 3.5-inch cards on Letter-size 3 × 3 sheets. The leader and tracker cards are supplemental open-information components and do not use the normal playable-card back. The leader portraits are loaded from the top-level `images/` directory.
