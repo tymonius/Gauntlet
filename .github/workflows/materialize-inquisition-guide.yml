@@ -36,7 +36,8 @@ jobs:
       - name: Consolidate definitive source hierarchy
         run: |
           cat .tmp/consolidate-inquisition-source.py.part-* > /tmp/consolidate-inquisition-source.py
-          python /tmp/consolidate-inquisition-source.py
+          set -o pipefail
+          python /tmp/consolidate-inquisition-source.py 2>&1 | tee .tmp/consolidation-error.txt
 
       - name: Materialize guide builder
         run: |
@@ -78,11 +79,22 @@ jobs:
           grep -q 'If you do, end their turn' releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md
           node --check deckbuilder-v0.6/app.js
 
+      - name: Preserve consolidation diagnostic
+        if: failure()
+        run: |
+          test -s .tmp/consolidation-error.txt || echo "Consolidation failed without diagnostic output." > .tmp/consolidation-error.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add .tmp/consolidation-error.txt
+          git commit -m "Record Inquisition consolidation failure"
+          git push origin HEAD:"${{ github.event.pull_request.head.ref }}"
+
       - name: Commit definitive package and clean temporary files
         run: |
           rm -f .tmp/build-inquisition-guide.py.gz.b64
           rm -f .tmp/consolidate-inquisition-source.py.part-*
           rm -f .tmp/inquisition-pr-trigger.txt
+          rm -f .tmp/consolidation-error.txt
           rm -f .github/workflows/materialize-inquisition-guide.yml
           rmdir .tmp 2>/dev/null || true
           git config user.name "github-actions[bot]"
