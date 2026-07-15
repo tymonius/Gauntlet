@@ -1,8 +1,8 @@
 # Gauntlet v0.6 Card Metadata
 
-**Status:** Consolidated metadata rollup through 66 approved playable-card designs: 54 reviewed v0.5.7 source cards and 12 new Neutral cards.
+**Status:** Consolidated metadata rollup through 77 approved playable-card designs: 54 reviewed v0.5.7 source cards, 12 new Neutral cards, and 11 new Diplomat cards. The approved 12-card Diplomat package also includes the previously reviewed source card Blockade.
 
-`card-reviews/STATUS.md` records the live checkpoint. `Gauntlet_v0.6_Neutral_Card_Pool.md` is authoritative for the names, costs, complexity, traits, uniqueness, and exact text of the 50 Neutral cards. The consolidated Card Review Log and standalone reviews remain provenance for migration decisions.
+`card-reviews/STATUS.md` records the live checkpoint. `Gauntlet_v0.6_Neutral_Card_Pool.md` is authoritative for the names, costs, complexity, traits, uniqueness, and exact text of the 50 Neutral cards. `Gauntlet_v0.6_Diplomat_Card_Pool.md` is authoritative for the 12 Diplomat faction cards. The consolidated Card Review Log and standalone reviews remain provenance for migration decisions.
 
 This file replaces the combined labels **Core Neutral** and **Advanced Neutral / Watchlist** with separate metadata fields. Those older labels in historical source material do not define gameplay categories.
 
@@ -24,7 +24,7 @@ Use **TBD** where the card has been faction-placed but starter-deck suitability 
 | 3 | Assassins | Intelligence | TBD | Advanced | Mission requirement and disruption density |
 | 4 | Assimilation | Neutral | No | Advanced | Immediate-capture density and overlap with capture shortcuts |
 | 5 | Attrition | Neutral | No | Advanced | Long-game card denial and Inquisition overlap |
-| 6 | Blockade | Diplomats | No | Advanced | Sanctions redesign pending |
+| 6 | Blockade | Diplomats | No | Advanced | Repeatable Influence pressure, movement-tax frequency, and sanctions-relief timing |
 | 7 | Brothers in Arms | Military | TBD | Advanced | Cancellation-proofing interactions |
 | 8 | Capital Gains | Financiers | TBD | Advanced | Faction-infrastructure redesign and cost |
 | 9 | Capital Punishment | Neutral | No | Basic | Hard-removal density and post-battle Action combinations |
@@ -85,6 +85,17 @@ Use **TBD** where the card has been faction-placed but starter-deck suitability 
 | 64 | Salvage | Neutral | No | Advanced | Exact recovery loops and battle-cleanup hand limit interactions |
 | 65 | Resourcefulness | Neutral | No | Advanced | Repeated card advantage, multiple-copy incentives, and extra-Action chains |
 | 66 | Counterworks | Neutral | No | Advanced | Overlay replacement timing and cards that would become Overlays |
+| 67 | Clemency | Diplomats | TBD | Basic | Repeated Graveyard recovery offers and low-cost Influence generation |
+| 68 | Trade Concessions | Diplomats | TBD | Advanced | Acceptance incentive size and concession-for-+2 Battle efficiency |
+| 69 | Safe Conduct | Diplomats | TBD | Advanced | Denial of opposing win/loss triggers and paid-Proposal risk reduction |
+| 70 | Neutral Observers | Diplomats | TBD | Advanced | Face-up commitment advantage and Intelligence overlap |
+| 71 | Good Faith | Diplomats | TBD | Advanced | Offered-card valuation and automatic Ambassador inclusion pressure |
+| 72 | Demilitarized Zone | Diplomats | TBD | Advanced | Standoff pacing, empty-hand entry locks, and Overlay/capture timing |
+| 73 | Diplomatic Latitude | Diplomats | TBD | Advanced | Proposal eligibility, stake timing, and two-option decision load |
+| 74 | Nonbinding Resolution | Diplomats | TBD | Advanced | Ratification-versus-Influence choice balance |
+| 75 | Censure | Diplomats | TBD | Advanced | Multiple-copy stacking and Action-card tax frequency |
+| 76 | Gunboat Diplomacy | Diplomats | TBD | Advanced | Automatic inclusion pressure and extra hand-play interactions |
+| 77 | Embargo | Diplomats | TBD | Advanced | Immediate Asset loss, matchup severity, and multiple-copy stacking |
 
 ## Name, trait, and uniqueness notes
 
@@ -92,10 +103,14 @@ Use **TBD** where the card has been faction-placed but starter-deck suitability 
 - The v0.5.7 card **Witchcraft** is named **Arcane Knowledge** in v0.6.
 - **Arcane Knowledge** (#54) has the **Arcane** trait despite Neutral allegiance. Trait and allegiance are separate fields.
 - **Manifest Destiny** is Neutral, cost 5, Advanced, and Unique: maximum one copy per deck.
+- The Ambassador ability formerly provisionally named **Good Offices** is named **Cordiality**.
+- **Recognition of Claims** is an archived Diplomat concept and is not part of the approved playable-card registry.
 
 ## Current rollup state
 
 - The 54-card source review is complete.
 - The twelve-card Neutral expansion is complete.
 - The Neutral pool contains exactly 50 unique cards with the final 11 / 19 / 11 / 8 / 1 cost curve.
-- Remaining card work concerns faction exact-text blockers, faction-package construction, faction cost curves and capstones, copied-effect rules, and canonical-data production.
+- The Diplomat pool contains exactly 12 cards with the approved 1 / 3 / 5 / 2 / 1 cost curve, total value 35, and average value 2.92.
+- The Diplomat package adds eleven new designs and finalizes the previously reviewed Blockade redesign.
+- Remaining card work concerns the other five faction packages, copied-effect rules, and canonical-data production.
