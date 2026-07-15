@@ -14,6 +14,7 @@ The project is in private pre-release development and physical playtesting.
 - **Definitive faction guide:** Military is packaged in Markdown, DOCX, and PDF under `releases/v0.6/faction-guides/military/`
 - **Territory review:** complete for all 25 v0.5.7 Territories and Arenas
 - **Conditions:** retired as a v0.6 game concept; persistent effects now use Assets, Overlays, or immediate/self-tracking resolution
+- **v0.6 deckbuilder:** initial development scaffold is live and reads the active Neutral, Military, Diplomat, and Inquisition source documents
 - **Live checkpoint:** `docs/Gauntlet_v0.6_Project_Index.md`
 
 The six developing factions are:
@@ -30,9 +31,10 @@ The six developing factions are:
 ## Playtest tools
 
 - [Gauntlet v0.5 Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder/) — build, validate, save, randomize, export, and print pre-faction v0.5 decks.
+- [Gauntlet v0.6 Development Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder-v0.6/) — developing faction/leader deckbuilder for the completed Neutral, Military, Diplomat, and Inquisition sources.
 - [Gauntlet v0.6 Faction Sheets](https://tymonius.github.io/Gauntlet/faction-sheets/) — browser-printable working sheets for completed v0.6 faction packages and supplemental cards.
 
-The current deckbuilder is versioned for the v0.5 line. The v0.6 faction sheets use active working exact text while faction development continues; a canonical v0.6 deckbuilder mode remains planned after the remaining packages stabilize.
+The v0.6 deckbuilder is intentionally a development tool rather than canonical release data. It currently covers playable-card construction and leader selection; Territory integration and print/PDF output remain pending.
 
 ## Game overview
 
@@ -104,6 +106,10 @@ Current v0.6 leader portrait assets are stored at the top level, with matching p
 
 Static browser deckbuilder for the v0.5 pre-faction ruleset. It supports card filtering, duplicate cards, Territory selection, validation, local saves, JSON import/export, text export, random deck generation, and browser print-to-PDF.
 
+### `deckbuilder-v0.6/`
+
+Development browser deckbuilder for the faction era. It reads the active Markdown card pools at runtime, supports completed faction and leader selection, filters Neutral plus faction cards, validates playable-card count/value, and keeps v0.6 saves separate from v0.5 decks. It is not canonical v0.6 data and does not yet include Territories or print/PDF export.
+
 ### `data/`
 
 Early machine-readable starter data and schema work for digital development. It is not the authoritative source for v0.5.7 or v0.6.
@@ -141,6 +147,7 @@ Then open:
 
 ```text
 http://localhost:8000/deckbuilder/
+http://localhost:8000/deckbuilder-v0.6/
 http://localhost:8000/faction-sheets/
 ```
 
