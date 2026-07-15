@@ -27,7 +27,8 @@ jobs:
 
       - name: Apply Diplomat production polish
         run: |
-          python3 - <<'PY'
+          set +e
+          python3 - <<'PY' > /tmp/diplomat-render.log 2>&1
           from pathlib import Path
           workflow = Path('.github/workflows/render-diplomat-sheets.yml').read_text()
           marker = "python3 - <<'PY'\n"
@@ -37,6 +38,18 @@ jobs:
           script = '\n'.join(line[10:] if line.startswith('          ') else line for line in raw.splitlines())
           exec(compile(script, 'render-diplomat-sheets', 'exec'))
           PY
+          status=$?
+          set -e
+          cat /tmp/diplomat-render.log
+          if [ "$status" -ne 0 ]; then
+            cp /tmp/diplomat-render.log diplomat-render-error.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add diplomat-render-error.txt
+            git commit -m "Record Diplomat sheet render error"
+            git push origin HEAD:agent/polish-diplomat-faction-sheets
+            exit "$status"
+          fi
           rm .github/workflows/render-diplomat-sheets.yml
           node --check faction-sheets/diplomat.js
 
@@ -108,9 +121,10 @@ jobs:
                 - name: Test
                   run: npm test
           YAML
+          rm -f diplomat-render-error.txt
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add faction-sheets/diplomat.js faction-sheets/diplomat.css .github/workflows/test.yml .github/workflows/render-diplomat-sheets.yml
+          git add faction-sheets/diplomat.js faction-sheets/diplomat.css .github/workflows/test.yml .github/workflows/render-diplomat-sheets.yml diplomat-render-error.txt
           git commit -m "Polish Diplomat faction sheet layout"
           git push origin HEAD:agent/polish-diplomat-faction-sheets
 
