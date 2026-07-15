@@ -120,9 +120,9 @@ A **negated** card has no effect. Unless the negating effect says otherwise, it 
 
 ### Effects that resolve other Battle effects
 
-A card effect that resolves another card's Battle effect cannot select a Battle effect that would itself resolve another card's Battle effect.
+A card effect that resolves another card's Battle effect cannot select a Battle effect that would itself resolve another card's Battle effect unless the resolving card explicitly permits one additional layer. An additional effect permitted this way cannot resolve another Battle effect.
 
-This prevents recursive chains across cards such as Arcane Knowledge, Witchcraft, Treason, and future copied- or appropriated-effect cards.
+This prevents indefinite recursive chains across cards such as Arcane Knowledge, Witchcraft, Treason, and Heresy while allowing a card to define a specific, bounded exception.
 
 ---
 
@@ -406,7 +406,7 @@ The first time each turn one or more opposing cards enter the Graveyard after a 
 
 In battles involving you, opposing battle-drawn cards that are played go to their owner's Graveyard after the battle instead of discard. Hand commitments already go to the Graveyard. Unplayed battle-drawn cards are discarded normally.
 
-### Heresy
+### Blasphemy
 
 Whenever the opponent plays a card with the **Arcane** trait, gain 1 Conviction. This does not count toward the normal once-per-turn gain limit, but cannot exceed the maximum.
 
@@ -418,7 +418,7 @@ Instead of playing an Action card during the Action step, spend Conviction to ch
 
 | Cost | Effect |
 |---:|---|
-| 1 | Send the top card of the opponent's discard pile to their Graveyard. |
+| 1 | Choose one: send the top card of the opponent's discard pile to their Graveyard; or choose up to two cards in their discard pile with a combined deckbuilding value of 2 or less and send them to their Graveyard. |
 | 2 | Choose one opposing Asset and send it to its owner's Graveyard. |
 | 3 | The opponent chooses one card from hand and sends it to their Graveyard. |
 | 4 | Look at the opponent's hand. Choose one card and send it to their Graveyard. |
@@ -438,6 +438,12 @@ Purification does not trigger from failed battle draws or card-effect draws.
 ### Witch Hunter
 
 **Relentless Pursuit:** Once per turn, when an opponent loses a battle they initiated against you, you may spend 2 Conviction. If you do, their turn ends immediately. Then move one space toward their Heartland. If this begins a battle, resolve it immediately; you are the attacker and neither player may play an Action before that battle.
+
+### Faction cards and supplemental components
+
+The authoritative names, costs, traits, complexity, and exact text for the twelve-card Inquisition package are maintained in `Gauntlet_v0.6_Inquisition_Card_Pool.md`.
+
+The authoritative Grand Inquisitor and Witch Hunter Leader Cards, Inquisition Doctrine reference, Purge Reference, and Conviction Tracker are maintained in `Gauntlet_v0.6_Inquisition_Supplemental_Cards.md`.
 
 ---
 
