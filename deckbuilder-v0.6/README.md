@@ -25,6 +25,7 @@ The development build supports:
 - exactly-three-Territory validation with a maximum of one Arena;
 - selected Territories in the Current deck display;
 - Territory-aware local saves, JSON import/export, and text deck lists;
+- browser Print / PDF export for the deck summary, selected Leader Card, every playable-card copy, and all three selected Territories;
 - local save/load/delete.
 
 Arcane, Financiers, and Intelligence appear as disabled development placeholders.
@@ -55,19 +56,22 @@ The Random deck control preserves the currently selected faction and leader, rep
 
 The generator is intended to accelerate broad playtesting rather than produce a strategically optimized deck for a specific leader.
 
-## Deliberate omission
+## Print / PDF export
 
-Print/PDF export is not included yet. It should eventually render:
+The Print / PDF control opens a browser-printable Letter-size package and then opens the system print dialog. The package contains:
 
-- playable Neutral and faction cards;
-- the selected three Territories;
-- the chosen Leader Card;
-- required faction references, trackers, Proposals, Orders, or other supplemental components.
+- a deck summary and deck list;
+- the selected Leader Card;
+- one printable card face for every playable-card copy in the deck;
+- the selected three Territories in landscape-reading orientation;
+- standardized Noto Sans typography and 2.5 × 3.5-inch cut lines.
+
+The summary lists every required faction component. Trackers, references, Proposal / Treaty Article cards, and other faction-specific supplemental cards are still printed from the existing faction sheets rather than duplicated inside the deckbuilder package.
 
 ## Next implementation steps
 
-1. Add faction supplemental-component manifests for leaders, references, trackers, Orders, Proposals, and Purge materials.
-2. Add print/PDF rendering for playable cards, Territories, and required supplemental components.
+1. Add faction supplemental-component manifests for references, trackers, Proposals, Orders, and Purge materials.
+2. Optionally integrate those supplemental components directly into the deckbuilder Print / PDF package.
 3. Add starter-deck templates.
 4. Add completed Arcane, Financier, and Intelligence packages as their exact-text sources stabilize.
 5. Replace Markdown parsing with canonical v0.6 JSON only after the complete release data is approved.
