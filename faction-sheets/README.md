@@ -37,8 +37,7 @@ Military tracks **0–2 Command**. Diplomats track **0–10 Influence**. Inquisi
 - `releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md` — definitive Military rules, leaders, components, and playable-card text. The Military sheets are derived from this guide.
 - `docs/Gauntlet_v0.6_Diplomat_Card_Pool.md` — Diplomat playable-card text.
 - `docs/Gauntlet_v0.6_Diplomat_Supplemental_Cards.md` — Diplomat leaders, Proposals, references, and tracker.
-- `docs/Gauntlet_v0.6_Inquisition_Card_Pool.md` — Inquisition playable-card text.
-- `docs/Gauntlet_v0.6_Inquisition_Supplemental_Cards.md` — Inquisition leaders, references, and tracker.
+- `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` — definitive Inquisition rules, leaders, references, tracker, and playable-card text. The Inquisition sheets are derived from this guide.
 - `docs/Gauntlet_v0.6_Working_Rules.md` — shared rules.
 - `docs/Gauntlet_v0.6_Leader_Design_Bible.md` — leader art direction.
 

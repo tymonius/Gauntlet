@@ -399,53 +399,11 @@ The authoritative Leader Cards, Proposal / Treaty Article cards, Terms reference
 
 ## 11. Inquisition
 
-**Identity:** Conviction, condemnation, suppression, purging enemy power, and turning enemy losses into permanent punishment.  
-**Resource:** Conviction. Maximum 4; cannot fall below 0.
+The definitive source for all Inquisition-specific rules and player-facing text is:
 
-The first time each turn one or more opposing cards enter the Graveyard after a battle involving you, gain 1 Conviction, up to the maximum.
+- `../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`
 
-### Condemnation
-
-In battles involving you, opposing battle-drawn cards that are played go to their owner's Graveyard after the battle instead of discard. Hand commitments already go to the Graveyard. Unplayed battle-drawn cards are discarded normally.
-
-### Blasphemy
-
-Whenever the opponent plays a card with the **Arcane** trait, gain 1 Conviction. This does not count toward the normal once-per-turn gain limit, but cannot exceed the maximum.
-
-The Arcane trait is distinct from Arcane faction allegiance.
-
-### Purge
-
-Instead of playing an Action card during the Action step, spend Conviction to choose one eligible Purge:
-
-| Cost | Effect |
-|---:|---|
-| 1 | Choose one: send the top card of the opponent's discard pile to their Graveyard; or choose up to two cards in their discard pile with a combined deckbuilding value of 2 or less and send them to their Graveyard. |
-| 2 | Choose one opposing Asset and send it to its owner's Graveyard. |
-| 3 | The opponent chooses one card from hand and sends it to their Graveyard. |
-| 4 | Look at the opponent's hand. Choose one card and send it to their Graveyard. |
-
-The menu remains provisional for balance testing.
-
-### Purification
-
-At the beginning of the opponent's turn, after their normal start-of-turn draw attempt, if they draw no cards because both deck and discard are empty, you win by **Purification**.
-
-Purification does not trigger from failed battle draws or card-effect draws.
-
-### Grand Inquisitor
-
-**Final Judgment:** Once per turn, after you win a battle, you may immediately Purge without using the Action opportunity. Reduce that Purge's Conviction cost by 1, minimum 1.
-
-### Witch Hunter
-
-**Relentless Pursuit:** Once per turn, when an opponent loses a battle they initiated against you, you may spend 2 Conviction. If you do, their turn ends immediately. Then move one space toward their Heartland. If this begins a battle, resolve it immediately; you are the attacker and neither player may play an Action before that battle.
-
-### Faction cards and supplemental components
-
-The authoritative names, costs, traits, complexity, and exact text for the twelve-card Inquisition package are maintained in `Gauntlet_v0.6_Inquisition_Card_Pool.md`.
-
-The authoritative Grand Inquisitor and Witch Hunter Leader Cards, Inquisition Doctrine reference, Purge Reference, and Conviction Tracker are maintained in `Gauntlet_v0.6_Inquisition_Supplemental_Cards.md`.
+The adjacent DOCX and PDF are release-formatted editions. That guide governs Conviction, Condemnation, Blasphemy, Purge, Purification, Grand Inquisitor, Witch Hunter, the sliding Conviction tracker, reference components, strategy, terminology, and the canonical twelve-card Inquisition pool. General rules in this document still apply unless the definitive faction guide specifically overrides them.
 
 ---
 

@@ -1,1 +1,0 @@
-docs/Gauntlet_v0.6_Project_Index.md: expected 1 regex occurrence(s), found 0: '^\\d+\\. \\*\\*`Gauntlet_v0\\.6_Inquisition_Supplemental_Cards\\.md`\\*\\* — Grand Inquisitor, Witch Hunter,'
