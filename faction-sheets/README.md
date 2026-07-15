@@ -7,12 +7,13 @@ These browser-printable sheets are separate from the versioned v0.5 deckbuilder.
 ## Available sheets
 
 - [Open the rendered Military faction sheets](https://tymonius.github.io/Gauntlet/faction-sheets/military.html) — the twelve-card Military faction pool, General, Commandant, and the shared sliding Command tracker.
+- [Open the rendered Inquisition faction sheets](https://tymonius.github.io/Gauntlet/faction-sheets/inquisition.html) — the twelve-card Inquisition faction pool, Grand Inquisitor, Witch Hunter, two rules references, and the Conviction tracker.
 
-Do not open `military.html` through GitHub's repository file viewer when you want to print it. GitHub displays HTML repository files as source code. Use the rendered GitHub Pages link above, or serve the repository locally.
+Do not open the HTML through GitHub's repository file viewer when you want to print it. GitHub displays HTML repository files as source code. Use the rendered GitHub Pages links above, or serve the repository locally.
 
 ## Printing
 
-1. Open the rendered link above, or serve the repository from its root with `python3 -m http.server 8000` and open `/faction-sheets/military.html`.
+1. Open the rendered sheet, or serve the repository from its root with `python3 -m http.server 8000` and open the corresponding file under `/faction-sheets/`.
 2. Print at **100% scale** on Letter paper.
 3. Disable browser headers and footers.
 4. Enable background graphics.
@@ -30,11 +31,17 @@ Place the Command tracker directly beneath the selected Military Leader Card:
 
 The Leader Card itself is the indicator. No separate Command token is required.
 
+## Inquisition Conviction tracker
+
+Place one marker on **0** during setup and move it along the five-space track as Conviction is gained or spent. Conviction cannot exceed **4** or fall below **0**.
+
 ## Sources of truth
 
 - `docs/Gauntlet_v0.6_Military_Card_Pool.md` governs playable Military exact text.
-- `docs/Gauntlet_v0.6_Working_Rules.md` governs Command and Orders.
 - `docs/Gauntlet_v0.6_Military_Supplemental_Cards.md` governs the Military leader and tracker component specification.
+- `docs/Gauntlet_v0.6_Inquisition_Card_Pool.md` governs playable Inquisition exact text.
+- `docs/Gauntlet_v0.6_Inquisition_Supplemental_Cards.md` governs the Inquisition leaders, references, and tracker.
+- `docs/Gauntlet_v0.6_Working_Rules.md` governs the shared faction rules.
 - `docs/Gauntlet_v0.6_Leader_Design_Bible.md` governs leader art direction.
 
 The HTML is a production rendering source, not independent canonical game data. When rules text changes, update the authoritative document first and then synchronize the sheet.
