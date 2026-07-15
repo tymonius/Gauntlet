@@ -15,7 +15,7 @@ Read this file first when resuming v0.6 work.
 3. **`Gauntlet_v0.6_Territory_Pool.md`** — authoritative names, complexity, watchlists, status, and exact text for all 25 Territories and Arenas.
 4. **`../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`** — definitive Military faction source: Military rules, General, Commandant, Orders, Command tracker, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are the release-formatted editions.
 5. **`Gauntlet_v0.6_Diplomat_Card_Pool.md`** — authoritative exact text and audit for all 12 Diplomat cards.
-6. **`../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`** — definitive Inquisition faction source: Inquisition rules, Grand Inquisitor, Witch Hunter, Conviction, doctrine, Purge, Purification, supplemental components, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are release-formatted editions.
+6. **`../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`** — definitive Inquisition faction source: Inquisition rules, Grand Inquisitor, Witch Hunter, Conviction, doctrine, Purge, Purification, supplemental components, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are the release-formatted editions.
 7. **`card-reviews/STATUS.md`** — live playable-card checkpoint and unresolved blockers.
 8. **`Gauntlet_v0.6_Card_Metadata.md`** — consolidated allegiance, starter, complexity, uniqueness, and watchlist metadata for 95 current playable designs.
 9. **`card-reviews/COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`** — completed Neutral pool audit.
@@ -157,8 +157,8 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 - The v0.6 development deckbuilder is live under `../deckbuilder-v0.6/` and reads the active Neutral, Military, Diplomat, Inquisition, and Territory Markdown sources at runtime.
 - It supports completed faction and leader selection, Neutral-plus-faction legality, playable-card count/value validation, all 25 Territories, exactly-three/max-one-Arena validation, local saves, JSON import/export, text export, and random valid test-deck generation.
 - Territory selection is included in the Current deck display and in saved/exported deck data.
-- Print / PDF export produces a deck summary, the selected Leader Card, every playable-card copy, and the selected three Territories using standardized 2.5 × 3.5-inch card layouts.
-- Trackers, references, Proposal / Treaty Article cards, and other supplemental components remain sourced from the faction sheets until supplemental-component manifests are integrated into the deckbuilder.
+- Print / PDF export now produces the complete selected faction package: deck summary, chosen Leader Card with portrait and rules, every playable-card copy, three Territories, trackers, references, and other required supplemental faces.
+- Military includes its Command Tracker; Inquisition includes its Conviction Tracker, Doctrine, and Purge Reference; Diplomats include the Influence Tracker, both Reference faces, nine Proposal fronts, and nine mirrored Treaty Article backs for duplex alignment.
 - Arcane, Financiers, and Intelligence remain disabled placeholders until their packages are complete.
 - Do not silently migrate v0.5 saved decks into v0.6.
 
@@ -190,4 +190,4 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 
 ## Immediate next step
 
-Continue Arcane, Financier, or Intelligence design while playtesting the completed Military, Diplomat, and Inquisition packages. In parallel, add faction supplemental-component manifests so trackers, references, Proposals, Orders, and Purge materials can optionally be included directly in the deckbuilder print package without creating premature canonical release data.
+Continue Arcane, Financier, or Intelligence design while playtesting the completed Military, Diplomat, and Inquisition packages. In parallel, add starter-deck templates and keep the supplemental print manifests synchronized with the definitive faction guides and faction-sheet sources.
