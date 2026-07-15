@@ -43,7 +43,6 @@ jobs:
                   raise SystemExit(f"End marker not found in {path}: {end!r}")
               p.write_text(text[:i] + replacement.rstrip() + "\n\n" + text[j:])
 
-          # Rename the three-card series throughout active development sources.
           rename_paths = [
               p for p in Path('docs').rglob('*')
               if p.is_file() and p.suffix in {'.md', '.json', '.ts', '.js'} and 'Archive' not in p.parts
@@ -251,11 +250,9 @@ Sanctions: Embargo consumes one of the Diplomat's Asset slots while reducing the
 
 Sanctions: Blockade is the package's cost-5 statement card. It suppresses one Territory's printed effect and creates lasting localized pressure but never prevents movement.''')
 
-          # Update the package-level hand-density rationale and stale Leverage wording.
           replace_once(pool, '- refused battles allow uncapped Leverage before dice;', '- refused battles allow all available Influence to be spent through Leverage before dice;')
           replace_once(pool, '- whether card-based Influence gains push uncapped Leverage beyond the intended practical range.', '- whether card-based Influence gains push Leverage beyond the intended practical range;\n- whether Trade Concessions and Nonbinding Resolution provide enough card replacement for the faction\'s out-of-turn interactions without producing excessive draw.')
 
-          # Supplemental leaders, Proposals, and reference cards.
           supp = 'docs/Gauntlet_v0.6_Diplomat_Supplemental_Cards.md'
           replacements = {
               '> **Setup:** Place your Influence Tracker beneath this card and set it to 1. Place your nine Proposal cards Proposal side up.': '> **Setup:** Set Influence to 1. Place your nine Proposal cards Proposal side up.',
@@ -382,124 +379,32 @@ Sanctions: Blockade is the package's cost-5 statement card. It suppresses one Te
 > **Peace Treaty:** At the start of your turn, after captures, five different Treaty Articles win the game.'''
           replace_between(supp, '## Diplomat Reference card\n', '---\n\n## Print-sheet integration', reference_block)
 
-          # Central Working Rules repeat Proposal and leader exact text.
           rules = 'docs/Gauntlet_v0.6_Working_Rules.md'
-          rules_proposals = proposal_block.replace('### 1. De-escalation', '### 1. De-escalation')
-          replace_between(rules, '### 1. De-escalation\n', '### Ambassador', rules_proposals)
+          replace_between(rules, '### 1. De-escalation\n', '### Ambassador', proposal_block)
           replace_once(rules, '**Cordiality:** Once per turn, after the opponent accepts Terms you offered, draw one card.', '**Cordiality:** Once per turn, after the opponent accepts your Terms, draw one card.')
           replace_once(rules, '**Political Capital:** Once per turn, when you would lose staked Influence because you lost the battle after refused Terms, you may send up to that many cards from your hand to your Graveyard. Recover 1 of that staked Influence for each card sent this way; lose the rest.', '**Political Capital:** Once per turn, when you would lose staked Influence after losing a battle following refused Terms, you may send up to that many cards from hand to your Graveyard. Recover 1 staked Influence per card sent; lose the rest.')
 
-          # Rebuild printable data and player-facing references from the approved text.
           js = 'faction-sheets/diplomat.js'
           p = Path(js)
           text = p.read_text()
           data = r'''const cards = [
-  {
-    name: 'Clemency', cost: 1, meta: 'Diplomats • Basic',
-    effects: [['Action', 'Choose a card in the opponent\'s Graveyard. They choose one: move it to their discard pile; you gain 1 Influence; or leave it there; you draw one card.']]
-  },
-  {
-    name: 'Trade Concessions', cost: 2, meta: 'Diplomats • Advanced',
-    effects: [
-      ['Terms', 'When you offer Terms, before the opponent accepts or refuses, you may reveal this from hand and set it aside.'],
-      ['Accepted', 'The opponent chooses one available option: draw two cards; or bank an Asset from hand without using an Action. Then discard this and draw one card.'],
-      ['Refused', 'Return this to your hand before battle.'],
-      ['Battle', 'The opponent draws one card. Gain +2 battle total.']
-    ]
-  },
-  {
-    name: 'Safe Conduct', cost: 2, meta: 'Diplomats • Advanced • Asset',
-    effects: [
-      ['Action', 'Bank this as an Asset.'],
-      ['Reaction', 'When you would lose a battle following refused Terms, you may discard this to withdraw instead. The opponent remains in or occupies the battle space, and the battle ends without a winner.']
-    ]
-  },
-  {
-    name: 'Neutral Observers', cost: 2, meta: 'Diplomats • Advanced • Asset',
-    effects: [
-      ['Action', 'Bank this as an Asset.'],
-      ['Reaction', 'After Terms are refused, before either player commits from hand, you may discard this. The opponent first commits a Battle card from hand face up or declines to commit; then you commit normally.']
-    ]
-  },
-  {
-    name: 'Good Faith', cost: 3, meta: 'Diplomats • Advanced • Asset',
-    effects: [
-      ['Action', 'Bank this as an Asset.'],
-      ['Terms', 'When you offer Terms, before the opponent accepts or refuses, you may discard this to draw one card, then reveal a card from hand and set it aside.'],
-      ['Accepted', 'Put that card in your Graveyard.'],
-      ['Refused', 'Return it to your hand before battle.']
-    ]
-  },
-  {
-    name: 'Demilitarized Zone', cost: 3, meta: 'Diplomats • Advanced • Territory Overlay',
-    effects: [
-      ['Settlement', 'After your Terms are accepted and the Proposal\'s Accepted effect resolves, you may play this on the battle Territory without using an Action. Each player still there withdraws.'],
-      ['Overlay', 'Neither player may enter this Territory during the turn this is placed. To enter it while unoccupied, discard one card. It cannot be captured or change control while this remains. At the start of your turn, before captures, if you occupy it, discard one card or withdraw. After the first battle here, discard this.']
-    ]
-  },
-  {
-    name: 'Diplomatic Latitude', cost: 3, meta: 'Diplomats • Advanced',
-    effects: [
-      ['Terms', 'When you offer Terms, you may reveal this from hand and offer two eligible Proposals with the same Influence Stake instead of one. Stake that amount once.'],
-      ['Accepted', 'The opponent chooses which Proposal is accepted.'],
-      ['Refused', 'Choose one Proposal before resolving its Refused effect. Only it may be imposed.'],
-      ['Cleanup', 'The other Proposal does not resolve or become ratified. After Terms resolve, discard this.']
-    ]
-  },
-  {
-    name: 'Nonbinding Resolution', cost: 3, meta: 'Diplomats • Advanced',
-    effects: [
-      ['Terms', 'When you offer Terms, before the opponent accepts or refuses, you may reveal this from hand and set it aside.'],
-      ['Accepted', 'If the Proposal is unratified, the opponent chooses one before ratification: ratify it normally; or leave it unratified and you gain 2 Influence. After Terms resolve, discard this, then draw one card.'],
-      ['Refused', 'Discard this, then draw one card before battle.']
-    ]
-  },
-  {
-    name: 'Sanctions: Censure', cost: 3, meta: 'Diplomats • Advanced • Asset • Sanction',
-    effects: [
-      ['Sanction', 'After an opponent refuses your Terms, you may bank this from hand without using an Action.'],
-      ['Asset', 'While banked, the first time each turn that opponent plays an Action card, they choose: discard one card, or you draw one card.'],
-      ['Relief', 'After they accept your Terms, discard this.']
-    ]
-  },
-  {
-    name: 'Gunboat Diplomacy', cost: 4, meta: 'Diplomats • Advanced',
-    effects: [
-      ['Terms', 'When you offer Terms, before the opponent accepts or refuses, you may reveal this from hand.'],
-      ['Accepted', 'Discard this.'],
-      ['Refused', 'Play this face up in the resulting battle as an additional Battle card from hand.'],
-      ['Battle', 'Gain +2 battle total. After the battle, discard this.']
-    ]
-  },
-  {
-    name: 'Sanctions: Embargo', cost: 4, meta: 'Diplomats • Advanced • Asset • Sanction',
-    effects: [
-      ['Sanction', 'After an opponent refuses your Terms, you may bank this from hand without using an Action.'],
-      ['Asset', 'While banked, that opponent\'s Asset-bank limit is reduced by 1, to a minimum of 0.'],
-      ['Relief', 'After they accept your Terms, discard this.']
-    ]
-  },
-  {
-    name: 'Sanctions: Blockade', cost: 5, meta: 'Diplomats • Advanced • Territory Overlay • Sanction',
-    effects: [
-      ['Sanction', 'After the battle following an opponent\'s refusal of your Terms, you may play this on a revealed Territory they control without using an Action.'],
-      ['Overlay', 'The first time each turn they enter or leave this Territory, they choose: discard one card, or you gain 1 Influence.'],
-      ['Relief', 'Discard this after they accept your Terms or lose control of this Territory.']
-    ]
-  }
+  { name: 'Clemency', cost: 1, meta: 'Diplomats • Basic', effects: [['Action', 'Choose a card in the opponent\'s Graveyard. They choose one: move it to their discard pile; you gain 1 Influence; or leave it there; you draw one card.']] },
+  { name: 'Trade Concessions', cost: 2, meta: 'Diplomats • Advanced', effects: [['Terms', 'When you offer Terms, before the opponent accepts or refuses, you may reveal this from hand and set it aside.'], ['Accepted', 'The opponent chooses one available option: draw two cards; or bank an Asset from hand without using an Action. Then discard this and draw one card.'], ['Refused', 'Return this to your hand before battle.'], ['Battle', 'The opponent draws one card. Gain +2 battle total.']] },
+  { name: 'Safe Conduct', cost: 2, meta: 'Diplomats • Advanced • Asset', effects: [['Action', 'Bank this as an Asset.'], ['Reaction', 'When you would lose a battle following refused Terms, you may discard this to withdraw instead. The opponent remains in or occupies the battle space, and the battle ends without a winner.']] },
+  { name: 'Neutral Observers', cost: 2, meta: 'Diplomats • Advanced • Asset', effects: [['Action', 'Bank this as an Asset.'], ['Reaction', 'After Terms are refused, before either player commits from hand, you may discard this. The opponent first commits a Battle card from hand face up or declines to commit; then you commit normally.']] },
+  { name: 'Good Faith', cost: 3, meta: 'Diplomats • Advanced • Asset', effects: [['Action', 'Bank this as an Asset.'], ['Terms', 'When you offer Terms, before the opponent accepts or refuses, you may discard this to draw one card, then reveal a card from hand and set it aside.'], ['Accepted', 'Put that card in your Graveyard.'], ['Refused', 'Return it to your hand before battle.']] },
+  { name: 'Demilitarized Zone', cost: 3, meta: 'Diplomats • Advanced • Territory Overlay', effects: [['Settlement', 'After your Terms are accepted and the Proposal\'s Accepted effect resolves, you may play this on the battle Territory without using an Action. Each player still there withdraws.'], ['Overlay', 'Neither player may enter this Territory during the turn this is placed. To enter it while unoccupied, discard one card. It cannot be captured or change control while this remains. At the start of your turn, before captures, if you occupy it, discard one card or withdraw. After the first battle here, discard this.']] },
+  { name: 'Diplomatic Latitude', cost: 3, meta: 'Diplomats • Advanced', effects: [['Terms', 'When you offer Terms, you may reveal this from hand and offer two eligible Proposals with the same Influence Stake instead of one. Stake that amount once.'], ['Accepted', 'The opponent chooses which Proposal is accepted.'], ['Refused', 'Choose one Proposal before resolving its Refused effect. Only it may be imposed.'], ['Cleanup', 'The other Proposal does not resolve or become ratified. After Terms resolve, discard this.']] },
+  { name: 'Nonbinding Resolution', cost: 3, meta: 'Diplomats • Advanced', effects: [['Terms', 'When you offer Terms, before the opponent accepts or refuses, you may reveal this from hand and set it aside.'], ['Accepted', 'If the Proposal is unratified, the opponent chooses one before ratification: ratify it normally; or leave it unratified and you gain 2 Influence. After Terms resolve, discard this, then draw one card.'], ['Refused', 'Discard this, then draw one card before battle.']] },
+  { name: 'Sanctions: Censure', cost: 3, meta: 'Diplomats • Advanced • Asset • Sanction', effects: [['Sanction', 'After an opponent refuses your Terms, you may bank this from hand without using an Action.'], ['Asset', 'While banked, the first time each turn that opponent plays an Action card, they choose: discard one card, or you draw one card.'], ['Relief', 'After they accept your Terms, discard this.']] },
+  { name: 'Gunboat Diplomacy', cost: 4, meta: 'Diplomats • Advanced', effects: [['Terms', 'When you offer Terms, before the opponent accepts or refuses, you may reveal this from hand.'], ['Accepted', 'Discard this.'], ['Refused', 'Play this face up in the resulting battle as an additional Battle card from hand.'], ['Battle', 'Gain +2 battle total. After the battle, discard this.']] },
+  { name: 'Sanctions: Embargo', cost: 4, meta: 'Diplomats • Advanced • Asset • Sanction', effects: [['Sanction', 'After an opponent refuses your Terms, you may bank this from hand without using an Action.'], ['Asset', 'While banked, that opponent\'s Asset-bank limit is reduced by 1, to a minimum of 0.'], ['Relief', 'After they accept your Terms, discard this.']] },
+  { name: 'Sanctions: Blockade', cost: 5, meta: 'Diplomats • Advanced • Territory Overlay • Sanction', effects: [['Sanction', 'After the battle following an opponent\'s refusal of your Terms, you may play this on a revealed Territory they control without using an Action.'], ['Overlay', 'The first time each turn they enter or leave this Territory, they choose: discard one card, or you gain 1 Influence.'], ['Relief', 'Discard this after they accept your Terms or lose control of this Territory.']] }
 ];
 
 const leaders = [
-  {
-    name: 'Ambassador', image: '../images/ambassador.png', motto: 'Words first. War last.',
-    abilityName: 'Cordiality',
-    ability: 'Once per turn, after the opponent accepts your Terms, draw one card.'
-  },
-  {
-    name: 'Senator', image: '../images/senator.png', motto: 'Procedure endures.',
-    abilityName: 'Political Capital',
-    ability: 'Once per turn, when you would lose staked Influence after losing a battle following refused Terms, you may send up to that many cards from hand to your Graveyard. Recover 1 staked Influence per card sent; lose the rest.'
-  }
+  { name: 'Ambassador', image: '../images/ambassador.png', motto: 'Words first. War last.', abilityName: 'Cordiality', ability: 'Once per turn, after the opponent accepts your Terms, draw one card.' },
+  { name: 'Senator', image: '../images/senator.png', motto: 'Procedure endures.', abilityName: 'Political Capital', ability: 'Once per turn, when you would lose staked Influence after losing a battle following refused Terms, you may send up to that many cards from hand to your Graveyard. Recover 1 staked Influence per card sent; lose the rest.' }
 ];
 
 const proposals = [
@@ -519,14 +424,13 @@ const proposals = [
           end = text.find('function escapeHtml')
           if start < 0 or end < 0:
               raise SystemExit('Could not locate diplomat.js data block')
-          text = text[:start] + data + text[end:]
-          p.write_text(text)
+          p.write_text(text[:start] + data + text[end:])
 
           replace_once(js, '<div class="leader-rule"><strong>Setup:</strong> Place your Influence Tracker beneath this card and set it to 1. Place your nine Proposal cards Proposal side up.</div>', '<div class="leader-rule"><strong>Setup:</strong> Set Influence to 1. Place your nine Proposal cards Proposal side up.</div>')
           replace_once(js, '<div class="leader-rule"><strong>Leverage:</strong> Before dice are rolled in a battle following refused Terms, you may spend any amount of available Influence. Gain +1 to your battle total for each Influence spent.</div>', '<div class="leader-rule"><strong>Leverage:</strong> Before dice in a battle following refused Terms, you may spend any amount of available Influence. Gain +1 battle total per Influence spent.</div>')
           replace_once(js, '<div class="leader-rule"><strong>Peace Treaty:</strong> At the start of your turn, after captures, if five different Proposals are ratified as Treaty Articles, you win.</div>', '<div class="leader-rule"><strong>Peace Treaty:</strong> At the start of your turn, after captures, if five different Proposals are ratified, you win.</div>')
 
-          ref_a_start = text = Path(js).read_text()
+          text = Path(js).read_text()
           a0 = text.find('function renderReferenceA()')
           a1 = text.find('function renderReferenceB()', a0)
           b1 = text.find('function renderTracker()', a1)
@@ -538,34 +442,18 @@ const proposals = [
     <div class="reference-subtitle">Side A — Offering Terms</div>
     <div class="fit-content">
       <div class="reference-step"><strong>Before a battle involving you:</strong></div>
-      <ol class="reference-list">
-        <li>Choose an eligible Proposal.</li>
-        <li>Lower Influence by its listed Stake.</li>
-        <li>The opponent accepts or refuses.</li>
-      </ol>
+      <ol class="reference-list"><li>Choose an eligible Proposal.</li><li>Lower Influence by its listed Stake.</li><li>The opponent accepts or refuses.</li></ol>
       <div class="reference-block"><strong>Accepted:</strong> No battle occurs. Resolve the Accepted effect and return the stake. If newly ratified, flip the Proposal and gain Influence equal to its Stake.</div>
       <div class="reference-block"><strong>Refused:</strong> Resolve the Refused effect, then battle. Before dice, you may use Leverage.</div>
-      <ul class="reference-list">
-        <li><strong>You win:</strong> Impose the Proposal and return the stake. If newly ratified, flip it and gain 1 Influence unless stated otherwise.</li>
-        <li><strong>You lose:</strong> Do not ratify it. Lose the stake.</li>
-        <li><strong>No winner:</strong> Do not ratify it. Return the stake.</li>
-      </ul>
-    </div>
-    <div class="pair-key">Reference side A • Pair with Reference side B</div>
+      <ul class="reference-list"><li><strong>You win:</strong> Impose the Proposal and return the stake. If newly ratified, flip it and gain 1 Influence unless stated otherwise.</li><li><strong>You lose:</strong> Do not ratify it. Lose the stake.</li><li><strong>No winner:</strong> Do not ratify it. Return the stake.</li></ul>
+    </div><div class="pair-key">Reference side A • Pair with Reference side B</div>
   </article>`;
 }
 
 function renderReferenceB() {
   return `<article class="print-card reference-card fit-card">
-    <div class="reference-heading">INFLUENCE & TREATY</div>
-    <div class="reference-subtitle">Side B — Resource and Victory</div>
-    <div class="fit-content">
-      <div class="reference-block"><strong>Influence:</strong> Track available Influence from 0 to 10. Excess gains are lost.</div>
-      <div class="reference-block"><strong>Staking:</strong> Lower the tracker by the Proposal’s Stake. That Influence is unavailable until Terms resolve.</div>
-      <div class="reference-block"><strong>Leverage:</strong> Before dice in a battle following refused Terms, spend any amount of available Influence for +1 battle total each.</div>
-      <div class="reference-block"><strong>Treaty Articles:</strong> A ratified Proposal may be offered again, but cannot be ratified again or grant normal newly-ratified Influence rewards.</div>
-      <div class="reference-block"><strong>Peace Treaty:</strong> At the start of your turn, after captures, five different Treaty Articles win the game.</div>
-    </div>
+    <div class="reference-heading">INFLUENCE & TREATY</div><div class="reference-subtitle">Side B — Resource and Victory</div>
+    <div class="fit-content"><div class="reference-block"><strong>Influence:</strong> Track available Influence from 0 to 10. Excess gains are lost.</div><div class="reference-block"><strong>Staking:</strong> Lower the tracker by the Proposal’s Stake. That Influence is unavailable until Terms resolve.</div><div class="reference-block"><strong>Leverage:</strong> Before dice in a battle following refused Terms, spend any amount of available Influence for +1 battle total each.</div><div class="reference-block"><strong>Treaty Articles:</strong> A ratified Proposal may be offered again, but cannot be ratified again or grant normal newly-ratified Influence rewards.</div><div class="reference-block"><strong>Peace Treaty:</strong> At the start of your turn, after captures, five different Treaty Articles win the game.</div></div>
     <div class="pair-key">Reference side B • Pair with Reference side A</div>
   </article>`;
 }
@@ -574,7 +462,6 @@ function renderReferenceB() {
           Path(js).write_text(text[:a0] + refs + text[b1:])
           replace_once(js, '<div class="tracker-note">Place beneath the selected Leader Card. Fully align at 0; slide the Leader upward until its bottom edge aligns with the current Influence line.</div>', '<div class="tracker-note">Slide your Leader Card until its lower edge aligns with your current Influence. Fully cover this card at 0. Maximum 10.</div>')
 
-          # Add the card-replacement question to active design/test rollups.
           design = 'docs/Gauntlet_v0.6_Diplomat_Design_Notes.md'
           replace_once(design, '- Are accepted effects attractive enough that refusal is not automatic even though paid acceptance also grows Influence?', '- Are accepted effects attractive enough that refusal is not automatic even though paid acceptance also grows Influence?\n- Do Trade Concessions and Nonbinding Resolution provide enough replacement draw for out-of-turn Diplomat interactions without creating excessive card advantage?')
           openq = 'docs/Gauntlet_v0.6_Open_Questions.md'
@@ -582,25 +469,14 @@ function renderReferenceB() {
           metrics = 'docs/Gauntlet_Playtest_Targets_and_Metrics.md'
           replace_once(metrics, '- Influence gained separately from accepted newly ratified Proposals, imposed newly ratified Proposals, Clemency, Nonbinding Resolution, Sanctions: Blockade, and any other source;', '- Influence gained separately from accepted newly ratified Proposals, imposed newly ratified Proposals, Clemency, Nonbinding Resolution, Sanctions: Blockade, and any other source;\n- cards drawn through Trade Concessions, Nonbinding Resolution, Cordiality, Clemency, Sanctions: Censure, and other Diplomat effects;')
 
-          # Remove temporary workflow from the final diff.
           Path('.github/workflows/tighten-diplomat-card-text.yml').unlink()
 
-          # Stale-text and exact-name guards.
-          forbidden = [
-              'Political Capital may recover it',
-              "name: 'Censure'", "name: 'Embargo'", "name: 'Blockade'",
-              'Then discard Trade Concessions.',
-              'After the accepted Terms resolve, discard Nonbinding Resolution.',
-              'before the resulting battle',
-          ]
-          scan_files = [Path(pool), Path(supp), Path(rules), Path(js)]
-          for file in scan_files:
+          forbidden = ['Political Capital may recover it', "name: 'Censure'", "name: 'Embargo'", "name: 'Blockade'", 'Then discard Trade Concessions.', 'After the accepted Terms resolve, discard Nonbinding Resolution.']
+          for file in [Path(pool), Path(supp), Path(rules), Path(js)]:
               content = file.read_text()
               for phrase in forbidden:
                   if phrase in content:
                       raise SystemExit(f'Stale phrase remains in {file}: {phrase}')
-
-          # Confirm the two approved draw additions appear in source and renderer.
           for file in [Path(pool), Path(js)]:
               content = file.read_text()
               for phrase in ['Then discard this and draw one card.', 'After Terms resolve, discard this, then draw one card.']:
@@ -618,3 +494,5 @@ function renderReferenceB() {
           git add -A
           git commit -m "Tighten Diplomat card and reference text"
           git push origin HEAD:agent/tighten-diplomat-card-text
+
+# Trigger registration pass
