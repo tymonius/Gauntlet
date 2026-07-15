@@ -67,7 +67,7 @@ Keep as shared card-economy pressure rather than faction-locking it to Inquisiti
 
 ---
 
-### 6. Sanctions: Blockade
+### 6. Blockade
 
 **Cost:** 4  
 **Allegiance:** Diplomats
@@ -156,7 +156,7 @@ Keep as shared protection against Asset removal and Battle-card cancellation. Li
 
 ### 15. Disruption
 
-**v0.5.7 source name:** Sanctions: Embargo  
+**v0.5.7 source name:** Embargo  
 **Cost:** 2  
 **Allegiance:** Neutral
 
@@ -164,7 +164,7 @@ Keep as shared protection against Asset removal and Battle-card cancellation. Li
 >
 > **Battle:** Cancel one active opposing Battle card. A canceled hand commitment returns to its owner's hand; a canceled battle-drawn card goes to its owner's discard pile.
 
-The title **Sanctions: Embargo** is reserved for a future Diplomat Sanctions card.
+The title **Embargo** is reserved for a future Diplomat Sanctions card.
 
 ---
 
@@ -606,7 +606,7 @@ General copied-effect handling for impossible targets and source-dependent text 
 ## Remaining exact-text blockers
 
 - Fully redesign Manifest Destiny.
-- Finalize Sanctions: Blockade / Sanctions.
+- Finalize Blockade / Sanctions.
 - Finalize Capital Gains around Financier infrastructure.
 - Resolve whether Siege Weaponry is renamed Bombardment.
 - Finalize Witchcraft's eligible copied-effect wording.

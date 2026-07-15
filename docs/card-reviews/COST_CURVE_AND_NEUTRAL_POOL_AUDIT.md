@@ -211,7 +211,7 @@ No canonical v0.6 data was created during this audit. That must wait until facti
 ## Remaining work outside this audit
 
 - decide whether Siege Weaponry is renamed Bombardment;
-- finalize Sanctions: Blockade / Sanctions;
+- finalize Blockade / Sanctions;
 - finalize Capital Gains around Financier infrastructure;
 - finalize Witchcraft's eligible-effect wording;
 - define impossible-target and source-dependent copied-effect handling;

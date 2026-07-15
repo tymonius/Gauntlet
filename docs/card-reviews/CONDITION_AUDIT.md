@@ -143,7 +143,7 @@ The following v0.5.7 Condition uses were removed or converted during card review
 
 ## Deferred until faction-card redesign
 
-- **Sanctions: Blockade / Sanctions** — exact Diplomat implementation remains unresolved.
+- **Blockade / Sanctions** — exact Diplomat implementation remains unresolved.
 - **Capital Gains** — payoff must first be reconnected to Financier infrastructure.
 
 ## Consolidation result
