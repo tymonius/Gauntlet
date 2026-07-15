@@ -63,6 +63,7 @@ The Print / PDF control opens a browser-printable Letter-size package and then o
 - a deck summary and deck list;
 - the selected Leader Card, including its portrait and exact leader rules;
 - one printable card face for every playable-card copy in the deck;
+- a full-height vertical ownership band on every playable card with an **Overlay** rules section, repeating the card name sideways so it remains visible when tucked beneath a Territory;
 - the selected three Territories in landscape-reading orientation;
 - every required one-sided faction tracker and reference card;
 - all nine Diplomat Proposal fronts and nine Treaty Article backs when Diplomats are selected;
