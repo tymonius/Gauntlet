@@ -27,7 +27,7 @@
         }
 
         const originalWrite = printWindow.document.write.bind(printWindow.document);
-        printWindow.document.write = html => originalWrite(prepareDuplexDocument(html));
+        printWindow.document.write = html => originalWrite(preparePrintDocument(html));
         restoreOpen();
         return printWindow;
       };
@@ -36,9 +36,10 @@
     }, true);
   }
 
-  function prepareDuplexDocument(html) {
+  function preparePrintDocument(html) {
     const documentNode = new DOMParser().parseFromString(html, "text/html");
     standardizePageGeometry(documentNode);
+    addOverlayBands(documentNode);
     alignProposalAndTreatyPages(documentNode);
     isolateDoubleSidedReference(documentNode);
     compactSingleSidedPages(documentNode);
@@ -66,7 +67,35 @@
 .duplex-page{break-before:page!important;page-break-before:always!important;break-after:page!important;page-break-after:always!important;}
 .duplex-page.duplex-back-page:last-of-type{break-after:auto!important;page-break-after:auto!important;}
 .duplex-page .card-table{position:absolute;inset:0;}
+.overlay-card .card-header,
+.overlay-card .card-body,
+.overlay-card .card-footer{margin-right:.30in;}
+.overlay-card .unique-flag{right:.37in;}
+.overlay-band{position:absolute;z-index:5;top:0;right:0;bottom:0;width:.30in;display:flex;align-items:center;justify-content:center;overflow:hidden;border-left:1px solid #111;background:#bcbcbc!important;box-shadow:inset 0 0 0 999px #bcbcbc;-webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact;}
+.overlay-band-name{display:block;max-height:3.24in;overflow:hidden;writing-mode:vertical-rl;transform:rotate(180deg);color:#111;font-size:7.8pt;font-weight:900;line-height:1;letter-spacing:.045em;text-align:center;text-transform:uppercase;white-space:nowrap;}
 `;
+  }
+
+  function addOverlayBands(documentNode) {
+    documentNode.querySelectorAll(".main-card").forEach(card => {
+      const isOverlay = [...card.querySelectorAll(".rules-section .card-label")]
+        .some(label => /(^|\s)overlay(\s|$)/i.test(label.textContent.trim()));
+      if (!isOverlay) return;
+
+      const name = card.querySelector(".card-name")?.textContent.trim();
+      if (!name) return;
+
+      card.classList.add("overlay-card");
+      const band = documentNode.createElement("div");
+      band.className = "overlay-band";
+      band.setAttribute("aria-label", `${name} Overlay ownership band`);
+
+      const bandName = documentNode.createElement("span");
+      bandName.className = "overlay-band-name";
+      bandName.textContent = name;
+      band.append(bandName);
+      card.append(band);
+    });
   }
 
   function alignProposalAndTreatyPages(documentNode) {
