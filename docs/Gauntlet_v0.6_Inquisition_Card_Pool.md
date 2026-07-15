@@ -1,20 +1,19 @@
 # Gauntlet v0.6 Inquisition Card Pool
 
 **Status:** Authoritative working exact-text source for the selected twelve-card v0.6 Inquisition package.  
-**Purpose:** Consolidate the current Inquisition core-rule amendments, card names, costs, complexity, traits, uniqueness, exact text, package structure, and playtest watchlist in one active document.
+**Purpose:** Consolidate the current Inquisition card names, costs, complexity, traits, uniqueness, exact text, package structure, and playtest watchlist in one active document.
 
 Use this document with:
 
-- `Gauntlet_v0.6_Working_Rules.md` for general battle timing, Assets, Graveyards, leaders, and faction rules;
+- `Gauntlet_v0.6_Working_Rules.md` for Conviction, Condemnation, Blasphemy, Purge, Purification, leaders, general battle timing, Assets, and Graveyards;
 - `Gauntlet_v0.6_Faction_Card_Design_Guide.md` for package standards;
 - `Gauntlet_v0.6_Inquisition_Design_Notes.md` for identity, strategic rationale, weaknesses, leader integration, and testing priorities;
+- `Gauntlet_v0.6_Inquisition_Supplemental_Cards.md` for the Leader Cards, faction references, and Conviction tracker;
 - `Gauntlet_v0.6_Neutral_Card_Pool.md` for shared cards and interaction checks.
-
-Until the next Working Rules consolidation, the approved **Blasphemy** name and revised 1-Conviction **Purge** below supersede the older Inquisition wording in `Gauntlet_v0.6_Working_Rules.md` where they differ.
 
 ---
 
-## Approved core-rule amendments
+## Core-rule summary
 
 ### Blasphemy
 
@@ -29,7 +28,7 @@ When using the 1-Conviction Purge, choose one:
 - send the top card of the opponent's discard pile to their Graveyard; or
 - choose up to two cards in their discard pile with a combined deckbuilding value of 2 or less and send them to their Graveyard.
 
-The remaining Purge options are unchanged:
+The remaining Purge options are:
 
 | Cost | Effect |
 |---:|---|
