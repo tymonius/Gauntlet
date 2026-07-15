@@ -242,20 +242,21 @@ Military may have up to **2 Command**. The first time each turn the Military pla
 ## 10. Diplomats
 
 **Identity:** negotiation, legitimacy, concessions, political leverage, and converting conflict into a Peace Treaty.  
-**Resource:** Influence. Influence starts at 0 and cannot fall below 0.
+**Resource:** Influence. Influence starts at 1, cannot fall below 0, and currently has no maximum.
 
 ### Terms
 
 Before any battle involving the Diplomat, whether attacking or defending, the Diplomat may offer **Terms** by choosing one Proposal whose requirements are met.
 
-To offer a Proposal, the Diplomat must be able to **stake** Influence equal to its cost. Remove that Influence from the Diplomat's available Influence until the Terms resolve. A zero-cost Proposal requires no stake.
+Each Proposal lists an **Influence Stake**. To offer that Proposal, place the listed amount of available Influence on its Proposal or Treaty Article card. Staked Influence is unavailable until the Terms resolve and cannot be spent through Leverage or another effect. A zero-stake Proposal requires no Influence.
 
 If Terms are accepted:
 
 - no battle occurs;
 - resolve the Proposal's accepted effect;
 - ratify that Proposal as a Treaty Article if it has not already been ratified;
-- return the staked Influence to the Diplomat.
+- return the staked Influence to the Diplomat;
+- if the Proposal was newly ratified, gain Influence equal to its listed stake.
 
 If Terms are refused:
 
@@ -267,9 +268,15 @@ If Terms are refused:
 - if the Diplomat loses, do not ratify the Proposal and lose the staked Influence;
 - if the battle ends without a winner, do not ratify the Proposal and return the staked Influence.
 
-A Proposal that has already been ratified may still be offered for its tactical effects. It cannot count toward Peace Treaty again and does not grant the default 1 Influence when imposed again unless a rule specifically says otherwise.
+A Proposal that has already been ratified may still be offered for its tactical effects. It cannot count toward Peace Treaty again and does not generate either normal newly-ratified Influence reward again unless a rule specifically says otherwise.
 
 A Proposal cannot be offered if its accepted effect would leave both players on the same space.
+
+### Leverage
+
+Before dice are rolled in a battle following refused Terms, the Diplomat may spend any amount of available Influence. Gain +1 to the Diplomat's battle total for each Influence spent.
+
+Influence spent through Leverage is lost regardless of the battle result. Staked Influence is not available for Leverage.
 
 ### Treaty Articles and Peace Treaty
 
@@ -291,7 +298,7 @@ At the start of the Diplomat's turn, after captures, if at least **five differen
 
 ### 1. De-escalation
 
-**Cost:** 0 Influence.
+**Influence Stake:** 0.
 
 **Accepted:** Both players withdraw. The opponent draws one card.
 
@@ -299,7 +306,7 @@ At the start of the Diplomat's turn, after captures, if at least **five differen
 
 ### 2. Orderly Withdrawal
 
-**Cost:** 0 Influence.  
+**Influence Stake:** 0.  
 **Requirement:** You must be attacking.
 
 **Accepted:** You withdraw. The opponent remains in or occupies the battle space. The opponent draws one card.
@@ -308,7 +315,7 @@ At the start of the Diplomat's turn, after captures, if at least **five differen
 
 ### 3. Capitulation
 
-**Cost:** 0 Influence.  
+**Influence Stake:** 0.  
 **Requirement:** You must be defending.
 
 **Accepted:** You withdraw. The opponent remains in or occupies the battle space. The opponent draws one card.
@@ -317,7 +324,7 @@ At the start of the Diplomat's turn, after captures, if at least **five differen
 
 ### 4. Open Channels
 
-**Cost:** 0 Influence.  
+**Influence Stake:** 1.  
 **Requirement:** You must have at least one card in hand.
 
 **Accepted:** Each player reveals their hand. Then both players withdraw. The opponent draws one card.
@@ -326,7 +333,7 @@ At the start of the Diplomat's turn, after captures, if at least **five differen
 
 ### 5. Mutual Disarmament
 
-**Cost:** 0 Influence.  
+**Influence Stake:** 1.  
 **Requirement:** Both players must have at least one card in hand.
 
 **Accepted:** Each player discards one card from hand. Then the opponent draws one card. Both players withdraw.
@@ -335,7 +342,7 @@ At the start of the Diplomat's turn, after captures, if at least **five differen
 
 ### 6. Prisoner Exchange
 
-**Cost:** 0 Influence.  
+**Influence Stake:** 1.  
 **Requirement:** Each player must have at least one card in their Graveyard.
 
 **Accepted:** Each player may move one card from their Graveyard to their discard pile. Then both players withdraw.
@@ -344,7 +351,7 @@ At the start of the Diplomat's turn, after captures, if at least **five differen
 
 ### 7. Rebuilding Pact
 
-**Cost:** 1 Influence.  
+**Influence Stake:** 1.  
 **Requirement:** You must have a card in hand that can be banked as an Asset.
 
 **Accepted:** Each player may bank one Asset from hand without using an Action. Then both players withdraw.
@@ -353,7 +360,7 @@ At the start of the Diplomat's turn, after captures, if at least **five differen
 
 ### 8. Ultimatum
 
-**Cost:** 1 Influence.
+**Influence Stake:** 2.
 
 **Accepted:** The opponent withdraws. You remain in or occupy the battle space.
 
@@ -361,7 +368,7 @@ At the start of the Diplomat's turn, after captures, if at least **five differen
 
 ### 9. Diplomatic Recognition
 
-**Cost:** 2 Influence.  
+**Influence Stake:** 2.  
 **Requirement:** You must be defending a counterattack while occupying a Territory the opponent controlled immediately before you occupied it.
 
 **Accepted:** Capture that Territory immediately. The opponent withdraws, then draws two cards.
@@ -378,11 +385,13 @@ At the start of the Diplomat's turn, after captures, if at least **five differen
 
 **Style:** institutional resilience, legitimacy, and preserving political standing through sacrifice.
 
-**Political Capital:** Once per turn, when you would lose staked Influence because you lost the battle after refused Terms, you may send one card from your hand to your Graveyard. If you do, recover 1 of that staked Influence instead of losing it.
+**Political Capital:** Once per turn, when you would lose staked Influence because you lost the battle after refused Terms, you may send up to that many cards from your hand to your Graveyard. Recover 1 of that staked Influence for each card sent this way; lose the rest.
 
-### Faction cards
+### Faction cards and supplemental components
 
 The authoritative names, costs, playable types, and exact text for the twelve-card Diplomat package are maintained in `Gauntlet_v0.6_Diplomat_Card_Pool.md`.
+
+The authoritative Leader Cards, Proposal / Treaty Article cards, Terms reference, and Influence-token specification are maintained in `Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`.
 
 ---
 
