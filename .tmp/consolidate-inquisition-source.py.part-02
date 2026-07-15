@@ -1,0 +1,97 @@
+ponents, strategy, terminology, and player-facing faction rules.",
+)
+replace(
+    "docs/Gauntlet_v0.6_Card_Metadata.md",
+    "This table is authoritative over the Inquisition-related migration row above.",
+    "This table records Inquisition metadata; the definitive Inquisition faction guide governs all "
+    "player-facing rules and exact card text.",
+)
+replace(
+    "docs/Gauntlet_v0.6_Card_Metadata.md",
+    "- The Inquisition pool contains exactly 12 unique cards with the approved 1 / 3 / 4 / 2 / 2 cost "
+    "curve, total value 37, and average value 3.08.",
+    "- The Inquisition pool contains exactly 12 unique cards with the approved 1 / 3 / 4 / 2 / 2 cost "
+    "curve, total value 37, and average value 3.08; its definitive source is the release faction guide.",
+)
+replace(
+    "docs/card-reviews/STATUS.md",
+    "4. `../Gauntlet_v0.6_Inquisition_Card_Pool.md`",
+    "4. `../../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` — "
+    "definitive Inquisition rules and exact card pool",
+)
+replace(
+    "docs/card-reviews/STATUS.md",
+    "Military's former split pool, design-note, supplemental, selection, and approval files have been "
+    "consolidated into the definitive guide and removed.",
+    "Military's former split files and Inquisition's former split pool, design-note, supplemental, and "
+    "working-guide files have been consolidated into their definitive guides and removed.",
+)
+replace(
+    "docs/card-reviews/STATUS.md",
+    "- The physical package uses a sliding 0–4 Conviction tracker beneath the selected leader. No token "
+    "or marker is used.",
+    "- The physical package uses a sliding 0–4 Conviction tracker beneath the selected leader. No token "
+    "or marker is used.\n"
+    "- The definitive source is `releases/v0.6/faction-guides/inquisition/"
+    "Gauntlet_v0.6_Inquisition_Faction_Guide.md`, with matching release DOCX and PDF.",
+)
+replace(
+    "docs/Gauntlet_v0.6_Open_Questions.md",
+    "- definitive Military faction guide in Markdown, DOCX, and PDF formats.",
+    "- definitive Military and Inquisition faction guides in Markdown, DOCX, and PDF formats.",
+)
+replace(
+    "docs/Gauntlet_v0.6_Open_Questions.md",
+    "Authoritative sources: `Gauntlet_v0.6_Inquisition_Card_Pool.md`, "
+    "`Gauntlet_v0.6_Inquisition_Design_Notes.md`, and "
+    "`Gauntlet_v0.6_Inquisition_Supplemental_Cards.md`.",
+    "Definitive source: `../releases/v0.6/faction-guides/inquisition/"
+    "Gauntlet_v0.6_Inquisition_Faction_Guide.md`. The adjacent PDF and DOCX are release-formatted editions. "
+    "Earlier split Inquisition pool, design, supplemental, and working-guide documents have been "
+    "consolidated and removed.",
+)
+
+# Working Rules retain only a source pointer for the completed faction.
+p = Path("docs/Gauntlet_v0.6_Working_Rules.md")
+text = p.read_text(encoding="utf-8")
+start = text.index("## 11. Inquisition")
+end = text.index("## 12. Arcane")
+working_pointer = (
+    "## 11. Inquisition\n\n"
+    "The definitive source for all Inquisition-specific rules and player-facing text is:\n\n"
+    "- `../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`\n\n"
+    "The adjacent DOCX and PDF are release-formatted editions. That guide governs Conviction, "
+    "Condemnation, Blasphemy, Purge, Purification, Grand Inquisitor, Witch Hunter, the sliding "
+    "Conviction tracker, reference components, strategy, terminology, and the canonical twelve-card "
+    "Inquisition pool. General rules in this document still apply unless the definitive faction guide "
+    "specifically overrides them.\n\n---\n\n"
+)
+p.write_text(text[:start] + working_pointer + text[end:], encoding="utf-8")
+
+# Derived print and deckbuilder sources.
+replace(
+    "faction-sheets/README.md",
+    "- `docs/Gauntlet_v0.6_Inquisition_Card_Pool.md` — Inquisition playable-card text.\n"
+    "- `docs/Gauntlet_v0.6_Inquisition_Supplemental_Cards.md` — Inquisition leaders, references, and tracker.",
+    "- `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` — "
+    "definitive Inquisition rules, leaders, references, tracker, and playable-card text. The Inquisition "
+    "sheets are derived from this guide.",
+)
+replace(
+    "deckbuilder-v0.6/app.js",
+    '  inquisition: {\n    label: "Inquisition",\n    path: "../docs/Gauntlet_v0.6_Inquisition_Card_Pool.md"\n  }',
+    '  inquisition: {\n    label: "Inquisition",\n    path: "../releases/v0.6/faction-guides/inquisition/'
+    'Gauntlet_v0.6_Inquisition_Faction_Guide.md",\n    start: "## 6. Canonical Inquisition card pool",\n'
+    '    end: "## 7. Card-pool summary",\n    headingLevel: 3\n  }',
+)
+replace(
+    "deckbuilder-v0.6/app.js",
+    "  const headings = [...section.matchAll(/^##\\s+(.+)$/gm)];",
+    "  const headingLevel = source.headingLevel || 2;\n"
+    "  const headings = [...section.matchAll(new RegExp(`^#{${headingLevel}}\\\\s+(.+)$`, \"gm\"))];",
+)
+replace(
+    "deckbuilder-v0.6/README.md",
+    "- `docs/Gauntlet_v0.6_Inquisition_Card_Pool.md`",
+    "- `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`",
+)
