@@ -63,8 +63,8 @@
 .card-page{position:relative;width:7.5in!important;height:10.5in!important;margin:0!important;overflow:hidden!important;}
 .card-table{width:7.5in!important;height:10.5in!important;margin:0!important;}
 .duplex-page{break-before:page!important;page-break-before:always!important;break-after:page!important;page-break-after:always!important;}
+.duplex-page.duplex-back-page:last-of-type{break-after:auto!important;page-break-after:auto!important;}
 .duplex-page .card-table{position:absolute;inset:0;}
-.duplex-print-instructions{margin-top:.08in;padding-top:.06in;border-top:1px solid #aaa;font-size:7.2pt;line-height:1.2;}
 `;
   }
 
@@ -104,9 +104,9 @@
 
   function isolateDoubleSidedReference(documentNode) {
     const references = [...documentNode.querySelectorAll(".reference-card")];
-    const frontCard = references.find(card => /side\s*a/i.test(card.textContent));
-    const backCard = references.find(card => /side\s*b/i.test(card.textContent));
-    if (!frontCard || !backCard) return;
+    const frontCard = references.find(card => /side\s*a/i.test(referenceSide(card)));
+    const backCard = references.find(card => /side\s*b/i.test(referenceSide(card)));
+    if (!frontCard || !backCard || frontCard === backCard) return;
 
     frontCard.closest("td")?.replaceChildren();
     backCard.closest("td")?.replaceChildren();
@@ -151,13 +151,27 @@
   }
 
   function addDuplexInstructions(documentNode) {
-    const summarySide = documentNode.querySelector(".summary-side");
-    if (!summarySide || !documentNode.querySelector(".duplex-page")) return;
+    if (!documentNode.querySelector(".duplex-page")) return;
 
+    const summaryBlocks = [...documentNode.querySelectorAll(".summary-side .summary-block")];
+    const printNote = summaryBlocks.find(block => /print note/i.test(block.textContent));
+    const instructionHtml = "<strong>Print note:</strong> Leader and supplemental cards are included. For paired cards, use Actual Size / 100%, disable headers and footers, and select <strong>Flip on long edge</strong>. Back positions are mirrored to their fronts.";
+
+    if (printNote) {
+      printNote.innerHTML = instructionHtml;
+      return;
+    }
+
+    const summarySide = documentNode.querySelector(".summary-side");
+    if (!summarySide) return;
     const instructions = documentNode.createElement("div");
-    instructions.className = "duplex-print-instructions";
-    instructions.innerHTML = "<strong>Duplex setup:</strong> Print at Actual Size / 100%, disable browser headers and footers, and select two-sided printing with <strong>Flip on long edge</strong>. Front and back sheets use identical page boxes and mirrored card positions.";
+    instructions.className = "summary-block";
+    instructions.innerHTML = instructionHtml;
     summarySide.append(instructions);
+  }
+
+  function referenceSide(card) {
+    return card.querySelector(".supplemental-subtitle")?.textContent.trim() || "";
   }
 
   function articleKey(card) {
