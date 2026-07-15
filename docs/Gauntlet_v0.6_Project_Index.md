@@ -12,51 +12,56 @@ Read this file first when resuming v0.6 work.
 
 1. **`Gauntlet_v0.6_Working_Rules.md`** — current v0.6 rules framework, faction mechanics, leaders, resources, alternate victories, Assets, Overlays, Territory activation, Ruins, and product scope.
 2. **`Gauntlet_v0.6_Neutral_Card_Pool.md`** — authoritative working names, costs, complexity, traits, uniqueness, and exact text for all 50 Neutral cards.
-3. **`card-reviews/STATUS.md`** — authoritative live playable-card checkpoint and unresolved card blockers.
-4. **`card-reviews/COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`** — completed Neutral pool-size, cost-curve, repricing, and addition audit.
-5. **`Gauntlet_v0.6_Card_Metadata.md`** — consolidated allegiance, starter eligibility, complexity, and watchlists for all 66 approved playable-card designs.
-6. **`Gauntlet_v0.6_Card_Review_Log.md`** — migration provenance for all 54 v0.5.7 source cards. It does not override the Neutral Card Pool where Neutral costs or exact text differ.
-7. **`card-reviews/CONDITION_AUDIT.md`** — detailed provenance for retiring Conditions and converting former Condition effects.
-8. **`card-reviews/`** — standalone detailed review provenance, including the approved Neutral additions and current faction-card audits.
-9. **`territory-reviews/STATUS.md`** — authoritative Territory-review checkpoint.
-10. **`territory-reviews/GENERAL_RULES.md`** — approved general Territory activation and suppression rules.
-11. **`territory-reviews/`** — standalone reviews for all 25 v0.5.7 Territories and Arenas.
-12. **`Gauntlet_v0.6_Open_Questions.md`** — unresolved current rules, faction-card, testing, and release questions.
-13. **`../releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`** — authoritative historical pre-v0.6 source order and text for migration only.
-14. **`v0.5.7_rules_clarifications.md`** — physical-rules clarifications discovered through digital implementation.
+3. **`Gauntlet_v0.6_Military_Card_Pool.md`** — authoritative working names, costs, complexity, uniqueness, exact text, package audit, and playtest watchlist for all 12 Military cards.
+4. **`card-reviews/STATUS.md`** — authoritative live playable-card checkpoint and unresolved card blockers.
+5. **`Gauntlet_v0.6_Card_Metadata.md`** — consolidated allegiance, starter eligibility, complexity, and watchlists for the current 73 playable-card designs and retired migration entries.
+6. **`card-reviews/COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`** — completed Neutral pool-size, cost-curve, repricing, and addition audit.
+7. **`card-reviews/MILITARY_V0.6_RELEASE_SELECTION.md`** — completed Military roster selection, final cost profile, and Standing Orders cut decision.
+8. **`Gauntlet_v0.6_Card_Review_Log.md`** — migration provenance for all 54 v0.5.7 source cards. It does not override completed exact-text pool documents.
+9. **`card-reviews/CONDITION_AUDIT.md`** — detailed provenance for retiring Conditions and converting former Condition effects.
+10. **`card-reviews/`** — standalone detailed review provenance, including approved Neutral additions, Military approval sidecars, inherited-candidate audits, and historical draft review.
+11. **`territory-reviews/STATUS.md`** — authoritative Territory-review checkpoint.
+12. **`territory-reviews/GENERAL_RULES.md`** — approved general Territory activation and suppression rules.
+13. **`territory-reviews/`** — standalone reviews for all 25 v0.5.7 Territories and Arenas.
+14. **`Gauntlet_v0.6_Open_Questions.md`** — unresolved current rules, faction-card, testing, and release questions.
+15. **`../releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`** — authoritative historical pre-v0.6 source order and text for migration only.
+16. **`v0.5.7_rules_clarifications.md`** — physical-rules clarifications discovered through digital implementation.
 
-No canonical v0.6 data exists yet. Active v0.6 documents govern development until the remaining faction exact-text and package blockers are resolved and a canonical release dataset is created.
+No canonical v0.6 data exists yet. Active v0.6 documents govern development until the remaining five faction packages, exact-text blockers, Intelligence Missions, copied-effect rules, and package testing are resolved.
 
 ### Design rationale and testing
 
-15. **`Gauntlet_Design_Principles_and_Guardrails.md`** — current design constraints for core rules, factions, cards, complexity, components, pacing, and digital work.
-16. **`Gauntlet_v0.6_Faction_Card_Design_Guide.md`** — active construction and review standard for faction card pools, including creative strategy, open-ended synergy, no-grandfathering, leader integration, the twelve-card package target, premium-leaning cost baseline, anti-patterns, and package approval criteria.
-17. **`Gauntlet_v0.6_Military_Design_Notes.md`** — active Military faction brief covering momentum versus consolidation, Command discipline, combined arms, maneuver, prepared operations, intended weaknesses, and inherited-candidate evaluation.
-18. **`Gauntlet_v0.6_Military_Card_Pool_Draft.md`** — superseded first-pass twelve-card Military package draft retained as design provenance. Most cards in that pass are not current recommendations.
-19. **`card-reviews/MILITARY_DRAFT_REVIEW_NOTES.md`** — active card-by-card review record for the Military package, including the revised Battlefield Promotion direction, retained Standing Orders and Field Command concepts, rejected Bridgehead design, and approved cost-2 Encampment Overlay direction.
-20. **`card-reviews/MILITARY_INHERITED_CANDIDATE_AUDIT.md`** — completed audit of Brothers in Arms, Militias, Patriotism, and Shock and Awe; recommendations await explicit approval before registry changes.
-21. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — why the v0.5 rebuild occurred and which older systems are not current.
-22. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing benchmarks, simulation conclusions, telemetry, and human-playtest questions.
-23. **`Gauntlet_v0.6_Diplomat_Design_Notes.md`** — active rationale, implementation guidance, Sanctions direction, and testing questions for the integrated v0.6 Diplomat framework.
-24. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, Day/Night, and other post-v0.6 concepts.
+17. **`Gauntlet_Design_Principles_and_Guardrails.md`** — current design constraints for core rules, factions, cards, complexity, components, pacing, and digital work.
+18. **`Gauntlet_v0.6_Faction_Card_Design_Guide.md`** — active construction and review standard for faction card pools, including creative strategy, open-ended synergy, no-grandfathering, leader integration, the twelve-card package target, premium-leaning cost baseline, anti-patterns, and package approval criteria.
+19. **`Gauntlet_v0.6_Military_Design_Notes.md`** — finalized Military identity, strategic threads, leader integration, intended weaknesses, Neutral boundaries, completed-package rationale, and testing priorities.
+20. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing benchmarks, simulation conclusions, telemetry, and human-playtest questions.
+21. **`Gauntlet_v0.6_Diplomat_Design_Notes.md`** — active rationale, implementation guidance, Sanctions direction, and testing questions for the integrated v0.6 Diplomat framework.
+22. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — why the v0.5 rebuild occurred and which older systems are not current.
+23. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, Day/Night, and other post-v0.6 concepts.
+
+The following Military files are historical provenance and do not override the active Military Card Pool or Design Notes:
+
+- `Gauntlet_v0.6_Military_Card_Pool_Draft.md`;
+- `card-reviews/MILITARY_DRAFT_REVIEW_NOTES.md`;
+- `card-reviews/MILITARY_INHERITED_CANDIDATE_AUDIT.md`;
+- individual Military approval sidecars.
 
 ### Digital development
 
-25. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, rules engine, CLI, GUI, telemetry, and remote-play roadmap.
-26. **`../deckbuilder/README.md`** — current v0.5 deckbuilder behavior and versioned upgrade path.
-27. **`../src/README.md`** — current TypeScript engine and development-interface status.
-28. **`../data/README.md`** — starter-data scope and source-of-truth warning.
+24. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, rules engine, CLI, GUI, telemetry, and remote-play roadmap.
+25. **`../deckbuilder/README.md`** — current v0.5 deckbuilder behavior and versioned upgrade path.
+26. **`../src/README.md`** — current TypeScript engine and development-interface status.
+27. **`../data/README.md`** — starter-data scope and source-of-truth warning.
 
 ### Setting and production
 
-29. **`Gauntlet_Lore_Development_Notes.md`** — current WIP setting direction, open questions, and rejected premises.
-30. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — active production-facing leader and miniature direction.
-31. **`Game_Design_Glossary.md`** — shared design terminology.
-32. **`../images/`** — current v0.6 leader image assets, with top-level portraits and matching production sketches in `images/sketches/`.
+28. **`Gauntlet_Lore_Development_Notes.md`** — current WIP setting direction, open questions, and rejected premises.
+29. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — active production-facing leader and miniature direction.
+30. **`Game_Design_Glossary.md`** — shared design terminology.
 
 ### Historical archive
 
-`Archive/` contains completed audits and superseded historical records that remain useful for provenance. Archive material does not override active rules, current exact-text documents, canonical data, or current design documents.
+`Archive/` contains completed audits and superseded historical records that remain useful for provenance. Archive material and superseded Military drafts do not override active rules, exact-text pool documents, canonical data, or current design documents.
 
 ---
 
@@ -64,17 +69,38 @@ No canonical v0.6 data exists yet. Active v0.6 documents govern development unti
 
 ### Playable cards
 
-- All **54** v0.5.7 playable cards have been mechanically reviewed for v0.6.
+- All **54** v0.5.7 playable source cards have migration-review records.
 - **12 new Neutral cards** have been approved.
-- The project therefore contains **66 approved playable-card designs**.
 - The Neutral pool is complete at **50 unique cards**.
-- The final Neutral curve is **11 cost-1 / 19 cost-2 / 11 cost-3 / 8 cost-4 / 1 cost-5**.
-- The Neutral pool has 119 total unique deckbuilding value and a 2.38 average cost.
-- **Manifest Destiny** is finalized as the Unique Neutral cost-5 Territory-expansion capstone.
+- The Military pool is complete at **12 unique cards**.
+- Militias and Patriotism are retired from the current playable pool.
+- Nine new Military designs have been added beyond the retained source cards Brothers in Arms, Shock and Awe, and War Crimes.
+- The project therefore contains **73 current playable-card designs**: 50 Neutral, 12 Military, and 11 retained cards assigned to the five unfinished factions.
+
+Neutral checkpoint:
+
+- Final curve: **11 cost-1 / 19 cost-2 / 11 cost-3 / 8 cost-4 / 1 cost-5**.
+- Total unique-card value: 119.
+- Average cost: 2.38.
+- **Manifest Destiny** is the Unique Neutral cost-5 Territory-expansion capstone.
 - **Resourcefulness** is the final low-cost-card build-around.
 - **Counterworks** provides narrow Neutral Overlay prevention and temporary suppression.
 - Repair, permanent dismantling, movement, upgrading, recurrence, connected infrastructure, and Overlay-network victory progress remain reserved for the future Engineer faction.
-- The Arcane Knowledge / Witchcraft name swap is integrated into the metadata and exact-text sources.
+
+Military checkpoint:
+
+- Final selected curve: **1 cost-1 / 4 cost-2 / 3 cost-3 / 3 cost-4 / 1 cost-5**.
+- Total unique-card value: 35.
+- Average cost: 2.92.
+- Selected roster: **Unbroken Ranks; Battlefield Promotion; Encampment; Rearguard; Brothers in Arms; Field Command; Reserve Force; Give Chase; Hold the Line; Countercharge; War Crimes; Shock and Awe**.
+- **Shock and Awe** is the Unique cost-5 statement card.
+- **War Crimes** is Military rather than Inquisition.
+- **Standing Orders** is deferred and not in the release pool.
+- The package remains subject to playtesting, physical-card templating, and playtest-driven balance or wording changes before canonical data is frozen.
+
+Other integrated card decisions:
+
+- The Arcane Knowledge / Witchcraft name swap is integrated into metadata and exact-text sources.
 - Conditions are retired as a v0.6 game concept.
 - Former Condition effects have been converted to Assets, Overlays, immediate effects, or deferred faction redesigns.
 
@@ -85,8 +111,9 @@ Remaining exact-text or design blockers:
 - Siege Weaponry may be renamed Bombardment.
 - Witchcraft needs final copied-effect eligibility wording.
 - General impossible-target and source-dependent copied-effect handling remains unresolved.
-- Intelligence Mission requirements and all six faction packages remain incomplete.
-- Each completed faction package still requires its faction-specific curve, premium-card, synergy, and leader-integration audit.
+- Intelligence Mission requirements remain incomplete.
+- The Diplomat, Inquisition, Arcane, Financier, and Intelligence packages remain incomplete.
+- Each completed package still requires playtesting and production templating before canonical v0.6 data is created.
 
 ### Territories
 
@@ -122,7 +149,7 @@ The six working factions are:
 - Financiers — Banker / Executive;
 - Intelligence — Ranger / Spymaster.
 
-Current faction rules are in the Working Rules. The revised Diplomat framework is part of the initial v0.6 baseline rather than a deferred v0.6.1 overhaul. Balance, names, Missions, card packages, and several thresholds remain under active testing or development.
+Current faction rules are in the Working Rules. The revised Diplomat framework is part of the initial v0.6 baseline rather than a deferred v0.6.1 overhaul. Balance, names, Missions, the five remaining card packages, and several thresholds remain under active testing or development.
 
 Faction package construction and review should follow `Gauntlet_v0.6_Faction_Card_Design_Guide.md`. The current v0.6 baseline is:
 
@@ -132,14 +159,7 @@ Faction package construction and review should follow `Gauntlet_v0.6_Faction_Car
 - at least one optional, game-defining cost-5 statement card per faction;
 - permission to deviate from the default curve or include additional premium cards when the completed strategic vocabulary is stronger, more varied, and more fun as a result.
 
-Military's active design brief is established in `Gauntlet_v0.6_Military_Design_Notes.md`. The original twelve-card package draft is now explicitly treated as a discarded first pass rather than a near-final package. Current retained or approved directions are:
-
-- **Battlefield Promotion:** revised to promote a successful battle-drawn card into hand; cost unresolved;
-- **Standing Orders:** name and Command-borrowing concept provisionally retained;
-- **Field Command:** name and premium Order-sequencing concept provisionally retained;
-- **Encampment:** approved cost-2 Territory Overlay direction; it replaces the underlying Territory effect, grants 1 Command when its controller ends a turn occupying and controlling it, remains after the army leaves, and is removed when an opponent gains control;
-- **Bridgehead:** rejected;
-- the remaining Military slots are open or require substantial redesign.
+Military is the first completed faction card package. Its active exact text is in `Gauntlet_v0.6_Military_Card_Pool.md`; its rationale and test plan are in `Gauntlet_v0.6_Military_Design_Notes.md`.
 
 ### Digital work
 
@@ -154,7 +174,6 @@ Military's active design brief is established in `Gauntlet_v0.6_Military_Design_
 
 - Lore remains intentionally incremental and non-canonical beyond the current direction document.
 - The Leader Design Bible is the active visual source of truth.
-- `images/` now contains top-level portrait assets and matching production sketches for all twelve current v0.6 faction leaders.
 - Earlier archetype and generated-sheet records are archived.
 
 ---
@@ -164,17 +183,18 @@ Military's active design brief is established in `Gauntlet_v0.6_Military_Design_
 1. Treat chat as workspace; write durable decisions into the repository.
 2. Use released canonical data for its matching version.
 3. For v0.6 Neutral card questions, use `Gauntlet_v0.6_Neutral_Card_Pool.md` first.
-4. For migration provenance, use the Card Review Log and standalone reviews.
-5. Before faction-locking a card, assess both neutral-pool impact and interaction with the destination faction's mechanics.
-6. Record approved decisions in the relevant active source.
-7. Update rollups and this Project Index at material milestones rather than after every minor discussion.
-8. Keep rules, testing rationale, lore, production direction, and implementation state in their designated documents.
-9. Remove or archive temporary worksheets, addenda, trackers, and continuation files once their information is consolidated.
-10. Do not claim a decision is logged until the repository update succeeds.
-11. Do not create canonical v0.6 data by silently resolving open design questions.
+4. For v0.6 Military card questions, use `Gauntlet_v0.6_Military_Card_Pool.md` first.
+5. For migration provenance, use the Card Review Log and standalone reviews.
+6. Before faction-locking a card, assess both Neutral-pool impact and interaction with the destination faction's mechanics.
+7. Record approved decisions in the relevant active source.
+8. Update rollups and this Project Index at material milestones rather than after every minor discussion.
+9. Keep rules, testing rationale, lore, production direction, and implementation state in their designated documents.
+10. Remove or archive temporary worksheets, addenda, trackers, and continuation files once their information is consolidated.
+11. Do not claim a decision is logged until the repository update succeeds.
+12. Do not create canonical v0.6 data by silently resolving open design questions.
 
 ---
 
 ## Immediate next step
 
-Continue rebuilding the Military package from the surviving cards rather than revising the discarded first-pass list. Review **Standing Orders**, **Field Command**, and **Brothers in Arms**, then create new candidates for the remaining open slots.
+Begin or continue one of the five remaining faction packages while adding Military to package-level playtesting and physical-card templating. Reopen the Military roster only if testing reveals a clear strategic, balance, wording, or production failure.
