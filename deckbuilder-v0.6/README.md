@@ -25,7 +25,7 @@ The development build supports:
 - exactly-three-Territory validation with a maximum of one Arena;
 - selected Territories in the Current deck display;
 - Territory-aware local saves, JSON import/export, and text deck lists;
-- browser Print / PDF export for the deck summary, selected Leader Card, every playable-card copy, and all three selected Territories;
+- browser Print / PDF export for the complete playable deck, Territories, selected Leader Card, and required faction supplemental cards;
 - local save/load/delete.
 
 Arcane, Financiers, and Intelligence appear as disabled development placeholders.
@@ -61,17 +61,24 @@ The generator is intended to accelerate broad playtesting rather than produce a 
 The Print / PDF control opens a browser-printable Letter-size package and then opens the system print dialog. The package contains:
 
 - a deck summary and deck list;
-- the selected Leader Card;
+- the selected Leader Card, including its portrait and exact leader rules;
 - one printable card face for every playable-card copy in the deck;
 - the selected three Territories in landscape-reading orientation;
+- every required one-sided faction tracker and reference card;
+- all nine Diplomat Proposal fronts and nine horizontally mirrored Treaty Article backs when Diplomats are selected;
 - standardized Noto Sans typography and 2.5 × 3.5-inch cut lines.
 
-The summary lists every required faction component. Trackers, references, Proposal / Treaty Article cards, and other faction-specific supplemental cards are still printed from the existing faction sheets rather than duplicated inside the deckbuilder package.
+Faction packages currently render as follows:
+
+- **Military:** selected Leader Card and shared Command Tracker;
+- **Diplomats:** selected Leader Card, Influence Tracker, both Reference faces, nine Proposal fronts, and nine Treaty Article backs;
+- **Inquisition:** selected Leader Card, Conviction Tracker, Inquisition Doctrine, and Purge Reference.
+
+The two Diplomat Proposal/Treaty pages are arranged for long-edge duplex alignment. The two Diplomat Reference faces remain separate printable faces that may be sleeved or mounted back-to-back.
 
 ## Next implementation steps
 
-1. Add faction supplemental-component manifests for references, trackers, Proposals, Orders, and Purge materials.
-2. Optionally integrate those supplemental components directly into the deckbuilder Print / PDF package.
-3. Add starter-deck templates.
-4. Add completed Arcane, Financier, and Intelligence packages as their exact-text sources stabilize.
-5. Replace Markdown parsing with canonical v0.6 JSON only after the complete release data is approved.
+1. Add starter-deck templates.
+2. Add completed Arcane, Financier, and Intelligence packages as their exact-text sources stabilize.
+3. Keep supplemental manifests synchronized with definitive faction guides and faction-sheet sources.
+4. Replace Markdown parsing with canonical v0.6 JSON only after the complete release data is approved.
