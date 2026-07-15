@@ -1,11 +1,6 @@
-name: Finalize Military faction guide
+name: Diagnose Military faction guide build
 
 on:
-  push:
-    branches:
-      - agent/finalize-military-faction-guide
-    paths:
-      - .github/workflows/finalize-military-guide.yml
   pull_request:
     branches:
       - main
@@ -14,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  finalize:
+  diagnose:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -22,50 +17,50 @@ jobs:
           ref: agent/finalize-military-faction-guide
           fetch-depth: 0
 
-      - name: Install document tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y libreoffice-writer poppler-utils zip unzip
-
-      - name: Reconstruct final DOCX
+      - name: Diagnose reconstruction
         shell: bash
         run: |
-          set -euo pipefail
-          outdir="releases/v0.6/faction-guides/military"
-          destination="$outdir/Gauntlet_v0.6_Military_Faction_Guide.docx"
-          mkdir -p "$outdir"
+          set +e
+          log="military-guide-build-diagnostic.txt"
+          {
+            echo "PWD=$PWD"
+            echo "HEAD=$(git rev-parse HEAD)"
+            echo "--- staging files ---"
+            find tmp/military-guide -maxdepth 1 -type f -printf '%f %s bytes\n' | sort
+            echo "--- checksums ---"
+            sha1sum tmp/military-guide/template.part* || true
+            echo "--- source images ---"
+            file images/sketches/general.png images/sketches/commandant.png || true
+            echo "--- Python reconstruction ---"
+            python3 <<'PY'
+          from pathlib import Path
+          import base64
+          import io
+          import traceback
+          import zipfile
 
-          count="$(find tmp/military-guide -maxdepth 1 -name 'template.part*' | wc -l)"
-          test "$count" = "9"
+          try:
+              root = Path.cwd()
+              chunks = sorted((root / "tmp/military-guide").glob("template.part*"))
+              print("chunk_count", len(chunks))
+              for path in chunks:
+                  print(path.name, path.stat().st_size)
+              encoded = "".join(path.read_text(encoding="utf-8").strip() for path in chunks)
+              print("encoded_chars", len(encoded), "mod4", len(encoded) % 4)
+              raw = base64.b64decode(encoded, validate=True)
+              print("decoded_bytes", len(raw), "magic", raw[:4])
+              with zipfile.ZipFile(io.BytesIO(raw), "r") as zf:
+                  print("zip_entries", len(zf.namelist()))
+                  print("zip_test", zf.testzip())
+                  print("media", [n for n in zf.namelist() if n.startswith("word/media/")])
+          except Exception:
+              traceback.print_exc()
+          PY
+          } > "$log" 2>&1
 
-          cat tmp/military-guide/template.part* | tr -d '\r\n' | base64 --decode > "$destination"
-          unzip -t "$destination"
-
-          media_dir="$(mktemp -d)"
-          mkdir -p "$media_dir/word/media"
-          cp images/sketches/general.png "$media_dir/word/media/image1.png"
-          cp images/sketches/commandant.png "$media_dir/word/media/image2.png"
-          absolute_destination="$GITHUB_WORKSPACE/$destination"
-          (cd "$media_dir" && zip -q -u "$absolute_destination" word/media/image1.png word/media/image2.png)
-          unzip -t "$destination"
-
-      - name: Export and validate final PDF
-        run: |
-          libreoffice --headless --convert-to pdf \
-            --outdir releases/v0.6/faction-guides/military \
-            releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.docx
-
-          test -s releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.docx
-          test -s releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.pdf
-          test "$(pdfinfo releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.pdf | awk '/Pages:/ {print $2}')" = "11"
-
-      - name: Commit release artifacts and remove staging files
-        run: |
-          rm -rf tmp/military-guide
           rm .github/workflows/finalize-military-guide.yml
-
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Add final Military faction guide PDF and DOCX"
+          git add "$log" .github/workflows/finalize-military-guide.yml
+          git commit -m "Record Military guide build diagnostic"
           git push
