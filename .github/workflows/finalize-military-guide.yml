@@ -25,38 +25,29 @@ jobs:
       - name: Install document tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y libreoffice-writer poppler-utils
+          sudo apt-get install -y libreoffice-writer poppler-utils zip unzip
 
       - name: Reconstruct final DOCX
+        shell: bash
         run: |
-          python3 <<'PY'
-          from pathlib import Path
-          import base64
-          import io
-          import zipfile
+          set -euo pipefail
+          outdir="releases/v0.6/faction-guides/military"
+          destination="$outdir/Gauntlet_v0.6_Military_Faction_Guide.docx"
+          mkdir -p "$outdir"
 
-          root = Path.cwd()
-          staging = root / "tmp/military-guide"
-          outdir = root / "releases/v0.6/faction-guides/military"
-          outdir.mkdir(parents=True, exist_ok=True)
+          count="$(find tmp/military-guide -maxdepth 1 -name 'template.part*' | wc -l)"
+          test "$count" = "9"
 
-          chunks = sorted(staging.glob("template.part*"))
-          if len(chunks) != 9:
-              raise SystemExit(f"Expected 9 template chunks, found {len(chunks)}")
+          cat tmp/military-guide/template.part* | tr -d '\r\n' | base64 --decode > "$destination"
+          unzip -t "$destination"
 
-          template = base64.b64decode("".join(path.read_text().strip() for path in chunks))
-          general = root / "images/sketches/general.png"
-          commandant = root / "images/sketches/commandant.png"
-          destination = outdir / "Gauntlet_v0.6_Military_Faction_Guide.docx"
-
-          with zipfile.ZipFile(io.BytesIO(template), "r") as source, zipfile.ZipFile(
-              destination, "w", zipfile.ZIP_DEFLATED, compresslevel=9
-          ) as target:
-              for item in source.infolist():
-                  target.writestr(item, source.read(item.filename))
-              target.writestr("word/media/image1.png", general.read_bytes())
-              target.writestr("word/media/image2.png", commandant.read_bytes())
-          PY
+          media_dir="$(mktemp -d)"
+          mkdir -p "$media_dir/word/media"
+          cp images/sketches/general.png "$media_dir/word/media/image1.png"
+          cp images/sketches/commandant.png "$media_dir/word/media/image2.png"
+          absolute_destination="$GITHUB_WORKSPACE/$destination"
+          (cd "$media_dir" && zip -q -u "$absolute_destination" word/media/image1.png word/media/image2.png)
+          unzip -t "$destination"
 
       - name: Export and validate final PDF
         run: |
