@@ -1,11 +1,11 @@
 # Military v0.6 Release Selection
 
-**Status:** Twelve-card release roster selected; individual cards remain subject to final templating and playtesting  
+**Status:** Completed twelve-card release selection; current exact text is consolidated in `../Gauntlet_v0.6_Military_Card_Pool.md`.  
 **Decision:** Standing Orders is cut from the v0.6 Military release pool. Brothers in Arms takes its place.
 
 ## Selected roster
 
-1. Battlefield Promotion — cost unresolved; cost 2 remains the leading direction
+1. Battlefield Promotion — cost 2
 2. Encampment — cost 2
 3. Field Command — cost 3
 4. Reserve Force — cost 3
@@ -18,13 +18,29 @@
 11. Shock and Awe — cost 5; Unique
 12. Brothers in Arms — cost 2
 
+## Final cost profile
+
+| Cost | Cards |
+|---:|---:|
+| 1 | 1 |
+| 2 | 4 |
+| 3 | 3 |
+| 4 | 3 |
+| 5 | 1 |
+| **Total** | **12** |
+
+- **Total unique-card value:** 35
+- **Average cost:** 2.92
+
+Battlefield Promotion is finalized at cost 2 as conditional post-victory preservation. It does not provide direct battle strength, Command, or unconditional draw.
+
 ## Cut from the release pool
 
 ### Standing Orders
 
 Standing Orders is removed from the v0.6 Military release roster.
 
-Its approved design direction was:
+Its final considered direction was:
 
 > **Action:** Bank Standing Orders as an Asset. When you use an Order, you may discard Standing Orders. If you do, reduce that Order's Command cost by 1.
 >
@@ -32,7 +48,7 @@ Its approved design direction was:
 
 The card is functional, but it is the least distinctive member of the completed candidate set. It primarily improves the efficiency of Orders the player already intended to use, creating greater automatic-inclusion risk than the other low-cost Military cards.
 
-The remaining Command-related cards create more specific decisions:
+The selected Command-related cards create more specific decisions:
 
 - Unbroken Ranks asks whether to fight without Orders in exchange for a larger post-victory Command payoff.
 - Encampment exchanges a Territory's printed effect and positional commitment for repeatable Command.
@@ -43,9 +59,11 @@ Standing Orders therefore loses the release slot to Brothers in Arms, which adds
 
 Standing Orders is deferred rather than erased. Its name and effect may be reconsidered in a later release if testing demonstrates that Military needs a flexible Order discount and that the design does not become routine infrastructure.
 
-## Remaining unresolved work
+## Remaining work
 
-- approve Battlefield Promotion's final cost;
-- complete exact timing and templating review across the package;
-- test the selected twelve-card roster as a package rather than only as individual cards;
-- revisit the cut only if playtesting shows a clear strategic gap or a selected card fails.
+The roster, current costs, and current exact text are complete. Remaining work is playtest-driven:
+
+- test the selected twelve-card package as a whole;
+- perform final physical-card templating and text-fit review;
+- resolve balance or timing problems revealed through testing;
+- revisit the cut only if testing shows a clear strategic gap or a selected card fails.
