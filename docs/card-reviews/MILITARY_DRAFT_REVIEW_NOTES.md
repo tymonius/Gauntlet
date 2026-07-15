@@ -157,6 +157,25 @@ Primary playtest watchlist:
 - interaction with movement effects that grant multiple movements rather than a single immediate movement;
 - exact timing when several pursuit effects are available.
 
+### Unbroken Ranks
+
+**Cost:** 1  
+**Role:** Reward winning without relying on Orders
+
+> **Action:** Bank Unbroken Ranks as an Asset. After you win a battle during which you used no Orders, you may discard Unbroken Ranks. If you do, gain 1 Command.
+>
+> **Battle:** After you win this battle, if you used no Orders during it, gain 1 Command.
+
+Unbroken Ranks' Action, Battle effect, and cost-1 value are approved. It asks the Military player to choose between spending Command to improve the current battle and preserving that tactical restraint for a larger post-victory Command payoff.
+
+When the first Military victory of the turn grants the faction's normal Command, Unbroken Ranks can provide the second Command needed for Rout or Fortify. The card contributes nothing toward securing the victory and fails if the player used any Order during the battle.
+
+Primary playtest watchlist:
+
+- whether gaining 2 total Command from the first unsupported victory of a turn makes Rout or Fortify too reliable;
+- whether the Action form becomes routine infrastructure despite requiring a successful unsupported battle;
+- timing relative to the faction's normal first-victory Command gain and post-victory Orders.
+
 ---
 
 ## Unresolved design seed
