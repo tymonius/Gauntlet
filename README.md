@@ -1,6 +1,6 @@
 # Gauntlet
 
-Gauntlet is a two-player tactical card-and-territory game about advancing across a contested battlefield, capturing ground, managing limited cards, surviving counterattacks, and breaking through the opponent's final position.
+Gauntlet is a two-player tactical card-and-territory game about advancing across a contested battlefield, capturing ground, managing limited cards, surviving counterattacks, and running the Gauntlet.
 
 The project is in private pre-release development and physical playtesting.
 
@@ -11,6 +11,7 @@ The project is in private pre-release development and physical playtesting.
 - **v0.6 focus:** six factions, two leaders per faction, faction resources, alternate victory paths, canonical-data production, and faction playtesting
 - **Playable-card review:** complete for all 54 v0.5.7 source cards
 - **Completed faction pools:** Military, Diplomats, and Inquisition
+- **Definitive faction guide:** Military is packaged in Markdown, DOCX, and PDF under `releases/v0.6/faction-guides/military/`
 - **Territory review:** complete for all 25 v0.5.7 Territories and Arenas
 - **Conditions:** retired as a v0.6 game concept; persistent effects now use Assets, Overlays, or immediate/self-tracking resolution
 - **Live checkpoint:** `docs/Gauntlet_v0.6_Project_Index.md`
@@ -37,7 +38,7 @@ The current deckbuilder is versioned for the v0.5 line. The v0.6 faction sheets 
 
 Players begin on opposite sides of a short line of Territories called the Gauntlet. Each player constructs a deck and selects Territories. During play, they draw cards, play Actions, bank Assets, move, contest ground, fight battles, occupy enemy Territories, survive counterattacks, and capture positions.
 
-The universal victory condition is to reach and defeat the opponent in their Heartland. v0.6 factions add distinct ways of creating pressure and, for most factions, visible alternate victory paths.
+The universal victory condition is to **run the Gauntlet**: advance through the contested line and defeat the opponent in their Heartland. v0.6 factions add distinct ways of creating pressure and, for most factions, visible alternate victory paths.
 
 Gauntlet is designed around:
 
@@ -53,9 +54,15 @@ Gauntlet is designed around:
 
 ### `releases/`
 
-Immutable historical playtest packages. Each version folder may contain canonical data, rules, printable cards, deck lists, feedback forms, release notes, and build scripts.
+Versioned playtest and release-ready packages. Completed historical releases remain immutable. Developing v0.6 release inserts may be assembled here once a faction source is definitive.
 
-Use the highest completed version for the latest released physical playtest baseline. Do not edit an old release folder to represent later rules.
+The definitive Military package is:
+
+- `releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`
+- `releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.docx`
+- `releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.pdf`
+
+The Markdown file is the definitive Military source. The DOCX and PDF are matching release-formatted editions prepared for insertion into the complete v0.6 release guide.
 
 ### `docs/`
 
@@ -66,7 +73,7 @@ Start with:
 - `docs/Gauntlet_v0.6_Project_Index.md` — current source-of-truth map and milestone checkpoint;
 - `docs/Gauntlet_v0.6_Working_Rules.md` — active v0.6 rules framework;
 - `docs/Gauntlet_v0.6_Neutral_Card_Pool.md` — authoritative working Neutral exact text;
-- `docs/Gauntlet_v0.6_Military_Card_Pool.md` — authoritative working Military exact text;
+- `releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md` — definitive Military rules, leaders, components, strategy, and exact card pool;
 - `docs/Gauntlet_v0.6_Diplomat_Card_Pool.md` — authoritative working Diplomat exact text;
 - `docs/Gauntlet_v0.6_Diplomat_Supplemental_Cards.md` — Ambassador, Senator, Proposal / Treaty Article cards, reference, and sliding Influence Tracker;
 - `docs/Gauntlet_v0.6_Inquisition_Card_Pool.md` — authoritative working Inquisition exact text;
@@ -81,11 +88,13 @@ Start with:
 - `docs/Gauntlet_Design_Principles_and_Guardrails.md` — design constraints;
 - `docs/Gauntlet_Playtest_Targets_and_Metrics.md` — pacing and telemetry standards.
 
-`docs/Archive/` contains completed audits and superseded historical records. Archived files provide provenance but do not override active documents or canonical release data.
+`docs/Archive/` contains completed audits and superseded historical records. Archived files provide provenance but do not override active documents, definitive faction guides, or canonical release data.
 
 ### `faction-sheets/`
 
 Browser-printable working sheets for v0.6 faction cards and supplemental components. Military and Inquisition have complete two-sheet packages; Diplomats have a four-sheet package with duplex Proposal / Treaty Article faces. See `faction-sheets/README.md` for rendered links and instructions.
+
+The Military sheets are derived production files governed by the definitive Military faction guide.
 
 ### `images/`
 
@@ -112,12 +121,12 @@ Automation and repository workflows.
 ## Development workflow
 
 1. Treat released canonical data as authoritative for its matching version.
-2. Treat active v0.6 documents as the working source of truth until canonical v0.6 data exists.
-3. Record approved decisions in the relevant active review or rules source.
-4. Roll standalone decisions into the consolidated Review Log and Metadata registry at material checkpoints.
+2. Treat definitive faction guides and active v0.6 documents as the working source of truth until canonical v0.6 data exists.
+3. Record approved decisions in the relevant active source.
+4. Roll standalone decisions into consolidated guides, the Review Log, and Metadata registry at material checkpoints.
 5. Reserve README and Project Index updates for material milestones, source-hierarchy changes, and batch checkpoints.
 6. Keep rules, testing rationale, lore, production art direction, and digital implementation status in their designated documents.
-7. Move completed audits and superseded working records into `docs/Archive/` when they remain useful for provenance.
+7. Archive or remove completed audits and superseded working records once their information is consolidated.
 8. Do not create canonical v0.6 data by silently resolving open design questions.
 
 ## Running digital tools locally
