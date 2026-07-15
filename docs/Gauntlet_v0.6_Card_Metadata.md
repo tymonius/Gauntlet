@@ -1,10 +1,10 @@
 # Gauntlet v0.6 Card Metadata
 
-**Status:** Consolidated metadata rollup through 73 current playable-card designs: 50 Neutral cards, 12 Military cards, and 11 retained non-Military faction source designs awaiting completed packages.
+**Status:** Consolidated metadata rollup through 84 current playable-card designs: 50 Neutral cards, 12 Military cards, 12 Diplomat cards, and 10 retained source designs assigned to the four unfinished factions.
 
-`card-reviews/STATUS.md` records the live checkpoint. `Gauntlet_v0.6_Neutral_Card_Pool.md` and `Gauntlet_v0.6_Military_Card_Pool.md` are authoritative for the names, costs, complexity, uniqueness, and exact text of their completed pools. The consolidated Card Review Log, source registry below, and standalone reviews remain migration and design provenance.
+`card-reviews/STATUS.md` records the live checkpoint. `Gauntlet_v0.6_Neutral_Card_Pool.md`, `Gauntlet_v0.6_Military_Card_Pool.md`, and `Gauntlet_v0.6_Diplomat_Card_Pool.md` are authoritative for the names, costs, complexity, uniqueness, and exact text of their completed pools. The consolidated Card Review Log, source registry below, and standalone reviews remain migration and design provenance.
 
-The 54-row source registry preserves the v0.5.7 migration record. It is not itself a count of current playable designs: Militias and Patriotism are retained below as retired source entries, while nine newly created Military cards appear only in the active Military package table.
+The 54-row source registry preserves the v0.5.7 migration record. It is not itself a count of current playable designs: Militias and Patriotism are retained below as retired source entries, while newly created Military and Diplomat cards appear only in their active package tables.
 
 This file replaces the combined labels **Core Neutral** and **Advanced Neutral / Watchlist** with separate metadata fields. Those older labels in historical source material do not define gameplay categories.
 
@@ -26,7 +26,7 @@ Use **TBD** where starter-deck suitability has not yet been decided. A dash in t
 | 3 | Assassins | Intelligence | TBD | Advanced | Mission requirement and disruption density |
 | 4 | Assimilation | Neutral | No | Advanced | Immediate-capture density and overlap with capture shortcuts |
 | 5 | Attrition | Neutral | No | Advanced | Long-game card denial and Inquisition overlap |
-| 6 | Blockade | Diplomats | No | Advanced | Sanctions redesign pending |
+| 6 | Blockade | Diplomats | No | Advanced | Repeatable Influence pressure, movement-tax frequency, and sanctions-relief timing |
 | 7 | Brothers in Arms | Military | TBD | Advanced | Post-draw commitment reliability and third-card clarity |
 | 8 | Capital Gains | Financiers | TBD | Advanced | Faction-infrastructure redesign and cost |
 | 9 | Capital Punishment | Neutral | No | Basic | Hard-removal density and post-battle Action combinations |
@@ -107,6 +107,25 @@ This table is authoritative over the Military-related migration rows above.
 | M11 | War Crimes | 4 | No | Advanced | No | Graveyard conversion, retreat stacking, and long-game denial |
 | M12 | Shock and Awe | 5 | No | Advanced | Yes | Post-reveal commitment and Breakthrough-versus-Consolidate balance |
 
+## Active Diplomat package metadata
+
+This table is authoritative over the Diplomat-related migration row above.
+
+| ID | Card | Cost | Starter eligible | Complexity | Unique | Watchlist |
+|---|---|---:|---|---|---|---|
+| D1 | Clemency | 1 | TBD | Basic | No | Repeated Graveyard-recovery offers and low-cost Influence generation |
+| D2 | Trade Concessions | 2 | TBD | Advanced | No | Acceptance incentive size and concession-for-+2 Battle efficiency |
+| D3 | Safe Conduct | 2 | TBD | Advanced | No | Denial of opposing win/loss triggers and paid-Proposal risk reduction |
+| D4 | Neutral Observers | 2 | TBD | Advanced | No | Face-up commitment advantage and Intelligence overlap |
+| D5 | Good Faith | 3 | TBD | Advanced | No | Offered-card valuation and automatic Ambassador inclusion pressure |
+| D6 | Demilitarized Zone | 3 | TBD | Advanced | No | Standoff pacing, empty-hand entry locks, and Overlay/capture timing |
+| D7 | Diplomatic Latitude | 3 | TBD | Advanced | No | Proposal eligibility, stake timing, and two-option decision load |
+| D8 | Nonbinding Resolution | 3 | TBD | Advanced | No | Ratification-versus-Influence choice balance |
+| D9 | Censure | 3 | TBD | Advanced | No | Multiple-copy stacking and Action-card tax frequency |
+| D10 | Gunboat Diplomacy | 4 | TBD | Advanced | No | Automatic inclusion pressure and extra hand-play interactions |
+| D11 | Embargo | 4 | TBD | Advanced | No | Immediate Asset loss, matchup severity, and multiple-copy stacking |
+| D12 | Blockade | 5 | No | Advanced | No | Repeatable Influence pressure, movement-tax frequency, and sanctions-relief timing |
+
 ## Name, trait, allegiance, and uniqueness notes
 
 - The v0.5.7 card **Arcane Knowledge** is named **Witchcraft** in v0.6.
@@ -116,6 +135,8 @@ This table is authoritative over the Military-related migration rows above.
 - **Shock and Awe** is Military, cost 5, Advanced, and Unique: maximum one copy per deck.
 - **War Crimes** is Military rather than Inquisition.
 - **Militias** and **Patriotism** are retired migration entries and are not playable in the current v0.6 pool.
+- The Ambassador ability formerly provisionally named **Good Offices** is named **Cordiality**.
+- **Recognition of Claims** is an archived Diplomat concept and is not part of the playable-card registry.
 
 ## Current rollup state
 
@@ -123,5 +144,6 @@ This table is authoritative over the Military-related migration rows above.
 - The twelve-card Neutral expansion is complete.
 - The Neutral pool contains exactly 50 unique cards with the final 11 / 19 / 11 / 8 / 1 cost curve.
 - The Military pool contains exactly 12 unique cards with the current 1 / 4 / 3 / 3 / 1 cost curve.
-- The current project contains 73 playable-card designs: 50 Neutral, 12 Military, and 11 retained cards assigned to the five unfinished factions.
-- Remaining card work concerns the other five faction packages, faction exact-text blockers, Intelligence Missions, copied-effect rules, package playtesting, and canonical-data production.
+- The Diplomat pool contains exactly 12 unique cards with the approved 1 / 3 / 5 / 2 / 1 cost curve, total value 35, and average value 2.92.
+- The current project contains 84 playable-card designs: 50 Neutral, 12 Military, 12 Diplomats, and 10 retained source designs assigned to the four unfinished factions.
+- Remaining card work concerns the Inquisition, Arcane, Financier, and Intelligence packages, faction exact-text blockers, Intelligence Missions, copied-effect rules, package playtesting, and canonical-data production.
