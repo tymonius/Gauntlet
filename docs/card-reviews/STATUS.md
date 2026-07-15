@@ -4,7 +4,7 @@
 **v0.5.7 source-card review:** Complete through all 54 migration records  
 **New Neutral additions:** Complete through all 12 cards  
 **Neutral pool:** Complete at 50 cards  
-**Military pool:** Complete at 12 cards  
+**Military pool:** Complete at 12 cards; definitive faction guide packaged  
 **Diplomat pool:** Complete at 12 cards  
 **Inquisition pool:** Complete at 12 cards  
 **Current playable designs:** 95  
@@ -17,16 +17,15 @@ The 95 current designs comprise 50 Neutral, 12 Military, 12 Diplomat, 12 Inquisi
 ## Active sources
 
 1. `../Gauntlet_v0.6_Neutral_Card_Pool.md`
-2. `../Gauntlet_v0.6_Military_Card_Pool.md`
+2. `../../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md` — definitive Military rules and exact card pool
 3. `../Gauntlet_v0.6_Diplomat_Card_Pool.md`
 4. `../Gauntlet_v0.6_Inquisition_Card_Pool.md`
 5. `../Gauntlet_v0.6_Card_Metadata.md`
 6. `COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`
-7. `MILITARY_V0.6_RELEASE_SELECTION.md`
-8. `../Gauntlet_v0.6_Card_Review_Log.md`
-9. `CONDITION_AUDIT.md`
+7. `../Gauntlet_v0.6_Card_Review_Log.md`
+8. `CONDITION_AUDIT.md`
 
-Completed exact-text pool documents override migration records and historical sidecars where they differ.
+Definitive faction guides and completed exact-text pool documents override migration records and historical sidecars where they differ. Military's former split pool, design-note, supplemental, selection, and approval files have been consolidated into the definitive guide and removed.
 
 ---
 
@@ -58,10 +57,12 @@ The Working Rules include:
 ### Military
 
 - Curve: **1 / 4 / 3 / 3 / 1**; total 35; average 2.92.
+- Roster: **Unbroken Ranks; Battlefield Promotion; Encampment; Rearguard; Brothers in Arms; Field Command; Reserve Force; Give Chase; Hold the Line; Countercharge; War Crimes; Shock and Awe**.
 - **Shock and Awe** is the Unique cost-5 statement card.
 - **War Crimes** is Military.
 - **Militias** and **Patriotism** are retired.
 - **Standing Orders** is deferred.
+- The definitive source is `releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`, with matching release DOCX and PDF.
 
 ### Diplomats
 
