@@ -45,20 +45,21 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 ### Digital development
 
 25. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, engine, interface, telemetry, and remote-play roadmap.
-26. **`../deckbuilder/README.md`** — current v0.5 deckbuilder.
-27. **`../src/README.md`** — TypeScript engine and interface status.
-28. **`../data/README.md`** — starter-data scope and source warning.
+26. **`../deckbuilder/README.md`** — stable v0.5 deckbuilder.
+27. **`../deckbuilder-v0.6/README.md`** — v0.6 development deckbuilder scope, live-source behavior, omissions, and next implementation steps.
+28. **`../src/README.md`** — TypeScript engine and interface status.
+29. **`../data/README.md`** — starter-data scope and source warning.
 
 ### Setting and production
 
-29. **`Gauntlet_Lore_Development_Notes.md`** — current incremental setting direction.
-30. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — leader art and miniature direction.
-31. **`Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`** — Ambassador, Senator, Proposal / Treaty Article cards, references, and sliding Influence tracker.
-32. **`Gauntlet_v0.6_Inquisition_Supplemental_Cards.md`** — Grand Inquisitor, Witch Hunter, references, and sliding Conviction tracker.
-33. **`Gauntlet_v0.6_Inquisition_Faction_Guide.md`** — canonical player-facing Inquisition faction-guide source for v0.6 release assembly.
-34. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions.
-35. **`../images/`** — leader portraits and matching production sketches.
-36. **`Game_Design_Glossary.md`** — shared terminology.
+30. **`Gauntlet_Lore_Development_Notes.md`** — current incremental setting direction.
+31. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — leader art and miniature direction.
+32. **`Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`** — Ambassador, Senator, Proposal / Treaty Article cards, references, and tracker.
+33. **`Gauntlet_v0.6_Inquisition_Supplemental_Cards.md`** — Grand Inquisitor, Witch Hunter, references, and tracker.
+34. **`Gauntlet_v0.6_Inquisition_Faction_Guide.md`** — canonical player-facing Inquisition faction-guide source for v0.6 release assembly.
+35. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions.
+36. **`../images/`** — leader portraits and matching production sketches.
+37. **`Game_Design_Glossary.md`** — shared terminology.
 
 ### Historical archive
 
@@ -151,7 +152,12 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 
 ### Digital work
 
-The TypeScript engine, CLI, and GUI remain development scaffolds. Do not silently migrate v0.5 saved decks into v0.6.
+- The TypeScript engine, CLI, and GUI remain development scaffolds.
+- The v0.6 development deckbuilder is live under `../deckbuilder-v0.6/` and reads the active Neutral, Military, Diplomat, and Inquisition Markdown sources at runtime.
+- It supports completed faction and leader selection, Neutral-plus-faction legality, playable-card count/value validation, local saves, JSON import/export, and text export.
+- Arcane, Financiers, and Intelligence remain disabled placeholders until their packages are complete.
+- Territory selection, supplemental-component manifests, and print/PDF export remain pending.
+- Do not silently migrate v0.5 saved decks into v0.6.
 
 ### Lore and production
 
@@ -181,4 +187,4 @@ The TypeScript engine, CLI, and GUI remain development scaffolds. Do not silentl
 
 ## Immediate next step
 
-Begin or continue Arcane, Financier, or Intelligence design while adding Military, Diplomat, and Inquisition to playtesting and print-legibility review. Reopen Military only when testing reveals a strategic, balance, wording, or production failure in the definitive faction guide or its derived components.
+Continue Arcane, Financier, or Intelligence design while playtesting the completed Military, Diplomat, and Inquisition packages. In parallel, add a consolidated v0.6 Territory source and supplemental-component manifests so the development deckbuilder can validate complete decks and generate the correct print package without creating premature canonical release data.
