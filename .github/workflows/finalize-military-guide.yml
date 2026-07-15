@@ -1,6 +1,9 @@
 name: Finalize Military faction guide
 
 on:
+  push:
+    branches:
+      - agent/finalize-military-faction-guide
   pull_request:
     branches:
       - main
