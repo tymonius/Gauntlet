@@ -6,6 +6,9 @@ on:
       - agent/finalize-military-faction-guide
     paths:
       - .github/workflows/finalize-military-guide.yml
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
