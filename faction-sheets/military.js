@@ -88,7 +88,7 @@ const cards = [
 
 const leaders = [
   {
-    name: 'General', image: '../images/general.png', motto: 'Forward. Again.',
+    name: 'General', image: 'https://tymonius.github.io/Gauntlet/images/general.png', motto: 'Forward. Again.',
     orders: [
       ['Onward', 1, 'Move one additional space this turn. This movement may initiate a battle.'],
       ['Rally', 1, 'Before dice are rolled in a battle you initiated, add +1 to your battle total.'],
@@ -96,7 +96,7 @@ const leaders = [
     ]
   },
   {
-    name: 'Commandant', image: '../images/commandant.png', motto: 'We hold. They break.',
+    name: 'Commandant', image: 'https://tymonius.github.io/Gauntlet/images/commandant.png', motto: 'We hold. They break.',
     orders: [
       ['Entrench', 1, 'Before dice are rolled in a battle you did not initiate, add +1 to your battle total.'],
       ['Repel', 1, 'After you win a battle you did not initiate, the defeated opponent retreats one additional space, if able.'],
