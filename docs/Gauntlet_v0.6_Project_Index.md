@@ -10,11 +10,11 @@ Read this file first when resuming v0.6 work.
 
 ### Rules, cards, and Territories
 
-1. **`Gauntlet_v0.6_Working_Rules.md`** — current general v0.6 rules framework, faction mechanics, leaders, resources, alternate victories, Assets, Overlays, Territory activation, Ruins, and product scope.
+1. **`Gauntlet_v0.6_Working_Rules.md`** — current v0.6 rules framework, faction mechanics, leaders, resources, alternate victories, Assets, Overlays, Territory activation, Ruins, and product scope.
 2. **`Gauntlet_v0.6_Neutral_Card_Pool.md`** — authoritative working names, costs, complexity, traits, uniqueness, and exact text for all 50 Neutral cards.
 3. **`Gauntlet_v0.6_Military_Card_Pool.md`** — authoritative working names, costs, complexity, uniqueness, exact text, package audit, and playtest watchlist for all 12 Military cards.
 4. **`Gauntlet_v0.6_Diplomat_Card_Pool.md`** — authoritative working names, costs, complexity, playable forms, exact text, package notes, and playtest watchlist for all 12 Diplomat cards.
-5. **`Gauntlet_v0.6_Inquisition_Card_Pool.md`** — authoritative working Inquisition core-rule amendments, names, costs, complexity, traits, uniqueness, exact text, package audit, and playtest watchlist for all 12 Inquisition cards.
+5. **`Gauntlet_v0.6_Inquisition_Card_Pool.md`** — authoritative working Inquisition names, costs, complexity, traits, uniqueness, exact text, package audit, and playtest watchlist for all 12 Inquisition cards.
 6. **`card-reviews/STATUS.md`** — authoritative live playable-card checkpoint and unresolved card blockers.
 7. **`Gauntlet_v0.6_Card_Metadata.md`** — consolidated allegiance, starter eligibility, complexity, uniqueness, and watchlists for the current 95 playable-card designs and retired migration entries.
 8. **`card-reviews/COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`** — completed Neutral pool-size, cost-curve, repricing, and addition audit.
@@ -30,8 +30,6 @@ Read this file first when resuming v0.6 work.
 18. **`v0.5.7_rules_clarifications.md`** — physical-rules clarifications discovered through digital implementation.
 
 No canonical v0.6 data exists yet. Active v0.6 documents govern development until the remaining three faction packages, exact-text blockers, Intelligence Missions, copied-effect rules, and package testing are resolved.
-
-The Inquisition Card Pool currently supersedes the older Working Rules wording only for the approved **Blasphemy** name and revised 1-Conviction **Purge**. These amendments should be folded into the next Working Rules consolidation.
 
 ### Design rationale and testing
 
@@ -59,8 +57,10 @@ Completed-package drafts, inherited-candidate audits, release-selection notes, a
 32. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — active production-facing leader and miniature direction.
 33. **`Gauntlet_v0.6_Military_Supplemental_Cards.md`** — authoritative General, Commandant, and sliding Military Command tracker component specification.
 34. **`Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`** — authoritative Ambassador, Senator, Proposal / Treaty Article, Terms reference, and Influence component specification.
-35. **`../faction-sheets/README.md`** — working v0.6 browser-printable faction-sheet sources and printing instructions.
-36. **`Game_Design_Glossary.md`** — shared design terminology.
+35. **`Gauntlet_v0.6_Inquisition_Supplemental_Cards.md`** — authoritative Grand Inquisitor, Witch Hunter, Inquisition Doctrine, Purge Reference, and Conviction Tracker specification.
+36. **`../faction-sheets/README.md`** — working v0.6 browser-printable faction-sheet sources and printing instructions.
+37. **`../images/`** — current v0.6 leader portraits, with matching production sketches under `images/sketches/`.
+38. **`Game_Design_Glossary.md`** — shared design terminology.
 
 ### Historical archive
 
@@ -127,7 +127,9 @@ Inquisition checkpoint:
 - **Hellfire** divides Conviction between battle strength and direct Purification pressure.
 - **Divine Mercy, Tyranny, and Burning at the Stake** are the primary balance watchlist.
 - The 1-Conviction Purge retains the top-discard option and adds an alternative that may condemn up to two cards with combined value 2 or less.
-- The package remains subject to playtesting, physical-card templating, and playtest-driven balance or wording changes before canonical data is frozen.
+- The Grand Inquisitor, Witch Hunter, Inquisition Doctrine, Purge Reference, and 0–4 Conviction tracker are specified in `Gauntlet_v0.6_Inquisition_Supplemental_Cards.md`.
+- `../faction-sheets/inquisition.html` provides the current two-sheet printable Inquisition package using the existing portraits under `images/`.
+- The package remains subject to playtesting, print-legibility review, and playtest-driven balance or wording changes before canonical data is frozen.
 
 Other integrated card decisions:
 
@@ -143,7 +145,7 @@ Remaining exact-text or design blockers:
 - General impossible-target and source-dependent copied-effect handling remains unresolved.
 - Intelligence Mission requirements remain incomplete.
 - The Arcane, Financier, and Intelligence packages remain incomplete.
-- Each completed package still requires playtesting and production templating before canonical v0.6 data is created.
+- Each completed package still requires playtesting and physical legibility review before canonical v0.6 data is created.
 
 ### Territories
 
@@ -165,10 +167,9 @@ The Working Rules now include:
 - general Territory activation and suppression;
 - Ruins replacement and persistence;
 - the definition of negated;
-- the anti-recursion rule for effects that resolve other Battle effects;
-- the revised Diplomat starting Influence, Proposal stakes, accepted-ratification rewards, Leverage, Treaty Article, and Senator rules.
-
-The next consolidation should integrate the Inquisition's **Blasphemy** rename, revised 1-Conviction Purge, faction-card pointer, and Heresy's explicit one-level anti-recursion exception.
+- bounded handling for effects that resolve other Battle effects, including Heresy's explicit one-level exception;
+- the revised Diplomat starting Influence, Proposal stakes, accepted-ratification rewards, Leverage, Treaty Article, and Senator rules;
+- the Inquisition Blasphemy name, revised 1-Conviction Purge, faction-card pointer, and supplemental-component pointer.
 
 ### Factions
 
@@ -191,7 +192,7 @@ Faction package construction and review should follow `Gauntlet_v0.6_Faction_Car
 - at least one optional, game-defining cost-5 statement card per faction;
 - permission to deviate from the default curve or include additional premium cards when the completed strategic vocabulary is stronger, more varied, and more fun as a result.
 
-Military, Diplomat, and Inquisition are the completed faction card packages. Their active exact text and design notes are listed in the source hierarchy above.
+Military, Diplomat, and Inquisition are the completed faction card packages. Their active exact text, design notes, and supplemental-component specifications are listed in the source hierarchy above.
 
 ### Digital work
 
@@ -206,8 +207,11 @@ Military, Diplomat, and Inquisition are the completed faction card packages. The
 
 - Lore remains intentionally incremental and non-canonical beyond the current direction document.
 - The Leader Design Bible is the active visual source of truth.
+- `images/` contains top-level portraits and matching production sketches for all twelve current v0.6 faction leaders.
 - The Military supplemental set is General or Commandant plus one shared tracker placed beneath the selected leader; the leader slides upward to show 1 or 2 Command.
 - The Military printable faction sheet is available under `faction-sheets/` and uses the existing General and Commandant image assets.
+- The Inquisition supplemental set is Grand Inquisitor or Witch Hunter, two single-sided rules references, and one 0–4 Conviction tracker with a marker.
+- The Inquisition printable faction sheet is available under `faction-sheets/` and uses `images/grand inquisitor.png` and `images/witch hunter.png`.
 - Earlier archetype and generated-sheet records are archived.
 
 ---
@@ -230,4 +234,4 @@ Military, Diplomat, and Inquisition are the completed faction card packages. The
 
 ## Immediate next step
 
-Begin or continue the Arcane, Financier, or Intelligence package while adding Military, Diplomat, and Inquisition to package-level playtesting and physical-card templating. Reopen a completed roster only if testing reveals a clear strategic, balance, wording, or production failure.
+Begin or continue the Arcane, Financier, or Intelligence package while adding Military, Diplomat, and Inquisition to package-level playtesting and print-legibility review. Reopen a completed roster only if testing reveals a clear strategic, balance, wording, or production failure.
