@@ -1,0 +1,116 @@
+.sliding-tracker {
+  position: relative;
+  padding: 0;
+  background:
+    linear-gradient(rgba(18,16,15,0.96), rgba(18,16,15,0.96)),
+    repeating-linear-gradient(0deg, transparent 0 0.12in, rgba(255,255,255,0.04) 0.12in 0.13in);
+  color: white;
+}
+
+.slider-heading {
+  position: absolute;
+  top: 0.07in;
+  left: 0.08in;
+  right: 0.08in;
+  text-align: center;
+  color: #efd99f;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 8.4pt;
+  font-weight: bold;
+  letter-spacing: 0.08em;
+}
+
+.slider-crest {
+  position: absolute;
+  top: 0.72in;
+  left: 0;
+  right: 0;
+  text-align: center;
+  color: rgba(239,217,159,0.13);
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 58pt;
+  line-height: 1;
+}
+
+.slider-note {
+  position: absolute;
+  top: 0.25in;
+  left: 0.22in;
+  right: 0.22in;
+  text-align: center;
+  color: rgba(255,255,255,0.5);
+  font-size: 3.8pt;
+  line-height: 1.18;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.conviction-step {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0.60in;
+  border-top: 1.35pt solid #efd99f;
+  background: linear-gradient(to bottom, rgba(196,154,75,0.16), rgba(255,255,255,0.02));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.08in;
+}
+
+.conviction-step.maximum {
+  background: linear-gradient(to bottom, rgba(111,41,36,0.48), rgba(255,255,255,0.02));
+  border-top-width: 1.8pt;
+}
+
+.conviction-step::before,
+.conviction-step::after {
+  content: 'ALIGN LEADER EDGE';
+  position: absolute;
+  top: 0.015in;
+  color: rgba(239,217,159,0.62);
+  font-size: 3.35pt;
+  font-weight: bold;
+  letter-spacing: 0.04em;
+}
+
+.conviction-step::before { left: 0.05in; }
+.conviction-step::after { right: 0.05in; }
+
+.conviction-number {
+  color: #efd99f;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: 22pt;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.conviction-label {
+  font-size: 6.2pt;
+  font-weight: 800;
+  letter-spacing: 0.075em;
+  text-transform: uppercase;
+}
+
+.tracker-zero {
+  position: absolute;
+  bottom: 0.035in;
+  left: 0.08in;
+  right: 0.08in;
+  text-align: center;
+  color: rgba(255,255,255,0.45);
+  font-size: 4pt;
+  font-weight: bold;
+  letter-spacing: 0.07em;
+}
+
+.sliding-tracker .cut-note {
+  position: absolute;
+  top: 0.30in;
+  right: 0.045in;
+  margin: 0;
+  padding: 0;
+  color: rgba(255,255,255,0.28);
+  font-size: 3.4pt;
+  writing-mode: vertical-rl;
+}
