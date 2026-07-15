@@ -23,7 +23,7 @@
   <main id="app" class="app-shell" hidden>
     <section class="panel warning-panel">
       <strong>Development build.</strong>
-      This tool reads active Markdown sources because canonical v0.6 data does not exist yet. Card and Territory text follow the consolidated working pools; print/PDF export remains pending.
+      This tool reads active Markdown sources because canonical v0.6 data does not exist yet. Card and Territory text follow the consolidated working pools; Print / PDF includes the selected leader, playable deck, and Territories.
     </section>
 
     <section class="panel setup-panel">
@@ -94,7 +94,7 @@
           <div class="button-row">
             <button id="copyDeckButton" type="button" class="secondary">Copy list</button>
             <button id="exportJsonButton" type="button" class="secondary">Export JSON</button>
-            <button type="button" class="secondary" disabled title="Planned after playable-card and supplemental-component rendering stabilizes">Print / PDF</button>
+            <button id="printDeckButton" type="button" class="secondary" disabled>Print / PDF</button>
           </div>
           <textarea id="importJson" rows="4" placeholder="Paste an exported v0.6 deck JSON here"></textarea>
           <button id="importJsonButton" type="button" class="secondary full-width">Import JSON</button>
@@ -196,5 +196,6 @@
   <script src="app.js" defer></script>
   <script src="territories.js" defer></script>
   <script src="random-deck.js" defer></script>
+  <script src="print.js" defer></script>
 </body>
 </html>
