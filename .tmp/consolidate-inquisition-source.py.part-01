@@ -25,8 +25,9 @@ regex_replace(
 )
 regex_replace(
     "docs/Gauntlet_v0.6_Project_Index.md",
-    r"^\d+\. \*\*`Gauntlet_v0\.6_Inquisition_Supplemental_Cards\.md`\*\* — Grand Inquisitor, Witch Hunter, references, and (?:sliding )?Conviction tracker\.\n"
-    r"^\d+\. \*\*`Gauntlet_v0\.6_Inquisition_Faction_Guide\.md`\*\* — canonical player-facing Inquisition faction-guide source for v0\.6 release assembly\.\n",
+    r"^\d+\. \*\*`Gauntlet_v0\.6_Inquisition_Supplemental_Cards\.md`\*\* — [^\n]+\n"
+    r"^\d+\. \*\*`Gauntlet_v0\.6_Inquisition_Faction_Guide\.md`\*\* — [^\n]+\n",
+# alignment padding: xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
     "32. **`../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`** — "
     "definitive Inquisition source and release-guide package.\n",
 )
