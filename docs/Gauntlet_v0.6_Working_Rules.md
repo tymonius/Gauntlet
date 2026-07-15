@@ -264,9 +264,8 @@ If Terms are refused:
 - if the Diplomat wins, the Proposal is **imposed**;
 - if the Proposal is imposed, ratify it as a Treaty Article if it has not already been ratified and return the staked Influence;
 - if the imposed Proposal is newly ratified, gain 1 Influence unless the Proposal says otherwise;
-- if the Diplomat does not win, do not ratify the Proposal and lose the staked Influence.
-
-If a refused battle ends without a winner, the Diplomat did not win for purposes of Terms.
+- if the Diplomat loses, do not ratify the Proposal and lose the staked Influence;
+- if the battle ends without a winner, do not ratify the Proposal and return the staked Influence.
 
 A Proposal that has already been ratified may still be offered for its tactical effects. It cannot count toward Peace Treaty again and does not grant the default 1 Influence when imposed again unless a rule specifically says otherwise.
 
@@ -373,15 +372,17 @@ At the start of the Diplomat's turn, after captures, if at least **five differen
 
 **Style:** cooperative diplomacy, successful negotiation, soft value.
 
-**Good Offices:** Once per turn, after the opponent accepts Terms you offered, draw one card.
-
-The ability name remains provisional.
+**Cordiality:** Once per turn, after the opponent accepts Terms you offered, draw one card.
 
 ### Senator
 
 **Style:** institutional resilience, legitimacy, and preserving political standing through sacrifice.
 
-**Political Capital:** Once per turn, when you would lose staked Influence because you did not win the battle after refused Terms, you may send one card from your hand to your Graveyard. If you do, recover 1 of that staked Influence instead of losing it.
+**Political Capital:** Once per turn, when you would lose staked Influence because you lost the battle after refused Terms, you may send one card from your hand to your Graveyard. If you do, recover 1 of that staked Influence instead of losing it.
+
+### Faction cards
+
+The authoritative names, costs, playable types, and exact text for the twelve-card Diplomat package are maintained in `Gauntlet_v0.6_Diplomat_Card_Pool.md`.
 
 ---
 
