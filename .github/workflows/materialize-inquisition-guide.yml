@@ -1,26 +1,24 @@
 name: Materialize definitive Inquisition guide
-# Second push activates this newly added workflow.
 
 on:
-  push:
+  pull_request_target:
     branches:
       - main
-    paths:
-      - ".tmp/build-inquisition-guide.py.gz.b64"
-      - ".tmp/consolidate-inquisition-source.py.part-*"
-      - ".github/workflows/materialize-inquisition-guide.yml"
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: write
 
 jobs:
   build:
-    if: github.actor != 'github-actions[bot]'
+    if: github.actor != 'github-actions[bot]' && github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
+          repository: ${{ github.event.pull_request.head.repo.full_name }}
+          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 0
 
       - name: Set up Python
@@ -84,10 +82,11 @@ jobs:
         run: |
           rm -f .tmp/build-inquisition-guide.py.gz.b64
           rm -f .tmp/consolidate-inquisition-source.py.part-*
+          rm -f .tmp/inquisition-pr-trigger.txt
           rm -f .github/workflows/materialize-inquisition-guide.yml
           rmdir .tmp 2>/dev/null || true
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "Finalize definitive Inquisition faction guide package"
-          git push
+          git push origin HEAD:"${{ github.event.pull_request.head.ref }}"
