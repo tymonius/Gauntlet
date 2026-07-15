@@ -81,6 +81,7 @@
           if (card.unique && qty >= 1) return false;
           if (!card.unique && qty >= SOFT_COPY_LIMIT) return false;
           if (card.cost > maximumNextCost) return false;
+          if (card.faction === state.factionId && factionCount >= MAX_FACTION_CARDS) return false;
           if (mustChooseFaction && card.faction !== state.factionId) return false;
           return true;
         });
@@ -107,7 +108,12 @@
         if (card.faction === state.factionId) factionCount += 1;
       }
 
-      if (cardCount !== CARD_TARGET || pointTotal > VALUE_LIMIT || factionCount < MIN_FACTION_CARDS) continue;
+      if (
+        cardCount !== CARD_TARGET ||
+        pointTotal > VALUE_LIMIT ||
+        factionCount < MIN_FACTION_CARDS ||
+        factionCount > MAX_FACTION_CARDS
+      ) continue;
 
       const uniqueTitles = Object.keys(deck).length;
       const score = 100
