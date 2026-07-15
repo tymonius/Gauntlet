@@ -29,7 +29,7 @@ The key distinction is:
 
 Peace Treaty is achieved by ratifying five different Proposals as Treaty Articles. Influence is not part of the victory check.
 
-Diplomats begin with **1 Influence**. This gives immediate access to the cost-1 Proposal tier or one point of Leverage without making the two strongest Proposals immediately available.
+Diplomats begin with **1 Influence** and may have up to **10 Influence**. Any Influence gained beyond 10 is lost. The starting point gives immediate access to the stake-1 Proposal tier or one point of Leverage without making the two strongest Proposals immediately available.
 
 ---
 
@@ -37,7 +37,7 @@ Diplomats begin with **1 Influence**. This gives immediate access to the cost-1 
 
 Each Proposal lists an **Influence Stake** of 0, 1, or 2.
 
-To offer a Proposal, the Diplomat must place its listed stake on that Proposal card. Staked Influence is removed from the Diplomat's available Influence until the Terms resolve and cannot be spent through Leverage or another effect.
+To offer a Proposal, the Diplomat must have at least its listed stake available. Lower the Influence Tracker by that amount; it becomes staked until the Terms resolve and cannot be spent through Leverage or another effect. The Proposal's printed stake records the amount at risk, so no separate stake marker is needed.
 
 | Outcome | Treaty result | Influence result |
 |---|---|---|
@@ -85,9 +85,9 @@ Its restrictions are essential:
 - staked Influence is unavailable and cannot be spent twice;
 - the amount is chosen before dice are rolled;
 - spent Influence is lost whether the battle is won, lost, or ends without a winner;
-- it has no fixed per-battle cap.
+- it has no fixed per-battle cap beyond the amount of available Influence, which can never exceed 10.
 
-Uncapped spending creates an intentional late-game possibility: a Diplomat may cash out several turns of political capital to impose a critical Article, especially the fifth. That should feel like a climactic commitment, not ordinary generic combat superiority.
+Allowing the Diplomat to spend all available Influence creates an intentional late-game possibility: several turns of political capital may be cashed out to impose a critical Article, especially the fifth. The 10-Influence maximum provides a hard ceiling, while the current Proposal stake usually lowers the amount available for Leverage. This should feel like a climactic commitment, not ordinary generic combat superiority.
 
 ---
 
@@ -205,11 +205,11 @@ The approved Diplomat supplemental set is:
 - one selected Leader Card: Ambassador or Senator;
 - nine double-sided Proposal / Treaty Article cards;
 - one double-sided Diplomat Reference card;
-- Influence tokens.
+- one shared 0–10 sliding Influence Tracker placed beneath the selected Leader Card.
 
 Proposal cards begin Proposal side up and flip when newly ratified. Both sides repeat the full Proposal rules because an already-ratified Article may still be offered.
 
-Influence stakes are placed directly on the offered Proposal card. This makes political risk visible and clearly separates available Influence from staked Influence.
+Available Influence is shown by sliding the selected Leader Card over the Influence Tracker. To stake Influence, lower the tracker by the Proposal's printed stake; that printed value records the amount currently at risk. This keeps available Influence distinct from staked Influence without adding a token or marker.
 
 The authoritative exact component specification is `Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`.
 
@@ -310,8 +310,10 @@ It may be reconsidered only if testing reveals that the package lacks meaningful
 - Are accepted effects attractive enough that refusal is not automatic even though paid acceptance also grows Influence?
 - Does accepted Influence equal to the listed stake create healthy progression or excessive snowballing?
 - Are the 0 / 1 / 2 Proposal tiers correctly assigned?
-- Does uncapped Leverage produce memorable commitments rather than deterministic non-decisions?
+- Does allowing all available Influence to be spent through Leverage produce memorable commitments rather than deterministic non-decisions?
 - What are the average, upper-quartile, and maximum Influence totals held and spent in one battle?
+- Is the 10-Influence maximum reached often enough to waste meaningful gains or cap healthy progression?
+- Does the sliding tracker remain stable and make available versus staked Influence easy to understand?
 - Are repeated already-ratified Proposals tactically useful without enabling card-specific Influence farming?
 - Are Ambassador and Senator comparably strong across the same twelve-card pool?
 - Is Political Capital's one-card-per-Influence exchange appropriately costly?

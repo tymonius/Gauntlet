@@ -147,6 +147,7 @@ For each faction, record relevant progress and resource history:
 - Diplomat Terms by Proposal, including accepted, refused, imposed, lost, no-winner, and repeated already-ratified offers;
 - Treaty Articles ratified, the turn each was ratified, and Peace Treaty attempts or victories;
 - Influence available before each offer, staked, returned, lost, recovered by Political Capital, and remaining after resolution;
+- maximum Influence held, number of times the 10-Influence cap was reached, and Influence lost because of the cap;
 - Influence gained separately from accepted newly ratified Proposals, imposed newly ratified Proposals, Clemency, Nonbinding Resolution, Blockade, and any other source;
 - Influence spent through Leverage in each battle, including mean, median, maximum single spend, and battle result;
 - Proposal stakes by tier, including acceptance rate, refusal rate, loss rate, and net Influence change for stakes 0, 1, and 2;
@@ -184,6 +185,8 @@ After a human game, ask both players:
 - Did gaining Influence equal to an accepted Proposal's stake feel like satisfying political momentum or runaway snowballing?
 - Did the possibility of Leverage make refusal tense without making the result feel predetermined?
 - Did the Diplomat face meaningful choices between saving Influence for future Proposals and spending it in the current battle?
+- Was the 10-Influence maximum noticeable, restrictive, or effectively irrelevant?
+- Did the sliding tracker remain stable and make available versus staked Influence clear?
 - Did the Senator's card sacrifice feel appropriately costly for the Influence preserved?
 - Did Peace Treaty pressure remain credible while the Diplomat was losing ground?
 - For Inquisition games, did preserving Conviction for Purges or leader abilities compete meaningfully with spending it on faction cards?
@@ -226,7 +229,7 @@ Do not rely on averages alone. A mixture of many short games and a few extreme s
 2. Measure whether the Asset bank still accelerates games without making comebacks functionally impossible.
 3. Verify that the current battle-card lifecycle prevents endgame deck collapse in human play.
 4. Compare General and Commandant, and then both leaders within every other faction.
-5. Test the revised Diplomat economy Proposal by Proposal, including stake-tier acceptance, accepted-ratification Influence, imposition rewards, failed stakes, Senator recovery, Leverage spending, and repeated offers.
+5. Test the revised Diplomat economy Proposal by Proposal, including stake-tier acceptance, accepted-ratification Influence, imposition rewards, failed stakes, Senator recovery, Leverage spending, the 10-Influence cap, tracker usability, and repeated offers.
 6. Test both Inquisition leaders against compact premium decks, mixed larger decks, and 60-card low-cost decks; measure Purification pressure, conventional breakthrough, Purge selection, Conviction allocation, and the Divine Mercy / Tyranny / Burning at the Stake watchlist.
 7. Verify that the Grand Inquisitor, Witch Hunter, doctrine reference, Purge reference, and Conviction tracker remain legible and fast to use at standard card size.
 8. Confirm that alternate victories create visible parallel pressure and do not encourage disengagement from the Gauntlet.

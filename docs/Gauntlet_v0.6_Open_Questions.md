@@ -73,7 +73,7 @@ Before faction-locking any Neutral card, continue asking:
 - The curve is **1 / 3 / 5 / 2 / 1**, with 35 total unique-card value and a 2.92 average cost.
 - The three formal Sanctions are Censure, Embargo, and Blockade.
 - Recognition of Claims is archived outside the release package.
-- Diplomats begin with 1 Influence.
+- Diplomats begin with 1 Influence and may have up to 10; excess gains are lost.
 - Proposals use listed Influence Stakes rather than ordinary costs.
 - Proposal stakes are distributed 3 / 4 / 2 across stakes 0 / 1 / 2.
 - Accepted newly ratified Proposals return the stake and generate additional Influence equal to that stake.
@@ -81,7 +81,8 @@ Before faction-locking any Neutral card, continue asking:
 - Leverage may spend any amount of available Influence before dice in a battle following refused Terms for +1 battle total per Influence.
 - Cordiality is the final Ambassador ability name.
 - Political Capital may trade up to one hand card per staked Influence recovered.
-- The supplemental set uses two Leader Cards, nine double-sided Proposal / Treaty Article cards, one double-sided Diplomat Reference, and Influence tokens.
+- The supplemental set uses two Leader Cards, one shared 0–10 sliding Influence Tracker, nine double-sided Proposal / Treaty Article cards, and one double-sided Diplomat Reference.
+- The printable Diplomat package uses four 9-up sheets, with mirrored Treaty Article backs for long-edge duplex printing.
 
 ### Closed Inquisition-package and component decisions
 
@@ -132,9 +133,11 @@ Open balance, timing, and production questions:
 - Does accepted Influence equal to the listed stake create healthy progression or excessive snowballing?
 - Are Open Channels, Mutual Disarmament, Prisoner Exchange, and Rebuilding Pact correctly placed at stake 1?
 - Are Ultimatum and Diplomatic Recognition correctly placed at stake 2?
-- Does uncapped Leverage produce memorable commitments rather than deterministic battles?
+- Does allowing all available Influence to be spent through Leverage—up to 10, less any current stake—produce memorable commitments rather than deterministic battles?
 - Does Leverage make Gunboat Diplomacy or other battle bonuses automatic inclusions?
 - What are the average, upper-quartile, and maximum Influence totals held and spent in one battle?
+- How often is the 10-Influence maximum reached, and how much Influence is lost to the cap?
+- Is the sliding Influence Tracker stable and clear at values 8–10 and while a stake is outstanding?
 - Are repeated already-ratified Proposals tactically useful without enabling card-specific Influence farming?
 - Are Ambassador and Senator comparably strong under the same economy and card pool?
 - Is Political Capital's one-card-per-Influence exchange appropriately costly with the three-card hand limit?
@@ -229,7 +232,7 @@ Open balance, timing, and production questions:
 - Does Resourcefulness create healthy low-cost archetypes without producing excessive card advantage?
 - Does Counterworks provide enough Overlay counterplay without weakening future Engineer identity?
 - Does the completed Military package preserve enough counterattack windows and comeback potential against every other faction?
-- Does the Diplomat's uncapped Leverage preserve a meaningful direct-combat weakness outside refused Terms?
+- Does the Diplomat's ability to spend all available Influence through Leverage preserve a meaningful direct-combat weakness outside refused Terms?
 - Does the Inquisition's permanent card denial leave opponents meaningful tactical and deckbuilding counterplay?
 - Is conventional breakthrough reliably the Inquisition's better response to oversized low-value decks?
 

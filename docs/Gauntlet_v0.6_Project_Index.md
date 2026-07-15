@@ -56,7 +56,7 @@ Completed-package drafts, inherited-candidate audits, release-selection notes, a
 31. **`Gauntlet_Lore_Development_Notes.md`** — current WIP setting direction, open questions, and rejected premises.
 32. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — active production-facing leader and miniature direction.
 33. **`Gauntlet_v0.6_Military_Supplemental_Cards.md`** — authoritative General, Commandant, and sliding Military Command tracker component specification.
-34. **`Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`** — authoritative Ambassador, Senator, Proposal / Treaty Article, Terms reference, and Influence component specification.
+34. **`Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`** — authoritative Ambassador, Senator, Proposal / Treaty Article, Terms reference, and 0–10 sliding Influence Tracker specification.
 35. **`Gauntlet_v0.6_Inquisition_Supplemental_Cards.md`** — authoritative Grand Inquisitor, Witch Hunter, Inquisition Doctrine, Purge Reference, and Conviction Tracker specification.
 36. **`../faction-sheets/README.md`** — working v0.6 browser-printable faction-sheet sources and printing instructions.
 37. **`../images/`** — current v0.6 leader portraits, with matching production sketches under `images/sketches/`.
@@ -113,8 +113,9 @@ Diplomat checkpoint:
 - **Blockade** is the cost-5 statement card.
 - **Censure**, **Embargo**, and **Blockade** are the three independent Sanctions.
 - **Recognition of Claims** is archived and not in the release pool.
-- Diplomats begin with 1 Influence and use the 3 / 4 / 2 Proposal-stake structure at stakes 0 / 1 / 2.
-- The Ambassador, Senator, Proposal / Treaty Article cards, reference, and Influence supply are specified in `Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`.
+- Diplomats begin with 1 Influence, may have up to 10, and use the 3 / 4 / 2 Proposal-stake structure at stakes 0 / 1 / 2.
+- The Ambassador, Senator, Proposal / Treaty Article cards, reference, and 0–10 sliding Influence Tracker are specified in `Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`.
+- `../faction-sheets/diplomat.html` provides the current four-sheet printable Diplomat package, including duplex Proposal / Treaty Article faces.
 - The package remains subject to playtesting, physical-card templating, and playtest-driven balance or wording changes before canonical data is frozen.
 
 Inquisition checkpoint:
@@ -168,7 +169,7 @@ The Working Rules now include:
 - Ruins replacement and persistence;
 - the definition of negated;
 - bounded handling for effects that resolve other Battle effects, including Heresy's explicit one-level exception;
-- the revised Diplomat starting Influence, Proposal stakes, accepted-ratification rewards, Leverage, Treaty Article, and Senator rules;
+- the revised Diplomat starting Influence, 10-Influence maximum, slider-based staking, accepted-ratification rewards, Leverage, Treaty Article, and Senator rules;
 - the Inquisition Blasphemy name, revised 1-Conviction Purge, faction-card pointer, and supplemental-component pointer.
 
 ### Factions
@@ -210,6 +211,8 @@ Military, Diplomat, and Inquisition are the completed faction card packages. The
 - `images/` contains top-level portraits and matching production sketches for all twelve current v0.6 faction leaders.
 - The Military supplemental set is General or Commandant plus one shared tracker placed beneath the selected leader; the leader slides upward to show 1 or 2 Command.
 - The Military printable faction sheet is available under `faction-sheets/` and uses the existing General and Commandant image assets.
+- The Diplomat supplemental set is Ambassador or Senator, one shared 0–10 sliding Influence Tracker, nine double-sided Proposal / Treaty Article cards, and one double-sided reference card.
+- The Diplomat printable faction sheet is available under `faction-sheets/` and includes mirrored Treaty Article backs for long-edge duplex printing.
 - The Inquisition supplemental set is Grand Inquisitor or Witch Hunter, two single-sided rules references, and one 0–4 Conviction tracker with a marker.
 - The Inquisition printable faction sheet is available under `faction-sheets/` and uses `images/grand inquisitor.png` and `images/witch hunter.png`.
 - Earlier archetype and generated-sheet records are archived.

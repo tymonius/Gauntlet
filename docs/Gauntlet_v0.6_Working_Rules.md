@@ -242,13 +242,15 @@ Military may have up to **2 Command**. The first time each turn the Military pla
 ## 10. Diplomats
 
 **Identity:** negotiation, legitimacy, concessions, political leverage, and converting conflict into a Peace Treaty.  
-**Resource:** Influence. Influence starts at 1, cannot fall below 0, and currently has no maximum.
+**Resource:** Influence. Influence starts at 1, has a maximum of 10, and cannot fall below 0. Any Influence gained beyond 10 is lost.
 
 ### Terms
 
 Before any battle involving the Diplomat, whether attacking or defending, the Diplomat may offer **Terms** by choosing one Proposal whose requirements are met.
 
-Each Proposal lists an **Influence Stake**. To offer that Proposal, place the listed amount of available Influence on its Proposal or Treaty Article card. Staked Influence is unavailable until the Terms resolve and cannot be spent through Leverage or another effect. A zero-stake Proposal requires no Influence.
+Each Proposal lists an **Influence Stake**. To offer that Proposal, the Diplomat must have at least that much available Influence. Reduce their available Influence by the listed amount; that amount becomes staked until the Terms resolve. Staked Influence cannot be spent through Leverage or another effect. A zero-stake Proposal requires no Influence.
+
+Available Influence is displayed by sliding the selected Leader Card over the 0–10 Influence Tracker. Lower the tracker when Influence is staked or spent; raise it when Influence is returned, recovered, or gained. No separate Influence or stake marker is used.
 
 If Terms are accepted:
 
@@ -391,7 +393,7 @@ At the start of the Diplomat's turn, after captures, if at least **five differen
 
 The authoritative names, costs, playable types, and exact text for the twelve-card Diplomat package are maintained in `Gauntlet_v0.6_Diplomat_Card_Pool.md`.
 
-The authoritative Leader Cards, Proposal / Treaty Article cards, Terms reference, and Influence-token specification are maintained in `Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`.
+The authoritative Leader Cards, Proposal / Treaty Article cards, Terms reference, and sliding Influence Tracker specification are maintained in `Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`.
 
 ---
 

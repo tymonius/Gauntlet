@@ -68,6 +68,7 @@ Start with:
 - `docs/Gauntlet_v0.6_Neutral_Card_Pool.md` — authoritative working Neutral exact text;
 - `docs/Gauntlet_v0.6_Military_Card_Pool.md` — authoritative working Military exact text;
 - `docs/Gauntlet_v0.6_Diplomat_Card_Pool.md` — authoritative working Diplomat exact text;
+- `docs/Gauntlet_v0.6_Diplomat_Supplemental_Cards.md` — Ambassador, Senator, Proposal / Treaty Article cards, reference, and sliding Influence Tracker;
 - `docs/Gauntlet_v0.6_Inquisition_Card_Pool.md` — authoritative working Inquisition exact text;
 - `docs/Gauntlet_v0.6_Inquisition_Supplemental_Cards.md` — Grand Inquisitor, Witch Hunter, faction references, and Conviction tracker;
 - `docs/card-reviews/STATUS.md` — consolidated playable-card checkpoint and exact-text blockers;
@@ -84,7 +85,7 @@ Start with:
 
 ### `faction-sheets/`
 
-Browser-printable working sheets for v0.6 faction cards and supplemental components. Military and Inquisition currently have complete two-sheet print-and-play packages; see `faction-sheets/README.md` for rendered links and instructions.
+Browser-printable working sheets for v0.6 faction cards and supplemental components. Military and Inquisition have complete two-sheet packages; Diplomats have a four-sheet package with duplex Proposal / Treaty Article faces. See `faction-sheets/README.md` for rendered links and instructions.
 
 ### `images/`
 
