@@ -52,6 +52,7 @@ No canonical v0.6 data exists yet. Active v0.6 documents govern development unti
 29. **`Gauntlet_Lore_Development_Notes.md`** — current WIP setting direction, open questions, and rejected premises.
 30. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — active production-facing leader and miniature direction.
 31. **`Game_Design_Glossary.md`** — shared design terminology.
+32. **`../images/`** — current v0.6 leader image assets, with top-level portraits and matching production sketches in `images/sketches/`.
 
 ### Historical archive
 
@@ -153,6 +154,7 @@ Military's active design brief is established in `Gauntlet_v0.6_Military_Design_
 
 - Lore remains intentionally incremental and non-canonical beyond the current direction document.
 - The Leader Design Bible is the active visual source of truth.
+- `images/` now contains top-level portrait assets and matching production sketches for all twelve current v0.6 faction leaders.
 - Earlier archetype and generated-sheet records are archived.
 
 ---
