@@ -57,7 +57,9 @@ The following Military files are historical provenance and do not override the a
 
 28. **`Gauntlet_Lore_Development_Notes.md`** — current WIP setting direction, open questions, and rejected premises.
 29. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — active production-facing leader and miniature direction.
-30. **`Game_Design_Glossary.md`** — shared design terminology.
+30. **`Gauntlet_v0.6_Military_Supplemental_Cards.md`** — authoritative General, Commandant, and sliding Military Command tracker component specification.
+31. **`../faction-sheets/README.md`** — working v0.6 browser-printable faction-sheet sources and printing instructions.
+32. **`Game_Design_Glossary.md`** — shared design terminology.
 
 ### Historical archive
 
@@ -96,6 +98,8 @@ Military checkpoint:
 - **Shock and Awe** is the Unique cost-5 statement card.
 - **War Crimes** is Military rather than Inquisition.
 - **Standing Orders** is deferred and not in the release pool.
+- The General, Commandant, and shared sliding Command tracker are specified in `Gauntlet_v0.6_Military_Supplemental_Cards.md`.
+- `../faction-sheets/military.html` provides the current two-sheet printable Military package: twelve playable cards, both Leader Cards, and one Command tracker.
 - The package remains subject to playtesting, physical-card templating, and playtest-driven balance or wording changes before canonical data is frozen.
 
 Other integrated card decisions:
@@ -159,7 +163,7 @@ Faction package construction and review should follow `Gauntlet_v0.6_Faction_Car
 - at least one optional, game-defining cost-5 statement card per faction;
 - permission to deviate from the default curve or include additional premium cards when the completed strategic vocabulary is stronger, more varied, and more fun as a result.
 
-Military is the first completed faction card package. Its active exact text is in `Gauntlet_v0.6_Military_Card_Pool.md`; its rationale and test plan are in `Gauntlet_v0.6_Military_Design_Notes.md`.
+Military is the first completed faction card package. Its active exact text is in `Gauntlet_v0.6_Military_Card_Pool.md`; its rationale and test plan are in `Gauntlet_v0.6_Military_Design_Notes.md`; and its player-facing supplemental components are in `Gauntlet_v0.6_Military_Supplemental_Cards.md`.
 
 ### Digital work
 
@@ -174,6 +178,8 @@ Military is the first completed faction card package. Its active exact text is i
 
 - Lore remains intentionally incremental and non-canonical beyond the current direction document.
 - The Leader Design Bible is the active visual source of truth.
+- The Military supplemental set is General or Commandant plus one shared tracker placed beneath the selected leader; the leader slides upward to show 1 or 2 Command.
+- The Military printable faction sheet is available under `faction-sheets/` and uses the existing General and Commandant image assets.
 - Earlier archetype and generated-sheet records are archived.
 
 ---
