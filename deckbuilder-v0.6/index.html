@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Gauntlet v0.6 Development Deckbuilder</title>
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="territories.css" />
 </head>
 <body>
   <header class="site-header">
@@ -22,7 +23,7 @@
   <main id="app" class="app-shell" hidden>
     <section class="panel warning-panel">
       <strong>Development build.</strong>
-      This tool reads active Markdown sources because canonical v0.6 data does not exist yet. Territory selection and print/PDF export are not wired in this first scaffold.
+      This tool reads active Markdown sources because canonical v0.6 data does not exist yet. Card and Territory text follow the consolidated working pools; print/PDF export remains pending.
     </section>
 
     <section class="panel setup-panel">
@@ -62,8 +63,12 @@
         <span>Faction cards</span>
         <strong id="factionCardCount">0</strong>
       </article>
+      <article class="metric-card">
+        <span>Territories</span>
+        <strong><span id="territoryMetricCount">0</span> / 3</strong>
+      </article>
       <article id="validityCard" class="metric-card validation-card">
-        <span>Playable cards</span>
+        <span>Deck status</span>
         <strong id="validityText">Incomplete</strong>
       </article>
     </section>
@@ -88,7 +93,7 @@
           <div class="button-row">
             <button id="copyDeckButton" type="button" class="secondary">Copy list</button>
             <button id="exportJsonButton" type="button" class="secondary">Export JSON</button>
-            <button type="button" class="secondary" disabled title="Planned after card and Territory rendering stabilizes">Print / PDF</button>
+            <button type="button" class="secondary" disabled title="Planned after playable-card and supplemental-component rendering stabilizes">Print / PDF</button>
           </div>
           <textarea id="importJson" rows="4" placeholder="Paste an exported v0.6 deck JSON here"></textarea>
           <button id="importJsonButton" type="button" class="secondary full-width">Import JSON</button>
@@ -137,9 +142,35 @@
           </div>
         </section>
 
-        <section class="panel territory-placeholder">
-          <h2>Territories</h2>
-          <p>The v0.6 Territory reviews are complete, but there is not yet a consolidated canonical v0.6 Territory dataset. Territory selection will be added without silently treating historical v0.5.7 data as final.</p>
+        <section class="panel territories-panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Territories</h2>
+              <p class="muted">Choose exactly three different Territories, with no more than one Arena.</p>
+            </div>
+            <div class="button-row">
+              <span id="territoryAvailableCount" class="pill">0</span>
+              <button id="clearTerritoriesButton" type="button" class="secondary danger">Clear Territories</button>
+            </div>
+          </div>
+          <div class="territory-filters">
+            <label>
+              Search Territories
+              <input id="territorySearch" type="search" placeholder="Name or effect text" />
+            </label>
+            <label>
+              Category
+              <select id="territoryCategory">
+                <option value="all">All Territories</option>
+                <option value="standard">Standard only</option>
+                <option value="arena">Arenas only</option>
+              </select>
+            </label>
+          </div>
+          <div class="territory-browser">
+            <div id="territoryList" class="compact-territory-list empty-state">Loading Territories…</div>
+            <aside id="territoryPreview" class="territory-preview empty-state">Select a Territory to view its active working text.</aside>
+          </div>
         </section>
       </div>
 
@@ -148,16 +179,20 @@
           <div class="panel-heading">
             <div>
               <h2>Current deck</h2>
-              <p class="muted">Playable cards only. Leader and other supplemental cards do not count.</p>
+              <p class="muted">Playable cards count toward deck size and value. Leader and other supplemental cards do not.</p>
             </div>
             <button id="clearDeckButton" type="button" class="secondary danger">Clear cards</button>
           </div>
+          <div class="deck-section-divider">Playable cards</div>
           <div id="deckCards" class="deck-list empty-state">No cards added yet.</div>
+          <div class="deck-section-divider">Territories</div>
+          <div id="deckTerritories" class="deck-list empty-state">No Territories selected yet.</div>
         </section>
       </div>
     </section>
   </main>
 
   <script src="app.js" defer></script>
+  <script src="territories.js" defer></script>
 </body>
 </html>
