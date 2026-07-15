@@ -118,6 +118,7 @@ Record, where practical:
 
 ### Card economy
 
+- starting deck count and total deckbuilding value for each player;
 - reshuffles per player;
 - final hand, deck, discard, Graveyard, and Asset-bank sizes;
 - smallest recyclable pool reached: deck + discard;
@@ -150,7 +151,14 @@ For each faction, record relevant progress and resource history:
 - Influence spent through Leverage in each battle, including mean, median, maximum single spend, and battle result;
 - Proposal stakes by tier, including acceptance rate, refusal rate, loss rate, and net Influence change for stakes 0, 1, and 2;
 - cards sent to the Graveyard through Political Capital and Influence recovered per use;
-- Conviction gained/spent and Purges used;
+- Conviction gained separately from the normal post-battle trigger, Blasphemy, Penance, Divine Mercy, Burning at the Stake, and any other source;
+- Conviction spent separately on each Purge option, Final Judgment, Relentless Pursuit, Tyranny, Heresy, Hellfire, and any other effect;
+- number of Purges at costs 1, 2, 3, and 4, including which 1-Conviction mode was chosen;
+- cards sent to the Graveyard through Condemnation, each Purge option, Excommunication, Guilt by Association, Act of Faith, Burning at the Stake, Hellfire, and other Inquisition effects;
+- Divine Mercy uses, value of cards returned, and whether the immediate benefit affected the battle or later Purge sequence;
+- Final Judgment and Relentless Pursuit opportunities, uses, and resulting board or card-economy impact;
+- Purification attempts or victories, the turn the opponent's recyclable pool first reached zero, and whether the Inquisition instead won by breakthrough;
+- starting deck count of Inquisition opponents, especially 30-card compact decks, mixed larger decks, and 60-card low-cost decks;
 - Rites begun, interrupted, and completed;
 - Capital, Treasury, Deeds, purchases, and buyouts;
 - Intel gained/spent, Missions completed/failed/aborted, and Special Operation attempts.
@@ -178,6 +186,14 @@ After a human game, ask both players:
 - Did the Diplomat face meaningful choices between saving Influence for future Proposals and spending it in the current battle?
 - Did the Senator's card sacrifice feel appropriately costly for the Influence preserved?
 - Did Peace Treaty pressure remain credible while the Diplomat was losing ground?
+- For Inquisition games, did preserving Conviction for Purges or leader abilities compete meaningfully with spending it on faction cards?
+- Did Condemnation make played battle-draw cards feel consequential without making battle participation feel futile?
+- Did the opponent feel able to respond through deck construction, commitment restraint, Graveyard recovery, territorial pressure, or conventional aggression?
+- Did Purification feel like a real approaching victory rather than an arbitrary counter or an impossible threat?
+- Against a large low-cost deck, did the Inquisition naturally pivot toward running the Gauntlet?
+- Were Blasphemy and Arcane-trait interactions clear and fair?
+- Did Grand Inquisitor and Witch Hunter feel strategically distinct with the same card pool?
+- Were the two Inquisition reference cards and Conviction tracker faster to use than consulting the rules document?
 - Which card, Territory, leader ability, or faction mechanic felt most valuable?
 - Which felt least valuable or least worth remembering?
 - Which interaction required a ruling?
@@ -211,5 +227,7 @@ Do not rely on averages alone. A mixture of many short games and a few extreme s
 3. Verify that the current battle-card lifecycle prevents endgame deck collapse in human play.
 4. Compare General and Commandant, and then both leaders within every other faction.
 5. Test the revised Diplomat economy Proposal by Proposal, including stake-tier acceptance, accepted-ratification Influence, imposition rewards, failed stakes, Senator recovery, Leverage spending, and repeated offers.
-6. Confirm that alternate victories create visible parallel pressure and do not encourage disengagement from the Gauntlet.
-7. Use the digital prototype to automate telemetry only after its rules implementation matches the selected physical ruleset.
+6. Test both Inquisition leaders against compact premium decks, mixed larger decks, and 60-card low-cost decks; measure Purification pressure, conventional breakthrough, Purge selection, Conviction allocation, and the Divine Mercy / Tyranny / Burning at the Stake watchlist.
+7. Verify that the Grand Inquisitor, Witch Hunter, doctrine reference, Purge reference, and Conviction tracker remain legible and fast to use at standard card size.
+8. Confirm that alternate victories create visible parallel pressure and do not encourage disengagement from the Gauntlet.
+9. Use the digital prototype to automate telemetry only after its rules implementation matches the selected physical ruleset.
