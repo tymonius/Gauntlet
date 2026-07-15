@@ -1,7 +1,8 @@
 # Gauntlet v0.6 Diplomat Design Notes
 
 **Status:** Active v0.6 design rationale and implementation notes.  
-**Rules source of truth:** `Gauntlet_v0.6_Working_Rules.md`.
+**Rules source of truth:** `Gauntlet_v0.6_Working_Rules.md`.  
+**Card source of truth:** `Gauntlet_v0.6_Diplomat_Card_Pool.md`.
 
 ---
 
@@ -37,7 +38,8 @@ To offer a Proposal, the Diplomat must be able to stake Influence equal to its c
 |---|---|---|
 | Opponent accepts | Ratify the Proposal if it is not already ratified | Return the stake; gain only Influence specifically granted by an effect |
 | Opponent refuses and the Diplomat wins | Impose and ratify the Proposal if it is not already ratified | Return the stake; if newly ratified, gain 1 Influence unless the Proposal says otherwise |
-| Opponent refuses and the Diplomat does not win | Do not ratify the Proposal | Lose the stake |
+| Opponent refuses and the Diplomat loses | Do not ratify the Proposal | Lose the stake |
+| Opponent refuses and the battle ends without a winner | Do not ratify the Proposal | Return the stake |
 
 A Proposal is **imposed** when the opponent refuses it and the Diplomat wins the resulting battle.
 
@@ -47,7 +49,7 @@ An already-ratified Proposal may still be offered for its tactical effects, but 
 - does not generate the default 1 Influence for imposition again;
 - may still generate Influence if a card, leader, or Proposal explicitly says so.
 
-This replaces generic **Loss of Face**. Political failure is now proportional to the amount of Influence risked.
+This replaces generic **Loss of Face**. Political failure is proportional to the amount of Influence risked, but only an actual loss forfeits the stake. A no-winner result produces no Treaty progress and returns the stake.
 
 ---
 
@@ -104,47 +106,93 @@ The full current text belongs in the Working Rules and faction reference materia
 
 ---
 
+## Fifth-Article endgame
+
+The opponent is not expected to voluntarily accept the fifth Treaty Article. The Diplomat can instead impose it by winning after refusal.
+
+Peace Treaty is checked at the start of the Diplomat's next turn, after captures. Once five different Articles have been ratified, the opponent's remaining counterplay is primarily to achieve their own victory before that check. Treaty Articles are not removed by ordinary battle losses, lost Influence, or changing Territory control.
+
+This creates an intended final showdown:
+
+- at four Articles, acceptance becomes increasingly unlikely;
+- the Diplomat must create a sufficiently dangerous offer or win the refused battle;
+- the opponent receives a final race window before Peace Treaty resolves.
+
+---
+
 ## Leader direction
 
 ### Ambassador
 
 The Ambassador rewards negotiated settlement rather than military imposition.
 
-Current direction:
+**Cordiality:**
 
 > Once per turn, after the opponent accepts Terms you offered, draw one card.
 
-This remains compatible with the revised framework because acceptance advances Peace Treaty without generating default Influence.
+Acceptance advances Peace Treaty without generating default Influence, so Cordiality supplies soft value without replacing the core faction decision.
 
 ### Senator
 
 The Senator represents institutional resilience and the ability to absorb political failure through sacrifice.
 
-Current direction:
+**Political Capital:**
 
-> Once per turn, after Terms you offered are refused and you do not win the resulting battle, you may send one card from your hand to your Graveyard. If you do, recover 1 of the Influence staked on that Proposal.
+> Once per turn, when you would lose staked Influence because you lost the battle after refused Terms, you may send one card from your hand to your Graveyard. If you do, recover 1 of that staked Influence instead of losing it.
 
-This replaces the older ability that reduced generic Loss of Face.
+This replaces the older ability that reduced generic Loss of Face. The wording now follows the win / loss / no-winner Terms structure.
+
+---
+
+## Approved faction-card package
+
+The twelve-card package is approved for exact-text implementation and initial testing:
+
+| Cost | Card | Primary role |
+|---:|---|---|
+| 1 | Clemency | Opponent-controlled recovery bargain |
+| 2 | Trade Concessions | Material incentive to accept; concession-for-strength Battle effect |
+| 2 | Safe Conduct | Visible one-use insurance for paid Proposals |
+| 2 | Neutral Observers | Commitment-order and information advantage |
+| 3 | Good Faith | Credible surrender of a specific card |
+| 3 | Demilitarized Zone | Symmetric territorial disengagement and remilitarization cost |
+| 3 | Diplomatic Latitude | Opponent chooses accepted settlement; Diplomat chooses refused consequence |
+| 3 | Nonbinding Resolution | Choice between Treaty progress and Influence |
+| 3 | Censure | Action-efficiency sanction |
+| 4 | Gunboat Diplomacy | Visible military threat supporting refusal pressure and fifth-Article battles |
+| 4 | Embargo | Asset-capacity sanction |
+| 5 | Blockade | Territory-local movement sanction and package statement card |
+
+The curve is **1 / 3 / 5 / 2 / 1**, with total deckbuilding value **35** and average value **2.92**.
+
+The cards form overlapping strategic threads rather than named packages:
+
+- negotiated value and credible concessions;
+- coercive diplomacy and visible threats;
+- sanctions and negotiated relief;
+- information and procedural advantage;
+- territorial settlement and restraint;
+- political resilience under failed Terms.
 
 ---
 
 ## Sanctions direction
 
-Diplomats may have a **Sanctions** card subtheme.
+The Diplomat package contains three formal Sanctions, each pressuring a different object:
 
-Sanctions represent coercive pressure following rejected Terms. They should connect directly to the negotiation loop rather than functioning as generic hand destruction or resource denial.
+- **Censure** pressures Action-card efficiency;
+- **Embargo** reduces Asset-bank capacity;
+- **Blockade** taxes movement through one Territory.
 
-Possible pattern:
+All three:
 
-- the Diplomat offers Terms;
-- the opponent refuses;
-- the Diplomat imposes or escalates a Sanction;
-- the Sanction creates an ongoing penalty, restriction, or pressure point represented by an Asset, Territory Overlay, or explicit card-specific tracking;
-- later accepted Terms may lift the Sanction as part of settlement.
+- arise directly from refused Terms;
+- remain visible through Assets or Overlays;
+- preserve the opponent's ability to act, move, and fight;
+- can be lifted by later accepted Terms, including acceptance of an already-ratified Proposal;
+- function independently and do not require a dedicated Sanctions package.
 
-**Blockade** is the leading candidate for this treatment. It may become a Diplomat faction card played after Terms are refused.
-
-Its persistent form must use the v0.6 Asset/Overlay object model rather than reviving Conditions. Accepted Terms or another explicit consequence may remove it.
+Blockade is removed if the sanctioned opponent loses control of its Territory. Embargo and Censure remain player-directed sanctions until accepted Terms remove them.
 
 If Financiers also receive Sanctions, their version should arise from Deeds, Capital, Treasury, credit, or market pressure rather than diplomatic legitimacy.
 
@@ -152,14 +200,34 @@ If Financiers also receive Sanctions, their version should arise from Deeds, Cap
 
 ## Demilitarized Zone direction
 
-**Demilitarized Zone** remains a strong candidate for a temporary, symmetric Territory Overlay connected to Terms.
+**Demilitarized Zone** is an approved temporary, symmetric Territory Overlay connected to accepted Terms.
 
-It should:
+It:
 
-- make a negotiated pause physically visible on the Gauntlet;
-- prevent immediate conflict in one Territory for a limited time;
-- avoid permanently locking the lane or recreating v0.4 stalemates;
-- clearly state whether it is a Proposal, faction card, or both.
+- makes a negotiated pause physically visible on the Gauntlet;
+- forces any players remaining after the accepted Proposal to withdraw;
+- prevents re-entry during the placement turn;
+- charges a card to enter while the Territory is unoccupied;
+- prevents capture or control changes while active;
+- charges continued occupation or forces withdrawal at the start of the occupier's turn;
+- ends after the first battle fought there.
+
+The entry rule is state-based rather than tracked: entering an **unoccupied** DMZ costs a card. No marker, rotation, or memory of a prior entrant is required.
+
+---
+
+## Archived concept
+
+**Recognition of Claims** was cut from the twelve-card package.
+
+Its core offer—accept Terms and receive immediate control of the contested Territory—was memorable, but it:
+
+- overlapped with the package's other acceptance incentives;
+- was thematically close to Diplomatic Recognition;
+- created sequencing questions with accepted Proposal movement and capture effects;
+- relied on a comparatively generic conditional +2 Battle floor.
+
+It may be reconsidered only if testing reveals that the package lacks meaningful territorial concessions.
 
 ---
 
@@ -168,17 +236,20 @@ It should:
 - Is starting at 0 Influence correct, or does it delay access to paid Proposals too much?
 - Is five different Treaty Articles the correct Peace Treaty threshold?
 - Are nine Proposals manageable as a supplemental reference?
-- Are the accepted effects attractive enough that refusal is not automatic?
+- Are the accepted effects and faction-card incentives attractive enough that refusal is not automatic?
 - Are the refused effects dangerous enough without making Terms coercively one-sided?
 - Do Rebuilding Pact, Ultimatum, and Diplomatic Recognition justify their stakes?
-- Should any accepted Proposal explicitly generate Influence?
 - Are repeated already-ratified Proposals tactically useful without enabling Influence farming?
-- Are Ambassador and Senator comparably strong?
-- How many Sanctions cards should the faction receive?
-- Should Demilitarized Zone be a Proposal, a faction card, or both?
+- Are Ambassador and Senator comparably strong across the same twelve-card pool?
+- Does Gunboat Diplomacy become an automatic inclusion?
+- Is Embargo excessively punishing against a full Asset bank, especially for Financiers?
+- Does Safe Conduct deny too many opposing win/loss triggers?
+- Does Demilitarized Zone create productive standoffs rather than excessive delay?
+- Do opponents rationally choose ratification rather than granting 2 Influence through Nonbinding Resolution?
+- Do multiple copies of persistent Sanctions create excessive stacking?
 
 ---
 
 ## Versioning consequence
 
-The first public v0.6 rules and faction materials should contain this framework. **v0.6.1** is reserved for changes discovered after v0.6 testing: balance adjustments, wording corrections, leader tuning, Proposal recalibration, and other genuine patch work.
+The first public v0.6 rules and faction materials should contain this framework and card package. **v0.6.1** is reserved for changes discovered after v0.6 testing: balance adjustments, wording corrections, leader tuning, Proposal recalibration, card-package substitutions, and other genuine patch work.
