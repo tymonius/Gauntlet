@@ -138,6 +138,25 @@ Primary playtest watchlist:
 - whether immediate capture after defeat creates the intended visible risk without becoming too punishing;
 - interaction with effects that enlarge or modify battle draw.
 
+### Rearguard
+
+**Cost:** 2  
+**Role:** Preserve a defeated force by blocking immediate pursuit
+
+> **Action:** Bank Rearguard as an Asset. After you lose a battle and retreat, when your opponent would use an Order or card effect to enter the space you occupy during that turn, you may discard Rearguard. If you do, they cannot use that Order or card effect. No Command is spent, and any card used for that effect is returned to its owner's hand.
+>
+> **Battle:** During battle cleanup, if you lose and retreat, bank Rearguard as an Asset instead of placing it in its normal destination.
+
+Rearguard's Action, Battle effect, and cost-2 value are approved. It does not alter the result of the lost battle or restore the contested Territory; it prevents one announced card effect or Order from immediately carrying the victor into the space occupied by the retreating player.
+
+The reaction occurs after the opponent announces the pursuit but before its cost is paid or movement resolves. A blocked Order spends no Command. A card used to create the blocked movement returns to its owner's hand, including a Give Chase already played during the preceding battle.
+
+Primary playtest watchlist:
+
+- whether returning an already-played pursuit card to hand creates excessive repeatability;
+- interaction with movement effects that grant multiple movements rather than a single immediate movement;
+- exact timing when several pursuit effects are available.
+
 ---
 
 ## Unresolved design seed
