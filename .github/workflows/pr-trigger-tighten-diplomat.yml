@@ -18,9 +18,10 @@ jobs:
           ref: agent/tighten-diplomat-card-text
           fetch-depth: 0
 
-      - name: Run asserted transformation from branch workflow
+      - name: Apply or record asserted transformation
         run: |
-          python3 - <<'PY'
+          set +e
+          python3 - <<'PY' > /tmp/diplomat-transform.log 2>&1
           from pathlib import Path
           import textwrap
           workflow = Path('.github/workflows/tighten-diplomat-card-text.yml').read_text()
@@ -30,15 +31,23 @@ jobs:
           script = workflow.split(marker, 1)[1].split('\n          PY', 1)[0]
           exec(compile(textwrap.dedent(script), 'tighten-diplomat-card-text', 'exec'))
           PY
-          rm -f .github/workflows/pr-trigger-tighten-diplomat.yml
+          status=$?
+          set -e
+          cat /tmp/diplomat-transform.log
 
-      - name: Validate printable source
-        run: node --check faction-sheets/diplomat.js
-
-      - name: Commit exact-text pass
-        run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Tighten Diplomat card and reference text"
+
+          if [ "$status" -eq 0 ]; then
+            rm -f .github/workflows/pr-trigger-tighten-diplomat.yml
+            node --check faction-sheets/diplomat.js
+            git add -A
+            git commit -m "Tighten Diplomat card and reference text"
+          else
+            cp /tmp/diplomat-transform.log diplomat-transform-error.txt
+            git add diplomat-transform-error.txt
+            git commit -m "Record Diplomat text transformation error"
+          fi
+
           git push origin HEAD:agent/tighten-diplomat-card-text
+          exit "$status"
