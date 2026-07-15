@@ -5,7 +5,7 @@
 
 Use this guide with the Gauntlet v0.6 core rules. General movement, battle, retreat, occupation, capture, deck construction, Assets, Overlays, and victory procedures remain in the core rulebook.
 
-Leader illustrations for release layout use:
+Leader illustrations use the finished sketches directly from:
 
 - `../images/sketches/general.png`
 - `../images/sketches/commandant.png`
@@ -16,13 +16,13 @@ The printable Leader Cards use the corresponding portraits under `../images/`.
 
 ## 1. Military overview
 
-The Military wins Gauntlet by taking the field, forcing decisive battles, occupying enemy ground, surviving counterattacks, and converting victory into further pressure or durable control.
+The Military takes the field, forces decisive battles, occupies enemy ground, survives counterattacks, and converts victory into further pressure or durable control. It has no alternate victory condition: **Military wins by running the Gauntlet.**
 
 > **Faction identity:** Turn battlefield success into strategic advantage while deciding how far to press before success becomes overextension.
 
-- **Victory:** normal breakthrough victory.
+- **Victory:** Run the Gauntlet.
 - **Resource:** Command, maximum 2.
-- **Resource gain:** the first time each turn you win a battle, gain 1 Command, up to the maximum.
+- **Resource gain:** The first time each turn you win a battle, gain 1 Command, up to the maximum.
 - **Leaders:** General or Commandant.
 - **Faction pool:** 12 unique cards; curve 1 / 4 / 3 / 3 / 1 at costs 1-5.
 - **Statement card:** Shock and Awe, cost 5, Unique.
@@ -60,7 +60,9 @@ The cap of 2 preserves the choice between using the two 1-Command Orders and sav
 **Forward. Again.**  
 **Style:** attack, forward pressure, tempo.
 
-The General rides where the line is breaking and turns hesitation into motion. Choose the General when you want to initiate engagements, threaten repeated movement, and convert one successful attack into a larger operation.
+The General rides where the line is breaking and turns hesitation into motion. He leads from the decisive point, using Command to advance, rally an attack, and press a defeated enemy before they can recover.
+
+Choose the General when you want to initiate engagements, threaten repeated movement, and convert one successful attack into a larger operation.
 
 ### General Orders
 
@@ -82,7 +84,9 @@ General priorities:
 **We hold. They break.**  
 **Style:** defense, counterattack, control.
 
-The Commandant is the iron center of the line. Choose the Commandant when you want to defend controlled ground, survive the opponent's counterattack, and make occupation become lasting control.
+The Commandant is the iron center of the line. He turns ground into position, position into discipline, and a successful defense into deeper retreat pressure, counterattack, or immediate capture.
+
+Choose the Commandant when you want to defend controlled ground, survive the opponent's counterattack, and make occupation become lasting control.
 
 ### Commandant Orders
 
@@ -107,6 +111,8 @@ After a victory, decide whether the most valuable outcome is another movement, a
 
 ### Strengths
 
+Military:
+
 - converts victories into movement, retreat pressure, capture, Command, preserved cards, and prepared operations;
 - coordinates hand commitments and battle draw;
 - changes initiative through pursuit and countercharge;
@@ -115,13 +121,13 @@ After a victory, decide whether the most valuable outcome is another movement, a
 
 ### Limits
 
-Military has:
+Military:
 
-- no alternate victory condition;
-- no broad hand surveillance, generic cancellation, negotiation, economic denial, or unconditional draw engine;
-- no automatic superiority in battle math;
-- only narrow and expensive capture shortcuts;
-- real overextension risk after follow-up movement and battles.
+- has no alternate victory condition and must run the Gauntlet;
+- has no broad hand surveillance, generic cancellation, negotiation, economic denial, or unconditional draw engine;
+- has no automatic superiority in battle math;
+- has only narrow and expensive capture shortcuts;
+- risks real overextension after follow-up movement and battles.
 
 ### Strategic threads
 
