@@ -17,14 +17,14 @@ const cards = [
     name: 'Penance', cost: 2, meta: 'Inquisition • Basic',
     effects: [
       ['Action', 'The opponent chooses one: send a card from hand to their Graveyard; or you gain 1 Conviction.'],
-      ['Battle', 'After Battle cards are revealed, the opponent chooses one: send a card from hand to their Graveyard; or you gain +1 battle total.']
+      ['Battle', 'After Battle cards are revealed, the opponent chooses one: send a card from hand to their Graveyard; or add +1 to your battle total.']
     ]
   },
   {
     name: 'Divine Mercy', cost: 2, meta: 'Inquisition • Basic',
     effects: [
       ['Action', 'Move a card from the opponent\'s Graveyard to their discard pile. Gain 2 Conviction.'],
-      ['Battle', 'Move a card from the opponent\'s Graveyard to their discard pile. Gain +2 battle total.']
+      ['Battle', 'Move a card from the opponent\'s Graveyard to their discard pile. Add +2 to your battle total.']
     ]
   },
   {
@@ -37,8 +37,8 @@ const cards = [
   {
     name: 'Excommunication', cost: 3, meta: 'Inquisition • Advanced',
     effects: [
-      ['Action', 'Choose cards in the opponent\'s discard pile with combined deckbuilding value up to 5. Send them to their Graveyard.'],
-      ['Battle', 'After the battle, choose cards in the opponent\'s discard pile with combined deckbuilding value up to 3. Send them to their Graveyard.']
+      ['Action', 'Choose one or more cards in the opponent\'s discard pile with combined deckbuilding value up to 5. Send them to their Graveyard.'],
+      ['Battle', 'After the battle, choose one or more cards in the opponent\'s discard pile with combined deckbuilding value up to 3. Send them to their Graveyard.']
     ]
   },
   {
@@ -79,7 +79,7 @@ const cards = [
     name: 'Hellfire', cost: 5, meta: 'Inquisition • Advanced',
     effects: [
       ['Action', 'Spend any amount of Conviction. Send that many cards from the top of the opponent\'s deck to their Graveyard.'],
-      ['Battle', 'After Battle cards are revealed, spend any amount of Conviction. For each Conviction spent, choose one: gain +1 battle total; or, if you win, after the battle send the top card of the opponent\'s deck to their Graveyard. You may choose either option more than once.']
+      ['Battle', 'After Battle cards are revealed, spend any amount of Conviction. For each Conviction spent, choose one: add +1 to your battle total; or, if you win, after the battle send the top card of the opponent\'s deck to their Graveyard. You may choose either option more than once.']
     ]
   }
 ];
