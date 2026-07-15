@@ -148,7 +148,8 @@ For each faction, record relevant progress and resource history:
 - Treaty Articles ratified, the turn each was ratified, and Peace Treaty attempts or victories;
 - Influence available before each offer, staked, returned, lost, recovered by Political Capital, and remaining after resolution;
 - maximum Influence held, number of times the 10-Influence cap was reached, and Influence lost because of the cap;
-- Influence gained separately from accepted newly ratified Proposals, imposed newly ratified Proposals, Clemency, Nonbinding Resolution, Blockade, and any other source;
+- Influence gained separately from accepted newly ratified Proposals, imposed newly ratified Proposals, Clemency, Nonbinding Resolution, Sanctions: Blockade, and any other source;
+- cards drawn through Trade Concessions, Nonbinding Resolution, Cordiality, Clemency, Sanctions: Censure, and other Diplomat effects;
 - Influence spent through Leverage in each battle, including mean, median, maximum single spend, and battle result;
 - Proposal stakes by tier, including acceptance rate, refusal rate, loss rate, and net Influence change for stakes 0, 1, and 2;
 - cards sent to the Graveyard through Political Capital and Influence recovered per use;

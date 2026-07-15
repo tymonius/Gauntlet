@@ -6,9 +6,6 @@ on:
     branches:
       - main
 
-permissions:
-  contents: write
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -16,85 +13,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: agent/tighten-diplomat-card-text
-          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Apply approved Diplomat exact-text pass
-        run: |
-          set +e
-          python3 - <<'PY' > /tmp/diplomat-transform.log 2>&1
-          from pathlib import Path
-          workflow = Path('.github/workflows/tighten-diplomat-card-text.yml').read_text()
-          marker = "python3 - <<'PY'\n"
-          if marker not in workflow:
-              raise SystemExit('Transformation script marker not found')
-          raw = workflow.split(marker, 1)[1].split('\n          PY', 1)[0]
-          script = '\n'.join(line[10:] if line.startswith('          ') else line for line in raw.splitlines())
-          old = "openq = 'docs/Gauntlet_v0.6_Open_Questions.md'\nreplace_once(openq, '- Are accepted effects attractive enough that refusal is not automatic even though paid acceptance also grows Influence?', '- Are accepted effects attractive enough that refusal is not automatic even though paid acceptance also grows Influence?\\n- Do Trade Concessions and Nonbinding Resolution provide enough replacement draw for out-of-turn Diplomat interactions without creating excessive card advantage?')"
-          new = "openq = 'docs/Gauntlet_v0.6_Open_Questions.md'\nreplace_once(openq, '- Are accepted effects attractive enough that refusal is not automatic?', '- Are accepted effects attractive enough that refusal is not automatic?\\n- Do Trade Concessions and Nonbinding Resolution provide enough replacement draw for out-of-turn Diplomat interactions without creating excessive card advantage?')"
-          if old not in script:
-              raise SystemExit('Open-question adaptation target not found in extracted script')
-          script = script.replace(old, new, 1)
-          exec(compile(script, 'tighten-diplomat-card-text', 'exec'))
-          PY
-          status=$?
-          set -e
-          cat /tmp/diplomat-transform.log
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-          if [ "$status" -ne 0 ]; then
-            cp /tmp/diplomat-transform.log diplomat-transform-error.txt
-            git add diplomat-transform-error.txt
-            git commit -m "Record Diplomat text transformation error" || true
-            git push origin HEAD:agent/tighten-diplomat-card-text
-            exit "$status"
-          fi
-
-          rm -f .github/workflows/pr-trigger-tighten-diplomat.yml diplomat-transform-error.txt diplomat-trigger.txt diplomat-trigger-2.txt
-          cat > .github/workflows/test.yml <<'YAML'
-          name: Test
-
-          on:
-            pull_request:
-            push:
-              branches:
-                - main
-
-          jobs:
-            test:
-              runs-on: ubuntu-latest
-
-              steps:
-                - name: Checkout
-                  uses: actions/checkout@v4
-
-                - name: Setup Node
-                  uses: actions/setup-node@v4
-                  with:
-                    node-version: 22
-
-                - name: Install dependencies
-                  run: npm install
-
-                - name: Typecheck
-                  run: npm run typecheck
-
-                - name: Test
-                  run: npm test
-          YAML
-
-          node --check faction-sheets/diplomat.js
-          git add -A
-          git commit -m "Tighten Diplomat card and reference text"
-          git push origin HEAD:agent/tighten-diplomat-card-text
 
       - name: Install dependencies
         run: npm install

@@ -26,7 +26,7 @@ Use **TBD** where starter-deck suitability has not yet been decided. A dash in t
 | 3 | Assassins | Intelligence | TBD | Advanced | Mission requirement and disruption density |
 | 4 | Assimilation | Neutral | No | Advanced | Immediate-capture density and overlap with capture shortcuts |
 | 5 | Attrition | Neutral | No | Advanced | Long-game card denial and Inquisition overlap |
-| 6 | Blockade | Diplomats | No | Advanced | Repeatable Influence pressure, movement-tax frequency, and sanctions-relief timing |
+| 6 | Sanctions: Blockade | Diplomats | No | Advanced | Repeatable Influence pressure, movement-tax frequency, and sanctions-relief timing |
 | 7 | Brothers in Arms | Military | TBD | Advanced | Post-draw commitment reliability and third-card clarity |
 | 8 | Capital Gains | Financiers | TBD | Advanced | Faction-infrastructure redesign and cost |
 | 9 | Capital Punishment | Neutral | No | Basic | Hard-removal density and post-battle Action combinations |
@@ -121,10 +121,10 @@ This table is authoritative over the Diplomat-related migration row above.
 | D6 | Demilitarized Zone | 3 | TBD | Advanced | No | Standoff pacing, empty-hand entry locks, and Overlay/capture timing |
 | D7 | Diplomatic Latitude | 3 | TBD | Advanced | No | Proposal eligibility, stake timing, and two-option decision load |
 | D8 | Nonbinding Resolution | 3 | TBD | Advanced | No | Ratification-versus-Influence choice balance |
-| D9 | Censure | 3 | TBD | Advanced | No | Multiple-copy stacking and Action-card tax frequency |
+| D9 | Sanctions: Censure | 3 | TBD | Advanced | No | Multiple-copy stacking and Action-card tax frequency |
 | D10 | Gunboat Diplomacy | 4 | TBD | Advanced | No | Automatic inclusion pressure and extra hand-play interactions |
-| D11 | Embargo | 4 | TBD | Advanced | No | Immediate Asset loss, matchup severity, and multiple-copy stacking |
-| D12 | Blockade | 5 | No | Advanced | No | Repeatable Influence pressure, movement-tax frequency, and sanctions-relief timing |
+| D11 | Sanctions: Embargo | 4 | TBD | Advanced | No | Immediate Asset loss, matchup severity, and multiple-copy stacking |
+| D12 | Sanctions: Blockade | 5 | No | Advanced | No | Repeatable Influence pressure, movement-tax frequency, and sanctions-relief timing |
 
 ## Active Inquisition package metadata
 

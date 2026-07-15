@@ -183,7 +183,7 @@ Added stronger final defense through Heartland-specific rules.
 
 ### v0.5.5 — Human Playtest Errata
 
-Addressed Conscription, Watchtower, Fortifications, Embargo, and other issues found in human play.
+Addressed Conscription, Watchtower, Fortifications, Sanctions: Embargo, and other issues found in human play.
 
 ### v0.5.6 — Asset Bank Patch
 
