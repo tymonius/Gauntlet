@@ -41,6 +41,7 @@
     standardizePageGeometry(documentNode);
     alignProposalAndTreatyPages(documentNode);
     isolateDoubleSidedReference(documentNode);
+    compactSingleSidedPages(documentNode);
     addDuplexInstructions(documentNode);
     return `<!doctype html>\n${documentNode.documentElement.outerHTML}`;
   }
@@ -123,6 +124,22 @@
     const script = documentNode.body.querySelector("script:last-of-type");
     documentNode.body.insertBefore(frontPage, script);
     documentNode.body.insertBefore(backPage, script);
+  }
+
+  function compactSingleSidedPages(documentNode) {
+    const firstPageCells = [...documentNode.querySelectorAll(".first-page .card-table td")];
+    const standardPages = [...documentNode.querySelectorAll(".card-page:not(.duplex-page)")];
+    const standardCells = standardPages.flatMap(page => [...page.querySelectorAll("td")]);
+    const cells = [...firstPageCells, ...standardCells];
+    if (!cells.length) return;
+
+    const cards = cells.flatMap(cell => [...cell.children].filter(child => child.classList.contains("print-card")));
+    cells.forEach(cell => cell.replaceChildren());
+    cards.forEach((card, index) => cells[index]?.append(card));
+
+    standardPages.forEach(page => {
+      if (!page.querySelector(".print-card")) page.remove();
+    });
   }
 
   function makeDuplexPage(documentNode, card, slotIndex, pairName, side) {
