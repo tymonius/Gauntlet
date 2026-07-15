@@ -67,7 +67,7 @@ jobs:
       - name: Render sheets and collect diagnostics
         run: |
           python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
-          cat > /tmp/render-diplomat.mjs <<'JS'
+          cat > render-diplomat.mjs <<'JS'
           import { chromium } from 'playwright';
           import fs from 'node:fs';
 
@@ -86,7 +86,7 @@ jobs:
           await page.pdf({ path: 'rendered-diplomat/diplomat-sheets.pdf', format: 'Letter', printBackground: true, margin: { top: '0', right: '0', bottom: '0', left: '0' } });
           await browser.close();
           JS
-          node /tmp/render-diplomat.mjs
+          node render-diplomat.mjs
 
       - name: Typecheck and test
         run: |
@@ -126,10 +126,10 @@ jobs:
                 - name: Test
                   run: npm test
           YAML
-          rm -f diplomat-render-error.txt diplomat-render-trigger.txt
+          rm -f diplomat-render-error.txt diplomat-render-trigger.txt render-diplomat.mjs
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add faction-sheets/diplomat.js faction-sheets/diplomat.css .github/workflows/test.yml .github/workflows/render-diplomat-sheets.yml diplomat-render-error.txt diplomat-render-trigger.txt
+          git add faction-sheets/diplomat.js faction-sheets/diplomat.css .github/workflows/test.yml .github/workflows/render-diplomat-sheets.yml diplomat-render-error.txt diplomat-render-trigger.txt render-diplomat.mjs
           git commit -m "Polish Diplomat faction sheet layout"
           git push origin HEAD:agent/polish-diplomat-faction-sheets
 
