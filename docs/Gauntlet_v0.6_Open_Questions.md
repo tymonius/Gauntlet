@@ -9,9 +9,11 @@ Closed audit items, historical rationale, and post-v0.6 concepts belong in their
 
 ## Card migration and canonical data
 
-The 54-card playable-source review, 12-card Neutral expansion, 50-card Neutral pool, 25-card Territory review, and current non-faction Condition cleanup are complete. Conditions are retired as a v0.6 game concept.
+The 54-card playable-source review, 12-card Neutral expansion, 50-card Neutral pool, 25-card Territory review, current non-faction Condition cleanup, and twelve-card Military package are complete. Conditions are retired as a v0.6 game concept.
 
 The final Neutral curve is 11 / 19 / 11 / 8 / 1. `Gauntlet_v0.6_Neutral_Card_Pool.md` is authoritative for current Neutral costs and exact text.
+
+The current Military curve is 1 / 4 / 3 / 3 / 1. `Gauntlet_v0.6_Military_Card_Pool.md` is authoritative for current Military costs and exact text.
 
 Remaining blockers before canonical v0.6 data can be authoritative:
 
@@ -21,13 +23,14 @@ Remaining blockers before canonical v0.6 data can be authoritative:
 - Finalize Witchcraft's eligible copied-effect wording.
 - Define copied or appropriated effects with impossible targets or source-dependent text.
 - Finish Intelligence Mission requirements, including an appropriately difficult Mission for **Assassins**.
-- Complete all six twelve-card faction packages and audit each final faction-specific curve and cost-5 statement card.
+- Complete the Diplomat, Inquisition, Arcane, Financier, and Intelligence twelve-card packages and audit each final curve and cost-5 statement card.
 - Decide final Arcane-trait assignments beyond the currently approved cards.
+- Playtest and physically template the completed Military package.
 - Create canonical v0.6 card, Territory, faction, leader, deckbuilding, and recommended-deck data after these decisions are stable.
 
-Before faction-locking any neutral card, continue asking:
+Before faction-locking any Neutral card, continue asking:
 
-1. What shared tool leaves the neutral pool?
+1. What shared tool leaves the Neutral pool?
 2. Do other factions still need that tool for counterplay, pacing, emergency defense, comeback potential, or basic interaction?
 3. Does the destination faction already perform the same job through its core mechanic?
 4. Does the card duplicate, bypass, or create strange interactions with that mechanic?
@@ -51,16 +54,38 @@ Before faction-locking any neutral card, continue asking:
 - Every faction must have access to at least one optional, game-defining cost-5 statement card.
 - Additional cost-5 and other premium cards are permitted when they support genuinely distinct ambitions rather than one obvious mandatory package.
 
+### Closed Military-package decisions
+
+- The Military release pool contains exactly 12 cards.
+- The curve is **1 / 4 / 3 / 3 / 1**, with 35 total unique-card value and a 2.92 average cost.
+- Battlefield Promotion is cost 2.
+- Shock and Awe is the Unique cost-5 statement card.
+- War Crimes belongs to Military rather than Inquisition.
+- Militias and Patriotism are retired from the v0.6 playable pool.
+- Standing Orders is deferred; Brothers in Arms occupies the final release slot.
+
 ---
 
 ## Military
 
-- Is maximum Command 2 correct?
-- Are General and Commandant comparably strong?
-- Does Rout create excessive chain-battle turns?
+The selected package and exact text are consolidated in `Gauntlet_v0.6_Military_Card_Pool.md`. The design rationale and package audit are in `Gauntlet_v0.6_Military_Design_Notes.md`.
+
+Open balance, timing, and production questions:
+
+- Is maximum Command 2 correct with Unbroken Ranks, Encampment, Field Command, and Shock and Awe?
+- Are General and Commandant comparably strong with the same twelve-card pool?
+- Does Rout create excessive chain-battle turns when combined with Give Chase, Countercharge, Invasion, and other movement effects?
 - Does Fortify bypass the normal counterattack window too often?
 - Does Military receive too many capture-timing shortcuts when combined with Neutral cards such as Assimilation and Invasion?
-- Which twelve Military cards earn places in the final package, and does its completed curve need to deviate from the planning baseline?
+- Is Battlefield Promotion appropriately priced at 2?
+- Do Brothers in Arms and Reserve Force provide too much post-reveal commitment reliability?
+- Is Give Chase's cumulative battle-draw penalty clear and sufficient?
+- Does Hold the Line's immediate-capture failure penalty adequately balance its defensive reinforcement?
+- Do Rearguard's reaction and returned-card handling resolve cleanly against every immediate pursuit effect?
+- Do unrestricted out-of-turn battles from Countercharge create turn-structure problems?
+- Does War Crimes create excessive long-game card denial or retreat pressure?
+- Are Shock and Awe's Breakthrough and Consolidate choices comparably attractive across board states and both leaders?
+- Do the current texts fit physical cards legibly without losing essential timing information?
 
 ---
 
@@ -157,6 +182,7 @@ Open v0.6 and production questions:
 - Does any matchup routinely remove the losing player's ability to make meaningful decisions?
 - Does Resourcefulness create healthy low-cost archetypes without producing excessive card advantage?
 - Does Counterworks provide enough Overlay counterplay without weakening future Engineer identity?
+- Does the completed Military package preserve enough counterattack windows and comeback potential against every other faction?
 
 Use `Gauntlet_Playtest_Targets_and_Metrics.md` for the quantitative and qualitative data to collect.
 
