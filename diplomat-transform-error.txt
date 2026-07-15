@@ -1,5 +1,1 @@
-Traceback (most recent call last):
-  File "<stdin>", line 8, in <module>
-  File "tighten-diplomat-card-text", line 1
-    from pathlib import Path
-IndentationError: unexpected indent
+Expected one match in docs/Gauntlet_v0.6_Open_Questions.md, found 0: '- Are accepted effects attractive enough that refusal is not automatic even though paid acceptance a'
