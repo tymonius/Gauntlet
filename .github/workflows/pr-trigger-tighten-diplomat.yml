@@ -29,6 +29,13 @@ jobs:
               raise SystemExit('Transformation script marker not found')
           raw = workflow.split(marker, 1)[1].split('\n          PY', 1)[0]
           script = '\n'.join(line[10:] if line.startswith('          ') else line for line in raw.splitlines())
+          old = """          openq = 'docs/Gauntlet_v0.6_Open_Questions.md'
+          replace_once(openq, '- Are accepted effects attractive enough that refusal is not automatic even though paid acceptance also grows Influence?', '- Are accepted effects attractive enough that refusal is not automatic even though paid acceptance also grows Influence?\\n- Do Trade Concessions and Nonbinding Resolution provide enough replacement draw for out-of-turn Diplomat interactions without creating excessive card advantage?')"""
+          new = """          openq = 'docs/Gauntlet_v0.6_Open_Questions.md'
+          replace_once(openq, '- Are accepted effects attractive enough that refusal is not automatic?', '- Are accepted effects attractive enough that refusal is not automatic?\\n- Do Trade Concessions and Nonbinding Resolution provide enough replacement draw for out-of-turn Diplomat interactions without creating excessive card advantage?')"""
+          if old not in script:
+              raise SystemExit('Open-question adaptation target not found in extracted script')
+          script = script.replace(old, new, 1)
           exec(compile(script, 'tighten-diplomat-card-text', 'exec'))
           PY
           status=$?
