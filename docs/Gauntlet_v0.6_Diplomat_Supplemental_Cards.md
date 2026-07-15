@@ -1,13 +1,14 @@
 # Gauntlet v0.6 Diplomat Supplemental Cards
 
-**Status:** Authoritative working component specification for the v0.6 Diplomat Leader Cards, Proposal / Treaty Article cards, Terms reference, and Influence supply.  
+**Status:** Authoritative working component specification for the v0.6 Diplomat Leader Cards, Proposal / Treaty Article cards, Terms reference, and sliding Influence Tracker.  
 **Purpose:** Define the exact player-facing text, physical relationship, and production behavior of the Diplomat supplemental components.
 
 Use this document with:
 
 - `Gauntlet_v0.6_Working_Rules.md` for the complete Terms, battle, withdrawal, capture, and victory rules;
 - `Gauntlet_v0.6_Leader_Design_Bible.md` for Ambassador and Senator art direction;
-- `Gauntlet_v0.6_Diplomat_Card_Pool.md` for the twelve playable Diplomat cards.
+- `Gauntlet_v0.6_Diplomat_Card_Pool.md` for the twelve playable Diplomat cards;
+- `../faction-sheets/diplomat.html` for the current printable rendering.
 
 Supplemental cards do not count toward deck size or deckbuilding value, are not shuffled into the deck, and are not cards in play.
 
@@ -18,9 +19,11 @@ Supplemental cards do not count toward deck size or deckbuilding value, are not 
 A Diplomat deck uses:
 
 1. one selected Leader Card: **Ambassador** or **Senator**;
-2. nine double-sided **Proposal / Treaty Article cards**;
-3. one double-sided **Diplomat Reference card**;
-4. an open supply of **Influence tokens**.
+2. one shared **Influence Tracker** placed beneath that Leader Card;
+3. nine double-sided **Proposal / Treaty Article cards**;
+4. one double-sided **Diplomat Reference card**.
+
+Diplomats do not use Influence tokens. Available Influence is displayed by sliding the selected Leader Card over the Influence Tracker. When Influence is staked, spent, lost, returned, recovered, or gained, move the Leader Card to the new available amount.
 
 The nine Proposal cards begin Proposal side up. When a Proposal is newly ratified, flip it to its Treaty Article side after the Terms resolve. A ratified Proposal may still be offered for its tactical effects, so both sides repeat the Proposal's full rules text.
 
@@ -30,13 +33,17 @@ The nine Proposal cards begin Proposal side up. When a Proposal is newly ratifie
 
 Both Leader Cards include the following shared text:
 
-> **Setup:** Begin with 1 Influence. Place your nine Proposal cards Proposal side up.
+> **Setup:** Place your Influence Tracker beneath this card and set it to 1. Place your nine Proposal cards Proposal side up.
 >
 > **Leverage:** Before dice are rolled in a battle following refused Terms, you may spend any amount of available Influence. Gain +1 to your battle total for each Influence spent.
 >
 > **Peace Treaty:** At the start of your turn, after captures, if five different Proposals are ratified as Treaty Articles, you win.
 
-Influence currently has no maximum. Influence staked on a Proposal is not available for Leverage or any other payment until the Terms resolve.
+A Diplomat may have up to **10 Influence**. Influence cannot fall below 0. Any Influence gained beyond 10 is lost.
+
+Influence shown on the tracker is available Influence. To stake a Proposal, lower the tracker by its listed Influence Stake. That amount remains staked and unavailable until the Terms resolve. The Proposal card itself records how much is currently staked, so no separate stake marker is needed.
+
+When an outcome returns or recovers staked Influence, raise the tracker by that amount. If the stake is lost, the tracker remains at its reduced value.
 
 ---
 
@@ -46,7 +53,7 @@ Influence currently has no maximum. Influence staked on a Proposal is not availa
 **Card type:** Supplemental Leader Card  
 **Player-facing phrase:** *Words first. War last.*
 
-> **Setup:** Begin with 1 Influence. Place your nine Proposal cards Proposal side up.
+> **Setup:** Place your Influence Tracker beneath this card and set it to 1. Place your nine Proposal cards Proposal side up.
 >
 > **Leverage:** Before dice are rolled in a battle following refused Terms, you may spend any amount of available Influence. Gain +1 to your battle total for each Influence spent.
 >
@@ -56,8 +63,8 @@ Influence currently has no maximum. Influence staked on a Proposal is not availa
 
 ### Production direction
 
-- Use `images/ambassador.png`.
-- Preserve the open hand, treaty paper, refined coat, and approachable diplomatic posture.
+- Use `images/ambassador.png`, cropped to emphasize the central standing figure and open-handed gesture.
+- Preserve the treaty paper, refined coat, and approachable diplomatic posture.
 - Use navy, ivory, parchment, wax-seal, laurel, and polished-wood visual language.
 - The composition should emphasize personal persuasion, trust, and voluntary agreement.
 
@@ -69,7 +76,7 @@ Influence currently has no maximum. Influence staked on a Proposal is not availa
 **Card type:** Supplemental Leader Card  
 **Player-facing phrase:** *Procedure endures.*
 
-> **Setup:** Begin with 1 Influence. Place your nine Proposal cards Proposal side up.
+> **Setup:** Place your Influence Tracker beneath this card and set it to 1. Place your nine Proposal cards Proposal side up.
 >
 > **Leverage:** Before dice are rolled in a battle following refused Terms, you may spend any amount of available Influence. Gain +1 to your battle total for each Influence spent.
 >
@@ -79,10 +86,57 @@ Influence currently has no maximum. Influence staked on a Proposal is not availa
 
 ### Production direction
 
-- Use `images/senator.png`.
-- Preserve the raised hand, formal document, dark coat, ivory cravat, and institutional orator posture.
+- Use `images/senator.png`, cropped to emphasize the central standing figure and raised hand.
+- Preserve the formal document, dark coat, ivory cravat, and institutional orator posture.
 - Use navy, ivory, parchment, columns, wax-seal, and laurel visual language.
 - The composition should emphasize procedure, legitimacy, and the sacrifice of political resources to preserve standing.
+
+---
+
+## Influence Tracker
+
+**Card type:** Supplemental resource tracker  
+**Format:** Standard 2.5 × 3.5-inch card, designed to sit directly beneath either Diplomat Leader Card.  
+**Range:** 0–10 Influence.
+
+### Use
+
+The selected Leader Card slides vertically over the Influence Tracker:
+
+- **0 Influence:** the Leader Card and tracker are fully aligned; the tracker is covered;
+- **1–10 Influence:** slide the Leader Card upward until its bottom edge aligns with the numbered registration line;
+- when Influence changes, move the Leader Card immediately to the new available amount.
+
+The bottom edge of the Leader Card is the resource pointer. No separate Influence token or marker is used.
+
+When offering a paid Proposal:
+
+1. read the Proposal's printed Influence Stake;
+2. lower the tracker by that amount;
+3. resolve the Terms;
+4. return, recover, or lose that stake according to the outcome by adjusting the tracker.
+
+Only one Terms offer can be resolving at a time, and the offered Proposal visibly lists the amount at risk. This makes a separate stake marker unnecessary.
+
+### Tracker face
+
+The tracker should include:
+
+- a clear **Diplomat Influence** title;
+- ten horizontal registration lines labeled 1 through 10;
+- a subtle reminder that fully covering the tracker represents 0;
+- repeated alignment guidance showing that the Leader Card's bottom edge is the pointer;
+- Diplomat navy, ivory, parchment, wax-seal, laurel, and restrained gold visual language.
+
+The tracker should not repeat the full Terms procedure, Leverage rule, or Peace Treaty condition. Those remain on the Leader and Reference cards.
+
+### Physical testing watchlist
+
+- Verify that the Leader Card remains stable and readable at high Influence values, especially 8–10.
+- Confirm that all ten registration positions are visually distinct at normal table distance.
+- Test sleeved and unsleeved use.
+- Confirm that ordinary handling does not accidentally shift the displayed Influence value.
+- Consider a shared oversized sleeve or simple player-board channel only if loose cards prove unreliable in playtesting.
 
 ---
 
@@ -183,26 +237,26 @@ A Treaty Article side remains fully usable because already-ratified Proposals ma
 > **Before a battle involving you:**
 >
 > 1. Choose one eligible Proposal.
-> 2. Place its listed Influence Stake on that Proposal card. Staked Influence is unavailable until the Terms resolve.
+> 2. Lower your Influence Tracker by its listed Stake. That Influence is staked and unavailable until the Terms resolve.
 > 3. The opponent accepts or refuses.
 >
-> **Accepted:** No battle occurs. Resolve the Accepted effect. If the Proposal is newly ratified, flip it to its Treaty Article side. Return the stake. If newly ratified, gain Influence equal to the Proposal's listed stake.
+> **Accepted:** No battle occurs. Resolve the Accepted effect. If the Proposal is newly ratified, flip it to its Treaty Article side. Return the stake on the tracker. If newly ratified, gain Influence equal to the Proposal's listed Stake.
 >
 > **Refused:** Resolve the Refused effect and fight. Before dice, you may use Leverage.
 >
 > - **You win:** Impose the Proposal. If newly ratified, flip it. Return the stake. If newly ratified, gain 1 Influence unless the Proposal says otherwise.
-> - **You lose:** Do not ratify. Lose the stake. Political Capital may recover part or all of it.
-> - **No winner:** Do not ratify. Return the stake.
+> - **You lose:** Do not ratify. The tracker already reflects the lost stake. Political Capital may recover part or all of it.
+> - **No winner:** Do not ratify. Return the stake on the tracker.
 
 ### Side B — Influence and Treaty Articles
 
-> **Available Influence:** Kept beside your Leader Card and usable to stake, spend, or pay effects.
+> **Influence:** Track available Influence from 0 to 10 by sliding your Leader Card over the Influence Tracker.
 >
-> **Staked Influence:** Placed on the offered Proposal and unavailable until Terms resolve.
+> **Staking:** Lower the tracker by the offered Proposal's listed Stake. Only available Influence may be staked or spent.
 >
 > **Leverage:** Before dice in a battle following refused Terms, spend any amount of available Influence for +1 battle total each.
 >
-> **Accepted newly ratified Proposal:** Return the stake and gain additional Influence equal to the listed stake.
+> **Accepted newly ratified Proposal:** Return the stake and gain additional Influence equal to the listed Stake.
 >
 > **Already-ratified Proposal:** May be offered again, but cannot count again or generate either normal newly-ratified Influence reward.
 >
@@ -210,18 +264,16 @@ A Treaty Article side remains fully usable because already-ratified Proposals ma
 
 ---
 
-## Influence tokens
+## Print-sheet integration
 
-Influence tokens should remain physically distinct from Command, Conviction, Capital, and Intel.
+`faction-sheets/diplomat.html` contains four Letter-size 3 × 3 sheets:
 
-Recommended prototype supply per Diplomat player:
+1. the first nine playable Diplomat cards;
+2. the remaining three playable cards, both Leader Cards, both Reference faces, and one Influence Tracker;
+3. all nine Proposal fronts;
+4. all nine Treaty Article backs, mirrored horizontally for long-edge duplex alignment with sheet 3.
 
-- at least twelve 1-Influence tokens;
-- at least two 5-Influence tokens or equivalent denomination markers.
-
-This supply recommendation is not a rules maximum. Additional generic counters may be substituted if an unusually long game or repeated card effects exceed the provided supply.
-
-During Terms, place the exact stake directly on the selected Proposal / Treaty Article card. This makes the amount at risk visible to both players and clearly separates available Influence from staked Influence.
+The two Reference faces may be sleeved or mounted back-to-back. The Leader Cards, Reference card, Proposal / Treaty Article cards, and Influence Tracker are supplemental open-information components and do not use the normal playable-card back.
 
 ---
 
@@ -232,6 +284,7 @@ During Terms, place the exact stake directly on the selected Proposal / Treaty A
 - Test whether repeating complete Proposal text on both sides remains readable at standard card size.
 - Track whether beginning with 1 Influence gives useful choices without making early cost-2 Proposals too accessible.
 - Track Influence gained from accepted newly ratified Proposals separately from imposition and faction-card gains.
-- Track the largest single Leverage spend and whether uncapped spending creates satisfying climaxes or deterministic battles.
+- Track the largest single Leverage spend and whether uncapped per-battle spending creates satisfying climaxes or deterministic battles.
 - Test whether the Senator's one-card-per-Influence recovery is appropriately costly with the three-card hand limit.
-- Confirm that placing stake tokens directly on Proposal cards causes no ambiguity when a card is flipped after ratification.
+- Test whether the 10-Influence maximum is reached often enough to waste meaningful gains.
+- Confirm that the slider remains practical at values 8–10 and that lowering the tracker cleanly represents a current stake.
