@@ -154,10 +154,11 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 ### Digital work
 
 - The TypeScript engine, CLI, and GUI remain development scaffolds.
-- The v0.6 development deckbuilder is live under `../deckbuilder-v0.6/` and reads the active Neutral, Military, Diplomat, and Inquisition Markdown sources at runtime.
-- It supports completed faction and leader selection, Neutral-plus-faction legality, playable-card count/value validation, local saves, JSON import/export, and text export.
+- The v0.6 development deckbuilder is live under `../deckbuilder-v0.6/` and reads the active Neutral, Military, Diplomat, Inquisition, and Territory Markdown sources at runtime.
+- It supports completed faction and leader selection, Neutral-plus-faction legality, playable-card count/value validation, all 25 Territories, exactly-three/max-one-Arena validation, local saves, JSON import/export, and text export.
+- Territory selection is included in the Current deck display and in saved/exported deck data.
 - Arcane, Financiers, and Intelligence remain disabled placeholders until their packages are complete.
-- Territory selection, supplemental-component manifests, and print/PDF export remain pending.
+- Supplemental-component manifests and print/PDF export remain pending.
 - Do not silently migrate v0.5 saved decks into v0.6.
 
 ### Lore and production
@@ -188,4 +189,4 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 
 ## Immediate next step
 
-Continue Arcane, Financier, or Intelligence design while playtesting the completed Military, Diplomat, and Inquisition packages. In parallel, use the consolidated Territory pool to add Territory selection and supplemental-component manifests to the development deckbuilder so it can validate complete decks and generate the correct print package without creating premature canonical release data.
+Continue Arcane, Financier, or Intelligence design while playtesting the completed Military, Diplomat, and Inquisition packages. In parallel, add faction supplemental-component manifests to the development deckbuilder so it can generate the correct print package without creating premature canonical release data.
