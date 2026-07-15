@@ -111,7 +111,7 @@ Neutral Observers changes procedure rather than battle totals. The opponent rema
 
 > **Action:** Bank Good Faith as an Asset.
 >
-> When you offer Terms, before the opponent accepts or refuses, if you have at least one card in hand, you may discard Good Faith. If you do, draw one card, then reveal one card from your hand and set it aside as the offered card.
+> When you offer Terms, before the opponent accepts or refuses, you may discard Good Faith. If you do, draw one card, then reveal one card from your hand and set it aside as the offered card.
 >
 > **Accepted:** Send the offered card to your Graveyard.
 >
@@ -207,7 +207,7 @@ Censure pressures unilateral Action-card play without preventing it. The sanctio
 >
 > **Accepted:** Discard Gunboat Diplomacy.
 >
-> **Refused:** Play Gunboat Diplomacy in the resulting battle without counting against the number of Battle cards you may play from hand.
+> **Refused:** Play Gunboat Diplomacy face up in the resulting battle without counting against the number of Battle cards you may play from hand.
 >
 > **Battle:** Gain +2 to your battle total. After the battle, discard Gunboat Diplomacy instead of sending it to the Graveyard.
 
