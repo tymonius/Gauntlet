@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gauntlet v0.6 Development Deckbuilder</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div>
+      <p class="eyebrow">Gauntlet development tool</p>
+      <h1>v0.6 Deckbuilder</h1>
+      <p class="lede">Build faction decks from the active v0.6 working sources.</p>
+    </div>
+    <div class="status-card" aria-live="polite">
+      <span>Source status</span>
+      <strong id="dataStatus">Loading active documents…</strong>
+    </div>
+  </header>
+
+  <main id="app" class="app-shell" hidden>
+    <section class="panel warning-panel">
+      <strong>Development build.</strong>
+      This tool reads active Markdown sources because canonical v0.6 data does not exist yet. Territory selection and print/PDF export are not wired in this first scaffold.
+    </section>
+
+    <section class="panel setup-panel">
+      <div class="panel-heading">
+        <div>
+          <h2>Deck setup</h2>
+          <p class="muted">Choose a completed faction and one of its leaders.</p>
+        </div>
+      </div>
+      <div class="setup-grid">
+        <label>
+          Deck name
+          <input id="deckName" type="text" maxlength="80" placeholder="Untitled v0.6 deck" />
+        </label>
+        <label>
+          Faction
+          <select id="factionSelect"></select>
+        </label>
+        <label>
+          Leader
+          <select id="leaderSelect"></select>
+        </label>
+      </div>
+      <article id="leaderPreview" class="leader-preview empty-state">Choose a completed faction to inspect its leaders.</article>
+    </section>
+
+    <section class="dashboard" aria-label="Deck summary">
+      <article class="metric-card">
+        <span>Main deck</span>
+        <strong><span id="cardCount">0</span> / 30+</strong>
+      </article>
+      <article class="metric-card">
+        <span>Value</span>
+        <strong><span id="pointTotal">0</span> / 60</strong>
+      </article>
+      <article class="metric-card">
+        <span>Faction cards</span>
+        <strong id="factionCardCount">0</strong>
+      </article>
+      <article id="validityCard" class="metric-card validation-card">
+        <span>Playable cards</span>
+        <strong id="validityText">Incomplete</strong>
+      </article>
+    </section>
+
+    <section class="panel management-panel">
+      <div class="management-grid">
+        <section>
+          <h3>Validation</h3>
+          <ul id="validationList" class="validation-list"></ul>
+        </section>
+        <section>
+          <h3>Saved decks</h3>
+          <select id="savedDeckSelect"></select>
+          <div class="button-row">
+            <button id="saveDeckButton" type="button">Save</button>
+            <button id="loadDeckButton" type="button" class="secondary">Load</button>
+            <button id="deleteDeckButton" type="button" class="secondary danger">Delete</button>
+          </div>
+        </section>
+        <section>
+          <h3>Share / transfer</h3>
+          <div class="button-row">
+            <button id="copyDeckButton" type="button" class="secondary">Copy list</button>
+            <button id="exportJsonButton" type="button" class="secondary">Export JSON</button>
+            <button type="button" class="secondary" disabled title="Planned after card and Territory rendering stabilizes">Print / PDF</button>
+          </div>
+          <textarea id="importJson" rows="4" placeholder="Paste an exported v0.6 deck JSON here"></textarea>
+          <button id="importJsonButton" type="button" class="secondary full-width">Import JSON</button>
+        </section>
+      </div>
+    </section>
+
+    <section class="builder-grid">
+      <div class="builder-column">
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Available cards</h2>
+              <p class="muted">Neutral cards plus cards from the selected faction.</p>
+            </div>
+            <span id="availableCount" class="pill">0</span>
+          </div>
+          <div class="filters">
+            <label>
+              Search
+              <input id="cardSearch" type="search" placeholder="Name or card text" />
+            </label>
+            <label>
+              Allegiance
+              <select id="allegianceFilter">
+                <option value="all">Neutral + faction</option>
+                <option value="neutral">Neutral only</option>
+                <option value="faction">Faction only</option>
+              </select>
+            </label>
+            <label>
+              Cost
+              <select id="costFilter">
+                <option value="all">All costs</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+            </label>
+          </div>
+          <div class="card-browser">
+            <div id="availableCards" class="compact-card-list"></div>
+            <aside id="cardPreview" class="card-preview empty-state">Select a card to view its active working text.</aside>
+          </div>
+        </section>
+
+        <section class="panel territory-placeholder">
+          <h2>Territories</h2>
+          <p>The v0.6 Territory reviews are complete, but there is not yet a consolidated canonical v0.6 Territory dataset. Territory selection will be added without silently treating historical v0.5.7 data as final.</p>
+        </section>
+      </div>
+
+      <div class="builder-column">
+        <section class="panel">
+          <div class="panel-heading">
+            <div>
+              <h2>Current deck</h2>
+              <p class="muted">Playable cards only. Leader and other supplemental cards do not count.</p>
+            </div>
+            <button id="clearDeckButton" type="button" class="secondary danger">Clear cards</button>
+          </div>
+          <div id="deckCards" class="deck-list empty-state">No cards added yet.</div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
