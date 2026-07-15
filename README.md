@@ -10,6 +10,7 @@ The project is in private pre-release development and physical playtesting.
 - **Active development line:** v0.6
 - **v0.6 focus:** six factions, two leaders per faction, faction resources, alternate victory paths, canonical-data production, and faction playtesting
 - **Playable-card review:** complete for all 54 v0.5.7 source cards
+- **Completed faction pools:** Military, Diplomats, and Inquisition
 - **Territory review:** complete for all 25 v0.5.7 Territories and Arenas
 - **Conditions:** retired as a v0.6 game concept; persistent effects now use Assets, Overlays, or immediate/self-tracking resolution
 - **Live checkpoint:** `docs/Gauntlet_v0.6_Project_Index.md`
@@ -64,6 +65,11 @@ Start with:
 
 - `docs/Gauntlet_v0.6_Project_Index.md` — current source-of-truth map and milestone checkpoint;
 - `docs/Gauntlet_v0.6_Working_Rules.md` — active v0.6 rules framework;
+- `docs/Gauntlet_v0.6_Neutral_Card_Pool.md` — authoritative working Neutral exact text;
+- `docs/Gauntlet_v0.6_Military_Card_Pool.md` — authoritative working Military exact text;
+- `docs/Gauntlet_v0.6_Diplomat_Card_Pool.md` — authoritative working Diplomat exact text;
+- `docs/Gauntlet_v0.6_Inquisition_Card_Pool.md` — authoritative working Inquisition exact text;
+- `docs/Gauntlet_v0.6_Inquisition_Supplemental_Cards.md` — Grand Inquisitor, Witch Hunter, faction references, and Conviction tracker;
 - `docs/card-reviews/STATUS.md` — consolidated playable-card checkpoint and exact-text blockers;
 - `docs/Gauntlet_v0.6_Card_Review_Log.md` — decisions for all 54 reviewed playable cards;
 - `docs/Gauntlet_v0.6_Card_Metadata.md` — card allegiance, complexity, starter, and watchlist metadata;
@@ -78,7 +84,11 @@ Start with:
 
 ### `faction-sheets/`
 
-Browser-printable working sheets for v0.6 faction cards and supplemental components. The Military sheet contains its twelve playable cards, both Leader Cards, and the shared sliding Command tracker.
+Browser-printable working sheets for v0.6 faction cards and supplemental components. Military and Inquisition currently have complete two-sheet print-and-play packages; see `faction-sheets/README.md` for rendered links and instructions.
+
+### `images/`
+
+Current v0.6 leader portrait assets are stored at the top level, with matching production sketches under `images/sketches/`.
 
 ### `deckbuilder/`
 
