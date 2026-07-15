@@ -1,10 +1,10 @@
 # Gauntlet v0.6 Card Metadata
 
-**Status:** Consolidated metadata rollup through 84 current playable-card designs: 50 Neutral cards, 12 Military cards, 12 Diplomat cards, and 10 retained source designs assigned to the four unfinished factions.
+**Status:** Consolidated metadata rollup through 95 current playable-card designs: 50 Neutral cards, 12 Military cards, 12 Diplomat cards, 12 Inquisition cards, and 9 retained source designs assigned to the three unfinished factions.
 
-`card-reviews/STATUS.md` records the live checkpoint. `Gauntlet_v0.6_Neutral_Card_Pool.md`, `Gauntlet_v0.6_Military_Card_Pool.md`, and `Gauntlet_v0.6_Diplomat_Card_Pool.md` are authoritative for the names, costs, complexity, uniqueness, and exact text of their completed pools. The consolidated Card Review Log, source registry below, and standalone reviews remain migration and design provenance.
+`card-reviews/STATUS.md` records the live checkpoint. `Gauntlet_v0.6_Neutral_Card_Pool.md`, `Gauntlet_v0.6_Military_Card_Pool.md`, `Gauntlet_v0.6_Diplomat_Card_Pool.md`, and `Gauntlet_v0.6_Inquisition_Card_Pool.md` are authoritative for the names, costs, complexity, uniqueness, traits, and exact text of their completed pools. The consolidated Card Review Log, source registry below, and standalone reviews remain migration and design provenance.
 
-The 54-row source registry preserves the v0.5.7 migration record. It is not itself a count of current playable designs: Militias and Patriotism are retained below as retired source entries, while newly created Military and Diplomat cards appear only in their active package tables.
+The 54-row source registry preserves the v0.5.7 migration record. It is not itself a count of current playable designs: Militias and Patriotism are retained below as retired source entries, while newly created Military, Diplomat, and Inquisition cards appear only in their active package tables.
 
 This file replaces the combined labels **Core Neutral** and **Advanced Neutral / Watchlist** with separate metadata fields. Those older labels in historical source material do not define gameplay categories.
 
@@ -71,7 +71,7 @@ Use **TBD** where starter-deck suitability has not yet been decided. A dash in t
 | 48 | Tariffs | Financiers | No | Advanced | Action economy, delayed draw suppression, multiple-copy incentives, and voluntary Asset removal |
 | 49 | Sequestration | Neutral | No | Advanced | Mass Asset resets, comeback strength, and Asset-heavy faction engines |
 | 50 | Treason | Intelligence | No | Advanced | Copied-effect timing, cancellation interactions, source-dependent effects, and Surveillance/Interference |
-| 51 | Tyranny | Inquisition | No | Advanced | Repeatable suppression, opponent-selected targets, multi-part Battle cards, and negation timing |
+| 51 | Tyranny | Inquisition | No | Advanced | Historical source wording; active Inquisition table overrides cost and exact-text assumptions |
 | 52 | Valor | Neutral | Yes | Basic | Multiple-copy stacking and repeated loss-trigger draws |
 | 53 | War Crimes | Military | No | Advanced | Long-game card denial, extra retreat, and sacrifice of normal victory exploitation |
 | 54 | Arcane Knowledge | Neutral | No | Advanced | Graveyard toolbox flexibility, premium Battle effects, and copied-effect chains |
@@ -126,13 +126,35 @@ This table is authoritative over the Diplomat-related migration row above.
 | D11 | Embargo | 4 | TBD | Advanced | No | Immediate Asset loss, matchup severity, and multiple-copy stacking |
 | D12 | Blockade | 5 | No | Advanced | No | Repeatable Influence pressure, movement-tax frequency, and sanctions-relief timing |
 
+## Active Inquisition package metadata
+
+This table is authoritative over the Inquisition-related migration row above.
+
+| ID | Card | Cost | Starter eligible | Complexity | Unique | Watchlist |
+|---|---|---:|---|---|---|---|
+| Q1 | Accusation | 1 | TBD | Basic | No | Low-cost top-deck control and repeated soft lock pressure |
+| Q2 | Confession | 2 | No | Advanced | No | Special-reveal timing and commitment replacement clarity |
+| Q3 | Penance | 2 | TBD | Basic | No | Opponent-choice balance and empty-hand handling |
+| Q4 | Divine Mercy | 2 | TBD | Basic | No | Automatic inclusion, +2 Battle efficiency, and Conviction acceleration |
+| Q5 | No Martyrs | 3 | No | Advanced | No | Beneficial-trigger scope and retreat timing |
+| Q6 | Excommunication | 3 | TBD | Advanced | No | Multi-card value selection and cheap-deck exhaustion rate |
+| Q7 | Guilt by Association | 3 | TBD | Basic | No | Duplicate-heavy matchup ceiling and copy definition |
+| Q8 | Act of Faith | 3 | TBD | Basic | No | Direct deck attack and partial-reveal handling |
+| Q9 | Tyranny | 4 | No | Advanced | No | Repeatable targeted negation and automatic inclusion pressure |
+| Q10 | Burning at the Stake | 4 | No | Advanced | No | Highest-value hand removal and compact-deck severity |
+| Q11 | Heresy | 5 | No | Advanced | No | Arcane trait, source-dependent copied effects, and one-level recursion exception |
+| Q12 | Hellfire | 5 | No | Advanced | No | Flexible Conviction allocation and direct-exhaustion pacing |
+
 ## Name, trait, allegiance, and uniqueness notes
 
 - The v0.5.7 card **Arcane Knowledge** is named **Witchcraft** in v0.6.
 - The v0.5.7 card **Witchcraft** is named **Arcane Knowledge** in v0.6.
 - **Arcane Knowledge** (#54) has the **Arcane** trait despite Neutral allegiance. Trait and allegiance are separate fields.
+- **Heresy** is an Inquisition card with the **Arcane** trait.
+- The Inquisition trigger formerly called **Heresy** is named **Blasphemy**.
 - **Manifest Destiny** is Neutral, cost 5, Advanced, and Unique: maximum one copy per deck.
 - **Shock and Awe** is Military, cost 5, Advanced, and Unique: maximum one copy per deck.
+- The Inquisition package currently contains no Unique cards.
 - **War Crimes** is Military rather than Inquisition.
 - **Militias** and **Patriotism** are retired migration entries and are not playable in the current v0.6 pool.
 - The Ambassador ability formerly provisionally named **Good Offices** is named **Cordiality**.
@@ -145,5 +167,6 @@ This table is authoritative over the Diplomat-related migration row above.
 - The Neutral pool contains exactly 50 unique cards with the final 11 / 19 / 11 / 8 / 1 cost curve.
 - The Military pool contains exactly 12 unique cards with the current 1 / 4 / 3 / 3 / 1 cost curve.
 - The Diplomat pool contains exactly 12 unique cards with the approved 1 / 3 / 5 / 2 / 1 cost curve, total value 35, and average value 2.92.
-- The current project contains 84 playable-card designs: 50 Neutral, 12 Military, 12 Diplomats, and 10 retained source designs assigned to the four unfinished factions.
-- Remaining card work concerns the Inquisition, Arcane, Financier, and Intelligence packages, faction exact-text blockers, Intelligence Missions, copied-effect rules, package playtesting, and canonical-data production.
+- The Inquisition pool contains exactly 12 unique cards with the approved 1 / 3 / 4 / 2 / 2 cost curve, total value 37, and average value 3.08.
+- The current project contains 95 playable-card designs: 50 Neutral, 12 Military, 12 Diplomats, 12 Inquisition, and 9 retained source designs assigned to the three unfinished factions.
+- Remaining card work concerns the Arcane, Financier, and Intelligence packages, faction exact-text blockers, Intelligence Missions, copied-effect rules, package playtesting, and canonical-data production.
