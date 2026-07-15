@@ -28,8 +28,9 @@ The six developing factions are:
 ## Playtest tools
 
 - [Gauntlet v0.5 Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder/) — build, validate, save, randomize, export, and print pre-faction v0.5 decks.
+- [Gauntlet v0.6 Faction Sheets](https://tymonius.github.io/Gauntlet/faction-sheets/) — browser-printable working sheets for completed v0.6 faction packages and supplemental cards.
 
-The current deckbuilder is versioned for the v0.5 line. A separate v0.6+ rules/data mode is planned after the remaining exact card text and faction packages stabilize enough to create canonical v0.6 data.
+The current deckbuilder is versioned for the v0.5 line. The v0.6 faction sheets use active working exact text while faction development continues; a canonical v0.6 deckbuilder mode remains planned after the remaining packages stabilize.
 
 ## Game overview
 
@@ -75,6 +76,10 @@ Start with:
 
 `docs/Archive/` contains completed audits and superseded historical records. Archived files provide provenance but do not override active documents or canonical release data.
 
+### `faction-sheets/`
+
+Browser-printable working sheets for v0.6 faction cards and supplemental components. The Military sheet contains its twelve playable cards, both Leader Cards, and the shared sliding Command tracker.
+
 ### `deckbuilder/`
 
 Static browser deckbuilder for the v0.5 pre-faction ruleset. It supports card filtering, duplicate cards, Territory selection, validation, local saves, JSON import/export, text export, random deck generation, and browser print-to-PDF.
@@ -112,10 +117,11 @@ From the repository root:
 python3 -m http.server 8000
 ```
 
-Then open the deckbuilder at:
+Then open:
 
 ```text
 http://localhost:8000/deckbuilder/
+http://localhost:8000/faction-sheets/
 ```
 
 For the TypeScript development tools:
