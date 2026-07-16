@@ -11,6 +11,7 @@ The project is in private pre-release development and physical playtesting.
 - **v0.6 focus:** six factions, two leaders per faction, faction resources, alternate victory paths, canonical-data production, and faction playtesting
 - **Playable-card review:** complete for all 54 v0.5.7 source cards
 - **Completed faction pools:** Military, Diplomats, and Inquisition
+- **Preliminary v0.6 core rulebook:** self-contained shared rules draft at `releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md`
 - **Definitive faction guides:** Military, Diplomats, and Inquisition are packaged in Markdown, DOCX, and PDF under `releases/v0.6/faction-guides/`
 - **Territory review:** complete for all 25 v0.5.7 Territories and Arenas; exact text consolidated in `docs/Gauntlet_v0.6_Territory_Pool.md`
 - **Conditions:** retired as a v0.6 game concept; persistent effects now use Assets, Overlays, or immediate/self-tracking resolution
@@ -58,6 +59,12 @@ Gauntlet is designed around:
 
 Versioned playtest and release-ready packages. Completed historical releases remain immutable. Developing v0.6 release inserts may be assembled here once a faction source is definitive.
 
+The preliminary shared v0.6 rulebook is:
+
+- `releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md`
+
+This is the current self-contained, player-facing core rules draft intended to accompany the faction guides. It consolidates the v0.5.7 baseline and approved v0.6 core decisions, but remains preliminary until all six faction packages and release blockers are complete. `docs/Gauntlet_v0.6_Working_Rules.md` remains the active development superset.
+
 The definitive Military package is:
 
 - `releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`
@@ -89,7 +96,8 @@ Active design, rules, testing, setting, and production documentation.
 Start with:
 
 - `docs/Gauntlet_v0.6_Project_Index.md` — current source-of-truth map and milestone checkpoint;
-- `docs/Gauntlet_v0.6_Working_Rules.md` — active v0.6 rules framework;
+- `releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md` — self-contained preliminary shared rulebook for use with completed faction guides;
+- `docs/Gauntlet_v0.6_Working_Rules.md` — active v0.6 development rules framework and superset;
 - `docs/Gauntlet_v0.6_Neutral_Card_Pool.md` — authoritative working Neutral exact text;
 - `docs/Gauntlet_v0.6_Territory_Pool.md` — authoritative working Territory and Arena exact text;
 - `releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md` — definitive Military rules, leaders, components, strategy, and exact card pool;
@@ -142,7 +150,7 @@ Automation and repository workflows.
 ## Development workflow
 
 1. Treat released canonical data as authoritative for its matching version.
-2. Treat definitive faction guides and active v0.6 documents as the working source of truth until canonical v0.6 data exists.
+2. Treat definitive faction guides, the preliminary core rulebook, and active v0.6 documents as the working source set until canonical v0.6 data exists; the Working Rules govern later development decisions not yet rolled into the preliminary rulebook.
 3. Record approved decisions in the relevant active source.
 4. Roll standalone decisions into consolidated guides, the Review Log, and Metadata registry at material checkpoints.
 5. Reserve README and Project Index updates for material milestones, source-hierarchy changes, and batch checkpoints.
