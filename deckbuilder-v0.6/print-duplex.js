@@ -39,6 +39,7 @@
   function preparePrintDocument(html) {
     const documentNode = new DOMParser().parseFromString(html, "text/html");
     standardizePageGeometry(documentNode);
+    normalizeProposalLayouts(documentNode);
     addOverlayBands(documentNode);
     alignProposalAndTreatyPages(documentNode);
     isolateDoubleSidedReference(documentNode);
@@ -69,6 +70,12 @@
 .duplex-page{break-before:page!important;page-break-before:always!important;break-after:page!important;page-break-after:always!important;}
 .duplex-page.duplex-back-page:last-of-type{break-after:auto!important;page-break-after:auto!important;}
 .duplex-page .card-table{position:absolute;inset:0;}
+.proposal-card .proposal-banner{grid-row:1;}
+.proposal-card .proposal-title-row{grid-row:2;}
+.proposal-card .requirement{grid-row:3;}
+.proposal-card .proposal-body{grid-row:4;}
+.proposal-card .proposal-footer{grid-row:5;}
+.proposal-card.treaty .proposal-banner{font-size:10pt!important;font-weight:900!important;letter-spacing:.16em!important;}
 .overlay-card .card-header,
 .overlay-card .card-body,
 .overlay-card .card-footer{margin-right:.30in;}
@@ -76,6 +83,13 @@
 .overlay-band{position:absolute;z-index:5;top:0;right:0;bottom:0;width:.30in;display:flex;align-items:center;justify-content:center;overflow:hidden;border-left:1px solid #111;background:#bcbcbc!important;box-shadow:inset 0 0 0 999px #bcbcbc;-webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact;}
 .overlay-band-name{display:block;max-height:3.24in;overflow:hidden;writing-mode:vertical-rl;transform:rotate(180deg);color:#111;font-size:7.8pt;font-weight:900;line-height:1;letter-spacing:.045em;text-align:center;text-transform:uppercase;white-space:nowrap;}
 `;
+  }
+
+  function normalizeProposalLayouts(documentNode) {
+    documentNode.querySelectorAll(".proposal-card.treaty .proposal-banner").forEach(banner => {
+      banner.textContent = "RATIFIED";
+      banner.setAttribute("aria-label", "Ratified Treaty Article");
+    });
   }
 
   function addOverlayBands(documentNode) {
