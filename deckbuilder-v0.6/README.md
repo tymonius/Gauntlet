@@ -36,7 +36,7 @@ This folder does not create canonical v0.6 release data. It reads the active wor
 
 - `docs/Gauntlet_v0.6_Neutral_Card_Pool.md`
 - `releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`
-- `docs/Gauntlet_v0.6_Diplomat_Card_Pool.md`
+- `releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`
 - `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`
 - `docs/Gauntlet_v0.6_Territory_Pool.md`
 
