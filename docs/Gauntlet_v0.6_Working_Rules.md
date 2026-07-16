@@ -391,9 +391,11 @@ At the start of the Diplomat's turn, after captures, if at least **five differen
 
 ### Faction cards and supplemental components
 
-The authoritative names, costs, playable types, and exact text for the twelve-card Diplomat package are maintained in `Gauntlet_v0.6_Diplomat_Card_Pool.md`.
+The definitive source for all Diplomat-specific rules and player-facing text is:
 
-The authoritative Leader Cards, Proposal / Treaty Article cards, Terms reference, and sliding Influence Tracker specification are maintained in `Gauntlet_v0.6_Diplomat_Supplemental_Cards.md`.
+- `../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`
+
+The adjacent DOCX and PDF are release-formatted editions. That guide governs Influence, Terms, Leverage, Treaty Articles, Peace Treaty, Ambassador, Senator, Proposal and reference components, the sliding Influence tracker, strategy, terminology, and the canonical twelve-card Diplomat pool. General rules in this document still apply unless the definitive faction guide specifically overrides them.
 
 ---
 
