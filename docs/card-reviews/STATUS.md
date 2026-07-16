@@ -5,7 +5,7 @@
 **New Neutral additions:** Complete through all 12 cards  
 **Neutral pool:** Complete at 50 cards  
 **Military pool:** Complete at 12 cards; definitive faction guide packaged  
-**Diplomat pool:** Complete at 12 cards  
+**Diplomat pool:** Complete at 12 cards; definitive faction guide packaged  
 **Inquisition pool:** Complete at 12 cards  
 **Current playable designs:** 95  
 **Conditions:** Retired as a v0.6 game concept
@@ -18,14 +18,14 @@ The 95 current designs comprise 50 Neutral, 12 Military, 12 Diplomat, 12 Inquisi
 
 1. `../Gauntlet_v0.6_Neutral_Card_Pool.md`
 2. `../../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md` — definitive Military rules and exact card pool
-3. `../Gauntlet_v0.6_Diplomat_Card_Pool.md`
+3. `../../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md` — definitive Diplomat rules and exact card pool
 4. `../../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` — definitive Inquisition rules and exact card pool
 5. `../Gauntlet_v0.6_Card_Metadata.md`
 6. `COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`
 7. `../Gauntlet_v0.6_Card_Review_Log.md`
 8. `CONDITION_AUDIT.md`
 
-Definitive faction guides and completed exact-text pool documents override migration records and historical sidecars where they differ. Military's former split files and Inquisition's former split pool, design-note, supplemental, and working-guide files have been consolidated into their definitive guides and removed.
+Definitive faction guides and completed exact-text pool documents override migration records and historical sidecars where they differ. Military's former split files, Diplomats' former split pool, design-note, and supplemental files, and Inquisition's former split pool, design-note, supplemental, and working-guide files have been consolidated into definitive guides and removed.
 
 ---
 
@@ -71,6 +71,7 @@ The Working Rules include:
 - **Sanctions: Censure, Sanctions: Embargo, and Sanctions: Blockade** are the Sanctions.
 - **Cordiality** is the Ambassador ability.
 - **Recognition of Claims** is archived.
+- The definitive source is `releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`, with matching release DOCX and PDF.
 
 ### Inquisition
 
