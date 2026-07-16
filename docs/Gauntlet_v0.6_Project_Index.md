@@ -10,7 +10,9 @@ Read this file first when resuming v0.6 work.
 
 ### Rules, cards, and Territories
 
-1. **`Gauntlet_v0.6_Working_Rules.md`** — current v0.6 rules framework, faction mechanics, leaders, resources, alternate victories, Assets, Overlays, Territories, and product scope.
+- **`../releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md`** — self-contained, release-facing shared rulebook draft intended to accompany completed faction guides. It consolidates the v0.5.7 core baseline and approved v0.6 core decisions, but is not yet canonical.
+
+1. **`Gauntlet_v0.6_Working_Rules.md`** — active v0.6 development rules framework and superset, including developing faction mechanics, leaders, resources, alternate victories, Assets, Overlays, Territories, and product scope. Later approved decisions recorded here govern until rolled into the preliminary core rulebook.
 2. **`Gauntlet_v0.6_Neutral_Card_Pool.md`** — authoritative names, costs, metadata, and exact text for all 50 Neutral cards.
 3. **`Gauntlet_v0.6_Territory_Pool.md`** — authoritative names, complexity, watchlists, status, and exact text for all 25 Territories and Arenas.
 4. **`../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`** — definitive Military faction source: Military rules, General, Commandant, Orders, Command tracker, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are the release-formatted editions.
@@ -29,7 +31,7 @@ Read this file first when resuming v0.6 work.
 17. **`../releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`** — historical pre-v0.6 canonical source.
 18. **`v0.5.7_rules_clarifications.md`** — physical-rules clarifications from digital implementation.
 
-No canonical v0.6 data exists yet. Active v0.6 documents govern until the remaining three faction packages, exact-text blockers, Intelligence Missions, copied-effect rules, and package testing are resolved. For Military, Diplomats, and Inquisition, the definitive faction guides above override earlier development records and split package documents, which have been removed from the active repository.
+No canonical v0.6 data exists yet. The preliminary core rulebook is the current player-facing shared-rules snapshot; the Working Rules remain the active development superset. Active v0.6 documents govern until the remaining three faction packages, exact-text blockers, Intelligence Missions, copied-effect rules, and package testing are resolved. For Military, Diplomats, and Inquisition, the definitive faction guides above override earlier development records and split package documents, which have been removed from the active repository.
 
 ### Design rationale and testing
 
@@ -141,6 +143,7 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - The numbered files under `territory-reviews/` remain design and approval provenance rather than the active exact-text source.
 - Current Territory watchlists include Old Battlefield, Grand Melee, and Monastery.
 - The Working Rules include independent Action and hand-commitment limits, voluntary Asset removal, no Conditions, Asset/Overlay persistence, negation, bounded copied-effect handling, revised Diplomat rules, and the current Inquisition rules.
+- `../releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md` now provides a self-contained player-facing shared-rules draft covering setup, deck construction, turn order, movement, battle, card destinations, occupation, capture, Assets, Territories, Overlays, Heartlands, victory, terminology, and integration summaries for the three completed factions.
 
 ### Factions
 
@@ -180,16 +183,17 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 1. Treat chat as workspace; write durable decisions into the repository.
 2. Use released canonical data for its matching version.
 3. Use definitive faction guides and completed exact-text pool documents before migration provenance.
-4. Assess Neutral-pool impact before faction-locking a shared card.
-5. Record approved decisions in the relevant active source.
-6. Update rollups at material checkpoints.
-7. Keep rules, rationale, lore, production, and implementation in their designated documents.
-8. Archive or remove superseded working records once consolidated.
-9. Do not claim a decision is logged until the repository update succeeds.
-10. Do not create canonical v0.6 data by silently resolving open questions.
+4. Use the preliminary core rulebook as the player-facing shared-rules snapshot and the Working Rules as the active development superset until canonical v0.6 data exists.
+5. Assess Neutral-pool impact before faction-locking a shared card.
+6. Record approved decisions in the relevant active source.
+7. Update rollups at material checkpoints.
+8. Keep rules, rationale, lore, production, and implementation in their designated documents.
+9. Archive or remove superseded working records once consolidated.
+10. Do not claim a decision is logged until the repository update succeeds.
+11. Do not create canonical v0.6 data by silently resolving open questions.
 
 ---
 
 ## Immediate next step
 
-Continue Arcane, Financier, or Intelligence design while playtesting the completed Military, Diplomat, and Inquisition packages. In parallel, add starter-deck templates and keep the supplemental print manifests synchronized with the definitive faction guides and faction-sheet sources. Reopen a definitive faction package only when testing reveals a strategic, balance, wording, or production failure.
+Playtest and physically review the preliminary core rulebook together with the completed Military, Diplomat, and Inquisition guides while continuing Arcane, Financier, or Intelligence design. Record any shared-rules corrections in the Working Rules first, then roll stable changes into the preliminary core rulebook at material checkpoints. In parallel, add starter-deck templates and keep supplemental print manifests synchronized with the definitive faction guides and faction-sheet sources. Reopen a definitive faction package only when testing reveals a strategic, balance, wording, or production failure.
