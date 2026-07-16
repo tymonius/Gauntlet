@@ -63,7 +63,9 @@
 
     style.textContent += `
 .card-page{position:relative;width:7.5in!important;height:10.5in!important;margin:0!important;overflow:hidden!important;}
-.card-table{width:7.5in!important;height:10.5in!important;margin:0!important;}
+.card-table{width:7.5in!important;margin:0!important;}
+.card-page .card-table{height:10.5in!important;}
+.first-page .card-table.two-row{height:7in!important;}
 .duplex-page{break-before:page!important;page-break-before:always!important;break-after:page!important;page-break-after:always!important;}
 .duplex-page.duplex-back-page:last-of-type{break-after:auto!important;page-break-after:auto!important;}
 .duplex-page .card-table{position:absolute;inset:0;}
