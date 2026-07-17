@@ -10,7 +10,7 @@
 ## v0.6 decision
 
 - **Complexity:** Advanced
-- **Watchlist:** Arcane-faction matchups and Arcane-trait assignment
+- **Watchlist:** Matchups involving Mystics and final Arcane-trait assignment
 
 > While Monastery's controller occupies it, cards cannot leave either player's Graveyard. During battles on Monastery, cards with the Arcane trait have no effect.
 
@@ -20,4 +20,4 @@
 - Keep the Graveyard lock conditional on Monastery's controller personally occupying it.
 - Make the battle suppression apply during any battle on Monastery, independent of who occupies or controls it.
 - Replace named-card references with the Arcane trait so the Territory remains compatible with the expanded v0.6 card pool and the Arcane Knowledge/Witchcraft name swap.
-- Suppress cards with the Arcane trait without inherently disabling Arcane faction rules or leader abilities.
+- Suppress cards with the Arcane trait without inherently disabling Mystics rules or leader abilities.

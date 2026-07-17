@@ -53,7 +53,7 @@ A card belongs to a faction when it expresses **how that faction pursues power o
 - **Military:** conquest, battlefield momentum, Orders, and direct pressure.
 - **Diplomats:** Terms, concessions, legitimacy, Influence, and Peace Treaty.
 - **Inquisition:** Conviction, condemnation, suppression, Purge, and Purification.
-- **Arcane:** Rites, sacrifice, transformation, Graveyard interaction, and Ritual.
+- **Mystics:** Rites, sacrifice, transformation, Graveyard interaction, and Ritual.
 - **Financiers:** Treasury, Capital, Deeds, leverage, income, and ownership.
 - **Intelligence:** Missions, Intel, Surveillance, Interference, and Special Operation.
 
@@ -246,15 +246,15 @@ If not, the victory condition is likely recreating the old tug-of-war problem.
 ### Inquisition
 
 - Should feel severe, procedural, and oppressive without using literal real-world religious iconography.
-- Must have a functional plan against every faction, not only Arcane.
+- Must have a functional plan against every faction, not only Mystics.
 - Purification should create pressure through card attrition without making ordinary participation feel self-destructive or hopeless.
 - Reserve scales imagery for a possible future Legal faction.
 
-### Arcane
+### Mystics
 
 - Weirdness should be organized through consistent Rite, sacrifice, trait, and Graveyard templates.
 - Ritual progress must remain public, interruptible, and connected to battles or board state.
-- Arcane may be advanced, but should not become a solitaire puzzle.
+- Mystics may be advanced, but should not become a solitaire puzzle.
 - Cultural and ritual imagery should be invented or adapted carefully rather than directly appropriating living sacred traditions.
 
 ### Financiers

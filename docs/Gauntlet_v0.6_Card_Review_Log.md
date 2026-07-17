@@ -15,7 +15,7 @@ Conditions are retired in v0.6. Former Condition effects have been converted to 
 
 **v0.5.7 source name:** Arcane Knowledge  
 **Cost:** 5  
-**Allegiance:** Arcane
+**Allegiance:** Mystics
 
 > **Action:** Bank Witchcraft as an Asset. Once per turn during a battle, Witchcraft may use the eligible Battle effect of one other card you played in that battle.
 >
@@ -218,7 +218,7 @@ Keep as pressure against occupation before capture. The Asset makes an opponent'
 **Cost:** 4  
 **Allegiance:** Neutral
 
-Keep as a chaotic global hand/deck reset and situational offensive battle card. Exclude from starter decks and watch interactions with Arcane Graveyard pressure and Inquisition Purification.
+Keep as a chaotic global hand/deck reset and situational offensive battle card. Exclude from starter decks and watch interactions with Graveyard pressure from Mystics and Inquisition Purification.
 
 ---
 
@@ -280,7 +280,7 @@ Financiers create asymmetry through Treasury preparation rather than an addition
 ### 27. Necromancy
 
 **Cost:** 5  
-**Allegiance:** Arcane  
+**Allegiance:** Mystics  
 **Trait:** Arcane
 
 > **Action direction:** Return one card from your Graveyard to your hand. Place Necromancy in your Graveyard instead of discard.

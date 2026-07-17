@@ -25,7 +25,7 @@ The six developing factions are:
 | Military | conquest, battlefield momentum, and Orders |
 | Diplomats | Terms, Influence, concessions, and Peace Treaty |
 | Inquisition | Conviction, condemnation, Purge, and Purification |
-| Arcane | Rites, sacrifice, transformation, and Ritual victory |
+| Mystics | Rites, sacrifice, transformation, and Ritual victory |
 | Financiers | Capital, Treasury, Deeds, and Controlling Interest |
 | Intelligence | Intel, Missions, Surveillance, and Special Operation |
 

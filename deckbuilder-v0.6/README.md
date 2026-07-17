@@ -28,7 +28,7 @@ The development build supports:
 - browser Print / PDF export for the complete playable deck, Territories, selected Leader Card, and required faction supplemental cards;
 - local save/load/delete.
 
-Arcane, Financiers, and Intelligence appear as disabled development placeholders.
+Mystics, Financiers, and Intelligence appear as disabled development placeholders.
 
 ## Active runtime sources
 
@@ -80,6 +80,6 @@ All duplex pairs use identical 7.5 × 10.5-inch page boxes. Back-side card posit
 ## Next implementation steps
 
 1. Add starter-deck templates.
-2. Add completed Arcane, Financier, and Intelligence packages as their exact-text sources stabilize.
+2. Add the completed Mystics, Financiers, and Intelligence packages as their exact-text sources stabilize.
 3. Keep supplemental manifests synchronized with definitive faction guides and faction-sheet sources.
 4. Replace Markdown parsing with canonical v0.6 JSON only after the complete release data is approved.

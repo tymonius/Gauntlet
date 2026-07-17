@@ -122,7 +122,7 @@ window.GAUNTLET_V06_SUPPLEMENTALS = {
         sections: [
           { label: "Conviction", text: "Maximum 4. The first time each turn one or more opposing cards enter the Graveyard after a battle involving you, gain 1 Conviction." },
           { label: "Condemnation", text: "In battles involving you, opposing played battle-drawn cards go to their owner's Graveyard after the battle instead of discard. Hand commitments already go to the Graveyard. Unplayed battle-drawn cards are discarded normally." },
-          { label: "Blasphemy", text: "Whenever the opponent plays a card with the Arcane trait, gain 1 Conviction outside the normal once-per-turn limit, up to the maximum. The Arcane trait is distinct from Arcane faction allegiance." },
+          { label: "Blasphemy", text: "Whenever the opponent plays a card with the Arcane trait, gain 1 Conviction outside the normal once-per-turn limit, up to the maximum. The Arcane trait is separate from faction allegiance; not every Arcane card belongs to Mystics." },
           { label: "Purification", text: "At the start of the opponent's turn, after their normal draw attempt, if they draw no cards because their deck and discard pile are empty, you win. Failed battle draws and card-effect draws do not trigger Purification." }
         ],
         footer: "Supplemental reference — no deckbuilding value"

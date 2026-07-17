@@ -16,7 +16,7 @@ v0.6 is the faction-framework release. It adds six playable factions while prese
 | **Military** | conquest, battlefield momentum, Orders, and direct pressure |
 | **Diplomats** | Terms, Influence, concessions, legitimacy, and Peace Treaty |
 | **Inquisition** | Conviction, condemnation, suppression, Purge, and Purification |
-| **Arcane** | Rites, sacrifice, forbidden knowledge, transformation, and Ritual victory |
+| **Mystics** | Rites, sacrifice, forbidden knowledge, transformation, and Ritual victory |
 | **Financiers** | Capital, Treasury, Deeds, leverage, income, and Controlling Interest |
 | **Intelligence** | Intel, Missions, Surveillance, Interference, and Special Operation |
 
@@ -409,7 +409,7 @@ The adjacent DOCX and PDF are release-formatted editions. That guide governs Con
 
 ---
 
-## 12. Arcane
+## 12. Mystics
 
 **Identity:** Rites, sacrifice, forbidden knowledge, transformation, Graveyard play, and rule-bending.  
 **Victory:** complete three public, interruptible Rites.
@@ -687,7 +687,7 @@ It cannot complete that turn and cannot be used to start the Special Operation.
 | Military | Crossed swords |
 | Diplomats | Laurel |
 | Inquisition | Wide-brimmed buckle hat |
-| Arcane | Pentagram or pentacle |
+| Mystics | Pentagram or pentacle |
 | Financiers | Coin |
 | Intelligence | Eye |
 

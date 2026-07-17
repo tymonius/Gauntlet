@@ -10,7 +10,7 @@
 ## v0.6 decision
 
 - **Complexity:** Basic
-- **Watchlist:** Narrow utility, Arcane Graveyard setup, and deliberate deck thinning
+- **Watchlist:** Narrow utility, Graveyard setup by Mystics, and deliberate deck thinning
 
 > During battle cleanup after a battle on Old Battlefield, its controller may place one unplayed card from their battle draw in their Graveyard instead of their discard pile.
 

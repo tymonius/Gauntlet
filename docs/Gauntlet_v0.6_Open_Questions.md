@@ -26,7 +26,7 @@ Remaining blockers:
 - Finalize Witchcraft copied-effect eligibility.
 - Define impossible-target and source-dependent copied effects generally.
 - Complete Intelligence Mission requirements, including **Assassins**.
-- Complete Arcane, Financier, and Intelligence twelve-card packages.
+- Complete the Mystics, Financiers, and Intelligence twelve-card packages.
 - Decide remaining Arcane-trait assignments.
 - Playtest and physically review completed packages.
 - Create canonical v0.6 card, Territory, faction, leader, deckbuilding, and recommended-deck data after these decisions stabilize.
@@ -104,7 +104,7 @@ Open questions:
 - Is maximum Conviction 4 correct?
 - Are Purge costs and targets correctly priced?
 - Does Condemnation make Purification viable without making battles hopeless?
-- Does Blasphemy pressure Arcane without creating a hard counter?
+- Does Blasphemy pressure Mystic decks without creating a hard counter?
 - Does Final Judgment create excessive post-battle Purge pressure?
 - Is Relentless Pursuit's timing and cost clear and fair?
 - Are Grand Inquisitor and Witch Hunter comparably strong?
@@ -117,7 +117,7 @@ Open questions:
 
 ---
 
-## Arcane
+## Mystics
 
 - Finalize names for Rites, Invocation, Transmutation, and both leader abilities.
 - Are the three Rites comparably difficult?
