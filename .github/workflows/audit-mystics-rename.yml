@@ -56,3 +56,20 @@ jobs:
         with:
           name: rename-inventory
           path: rename-inventory.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rename-source
+          path: |
+            README.md
+            docs
+            releases/v0.6
+            deckbuilder-v0.6
+            faction-sheets
+            images
+            package.json
+            package-lock.json
+            tsconfig.json
+            src
+            test
+            tests
+          if-no-files-found: ignore
