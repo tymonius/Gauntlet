@@ -32,7 +32,27 @@ jobs:
               -E '\bArcane\b|\barcane\b' \
               README.md docs releases/v0.6 deckbuilder-v0.6 faction-sheets images 2>/dev/null || true
           } | tee arcane-occurrences.txt
+      - name: Inventory relevant files
+        shell: bash
+        run: |
+          {
+            echo "# Paths containing arcane in the filename"
+            find . -path './.git' -prune -o -iname '*arcane*' -print | sort
+            echo
+            echo "# Inquisition release package"
+            find releases/v0.6/faction-guides/inquisition -maxdepth 3 -type f -print | sort
+            echo
+            echo "# Image assets"
+            find images -maxdepth 3 -type f -print | sort
+            echo
+            echo "# Generation scripts"
+            find . -path './.git' -prune -o -type f \( -iname '*generate*' -o -iname '*build*' -o -iname '*render*' \) -print | sort
+          } | tee rename-inventory.txt
       - uses: actions/upload-artifact@v4
         with:
           name: arcane-occurrences
           path: arcane-occurrences.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rename-inventory
+          path: rename-inventory.txt
