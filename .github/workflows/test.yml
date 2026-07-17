@@ -14,6 +14,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Audit Arcane references
+        shell: bash
+        run: |
+          set -o pipefail
+          grep -RIn --binary-files=without-match \
+            --exclude='*.pdf' \
+            --exclude='*.docx' \
+            --exclude-dir='.git' \
+            --exclude-dir='Archive' \
+            --exclude-dir='releases/v0.5.7' \
+            -E '\bArcane\b|\barcane\b' \
+            README.md docs releases/v0.6 deckbuilder-v0.6 faction-sheets images 2>/dev/null || true
+
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
