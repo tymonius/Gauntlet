@@ -69,7 +69,7 @@ These are not strict faction colors, but production tendencies.
 | Military | Blue, brass, leather, smoke, field earth, polished weapons |
 | Diplomats | Navy, ivory, parchment, wax seals, laurel, polished wood |
 | Inquisition | Black, charcoal, brown leather, smoke, ash, iron, candlelight |
-| Arcane | Bone, charcoal, dark red, green glass, brass, smoke, ritual marks |
+| Mystics | Bone, charcoal, dark red, green glass, brass, smoke, ritual marks |
 | Financiers | Dark green, burgundy, navy, brass, parchment, ledgers, wax |
 | Intelligence | Muted green, ink black, parchment, walnut wood, brass, coded papers |
 
@@ -502,11 +502,11 @@ The Grand Inquisitor condemns. The Witch Hunter pursues.
 
 ---
 
-# Arcane Leaders
+# Mystic Leaders
 
 ## 10. Alchemist
 
-**Faction:** Arcane  
+**Faction:** Mystics  
 **Mechanical anchor:** Sacrifice, Transmutation, and turning cards sent from hand to Graveyard into fuel. Ability name TBD.  
 **Core identity:** Experiment, transmutation, disciplined occult science.
 
@@ -582,7 +582,7 @@ The Alchemist experiments with matter. The Spirit Walker invokes unseen forces.
 
 ## 11. Spirit Walker
 
-**Faction:** Arcane  
+**Faction:** Mystics  
 **Mechanical anchor:** Ritual protection, Graveyard contact, and preserving a begun Rite through sacrifice. Ability name TBD.  
 **Core identity:** Ritual endurance, unseen communion, protective invocation.
 
@@ -986,7 +986,7 @@ The Ranger sees the field. The Spymaster moves the network.
 | Military | General | Commandant | Attack vs defense |
 | Diplomats | Ambassador | Senator | Personal diplomacy vs institutional legitimacy |
 | Inquisition | Grand Inquisitor | Witch Hunter | Judgment vs pursuit |
-| Arcane | Alchemist | Spirit Walker | Experiment vs invocation |
+| Mystics | Alchemist | Spirit Walker | Experiment vs invocation |
 | Financiers | Banker | Executive | Leverage vs control |
 | Intelligence | Ranger | Spymaster | Fieldcraft vs network command |
 
@@ -1014,7 +1014,7 @@ Bases should reinforce role, not overwhelm the character.
 | Military | Battlefield / fortification |
 | Diplomats | Papers / seals / chamber or diplomatic table |
 | Inquisition | Ash / writs / smoke / tribunal or trail |
-| Arcane | Lab apparatus / ritual circle |
+| Mystics | Lab apparatus / ritual circle |
 | Financiers | Ledgers / strongboxes / crates / trade goods |
 | Intelligence | Terrain markers / maps / cipher tools |
 

@@ -183,7 +183,7 @@ Potential affiliations for discussion:
 | Day | Night |
 |---|---|
 | Military | Intelligence |
-| Diplomats | Arcane |
+| Diplomats | Mystics |
 | Financiers | Inquisition |
 
 Day factions broadly represent open force, public legitimacy, visible institutions, finance, formal power, and battlefield command.
@@ -225,7 +225,7 @@ Examples for later testing, not final rules:
 - Diplomats during Day: first accepted/refused Terms each turn grants +1 Influence, or Proposal costs are reduced by 1, minimum 0.
 - Financiers during Day: first Deed purchase costs 1 less, or Deed Income gains +1 Capital.
 - Intelligence during Night: first Surveillance each turn costs 0, or completed Missions grant +1 Intel.
-- Arcane during Night: first Arcane card sent from hand to Graveyard each turn draws one, or beginning a Rite is slightly easier.
+- Mystics during Night: first Arcane card sent from hand to Graveyard each turn draws one, or beginning a Rite is slightly easier.
 - Inquisition during Night: first Purge each turn costs 1 less, minimum 1, or first opposing card entering Graveyard after battle grants extra Conviction.
 
 ### Open Questions

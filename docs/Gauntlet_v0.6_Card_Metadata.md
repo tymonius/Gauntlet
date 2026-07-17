@@ -21,7 +21,7 @@ Use **TBD** where starter-deck suitability has not yet been decided. A dash in t
 
 | # | Card | Allegiance | Starter eligible | Complexity | Watchlist |
 |---:|---|---|---|---|---|
-| 1 | Witchcraft | Arcane | TBD | Advanced | Copied-effect wording and eligible-effect boundaries |
+| 1 | Witchcraft | Mystics | TBD | Advanced | Copied-effect wording and eligible-effect boundaries |
 | 2 | Armistice | Neutral | No | Advanced | Global battle suppression, alternate-win stalling, and draw-engine support |
 | 3 | Assassins | Intelligence | TBD | Advanced | Mission requirement and disruption density |
 | 4 | Assimilation | Neutral | No | Advanced | Immediate-capture density and overlap with capture shortcuts |
@@ -47,7 +47,7 @@ Use **TBD** where starter-deck suitability has not yet been decided. A dash in t
 | 24 | Manifest Destiny | Neutral | No | Advanced | Unique board expansion, severe sacrifice, and board-geometry interactions |
 | 25 | Militias | — | — | — | Retired; not included in the v0.6 Military release pool |
 | 26 | Monetary Crisis | Financiers | TBD | Advanced | Repeated hand resets |
-| 27 | Necromancy | Arcane | TBD | Advanced | Recursion and Arcane-system interactions |
+| 27 | Necromancy | Mystics | TBD | Advanced | Recursion and interactions with Mystics mechanics |
 | 28 | New Recruits | Neutral | Yes | Basic | Possible automatic inclusion |
 | 29 | Palisade Wall | Neutral | Yes | Basic | Defensive Asset suppression and overlap with Fortified Pass |
 | 30 | Patriotism | — | — | — | Retired; not included in the v0.6 Military release pool |
@@ -169,4 +169,4 @@ This table records Inquisition metadata; the definitive Inquisition faction guid
 - The Diplomat pool contains exactly 12 unique cards with the approved 1 / 3 / 5 / 2 / 1 cost curve, total value 35, and average value 2.92; its definitive source is the release faction guide.
 - The Inquisition pool contains exactly 12 unique cards with the approved 1 / 3 / 4 / 2 / 2 cost curve, total value 37, and average value 3.08; its definitive source is the release faction guide.
 - The current project contains 95 playable-card designs: 50 Neutral, 12 Military, 12 Diplomats, 12 Inquisition, and 9 retained source designs assigned to the three unfinished factions.
-- Remaining card work concerns the Arcane, Financier, and Intelligence packages, faction exact-text blockers, Intelligence Missions, copied-effect rules, package playtesting, and canonical-data production.
+- Remaining card work concerns the Mystics, Financiers, and Intelligence packages, faction exact-text blockers, Intelligence Missions, copied-effect rules, package playtesting, and canonical-data production.

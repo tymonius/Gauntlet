@@ -122,7 +122,7 @@ This is not yet canonical v0.6 release data. The remaining faction packages and 
 
 **Status:** Approved for retention pending playtest  
 **Complexity:** Basic  
-**Watchlist:** Narrow utility, Arcane Graveyard setup, and deliberate deck thinning
+**Watchlist:** Narrow utility, Graveyard setup by Mystics, and deliberate deck thinning
 
 > During battle cleanup after a battle on Old Battlefield, its controller may place one unplayed card from their battle draw in their Graveyard instead of their discard pile.
 
@@ -143,7 +143,7 @@ This is not yet canonical v0.6 release data. The remaining faction packages and 
 ## 17. Monastery
 
 **Complexity:** Advanced  
-**Watchlist:** Arcane-faction matchups and Arcane-trait assignment
+**Watchlist:** Matchups involving Mystics and final Arcane-trait assignment
 
 > While Monastery's controller occupies it, cards cannot leave either player's Graveyard. During battles on Monastery, cards with the Arcane trait have no effect.
 
@@ -209,5 +209,5 @@ This is not yet canonical v0.6 release data. The remaining faction packages and 
 
 - Determine whether Old Battlefield provides enough value outside dedicated Graveyard strategies.
 - Test Grand Melee with cards and faction effects that increase battle-draw size or battle-drawn play allowances.
-- Evaluate Monastery's pressure on the completed Arcane faction and confirm final Arcane-trait assignments.
+- Evaluate Monastery's pressure on the completed Mystics faction and confirm final Arcane-trait assignments.
 - Verify Arena wording and behavior against final tie, Homeland Advantage, battle-draw, and battle-cleanup rules during canonical-data QA.

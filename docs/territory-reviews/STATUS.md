@@ -34,4 +34,4 @@ The approved general rules in `GENERAL_RULES.md` are included in `../Gauntlet_v0
 
 - Whether Old Battlefield provides enough value outside dedicated Graveyard strategies.
 - Grand Melee combinations that substantially increase battle-draw size or battle-drawn play allowances.
-- Arcane-faction pressure from Monastery and final Arcane-trait assignment.
+- Pressure on Mystics from Monastery and final Arcane-trait assignment.

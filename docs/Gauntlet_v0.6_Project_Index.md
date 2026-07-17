@@ -75,7 +75,7 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - The Neutral pool is complete at **50** cards.
 - Military, Diplomats, and Inquisition are complete at **12** cards each.
 - Militias and Patriotism are retired.
-- The project contains **95 current playable designs**: 50 Neutral, 12 Military, 12 Diplomat, 12 Inquisition, and 9 retained source designs assigned to Arcane, Financiers, and Intelligence.
+- The project contains **95 current playable designs**: 50 Neutral, 12 Military, 12 Diplomat, 12 Inquisition, and 9 retained source designs assigned to Mystics, Financiers, and Intelligence.
 
 ### Neutral checkpoint
 
@@ -132,7 +132,7 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - Finalize Witchcraft copied-effect eligibility.
 - Define impossible-target and source-dependent copied effects generally.
 - Complete Intelligence Mission requirements.
-- Complete Arcane, Financier, and Intelligence card packages.
+- Complete the Mystics, Financiers, and Intelligence card packages.
 - Playtest and physically review all completed packages before canonical v0.6 data is created.
 
 ### Territories and core rules
@@ -150,7 +150,7 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - Military — General / Commandant
 - Diplomats — Ambassador / Senator
 - Inquisition — Grand Inquisitor / Witch Hunter
-- Arcane — Alchemist / Spirit Walker
+- Mystics — Alchemist / Spirit Walker
 - Financiers — Banker / Executive
 - Intelligence — Ranger / Spymaster
 
@@ -164,7 +164,7 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 - Territory selection is included in the Current deck display and in saved/exported deck data.
 - Print / PDF export now produces the complete selected faction package: deck summary, chosen Leader Card with portrait and rules, every playable-card copy, three Territories, trackers, references, and other required supplemental faces.
 - Military includes its Command Tracker; Inquisition includes its Conviction Tracker, Doctrine, and Purge Reference; Diplomats include the Influence Tracker, both Reference faces, nine Proposal fronts, and nine mirrored Treaty Article backs for duplex alignment.
-- Arcane, Financiers, and Intelligence remain disabled placeholders until their packages are complete.
+- Mystics, Financiers, and Intelligence remain disabled placeholders until their packages are complete.
 - Do not silently migrate v0.5 saved decks into v0.6.
 
 ### Lore and production
@@ -196,4 +196,4 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 
 ## Immediate next step
 
-Playtest and physically review the preliminary core rulebook together with the completed Military, Diplomat, and Inquisition guides while continuing Arcane, Financier, or Intelligence design. Record any shared-rules corrections in the Working Rules first, then roll stable changes into the preliminary core rulebook at material checkpoints. In parallel, add starter-deck templates and keep supplemental print manifests synchronized with the definitive faction guides and faction-sheet sources. Reopen a definitive faction package only when testing reveals a strategic, balance, wording, or production failure.
+Playtest and physically review the preliminary core rulebook together with the completed Military, Diplomat, and Inquisition guides while continuing design work on Mystics, Financiers, or Intelligence. Record any shared-rules corrections in the Working Rules first, then roll stable changes into the preliminary core rulebook at material checkpoints. In parallel, add starter-deck templates and keep supplemental print manifests synchronized with the definitive faction guides and faction-sheet sources. Reopen a definitive faction package only when testing reveals a strategic, balance, wording, or production failure.

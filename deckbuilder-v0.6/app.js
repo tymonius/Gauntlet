@@ -128,8 +128,8 @@ const FACTIONS = [
     ]
   },
   {
-    id: "arcane",
-    name: "Arcane",
+    id: "mystics",
+    name: "Mystics",
     status: "developing",
     identity: "Rites, sacrifice, transformation, and Ritual victory.",
     resource: "In development",

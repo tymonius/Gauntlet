@@ -57,7 +57,7 @@ In battles involving you, opposing played battle-drawn cards go to their owner's
 
 ### Blasphemy
 
-Whenever the opponent plays a card with the **Arcane** trait, gain 1 Conviction. This gain is outside the normal once-per-turn limit but cannot exceed the maximum. The Arcane trait is distinct from Arcane faction allegiance.
+Whenever the opponent plays a card with the **Arcane** trait, gain 1 Conviction. This gain is outside the normal once-per-turn limit but cannot exceed the maximum. The Arcane trait is separate from faction allegiance; not every Arcane card belongs to Mystics.
 
 ### Purge
 

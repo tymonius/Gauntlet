@@ -10,7 +10,7 @@
 **Current playable designs:** 95  
 **Conditions:** Retired as a v0.6 game concept
 
-The 95 current designs comprise 50 Neutral, 12 Military, 12 Diplomat, 12 Inquisition, and 9 retained source designs assigned to Arcane, Financiers, and Intelligence.
+The 95 current designs comprise 50 Neutral, 12 Military, 12 Diplomat, 12 Inquisition, and 9 retained source designs assigned to Mystics, Financiers, and Intelligence.
 
 ---
 
@@ -48,7 +48,7 @@ The Working Rules include:
 ### Neutral
 
 - **Arcane Knowledge** and **Witchcraft** exchanged names for v0.6.
-- Arcane trait and allegiance are separate.
+- Arcane trait and faction allegiance are separate.
 - **Sequestration** replaces the former Neutral use of **The Black Edict**.
 - **Manifest Destiny** is the Unique cost-5 capstone.
 - Twelve additions complete the 50-card pool.
@@ -92,7 +92,7 @@ The Working Rules include:
 - Finalize Witchcraft copied-effect eligibility.
 - Define impossible-target and source-dependent copied effects generally.
 - Complete Intelligence Mission requirements.
-- Complete Arcane, Financier, and Intelligence packages.
+- Complete the Mystics, Financiers, and Intelligence packages.
 - Playtest and physically review completed packages.
 - Create canonical v0.6 data only after remaining blockers are resolved.
 
@@ -100,4 +100,4 @@ The Working Rules include:
 
 ## Immediate next step
 
-Begin Arcane, Financier, or Intelligence design while testing and reviewing the completed Military, Diplomat, and Inquisition packages. Do not reopen a completed roster without new evidence.
+Begin design work on Mystics, Financiers, or Intelligence while testing and reviewing the completed Military, Diplomat, and Inquisition packages. Do not reopen a completed roster without new evidence.

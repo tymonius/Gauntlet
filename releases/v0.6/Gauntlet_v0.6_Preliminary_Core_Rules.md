@@ -11,7 +11,7 @@ The following faction inserts are complete and may be used with this draft:
 - **Diplomats** — Ambassador or Senator
 - **Inquisition** — Grand Inquisitor or Witch Hunter
 
-Arcane, Financiers, and Intelligence remain in development. This draft should not be treated as the final v0.6 canonical release until all six faction packages, cross-card interactions, physical review, and canonical data are complete.
+Mystics, Financiers, and Intelligence remain in development. This draft should not be treated as the final v0.6 canonical release until all six faction packages, cross-card interactions, physical review, and canonical data are complete.
 
 ---
 

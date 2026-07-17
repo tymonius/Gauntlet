@@ -37,7 +37,7 @@
 
 ## Cross-card name swap
 
-The v0.5.7 card named **Arcane Knowledge** is renamed **Witchcraft** in v0.6. It retains its previously approved mechanics, cost 5, Arcane allegiance, and Advanced complexity:
+The v0.5.7 card named **Arcane Knowledge** is renamed **Witchcraft** in v0.6. It retains its previously approved mechanics, cost 5, allegiance to Mystics, and Advanced complexity:
 
 > **Action:** Bank Witchcraft as an Asset. Once per turn during a battle, Witchcraft may use the eligible Battle effect of one other card you played in that battle.
 >
@@ -55,11 +55,11 @@ This replaces card-specific exclusions such as **non-Witchcraft** and prevents r
 
 ### Neutral-pool impact
 
-Arcane Knowledge demonstrates that cards with the Arcane trait are not automatically locked behind Arcane allegiance. Limited magical study and recovered lore may appear in the Neutral pool, while the Arcane faction retains the highest density and strongest systemic exploitation of such cards.
+Arcane Knowledge demonstrates that cards with the Arcane trait are not automatically restricted to Mystics. Limited magical study and recovered lore may appear in the Neutral pool, while the Mystics faction retains the highest density and strongest systemic exploitation of such cards.
 
 ### Faction-system interaction
 
-As a Neutral Arcane-trait card, Arcane Knowledge can trigger anti-Arcane mechanics such as Heresy outside a direct Arcane-faction matchup. The Arcane faction can exploit it more efficiently through Invocation, Transmutation, Rites, and Graveyard interactions without making the card faction-exclusive.
+As a Neutral Arcane-trait card, Arcane Knowledge can trigger anti-Arcane mechanics such as Heresy outside a direct matchup against Mystics. Mystics can exploit it more efficiently through Invocation, Transmutation, Rites, and Graveyard interactions without making the card faction-exclusive.
 
 ### Rationale
 
@@ -67,10 +67,10 @@ As a Neutral Arcane-trait card, Arcane Knowledge can trigger anti-Arcane mechani
 - Replace **one other card** with **a card** in the Action because Arcane Knowledge has already left the hand and cannot target itself there.
 - Remove the printed **non-Witchcraft** exclusion and handle recursive copying through one general rule.
 - Raise the cost from 3 to 4 because the Battle effect acts as a flexible additional copy of the best eligible effect already available in the Graveyard.
-- Keep the card Neutral with the Arcane trait so magic can be accessed outside the faction without granting access to the Arcane faction's full engine.
+- Keep the card Neutral with the Arcane trait so magic can be accessed outside the faction without granting access to the Mystics' full faction engine.
 
 ## Follow-up
 
 - Rewrite Witchcraft's final copied-effect eligibility wording during the comprehensive copied-effect rules pass.
-- Test Arcane Knowledge in non-Arcane decks and in Arcane decks with Invocation, Transmutation, Necromancy, and Rites.
+- Test Arcane Knowledge in non-Mystic decks and in Mystic decks with Invocation, Transmutation, Necromancy, and Rites.
 - The name swap and cards 48–54 are now integrated into the consolidated Review Log and Metadata registry.

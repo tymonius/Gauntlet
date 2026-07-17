@@ -43,7 +43,7 @@ Current factions:
 - Military;
 - Diplomats;
 - Inquisition;
-- Arcane;
+- Mystics;
 - Financiers;
 - Intelligence.
 
@@ -137,7 +137,7 @@ The leader-design documents establish a shared early-modern / Colonial-adjacent 
 The institutional premise supports the visual roster:
 
 - Military officers can belong to the same broad order as court diplomats;
-- Inquisition officials can share clothing and social forms with Arcane scholars while opposing them;
+- Inquisition officials can share clothing and social forms with Mystic scholars while opposing them;
 - Financiers can fund armies, courts, expeditions, or rival institutions;
 - Intelligence leaders can operate across all institutional boundaries.
 
@@ -154,7 +154,7 @@ Develop one at a time:
 3. Are the factions formally at war, operating through proxies, or competing inside a nominally shared government?
 4. What geographic scale does a normal match represent?
 5. Are Gauntlets common strategic corridors, a formal campaign tradition, or simply the game's abstraction for many kinds of contested routes?
-6. How public and accepted is Arcane practice?
+6. How public and accepted are Mystic practices?
 7. Is the Inquisition primarily religious, legal, political, or a hybrid institution?
 8. How independent are chartered financial and intelligence institutions from military and civil authority?
 9. What non-faction populations, local powers, towns, and communities inhabit the world?
