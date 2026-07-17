@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - rename-arcane-faction-to-mystics
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
