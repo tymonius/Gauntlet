@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="552" viewBox="0 0 1000 552">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="35%" r="75%">
+      <stop offset="0" stop-color="#47675b"/>
+      <stop offset="1" stop-color="#18372e"/>
+    </radialGradient>
+    <linearGradient id="top" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0b211b" stop-opacity=".88"/>
+      <stop offset=".14" stop-color="#0b211b" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="shade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0c251e" stop-opacity="0"/>
+      <stop offset="1" stop-color="#071a15" stop-opacity=".78"/>
+    </linearGradient>
+    <clipPath id="portrait"><rect x="250" y="0" width="500" height="552" rx="4"/></clipPath>
+  </defs>
+  <rect width="1000" height="552" fill="url(#bg)"/>
+  <g clip-path="url(#portrait)">
+    <image href="../banker.png" x="96" y="-192" width="2784" height="2088"/>
+  </g>
+  <rect width="1000" height="552" fill="url(#top)"/>
+  <rect width="1000" height="552" fill="url(#shade)"/>
+</svg>
