@@ -159,7 +159,6 @@ body {
   display: block;
 }
 
-.leader-card[data-card-name="Senator"] .leader-art img { object-position: center 20%; }
 
 .leader-art::after {
   content: '';
