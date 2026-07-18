@@ -14,8 +14,8 @@ const cards = [
 ];
 
 const leaders = [
-  { name: 'Ambassador', image: '../images/leader-cards/ambassador.svg', motto: 'Words first. War last.', abilityName: 'Cordiality', ability: 'Once per turn, after the opponent accepts your Terms, draw one card.' },
-  { name: 'Senator', image: '../images/leader-cards/senator.svg', motto: 'Procedure endures.', abilityName: 'Political Capital', ability: 'Once per turn, when you would lose staked Influence after losing a battle following refused Terms, you may send up to that many cards from hand to your Graveyard. Recover 1 staked Influence per card sent; lose the rest.' }
+  { name: 'Ambassador', image: '../images/leader-cards/ambassador.jpg', motto: 'Words first. War last.', abilityName: 'Cordiality', ability: 'Once per turn, after the opponent accepts your Terms, draw one card.' },
+  { name: 'Senator', image: '../images/leader-cards/senator.jpg', motto: 'Procedure endures.', abilityName: 'Political Capital', ability: 'Once per turn, when you would lose staked Influence after losing a battle following refused Terms, you may send up to that many cards from hand to your Graveyard. Recover 1 staked Influence per card sent; lose the rest.' }
 ];
 
 const proposals = [
