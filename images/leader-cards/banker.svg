@@ -18,6 +18,7 @@
   <g clip-path="url(#portrait)">
     <image href="../banker.png" x="96" y="-192" width="2784" height="2088"/>
   </g>
+  <rect width="1000" height="34" fill="#0b211b" opacity=".96"/>
   <rect width="1000" height="552" fill="url(#top)"/>
   <rect width="1000" height="552" fill="url(#shade)"/>
 </svg>
