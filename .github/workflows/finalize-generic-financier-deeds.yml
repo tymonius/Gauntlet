@@ -26,7 +26,7 @@ jobs:
           python -m pip install python-docx pypdf
           sudo apt-get update
           sudo apt-get install -y libreoffice-writer
-      - name: Extract and run one-time finalizer
+      - name: Extract one-time finalizer
         run: |
           python - <<'PY'
           import base64, gzip, re
@@ -37,12 +37,25 @@ jobs:
           script.parent.mkdir(parents=True, exist_ok=True)
           script.write_bytes(gzip.decompress(base64.b64decode(payload)))
           PY
-          python .github/scripts/finalize_generic_deeds.py
-      - name: Remove one-time files and commit
+      - name: Apply and publish Deed-card component model
         run: |
+          set +e
+          python .github/scripts/finalize_generic_deeds.py > finalizer.log 2>&1
+          status=$?
+          if [ "$status" -ne 0 ]; then
+            cp finalizer.log FINALIZER_ERROR.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add FINALIZER_ERROR.txt
+            git commit -m "Record generic Deed finalizer error"
+            git push origin HEAD:agent/add-generic-deed-cards
+            cat finalizer.log
+            exit "$status"
+          fi
           rm .github/scripts/finalize_generic_deeds.py
           rm .github/workflows/apply-generic-financier-deeds.yml
           rm .github/workflows/finalize-generic-financier-deeds.yml
+          rm -f FINALIZER_ERROR.txt finalizer.log
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
