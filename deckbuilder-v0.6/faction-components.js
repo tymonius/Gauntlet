@@ -45,8 +45,12 @@
         meta: `${faction.name} · Selected leader`
       },
       ...(packageData.components || []).map(component => ({
-        name: component.title,
-        meta: component.type === "tracker" ? "Supplemental tracker" : "Supplemental reference"
+        name: component.type === "deed-set" ? `${component.count || 8} × ${component.title}` : component.title,
+        meta: component.type === "tracker" || component.type === "capital"
+          ? "Supplemental tracker"
+          : component.type === "deed-set"
+            ? "Shared supplemental cards"
+            : "Supplemental reference"
       }))
     ];
 

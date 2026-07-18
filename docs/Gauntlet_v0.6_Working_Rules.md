@@ -456,9 +456,9 @@ Treasury cards are outside every normal zone and cannot be played or affected un
 
 ### Deeds
 
-Each Territory has one Deed. A Deed may be unowned or owned by a Financier. Heartlands have no Deeds.
+Each Territory has one Deed. A Deed may be unowned or owned by a Financier. Heartlands have no Deeds. Eight identical full-size generic Deed Cards begin in a shared supply.
 
-During the Action phase after movement, instead of playing an Action card, buy one Deed by spending Capital. An opposing Financier's Deed may be bought out and transferred.
+During the Action phase after movement, instead of playing an Action card, buy one Deed by spending Capital. When buying an unowned Deed, take one card from the shared supply and place it beside that Territory on your side of the Gauntlet. An opposing Financier's Deed may be bought out; move its card to the new owner's side. If a Deed becomes unowned, return its card to the supply.
 
 ### Deed cost
 

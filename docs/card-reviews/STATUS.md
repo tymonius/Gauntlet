@@ -111,7 +111,7 @@ The active source set includes:
 - Deed base costs and Financier-mirror buyout premiums stop scaling after 6.
 - Manifest Destiny Territories have normal Deeds and expand Controlling Interest.
 - The definitive source is `releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`, with matching release DOCX and PDF.
-- `faction-sheets/financier.html` is the two-sheet printable package using Banker, Executive, the Financier Reference, the public Capital / Deed Ledger, and dedicated leader-card crops.
+- `faction-sheets/financier.html` is the three-sheet printable package using Banker, Executive, the Financier Reference, a public Capital Tracker, eight full-size generic Deed Cards, and dedicated leader-card crops.
 
 ### Intelligence
 

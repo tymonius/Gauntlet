@@ -622,9 +622,9 @@ This section is only an integration summary. The definitive faction guides conta
 ## Financiers
 
 - Choose the **Banker** or **Executive**.
-- Begin with 0 Capital and an empty Treasury.
+- Begin with 0 Capital, an empty Treasury, a public Capital Tracker, and eight full-size generic Deed Cards in a shared supply.
 - Capital limit equals controlled Territories plus the total value of cards in Treasury.
-- Buy Deeds with Capital; base Deed cost and opposing-owner buyout premium stop scaling after 6.
+- Buy Deeds with Capital; place a Deed Card beside the Territory on the owner's side, move it across on a buyout, and return it to the supply when unowned. Base Deed cost and opposing-owner buyout premium stop scaling after 6.
 - Gain 1 Capital per owned Deed at the start of the turn after captures.
 - Spend Capital through Subsidize for escalating battle bonuses.
 - Immediately win by Controlling Interest when you own the Deeds to every Territory currently in the Gauntlet.

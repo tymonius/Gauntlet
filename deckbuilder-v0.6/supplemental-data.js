@@ -141,5 +141,31 @@ window.GAUNTLET_V06_SUPPLEMENTALS = {
         reminder: "Final Judgment: After the Grand Inquisitor wins a battle, they may Purge once per turn without using the Action opportunity and reduce its cost by 1, minimum 1."
       }
     ]
-  }
+  },
+  financiers: {
+    summary: [
+      "Selected Leader Card",
+      "Financier Reference",
+      "Capital Tracker",
+      "Eight full-size generic Deed Cards"
+    ],
+    leaderImages: {
+      banker: "https://tymonius.github.io/Gauntlet/images/leader-cards/banker.svg",
+      executive: "https://tymonius.github.io/Gauntlet/images/leader-cards/executive.svg"
+    },
+    components: [
+      {
+        type: "reference", id: "financier-reference", title: "Financier Reference",
+        sections: [
+          { label: "Capital", text: "Cannot fall below 0. Limit = controlled Territories + total value in Treasury. Reduce excess only at end of turn." },
+          { label: "Treasury", text: "After movement, instead of an Action card, place one hand card face up in Treasury. It raises the Capital limit but cannot be played normally." },
+          { label: "Deed cost", text: "min(Deeds you own + 1, 6) + position modifier + buyout premium; minimum 1. Control -1, occupy 0, neither +1. Buyout premium = min(opposing owner's Deeds, 6)." },
+          { label: "Market & Subsidize", text: "Market: 1 = Graveyard/0; 2-3 = 1; 4-5 = card value; 6 = twice value. Subsidize: +1/1, +2/3, +3/6, +4/10." },
+          { label: "Income & victory", text: "After captures, gain 1 Capital per owned Deed. Win when every Territory has a Deed Card on your side." }
+        ]
+      },
+      { type: "capital", id: "financier-capital-tracker", title: "Capital Tracker", note: "Track current Capital and Capital limit publicly. Capital has no fixed maximum." },
+      { type: "deed-set", id: "financier-deed-cards", title: "Deed", count: 8 }
+    ]
+  },
 };

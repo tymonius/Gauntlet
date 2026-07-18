@@ -143,8 +143,8 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - **Corner the Market** is the Unique cost-5 statement card.
 - Deed base costs and opposing-owner buyout premiums stop scaling after 6.
 - Manifest Destiny Territories receive normal Deeds and expand Controlling Interest.
-- The supplemental set uses either leader, one Financier Reference, and a public Capital / Deed Ledger rather than currency tokens.
-- `../faction-sheets/financier.html` is the two-sheet printable package using dedicated Banker and Executive leader-card crops under `../images/leader-cards/`.
+- The supplemental set uses either leader, one Financier Reference, one public Capital Tracker, and eight identical full-size generic Deed Cards in a shared supply.
+- `../faction-sheets/financier.html` is the three-sheet printable package using dedicated Banker and Executive leader-card crops under `../images/leader-cards/`; the third 9-up sheet contains eight full-size Deed Cards and one blank slot.
 - `../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` is the definitive Financier source; the adjacent DOCX and PDF are release-formatted editions using the Banker and Executive sketches under `../images/sketches/`.
 
 ### Intelligence checkpoint
