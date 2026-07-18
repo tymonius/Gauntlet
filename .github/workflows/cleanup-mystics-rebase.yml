@@ -1,0 +1,78 @@
+name: Clean up resolved Mystics rollups
+
+on:
+  push:
+    branches:
+      - agent/mystics-rebase-test
+    paths:
+      - .github/workflows/cleanup-mystics-rebase.yml
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/mystics-rebase-test
+      - name: Correct numbering and separators
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p=Path('docs/Gauntlet_v0.6_Project_Index.md')
+          text=p.read_text(encoding='utf-8')
+          old='''32. **`Gauntlet_Lore_Development_Notes.md`** — current incremental setting direction.
+33. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — leader art and miniature direction.
+34. **`../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`** — definitive Diplomat source and release-guide package.
+35. **`../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`** — definitive Inquisition source and release-guide package.
+36. **`../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`** — definitive Intelligence source and release-guide package.
+35. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions.
+36. **`../images/`** — leader portraits and matching production sketches.
+37. **`Game_Design_Glossary.md`** — shared terminology.'''
+          new='''32. **`Gauntlet_Lore_Development_Notes.md`** — current incremental setting direction.
+33. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — leader art and miniature direction.
+34. **`../releases/v0.6/faction-guides/`** — definitive release-guide packages for all six factions.
+35. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions.
+36. **`../images/`** — leader portraits and matching production sketches.
+37. **`Game_Design_Glossary.md`** — shared terminology.'''
+          assert old in text
+          p.write_text(text.replace(old,new,1),encoding='utf-8')
+
+          p=Path('docs/card-reviews/STATUS.md')
+          text=p.read_text(encoding='utf-8')
+          text=text.replace('''7. `../../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` — definitive Mystics rules and exact card pool
+7. `../Gauntlet_v0.6_Card_Metadata.md`
+8. `COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`
+9. `../Gauntlet_v0.6_Card_Review_Log.md`
+10. `CONDITION_AUDIT.md`''','''7. `../../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` — definitive Mystics rules and exact card pool
+8. `../Gauntlet_v0.6_Card_Metadata.md`
+9. `COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`
+10. `../Gauntlet_v0.6_Card_Review_Log.md`
+11. `CONDITION_AUDIT.md`''',1)
+          text=text.replace('- the current Intelligence faction framework.\n- Mystics bound-card handling,','- the current Intelligence faction framework;\n- Mystics bound-card handling,',1)
+          p.write_text(text,encoding='utf-8')
+
+          p=Path('docs/Gauntlet_v0.6_Open_Questions.md')
+          text=p.read_text(encoding='utf-8')
+          old='''- Does Corner the Market create a visible, dramatic finish?
+
+## Intelligence'''
+          new='''- Does Corner the Market create a visible, dramatic finish?
+
+---
+
+## Intelligence'''
+          assert old in text
+          p.write_text(text.replace(old,new,1),encoding='utf-8')
+          PY
+      - name: Commit cleanup
+        run: |
+          rm .github/workflows/cleanup-mystics-rebase.yml
+          git config user.name 'Gauntlet Documentation Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git add docs/Gauntlet_v0.6_Project_Index.md docs/card-reviews/STATUS.md docs/Gauntlet_v0.6_Open_Questions.md .github/workflows/cleanup-mystics-rebase.yml
+          git commit -m 'Clean up resolved Mystics rollups'
+          git push origin HEAD:agent/mystics-rebase-test
