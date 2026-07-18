@@ -8,7 +8,7 @@
 **Military pool:** Complete at 12 cards; definitive faction guide packaged  
 **Diplomat pool:** Complete at 12 cards; definitive faction guide packaged  
 **Inquisition pool:** Complete at 12 cards; definitive faction guide packaged  
-**Mystics pool:** Complete at 12 cards; definitive faction guide packaged  
+**Mystics pool:** Complete at 12 cards; definitive faction guide and printable package complete  
 **Financier pool:** Complete at 12 cards; definitive faction guide and printable package complete  
 **Intelligence pool:** Complete at 12 cards; definitive faction guide packaged  
 **Current playable designs:** 122  
@@ -101,6 +101,8 @@ The active source set includes:
 - **Necromancy** is the Unique cost-5 statement card.
 - The leaders are **Alchemist** and **Spirit Walker**; their abilities are **Materia Prima** and **Guardians of the Circle**.
 - The supplemental set uses one selected leader, one Mystics Reference, and three double-sided Rite cards. No token or resource tracker is used.
+- `faction-sheets/mystics.html` is the three-sheet printable package with incomplete Rite fronts and mirrored completed backs.
+- The v0.6 deckbuilder reads the definitive Mystics guide at runtime and includes both leaders, the reference, and all three duplex Rite pairs in its component and Print / PDF output.
 - The definitive source is `releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`, with matching release DOCX and PDF prepared from that source.
 
 ### Financiers
@@ -131,11 +133,10 @@ The active source set includes:
 - Decide whether **Siege Weaponry** becomes **Bombardment**.
 - Validate impossible-target and source-dependent copied-effect handling generally, including Treason.
 - Playtest and physically review all completed packages, with special attention to Mystics Graveyard recursion, Rite pacing, leader balance, and the Inquisition matchup.
-- Complete the dedicated Mystics printable sheet and Mystics deckbuilder integration.
 - Create canonical v0.6 data only after remaining blockers are resolved.
 
 ---
 
 ## Immediate next step
 
-Playtest the definitive Mystics, Financier, and Intelligence guides alongside the established factions. Complete the remaining Mystics production integration, and reopen a definitive roster only when testing reveals a strategic, balance, wording, or production failure.
+Playtest and physically review the complete six-faction deckbuilder and printable packages. Reopen a definitive roster only when testing reveals a strategic, balance, wording, or production failure.

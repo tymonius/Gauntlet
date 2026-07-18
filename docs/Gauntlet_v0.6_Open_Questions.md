@@ -17,16 +17,16 @@ Completed:
 - Condition retirement;
 - twelve-card Military, Diplomat, Inquisition, Mystics, Financier, and Intelligence packages;
 - Intelligence Mission requirements and exact card text;
-- supplemental-component specifications for all six factions, with printable sheets complete for Military, Diplomats, Inquisition, and Intelligence;
-- definitive faction guides for all six factions in Markdown, DOCX, and PDF formats.
+- supplemental-component specifications and printable sheets for all six factions;
+- definitive faction guides for all six factions in Markdown, DOCX, and PDF formats;
+- all six factions and twelve leaders integrated into the development deckbuilder with their required supplemental components.
 
 Remaining blockers:
 
 - Decide whether **Siege Weaponry** becomes **Bombardment**.
 - Validate impossible-target and source-dependent copied-effect handling generally, including Treason.
-- Playtest the Mystics, Financier, and Intelligence definitive guides and complete the remaining Mystics and Financier printable-package work.
+- Playtest and physically review the Mystics, Financier, and Intelligence definitive guides and printable packages.
 - Playtest and physically review completed packages.
-- Integrate Mystics and later completed factions into the development deckbuilder and printable faction-sheet tooling.
 - Create canonical v0.6 card, Territory, faction, leader, deckbuilding, and recommended-deck data after these decisions stabilize.
 
 ---
@@ -130,6 +130,8 @@ Closed package and production decisions:
 - The three Rites are **Rite of Echoes, Rite of Blood, and Rite of Crossing**.
 - The supplemental set uses one selected Leader Card, one Mystics Reference, and three double-sided Rite cards.
 - Completed Rites are flipped to their completed faces; no token or resource tracker is used.
+- `faction-sheets/mystics.html` is the dedicated three-sheet printable package with mirrored incomplete/completed Rite faces.
+- Mystics is integrated into the v0.6 deckbuilder, including live guide parsing, both leaders, legality and random-deck support, component display, and duplex Rite printing.
 - Witchcraft's eligible-effect boundary and the package's bounded copied-effect rules are defined in the definitive guide.
 
 Open questions:
