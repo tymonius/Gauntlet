@@ -1,0 +1,110 @@
+name: Synchronize final Financier rollups
+
+on:
+  push:
+    branches:
+      - agent/finalize-financier-faction-guide
+    paths:
+      - .github/workflows/fix-financier-rollups.yml
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/finalize-financier-faction-guide
+          fetch-depth: 0
+
+      - name: Patch final rollups
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def update(path, replacements):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              for old, new in replacements:
+                  count = text.count(old)
+                  if count != 1:
+                      raise SystemExit(f'{path}: expected one occurrence of {old!r}, found {count}')
+                  text = text.replace(old, new, 1)
+              p.write_text(text, encoding='utf-8')
+
+          update('README.md', [
+              ('The six developing factions are:', 'The six v0.6 factions are:'),
+              ('The Markdown file is the definitive Inquisition source. The DOCX and PDF are matching release-formatted editions.\n\n\nThe definitive Financier package is:',
+               'The Markdown file is the definitive Inquisition source. The DOCX and PDF are matching release-formatted editions.\n\nThe definitive Financier package is:'),
+          ])
+
+          update('docs/Gauntlet_v0.6_Card_Metadata.md', [
+              ('while newly created Military, Diplomat, and Inquisition cards appear only in their active package tables.',
+               'while newly created Military, Diplomat, Inquisition, and Financier cards appear only in their active package tables.'),
+          ])
+
+          update('docs/card-reviews/STATUS.md', [
+              ('6. `../Gauntlet_v0.6_Card_Metadata.md`\n6. `COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`\n7. `../Gauntlet_v0.6_Card_Review_Log.md`\n8. `CONDITION_AUDIT.md`',
+               '6. `../Gauntlet_v0.6_Card_Metadata.md`\n7. `COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`\n8. `../Gauntlet_v0.6_Card_Review_Log.md`\n9. `CONDITION_AUDIT.md`'),
+              ('\n\n### Financiers', '\n### Financiers'),
+          ])
+
+          update('docs/Gauntlet_v0.6_Project_Index.md', [
+              ('19. **`Gauntlet_Design_Principles_and_Guardrails.md`**', '20. **`Gauntlet_Design_Principles_and_Guardrails.md`**'),
+              ('20. **`Gauntlet_v0.6_Faction_Card_Design_Guide.md`**', '21. **`Gauntlet_v0.6_Faction_Card_Design_Guide.md`**'),
+              ('21. **`Gauntlet_Playtest_Targets_and_Metrics.md`**', '22. **`Gauntlet_Playtest_Targets_and_Metrics.md`**'),
+              ('22. **`Gauntlet_Development_History_and_Superseded_Directions.md`**', '23. **`Gauntlet_Development_History_and_Superseded_Directions.md`**'),
+              ('23. **`Gauntlet_v0.7_Parking_Lot.md`**', '24. **`Gauntlet_v0.7_Parking_Lot.md`**'),
+              ('24. **`Gauntlet_Digital_Prototype_Roadmap.md`**', '25. **`Gauntlet_Digital_Prototype_Roadmap.md`**'),
+              ('25. **`../deckbuilder/README.md`**', '26. **`../deckbuilder/README.md`**'),
+              ('26. **`../deckbuilder-v0.6/README.md`**', '27. **`../deckbuilder-v0.6/README.md`**'),
+              ('27. **`../src/README.md`**', '28. **`../src/README.md`**'),
+              ('28. **`../data/README.md`**', '29. **`../data/README.md`**'),
+              ('29. **`Gauntlet_Lore_Development_Notes.md`**', '30. **`Gauntlet_Lore_Development_Notes.md`**'),
+              ('30. **`Gauntlet_v0.6_Leader_Design_Bible.md`**', '31. **`Gauntlet_v0.6_Leader_Design_Bible.md`**'),
+              ('31. **`../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`**', '32. **`../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`**'),
+              ('32. **`../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`**', '33. **`../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`**'),
+              ('33. **`../faction-sheets/README.md`**', '34. **`../faction-sheets/README.md`**'),
+              ('34. **`../images/`**', '35. **`../images/`**'),
+              ('35. **`Game_Design_Glossary.md`**', '36. **`Game_Design_Glossary.md`**'),
+              ('the current Inquisition rules.', 'the current Inquisition and Financier rules.'),
+              ('integration summaries for the three completed factions.', 'integration summaries for the four completed factions.'),
+          ])
+
+          update('releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md', [
+              ('- **Inquisition** — Grand Inquisitor or Witch Hunter\n\nMystics, Financiers, and Intelligence remain in development.',
+               '- **Inquisition** — Grand Inquisitor or Witch Hunter\n- **Financiers** — Banker or Executive\n\nMystics and Intelligence remain in development.'),
+              ('- `faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`',
+               '- `faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`\n- `faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`'),
+              ('An effect that grants an additional Action-card play creates an additional Action opportunity unless it says otherwise.',
+               'An effect that grants an additional Action-card play creates an additional Action opportunity unless it says otherwise. When an effect tells a player to **take an extra action**, it grants one additional Action opportunity that turn; it may be used for any normal Action replacement but does not grant movement unless the effect specifically says so.'),
+              ('| Inquisition | Run the Gauntlet or Purification |',
+               '| Inquisition | Run the Gauntlet or Purification |\n| Financiers | Run the Gauntlet or Controlling Interest |'),
+              ('- At the beginning of the opponent\'s turn, after their normal draw attempt, the Inquisition wins by Purification if the opponent draws no cards because both deck and discard pile are empty.\n\n---',
+               '- At the beginning of the opponent\'s turn, after their normal draw attempt, the Inquisition wins by Purification if the opponent draws no cards because both deck and discard pile are empty.\n\n## Financiers\n\n- Choose the **Banker** or **Executive**.\n- Begin with 0 Capital and an empty Treasury.\n- Capital limit equals controlled Territories plus the total value of cards in Treasury.\n- Buy Deeds with Capital; base Deed cost and opposing-owner buyout premium stop scaling after 6.\n- Gain 1 Capital per owned Deed at the start of the turn after captures.\n- Spend Capital through Subsidize for escalating battle bonuses.\n- Immediately win by Controlling Interest when you own the Deeds to every Territory currently in the Gauntlet.\n\n---'),
+          ])
+
+          core = Path('releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md').read_text(encoding='utf-8')
+          required = [
+              '**Financiers** — Banker or Executive',
+              'faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md',
+              '| Financiers | Run the Gauntlet or Controlling Interest |',
+              '## Financiers',
+          ]
+          for item in required:
+              if item not in core:
+                  raise SystemExit(f'Missing preliminary-core integration: {item}')
+          print('Final Financier rollups synchronized')
+          PY
+
+      - name: Remove one-time workflow and commit
+        run: |
+          rm .github/workflows/fix-financier-rollups.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Synchronize Financier core-rule and status rollups'
+          git push origin HEAD:agent/finalize-financier-faction-guide
