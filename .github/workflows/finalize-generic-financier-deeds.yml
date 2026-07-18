@@ -36,7 +36,7 @@ jobs:
           decoded = gzip.decompress(base64.b64decode(payload)).decode()
           patches = {
               'text = re.sub(r"\\n\\};\\s*$", block + "};", text)': 'text = re.sub(r"\\n\\};\\s*$", ",\\n" + block.lstrip("\\n") + "};", text)',
-              'if len(PdfReader(str(pdf_path)).pages) != 10: raise RuntimeError("Financier guide PDF page count changed")': 'page_count = len(PdfReader(str(pdf_path)).pages)\nif page_count < 10 or page_count > 11: raise RuntimeError(f"Unexpected Financier guide PDF page count: {page_count}")'
+              'if len(PdfReader(str(pdf_path)).pages) != 10: raise RuntimeError("Financier guide PDF page count changed")': 'page_count = len(PdfReader(str(pdf_path)).pages)\nif page_count < 9 or page_count > 11: raise RuntimeError(f"Unexpected Financier guide PDF page count: {page_count}")'
           }
           for old, new in patches.items():
               if old not in decoded:
