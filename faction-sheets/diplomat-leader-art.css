@@ -1,8 +1,15 @@
-/* The dedicated Diplomat assets are wide full-figure compositions.
-   Enlarge them to match the apparent scale of the Military and Inquisition
-   portraits, while anchoring the zoom to the top edge so the full head stays
-   visible and the necessary vertical crop is taken from below the subject. */
+/* Use the full-resolution dedicated portraits rather than the blurred
+   landscape composites. Keep a shared close-up scale, then tune each
+   portrait's vertical focal point so the complete head remains visible. */
 .leader-card .leader-art img {
-  transform: scale(1.8);
+  transform: scale(1.35);
   transform-origin: center top;
+}
+
+.leader-card[data-card-name="Ambassador"] .leader-art img {
+  object-position: center 3%;
+}
+
+.leader-card[data-card-name="Senator"] .leader-art img {
+  object-position: center 4%;
 }
