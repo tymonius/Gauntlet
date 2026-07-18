@@ -1,0 +1,38 @@
+name: Finalize generic Financier Deeds
+
+on:
+  pull_request:
+    branches: [main]
+    types: [synchronize]
+
+permissions:
+  contents: write
+
+jobs:
+  merge-main:
+    if: github.actor != 'github-actions[bot]' && github.head_ref == 'agent/add-generic-deed-cards'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/add-generic-deed-cards
+          fetch-depth: 0
+      - name: Merge current main and clean up
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          set +e
+          git merge origin/main --no-edit
+          status=$?
+          set -e
+          if [ "$status" -ne 0 ]; then
+            git checkout --ours faction-sheets/README.md faction-sheets/intelligence.html
+            git add faction-sheets/README.md faction-sheets/intelligence.html
+            git commit --no-edit
+          fi
+          rm -f .github/workflows/finalize-generic-financier-deeds.yml
+          rm -f .github/workflows/merge-generic-deeds-main.yml
+          git add -A
+          git commit --amend --no-edit
+          git push origin HEAD:agent/add-generic-deed-cards
