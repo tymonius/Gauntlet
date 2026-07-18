@@ -1,0 +1,71 @@
+name: Build Diplomat leader art
+
+on:
+  push:
+    branches:
+      - agent/fix-diplomat-leader-art
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/fix-diplomat-leader-art
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: python -m pip install Pillow
+
+      - name: Generate dedicated art and remove crop overrides
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from PIL import Image
+
+          root = Path('.')
+          output = root / 'images' / 'leader-cards'
+          output.mkdir(parents=True, exist_ok=True)
+
+          specs = {
+              'ambassador': ((520, 45, 840, 208), (600, 305)),
+              'senator': ((466, 35, 850, 230), (600, 305)),
+          }
+
+          for name, (box, size) in specs.items():
+              image = Image.open(root / 'images' / f'{name}.png').convert('RGB')
+              image = image.crop(box).resize(size, Image.Resampling.LANCZOS)
+              image.save(output / f'{name}.jpg', quality=80, optimize=True, progressive=True)
+
+          js_path = root / 'faction-sheets' / 'diplomat.js'
+          js = js_path.read_text(encoding='utf-8')
+          js = js.replace('leader-cards/ambassador.svg', 'leader-cards/ambassador.jpg')
+          js = js.replace('leader-cards/senator.svg', 'leader-cards/senator.jpg')
+          js_path.write_text(js, encoding='utf-8')
+
+          css_path = root / 'faction-sheets' / 'diplomat.css'
+          css = css_path.read_text(encoding='utf-8')
+          css = css.replace('\n.leader-card[data-card-name="Senator"] .leader-art img { object-position: center 20%; }\n', '\n')
+          css_path.write_text(css, encoding='utf-8')
+
+          for path in [
+              output / 'ambassador.svg',
+              output / 'senator.svg',
+              root / '.github' / 'workflows' / 'build-diplomat-leader-art.yml',
+          ]:
+              path.unlink(missing_ok=True)
+          PY
+
+      - name: Commit generated assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Finalize Diplomat leader-card art"
+          git push origin HEAD:agent/fix-diplomat-leader-art
