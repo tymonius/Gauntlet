@@ -93,13 +93,13 @@ const sharedLeaderRules = [
 const leaders = [
   {
     name: 'Grand Inquisitor',
-    image: 'https://tymonius.github.io/Gauntlet/images/grand%20inquisitor.png',
+    image: 'https://tymonius.github.io/Gauntlet/images/leader-cards/grand_inquisitor.jpg',
     motto: 'We judge. We purge.',
     ability: ['Final Judgment', 'Once per turn after you win a battle, you may Purge immediately without using the Action opportunity. Reduce its Conviction cost by 1, minimum 1.']
   },
   {
     name: 'Witch Hunter',
-    image: 'https://tymonius.github.io/Gauntlet/images/witch%20hunter.png',
+    image: 'https://tymonius.github.io/Gauntlet/images/leader-cards/witch_hunter.jpg',
     motto: 'You ran. I followed.',
     ability: ['Relentless Pursuit', 'Once per turn, after an opponent loses a battle they initiated against you, you may spend 2 Conviction. If you do, end their turn, then move one space toward their Heartland. If this starts a battle, resolve it immediately; you are the attacker, and neither player may play an Action before it.']
   }
