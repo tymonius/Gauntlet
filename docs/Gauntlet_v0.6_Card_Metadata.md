@@ -1,8 +1,8 @@
 # Gauntlet v0.6 Card Metadata
 
-**Status:** Consolidated metadata rollup through 95 current playable-card designs: 50 Neutral cards, 12 Military cards, 12 Diplomat cards, 12 Inquisition cards, and 9 retained source designs assigned to the three unfinished factions.
+**Status:** Consolidated metadata rollup through 104 current playable-card designs: 50 Neutral cards, 12 Military cards, 12 Diplomat cards, 12 Inquisition cards, 12 Financier cards, and 6 retained source designs assigned to the two unfinished factions.
 
-`card-reviews/STATUS.md` records the live checkpoint. `Gauntlet_v0.6_Neutral_Card_Pool.md`, `../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`, `../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`, and `../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` are authoritative for their completed pools. The definitive Military, Diplomat, and Inquisition guides also govern their leaders, resources, components, strategy, terminology, and player-facing faction rules. The consolidated Card Review Log, source registry below, and standalone reviews remain migration and design provenance.
+`card-reviews/STATUS.md` records the live checkpoint. `Gauntlet_v0.6_Neutral_Card_Pool.md`, `../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`, `../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`, `../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`, and `../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` are authoritative for their completed pools. The definitive Military, Diplomat, Inquisition, and Financier guides also govern their leaders, resources, components, strategy, terminology, and player-facing faction rules. The consolidated Card Review Log, source registry below, and standalone reviews remain migration and design provenance.
 
 The 54-row source registry preserves the v0.5.7 migration record. It is not itself a count of current playable designs: Militias and Patriotism are retained below as retired source entries, while newly created Military, Diplomat, and Inquisition cards appear only in their active package tables.
 
@@ -145,6 +145,26 @@ This table records Inquisition metadata; the definitive Inquisition faction guid
 | Q11 | Heresy | 5 | No | Advanced | No | Arcane trait, source-dependent copied effects, and one-level recursion exception |
 | Q12 | Hellfire | 5 | No | Advanced | No | Flexible Conviction allocation and direct-exhaustion pacing |
 
+
+## Active Financier package metadata
+
+This table records Financier metadata; the definitive Financier faction guide governs all player-facing rules and exact card text.
+
+| ID | Card | Cost | Starter eligible | Complexity | Unique | Watchlist |
+|---|---|---:|---|---|---|---|
+| F1 | Speculation | 1 | TBD | Advanced | No | Visible self-tracking, Capital wager, and failure destination |
+| F2 | Monetary Crisis | 2 | TBD | Basic | No | Repeated hand resets and Treasury asymmetry |
+| F3 | Liquidation | 2 | TBD | Advanced | No | Temporary over-limit Capital and immediate-purchase timing |
+| F4 | Underwriting | 2 | TBD | Advanced | No | Narrow standalone floor and Subsidize incentives |
+| F5 | Capital Gains | 3 | TBD | Advanced | No | High-value preservation and delayed-investment tracking |
+| F6 | Tariffs | 3 | No | Advanced | No | Action compression, delayed draw loss, and debt evasion |
+| F7 | Divestment | 3 | TBD | Advanced | No | Sell-and-rebuy lines and portfolio-loop efficiency |
+| F8 | Margin Loan | 3 | No | Advanced | No | Default timing, collateral recovery, and Action compression |
+| F9 | Leveraged Buyout | 4 | No | Advanced | No | Additional Battle-card collateral and full-cost financing |
+| F10 | Foreclosure | 4 | No | Advanced | No | Adjacency counterplay and ownership-to-control conversion |
+| F11 | Property Dues | 4 | No | Advanced | No | Multiple-copy stacking and repeated movement pressure |
+| F12 | Corner the Market | 5 | No | Advanced | Yes | Sudden Controlling Interest conversion after visible preparation |
+
 ## Name, trait, allegiance, and uniqueness notes
 
 - The v0.5.7 card **Arcane Knowledge** is named **Witchcraft** in v0.6.
@@ -155,6 +175,7 @@ This table records Inquisition metadata; the definitive Inquisition faction guid
 - **Manifest Destiny** is Neutral, cost 5, Advanced, and Unique: maximum one copy per deck.
 - **Shock and Awe** is Military, cost 5, Advanced, and Unique: maximum one copy per deck.
 - The Inquisition package currently contains no Unique cards.
+- **Corner the Market** is Financier, cost 5, Advanced, and Unique: maximum one copy per deck.
 - **War Crimes** is Military rather than Inquisition.
 - **Militias** and **Patriotism** are retired migration entries and are not playable in the current v0.6 pool.
 - The Ambassador ability formerly provisionally named **Good Offices** is named **Cordiality**.
@@ -168,5 +189,6 @@ This table records Inquisition metadata; the definitive Inquisition faction guid
 - The Military pool contains exactly 12 unique cards with the current 1 / 4 / 3 / 3 / 1 cost curve; its definitive source is the release faction guide.
 - The Diplomat pool contains exactly 12 unique cards with the approved 1 / 3 / 5 / 2 / 1 cost curve, total value 35, and average value 2.92; its definitive source is the release faction guide.
 - The Inquisition pool contains exactly 12 unique cards with the approved 1 / 3 / 4 / 2 / 2 cost curve, total value 37, and average value 3.08; its definitive source is the release faction guide.
-- The current project contains 95 playable-card designs: 50 Neutral, 12 Military, 12 Diplomats, 12 Inquisition, and 9 retained source designs assigned to the three unfinished factions.
-- Remaining card work concerns the Mystics, Financiers, and Intelligence packages, faction exact-text blockers, Intelligence Missions, copied-effect rules, package playtesting, and canonical-data production.
+- The Financier pool contains exactly 12 unique cards with the approved 1 / 3 / 4 / 3 / 1 cost curve, total value 36, and average value 3.00; its definitive source is the release faction guide.
+- The current project contains 104 playable-card designs: 50 Neutral, 12 Military, 12 Diplomats, 12 Inquisition, 12 Financiers, and 6 retained source designs assigned to Mystics and Intelligence.
+- Remaining card work concerns the Mystics and Intelligence packages, Intelligence Missions, copied-effect rules, package playtesting, and canonical-data production.

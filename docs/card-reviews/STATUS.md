@@ -1,16 +1,17 @@
 # Gauntlet v0.6 Card Review Status
 
-**Last completed faction package:** Inquisition  
+**Last completed faction package:** Financiers  
 **v0.5.7 source-card review:** Complete through all 54 migration records  
 **New Neutral additions:** Complete through all 12 cards  
 **Neutral pool:** Complete at 50 cards  
 **Military pool:** Complete at 12 cards; definitive faction guide packaged  
 **Diplomat pool:** Complete at 12 cards; definitive faction guide packaged  
-**Inquisition pool:** Complete at 12 cards  
-**Current playable designs:** 95  
+**Inquisition pool:** Complete at 12 cards; definitive faction guide packaged  
+**Financier pool:** Complete at 12 cards; definitive faction guide packaged  
+**Current playable designs:** 104  
 **Conditions:** Retired as a v0.6 game concept
 
-The 95 current designs comprise 50 Neutral, 12 Military, 12 Diplomat, 12 Inquisition, and 9 retained source designs assigned to Mystics, Financiers, and Intelligence.
+The 104 current designs comprise 50 Neutral, 12 Military, 12 Diplomat, 12 Inquisition, 12 Financier, and 6 retained source designs assigned to Mystics and Intelligence.
 
 ---
 
@@ -20,12 +21,13 @@ The 95 current designs comprise 50 Neutral, 12 Military, 12 Diplomat, 12 Inquisi
 2. `../../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md` — definitive Military rules and exact card pool
 3. `../../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md` — definitive Diplomat rules and exact card pool
 4. `../../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` — definitive Inquisition rules and exact card pool
-5. `../Gauntlet_v0.6_Card_Metadata.md`
+5. `../../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` — definitive Financier rules and exact card pool
+6. `../Gauntlet_v0.6_Card_Metadata.md`
 6. `COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`
 7. `../Gauntlet_v0.6_Card_Review_Log.md`
 8. `CONDITION_AUDIT.md`
 
-Definitive faction guides and completed exact-text pool documents override migration records and historical sidecars where they differ. Military's former split files, Diplomats' former split pool, design-note, and supplemental files, and Inquisition's former split pool, design-note, supplemental, and working-guide files have been consolidated into definitive guides and removed.
+Definitive faction guides and completed exact-text pool documents override migration records and historical sidecars where they differ. Military's former split files, Diplomats' former split pool, design-note, and supplemental files, Inquisition's former split pool, design-note, supplemental, and working-guide files, and the Financier split pool and design notes have been consolidated into definitive guides and removed.
 
 ---
 
@@ -39,7 +41,8 @@ The Working Rules include:
 - normal destinations for negated cards;
 - general Territory, Overlay, and Ruins rules;
 - revised Diplomat staking, ratification, Leverage, and leader rules;
-- Inquisition Blasphemy, revised Purge, Purification, and leader rules.
+- Inquisition Blasphemy, revised Purge, Purification, and leader rules;
+- Financier extra actions, capped Deed and buyout costs, Manifest Destiny Deeds, Capital, Treasury, and leader rules.
 
 ---
 
@@ -83,16 +86,25 @@ The Working Rules include:
 - The physical package uses a sliding 0–4 Conviction tracker beneath the selected leader. No token or marker is used.
 - The definitive source is `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`, with matching release DOCX and PDF.
 
+
+### Financiers
+
+- Curve: **1 / 3 / 4 / 3 / 1**; total 36; average 3.00.
+- Roster: **Speculation; Monetary Crisis; Liquidation; Underwriting; Capital Gains; Tariffs; Divestment; Margin Loan; Leveraged Buyout; Foreclosure; Property Dues; Corner the Market**.
+- **Corner the Market** is the Unique cost-5 statement card.
+- Deed base costs and Financier-mirror buyout premiums stop scaling after 6.
+- Manifest Destiny Territories have normal Deeds and expand Controlling Interest.
+- The definitive source is `releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`, with matching release DOCX and PDF.
+
 ---
 
 ## Unresolved items
 
 - Decide whether **Siege Weaponry** becomes **Bombardment**.
-- Redesign **Capital Gains** around Financier infrastructure.
 - Finalize Witchcraft copied-effect eligibility.
 - Define impossible-target and source-dependent copied effects generally.
 - Complete Intelligence Mission requirements.
-- Complete the Mystics, Financiers, and Intelligence packages.
+- Complete the Mystics and Intelligence packages.
 - Playtest and physically review completed packages.
 - Create canonical v0.6 data only after remaining blockers are resolved.
 
@@ -100,4 +112,4 @@ The Working Rules include:
 
 ## Immediate next step
 
-Begin design work on Mystics, Financiers, or Intelligence while testing and reviewing the completed Military, Diplomat, and Inquisition packages. Do not reopen a completed roster without new evidence.
+Continue design work on Mystics or Intelligence while testing and reviewing the completed Military, Diplomat, Inquisition, and Financier packages. Do not reopen a completed roster without new evidence.

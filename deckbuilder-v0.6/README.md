@@ -10,7 +10,7 @@ Rendered tool:
 
 The development build supports:
 
-- faction selection for Military, Diplomats, and Inquisition;
+- faction selection for Military, Diplomats, Inquisition, and Financiers;
 - leader selection and leader-rule summaries;
 - Neutral plus selected-faction card legality;
 - live parsing of active Markdown card sources;
@@ -28,7 +28,7 @@ The development build supports:
 - browser Print / PDF export for the complete playable deck, Territories, selected Leader Card, and required faction supplemental cards;
 - local save/load/delete.
 
-Mystics, Financiers, and Intelligence appear as disabled development placeholders.
+Mystics and Intelligence appear as disabled development placeholders.
 
 ## Active runtime sources
 
@@ -38,6 +38,7 @@ This folder does not create canonical v0.6 release data. It reads the active wor
 - `releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`
 - `releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`
 - `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`
+- `releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`
 - `docs/Gauntlet_v0.6_Territory_Pool.md`
 
 The Territory source is the authoritative working exact-text pool, but it is not yet canonical v0.6 release JSON. The deckbuilder therefore remains explicitly versioned as a development tool.
@@ -74,12 +75,13 @@ Faction packages currently render as follows:
 - **Military:** selected Leader Card and shared Command Tracker;
 - **Diplomats:** selected Leader Card, Influence Tracker, double-sided Reference card, nine Proposal fronts, and nine Treaty Article backs;
 - **Inquisition:** selected Leader Card, Conviction Tracker, Inquisition Doctrine, and Purge Reference.
+- **Financiers:** selected Leader Card with Capital, Treasury, Deed, Play the Market, Subsidize, and Controlling Interest reference text.
 
 All duplex pairs use identical 7.5 × 10.5-inch page boxes. Back-side card positions are mirrored horizontally so they align after long-edge duplex printing. The Diplomat Reference sides are placed in the same centered card position on consecutive front/back pages. Print at Actual Size / 100%, disable browser headers and footers, and choose **Flip on long edge**.
 
 ## Next implementation steps
 
 1. Add starter-deck templates.
-2. Add the completed Mystics, Financiers, and Intelligence packages as their exact-text sources stabilize.
+2. Add the completed Mystics and Intelligence packages as their exact-text sources stabilize.
 3. Keep supplemental manifests synchronized with definitive faction guides and faction-sheet sources.
 4. Replace Markdown parsing with canonical v0.6 JSON only after the complete release data is approved.

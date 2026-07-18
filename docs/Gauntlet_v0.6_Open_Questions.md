@@ -15,18 +15,17 @@ Completed:
 - 50-card Neutral pool;
 - all 25 Territory and Arena reviews;
 - Condition retirement;
-- twelve-card Military, Diplomat, and Inquisition packages;
+- twelve-card Military, Diplomat, Inquisition, and Financier packages;
 - Military, Diplomat, and Inquisition supplemental-component specifications and printable sheets;
-- definitive Military, Diplomat, and Inquisition faction guides in Markdown, DOCX, and PDF formats.
+- definitive Military, Diplomat, Inquisition, and Financier faction guides in Markdown, DOCX, and PDF formats.
 
 Remaining blockers:
 
 - Decide whether **Siege Weaponry** becomes **Bombardment**.
-- Redesign **Capital Gains** around Financier infrastructure.
 - Finalize Witchcraft copied-effect eligibility.
 - Define impossible-target and source-dependent copied effects generally.
 - Complete Intelligence Mission requirements, including **Assassins**.
-- Complete the Mystics, Financiers, and Intelligence twelve-card packages.
+- Complete the Mystics and Intelligence twelve-card packages.
 - Decide remaining Arcane-trait assignments.
 - Playtest and physically review completed packages.
 - Create canonical v0.6 card, Territory, faction, leader, deckbuilding, and recommended-deck data after these decisions stabilize.
@@ -133,17 +132,33 @@ Open questions:
 
 ## Financiers
 
+Definitive source: `../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`. The adjacent PDF and DOCX are the release-formatted editions. The earlier split Financier pool and design-note documents have been consolidated and removed.
+
+Closed production decisions:
+
+- The package contains twelve cards with a **1 / 3 / 4 / 3 / 1** curve, total value 36, and average value 3.00.
+- **Corner the Market** is the Unique cost-5 statement card.
+- Added Territories receive normal Deeds; Deed base costs and buyout premiums stop scaling after 6.
+- **Take an extra action** grants a full additional Action opportunity.
+- The package uses two Leader Cards, one Financier Reference, and a public Capital / Deed ledger or equivalent record rather than currency tokens.
+
+Open questions:
+
 - Is Capital accumulation fast enough without becoming runaway?
-- Is the Capital-limit formula easy to track?
+- Is the Capital-limit formula easy to track physically?
 - Does Treasury create planning rather than disconnected setup?
-- Are Deed costs and buyout premiums intuitive, including mirrors?
+- Are Deed costs and buyout premiums intuitive, including mirrors and Manifest Destiny?
 - Is Play the Market appropriately swingy?
 - Is Subsidize understandable and balanced?
-- Should Line of Credit collateral go to discard or Graveyard?
+- Should Line of Credit collateral remain in discard rather than the Graveyard?
 - Does Hostile Takeover snowball too quickly?
 - Are Banker and Executive comparably strong?
-- Redesign Capital Gains around faction infrastructure.
-- Select and audit the twelve-card package.
+- Do Tariffs, Divestment, and Margin Loan collectively erase intended Action pressure?
+- Do repeated Monetary Crisis and stacked Property Dues create excessive denial?
+- Are Divestment loops, Leveraged Buyout collateral, Foreclosure, and Capital Gains fair?
+- Is Underwriting's standalone floor sufficient?
+- Is the self-tracking burden of Speculation, Capital Gains, and Margin Loan acceptable?
+- Does Corner the Market create a visible, dramatic finish?
 
 ---
 

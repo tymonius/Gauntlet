@@ -176,6 +176,13 @@ Whenever a player could play an Action card during their turn, they may instead 
 - An effect granting an additional Action-card play may instead be used to discard a banked Asset.
 - A card may prohibit or delay its own voluntary removal.
 
+### Extra actions
+
+When an effect tells a player to **take an extra action**, it grants one additional Action opportunity that turn.
+
+- It may be used for anything the player could normally do instead of playing an Action card, including a faction action or voluntary Asset removal.
+- It does not grant additional movement unless an effect specifically says so.
+
 ### Persistent playable-card effects
 
 Gauntlet does not use Conditions in v0.6.
@@ -490,6 +497,7 @@ This cannot prevent interruption caused by losing occupation or control required
 
 ## 13. Financiers
 
+**Definitive faction source:** `../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`  
 **Identity:** Treasury, investment, ownership, Capital, leverage, and delayed payoff.  
 **Resource:** Capital. Capital cannot fall below 0.
 
@@ -499,13 +507,13 @@ Capital limit equals:
 
 > Territories you control + total deckbuilding value of cards in your Treasury
 
-Heartlands do not count. Capital may temporarily exceed the limit during the turn, but excess is lost at end of turn.
+Heartlands do not count. Capital may temporarily exceed the limit during a turn, but excess is lost at the end of that turn.
 
 ### Treasury
 
-During the Action phase after movement, instead of playing an Action card, place one card from hand face-up in the Treasury.
+During the Action phase after movement, instead of playing an Action card, place one card from hand face up in the Treasury.
 
-Treasury cards are outside every normal zone and cannot be played or affected unless a rule specifically refers to Treasury. Each contributes its deckbuilding value to the Capital limit.
+Treasury cards are outside every normal zone and cannot be played or affected unless a rule specifically refers to Treasury. Each contributes its deckbuilding value to the Capital limit. Treasury does not use Asset-bank capacity.
 
 ### Deeds
 
@@ -515,7 +523,7 @@ During the Action phase after movement, instead of playing an Action card, buy o
 
 ### Deed cost
 
-> Deed cost = Deeds you own + 1 + position modifier + buyout premium
+> Deed cost = min(Deeds you own + 1, 6) + position modifier + buyout premium
 
 Minimum cost: 1 Capital.
 
@@ -525,13 +533,17 @@ Minimum cost: 1 Capital.
 | You occupy but do not control it | 0 |
 | You neither control nor occupy it | +1 |
 
-Buyout premium is 0 for an unowned Deed. For a Deed owned by an opposing Financier, the premium equals the number of Deeds that opponent owns.
+Buyout premium is 0 for an unowned Deed. For a Deed owned by an opposing Financier:
+
+> Buyout premium = min(Deeds the opposing owner owns, 6)
+
+A Territory added to the Gauntlet, including Manifest Destiny, is a normal Territory with a Deed unless its effect says otherwise. It counts normally for income, Capital and Asset limits, and Controlling Interest.
 
 ### Income and victory
 
 At the start of your turn, after captures, gain 1 Capital per Deed you own.
 
-When you own the Deeds to all Territories in the Gauntlet, immediately win by **Controlling Interest**.
+When you own the Deeds to all Territories currently in the Gauntlet, immediately win by **Controlling Interest**.
 
 ### Play the Market
 

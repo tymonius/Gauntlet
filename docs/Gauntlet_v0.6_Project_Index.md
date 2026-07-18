@@ -18,20 +18,21 @@ Read this file first when resuming v0.6 work.
 4. **`../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`** — definitive Military faction source: Military rules, General, Commandant, Orders, Command tracker, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are the release-formatted editions.
 5. **`../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`** — definitive Diplomat faction source: rules, Ambassador, Senator, Influence, Terms, Proposals / Treaty Articles, references, tracker, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are release-formatted editions.
 6. **`../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`** — definitive Inquisition faction source: Inquisition rules, Grand Inquisitor, Witch Hunter, Conviction, doctrine, Purge, Purification, supplemental components, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are the release-formatted editions.
-7. **`card-reviews/STATUS.md`** — live playable-card checkpoint and unresolved blockers.
-8. **`Gauntlet_v0.6_Card_Metadata.md`** — consolidated allegiance, starter, complexity, uniqueness, and watchlist metadata for 95 current playable designs.
-9. **`card-reviews/COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`** — completed Neutral pool audit.
-10. **`Gauntlet_v0.6_Card_Review_Log.md`** — migration provenance for all 54 v0.5.7 source cards.
-11. **`card-reviews/CONDITION_AUDIT.md`** — Condition retirement and conversion provenance.
-12. **`card-reviews/`** — detailed historical reviews and approval sidecars for unfinished or unconsolidated packages.
-13. **`territory-reviews/STATUS.md`** — Territory-review and consolidation checkpoint.
-14. **`territory-reviews/GENERAL_RULES.md`** — Territory activation and suppression-rule provenance.
-15. **`territory-reviews/`** — individual design and approval provenance for all 25 v0.5.7 Territories and Arenas.
-16. **`Gauntlet_v0.6_Open_Questions.md`** — unresolved rules, card, testing, and release decisions.
-17. **`../releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`** — historical pre-v0.6 canonical source.
-18. **`v0.5.7_rules_clarifications.md`** — physical-rules clarifications from digital implementation.
+7. **`../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`** — definitive Financier faction source: rules, Banker, Executive, Capital, Treasury, Deeds, Play the Market, Subsidize, Controlling Interest, components, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are the release-formatted editions.
+8. **`card-reviews/STATUS.md`** — live playable-card checkpoint and unresolved blockers.
+9. **`Gauntlet_v0.6_Card_Metadata.md`** — consolidated allegiance, starter, complexity, uniqueness, and watchlist metadata for 104 current playable designs.
+10. **`card-reviews/COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`** — completed Neutral pool audit.
+11. **`Gauntlet_v0.6_Card_Review_Log.md`** — migration provenance for all 54 v0.5.7 source cards.
+12. **`card-reviews/CONDITION_AUDIT.md`** — Condition retirement and conversion provenance.
+13. **`card-reviews/`** — detailed historical reviews and approval sidecars for unfinished or unconsolidated packages.
+14. **`territory-reviews/STATUS.md`** — Territory-review and consolidation checkpoint.
+15. **`territory-reviews/GENERAL_RULES.md`** — Territory activation and suppression-rule provenance.
+16. **`territory-reviews/`** — individual design and approval provenance for all 25 v0.5.7 Territories and Arenas.
+17. **`Gauntlet_v0.6_Open_Questions.md`** — unresolved rules, card, testing, and release decisions.
+18. **`../releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`** — historical pre-v0.6 canonical source.
+19. **`v0.5.7_rules_clarifications.md`** — physical-rules clarifications from digital implementation.
 
-No canonical v0.6 data exists yet. The preliminary core rulebook is the current player-facing shared-rules snapshot; the Working Rules remain the active development superset. Active v0.6 documents govern until the remaining three faction packages, exact-text blockers, Intelligence Missions, copied-effect rules, and package testing are resolved. For Military, Diplomats, and Inquisition, the definitive faction guides above override earlier development records and split package documents, which have been removed from the active repository.
+No canonical v0.6 data exists yet. The preliminary core rulebook is the current player-facing shared-rules snapshot; the Working Rules remain the active development superset. Active v0.6 documents govern until the remaining two faction packages, Intelligence Missions, copied-effect rules, and package testing are resolved. For Military, Diplomats, Inquisition, and Financiers, the definitive faction guides above override earlier development records and split package documents, which have been removed from the active repository.
 
 ### Design rationale and testing
 
@@ -41,7 +42,7 @@ No canonical v0.6 data exists yet. The preliminary core rulebook is the current 
 22. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — historical rationale and retired systems.
 23. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, and other post-v0.6 concepts.
 
-Completed-package drafts and sidecars remain provenance only where retained. Military development notes, drafts, audits, selection notes, and approval sidecars were removed after consolidation. The split Diplomat pool, design-note, and supplemental-component documents and the split Inquisition pool, design-note, supplemental-component, and working-guide documents were likewise removed after consolidation into their definitive guides.
+Completed-package drafts and sidecars remain provenance only where retained. Military development notes, drafts, audits, selection notes, and approval sidecars were removed after consolidation. The split Diplomat pool, design-note, and supplemental-component documents, the split Inquisition pool, design-note, supplemental-component, and working-guide documents, and the split Financier pool and design notes were likewise removed after consolidation into their definitive guides.
 
 ### Digital development
 
@@ -73,9 +74,9 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 
 - All **54** v0.5.7 playable source cards have migration records.
 - The Neutral pool is complete at **50** cards.
-- Military, Diplomats, and Inquisition are complete at **12** cards each.
+- Military, Diplomats, Inquisition, and Financiers are complete at **12** cards each.
 - Militias and Patriotism are retired.
-- The project contains **95 current playable designs**: 50 Neutral, 12 Military, 12 Diplomat, 12 Inquisition, and 9 retained source designs assigned to Mystics, Financiers, and Intelligence.
+- The project contains **104 current playable designs**: 50 Neutral, 12 Military, 12 Diplomat, 12 Inquisition, 12 Financier, and 6 retained source designs assigned to Mystics and Intelligence.
 
 ### Neutral checkpoint
 
@@ -125,14 +126,24 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - `../faction-sheets/inquisition.html` is the two-sheet printable package using the existing portraits under `images/`.
 - `../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` is the definitive Inquisition source; the adjacent DOCX and PDF are release-formatted editions using the Grand Inquisitor and Witch Hunter sketches under `../images/sketches/`.
 
+### Financier checkpoint
+
+- Curve: **1 / 3 / 4 / 3 / 1**.
+- Total value: 36; average: 3.00.
+- Roster: **Speculation; Monetary Crisis; Liquidation; Underwriting; Capital Gains; Tariffs; Divestment; Margin Loan; Leveraged Buyout; Foreclosure; Property Dues; Corner the Market**.
+- **Corner the Market** is the Unique cost-5 statement card.
+- Deed base costs and opposing-owner buyout premiums stop scaling after 6.
+- Manifest Destiny Territories receive normal Deeds and expand Controlling Interest.
+- The supplemental specification uses either leader, one Financier Reference, and a public Capital / Deed ledger or equivalent record.
+- `../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` is the definitive Financier source; the adjacent DOCX and PDF are release-formatted editions using the Banker and Executive sketches under `../images/sketches/`.
+
 ### Remaining blockers
 
-- Redesign **Capital Gains** around Financier infrastructure.
 - Decide whether **Siege Weaponry** becomes **Bombardment**.
 - Finalize Witchcraft copied-effect eligibility.
 - Define impossible-target and source-dependent copied effects generally.
 - Complete Intelligence Mission requirements.
-- Complete the Mystics, Financiers, and Intelligence card packages.
+- Complete the Mystics and Intelligence card packages.
 - Playtest and physically review all completed packages before canonical v0.6 data is created.
 
 ### Territories and core rules
@@ -159,12 +170,12 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 ### Digital work
 
 - The TypeScript engine, CLI, and GUI remain development scaffolds.
-- The v0.6 development deckbuilder is live under `../deckbuilder-v0.6/` and reads the active Neutral, Military, Diplomat, Inquisition, and Territory Markdown sources at runtime.
+- The v0.6 development deckbuilder is live under `../deckbuilder-v0.6/` and reads the active Neutral, Military, Diplomat, Inquisition, Financier, and Territory Markdown sources at runtime.
 - It supports completed faction and leader selection, Neutral-plus-faction legality, playable-card count/value validation, all 25 Territories, exactly-three/max-one-Arena validation, local saves, JSON import/export, text export, and random valid test-deck generation.
 - Territory selection is included in the Current deck display and in saved/exported deck data.
 - Print / PDF export now produces the complete selected faction package: deck summary, chosen Leader Card with portrait and rules, every playable-card copy, three Territories, trackers, references, and other required supplemental faces.
 - Military includes its Command Tracker; Inquisition includes its Conviction Tracker, Doctrine, and Purge Reference; Diplomats include the Influence Tracker, both Reference faces, nine Proposal fronts, and nine mirrored Treaty Article backs for duplex alignment.
-- Mystics, Financiers, and Intelligence remain disabled placeholders until their packages are complete.
+- Mystics and Intelligence remain disabled placeholders until their packages are complete.
 - Do not silently migrate v0.5 saved decks into v0.6.
 
 ### Lore and production
@@ -173,7 +184,7 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 - The Leader Design Bible is the visual source of truth.
 - `images/` contains portraits and production sketches for all twelve leaders.
 - Military, Diplomat, and Inquisition printable packages are under `faction-sheets/`.
-- The definitive Military, Diplomat, and Inquisition guide packages are under `releases/v0.6/faction-guides/` in Markdown, DOCX, and PDF formats.
+- The definitive Military, Diplomat, Inquisition, and Financier guide packages are under `releases/v0.6/faction-guides/` in Markdown, DOCX, and PDF formats.
 - Military, Diplomat, and Inquisition resources use sliding leader-over-tracker components; Inquisition uses no token.
 
 ---
@@ -196,4 +207,4 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 
 ## Immediate next step
 
-Playtest and physically review the preliminary core rulebook together with the completed Military, Diplomat, and Inquisition guides while continuing design work on Mystics, Financiers, or Intelligence. Record any shared-rules corrections in the Working Rules first, then roll stable changes into the preliminary core rulebook at material checkpoints. In parallel, add starter-deck templates and keep supplemental print manifests synchronized with the definitive faction guides and faction-sheet sources. Reopen a definitive faction package only when testing reveals a strategic, balance, wording, or production failure.
+Playtest and physically review the preliminary core rulebook together with the completed Military, Diplomat, Inquisition, and Financier guides while continuing design work on Mystics or Intelligence. Record any shared-rules corrections in the Working Rules first, then roll stable changes into the preliminary core rulebook at material checkpoints. In parallel, add starter-deck templates and keep supplemental print manifests synchronized with the definitive faction guides and faction-sheet sources. Reopen a definitive faction package only when testing reveals a strategic, balance, wording, or production failure.
