@@ -58,9 +58,7 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 
 32. **`Gauntlet_Lore_Development_Notes.md`** — current incremental setting direction.
 33. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — leader art and miniature direction.
-34. **`../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`** — definitive Diplomat source and release-guide package.
-35. **`../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`** — definitive Inquisition source and release-guide package.
-36. **`../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`** — definitive Intelligence source and release-guide package.
+34. **`../releases/v0.6/faction-guides/`** — definitive release-guide packages for all six factions.
 35. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions.
 36. **`../images/`** — leader portraits and matching production sketches.
 37. **`Game_Design_Glossary.md`** — shared terminology.
@@ -136,7 +134,6 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - The guide defines bound cards, Graveyard entry, exchanges, additional Battle-card sources, repeated Battle effects, eligible copied effects, Overlay ownership, and dormant removal conditions.
 - `../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` is the definitive source; matching PDF and DOCX are the release editions.
 - Deckbuilder and printable faction-sheet integration remain production follow-ups.
-
 
 ### Financier checkpoint
 
