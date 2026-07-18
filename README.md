@@ -16,7 +16,7 @@ The project is in private pre-release development and physical playtesting.
 - **Definitive faction guides:** all six factions are packaged in Markdown, DOCX, and PDF under `releases/v0.6/faction-guides/`
 - **Territory review:** complete for all 25 v0.5.7 Territories and Arenas; exact text consolidated in `docs/Gauntlet_v0.6_Territory_Pool.md`
 - **Conditions:** retired as a v0.6 game concept; persistent effects now use Assets, Overlays, or immediate/self-tracking resolution
-- **v0.6 deckbuilder:** live and reading the active Neutral, Military, Diplomat, Inquisition, Financier, Intelligence, and Territory Markdown sources; Mystics integration remains a production follow-up
+- **v0.6 deckbuilder:** live and reading the active Neutral, all six definitive faction-guide, and Territory Markdown sources, with complete leader and supplemental-package output
 - **Live checkpoint:** `docs/Gauntlet_v0.6_Project_Index.md`
 
 The six v0.6 factions are:
@@ -33,10 +33,10 @@ The six v0.6 factions are:
 ## Playtest tools
 
 - [Gauntlet v0.5 Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder/) — build, validate, save, randomize, export, and print pre-faction v0.5 decks.
-- [Gauntlet v0.6 Development Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder-v0.6/) — build faction-era test decks with implemented leaders and Territories, save or export them, generate random valid decks, and print complete implemented faction packages.
-- [Gauntlet v0.6 Faction Sheets](https://tymonius.github.io/Gauntlet/faction-sheets/) — browser-printable working sheets for implemented v0.6 faction packages and supplemental cards.
+- [Gauntlet v0.6 Development Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder-v0.6/) — build test decks for all six factions with leaders and Territories, save or export them, generate random valid decks, and print complete faction packages.
+- [Gauntlet v0.6 Faction Sheets](https://tymonius.github.io/Gauntlet/faction-sheets/) — browser-printable working sheets for all six v0.6 faction packages and supplemental cards.
 
-The v0.6 deckbuilder is intentionally a development tool rather than canonical release data. It supports implemented faction and leader selection, playable-card and Territory validation, local saves, JSON and text export, random test-deck generation, and browser Print / PDF output containing the selected leader, playable cards, Territories, trackers, references, and required supplemental faces. The definitive Mystics source is complete, but its deckbuilder and printable-sheet implementation remains pending.
+The v0.6 deckbuilder is intentionally a development tool rather than canonical release data. It supports all six factions and twelve leaders, playable-card and Territory validation, local saves, JSON and text export, random test-deck generation, and browser Print / PDF output containing the selected leader, playable cards, Territories, trackers, references, and required supplemental faces.
 
 ## Game overview
 
@@ -145,9 +145,9 @@ Start with:
 
 ### `faction-sheets/`
 
-Browser-printable working sheets for v0.6 faction cards and supplemental components. Military, Inquisition, Financiers, and Intelligence have complete two-sheet packages; Diplomats have a four-sheet package with duplex Proposal / Treaty Article faces. See `faction-sheets/README.md` for rendered links and instructions.
+Browser-printable working sheets for all six v0.6 faction-card and supplemental-component packages. Diplomats use a four-sheet package with duplex Proposal / Treaty Article faces; Mystics use a three-sheet package with duplex Rite faces. See `faction-sheets/README.md` for rendered links and instructions.
 
-The Military, Diplomat, Inquisition, Financier, and Intelligence sheets are derived production files governed by their definitive faction guides. A dedicated Mystics browser-printable sheet remains a production task.
+All six faction sheets are derived production files governed by their definitive faction guides.
 
 ### `images/`
 
@@ -159,7 +159,7 @@ Static browser deckbuilder for the v0.5 pre-faction ruleset. It supports card fi
 
 ### `deckbuilder-v0.6/`
 
-Development browser deckbuilder for the faction era. It reads the active Neutral, implemented completed-faction, and Territory Markdown sources at runtime; supports faction and leader selection, playable-card and Territory construction, legality checks, local saves, JSON/text export, and random valid test-deck generation; and produces complete browser-printable implemented faction packages. It remains development tooling rather than canonical v0.6 release data.
+Development browser deckbuilder for the faction era. It reads the active Neutral, all six definitive faction-guide, and Territory Markdown sources at runtime; supports faction and leader selection, playable-card and Territory construction, legality checks, local saves, JSON/text export, and random valid test-deck generation; and produces complete browser-printable faction packages. It remains development tooling rather than canonical v0.6 release data.
 
 ### `data/`
 
