@@ -18,7 +18,7 @@ Completed:
 - twelve-card Military, Diplomat, Inquisition, Financier, and Intelligence packages;
 - Intelligence Mission requirements and exact card text;
 - Military, Diplomat, and Inquisition supplemental-component specifications and printable sheets;
-- definitive Military, Diplomat, and Inquisition faction guides in Markdown, DOCX, and PDF formats.
+- definitive Military, Diplomat, Inquisition, and Financier faction guides in Markdown, DOCX, and PDF formats.
 
 Remaining blockers:
 
@@ -27,8 +27,7 @@ Remaining blockers:
 - Define impossible-target and source-dependent copied effects generally, including Treason.
 - Complete the Mystics twelve-card package.
 - Decide remaining Arcane-trait assignments.
-- Synchronize approved Financier rules clarifications into the Working Rules.
-- Playtest the Financier and Intelligence card pools and complete their definitive faction guides, supplemental components, printable sheets, and physical reviews.
+- Playtest the Financier definitive guide and Intelligence card pool; complete the Intelligence definitive guide and both factions' remaining supplemental, printable, and physical-review work.
 - Playtest and physically review completed packages.
 - Create canonical v0.6 card, Territory, faction, leader, deckbuilding, and recommended-deck data after these decisions stabilize.
 
@@ -134,36 +133,33 @@ Open questions:
 
 ## Financiers
 
-Active exact-text source: `Gauntlet_v0.6_Financier_Card_Pool.md`. `Gauntlet_v0.6_Financier_Design_Notes.md` records strategic rationale and audit findings.
+Definitive source: `../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`. The adjacent PDF and DOCX are the release-formatted editions. The earlier split Financier pool and design-note documents have been consolidated and removed.
 
-Closed package decisions:
+Closed production decisions:
 
-- The package contains twelve cards with a **1 / 3 / 4 / 3 / 1** curve, total value 36, and average value 3.0.
-- The roster is **Speculation; Monetary Crisis; Liquidation; Underwriting; Capital Gains; Tariffs; Divestment; Margin Loan; Leveraged Buyout; Foreclosure; Property Dues; Corner the Market**.
+- The package contains twelve cards with a **1 / 3 / 4 / 3 / 1** curve, total value 36, and average value 3.00.
 - **Corner the Market** is the Unique cost-5 statement card.
-- **Capital Gains** has been redesigned around Treasury investment and successful-battle preservation.
-- The working exact-text source caps both Deed-cost components at 6 and defines **take an extra action** as an additional Action opportunity.
+- Added Territories receive normal Deeds; Deed base costs and buyout premiums stop scaling after 6.
+- **Take an extra action** grants a full additional Action opportunity.
+- The package uses two Leader Cards, one Financier Reference, and a public Capital / Deed ledger or equivalent record rather than currency tokens.
 
 Open questions:
 
 - Is Capital accumulation fast enough without becoming runaway?
-- Do the Deed-cost and buyout-premium caps at 6 remain intuitive and sufficient?
+- Is the Capital-limit formula easy to track physically?
 - Does Treasury create planning rather than disconnected setup?
+- Are Deed costs and buyout premiums intuitive, including mirrors and Manifest Destiny?
 - Is Play the Market appropriately swingy?
 - Is Subsidize understandable and balanced?
-- Should Line of Credit collateral go to discard or Graveyard?
+- Should Line of Credit collateral remain in discard rather than the Graveyard?
 - Does Hostile Takeover snowball too quickly?
 - Are Banker and Executive comparably strong?
 - Do Tariffs, Divestment, and Margin Loan collectively erase intended Action pressure?
-- Does repeated Monetary Crisis prevent opponents from assembling meaningful hands?
-- Do multiple Property Dues Assets create excessive stacking from one advance?
-- Is Divestment's sell-and-rebuy line too reliable?
-- Do extra-Battle-card effects make Leveraged Buyout too efficient?
-- Is Foreclosure sufficiently constrained by adjacency and prior Deed ownership?
-- Does Corner the Market end games after visible preparation rather than abruptly from routine accumulation?
-- Is the combined physical tracking burden of Speculation, Capital Gains, and Margin Loan acceptable?
-
----
+- Do repeated Monetary Crisis and stacked Property Dues create excessive denial?
+- Are Divestment loops, Leveraged Buyout collateral, Foreclosure, and Capital Gains fair?
+- Is Underwriting's standalone floor sufficient?
+- Is the self-tracking burden of Speculation, Capital Gains, and Margin Loan acceptable?
+- Does Corner the Market create a visible, dramatic finish?
 
 ## Intelligence
 

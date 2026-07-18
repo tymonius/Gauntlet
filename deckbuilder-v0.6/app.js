@@ -21,6 +21,13 @@ const SOURCES = {
     start: "## 6. Canonical Inquisition card pool",
     end: "## 7. Card-pool summary",
     headingLevel: 3
+  },
+  financiers: {
+    label: "Financiers",
+    path: "../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md",
+    start: "## 6. Canonical Financier card pool",
+    end: "## 7. Card-pool summary",
+    headingLevel: 3
   }
 };
 
@@ -139,11 +146,36 @@ const FACTIONS = [
   {
     id: "financiers",
     name: "Financiers",
-    status: "developing",
-    identity: "Capital, Treasury, Deeds, and Controlling Interest.",
-    resource: "In development",
-    victory: "Controlling Interest — in development.",
-    leaders: [{ id: "banker", name: "Banker" }, { id: "executive", name: "Executive" }]
+    status: "ready",
+    identity: "Capital, Treasury, Deeds, leverage, income, and Controlling Interest.",
+    resource: "Capital (dynamic limit)",
+    victory: "Controlling Interest: own the Deeds to every Territory in the Gauntlet.",
+    leaders: [
+      {
+        id: "banker",
+        name: "Banker",
+        tagline: "Credit closes the distance.",
+        role: "Collateral · Purchase timing · Flexible financing",
+        rules: [
+          ["Capital limit", "Territories you control plus the total value of cards in your Treasury."],
+          ["Treasury", "Instead of playing an Action card after movement, place one card from hand face up in Treasury."],
+          ["Line of Credit", "The first Deed purchase or buyout each turn may use one hand or Treasury card as collateral, contributing its value up to half the cost before being discarded."],
+          ["Controlling Interest", "Immediately win when you own the Deeds to every Territory currently in the Gauntlet."]
+        ]
+      },
+      {
+        id: "executive",
+        name: "Executive",
+        tagline: "Take the ground. Close the deal.",
+        role: "Offense · Occupation · Immediate control",
+        rules: [
+          ["Capital limit", "Territories you control plus the total value of cards in your Treasury."],
+          ["Treasury", "Instead of playing an Action card after movement, place one card from hand face up in Treasury."],
+          ["Hostile Takeover", "After winning a battle that caused you to occupy enemy Territory, use the after-movement Action opportunity to buy that Deed at occupied cost; success immediately gives you control."],
+          ["Controlling Interest", "Immediately win when you own the Deeds to every Territory currently in the Gauntlet."]
+        ]
+      }
+    ]
   },
   {
     id: "intelligence",
