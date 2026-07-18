@@ -1,0 +1,51 @@
+name: Materialize Intelligence faction package
+
+on:
+  push:
+    branches:
+      - agent/finalize-intelligence-faction-guide
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    if: ${{ !contains(github.event.head_commit.message, '[materialized]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libreoffice-writer poppler-utils
+          python -m pip install --upgrade pip
+          python -m pip install python-docx Pillow
+      - name: Decode package payload
+        run: |
+          mkdir -p .tmp/intelligence-package
+          cat .tmp/intelligence-package.part-* | base64 --decode | tar -xz -C .tmp/intelligence-package
+      - name: Build and synchronize package
+        run: python .tmp/intelligence-package/materialize.py
+      - name: Upload QA package
+        uses: actions/upload-artifact@v4
+        with:
+          name: intelligence-faction-package
+          path: |
+            releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.docx
+            releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.pdf
+            faction-sheets/intelligence.html
+            faction-sheets/intelligence.css
+            faction-sheets/intelligence.js
+            faction-sheets/intelligence-fit.js
+            images/leader-cards/ranger.jpg
+            images/leader-cards/spymaster.jpg
+      - name: Commit materialized package
+        run: |
+          rm -rf .tmp/intelligence-package .tmp/intelligence-package.part-* .github/workflows/materialize-intelligence-faction-guide.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Finalize definitive Intelligence faction guide [materialized]"
+          git push
