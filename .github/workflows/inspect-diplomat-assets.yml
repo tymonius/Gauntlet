@@ -11,36 +11,80 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0
           lfs: true
 
-      - name: Inventory current and historical assets
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Apply candidate framing in working tree
         run: |
-          mkdir -p proof/current proof/history
-          find . -type f \( -iname '*ambassador*' -o -iname '*senator*' \) -print | sort | tee proof/current-paths.txt
-          while IFS= read -r path; do
-            clean="${path#./}"
-            mkdir -p "proof/current/$(dirname "$clean")"
-            cp "$path" "proof/current/$clean"
-          done < proof/current-paths.txt
+          sed -i "s#../images/leader-cards/ambassador.jpg#../images/ambassador.png#" faction-sheets/diplomat.js
+          sed -i "s#../images/leader-cards/senator.jpg#../images/senator.png#" faction-sheets/diplomat.js
+          cat > faction-sheets/diplomat-leader-art.css <<'EOF'
+          /* Use the full-resolution dedicated portraits rather than the blurred
+             landscape composites. Keep a shared close-up scale, then tune each
+             portrait's vertical focal point so the complete head remains visible. */
+          .leader-card .leader-art img {
+            transform: scale(1.35);
+            transform-origin: center top;
+          }
 
-          git log --all --name-only --pretty=format: -- '*ambassador*' '*senator*' | sed '/^$/d' | sort -u | tee proof/historical-paths.txt
-          git rev-list --all | while read commit; do
-            for path in images/leader-cards/ambassador.jpg images/leader-cards/senator.jpg; do
-              if git cat-file -e "$commit:$path" 2>/dev/null; then
-                blob=$(git rev-parse "$commit:$path")
-                out="proof/history/${path##*/}-${blob}.jpg"
-                if [ ! -f "$out" ]; then
-                  git show "$commit:$path" > "$out"
-                fi
-              fi
-            done
-          done
+          .leader-card[data-card-name="Ambassador"] .leader-art img {
+            object-position: center 3%;
+          }
 
-          file proof/current-paths.txt proof/historical-paths.txt proof/history/* || true
-          identify proof/history/* || true
+          .leader-card[data-card-name="Senator"] .leader-art img {
+            object-position: center 4%;
+          }
+          EOF
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install chromium --with-deps
+
+      - name: Render comparison
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p proof/files
+          cp faction-sheets/diplomat.js proof/files/
+          cp faction-sheets/diplomat-leader-art.css proof/files/
+          cat > render-comparison.mjs <<'EOF'
+          import { chromium } from 'playwright';
+          import { spawn } from 'node:child_process';
+
+          const server = spawn('python3', ['-m', 'http.server', '8000'], { stdio: 'inherit' });
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+
+          const browser = await chromium.launch({ headless: true });
+          const page = await browser.newPage({
+            viewport: { width: 1600, height: 1200 },
+            deviceScaleFactor: 2
+          });
+
+          for (const faction of ['diplomat', 'military', 'inquisition']) {
+            await page.goto(`http://127.0.0.1:8000/faction-sheets/${faction}.html`, { waitUntil: 'networkidle' });
+            const cards = page.locator('.leader-card');
+            const count = await cards.count();
+            for (let index = 0; index < Math.min(count, 2); index += 1) {
+              const name = (await cards.nth(index).getAttribute('data-card-name'))
+                .toLowerCase().replaceAll(/[^a-z0-9]+/g, '-');
+              await cards.nth(index).screenshot({ path: `proof/${faction}-${name}.png` });
+            }
+            if (faction === 'diplomat') {
+              await page.screenshot({ path: 'proof/diplomat-faction-sheet.png', fullPage: true });
+            }
+          }
+
+          const metrics = await page.evaluate(() => true);
+          await browser.close();
+          server.kill();
+          EOF
+          node render-comparison.mjs
 
       - uses: actions/upload-artifact@v4
         with:
-          name: diplomat-asset-inventory
+          name: diplomat-dedicated-portrait-candidate
           path: proof/
