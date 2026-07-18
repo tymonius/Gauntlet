@@ -10,10 +10,10 @@ Rendered tool:
 
 The development build supports:
 
-- faction selection for Military, Diplomats, Inquisition, Financiers, and Intelligence;
-- leader selection and leader-rule summaries;
+- faction selection for Military, Diplomats, Inquisition, Mystics, Financiers, and Intelligence;
+- both completed leaders for every faction, with leader-rule summaries;
 - Neutral plus selected-faction card legality;
-- live parsing of active Markdown card sources;
+- live parsing of all six definitive faction-guide Markdown sources;
 - card search and cost/allegiance filters;
 - duplicate quantities and Unique enforcement;
 - 30-card / 60-value playable-card validation;
@@ -23,12 +23,10 @@ The development build supports:
 - all 25 consolidated v0.6 Territories;
 - Territory search, standard/Arena filtering, previews, and playtest-watchlist display;
 - exactly-three-Territory validation with a maximum of one Arena;
-- selected Territories in the Current deck display;
+- selected Territories and faction supplemental packages in the Current deck display;
 - Territory-aware local saves, JSON import/export, and text deck lists;
 - browser Print / PDF export for the complete playable deck, Territories, selected Leader Card, and required faction supplemental cards;
 - local save/load/delete.
-
-Mystics appears as a disabled development placeholder.
 
 ## Active runtime sources
 
@@ -38,6 +36,7 @@ This folder does not create canonical v0.6 release data. It reads the active wor
 - `releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`
 - `releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`
 - `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`
+- `releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`
 - `releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`
 - `releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`
 - `docs/Gauntlet_v0.6_Territory_Pool.md`
@@ -67,23 +66,22 @@ The Print / PDF control opens a browser-printable Letter-size package and then o
 - one printable card face for every playable-card copy in the deck;
 - a full-height vertical ownership band on every playable card with an **Overlay** rules section, repeating the card name sideways so it remains visible when tucked beneath a Territory;
 - the selected three Territories in landscape-reading orientation;
-- every required one-sided faction tracker and reference card;
-- all nine Diplomat Proposal fronts and nine Treaty Article backs when Diplomats are selected;
+- every required faction tracker, reference, and supplemental card;
 - standardized Noto Sans typography and 2.5 × 3.5-inch cut lines.
 
-Faction packages currently render as follows:
+Faction packages render as follows:
 
 - **Military:** selected Leader Card and shared Command Tracker;
 - **Diplomats:** selected Leader Card, Influence Tracker, double-sided Reference card, nine Proposal fronts, and nine Treaty Article backs;
-- **Inquisition:** selected Leader Card, Conviction Tracker, Inquisition Doctrine, and Purge Reference.
-- **Financiers:** selected Leader Card, Financier Reference, public Capital Tracker, and eight full-size generic Deed Cards.
+- **Inquisition:** selected Leader Card, Conviction Tracker, Inquisition Doctrine, and Purge Reference;
+- **Mystics:** selected Leader Card, Mystics Reference, and three double-sided incomplete/completed Rite cards;
+- **Financiers:** selected Leader Card, Financier Reference, public Capital Tracker, and eight full-size generic Deed Cards;
 - **Intelligence:** selected Leader Card, dual Intel / Operation Progress tracker, Mission Reference, and Operations Reference.
 
-All duplex pairs use identical 7.5 × 10.5-inch page boxes. Back-side card positions are mirrored horizontally so they align after long-edge duplex printing. The Diplomat Reference sides are placed in the same centered card position on consecutive front/back pages. Print at Actual Size / 100%, disable browser headers and footers, and choose **Flip on long edge**.
+All duplex pairs use identical 7.5 × 10.5-inch page boxes. Back-side card positions are mirrored horizontally so they align after long-edge duplex printing. Print at Actual Size / 100%, disable browser headers and footers, and choose **Flip on long edge**.
 
 ## Next implementation steps
 
 1. Add starter-deck templates.
-2. Add the completed Mystics package as its exact-text source stabilizes.
-3. Keep supplemental manifests synchronized with definitive faction guides and faction-sheet sources.
-4. Replace Markdown parsing with canonical v0.6 JSON only after the complete release data is approved.
+2. Keep supplemental manifests synchronized with definitive faction guides and faction-sheet sources.
+3. Replace Markdown parsing with canonical v0.6 JSON only after the complete release data is approved.
