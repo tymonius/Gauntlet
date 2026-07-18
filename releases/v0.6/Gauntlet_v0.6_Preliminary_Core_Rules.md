@@ -10,8 +10,9 @@ The following faction inserts are complete and may be used with this draft:
 - **Military** — General or Commandant
 - **Diplomats** — Ambassador or Senator
 - **Inquisition** — Grand Inquisitor or Witch Hunter
+- **Financiers** — Banker or Executive
 
-Mystics, Financiers, and Intelligence remain in development. This draft should not be treated as the final v0.6 canonical release until all six faction packages, cross-card interactions, physical review, and canonical data are complete.
+Mystics and Intelligence remain in development. This draft should not be treated as the final v0.6 canonical release until all six faction packages, cross-card interactions, physical review, and canonical data are complete.
 
 ---
 
@@ -46,6 +47,7 @@ Use the corresponding definitive faction guide for all faction resources, leader
 - `faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`
 - `faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`
 - `faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`
+- `faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`
 
 ---
 
@@ -225,7 +227,7 @@ Whenever you could use the normal Action opportunity, you may instead perform on
 - using a faction action such as Purge;
 - beginning or completing a faction objective where permitted.
 
-An effect that grants an additional Action-card play creates an additional Action opportunity unless it says otherwise.
+An effect that grants an additional Action-card play creates an additional Action opportunity unless it says otherwise. When an effect tells a player to **take an extra action**, it grants one additional Action opportunity that turn; it may be used for any normal Action replacement but does not grant movement unless the effect specifically says so.
 
 ---
 
@@ -561,6 +563,7 @@ Some factions have an alternate victory condition described in their definitive 
 | Military | Run the Gauntlet only |
 | Diplomats | Run the Gauntlet or Peace Treaty |
 | Inquisition | Run the Gauntlet or Purification |
+| Financiers | Run the Gauntlet or Controlling Interest |
 
 ---
 
@@ -592,6 +595,16 @@ This section is only an integration summary. The definitive faction guides conta
 - Condemnation sends opposing played battle-drawn cards to the Graveyard after battle.
 - Spend Conviction on Purges and leader or card effects.
 - At the beginning of the opponent's turn, after their normal draw attempt, the Inquisition wins by Purification if the opponent draws no cards because both deck and discard pile are empty.
+
+## Financiers
+
+- Choose the **Banker** or **Executive**.
+- Begin with 0 Capital and an empty Treasury.
+- Capital limit equals controlled Territories plus the total value of cards in Treasury.
+- Buy Deeds with Capital; base Deed cost and opposing-owner buyout premium stop scaling after 6.
+- Gain 1 Capital per owned Deed at the start of the turn after captures.
+- Spend Capital through Subsidize for escalating battle bonuses.
+- Immediately win by Controlling Interest when you own the Deeds to every Territory currently in the Gauntlet.
 
 ---
 

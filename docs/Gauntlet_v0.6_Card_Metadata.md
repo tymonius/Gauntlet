@@ -4,7 +4,7 @@
 
 `card-reviews/STATUS.md` records the live checkpoint. `Gauntlet_v0.6_Neutral_Card_Pool.md`, `../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`, `../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`, `../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`, and `../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` are authoritative for their completed pools. The definitive Military, Diplomat, Inquisition, and Financier guides also govern their leaders, resources, components, strategy, terminology, and player-facing faction rules. The consolidated Card Review Log, source registry below, and standalone reviews remain migration and design provenance.
 
-The 54-row source registry preserves the v0.5.7 migration record. It is not itself a count of current playable designs: Militias and Patriotism are retained below as retired source entries, while newly created Military, Diplomat, and Inquisition cards appear only in their active package tables.
+The 54-row source registry preserves the v0.5.7 migration record. It is not itself a count of current playable designs: Militias and Patriotism are retained below as retired source entries, while newly created Military, Diplomat, Inquisition, and Financier cards appear only in their active package tables.
 
 This file replaces the combined labels **Core Neutral** and **Advanced Neutral / Watchlist** with separate metadata fields. Those older labels in historical source material do not define gameplay categories.
 

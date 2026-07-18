@@ -36,31 +36,31 @@ No canonical v0.6 data exists yet. The preliminary core rulebook is the current 
 
 ### Design rationale and testing
 
-19. **`Gauntlet_Design_Principles_and_Guardrails.md`** — core design constraints.
-20. **`Gauntlet_v0.6_Faction_Card_Design_Guide.md`** — faction-pool construction and approval standard.
-21. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing, telemetry, and human-playtest standards.
-22. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — historical rationale and retired systems.
-23. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, and other post-v0.6 concepts.
+20. **`Gauntlet_Design_Principles_and_Guardrails.md`** — core design constraints.
+21. **`Gauntlet_v0.6_Faction_Card_Design_Guide.md`** — faction-pool construction and approval standard.
+22. **`Gauntlet_Playtest_Targets_and_Metrics.md`** — pacing, telemetry, and human-playtest standards.
+23. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — historical rationale and retired systems.
+24. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, and other post-v0.6 concepts.
 
 Completed-package drafts and sidecars remain provenance only where retained. Military development notes, drafts, audits, selection notes, and approval sidecars were removed after consolidation. The split Diplomat pool, design-note, and supplemental-component documents, the split Inquisition pool, design-note, supplemental-component, and working-guide documents, and the split Financier pool and design notes were likewise removed after consolidation into their definitive guides.
 
 ### Digital development
 
-24. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, engine, interface, telemetry, and remote-play roadmap.
-25. **`../deckbuilder/README.md`** — stable v0.5 deckbuilder.
-26. **`../deckbuilder-v0.6/README.md`** — v0.6 development deckbuilder scope, live-source behavior, omissions, and next implementation steps.
-27. **`../src/README.md`** — TypeScript engine and interface status.
-28. **`../data/README.md`** — starter-data scope and source warning.
+25. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, engine, interface, telemetry, and remote-play roadmap.
+26. **`../deckbuilder/README.md`** — stable v0.5 deckbuilder.
+27. **`../deckbuilder-v0.6/README.md`** — v0.6 development deckbuilder scope, live-source behavior, omissions, and next implementation steps.
+28. **`../src/README.md`** — TypeScript engine and interface status.
+29. **`../data/README.md`** — starter-data scope and source warning.
 
 ### Setting and production
 
-29. **`Gauntlet_Lore_Development_Notes.md`** — current incremental setting direction.
-30. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — leader art and miniature direction.
-31. **`../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`** — definitive Diplomat source and release-guide package.
-32. **`../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`** — definitive Inquisition source and release-guide package.
-33. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions.
-34. **`../images/`** — leader portraits and matching production sketches.
-35. **`Game_Design_Glossary.md`** — shared terminology.
+30. **`Gauntlet_Lore_Development_Notes.md`** — current incremental setting direction.
+31. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — leader art and miniature direction.
+32. **`../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`** — definitive Diplomat source and release-guide package.
+33. **`../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`** — definitive Inquisition source and release-guide package.
+34. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions.
+35. **`../images/`** — leader portraits and matching production sketches.
+36. **`Game_Design_Glossary.md`** — shared terminology.
 
 ### Historical archive
 
@@ -153,8 +153,8 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - Territory activation, suppression, Overlays, dormant lower Overlays, and Ruins are consolidated in the Working Rules.
 - The numbered files under `territory-reviews/` remain design and approval provenance rather than the active exact-text source.
 - Current Territory watchlists include Old Battlefield, Grand Melee, and Monastery.
-- The Working Rules include independent Action and hand-commitment limits, voluntary Asset removal, no Conditions, Asset/Overlay persistence, negation, bounded copied-effect handling, revised Diplomat rules, and the current Inquisition rules.
-- `../releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md` now provides a self-contained player-facing shared-rules draft covering setup, deck construction, turn order, movement, battle, card destinations, occupation, capture, Assets, Territories, Overlays, Heartlands, victory, terminology, and integration summaries for the three completed factions.
+- The Working Rules include independent Action and hand-commitment limits, voluntary Asset removal, no Conditions, Asset/Overlay persistence, negation, bounded copied-effect handling, revised Diplomat rules, and the current Inquisition and Financier rules.
+- `../releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md` now provides a self-contained player-facing shared-rules draft covering setup, deck construction, turn order, movement, battle, card destinations, occupation, capture, Assets, Territories, Overlays, Heartlands, victory, terminology, and integration summaries for the four completed factions.
 
 ### Factions
 

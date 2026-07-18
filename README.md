@@ -18,7 +18,7 @@ The project is in private pre-release development and physical playtesting.
 - **v0.6 deckbuilder:** live and reading the active Neutral, Military, Diplomat, Inquisition, Financier, and Territory Markdown sources
 - **Live checkpoint:** `docs/Gauntlet_v0.6_Project_Index.md`
 
-The six developing factions are:
+The six v0.6 factions are:
 
 | Faction | Identity |
 |---|---|
@@ -88,7 +88,6 @@ The definitive Inquisition package is:
 - `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.pdf`
 
 The Markdown file is the definitive Inquisition source. The DOCX and PDF are matching release-formatted editions.
-
 
 The definitive Financier package is:
 
