@@ -1,0 +1,50 @@
+name: Finalize generic Financier Deeds
+
+on:
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    if: github.actor != 'github-actions[bot]' && github.head_ref == 'agent/add-generic-deed-cards'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/add-generic-deed-cards
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install document tooling
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install python-docx pypdf
+          sudo apt-get update
+          sudo apt-get install -y libreoffice-writer
+      - name: Extract and run one-time finalizer
+        run: |
+          python - <<'PY'
+          import base64, gzip, re
+          from pathlib import Path
+          source = Path('.github/workflows/apply-generic-financier-deeds.yml').read_text()
+          payload = re.search(r'payload = """([A-Za-z0-9+/=]+)"""', source).group(1)
+          script = Path('.github/scripts/finalize_generic_deeds.py')
+          script.parent.mkdir(parents=True, exist_ok=True)
+          script.write_bytes(gzip.decompress(base64.b64decode(payload)))
+          PY
+          python .github/scripts/finalize_generic_deeds.py
+      - name: Remove one-time files and commit
+        run: |
+          rm .github/scripts/finalize_generic_deeds.py
+          rm .github/workflows/apply-generic-financier-deeds.yml
+          rm .github/workflows/finalize-generic-financier-deeds.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Replace Financier ledger with generic Deed cards"
+          git push origin HEAD:agent/add-generic-deed-cards
