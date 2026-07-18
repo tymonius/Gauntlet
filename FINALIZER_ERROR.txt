@@ -1,0 +1,16 @@
+Warning: failed to launch javaldx - java may not function correctly
+convert /home/runner/work/Gauntlet/Gauntlet/releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.docx as a Writer document -> /home/runner/work/Gauntlet/Gauntlet/releases/v0.6/faction-guides/financier/_pdf/Gauntlet_v0.6_Financier_Faction_Guide.pdf using filter : writer_pdf_Export
+/home/runner/work/Gauntlet/Gauntlet/deckbuilder-v0.6/supplemental-data.js:145
+  financiers: {
+  ^^^^^^^^^^
+
+SyntaxError: Unexpected identifier 'financiers'
+    at checkSyntax (node:internal/main/check_syntax:74:5)
+
+Node.js v22.23.1
+Traceback (most recent call last):
+  File "/home/runner/work/Gauntlet/Gauntlet/.github/scripts/finalize_generic_deeds.py", line 317, in <module>
+    subprocess.run(["node", "--check", file], check=True)
+  File "/opt/hostedtoolcache/Python/3.12.13/x64/lib/python3.12/subprocess.py", line 571, in run
+    raise CalledProcessError(retcode, process.args,
+subprocess.CalledProcessError: Command '['node', '--check', 'deckbuilder-v0.6/supplemental-data.js']' returned non-zero exit status 1.
