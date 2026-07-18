@@ -23,8 +23,10 @@ jobs:
           npx playwright install chromium --with-deps
 
       - name: Render Diplomat faction sheet
+        shell: bash
         run: |
-          cat > /tmp/render-diplomat.mjs <<'EOF'
+          set -o pipefail
+          cat > render-diplomat.mjs <<'EOF'
           import { chromium } from 'playwright';
           import { spawn } from 'node:child_process';
 
@@ -51,9 +53,10 @@ jobs:
           });
 
           const leaderCards = page.locator('.leader-card');
-          await leaderCards.screenshot({ path: 'diplomat-leader-cards.png' });
+          await leaderCards.nth(0).screenshot({ path: 'diplomat-ambassador-card.png' });
+          await leaderCards.nth(1).screenshot({ path: 'diplomat-senator-card.png' });
 
-          const framing = await page.locator('.leader-card').evaluateAll((cards) =>
+          const framing = await leaderCards.evaluateAll((cards) =>
             cards.map((card) => {
               const image = card.querySelector('.leader-art img');
               const art = card.querySelector('.leader-art');
@@ -77,12 +80,13 @@ jobs:
           server.kill();
           EOF
 
-          node /tmp/render-diplomat.mjs | tee diplomat-framing-metrics.json
+          node render-diplomat.mjs | tee diplomat-framing-metrics.json
 
       - uses: actions/upload-artifact@v4
         with:
           name: diplomat-framing-proof
           path: |
             diplomat-faction-sheet.png
-            diplomat-leader-cards.png
+            diplomat-ambassador-card.png
+            diplomat-senator-card.png
             diplomat-framing-metrics.json
