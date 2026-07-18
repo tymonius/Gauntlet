@@ -160,7 +160,7 @@ p{margin:0}
 .purge-cost{display:flex;align-items:center;justify-content:center;width:.25in;height:.25in;border:1px solid #111;border-radius:50%;font-size:8pt;font-weight:900;line-height:1}
 .purge-text{font-size:var(--card-text-size);line-height:1.06}
 .purge-reminder{margin-top:.05in;padding-top:.04in;border-top:1px solid #888;font-size:calc(var(--card-text-size) - .3pt);line-height:1.04;font-style:italic}
-.tracker-card{position:relative;background:repeating-linear-gradient(135deg,#fff 0,#fff .08in,#f3f3f3 .08in,#f3f3f3 .16in)}
+.tracker-card{position:relative;background:repeating-linear-gradient(135deg,#fff 0,#fff .08in,#f3f3f3 .08in,#f3f3f3 .16in)}.capital-tracker-card{display:grid;grid-template-rows:.42in 1fr .16in;background:#173e32!important;color:#fff}.capital-tracker-body{padding:.1in;display:grid;grid-template-columns:1fr 1fr;gap:.08in}.capital-box{height:.85in;border:1px solid #bd9850;padding:.06in;text-align:center}.capital-box span{display:block;color:#ecd699;font-size:5.4pt;font-weight:900;text-transform:uppercase}.capital-box div{height:.42in;margin-top:.06in;border-bottom:1px solid #fff}.capital-tracker-body p{grid-column:1/-1;font-size:6pt;line-height:1.18}.deed-card{display:flex;flex-direction:column;padding:.075in;background:#f3ead7!important;text-align:center}.deed-banner{margin:-.075in -.075in .16in;padding:.095in .04in .08in;border-bottom:1.5px solid #bd9850;background:#173e32!important;color:#fff7dc;font-family:Georgia,serif;font-size:13.5pt;font-weight:700;letter-spacing:.19em;text-transform:uppercase}.deed-seal{display:flex;align-items:center;justify-content:center;width:.82in;height:.82in;margin:0 auto .13in;border:3px double #bd9850;border-radius:50%;color:#173e32;font-family:Georgia,serif;font-size:30pt;font-weight:700}.deed-title{margin-bottom:.12in;color:#173e32;font-family:Georgia,serif;font-size:11.5pt;font-weight:700}.deed-rule{margin:0 auto .1in;max-width:2.05in;font-family:Georgia,serif;font-size:6.6pt;line-height:1.16}.deed-note{margin-top:auto;padding-top:.065in;border-top:.8px solid #bd9850;color:#5b2d2c;font-size:5.2pt;font-weight:700;text-transform:uppercase}
 .tracker-title{position:absolute;top:.09in;left:.1in;right:.1in;font-size:11.2pt;font-weight:900;line-height:1;text-align:center;text-transform:uppercase;letter-spacing:.035em}
 .tracker-note{position:absolute;top:.38in;left:.14in;right:.14in;font-size:5.6pt;line-height:1.12;text-align:center}
 .tracker-step{position:absolute;left:.16in;right:.16in;border-top:1.4px solid #111}
@@ -208,7 +208,7 @@ window.addEventListener('load',preparePrint);
 
   function buildSupplementalPackage(data) {
     const packageData = data.supplementalPackage || {};
-    const inlineItems = (packageData.components || []).map(componentToPrintHtml).filter(Boolean);
+    const inlineItems = (packageData.components || []).flatMap(component => { const item = componentToPrintHtml(component); return Array.isArray(item) ? item : [item]; }).filter(Boolean);
     const dedicatedPages = [];
 
     if (packageData.proposals?.length) {
@@ -233,6 +233,8 @@ window.addEventListener('load',preparePrint);
     if (component.type === "tracker") return trackerToPrintHtml(component);
     if (component.type === "reference") return referenceToPrintHtml(component);
     if (component.type === "purge") return purgeToPrintHtml(component);
+    if (component.type === "capital") return capitalToPrintHtml(component);
+    if (component.type === "deed-set") return Array.from({ length: Number(component.count) || 8 }, () => deedToPrintHtml());
     return "";
   }
 
@@ -328,6 +330,30 @@ window.addEventListener('load',preparePrint);
         <div class="purge-reminder">${escapeHtml(component.reminder || "")}</div>
       </div>
       <footer class="reference-footer">Supplemental reference — no deckbuilding value</footer>
+    </article>`;
+  }
+
+  function capitalToPrintHtml(component) {
+    return `<article class="print-card capital-tracker-card">
+      <header class="supplemental-header">${escapeHtml(component.title)}</header>
+      <div class="capital-tracker-body">
+        <div class="capital-box"><span>Current Capital</span><div></div></div>
+        <div class="capital-box"><span>Capital Limit</span><div></div></div>
+        <p>${escapeHtml(component.note)}</p>
+      </div>
+      <footer class="reference-footer">Supplemental tracker — no deckbuilding value</footer>
+    </article>`;
+  }
+
+  function deedToPrintHtml() {
+    return `<article class="print-card deed-card">
+      <div class="deed-banner">Deed</div>
+      <div class="deed-seal">§</div>
+      <div class="deed-title">Territory Ownership</div>
+      <div class="deed-rule">When you buy an unowned Deed, place this card beside that Territory on your side.</div>
+      <div class="deed-rule">Move it across on a buyout; return it to the supply when unowned.</div>
+      <div class="deed-note">One per Territory. Heartlands have no Deeds.</div>
+      <footer class="reference-footer">Shared supplemental card — no deckbuilding value</footer>
     </article>`;
   }
 

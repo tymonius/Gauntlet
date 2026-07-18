@@ -160,7 +160,7 @@ Closed production decisions:
 - **Corner the Market** is the Unique cost-5 statement card.
 - Added Territories receive normal Deeds; Deed base costs and buyout premiums stop scaling after 6.
 - **Take an extra action** grants a full additional Action opportunity.
-- The package uses two Leader Cards, one Financier Reference, and a public Capital / Deed ledger or equivalent record rather than currency tokens.
+- The package uses two Leader Cards, one Financier Reference, one public Capital Tracker, and eight identical full-size generic Deed Cards in a shared supply.
 
 Open questions:
 
