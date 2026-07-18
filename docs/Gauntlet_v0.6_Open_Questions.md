@@ -17,8 +17,8 @@ Completed:
 - Condition retirement;
 - twelve-card Military, Diplomat, Inquisition, Financier, and Intelligence packages;
 - Intelligence Mission requirements and exact card text;
-- Military, Diplomat, and Inquisition supplemental-component specifications and printable sheets;
-- definitive Military, Diplomat, Inquisition, and Financier faction guides in Markdown, DOCX, and PDF formats.
+- Military, Diplomat, Inquisition, and Intelligence supplemental-component specifications and printable sheets;
+- definitive Military, Diplomat, Inquisition, Financier, and Intelligence faction guides in Markdown, DOCX, and PDF formats.
 
 Remaining blockers:
 
@@ -27,7 +27,7 @@ Remaining blockers:
 - Define impossible-target and source-dependent copied effects generally, including Treason.
 - Complete the Mystics twelve-card package.
 - Decide remaining Arcane-trait assignments.
-- Playtest the Financier definitive guide and Intelligence card pool; complete the Intelligence definitive guide and both factions' remaining supplemental, printable, and physical-review work.
+- Playtest the Financier and Intelligence definitive guides and complete the Financier printable package and both factions' remaining physical-review work.
 - Playtest and physically review completed packages.
 - Create canonical v0.6 card, Territory, faction, leader, deckbuilding, and recommended-deck data after these decisions stabilize.
 
@@ -163,16 +163,16 @@ Open questions:
 
 ## Intelligence
 
-Active exact-text source: `Gauntlet_v0.6_Intelligence_Card_Pool.md`. It governs the approved roster, costs, Missions, exact player-facing card text, strategic audit, and initial watchlist until a definitive Intelligence faction guide supersedes it.
+Definitive source: `../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`. The adjacent PDF and DOCX are release-formatted editions. The earlier split exact-text pool has been consolidated and removed.
 
-Closed package decisions:
+Closed production decisions:
 
 - The package contains twelve cards with a **1 / 3 / 4 / 3 / 1** curve, total value 36, and average value 3.0.
-- The roster is **Exfiltration; Spies; Fog of War; Disinformation; Operational Reassessment; Intercepted Orders; Reconnaissance; Deep Cover; Assassins; Treason; Subversion; Sleeper Network**.
 - Six cards have Mission requirements: **Spies, Fog of War, Disinformation, Reconnaissance, Assassins, and Subversion**.
-- **Treason** is cost 4.
-- **Sleeper Network** is the Unique cost-5 statement card.
-- **Spies, Fog of War, Disinformation, Deep Cover, and Sleeper Network** are the initial package watchlist.
+- **Treason** is cost 4; **Sleeper Network** is the Unique cost-5 statement card.
+- The supplemental set uses Ranger, Spymaster, a Mission Reference, an Operations Reference, and one dual Intel / Operation Progress tracker with two cut-out markers.
+- The printable package uses two Letter-size 9-up sheets and dedicated leader-card crops.
+- The definitive guide is packaged in matching Markdown, DOCX, and 13-page Letter PDF editions.
 
 Open questions:
 
@@ -188,7 +188,8 @@ Open questions:
 - Is Deep Cover sufficiently useful outside matchups with early-reveal effects?
 - Does Sleeper Network produce an ambitious but recoverable operation, and is its forced-removal trigger fair?
 - Does Treason resolve cleanly under the final copied-effect rules?
-- Do the leader, resource, Mission, and Special Operation references fit and remain fast to use at standard card size?
+- Do the two references and dual tracker remain fast and legible in physical play?
+- Does all player-facing text remain clear at standard card size, especially Sleeper Network?
 
 ---
 

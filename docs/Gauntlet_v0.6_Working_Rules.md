@@ -593,6 +593,8 @@ Treat it as occupied but not controlled for cost. Normal buyout premiums apply. 
 **Identity:** information, preparation, hidden objectives, tactical disruption, and a coordinated Special Operation.  
 **Resources:** Intel and Operation Progress.
 
+**Definitive faction source:** `../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`. It governs Intelligence player-facing rules, leaders, components, strategy, terminology, and exact card text. This section remains the development integration summary.
+
 Intel starts at 0, cannot fall below 0, and currently has no maximum.
 
 Operation Progress starts at 0 and cannot fall below 0 unless a rule says otherwise.

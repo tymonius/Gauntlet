@@ -2,7 +2,7 @@
 
 **Status:** Consolidated metadata rollup through 112 current playable-card designs: 50 Neutral cards, 12 Military cards, 12 Diplomat cards, 12 Inquisition cards, 12 Financier cards, 12 Intelligence cards, and 2 retained source designs assigned to the unfinished Mystics faction.
 
-`card-reviews/STATUS.md` records the live checkpoint. `Gauntlet_v0.6_Neutral_Card_Pool.md`, `../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`, `../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`, `../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`, `../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`, and `Gauntlet_v0.6_Intelligence_Card_Pool.md` are authoritative for their completed pools. The definitive Military, Diplomat, Inquisition, and Financier guides also govern their leaders, resources, components, strategy, terminology, and player-facing faction rules. The consolidated Card Review Log, source registry below, and standalone reviews remain migration and design provenance.
+`card-reviews/STATUS.md` records the live checkpoint. `Gauntlet_v0.6_Neutral_Card_Pool.md`, `../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`, `../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`, `../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`, `../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`, and `../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md` are authoritative for their completed pools. The definitive Military, Diplomat, Inquisition, Financier, and Intelligence guides also govern their leaders, resources, components, strategy, terminology, and player-facing faction rules. The consolidated Card Review Log, source registry below, and standalone reviews remain migration and design provenance.
 
 The 54-row source registry preserves the v0.5.7 migration record. It is not itself a count of current playable designs: Militias and Patriotism are retained below as retired source entries, while newly created Military, Diplomat, Inquisition, Financier, and Intelligence cards appear only in their active package tables.
 
@@ -166,7 +166,7 @@ This table records Financier metadata; the definitive Financier faction guide go
 
 ## Active Intelligence package metadata
 
-This table is authoritative for Intelligence card metadata; `Gauntlet_v0.6_Intelligence_Card_Pool.md` governs all player-facing Intelligence card text and Mission requirements until a definitive faction guide supersedes it.
+This table records Intelligence metadata; the definitive Intelligence faction guide governs all player-facing Intelligence rules, Mission requirements, and exact card text.
 
 | ID | Card | Cost | Starter eligible | Complexity | Unique | Watchlist |
 |---|---|---:|---|---|---|---|
@@ -210,6 +210,6 @@ This table is authoritative for Intelligence card metadata; `Gauntlet_v0.6_Intel
 - The Diplomat pool contains exactly 12 unique cards with the approved 1 / 3 / 5 / 2 / 1 cost curve, total value 35, and average value 2.92; its definitive source is the release faction guide.
 - The Inquisition pool contains exactly 12 unique cards with the approved 1 / 3 / 4 / 2 / 2 cost curve, total value 37, and average value 3.08; its definitive source is the release faction guide.
 - The Financier pool contains exactly 12 unique cards with the approved 1 / 3 / 4 / 3 / 1 cost curve, total value 36, and average value 3.00; its definitive source is the release faction guide.
-- The Intelligence pool contains exactly 12 unique cards with the approved 1 / 3 / 4 / 3 / 1 cost curve, total value 36, and average value 3.0; its active source is `Gauntlet_v0.6_Intelligence_Card_Pool.md`.
+- The Intelligence pool contains exactly 12 unique cards with the approved 1 / 3 / 4 / 3 / 1 cost curve, total value 36, and average value 3.0; its definitive source is the release faction guide.
 - The current project contains 112 playable-card designs: 50 Neutral, 12 Military, 12 Diplomats, 12 Inquisition, 12 Financiers, 12 Intelligence, and 2 retained source designs assigned to Mystics.
 - Remaining work concerns the Mystics package, copied-effect rules, Financier and Intelligence playtesting and production, and canonical-data production.

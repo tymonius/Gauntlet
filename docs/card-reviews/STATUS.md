@@ -1,7 +1,7 @@
 # Gauntlet v0.6 Card Review Status
 
 **Last completed faction pool:** Intelligence  
-**Last completed definitive faction guide:** Financiers  
+**Last completed definitive faction guide:** Intelligence  
 **v0.5.7 source-card review:** Complete through all 54 migration records  
 **New Neutral additions:** Complete through all 12 cards  
 **Neutral pool:** Complete at 50 cards  
@@ -9,7 +9,7 @@
 **Diplomat pool:** Complete at 12 cards; definitive faction guide packaged  
 **Inquisition pool:** Complete at 12 cards; definitive faction guide packaged  
 **Financier pool:** Complete at 12 cards; definitive faction guide packaged  
-**Intelligence pool:** Complete at 12 cards; working exact-text pool approved  
+**Intelligence pool:** Complete at 12 cards; definitive faction guide packaged  
 **Current playable designs:** 112  
 **Conditions:** Retired as a v0.6 game concept
 
@@ -24,13 +24,13 @@ The 112 current designs comprise 50 Neutral, 12 Military, 12 Diplomat, 12 Inquis
 3. `../../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md` — definitive Diplomat rules and exact card pool
 4. `../../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` — definitive Inquisition rules and exact card pool
 5. `../../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` — definitive Financier rules and exact card pool
-6. `../Gauntlet_v0.6_Intelligence_Card_Pool.md` — approved Intelligence roster, exact text, Missions, package audit, and playtest watchlist
+6. `../../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md` — definitive Intelligence rules, leaders, components, Missions, strategy, and exact card pool
 7. `../Gauntlet_v0.6_Card_Metadata.md`
 8. `COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`
 9. `../Gauntlet_v0.6_Card_Review_Log.md`
 10. `CONDITION_AUDIT.md`
 
-Definitive faction guides and completed exact-text pool documents override migration records and historical sidecars where they differ. Military's former split files, Diplomats' former split pool, design-note, and supplemental files, Inquisition's former split pool, design-note, supplemental, and working-guide files, and the Financier split pool and design notes have been consolidated into definitive guides and removed.
+Definitive faction guides and completed exact-text pool documents override migration records and historical sidecars where they differ. Military's former split files, Diplomats' former split pool, design-note, and supplemental files, Inquisition's former split pool, design-note, supplemental, and working-guide files, the Financier split pool and design notes, and the Intelligence split exact-text pool have been consolidated into definitive guides and removed.
 
 ---
 
@@ -107,7 +107,8 @@ The Working Rules include:
 - **Treason** is cost 4 rather than the faction capstone.
 - **Sleeper Network** is the Unique cost-5 statement card.
 - **Spies, Fog of War, Disinformation, Deep Cover, and Sleeper Network** are the initial package watchlist.
-- The active exact-text source is `docs/Gauntlet_v0.6_Intelligence_Card_Pool.md` until a definitive Intelligence faction guide supersedes it.
+- The definitive source is `releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`, with matching release DOCX and PDF.
+- The physical package uses Ranger, Spymaster, two references, and a dual Intel / Operation Progress tracker with two cut-out markers.
 
 ---
 
@@ -117,7 +118,7 @@ The Working Rules include:
 - Finalize Witchcraft copied-effect eligibility.
 - Define impossible-target and source-dependent copied effects generally, including Treason.
 - Complete the Mystics package.
-- Playtest the Financier definitive guide and Intelligence card pool; complete the Intelligence definitive guide and both factions' remaining supplemental, printable, and physical-review work.
+- Playtest the Financier and Intelligence definitive guides and complete the Financier printable package and both factions' remaining physical-review work.
 - Playtest and physically review all completed packages.
 - Create canonical v0.6 data only after remaining blockers are resolved.
 
@@ -125,4 +126,4 @@ The Working Rules include:
 
 ## Immediate next step
 
-Playtest the definitive Financier guide and the approved Intelligence pool while continuing design work on Mystics. Complete the Intelligence definitive guide and the remaining Financier and Intelligence printable packages after their rules, leaders, watchlists, and physical text survive focused testing.
+Playtest the definitive Financier and Intelligence guides while continuing design work on Mystics. Complete the remaining Financier printable package and physically review both factions after their rules, leaders, watchlists, and physical text survive focused testing.
