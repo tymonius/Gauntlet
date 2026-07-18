@@ -59,10 +59,11 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 32. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — leader art and miniature direction.
 33. **`../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`** — definitive Diplomat source and release-guide package.
 34. **`../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`** — definitive Inquisition source and release-guide package.
-35. **`../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`** — definitive Intelligence source and release-guide package.
-35. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions.
-36. **`../images/`** — leader portraits and matching production sketches.
-37. **`Game_Design_Glossary.md`** — shared terminology.
+35. **`../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`** — definitive Financier source and release-guide package.
+36. **`../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`** — definitive Intelligence source and release-guide package.
+37. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions.
+38. **`../images/`** — leader portraits and matching production sketches.
+39. **`Game_Design_Glossary.md`** — shared terminology.
 
 ### Historical archive
 
@@ -123,7 +124,7 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - **Hellfire** divides Conviction between battle strength and Purification pressure.
 - **Divine Mercy, Tyranny, and Burning at the Stake** are the primary balance watchlist.
 - The 1-Conviction Purge retains top-discard removal and adds a combined-value-2 option.
-- Player-facing card text has received a dedicated concision pass without mechanical changes.
+- Player-facing text has received a dedicated concision pass without mechanical changes.
 - The supplemental set uses either leader, two single-sided references, and one shared sliding 0–4 Conviction tracker. No token or marker is used.
 - `../faction-sheets/inquisition.html` is the two-sheet printable package using the existing portraits under `images/`.
 - `../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` is the definitive Inquisition source; the adjacent DOCX and PDF are release-formatted editions using the Grand Inquisitor and Witch Hunter sketches under `../images/sketches/`.
@@ -136,7 +137,8 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - **Corner the Market** is the Unique cost-5 statement card.
 - Deed base costs and opposing-owner buyout premiums stop scaling after 6.
 - Manifest Destiny Territories receive normal Deeds and expand Controlling Interest.
-- The supplemental specification uses either leader, one Financier Reference, and a public Capital / Deed ledger or equivalent record.
+- The supplemental set uses either leader, one Financier Reference, and a public Capital / Deed Ledger rather than currency tokens.
+- `../faction-sheets/financier.html` is the two-sheet printable package using dedicated Banker and Executive leader-card crops under `../images/leader-cards/`.
 - `../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` is the definitive Financier source; the adjacent DOCX and PDF are release-formatted editions using the Banker and Executive sketches under `../images/sketches/`.
 
 ### Intelligence checkpoint
@@ -159,7 +161,7 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - Finalize Witchcraft copied-effect eligibility.
 - Define impossible-target and source-dependent copied effects generally, including Treason.
 - Complete the Mystics card package.
-- Playtest the Financier and Intelligence definitive guides and complete the Financier printable package and both factions' remaining physical-review work.
+- Playtest and physically review the Financier and Intelligence definitive guides and printable packages.
 - Playtest and physically review all completed packages before canonical v0.6 data is created.
 
 ### Territories and core rules
@@ -186,12 +188,12 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 ### Digital work
 
 - The TypeScript engine, CLI, and GUI remain development scaffolds.
-- The v0.6 development deckbuilder is live under `../deckbuilder-v0.6/` and reads the active Neutral, Military, Diplomat, Inquisition, Financier, and Territory Markdown sources at runtime.
+- The v0.6 development deckbuilder is live under `../deckbuilder-v0.6/` and reads the active Neutral, Military, Diplomat, Inquisition, Financier, Intelligence, and Territory Markdown sources at runtime.
 - It supports completed faction and leader selection, Neutral-plus-faction legality, playable-card count/value validation, all 25 Territories, exactly-three/max-one-Arena validation, local saves, JSON import/export, text export, and random valid test-deck generation.
 - Territory selection is included in the Current deck display and in saved/exported deck data.
 - Print / PDF export now produces the complete selected faction package: deck summary, chosen Leader Card with portrait and rules, every playable-card copy, three Territories, trackers, references, and other required supplemental faces.
 - Military includes its Command Tracker; Inquisition includes its Conviction Tracker, Doctrine, and Purge Reference; Diplomats include the Influence Tracker, both Reference faces, nine Proposal fronts, and nine mirrored Treaty Article backs for duplex alignment.
-- Mystics and Intelligence remain disabled pending completed definitive-guide and printable-package integration.
+- Mystics remains disabled pending completed definitive-guide and printable-package integration.
 - Do not silently migrate v0.5 saved decks into v0.6.
 
 ### Lore and production
@@ -199,10 +201,10 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 - Lore remains incremental and non-canonical beyond the active notes.
 - The Leader Design Bible is the visual source of truth.
 - `images/` contains portraits and production sketches for all twelve leaders.
-- Military, Diplomat, and Inquisition printable packages are under `faction-sheets/`.
+- Military, Diplomat, Inquisition, Financier, and Intelligence printable packages are under `faction-sheets/`.
 - The definitive Military, Diplomat, Inquisition, Financier, and Intelligence guide packages are under `releases/v0.6/faction-guides/` in Markdown, DOCX, and PDF formats.
 - Military, Diplomat, and Inquisition resources use sliding leader-over-tracker components; Inquisition uses no token.
-- The Financier definitive guide is complete; its dedicated printable faction sheet remains production work. Intelligence card design is complete, but its definitive guide, supplemental components, and printable sheet remain to be produced.
+- Financier and Intelligence each have definitive guides and printable packages; both remain subject to physical review.
 
 ---
 
@@ -224,4 +226,4 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 
 ## Immediate next step
 
-Playtest the definitive Financier guide and approved Intelligence exact-text pool while completing the Mystics card package. Record shared-rules corrections in the Working Rules first. After Intelligence survives focused testing, consolidate its rules, leaders, references, strategy, and twelve cards into a definitive guide and printable package; complete the Financier printable sheet in parallel. Continue physical review of the preliminary core rulebook and completed definitive faction guides.
+Playtest and physically review the definitive Financier and Intelligence guides and printable packages while completing the Mystics card package. Record shared-rules corrections in the Working Rules first. Reopen a completed package only when testing reveals a strategic, balance, wording, or production failure.
