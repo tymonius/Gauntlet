@@ -9,6 +9,7 @@ These browser-printable sheets are separate from the versioned v0.5 deckbuilder.
 - [Open the rendered Military faction sheets](https://tymonius.github.io/Gauntlet/faction-sheets/military.html) — twelve Military cards, General, Commandant, and the sliding Command tracker.
 - [Open the rendered Diplomat faction sheets](https://tymonius.github.io/Gauntlet/faction-sheets/diplomat.html) — twelve Diplomat cards, both leaders, Proposal / Treaty Article cards, references, and the sliding Influence tracker.
 - [Open the rendered Inquisition faction sheets](https://tymonius.github.io/Gauntlet/faction-sheets/inquisition.html) — twelve Inquisition cards, Grand Inquisitor, Witch Hunter, two references, and the sliding Conviction tracker.
+- [Open the rendered Mystics faction sheets](https://tymonius.github.io/Gauntlet/faction-sheets/mystics.html) — twelve Mystics cards, Alchemist, Spirit Walker, the Mystics Reference, three incomplete Rite faces, and three mirrored completed Rite backs.
 - [Open the rendered Financier faction sheets](https://tymonius.github.io/Gauntlet/faction-sheets/financier.html) — twelve Financier cards, Banker, Executive, the Financier Reference, and the public Capital / Deed Ledger.
 - [Open the rendered Intelligence faction sheets](https://tymonius.github.io/Gauntlet/faction-sheets/intelligence.html) — twelve Intelligence cards, Ranger, Spymaster, two references, and the dual Intel / Operation Progress tracker.
 
@@ -22,7 +23,7 @@ Use the rendered GitHub Pages links rather than GitHub's source-code view.
 4. Enable background graphics.
 5. Cut cards to **2.5 × 3.5 inches**.
 
-The sheets use a 3 × 3 grid. Supplemental cards are open information and do not use the normal playable-card back.
+The sheets use a 3 × 3 grid. Supplemental cards are open information and do not use the normal playable-card back. Mystics page 1 is single-sided; pages 2 and 3 are aligned for long-edge duplex printing so the three incomplete Rites pair with their mirrored completed backs.
 
 ## Sliding trackers and ledgers
 
@@ -36,11 +37,14 @@ Military tracks **0–2 Command**. Diplomats track **0–10 Influence**. Inquisi
 
 Financiers use the writable **Capital / Deed Ledger** rather than a sliding tracker. Capital and Deed ownership must remain public; use pencil, a dry-erase sleeve, or an equivalent record.
 
+Mystics use no tracker or ledger. Completed Rites are flipped to their completed faces and remain public.
+
 ## Sources of truth
 
 - `releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md` — definitive Military rules, leaders, components, and playable-card text. The Military sheets are derived from this guide.
 - `releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md` — definitive Diplomat rules, leaders, Proposals, references, tracker, and playable-card text. The Diplomat sheets are derived from this guide.
 - `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` — definitive Inquisition rules, leaders, references, tracker, and playable-card text. The Inquisition sheets are derived from this guide.
+- `releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` — definitive Mystics rules, leaders, Rites, reference, and playable-card text. The Mystics sheets are derived from this guide.
 - `releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` — definitive Financier rules, leaders, Capital, Treasury, Deeds, references, ledger requirements, and playable-card text. The Financier sheets are derived from this guide.
 - `releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md` — definitive Intelligence rules, leaders, Missions, references, tracker, and playable-card text. The Intelligence sheets are derived from this guide.
 - `docs/Gauntlet_v0.6_Working_Rules.md` — shared rules.
