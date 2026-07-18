@@ -15,20 +15,34 @@ Completed:
 - 50-card Neutral pool;
 - all 25 Territory and Arena reviews;
 - Condition retirement;
+<<<<<<< ours
 - twelve-card Military, Diplomat, Inquisition, Financier, and Intelligence packages;
 - Intelligence Mission requirements and exact card text;
 - Military, Diplomat, Inquisition, and Intelligence supplemental-component specifications and printable sheets;
 - definitive Military, Diplomat, Inquisition, Financier, and Intelligence faction guides in Markdown, DOCX, and PDF formats.
+=======
+- twelve-card Military, Diplomat, Inquisition, and Mystics packages;
+- Military, Diplomat, Inquisition, and Mystics supplemental-component specifications;
+- definitive Military, Diplomat, Inquisition, and Mystics faction guides in Markdown, DOCX, and PDF formats;
+- selected twelve-card Financier pool and package audit.
+>>>>>>> theirs
 
 Remaining blockers:
 
 - Decide whether **Siege Weaponry** becomes **Bombardment**.
+<<<<<<< ours
 - Finalize Witchcraft copied-effect eligibility.
 - Define impossible-target and source-dependent copied effects generally, including Treason.
 - Complete the Mystics twelve-card package.
 - Decide remaining Arcane-trait assignments.
 - Playtest the Financier and Intelligence definitive guides and complete the Financier printable package and both factions' remaining physical-review work.
+=======
+- Roll stable Mystics copied-effect, bound-card, additional-Battle-card, and Overlay clarifications into the preliminary core rulebook.
+- Consolidate the selected Financier pool into a definitive guide and production package.
+- Complete Intelligence Mission requirements, including **Assassins**, and select the full Intelligence package.
+>>>>>>> theirs
 - Playtest and physically review completed packages.
+- Integrate Mystics and later completed factions into the development deckbuilder and printable faction-sheet tooling.
 - Create canonical v0.6 card, Territory, faction, leader, deckbuilding, and recommended-deck data after these decisions stabilize.
 
 ---
@@ -119,20 +133,42 @@ Open questions:
 
 ## Mystics
 
-- Finalize names for Rites, Invocation, Transmutation, and both leader abilities.
-- Are the three Rites comparably difficult?
-- Is one incomplete Rite at a time correct?
-- Do Rite of Echoes, Rite of Blood, and Rite of Crossing resolve cleanly?
+Definitive source: `../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`. The adjacent PDF and DOCX are release-formatted editions. Earlier Mystics rules and card drafts are superseded where they conflict with the definitive guide.
+
+Closed package and production decisions:
+
+- The package contains twelve cards with a **1 / 3 / 4 / 3 / 1** curve, total value 36, and average value 3.00.
+- The roster is **Dark Omens; Accursed Wager; Fate's Toll; Grave Ward; Spirit Hollow; Soul for Soul; Rend the Veil; Paths of Shadow; Witchcraft; Black Covenant; Circle of Bones; Necromancy**.
+- All twelve cards have the **Arcane** trait.
+- **Necromancy** is the Unique cost-5 statement card.
+- The leaders are **Alchemist** and **Spirit Walker**.
+- Their abilities are **Catalysis** and **The Circle Holds**.
+- The three Rites are **Rite of Echoes, Rite of Blood, and Rite of Crossing**.
+- The supplemental set uses one selected Leader Card, one Mystics Reference, and three double-sided Rite cards.
+- Completed Rites are flipped to their completed faces; no token or resource tracker is used.
+- Witchcraft's eligible-effect boundary and the package's bounded copied-effect rules are defined in the definitive guide.
+
+Open questions:
+
+- Are the three Rites comparably difficult and interactive?
+- Is one begun but incomplete Rite at a time correct?
+- Do Rite of Echoes, Rite of Blood, and Rite of Crossing resolve cleanly in physical play?
 - Are Invocation and Transmutation strong without creating excessive swings?
-- Are Alchemist and Spirit Walker comparably strong?
-- Finalize Witchcraft copied-effect eligibility.
-- Decide final Arcane-trait assignments.
-- Select and audit the twelve-card package.
+- Are Alchemist and Spirit Walker comparably strong across conventional and Ritual-focused decks?
+- Does Necromancy recur too easily through Rend the Veil, Soul for Soul, Grave Ward, Spirit Hollow, or Invocation?
+- Does Alchemist plus Grave Ward preserve sacrifice value too efficiently?
+- Are Fate's Toll and Circle of Bones correctly priced under Catalysis?
+- Does Black Covenant's additional-Action and hand-commitment sequencing remain clear?
+- Does Rend the Veil at cost 3 outperform Neutral Arcane Knowledge at cost 4?
+- Does the all-twelve Arcane assignment make Blasphemy an oppressive counter rather than healthy matchup pressure?
+- Are Spirit Hollow and Circle of Bones compelling contested locations without excessive tracking?
+- Does all player-facing text remain legible at standard card size?
 
 ---
 
 ## Financiers
 
+<<<<<<< ours
 Definitive source: `../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`. The adjacent PDF and DOCX are the release-formatted editions. The earlier split Financier pool and design-note documents have been consolidated and removed.
 
 Closed production decisions:
@@ -142,6 +178,13 @@ Closed production decisions:
 - Added Territories receive normal Deeds; Deed base costs and buyout premiums stop scaling after 6.
 - **Take an extra action** grants a full additional Action opportunity.
 - The package uses two Leader Cards, one Financier Reference, and a public Capital / Deed ledger or equivalent record rather than currency tokens.
+=======
+Authoritative working exact-text source: `Gauntlet_v0.6_Financier_Card_Pool.md`. Design rationale: `Gauntlet_v0.6_Financier_Design_Notes.md`.
+
+Closed package decision:
+
+- The selected package contains twelve cards with a **1 / 3 / 4 / 3 / 1** curve, total value 36, and average value 3.00.
+>>>>>>> theirs
 
 Open questions:
 
@@ -151,6 +194,7 @@ Open questions:
 - Are Deed costs and buyout premiums intuitive, including mirrors and Manifest Destiny?
 - Is Play the Market appropriately swingy?
 - Is Subsidize understandable and balanced?
+<<<<<<< ours
 - Should Line of Credit collateral remain in discard rather than the Graveyard?
 - Does Hostile Takeover snowball too quickly?
 - Are Banker and Executive comparably strong?
@@ -160,6 +204,16 @@ Open questions:
 - Is Underwriting's standalone floor sufficient?
 - Is the self-tracking burden of Speculation, Capital Gains, and Margin Loan acceptable?
 - Does Corner the Market create a visible, dramatic finish?
+=======
+- Are Banker and Executive comparably strong?
+- Do Tariffs, Divestment, and Margin Loan collectively erase intended Action pressure?
+- Does repeated Monetary Crisis prevent meaningful hand planning?
+- Is Underwriting too narrow compared with the rest of the package?
+- Does Corner the Market end games after visible preparation rather than routine accumulation?
+- Consolidate the selected rules, leaders, components, strategy, terminology, and card pool into one definitive release guide.
+
+---
+>>>>>>> theirs
 
 ## Intelligence
 
@@ -201,6 +255,7 @@ Open questions:
 - Does the Territory-scaled Asset bank accelerate games without killing comebacks?
 - Does any matchup routinely remove meaningful decisions?
 - Do completed packages preserve counterattack windows and comeback potential?
+- Is Inquisition-versus-Mystics a healthy counter relationship rather than a hard lock?
 
 Use `Gauntlet_Playtest_Targets_and_Metrics.md` for required data collection.
 

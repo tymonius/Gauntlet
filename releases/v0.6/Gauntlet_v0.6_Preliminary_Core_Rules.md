@@ -10,9 +10,15 @@ The following faction inserts are complete and may be used with this draft:
 - **Military** — General or Commandant
 - **Diplomats** — Ambassador or Senator
 - **Inquisition** — Grand Inquisitor or Witch Hunter
+<<<<<<< ours
 - **Financiers** — Banker or Executive
 
 Mystics and Intelligence remain in development. This draft should not be treated as the final v0.6 canonical release until all six faction packages, cross-card interactions, physical review, and canonical data are complete.
+=======
+- **Mystics** — Alchemist or Spirit Walker
+
+Financiers and Intelligence remain in release development. This draft should not be treated as the final v0.6 canonical release until all six faction packages, cross-card interactions, physical review, and canonical data are complete.
+>>>>>>> theirs
 
 ---
 
@@ -38,7 +44,7 @@ When rules conflict, apply them in this order:
 2. The selected faction guide and Leader Card.
 3. These core rules.
 
-A specific effect overrides a general rule only to the extent stated. This preliminary draft intentionally does not establish a new universal rule for impossible targets or source-dependent copied effects; those remain release blockers and must be resolved in the relevant exact text before canonical data is created.
+A specific effect overrides a general rule only to the extent stated. Impossible instructions, source-dependent Battle effects, and effects that resolve or repeat other Battle effects follow the bounded rules in section 13. Faction guides may define a specific one-layer exception.
 
 ## Definitive faction sources
 
@@ -47,7 +53,11 @@ Use the corresponding definitive faction guide for all faction resources, leader
 - `faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`
 - `faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`
 - `faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`
+<<<<<<< ours
 - `faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`
+=======
+- `faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`
+>>>>>>> theirs
 
 ---
 
@@ -83,6 +93,7 @@ Supplemental cards are kept with a deck for setup, tracking, or reference. Examp
 - faction references;
 - resource trackers;
 - Proposal / Treaty Article cards;
+- Rite cards and faction references;
 - Order, Purge, turn, battle, and capture references.
 
 Supplemental cards:
@@ -471,11 +482,18 @@ When a played card is canceled and the canceling effect does not specify another
 - a canceled hand commitment returns to its owner's hand;
 - a canceled battle-drawn card goes to its owner's discard pile.
 
-## Effects that resolve other Battle effects
+## Effects that resolve or repeat other Battle effects
 
-An effect that resolves another card's Battle effect cannot select a Battle effect that would itself resolve another Battle effect unless the resolving card explicitly permits one additional layer. An additional effect permitted this way cannot resolve another Battle effect.
+An effect that resolves or repeats another card's Battle effect cannot choose an effect that would play another Battle card or resolve or repeat another Battle effect unless it explicitly permits one additional layer. An additional layer cannot create another layer.
 
-This prevents indefinite recursive chains while permitting explicitly bounded exceptions.
+When a Battle effect resolves an additional time:
+
+- make all choices again;
+- pay all costs again;
+- apply source-dependent instructions only when they can legally function;
+- apply instructions that change the source card's destination or status only once.
+
+An impossible instruction does not prevent the rest of an otherwise legal effect from resolving unless that instruction is a required cost or target. These limits prevent indefinite recursive chains while permitting explicitly bounded exceptions.
 
 ---
 
@@ -526,6 +544,8 @@ An **Overlay** is placed face up over a revealed Territory. Overlays cannot be p
 - Changing control does not remove or rearrange Overlays.
 - When the top Overlay is removed, the next exposed Overlay becomes active; if none remains, the Territory's printed effect becomes active again.
 - A removed Overlay follows the destination stated by its effect or its normal destination if none is stated.
+- Unless an Overlay says otherwise, its owner makes all choices for its effect. Changing control of the Territory does not transfer ownership of the Overlay.
+- A printed condition that removes an Overlay remains active while that Overlay is dormant beneath another Overlay.
 
 ## Ruins
 
@@ -563,7 +583,11 @@ Some factions have an alternate victory condition described in their definitive 
 | Military | Run the Gauntlet only |
 | Diplomats | Run the Gauntlet or Peace Treaty |
 | Inquisition | Run the Gauntlet or Purification |
+<<<<<<< ours
 | Financiers | Run the Gauntlet or Controlling Interest |
+=======
+| Mystics | Run the Gauntlet or Ritual |
+>>>>>>> theirs
 
 ---
 
@@ -596,6 +620,7 @@ This section is only an integration summary. The definitive faction guides conta
 - Spend Conviction on Purges and leader or card effects.
 - At the beginning of the opponent's turn, after their normal draw attempt, the Inquisition wins by Purification if the opponent draws no cards because both deck and discard pile are empty.
 
+<<<<<<< ours
 ## Financiers
 
 - Choose the **Banker** or **Executive**.
@@ -605,6 +630,17 @@ This section is only an integration summary. The definitive faction guides conta
 - Gain 1 Capital per owned Deed at the start of the turn after captures.
 - Spend Capital through Subsidize for escalating battle bonuses.
 - Immediately win by Controlling Interest when you own the Deeds to every Territory currently in the Gauntlet.
+=======
+## Mystics
+
+- Choose the **Alchemist** or **Spirit Walker**.
+- Prepare the Mystics Reference and the three double-sided Rite cards.
+- Begin one Rite after movement instead of playing an Action card; only one Rite may be begun but incomplete at a time.
+- The first completed Rite unlocks **Invocation**; the second unlocks **Transmutation**; the third immediately wins by **Ritual**.
+- Invocation moves one chosen Graveyard card to discard when an Arcane card is played, once per turn.
+- Transmutation sends one card from hand to the Graveyard before battle dice are rolled and adds its deckbuilding value to the battle total, once per turn.
+- All twelve Mystics faction cards have the **Arcane** trait.
+>>>>>>> theirs
 
 ---
 
@@ -616,6 +652,8 @@ This section is only an integration summary. The definitive faction guides conta
 | **Advance** | Move one space toward the opponent's Heartland. |
 | **Arena** | A Territory subtype; no more than one may be selected per player. |
 | **Asset** | A persistent card banked in a player's Asset bank. |
+| **Arcane** | A printed card trait referenced by Mystics and Inquisition rules; separate from faction allegiance. |
+| **Bound card** | A card held outside normal zones by a Rite or another effect. |
 | **Attacker** | The player who initiates or moves into a battle. |
 | **Battle draw** | Cards drawn specifically for selection during a battle. |
 | **Capture** | Change control of a Territory and rotate it toward the new controller. |
