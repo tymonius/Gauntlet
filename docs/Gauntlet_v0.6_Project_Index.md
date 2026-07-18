@@ -19,7 +19,7 @@ Read this file first when resuming v0.6 work.
 5. **`../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`** — definitive Diplomat faction source: rules, Ambassador, Senator, Influence, Terms, Proposals / Treaty Articles, references, tracker, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are release-formatted editions.
 6. **`../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`** — definitive Inquisition faction source: Inquisition rules, Grand Inquisitor, Witch Hunter, Conviction, doctrine, Purge, Purification, supplemental components, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are the release-formatted editions.
 7. **`../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`** — definitive Financier faction source: rules, Banker, Executive, Capital, Treasury, Deeds, Play the Market, Subsidize, Controlling Interest, components, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are the release-formatted editions.
-8. **`Gauntlet_v0.6_Intelligence_Card_Pool.md`** — active Intelligence exact-text source: approved twelve-card roster, costs, Missions, exact wording, strategic audit, and initial playtest watchlist. It remains authoritative until a definitive Intelligence faction guide supersedes it.
+8. **`../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`** — definitive Intelligence faction source: Intelligence rules, Ranger, Spymaster, Intel, Missions, Operation Progress, Surveillance, Interference, Special Operation, references, tracker, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are release-formatted editions.
 9. **`card-reviews/STATUS.md`** — live playable-card checkpoint and unresolved blockers.
 10. **`Gauntlet_v0.6_Card_Metadata.md`** — consolidated allegiance, starter, complexity, uniqueness, and watchlist metadata for 112 current playable designs.
 11. **`card-reviews/COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`** — completed Neutral pool audit.
@@ -33,7 +33,7 @@ Read this file first when resuming v0.6 work.
 19. **`../releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json`** — historical pre-v0.6 canonical source.
 20. **`v0.5.7_rules_clarifications.md`** — physical-rules clarifications from digital implementation.
 
-No canonical v0.6 data exists yet. The preliminary core rulebook is the current player-facing shared-rules snapshot; the Working Rules remain the active development superset. Active v0.6 documents govern until the remaining Mystics card package, copied-effect rules, Intelligence production package, and package testing are resolved. For Military, Diplomats, Inquisition, and Financiers, the definitive faction guides above override earlier development records and split package documents, which have been removed from the active repository. The Intelligence exact-text pool overrides its migration-era records until it is consolidated into a definitive guide.
+No canonical v0.6 data exists yet. The preliminary core rulebook is the current player-facing shared-rules snapshot; the Working Rules remain the active development superset. Active v0.6 documents govern until the remaining Mystics card package, copied-effect rules, and package testing are resolved. For Military, Diplomats, Inquisition, Financiers, and Intelligence, the definitive faction guides above override earlier development records and split package documents, which have been removed from the active repository.
 
 ### Design rationale and testing
 
@@ -43,7 +43,7 @@ No canonical v0.6 data exists yet. The preliminary core rulebook is the current 
 24. **`Gauntlet_Development_History_and_Superseded_Directions.md`** — historical rationale and retired systems.
 25. **`Gauntlet_v0.7_Parking_Lot.md`** — Engineers, multiplayer, and other post-v0.6 concepts.
 
-Completed-package drafts and sidecars remain provenance only where retained. Military development notes, drafts, audits, selection notes, and approval sidecars were removed after consolidation. The split Diplomat pool, design-note, and supplemental-component documents, the split Inquisition pool, design-note, supplemental-component, and working-guide documents, and the split Financier pool and design notes were likewise removed after consolidation into their definitive guides.
+Completed-package drafts and sidecars remain provenance only where retained. Military development notes, drafts, audits, selection notes, and approval sidecars were removed after consolidation. The split Diplomat pool, design-note, and supplemental-component documents, the split Inquisition pool, design-note, supplemental-component, and working-guide documents, the split Financier pool and design notes, and the split Intelligence exact-text pool were likewise removed after consolidation into their definitive guides.
 
 ### Digital development
 
@@ -59,6 +59,7 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 32. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — leader art and miniature direction.
 33. **`../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`** — definitive Diplomat source and release-guide package.
 34. **`../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`** — definitive Inquisition source and release-guide package.
+35. **`../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`** — definitive Intelligence source and release-guide package.
 35. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions.
 36. **`../images/`** — leader portraits and matching production sketches.
 37. **`Game_Design_Glossary.md`** — shared terminology.
@@ -147,9 +148,10 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - **Treason** is cost 4 and remains dependent on the project-wide copied-effect rules.
 - **Sleeper Network** is the Unique cost-5 statement card.
 - **Spies, Fog of War, Disinformation, Deep Cover, and Sleeper Network** are the initial package watchlist.
-- `Gauntlet_v0.6_Intelligence_Card_Pool.md` is the active exact-text source until a definitive guide is produced.
-- The Ranger and Spymaster remain the selected leaders; their current rules are in the Working Rules.
-- Supplemental references, printable sheets, and a definitive faction guide remain production work rather than card-pool design blockers.
+- The supplemental set uses either leader, a Mission Reference, an Operations Reference, and a dual Intel / Operation Progress tracker with two cut-out markers.
+- `../faction-sheets/intelligence.html` is the two-sheet printable package using dedicated Ranger and Spymaster leader-card crops under `../images/leader-cards/`.
+- `../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md` is the definitive Intelligence source; the adjacent DOCX and PDF are release-formatted editions.
+- `Gauntlet_v0.6_Intelligence_Card_Pool.md` has been consolidated into the definitive guide and removed.
 
 ### Remaining blockers
 
@@ -157,7 +159,7 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - Finalize Witchcraft copied-effect eligibility.
 - Define impossible-target and source-dependent copied effects generally, including Treason.
 - Complete the Mystics card package.
-- Playtest the Financier definitive guide and Intelligence pool; complete the Intelligence definitive guide and both factions' remaining supplemental, printable, and physical-review work.
+- Playtest the Financier and Intelligence definitive guides and complete the Financier printable package and both factions' remaining physical-review work.
 - Playtest and physically review all completed packages before canonical v0.6 data is created.
 
 ### Territories and core rules
@@ -198,7 +200,7 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 - The Leader Design Bible is the visual source of truth.
 - `images/` contains portraits and production sketches for all twelve leaders.
 - Military, Diplomat, and Inquisition printable packages are under `faction-sheets/`.
-- The definitive Military, Diplomat, Inquisition, and Financier guide packages are under `releases/v0.6/faction-guides/` in Markdown, DOCX, and PDF formats.
+- The definitive Military, Diplomat, Inquisition, Financier, and Intelligence guide packages are under `releases/v0.6/faction-guides/` in Markdown, DOCX, and PDF formats.
 - Military, Diplomat, and Inquisition resources use sliding leader-over-tracker components; Inquisition uses no token.
 - The Financier definitive guide is complete; its dedicated printable faction sheet remains production work. Intelligence card design is complete, but its definitive guide, supplemental components, and printable sheet remain to be produced.
 

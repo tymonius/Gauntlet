@@ -10,12 +10,12 @@ The project is in private pre-release development and physical playtesting.
 - **Active development line:** v0.6
 - **v0.6 focus:** six factions, two leaders per faction, faction resources, alternate victory paths, canonical-data production, and faction playtesting
 - **Playable-card review:** complete for all 54 v0.5.7 source cards
-- **Completed faction pools:** Military, Diplomats, Inquisition, and Financiers
+- **Completed faction pools:** Military, Diplomats, Inquisition, Financiers, and Intelligence
 - **Preliminary v0.6 core rulebook:** self-contained shared rules draft at `releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md`
-- **Definitive faction guides:** Military, Diplomats, Inquisition, and Financiers are packaged in Markdown, DOCX, and PDF under `releases/v0.6/faction-guides/`
+- **Definitive faction guides:** Military, Diplomats, Inquisition, Financiers, and Intelligence are packaged in Markdown, DOCX, and PDF under `releases/v0.6/faction-guides/`
 - **Territory review:** complete for all 25 v0.5.7 Territories and Arenas; exact text consolidated in `docs/Gauntlet_v0.6_Territory_Pool.md`
 - **Conditions:** retired as a v0.6 game concept; persistent effects now use Assets, Overlays, or immediate/self-tracking resolution
-- **v0.6 deckbuilder:** live and reading the active Neutral, Military, Diplomat, Inquisition, Financier, and Territory Markdown sources
+- **v0.6 deckbuilder:** live and reading the active Neutral, Military, Diplomat, Inquisition, Financier, Intelligence, and Territory Markdown sources
 - **Live checkpoint:** `docs/Gauntlet_v0.6_Project_Index.md`
 
 The six v0.6 factions are:
@@ -97,6 +97,14 @@ The definitive Financier package is:
 
 The Markdown file is the definitive Financier source. The DOCX and PDF are matching release-formatted editions.
 
+The definitive Intelligence package is:
+
+- `releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`
+- `releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.docx`
+- `releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.pdf`
+
+The Markdown file is the definitive Intelligence source. The DOCX and PDF are matching release-formatted editions.
+
 ### `docs/`
 
 Active design, rules, testing, setting, and production documentation.
@@ -112,6 +120,7 @@ Start with:
 - `releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md` — definitive Diplomat rules, leaders, Influence, Terms, Proposals / Treaty Articles, components, strategy, and exact card pool;
 - `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` — definitive Inquisition rules, leaders, components, strategy, and exact card pool;
 - `releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` — definitive Financier rules, leaders, Capital, Treasury, Deeds, components, strategy, and exact card pool;
+- `releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md` — definitive Intelligence rules, leaders, Missions, references, tracker, strategy, and exact card pool;
 - `docs/card-reviews/STATUS.md` — consolidated playable-card checkpoint and exact-text blockers;
 - `docs/Gauntlet_v0.6_Card_Review_Log.md` — decisions for all 54 reviewed playable cards;
 - `docs/Gauntlet_v0.6_Card_Metadata.md` — card allegiance, complexity, starter, and watchlist metadata;
@@ -126,9 +135,9 @@ Start with:
 
 ### `faction-sheets/`
 
-Browser-printable working sheets for v0.6 faction cards and supplemental components. Military and Inquisition have complete two-sheet packages; Diplomats have a four-sheet package with duplex Proposal / Treaty Article faces. See `faction-sheets/README.md` for rendered links and instructions.
+Browser-printable working sheets for v0.6 faction cards and supplemental components. Military, Inquisition, and Intelligence have complete two-sheet packages; Diplomats have a four-sheet package with duplex Proposal / Treaty Article faces. See `faction-sheets/README.md` for rendered links and instructions.
 
-The Military, Diplomat, and Inquisition sheets are derived production files governed by their definitive faction guides. The Financier definitive guide is complete; its dedicated browser-printable sheet remains a separate production task.
+The Military, Diplomat, Inquisition, and Intelligence sheets are derived production files governed by their definitive faction guides. The Financier definitive guide is complete; its dedicated browser-printable sheet remains a separate production task.
 
 ### `images/`
 

@@ -28,6 +28,12 @@ const SOURCES = {
     start: "## 6. Canonical Financier card pool",
     end: "## 7. Card-pool summary",
     headingLevel: 3
+  },
+  intelligence: {
+    label: "Intelligence",
+    path: "../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md",
+    start: "# 6. Canonical Intelligence card pool",
+    end: "# 7. Card-pool summary"
   }
 };
 
@@ -180,11 +186,36 @@ const FACTIONS = [
   {
     id: "intelligence",
     name: "Intelligence",
-    status: "developing",
-    identity: "Intel, Missions, Surveillance, and Special Operation.",
-    resource: "In development",
-    victory: "Special Operation — in development.",
-    leaders: [{ id: "ranger", name: "Ranger" }, { id: "spymaster", name: "Spymaster" }]
+    status: "ready",
+    identity: "Intel, Missions, Surveillance, Interference, and Special Operation.",
+    resource: "Intel and Operation Progress (begin at 0)",
+    victory: "Run the Gauntlet or complete a Special Operation.",
+    leaders: [
+      {
+        id: "ranger",
+        name: "Ranger",
+        tagline: "Know the land before the battle begins.",
+        role: "Terrain · Reconnaissance · Hostile ground",
+        rules: [
+          ["Missions", "Complete normal Missions to gain 1 Operation Progress and Intel equal to the Mission card's value."],
+          ["Surveillance", "Once per battle, spend 1 Intel to look at one opposing face-down Battle card when it is committed or selected."],
+          ["Fieldcraft", "Once per turn, spend 1 Intel to ignore a revealed Territory effect affecting you, your movement, or a battle involving you until end of turn."],
+          ["Special Operation", "When Progress exceeds opposing controlled Territories, start an eligible Mission card as the Special Operation; satisfy it later and pay the final Intel cost to win."]
+        ]
+      },
+      {
+        id: "spymaster",
+        name: "Spymaster",
+        tagline: "Information never rests. Momentum is the weapon.",
+        role: "Mission tempo · Network command · Coordination",
+        rules: [
+          ["Missions", "Complete normal Missions to gain 1 Operation Progress and Intel equal to the Mission card's value."],
+          ["Surveillance", "Once per battle, spend 1 Intel to look at one opposing face-down Battle card when it is committed or selected."],
+          ["Mission Control", "Once per turn after completing a normal Mission, immediately start another Mission from hand without using the Action opportunity. It cannot complete that turn or be the Special Operation."],
+          ["Special Operation", "When Progress exceeds opposing controlled Territories, start an eligible Mission card as the Special Operation; satisfy it later and pay the final Intel cost to win."]
+        ]
+      }
+    ]
   }
 ];
 
