@@ -189,41 +189,54 @@ function renderReference() {
   </article>`;
 }
 
-function renderLedger() {
-  const rows = Array.from({ length: 8 }, (_, index) => `
-    <div class="deed-row">
-      <div class="deed-index">${index + 1}</div>
-      <div class="write-line" aria-label="Territory name line"></div>
-      <div class="owner-box">Owner</div>
-    </div>`).join('');
-
-  return `<article class="print-card ledger-card" data-card-name="Financier Ledger">
-    <div class="ledger-heading">Capital / Deed Ledger</div>
+function renderCapitalTracker() {
+  return `<article class="print-card ledger-card" data-card-name="Capital Tracker">
+    <div class="ledger-heading">Capital Tracker</div>
     <div class="ledger-stats">
       <div class="ledger-stat"><span>Current Capital</span><div class="write-box"></div></div>
       <div class="ledger-stat"><span>Capital Limit</span><div class="write-box"></div></div>
     </div>
-    <div class="ledger-subhead">Territory Deeds</div>
-    <div class="deed-table">${rows}</div>
-    <div class="ledger-note">Record each Territory and whether its Deed is unowned, yours, or owned by an opposing Financier. Use pencil, a dry-erase sleeve, or an equivalent public record. Heartlands have no Deeds.</div>
-    <div class="cut-note">Supplemental ledger — no deckbuilding value</div>
+    <div class="capital-rule"><strong>Capital limit:</strong> Territories you control plus total Treasury value. Reduce excess only at end of turn.</div>
+    <div class="capital-rule"><strong>Income:</strong> After captures, gain 1 Capital for each Deed card on your side.</div>
+    <div class="capital-rule"><strong>Tracking:</strong> Use counters, dice, pencil, a dry-erase sleeve, or a digital number tracker. Capital has no fixed maximum.</div>
+    <div class="capital-rule"><strong>Controlling Interest:</strong> Win when every Territory has a Deed card on your side.</div>
+    <div class="ledger-note">Heartlands have no Deeds. The eight Deed cards are shared components.</div>
+    <div class="cut-note">Supplemental tracker — no deckbuilding value</div>
+  </article>`;
+}
+
+function renderDeedCard() {
+  return `<article class="print-card deed-card" data-card-name="Deed">
+    <div class="deed-banner">Deed</div>
+    <div class="deed-seal" aria-hidden="true">§</div>
+    <div class="deed-title">Territory Ownership</div>
+    <div class="deed-rule">When you buy an unowned Deed, place this card beside that Territory on your side of the Gauntlet.</div>
+    <div class="deed-rule">When a Deed is bought out, move this card to the new owner's side.</div>
+    <div class="deed-rule">When a Deed becomes unowned, return this card to the shared supply.</div>
+    <div class="deed-note">One Deed card may be beside each Territory. Heartlands have no Deeds.</div>
+    <div class="cut-note dark-note">Shared supplemental card — no deckbuilding value</div>
   </article>`;
 }
 
 function renderSheets() {
-  const items = [
+  const packageItems = [
     ...cards.map(renderFactionCard),
     ...leaders.map(renderLeaderCard),
     renderReference(),
-    renderLedger()
+    renderCapitalTracker()
   ];
-
-  const root = document.getElementById('sheets');
-  for (let index = 0; index < Math.ceil(items.length / 9); index += 1) {
-    const pageItems = items.slice(index * 9, index * 9 + 9);
-    while (pageItems.length < 9) pageItems.push('<div class="print-card placeholder-card"></div>');
-    root.insertAdjacentHTML('beforeend', `<section class="sheet">${pageItems.join('')}</section>`);
+  const pages = [];
+  for (let index = 0; index < Math.ceil(packageItems.length / 9); index += 1) {
+    const items = packageItems.slice(index * 9, index * 9 + 9);
+    while (items.length < 9) items.push('<div class="print-card placeholder-card"></div>');
+    pages.push(items);
   }
+  const deedItems = Array.from({ length: 8 }, renderDeedCard);
+  deedItems.push('<div class="print-card placeholder-card"></div>');
+  pages.push(deedItems);
+  document.getElementById('sheets').innerHTML = pages
+    .map(items => `<section class="sheet">${items.join('')}</section>`)
+    .join('');
 }
 
 function fitCards() {

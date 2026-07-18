@@ -41,17 +41,18 @@ A Financier deck uses:
 
 1. one selected Leader Card: **Banker** or **Executive**;
 2. one **Financier Reference** containing the Capital limit, Deed-cost formula, Play the Market table, Subsidize table, and Controlling Interest reminder;
-3. one **Financier Ledger** or equivalent number record for current Capital and Deed ownership;
-4. any Financier playable cards included through normal deck construction.
+3. one public **Capital Tracker** or equivalent number tracker;
+4. eight identical full-size **Deed Cards**, kept in a shared supply;
+5. any Financier playable cards included through normal deck construction.
 
-Capital and Deed ownership are tracked values, not currency tokens. Treasury cards remain face up near the Financier play area. The physical reference implementation may use a writable ledger, sliding number reference, or digital tracker, but it must show current Capital and Deed ownership publicly.
+Capital remains a public tracked value. Deed ownership is represented physically rather than written on a ledger. Treasury cards remain face up near the Financier play area. The eight generic Deed Cards are shared supplemental cards: they have no deckbuilding value, never enter a deck or normal card zone, and are affected only by rules or effects that specifically refer to Deeds. Eight cards cover the maximum number of Territories that can be present in the Gauntlet.
 
 ### Setup
 
 - Choose Banker or Executive during deck construction.
-- Place the selected Leader Card and Financier Reference near your play area.
+- Place the selected Leader Card, Financier Reference, and Capital Tracker near your play area.
 - Set Capital to 0 unless a later setup rule says otherwise.
-- Mark every Territory Deed as unowned.
+- Place all eight generic Deed Cards in a shared unowned supply.
 - Begin with an empty Treasury.
 
 ---
@@ -86,7 +87,9 @@ Treasury does not generate Capital by itself. It determines how much Capital you
 
 Each Territory has one Deed. A Deed is either unowned or owned by a Financier. Heartlands do not have Deeds.
 
-During the Action phase after movement, instead of playing an Action card, buy one Deed by spending Capital. A Deed owned by an opposing Financier may be bought out and transferred.
+Owned Deeds are represented by generic Deed Cards. Unused Deed Cards remain in the shared supply. When you buy an unowned Deed, take one Deed Card from the supply and place it beside that Territory on your side of the Gauntlet. In a Financier mirror, the side on which the Deed Card is placed identifies its owner.
+
+During the Action phase after movement, instead of playing an Action card, buy one Deed by spending Capital. A Deed owned by an opposing Financier may be bought out and transferred. When a Deed is bought out, move its card directly to the new owner's side of the Territory. When an effect makes a Deed unowned, return its card to the shared supply.
 
 ### Deed cost
 
@@ -116,7 +119,7 @@ Income can temporarily raise Capital above the current limit. Excess is reduced 
 
 When you own the Deeds to every Territory currently in the Gauntlet, immediately win by **Controlling Interest**.
 
-This victory is public and dynamic. A Territory added by Manifest Destiny has a normal Deed and expands the set required for Controlling Interest.
+This victory is public and dynamic: every Territory in the Gauntlet must have a Deed Card on your side. A Territory added by Manifest Destiny has a normal Deed, uses one of the same generic Deed Cards, and expands the set required for Controlling Interest.
 
 ### Play the Market
 
@@ -273,7 +276,7 @@ Deed ownership is independent of Territory control and occupation. A Financier m
 
 ### Buying and buying out
 
-A normal Deed purchase uses one Action opportunity and resolves one Deed. Pay the full cost, then mark the Deed owned by the buyer. A buyout transfers an opposing Financier's Deed and includes the opposing-owner premium. Effects that permit several purchases resolve each purchase fully before the next cost is calculated.
+A normal Deed purchase uses one Action opportunity and resolves one Deed. Pay the full cost, then take one generic Deed Card from the supply and place it beside that Territory on the buyer's side. A buyout moves the Deed Card already beside that Territory to the buyer's side and includes the opposing-owner premium. Effects that permit several purchases resolve each purchase fully before the next cost is calculated.
 
 ### Collateral
 
@@ -291,7 +294,7 @@ Gaining Capital above the limit is legal during any turn. Do not reduce it immed
 
 ### Added Territories and Manifest Destiny
 
-A Territory added to the Gauntlet is a normal Territory unless its effect says otherwise. Manifest Destiny therefore:
+A Territory added to the Gauntlet is a normal Territory unless its effect says otherwise. Its Deed uses one of the same generic Deed Cards when purchased. Manifest Destiny therefore:
 
 - has a Deed;
 - counts toward Capital and Asset-bank limits when controlled;
@@ -501,7 +504,7 @@ Monetary Crisis is Basic. The remaining pool is Advanced because it uses delayed
 - Capital Gains preserving high-value cards;
 - Foreclosure counterplay;
 - Underwriting's standalone floor;
-- physical tracking burden;
+- table footprint and handling of eight full-size generic Deed Cards;
 - whether Corner the Market produces a visible, dramatic finish.
 
 ---
@@ -521,6 +524,15 @@ Monetary Crisis is Basic. The remaining pool is Advanced because it uses delayed
 | Control | -1 |
 | Occupy without control | 0 |
 | Neither | +1 |
+
+### Deed Card placement
+
+- All eight generic Deed Cards begin in the shared supply.
+- Buying an unowned Deed takes one card from the supply and places it beside that Territory on the owner's side of the Gauntlet.
+- A buyout moves that card to the new owner's side.
+- Divestment or another effect that makes a Deed unowned returns its card to the supply.
+- Count Deeds by counting Deed Cards on your side.
+- One Deed Card may be beside each Territory; Heartlands have no Deeds.
 
 ### Turn reminders
 

@@ -76,7 +76,7 @@ Faction packages currently render as follows:
 - **Military:** selected Leader Card and shared Command Tracker;
 - **Diplomats:** selected Leader Card, Influence Tracker, double-sided Reference card, nine Proposal fronts, and nine Treaty Article backs;
 - **Inquisition:** selected Leader Card, Conviction Tracker, Inquisition Doctrine, and Purge Reference.
-- **Financiers:** selected Leader Card with Capital, Treasury, Deed, Play the Market, Subsidize, and Controlling Interest reference text.
+- **Financiers:** selected Leader Card, Financier Reference, public Capital Tracker, and eight full-size generic Deed Cards.
 - **Intelligence:** selected Leader Card, dual Intel / Operation Progress tracker, Mission Reference, and Operations Reference.
 
 All duplex pairs use identical 7.5 × 10.5-inch page boxes. Back-side card positions are mirrored horizontally so they align after long-edge duplex printing. The Diplomat Reference sides are placed in the same centered card position on consecutive front/back pages. Print at Actual Size / 100%, disable browser headers and footers, and choose **Flip on long edge**.
