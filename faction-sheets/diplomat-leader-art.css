@@ -1,8 +1,8 @@
 /* The dedicated Diplomat assets are wide full-figure compositions.
-   Keep the portrait scale aligned with the Military and Inquisition cards,
-   but anchor the zoom to the top edge so the full head remains visible and
-   the necessary vertical crop is taken from below the subject. */
+   Enlarge them to match the apparent scale of the Military and Inquisition
+   portraits, while anchoring the zoom to the top edge so the full head stays
+   visible and the necessary vertical crop is taken from below the subject. */
 .leader-card .leader-art img {
-  transform: scale(1.42);
+  transform: scale(1.8);
   transform-origin: center top;
 }
