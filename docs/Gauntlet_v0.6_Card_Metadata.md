@@ -1,10 +1,10 @@
 # Gauntlet v0.6 Card Metadata
 
-**Status:** Consolidated metadata rollup through 95 current playable-card designs: 50 Neutral cards, 12 Military cards, 12 Diplomat cards, 12 Inquisition cards, and 9 retained source designs assigned to the three unfinished factions.
+**Status:** Consolidated metadata rollup through 112 current playable-card designs: 50 Neutral cards, 12 Military cards, 12 Diplomat cards, 12 Inquisition cards, 12 Financier cards, 12 Intelligence cards, and 2 retained source designs assigned to the unfinished Mystics faction.
 
-`card-reviews/STATUS.md` records the live checkpoint. `Gauntlet_v0.6_Neutral_Card_Pool.md`, `../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`, `../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`, and `../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` are authoritative for their completed pools. The definitive Military, Diplomat, and Inquisition guides also govern their leaders, resources, components, strategy, terminology, and player-facing faction rules. The consolidated Card Review Log, source registry below, and standalone reviews remain migration and design provenance.
+`card-reviews/STATUS.md` records the live checkpoint. `Gauntlet_v0.6_Neutral_Card_Pool.md`, `../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`, `../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`, `../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`, `Gauntlet_v0.6_Financier_Card_Pool.md`, and `Gauntlet_v0.6_Intelligence_Card_Pool.md` are authoritative for their completed pools. The definitive Military, Diplomat, and Inquisition guides also govern their leaders, resources, components, strategy, terminology, and player-facing faction rules. The consolidated Card Review Log, source registry below, and standalone reviews remain migration and design provenance.
 
-The 54-row source registry preserves the v0.5.7 migration record. It is not itself a count of current playable designs: Militias and Patriotism are retained below as retired source entries, while newly created Military, Diplomat, and Inquisition cards appear only in their active package tables.
+The 54-row source registry preserves the v0.5.7 migration record. It is not itself a count of current playable designs: Militias and Patriotism are retained below as retired source entries, while newly created Military, Diplomat, Inquisition, Financier, and Intelligence cards appear only in their active package tables.
 
 This file replaces the combined labels **Core Neutral** and **Advanced Neutral / Watchlist** with separate metadata fields. Those older labels in historical source material do not define gameplay categories.
 
@@ -145,6 +145,44 @@ This table records Inquisition metadata; the definitive Inquisition faction guid
 | Q11 | Heresy | 5 | No | Advanced | No | Arcane trait, source-dependent copied effects, and one-level recursion exception |
 | Q12 | Hellfire | 5 | No | Advanced | No | Flexible Conviction allocation and direct-exhaustion pacing |
 
+## Active Financier package metadata
+
+This table is authoritative for Financier card metadata; `Gauntlet_v0.6_Financier_Card_Pool.md` governs all player-facing Financier card text and package-specific rules clarifications until a definitive faction guide supersedes it.
+
+| ID | Card | Cost | Starter eligible | Complexity | Unique | Watchlist |
+|---|---|---:|---|---|---|---|
+| F1 | Speculation | 1 | TBD | Advanced | No | Territorial prediction, visible tracking, and failure destination |
+| F2 | Monetary Crisis | 2 | TBD | Basic | No | Repeated hand resets and Treasury asymmetry |
+| F3 | Liquidation | 2 | TBD | Advanced | No | Treasury-capacity sacrifice and immediate purchase timing |
+| F4 | Underwriting | 2 | TBD | Advanced | No | Narrowness and Subsidize refund efficiency |
+| F5 | Capital Gains | 3 | TBD | Advanced | No | Delayed Treasury payoff, battle preservation, and tracking burden |
+| F6 | Tariffs | 3 | No | Advanced | No | Action compression, delayed draw suppression, and removal timing |
+| F7 | Divestment | 3 | TBD | Advanced | No | Sell-and-rebuy loops and generic Capital efficiency |
+| F8 | Margin Loan | 3 | TBD | Advanced | No | Collateral tracking, repayment, default, and action compression |
+| F9 | Leveraged Buyout | 4 | TBD | Advanced | No | Broad collateral use and extra-Battle-card interactions |
+| F10 | Foreclosure | 4 | TBD | Advanced | No | Ownership-to-control conversion and adjacency counterplay |
+| F11 | Property Dues | 4 | TBD | Advanced | No | Multiple-copy stacking and repeated advance taxes |
+| F12 | Corner the Market | 5 | No | Advanced | Yes | Multi-purchase ceiling and abrupt Controlling Interest victories |
+
+## Active Intelligence package metadata
+
+This table is authoritative for Intelligence card metadata; `Gauntlet_v0.6_Intelligence_Card_Pool.md` governs all player-facing Intelligence card text and Mission requirements until a definitive faction guide supersedes it.
+
+| ID | Card | Cost | Starter eligible | Complexity | Unique | Watchlist |
+|---|---|---:|---|---|---|---|
+| I1 | Exfiltration | 1 | TBD | Basic | No | Mission-completion movement and additional-retreat stacking |
+| I2 | Spies | 2 | No | Advanced | No | Automatic inclusion, full-hand information, battle-draw reselection, and Surveillance / Scouting Report overlap |
+| I3 | Fog of War | 2 | TBD | Advanced | No | Persistent Territory suppression and commitment-order control |
+| I4 | Disinformation | 2 | TBD | Advanced | No | Repeated hand preservation and opponent commitment response |
+| I5 | Operational Reassessment | 3 | TBD | Advanced | No | Mission exchange, post-reveal replacement, and source handling |
+| I6 | Intercepted Orders | 3 | TBD | Advanced | No | Battle-draw denial, selected-card replacement, and information density |
+| I7 | Reconnaissance | 3 | TBD | Advanced | No | Pre-commit withdrawal and return-to-source timing |
+| I8 | Deep Cover | 3 | TBD | Advanced | No | Mission-failure insurance and matchup-dependent Battle floor |
+| I9 | Assassins | 4 | TBD | Advanced | No | Targeted hand removal, hand-commitment punishment, and Mission difficulty |
+| I10 | Treason | 4 | No | Advanced | No | Copied-effect timing, impossible or source-dependent effects, and recursion |
+| I11 | Subversion | 4 | TBD | Advanced | No | Asset suppression, removal density, and Mission trigger scope |
+| I12 | Sleeper Network | 5 | No | Advanced | Yes | Stored-card ceiling, activation timing, forced-removal trigger, and Asset-bank contraction |
+
 ## Name, trait, allegiance, and uniqueness notes
 
 - The v0.5.7 card **Arcane Knowledge** is named **Witchcraft** in v0.6.
@@ -154,7 +192,10 @@ This table records Inquisition metadata; the definitive Inquisition faction guid
 - The Inquisition trigger formerly called **Heresy** is named **Blasphemy**.
 - **Manifest Destiny** is Neutral, cost 5, Advanced, and Unique: maximum one copy per deck.
 - **Shock and Awe** is Military, cost 5, Advanced, and Unique: maximum one copy per deck.
+- **Corner the Market** is Financier, cost 5, Advanced, and Unique: maximum one copy per deck.
+- **Sleeper Network** is Intelligence, cost 5, Advanced, and Unique: maximum one copy per deck.
 - The Inquisition package currently contains no Unique cards.
+- **Treason** is Intelligence and cost 4; it is not the Intelligence capstone.
 - **War Crimes** is Military rather than Inquisition.
 - **Militias** and **Patriotism** are retired migration entries and are not playable in the current v0.6 pool.
 - The Ambassador ability formerly provisionally named **Good Offices** is named **Cordiality**.
@@ -168,5 +209,7 @@ This table records Inquisition metadata; the definitive Inquisition faction guid
 - The Military pool contains exactly 12 unique cards with the current 1 / 4 / 3 / 3 / 1 cost curve; its definitive source is the release faction guide.
 - The Diplomat pool contains exactly 12 unique cards with the approved 1 / 3 / 5 / 2 / 1 cost curve, total value 35, and average value 2.92; its definitive source is the release faction guide.
 - The Inquisition pool contains exactly 12 unique cards with the approved 1 / 3 / 4 / 2 / 2 cost curve, total value 37, and average value 3.08; its definitive source is the release faction guide.
-- The current project contains 95 playable-card designs: 50 Neutral, 12 Military, 12 Diplomats, 12 Inquisition, and 9 retained source designs assigned to the three unfinished factions.
-- Remaining card work concerns the Mystics, Financiers, and Intelligence packages, faction exact-text blockers, Intelligence Missions, copied-effect rules, package playtesting, and canonical-data production.
+- The Financier pool contains exactly 12 unique cards with the approved 1 / 3 / 4 / 3 / 1 cost curve, total value 36, and average value 3.0; its active source is `Gauntlet_v0.6_Financier_Card_Pool.md`.
+- The Intelligence pool contains exactly 12 unique cards with the approved 1 / 3 / 4 / 3 / 1 cost curve, total value 36, and average value 3.0; its active source is `Gauntlet_v0.6_Intelligence_Card_Pool.md`.
+- The current project contains 112 playable-card designs: 50 Neutral, 12 Military, 12 Diplomats, 12 Inquisition, 12 Financiers, 12 Intelligence, and 2 retained source designs assigned to Mystics.
+- Remaining card work concerns the Mystics package, copied-effect rules, Financier and Intelligence package playtesting and production, and canonical-data production.
