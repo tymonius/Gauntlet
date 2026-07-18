@@ -1,7 +1,7 @@
 Warning: failed to launch javaldx - java may not function correctly
 convert /home/runner/work/Gauntlet/Gauntlet/releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.docx as a Writer document -> /home/runner/work/Gauntlet/Gauntlet/releases/v0.6/faction-guides/financier/_pdf/Gauntlet_v0.6_Financier_Faction_Guide.pdf using filter : writer_pdf_Export
 Traceback (most recent call last):
-  File "/home/runner/work/Gauntlet/Gauntlet/.github/scripts/finalize_generic_deeds.py", line 318, in <module>
-    if len(PdfReader(str(pdf_path)).pages) != 10: raise RuntimeError("Financier guide PDF page count changed")
-                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-RuntimeError: Financier guide PDF page count changed
+  File "/home/runner/work/Gauntlet/Gauntlet/.github/scripts/finalize_generic_deeds.py", line 319, in <module>
+    if page_count < 10 or page_count > 11: raise RuntimeError(f"Unexpected Financier guide PDF page count: {page_count}")
+                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+RuntimeError: Unexpected Financier guide PDF page count: 9
