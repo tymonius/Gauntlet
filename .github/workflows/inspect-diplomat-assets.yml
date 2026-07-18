@@ -12,18 +12,35 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          lfs: true
 
-      - name: Extract current and pre-PR61 assets
+      - name: Inventory current and historical assets
         run: |
-          mkdir -p proof
-          cp images/leader-cards/ambassador.jpg proof/current-ambassador.jpg
-          cp images/leader-cards/senator.jpg proof/current-senator.jpg
-          git cat-file blob e0bd154 > proof/pre61-ambassador.jpg
-          git cat-file blob cc7b413 > proof/pre61-senator.jpg
-          file proof/*
-          identify proof/* || true
+          mkdir -p proof/current proof/history
+          find . -type f \( -iname '*ambassador*' -o -iname '*senator*' \) -print | sort | tee proof/current-paths.txt
+          while IFS= read -r path; do
+            clean="${path#./}"
+            mkdir -p "proof/current/$(dirname "$clean")"
+            cp "$path" "proof/current/$clean"
+          done < proof/current-paths.txt
+
+          git log --all --name-only --pretty=format: -- '*ambassador*' '*senator*' | sed '/^$/d' | sort -u | tee proof/historical-paths.txt
+          git rev-list --all | while read commit; do
+            for path in images/leader-cards/ambassador.jpg images/leader-cards/senator.jpg; do
+              if git cat-file -e "$commit:$path" 2>/dev/null; then
+                blob=$(git rev-parse "$commit:$path")
+                out="proof/history/${path##*/}-${blob}.jpg"
+                if [ ! -f "$out" ]; then
+                  git show "$commit:$path" > "$out"
+                fi
+              fi
+            done
+          done
+
+          file proof/current-paths.txt proof/historical-paths.txt proof/history/* || true
+          identify proof/history/* || true
 
       - uses: actions/upload-artifact@v4
         with:
-          name: diplomat-asset-comparison
+          name: diplomat-asset-inventory
           path: proof/
