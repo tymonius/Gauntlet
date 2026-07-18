@@ -1,0 +1,7 @@
+/* The dedicated Diplomat assets are wide full-figure compositions.
+   Magnify them within the shared leader-art window so their portrait scale
+   matches the Military and Inquisition leader cards. */
+.leader-card .leader-art img {
+  transform: scale(1.42);
+  transform-origin: 50% 30%;
+}
