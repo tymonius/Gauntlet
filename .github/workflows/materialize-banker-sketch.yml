@@ -23,7 +23,7 @@ jobs:
       - name: Replace image
         run: |
           cat .tmp/banker-image.part-* | base64 --decode > images/sketches/banker.png
-          echo "7bf20864004ab9f5153e29151b1fdb810c665d1c929bf6268d50c70fd3a7cd17  images/sketches/banker.png" | sha256sum --check
+          echo "94e4d835c7e07c34206b392dfe8d2ddf7e62e8fd5d4c936f0f86845c72b1fcc3  images/sketches/banker.png" | sha256sum --check
       - name: Commit replacement
         run: |
           rm -f .tmp/banker-image.part-* .github/workflows/materialize-banker-sketch.yml
