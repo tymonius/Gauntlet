@@ -43,15 +43,18 @@ jobs:
 
           p=Path('docs/card-reviews/STATUS.md')
           text=p.read_text(encoding='utf-8')
-          text=text.replace('''7. `../../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` — definitive Mystics rules and exact card pool
+          old='''7. `../../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` — definitive Mystics rules and exact card pool
 7. `../Gauntlet_v0.6_Card_Metadata.md`
 8. `COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`
 9. `../Gauntlet_v0.6_Card_Review_Log.md`
-10. `CONDITION_AUDIT.md`''','''7. `../../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` — definitive Mystics rules and exact card pool
+10. `CONDITION_AUDIT.md`'''
+          new='''7. `../../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` — definitive Mystics rules and exact card pool
 8. `../Gauntlet_v0.6_Card_Metadata.md`
 9. `COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`
 10. `../Gauntlet_v0.6_Card_Review_Log.md`
-11. `CONDITION_AUDIT.md`''',1)
+11. `CONDITION_AUDIT.md`'''
+          assert old in text
+          text=text.replace(old,new,1)
           text=text.replace('- the current Intelligence faction framework.\n- Mystics bound-card handling,','- the current Intelligence faction framework;\n- Mystics bound-card handling,',1)
           p.write_text(text,encoding='utf-8')
 
