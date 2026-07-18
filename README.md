@@ -145,9 +145,9 @@ Start with:
 
 ### `faction-sheets/`
 
-Browser-printable working sheets for v0.6 faction cards and supplemental components. Military, Inquisition, and Intelligence have complete two-sheet packages; Diplomats have a four-sheet package with duplex Proposal / Treaty Article faces. See `faction-sheets/README.md` for rendered links and instructions.
+Browser-printable working sheets for v0.6 faction cards and supplemental components. Military, Inquisition, Financiers, and Intelligence have complete two-sheet packages; Diplomats have a four-sheet package with duplex Proposal / Treaty Article faces. See `faction-sheets/README.md` for rendered links and instructions.
 
-The Military, Diplomat, Inquisition, and Intelligence sheets are derived production files governed by their definitive faction guides. Dedicated Financier and Mystics browser-printable sheets remain production tasks.
+The Military, Diplomat, Inquisition, Financier, and Intelligence sheets are derived production files governed by their definitive faction guides. A dedicated Mystics browser-printable sheet remains a production task.
 
 ### `images/`
 

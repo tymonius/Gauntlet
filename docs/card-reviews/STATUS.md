@@ -9,7 +9,7 @@
 **Diplomat pool:** Complete at 12 cards; definitive faction guide packaged  
 **Inquisition pool:** Complete at 12 cards; definitive faction guide packaged  
 **Mystics pool:** Complete at 12 cards; definitive faction guide packaged  
-**Financier pool:** Complete at 12 cards; definitive faction guide packaged  
+**Financier pool:** Complete at 12 cards; definitive faction guide and printable package complete  
 **Intelligence pool:** Complete at 12 cards; definitive faction guide packaged  
 **Current playable designs:** 122  
 **Conditions:** Retired as a v0.6 game concept
@@ -111,6 +111,7 @@ The active source set includes:
 - Deed base costs and Financier-mirror buyout premiums stop scaling after 6.
 - Manifest Destiny Territories have normal Deeds and expand Controlling Interest.
 - The definitive source is `releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`, with matching release DOCX and PDF.
+- `faction-sheets/financier.html` is the two-sheet printable package using Banker, Executive, the Financier Reference, the public Capital / Deed Ledger, and dedicated leader-card crops.
 
 ### Intelligence
 
@@ -130,11 +131,11 @@ The active source set includes:
 - Decide whether **Siege Weaponry** becomes **Bombardment**.
 - Validate impossible-target and source-dependent copied-effect handling generally, including Treason.
 - Playtest and physically review all completed packages, with special attention to Mystics Graveyard recursion, Rite pacing, leader balance, and the Inquisition matchup.
-- Complete dedicated Mystics and Financier printable sheets and Mystics deckbuilder integration.
+- Complete the dedicated Mystics printable sheet and Mystics deckbuilder integration.
 - Create canonical v0.6 data only after remaining blockers are resolved.
 
 ---
 
 ## Immediate next step
 
-Playtest the definitive Mystics, Financier, and Intelligence guides alongside the established factions. Complete the remaining Mystics and Financier production integration, and reopen a definitive roster only when testing reveals a strategic, balance, wording, or production failure.
+Playtest the definitive Mystics, Financier, and Intelligence guides alongside the established factions. Complete the remaining Mystics production integration, and reopen a definitive roster only when testing reveals a strategic, balance, wording, or production failure.

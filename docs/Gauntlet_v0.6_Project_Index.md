@@ -143,7 +143,8 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - **Corner the Market** is the Unique cost-5 statement card.
 - Deed base costs and opposing-owner buyout premiums stop scaling after 6.
 - Manifest Destiny Territories receive normal Deeds and expand Controlling Interest.
-- The supplemental specification uses either leader, one Financier Reference, and a public Capital / Deed ledger or equivalent record.
+- The supplemental set uses either leader, one Financier Reference, and a public Capital / Deed Ledger rather than currency tokens.
+- `../faction-sheets/financier.html` is the two-sheet printable package using dedicated Banker and Executive leader-card crops under `../images/leader-cards/`.
 - `../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` is the definitive Financier source; the adjacent DOCX and PDF are release-formatted editions using the Banker and Executive sketches under `../images/sketches/`.
 
 ### Intelligence checkpoint
@@ -165,7 +166,7 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - Decide whether **Siege Weaponry** becomes **Bombardment**.
 - Validate impossible-target and source-dependent copied-effect handling generally, including Treason.
 - Playtest and physically review the Mystics, Financier, and Intelligence definitive guides.
-- Complete the dedicated Mystics and Financier printable packages.
+- Complete the dedicated Mystics printable package.
 - Playtest and physically review all completed packages before canonical v0.6 data is created.
 - Integrate newly completed factions into deckbuilder and faction-sheet tooling.
 
@@ -203,7 +204,7 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 - Lore remains incremental and non-canonical beyond the active notes.
 - The Leader Design Bible is the visual source of truth.
 - `images/` contains portraits and production sketches for all twelve leaders.
-- Military, Diplomat, Inquisition, and Intelligence printable packages are under `faction-sheets/`; dedicated Mystics and Financier sheets remain production work.
+- Military, Diplomat, Inquisition, Financier, and Intelligence printable packages are under `faction-sheets/`; the dedicated Mystics sheet remains production work.
 - Definitive guide packages for all six factions are under `releases/v0.6/faction-guides/` in Markdown, DOCX, and PDF formats.
 
 ---
@@ -226,4 +227,4 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 
 ## Immediate next step
 
-Playtest and physically review the definitive Mystics, Financier, and Intelligence guides. Complete Mystics deckbuilder and faction-sheet integration plus the Financier printable package, then create canonical v0.6 data only after shared copied-effect and physical-review blockers are resolved.
+Playtest and physically review the definitive Mystics, Financier, and Intelligence guides and existing printable packages. Complete Mystics deckbuilder and faction-sheet integration, then create canonical v0.6 data only after shared copied-effect and physical-review blockers are resolved.

@@ -9,6 +9,7 @@ These browser-printable sheets are separate from the versioned v0.5 deckbuilder.
 - [Open the rendered Military faction sheets](https://tymonius.github.io/Gauntlet/faction-sheets/military.html) — twelve Military cards, General, Commandant, and the sliding Command tracker.
 - [Open the rendered Diplomat faction sheets](https://tymonius.github.io/Gauntlet/faction-sheets/diplomat.html) — twelve Diplomat cards, both leaders, Proposal / Treaty Article cards, references, and the sliding Influence tracker.
 - [Open the rendered Inquisition faction sheets](https://tymonius.github.io/Gauntlet/faction-sheets/inquisition.html) — twelve Inquisition cards, Grand Inquisitor, Witch Hunter, two references, and the sliding Conviction tracker.
+- [Open the rendered Financier faction sheets](https://tymonius.github.io/Gauntlet/faction-sheets/financier.html) — twelve Financier cards, Banker, Executive, the Financier Reference, and the public Capital / Deed Ledger.
 - [Open the rendered Intelligence faction sheets](https://tymonius.github.io/Gauntlet/faction-sheets/intelligence.html) — twelve Intelligence cards, Ranger, Spymaster, two references, and the dual Intel / Operation Progress tracker.
 
 Use the rendered GitHub Pages links rather than GitHub's source-code view.
@@ -23,9 +24,9 @@ Use the rendered GitHub Pages links rather than GitHub's source-code view.
 
 The sheets use a 3 × 3 grid. Supplemental cards are open information and do not use the normal playable-card back.
 
-## Sliding trackers
+## Sliding trackers and ledgers
 
-Place the tracker beneath the selected Leader Card. The Leader Card's bottom edge indicates the current value.
+Place a sliding tracker beneath the selected Leader Card. The Leader Card's bottom edge indicates the current value.
 
 - At **0**, align both cards so the tracker is fully covered.
 - Slide the Leader upward until its bottom edge aligns with the current numbered line.
@@ -33,13 +34,15 @@ Place the tracker beneath the selected Leader Card. The Leader Card's bottom edg
 
 Military tracks **0–2 Command**. Diplomats track **0–10 Influence**. Inquisition tracks **0–4 Conviction**. Intelligence uses a dual printed track for **Intel 0–20** and **Operation Progress 0–8** with separate cut-out markers; those printed ranges are not resource maximums.
 
+Financiers use the writable **Capital / Deed Ledger** rather than a sliding tracker. Capital and Deed ownership must remain public; use pencil, a dry-erase sleeve, or an equivalent record.
+
 ## Sources of truth
 
 - `releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md` — definitive Military rules, leaders, components, and playable-card text. The Military sheets are derived from this guide.
 - `releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md` — definitive Diplomat rules, leaders, Proposals, references, tracker, and playable-card text. The Diplomat sheets are derived from this guide.
 - `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` — definitive Inquisition rules, leaders, references, tracker, and playable-card text. The Inquisition sheets are derived from this guide.
+- `releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` — definitive Financier rules, leaders, Capital, Treasury, Deeds, references, ledger requirements, and playable-card text. The Financier sheets are derived from this guide.
 - `releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md` — definitive Intelligence rules, leaders, Missions, references, tracker, and playable-card text. The Intelligence sheets are derived from this guide.
-- `releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` — definitive Financier rules, leaders, Capital, Treasury, Deeds, references, ledger requirements, and playable-card text. A dedicated browser-printable Financier sheet remains to be created from this guide.
 - `docs/Gauntlet_v0.6_Working_Rules.md` — shared rules.
 - `docs/Gauntlet_v0.6_Leader_Design_Bible.md` — leader art direction.
 
