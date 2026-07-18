@@ -33,9 +33,15 @@ jobs:
           from pathlib import Path
           source = Path('.github/workflows/apply-generic-financier-deeds.yml').read_text()
           payload = re.search(r'payload = """([A-Za-z0-9+/=]+)"""', source).group(1)
+          decoded = gzip.decompress(base64.b64decode(payload)).decode()
+          old = 'text = re.sub(r"\\n\\};\\s*$", block + "};", text)'
+          new = 'text = re.sub(r"\\n\\};\\s*$", ",\\n" + block.lstrip("\\n") + "};", text)'
+          if old not in decoded:
+              raise RuntimeError('supplemental insertion patch anchor missing')
+          decoded = decoded.replace(old, new)
           script = Path('.github/scripts/finalize_generic_deeds.py')
           script.parent.mkdir(parents=True, exist_ok=True)
-          script.write_bytes(gzip.decompress(base64.b64decode(payload)))
+          script.write_text(decoded)
           PY
       - name: Apply and publish Deed-card component model
         run: |
