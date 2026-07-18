@@ -10,23 +10,13 @@ The project is in private pre-release development and physical playtesting.
 - **Active development line:** v0.6
 - **v0.6 focus:** six factions, two leaders per faction, faction resources, alternate victory paths, canonical-data production, and faction playtesting
 - **Playable-card review:** complete for all 54 v0.5.7 source cards
-<<<<<<< ours
-- **Completed faction pools:** Military, Diplomats, Inquisition, Financiers, and Intelligence
+- **Completed faction pools:** Military, Diplomats, Inquisition, Mystics, Financiers, and Intelligence
+- **Current playable designs:** 122
 - **Preliminary v0.6 core rulebook:** self-contained shared rules draft at `releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md`
-- **Definitive faction guides:** Military, Diplomats, Inquisition, Financiers, and Intelligence are packaged in Markdown, DOCX, and PDF under `releases/v0.6/faction-guides/`
+- **Definitive faction guides:** all six factions are packaged in Markdown, DOCX, and PDF under `releases/v0.6/faction-guides/`
 - **Territory review:** complete for all 25 v0.5.7 Territories and Arenas; exact text consolidated in `docs/Gauntlet_v0.6_Territory_Pool.md`
 - **Conditions:** retired as a v0.6 game concept; persistent effects now use Assets, Overlays, or immediate/self-tracking resolution
-- **v0.6 deckbuilder:** live and reading the active Neutral, Military, Diplomat, Inquisition, Financier, Intelligence, and Territory Markdown sources
-=======
-- **Completed definitive faction pools:** Military, Diplomats, Inquisition, and Mystics
-- **Selected working faction pool:** Financiers
-- **Current playable designs:** 114
-- **Preliminary v0.6 core rulebook:** self-contained shared rules draft at `releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md`
-- **Definitive faction guides:** Military, Diplomats, Inquisition, and Mystics are packaged under `releases/v0.6/faction-guides/`
-- **Territory review:** complete for all 25 v0.5.7 Territories and Arenas; exact text consolidated in `docs/Gauntlet_v0.6_Territory_Pool.md`
-- **Conditions:** retired as a v0.6 game concept; persistent effects now use Assets, Overlays, or immediate/self-tracking resolution
-- **v0.6 deckbuilder:** live and reading the implemented Neutral, Military, Diplomat, Inquisition, and Territory Markdown sources; Mystics integration remains a production follow-up
->>>>>>> theirs
+- **v0.6 deckbuilder:** live and reading the active Neutral, Military, Diplomat, Inquisition, Financier, Intelligence, and Territory Markdown sources; Mystics integration remains a production follow-up
 - **Live checkpoint:** `docs/Gauntlet_v0.6_Project_Index.md`
 
 The six v0.6 factions are:
@@ -100,7 +90,14 @@ The definitive Inquisition package is:
 
 The Markdown file is the definitive Inquisition source. The DOCX and PDF are matching release-formatted editions.
 
-<<<<<<< ours
+The definitive Mystics package is:
+
+- `releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`
+- `releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.docx`
+- `releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.pdf`
+
+The Markdown file is the definitive Mystics source. The DOCX and PDF are matching release-formatted editions covering the leaders, three Rites, Ritual progression, references, strategy, rules clarifications, and canonical twelve-card pool.
+
 The definitive Financier package is:
 
 - `releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`
@@ -116,15 +113,6 @@ The definitive Intelligence package is:
 - `releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.pdf`
 
 The Markdown file is the definitive Intelligence source. The DOCX and PDF are matching release-formatted editions.
-=======
-The definitive Mystics package is:
-
-- `releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`
-- `releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.docx`
-- `releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.pdf`
-
-The Markdown file is the definitive Mystics source. The DOCX and PDF are matching release-formatted editions covering the leaders, three Rites, Ritual progression, references, strategy, rules clarifications, and canonical twelve-card pool.
->>>>>>> theirs
 
 ### `docs/`
 
@@ -137,19 +125,12 @@ Start with:
 - `docs/Gauntlet_v0.6_Working_Rules.md` — active v0.6 development rules framework and superset;
 - `docs/Gauntlet_v0.6_Neutral_Card_Pool.md` — authoritative working Neutral exact text;
 - `docs/Gauntlet_v0.6_Territory_Pool.md` — authoritative working Territory and Arena exact text;
-<<<<<<< ours
 - `releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md` — definitive Military rules, leaders, components, strategy, and exact card pool;
 - `releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md` — definitive Diplomat rules, leaders, Influence, Terms, Proposals / Treaty Articles, components, strategy, and exact card pool;
 - `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` — definitive Inquisition rules, leaders, components, strategy, and exact card pool;
 - `releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` — definitive Financier rules, leaders, Capital, Treasury, Deeds, components, strategy, and exact card pool;
 - `releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md` — definitive Intelligence rules, leaders, Missions, references, tracker, strategy, and exact card pool;
-=======
-- `releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md` — definitive Military source;
-- `releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md` — definitive Diplomat source;
-- `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` — definitive Inquisition source;
-- `releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` — definitive Mystics source;
-- `docs/Gauntlet_v0.6_Financier_Card_Pool.md` — authoritative working Financier card pool pending definitive-guide consolidation;
->>>>>>> theirs
+- `releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` — definitive Mystics rules, leaders, Rites, components, strategy, and exact card pool;
 - `docs/card-reviews/STATUS.md` — consolidated playable-card checkpoint and exact-text blockers;
 - `docs/Gauntlet_v0.6_Card_Review_Log.md` — decisions for all 54 reviewed playable source cards;
 - `docs/Gauntlet_v0.6_Card_Metadata.md` — card allegiance, complexity, trait, uniqueness, starter, and watchlist metadata;
@@ -164,15 +145,9 @@ Start with:
 
 ### `faction-sheets/`
 
-<<<<<<< ours
 Browser-printable working sheets for v0.6 faction cards and supplemental components. Military, Inquisition, and Intelligence have complete two-sheet packages; Diplomats have a four-sheet package with duplex Proposal / Treaty Article faces. See `faction-sheets/README.md` for rendered links and instructions.
 
-The Military, Diplomat, Inquisition, and Intelligence sheets are derived production files governed by their definitive faction guides. The Financier definitive guide is complete; its dedicated browser-printable sheet remains a separate production task.
-=======
-Browser-printable working sheets for implemented v0.6 faction cards and supplemental components. Military and Inquisition have complete two-sheet packages; Diplomats have a four-sheet package with duplex Proposal / Treaty Article faces. See `faction-sheets/README.md` for rendered links and instructions.
-
-The Military, Diplomat, and Inquisition sheets are derived production files governed by their definitive faction guides. Mystics sheet production remains to be implemented from the definitive Mystics guide and component specification.
->>>>>>> theirs
+The Military, Diplomat, Inquisition, and Intelligence sheets are derived production files governed by their definitive faction guides. Dedicated Financier and Mystics browser-printable sheets remain production tasks.
 
 ### `images/`
 

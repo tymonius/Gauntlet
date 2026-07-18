@@ -1,7 +1,0 @@
-README.md
-docs/Gauntlet_v0.6_Card_Metadata.md
-docs/Gauntlet_v0.6_Open_Questions.md
-docs/Gauntlet_v0.6_Project_Index.md
-docs/card-reviews/STATUS.md
-releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md
-git apply exit status: 1

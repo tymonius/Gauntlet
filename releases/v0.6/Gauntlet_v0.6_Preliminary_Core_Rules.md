@@ -10,15 +10,10 @@ The following faction inserts are complete and may be used with this draft:
 - **Military** — General or Commandant
 - **Diplomats** — Ambassador or Senator
 - **Inquisition** — Grand Inquisitor or Witch Hunter
-<<<<<<< ours
+- **Mystics** — Alchemist or Spirit Walker
 - **Financiers** — Banker or Executive
 
-Mystics and Intelligence remain in development. This draft should not be treated as the final v0.6 canonical release until all six faction packages, cross-card interactions, physical review, and canonical data are complete.
-=======
-- **Mystics** — Alchemist or Spirit Walker
-
-Financiers and Intelligence remain in release development. This draft should not be treated as the final v0.6 canonical release until all six faction packages, cross-card interactions, physical review, and canonical data are complete.
->>>>>>> theirs
+Intelligence remains in release development for this shared-rulebook integration. This draft should not be treated as final canonical v0.6 data until cross-card interactions, physical review, and canonical data are complete.
 
 ---
 
@@ -53,11 +48,8 @@ Use the corresponding definitive faction guide for all faction resources, leader
 - `faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`
 - `faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`
 - `faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`
-<<<<<<< ours
-- `faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`
-=======
 - `faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`
->>>>>>> theirs
+- `faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`
 
 ---
 
@@ -583,11 +575,8 @@ Some factions have an alternate victory condition described in their definitive 
 | Military | Run the Gauntlet only |
 | Diplomats | Run the Gauntlet or Peace Treaty |
 | Inquisition | Run the Gauntlet or Purification |
-<<<<<<< ours
-| Financiers | Run the Gauntlet or Controlling Interest |
-=======
 | Mystics | Run the Gauntlet or Ritual |
->>>>>>> theirs
+| Financiers | Run the Gauntlet or Controlling Interest |
 
 ---
 
@@ -620,17 +609,6 @@ This section is only an integration summary. The definitive faction guides conta
 - Spend Conviction on Purges and leader or card effects.
 - At the beginning of the opponent's turn, after their normal draw attempt, the Inquisition wins by Purification if the opponent draws no cards because both deck and discard pile are empty.
 
-<<<<<<< ours
-## Financiers
-
-- Choose the **Banker** or **Executive**.
-- Begin with 0 Capital and an empty Treasury.
-- Capital limit equals controlled Territories plus the total value of cards in Treasury.
-- Buy Deeds with Capital; base Deed cost and opposing-owner buyout premium stop scaling after 6.
-- Gain 1 Capital per owned Deed at the start of the turn after captures.
-- Spend Capital through Subsidize for escalating battle bonuses.
-- Immediately win by Controlling Interest when you own the Deeds to every Territory currently in the Gauntlet.
-=======
 ## Mystics
 
 - Choose the **Alchemist** or **Spirit Walker**.
@@ -640,7 +618,16 @@ This section is only an integration summary. The definitive faction guides conta
 - Invocation moves one chosen Graveyard card to discard when an Arcane card is played, once per turn.
 - Transmutation sends one card from hand to the Graveyard before battle dice are rolled and adds its deckbuilding value to the battle total, once per turn.
 - All twelve Mystics faction cards have the **Arcane** trait.
->>>>>>> theirs
+
+## Financiers
+
+- Choose the **Banker** or **Executive**.
+- Begin with 0 Capital and an empty Treasury.
+- Capital limit equals controlled Territories plus the total value of cards in Treasury.
+- Buy Deeds with Capital; base Deed cost and opposing-owner buyout premium stop scaling after 6.
+- Gain 1 Capital per owned Deed at the start of the turn after captures.
+- Spend Capital through Subsidize for escalating battle bonuses.
+- Immediately win by Controlling Interest when you own the Deeds to every Territory currently in the Gauntlet.
 
 ---
 

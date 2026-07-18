@@ -1,6 +1,0 @@
-README.md: 4
-docs/Gauntlet_v0.6_Card_Metadata.md: 4
-docs/Gauntlet_v0.6_Open_Questions.md: 4
-docs/Gauntlet_v0.6_Project_Index.md: 7
-docs/card-reviews/STATUS.md: 8
-releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md: 4
