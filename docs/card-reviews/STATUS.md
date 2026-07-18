@@ -1,13 +1,14 @@
 # Gauntlet v0.6 Card Review Status
 
 **Last completed faction pool:** Intelligence  
+**Last completed definitive faction guide:** Financiers  
 **v0.5.7 source-card review:** Complete through all 54 migration records  
 **New Neutral additions:** Complete through all 12 cards  
 **Neutral pool:** Complete at 50 cards  
 **Military pool:** Complete at 12 cards; definitive faction guide packaged  
 **Diplomat pool:** Complete at 12 cards; definitive faction guide packaged  
 **Inquisition pool:** Complete at 12 cards; definitive faction guide packaged  
-**Financier pool:** Complete at 12 cards; working exact-text pool approved  
+**Financier pool:** Complete at 12 cards; definitive faction guide packaged  
 **Intelligence pool:** Complete at 12 cards; working exact-text pool approved  
 **Current playable designs:** 112  
 **Conditions:** Retired as a v0.6 game concept
@@ -22,14 +23,14 @@ The 112 current designs comprise 50 Neutral, 12 Military, 12 Diplomat, 12 Inquis
 2. `../../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md` — definitive Military rules and exact card pool
 3. `../../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md` — definitive Diplomat rules and exact card pool
 4. `../../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` — definitive Inquisition rules and exact card pool
-5. `../Gauntlet_v0.6_Financier_Card_Pool.md` — approved Financier roster, exact text, package structure, rules clarifications, and playtest watchlist
+5. `../../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` — definitive Financier rules and exact card pool
 6. `../Gauntlet_v0.6_Intelligence_Card_Pool.md` — approved Intelligence roster, exact text, Missions, package audit, and playtest watchlist
 7. `../Gauntlet_v0.6_Card_Metadata.md`
 8. `COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`
 9. `../Gauntlet_v0.6_Card_Review_Log.md`
 10. `CONDITION_AUDIT.md`
 
-Definitive faction guides and completed exact-text pool documents override migration records and historical sidecars where they differ. Military's former split files, Diplomats' former split pool, design-note, and supplemental files, and Inquisition's former split pool, design-note, supplemental, and working-guide files have been consolidated into definitive guides and removed.
+Definitive faction guides and completed exact-text pool documents override migration records and historical sidecars where they differ. Military's former split files, Diplomats' former split pool, design-note, and supplemental files, Inquisition's former split pool, design-note, supplemental, and working-guide files, and the Financier split pool and design notes have been consolidated into definitive guides and removed.
 
 ---
 
@@ -44,7 +45,8 @@ The Working Rules include:
 - general Territory, Overlay, and Ruins rules;
 - revised Diplomat staking, ratification, Leverage, and leader rules;
 - Inquisition Blasphemy, revised Purge, Purification, and leader rules;
-- current Financier and Intelligence faction frameworks.
+- definitive Financier extra-action, capped Deed and buyout cost, Manifest Destiny Deed, Capital, Treasury, and leader rules;
+- the current Intelligence faction framework.
 
 ---
 
@@ -90,11 +92,12 @@ The Working Rules include:
 
 ### Financiers
 
-- Curve: **1 / 3 / 4 / 3 / 1**; total 36; average 3.0.
+- Curve: **1 / 3 / 4 / 3 / 1**; total 36; average 3.00.
 - Roster: **Speculation; Monetary Crisis; Liquidation; Underwriting; Capital Gains; Tariffs; Divestment; Margin Loan; Leveraged Buyout; Foreclosure; Property Dues; Corner the Market**.
 - **Corner the Market** is the Unique cost-5 statement card.
-- The exact-text source also records the extra-action meaning and Deed-cost cap pending Working Rules synchronization.
-- The active source is `docs/Gauntlet_v0.6_Financier_Card_Pool.md` until a definitive Financier faction guide supersedes it.
+- Deed base costs and Financier-mirror buyout premiums stop scaling after 6.
+- Manifest Destiny Territories have normal Deeds and expand Controlling Interest.
+- The definitive source is `releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`, with matching release DOCX and PDF.
 
 ### Intelligence
 
@@ -114,8 +117,7 @@ The Working Rules include:
 - Finalize Witchcraft copied-effect eligibility.
 - Define impossible-target and source-dependent copied effects generally, including Treason.
 - Complete the Mystics package.
-- Synchronize approved Financier rules clarifications into the Working Rules.
-- Playtest the Financier and Intelligence card pools and complete their definitive faction guides, supplemental components, printable sheets, and physical reviews.
+- Playtest the Financier definitive guide and Intelligence card pool; complete the Intelligence definitive guide and both factions' remaining supplemental, printable, and physical-review work.
 - Playtest and physically review all completed packages.
 - Create canonical v0.6 data only after remaining blockers are resolved.
 
@@ -123,4 +125,4 @@ The Working Rules include:
 
 ## Immediate next step
 
-Begin focused playtesting of the approved Financier and Intelligence pools while continuing design work on Mystics. Convert each working exact-text pool into a definitive faction guide and printable package only after its package rules, leaders, primary watchlist, and physical text survive testing.
+Playtest the definitive Financier guide and the approved Intelligence pool while continuing design work on Mystics. Complete the Intelligence definitive guide and the remaining Financier and Intelligence printable packages after their rules, leaders, watchlists, and physical text survive focused testing.
