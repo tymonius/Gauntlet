@@ -1,4 +1,4 @@
-name: Resolve Mystics rebase conflicts
+name: Diagnose Mystics rebase conflicts
 
 on:
   push:
@@ -11,183 +11,37 @@ permissions:
   contents: write
 
 jobs:
-  resolve:
+  diagnose:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: agent/mystics-rebase-test
-          fetch-depth: 0
-      - name: Resolve aggregate-document conflicts
+      - name: Count conflict blocks
         run: |
           python - <<'PY'
           from pathlib import Path
           import re
-
-          def blocks(text):
-              return list(re.finditer(r'<<<<<<< ours\n(.*?)=======\n(.*?)>>>>>>> theirs\n?', text, re.S))
-
-          def resolve(path, resolvers):
-              p = Path(path)
-              text = p.read_text(encoding='utf-8')
-              ms = blocks(text)
-              assert len(ms) == len(resolvers), (path, len(ms), len(resolvers))
-              out=[]; pos=0
-              for m, resolver in zip(ms, resolvers):
-                  out.append(text[pos:m.start()])
-                  ours=m.group(1); theirs=m.group(2)
-                  out.append(resolver(ours, theirs).rstrip()+'\n')
-                  pos=m.end()
-              out.append(text[pos:])
-              text=''.join(out)
-              text=text.replace('Catalysis','Materia Prima').replace('The Circle Holds','Guardians of the Circle')
-              assert '<<<<<<<' not in text and '=======' not in text and '>>>>>>>' not in text
-              p.write_text(text, encoding='utf-8')
-
-          def const(s):
-              return lambda o,t:s
-
-          # README
-          resolve('README.md', [
-              const('''- **Completed faction pools:** Military, Diplomats, Inquisition, Mystics, Financiers, and Intelligence
-- **Current playable designs:** 122
-- **Preliminary v0.6 core rulebook:** self-contained shared rules draft at `releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md`
-- **Definitive faction guides:** all six factions are packaged in Markdown, DOCX, and PDF under `releases/v0.6/faction-guides/`
-- **Territory review:** complete for all 25 v0.5.7 Territories and Arenas; exact text consolidated in `docs/Gauntlet_v0.6_Territory_Pool.md`
-- **Conditions:** retired as a v0.6 game concept; persistent effects now use Assets, Overlays, or immediate/self-tracking resolution
-- **v0.6 deckbuilder:** live and reading the active Neutral, Military, Diplomat, Inquisition, Financier, Intelligence, and Territory Markdown sources; Mystics integration remains a production follow-up'''),
-              lambda o,t: t.rstrip()+'\n\n'+o.rstrip(),
-              lambda o,t: o.rstrip()+'\n- `releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` — definitive Mystics rules, leaders, Rites, components, strategy, and exact card pool;',
-              const('''Browser-printable working sheets for v0.6 faction cards and supplemental components. Military, Inquisition, and Intelligence have complete two-sheet packages; Diplomats have a four-sheet package with duplex Proposal / Treaty Article faces. See `faction-sheets/README.md` for rendered links and instructions.
-
-The Military, Diplomat, Inquisition, and Intelligence sheets are derived production files governed by their definitive faction guides. Dedicated Financier and Mystics browser-printable sheets remain production tasks.''')
-          ])
-
-          # Card metadata
-          resolve('docs/Gauntlet_v0.6_Card_Metadata.md', [
-              const('''**Status:** Consolidated metadata rollup through 122 current playable-card designs: 50 Neutral cards and 12 cards for each of Military, Diplomats, Inquisition, Mystics, Financiers, and Intelligence.
-
-`card-reviews/STATUS.md` records the live checkpoint. `Gauntlet_v0.6_Neutral_Card_Pool.md` and the definitive Military, Diplomat, Inquisition, Mystics, Financier, and Intelligence faction guides are authoritative for their completed pools. The definitive faction guides also govern leaders, resources, components, strategy, terminology, and player-facing faction rules. The consolidated Card Review Log, source registry below, and standalone reviews remain migration and design provenance.
-
-The 54-row source registry preserves the v0.5.7 migration record. It is not itself a count of current playable designs: Militias and Patriotism are retained below as retired source entries, while newly created faction cards appear only in their active package tables.'''),
-              lambda o,t: t.split('## Active Financier package metadata',1)[0].rstrip()+'\n\n'+o.rstrip(),
-              const('''- **Manifest Destiny** is Neutral, cost 5, Advanced, and Unique: maximum one copy per deck.
-- **Shock and Awe** is Military, cost 5, Advanced, and Unique: maximum one copy per deck.
-- **Necromancy** is Mystics, cost 5, Advanced, and Unique: maximum one copy per deck.
-- **Corner the Market** is Financier, cost 5, Advanced, and Unique: maximum one copy per deck.
-- **Sleeper Network** is Intelligence, cost 5, Advanced, and Unique: maximum one copy per deck.'''),
-              const('''- The Mystics pool contains exactly 12 unique cards with the approved 1 / 3 / 4 / 3 / 1 cost curve, total value 36, and average value 3.00; its definitive source is the release faction guide.
-- The Financier pool contains exactly 12 unique cards with the approved 1 / 3 / 4 / 3 / 1 cost curve, total value 36, and average value 3.00; its definitive source is the release faction guide.
-- The Intelligence pool contains exactly 12 unique cards with the approved 1 / 3 / 4 / 3 / 1 cost curve, total value 36, and average value 3.0; its definitive source is the release faction guide.
-- The current project contains 122 playable-card designs: 50 Neutral and 12 for each of Military, Diplomats, Inquisition, Mystics, Financiers, and Intelligence.
-- Remaining work concerns shared copied-effect validation, faction-package playtesting and physical review, Mystics and Financier production integration, and canonical-data production.''')
-          ])
-
-          # Open questions
-          resolve('docs/Gauntlet_v0.6_Open_Questions.md', [
-              const('''- twelve-card Military, Diplomat, Inquisition, Mystics, Financier, and Intelligence packages;
-- Intelligence Mission requirements and exact card text;
-- supplemental-component specifications for all six factions, with printable sheets complete for Military, Diplomats, Inquisition, and Intelligence;
-- definitive faction guides for all six factions in Markdown, DOCX, and PDF formats.'''),
-              const('''- Validate impossible-target and source-dependent copied-effect handling generally, including Treason.
-- Playtest the Mystics, Financier, and Intelligence definitive guides and complete the remaining Mystics and Financier printable-package work.'''),
-              lambda o,t:o,
-              lambda o,t:o
-          ])
-
-          # Project index
-          def project_hierarchy(o,t):
-              s=o
-              def bump(m):
-                  n=int(m.group(1)); return f'{n+1}. ' if n>=7 else m.group(0)
-              s=re.sub(r'(?m)^(\d+)\. ', bump, s)
-              marker='6. **`../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`**'
-              line='7. **`../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`** — definitive Mystics faction source: rules, Alchemist, Spirit Walker, Rites, Ritual, Invocation, Transmutation, supplemental components, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are release-formatted editions.\n'
-              idx=s.index(marker); end=s.index('\n',idx)+1; s=s[:end]+line+s[end:]
-              s=s.replace('112 current playable designs','122 current playable designs')
-              s=s.replace('Active v0.6 documents govern until the remaining Mystics card package, copied-effect rules, and package testing are resolved. For Military, Diplomats, Inquisition, Financiers, and Intelligence, the definitive faction guides above override earlier development records and split package documents, which have been removed from the active repository.', 'All six definitive faction guides override earlier development records and split package documents. Remaining work concerns shared copied-effect validation, focused package testing, physical production, and canonical data.')
-              s=s.replace('the split Financier pool and design notes, and the split Intelligence exact-text pool', 'the split Financier pool and design notes, the split Intelligence exact-text pool, and earlier Mystics drafts')
-              prod='35. **`../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`** — definitive Mystics source and release-guide package.\n'
-              needle='35. **`../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`**'
-              if needle in s:
-                  i=s.index(needle); s=s[:i]+prod+s[i:]
-              return s
-
-          resolve('docs/Gauntlet_v0.6_Project_Index.md', [
-              project_hierarchy,
-              const('''- Military, Diplomats, Inquisition, Mystics, Financiers, and Intelligence are complete at **12** cards each and have definitive release guides.
-- Militias and Patriotism are retired.
-- The project contains **122 current playable designs**: 50 Neutral and 12 for each of the six factions.'''),
-              const('''- Validate impossible-target and source-dependent copied-effect handling generally, including Treason.
-- Playtest and physically review the Mystics, Financier, and Intelligence definitive guides.
-- Complete the dedicated Mystics and Financier printable packages.'''),
-              const('''- The Working Rules and preliminary core rulebook include independent Action and hand-commitment limits, voluntary Asset removal, no Conditions, Asset/Overlay persistence, negation, bounded copied-effect handling, revised Diplomat rules, current Inquisition and Financier rules, and stable Mystics bound-card, repeated-effect, and Overlay clarifications.
-- `../releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md` is the self-contained player-facing shared-rules draft and contains integration summaries for Military, Diplomats, Inquisition, Mystics, and Financiers.'''),
-              const('''- The v0.6 development deckbuilder is live under `../deckbuilder-v0.6/` and reads the active Neutral, Military, Diplomat, Inquisition, Financier, Intelligence, and Territory Markdown sources at runtime.
-- It supports implemented faction and leader selection, Neutral-plus-faction legality, playable-card count/value validation, all 25 Territories, local saves, JSON/text export, random valid test-deck generation, and browser print output.
-- Military, Diplomats, Inquisition, Financiers, and Intelligence include their implemented supplemental components in print output.
-- Mystics source and component specifications are complete, but deckbuilder and faction-sheet integration remain pending.'''),
-              const('''- Military, Diplomat, Inquisition, and Intelligence printable packages are under `faction-sheets/`; dedicated Mystics and Financier sheets remain production work.
-- Definitive guide packages for all six factions are under `releases/v0.6/faction-guides/` in Markdown, DOCX, and PDF formats.''')
-          ])
-          p=Path('docs/Gauntlet_v0.6_Project_Index.md')
-          text=p.read_text(encoding='utf-8')
-          text=re.sub(r'\n### Financier checkpoint\n\n- Curve: \*\*1 / 3 / 4 / 3 / 1\*\*\.\n- Total value: 36; average: 3\.00\.\n- Roster: \*\*Speculation; Monetary Crisis; Liquidation; Underwriting; Capital Gains; Tariffs; Divestment; Margin Loan; Leveraged Buyout; Foreclosure; Property Dues; Corner the Market\*\*\.\n- \*\*Corner the Market\*\* is the Unique cost-5 statement card\.\n- Exact text is in `Gauntlet_v0\.6_Financier_Card_Pool\.md`; rationale and audit are in `Gauntlet_v0\.6_Financier_Design_Notes\.md`\.\n- Definitive-guide, component, and release-format consolidation remain\.\n', '\n', text, count=1)
-          p.write_text(text,encoding='utf-8')
-
-          # Review status
-          resolve('docs/card-reviews/STATUS.md', [
-              const('''**Last completed faction pool:** Mystics  
-**Last completed definitive faction guide:** Mystics  '''),
-              const('''**Mystics pool:** Complete at 12 cards; definitive faction guide packaged  
-**Financier pool:** Complete at 12 cards; definitive faction guide packaged  
-**Intelligence pool:** Complete at 12 cards; definitive faction guide packaged  
-**Current playable designs:** 122  
-**Conditions:** Retired as a v0.6 game concept
-
-The 122 current designs comprise 50 Neutral and 12 for each of Military, Diplomats, Inquisition, Mystics, Financiers, and Intelligence.'''),
-              lambda o,t:o.rstrip()+'\n7. `../../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` — definitive Mystics rules and exact card pool',
-              const("Definitive faction guides and completed exact-text pool documents override migration records and historical sidecars where they differ. Earlier split Military, Diplomat, Inquisition, Mystics, Financier, and Intelligence package documents have been consolidated, removed, or superseded by their definitive guides."),
-              lambda o,t:o.rstrip()+'\n- Mystics bound-card handling, additional Battle-card sources, repeated Battle-effect limits, Graveyard-entry timing, Overlay ownership, and dormant-Overlay removal conditions.',
-              lambda o,t:t.split('### Financiers',1)[0].rstrip()+'\n\n'+o.rstrip(),
-              const('''- Validate impossible-target and source-dependent copied-effect handling generally, including Treason.
-- Playtest and physically review all completed packages, with special attention to Mystics Graveyard recursion, Rite pacing, leader balance, and the Inquisition matchup.
-- Complete dedicated Mystics and Financier printable sheets and Mystics deckbuilder integration.'''),
-              const('''Playtest the definitive Mystics, Financier, and Intelligence guides alongside the established factions. Complete the remaining Mystics and Financier production integration, and reopen a definitive roster only when testing reveals a strategic, balance, wording, or production failure.''')
-          ])
-
-          # Preliminary core rules
-          resolve('releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md', [
-              const('''- **Mystics** — Alchemist or Spirit Walker
-- **Financiers** — Banker or Executive
-
-Intelligence remains in release development for this shared-rulebook integration. This draft should not be treated as final canonical v0.6 data until cross-card interactions, physical review, and canonical data are complete.'''),
-              const('''- `faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`
-- `faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`'''),
-              const('''| Mystics | Run the Gauntlet or Ritual |
-| Financiers | Run the Gauntlet or Controlling Interest |'''),
-              lambda o,t:t.rstrip()+'\n\n'+o.rstrip()
-          ])
-
-          # Final consistency checks.
-          for path in [
-              'README.md','docs/Gauntlet_v0.6_Card_Metadata.md','docs/Gauntlet_v0.6_Open_Questions.md',
-              'docs/Gauntlet_v0.6_Project_Index.md','docs/card-reviews/STATUS.md',
-              'releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md',
-              'docs/Gauntlet_v0.6_Working_Rules.md','docs/Gauntlet_v0.6_Leader_Design_Bible.md',
-              'releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md'
-          ]:
-              text=Path(path).read_text(encoding='utf-8')
-              text=text.replace('Catalysis','Materia Prima').replace('The Circle Holds','Guardians of the Circle')
-              assert '<<<<<<<' not in text and '=======' not in text and '>>>>>>>' not in text, path
-              Path(path).write_text(text,encoding='utf-8')
-          Path('REBASE_CONFLICTS.txt').unlink(missing_ok=True)
+          paths=[
+            'README.md',
+            'docs/Gauntlet_v0.6_Card_Metadata.md',
+            'docs/Gauntlet_v0.6_Open_Questions.md',
+            'docs/Gauntlet_v0.6_Project_Index.md',
+            'docs/card-reviews/STATUS.md',
+            'releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md',
+          ]
+          lines=[]
+          for path in paths:
+            text=Path(path).read_text(encoding='utf-8')
+            count=len(re.findall(r'<<<<<<< ours\n(.*?)=======\n(.*?)>>>>>>> theirs\n?',text,re.S))
+            lines.append(f'{path}: {count}')
+          Path('BLOCK_COUNTS.txt').write_text('\n'.join(lines)+'\n',encoding='utf-8')
           PY
-      - name: Commit resolved rebase
+      - name: Commit diagnostics
         run: |
           rm .github/workflows/resolve-mystics-rebase.yml
           git config user.name 'Gauntlet Documentation Bot'
           git config user.email 'actions@users.noreply.github.com'
-          git add -A
-          git commit -m 'Resolve Mystics package against current main'
+          git add BLOCK_COUNTS.txt .github/workflows/resolve-mystics-rebase.yml
+          git commit -m 'Record Mystics rebase conflict counts'
           git push origin HEAD:agent/mystics-rebase-test
