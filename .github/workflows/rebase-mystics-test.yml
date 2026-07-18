@@ -1,0 +1,63 @@
+name: Test Mystics aggregate rebase
+
+on:
+  push:
+    branches:
+      - agent/mystics-rebase-test
+    paths:
+      - .github/workflows/rebase-mystics-test.yml
+
+permissions:
+  contents: write
+
+jobs:
+  rebase:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/mystics-rebase-test
+          fetch-depth: 0
+      - name: Apply final Mystics change set to current main
+        run: |
+          git config user.name 'Gauntlet Documentation Bot'
+          git config user.email 'actions@users.noreply.github.com'
+          git fetch origin main agent/finalize-mystics-faction-guide
+          OLD=origin/agent/finalize-mystics-faction-guide
+          BASE=$(git merge-base origin/main "$OLD")
+          git diff --binary "$BASE".."$OLD" -- \
+            README.md \
+            docs/Gauntlet_v0.6_Card_Metadata.md \
+            docs/Gauntlet_v0.6_Leader_Design_Bible.md \
+            docs/Gauntlet_v0.6_Open_Questions.md \
+            docs/Gauntlet_v0.6_Project_Index.md \
+            docs/Gauntlet_v0.6_Working_Rules.md \
+            docs/card-reviews/STATUS.md \
+            releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md \
+            releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md \
+            releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.docx \
+            releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.pdf \
+            > /tmp/mystics.patch
+
+          set +e
+          git apply --3way --index /tmp/mystics.patch
+          APPLY_STATUS=$?
+          set -e
+
+          CONFLICTS=$(git diff --name-only --diff-filter=U || true)
+          if [ -n "$CONFLICTS" ]; then
+            printf '%s\n' "$CONFLICTS" > REBASE_CONFLICTS.txt
+            while IFS= read -r file; do
+              [ -z "$file" ] && continue
+              git checkout --conflict=merge -- "$file" 2>/dev/null || git checkout "$OLD" -- "$file"
+              git add "$file"
+            done <<< "$CONFLICTS"
+          else
+            printf 'none\n' > REBASE_CONFLICTS.txt
+          fi
+
+          printf 'git apply exit status: %s\n' "$APPLY_STATUS" >> REBASE_CONFLICTS.txt
+          rm .github/workflows/rebase-mystics-test.yml
+          git add -A
+          git commit -m 'Rebase final Mystics package onto current main'
+          git push origin HEAD:agent/mystics-rebase-test
