@@ -8,7 +8,7 @@
 **Military pool:** Complete at 12 cards; definitive faction guide packaged  
 **Diplomat pool:** Complete at 12 cards; definitive faction guide packaged  
 **Inquisition pool:** Complete at 12 cards; definitive faction guide packaged  
-**Financier pool:** Complete at 12 cards; definitive faction guide packaged  
+**Financier pool:** Complete at 12 cards; definitive faction guide and printable package complete  
 **Intelligence pool:** Complete at 12 cards; definitive faction guide packaged  
 **Current playable designs:** 112  
 **Conditions:** Retired as a v0.6 game concept
@@ -98,6 +98,7 @@ The Working Rules include:
 - Deed base costs and Financier-mirror buyout premiums stop scaling after 6.
 - Manifest Destiny Territories have normal Deeds and expand Controlling Interest.
 - The definitive source is `releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`, with matching release DOCX and PDF.
+- `faction-sheets/financier.html` is the two-sheet printable package using Banker, Executive, the Financier Reference, the public Capital / Deed Ledger, and dedicated leader-card crops.
 
 ### Intelligence
 
@@ -118,7 +119,7 @@ The Working Rules include:
 - Finalize Witchcraft copied-effect eligibility.
 - Define impossible-target and source-dependent copied effects generally, including Treason.
 - Complete the Mystics package.
-- Playtest the Financier and Intelligence definitive guides and complete the Financier printable package and both factions' remaining physical-review work.
+- Playtest and physically review the Financier and Intelligence definitive guides and printable packages.
 - Playtest and physically review all completed packages.
 - Create canonical v0.6 data only after remaining blockers are resolved.
 
@@ -126,4 +127,4 @@ The Working Rules include:
 
 ## Immediate next step
 
-Playtest the definitive Financier and Intelligence guides while continuing design work on Mystics. Complete the remaining Financier printable package and physically review both factions after their rules, leaders, watchlists, and physical text survive focused testing.
+Playtest and physically review the definitive Financier and Intelligence guides and printable packages while continuing design work on Mystics. Reopen either completed package only when testing reveals a strategic, balance, wording, or production failure.
