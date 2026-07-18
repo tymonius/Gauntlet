@@ -50,7 +50,7 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 
 27. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, engine, interface, telemetry, and remote-play roadmap.
 28. **`../deckbuilder/README.md`** — stable v0.5 deckbuilder.
-29. **`../deckbuilder-v0.6/README.md`** — v0.6 development deckbuilder scope, live-source behavior, omissions, and next implementation steps.
+29. **`../deckbuilder-v0.6/README.md`** — six-faction v0.6 development deckbuilder scope, live-source behavior, print packages, and next implementation steps.
 30. **`../src/README.md`** — TypeScript engine and interface status.
 31. **`../data/README.md`** — starter-data scope and source warning.
 
@@ -59,7 +59,7 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 32. **`Gauntlet_Lore_Development_Notes.md`** — current incremental setting direction.
 33. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — leader art and miniature direction.
 34. **`../releases/v0.6/faction-guides/`** — definitive release-guide packages for all six factions.
-35. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions.
+35. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions for all six factions.
 36. **`../images/`** — leader portraits and matching production sketches.
 37. **`Game_Design_Glossary.md`** — shared terminology.
 
@@ -132,8 +132,9 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - The shared progression is three public Rites; the first completion unlocks Invocation, the second unlocks Transmutation, and the third wins by Ritual.
 - The supplemental set uses one selected leader, one Mystics Reference, and three double-sided Rite cards. No token or resource tracker is used.
 - The guide defines bound cards, Graveyard entry, exchanges, additional Battle-card sources, repeated Battle effects, eligible copied effects, Overlay ownership, and dormant removal conditions.
+- `../faction-sheets/mystics.html` is the three-sheet printable package with duplex incomplete/completed Rite faces.
 - `../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` is the definitive source; matching PDF and DOCX are the release editions.
-- Deckbuilder and printable faction-sheet integration remain production follow-ups.
+- Mystics is integrated into the v0.6 deckbuilder, including random decks, leader selection, faction components, Overlay treatment, and duplex Rite printing.
 
 ### Financier checkpoint
 
@@ -165,10 +166,8 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 
 - Decide whether **Siege Weaponry** becomes **Bombardment**.
 - Validate impossible-target and source-dependent copied-effect handling generally, including Treason.
-- Playtest and physically review the Mystics, Financier, and Intelligence definitive guides.
-- Complete the dedicated Mystics printable package.
+- Playtest and physically review the Mystics, Financier, and Intelligence definitive guides and printable packages.
 - Playtest and physically review all completed packages before canonical v0.6 data is created.
-- Integrate newly completed factions into deckbuilder and faction-sheet tooling.
 
 ### Territories and core rules
 
@@ -193,10 +192,9 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 ### Digital work
 
 - The TypeScript engine, CLI, and GUI remain development scaffolds.
-- The v0.6 development deckbuilder is live under `../deckbuilder-v0.6/` and reads the active Neutral, Military, Diplomat, Inquisition, Financier, Intelligence, and Territory Markdown sources at runtime.
-- It supports implemented faction and leader selection, Neutral-plus-faction legality, playable-card count/value validation, all 25 Territories, local saves, JSON/text export, random valid test-deck generation, and browser print output.
-- Military, Diplomats, Inquisition, Financiers, and Intelligence include their implemented supplemental components in print output.
-- Mystics source and component specifications are complete, but deckbuilder and faction-sheet integration remain pending.
+- The v0.6 development deckbuilder is live under `../deckbuilder-v0.6/` and reads the active Neutral, all six definitive faction-guide, and Territory Markdown sources at runtime.
+- It supports all six factions and twelve leaders, Neutral-plus-faction legality, playable-card count/value validation, all 25 Territories, local saves, JSON/text export, random valid test-deck generation, and browser print output.
+- All six factions include their required leaders and supplemental components in Current deck and Print / PDF output, including duplex Diplomat Proposal/Treaty cards and Mystics Rite cards.
 - Do not silently migrate v0.5 saved decks into v0.6.
 
 ### Lore and production
@@ -204,7 +202,7 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 - Lore remains incremental and non-canonical beyond the active notes.
 - The Leader Design Bible is the visual source of truth.
 - `images/` contains portraits and production sketches for all twelve leaders.
-- Military, Diplomat, Inquisition, Financier, and Intelligence printable packages are under `faction-sheets/`; the dedicated Mystics sheet remains production work.
+- Browser-printable packages for all six factions are under `faction-sheets/`.
 - Definitive guide packages for all six factions are under `releases/v0.6/faction-guides/` in Markdown, DOCX, and PDF formats.
 
 ---
@@ -227,4 +225,4 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 
 ## Immediate next step
 
-Playtest and physically review the definitive Mystics, Financier, and Intelligence guides and existing printable packages. Complete Mystics deckbuilder and faction-sheet integration, then create canonical v0.6 data only after shared copied-effect and physical-review blockers are resolved.
+Playtest and physically review the complete six-faction deckbuilder and printable packages, resolve the remaining copied-effect and naming blockers, and then prepare canonical v0.6 data and release integration.
