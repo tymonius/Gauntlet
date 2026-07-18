@@ -1,19 +1,20 @@
 # Gauntlet v0.6 Card Review Status
 
-**Last completed faction pool:** Intelligence  
-**Last completed definitive faction guide:** Intelligence  
+**Last completed faction pool:** Mystics  
+**Last completed definitive faction guide:** Mystics  
 **v0.5.7 source-card review:** Complete through all 54 migration records  
 **New Neutral additions:** Complete through all 12 cards  
 **Neutral pool:** Complete at 50 cards  
 **Military pool:** Complete at 12 cards; definitive faction guide packaged  
 **Diplomat pool:** Complete at 12 cards; definitive faction guide packaged  
 **Inquisition pool:** Complete at 12 cards; definitive faction guide packaged  
+**Mystics pool:** Complete at 12 cards; definitive faction guide packaged  
 **Financier pool:** Complete at 12 cards; definitive faction guide and printable package complete  
 **Intelligence pool:** Complete at 12 cards; definitive faction guide packaged  
-**Current playable designs:** 112  
+**Current playable designs:** 122  
 **Conditions:** Retired as a v0.6 game concept
 
-The 112 current designs comprise 50 Neutral, 12 Military, 12 Diplomat, 12 Inquisition, 12 Financier, 12 Intelligence, and 2 retained source designs assigned to Mystics.
+The 122 current designs comprise 50 Neutral and 12 for each of Military, Diplomats, Inquisition, Mystics, Financiers, and Intelligence.
 
 ---
 
@@ -25,18 +26,19 @@ The 112 current designs comprise 50 Neutral, 12 Military, 12 Diplomat, 12 Inquis
 4. `../../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` — definitive Inquisition rules and exact card pool
 5. `../../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` — definitive Financier rules and exact card pool
 6. `../../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md` — definitive Intelligence rules, leaders, components, Missions, strategy, and exact card pool
-7. `../Gauntlet_v0.6_Card_Metadata.md`
-8. `COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`
-9. `../Gauntlet_v0.6_Card_Review_Log.md`
-10. `CONDITION_AUDIT.md`
+7. `../../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` — definitive Mystics rules and exact card pool
+8. `../Gauntlet_v0.6_Card_Metadata.md`
+9. `COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`
+10. `../Gauntlet_v0.6_Card_Review_Log.md`
+11. `CONDITION_AUDIT.md`
 
-Definitive faction guides and completed exact-text pool documents override migration records and historical sidecars where they differ. Military's former split files, Diplomats' former split pool, design-note, and supplemental files, Inquisition's former split pool, design-note, supplemental, and working-guide files, the Financier split pool and design notes, and the Intelligence split exact-text pool have been consolidated into definitive guides and removed.
+Definitive faction guides and completed exact-text pool documents override migration records and historical sidecars where they differ. Earlier split Military, Diplomat, Inquisition, Mystics, Financier, and Intelligence package documents have been consolidated, removed, or superseded by their definitive guides.
 
 ---
 
 ## Integrated cross-card rules
 
-The Working Rules include:
+The active source set includes:
 
 - no Condition zone or Condition category;
 - voluntary Asset removal using an Action opportunity;
@@ -46,7 +48,8 @@ The Working Rules include:
 - revised Diplomat staking, ratification, Leverage, and leader rules;
 - Inquisition Blasphemy, revised Purge, Purification, and leader rules;
 - definitive Financier extra-action, capped Deed and buyout cost, Manifest Destiny Deed, Capital, Treasury, and leader rules;
-- the current Intelligence faction framework.
+- the current Intelligence faction framework;
+- Mystics bound-card handling, additional Battle-card sources, repeated Battle-effect limits, Graveyard-entry timing, Overlay ownership, and dormant-Overlay removal conditions.
 
 ---
 
@@ -90,6 +93,16 @@ The Working Rules include:
 - The physical package uses a sliding 0–4 Conviction tracker beneath the selected leader. No token or marker is used.
 - The definitive source is `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`, with matching release DOCX and PDF.
 
+### Mystics
+
+- Curve: **1 / 3 / 4 / 3 / 1**; total 36; average 3.00.
+- Roster: **Dark Omens; Accursed Wager; Fate's Toll; Grave Ward; Spirit Hollow; Soul for Soul; Rend the Veil; Paths of Shadow; Witchcraft; Black Covenant; Circle of Bones; Necromancy**.
+- All twelve cards have the **Arcane** trait.
+- **Necromancy** is the Unique cost-5 statement card.
+- The leaders are **Alchemist** and **Spirit Walker**; their abilities are **Materia Prima** and **Guardians of the Circle**.
+- The supplemental set uses one selected leader, one Mystics Reference, and three double-sided Rite cards. No token or resource tracker is used.
+- The definitive source is `releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`, with matching release DOCX and PDF prepared from that source.
+
 ### Financiers
 
 - Curve: **1 / 3 / 4 / 3 / 1**; total 36; average 3.00.
@@ -116,15 +129,13 @@ The Working Rules include:
 ## Unresolved items
 
 - Decide whether **Siege Weaponry** becomes **Bombardment**.
-- Finalize Witchcraft copied-effect eligibility.
-- Define impossible-target and source-dependent copied effects generally, including Treason.
-- Complete the Mystics package.
-- Playtest and physically review the Financier and Intelligence definitive guides and printable packages.
-- Playtest and physically review all completed packages.
+- Validate impossible-target and source-dependent copied-effect handling generally, including Treason.
+- Playtest and physically review all completed packages, with special attention to Mystics Graveyard recursion, Rite pacing, leader balance, and the Inquisition matchup.
+- Complete the dedicated Mystics printable sheet and Mystics deckbuilder integration.
 - Create canonical v0.6 data only after remaining blockers are resolved.
 
 ---
 
 ## Immediate next step
 
-Playtest and physically review the definitive Financier and Intelligence guides and printable packages while continuing design work on Mystics. Reopen either completed package only when testing reveals a strategic, balance, wording, or production failure.
+Playtest the definitive Mystics, Financier, and Intelligence guides alongside the established factions. Complete the remaining Mystics production integration, and reopen a definitive roster only when testing reveals a strategic, balance, wording, or production failure.

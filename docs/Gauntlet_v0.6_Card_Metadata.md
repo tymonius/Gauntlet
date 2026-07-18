@@ -1,10 +1,10 @@
 # Gauntlet v0.6 Card Metadata
 
-**Status:** Consolidated metadata rollup through 112 current playable-card designs: 50 Neutral cards, 12 Military cards, 12 Diplomat cards, 12 Inquisition cards, 12 Financier cards, 12 Intelligence cards, and 2 retained source designs assigned to the unfinished Mystics faction.
+**Status:** Consolidated metadata rollup through 122 current playable-card designs: 50 Neutral cards and 12 cards for each of Military, Diplomats, Inquisition, Mystics, Financiers, and Intelligence.
 
-`card-reviews/STATUS.md` records the live checkpoint. `Gauntlet_v0.6_Neutral_Card_Pool.md`, `../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`, `../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`, `../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`, `../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`, and `../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md` are authoritative for their completed pools. The definitive Military, Diplomat, Inquisition, Financier, and Intelligence guides also govern their leaders, resources, components, strategy, terminology, and player-facing faction rules. The consolidated Card Review Log, source registry below, and standalone reviews remain migration and design provenance.
+`card-reviews/STATUS.md` records the live checkpoint. `Gauntlet_v0.6_Neutral_Card_Pool.md` and the definitive Military, Diplomat, Inquisition, Mystics, Financier, and Intelligence faction guides are authoritative for their completed pools. The definitive faction guides also govern leaders, resources, components, strategy, terminology, and player-facing faction rules. The consolidated Card Review Log, source registry below, and standalone reviews remain migration and design provenance.
 
-The 54-row source registry preserves the v0.5.7 migration record. It is not itself a count of current playable designs: Militias and Patriotism are retained below as retired source entries, while newly created Military, Diplomat, Inquisition, Financier, and Intelligence cards appear only in their active package tables.
+The 54-row source registry preserves the v0.5.7 migration record. It is not itself a count of current playable designs: Militias and Patriotism are retained below as retired source entries, while newly created faction cards appear only in their active package tables.
 
 This file replaces the combined labels **Core Neutral** and **Advanced Neutral / Watchlist** with separate metadata fields. Those older labels in historical source material do not define gameplay categories.
 
@@ -13,6 +13,7 @@ This file replaces the combined labels **Core Neutral** and **Advanced Neutral /
 - **Allegiance** — whether the card is Neutral or belongs to a named faction. This affects deck access.
 - **Starter eligible** — whether the card is recommended for introductory or starter decks. This does not affect normal deck-construction legality.
 - **Complexity** — teaching and rules-load rating: **Basic** or **Advanced**.
+- **Trait** — an independent printed characteristic such as **Arcane**. Trait and allegiance are separate.
 - **Watchlist** — a specific balance, pacing, wording, or interaction concern to test. A watchlist entry does not make a card illegal or Advanced by itself.
 
 Use **TBD** where starter-deck suitability has not yet been decided. A dash in the source registry indicates a retired migration entry that is not playable in the current v0.6 pool.
@@ -21,14 +22,14 @@ Use **TBD** where starter-deck suitability has not yet been decided. A dash in t
 
 | # | Card | Allegiance | Starter eligible | Complexity | Watchlist |
 |---:|---|---|---|---|---|
-| 1 | Witchcraft | Mystics | TBD | Advanced | Copied-effect wording and eligible-effect boundaries |
+| 1 | Witchcraft | Mystics | TBD | Advanced | Historical source entry; active Mystics guide governs cost, text, trait, and copied-effect boundaries |
 | 2 | Armistice | Neutral | No | Advanced | Global battle suppression, alternate-win stalling, and draw-engine support |
 | 3 | Assassins | Intelligence | TBD | Advanced | Mission requirement and disruption density |
 | 4 | Assimilation | Neutral | No | Advanced | Immediate-capture density and overlap with capture shortcuts |
 | 5 | Attrition | Neutral | No | Advanced | Long-game card denial and Inquisition overlap |
 | 6 | Sanctions: Blockade | Diplomats | No | Advanced | Repeatable Influence pressure, movement-tax frequency, and sanctions-relief timing |
 | 7 | Brothers in Arms | Military | TBD | Advanced | Post-draw commitment reliability and third-card clarity |
-| 8 | Capital Gains | Financiers | TBD | Advanced | Faction-infrastructure redesign and cost |
+| 8 | Capital Gains | Financiers | TBD | Advanced | Treasury maturity, battle-to-economy conversion, and physical tracking |
 | 9 | Capital Punishment | Neutral | No | Basic | Hard-removal density and post-battle Action combinations |
 | 10 | Conscription | Neutral | Yes | Basic | None |
 | 11 | Contraband | Neutral | Yes | Basic | Replay timing and copied-effect boundaries |
@@ -46,8 +47,8 @@ Use **TBD** where starter-deck suitability has not yet been decided. A dash in t
 | 23 | Liberation | Neutral | No | Advanced | Counterattack efficiency and extra-play timing |
 | 24 | Manifest Destiny | Neutral | No | Advanced | Unique board expansion, severe sacrifice, and board-geometry interactions |
 | 25 | Militias | — | — | — | Retired; not included in the v0.6 Military release pool |
-| 26 | Monetary Crisis | Financiers | TBD | Advanced | Repeated hand resets |
-| 27 | Necromancy | Mystics | TBD | Advanced | Recursion and interactions with Mystics mechanics |
+| 26 | Monetary Crisis | Financiers | TBD | Basic | Repeated hand resets |
+| 27 | Necromancy | Mystics | No | Advanced | Historical source entry; active Mystics guide governs the Unique cost-5 redesign |
 | 28 | New Recruits | Neutral | Yes | Basic | Possible automatic inclusion |
 | 29 | Palisade Wall | Neutral | Yes | Basic | Defensive Asset suppression and overlap with Fortified Pass |
 | 30 | Patriotism | — | — | — | Retired; not included in the v0.6 Military release pool |
@@ -71,7 +72,7 @@ Use **TBD** where starter-deck suitability has not yet been decided. A dash in t
 | 48 | Tariffs | Financiers | No | Advanced | Action economy, delayed draw suppression, multiple-copy incentives, and voluntary Asset removal |
 | 49 | Sequestration | Neutral | No | Advanced | Mass Asset resets, comeback strength, and Asset-heavy faction engines |
 | 50 | Treason | Intelligence | No | Advanced | Copied-effect timing, cancellation interactions, source-dependent effects, and Surveillance/Interference |
-| 51 | Tyranny | Inquisition | No | Advanced | Historical source wording; active Inquisition table overrides cost and exact-text assumptions |
+| 51 | Tyranny | Inquisition | No | Advanced | Historical source wording; active Inquisition guide governs cost and exact text |
 | 52 | Valor | Neutral | Yes | Basic | Multiple-copy stacking and repeated loss-trigger draws |
 | 53 | War Crimes | Military | No | Advanced | Long-game card denial, extra retreat, and sacrifice of normal victory exploitation |
 | 54 | Arcane Knowledge | Neutral | No | Advanced | Graveyard toolbox flexibility, premium Battle effects, and copied-effect chains |
@@ -145,6 +146,25 @@ This table records Inquisition metadata; the definitive Inquisition faction guid
 | Q11 | Heresy | 5 | No | Advanced | No | Arcane trait, source-dependent copied effects, and one-level recursion exception |
 | Q12 | Hellfire | 5 | No | Advanced | No | Flexible Conviction allocation and direct-exhaustion pacing |
 
+## Active Mystics package metadata
+
+This table records Mystics metadata; the definitive Mystics faction guide governs all player-facing rules and exact card text. The `Y` prefix distinguishes Mystics from Military's `M` prefix.
+
+| ID | Card | Cost | Starter eligible | Complexity | Trait | Unique | Watchlist |
+|---|---|---:|---|---|---|---|---|
+| Y1 | Dark Omens | 1 | TBD | Basic | Arcane | No | Low-cost filtering and automatic-inclusion pressure |
+| Y2 | Accursed Wager | 2 | TBD | Basic | Arcane | No | Loser-hand pressure and repeated-effect stacking |
+| Y3 | Fate's Toll | 2 | TBD | Basic | Arcane | No | Materia Prima efficiency, movement stacking, and reroll timing |
+| Y4 | Grave Ward | 2 | TBD | Advanced | Arcane | No | Graveyard-entry triggers, Transmutation recovery, and sacrifice preservation |
+| Y5 | Spirit Hollow | 3 | TBD | Advanced | Arcane | No | Symmetrical exchange, after-cleanup timing, and capture removal |
+| Y6 | Soul for Soul | 3 | TBD | Advanced | Arcane | No | Exchange timing and targeted hand recursion |
+| Y7 | Rend the Veil | 3 | No | Advanced | Arcane | No | Playing from Graveyard, Rite of Blood, and Arcane Knowledge comparison |
+| Y8 | Paths of Shadow | 3 | TBD | Advanced | Arcane | No | Long-range repositioning and withdrawal replacement |
+| Y9 | Witchcraft | 4 | No | Advanced | Arcane | No | Eligible copied-effect boundaries, repeated costs, and Asset efficiency |
+| Y10 | Black Covenant | 4 | No | Advanced | Arcane | No | Bound-card secrecy, additional plays, and source/destination rules |
+| Y11 | Circle of Bones | 4 | No | Advanced | Arcane | No | Persistent reroll control, Materia Prima efficiency, and Overlay ownership |
+| Y12 | Necromancy | 5 | No | Advanced | Arcane | Yes | Early-cycle mode, mass hand reconstruction, and repeat recursion |
+
 ## Active Financier package metadata
 
 This table records Financier metadata; the definitive Financier faction guide governs all player-facing rules and exact card text.
@@ -188,10 +208,12 @@ This table records Intelligence metadata; the definitive Intelligence faction gu
 - The v0.5.7 card **Arcane Knowledge** is named **Witchcraft** in v0.6.
 - The v0.5.7 card **Witchcraft** is named **Arcane Knowledge** in v0.6.
 - **Arcane Knowledge** (#54) has the **Arcane** trait despite Neutral allegiance. Trait and allegiance are separate fields.
+- All twelve Mystics cards have the **Arcane** trait.
 - **Heresy** is an Inquisition card with the **Arcane** trait.
 - The Inquisition trigger formerly called **Heresy** is named **Blasphemy**.
 - **Manifest Destiny** is Neutral, cost 5, Advanced, and Unique: maximum one copy per deck.
 - **Shock and Awe** is Military, cost 5, Advanced, and Unique: maximum one copy per deck.
+- **Necromancy** is Mystics, cost 5, Advanced, and Unique: maximum one copy per deck.
 - **Corner the Market** is Financier, cost 5, Advanced, and Unique: maximum one copy per deck.
 - **Sleeper Network** is Intelligence, cost 5, Advanced, and Unique: maximum one copy per deck.
 - The Inquisition package currently contains no Unique cards.
@@ -209,7 +231,8 @@ This table records Intelligence metadata; the definitive Intelligence faction gu
 - The Military pool contains exactly 12 unique cards with the current 1 / 4 / 3 / 3 / 1 cost curve; its definitive source is the release faction guide.
 - The Diplomat pool contains exactly 12 unique cards with the approved 1 / 3 / 5 / 2 / 1 cost curve, total value 35, and average value 2.92; its definitive source is the release faction guide.
 - The Inquisition pool contains exactly 12 unique cards with the approved 1 / 3 / 4 / 2 / 2 cost curve, total value 37, and average value 3.08; its definitive source is the release faction guide.
+- The Mystics pool contains exactly 12 unique cards with the approved 1 / 3 / 4 / 3 / 1 cost curve, total value 36, and average value 3.00; its definitive source is the release faction guide.
 - The Financier pool contains exactly 12 unique cards with the approved 1 / 3 / 4 / 3 / 1 cost curve, total value 36, and average value 3.00; its definitive source is the release faction guide.
 - The Intelligence pool contains exactly 12 unique cards with the approved 1 / 3 / 4 / 3 / 1 cost curve, total value 36, and average value 3.0; its definitive source is the release faction guide.
-- The current project contains 112 playable-card designs: 50 Neutral, 12 Military, 12 Diplomats, 12 Inquisition, 12 Financiers, 12 Intelligence, and 2 retained source designs assigned to Mystics.
-- Remaining work concerns the Mystics package, copied-effect rules, Financier and Intelligence playtesting and production, and canonical-data production.
+- The current project contains 122 playable-card designs: 50 Neutral and 12 for each of Military, Diplomats, Inquisition, Mystics, Financiers, and Intelligence.
+- Remaining work concerns shared copied-effect validation, faction-package playtesting and physical review, Mystics and Financier production integration, and canonical-data production.

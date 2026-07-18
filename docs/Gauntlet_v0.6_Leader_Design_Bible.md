@@ -507,7 +507,7 @@ The Grand Inquisitor condemns. The Witch Hunter pursues.
 ## 10. Alchemist
 
 **Faction:** Mystics  
-**Mechanical anchor:** Sacrifice, Transmutation, and turning cards sent from hand to Graveyard into fuel. Ability name TBD.  
+**Mechanical anchor:** Sacrifice, Transmutation, and turning cards sent from hand to Graveyard into fuel. **Materia Prima.**  
 **Core identity:** Experiment, transmutation, disciplined occult science.
 
 ### Design Thesis
@@ -583,7 +583,7 @@ The Alchemist experiments with matter. The Spirit Walker invokes unseen forces.
 ## 11. Spirit Walker
 
 **Faction:** Mystics  
-**Mechanical anchor:** Ritual protection, Graveyard contact, and preserving a begun Rite through sacrifice. Ability name TBD.  
+**Mechanical anchor:** Ritual protection, Graveyard contact, and preserving a begun Rite through sacrifice. **Guardians of the Circle.**  
 **Core identity:** Ritual endurance, unseen communion, protective invocation.
 
 ### Design Thesis

@@ -67,6 +67,10 @@ Examples include:
 
 Supplemental cards may be double-sided and do not need the normal card back.
 
+### Bound cards created by effects
+
+Cards bound to a Rite or another card are outside every normal zone. A face-up bound card is public. A face-down bound card may be viewed by its owner but not by the opponent. A bound card cannot be played, moved, or affected except as instructed by the effect to which it is bound. If an effect ends while a card remains bound and gives no destination, place the bound card in its owner's Graveyard.
+
 ---
 
 ## 4. Leader cards
@@ -118,9 +122,11 @@ While defending your own Heartland, gain **+1 to your battle total**. This is se
 
 A **negated** card has no effect. Unless the negating effect says otherwise, it remains played and follows its normal destination.
 
-### Effects that resolve other Battle effects
+### Effects that resolve or repeat other Battle effects
 
-A card effect that resolves another card's Battle effect cannot select a Battle effect that would itself resolve another card's Battle effect unless the resolving card explicitly permits one additional layer. An additional effect permitted this way cannot resolve another Battle effect.
+An effect that resolves or repeats another card's Battle effect cannot choose an effect that would play another Battle card or resolve or repeat another Battle effect unless it explicitly permits one additional layer. An additional layer cannot create another layer.
+
+When a Battle effect resolves an additional time, make all choices and pay all costs again. Instructions that change the source card's destination or status are applied only once. Source-dependent instructions resolve only when they can legally function. An impossible instruction does not prevent the rest of an otherwise legal effect from resolving unless that instruction is a required cost or target.
 
 This prevents indefinite recursive chains across cards such as Arcane Knowledge, Witchcraft, Treason, and Heresy while allowing a card to define a specific, bounded exception.
 
@@ -202,6 +208,8 @@ An Overlay is placed over a revealed Territory. Overlays cannot be placed on Hea
 - When the top Overlay is removed, the next exposed Overlay becomes active; if none remains, the Territory's printed effect becomes active again.
 - A removed Overlay follows the destination stated by its effect, or its normal card destination if none is stated.
 - Specific card text may override these rules.
+- Unless an Overlay says otherwise, its owner makes all choices for its effect. Changing control of the Territory does not transfer ownership of the Overlay.
+- A printed condition that removes an Overlay remains active while that Overlay is dormant beneath another Overlay.
 
 ### Active Territory text
 
@@ -418,80 +426,11 @@ The adjacent DOCX and PDF are release-formatted editions. That guide governs Con
 
 ## 12. Mystics
 
-**Identity:** Rites, sacrifice, forbidden knowledge, transformation, Graveyard play, and rule-bending.  
-**Victory:** complete three public, interruptible Rites.
+The definitive source for all Mystics-specific rules and player-facing text is:
 
-### Arcane trait
+- `../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`
 
-Cards with the **Arcane** trait may be neutral or faction-specific. The trait must be visibly marked because other rules may reference it.
-
-### Ritual structure
-
-During the Action phase after movement, instead of playing an Action card, begin one incomplete Rite by paying its beginning cost.
-
-- Only one Rite may be begun but incomplete at a time.
-- A Rite cannot be completed on the turn it begins.
-- Only one Rite may be completed per turn.
-- If interrupted, the Rite resets and paid costs are not returned unless the Rite says otherwise.
-- Completing the first Rite unlocks **Invocation**.
-- Completing the second unlocks **Transmutation**.
-- Completing the third immediately wins by **Ritual**.
-
-### Bound cards
-
-Cards bound to a Rite are placed face-up near the Graveyard. They are outside every normal zone and cannot be played or affected unless a rule specifically refers to bound cards.
-
-### Invocation
-
-Once per turn, when you play an Arcane card, you may move one card from your Graveyard to your discard pile.
-
-### Transmutation
-
-Once per turn, before dice are rolled in a battle involving you, you may send one card from hand to the Graveyard. Add its deckbuilding value to your battle total.
-
-This is neither a hand commitment nor a battle-drawn play. Supplemental cards cannot be used.
-
-### Rite of Echoes
-
-To begin, bind one chosen card from your Graveyard and one card from hand whose title matches at least one other card in your constructed deck.
-
-Complete the Rite on a later turn when you play another card with that title during battle.
-
-On completion:
-
-- move the selected Graveyard card to discard;
-- send the bound hand card to the Graveyard;
-- the completing card resolves normally and follows its normal destination.
-
-If you lose a battle before completion, send both bound cards to the Graveyard and reset the Rite.
-
-### Rite of Blood
-
-To begin, send one card from hand to the Graveyard.
-
-Complete the Rite on a later turn when you win a battle without committing from hand and without playing a battle-drawn card. Using Transmutation does not prevent completion.
-
-If you lose a battle before completion, reset the Rite.
-
-### Rite of Crossing
-
-You may begin this Rite only if you won a battle this turn that caused you to occupy a Territory the opponent controlled immediately before that battle.
-
-To begin, send one Arcane card from hand to the Graveyard. If none is in hand, reveal your hand and send one Arcane card from discard to the Graveyard instead.
-
-At the beginning of your next turn, after captures, complete the Rite if you still occupy or control that Territory. Otherwise it is interrupted and resets.
-
-Heartlands do not count.
-
-### Alchemist
-
-**Ability name TBD:** The first time on your turn that you send a card from hand to the Graveyard as part of a Rite, Transmutation, or Arcane ability, draw one card. If this happens during battle, draw after battle resolves.
-
-### Spirit Walker
-
-**Ability name TBD:** The first time on your turn that you lose a battle and a begun Rite would be interrupted, you may send one Arcane card from hand to the Graveyard. If you do, that Rite is not interrupted.
-
-This cannot prevent interruption caused by losing occupation or control required by a Rite.
+The adjacent DOCX and PDF are release-formatted editions. That guide governs Rites, Ritual victory, Invocation, Transmutation, bound cards, Alchemist, Spirit Walker, supplemental components, strategy, terminology, and the canonical twelve-card Mystics pool. General rules in this document still apply unless the definitive faction guide specifically overrides them.
 
 ---
 

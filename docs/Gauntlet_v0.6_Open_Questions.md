@@ -15,20 +15,18 @@ Completed:
 - 50-card Neutral pool;
 - all 25 Territory and Arena reviews;
 - Condition retirement;
-- twelve-card Military, Diplomat, Inquisition, Financier, and Intelligence packages;
+- twelve-card Military, Diplomat, Inquisition, Mystics, Financier, and Intelligence packages;
 - Intelligence Mission requirements and exact card text;
-- Military, Diplomat, Inquisition, and Intelligence supplemental-component specifications and printable sheets;
-- definitive Military, Diplomat, Inquisition, Financier, and Intelligence faction guides in Markdown, DOCX, and PDF formats.
+- supplemental-component specifications for all six factions, with printable sheets complete for Military, Diplomats, Inquisition, and Intelligence;
+- definitive faction guides for all six factions in Markdown, DOCX, and PDF formats.
 
 Remaining blockers:
 
 - Decide whether **Siege Weaponry** becomes **Bombardment**.
-- Finalize Witchcraft copied-effect eligibility.
-- Define impossible-target and source-dependent copied effects generally, including Treason.
-- Complete the Mystics twelve-card package.
-- Decide remaining Arcane-trait assignments.
-- Playtest the Financier and Intelligence definitive guides and complete the Financier printable package and both factions' remaining physical-review work.
+- Validate impossible-target and source-dependent copied-effect handling generally, including Treason.
+- Playtest the Mystics, Financier, and Intelligence definitive guides and complete the remaining Mystics and Financier printable-package work.
 - Playtest and physically review completed packages.
+- Integrate Mystics and later completed factions into the development deckbuilder and printable faction-sheet tooling.
 - Create canonical v0.6 card, Territory, faction, leader, deckbuilding, and recommended-deck data after these decisions stabilize.
 
 ---
@@ -119,15 +117,36 @@ Open questions:
 
 ## Mystics
 
-- Finalize names for Rites, Invocation, Transmutation, and both leader abilities.
-- Are the three Rites comparably difficult?
-- Is one incomplete Rite at a time correct?
-- Do Rite of Echoes, Rite of Blood, and Rite of Crossing resolve cleanly?
+Definitive source: `../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`. The adjacent PDF and DOCX are release-formatted editions. Earlier Mystics rules and card drafts are superseded where they conflict with the definitive guide.
+
+Closed package and production decisions:
+
+- The package contains twelve cards with a **1 / 3 / 4 / 3 / 1** curve, total value 36, and average value 3.00.
+- The roster is **Dark Omens; Accursed Wager; Fate's Toll; Grave Ward; Spirit Hollow; Soul for Soul; Rend the Veil; Paths of Shadow; Witchcraft; Black Covenant; Circle of Bones; Necromancy**.
+- All twelve cards have the **Arcane** trait.
+- **Necromancy** is the Unique cost-5 statement card.
+- The leaders are **Alchemist** and **Spirit Walker**.
+- Their abilities are **Materia Prima** and **Guardians of the Circle**.
+- The three Rites are **Rite of Echoes, Rite of Blood, and Rite of Crossing**.
+- The supplemental set uses one selected Leader Card, one Mystics Reference, and three double-sided Rite cards.
+- Completed Rites are flipped to their completed faces; no token or resource tracker is used.
+- Witchcraft's eligible-effect boundary and the package's bounded copied-effect rules are defined in the definitive guide.
+
+Open questions:
+
+- Are the three Rites comparably difficult and interactive?
+- Is one begun but incomplete Rite at a time correct?
+- Do Rite of Echoes, Rite of Blood, and Rite of Crossing resolve cleanly in physical play?
 - Are Invocation and Transmutation strong without creating excessive swings?
-- Are Alchemist and Spirit Walker comparably strong?
-- Finalize Witchcraft copied-effect eligibility.
-- Decide final Arcane-trait assignments.
-- Select and audit the twelve-card package.
+- Are Alchemist and Spirit Walker comparably strong across conventional and Ritual-focused decks?
+- Does Necromancy recur too easily through Rend the Veil, Soul for Soul, Grave Ward, Spirit Hollow, or Invocation?
+- Does Alchemist plus Grave Ward preserve sacrifice value too efficiently?
+- Are Fate's Toll and Circle of Bones correctly priced under Materia Prima?
+- Does Black Covenant's additional-Action and hand-commitment sequencing remain clear?
+- Does Rend the Veil at cost 3 outperform Neutral Arcane Knowledge at cost 4?
+- Does the all-twelve Arcane assignment make Blasphemy an oppressive counter rather than healthy matchup pressure?
+- Are Spirit Hollow and Circle of Bones compelling contested locations without excessive tracking?
+- Does all player-facing text remain legible at standard card size?
 
 ---
 
@@ -201,6 +220,7 @@ Open questions:
 - Does the Territory-scaled Asset bank accelerate games without killing comebacks?
 - Does any matchup routinely remove meaningful decisions?
 - Do completed packages preserve counterattack windows and comeback potential?
+- Is Inquisition-versus-Mystics a healthy counter relationship rather than a hard lock?
 
 Use `Gauntlet_Playtest_Targets_and_Metrics.md` for required data collection.
 

@@ -10,12 +10,13 @@ The project is in private pre-release development and physical playtesting.
 - **Active development line:** v0.6
 - **v0.6 focus:** six factions, two leaders per faction, faction resources, alternate victory paths, canonical-data production, and faction playtesting
 - **Playable-card review:** complete for all 54 v0.5.7 source cards
-- **Completed faction pools:** Military, Diplomats, Inquisition, Financiers, and Intelligence
+- **Completed faction pools:** Military, Diplomats, Inquisition, Mystics, Financiers, and Intelligence
+- **Current playable designs:** 122
 - **Preliminary v0.6 core rulebook:** self-contained shared rules draft at `releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md`
-- **Definitive faction guides:** Military, Diplomats, Inquisition, Financiers, and Intelligence are packaged in Markdown, DOCX, and PDF under `releases/v0.6/faction-guides/`
+- **Definitive faction guides:** all six factions are packaged in Markdown, DOCX, and PDF under `releases/v0.6/faction-guides/`
 - **Territory review:** complete for all 25 v0.5.7 Territories and Arenas; exact text consolidated in `docs/Gauntlet_v0.6_Territory_Pool.md`
 - **Conditions:** retired as a v0.6 game concept; persistent effects now use Assets, Overlays, or immediate/self-tracking resolution
-- **v0.6 deckbuilder:** live and reading the active Neutral, Military, Diplomat, Inquisition, Financier, Intelligence, and Territory Markdown sources
+- **v0.6 deckbuilder:** live and reading the active Neutral, Military, Diplomat, Inquisition, Financier, Intelligence, and Territory Markdown sources; Mystics integration remains a production follow-up
 - **Live checkpoint:** `docs/Gauntlet_v0.6_Project_Index.md`
 
 The six v0.6 factions are:
@@ -25,17 +26,17 @@ The six v0.6 factions are:
 | Military | conquest, battlefield momentum, and Orders |
 | Diplomats | Terms, Influence, concessions, and Peace Treaty |
 | Inquisition | Conviction, condemnation, Purge, and Purification |
-| Mystics | Rites, sacrifice, transformation, and Ritual victory |
+| Mystics | Rites, sacrifice, Graveyard transformation, and Ritual victory |
 | Financiers | Capital, Treasury, Deeds, and Controlling Interest |
 | Intelligence | Intel, Missions, Surveillance, and Special Operation |
 
 ## Playtest tools
 
 - [Gauntlet v0.5 Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder/) — build, validate, save, randomize, export, and print pre-faction v0.5 decks.
-- [Gauntlet v0.6 Development Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder-v0.6/) — build faction-era test decks with leaders and Territories, save or export them, generate random valid decks, and print complete faction packages.
-- [Gauntlet v0.6 Faction Sheets](https://tymonius.github.io/Gauntlet/faction-sheets/) — browser-printable working sheets for completed v0.6 faction packages and supplemental cards.
+- [Gauntlet v0.6 Development Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder-v0.6/) — build faction-era test decks with implemented leaders and Territories, save or export them, generate random valid decks, and print complete implemented faction packages.
+- [Gauntlet v0.6 Faction Sheets](https://tymonius.github.io/Gauntlet/faction-sheets/) — browser-printable working sheets for implemented v0.6 faction packages and supplemental cards.
 
-The v0.6 deckbuilder is intentionally a development tool rather than canonical release data. It supports completed faction and leader selection, playable-card and Territory validation, local saves, JSON and text export, random test-deck generation, and browser Print / PDF output containing the selected leader, playable cards, Territories, trackers, references, and required supplemental faces.
+The v0.6 deckbuilder is intentionally a development tool rather than canonical release data. It supports implemented faction and leader selection, playable-card and Territory validation, local saves, JSON and text export, random test-deck generation, and browser Print / PDF output containing the selected leader, playable cards, Territories, trackers, references, and required supplemental faces. The definitive Mystics source is complete, but its deckbuilder and printable-sheet implementation remains pending.
 
 ## Game overview
 
@@ -89,6 +90,14 @@ The definitive Inquisition package is:
 
 The Markdown file is the definitive Inquisition source. The DOCX and PDF are matching release-formatted editions.
 
+The definitive Mystics package is:
+
+- `releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`
+- `releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.docx`
+- `releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.pdf`
+
+The Markdown file is the definitive Mystics source. The DOCX and PDF are matching release-formatted editions covering the leaders, three Rites, Ritual progression, references, strategy, rules clarifications, and canonical twelve-card pool.
+
 The definitive Financier package is:
 
 - `releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`
@@ -121,9 +130,10 @@ Start with:
 - `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` — definitive Inquisition rules, leaders, components, strategy, and exact card pool;
 - `releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` — definitive Financier rules, leaders, Capital, Treasury, Deeds, components, strategy, and exact card pool;
 - `releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md` — definitive Intelligence rules, leaders, Missions, references, tracker, strategy, and exact card pool;
+- `releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` — definitive Mystics rules, leaders, Rites, components, strategy, and exact card pool;
 - `docs/card-reviews/STATUS.md` — consolidated playable-card checkpoint and exact-text blockers;
-- `docs/Gauntlet_v0.6_Card_Review_Log.md` — decisions for all 54 reviewed playable cards;
-- `docs/Gauntlet_v0.6_Card_Metadata.md` — card allegiance, complexity, starter, and watchlist metadata;
+- `docs/Gauntlet_v0.6_Card_Review_Log.md` — decisions for all 54 reviewed playable source cards;
+- `docs/Gauntlet_v0.6_Card_Metadata.md` — card allegiance, complexity, trait, uniqueness, starter, and watchlist metadata;
 - `docs/card-reviews/CONDITION_AUDIT.md` — former Condition conversions and retirement rationale;
 - `docs/territory-reviews/STATUS.md` — Territory-review checkpoint;
 - `docs/territory-reviews/GENERAL_RULES.md` — Territory activation and suppression rules;
@@ -137,7 +147,7 @@ Start with:
 
 Browser-printable working sheets for v0.6 faction cards and supplemental components. Military, Inquisition, Financiers, and Intelligence have complete two-sheet packages; Diplomats have a four-sheet package with duplex Proposal / Treaty Article faces. See `faction-sheets/README.md` for rendered links and instructions.
 
-The Military, Diplomat, Inquisition, Financier, and Intelligence sheets are derived production files governed by their definitive faction guides.
+The Military, Diplomat, Inquisition, Financier, and Intelligence sheets are derived production files governed by their definitive faction guides. A dedicated Mystics browser-printable sheet remains a production task.
 
 ### `images/`
 
@@ -149,7 +159,7 @@ Static browser deckbuilder for the v0.5 pre-faction ruleset. It supports card fi
 
 ### `deckbuilder-v0.6/`
 
-Development browser deckbuilder for the faction era. It reads the active Neutral, completed-faction, and Territory Markdown sources at runtime; supports faction and leader selection, playable-card and Territory construction, legality checks, local saves, JSON/text export, and random valid decks; and produces complete browser-printable faction packages. It remains development tooling rather than canonical v0.6 release data.
+Development browser deckbuilder for the faction era. It reads the active Neutral, implemented completed-faction, and Territory Markdown sources at runtime; supports faction and leader selection, playable-card and Territory construction, legality checks, local saves, JSON/text export, and random valid test-deck generation; and produces complete browser-printable implemented faction packages. It remains development tooling rather than canonical v0.6 release data.
 
 ### `data/`
 
