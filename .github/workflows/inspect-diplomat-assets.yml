@@ -44,14 +44,14 @@ jobs:
           npm install --no-save playwright
           npx playwright install chromium --with-deps
 
-      - name: Render comparison
+      - name: Render Diplomat candidate
         shell: bash
         run: |
           set -o pipefail
           mkdir -p proof/files
           cp faction-sheets/diplomat.js proof/files/
           cp faction-sheets/diplomat-leader-art.css proof/files/
-          cat > render-comparison.mjs <<'EOF'
+          cat > render-diplomat.mjs <<'EOF'
           import { chromium } from 'playwright';
           import { spawn } from 'node:child_process';
 
@@ -64,27 +64,25 @@ jobs:
             deviceScaleFactor: 2
           });
 
-          for (const faction of ['diplomat', 'military', 'inquisition']) {
-            await page.goto(`http://127.0.0.1:8000/faction-sheets/${faction}.html`, { waitUntil: 'networkidle' });
-            const cards = page.locator('.leader-card');
-            const count = await cards.count();
-            for (let index = 0; index < Math.min(count, 2); index += 1) {
-              const name = (await cards.nth(index).getAttribute('data-card-name'))
-                .toLowerCase().replaceAll(/[^a-z0-9]+/g, '-');
-              await cards.nth(index).screenshot({ path: `proof/${faction}-${name}.png` });
-            }
-            if (faction === 'diplomat') {
-              await page.screenshot({ path: 'proof/diplomat-faction-sheet.png', fullPage: true });
-            }
-          }
+          await page.goto('http://127.0.0.1:8000/faction-sheets/diplomat.html', {
+            waitUntil: 'domcontentloaded',
+            timeout: 20000
+          });
+          await page.locator('.leader-card').first().waitFor({ state: 'visible' });
+          await page.waitForFunction(() => [...document.images].every((image) => image.complete));
 
-          const metrics = await page.evaluate(() => true);
+          const cards = page.locator('.leader-card');
+          await cards.nth(0).screenshot({ path: 'proof/diplomat-ambassador.png' });
+          await cards.nth(1).screenshot({ path: 'proof/diplomat-senator.png' });
+          await page.screenshot({ path: 'proof/diplomat-faction-sheet.png', fullPage: true });
+
           await browser.close();
           server.kill();
           EOF
-          node render-comparison.mjs
+          node render-diplomat.mjs
 
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: diplomat-dedicated-portrait-candidate
           path: proof/
