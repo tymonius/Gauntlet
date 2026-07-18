@@ -3,7 +3,7 @@ name: Finalize generic Financier Deeds
 on:
   pull_request:
     branches: [main]
-    types: [synchronize]
+    types: [opened, synchronize, reopened]
 
 permissions:
   contents: write
