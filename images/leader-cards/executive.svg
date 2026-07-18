@@ -18,6 +18,7 @@
   <g clip-path="url(#portrait)">
     <image href="../executive.png" x="-475" y="-17" width="1807" height="2418"/>
   </g>
+  <rect width="1000" height="34" fill="#160f0e" opacity=".96"/>
   <rect width="1000" height="552" fill="url(#top)"/>
   <rect width="1000" height="552" fill="url(#shade)"/>
 </svg>
