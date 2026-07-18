@@ -90,11 +90,11 @@ const cards = [
 
 const leaders = [
   {
-    name: 'Banker', image: '../images/leader-cards/banker.jpg', imageClass: 'banker', motto: 'Credit closes the distance.',
+    name: 'Banker', image: '../images/leader-cards/banker.svg', imageClass: 'banker', motto: 'Credit closes the distance.',
     ability: ['Line of Credit', "The first time on your turn that you would buy or buy out a Deed, you may use one card from hand or Treasury as collateral. It contributes Capital equal to its value, cannot fund more than half the purchase cost, and is discarded after the purchase. Unused value is lost. It cannot fund Subsidize."]
   },
   {
-    name: 'Executive', image: '../images/leader-cards/executive.jpg', imageClass: 'executive', motto: 'Take the ground. Close the deal.',
+    name: 'Executive', image: '../images/leader-cards/executive.svg', imageClass: 'executive', motto: 'Take the ground. Close the deal.',
     ability: ['Hostile Takeover', "During the Action phase after movement, instead of playing an Action card, if you won a battle this turn that caused you to occupy an enemy Territory, you may buy that Territory's Deed. Treat it as occupied but not controlled for cost. Normal buyout premiums apply. If the purchase succeeds, immediately control that Territory."]
   }
 ];
