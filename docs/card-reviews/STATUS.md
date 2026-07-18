@@ -1,7 +1,7 @@
 # Gauntlet v0.6 Card Review Status
 
 **Last completed faction pool:** Mystics  
-**Last completed definitive faction guide:** Mystics
+**Last completed definitive faction guide:** Mystics  
 **v0.5.7 source-card review:** Complete through all 54 migration records  
 **New Neutral additions:** Complete through all 12 cards  
 **Neutral pool:** Complete at 50 cards  
@@ -27,10 +27,10 @@ The 122 current designs comprise 50 Neutral and 12 for each of Military, Diploma
 5. `../../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` — definitive Financier rules and exact card pool
 6. `../../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md` — definitive Intelligence rules, leaders, components, Missions, strategy, and exact card pool
 7. `../../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` — definitive Mystics rules and exact card pool
-7. `../Gauntlet_v0.6_Card_Metadata.md`
-8. `COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`
-9. `../Gauntlet_v0.6_Card_Review_Log.md`
-10. `CONDITION_AUDIT.md`
+8. `../Gauntlet_v0.6_Card_Metadata.md`
+9. `COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`
+10. `../Gauntlet_v0.6_Card_Review_Log.md`
+11. `CONDITION_AUDIT.md`
 
 Definitive faction guides and completed exact-text pool documents override migration records and historical sidecars where they differ. Earlier split Military, Diplomat, Inquisition, Mystics, Financier, and Intelligence package documents have been consolidated, removed, or superseded by their definitive guides.
 
@@ -48,7 +48,7 @@ The active source set includes:
 - revised Diplomat staking, ratification, Leverage, and leader rules;
 - Inquisition Blasphemy, revised Purge, Purification, and leader rules;
 - definitive Financier extra-action, capped Deed and buyout cost, Manifest Destiny Deed, Capital, Treasury, and leader rules;
-- the current Intelligence faction framework.
+- the current Intelligence faction framework;
 - Mystics bound-card handling, additional Battle-card sources, repeated Battle-effect limits, Graveyard-entry timing, Overlay ownership, and dormant-Overlay removal conditions.
 
 ---
