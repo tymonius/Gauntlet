@@ -1,0 +1,29 @@
+name: Inspect Diplomat leader assets
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/inspect-diplomat-assets.yml"
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract current and pre-PR61 assets
+        run: |
+          mkdir -p proof
+          cp images/leader-cards/ambassador.jpg proof/current-ambassador.jpg
+          cp images/leader-cards/senator.jpg proof/current-senator.jpg
+          git cat-file blob e0bd154 > proof/pre61-ambassador.jpg
+          git cat-file blob cc7b413 > proof/pre61-senator.jpg
+          file proof/*
+          identify proof/* || true
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: diplomat-asset-comparison
+          path: proof/
