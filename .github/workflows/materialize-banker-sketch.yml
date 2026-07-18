@@ -4,16 +4,13 @@ on:
   push:
     branches:
       - fix/replace-banker-sketch-materialize
-  pull_request:
-    branches:
-      - main
 
 permissions:
   contents: write
 
 jobs:
   replace:
-    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[materialized]') }}
+    if: ${{ !contains(github.event.head_commit.message, '[materialized]') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,12 +18,10 @@ jobs:
           ref: fix/replace-banker-sketch-materialize
           fetch-depth: 0
       - name: Replace image
-        run: |
-          cat .tmp/banker-image.part-* | base64 --decode > images/sketches/banker.png
-          echo "94e4d835c7e07c34206b392dfe8d2ddf7e62e8fd5d4c936f0f86845c72b1fcc3  images/sketches/banker.png" | sha256sum --check
+        run: cat .tmp/banker-image.part-* | base64 --decode > images/sketches/banker.png
       - name: Commit replacement
         run: |
-          rm -f .tmp/banker-image.part-* .github/workflows/materialize-banker-sketch.yml
+          rm -f .tmp/banker-image.part-* .tmp/trigger .github/workflows/materialize-banker-sketch.yml
           rmdir .tmp 2>/dev/null || true
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
