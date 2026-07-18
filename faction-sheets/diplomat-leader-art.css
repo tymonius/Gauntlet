@@ -1,7 +1,15 @@
-/* The dedicated Diplomat assets are wide full-figure compositions.
-   Magnify them within the shared leader-art window so their portrait scale
-   matches the Military and Inquisition leader cards. */
+/* Use the full-resolution dedicated portraits rather than the blurred
+   landscape composites. Keep a shared close-up scale, then tune each
+   portrait's vertical focal point so the complete head remains visible. */
 .leader-card .leader-art img {
-  transform: scale(1.42);
-  transform-origin: 50% 30%;
+  transform: scale(1.35);
+  transform-origin: center top;
+}
+
+.leader-card[data-card-name="Ambassador"] .leader-art img {
+  object-position: center 3%;
+}
+
+.leader-card[data-card-name="Senator"] .leader-art img {
+  object-position: center 4%;
 }
