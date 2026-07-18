@@ -46,7 +46,7 @@
       },
       ...(packageData.components || []).map(component => ({
         name: component.type === "deed-set" ? `${component.count || 8} × ${component.title}` : component.title,
-        meta: component.type === "tracker" || component.type === "capital"
+        meta: component.type === "tracker" || component.type === "capital" || /tracker/i.test(component.footer || component.subtitle || "")
           ? "Supplemental tracker"
           : component.type === "deed-set"
             ? "Shared supplemental cards"
@@ -59,6 +59,15 @@
         items.push({
           name: `Article ${proposal.number}: ${proposal.name}`,
           meta: "Double-sided Proposal / Treaty Article"
+        });
+      });
+    }
+
+    if (packageData.rites?.length) {
+      packageData.rites.forEach(rite => {
+        items.push({
+          name: rite.name,
+          meta: "Double-sided incomplete / completed Rite"
         });
       });
     }
