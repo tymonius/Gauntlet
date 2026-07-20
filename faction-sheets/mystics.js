@@ -2,94 +2,94 @@ const cards = [
   {
     name: 'Dark Omens', cost: 1, meta: 'Mystics • Basic • Arcane',
     effects: [
-      ['Action', 'Draw two cards, then place one of them in your Graveyard.'],
-      ['Battle', 'Draw one card. You may place it in your Graveyard. If you do, gain advantage.']
+      ['Action', 'Draw two cards, then put one of them in your Graveyard.'],
+      ['Battle', 'Draw one card. You may put it in your Graveyard. If you do, gain advantage.']
     ]
   },
   {
     name: 'Accursed Wager', cost: 2, meta: 'Mystics • Basic • Arcane',
     effects: [
-      ['Action', 'After the next battle you initiate this turn, the loser places one card from their hand in their Graveyard, if able.'],
-      ['Battle', 'After this battle, the loser places one card from their hand in their Graveyard, if able.']
+      ['Action', 'After the next battle you initiate this turn, the losing player puts one card from their hand in their Graveyard, if able.'],
+      ['Battle', 'After this battle, the losing player puts one card from their hand in their Graveyard, if able.']
     ]
   },
   {
     name: "Fate's Toll", cost: 2, meta: 'Mystics • Basic • Arcane',
     effects: [
-      ['Action', 'Place one other card from your hand in your Graveyard. Gain one additional movement this turn.'],
-      ['Battle', 'After you roll, you may place one other card from your hand in your Graveyard to reroll. You must use the new result.']
+      ['Action', 'Put one other card from your hand in your Graveyard. Gain one additional position of movement this turn. Resolve movement one position at a time.'],
+      ['Battle', 'After you roll, you may put one other card from your hand in your Graveyard to reroll. You must use the new result.']
     ]
   },
   {
     name: 'Grave Ward', cost: 2, meta: 'Mystics • Advanced • Arcane', form: 'Asset',
     effects: [
-      ['Action', 'Bank Grave Ward as an Asset. When a card enters your Graveyard, you may discard Grave Ward. If you do, move that card from your Graveyard to your discard pile.'],
-      ['Battle', 'During battle cleanup, choose one other card you committed from your hand this battle. Move it from your Graveyard to your discard pile.']
+      ['Action', 'Bank this as an Asset. When a card enters your Graveyard, you may discard this. If you do, move that card from your Graveyard to your Discard Pile.'],
+      ['Battle', 'During battle cleanup, choose one other card you committed from hand during this battle. Move it from your Graveyard to your Discard Pile.']
     ]
   },
   {
-    name: 'Spirit Hollow', cost: 3, meta: 'Mystics • Advanced • Arcane', form: 'Overlay',
+    name: 'Spirit Hollow', cost: 3, meta: 'Mystics • Advanced • Arcane', form: 'Territory Overlay',
     effects: [
-      ['Action', 'Place this card face up on your current Territory or an adjacent revealed Territory. It becomes an Overlay.'],
-      ['Battle', 'Place this card face up on the contested Territory. It becomes an Overlay instead of entering its normal destination.'],
-      ['Overlay', 'After battle cleanup following a battle here, each player may place one card from their hand in their Graveyard. A player who does may move one other card from their Graveyard to their discard pile.'],
-      ['Capture', "When this Territory is captured, place this card in its owner's Graveyard."]
+      ['Action', 'Place this as an Overlay on your current Territory or an adjacent Territory.'],
+      ['Battle', 'Place this as an Overlay on the contested Territory instead of following its normal destination.'],
+      ['Overlay', 'After battle cleanup following a battle here, each player may put one card from their hand in their Graveyard. A player who does may move one other card from their Graveyard to their Discard Pile.'],
+      ['Capture', "When this Territory is captured, put this in its owner's Graveyard."]
     ]
   },
   {
     name: 'Soul for Soul', cost: 3, meta: 'Mystics • Advanced • Arcane',
     effects: [
       ['Action', 'Choose one card in your hand and one card in your Graveyard. Exchange them.'],
-      ['Battle', 'During battle cleanup, after cards committed from your hand enter your Graveyard, you may exchange one card in your hand with one other card in your Graveyard that you committed from hand in this battle.']
+      ['Battle', 'During battle cleanup, after cards committed from your hand enter your Graveyard, you may exchange one card in your hand with one other card in your Graveyard that you committed from hand during this battle.']
     ]
   },
   {
     name: 'Rend the Veil', cost: 3, meta: 'Mystics • Advanced • Arcane', form: 'Asset',
     effects: [
-      ['Action', 'Bank this card as an Asset. After Battle cards are revealed in a battle involving you, you may discard this card. If you do, choose one card in your Graveyard whose Battle effect can resolve in this battle and does not play another Battle card or resolve or repeat another Battle effect. Play the chosen card as an additional Battle card.'],
-      ['Battle', 'When revealed, you may choose one card in your Graveyard whose Battle effect can resolve in this battle and does not play another Battle card or resolve or repeat another Battle effect. Play the chosen card as an additional Battle card.'],
-      ['Reminder', 'A card played this way is neither a hand commitment nor a battle-drawn play. During battle cleanup, move it to your discard pile instead of any other destination.']
+      ['Action', 'Bank this as an Asset. After all cards in a battle involving you are revealed, you may discard this. If you do, choose one card in your Graveyard whose Battle effect can resolve in this battle and does not use another card or resolve or repeat another Battle effect. Reveal the chosen card face up and resolve its Battle effect.'],
+      ['Battle', 'When revealed, you may choose one card in your Graveyard whose Battle effect can resolve in this battle and does not use another card or resolve or repeat another Battle effect. Reveal the chosen card face up and resolve its Battle effect.'],
+      ['Reminder', 'A card used this way is neither a hand commitment nor a card from a Battle Hand. During battle cleanup, move it to your Discard Pile instead of any other destination.']
     ]
   },
   {
     name: 'Paths of Shadow', cost: 3, meta: 'Mystics • Advanced • Arcane',
     effects: [
-      ['Action', 'Move to any revealed Territory you control. This movement cannot initiate a battle.'],
-      ['Battle', 'If you lose this battle, you may move to any revealed Territory you control instead of withdrawing normally.']
+      ['Action', 'Move to any Territory you control. This movement cannot initiate a battle.'],
+      ['Battle', 'If you lose this battle, you may move to any Territory you control instead of retreating normally.']
     ]
   },
   {
     name: 'Witchcraft', cost: 4, meta: 'Mystics • Advanced • Arcane', form: 'Asset',
     effects: [
-      ['Action', 'Bank this card as an Asset. Once per turn, after Battle cards are revealed in a battle involving you, you may place one card from your hand in your Graveyard. If you do, choose one other active Battle card you played with an eligible Battle effect. That effect resolves one additional time during this battle.'],
-      ['Battle', 'When revealed, choose one other active Battle card you played with an eligible Battle effect. That effect resolves one additional time during this battle. If you cannot choose one, gain advantage. During battle cleanup, place this card in your Graveyard.'],
-      ['Reminder', 'An eligible Battle effect can legally resolve in this battle and does not play another Battle card or resolve or repeat another Battle effect. Make all choices and pay all costs again when it repeats.']
+      ['Action', 'Bank this as an Asset. Once per turn, after all cards in a battle involving you are revealed, you may put one card from your hand in your Graveyard. If you do, choose one other active card you used in the battle with an eligible Battle effect. Resolve that effect one additional time.'],
+      ['Battle', 'When revealed, choose one other active card you used in the battle with an eligible Battle effect. Resolve that effect one additional time. If you cannot choose one, gain advantage. During battle cleanup, put this in your Graveyard.'],
+      ['Reminder', 'An eligible Battle effect can legally resolve in this battle and does not use another card or resolve or repeat another Battle effect. Make all choices and pay all costs again when it repeats.']
     ]
   },
   {
-    name: 'Black Covenant', cost: 4, meta: 'Mystics • Advanced • Arcane', form: 'Asset',
+    name: 'Black Covenant', cost: 4, meta: 'Mystics • Advanced • Arcane', form: 'Asset with bound card',
     effects: [
-      ['Action', 'Bind one other card from your hand face down beneath this card, then bank this card as an Asset. While banked, you may play the bound card as an Action or commit it during a battle at a legal time as though it were in your hand. This is an additional Action-card play or hand commitment. The bound card follows the normal destination for a card played or committed from hand. After the bound card resolves, place this card in your Graveyard.'],
-      ['Battle', 'When revealed, you may bind one other Battle card from your hand beneath this card, then immediately commit and reveal it as an additional hand commitment. During battle cleanup, place this card in your Graveyard.'],
-      ['Reminder', 'If this card leaves play while a card remains bound beneath it, place the bound card in your Graveyard.']
+      ['Action', 'Bind one other card from your hand face down beneath this, then bank this as an Asset. While banked, you may either play the bound card for its Action effect at a legal Action timing without using your normal Action Opportunity, or commit it during a battle as an additional hand commitment. The bound card follows the normal destination for a card used from hand. After the bound card resolves, put this in your Graveyard.'],
+      ['Battle', 'When revealed, you may bind one other card from your hand that has a Battle effect beneath this, then immediately commit and reveal it as an additional hand commitment. During battle cleanup, put this in your Graveyard.'],
+      ['Reminder', 'If this leaves play while a card remains bound beneath it, put the bound card in your Graveyard.']
     ]
   },
   {
-    name: 'Circle of Bones', cost: 4, meta: 'Mystics • Advanced • Arcane', form: 'Overlay',
+    name: 'Circle of Bones', cost: 4, meta: 'Mystics • Advanced • Arcane', form: 'Territory Overlay',
     effects: [
-      ['Action', 'Place this card face up on your current Territory or an adjacent revealed Territory. It becomes an Overlay.'],
-      ['Battle', 'Place this card face up on the contested Territory. It becomes an Overlay instead of entering its normal destination.'],
-      ['Overlay', 'Once during each battle here involving you, after dice are rolled, you may place one card from your hand in your Graveyard. If you do, choose either player. That player rerolls and must use the new result.'],
-      ['Capture', "When this Territory is captured, place this card in its owner's Graveyard."]
+      ['Action', 'Place this as an Overlay on your current Territory or an adjacent Territory.'],
+      ['Battle', 'Place this as an Overlay on the contested Territory instead of following its normal destination.'],
+      ['Overlay', 'Once during each battle here involving you, after dice are rolled, you may put one card from your hand in your Graveyard. If you do, choose either player. That player rerolls and must use the new result.'],
+      ['Capture', "When this Territory is captured, put this in its owner's Graveyard."]
     ]
   },
   {
-    name: 'Necromancy', cost: 5, meta: 'Mystics • Advanced • Arcane', unique: 'Unique — maximum one copy per deck',
+    name: 'Necromancy', cost: 5, meta: 'Mystics • Advanced • Arcane', unique: 'Unique — maximum one copy per Playable Deck',
     effects: [
       ['Action', 'Choose one:'],
-      ['Option', 'Place this card face down beneath your draw pile, then draw one card.'],
-      ['Option', 'Choose up to three non-Necromancy cards in your Graveyard. Place every other card in your hand in your Graveyard, then return the chosen cards to your hand. Place this card in your Graveyard.'],
-      ['Battle', 'During battle cleanup, after your other played cards follow their normal destinations, choose up to three non-Necromancy cards in your Graveyard. Place every card remaining in your hand in your Graveyard, then return the chosen cards to your hand. This card follows its normal destination.']
+      ['Option', 'Place this face down beneath your Draw Pile, then draw one card.'],
+      ['Option', 'Choose up to three non-Necromancy cards in your Graveyard. Put every other card in your hand in your Graveyard, then return the chosen cards to your hand. Put this in your Graveyard.'],
+      ['Battle', 'During battle cleanup, after your other used cards follow their normal destinations, choose up to three non-Necromancy cards in your Graveyard. Put every card remaining in your hand in your Graveyard, then return the chosen cards to your hand. This follows its normal destination.']
     ]
   }
 ];
@@ -97,35 +97,35 @@ const cards = [
 const leaders = [
   {
     name: 'Alchemist', image: '../images/leader-cards/alchemist.svg', imageClass: 'alchemist', motto: 'Nothing is fixed. Everything can be transformed.',
-    ability: ['Materia Prima', 'The first time on your turn that you send a card from your hand to your Graveyard as part of a Rite, Transmutation, or an Arcane card ability, draw one card. If this happens during battle, draw after the battle resolves.']
+    ability: ['Materia Prima', 'The first time on your turn that you put a card from your hand in your Graveyard as part of a Rite, Transmutation, or an Arcane card effect, draw one card. If this happens during battle, draw after the battle resolves.']
   },
   {
     name: 'Spirit Walker', image: '../images/leader-cards/spirit-walker.svg', imageClass: 'spirit-walker', motto: 'The spirits remember what the living abandon.',
-    ability: ['Guardians of the Circle', 'The first time on your turn that you lose a battle and a begun Rite would be interrupted, you may send one Arcane card from your hand to your Graveyard. If you do, that Rite is not interrupted. This cannot preserve Rite of Crossing if you no longer occupy or control its required Territory.']
+    ability: ['Guardians of the Circle', 'The first time on your turn that you lose a battle and a begun Rite would be interrupted, you may put one Arcane card from your hand in your Graveyard. If you do, that Rite is not interrupted. This cannot preserve Rite of Crossing if you no longer occupy or control its required Territory.']
   }
 ];
 
 const rites = [
   {
     name: 'Rite of Echoes', icon: '◉',
-    beginning: 'Bind one chosen card from your Graveyard face up beneath this Rite. Then bind one card from your hand face down beneath it whose title matches at least one other card in your constructed deck.',
-    completion: "On a later turn, complete this Rite when you play another card with the bound hand card's title during battle.",
-    result: 'Move the selected Graveyard card to your discard pile. Place the bound hand card in your Graveyard. The completing card resolves normally.',
-    interruption: 'If you lose a battle first, place both bound cards in your Graveyard and reset this Rite.'
+    beginning: 'Bind one chosen card from your Graveyard face up beneath this Rite. Then bind one card from your hand face down beneath it whose title matches at least one other card in your Playable Deck.',
+    completion: "On a later turn, complete this Rite when you use another card with the bound hand card's title for its Battle effect.",
+    result: 'Move the selected Graveyard card to your Discard Pile. Put the bound hand card in your Graveyard. The completing card resolves normally.',
+    interruption: 'If you lose a battle first, put both bound cards in your Graveyard and reset this Rite.'
   },
   {
     name: 'Rite of Blood', icon: '◆',
-    beginning: 'Send one card from your hand to your Graveyard.',
-    completion: 'On a later turn, complete this Rite when you win a battle without committing a card from hand and without playing a battle-drawn card.',
-    result: 'Transmutation, Assets, Overlays, Territory effects, leader abilities, and cards played from the Graveyard do not by themselves prevent completion.',
+    beginning: 'Put one card from your hand in your Graveyard.',
+    completion: 'On a later turn, complete this Rite when you win a battle without committing a card from hand and without using a card from your Battle Hand.',
+    result: 'Transmutation, Assets, Overlays, Territory effects, Leader abilities, and cards from other sources do not by themselves prevent completion.',
     interruption: 'If you lose a battle first, reset this Rite.'
   },
   {
     name: 'Rite of Crossing', icon: '✦',
-    requirement: 'Begin only after winning a battle that causes you to occupy a Territory the opponent controlled immediately before that battle.',
-    beginning: 'Send one Arcane card from your hand to your Graveyard. If you have none, reveal your hand and send one Arcane card from your discard pile to your Graveyard instead.',
-    completion: 'At the beginning of your next turn, after captures, complete this Rite if you still occupy or control that Territory.',
-    interruption: 'Otherwise, reset this Rite. Heartlands do not count.'
+    requirement: 'Begin only during the Action Opportunity after movement after winning a battle that caused you to occupy a Territory the opponent controlled immediately before that battle.',
+    beginning: 'Put one Arcane card from your hand in your Graveyard. If you have none, reveal your hand and move one Arcane card from your Discard Pile to your Graveyard instead.',
+    completion: 'At the start of your next turn, after the Capture step, complete this Rite if you still occupy or control that Territory.',
+    interruption: 'Otherwise, reset this Rite.'
   }
 ];
 
@@ -158,10 +158,10 @@ function renderFactionCard(card) {
 
 function renderLeaderCard(leader) {
   const rules = [
-    ['Rites', 'During the Action phase after movement, instead of playing an Action card, begin one incomplete Rite by paying its cost. You may have only one begun Rite at a time.'],
+    ['Rites', 'During the Action Opportunity after movement, instead of playing a card for its Action effect, begin one incomplete Rite by paying its cost. You may have only one begun Rite at a time.'],
     leader.ability,
-    ['Invocation', 'After your first completed Rite: once per turn, when you play an Arcane card, you may move one card from your Graveyard to your discard pile.'],
-    ['Transmutation', 'After your second completed Rite: once per turn before dice, send one hand card to your Graveyard and add its value to your battle total.'],
+    ['Invocation', 'After your first completed Rite: once per turn, when you use an Arcane card for its Action or Battle effect, move one card from your Graveyard to your Discard Pile.'],
+    ['Transmutation', 'After your second completed Rite: once per turn before dice, put one hand card in your Graveyard and add its deckbuilding value to your battle total.'],
     ['Ritual', 'Complete all three Rites to win immediately.']
   ].map(([name, text]) => `<div class="leader-rule"><strong>${escapeHtml(name)}:</strong> ${escapeHtml(text)}</div>`).join('');
 
@@ -183,15 +183,15 @@ function renderReference() {
     <div class="reference-heading">Mystics Reference</div>
     <div class="fit-content">
       <div class="reference-block"><strong>Setup:</strong> Place the three Rites incomplete side up. Completed Rites remain public and cannot be begun again.</div>
-      <div class="reference-block"><strong>Begin:</strong> During the Action phase after movement, instead of an Action card, begin one incomplete Rite and pay its cost. Only one Rite may be begun at a time.</div>
+      <div class="reference-block"><strong>Begin:</strong> During the Action Opportunity after movement, instead of playing a card for its Action effect, begin one incomplete Rite and pay its cost. Only one Rite may be begun at a time.</div>
       <div class="reference-block"><strong>Timing:</strong> A Rite cannot complete on the turn it begins. Complete at most one Rite per turn. If interrupted, reset it; paid costs are not returned.</div>
       <div class="progress-grid">
         <div><span>1st Rite</span><strong>Invocation</strong></div>
         <div><span>2nd Rite</span><strong>Transmutation</strong></div>
         <div><span>3rd Rite</span><strong>Ritual Victory</strong></div>
       </div>
-      <div class="reference-block"><strong>Invocation:</strong> Once per turn, when you play an Arcane card, you may move one card from your Graveyard to your discard pile.</div>
-      <div class="reference-block"><strong>Transmutation:</strong> Once per turn before dice in your battle, send one hand card to your Graveyard. Add its deckbuilding value to your battle total. This is neither a hand commitment nor a battle-drawn play.</div>
+      <div class="reference-block"><strong>Invocation:</strong> Once per turn, when you use an Arcane card for its Action or Battle effect, move one card from your Graveyard to your Discard Pile.</div>
+      <div class="reference-block"><strong>Transmutation:</strong> Once per turn before dice in your battle, put one hand card in your Graveyard. Add its deckbuilding value to your battle total. This is not a hand commitment.</div>
       <div class="reference-block"><strong>Bound cards:</strong> Outside all normal zones. Face-up bound cards are public; owners may view their face-down bound cards. They move only as instructed. If their effect ends without a destination, put them in their owner's Graveyard.</div>
     </div>
     <div class="cut-note">Supplemental reference — no deckbuilding value</div>
