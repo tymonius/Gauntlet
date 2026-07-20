@@ -1,0 +1,71 @@
+name: Render v0.6.0 documents
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - releases/v0.6/Gauntlet_v0.6.0_Rulebook.md
+      - releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.md
+      - releases/v0.6/rulebook.css
+      - images/sketches/**
+      - scripts/prepare-v0.6-markdown.py
+      - scripts/create-v0.6-reference-docx.py
+      - scripts/pagebreak.lua
+      - scripts/make-pdf-contact-sheets.py
+      - scripts/render-v0.6.0-documents.sh
+      - .github/workflows/render-v0.6.0-documents.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Install document tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc poppler-utils fonts-noto-core fonts-noto-extra
+          python3 -m pip install --upgrade pip
+          python3 -m pip install python-docx weasyprint Pillow
+
+      - name: Render and validate documents
+        run: bash scripts/render-v0.6.0-documents.sh
+
+      - name: Commit rendered documents
+        run: |
+          if git diff --quiet -- \
+            releases/v0.6/Gauntlet_v0.6.0_Rulebook.docx \
+            releases/v0.6/Gauntlet_v0.6.0_Rulebook.pdf \
+            releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.docx \
+            releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.pdf; then
+            echo "Rendered documents are current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            releases/v0.6/Gauntlet_v0.6.0_Rulebook.docx \
+            releases/v0.6/Gauntlet_v0.6.0_Rulebook.pdf \
+            releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.docx \
+            releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.pdf
+          git commit -m "Render v0.6.0 rulebook and reference guide [skip ci]"
+          git push origin HEAD
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gauntlet-v0.6.0-documents
+          path: |
+            releases/v0.6/Gauntlet_v0.6.0_Rulebook.docx
+            releases/v0.6/Gauntlet_v0.6.0_Rulebook.pdf
+            releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.docx
+            releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.pdf
+            build/v0.6.0/validation/*contact*.png
+          if-no-files-found: warn
