@@ -1,0 +1,4 @@
+build/v0.6.0/reference.docx
+WARNING: Ignored `overflow-x: auto` at 5:28, unknown property.
+WARNING: Ignored `overflow-x: auto` at 5:28, unknown property.
+Rulebook page 5 appears blank.
