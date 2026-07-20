@@ -1,5 +1,6 @@
 name: Build v0.6.0 canonical release data
 
+# Pull requests run the canonical parser before release publication.
 on:
   push:
     branches: [main]
