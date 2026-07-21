@@ -206,11 +206,12 @@ h3 span { color: var(--muted); font-size: 7.7pt; font-weight: 600; }
 
 .feedback-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 0.1in 0.12in;
   margin-top: 0.12in;
 }
 .feedback-grid article { min-width: 0; }
+.feedback-grid h3 { min-height: 0.29in; font-size: 9.4pt; }
 .writing-box {
   height: 0.82in;
   border: 1.25px solid var(--line);
