@@ -49,7 +49,7 @@ To run the Gauntlet, a player must defeat the opponent on their final Territory,
 
 - [Gauntlet v0.6 Deckbuilder](https://gauntlet.run/deckbuilder/) — load a recommended Leader Deck or build, validate, save, export, randomize, and print a custom Deck.
 - [Gauntlet v0.6 Faction Sheets](https://gauntlet.run/faction-sheets/) — browser-printable faction cards and supplemental components.
-- [Gauntlet v0.6.0 Playtest Packet](https://gauntlet.run/playtest/) — printable facilitator guide, evaluation questionnaire, issue log, locally saved form, and structured response export.
+- [Gauntlet v0.6.0 Playtest Sheet](https://gauntlet.run/playtest/) — one-page printable evaluation form with local autosave and structured response export.
 
 Scan to open the v0.6 Deckbuilder:
 
@@ -78,10 +78,6 @@ The [documentation index](docs/README.md) separates canonical sources, active de
 ### `faction-sheets/`
 
 Browser-printable faction cards, Leader Cards, trackers, references, Deeds, Proposals, Treaty Articles, and Rites.
-
-### `playtest/`
-
-The public v0.6.0 human-playtest packet: facilitator instructions, objective metrics, private player evaluations, product review, issue classification, local draft storage, and report export.
 
 ### `images/`
 
@@ -129,7 +125,6 @@ Then open:
 ```text
 http://localhost:8000/deckbuilder/
 http://localhost:8000/faction-sheets/
-http://localhost:8000/playtest/
 ```
 
 For the legacy TypeScript prototype:
