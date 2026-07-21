@@ -77,6 +77,11 @@ for ((page=1; page<=reference_pages; page++)); do
   fi
 done
 
+if pdftotext "$RELEASE/Gauntlet_v0.6.0_Rulebook.pdf" - | grep -Eq 'images/(sketches|qr)/|!\[[^]]+\]\('; then
+  echo "Rulebook contains unresolved image markup." >&2
+  exit 1
+fi
+
 pdftoppm -png -r 72 "$RELEASE/Gauntlet_v0.6.0_Rulebook.pdf" "$VALIDATION/rulebook-page"
 pdftoppm -png -r 90 "$RELEASE/Gauntlet_v0.6.0_Reference_Guide.pdf" "$VALIDATION/reference-page"
 python3 scripts/make-pdf-contact-sheets.py "$VALIDATION" 'rulebook-page-*.png' "$VALIDATION/rulebook-contact"
