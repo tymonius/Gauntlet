@@ -9,7 +9,9 @@ VALIDATION="$BUILD/validation"
 mkdir -p "$BUILD" "$VALIDATION"
 find "$VALIDATION" -maxdepth 1 -type f -name '*.png' -delete
 
-python3 scripts/prepare-v0.6-markdown.py rulebook "$RELEASE/Gauntlet_v0.6.0_Rulebook.md" "$BUILD/rulebook-prepared.md"
+python3 scripts/prepare-v0.6-markdown.py rulebook "$RELEASE/Gauntlet_v0.6.0_Rulebook.md" "$BUILD/rulebook-base.md"
+cp "$BUILD/rulebook-base.md" "$BUILD/rulebook-booklet-prepared.md"
+cp "$BUILD/rulebook-base.md" "$BUILD/rulebook-prepared.md"
 printf '\n' >> "$BUILD/rulebook-prepared.md"
 cat "$RELEASE/rulebook-colophon.md" >> "$BUILD/rulebook-prepared.md"
 python3 scripts/prepare-v0.6-markdown.py reference "$RELEASE/Gauntlet_v0.6.0_Reference_Guide.md" "$BUILD/reference-prepared.md"
@@ -40,7 +42,7 @@ pandoc "$BUILD/rulebook-prepared.md" \
   --css="$RELEASE/rulebook-colophon.css" \
   -o "$BUILD/rulebook.html"
 
-pandoc "$BUILD/rulebook-prepared.md" \
+pandoc "$BUILD/rulebook-booklet-prepared.md" \
   --from=gfm+raw_html \
   --resource-path="$ROOT:$RELEASE" \
   --lua-filter="$ROOT/scripts/pagebreak.lua" \
@@ -51,6 +53,15 @@ pandoc "$BUILD/rulebook-prepared.md" \
   --css="$RELEASE/rulebook-booklet.css" \
   --css="$RELEASE/rulebook-booklet-refinements.css" \
   -o "$BUILD/rulebook-booklet.html"
+
+pandoc "$RELEASE/rulebook-colophon.md" \
+  --from=gfm+raw_html \
+  --to=html5 \
+  -o "$BUILD/rulebook-colophon-fragment.html"
+python3 scripts/inject-v0.6-booklet-matter.py \
+  "$BUILD/rulebook-booklet.html" \
+  "$BUILD/rulebook-colophon-fragment.html" \
+  "$RELEASE/rulebook-booklet-back-cover.html"
 
 pandoc "$BUILD/reference-prepared.md" \
   --from=gfm+raw_html \
@@ -78,8 +89,8 @@ if (( rulebook_pages < 22 || rulebook_pages > 30 )); then
   echo "Unexpected rulebook page count: $rulebook_pages" >&2
   exit 1
 fi
-if (( booklet_pages < 32 || booklet_pages > 80 || booklet_pages % 4 != 0 )); then
-  echo "Unexpected booklet page count: $booklet_pages" >&2
+if (( booklet_pages != 32 )); then
+  echo "The v0.6.0 booklet must remain 32 pages; rendered $booklet_pages." >&2
   exit 1
 fi
 if (( booklet_print_pages * 2 != booklet_pages )); then
@@ -122,16 +133,54 @@ for ((page=1; page<=booklet_pages; page++)); do
     exit 1
   fi
 
-  # The cover is intentionally sparse, and up to three final pages may be
-  # imposition padding. Every interior content page should contain substantial
-  # rulebook text rather than only running furniture or a stranded sentence.
-  if (( page > 1 && first_booklet_blank == 0 && chars < 200 )); then
+  # The cover and back cover are intentionally sparse. Every other page should
+  # contain substantial text rather than only running furniture or a stranded
+  # sentence.
+  if (( page > 1 && page < booklet_pages && first_booklet_blank == 0 && chars < 200 )); then
     echo "Booklet page $page is suspiciously sparse ($chars non-whitespace characters)." >&2
     exit 1
   fi
 done
-if (( first_booklet_blank != 0 && booklet_pages - first_booklet_blank + 1 > 3 )); then
-  echo "Booklet has more than three trailing padding pages." >&2
+if (( first_booklet_blank != 0 )); then
+  echo "The finished 32-page booklet should not require padding pages." >&2
+  exit 1
+fi
+
+if ! pdftotext -f 2 -l 2 "$RELEASE/Gauntlet_v0.6.0_Rulebook_Booklet.pdf" - | grep -Fq 'Copyright and Use'; then
+  echo "The copyright colophon is not on the inside front cover." >&2
+  exit 1
+fi
+if ! pdftotext -f 3 -l 3 "$RELEASE/Gauntlet_v0.6.0_Rulebook_Booklet.pdf" - | grep -Fq 'CONTENTS'; then
+  echo "The table of contents is not on page 3." >&2
+  exit 1
+fi
+if ! pdftotext -f "$booklet_pages" -l "$booklet_pages" "$RELEASE/Gauntlet_v0.6.0_Rulebook_Booklet.pdf" - | grep -Fq 'Tymon Scott'; then
+  echo "The back cover does not contain the official credit." >&2
+  exit 1
+fi
+
+find_booklet_page() {
+  local label="$1"
+  local page
+  for ((page=1; page<=booklet_pages; page++)); do
+    if pdftotext -f "$page" -l "$page" "$RELEASE/Gauntlet_v0.6.0_Rulebook_Booklet.pdf" - | grep -Fqx "$label"; then
+      echo "$page"
+      return 0
+    fi
+  done
+  echo 0
+}
+
+ranger_page="$(find_booklet_page Ranger)"
+spymaster_page="$(find_booklet_page Spymaster)"
+alchemist_page="$(find_booklet_page Alchemist)"
+spirit_walker_page="$(find_booklet_page 'Spirit Walker')"
+if (( ranger_page == 0 || ranger_page != spymaster_page )); then
+  echo "Ranger and Spymaster are not paired on the same booklet page." >&2
+  exit 1
+fi
+if (( alchemist_page == 0 || alchemist_page != spirit_walker_page )); then
+  echo "Alchemist and Spirit Walker are not paired on the same booklet page." >&2
   exit 1
 fi
 
