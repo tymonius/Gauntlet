@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - releases/v0.6/Gauntlet_v0.6.0_Canonical_Data.json
+      - releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json
       - faction-sheets/*.html
       - faction-sheets/*.css
       - faction-sheets/*.js
@@ -46,29 +46,29 @@ jobs:
           status=$?
           cat card-build.log
           if [ "$status" -ne 0 ]; then
-            cp card-build.log releases/v0.6/Gauntlet_v0.6.0_Card_Build_Error.txt
+            cp card-build.log releases/v0.6.0/Gauntlet_v0.6.0_Card_Build_Error.txt
             node scripts/commit-generated-files.mjs \
               "Record v0.6.0 card build error [skip ci]" -- \
-              releases/v0.6/Gauntlet_v0.6.0_Card_Build_Error.txt || true
+              releases/v0.6.0/Gauntlet_v0.6.0_Card_Build_Error.txt || true
             exit "$status"
           fi
 
       - name: Commit rendered card PDFs
         run: |
-          rm -f releases/v0.6/Gauntlet_v0.6.0_Card_Build_Error.txt
+          rm -f releases/v0.6.0/Gauntlet_v0.6.0_Card_Build_Error.txt
           set +e
           node scripts/commit-generated-files.mjs \
             "Render v0.6.0 card and component PDFs [skip ci]" -- \
-            releases/v0.6/Gauntlet_v0.6.0_Neutral_Cards.pdf \
-            releases/v0.6/Gauntlet_v0.6.0_Territories.pdf \
-            releases/v0.6/Gauntlet_v0.6.0_Military_Cards_and_Components.pdf \
-            releases/v0.6/Gauntlet_v0.6.0_Diplomat_Cards_and_Components.pdf \
-            releases/v0.6/Gauntlet_v0.6.0_Financier_Cards_and_Components.pdf \
-            releases/v0.6/Gauntlet_v0.6.0_Intelligence_Cards_and_Components.pdf \
-            releases/v0.6/Gauntlet_v0.6.0_Mystics_Cards_and_Components.pdf \
-            releases/v0.6/Gauntlet_v0.6.0_Inquisition_Cards_and_Components.pdf \
-            releases/v0.6/Gauntlet_v0.6.0_All_Cards_and_Components.pdf \
-            releases/v0.6/Gauntlet_v0.6.0_Card_Build_Error.txt \
+            releases/v0.6.0/Gauntlet_v0.6.0_Neutral_Cards.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Territories.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Military_Cards_and_Components.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Diplomat_Cards_and_Components.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Financier_Cards_and_Components.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Intelligence_Cards_and_Components.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Mystics_Cards_and_Components.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Inquisition_Cards_and_Components.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_All_Cards_and_Components.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Card_Build_Error.txt \
             > card-commit.log 2>&1
           status=$?
           cat card-commit.log
@@ -81,8 +81,8 @@ jobs:
           path: |
             card-build.log
             card-commit.log
-            releases/v0.6/Gauntlet_v0.6.0_*Cards*.pdf
-            releases/v0.6/Gauntlet_v0.6.0_Territories.pdf
-            releases/v0.6/Gauntlet_v0.6.0_Card_Build_Error.txt
+            releases/v0.6.0/Gauntlet_v0.6.0_*Cards*.pdf
+            releases/v0.6.0/Gauntlet_v0.6.0_Territories.pdf
+            releases/v0.6.0/Gauntlet_v0.6.0_Card_Build_Error.txt
             build/v0.6.0/card-validation/*contact*.png
           if-no-files-found: ignore
