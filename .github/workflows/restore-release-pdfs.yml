@@ -32,7 +32,7 @@ jobs:
             releases/v0.6.0/Gauntlet_v0.6.0_Neutral_Cards.pdf \
             releases/v0.6.0/Gauntlet_v0.6.0_Territories.pdf
 
-          if git diff --quiet; then
+          if git diff --quiet && git diff --cached --quiet; then
             echo 'Release PDFs already match main.'
             exit 0
           fi
