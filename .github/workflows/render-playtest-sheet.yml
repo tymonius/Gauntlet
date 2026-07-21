@@ -4,11 +4,19 @@ on:
   push:
     branches:
       - main
-      - agent/add-playtest-sheet-pdf
     paths:
       - playtest/index.html
       - playtest/styles.css
       - .github/workflows/render-playtest-sheet.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - playtest/index.html
+      - playtest/styles.css
+      - .github/workflows/render-playtest-sheet.yml
+      - README.md
+      - playtest/README.md
   workflow_dispatch:
 
 permissions:
@@ -92,6 +100,7 @@ jobs:
           PY
 
       - name: Commit generated PDF
+        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
