@@ -40,7 +40,7 @@ async function api(path, options = {}) {
 const entries = [];
 for (const filePath of paths) {
   if (!fs.existsSync(filePath)) {
-    entries.push({ path: filePath, mode: '100644', type: 'blob', sha: null });
+    console.log(`Skipping absent generated file: ${filePath}`);
     continue;
   }
   const content = fs.readFileSync(filePath).toString('base64');
@@ -49,6 +49,11 @@ for (const filePath of paths) {
     body: JSON.stringify({ content, encoding: 'base64' })
   });
   entries.push({ path: filePath, mode: '100644', type: 'blob', sha: blob.sha });
+}
+
+if (!entries.length) {
+  console.log('No generated files to commit.');
+  process.exit(0);
 }
 
 for (let attempt = 1; attempt <= 5; attempt += 1) {
