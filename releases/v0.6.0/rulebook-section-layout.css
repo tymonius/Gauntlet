@@ -1,5 +1,5 @@
 /* Section-aware overrides applied after rulebook.css.
-   Pandoc places generated heading IDs on section wrappers when --section-divs is enabled. */
+   Pandoc prefixes numbered level-one heading IDs with the section number. */
 
 .page-break {
   display: none;
@@ -8,18 +8,80 @@
   page-break-before: auto;
 }
 
-section#military,
-section#diplomats,
-section#financiers,
-section#intelligence,
-section#mystics,
-section#inquisition,
-section#glossary {
+/* Contents labels -------------------------------------------------------- */
+
+nav#TOC a[href$="-military"]::before {
+  content: "FACTIONS";
+  display: block;
+  margin: 0.18in 0 0.08in;
+  padding-top: 0.10in;
+  border-top: 1pt solid #9aa4b2;
+  color: #6b7280;
+  font-size: 8pt;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+/* Compact two-column rules passages ------------------------------------- */
+
+section.level1[id$="-components"],
+section.level1[id$="-building-a-deck"],
+section.level1[id$="-setup"],
+section.level1[id$="-turn-structure"],
+section.level1[id$="-movement"],
+section.level1[id$="-territory-control"],
+section.level1[id$="-game-zones"],
+section.level1[id$="-actions-assets-and-overlays"],
+section.level1[id$="-glossary"] {
+  columns: 2;
+  column-gap: 0.28in;
+  column-rule: 0.45pt solid #d9dde3;
+}
+
+section.level1[id$="-components"] > h1,
+section.level1[id$="-building-a-deck"] > h1,
+section.level1[id$="-setup"] > h1,
+section.level1[id$="-turn-structure"] > h1,
+section.level1[id$="-movement"] > h1,
+section.level1[id$="-territory-control"] > h1,
+section.level1[id$="-game-zones"] > h1,
+section.level1[id$="-actions-assets-and-overlays"] > h1,
+section.level1[id$="-glossary"] > h1,
+section.level1 table,
+section.level1 blockquote {
+  column-span: all;
+}
+
+section.level1[id$="-glossary"] p {
+  margin-bottom: 0.05in;
+  break-inside: avoid;
+}
+
+/* Faction openers -------------------------------------------------------- */
+
+section.level1[id$="-military"],
+section.level1[id$="-diplomats"],
+section.level1[id$="-financiers"],
+section.level1[id$="-intelligence"],
+section.level1[id$="-mystics"],
+section.level1[id$="-inquisition"],
+section.level1[id$="-glossary"] {
   break-before: page;
   page-break-before: always;
 }
 
-section#military > h1::before {
+section.level1[id$="-military"] > h1,
+section.level1[id$="-diplomats"] > h1,
+section.level1[id$="-financiers"] > h1,
+section.level1[id$="-intelligence"] > h1,
+section.level1[id$="-mystics"] > h1,
+section.level1[id$="-inquisition"] > h1,
+section.level1[id$="-glossary"] > h1 {
+  break-before: page;
+  page-break-before: always;
+}
+
+section.level1[id$="-military"] > h1::before {
   content: "FACTIONS";
   display: block;
   margin-bottom: 0.14in;
@@ -29,12 +91,14 @@ section#military > h1::before {
   letter-spacing: 0.18em;
 }
 
-section#military > h1 { border-bottom-color: #8f2f2b; }
-section#diplomats > h1 { border-bottom-color: #275487; }
-section#financiers > h1 { border-bottom-color: #2f6b4d; }
-section#intelligence > h1 { border-bottom-color: #3f454d; }
-section#mystics > h1 { border-bottom-color: #60437d; }
-section#inquisition > h1 { border-bottom-color: #9a7a2f; }
+section.level1[id$="-military"] > h1 { border-bottom-color: #8f2f2b; }
+section.level1[id$="-diplomats"] > h1 { border-bottom-color: #275487; }
+section.level1[id$="-financiers"] > h1 { border-bottom-color: #2f6b4d; }
+section.level1[id$="-intelligence"] > h1 { border-bottom-color: #3f454d; }
+section.level1[id$="-mystics"] > h1 { border-bottom-color: #60437d; }
+section.level1[id$="-inquisition"] > h1 { border-bottom-color: #9a7a2f; }
+
+/* Leader profiles ------------------------------------------------------- */
 
 section#general,
 section#commandant,
