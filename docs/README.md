@@ -22,7 +22,7 @@ When a derived PDF, printable sheet, deckbuilder entry, or digital implementatio
 - [Design Principles and Guardrails](Gauntlet_Design_Principles_and_Guardrails.md) — durable design constraints.
 - [Faction Card Design Guide](Gauntlet_v0.6_Faction_Card_Design_Guide.md) — standards for faction-card pools and future revisions.
 - [Playtest Targets and Metrics](Gauntlet_Playtest_Targets_and_Metrics.md) — complete evidence targets and thresholds for controlled testing.
-- [One-Page Playtest Sheet](../playtest/) — the routine post-game questionnaire, with local autosave and structured response export.
+- [One-Page Playtest Sheet](../playtest/) — the routine paper questionnaire, designed to be printed and completed by hand.
 - [Leader Design Bible](Gauntlet_v0.6_Leader_Design_Bible.md) — current Leader art and character direction.
 - [Lore Development Notes](Gauntlet_Lore_Development_Notes.md) — incremental setting development.
 - [Digital Roadmap](Gauntlet_Digital_Roadmap.md) — future canonical engine and interface direction.
