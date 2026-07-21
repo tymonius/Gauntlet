@@ -63,6 +63,7 @@ export interface BattleState {
   attacker: BattleParticipantState;
   defender: BattleParticipantState;
   tiePolicy: BattleTiePolicy;
+  lastStand?: boolean;
   attackerHandCommitVisibleTo?: PlayerID[];
   winner?: PlayerID;
   loser?: PlayerID;
@@ -91,6 +92,7 @@ export interface PublicBattleView {
   attacker: PublicBattleParticipantView;
   defender: PublicBattleParticipantView;
   tiePolicy: BattleTiePolicy;
+  lastStand?: boolean;
   validBattleCardTargets?: BattleCardTargetOption[];
   legalBattlePlays?: BattlePlayOption[];
   winner?: PlayerID;
