@@ -1,0 +1,39 @@
+name: Restore unchanged release PDFs
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    if: github.head_ref == 'agent/refresh-root-tool-links'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+
+      - name: Restore release PDFs and remove helper
+        run: |
+          set -euo pipefail
+          git fetch origin main
+          git checkout origin/main -- \
+            releases/v0.6.0/Gauntlet_v0.6.0_All_Cards_and_Components.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Diplomat_Cards_and_Components.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Financier_Cards_and_Components.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Inquisition_Cards_and_Components.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Intelligence_Cards_and_Components.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Military_Cards_and_Components.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Mystics_Cards_and_Components.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Neutral_Cards.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Territories.pdf
+          rm .github/workflows/restore-release-pdfs.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Restore unchanged release PDFs and remove helper [skip ci]'
+          git push origin HEAD
