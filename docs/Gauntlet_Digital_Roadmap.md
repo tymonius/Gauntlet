@@ -5,6 +5,8 @@
 
 The [official v0.6.0 rulebook](../releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md), definitive faction guides, Neutral pool, and Territory pool remain authoritative. Digital behavior must follow those sources and generated canonical data.
 
+The detailed legacy-to-v0.6 subsystem assessment and acceptance criteria are maintained in the [v0.6 Digital Migration Audit](Gauntlet_v0.6_Digital_Migration_Audit.md).
+
 ---
 
 ## 1. Current layers
