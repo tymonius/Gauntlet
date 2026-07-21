@@ -4,9 +4,9 @@ on:
   push:
     branches: [main]
     paths:
-      - releases/v0.6/Gauntlet_v0.6.0_Manifest.json
-      - releases/v0.6/Gauntlet_v0.6.0_Rulebook.pdf
-      - releases/v0.6/Gauntlet_v0.6.0_All_Cards_and_Components.pdf
+      - releases/v0.6.0/Gauntlet_v0.6.0_Manifest.json
+      - releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf
+      - releases/v0.6.0/Gauntlet_v0.6.0_All_Cards_and_Components.pdf
       - .github/workflows/publish-v0.6.0-release.yml
   workflow_dispatch:
 
@@ -19,7 +19,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       TAG: v0.6.0
-      RELEASE_DIR: releases/v0.6
+      RELEASE_DIR: releases/v0.6.0
     steps:
       - uses: actions/checkout@v4
 
