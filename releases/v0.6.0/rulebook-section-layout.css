@@ -64,6 +64,48 @@ section#quick-reference {
   page-break-before: always;
 }
 
+/* Pagination refinements ------------------------------------------------- */
+
+/* Keep a new chapter heading with its opening passage wherever possible. */
+section.level1 > h1 + p,
+section.level1 > h1 + section.level2,
+section.level2 > h2 + p,
+section.level2 > h2 + ol,
+section.level2 > h2 + ul {
+  break-before: avoid-page;
+  page-break-before: avoid;
+}
+
+/* This compact chapter fits comfortably on one page and should never leave
+   its title stranded at the foot of Game Zones. */
+section.level1[id$="-actions-assets-and-overlays"] {
+  break-before: page;
+  page-break-before: always;
+}
+
+/* Turn Structure misses a single page by only its Cleanup paragraph in the
+   default rhythm. Tighten this section locally rather than shrinking the book. */
+section.level1[id$="-turn-structure"] {
+  font-size: 9.25pt;
+  line-height: 1.24;
+}
+
+section.level1[id$="-turn-structure"] h2 {
+  margin-top: 0.085in;
+  margin-bottom: 0.03in;
+  font-size: 13.3pt;
+}
+
+section.level1[id$="-turn-structure"] p {
+  margin-bottom: 0.045in;
+}
+
+section.level1[id$="-turn-structure"] ol,
+section.level1[id$="-turn-structure"] ul {
+  margin-top: 0.025in;
+  margin-bottom: 0.05in;
+}
+
 /* Faction openers -------------------------------------------------------- */
 
 section.level1[id$="-military"],
@@ -119,19 +161,95 @@ section#alchemist,
 section#spirit-walker,
 section#grand-inquisitor,
 section#witch-hunter {
-  margin-top: 0.18in;
+  margin-top: 0.12in;
+  font-size: 8.9pt;
+  line-height: 1.21;
   break-inside: avoid-page;
   page-break-inside: avoid;
 }
 
+section#general > h2,
+section#commandant > h2,
+section#ambassador > h2,
+section#senator > h2,
+section#banker > h2,
+section#executive > h2,
+section#ranger > h2,
+section#spymaster > h2,
+section#alchemist > h2,
+section#spirit-walker > h2,
+section#grand-inquisitor > h2,
+section#witch-hunter > h2 {
+  margin-top: 0;
+  margin-bottom: 0.045in;
+  padding-bottom: 0.045in;
+  font-size: 17.5pt;
+}
+
+section#general h3,
+section#commandant h3,
+section#ambassador h3,
+section#senator h3,
+section#banker h3,
+section#executive h3,
+section#ranger h3,
+section#spymaster h3,
+section#alchemist h3,
+section#spirit-walker h3,
+section#grand-inquisitor h3,
+section#witch-hunter h3 {
+  margin-top: 0.065in;
+  margin-bottom: 0.02in;
+  font-size: 10.3pt;
+}
+
+section#general p,
+section#commandant p,
+section#ambassador p,
+section#senator p,
+section#banker p,
+section#executive p,
+section#ranger p,
+section#spymaster p,
+section#alchemist p,
+section#spirit-walker p,
+section#grand-inquisitor p,
+section#witch-hunter p {
+  margin-bottom: 0.04in;
+}
+
+section#general img,
+section#commandant img,
+section#ambassador img,
+section#senator img,
+section#banker img,
+section#executive img,
+section#ranger img,
+section#spymaster img,
+section#alchemist img,
+section#spirit-walker img,
+section#grand-inquisitor img,
+section#witch-hunter img {
+  width: 32%;
+  max-width: 32%;
+  max-height: 3.15in;
+  margin: 0.035in 0.22in 0.08in 0;
+}
+
+/* The second Leader follows the first whenever the pair fits. A quiet rule
+   separates paired profiles without forcing a new page. */
 section#commandant,
 section#senator,
 section#executive,
 section#spymaster,
 section#spirit-walker,
 section#witch-hunter {
-  break-before: page;
-  page-break-before: always;
+  clear: both;
+  margin-top: 0.14in;
+  padding-top: 0.12in;
+  border-top: 0.7pt solid #c8cdd4;
+  break-before: auto;
+  page-break-before: auto;
 }
 
 section#general ul,
@@ -159,7 +277,7 @@ section#spirit-walker ol,
 section#grand-inquisitor ol,
 section#witch-hunter ol {
   overflow: visible;
-  margin-left: 0;
+  margin: 0.025in 0 0.045in;
   padding-left: 0;
   list-style-position: inside;
 }
