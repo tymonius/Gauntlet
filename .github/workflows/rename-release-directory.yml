@@ -17,7 +17,7 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.head_ref }}
 
-      - name: Rename directory and update references
+      - name: Rename directory and update non-workflow references
         run: |
           set -euo pipefail
 
@@ -38,6 +38,8 @@ jobs:
               if not raw:
                   continue
               path = Path(raw.decode())
+              if path.parts[:2] == (".github", "workflows"):
+                  continue
               if not path.is_file():
                   continue
               data = path.read_bytes()
@@ -55,8 +57,8 @@ jobs:
           test -d releases/v0.6.0
           test ! -e releases/v0.6
 
-          if git grep -nP 'releases/v0\.6(?!\.0)' -- ':!docs/Archive/**'; then
-            echo 'Found an active reference to the old release directory.' >&2
+          if git grep -nP 'releases/v0\.6(?!\.0)' -- ':!.github/workflows/**'; then
+            echo 'Found a non-workflow reference to the old release directory.' >&2
             exit 1
           fi
 
@@ -66,6 +68,7 @@ jobs:
             echo 'Release directory is already renamed.'
             exit 0
           fi
+          git status --short
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
