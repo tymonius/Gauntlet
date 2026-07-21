@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { V06_RULES_VERSION } from '../content';
+import { V06_RULES_VERSION, v06CanonicalContent } from '../content';
 import { GameSetupValidationError } from './validation';
 import { initializeV06Game, validateV06GameSetup, type V06GameSetupInput } from './v06-setup';
 
@@ -53,11 +53,13 @@ describe('canonical v0.6 game setup', () => {
     expect(() => initializeV06Game(setup)).toThrow(GameSetupValidationError);
   });
 
-  it('rejects undersized, over-value, illegal-allegiance, and invalid Territory packages', () => {
+  it('rejects illegal-allegiance and invalid Territory packages', () => {
     const setup = validSetup();
+    const diplomatCard = v06CanonicalContent.content.cards.find((card) => card.allegiance === 'Diplomats');
+    expect(diplomatCard).toBeDefined();
     setup.players[0].deck = [
       ...Array.from({ length: 29 }, () => 'neutral-rallying-cry'),
-      'diplomats-balanced-concessions',
+      diplomatCard!.id,
     ];
     setup.players[0].territories = [
       'territory-arena-grand-melee',
@@ -72,9 +74,11 @@ describe('canonical v0.6 game setup', () => {
 
   it('rejects duplicate Unique cards', () => {
     const setup = validSetup();
+    const uniqueNeutral = v06CanonicalContent.content.cards.find((card) => card.allegiance === 'Neutral' && card.unique);
+    expect(uniqueNeutral).toBeDefined();
     setup.players[0].deck = [
-      'neutral-manifest-destiny',
-      'neutral-manifest-destiny',
+      uniqueNeutral!.id,
+      uniqueNeutral!.id,
       ...Array.from({ length: 28 }, () => 'neutral-rallying-cry'),
     ];
 
