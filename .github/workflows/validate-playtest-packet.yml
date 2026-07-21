@@ -106,15 +106,23 @@ jobs:
 
           await page.screenshot({ path: 'playtest-validation/screen.png', fullPage: true });
           await page.emulateMedia({ media: 'print' });
-          const pageBoxes = await page.evaluate(() => [...document.querySelectorAll('.print-page')].map((element, index) => ({
-            page: index + 1,
-            clientHeight: element.clientHeight,
-            scrollHeight: element.scrollHeight,
-            overflow: element.scrollHeight - element.clientHeight
-          })));
+          const pageBoxes = await page.evaluate(() => [...document.querySelectorAll('.print-page')].map((element, index) => {
+            const pageRect = element.getBoundingClientRect();
+            const footer = element.querySelector('.page-footer');
+            const contentLimit = footer ? footer.getBoundingClientRect().top - 3 : pageRect.bottom - 12;
+            const contentNodes = [...element.querySelectorAll('*')].filter(node => !node.closest('.page-footer'));
+            const contentBottom = Math.max(pageRect.top, ...contentNodes.map(node => node.getBoundingClientRect().bottom));
+            return {
+              page: index + 1,
+              pageHeight: pageRect.height,
+              contentBottom,
+              contentLimit,
+              overflow: contentBottom - contentLimit
+            };
+          }));
           console.log({ pageBoxes });
-          const overflowing = pageBoxes.filter(item => item.overflow > 2);
-          if (overflowing.length) throw new Error(`Print-page overflow detected: ${JSON.stringify(overflowing)}`);
+          const overflowing = pageBoxes.filter(item => item.overflow > 1);
+          if (overflowing.length) throw new Error(`Print-page content crosses the footer boundary: ${JSON.stringify(overflowing)}`);
 
           await page.pdf({
             path: 'playtest-validation/Gauntlet_v0.6.0_Playtest_Packet.pdf',
@@ -134,7 +142,7 @@ jobs:
           from pathlib import Path
           from pypdf import PdfReader
           import fitz
-          from PIL import Image, ImageOps, ImageDraw
+          from PIL import Image, ImageDraw
 
           root = Path('playtest-validation')
           pdf_path = root / 'Gauntlet_v0.6.0_Playtest_Packet.pdf'
