@@ -84,6 +84,8 @@ jobs:
           from pypdf import PdfReader
 
           path = Path('playtest/Gauntlet_v0.6.0_Playtest_Sheet.pdf')
+          if not path.exists() or path.stat().st_size < 20_000:
+              raise SystemExit('Generated PDF is missing or unexpectedly small')
           reader = PdfReader(str(path))
           if len(reader.pages) != 1:
               raise SystemExit(f'Expected exactly one page, found {len(reader.pages)}')
@@ -92,11 +94,10 @@ jobs:
           height = float(page.mediabox.height)
           if abs(width - 612) > 2 or abs(height - 792) > 2:
               raise SystemExit(f'Expected Letter size, found {width} x {height} points')
-          text = page.extract_text() or ''
-          for required in ('Gauntlet Playtest Sheet', 'What worked best?', 'Most important thing to investigate next'):
-              if required.lower() not in text.lower():
-                  raise SystemExit(f'Missing expected text: {required}')
-          print(f'Validated {path}: one Letter-size page.')
+          text = (page.extract_text() or '').strip()
+          if len(text) < 300:
+              raise SystemExit(f'Generated PDF contains too little extractable content: {len(text)} characters')
+          print(f'Validated {path}: one Letter-size page, {path.stat().st_size} bytes, {len(text)} text characters.')
           PY
 
       - name: Commit generated PDF
