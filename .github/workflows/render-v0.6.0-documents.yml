@@ -8,11 +8,13 @@ on:
       - releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.md
       - releases/v0.6/rulebook.css
       - images/sketches/**
+      - images/qr/**
       - scripts/prepare-v0.6-markdown.py
       - scripts/create-v0.6-reference-docx.py
       - scripts/pagebreak.lua
       - scripts/make-pdf-contact-sheets.py
       - scripts/render-v0.6.0-documents.sh
+      - scripts/commit-generated-files.mjs
       - .github/workflows/render-v0.6.0-documents.yml
   workflow_dispatch:
 
@@ -22,6 +24,8 @@ permissions:
 jobs:
   render:
     runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -43,40 +47,22 @@ jobs:
           cat document-build.log
           if [ "$status" -ne 0 ]; then
             cp document-build.log releases/v0.6/Gauntlet_v0.6.0_Document_Build_Error.txt
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add releases/v0.6/Gauntlet_v0.6.0_Document_Build_Error.txt
-            git commit -m "Record v0.6.0 document build error [skip ci]" || true
-            branch="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
-            git pull --rebase origin "$branch" || true
-            git push origin "HEAD:$branch" || true
+            node scripts/commit-generated-files.mjs \
+              "Record v0.6.0 document build error [skip ci]" -- \
+              releases/v0.6/Gauntlet_v0.6.0_Document_Build_Error.txt || true
             exit "$status"
           fi
 
       - name: Commit rendered documents
         run: |
           rm -f releases/v0.6/Gauntlet_v0.6.0_Document_Build_Error.txt
-          if git diff --quiet -- \
-            releases/v0.6/Gauntlet_v0.6.0_Rulebook.docx \
-            releases/v0.6/Gauntlet_v0.6.0_Rulebook.pdf \
-            releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.docx \
-            releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.pdf \
-            releases/v0.6/Gauntlet_v0.6.0_Document_Build_Error.txt; then
-            echo "Rendered documents are current."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A \
+          node scripts/commit-generated-files.mjs \
+            "Render v0.6.0 rulebook and reference guide [skip ci]" -- \
             releases/v0.6/Gauntlet_v0.6.0_Rulebook.docx \
             releases/v0.6/Gauntlet_v0.6.0_Rulebook.pdf \
             releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.docx \
             releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.pdf \
             releases/v0.6/Gauntlet_v0.6.0_Document_Build_Error.txt
-          git commit -m "Render v0.6.0 rulebook and reference guide [skip ci]"
-          branch="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
-          git pull --rebase origin "$branch"
-          git push origin "HEAD:$branch"
 
       - uses: actions/upload-artifact@v4
         if: always()
