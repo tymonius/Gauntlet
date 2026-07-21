@@ -146,7 +146,7 @@ section#online-tools-and-updates > p:last-child {
   box-sizing: border-box;
   min-height: 1.10in;
   margin: 0.01in 0 0.08in;
-  padding-top: 0.32in;
+  padding-top: 0.36in;
   font-family: "Noto Sans", sans-serif;
   font-size: 8.35pt;
   line-height: 1.22;
@@ -211,18 +211,18 @@ section#spirit-walker p {
 
 section#ranger img,
 section#alchemist img {
-  width: 40%;
-  max-width: 40%;
-  max-height: 2.85in;
-  margin-right: 0.11in;
+  width: 44%;
+  max-width: 44%;
+  max-height: 3.10in;
+  margin-right: 0.10in;
 }
 
 section#spymaster img,
 section#spirit-walker img {
-  width: 38%;
-  max-width: 38%;
-  max-height: 2.70in;
-  margin-right: 0.11in;
+  width: 42%;
+  max-width: 42%;
+  max-height: 2.95in;
+  margin-right: 0.10in;
 }
 
 section#spymaster,
