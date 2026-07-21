@@ -15,8 +15,8 @@
 
 html {
   font-family: "Noto Serif", serif;
-  font-size: 10.2pt;
-  line-height: 1.36;
+  font-size: 9.9pt;
+  line-height: 1.31;
   color: #202124;
 }
 
@@ -74,8 +74,8 @@ h1, h2, h3, h4 {
 h1 {
   font-size: 23pt;
   line-height: 1.12;
-  margin: 0 0 0.25in 0;
-  padding-bottom: 0.08in;
+  margin: 0 0 0.20in 0;
+  padding-bottom: 0.07in;
   border-bottom: 1.4pt solid #64748b;
   break-before: page;
   page-break-before: always;
@@ -83,37 +83,37 @@ h1 {
 
 h2 {
   font-size: 16pt;
-  margin: 0.22in 0 0.10in 0;
+  margin: 0.16in 0 0.07in 0;
 }
 
 h3 {
   font-size: 12.5pt;
-  margin: 0.17in 0 0.06in 0;
+  margin: 0.13in 0 0.04in 0;
 }
 
 h4 {
   font-size: 10.7pt;
-  margin: 0.12in 0 0.04in 0;
+  margin: 0.10in 0 0.03in 0;
 }
 
 p {
-  margin: 0.04in 0 0.10in 0;
+  margin: 0.03in 0 0.075in 0;
   orphans: 3;
   widows: 3;
 }
 
 ul, ol {
-  margin: 0.06in 0 0.12in 0.24in;
+  margin: 0.04in 0 0.09in 0.24in;
   padding-left: 0.14in;
 }
 
 li {
-  margin: 0.025in 0;
+  margin: 0.015in 0;
 }
 
 blockquote {
-  margin: 0.12in 0.18in;
-  padding: 0.08in 0.14in;
+  margin: 0.10in 0.18in;
+  padding: 0.07in 0.14in;
   border-left: 3pt solid #64748b;
   background: #f3f5f7;
 }
@@ -121,14 +121,14 @@ blockquote {
 table {
   width: 100%;
   border-collapse: collapse;
-  margin: 0.10in 0 0.18in 0;
-  font-size: 9.1pt;
+  margin: 0.08in 0 0.14in 0;
+  font-size: 9pt;
   break-inside: avoid-page;
 }
 
 th, td {
   border: 0.6pt solid #aeb6c2;
-  padding: 0.055in 0.075in;
+  padding: 0.05in 0.07in;
   vertical-align: top;
 }
 
@@ -146,7 +146,7 @@ img {
   width: auto;
   height: auto;
   object-fit: contain;
-  margin: 0.12in auto 0.18in auto;
+  margin: 0.10in auto 0.15in auto;
   break-inside: avoid-page;
 }
 
@@ -158,7 +158,7 @@ code {
 hr {
   border: 0;
   border-top: 0.7pt solid #c2c8d0;
-  margin: 0.18in 0;
+  margin: 0.15in 0;
 }
 
 strong {
