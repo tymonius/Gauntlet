@@ -145,13 +145,7 @@ section#spymaster ul,
 section#alchemist ul,
 section#spirit-walker ul,
 section#grand-inquisitor ul,
-section#witch-hunter ul {
-  overflow: hidden;
-  margin-left: 0;
-  padding-left: 0;
-  list-style: none;
-}
-
+section#witch-hunter ul,
 section#general ol,
 section#commandant ol,
 section#ambassador ol,
@@ -164,7 +158,8 @@ section#alchemist ol,
 section#spirit-walker ol,
 section#grand-inquisitor ol,
 section#witch-hunter ol {
-  overflow: hidden;
+  overflow: visible;
   margin-left: 0;
-  padding-left: 0.22in;
+  padding-left: 0;
+  list-style-position: inside;
 }
