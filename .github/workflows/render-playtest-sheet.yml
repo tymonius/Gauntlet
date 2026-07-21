@@ -100,8 +100,8 @@ jobs:
           print(f'Validated {path}: one Letter-size page, {path.stat().st_size} bytes, {len(text)} text characters.')
           PY
 
-      - name: Commit generated PDF
-        if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+      - name: Commit generated PDF on main
+        if: github.event_name != 'pull_request'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
