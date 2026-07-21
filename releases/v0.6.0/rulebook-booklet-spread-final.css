@@ -1,0 +1,26 @@
+/* Final orphan correction after the spread-layout pass. */
+
+section.level1[id$="-setup"] {
+  break-before: page;
+  page-break-before: always;
+  font-size: 8.35pt;
+  line-height: 1.17;
+}
+
+section.level1[id$="-setup"] > h1 {
+  margin-top: 0.070in;
+  margin-bottom: 0.060in;
+  padding-bottom: 0.043in;
+  font-size: 16.2pt;
+}
+
+section.level1[id$="-setup"] p {
+  margin-bottom: 0.034in;
+}
+
+section.level1[id$="-setup"] ul,
+section.level1[id$="-setup"] ol {
+  margin-top: 0.014in;
+  margin-bottom: 0.036in;
+  line-height: 1.14;
+}
