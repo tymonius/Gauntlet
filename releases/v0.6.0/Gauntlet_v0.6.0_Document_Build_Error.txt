@@ -4,4 +4,4 @@ WARNING: Ignored `overflow-x: auto` at 5:28, unknown property.
 WARNING: Ignored `overflow-x: auto` at 5:28, unknown property.
 Booklet imposition: 32 content pages + 0 padding pages = 32 booklet pages / 16 imposed sheet sides.
 WARNING: Ignored `overflow-x: auto` at 5:28, unknown property.
-Booklet page 14 is suspiciously sparse (48 non-whitespace characters).
+The copyright colophon is not on the inside front cover.
