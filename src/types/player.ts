@@ -4,6 +4,8 @@ import type { PrivateZones, PublicZoneView } from './zones';
 export interface PlayerState {
   id: PlayerID;
   name: string;
+  factionId?: string;
+  leaderName?: string;
   zones: PrivateZones;
   controlledTerritories: TerritoryID[];
   occupiedSpaceId?: string;
@@ -16,6 +18,8 @@ export interface PlayerState {
 export interface PublicPlayerView {
   id: PlayerID;
   name: string;
+  factionId?: string;
+  leaderName?: string;
   zones: {
     deck: PublicZoneView;
     hand: PublicZoneView;
