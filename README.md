@@ -2,7 +2,7 @@
 
 Gauntlet is a two-player tactical card-and-territory game about deck construction, hidden battle commitments, territorial control, faction asymmetry, and running the Gauntlet.
 
-**Project site:** [tymonius.github.io/Gauntlet](https://tymonius.github.io/Gauntlet/) — the hosted site for Gauntlet repository materials, releases, and browser tools.
+**Project site:** [gauntlet.run](https://gauntlet.run/) — the custom URL for Gauntlet repository materials, releases, and browser tools.
 
 ## Canonical release
 
@@ -47,8 +47,8 @@ To run the Gauntlet, a player must defeat the opponent on their final Territory,
 
 ## Playtest tools
 
-- [Gauntlet v0.6 Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder-v0.6/) — build, validate, save, export, randomize, and print faction-era Decks.
-- [Gauntlet v0.6 Faction Sheets](https://tymonius.github.io/Gauntlet/faction-sheets/) — browser-printable faction cards and supplemental components.
+- [Gauntlet v0.6 Deckbuilder](https://gauntlet.run/deckbuilder-v0.6/) — build, validate, save, export, randomize, and print faction-era Decks.
+- [Gauntlet v0.6 Faction Sheets](https://gauntlet.run/faction-sheets/) — browser-printable faction cards and supplemental components.
 
 Scan to open the v0.6 Deckbuilder:
 
