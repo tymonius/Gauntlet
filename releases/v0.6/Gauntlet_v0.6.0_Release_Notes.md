@@ -74,6 +74,12 @@ Mystics use no faction resource. They complete three public Rites, unlocking Inv
 
 Inquisition gains Conviction when opposing cards enter the Graveyard after battle and when Arcane cards are used. Conviction powers Purges. Emptying both the opponent's Draw Pile and Discard Pile at their normal Draw step achieves Purification.
 
+## Online access
+
+The Gauntlet project repository, current release materials, and browser tools are available at **[gauntlet.run](https://gauntlet.run/)**.
+
+Build, validate, save, export, randomize, and print v0.6 Decks with the **[Gauntlet Deckbuilder](https://gauntlet.run/deckbuilder-v0.6/)**.
+
 ## Canonical sources
 
 The v0.6.0 rulebook, Neutral pool, Territory pool, and six definitive faction guides are the authoritative player-facing sources. `Gauntlet_v0.6.0_Canonical_Data.json` is generated directly from those audited documents and must not be edited independently.
