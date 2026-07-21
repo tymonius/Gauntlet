@@ -1,11 +1,17 @@
 Built 50 Neutral cards and 25 Territories.
 Gauntlet_v0.6.0_Neutral_Cards.pdf: 50 fitted cards
 Gauntlet_v0.6.0_Territories.pdf: 25 fitted cards
-file:///home/runner/work/Gauntlet/Gauntlet/scripts/print-v0.6.0-card-sheets.mjs:31
-    if (failures.length) throw new Error(`${filename} has overflowing cards: ${JSON.stringify(failures)}`);
-                               ^
+Gauntlet_v0.6.0_Military_Cards_and_Components.pdf: 12 fitted cards
+Gauntlet_v0.6.0_Diplomat_Cards_and_Components.pdf: 32 fitted cards
+Gauntlet_v0.6.0_Financier_Cards_and_Components.pdf: 12 fitted cards
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
 
-Error: Gauntlet_v0.6.0_Military_Cards_and_Components.pdf has overflowing cards: [{"name":"Shock and Awe","fontSize":5.5,"fits":false,"overflow":46}]
-    at file:///home/runner/work/Gauntlet/Gauntlet/scripts/print-v0.6.0-card-sheets.mjs:31:32
+page.waitForFunction: Timeout 30000ms exceeded.
+    at /home/runner/work/Gauntlet/Gauntlet/scripts/print-v0.6.0-card-sheets.mjs:27:16 {
+  log: [],
+  name: 'TimeoutError'
+}
 
 Node.js v22.23.1
