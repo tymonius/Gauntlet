@@ -1,0 +1,439 @@
+/* Half-letter booklet edition. Applied after the standard rulebook styles. */
+
+@page {
+  size: 5.5in 8.5in;
+  margin-top: 0.43in;
+  margin-bottom: 0.48in;
+
+  @top-left { content: none; }
+  @top-right { content: none; }
+  @bottom-left { content: none; }
+  @bottom-right { content: none; }
+}
+
+@page:left {
+  margin-left: 0.40in;
+  margin-right: 0.52in;
+
+  @top-left {
+    content: string(chapter);
+    color: #64748b;
+    font-family: "Noto Sans", sans-serif;
+    font-size: 6.4pt;
+  }
+
+  @bottom-left {
+    content: counter(page);
+    color: #5f6874;
+    font-family: "Noto Sans", sans-serif;
+    font-size: 7pt;
+    font-weight: 600;
+  }
+
+  @bottom-right {
+    content: "GAUNTLET  •  v0.6.0";
+    color: #7b8491;
+    font-family: "Noto Sans", sans-serif;
+    font-size: 5.8pt;
+    letter-spacing: 0.04em;
+  }
+}
+
+@page:right {
+  margin-left: 0.52in;
+  margin-right: 0.40in;
+
+  @top-right {
+    content: string(chapter);
+    color: #64748b;
+    font-family: "Noto Sans", sans-serif;
+    font-size: 6.4pt;
+  }
+
+  @bottom-left {
+    content: "GAUNTLET  •  v0.6.0";
+    color: #7b8491;
+    font-family: "Noto Sans", sans-serif;
+    font-size: 5.8pt;
+    letter-spacing: 0.04em;
+  }
+
+  @bottom-right {
+    content: counter(page);
+    color: #5f6874;
+    font-family: "Noto Sans", sans-serif;
+    font-size: 7pt;
+    font-weight: 600;
+  }
+}
+
+@page:first {
+  size: 5.5in 8.5in;
+  margin: 0.30in;
+
+  @top-left { content: none; }
+  @top-right { content: none; }
+  @bottom-left { content: none; }
+  @bottom-right { content: none; }
+}
+
+html {
+  font-size: 9.05pt;
+  line-height: 1.27;
+}
+
+/* Cover ------------------------------------------------------------------ */
+
+#title-block-header {
+  min-height: 7.90in;
+  padding: 1.65in 0.40in 0.52in;
+  border-width: 1.15pt;
+}
+
+#title-block-header::before {
+  inset: 0.14in;
+}
+
+#title-block-header::after {
+  width: 0.92in;
+  margin-top: 0.34in;
+  border-top-width: 3pt;
+}
+
+#title-block-header .title {
+  font-size: 33pt;
+  letter-spacing: 0.115em;
+}
+
+#title-block-header .subtitle {
+  margin-top: 0.18in;
+  font-size: 12.5pt;
+  letter-spacing: 0.07em;
+}
+
+#title-block-header .date {
+  margin-top: 0.28in;
+  padding: 0.055in 0.13in;
+  font-size: 8.8pt;
+}
+
+/* Contents --------------------------------------------------------------- */
+
+nav#TOC {
+  min-height: auto;
+  page-break-after: always;
+}
+
+nav#TOC::before {
+  margin-bottom: 0.19in;
+  padding-bottom: 0.075in;
+  font-size: 20pt;
+}
+
+nav#TOC > ul {
+  columns: 1;
+  column-rule: 0;
+  font-size: 8.35pt;
+  line-height: 1.18;
+}
+
+nav#TOC li {
+  margin-bottom: 0.047in;
+}
+
+nav#TOC a[href$="-military"]::before {
+  margin-top: 0.14in;
+  margin-bottom: 0.065in;
+  padding-top: 0.075in;
+  font-size: 7.3pt;
+}
+
+/* Hierarchy and rhythm ---------------------------------------------------- */
+
+h1 {
+  margin: 0.12in 0 0.105in;
+  padding-bottom: 0.052in;
+  font-size: 17.8pt;
+  line-height: 1.06;
+}
+
+h2 {
+  margin: 0.105in 0 0.04in;
+  font-size: 12.2pt;
+  line-height: 1.10;
+}
+
+h3 {
+  margin: 0.085in 0 0.025in;
+  font-size: 9.9pt;
+  line-height: 1.13;
+}
+
+h4 {
+  margin: 0.075in 0 0.02in;
+  font-size: 9.2pt;
+}
+
+p {
+  margin: 0.018in 0 0.052in;
+  orphans: 2;
+  widows: 2;
+}
+
+section.level1 > p:first-of-type {
+  font-size: 9.2pt;
+}
+
+ul, ol {
+  margin: 0.028in 0 0.060in 0.18in;
+  padding-left: 0.12in;
+}
+
+li {
+  margin: 0.009in 0;
+}
+
+hr {
+  margin: 0.09in 0;
+}
+
+/* A half-letter page is too narrow for the Letter edition's columns. */
+section.level1[id$="-components"],
+section.level1[id$="-building-a-deck"],
+section.level1[id$="-setup"],
+section.level1[id$="-turn-structure"],
+section.level1[id$="-movement"],
+section.level1[id$="-territory-control"],
+section.level1[id$="-game-zones"],
+section.level1[id$="-actions-assets-and-overlays"],
+section.level1[id$="-glossary"],
+section#quick-reference {
+  columns: auto;
+  column-count: 1;
+  column-rule: 0;
+}
+
+section.level1[id$="-turn-structure"] {
+  font-size: inherit;
+  line-height: inherit;
+}
+
+section.level1[id$="-turn-structure"] h2 {
+  margin-top: 0.105in;
+  margin-bottom: 0.04in;
+  font-size: 12.2pt;
+}
+
+section.level1[id$="-turn-structure"] p {
+  margin-bottom: 0.052in;
+}
+
+section.level1[id$="-turn-structure"] ol,
+section.level1[id$="-turn-structure"] ul {
+  margin-top: 0.028in;
+  margin-bottom: 0.060in;
+}
+
+/* Callouts, tables, and images ------------------------------------------- */
+
+blockquote {
+  margin: 0.075in 0 0.095in;
+  padding: 0.075in 0.105in 0.075in 0.13in;
+  border-left-width: 3pt;
+  font-size: 8.65pt;
+}
+
+table {
+  margin: 0.055in 0 0.095in;
+  font-size: 7.65pt;
+  line-height: 1.18;
+}
+
+th, td {
+  padding: 0.035in 0.045in;
+}
+
+img {
+  max-width: 88%;
+  max-height: 3.25in;
+  margin: 0.06in auto 0.095in;
+}
+
+img[alt*="QR code"] {
+  width: 1.05in;
+  max-width: 1.05in;
+  margin: 0.10in auto 0.08in;
+}
+
+/* Factions and Leaders ---------------------------------------------------- */
+
+section.level1[id$="-military"] > h1::before {
+  margin-bottom: 0.10in;
+  font-size: 7.8pt;
+}
+
+section#general,
+section#commandant,
+section#ambassador,
+section#senator,
+section#banker,
+section#executive,
+section#ranger,
+section#spymaster,
+section#alchemist,
+section#spirit-walker,
+section#grand-inquisitor,
+section#witch-hunter {
+  margin-top: 0.10in;
+  font-size: 8.35pt;
+  line-height: 1.19;
+  break-inside: avoid-page;
+  page-break-inside: avoid;
+}
+
+section#general > h2,
+section#commandant > h2,
+section#ambassador > h2,
+section#senator > h2,
+section#banker > h2,
+section#executive > h2,
+section#ranger > h2,
+section#spymaster > h2,
+section#alchemist > h2,
+section#spirit-walker > h2,
+section#grand-inquisitor > h2,
+section#witch-hunter > h2 {
+  margin-top: 0;
+  margin-bottom: 0.038in;
+  padding-bottom: 0.038in;
+  font-size: 14.4pt;
+}
+
+section#general h3,
+section#commandant h3,
+section#ambassador h3,
+section#senator h3,
+section#banker h3,
+section#executive h3,
+section#ranger h3,
+section#spymaster h3,
+section#alchemist h3,
+section#spirit-walker h3,
+section#grand-inquisitor h3,
+section#witch-hunter h3 {
+  margin-top: 0.055in;
+  margin-bottom: 0.016in;
+  font-size: 9.3pt;
+}
+
+section#general p,
+section#commandant p,
+section#ambassador p,
+section#senator p,
+section#banker p,
+section#executive p,
+section#ranger p,
+section#spymaster p,
+section#alchemist p,
+section#spirit-walker p,
+section#grand-inquisitor p,
+section#witch-hunter p {
+  margin-bottom: 0.034in;
+}
+
+section#general img,
+section#commandant img,
+section#ambassador img,
+section#senator img,
+section#banker img,
+section#executive img,
+section#ranger img,
+section#spymaster img,
+section#alchemist img,
+section#spirit-walker img,
+section#grand-inquisitor img,
+section#witch-hunter img {
+  float: left;
+  width: 35%;
+  max-width: 35%;
+  max-height: 2.75in;
+  margin: 0.025in 0.15in 0.065in 0;
+}
+
+section#general img,
+section#banker img {
+  width: 35%;
+  max-width: 35%;
+  max-height: 2.75in;
+}
+
+section#commandant,
+section#senator,
+section#executive,
+section#spymaster,
+section#spirit-walker,
+section#witch-hunter {
+  clear: both;
+  margin-top: 0.065in;
+  padding-top: 0.065in;
+  border-top: 0.65pt solid #c8cdd4;
+}
+
+section#commandant > h2,
+section#senator > h2,
+section#executive > h2,
+section#spymaster > h2,
+section#spirit-walker > h2,
+section#witch-hunter > h2 {
+  font-size: 14.0pt;
+}
+
+section#commandant img,
+section#senator img,
+section#executive img,
+section#spymaster img,
+section#spirit-walker img,
+section#witch-hunter img {
+  width: 33%;
+  max-width: 33%;
+  max-height: 2.55in;
+}
+
+section#general ul,
+section#commandant ul,
+section#ambassador ul,
+section#senator ul,
+section#banker ul,
+section#executive ul,
+section#ranger ul,
+section#spymaster ul,
+section#alchemist ul,
+section#spirit-walker ul,
+section#grand-inquisitor ul,
+section#witch-hunter ul,
+section#general ol,
+section#commandant ol,
+section#ambassador ol,
+section#senator ol,
+section#banker ol,
+section#executive ol,
+section#ranger ol,
+section#spymaster ol,
+section#alchemist ol,
+section#spirit-walker ol,
+section#grand-inquisitor ol,
+section#witch-hunter ol {
+  margin: 0.02in 0 0.038in;
+  padding-left: 0;
+  list-style-position: inside;
+}
+
+/* Avoid chapter titles at the bottom of a small page. */
+section.level1 > h1 + p,
+section.level1 > h1 + section.level2,
+section.level2 > h2 + p,
+section.level2 > h2 + ol,
+section.level2 > h2 + ul {
+  break-before: avoid-page;
+  page-break-before: avoid;
+}
