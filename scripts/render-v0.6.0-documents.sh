@@ -45,6 +45,7 @@ pandoc "$BUILD/rulebook-prepared.md" \
   --css="$RELEASE/rulebook.css" \
   --css="$RELEASE/rulebook-section-layout.css" \
   --css="$RELEASE/rulebook-booklet.css" \
+  --css="$RELEASE/rulebook-booklet-refinements.css" \
   -o "$BUILD/rulebook-booklet.html"
 
 pandoc "$BUILD/reference-prepared.md" \
@@ -114,6 +115,14 @@ for ((page=1; page<=booklet_pages; page++)); do
     fi
   elif (( first_booklet_blank != 0 )); then
     echo "Booklet has a blank page before later content (page $first_booklet_blank)." >&2
+    exit 1
+  fi
+
+  # The cover is intentionally sparse, and up to three final pages may be
+  # imposition padding. Every interior content page should contain substantial
+  # rulebook text rather than only running furniture or a stranded sentence.
+  if (( page > 1 && first_booklet_blank == 0 && chars < 200 )); then
+    echo "Booklet page $page is suspiciously sparse ($chars non-whitespace characters)." >&2
     exit 1
   fi
 done
