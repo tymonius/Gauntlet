@@ -3,531 +3,138 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gauntlet v0.6.0 Playtest Packet</title>
+  <title>Gauntlet v0.6.0 Playtest Sheet</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
   <header class="site-header screen-only">
     <div>
       <p class="eyebrow">Gauntlet playtest tool</p>
-      <h1>v0.6.0 Playtest Packet</h1>
-      <p class="lede">Facilitator guide, session record, player evaluations, and issue log.</p>
+      <h1>One-Page Playtest Sheet</h1>
+      <p class="lede">Record the matchup, outcome, strongest impressions, and anything that needs investigation.</p>
     </div>
     <div class="toolbar" aria-label="Playtest form controls">
       <span id="saveStatus" class="save-status" aria-live="polite">Draft stored only in this browser</span>
       <button id="printButton" type="button">Print / Save PDF</button>
       <button id="copyButton" type="button" class="secondary">Copy report</button>
       <button id="downloadButton" type="button" class="secondary">Download JSON</button>
-      <button id="resetButton" type="button" class="secondary danger">Clear form</button>
+      <button id="resetButton" type="button" class="secondary danger">Clear</button>
     </div>
   </header>
 
-  <main class="packet-shell">
+  <main class="sheet-shell">
     <form id="playtestForm" autocomplete="off">
-      <section class="print-page cover-page" aria-labelledby="packet-title">
-        <div class="print-title">
-          <p class="eyebrow">Official human-playtest questionnaire</p>
-          <h2 id="packet-title">Gauntlet v0.6.0 Playtest Packet</h2>
-          <p>Use with the canonical v0.6.0 rulebook and, for first games, the recommended Deck for each selected Leader.</p>
-        </div>
-
-        <aside class="callout important">
-          <strong>Facilitator rule:</strong> Record the problem before proposing a fix. Do not change a rule or card during the game unless the test was explicitly scheduled as a variant comparison.
-        </aside>
-
-        <div class="two-column guide-columns">
-          <section>
-            <h3>Before play</h3>
-            <ol>
-              <li>Record the exact version, Decks, Leaders, Territory order, first player, and any intentional variant.</li>
-              <li>For onboarding tests, let players use the rulebook and player aids without strategic coaching.</li>
-              <li>Explain that honest criticism is more useful than politeness and that feedback may be used in later versions.</li>
-              <li>Choose the test mode below. A single game should answer a small number of primary questions.</li>
-            </ol>
-          </section>
-          <section>
-            <h3>During play</h3>
-            <ol>
-              <li>Note rule lookups, disagreements, difficult physical states, and moments when play stops flowing.</li>
-              <li>Count objective events where practical, but do not interrupt players for perfect telemetry.</li>
-              <li>Do not rescue players from strategic mistakes in a blind or onboarding test.</li>
-              <li>Mark the moment the result first seemed inevitable and whether meaningful recovery decisions remained.</li>
-            </ol>
-          </section>
-        </div>
-
-        <section>
-          <h3>After play</h3>
-          <ol class="compact-list">
-            <li>Have each player complete their evaluation privately before discussing the game.</li>
-            <li>Conduct the joint debrief, then classify issues by category and severity.</li>
-            <li>Separate rules confusion, production friction, balance concerns, and personal preference.</li>
-            <li>One unusual game is evidence, not a verdict. Deterministic exploits and impossible resolutions are exceptions.</li>
-          </ol>
-        </section>
-
-        <section class="form-section">
-          <h3>Session identity</h3>
-          <div class="field-grid four">
-            <label>Session ID <input name="session_id" type="text" /></label>
-            <label>Date <input name="date" type="date" /></label>
-            <label>Facilitator / observer <input name="facilitator" type="text" /></label>
-            <label>Location / platform <input name="location" type="text" /></label>
-            <label>Rules version <input name="rules_version" type="text" value="v0.6.0" /></label>
-            <label>Teach time (min) <input name="teach_minutes" type="number" min="0" /></label>
-            <label>Play time (min) <input name="play_minutes" type="number" min="0" /></label>
-            <label>Debrief time (min) <input name="debrief_minutes" type="number" min="0" /></label>
+      <section class="playtest-sheet" aria-labelledby="sheet-title">
+        <header class="sheet-title">
+          <div>
+            <p class="eyebrow">Official v0.6.0 human-playtest questionnaire</p>
+            <h2 id="sheet-title">Gauntlet Playtest Sheet</h2>
           </div>
+          <p><strong>Record the problem before proposing a fix.</strong> One unusual game is evidence, not a verdict.</p>
+        </header>
+
+        <section class="identity-grid compact-section">
+          <label>Date <input name="date" type="date" /></label>
+          <label>Session / group <input name="session_id" type="text" /></label>
+          <label>Test type
+            <select name="test_type">
+              <option value="">—</option>
+              <option>First game / onboarding</option>
+              <option>Repeated matchup</option>
+              <option>Leader comparison</option>
+              <option>Custom Deck test</option>
+              <option>Rules / wording test</option>
+              <option>Component test</option>
+            </select>
+          </label>
+          <label>Play time <span class="unit-field"><input name="play_minutes" type="number" min="0" /><span>min</span></span></label>
         </section>
 
-        <fieldset class="choice-block">
-          <legend>Test mode — choose all that apply</legend>
-          <label><input name="mode_first_game" type="checkbox" /> First game / onboarding</label>
-          <label><input name="mode_blind_rules" type="checkbox" /> Blind rulebook test</label>
-          <label><input name="mode_repeated_matchup" type="checkbox" /> Repeated matchup</label>
-          <label><input name="mode_leader_comparison" type="checkbox" /> Leader comparison</label>
-          <label><input name="mode_custom_deck" type="checkbox" /> Custom Deck test</label>
-          <label><input name="mode_component" type="checkbox" /> Physical component / print test</label>
-          <label><input name="mode_variant" type="checkbox" /> Intentional variant</label>
-        </fieldset>
-
-        <label class="wide-field">Primary question(s) this session is intended to answer
-          <textarea name="primary_questions" rows="3"></textarea>
-        </label>
-        <label class="wide-field">Any noncanonical rule, card text, component, or setup used
-          <textarea name="test_variants" rows="2"></textarea>
-        </label>
-
-        <footer class="page-footer">Page 1 · Facilitator guide and session setup · gauntlet.run/playtest/</footer>
-      </section>
-
-      <section class="print-page" aria-labelledby="game-record-heading">
-        <h2 id="game-record-heading">Game Record and Objective Metrics</h2>
-        <p class="instruction">Fields marked <span class="required-mark">◆</span> are the minimum useful record. Extended counts are strongly preferred when an observer is available.</p>
-
-        <div class="player-setup-grid">
-          <section class="player-card player-a">
+        <section class="players-grid compact-section">
+          <article class="player-card player-a">
             <h3>Player A</h3>
-            <div class="field-grid two">
-              <label><span class="required-mark">◆</span> Name / ID <input name="a_name" type="text" /></label>
-              <label>Prior Gauntlet games <input name="a_prior_games" type="number" min="0" /></label>
-              <label><span class="required-mark">◆</span> Faction <input name="a_faction" type="text" /></label>
-              <label><span class="required-mark">◆</span> Leader <input name="a_leader" type="text" /></label>
-              <label><span class="required-mark">◆</span> Deck name / ID <input name="a_deck" type="text" /></label>
-              <label>Recommended starter? <select name="a_starter"><option value="">—</option><option>Yes, unchanged</option><option>Yes, modified</option><option>No</option></select></label>
+            <div class="player-fields">
+              <label>Name / ID <input name="a_name" type="text" /></label>
+              <label>Faction / Leader <input name="a_faction_leader" type="text" /></label>
+              <label>Deck <input name="a_deck" type="text" placeholder="Recommended starter or Deck name" /></label>
             </div>
-            <label>Territories from own end outward <input name="a_territories" type="text" placeholder="1 → 2 → 3" /></label>
-          </section>
-
-          <section class="player-card player-b">
+          </article>
+          <article class="player-card player-b">
             <h3>Player B</h3>
-            <div class="field-grid two">
-              <label><span class="required-mark">◆</span> Name / ID <input name="b_name" type="text" /></label>
-              <label>Prior Gauntlet games <input name="b_prior_games" type="number" min="0" /></label>
-              <label><span class="required-mark">◆</span> Faction <input name="b_faction" type="text" /></label>
-              <label><span class="required-mark">◆</span> Leader <input name="b_leader" type="text" /></label>
-              <label><span class="required-mark">◆</span> Deck name / ID <input name="b_deck" type="text" /></label>
-              <label>Recommended starter? <select name="b_starter"><option value="">—</option><option>Yes, unchanged</option><option>Yes, modified</option><option>No</option></select></label>
+            <div class="player-fields">
+              <label>Name / ID <input name="b_name" type="text" /></label>
+              <label>Faction / Leader <input name="b_faction_leader" type="text" /></label>
+              <label>Deck <input name="b_deck" type="text" placeholder="Recommended starter or Deck name" /></label>
             </div>
-            <label>Territories from own end outward <input name="b_territories" type="text" placeholder="1 → 2 → 3" /></label>
-          </section>
-        </div>
+          </article>
+        </section>
 
-        <section class="form-section">
+        <section class="compact-section">
           <h3>Outcome</h3>
-          <div class="field-grid four">
-            <label><span class="required-mark">◆</span> First player <select name="first_player"><option value="">—</option><option>Player A</option><option>Player B</option></select></label>
-            <label><span class="required-mark">◆</span> Winner <select name="winner"><option value="">—</option><option>Player A</option><option>Player B</option><option>No winner / stopped</option></select></label>
-            <label><span class="required-mark">◆</span> Victory route <select name="victory_route"><option value="">—</option><option>Ran the Gauntlet</option><option>Peace Treaty</option><option>Controlling Interest</option><option>Special Operation</option><option>Ritual</option><option>Purification</option><option>Concession</option><option>Stopped / unresolved</option></select></label>
-            <label>Game end quality <select name="ending_quality"><option value="">—</option><option>Natural and satisfying</option><option>Natural but anticlimactic</option><option>Result clear before ending</option><option>Stopped by time</option><option>Stopped by rules issue</option><option>Concession</option></select></label>
-            <label><span class="required-mark">◆</span> Full rounds <input name="rounds" type="number" min="0" /></label>
-            <label>Individual player-turns <input name="player_turns" type="number" min="0" /></label>
-            <label><span class="required-mark">◆</span> Total battles <input name="battle_count" type="number" min="0" /></label>
+          <div class="outcome-grid">
+            <label>First player <select name="first_player"><option value="">—</option><option>Player A</option><option>Player B</option></select></label>
+            <label>Winner <select name="winner"><option value="">—</option><option>Player A</option><option>Player B</option><option>No winner / stopped</option></select></label>
+            <label>Victory route <select name="victory_route"><option value="">—</option><option>Ran the Gauntlet</option><option>Peace Treaty</option><option>Controlling Interest</option><option>Special Operation</option><option>Ritual</option><option>Purification</option><option>Concession</option><option>Stopped / unresolved</option></select></label>
+            <label>Rounds <input name="rounds" type="number" min="0" /></label>
+            <label>Battles <input name="battle_count" type="number" min="0" /></label>
             <label>Rule lookups <input name="rule_lookups" type="number" min="0" /></label>
           </div>
-          <label>When did the result first seem likely or inevitable? Was meaningful counterplay still available?
-            <textarea name="inevitability_observation" rows="2"></textarea>
+        </section>
+
+        <section class="compact-section ratings-section">
+          <h3>Player ratings <span>1 = poor · 3 = acceptable · 5 = excellent</span></h3>
+          <table class="ratings-table">
+            <thead><tr><th>Question</th><th>Player A</th><th>Player B</th><th>Question</th><th>Player A</th><th>Player B</th></tr></thead>
+            <tbody>
+              <tr><td>Overall fun</td><td><select name="a_fun"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td><td><select name="b_fun"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td><td>Pacing</td><td><select name="a_pacing"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td><td><select name="b_pacing"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td></tr>
+              <tr><td>Meaningful decisions</td><td><select name="a_decisions"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td><td><select name="b_decisions"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td><td>Battle tension</td><td><select name="a_battles"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td><td><select name="b_battles"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td></tr>
+              <tr><td>Faction / Leader clarity</td><td><select name="a_faction_clarity"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td><td><select name="b_faction_clarity"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td><td>Would play again</td><td><select name="a_replay"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td><td><select name="b_replay"><option></option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></td></tr>
+            </tbody>
+          </table>
+        </section>
+
+        <section class="compact-section warning-section">
+          <h3>Did any of these occur?</h3>
+          <div class="warning-grid">
+            <label><input name="flag_winner_clear_early" type="checkbox" /> Winner clear long before the end</label>
+            <label><input name="flag_repetitive" type="checkbox" /> Repetitive or low-stakes battles</label>
+            <label><input name="flag_no_options" type="checkbox" /> Player had no meaningful options</label>
+            <label><input name="flag_attack_futile" type="checkbox" /> Attacking felt consistently futile</label>
+            <label><input name="flag_snowball" type="checkbox" /> Territory / Asset loss snowballed too hard</label>
+            <label><input name="flag_alt_victory" type="checkbox" /> Additional victory felt solitaire or irrelevant</label>
+            <label><input name="flag_card_flow" type="checkbox" /> Card flow or Graveyard pressure broke down</label>
+            <label><input name="flag_rules_components" type="checkbox" /> Rules text or components interrupted play</label>
+          </div>
+        </section>
+
+        <section class="feedback-grid compact-section">
+          <label>What worked best?
+            <textarea name="worked_best" rows="3"></textarea>
+          </label>
+          <label>What dragged, frustrated, or felt weak?
+            <textarea name="worked_worst" rows="3"></textarea>
+          </label>
+          <label>What was confusing or required a ruling?
+            <textarea name="confusing" rows="3"></textarea>
+          </label>
+          <label>Anything too strong, too weak, or too automatic?
+            <textarea name="balance_notes" rows="3"></textarea>
           </label>
         </section>
 
-        <section class="form-section compact-table-section">
-          <h3>Activity counts</h3>
-          <table class="metric-table">
-            <thead><tr><th>Metric</th><th>Player A</th><th>Player B</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td>Battles initiated</td><td><input name="a_battles_initiated" type="number" min="0" /></td><td><input name="b_battles_initiated" type="number" min="0" /></td><td><input name="battles_note" type="text" /></td></tr>
-              <tr><td>Wins while attacking</td><td><input name="a_attack_wins" type="number" min="0" /></td><td><input name="b_attack_wins" type="number" min="0" /></td><td></td></tr>
-              <tr><td>Wins while defending</td><td><input name="a_defense_wins" type="number" min="0" /></td><td><input name="b_defense_wins" type="number" min="0" /></td><td></td></tr>
-              <tr><td>Cards committed from hand</td><td><input name="a_hand_commits" type="number" min="0" /></td><td><input name="b_hand_commits" type="number" min="0" /></td><td><input name="commitment_note" type="text" placeholder="Too frequent? Too rare?" /></td></tr>
-              <tr><td>Territories occupied / captured / recaptured</td><td><input name="a_territory_events" type="text" placeholder="O / C / R" /></td><td><input name="b_territory_events" type="text" placeholder="O / C / R" /></td><td></td></tr>
-              <tr><td>Last Stand attempts / wins</td><td><input name="a_last_stands" type="text" placeholder="Attempts / wins" /></td><td><input name="b_last_stands" type="text" placeholder="Attempts / wins" /></td><td></td></tr>
-              <tr><td>Reshuffles</td><td><input name="a_reshuffles" type="number" min="0" /></td><td><input name="b_reshuffles" type="number" min="0" /></td><td><input name="card_flow_note" type="text" placeholder="Incomplete draws or card starvation" /></td></tr>
-              <tr><td>Maximum Assets banked</td><td><input name="a_max_assets" type="number" min="0" /></td><td><input name="b_max_assets" type="number" min="0" /></td><td></td></tr>
-              <tr><td>Forced Asset discards after lost control</td><td><input name="a_forced_asset_discards" type="number" min="0" /></td><td><input name="b_forced_asset_discards" type="number" min="0" /></td><td><input name="asset_contraction_note" type="text" placeholder="Strategic or punitive?" /></td></tr>
-              <tr><td>Turns with no meaningful choice</td><td><input name="a_no_choice_turns" type="number" min="0" /></td><td><input name="b_no_choice_turns" type="number" min="0" /></td><td><input name="no_choice_note" type="text" /></td></tr>
-            </tbody>
-          </table>
+        <section class="final-grid compact-section">
+          <label>Best moment / hardest decision
+            <textarea name="best_moment" rows="2"></textarea>
+          </label>
+          <label>Most important thing to investigate next
+            <textarea name="next_test" rows="2"></textarea>
+          </label>
         </section>
 
-        <section class="form-section">
-          <h3>Final state</h3>
-          <div class="field-grid two">
-            <label>Player A — Token position, Territories controlled, hand / Draw / Discard / Graveyard / Assets
-              <textarea name="a_final_state" rows="3"></textarea>
-            </label>
-            <label>Player B — Token position, Territories controlled, hand / Draw / Discard / Graveyard / Assets
-              <textarea name="b_final_state" rows="3"></textarea>
-            </label>
-          </div>
-        </section>
-
-        <footer class="page-footer">Page 2 · Game record and objective metrics</footer>
-      </section>
-
-      <section class="print-page" aria-labelledby="faction-metrics-heading">
-        <h2 id="faction-metrics-heading">Faction Systems, Pacing, and Recovery</h2>
-        <p class="instruction">Complete the rows relevant to each faction. Exact counts are ideal; concise estimates are acceptable.</p>
-
-        <section class="form-section compact-table-section">
-          <h3>Faction-specific telemetry</h3>
-          <table class="faction-table">
-            <thead><tr><th>Faction</th><th>Player using it</th><th>Record</th></tr></thead>
-            <tbody>
-              <tr><td><strong>Military</strong></td><td><input name="military_player" type="text" /></td><td><textarea name="military_metrics" rows="2" placeholder="Command gained/spent; Orders by type; additional battles; immediate captures"></textarea></td></tr>
-              <tr><td><strong>Diplomats</strong></td><td><input name="diplomats_player" type="text" /></td><td><textarea name="diplomats_metrics" rows="2" placeholder="Terms offered/accepted/refused/imposed; Influence; ratifications; credible Peace Treaty turn"></textarea></td></tr>
-              <tr><td><strong>Financiers</strong></td><td><input name="financiers_player" type="text" /></td><td><textarea name="financiers_metrics" rows="2" placeholder="Capital; Treasury; Deeds bought/bought out/lost; credible Controlling Interest turn"></textarea></td></tr>
-              <tr><td><strong>Intelligence</strong></td><td><input name="intelligence_player" type="text" /></td><td><textarea name="intelligence_metrics" rows="2" placeholder="Missions started/completed/failed/aborted; Intel; Surveillance/Interference; Special Operations"></textarea></td></tr>
-              <tr><td><strong>Mystics</strong></td><td><input name="mystics_player" type="text" /></td><td><textarea name="mystics_metrics" rows="2" placeholder="Rites begun/completed/interrupted; sacrifice/recovery; Invocation/Transmutation; credible Ritual turn"></textarea></td></tr>
-              <tr><td><strong>Inquisition</strong></td><td><input name="inquisition_player" type="text" /></td><td><textarea name="inquisition_metrics" rows="2" placeholder="Conviction gained/spent; Purges by tier; opposing cards removed; credible Purification turn"></textarea></td></tr>
-            </tbody>
-          </table>
-        </section>
-
-        <div class="two-column">
-          <section class="form-section">
-            <h3>Territorial progress</h3>
-            <label>Did advancing and capturing feel worthwhile despite the risk of counterattack?
-              <textarea name="territorial_value" rows="3"></textarea>
-            </label>
-            <label>Were the same positions fought over repeatedly without meaningful change? Identify where and why.
-              <textarea name="repeated_battles" rows="3"></textarea>
-            </label>
-            <label>Did immediate movement or capture effects preserve or undermine the occupation-and-counterattack structure?
-              <textarea name="capture_window" rows="3"></textarea>
-            </label>
-          </section>
-
-          <section class="form-section">
-            <h3>Recovery and snowballing</h3>
-            <label>Largest territorial deficit later overcome by either player
-              <input name="largest_deficit_overcome" type="text" />
-            </label>
-            <label>What credible recovery lines were available to the trailing player?
-              <textarea name="recovery_lines" rows="3"></textarea>
-            </label>
-            <label>Did losing Territory and Asset capacity compound appropriately, or remove too much agency?
-              <textarea name="snowball_observation" rows="3"></textarea>
-            </label>
-          </section>
-        </div>
-
-        <div class="two-column">
-          <section class="form-section">
-            <h3>Battle procedure</h3>
-            <label>Did hand commitment feel costly and intentional?
-              <textarea name="hand_commitment_quality" rows="2"></textarea>
-            </label>
-            <label>Did Battle Hand selection feel tactical or mostly automatic?
-              <textarea name="battle_hand_quality" rows="2"></textarea>
-            </label>
-            <label>Were any battles too minor to justify the full battle procedure?
-              <textarea name="battle_overhead" rows="2"></textarea>
-            </label>
-          </section>
-
-          <section class="form-section">
-            <h3>Victory pressure</h3>
-            <label>When did each additional victory become publicly credible?
-              <textarea name="credible_victory_turns" rows="2"></textarea>
-            </label>
-            <label>Did the threat change the opponent's movement, battles, or resource spending?
-              <textarea name="victory_interaction" rows="2"></textarea>
-            </label>
-            <label>Could the faction still pursue running the Gauntlet, or did one route crowd out the other?
-              <textarea name="victory_route_balance" rows="2"></textarea>
-            </label>
-          </section>
-        </div>
-
-        <fieldset class="choice-block horizontal">
-          <legend>Observer pacing judgment</legend>
-          <label><input name="observer_pace" type="radio" value="Much too slow" /> Much too slow</label>
-          <label><input name="observer_pace" type="radio" value="Somewhat slow" /> Somewhat slow</label>
-          <label><input name="observer_pace" type="radio" value="About right" /> About right</label>
-          <label><input name="observer_pace" type="radio" value="Somewhat fast" /> Somewhat fast</label>
-          <label><input name="observer_pace" type="radio" value="Much too fast" /> Much too fast</label>
-        </fieldset>
-
-        <label class="wide-field">Observer notes on pace, downtime, repeated sequences, or the point at which engagement changed
-          <textarea name="observer_pacing_notes" rows="4"></textarea>
-        </label>
-
-        <footer class="page-footer">Page 3 · Faction systems, pacing, and recovery</footer>
-      </section>
-
-      <section class="print-page player-evaluation" aria-labelledby="player-a-evaluation-heading">
-        <h2 id="player-a-evaluation-heading">Player A — Private Evaluation</h2>
-        <p class="instruction">Complete before discussing the game. Rate each statement from 1 (strongly disagree / very poor) to 5 (strongly agree / excellent). Choose N/A when it did not apply.</p>
-        <div id="ratingMatrixA" class="rating-matrix" data-player="a"></div>
-
-        <div class="two-column open-feedback">
-          <section>
-            <label>What strategy were you trying to execute?
-              <textarea name="a_strategy" rows="3"></textarea>
-            </label>
-            <label>What was the most satisfying moment or interaction?
-              <textarea name="a_best_moment" rows="3"></textarea>
-            </label>
-            <label>What was the most frustrating, boring, or confusing moment?
-              <textarea name="a_worst_moment" rows="3"></textarea>
-            </label>
-            <label>What was your hardest or most interesting decision?
-              <textarea name="a_hardest_decision" rows="3"></textarea>
-            </label>
-          </section>
-          <section>
-            <label>When did you first think you would win or lose? Why?
-              <textarea name="a_win_expectation" rows="3"></textarea>
-            </label>
-            <label>Which card, Territory, or Leader ability felt most valuable? Why?
-              <textarea name="a_most_valuable" rows="3"></textarea>
-            </label>
-            <label>Did anything feel automatic, dead, oppressive, or not worth remembering?
-              <textarea name="a_problem_component" rows="3"></textarea>
-            </label>
-            <label>Which rule or wording was hardest to understand?
-              <textarea name="a_rules_confusion" rows="3"></textarea>
-            </label>
-          </section>
-        </div>
-
-        <fieldset class="choice-block horizontal">
-          <legend>What would you most like to play next?</legend>
-          <label><input name="a_next_play" type="radio" value="Same Deck and matchup" /> Same Deck and matchup</label>
-          <label><input name="a_next_play" type="radio" value="Same Deck, different opponent" /> Same Deck, different opponent</label>
-          <label><input name="a_next_play" type="radio" value="Modify this Deck" /> Modify this Deck</label>
-          <label><input name="a_next_play" type="radio" value="Different faction or Leader" /> Different faction / Leader</label>
-          <label><input name="a_next_play" type="radio" value="Would not replay" /> Would not replay</label>
-        </fieldset>
-
-        <label class="wide-field">One change that would most improve your experience
-          <textarea name="a_one_change" rows="3"></textarea>
-        </label>
-
-        <footer class="page-footer">Page 4 · Player A private evaluation</footer>
-      </section>
-
-      <section class="print-page player-evaluation" aria-labelledby="player-b-evaluation-heading">
-        <h2 id="player-b-evaluation-heading">Player B — Private Evaluation</h2>
-        <p class="instruction">Complete before discussing the game. Rate each statement from 1 (strongly disagree / very poor) to 5 (strongly agree / excellent). Choose N/A when it did not apply.</p>
-        <div id="ratingMatrixB" class="rating-matrix" data-player="b"></div>
-
-        <div class="two-column open-feedback">
-          <section>
-            <label>What strategy were you trying to execute?
-              <textarea name="b_strategy" rows="3"></textarea>
-            </label>
-            <label>What was the most satisfying moment or interaction?
-              <textarea name="b_best_moment" rows="3"></textarea>
-            </label>
-            <label>What was the most frustrating, boring, or confusing moment?
-              <textarea name="b_worst_moment" rows="3"></textarea>
-            </label>
-            <label>What was your hardest or most interesting decision?
-              <textarea name="b_hardest_decision" rows="3"></textarea>
-            </label>
-          </section>
-          <section>
-            <label>When did you first think you would win or lose? Why?
-              <textarea name="b_win_expectation" rows="3"></textarea>
-            </label>
-            <label>Which card, Territory, or Leader ability felt most valuable? Why?
-              <textarea name="b_most_valuable" rows="3"></textarea>
-            </label>
-            <label>Did anything feel automatic, dead, oppressive, or not worth remembering?
-              <textarea name="b_problem_component" rows="3"></textarea>
-            </label>
-            <label>Which rule or wording was hardest to understand?
-              <textarea name="b_rules_confusion" rows="3"></textarea>
-            </label>
-          </section>
-        </div>
-
-        <fieldset class="choice-block horizontal">
-          <legend>What would you most like to play next?</legend>
-          <label><input name="b_next_play" type="radio" value="Same Deck and matchup" /> Same Deck and matchup</label>
-          <label><input name="b_next_play" type="radio" value="Same Deck, different opponent" /> Same Deck, different opponent</label>
-          <label><input name="b_next_play" type="radio" value="Modify this Deck" /> Modify this Deck</label>
-          <label><input name="b_next_play" type="radio" value="Different faction or Leader" /> Different faction / Leader</label>
-          <label><input name="b_next_play" type="radio" value="Would not replay" /> Would not replay</label>
-        </fieldset>
-
-        <label class="wide-field">One change that would most improve your experience
-          <textarea name="b_one_change" rows="3"></textarea>
-        </label>
-
-        <footer class="page-footer">Page 5 · Player B private evaluation</footer>
-      </section>
-
-      <section class="print-page" aria-labelledby="debrief-heading">
-        <h2 id="debrief-heading">Joint Debrief and Product Evaluation</h2>
-        <p class="instruction">Discuss only after both private evaluations are complete. The facilitator should capture points of agreement and disagreement.</p>
-
-        <div class="two-column">
-          <section class="form-section">
-            <h3>What worked</h3>
-            <label>Which part of the game created the strongest decisions or most excitement?
-              <textarea name="joint_best_system" rows="4"></textarea>
-            </label>
-            <label>Which faction, Leader, card, Territory, or sequence best expressed its intended theme?
-              <textarea name="joint_best_theme" rows="3"></textarea>
-            </label>
-            <label>What should definitely be preserved?
-              <textarea name="joint_preserve" rows="3"></textarea>
-            </label>
-          </section>
-
-          <section class="form-section">
-            <h3>What did not work</h3>
-            <label>Where did the game become slow, repetitive, obvious, or noninteractive?
-              <textarea name="joint_worst_system" rows="4"></textarea>
-            </label>
-            <label>Which interaction produced the least satisfying outcome?
-              <textarea name="joint_worst_interaction" rows="3"></textarea>
-            </label>
-            <label>What should be investigated first?
-              <textarea name="joint_priority" rows="3"></textarea>
-            </label>
-          </section>
-        </div>
-
-        <section class="form-section">
-          <h3>Starter Deck and onboarding test</h3>
-          <div class="field-grid two">
-            <label>Did Player A's Deck reveal a coherent plan without outside coaching?
-              <textarea name="a_starter_coherence" rows="3"></textarea>
-            </label>
-            <label>Did Player B's Deck reveal a coherent plan without outside coaching?
-              <textarea name="b_starter_coherence" rows="3"></textarea>
-            </label>
-            <label>Which important faction rule or component was overlooked, forgotten, or difficult to use?
-              <textarea name="missed_systems" rows="3"></textarea>
-            </label>
-            <label>Could the players set up and continue play using only the supplied rulebook, Deck package, and references?
-              <textarea name="self_sufficiency" rows="3"></textarea>
-            </label>
-          </div>
-        </section>
-
-        <section class="form-section compact-table-section">
-          <h3>Product and physical usability</h3>
-          <table class="check-table">
-            <thead><tr><th>Area</th><th>Worked</th><th>Needs attention</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td>Rulebook navigation and examples</td><td><input name="product_rulebook_ok" type="checkbox" /></td><td><input name="product_rulebook_issue" type="checkbox" /></td><td><input name="product_rulebook_note" type="text" /></td></tr>
-              <tr><td>Card text readability and hierarchy</td><td><input name="product_cards_ok" type="checkbox" /></td><td><input name="product_cards_issue" type="checkbox" /></td><td><input name="product_cards_note" type="text" /></td></tr>
-              <tr><td>Leader and faction reference clarity</td><td><input name="product_reference_ok" type="checkbox" /></td><td><input name="product_reference_issue" type="checkbox" /></td><td><input name="product_reference_note" type="text" /></td></tr>
-              <tr><td>Trackers and supplemental components</td><td><input name="product_trackers_ok" type="checkbox" /></td><td><input name="product_trackers_issue" type="checkbox" /></td><td><input name="product_trackers_note" type="text" /></td></tr>
-              <tr><td>Territory / Overlay orientation and state</td><td><input name="product_orientation_ok" type="checkbox" /></td><td><input name="product_orientation_issue" type="checkbox" /></td><td><input name="product_orientation_note" type="text" /></td></tr>
-              <tr><td>Table footprint and state restoration</td><td><input name="product_footprint_ok" type="checkbox" /></td><td><input name="product_footprint_issue" type="checkbox" /></td><td><input name="product_footprint_note" type="text" /></td></tr>
-              <tr><td>Deckbuilder / printing workflow</td><td><input name="product_deckbuilder_ok" type="checkbox" /></td><td><input name="product_deckbuilder_issue" type="checkbox" /></td><td><input name="product_deckbuilder_note" type="text" /></td></tr>
-            </tbody>
-          </table>
-        </section>
-
-        <fieldset class="choice-block horizontal">
-          <legend>Shared verdict</legend>
-          <label><input name="shared_verdict" type="radio" value="Ready to repeat unchanged" /> Repeat unchanged</label>
-          <label><input name="shared_verdict" type="radio" value="Promising; monitor" /> Promising; monitor</label>
-          <label><input name="shared_verdict" type="radio" value="Targeted retest needed" /> Targeted retest needed</label>
-          <label><input name="shared_verdict" type="radio" value="Revision needed before retest" /> Revise before retest</label>
-          <label><input name="shared_verdict" type="radio" value="Game-breaking issue" /> Game-breaking issue</label>
-        </fieldset>
-
-        <label class="wide-field">Single most important conclusion from this session
-          <textarea name="single_conclusion" rows="4"></textarea>
-        </label>
-
-        <footer class="page-footer">Page 6 · Joint debrief and product evaluation</footer>
-      </section>
-
-      <section class="print-page" aria-labelledby="issue-log-heading">
-        <h2 id="issue-log-heading">Issue Log and Facilitator Summary</h2>
-        <p class="instruction">Describe observed behavior first. A proposed fix may be recorded separately, but should not replace the evidence.</p>
-
-        <section class="form-section compact-table-section">
-          <h3>Specific issues, rulings, or critical incidents</h3>
-          <table class="issue-table">
-            <thead>
-              <tr><th>#</th><th>Turn / phase</th><th>Cards / Territory / rule</th><th>What happened and how it was resolved</th><th>Category</th><th>Severity</th><th>Repeatable?</th></tr>
-            </thead>
-            <tbody id="issueRows"></tbody>
-          </table>
-        </section>
-
-        <section class="form-section">
-          <h3>Issue classification</h3>
-          <fieldset class="choice-block">
-            <legend>Primary concern(s)</legend>
-            <label><input name="concern_rules" type="checkbox" /> Rules clarity / missing procedure</label>
-            <label><input name="concern_wording" type="checkbox" /> Card or component wording</label>
-            <label><input name="concern_balance" type="checkbox" /> Balance / matchup</label>
-            <label><input name="concern_pacing" type="checkbox" /> Pacing / repetition / downtime</label>
-            <label><input name="concern_agency" type="checkbox" /> Agency / comeback / snowballing</label>
-            <label><input name="concern_onboarding" type="checkbox" /> Teaching / onboarding</label>
-            <label><input name="concern_components" type="checkbox" /> Components / printing / physical state</label>
-            <label><input name="concern_exploit" type="checkbox" /> Deterministic exploit / impossible resolution</label>
-            <label><input name="concern_preference" type="checkbox" /> Player preference rather than defect</label>
-          </fieldset>
-        </section>
-
-        <div class="two-column">
-          <section class="form-section">
-            <h3>Facilitator interpretation</h3>
-            <label>What evidence supports the conclusion?
-              <textarea name="evidence_summary" rows="5"></textarea>
-            </label>
-            <label>What competing explanation should be considered? (experience, misplay, matchup, luck, teaching, print error)
-              <textarea name="alternative_explanation" rows="4"></textarea>
-            </label>
-          </section>
-          <section class="form-section">
-            <h3>Recommended next test</h3>
-            <label>Repeat unchanged, change one variable, or escalate immediately?
-              <textarea name="next_test" rows="4"></textarea>
-            </label>
-            <label>Decks, Leaders, seating order, Territory setup, or rule variant for the next comparison
-              <textarea name="next_setup" rows="4"></textarea>
-            </label>
-          </section>
-        </div>
-
-        <div class="field-grid four">
-          <label>Confidence in finding <select name="finding_confidence"><option value="">—</option><option>Low — tentative</option><option>Moderate</option><option>High — repeated or clear</option><option>Conclusive — deterministic</option></select></label>
-          <label>Recommended priority <select name="finding_priority"><option value="">—</option><option>P0 — blocks play</option><option>P1 — fix before next broad test</option><option>P2 — targeted retest</option><option>P3 — monitor</option><option>Not a change request</option></select></label>
-          <label>Would both players replay? <select name="both_replay"><option value="">—</option><option>Yes</option><option>One would</option><option>No</option><option>Unsure</option></select></label>
-          <label>Form completed by <input name="completed_by" type="text" /></label>
-        </div>
-
-        <label class="wide-field">Facilitator's concise session summary
-          <textarea name="facilitator_summary" rows="6"></textarea>
-        </label>
-
-        <aside class="callout">
-          <strong>Submission:</strong> This page does not send data automatically. Use <em>Copy report</em> for a readable summary or <em>Download JSON</em> for structured aggregation, then provide the file or text to the project owner.
-        </aside>
-
-        <footer class="page-footer">Page 7 · Issue log and facilitator summary · gauntlet.run/playtest/</footer>
+        <footer class="sheet-footer">
+          <span>Full testing targets and faction-specific metrics: docs/Gauntlet_Playtest_Targets_and_Metrics.md</span>
+          <strong>gauntlet.run/playtest/</strong>
+        </footer>
       </section>
     </form>
   </main>
