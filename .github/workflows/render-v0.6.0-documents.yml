@@ -9,6 +9,7 @@ on:
       - releases/v0.6.0/rulebook.css
       - releases/v0.6.0/rulebook-section-layout.css
       - releases/v0.6.0/rulebook-booklet.css
+      - releases/v0.6.0/rulebook-booklet-refinements.css
       - images/sketches/**
       - images/qr/**
       - scripts/prepare-v0.6-markdown.py
