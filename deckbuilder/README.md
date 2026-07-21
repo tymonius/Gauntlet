@@ -4,7 +4,9 @@ This is the developing faction-era deckbuilder. It is intentionally separate fro
 
 Rendered tool:
 
-- `https://tymonius.github.io/Gauntlet/deckbuilder/`
+- `https://gauntlet.run/deckbuilder/`
+
+The former `https://gauntlet.run/deckbuilder-v0.6/` address remains as a compatibility redirect to the canonical URL.
 
 ## Current scope
 
