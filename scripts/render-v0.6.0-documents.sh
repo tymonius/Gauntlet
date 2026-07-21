@@ -18,7 +18,7 @@ pandoc "$BUILD/rulebook-prepared.md" \
   --resource-path="$ROOT:$RELEASE" \
   --lua-filter="$ROOT/scripts/pagebreak.lua" \
   --reference-doc="$BUILD/reference.docx" \
-  --toc --toc-depth=2 \
+  --toc --toc-depth=1 \
   -o "$RELEASE/Gauntlet_v0.6.0_Rulebook.docx"
 
 pandoc "$BUILD/reference-prepared.md" \
@@ -32,7 +32,7 @@ pandoc "$BUILD/rulebook-prepared.md" \
   --from=gfm+raw_html \
   --resource-path="$ROOT:$RELEASE" \
   --lua-filter="$ROOT/scripts/pagebreak.lua" \
-  --standalone --section-divs --toc --toc-depth=2 \
+  --standalone --section-divs --toc --toc-depth=1 \
   --css="$RELEASE/rulebook.css" \
   -o "$BUILD/rulebook.html"
 
