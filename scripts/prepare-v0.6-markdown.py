@@ -9,9 +9,9 @@ from pathlib import Path
 ONLINE_TEXT_BLOCK = """
 ## Online Tools and Updates
 
-The Gauntlet project repository, current release materials, and browser tools are available at **[gauntlet.run](https://gauntlet.run/)**.
+The Gauntlet project repository, current release materials, and browser tools are available at **[tymonius.github.io/Gauntlet](https://tymonius.github.io/Gauntlet/)**.
 
-Build and validate v0.6 Decks with the **[Gauntlet Deckbuilder](https://gauntlet.run/deckbuilder-v0.6/)**.
+Build and validate v0.6 Decks with the **[Gauntlet Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder-v0.6/)**.
 """
 
 ONLINE_QR = """
