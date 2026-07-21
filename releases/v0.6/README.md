@@ -4,7 +4,7 @@ Canonical pre-release package generated July 20, 2026.
 
 Gauntlet v0.6.0 introduces six complete factions, twelve Leaders, 72 faction cards, and the first unified rulebook for the faction era. This package supersedes earlier releases for current playtesting. Earlier release files remain available as historical records.
 
-The Gauntlet project repository, current release materials, and hosted browser tools are available at **[gauntlet.run](https://gauntlet.run/)**.
+The Gauntlet project repository, current release materials, and hosted browser tools are available at **[tymonius.github.io/Gauntlet](https://tymonius.github.io/Gauntlet/)**.
 
 ## Canonical files
 
@@ -20,7 +20,7 @@ The Gauntlet project repository, current release materials, and hosted browser t
 
 ## Online Deckbuilder
 
-Build, validate, save, export, randomize, and print v0.6 Decks at **[gauntlet.run/deckbuilder-v0.6/](https://gauntlet.run/deckbuilder-v0.6/)**.
+Build, validate, save, export, randomize, and print v0.6 Decks at **[tymonius.github.io/Gauntlet/deckbuilder-v0.6/](https://tymonius.github.io/Gauntlet/deckbuilder-v0.6/)**.
 
 Scan to open the Deckbuilder:
 
