@@ -14,6 +14,8 @@ import { assertValidGameSetup } from './validation';
 export interface PlayerSetupInput {
   id: PlayerID;
   name: string;
+  factionId?: string;
+  leaderName?: string;
   deck: CardID[];
   territories: TerritoryID[];
 }
@@ -61,6 +63,8 @@ function createPlayerState(
   return {
     id: input.id,
     name: input.name,
+    factionId: input.factionId,
+    leaderName: input.leaderName,
     zones: {
       deck,
       hand,
