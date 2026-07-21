@@ -1,8 +1,16 @@
 /* Final pagination refinements for the half-letter booklet edition. */
 
+/* Horizontal rules separate top-level Markdown chapters in the source. The
+   booklet already gives every chapter a ruled heading, and a trailing rule can
+   otherwise be pushed onto a page by itself immediately before a forced
+   faction opener. */
+hr {
+  display: none;
+}
+
 /* The section and its heading both inherit page-break rules from the Letter
-   edition. On half-letter pages that produces a furniture-only page. The
-   section itself owns the break; its heading should not request another one. */
+   edition. The section itself owns the break; its heading should not request
+   another one. */
 section.level1[id$="-military"] > h1,
 section.level1[id$="-diplomats"] > h1,
 section.level1[id$="-financiers"] > h1,
