@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
+# Release validation marker: gauntlet.run and Deckbuilder QR integration.
+
 import argparse
 import re
 from pathlib import Path

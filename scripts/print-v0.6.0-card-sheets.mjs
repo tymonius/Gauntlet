@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { chromium } from 'playwright';
 
+// Release validation marker: rerun all card-sheet checks from the final source head.
+
 const ROOT = process.cwd();
 const OUT = path.join(ROOT, 'releases/v0.6');
 fs.mkdirSync(OUT, { recursive: true });
