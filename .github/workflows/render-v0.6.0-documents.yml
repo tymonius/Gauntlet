@@ -7,6 +7,7 @@ on:
       - releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md
       - releases/v0.6.0/Gauntlet_v0.6.0_Reference_Guide.md
       - releases/v0.6.0/rulebook.css
+      - releases/v0.6.0/rulebook-section-layout.css
       - images/sketches/**
       - images/qr/**
       - scripts/prepare-v0.6-markdown.py
