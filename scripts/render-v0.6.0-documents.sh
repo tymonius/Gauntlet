@@ -32,7 +32,7 @@ pandoc "$BUILD/rulebook-prepared.md" \
   --from=gfm+raw_html \
   --resource-path="$ROOT:$RELEASE" \
   --lua-filter="$ROOT/scripts/pagebreak.lua" \
-  --standalone --toc --toc-depth=2 \
+  --standalone --section-divs --toc --toc-depth=2 \
   --css="$RELEASE/rulebook.css" \
   -o "$BUILD/rulebook.html"
 
@@ -40,7 +40,7 @@ pandoc "$BUILD/reference-prepared.md" \
   --from=gfm+raw_html \
   --resource-path="$ROOT:$RELEASE" \
   --lua-filter="$ROOT/scripts/pagebreak.lua" \
-  --standalone --css="$RELEASE/rulebook.css" \
+  --standalone --section-divs --css="$RELEASE/rulebook.css" \
   -o "$BUILD/reference.html"
 
 weasyprint --base-url "$ROOT" "$BUILD/rulebook.html" "$RELEASE/Gauntlet_v0.6.0_Rulebook.pdf"
