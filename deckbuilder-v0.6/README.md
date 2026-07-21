@@ -26,6 +26,7 @@ The development build supports:
 - selected Territories and faction supplemental packages in the Current deck display;
 - Territory-aware local saves, JSON import/export, and text deck lists;
 - browser Print / PDF export for the complete playable deck, Territories, selected Leader Card, and required faction supplemental cards;
+- optional duplex backs for every playable card and Territory;
 - local save/load/delete.
 
 ## Active runtime sources
@@ -68,6 +69,8 @@ The Print / PDF control opens a browser-printable Letter-size package and then o
 - the selected three Territories in landscape-reading orientation;
 - every required faction tracker, reference, and supplemental card;
 - standardized Noto Sans typography and 2.5 × 3.5-inch cut lines.
+
+Enable **Print card backs** to add a mirrored reverse page for each sheet containing playable cards or Territories. Each reverse uses the same card positions as its front after long-edge duplex printing and carries **GAUNTLET** vertically in the same reading direction as the Overlay ownership bands. Leader cards and one-sided supplemental cards remain blank-backed; faction components that already have defined reverse faces retain those faces.
 
 Faction packages render as follows:
 
