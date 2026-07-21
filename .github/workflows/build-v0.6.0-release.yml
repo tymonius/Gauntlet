@@ -1,5 +1,6 @@
 name: Build v0.6.0 canonical release data
 
+# Pull requests run the canonical parser before release publication.
 on:
   push:
     branches: [main]
@@ -40,24 +41,42 @@ jobs:
           node-version: 22
 
       - name: Generate and validate canonical outputs
-        run: node scripts/build-v0.6.0-release.mjs
+        run: |
+          set +e
+          node scripts/build-v0.6.0-release.mjs > canonical-build.log 2>&1
+          status=$?
+          cat canonical-build.log
+          if [ "$status" -ne 0 ]; then
+            cp canonical-build.log releases/v0.6/Gauntlet_v0.6.0_Build_Error.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add releases/v0.6/Gauntlet_v0.6.0_Build_Error.txt
+            git commit -m "Record v0.6.0 canonical build error [skip ci]" || true
+            git push origin HEAD || true
+            exit "$status"
+          fi
 
       - name: Commit generated outputs
         run: |
-          if git diff --quiet -- releases/v0.6/Gauntlet_v0.6.0_Canonical_Data.json releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.md releases/v0.6/Gauntlet_v0.6.0_Manifest.json; then
+          rm -f releases/v0.6/Gauntlet_v0.6.0_Build_Error.txt
+          if git diff --quiet -- releases/v0.6/Gauntlet_v0.6.0_Canonical_Data.json releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.md releases/v0.6/Gauntlet_v0.6.0_Manifest.json releases/v0.6/Gauntlet_v0.6.0_Build_Error.txt; then
             echo "Canonical outputs are current."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add releases/v0.6/Gauntlet_v0.6.0_Canonical_Data.json releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.md releases/v0.6/Gauntlet_v0.6.0_Manifest.json
+          git add -A releases/v0.6/Gauntlet_v0.6.0_Canonical_Data.json releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.md releases/v0.6/Gauntlet_v0.6.0_Manifest.json releases/v0.6/Gauntlet_v0.6.0_Build_Error.txt
           git commit -m "Generate v0.6.0 canonical release data [skip ci]"
           git push origin HEAD
 
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: gauntlet-v0.6.0-canonical-data
           path: |
+            canonical-build.log
             releases/v0.6/Gauntlet_v0.6.0_Canonical_Data.json
             releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.md
             releases/v0.6/Gauntlet_v0.6.0_Manifest.json
+            releases/v0.6/Gauntlet_v0.6.0_Build_Error.txt
+          if-no-files-found: ignore

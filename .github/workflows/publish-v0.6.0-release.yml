@@ -1,0 +1,95 @@
+name: Publish Gauntlet v0.6.0
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - releases/v0.6/Gauntlet_v0.6.0_Manifest.json
+      - releases/v0.6/Gauntlet_v0.6.0_Rulebook.pdf
+      - releases/v0.6/Gauntlet_v0.6.0_All_Cards_and_Components.pdf
+      - .github/workflows/publish-v0.6.0-release.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: v0.6.0
+      RELEASE_DIR: releases/v0.6
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Verify canonical release assets
+        run: |
+          required=(
+            Gauntlet_v0.6.0_Rulebook.md
+            Gauntlet_v0.6.0_Rulebook.docx
+            Gauntlet_v0.6.0_Rulebook.pdf
+            Gauntlet_v0.6.0_Reference_Guide.md
+            Gauntlet_v0.6.0_Reference_Guide.docx
+            Gauntlet_v0.6.0_Reference_Guide.pdf
+            Gauntlet_v0.6.0_Canonical_Data.json
+            Gauntlet_v0.6.0_Manifest.json
+            Gauntlet_v0.6.0_Release_Notes.md
+            Gauntlet_v0.6.0_Changelog.md
+            Gauntlet_v0.6.0_Neutral_Cards.pdf
+            Gauntlet_v0.6.0_Territories.pdf
+            Gauntlet_v0.6.0_Military_Cards_and_Components.pdf
+            Gauntlet_v0.6.0_Diplomat_Cards_and_Components.pdf
+            Gauntlet_v0.6.0_Financier_Cards_and_Components.pdf
+            Gauntlet_v0.6.0_Intelligence_Cards_and_Components.pdf
+            Gauntlet_v0.6.0_Mystics_Cards_and_Components.pdf
+            Gauntlet_v0.6.0_Inquisition_Cards_and_Components.pdf
+            Gauntlet_v0.6.0_All_Cards_and_Components.pdf
+          )
+          for file in "${required[@]}"; do
+            test -s "$RELEASE_DIR/$file" || { echo "Missing release asset: $file" >&2; exit 1; }
+          done
+
+      - name: Build clean release archive
+        run: |
+          package="build/Gauntlet_v0.6.0"
+          mkdir -p "$package"
+          cp "$RELEASE_DIR"/README.md "$package/"
+          cp "$RELEASE_DIR"/Gauntlet_v0.6.0_* "$package/"
+          find "$package" -type f -name '*_Error.txt' -delete
+          (cd build && zip -r -9 Gauntlet_v0.6.0_Release.zip Gauntlet_v0.6.0)
+
+      - name: Publish GitHub release
+        run: |
+          assets=(
+            "$RELEASE_DIR/Gauntlet_v0.6.0_Rulebook.pdf"
+            "$RELEASE_DIR/Gauntlet_v0.6.0_Rulebook.docx"
+            "$RELEASE_DIR/Gauntlet_v0.6.0_Reference_Guide.pdf"
+            "$RELEASE_DIR/Gauntlet_v0.6.0_Canonical_Data.json"
+            "$RELEASE_DIR/Gauntlet_v0.6.0_All_Cards_and_Components.pdf"
+            "$RELEASE_DIR/Gauntlet_v0.6.0_Neutral_Cards.pdf"
+            "$RELEASE_DIR/Gauntlet_v0.6.0_Territories.pdf"
+            "$RELEASE_DIR/Gauntlet_v0.6.0_Military_Cards_and_Components.pdf"
+            "$RELEASE_DIR/Gauntlet_v0.6.0_Diplomat_Cards_and_Components.pdf"
+            "$RELEASE_DIR/Gauntlet_v0.6.0_Financier_Cards_and_Components.pdf"
+            "$RELEASE_DIR/Gauntlet_v0.6.0_Intelligence_Cards_and_Components.pdf"
+            "$RELEASE_DIR/Gauntlet_v0.6.0_Mystics_Cards_and_Components.pdf"
+            "$RELEASE_DIR/Gauntlet_v0.6.0_Inquisition_Cards_and_Components.pdf"
+            "build/Gauntlet_v0.6.0_Release.zip"
+          )
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release edit "$TAG" \
+              --target "$GITHUB_SHA" \
+              --title "Gauntlet v0.6.0 — Faction Framework Release" \
+              --notes-file "$RELEASE_DIR/Gauntlet_v0.6.0_Release_Notes.md" \
+              --prerelease
+            gh release upload "$TAG" --clobber "${assets[@]}"
+          else
+            gh release create "$TAG" \
+              --target "$GITHUB_SHA" \
+              --title "Gauntlet v0.6.0 — Faction Framework Release" \
+              --notes-file "$RELEASE_DIR/Gauntlet_v0.6.0_Release_Notes.md" \
+              --prerelease \
+              "${assets[@]}"
+          fi

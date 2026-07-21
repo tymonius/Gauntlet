@@ -6,119 +6,22 @@ const VERSION = 'v0.6.0';
 const DATE = 'July 20, 2026';
 
 const sourceSpecs = [
-  {
-    id: 'neutral',
-    name: 'Neutral',
-    path: 'docs/Gauntlet_v0.6_Neutral_Card_Pool.md',
-    start: '# Cost 1',
-    headingLevel: 2,
-    allegiance: 'Neutral'
-  },
-  {
-    id: 'military',
-    name: 'Military',
-    path: 'releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md',
-    start: '# 6. Canonical Military card pool',
-    end: '# 7. Card-pool summary',
-    headingLevel: 2,
-    allegiance: 'Military'
-  },
-  {
-    id: 'diplomats',
-    name: 'Diplomats',
-    path: 'releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md',
-    start: '# 6. Canonical card pool',
-    end: '# 7. Card-pool summary',
-    headingLevel: 2,
-    allegiance: 'Diplomats'
-  },
-  {
-    id: 'financiers',
-    name: 'Financiers',
-    path: 'releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md',
-    start: '## 6. Canonical Financier card pool',
-    end: '## 7. Card-pool summary',
-    headingLevel: 3,
-    allegiance: 'Financiers'
-  },
-  {
-    id: 'intelligence',
-    name: 'Intelligence',
-    path: 'releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md',
-    start: '# 6. Canonical Intelligence card pool',
-    end: '# 7. Card-pool summary',
-    headingLevel: 2,
-    allegiance: 'Intelligence'
-  },
-  {
-    id: 'mystics',
-    name: 'Mystics',
-    path: 'releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md',
-    start: '## 7. Canonical Mystics card pool',
-    end: '## 8. Package summary and development watchlist',
-    headingLevel: 3,
-    allegiance: 'Mystics'
-  },
-  {
-    id: 'inquisition',
-    name: 'Inquisition',
-    path: 'releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md',
-    start: '## 6. Canonical Inquisition card pool',
-    end: '## 7. Card-pool summary',
-    headingLevel: 3,
-    allegiance: 'Inquisition'
-  }
+  { id: 'neutral', name: 'Neutral', path: 'docs/Gauntlet_v0.6_Neutral_Card_Pool.md', start: '# Cost 1', headingLevel: 2, allegiance: 'Neutral' },
+  { id: 'military', name: 'Military', path: 'releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md', start: '# 6. Canonical Military card pool', end: '# 7. Card-pool summary', headingLevel: 2, allegiance: 'Military' },
+  { id: 'diplomats', name: 'Diplomats', path: 'releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md', start: '# 6. Canonical card pool', end: '# 7. Card-pool summary', headingLevel: 2, allegiance: 'Diplomats' },
+  { id: 'financiers', name: 'Financiers', path: 'releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md', start: '## 6. Canonical Financier card pool', end: '## 7. Card-pool summary', headingLevel: 3, allegiance: 'Financiers' },
+  { id: 'intelligence', name: 'Intelligence', path: 'releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md', start: '# 6. Canonical Intelligence card pool', end: '# 7. Card-pool summary', headingLevel: 2, allegiance: 'Intelligence' },
+  { id: 'mystics', name: 'Mystics', path: 'releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md', start: '## 7. Canonical Mystics card pool', end: '## 8. Package summary and development watchlist', headingLevel: 3, allegiance: 'Mystics' },
+  { id: 'inquisition', name: 'Inquisition', path: 'releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md', start: '## 6. Canonical Inquisition card pool', end: '## 7. Card-pool summary', headingLevel: 3, allegiance: 'Inquisition' }
 ];
 
 const factionMetadata = [
-  {
-    id: 'military', name: 'Military', color: 'crimson red', resource: 'Command (maximum 2)',
-    leaders: [
-      { name: 'General', image: 'images/sketches/general.png' },
-      { name: 'Commandant', image: 'images/sketches/commandant.png' }
-    ],
-    victory: 'Run the Gauntlet.'
-  },
-  {
-    id: 'diplomats', name: 'Diplomats', color: 'royal blue', resource: 'Influence (0–10)',
-    leaders: [
-      { name: 'Ambassador', image: 'images/sketches/ambassador.png' },
-      { name: 'Senator', image: 'images/sketches/senator.png' }
-    ],
-    victory: 'Run the Gauntlet or complete the Peace Treaty.'
-  },
-  {
-    id: 'financiers', name: 'Financiers', color: 'emerald green', resource: 'Capital (dynamic limit)',
-    leaders: [
-      { name: 'Banker', image: 'images/sketches/banker.png' },
-      { name: 'Executive', image: 'images/sketches/executive.png' }
-    ],
-    victory: 'Run the Gauntlet or achieve Controlling Interest.'
-  },
-  {
-    id: 'intelligence', name: 'Intelligence', color: 'charcoal/black', resource: 'Intel and Operation Progress',
-    leaders: [
-      { name: 'Ranger', image: 'images/sketches/ranger.png' },
-      { name: 'Spymaster', image: 'images/sketches/spymaster.png' }
-    ],
-    victory: 'Run the Gauntlet or complete a Special Operation.'
-  },
-  {
-    id: 'mystics', name: 'Mystics', color: 'deep violet', resource: null,
-    leaders: [
-      { name: 'Alchemist', image: 'images/sketches/alchemist.png' },
-      { name: 'Spirit Walker', image: 'images/sketches/spirit walker.png' }
-    ],
-    victory: 'Run the Gauntlet or complete Ritual.'
-  },
-  {
-    id: 'inquisition', name: 'Inquisition', color: 'antique gold/ochre', resource: 'Conviction (maximum 4)',
-    leaders: [
-      { name: 'Grand Inquisitor', image: 'images/sketches/grand inquisitor.png' },
-      { name: 'Witch Hunter', image: 'images/sketches/witch hunter.png' }
-    ],
-    victory: 'Run the Gauntlet or achieve Purification.'
-  }
+  { id: 'military', name: 'Military', color: 'crimson red', resource: 'Command (maximum 2)', leaders: [{ name: 'General', image: 'images/sketches/general.png' }, { name: 'Commandant', image: 'images/sketches/commandant.png' }], victory: 'Run the Gauntlet.' },
+  { id: 'diplomats', name: 'Diplomats', color: 'royal blue', resource: 'Influence (0–10)', leaders: [{ name: 'Ambassador', image: 'images/sketches/ambassador.png' }, { name: 'Senator', image: 'images/sketches/senator.png' }], victory: 'Run the Gauntlet or complete the Peace Treaty.' },
+  { id: 'financiers', name: 'Financiers', color: 'emerald green', resource: 'Capital (dynamic limit)', leaders: [{ name: 'Banker', image: 'images/sketches/banker.png' }, { name: 'Executive', image: 'images/sketches/executive.png' }], victory: 'Run the Gauntlet or achieve Controlling Interest.' },
+  { id: 'intelligence', name: 'Intelligence', color: 'charcoal/black', resource: 'Intel and Operation Progress', leaders: [{ name: 'Ranger', image: 'images/sketches/ranger.png' }, { name: 'Spymaster', image: 'images/sketches/spymaster.png' }], victory: 'Run the Gauntlet or complete a Special Operation.' },
+  { id: 'mystics', name: 'Mystics', color: 'deep violet', resource: null, leaders: [{ name: 'Alchemist', image: 'images/sketches/alchemist.png' }, { name: 'Spirit Walker', image: 'images/sketches/spirit walker.png' }], victory: 'Run the Gauntlet or complete Ritual.' },
+  { id: 'inquisition', name: 'Inquisition', color: 'antique gold/ochre', resource: 'Conviction (maximum 4)', leaders: [{ name: 'Grand Inquisitor', image: 'images/sketches/grand inquisitor.png' }, { name: 'Witch Hunter', image: 'images/sketches/witch hunter.png' }], victory: 'Run the Gauntlet or achieve Purification.' }
 ];
 
 function read(relativePath) {
@@ -159,13 +62,19 @@ function parseEffects(block) {
       effects.push(current);
       continue;
     }
-    if (!current) continue;
+
+    if (!line && !current) continue;
+    if (!current) {
+      current = { label: 'Rule', text: '' };
+      effects.push(current);
+    }
+
     const cleaned = line.replace(/^[-*]\s+/, '• ');
-    if (!cleaned && current.text.endsWith('\n')) continue;
+    if (!cleaned && !current.text) continue;
     current.text += `${current.text ? '\n' : ''}${cleaned}`;
   }
 
-  return effects.map(effect => ({ ...effect, text: effect.text.trim() }));
+  return effects.map(effect => ({ ...effect, text: effect.text.trim() })).filter(effect => effect.text);
 }
 
 function parseCards(spec) {
@@ -262,29 +171,23 @@ function validate(cards, territories) {
 
 function buildReference(data) {
   const lines = [
-    '# Gauntlet v0.6.0 Reference Guide',
-    '',
-    '## Setup',
-    '',
+    '# Gauntlet v0.6.0 Reference Guide', '',
+    '## Setup', '',
     '1. Shuffle the Playable Deck to form the Draw Pile.',
     '2. Secretly arrange three Territories.',
     '3. Join both Territory lines and reveal all six.',
     '4. Prepare the Leader and supplemental components.',
     '5. Place the Player Token before that player’s end of the Gauntlet.',
     '6. Draw three cards.',
-    '7. Roll to determine the first player; reroll ties.',
-    '',
-    '## Turn',
-    '',
+    '7. Roll to determine the first player; reroll ties.', '',
+    '## Turn', '',
     '1. Capture a Territory occupied but not controlled.',
     '2. Draw one card.',
     '3. Use the Action Opportunity before movement, if desired.',
     '4. Advance, hold, or withdraw; resolve any battle.',
     '5. Use the Action Opportunity after movement if the first was unused.',
-    '6. Resolve end-of-turn effects and discard down to three cards.',
-    '',
-    '## Battle',
-    '',
+    '6. Resolve end-of-turn effects and discard down to three cards.', '',
+    '## Battle', '',
     '1. Resolve begin-battle effects.',
     '2. Attacker commits from hand or declines; defender does the same.',
     '3. Attacker forms a Battle Hand and chooses a card or declines; defender does the same.',
@@ -293,33 +196,24 @@ function buildReference(data) {
     '6. Roll battle dice; combine advantage and disadvantage, rerolls, and modifiers.',
     '7. Determine the winner; apply Defender’s Advantage where applicable.',
     '8. Resolve retreat and occupation.',
-    '9. Put hand commitments in the Graveyard and all Battle Hand cards in the Discard Pile unless stated otherwise.',
-    '',
-    '## Running the Gauntlet',
-    '',
+    '9. Put hand commitments in the Graveyard and all Battle Hand cards in the Discard Pile unless stated otherwise.', '',
+    '## Running the Gauntlet', '',
     '1. Win on the opponent’s final Territory.',
     '2. The opponent retreats beyond the Gauntlet; occupy the final Territory.',
     '3. Capture it at the start of the next turn if still occupied.',
     '4. Advance beyond it to initiate the opponent’s Last Stand.',
     '5. The defender has Defender’s Advantage and +1.',
-    '6. Win the Last Stand to run the Gauntlet and win.',
-    '',
-    '## Factions',
-    '',
+    '6. Win the Last Stand to run the Gauntlet and win.', '',
+    '## Factions', '',
     '| Faction | Resource / Progression | Victory | Leaders |',
     '|---|---|---|---|',
-    ...data.factions.map(faction => `| ${faction.name} | ${faction.resource ?? 'Three Rites; no resource'} | ${faction.victory} | ${faction.leaders.map(leader => leader.name).join(', ')} |`),
-    '',
-    '## Card Pool',
-    '',
+    ...data.factions.map(faction => `| ${faction.name} | ${faction.resource ?? 'Three Rites; no resource'} | ${faction.victory} | ${faction.leaders.map(leader => leader.name).join(', ')} |`), '',
+    '## Card Pool', '',
     '| Pool | Cards | Total value | Unique cards |',
     '|---|---:|---:|---|',
-    ...Object.entries(data.card_pool_summary).map(([pool, summary]) => `| ${pool} | ${summary.count} | ${summary.total_value} | ${summary.unique.join(', ') || 'None'} |`),
-    '',
-    '## Territory Pool',
-    '',
-    ...data.territories.map(territory => `- **${territory.name}**${territory.arena ? ' *(Arena)*' : ''}: ${territory.text.replace(/\n/g, ' ')}`),
-    '',
+    ...Object.entries(data.card_pool_summary).map(([pool, summary]) => `| ${pool} | ${summary.count} | ${summary.total_value} | ${summary.unique.join(', ') || 'None'} |`), '',
+    '## Territory Pool', '',
+    ...data.territories.map(territory => `- **${territory.name}**${territory.arena ? ' *(Arena)*' : ''}: ${territory.text.replace(/\n/g, ' ')}`), '',
     `Generated from the canonical v0.6.0 sources on ${DATE}.`
   ];
   return `${lines.join('\n')}\n`;
@@ -344,16 +238,7 @@ const canonical = {
   name: 'Faction Framework Release',
   date: DATE,
   status: 'Canonical pre-release edition',
-  deck_construction: {
-    minimum_playable_cards: 30,
-    maximum_deckbuilding_value: 60,
-    opening_hand: 3,
-    hand_limit: 3,
-    territories_per_player: 3,
-    maximum_arenas: 1,
-    factions_per_deck: 1,
-    leaders_per_deck: 1
-  },
+  deck_construction: { minimum_playable_cards: 30, maximum_deckbuilding_value: 60, opening_hand: 3, hand_limit: 3, territories_per_player: 3, maximum_arenas: 1, factions_per_deck: 1, leaders_per_deck: 1 },
   battlefield: {
     gauntlet: 'Six Territory Cards arranged in one column.',
     starting_position: 'Each Player Token begins immediately before that player’s end of the Gauntlet.',
@@ -369,11 +254,7 @@ const canonical = {
     battle_hand_destination: 'Discard Pile',
     defender_advantage: 'The defending player wins tied battle totals when defending a Territory they control or during their Last Stand.'
   },
-  factions: factionMetadata.map(faction => ({
-    ...faction,
-    card_count: counts[faction.name],
-    source: sourceSpecs.find(spec => spec.id === faction.id)?.path
-  })),
+  factions: factionMetadata.map(faction => ({ ...faction, card_count: counts[faction.name], source: sourceSpecs.find(spec => spec.id === faction.id)?.path })),
   card_pool_summary: cardPoolSummary,
   cards,
   territories,
@@ -399,12 +280,7 @@ fs.writeFileSync(path.join(releaseDir, 'Gauntlet_v0.6.0_Manifest.json'), `${JSON
   arenas: territories.filter(t => t.arena).length,
   factions: factionMetadata.length,
   leaders: factionMetadata.reduce((sum, faction) => sum + faction.leaders.length, 0),
-  outputs: [
-    'Gauntlet_v0.6.0_Rulebook.md',
-    'Gauntlet_v0.6.0_Reference_Guide.md',
-    'Gauntlet_v0.6.0_Canonical_Data.json',
-    'Gauntlet_v0.6.0_Manifest.json'
-  ]
+  outputs: ['Gauntlet_v0.6.0_Rulebook.md', 'Gauntlet_v0.6.0_Reference_Guide.md', 'Gauntlet_v0.6.0_Canonical_Data.json', 'Gauntlet_v0.6.0_Manifest.json']
 }, null, 2)}\n`);
 
 console.log(`Generated ${cards.length} cards, ${territories.length} Territories, ${factionMetadata.length} factions, and ${factionMetadata.reduce((sum, faction) => sum + faction.leaders.length, 0)} Leaders.`);

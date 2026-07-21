@@ -1,0 +1,85 @@
+name: Render v0.6.0 documents
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - releases/v0.6/Gauntlet_v0.6.0_Rulebook.md
+      - releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.md
+      - releases/v0.6/rulebook.css
+      - images/sketches/**
+      - images/qr/**
+      - scripts/prepare-v0.6-markdown.py
+      - scripts/create-v0.6-reference-docx.py
+      - scripts/pagebreak.lua
+      - scripts/make-pdf-contact-sheets.py
+      - scripts/render-v0.6.0-documents.sh
+      - scripts/commit-generated-files.mjs
+      - .github/workflows/render-v0.6.0-documents.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Install document tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pandoc poppler-utils fonts-noto-core fonts-noto-extra
+          python3 -m pip install --upgrade pip
+          python3 -m pip install python-docx weasyprint Pillow
+
+      - name: Render and validate documents
+        run: |
+          set +e
+          bash scripts/render-v0.6.0-documents.sh > document-build.log 2>&1
+          status=$?
+          cat document-build.log
+          if [ "$status" -ne 0 ]; then
+            cp document-build.log releases/v0.6/Gauntlet_v0.6.0_Document_Build_Error.txt
+            node scripts/commit-generated-files.mjs \
+              "Record v0.6.0 document build error [skip ci]" -- \
+              releases/v0.6/Gauntlet_v0.6.0_Document_Build_Error.txt || true
+            exit "$status"
+          fi
+
+      - name: Commit rendered documents
+        run: |
+          rm -f releases/v0.6/Gauntlet_v0.6.0_Document_Build_Error.txt
+          set +e
+          node scripts/commit-generated-files.mjs \
+            "Render v0.6.0 rulebook and reference guide [skip ci]" -- \
+            releases/v0.6/Gauntlet_v0.6.0_Rulebook.docx \
+            releases/v0.6/Gauntlet_v0.6.0_Rulebook.pdf \
+            releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.docx \
+            releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.pdf \
+            releases/v0.6/Gauntlet_v0.6.0_Document_Build_Error.txt \
+            > document-commit.log 2>&1
+          status=$?
+          cat document-commit.log
+          exit "$status"
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gauntlet-v0.6.0-documents
+          path: |
+            document-build.log
+            document-commit.log
+            releases/v0.6/Gauntlet_v0.6.0_Rulebook.docx
+            releases/v0.6/Gauntlet_v0.6.0_Rulebook.pdf
+            releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.docx
+            releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.pdf
+            releases/v0.6/Gauntlet_v0.6.0_Document_Build_Error.txt
+            build/v0.6.0/validation/*contact*.png
+          if-no-files-found: ignore
