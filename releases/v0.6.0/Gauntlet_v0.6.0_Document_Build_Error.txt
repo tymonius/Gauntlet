@@ -2,4 +2,6 @@ build/v0.6.0/reference.docx
 [WARNING] Could not convert image images/qr/gauntlet-v0.6-deckbuilder.svg: "check that rsvg-convert is in path.\nrsvg-convert: createProcess: posix_spawnp: does not exist (No such file or directory)"
 WARNING: Ignored `overflow-x: auto` at 5:28, unknown property.
 WARNING: Ignored `overflow-x: auto` at 5:28, unknown property.
-Unexpected rulebook page count: 23
+Booklet imposition: 32 content pages + 0 padding pages = 32 booklet pages / 16 imposed sheet sides.
+WARNING: Ignored `overflow-x: auto` at 5:28, unknown property.
+Booklet page 14 is suspiciously sparse (48 non-whitespace characters).
