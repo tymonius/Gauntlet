@@ -6,8 +6,8 @@ The code is preserved because it contains useful architecture, state-transition 
 
 Current references:
 
-- `releases/v0.6/Gauntlet_v0.6.0_Rulebook.md`
-- `releases/v0.6/Gauntlet_v0.6.0_Canonical_Data.json`
+- `releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md`
+- `releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json`
 - `docs/Gauntlet_Digital_Roadmap.md`
 - `docs/Gauntlet_Playtest_Targets_and_Metrics.md`
 

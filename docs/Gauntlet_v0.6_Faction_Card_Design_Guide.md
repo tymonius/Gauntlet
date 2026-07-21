@@ -5,11 +5,11 @@
 
 This document should be used alongside:
 
-- the [official v0.6.0 rulebook](../releases/v0.6/Gauntlet_v0.6.0_Rulebook.md) for shared rules;
-- the [definitive faction guides](../releases/v0.6/faction-guides/) for current faction mechanics, Leaders, components, and exact faction-card text;
+- the [official v0.6.0 rulebook](../releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md) for shared rules;
+- the [definitive faction guides](../releases/v0.6.0/faction-guides/) for current faction mechanics, Leaders, components, and exact faction-card text;
 - [Gauntlet Design Principles and Guardrails](Gauntlet_Design_Principles_and_Guardrails.md) for broader design constraints;
 - [Gauntlet Development Status](Gauntlet_Development_Status.md) for the current testing watchlist; and
-- the generated [canonical data](../releases/v0.6/Gauntlet_v0.6.0_Canonical_Data.json) for current pool counts and metadata.
+- the generated [canonical data](../releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json) for current pool counts and metadata.
 
 Exact card text belongs in the governing faction guide once approved. This document defines how new faction cards and future package revisions should be evaluated; it is not an alternate card source.
 

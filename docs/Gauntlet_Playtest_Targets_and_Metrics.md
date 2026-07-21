@@ -3,7 +3,7 @@
 **Status:** Active v0.6.0 testing standard.  
 **Purpose:** Define what to record, what healthy play should look like, and what evidence is required before changing canonical rules or card text.
 
-Use this document with the [official v0.6.0 rulebook](../releases/v0.6/Gauntlet_v0.6.0_Rulebook.md) and [Development Status](Gauntlet_Development_Status.md).
+Use this document with the [official v0.6.0 rulebook](../releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md) and [Development Status](Gauntlet_Development_Status.md).
 
 ---
 

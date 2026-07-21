@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const ROOT = process.cwd();
-const DATA = JSON.parse(fs.readFileSync(path.join(ROOT, 'releases/v0.6/Gauntlet_v0.6.0_Canonical_Data.json'), 'utf8'));
+const DATA = JSON.parse(fs.readFileSync(path.join(ROOT, 'releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json'), 'utf8'));
 const OUT = path.join(ROOT, 'build/v0.6.0/cards');
 fs.mkdirSync(OUT, { recursive: true });
 

@@ -5,33 +5,33 @@ const SOURCES = {
   },
   military: {
     label: "Military",
-    path: "../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md",
+    path: "../releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md",
     start: "# 6. Canonical Military card pool",
     end: "# 7. Card-pool summary"
   },
   diplomats: {
     label: "Diplomats",
-    path: "../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md",
+    path: "../releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md",
     start: "# 6. Canonical card pool",
     end: "# 7. Card-pool summary"
   },
   inquisition: {
     label: "Inquisition",
-    path: "../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md",
+    path: "../releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md",
     start: "## 6. Canonical Inquisition card pool",
     end: "## 7. Card-pool summary",
     headingLevel: 3
   },
   financiers: {
     label: "Financiers",
-    path: "../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md",
+    path: "../releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md",
     start: "## 6. Canonical Financier card pool",
     end: "## 7. Card-pool summary",
     headingLevel: 3
   },
   intelligence: {
     label: "Intelligence",
-    path: "../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md",
+    path: "../releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md",
     start: "# 6. Canonical Intelligence card pool",
     end: "# 7. Card-pool summary"
   }

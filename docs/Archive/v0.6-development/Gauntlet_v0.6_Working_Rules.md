@@ -408,7 +408,7 @@ At the start of the Diplomat's turn, after captures, if at least **five differen
 
 The definitive source for all Diplomat-specific rules and player-facing text is:
 
-- `../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`
+- `../releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`
 
 The adjacent DOCX and PDF are release-formatted editions. That guide governs Influence, Terms, Leverage, Treaty Articles, Peace Treaty, Ambassador, Senator, Proposal and reference components, the sliding Influence tracker, strategy, terminology, and the canonical twelve-card Diplomat pool. General rules in this document still apply unless the definitive faction guide specifically overrides them.
 
@@ -418,7 +418,7 @@ The adjacent DOCX and PDF are release-formatted editions. That guide governs Inf
 
 The definitive source for all Inquisition-specific rules and player-facing text is:
 
-- `../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`
+- `../releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`
 
 The adjacent DOCX and PDF are release-formatted editions. That guide governs Conviction, Condemnation, Blasphemy, Purge, Purification, Grand Inquisitor, Witch Hunter, the sliding Conviction tracker, reference components, strategy, terminology, and the canonical twelve-card Inquisition pool. General rules in this document still apply unless the definitive faction guide specifically overrides them.
 
@@ -428,7 +428,7 @@ The adjacent DOCX and PDF are release-formatted editions. That guide governs Con
 
 The definitive source for all Mystics-specific rules and player-facing text is:
 
-- `../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`
+- `../releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`
 
 The adjacent DOCX and PDF are release-formatted editions. That guide governs Rites, Ritual victory, Invocation, Transmutation, bound cards, Alchemist, Spirit Walker, supplemental components, strategy, terminology, and the canonical twelve-card Mystics pool. General rules in this document still apply unless the definitive faction guide specifically overrides them.
 
@@ -436,7 +436,7 @@ The adjacent DOCX and PDF are release-formatted editions. That guide governs Rit
 
 ## 13. Financiers
 
-**Definitive faction source:** `../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`  
+**Definitive faction source:** `../releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`  
 **Identity:** Treasury, investment, ownership, Capital, leverage, and delayed payoff.  
 **Resource:** Capital. Capital cannot fall below 0.
 
@@ -532,7 +532,7 @@ Treat it as occupied but not controlled for cost. Normal buyout premiums apply. 
 **Identity:** information, preparation, hidden objectives, tactical disruption, and a coordinated Special Operation.  
 **Resources:** Intel and Operation Progress.
 
-**Definitive faction source:** `../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`. It governs Intelligence player-facing rules, leaders, components, strategy, terminology, and exact card text. This section remains the development integration summary.
+**Definitive faction source:** `../releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`. It governs Intelligence player-facing rules, leaders, components, strategy, terminology, and exact card text. This section remains the development integration summary.
 
 Intel starts at 0, cannot fall below 0, and currently has no maximum.
 

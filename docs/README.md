@@ -2,17 +2,17 @@
 
 This directory contains the active design, testing, setting, and source-card documents for Gauntlet.
 
-For the current playable release, begin with the [v0.6.0 release package](../releases/v0.6/README.md), not with a development document in this directory.
+For the current playable release, begin with the [v0.6.0 release package](../releases/v0.6.0/README.md), not with a development document in this directory.
 
 ## Canonical v0.6.0 sources
 
 These files govern the current game:
 
-1. [Official Rulebook](../releases/v0.6/Gauntlet_v0.6.0_Rulebook.md) — shared rules.
-2. [Definitive faction guides](../releases/v0.6/faction-guides/) — faction rules, Leaders, supplemental components, and exact faction-card text.
+1. [Official Rulebook](../releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md) — shared rules.
+2. [Definitive faction guides](../releases/v0.6.0/faction-guides/) — faction rules, Leaders, supplemental components, and exact faction-card text.
 3. [Neutral Card Pool](Gauntlet_v0.6_Neutral_Card_Pool.md) — exact Neutral-card text.
 4. [Territory Pool](Gauntlet_v0.6_Territory_Pool.md) — exact Territory and Arena text.
-5. [Canonical Data](../releases/v0.6/Gauntlet_v0.6.0_Canonical_Data.json) — generated structured data; do not edit independently.
+5. [Canonical Data](../releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json) — generated structured data; do not edit independently.
 
 When a derived PDF, printable sheet, deckbuilder entry, or digital implementation conflicts with these sources, correct the governing source and regenerate the derived artifact.
 

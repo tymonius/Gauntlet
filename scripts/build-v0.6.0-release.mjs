@@ -7,12 +7,12 @@ const DATE = 'July 20, 2026';
 
 const sourceSpecs = [
   { id: 'neutral', name: 'Neutral', path: 'docs/Gauntlet_v0.6_Neutral_Card_Pool.md', start: '# Cost 1', headingLevel: 2, allegiance: 'Neutral' },
-  { id: 'military', name: 'Military', path: 'releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md', start: '# 6. Canonical Military card pool', end: '# 7. Card-pool summary', headingLevel: 2, allegiance: 'Military' },
-  { id: 'diplomats', name: 'Diplomats', path: 'releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md', start: '# 6. Canonical card pool', end: '# 7. Card-pool summary', headingLevel: 2, allegiance: 'Diplomats' },
-  { id: 'financiers', name: 'Financiers', path: 'releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md', start: '## 6. Canonical Financier card pool', end: '## 7. Card-pool summary', headingLevel: 3, allegiance: 'Financiers' },
-  { id: 'intelligence', name: 'Intelligence', path: 'releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md', start: '# 6. Canonical Intelligence card pool', end: '# 7. Card-pool summary', headingLevel: 2, allegiance: 'Intelligence' },
-  { id: 'mystics', name: 'Mystics', path: 'releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md', start: '## 7. Canonical Mystics card pool', end: '## 8. Package summary and development watchlist', headingLevel: 3, allegiance: 'Mystics' },
-  { id: 'inquisition', name: 'Inquisition', path: 'releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md', start: '## 6. Canonical Inquisition card pool', end: '## 7. Card-pool summary', headingLevel: 3, allegiance: 'Inquisition' }
+  { id: 'military', name: 'Military', path: 'releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md', start: '# 6. Canonical Military card pool', end: '# 7. Card-pool summary', headingLevel: 2, allegiance: 'Military' },
+  { id: 'diplomats', name: 'Diplomats', path: 'releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md', start: '# 6. Canonical card pool', end: '# 7. Card-pool summary', headingLevel: 2, allegiance: 'Diplomats' },
+  { id: 'financiers', name: 'Financiers', path: 'releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md', start: '## 6. Canonical Financier card pool', end: '## 7. Card-pool summary', headingLevel: 3, allegiance: 'Financiers' },
+  { id: 'intelligence', name: 'Intelligence', path: 'releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md', start: '# 6. Canonical Intelligence card pool', end: '# 7. Card-pool summary', headingLevel: 2, allegiance: 'Intelligence' },
+  { id: 'mystics', name: 'Mystics', path: 'releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md', start: '## 7. Canonical Mystics card pool', end: '## 8. Package summary and development watchlist', headingLevel: 3, allegiance: 'Mystics' },
+  { id: 'inquisition', name: 'Inquisition', path: 'releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md', start: '## 6. Canonical Inquisition card pool', end: '## 7. Card-pool summary', headingLevel: 3, allegiance: 'Inquisition' }
 ];
 
 const factionMetadata = [
@@ -259,14 +259,14 @@ const canonical = {
   cards,
   territories,
   source_files: {
-    rulebook: 'releases/v0.6/Gauntlet_v0.6.0_Rulebook.md',
+    rulebook: 'releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md',
     neutral: sourceSpecs[0].path,
     territories: 'docs/Gauntlet_v0.6_Territory_Pool.md',
     factions: Object.fromEntries(sourceSpecs.slice(1).map(spec => [spec.id, spec.path]))
   }
 };
 
-const releaseDir = path.join(ROOT, 'releases/v0.6');
+const releaseDir = path.join(ROOT, 'releases/v0.6.0');
 fs.mkdirSync(releaseDir, { recursive: true });
 fs.writeFileSync(path.join(releaseDir, 'Gauntlet_v0.6.0_Canonical_Data.json'), `${JSON.stringify(canonical, null, 2)}\n`);
 fs.writeFileSync(path.join(releaseDir, 'Gauntlet_v0.6.0_Reference_Guide.md'), buildReference(canonical));

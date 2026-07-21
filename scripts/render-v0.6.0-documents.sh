@@ -3,7 +3,7 @@ set -euo pipefail
 
 ROOT="$(pwd)"
 BUILD="$ROOT/build/v0.6.0"
-RELEASE="$ROOT/releases/v0.6"
+RELEASE="$ROOT/releases/v0.6.0"
 VALIDATION="$BUILD/validation"
 
 mkdir -p "$BUILD" "$VALIDATION"

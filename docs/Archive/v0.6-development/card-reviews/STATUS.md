@@ -21,12 +21,12 @@ The 122 current designs comprise 50 Neutral and 12 for each of Military, Diploma
 ## Active sources
 
 1. `../Gauntlet_v0.6_Neutral_Card_Pool.md`
-2. `../../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md` — definitive Military rules and exact card pool
-3. `../../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md` — definitive Diplomat rules and exact card pool
-4. `../../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` — definitive Inquisition rules and exact card pool
-5. `../../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` — definitive Financier rules and exact card pool
-6. `../../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md` — definitive Intelligence rules, leaders, components, Missions, strategy, and exact card pool
-7. `../../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` — definitive Mystics rules and exact card pool
+2. `../../releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md` — definitive Military rules and exact card pool
+3. `../../releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md` — definitive Diplomat rules and exact card pool
+4. `../../releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` — definitive Inquisition rules and exact card pool
+5. `../../releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` — definitive Financier rules and exact card pool
+6. `../../releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md` — definitive Intelligence rules, leaders, components, Missions, strategy, and exact card pool
+7. `../../releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` — definitive Mystics rules and exact card pool
 8. `../Gauntlet_v0.6_Card_Metadata.md`
 9. `COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`
 10. `../Gauntlet_v0.6_Card_Review_Log.md`
@@ -72,7 +72,7 @@ The active source set includes:
 - **War Crimes** is Military.
 - **Militias** and **Patriotism** are retired.
 - **Standing Orders** is deferred.
-- The definitive source is `releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`, with matching release DOCX and PDF.
+- The definitive source is `releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`, with matching release DOCX and PDF.
 
 ### Diplomats
 
@@ -81,7 +81,7 @@ The active source set includes:
 - **Sanctions: Censure, Sanctions: Embargo, and Sanctions: Blockade** are the Sanctions.
 - **Cordiality** is the Ambassador ability.
 - **Recognition of Claims** is archived.
-- The definitive source is `releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`, with matching release DOCX and PDF.
+- The definitive source is `releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`, with matching release DOCX and PDF.
 
 ### Inquisition
 
@@ -91,7 +91,7 @@ The active source set includes:
 - **Divine Mercy, Tyranny, and Burning at the Stake** are the primary balance watchlist.
 - Player-facing card text has received a concision pass without mechanical changes.
 - The physical package uses a sliding 0–4 Conviction tracker beneath the selected leader. No token or marker is used.
-- The definitive source is `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`, with matching release DOCX and PDF.
+- The definitive source is `releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`, with matching release DOCX and PDF.
 
 ### Mystics
 
@@ -103,7 +103,7 @@ The active source set includes:
 - The supplemental set uses one selected leader, one Mystics Reference, and three double-sided Rite cards. No token or resource tracker is used.
 - `faction-sheets/mystics.html` is the three-sheet printable package with incomplete Rite fronts and mirrored completed backs.
 - The v0.6 deckbuilder reads the definitive Mystics guide at runtime and includes both leaders, the reference, and all three duplex Rite pairs in its component and Print / PDF output.
-- The definitive source is `releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`, with matching release DOCX and PDF prepared from that source.
+- The definitive source is `releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`, with matching release DOCX and PDF prepared from that source.
 
 ### Financiers
 
@@ -112,7 +112,7 @@ The active source set includes:
 - **Corner the Market** is the Unique cost-5 statement card.
 - Deed base costs and Financier-mirror buyout premiums stop scaling after 6.
 - Manifest Destiny Territories have normal Deeds and expand Controlling Interest.
-- The definitive source is `releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`, with matching release DOCX and PDF.
+- The definitive source is `releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`, with matching release DOCX and PDF.
 - `faction-sheets/financier.html` is the three-sheet printable package using Banker, Executive, the Financier Reference, a public Capital Tracker, eight full-size generic Deed Cards, and dedicated leader-card crops.
 
 ### Intelligence
@@ -123,7 +123,7 @@ The active source set includes:
 - **Treason** is cost 4 rather than the faction capstone.
 - **Sleeper Network** is the Unique cost-5 statement card.
 - **Spies, Fog of War, Disinformation, Deep Cover, and Sleeper Network** are the initial package watchlist.
-- The definitive source is `releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`, with matching release DOCX and PDF.
+- The definitive source is `releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`, with matching release DOCX and PDF.
 - The physical package uses Ranger, Spymaster, two references, and a dual Intel / Operation Progress tracker with two cut-out markers.
 
 ---

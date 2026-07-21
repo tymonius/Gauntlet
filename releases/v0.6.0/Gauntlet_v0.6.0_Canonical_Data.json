@@ -49,7 +49,7 @@
       ],
       "victory": "Run the Gauntlet.",
       "card_count": 12,
-      "source": "releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
     },
     {
       "id": "diplomats",
@@ -68,7 +68,7 @@
       ],
       "victory": "Run the Gauntlet or complete the Peace Treaty.",
       "card_count": 12,
-      "source": "releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
     },
     {
       "id": "financiers",
@@ -87,7 +87,7 @@
       ],
       "victory": "Run the Gauntlet or achieve Controlling Interest.",
       "card_count": 12,
-      "source": "releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
     },
     {
       "id": "intelligence",
@@ -106,7 +106,7 @@
       ],
       "victory": "Run the Gauntlet or complete a Special Operation.",
       "card_count": 12,
-      "source": "releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
     },
     {
       "id": "mystics",
@@ -125,7 +125,7 @@
       ],
       "victory": "Run the Gauntlet or complete Ritual.",
       "card_count": 12,
-      "source": "releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
     },
     {
       "id": "inquisition",
@@ -144,7 +144,7 @@
       ],
       "victory": "Run the Gauntlet or achieve Purification.",
       "card_count": 12,
-      "source": "releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
     }
   ],
   "card_pool_summary": {
@@ -1553,7 +1553,7 @@
       "action": "Bank this as an Asset. After you win a battle in which you used no Orders, you may discard it to gain 1 Command.",
       "battle": "If you win this battle and used no Orders in it, gain 1 Command.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
     },
     {
       "id": "military-battlefield-promotion",
@@ -1578,7 +1578,7 @@
       "action": "During an Action Opportunity after you win a battle this turn, return one card you played from your Battle Hand in that battle from your Discard Pile to your hand.",
       "battle": "If you win, return one other card you played from your Battle Hand to your hand instead of discarding it during cleanup.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
     },
     {
       "id": "military-encampment",
@@ -1607,7 +1607,7 @@
       "action": "Place this as an Overlay on a Territory you occupy and control.",
       "battle": "If you win while defending a Territory you control, place this on it as an Overlay during cleanup.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
     },
     {
       "id": "military-rearguard",
@@ -1632,7 +1632,7 @@
       "action": "Bank this as an Asset. After you lose a battle and retreat, when your opponent would enter your position that turn using an Order or card effect, you may discard this to prevent that movement. No Command is spent; any card used returns to its owner's hand.",
       "battle": "If you lose and retreat, bank this during cleanup.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
     },
     {
       "id": "military-brothers-in-arms",
@@ -1657,7 +1657,7 @@
       "action": "Bank this as an Asset. Before cards are committed from hand in a battle involving you, you may discard this to delay your hand commitment until after both players form their Battle Hands. Then either commit one card from your hand and choose one card from your Battle Hand, revealing both face up together, or choose neither. Both Battle effects must still be able to resolve.",
       "battle": "If this is in your initial Battle Hand and you committed no card from your hand, you may choose this and also commit one card from your hand face up. Both Battle effects must still be able to resolve.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
     },
     {
       "id": "military-field-command",
@@ -1682,7 +1682,7 @@
       "action": "Bank this as an Asset. After using a 1-Command Order, you may discard this to use your Leader's other 1-Command Order once this turn, at its next legal timing, for 0 Command.",
       "battle": "After using a 1-Command Order during this battle, you may use your Leader's other 1-Command Order once this turn, at its next legal timing, for 0 Command. If you do, put this in your Graveyard after that Order resolves.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
     },
     {
       "id": "military-reserve-force",
@@ -1707,7 +1707,7 @@
       "action": "Bank this as an Asset with another card from your hand that has a Battle effect face down beneath it. After all cards in a battle involving you are revealed, you may discard this to reveal the stored card face up for its Battle effect, if that effect can still resolve. Put the stored card in your Graveyard during cleanup, or immediately if this leaves play before deployment.",
       "battle": "After all cards in the battle are revealed, you may replace this with a card from your hand whose Battle effect can still resolve. If you do, put this in your Graveyard, reveal that card face up for its Battle effect, and put that card in your Graveyard during cleanup. Otherwise, discard this during cleanup.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
     },
     {
       "id": "military-give-chase",
@@ -1736,7 +1736,7 @@
       "action": "During an Action Opportunity after you win a battle you initiated this turn, move one position toward the opponent's end of the Gauntlet. This may initiate a battle.",
       "battle": "If you win and initiated this battle, after the opponent retreats, move one position toward their end of the Gauntlet. This may initiate a battle.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
     },
     {
       "id": "military-hold-the-line",
@@ -1765,7 +1765,7 @@
       "action": "Bank this as an Asset. When a battle begins in which you defend a Territory you control, before cards are committed from hand, you may put this in your Graveyard to use the effect below.",
       "battle": "If you are defending a Territory you control, use the effect below, then put this in your Graveyard during cleanup.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
     },
     {
       "id": "military-countercharge",
@@ -1794,7 +1794,7 @@
       "action": "Bank this as an Asset. After you win a battle you did not initiate, you may put this in your Graveyard to use the effect below.",
       "battle": "If you win this battle and did not initiate it, use the effect below, then put this in your Graveyard.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
     },
     {
       "id": "military-war-crimes",
@@ -1823,7 +1823,7 @@
       "action": "Bank this as an Asset. After you win a battle, you may put this in your Graveyard to use the effect below.",
       "battle": "If you win, you may use the effect below. If you do, put this in your Graveyard during cleanup.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
     },
     {
       "id": "military-shock-and-awe",
@@ -1864,7 +1864,7 @@
       "action": "Bank this as an Asset. When you initiate a battle on an enemy-controlled Territory, before cards are committed from hand, you may put this in your Graveyard to use the effect below.",
       "battle": "If you are attacking on an enemy-controlled Territory, use the effect below, then put this in your Graveyard during cleanup.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
     },
     {
       "id": "diplomats-clemency",
@@ -1885,7 +1885,7 @@
       "action": "Choose a card in the opponent's Graveyard. They choose one:\n\n• Move it to their Discard Pile; you gain 1 Influence.\n• Leave it there; you draw one card.",
       "battle": null,
       "mission": null,
-      "source": "releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
     },
     {
       "id": "diplomats-trade-concessions",
@@ -1918,7 +1918,7 @@
       "action": null,
       "battle": "The opponent draws one card. Add +2 to your battle total.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
     },
     {
       "id": "diplomats-safe-conduct",
@@ -1939,7 +1939,7 @@
       "action": "Bank this as an Asset.\n\nWhen you would lose a battle following refused Terms, you may discard this to withdraw instead. The opponent remains in or occupies the contested position, and the battle ends without a winner.",
       "battle": null,
       "mission": null,
-      "source": "releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
     },
     {
       "id": "diplomats-neutral-observers",
@@ -1960,7 +1960,7 @@
       "action": "Bank this as an Asset.\n\nAfter Terms are refused, before either player commits a card from hand, you may discard this. The opponent first commits one card from hand face up for its Battle effect or declines to commit; then you commit normally.",
       "battle": null,
       "mission": null,
-      "source": "releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
     },
     {
       "id": "diplomats-good-faith",
@@ -1989,7 +1989,7 @@
       "action": "Bank this as an Asset.\n\nWhen you offer Terms, before the opponent accepts or refuses, you may discard this to draw one card, then reveal one card from hand and set it aside.",
       "battle": null,
       "mission": null,
-      "source": "releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
     },
     {
       "id": "diplomats-demilitarized-zone",
@@ -2010,7 +2010,7 @@
       "action": null,
       "battle": null,
       "mission": null,
-      "source": "releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
     },
     {
       "id": "diplomats-diplomatic-latitude",
@@ -2039,7 +2039,7 @@
       "action": null,
       "battle": null,
       "mission": null,
-      "source": "releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
     },
     {
       "id": "diplomats-nonbinding-resolution",
@@ -2068,7 +2068,7 @@
       "action": null,
       "battle": null,
       "mission": null,
-      "source": "releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
     },
     {
       "id": "diplomats-sanctions-censure",
@@ -2089,7 +2089,7 @@
       "action": null,
       "battle": null,
       "mission": null,
-      "source": "releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
     },
     {
       "id": "diplomats-gunboat-diplomacy",
@@ -2122,7 +2122,7 @@
       "action": null,
       "battle": "Add +2 to your battle total. After the battle, put this in your Discard Pile.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
     },
     {
       "id": "diplomats-sanctions-embargo",
@@ -2143,7 +2143,7 @@
       "action": null,
       "battle": null,
       "mission": null,
-      "source": "releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
     },
     {
       "id": "diplomats-sanctions-blockade",
@@ -2164,7 +2164,7 @@
       "action": null,
       "battle": null,
       "mission": null,
-      "source": "releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"
     },
     {
       "id": "financiers-speculation",
@@ -2189,7 +2189,7 @@
       "action": "Choose one Territory you neither control nor occupy. Place this face up beside that Territory. At the start of your next turn, if you occupy or control that Territory, gain 2 Capital and discard this. Otherwise, put this in your Graveyard.",
       "battle": "If you initiated this battle, you may spend 1 Capital. If you do and win, gain 2 Capital during battle cleanup. If you do and do not win, put this in your Graveyard instead of its normal destination.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
     },
     {
       "id": "financiers-monetary-crisis",
@@ -2214,7 +2214,7 @@
       "action": "Each player discards their hand, then draws two cards.",
       "battle": "During battle cleanup, each player with more than one card in hand chooses one of those cards and discards the rest.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
     },
     {
       "id": "financiers-liquidation",
@@ -2239,7 +2239,7 @@
       "action": "Choose one card in your Treasury and put it in your Discard Pile. Gain Capital equal to its deckbuilding value, then you may immediately buy or buy out one Deed.",
       "battle": "Before dice are rolled, you may choose one card in your Treasury and put it in your Discard Pile. If you do, gain Capital equal to its deckbuilding value, then you may immediately Subsidize.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
     },
     {
       "id": "financiers-underwriting",
@@ -2264,7 +2264,7 @@
       "action": "Bank this as an Asset. After you lose a battle in which you used Subsidize, you may discard this. If you do, gain Capital equal to the bonus you purchased.",
       "battle": "After this battle, if you lose and used Subsidize, gain Capital equal to the bonus you purchased.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
     },
     {
       "id": "financiers-capital-gains",
@@ -2289,7 +2289,7 @@
       "action": "Place this beneath one card in your Treasury. At the start of your next turn, after the Capture step and income, return that Treasury card to your hand and gain Capital equal to its deckbuilding value, then discard this. If you lose a battle before then, put both cards in your Discard Pile instead. If the chosen card leaves your Treasury before this effect resolves, discard this.",
       "battle": "During battle cleanup, if you won, choose one other card you used during this battle that would enter your Discard Pile or Graveyard. Place that card face up in your Treasury instead.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
     },
     {
       "id": "financiers-tariffs",
@@ -2318,7 +2318,7 @@
       "action": "Bank this as an Asset. Draw two cards, then take one additional Action Opportunity this turn.",
       "battle": "Your opponent may discard one card from hand. If they do not, add +1 to your battle total.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
     },
     {
       "id": "financiers-divestment",
@@ -2343,7 +2343,7 @@
       "action": "Make one Deed you own unowned. Gain Capital equal to the number of Deeds you owned before doing so, then take one additional Action Opportunity this turn.",
       "battle": "Before dice are rolled, you may make one Deed you own unowned. If you do, gain Capital equal to the number of Deeds you owned before doing so, then you may immediately Subsidize.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
     },
     {
       "id": "financiers-margin-loan",
@@ -2376,7 +2376,7 @@
       "action": "Choose one other card in your hand or Treasury and place it beneath this as collateral. Bank this as an Asset. Gain Capital equal to the collateral card's deckbuilding value plus 2, then take one additional Action Opportunity this turn.",
       "battle": "Before dice are rolled, you may place one other card from your hand or Treasury beneath this as collateral. If you do, gain Capital equal to its deckbuilding value, then you may immediately Subsidize. During battle cleanup, if you won, return the collateral card to your hand. Otherwise, put this and its collateral in your Graveyard.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
     },
     {
       "id": "financiers-leveraged-buyout",
@@ -2401,7 +2401,7 @@
       "action": "Buy or buy out one Deed. For this purchase, you may use any number of cards from your hand or Treasury as collateral. Each collateral card contributes payment equal to its deckbuilding value and is put in your Graveyard after the purchase. Collateral may pay the entire cost.",
       "battle": "During battle cleanup, if you won as the attacking player on a Territory whose Deed you do not own, you may immediately buy or buy out that Deed, treating the Territory as occupied. For this purchase, you may use any number of other cards you used in this battle as collateral. Each contributes payment equal to its deckbuilding value and is put in your Graveyard instead of its normal destination. Collateral may pay the entire cost.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
     },
     {
       "id": "financiers-foreclosure",
@@ -2426,7 +2426,7 @@
       "action": "Choose one unoccupied Territory whose Deed you own that is adjacent to a Territory you control. Take control of the chosen Territory.",
       "battle": "If you initiated this battle on a Territory whose Deed you owned when the battle began and you win, capture that Territory immediately instead of occupying it.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
     },
     {
       "id": "financiers-property-dues",
@@ -2451,7 +2451,7 @@
       "action": "Bank this as an Asset. The first time each turn your opponent advances onto a Territory whose Deed you own, they choose one: discard one card from hand, or you gain 2 Capital.",
       "battle": "If this battle takes place on a Territory whose Deed you own, your opponent chooses one: discard one card from hand, or you gain 3 Capital during battle cleanup.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
     },
     {
       "id": "financiers-corner-the-market",
@@ -2476,7 +2476,7 @@
       "action": "Buy or buy out any number of Deeds. Resolve each purchase completely before calculating the cost of the next.",
       "battle": "During battle cleanup, if you won, you may buy or buy out any number of Deeds. Resolve each purchase completely before calculating the cost of the next.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"
     },
     {
       "id": "intelligence-exfiltration",
@@ -2501,7 +2501,7 @@
       "action": "Bank this as an Asset. After you complete or abort a Mission, you may discard this. If you do, withdraw.",
       "battle": "If you lose, you may retreat one additional position.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
     },
     {
       "id": "intelligence-spies",
@@ -2530,7 +2530,7 @@
       "action": "Look at your opponent's hand. Draw one card, then discard one card.",
       "battle": "Reveal this before the other cards in the battle. Look at each opposing face-down card used in the battle. You may return your selected card to your Battle Hand and choose another eligible card from that Battle Hand face down.",
       "mission": "Complete after you look at or reveal an opposing face-down card before the normal battle reveal, then win that battle.",
-      "source": "releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
     },
     {
       "id": "intelligence-fog-of-war",
@@ -2559,7 +2559,7 @@
       "action": "Place this as an Overlay on a Territory. Remove it after the next battle fought there. During that battle, make each hand commitment and Battle Hand choice after your opponent makes the corresponding choice, regardless of who initiated the battle.",
       "battle": "Reveal this before the other cards in the battle. If your opponent used one card from hand and one card from their Battle Hand, they choose one of those cards and return it to its source. They use no card from that source.",
       "mission": "Complete after your opponent uses a card from both hand and Battle Hand in a battle involving you, then loses that battle.",
-      "source": "releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
     },
     {
       "id": "intelligence-disinformation",
@@ -2584,7 +2584,7 @@
       "action": null,
       "battle": "If you committed this from hand, reveal it before the other cards in the battle. If your opponent also committed a card from hand, gain advantage. Return this to your hand during cleanup.",
       "mission": "Complete after you win a battle in which your opponent committed a card from hand and you did not.",
-      "source": "releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
     },
     {
       "id": "intelligence-operational-reassessment",
@@ -2609,7 +2609,7 @@
       "action": "Return your Active Mission to your hand, then place another eligible Intelligence card from your hand face down as your Active Mission. It cannot complete this turn.",
       "battle": "After all cards in the battle are revealed, you may replace this with a card from your hand whose Battle effect can still resolve. If you do, put this in your Graveyard, reveal the replacement card face up for its Battle effect, and put that card in your Graveyard during cleanup.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
     },
     {
       "id": "intelligence-intercepted-orders",
@@ -2634,7 +2634,7 @@
       "action": "Bank this as an Asset. When your opponent forms their initial Battle Hand in a battle involving you, before they choose a card, you may discard this. If you do, look at that Battle Hand and choose one card. They cannot choose that card during this battle.",
       "battle": "Reveal this before the other cards in the battle. Look at your opponent's Battle Hand and choose one card. They cannot use that card during this battle. If it was their selected card, they may choose another eligible card from that Battle Hand face down.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
     },
     {
       "id": "intelligence-reconnaissance",
@@ -2663,7 +2663,7 @@
       "action": "Bank this as an Asset. When a battle you initiated begins, you may discard this to look at your opponent's hand. You may then withdraw before cards are committed from hand.",
       "battle": "Reveal this before the other cards in the battle. After the remaining cards are revealed, before any of their effects resolve, you may withdraw. If you do, return all other cards used in the battle to their sources and end the battle without a winner.",
       "mission": "Complete after you win a battle you did not initiate while occupying an enemy-controlled Territory.",
-      "source": "releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
     },
     {
       "id": "intelligence-deep-cover",
@@ -2688,7 +2688,7 @@
       "action": "Bank this as an Asset. When your Active Mission would fail, you may put this in your Graveyard. If you do, return that Mission to your hand instead.",
       "battle": "If an opposing effect looked at or revealed one of your face-down cards used in this battle before the normal reveal, gain advantage.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
     },
     {
       "id": "intelligence-assassins",
@@ -2717,7 +2717,7 @@
       "action": "Look at your opponent's hand. Choose one card from it and discard that card.",
       "battle": "Reveal this before the other cards in the battle. If your opponent committed a card from hand, reveal and negate that card. Otherwise, give your opponent disadvantage during this battle.",
       "mission": "Complete after you look at one or more cards in your opponent's hand outside a battle, then win a battle against that opponent in which they committed a card from hand.",
-      "source": "releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
     },
     {
       "id": "intelligence-treason",
@@ -2742,7 +2742,7 @@
       "action": "Bank this as an Asset. After all cards in a battle involving you are revealed, before their effects resolve, you may discard this. If you do, choose one opposing card used in the battle. Negate it, then resolve its Battle effect as though you had used it.",
       "battle": "Reveal this before the other cards in the battle. After the remaining cards are revealed, before their effects resolve, choose one opposing card used in the battle. Negate it, then resolve its Battle effect as though you had used it.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
     },
     {
       "id": "intelligence-subversion",
@@ -2771,7 +2771,7 @@
       "action": "Bank this as an Asset. When an opposing banked Asset's effect would resolve, you may put this in your Graveyard. If you do, negate that effect and discard that Asset if it remains in play.",
       "battle": "Opposing banked Assets cannot be used during this battle.",
       "mission": "Complete after you win a battle in which your opponent used a banked Asset and you used none.",
-      "source": "releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
     },
     {
       "id": "intelligence-sleeper-network",
@@ -2808,7 +2808,7 @@
       "action": "Bank this as an Asset with one other card from your hand face down beneath it. At the end of each of your later turns, you may place one other card from your hand face down beneath it.",
       "battle": null,
       "mission": null,
-      "source": "releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"
     },
     {
       "id": "mystics-dark-omens",
@@ -2833,7 +2833,7 @@
       "action": "Draw two cards, then put one of them in your Graveyard.",
       "battle": "Draw one card. You may put it in your Graveyard. If you do, gain advantage.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
     },
     {
       "id": "mystics-accursed-wager",
@@ -2858,7 +2858,7 @@
       "action": "After the next battle you initiate this turn, the losing player puts one card from their hand in their Graveyard, if able.",
       "battle": "After this battle, the losing player puts one card from their hand in their Graveyard, if able.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
     },
     {
       "id": "mystics-fate-s-toll",
@@ -2883,7 +2883,7 @@
       "action": "Put one other card from your hand in your Graveyard. Gain one additional position of movement this turn. Resolve movement one position at a time.",
       "battle": "After you roll, you may put one other card from your hand in your Graveyard to reroll. You must use the new result.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
     },
     {
       "id": "mystics-grave-ward",
@@ -2908,7 +2908,7 @@
       "action": "Bank this as an Asset. When a card enters your Graveyard, you may discard this. If you do, move that card from your Graveyard to your Discard Pile.",
       "battle": "During battle cleanup, choose one other card you committed from hand during this battle. Move it from your Graveyard to your Discard Pile.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
     },
     {
       "id": "mystics-spirit-hollow",
@@ -2937,7 +2937,7 @@
       "action": "Place this as an Overlay on your current Territory or an adjacent Territory.",
       "battle": "Place this as an Overlay on the contested Territory instead of following its normal destination.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
     },
     {
       "id": "mystics-soul-for-soul",
@@ -2962,7 +2962,7 @@
       "action": "Choose one card in your hand and one card in your Graveyard. Exchange them.",
       "battle": "During battle cleanup, after cards committed from your hand enter your Graveyard, you may exchange one card in your hand with one other card in your Graveyard that you committed from hand during this battle.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
     },
     {
       "id": "mystics-rend-the-veil",
@@ -2991,7 +2991,7 @@
       "action": "Bank this as an Asset. After all cards in a battle involving you are revealed, you may discard this. If you do, choose one card in your Graveyard whose Battle effect can resolve in this battle and does not use another card or resolve or repeat another Battle effect. Reveal the chosen card face up and resolve its Battle effect.",
       "battle": "When revealed, you may choose one card in your Graveyard whose Battle effect can resolve in this battle and does not use another card or resolve or repeat another Battle effect. Reveal the chosen card face up and resolve its Battle effect.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
     },
     {
       "id": "mystics-paths-of-shadow",
@@ -3016,7 +3016,7 @@
       "action": "Move to any Territory you control. This movement cannot initiate a battle.",
       "battle": "If you lose this battle, you may move to any Territory you control instead of retreating normally.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
     },
     {
       "id": "mystics-witchcraft",
@@ -3045,7 +3045,7 @@
       "action": "Bank this as an Asset. Once per turn, after all cards in a battle involving you are revealed, you may put one card from your hand in your Graveyard. If you do, choose one other active card you used in the battle with an eligible Battle effect. Resolve that effect one additional time.",
       "battle": "When revealed, choose one other active card you used in the battle with an eligible Battle effect. Resolve that effect one additional time. If you cannot choose one, gain advantage. During battle cleanup, put this in your Graveyard.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
     },
     {
       "id": "mystics-black-covenant",
@@ -3074,7 +3074,7 @@
       "action": "Bind one other card from your hand face down beneath this, then bank this as an Asset. While banked, you may either play the bound card for its Action effect at a legal Action timing without using your normal Action Opportunity, or commit it during a battle as an additional hand commitment. The bound card follows the normal destination for a card used from hand. After the bound card resolves, put this in your Graveyard.",
       "battle": "When revealed, you may bind one other card from your hand that has a Battle effect beneath this, then immediately commit and reveal it as an additional hand commitment. During battle cleanup, put this in your Graveyard.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
     },
     {
       "id": "mystics-circle-of-bones",
@@ -3103,7 +3103,7 @@
       "action": "Place this as an Overlay on your current Territory or an adjacent Territory.",
       "battle": "Place this as an Overlay on the contested Territory instead of following its normal destination.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
     },
     {
       "id": "mystics-necromancy",
@@ -3128,7 +3128,7 @@
       "action": "Choose one:\n\n• Place this face down beneath your Draw Pile, then draw one card.\n• Choose up to three non-Necromancy cards in your Graveyard. Put every other card in your hand in your Graveyard, then return the chosen cards to your hand. Put this in your Graveyard.",
       "battle": "During battle cleanup, after your other used cards follow their normal destinations, choose up to three non-Necromancy cards in your Graveyard. Put every card remaining in your hand in your Graveyard, then return the chosen cards to your hand. This follows its normal destination.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md"
     },
     {
       "id": "inquisition-accusation",
@@ -3153,7 +3153,7 @@
       "action": "Choose one card in the opponent's Discard Pile. They put it on top of their Draw Pile or in their Graveyard.",
       "battle": "After the battle, choose one card in the opponent's Discard Pile. They put it on top of their Draw Pile or in their Graveyard.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
     },
     {
       "id": "inquisition-confession",
@@ -3182,7 +3182,7 @@
       "action": "Look at the opponent's hand and choose one card with a Battle effect. Until the end of the turn, if they commit a card from hand in a battle involving you, they must commit the chosen card if able.",
       "battle": "After both players complete their hand commitments and Battle Hand choices, before the normal reveal, reveal this and the opponent's hand commitment, if any. You may return your own hand commitment to your hand and replace it with another eligible card from hand, revealed face up.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
     },
     {
       "id": "inquisition-penance",
@@ -3207,7 +3207,7 @@
       "action": "The opponent chooses one: put one card from hand in their Graveyard, or you gain 1 Conviction.",
       "battle": "After all cards in the battle are revealed, the opponent chooses one: put one card from hand in their Graveyard, or add +1 to your battle total.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
     },
     {
       "id": "inquisition-divine-mercy",
@@ -3232,7 +3232,7 @@
       "action": "Choose one card in the opponent's Graveyard and move it to their Discard Pile. Then gain 2 Conviction.",
       "battle": "Choose one card in the opponent's Graveyard and move it to their Discard Pile. Then add +2 to your battle total.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
     },
     {
       "id": "inquisition-no-martyrs",
@@ -3257,7 +3257,7 @@
       "action": "Bank this as an Asset. After all cards in a battle involving you are revealed, you may discard this. If you do and the opponent loses, they cannot benefit from effects they control triggered by that loss or retreat, and they retreat one additional position.",
       "battle": "If the opponent loses, they cannot benefit from effects they control triggered by that loss or retreat, and they retreat one additional position.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
     },
     {
       "id": "inquisition-excommunication",
@@ -3282,7 +3282,7 @@
       "action": "Choose one or more cards in the opponent's Discard Pile with combined deckbuilding value up to 5. Put them in their Graveyard.",
       "battle": "After the battle, choose one or more cards in the opponent's Discard Pile with combined deckbuilding value up to 3. Put them in their Graveyard.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
     },
     {
       "id": "inquisition-guilt-by-association",
@@ -3307,7 +3307,7 @@
       "action": "Choose one card in the opponent's Discard Pile. Put every card there with that title in their Graveyard.",
       "battle": "After the battle, choose one card the opponent used in that battle. Put every card in their Discard Pile with that title in their Graveyard.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
     },
     {
       "id": "inquisition-act-of-faith",
@@ -3336,7 +3336,7 @@
       "action": "Reveal up to three cards from the top of the opponent's Draw Pile. Put one in their Graveyard and the rest in their Discard Pile.",
       "battle": "After the battle, reveal up to two cards from the top of the opponent's Draw Pile. Put one in their Graveyard and the rest in their Discard Pile.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
     },
     {
       "id": "inquisition-tyranny",
@@ -3361,7 +3361,7 @@
       "action": "Bank this as an Asset. Once per turn, after all cards in a battle involving you are revealed, you may spend 1 Conviction to negate one opposing card used in the battle.",
       "battle": "Negate one opposing card used in the battle.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
     },
     {
       "id": "inquisition-burning-at-the-stake",
@@ -3390,7 +3390,7 @@
       "action": "The opponent reveals their hand. Put the card with the highest deckbuilding value in their Graveyard; choose among ties. If it has the Arcane trait, gain 1 Conviction.",
       "battle": "If the opponent loses, they reveal their hand. Put the card with the highest deckbuilding value in their Graveyard; choose among ties. If it has the Arcane trait, gain 1 Conviction.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
     },
     {
       "id": "inquisition-heresy",
@@ -3411,7 +3411,7 @@
       "action": null,
       "battle": "You may spend 4 Conviction to choose one card in the opponent's Graveyard and resolve its Battle effect as though you had used it. That effect may resolve one additional Battle effect; the additional effect cannot resolve another.\n\nThe chosen card remains in the opponent's Graveyard.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
     },
     {
       "id": "inquisition-hellfire",
@@ -3440,7 +3440,7 @@
       "action": "Spend any amount of Conviction. Put that many cards from the top of the opponent's Draw Pile in their Graveyard.",
       "battle": "After all cards in the battle are revealed, spend any amount of Conviction. For each Conviction spent, choose one: add +1 to your battle total; or, if you win, after the battle put the top card of the opponent's Draw Pile in their Graveyard. You may choose either option more than once.",
       "mission": null,
-      "source": "releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
+      "source": "releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
     }
   ],
   "territories": [
@@ -3671,16 +3671,16 @@
     }
   ],
   "source_files": {
-    "rulebook": "releases/v0.6/Gauntlet_v0.6.0_Rulebook.md",
+    "rulebook": "releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md",
     "neutral": "docs/Gauntlet_v0.6_Neutral_Card_Pool.md",
     "territories": "docs/Gauntlet_v0.6_Territory_Pool.md",
     "factions": {
-      "military": "releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md",
-      "diplomats": "releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md",
-      "financiers": "releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md",
-      "intelligence": "releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md",
-      "mystics": "releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md",
-      "inquisition": "releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
+      "military": "releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md",
+      "diplomats": "releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md",
+      "financiers": "releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md",
+      "intelligence": "releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md",
+      "mystics": "releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md",
+      "inquisition": "releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md"
     }
   }
 }

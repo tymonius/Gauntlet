@@ -6,7 +6,7 @@ Current work should begin with:
 
 - [Documentation Index](../README.md)
 - [Development Status](../Gauntlet_Development_Status.md)
-- [v0.6.0 Release Package](../../releases/v0.6/README.md)
+- [v0.6.0 Release Package](../../releases/v0.6.0/README.md)
 
 ## Archive groups
 
