@@ -6,8 +6,10 @@ on:
     paths:
       - releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md
       - releases/v0.6.0/Gauntlet_v0.6.0_Reference_Guide.md
+      - releases/v0.6.0/rulebook-colophon.md
       - releases/v0.6.0/rulebook.css
       - releases/v0.6.0/rulebook-section-layout.css
+      - releases/v0.6.0/rulebook-colophon.css
       - releases/v0.6.0/rulebook-booklet.css
       - releases/v0.6.0/rulebook-booklet-refinements.css
       - images/sketches/**
