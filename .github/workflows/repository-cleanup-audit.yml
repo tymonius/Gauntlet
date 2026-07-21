@@ -28,6 +28,9 @@ jobs:
             --include='*.md' --include='*.ts' --include='*.js' --include='*.json' \
             --exclude-dir=.git --exclude-dir=node_modules . | sort > build/repository-cleanup-audit/stale-terminology-files.txt || true
           git ls-files > build/repository-cleanup-audit/tracked-files.txt
+          git ls-files -s > build/repository-cleanup-audit/tracked-files-with-blobs.txt
+          git rev-parse HEAD > build/repository-cleanup-audit/head.txt
+          git rev-parse HEAD^{tree} > build/repository-cleanup-audit/tree.txt
 
       - uses: actions/upload-artifact@v4
         with:
