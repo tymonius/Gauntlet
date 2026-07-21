@@ -22,7 +22,7 @@ export interface PublicPlayerView {
   name: string;
   factionId?: string;
   leaderName?: string;
-  resources: FactionResourceMap;
+  resources?: FactionResourceMap;
   zones: {
     deck: PublicZoneView;
     hand: PublicZoneView;
