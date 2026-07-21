@@ -83,7 +83,7 @@ Different matches or scenarios may represent different Gauntlets.
 
 The game board does not require one universal legendary prize at the far end. The conflict may concern a city, fort, road, port, mine, pass, sacred site, political center, supply route, ruin, or other strategic objective.
 
-Heartlands are rules endpoints and final defensive positions. They should not automatically become sacred, metaphysical, or world-defining lore objects.
+The unnamed positions beyond each end of the Gauntlet are rules endpoints, not defined regions of the setting. They should not automatically become sacred, metaphysical, or world-defining lore objects.
 
 ---
 
@@ -115,7 +115,7 @@ Those ideas may appear locally where appropriate, especially for Diplomats or Fi
 
 Rejected or set aside:
 
-- ancient roads reconnecting Heartlands;
+- ancient roads reconnecting distant realms or capitals;
 - the Gauntlet as a sacred succession mechanism;
 - a universal metaphysical explanation for every battlefield;
 - one vanished empire explaining all ruins, magic, politics, and conflict.
