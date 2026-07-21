@@ -8,11 +8,13 @@ on:
       - releases/v0.6.0/Gauntlet_v0.6.0_Reference_Guide.md
       - releases/v0.6.0/rulebook-colophon.md
       - releases/v0.6.0/rulebook-booklet-back-cover.html
+      - releases/v0.6.0/rulebook-booklet-factions-divider.html
       - releases/v0.6.0/rulebook.css
       - releases/v0.6.0/rulebook-section-layout.css
       - releases/v0.6.0/rulebook-colophon.css
       - releases/v0.6.0/rulebook-booklet.css
       - releases/v0.6.0/rulebook-booklet-refinements.css
+      - releases/v0.6.0/rulebook-booklet-spread-*.css
       - images/sketches/**
       - images/qr/**
       - scripts/prepare-v0.6-markdown.py

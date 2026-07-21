@@ -1,0 +1,16 @@
+/* Bring the Financier Leader portraits up to the visual scale used by the
+   other paired Leader pages while preserving the three-page faction layout. */
+
+section#banker img {
+  width: 42%;
+  max-width: 42%;
+  max-height: 3.18in;
+  margin-right: 0.11in;
+}
+
+section#executive img {
+  width: 40%;
+  max-width: 40%;
+  max-height: 3.02in;
+  margin-right: 0.11in;
+}
