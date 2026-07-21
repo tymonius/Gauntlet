@@ -1,0 +1,218 @@
+/* Booklet-only spread and orphan-control refinements. */
+
+/* Keep these chapter titles with their opening material instead of leaving a
+   ruled heading at the foot of the preceding page. The tighter local rhythm
+   offsets the space consumed by moving the heading forward. */
+section.level1[id$="-building-a-deck"],
+section.level1[id$="-territory-control"] {
+  break-before: page;
+  page-break-before: always;
+  font-size: 8.45pt;
+  line-height: 1.19;
+}
+
+section.level1[id$="-building-a-deck"] > h1,
+section.level1[id$="-territory-control"] > h1 {
+  margin-top: 0.075in;
+  margin-bottom: 0.070in;
+  padding-bottom: 0.045in;
+  font-size: 16.4pt;
+}
+
+section.level1[id$="-building-a-deck"] h2,
+section.level1[id$="-territory-control"] h2 {
+  margin-top: 0.070in;
+  margin-bottom: 0.022in;
+  font-size: 10.9pt;
+}
+
+section.level1[id$="-building-a-deck"] p,
+section.level1[id$="-territory-control"] p {
+  margin-bottom: 0.038in;
+}
+
+section.level1[id$="-building-a-deck"] ul,
+section.level1[id$="-building-a-deck"] ol,
+section.level1[id$="-territory-control"] ul,
+section.level1[id$="-territory-control"] ol {
+  margin-top: 0.018in;
+  margin-bottom: 0.042in;
+  line-height: 1.16;
+}
+
+/* Factions divider ------------------------------------------------------- */
+
+@page factions-divider {
+  size: 5.5in 8.5in;
+  margin: 0.30in;
+
+  @top-left { content: none; }
+  @top-right { content: none; }
+  @bottom-left { content: none; }
+  @bottom-right { content: none; }
+}
+
+section#booklet-factions-divider {
+  page: factions-divider;
+  position: relative;
+  box-sizing: border-box;
+  min-height: 7.90in;
+  margin: 0;
+  padding: 0.72in 0.48in 0.62in;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  break-before: page;
+  page-break-before: always;
+  break-after: page;
+  page-break-after: always;
+  border: 1.15pt solid #172235;
+  background:
+    linear-gradient(180deg, rgba(23, 34, 53, 0.04), rgba(23, 34, 53, 0) 42%),
+    #fbfaf7;
+  font-family: "Noto Sans", sans-serif;
+  text-align: center;
+  color: #475569;
+}
+
+section#booklet-factions-divider::before {
+  content: "";
+  position: absolute;
+  inset: 0.14in;
+  border: 0.55pt solid #aeb6c2;
+}
+
+.booklet-factions-divider-content {
+  position: relative;
+  z-index: 1;
+  max-width: 3.82in;
+}
+
+.booklet-factions-divider-kicker {
+  margin: 0 0 0.15in;
+  font-size: 7.5pt;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: #6b7280;
+}
+
+section#booklet-factions-divider h1 {
+  margin: 0;
+  padding: 0 0 0.22in;
+  border: 0;
+  font-size: 29pt;
+  letter-spacing: 0.12em;
+  color: #172235;
+}
+
+section#booklet-factions-divider h1::after {
+  content: "";
+  display: block;
+  width: 1.02in;
+  margin: 0.24in auto 0;
+  border-top: 3pt double #9a7a2f;
+}
+
+section#booklet-factions-divider p:not(.booklet-factions-divider-kicker) {
+  margin: 0 0 0.11in;
+  font-family: "Noto Serif", serif;
+  font-size: 8.5pt;
+  line-height: 1.32;
+  color: #3c4654;
+}
+
+/* Facing-page faction presentations ------------------------------------- */
+
+/* Military rules occupy the left page; both Leaders begin together on the
+   facing right page. */
+section#general {
+  break-before: page;
+  page-break-before: always;
+}
+
+section#general,
+section#commandant {
+  margin-top: 0.052in;
+  font-size: 8.05pt;
+  line-height: 1.15;
+}
+
+section#general > h2,
+section#commandant > h2 {
+  margin-bottom: 0.030in;
+  padding-bottom: 0.030in;
+  font-size: 13.2pt;
+}
+
+section#general h3,
+section#commandant h3 {
+  margin-top: 0.040in;
+  margin-bottom: 0.010in;
+  font-size: 8.7pt;
+}
+
+section#general p,
+section#commandant p,
+section#general ul,
+section#commandant ul {
+  margin-bottom: 0.024in;
+}
+
+section#general img {
+  width: 40%;
+  max-width: 40%;
+  max-height: 3.00in;
+  margin-right: 0.11in;
+}
+
+section#commandant img {
+  width: 38%;
+  max-width: 38%;
+  max-height: 2.78in;
+  margin-right: 0.11in;
+}
+
+section#commandant {
+  margin-top: 0.045in;
+  padding-top: 0.045in;
+}
+
+/* Mystics are the one long faction chapter that can be condensed enough to
+   preserve a clean rules-left / Leaders-right spread without shrinking the
+   enlarged Alchemist and Spirit Walker portraits. */
+section.level1[id$="-mystics"] > h1 {
+  margin-top: 0.060in;
+  margin-bottom: 0.060in;
+  padding-bottom: 0.042in;
+  font-size: 16.0pt;
+}
+
+section.level1[id$="-mystics"] > p:first-of-type,
+section.level1[id$="-mystics"] > section:not(#alchemist):not(#spirit-walker) {
+  font-size: 7.42pt;
+  line-height: 1.105;
+}
+
+section.level1[id$="-mystics"] > section:not(#alchemist):not(#spirit-walker) > h2 {
+  margin-top: 0.052in;
+  margin-bottom: 0.014in;
+  font-size: 9.55pt;
+}
+
+section.level1[id$="-mystics"] > section:not(#alchemist):not(#spirit-walker) h3 {
+  margin-top: 0.040in;
+  margin-bottom: 0.008in;
+  font-size: 8.25pt;
+}
+
+section.level1[id$="-mystics"] > section:not(#alchemist):not(#spirit-walker) p {
+  margin-bottom: 0.025in;
+}
+
+section.level1[id$="-mystics"] > section:not(#alchemist):not(#spirit-walker) ul,
+section.level1[id$="-mystics"] > section:not(#alchemist):not(#spirit-walker) ol {
+  margin-top: 0.010in;
+  margin-bottom: 0.026in;
+  line-height: 1.09;
+}
