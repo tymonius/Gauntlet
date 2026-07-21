@@ -7,7 +7,7 @@ export interface PlayerState {
   name: string;
   factionId?: string;
   leaderName?: string;
-  resources: FactionResourceMap;
+  resources?: FactionResourceMap;
   zones: PrivateZones;
   controlledTerritories: TerritoryID[];
   occupiedSpaceId?: string;
