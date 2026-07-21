@@ -6,7 +6,10 @@ import {
 } from './reducer';
 import { runPostActionAutomationPipeline } from './pipeline';
 import { isOpponentBeyondGauntletSpace, isOwnBeyondGauntletSpace } from './v06-board';
-import type { GameState } from '../types';
+import type { GameEvent, GameState, PlayerID } from '../types';
+
+const LAST_STAND_DEFENDER_BONUS_EFFECT = 'last_stand_defender_bonus';
+const LAST_STAND_DEFENDER_BONUS = 1;
 
 function validateV06EndpointMovement(game: GameState, action: GameAction): void {
   if (game.version !== 'v0.6.0' || action.type !== 'move_player') return;
@@ -38,10 +41,74 @@ function markLastStand(result: ApplyGameActionResult, action: GameAction): void 
   result.state.battle.tiePolicy = 'defender';
 }
 
+function prepareLastStandResolution(game: GameState, action: GameAction): {
+  game: GameState;
+  attacker?: PlayerID;
+  defender?: PlayerID;
+} {
+  if (
+    game.version !== 'v0.6.0'
+    || action.type !== 'resolve_battle'
+    || !game.battle?.lastStand
+  ) {
+    return { game };
+  }
+
+  const prepared = structuredClone(game);
+  const battle = prepared.battle!;
+  if (!battle.effectsResolved.includes(LAST_STAND_DEFENDER_BONUS_EFFECT)) {
+    battle.defender.modifiers += LAST_STAND_DEFENDER_BONUS;
+    battle.effectsResolved.push(LAST_STAND_DEFENDER_BONUS_EFFECT);
+  }
+  battle.tiePolicy = 'defender';
+
+  return {
+    game: prepared,
+    attacker: battle.attacker.playerId,
+    defender: battle.defender.playerId,
+  };
+}
+
+function lastResolvedBattleWinner(game: GameState): PlayerID | undefined {
+  const event = [...game.log].reverse().find((candidate) => candidate.type === 'battle_resolved');
+  if (!event?.payload || typeof event.payload !== 'object') return undefined;
+  return (event.payload as { winner?: PlayerID }).winner;
+}
+
+function appendLastStandVictoryLog(game: GameState, winner: PlayerID, defeatedPlayer: PlayerID): void {
+  game.log.push({
+    id: `${game.id}-event-${game.log.length + 1}`,
+    turn: game.turn,
+    actor: winner,
+    type: 'last_stand_won',
+    message: `${game.players[winner].name} won ${game.players[defeatedPlayer].name}’s Last Stand and ran the Gauntlet.`,
+    payload: { winner, defeatedPlayer },
+    visibility: 'public',
+  } satisfies GameEvent);
+}
+
+function finalizeLastStandResolution(
+  result: ApplyGameActionResult,
+  attacker: PlayerID | undefined,
+  defender: PlayerID | undefined,
+): void {
+  if (!attacker || !defender) return;
+  const winner = lastResolvedBattleWinner(result.state);
+  if (winner !== attacker) return;
+
+  result.state.winner = attacker;
+  result.state.phase = 'game_over';
+  result.state.priorityPlayer = attacker;
+  result.state.pendingAssetBankDiscards = undefined;
+  appendLastStandVictoryLog(result.state, attacker, defender);
+}
+
 export function applyGameAction(game: GameState, action: GameAction): ApplyGameActionResult {
   validateV06EndpointMovement(game, action);
-  const result = applyGameActionWithoutAutomation(game, action);
+  const prepared = prepareLastStandResolution(game, action);
+  const result = applyGameActionWithoutAutomation(prepared.game, action);
   markLastStand(result, action);
   runPostActionAutomationPipeline(result.state);
+  finalizeLastStandResolution(result, prepared.attacker, prepared.defender);
   return result;
 }
