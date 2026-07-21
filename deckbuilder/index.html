@@ -3,42 +3,46 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gauntlet v0.6 Development Deckbuilder</title>
+  <title>Gauntlet v0.6.0 Deckbuilder</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="territories.css" />
   <link rel="stylesheet" href="print-options.css" />
+  <link rel="stylesheet" href="starter-decks.css" />
 </head>
 <body>
   <header class="site-header">
     <div>
-      <p class="eyebrow">Gauntlet development tool</p>
-      <h1>v0.6 Deckbuilder</h1>
-      <p class="lede">Build faction decks from the active v0.6 working sources.</p>
+      <p class="eyebrow">Gauntlet playtest tool</p>
+      <h1>v0.6.0 Deckbuilder</h1>
+      <p class="lede">Choose a faction and Leader, load a recommended starter Deck, or build your own.</p>
     </div>
     <div class="status-card" aria-live="polite">
       <span>Source status</span>
-      <strong id="dataStatus">Loading active documents…</strong>
+      <strong id="dataStatus">Loading canonical sources…</strong>
     </div>
   </header>
 
   <main id="app" class="app-shell" hidden>
-    <section class="panel warning-panel">
-      <strong>Development build.</strong>
-      This tool reads active Markdown sources because canonical v0.6 data does not exist yet. Card and Territory text follow the consolidated working pools; Print / PDF includes the selected leader, playable deck, Territories, and faction components.
+    <section class="panel starter-panel">
+      <strong>New to Gauntlet?</strong>
+      Choose a faction and Leader, then load the recommended starter Deck. Each preset includes 30 playable cards, three ordered Territories, and every required faction component when printed.
     </section>
 
     <section class="panel setup-panel">
       <div class="panel-heading">
         <div>
           <h2>Deck setup</h2>
-          <p class="muted">Choose a completed faction and one of its leaders.</p>
+          <p class="muted">Every Leader has a complete recommended first-game Deck.</p>
         </div>
-        <button id="randomDeckButton" type="button" class="secondary" disabled>Random deck</button>
+        <div class="button-row setup-actions">
+          <button id="starterDeckButton" type="button" disabled>Load recommended deck</button>
+          <button id="randomDeckButton" type="button" class="secondary" disabled>Random deck</button>
+        </div>
       </div>
       <div class="setup-grid">
         <label>
           Deck name
-          <input id="deckName" type="text" maxlength="80" placeholder="Untitled v0.6 deck" />
+          <input id="deckName" type="text" maxlength="80" placeholder="Untitled v0.6.0 Deck" />
         </label>
         <label>
           Faction
@@ -49,7 +53,8 @@
           <select id="leaderSelect"></select>
         </label>
       </div>
-      <article id="leaderPreview" class="leader-preview empty-state">Choose a completed faction to inspect its leaders.</article>
+      <article id="leaderPreview" class="leader-preview empty-state">Choose a faction to inspect its Leaders.</article>
+      <article id="starterDeckPreview" class="starter-deck-preview empty-state">Loading recommended starter Deck…</article>
     </section>
 
     <section class="dashboard" aria-label="Deck summary">
@@ -101,7 +106,7 @@
             <input id="printCardBacks" type="checkbox" />
             <span>Print card backs</span>
           </label>
-          <textarea id="importJson" rows="4" placeholder="Paste an exported v0.6 deck JSON here"></textarea>
+          <textarea id="importJson" rows="4" placeholder="Paste an exported v0.6 Deck JSON here"></textarea>
           <button id="importJsonButton" type="button" class="secondary full-width">Import JSON</button>
         </section>
       </div>
@@ -144,7 +149,7 @@
           </div>
           <div class="card-browser">
             <div id="availableCards" class="compact-card-list"></div>
-            <aside id="cardPreview" class="card-preview empty-state">Select a card to view its active working text.</aside>
+            <aside id="cardPreview" class="card-preview empty-state">Select a card to view its canonical text.</aside>
           </div>
         </section>
 
@@ -175,7 +180,7 @@
           </div>
           <div class="territory-browser">
             <div id="territoryList" class="compact-territory-list empty-state">Loading Territories…</div>
-            <aside id="territoryPreview" class="territory-preview empty-state">Select a Territory to view its active working text.</aside>
+            <aside id="territoryPreview" class="territory-preview empty-state">Select a Territory to view its canonical text.</aside>
           </div>
         </section>
       </div>
@@ -185,7 +190,7 @@
           <div class="panel-heading">
             <div>
               <h2>Current deck</h2>
-              <p class="muted">Playable cards count toward deck size and value. Leader and other supplemental cards do not.</p>
+              <p class="muted">Playable cards count toward deck size and value. Leader and supplemental cards do not.</p>
             </div>
             <button id="clearDeckButton" type="button" class="secondary danger">Clear cards</button>
           </div>
@@ -207,5 +212,6 @@
   <script src="faction-components.js?v=20260718-4" defer></script>
   <script src="print.js?v=20260718-3" defer></script>
   <script src="print-duplex.js?v=20260720-2" defer></script>
+  <script src="starter-decks.js?v=20260721-1" defer></script>
 </body>
 </html>
