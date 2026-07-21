@@ -1,0 +1,82 @@
+/* Section-aware overrides applied after rulebook.css.
+   Pandoc places generated heading IDs on section wrappers when --section-divs is enabled. */
+
+.page-break {
+  display: none;
+  height: 0;
+  break-before: auto;
+  page-break-before: auto;
+}
+
+section#military,
+section#diplomats,
+section#financiers,
+section#intelligence,
+section#mystics,
+section#inquisition,
+section#glossary {
+  break-before: page;
+  page-break-before: always;
+}
+
+section#military > h1::before {
+  content: "FACTIONS";
+  display: block;
+  margin-bottom: 0.14in;
+  color: #6b7280;
+  font-size: 9pt;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+section#military > h1 { border-bottom-color: #8f2f2b; }
+section#diplomats > h1 { border-bottom-color: #275487; }
+section#financiers > h1 { border-bottom-color: #2f6b4d; }
+section#intelligence > h1 { border-bottom-color: #3f454d; }
+section#mystics > h1 { border-bottom-color: #60437d; }
+section#inquisition > h1 { border-bottom-color: #9a7a2f; }
+
+section#general,
+section#commandant,
+section#ambassador,
+section#senator,
+section#banker,
+section#executive,
+section#ranger,
+section#spymaster,
+section#alchemist,
+section#spirit-walker,
+section#grand-inquisitor,
+section#witch-hunter {
+  margin-top: 0.18in;
+  break-inside: avoid-page;
+  page-break-inside: avoid;
+}
+
+section#commandant,
+section#senator,
+section#executive,
+section#spymaster,
+section#spirit-walker,
+section#witch-hunter {
+  break-before: page;
+  page-break-before: always;
+}
+
+section#general ul,
+section#commandant ul,
+section#ambassador ul,
+section#senator ul,
+section#banker ul,
+section#executive ul,
+section#ranger ul,
+section#spymaster ul,
+section#alchemist ul,
+section#spirit-walker ul,
+section#grand-inquisitor ul,
+section#witch-hunter ul {
+  overflow: hidden;
+  margin-left: 0;
+  padding-left: 0;
+  list-style: none;
+}
