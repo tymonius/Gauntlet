@@ -1,6 +1,7 @@
 import type { PlayerID, SpaceID, TerritoryID } from './ids';
 
-export type SpaceKind = 'heartland' | 'territory' | 'arena';
+export type SpaceKind = 'heartland' | 'endpoint' | 'territory' | 'arena';
+export type EndpointRole = 'before_gauntlet' | 'beyond_gauntlet';
 
 export interface BoardSpaceState {
   id: SpaceID;
@@ -8,6 +9,8 @@ export interface BoardSpaceState {
   kind: SpaceKind;
   territoryId?: TerritoryID;
   controller?: PlayerID;
+  endpointOwner?: PlayerID;
+  endpointRole?: EndpointRole;
   occupant?: PlayerID;
   revealed: boolean;
   capturePendingBy?: PlayerID;
