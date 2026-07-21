@@ -1,0 +1,48 @@
+/* Final pagination refinements for the half-letter booklet edition. */
+
+/* Horizontal rules separate top-level Markdown chapters in the source. The
+   booklet already gives every chapter a ruled heading, and a trailing rule can
+   otherwise be pushed onto a page by itself immediately before a forced
+   faction opener. */
+hr {
+  display: none;
+}
+
+/* The section and its heading both inherit page-break rules from the Letter
+   edition. The section itself owns the break; its heading should not request
+   another one. */
+section.level1[id$="-military"] > h1,
+section.level1[id$="-diplomats"] > h1,
+section.level1[id$="-financiers"] > h1,
+section.level1[id$="-intelligence"] > h1,
+section.level1[id$="-mystics"] > h1,
+section.level1[id$="-inquisition"] > h1,
+section.level1[id$="-glossary"] > h1 {
+  break-before: auto;
+  page-break-before: auto;
+}
+
+/* Game Zones misses the preceding page by one short closing paragraph.
+   Tighten only this reference-style section so it closes cleanly before the
+   deliberately new-page Actions chapter. */
+section.level1[id$="-game-zones"] {
+  font-size: 8.72pt;
+  line-height: 1.22;
+}
+
+section.level1[id$="-game-zones"] > h1 {
+  margin-top: 0.085in;
+  margin-bottom: 0.075in;
+  padding-bottom: 0.045in;
+  font-size: 16.6pt;
+}
+
+section.level1[id$="-game-zones"] h2 {
+  margin-top: 0.075in;
+  margin-bottom: 0.025in;
+  font-size: 11.35pt;
+}
+
+section.level1[id$="-game-zones"] p {
+  margin-bottom: 0.038in;
+}
