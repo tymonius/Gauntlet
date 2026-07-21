@@ -8,7 +8,7 @@ describe('v0.6 canonical content', () => {
 
     expect(canonical.rulesVersion).toBe('v0.6.0');
     expect(canonical.content.factions).toHaveLength(6);
-    expect(canonical.leadersByName).toHaveLength(12);
+    expect(canonical.leadersByName.size).toBe(12);
     expect(canonical.content.cards).toHaveLength(122);
     expect(canonical.content.territories).toHaveLength(25);
     expect(canonical.factionsById.get('military')?.leaders.map((leader) => leader.name)).toEqual([
