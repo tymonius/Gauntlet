@@ -32,7 +32,8 @@ section.level1[id$="-movement"],
 section.level1[id$="-territory-control"],
 section.level1[id$="-game-zones"],
 section.level1[id$="-actions-assets-and-overlays"],
-section.level1[id$="-glossary"] {
+section.level1[id$="-glossary"],
+section#quick-reference {
   columns: 2;
   column-gap: 0.28in;
   column-rule: 0.45pt solid #d9dde3;
@@ -47,6 +48,7 @@ section.level1[id$="-territory-control"] > h1,
 section.level1[id$="-game-zones"] > h1,
 section.level1[id$="-actions-assets-and-overlays"] > h1,
 section.level1[id$="-glossary"] > h1,
+section#quick-reference > h1,
 section.level1 table,
 section.level1 blockquote {
   column-span: all;
@@ -55,6 +57,11 @@ section.level1 blockquote {
 section.level1[id$="-glossary"] p {
   margin-bottom: 0.05in;
   break-inside: avoid;
+}
+
+section#quick-reference {
+  break-before: page;
+  page-break-before: always;
 }
 
 /* Faction openers -------------------------------------------------------- */
@@ -143,4 +150,21 @@ section#witch-hunter ul {
   margin-left: 0;
   padding-left: 0;
   list-style: none;
+}
+
+section#general ol,
+section#commandant ol,
+section#ambassador ol,
+section#senator ol,
+section#banker ol,
+section#executive ol,
+section#ranger ol,
+section#spymaster ol,
+section#alchemist ol,
+section#spirit-walker ol,
+section#grand-inquisitor ol,
+section#witch-hunter ol {
+  overflow: hidden;
+  margin-left: 0;
+  padding-left: 0.22in;
 }
