@@ -31,15 +31,15 @@ function gameFor(factionId: string) {
 
 describe('faction resource framework', () => {
   it('initializes canonical starting values and limits', () => {
-    expect(gameFor('military').players.player_1.resources.command).toMatchObject({ value: 0, maximum: 2 });
-    expect(gameFor('diplomats').players.player_1.resources.influence).toMatchObject({ value: 1, maximum: 10 });
-    expect(gameFor('financiers').players.player_1.resources.capital).toMatchObject({ value: 0, limitKind: 'dynamic' });
+    expect(gameFor('military').players.player_1.resources!.command).toMatchObject({ value: 0, maximum: 2 });
+    expect(gameFor('diplomats').players.player_1.resources!.influence).toMatchObject({ value: 1, maximum: 10 });
+    expect(gameFor('financiers').players.player_1.resources!.capital).toMatchObject({ value: 0, limitKind: 'dynamic' });
     expect(gameFor('intelligence').players.player_1.resources).toMatchObject({
       intel: { value: 0, limitKind: 'none' },
       operation_progress: { value: 0, limitKind: 'none' },
     });
     expect(gameFor('mystics').players.player_1.resources).toEqual({});
-    expect(gameFor('inquisition').players.player_1.resources.conviction).toMatchObject({ value: 0, maximum: 4 });
+    expect(gameFor('inquisition').players.player_1.resources!.conviction).toMatchObject({ value: 0, maximum: 4 });
   });
 
   it('gains, spends, checks, caps, and logs resources', () => {
