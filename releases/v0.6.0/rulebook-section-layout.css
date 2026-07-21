@@ -275,6 +275,15 @@ section#witch-hunter img {
   margin: 0.025in 0.20in 0.055in 0;
 }
 
+/* These two first portraits were the only remaining blockers to pairing both
+   Leaders on the same page. Their text remains at the standard Leader size. */
+section#general img,
+section#banker img {
+  width: 29%;
+  max-width: 29%;
+  max-height: 2.55in;
+}
+
 section#general ul,
 section#commandant ul,
 section#ambassador ul,
