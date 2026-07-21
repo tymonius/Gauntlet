@@ -146,7 +146,7 @@ if (( first_booklet_blank != 0 )); then
   exit 1
 fi
 
-if ! pdftotext -f 2 -l 2 "$RELEASE/Gauntlet_v0.6.0_Rulebook_Booklet.pdf" - | grep -Fq 'Copyright and Use'; then
+if ! pdftotext -f 2 -l 2 "$RELEASE/Gauntlet_v0.6.0_Rulebook_Booklet.pdf" - | grep -Fiq 'Copyright and Use'; then
   echo "The copyright colophon is not on the inside front cover." >&2
   exit 1
 fi
