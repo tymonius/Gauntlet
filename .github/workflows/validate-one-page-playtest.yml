@@ -1,0 +1,141 @@
+name: Validate one-page playtest sheet
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    if: github.head_ref == 'agent/condense-playtest-sheet'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install tools
+        run: |
+          npm install
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+          python3 -m pip install pypdf pymupdf pillow
+      - name: Run repository checks
+        run: |
+          npm run typecheck
+          npm test
+      - name: Serve repository
+        run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
+      - name: Validate browser and print sheet
+        run: |
+          mkdir -p one-page-validation
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { chromium } from 'playwright';
+
+          const browser = await chromium.launch({ headless: true });
+          const page = await browser.newPage({ viewport: { width: 1400, height: 1100 }, acceptDownloads: true });
+          const errors = [];
+          page.on('pageerror', error => errors.push(error.message));
+          page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+          page.on('dialog', dialog => dialog.accept());
+
+          await page.goto('http://127.0.0.1:8000/playtest/', { waitUntil: 'networkidle' });
+          await page.waitForSelector('.playtest-sheet');
+          const structure = await page.evaluate(() => ({
+            sheets: document.querySelectorAll('.playtest-sheet').length,
+            fields: document.querySelectorAll('#playtestForm [name]').length,
+            warnings: document.querySelectorAll('.warning-grid input[type="checkbox"]').length,
+            feedback: document.querySelectorAll('.feedback-grid textarea, .final-grid textarea').length
+          }));
+          console.log(structure);
+          if (structure.sheets !== 1) throw new Error(`Expected one sheet, found ${structure.sheets}.`);
+          if (structure.fields < 40 || structure.fields > 70) throw new Error(`Unexpected form size: ${structure.fields} fields.`);
+          if (structure.warnings !== 8) throw new Error(`Expected 8 warning flags, found ${structure.warnings}.`);
+          if (structure.feedback !== 6) throw new Error(`Expected 6 written prompts, found ${structure.feedback}.`);
+
+          await page.fill('[name=session_id]', 'one-page-validation');
+          await page.fill('[name=a_name]', 'Tester A');
+          await page.fill('[name=b_name]', 'Tester B');
+          await page.selectOption('[name=a_fun]', '5');
+          await page.fill('[name=worked_best]', 'Battle choices felt consequential.');
+          await page.waitForFunction(() => document.querySelector('#saveStatus').textContent.includes('saved'));
+          await page.reload({ waitUntil: 'networkidle' });
+          if (await page.inputValue('[name=session_id]') !== 'one-page-validation') throw new Error('Local draft did not restore.');
+          if (await page.inputValue('[name=a_fun]') !== '5') throw new Error('Rating did not restore.');
+
+          const downloadPromise = page.waitForEvent('download');
+          await page.click('#downloadButton');
+          const download = await downloadPromise;
+          await download.saveAs('one-page-validation/response.json');
+          const response = JSON.parse(fs.readFileSync('one-page-validation/response.json', 'utf8'));
+          if (response.schemaVersion !== 2 || response.session_id !== 'one-page-validation') throw new Error('Export schema or values are incorrect.');
+
+          await page.screenshot({ path: 'one-page-validation/screen.png', fullPage: true });
+          await page.emulateMedia({ media: 'print' });
+          const bounds = await page.evaluate(() => {
+            const sheet = document.querySelector('.playtest-sheet');
+            const footer = document.querySelector('.sheet-footer');
+            const sheetBox = sheet.getBoundingClientRect();
+            const footerBox = footer.getBoundingClientRect();
+            const descendants = [...sheet.querySelectorAll('*')].filter(element => !element.closest('.screen-only'));
+            const lowest = Math.max(...descendants.map(element => element.getBoundingClientRect().bottom));
+            return {
+              width: sheetBox.width,
+              height: sheetBox.height,
+              lowest,
+              footerTop: footerBox.top,
+              sheetBottom: sheetBox.bottom
+            };
+          });
+          console.log(bounds);
+          if (bounds.lowest > bounds.sheetBottom + 1) throw new Error(`Content exceeds sheet boundary: ${JSON.stringify(bounds)}`);
+          const nonFooterLowest = await page.evaluate(() => {
+            const footer = document.querySelector('.sheet-footer');
+            const elements = [...document.querySelectorAll('.playtest-sheet *')].filter(element => element !== footer && !footer.contains(element));
+            return Math.max(...elements.map(element => element.getBoundingClientRect().bottom));
+          });
+          if (nonFooterLowest > bounds.footerTop - 2) throw new Error(`Content overlaps footer: ${nonFooterLowest} > ${bounds.footerTop}`);
+
+          await page.pdf({
+            path: 'one-page-validation/Gauntlet_v0.6.0_Playtest_Sheet.pdf',
+            format: 'Letter',
+            printBackground: true,
+            preferCSSPageSize: true,
+            margin: { top: '0', right: '0', bottom: '0', left: '0' }
+          });
+          await browser.close();
+          if (errors.length) throw new Error(`Browser errors:\n${errors.join('\n')}`);
+          NODE
+      - name: Validate PDF
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          from pypdf import PdfReader
+          import fitz
+          from PIL import Image
+
+          root = Path('one-page-validation')
+          pdf_path = root / 'Gauntlet_v0.6.0_Playtest_Sheet.pdf'
+          reader = PdfReader(str(pdf_path))
+          if len(reader.pages) != 1:
+              raise SystemExit(f'Expected exactly one PDF page, found {len(reader.pages)}')
+          page = reader.pages[0]
+          if abs(float(page.mediabox.width) - 612) > 2 or abs(float(page.mediabox.height) - 792) > 2:
+              raise SystemExit('Playtest sheet is not Letter size')
+          text = page.extract_text() or ''
+          for required in ['Gauntlet Playtest Sheet', 'What worked best?', 'What was confusing', 'investigate next']:
+              if required.lower() not in text.lower():
+                  raise SystemExit(f'Missing expected text: {required}')
+
+          document = fitz.open(pdf_path)
+          pix = document[0].get_pixmap(matrix=fitz.Matrix(1.4, 1.4), alpha=False)
+          Image.frombytes('RGB', (pix.width, pix.height), pix.samples).save(root / 'print-page.png')
+          print('Validated one Letter-size playtest page.')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: one-page-playtest-validation
+          path: one-page-validation/
