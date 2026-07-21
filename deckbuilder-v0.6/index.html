@@ -6,6 +6,7 @@
   <title>Gauntlet v0.6 Development Deckbuilder</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="territories.css" />
+  <link rel="stylesheet" href="print-options.css" />
 </head>
 <body>
   <header class="site-header">
@@ -96,6 +97,10 @@
             <button id="exportJsonButton" type="button" class="secondary">Export JSON</button>
             <button id="printDeckButton" type="button" class="secondary" disabled>Print / PDF</button>
           </div>
+          <label class="print-option">
+            <input id="printCardBacks" type="checkbox" />
+            <span>Print card backs</span>
+          </label>
           <textarea id="importJson" rows="4" placeholder="Paste an exported v0.6 deck JSON here"></textarea>
           <button id="importJsonButton" type="button" class="secondary full-width">Import JSON</button>
         </section>
@@ -201,6 +206,6 @@
   <script src="completed-supplementals.js?v=20260718-1" defer></script>
   <script src="faction-components.js?v=20260718-4" defer></script>
   <script src="print.js?v=20260718-3" defer></script>
-  <script src="print-duplex.js?v=20260718-5" defer></script>
+  <script src="print-duplex.js?v=20260720-1" defer></script>
 </body>
 </html>
