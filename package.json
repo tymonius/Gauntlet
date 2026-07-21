@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "vitest run",
+    "test": "vitest run && node scripts/validate-starter-decks.mjs",
     "test:watch": "vitest",
     "dev:cli": "tsx src/cli/dev-runner.ts",
     "dev:gui": "tsx src/gui/dev-server.ts"
