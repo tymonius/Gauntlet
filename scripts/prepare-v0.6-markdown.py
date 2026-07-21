@@ -21,7 +21,7 @@ date: Version 0.6.0
 lang: en-US
 ---
 
-<div class="page-break"></div>
+<div class="docx-page-break"></div>
 
 """
     return frontmatter + body
@@ -37,7 +37,7 @@ date: July 20, 2026
 lang: en-US
 ---
 
-<div class="page-break"></div>
+<div class="docx-page-break"></div>
 
 """
     return frontmatter + source.lstrip("\n")
