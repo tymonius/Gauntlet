@@ -131,10 +131,39 @@ section#quick-reference ul {
   line-height: 1.13;
 }
 
+/* Deckbuilder access ----------------------------------------------------- */
+
+/* Keep the printed desktop address visually attached to the QR code while
+   retaining ordinary linear Markdown for accessible DOCX output. */
+section#online-tools-and-updates img[alt*="QR code"] {
+  float: left;
+  width: 1.08in;
+  max-width: 1.08in;
+  margin: 0.02in 0.16in 0.08in 0;
+}
+
+section#online-tools-and-updates > p:last-child {
+  box-sizing: border-box;
+  min-height: 1.10in;
+  margin: 0.01in 0 0.08in;
+  padding-top: 0.32in;
+  font-family: "Noto Sans", sans-serif;
+  font-size: 8.35pt;
+  line-height: 1.22;
+  color: #273244;
+}
+
+section#online-tools-and-updates::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
 /* Leader pairing --------------------------------------------------------- */
 
-/* Begin each near-fitting pair on a fresh page. The existing compact Leader
-   treatment then has ample room to keep both profiles together. */
+/* Begin each near-fitting pair on a fresh page. The enlarged portraits still
+   leave both profiles comfortably on one page while using the available space
+   more deliberately. */
 section#ranger,
 section#alchemist {
   break-before: page;
@@ -182,18 +211,18 @@ section#spirit-walker p {
 
 section#ranger img,
 section#alchemist img {
-  width: 29%;
-  max-width: 29%;
-  max-height: 2.34in;
-  margin-right: 0.14in;
+  width: 40%;
+  max-width: 40%;
+  max-height: 2.85in;
+  margin-right: 0.11in;
 }
 
 section#spymaster img,
 section#spirit-walker img {
-  width: 26%;
-  max-width: 26%;
-  max-height: 2.15in;
-  margin-right: 0.14in;
+  width: 38%;
+  max-width: 38%;
+  max-height: 2.70in;
+  margin-right: 0.11in;
 }
 
 section#spymaster,
