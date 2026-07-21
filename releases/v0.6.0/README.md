@@ -20,7 +20,7 @@ The Gauntlet project repository, current release materials, and hosted browser t
 
 ## Online Deckbuilder
 
-Build, validate, save, export, randomize, and print v0.6 Decks at **[tymonius.github.io/Gauntlet/deckbuilder-v0.6/](https://tymonius.github.io/Gauntlet/deckbuilder-v0.6/)**.
+Build, validate, save, export, randomize, and print v0.6 Decks at **[tymonius.github.io/Gauntlet/deckbuilder/](https://tymonius.github.io/Gauntlet/deckbuilder/)**.
 
 Scan to open the Deckbuilder:
 

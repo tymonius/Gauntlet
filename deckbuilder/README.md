@@ -1,57 +1,90 @@
-# Gauntlet v0.5 Deckbuilder
+# Gauntlet v0.6 Development Deckbuilder
 
-A lightweight static browser tool for building and validating pre-faction Gauntlet decks.
+This is the developing faction-era deckbuilder. It is intentionally separate from the stable pre-faction tool under `/deckbuilder-v0.5/`.
+
+Rendered tool:
+
+- `https://tymonius.github.io/Gauntlet/deckbuilder/`
 
 ## Current scope
 
-The current mode targets the v0.5 playtest line and loads canonical v0.5.6 data from:
+The development build supports:
 
-- `releases/v0.5.6/Gauntlet_v0.5.6_Canonical_Data.json`
+- faction selection for Military, Diplomats, Inquisition, Mystics, Financiers, and Intelligence;
+- both completed leaders for every faction, with leader-rule summaries;
+- Neutral plus selected-faction card legality;
+- live parsing of all six definitive faction-guide Markdown sources;
+- card search and cost/allegiance filters;
+- duplicate quantities and Unique enforcement;
+- 30-card / 60-value playable-card validation;
+- random valid 30-card test decks for the selected faction and leader;
+- random decks containing 6–10 faction cards, no more than three copies of a non-Unique title, and no more than one copy of a Unique title;
+- random selection of three different Territories, with a maximum of one Arena;
+- all 25 consolidated v0.6 Territories;
+- Territory search, standard/Arena filtering, previews, and playtest-watchlist display;
+- exactly-three-Territory validation with a maximum of one Arena;
+- selected Territories and faction supplemental packages in the Current deck display;
+- Territory-aware local saves, JSON import/export, and text deck lists;
+- browser Print / PDF export for the complete playable deck, Territories, selected Leader Card, and required faction supplemental cards;
+- optional duplex backs for every playable card and Territory;
+- local save/load/delete.
 
-It supports:
+## Active runtime sources
 
-- searching and filtering available cards;
-- adding duplicate main-deck cards;
-- tracking deck size and point total;
-- selecting exactly three different Territories;
-- enforcing the one-Arena maximum;
-- enforcing unique-card limits from canonical data;
-- generating random legal test decks;
-- saving, loading, and deleting decks in browser storage;
-- copying decklists as text;
-- importing and exporting deck JSON;
-- printable card and Territory layouts for browser print-to-PDF.
+This folder does not create canonical v0.6 release data. It reads the active working Markdown sources at runtime:
 
-## File structure
+- `docs/Gauntlet_v0.6_Neutral_Card_Pool.md`
+- `releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`
+- `releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`
+- `releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`
+- `releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`
+- `releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`
+- `releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`
+- `docs/Gauntlet_v0.6_Territory_Pool.md`
 
-The implementation is intentionally small and framework-free:
+The Territory source is the authoritative working exact-text pool, but it is not yet canonical v0.6 release JSON. The deckbuilder therefore remains explicitly versioned as a development tool.
 
-- `index.html` — application structure and controls;
-- `styles.css` — base tokens and shared styling;
-- `components.css` — consolidated builder, browser, validation, deck-list, and responsive component styling;
-- `app.js` — core state, canonical-data loading, validation, persistence, text/JSON export, and baseline rendering;
-- `features.js` — compact browsers, random-deck generation, and print/PDF features.
+## Random test decks
 
-The former sequence of small cleanup and print-override files has been consolidated into `components.css` and `features.js` so the active implementation is easier to understand and maintain.
+The Random deck control preserves the currently selected faction and leader, replaces the current playable cards and Territories after confirmation, and generates:
 
-## Running locally
+- exactly 30 playable cards;
+- no more than 60 total deckbuilding value;
+- a meaningful faction presence of 6–10 faction cards;
+- varied card titles through a soft three-copy limit;
+- normal Unique enforcement;
+- exactly three different Territories;
+- either no Arena or one Arena.
 
-Because the app fetches JSON data from the repository, open it through a local web server rather than directly from the filesystem.
+The generator is intended to accelerate broad playtesting rather than produce a strategically optimized deck for a specific leader.
 
-From the repository root:
+## Print / PDF export
 
-```bash
-python3 -m http.server 8000
-```
+The Print / PDF control opens a browser-printable Letter-size package and then opens the system print dialog. The package contains:
 
-Then open:
+- a deck summary and deck list;
+- the selected Leader Card, including its portrait and exact leader rules;
+- one printable card face for every playable-card copy in the deck;
+- a full-height vertical ownership band on every playable card with an **Overlay** rules section, repeating the card name sideways so it remains visible when tucked beneath a Territory;
+- the selected three Territories in landscape-reading orientation;
+- every required faction tracker, reference, and supplemental card;
+- standardized Noto Sans typography and 2.5 × 3.5-inch cut lines.
 
-```text
-http://localhost:8000/deckbuilder/
-```
+Enable **Print card backs** to add a mirrored reverse page for each sheet containing playable cards or Territories. Each reverse uses the same card positions as its front after long-edge duplex printing and carries **GAUNTLET** vertically in the same reading direction as the Overlay ownership bands. Leader cards and one-sided supplemental cards remain blank-backed; faction components that already have defined reverse faces retain those faces.
 
-## Version policy
+Faction packages render as follows:
 
-Saved decks include a `gameVersion` and `ruleset` field. A deck should be viewed and edited in the mode for which it was built rather than silently migrated.
+- **Military:** selected Leader Card and shared Command Tracker;
+- **Diplomats:** selected Leader Card, Influence Tracker, double-sided Reference card, nine Proposal fronts, and nine Treaty Article backs;
+- **Inquisition:** selected Leader Card, Conviction Tracker, Inquisition Doctrine, and Purge Reference;
+- **Mystics:** selected Leader Card, Mystics Reference, and three double-sided incomplete/completed Rite cards;
+- **Financiers:** selected Leader Card, Financier Reference, public Capital Tracker, and eight full-size generic Deed Cards;
+- **Intelligence:** selected Leader Card, dual Intel / Operation Progress tracker, Mission Reference, and Operations Reference.
 
-The intended upgrade path is a shared UI shell with a separate v0.6+ data and validation mode once factions, leaders, card legality, and canonical v0.6 data are stable. The current v0.5 mode should remain available as a legacy playtest tool.
+All duplex pairs use identical 7.5 × 10.5-inch page boxes. Back-side card positions are mirrored horizontally so they align after long-edge duplex printing. Print at Actual Size / 100%, disable browser headers and footers, and choose **Flip on long edge**.
+
+## Next implementation steps
+
+1. Add starter-deck templates.
+2. Keep supplemental manifests synchronized with definitive faction guides and faction-sheet sources.
+3. Replace Markdown parsing with canonical v0.6 JSON only after the complete release data is approved.

@@ -11,7 +11,7 @@ ONLINE_TEXT_BLOCK = """
 
 The Gauntlet project repository, current release materials, and browser tools are available at **[gauntlet.run](https://gauntlet.run/)**.
 
-Build and validate v0.6 Decks with the **[Gauntlet Deckbuilder](https://gauntlet.run/deckbuilder-v0.6/)**.
+Build and validate v0.6 Decks with the **[Gauntlet Deckbuilder](https://gauntlet.run/deckbuilder/)**.
 """
 
 ONLINE_QR = """

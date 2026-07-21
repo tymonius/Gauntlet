@@ -49,8 +49,8 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 ### Digital development
 
 27. **`Gauntlet_Digital_Prototype_Roadmap.md`** — canonical data, deckbuilder, engine, interface, telemetry, and remote-play roadmap.
-28. **`../deckbuilder/README.md`** — stable v0.5 deckbuilder.
-29. **`../deckbuilder-v0.6/README.md`** — six-faction v0.6 development deckbuilder scope, live-source behavior, print packages, and next implementation steps.
+28. **`../deckbuilder-v0.5/README.md`** — stable v0.5 deckbuilder.
+29. **`../deckbuilder/README.md`** — six-faction v0.6 development deckbuilder scope, live-source behavior, print packages, and next implementation steps.
 30. **`../src/README.md`** — TypeScript engine and interface status.
 31. **`../data/README.md`** — starter-data scope and source warning.
 
@@ -192,7 +192,7 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 ### Digital work
 
 - The TypeScript engine, CLI, and GUI remain development scaffolds.
-- The v0.6 development deckbuilder is live under `../deckbuilder-v0.6/` and reads the active Neutral, all six definitive faction-guide, and Territory Markdown sources at runtime.
+- The v0.6 development deckbuilder is live under `../deckbuilder/` and reads the active Neutral, all six definitive faction-guide, and Territory Markdown sources at runtime.
 - It supports all six factions and twelve leaders, Neutral-plus-faction legality, playable-card count/value validation, all 25 Territories, local saves, JSON/text export, random valid test-deck generation, and browser print output.
 - All six factions include their required leaders and supplemental components in Current deck and Print / PDF output, including duplex Diplomat Proposal/Treaty cards and Mystics Rite cards.
 - Do not silently migrate v0.5 saved decks into v0.6.

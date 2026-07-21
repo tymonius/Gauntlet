@@ -19,7 +19,7 @@ This layer defines versioned content and identifiers.
 
 ### Browser tools
 
-- `deckbuilder-v0.6/`
+- `deckbuilder/`
 - `faction-sheets/`
 
 These tools build Decks and render physical components. They are production tools, not rules engines.
