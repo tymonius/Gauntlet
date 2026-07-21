@@ -77,9 +77,10 @@
 .deck-card-back-page{break-before:page!important;page-break-before:always!important;break-after:page!important;page-break-after:always!important;}
 .deck-card-back-page.first-page-back .card-table.two-row{height:7in!important;}
 .first-page-back-spacer{height:3.5in;}
-.gauntlet-card-back{position:relative;display:flex;align-items:center;justify-content:center;width:2.5in;height:3.5in;overflow:hidden;border:1px solid #111;background:#2b211b!important;box-shadow:inset 0 0 0 999px #2b211b;-webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact;}
-.gauntlet-card-back::before{content:"";position:absolute;inset:.12in;border:1px solid #c9b899;box-shadow:inset 0 0 0 1px rgba(201,184,153,.22);}
-.gauntlet-back-name{position:relative;z-index:1;display:block;writing-mode:vertical-rl;transform:rotate(180deg);color:#f5ede0;font-size:23pt;font-weight:900;line-height:1;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;text-shadow:0 1px 1px #000;}
+.gauntlet-card-back{position:relative;display:flex;align-items:center;justify-content:center;width:2.5in;height:3.5in;overflow:hidden;border:1px solid #4f4338;background:#fffdf8!important;box-shadow:none;-webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact;}
+.gauntlet-card-back::before{content:"";position:absolute;inset:.13in;border:1px solid #8d7c69;box-shadow:inset 0 0 0 1px #d8cec0;}
+.gauntlet-card-back::after{content:"";position:absolute;top:.24in;bottom:.24in;left:50%;width:.62in;transform:translateX(-50%);border-left:1px solid #c4b7a5;border-right:1px solid #c4b7a5;background:#eee8de!important;box-shadow:inset 0 0 0 999px #eee8de;-webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact;}
+.gauntlet-back-name{position:relative;z-index:1;display:block;writing-mode:vertical-rl;transform:none;color:#3d332b;font-size:23pt;font-weight:900;line-height:1;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;}
 .proposal-card .proposal-banner{grid-row:1;}
 .proposal-card .proposal-title-row{grid-row:2;}
 .proposal-card .requirement{grid-row:3;}
