@@ -8,6 +8,8 @@ This directory contains the official routine human-playtest questionnaire for th
 
 - [`Gauntlet_v0.6.0_Playtest_Sheet.pdf`](Gauntlet_v0.6.0_Playtest_Sheet.pdf)
 
+Print the PDF on Letter paper at Actual Size / 100% with browser or printer headers and footers disabled.
+
 The PDF is generated from `index.html` and `styles.css` by `.github/workflows/render-playtest-sheet.yml`. Update the print source rather than editing the PDF independently.
 
 ## What the sheet captures
