@@ -19,7 +19,8 @@ When a derived PDF, printable sheet, deckbuilder entry, or digital implementatio
 ## Active development documents and tools
 
 - [Development Status](Gauntlet_Development_Status.md) — current post-release priorities and playtest watchlist.
-- [Design Principles and Guardrails](Gauntlet_Design_Principles_and_Guardrails.md) — durable design constraints.
+- [Design Principles and Guardrails](Gauntlet_Design_Principles_and_Guardrails.md) — durable game-design constraints.
+- [Visual Design Language](Gauntlet_Visual_Design_Language.md) — approved visual principles for faction identity, components, interfaces, and illustration.
 - [Faction Card Design Guide](Gauntlet_v0.6_Faction_Card_Design_Guide.md) — standards for faction-card pools and future revisions.
 - [Playtest Targets and Metrics](Gauntlet_Playtest_Targets_and_Metrics.md) — complete evidence targets and thresholds for controlled testing.
 - [One-Page Playtest Sheet](../playtest/) — the routine paper questionnaire, designed to be printed and completed by hand.
