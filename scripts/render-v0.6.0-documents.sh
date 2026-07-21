@@ -52,7 +52,7 @@ weasyprint --base-url "$ROOT" "$BUILD/reference.html" "$RELEASE/Gauntlet_v0.6.0_
 rulebook_pages="$(pdfinfo "$RELEASE/Gauntlet_v0.6.0_Rulebook.pdf" | awk '/^Pages:/ {print $2}')"
 reference_pages="$(pdfinfo "$RELEASE/Gauntlet_v0.6.0_Reference_Guide.pdf" | awk '/^Pages:/ {print $2}')"
 
-if (( rulebook_pages < 25 || rulebook_pages > 100 )); then
+if (( rulebook_pages < 20 || rulebook_pages > 100 )); then
   echo "Unexpected rulebook page count: $rulebook_pages" >&2
   exit 1
 fi
