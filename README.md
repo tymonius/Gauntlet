@@ -2,6 +2,8 @@
 
 Gauntlet is a two-player tactical card-and-territory game about deck construction, hidden battle commitments, territorial control, faction asymmetry, and running the Gauntlet.
 
+**Project site:** [gauntlet.run](https://gauntlet.run/) — the custom URL for the Gauntlet repository materials, releases, and hosted browser tools.
+
 ## Canonical release
 
 **Current canonical version:** v0.6.0 — Faction Framework Release
@@ -45,9 +47,13 @@ To run the Gauntlet, a player must defeat the opponent on their final Territory,
 
 ## Playtest tools
 
-- [Gauntlet v0.6 Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder-v0.6/) — build, validate, save, export, randomize, and print faction-era Decks.
-- [Gauntlet v0.6 Faction Sheets](https://tymonius.github.io/Gauntlet/faction-sheets/) — browser-printable faction cards and supplemental components.
-- [Gauntlet v0.5 Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder/) — historical pre-faction deckbuilder.
+- [Gauntlet v0.6 Deckbuilder](https://gauntlet.run/deckbuilder-v0.6/) — build, validate, save, export, randomize, and print faction-era Decks.
+- [Gauntlet v0.6 Faction Sheets](https://gauntlet.run/faction-sheets/) — browser-printable faction cards and supplemental components.
+- [Gauntlet v0.5 Deckbuilder](https://gauntlet.run/deckbuilder/) — historical pre-faction deckbuilder.
+
+Scan to open the v0.6 Deckbuilder:
+
+<img src="images/qr/gauntlet-v0.6-deckbuilder.svg" alt="QR code for the Gauntlet v0.6 Deckbuilder" width="180">
 
 ## Canonical source hierarchy
 
@@ -75,7 +81,7 @@ Browser-printable faction cards, Leader Cards, trackers, references, Deeds, Prop
 
 ### `images/`
 
-Leader portraits and production artwork. Canonical rulebook Leader sketches are under `images/sketches/`.
+Leader portraits and production artwork. Canonical rulebook Leader sketches are under `images/sketches/`. QR codes for public tools are under `images/qr/`.
 
 ### `deckbuilder-v0.6/`
 
