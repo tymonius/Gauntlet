@@ -64,14 +64,14 @@ export function createInitialFactionResources(factionId?: string): FactionResour
 }
 
 export function getFactionResource(player: PlayerState, key: FactionResourceKey): FactionResourceState {
-  const resource = player.resources[key];
+  const resource = player.resources?.[key];
   if (!resource) throw new FactionResourceError(`${player.name} does not track ${key}.`);
   return resource;
 }
 
 export function hasFactionResource(player: PlayerState, key: FactionResourceKey, amount = 1): boolean {
   if (!Number.isFinite(amount) || amount < 0) return false;
-  return (player.resources[key]?.value ?? 0) >= amount;
+  return (player.resources?.[key]?.value ?? 0) >= amount;
 }
 
 function normalizedValue(resource: FactionResourceState, requested: number): number {
