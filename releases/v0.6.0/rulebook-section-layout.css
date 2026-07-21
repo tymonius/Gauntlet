@@ -245,11 +245,34 @@ section#spymaster,
 section#spirit-walker,
 section#witch-hunter {
   clear: both;
-  margin-top: 0.14in;
-  padding-top: 0.12in;
+  margin-top: 0.07in;
+  padding-top: 0.07in;
   border-top: 0.7pt solid #c8cdd4;
   break-before: auto;
   page-break-before: auto;
+}
+
+section#commandant > h2,
+section#senator > h2,
+section#executive > h2,
+section#spymaster > h2,
+section#spirit-walker > h2,
+section#witch-hunter > h2 {
+  margin-bottom: 0.035in;
+  padding-bottom: 0.035in;
+  font-size: 16.5pt;
+}
+
+section#commandant img,
+section#senator img,
+section#executive img,
+section#spymaster img,
+section#spirit-walker img,
+section#witch-hunter img {
+  width: 28%;
+  max-width: 28%;
+  max-height: 2.72in;
+  margin: 0.025in 0.20in 0.055in 0;
 }
 
 section#general ul,
