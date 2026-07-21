@@ -1,0 +1,64 @@
+/* Final copyright and production colophon. */
+
+@page copyright {
+  @top-left { content: none; }
+  @top-right { content: none; }
+  @bottom-left { content: none; }
+  @bottom-right { content: none; }
+}
+
+section#copyright-and-use {
+  page: copyright;
+  box-sizing: border-box;
+  min-height: 8.85in;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  max-width: 6.2in;
+  margin: 0 auto;
+  padding-bottom: 0.18in;
+  font-family: "Noto Sans", sans-serif;
+  font-size: 8.8pt;
+  line-height: 1.38;
+  color: #4b5563;
+}
+
+section#copyright-and-use h6 {
+  margin: 0 0 0.20in;
+  padding: 0;
+  border: 0;
+  font-family: "Noto Sans", sans-serif;
+  font-size: 12.5pt;
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #172235;
+}
+
+section#copyright-and-use h6::before {
+  content: "";
+  display: block;
+  width: 0.78in;
+  margin-bottom: 0.15in;
+  border-top: 3pt double #9a7a2f;
+}
+
+section#copyright-and-use p {
+  margin: 0 0 0.105in;
+  max-width: 5.85in;
+  orphans: 2;
+  widows: 2;
+}
+
+section#copyright-and-use p:first-of-type {
+  color: #273244;
+}
+
+section#copyright-and-use p:last-child {
+  margin-top: 0.12in;
+  margin-bottom: 0;
+  color: #172235;
+  font-size: 9.4pt;
+  letter-spacing: 0.05em;
+}
