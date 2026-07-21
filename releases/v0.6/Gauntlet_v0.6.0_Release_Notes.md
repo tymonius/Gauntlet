@@ -76,9 +76,9 @@ Inquisition gains Conviction when opposing cards enter the Graveyard after battl
 
 ## Online access
 
-The Gauntlet project repository, current release materials, and browser tools are available at **[gauntlet.run](https://gauntlet.run/)**.
+The Gauntlet project repository, current release materials, and browser tools are available at **[tymonius.github.io/Gauntlet](https://tymonius.github.io/Gauntlet/)**.
 
-Build, validate, save, export, randomize, and print v0.6 Decks with the **[Gauntlet Deckbuilder](https://gauntlet.run/deckbuilder-v0.6/)**.
+Build, validate, save, export, randomize, and print v0.6 Decks with the **[Gauntlet Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder-v0.6/)**.
 
 ## Canonical sources
 
