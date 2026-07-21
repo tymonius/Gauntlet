@@ -54,6 +54,7 @@ jobs:
       - name: Commit rendered card PDFs
         run: |
           rm -f releases/v0.6/Gauntlet_v0.6.0_Card_Build_Error.txt
+          set +e
           node scripts/commit-generated-files.mjs \
             "Render v0.6.0 card and component PDFs [skip ci]" -- \
             releases/v0.6/Gauntlet_v0.6.0_Neutral_Cards.pdf \
@@ -65,7 +66,11 @@ jobs:
             releases/v0.6/Gauntlet_v0.6.0_Mystics_Cards_and_Components.pdf \
             releases/v0.6/Gauntlet_v0.6.0_Inquisition_Cards_and_Components.pdf \
             releases/v0.6/Gauntlet_v0.6.0_All_Cards_and_Components.pdf \
-            releases/v0.6/Gauntlet_v0.6.0_Card_Build_Error.txt
+            releases/v0.6/Gauntlet_v0.6.0_Card_Build_Error.txt \
+            > card-commit.log 2>&1
+          status=$?
+          cat card-commit.log
+          exit "$status"
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -73,6 +78,7 @@ jobs:
           name: gauntlet-v0.6.0-card-sheets
           path: |
             card-build.log
+            card-commit.log
             releases/v0.6/Gauntlet_v0.6.0_*Cards*.pdf
             releases/v0.6/Gauntlet_v0.6.0_Territories.pdf
             releases/v0.6/Gauntlet_v0.6.0_Card_Build_Error.txt
