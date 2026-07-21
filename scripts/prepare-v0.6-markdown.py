@@ -15,7 +15,7 @@ Build and validate v0.6 Decks with the **[Gauntlet Deckbuilder](https://gauntlet
 """
 
 ONLINE_QR = """
-![QR code for the Gauntlet v0.6 Deckbuilder](images/qr/gauntlet-v0.6-deckbuilder.svg){ width=1.45in }
+![QR code for the Gauntlet v0.6 Deckbuilder](images/qr/gauntlet-v0.6-deckbuilder.svg)
 """
 
 
