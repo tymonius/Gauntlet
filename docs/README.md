@@ -24,7 +24,7 @@ When a derived PDF, printable sheet, deckbuilder entry, or digital implementatio
 - [Playtest Targets and Metrics](Gauntlet_Playtest_Targets_and_Metrics.md) — data to collect and evaluation thresholds.
 - [Leader Design Bible](Gauntlet_v0.6_Leader_Design_Bible.md) — current Leader art and character direction.
 - [Lore Development Notes](Gauntlet_Lore_Development_Notes.md) — incremental setting development.
-- [Digital Prototype Roadmap](Gauntlet_Digital_Prototype_Roadmap.md) — future canonical engine and interface direction.
+- [Digital Roadmap](Gauntlet_Digital_Roadmap.md) — future canonical engine and interface direction.
 - [v0.7 Parking Lot](Gauntlet_v0.7_Parking_Lot.md) — deferred modules and post-v0.6 concepts.
 - [Game Design Glossary](Game_Design_Glossary.md) — general design vocabulary.
 

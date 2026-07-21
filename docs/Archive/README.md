@@ -22,7 +22,7 @@ Clarifications and development records from the final pre-faction rules generati
 
 ### Other archived records
 
-Conversation audits, character-design logs, superseded visual notes, and long-form development history remain at the archive root when they span several versions or do not belong to one release cycle.
+Conversation audits, character-design logs, superseded visual notes, the pre-v0.6 digital prototype roadmap, and long-form development history remain at the archive root when they span several versions or do not belong to one release cycle.
 
 ## Archive rules
 

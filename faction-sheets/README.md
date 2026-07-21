@@ -47,7 +47,7 @@ Mystics use no tracker or ledger. Completed Rites are flipped to their completed
 - `releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` — definitive Mystics rules, leaders, Rites, reference, and playable-card text. The Mystics sheets are derived from this guide.
 - `releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` — definitive Financier rules, leaders, Capital, Treasury, Deeds, reference, Capital Tracker, Deed-card requirements, and playable-card text. The Financier sheets are derived from this guide.
 - `releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md` — definitive Intelligence rules, leaders, Missions, references, tracker, and playable-card text. The Intelligence sheets are derived from this guide.
-- `docs/Gauntlet_v0.6_Working_Rules.md` — shared rules.
+- `releases/v0.6/Gauntlet_v0.6.0_Rulebook.md` — canonical shared rules.
 - `docs/Gauntlet_v0.6_Leader_Design_Bible.md` — leader art direction.
 
 The HTML is a rendering source, not independent canonical game data. Update authoritative text first, then synchronize the sheets.

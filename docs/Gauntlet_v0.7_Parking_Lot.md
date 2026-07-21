@@ -136,7 +136,7 @@ Possible directions:
 
 Design question:
 
-- The cross variant may make it easier for players to get around blockers or create openings into Heartlands, but it may also increase rules load and board-state ambiguity.
+- The cross variant may make it easier for players to get around blockers or create openings beyond an opponent's end of the Gauntlet, but it may also increase rules load and board-state ambiguity.
 
 ### Free-for-All / Arena Variant
 

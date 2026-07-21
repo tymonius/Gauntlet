@@ -5,12 +5,13 @@
 
 This document should be used alongside:
 
-- `Gauntlet_v0.6_Working_Rules.md` for current faction and leader mechanics;
-- `Gauntlet_Design_Principles_and_Guardrails.md` for broader game-design constraints;
-- `card-reviews/COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md` for current cost-tier expectations;
-- the active card metadata and review records for approved cards and unresolved wording.
+- the [official v0.6.0 rulebook](../releases/v0.6/Gauntlet_v0.6.0_Rulebook.md) for shared rules;
+- the [definitive faction guides](../releases/v0.6/faction-guides/) for current faction mechanics, Leaders, components, and exact faction-card text;
+- [Gauntlet Design Principles and Guardrails](Gauntlet_Design_Principles_and_Guardrails.md) for broader design constraints;
+- [Gauntlet Development Status](Gauntlet_Development_Status.md) for the current testing watchlist; and
+- the generated [canonical data](../releases/v0.6/Gauntlet_v0.6.0_Canonical_Data.json) for current pool counts and metadata.
 
-Exact card text belongs in the appropriate active faction-pool or card source once approved. This guide defines how proposed faction cards and completed packages should be evaluated and records the working v0.6 package-size and cost-profile baseline.
+Exact card text belongs in the governing faction guide once approved. This document defines how new faction cards and future package revisions should be evaluated; it is not an alternate card source.
 
 ---
 

@@ -73,7 +73,7 @@ Versioned canonical and historical release packages. The current package is [`re
 
 ### `docs/`
 
-Active design, testing, source-card, Territory, project-index, and production documentation. Archived or superseded records are under `docs/Archive/`.
+The [documentation index](docs/README.md) separates canonical sources, active design and testing documents, and archived provenance. Current post-release priorities are in [Gauntlet Development Status](docs/Gauntlet_Development_Status.md).
 
 ### `faction-sheets/`
 
@@ -99,9 +99,9 @@ Canonical-data generation, document rendering, card-sheet rendering, package val
 
 Automated validation, rendering, and release-publication workflows.
 
-### `src/`
+### `src/` and `data/`
 
-Framework-neutral TypeScript rules-engine and digital-prototype scaffolding. It is development software, not the authoritative rules source.
+Legacy pre-v0.6 digital-prototype code and starter data. They are retained for architecture and testing provenance but do not implement the canonical faction-era game. Future work is governed by the [Digital Roadmap](docs/Gauntlet_Digital_Roadmap.md).
 
 ## Development workflow
 
@@ -110,7 +110,7 @@ Framework-neutral TypeScript rules-engine and digital-prototype scaffolding. It 
 3. Regenerate the affected documents, cards, or tools.
 4. Visually inspect rendered documents and print sheets.
 5. Record release-facing changes in the changelog.
-6. Do not silently resolve open design questions in generated data or production artifacts.
+6. Record unresolved testing concerns in `docs/Gauntlet_Development_Status.md`; do not silently resolve them in generated data or production artifacts.
 
 ## Running browser tools locally
 
@@ -127,7 +127,7 @@ http://localhost:8000/deckbuilder-v0.6/
 http://localhost:8000/faction-sheets/
 ```
 
-For the TypeScript development tools:
+For the legacy TypeScript prototype:
 
 ```bash
 npm install

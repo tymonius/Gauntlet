@@ -3,7 +3,7 @@
 **Status:** Working production-facing art and miniature direction for the v0.6 faction leader roster  
 **Purpose:** Define the visual identity, tabletop miniature silhouette, and player-facing character direction for all twelve v0.6 faction leaders.
 
-This document records the current character design direction for the twelve v0.6 faction leaders. It should be used alongside `docs/Gauntlet_v0.6_Working_Rules.md`, which remains the source of truth for rules text and leader abilities.
+This document records the current character design direction for the twelve v0.6 faction Leaders. The [official rulebook](../releases/v0.6/Gauntlet_v0.6.0_Rulebook.md) and [definitive faction guides](../releases/v0.6/faction-guides/) govern rules text and Leader abilities.
 
 ---
 
