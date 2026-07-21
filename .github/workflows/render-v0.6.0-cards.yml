@@ -46,7 +46,9 @@ jobs:
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
             git add releases/v0.6/Gauntlet_v0.6.0_Card_Build_Error.txt
             git commit -m "Record v0.6.0 card build error [skip ci]" || true
-            git push origin HEAD || true
+            branch="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+            git pull --rebase origin "$branch" || true
+            git push origin "HEAD:$branch" || true
             exit "$status"
           fi
 
@@ -61,7 +63,9 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A releases/v0.6/Gauntlet_v0.6.0_*Cards*.pdf releases/v0.6/Gauntlet_v0.6.0_Territories.pdf releases/v0.6/Gauntlet_v0.6.0_Card_Build_Error.txt
           git commit -m "Render v0.6.0 card and component PDFs [skip ci]"
-          git push origin HEAD
+          branch="${GITHUB_HEAD_REF:-${GITHUB_REF_NAME}}"
+          git pull --rebase origin "$branch"
+          git push origin "HEAD:$branch"
 
       - uses: actions/upload-artifact@v4
         if: always()
