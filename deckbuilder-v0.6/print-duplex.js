@@ -38,6 +38,8 @@
 
   function preparePrintDocument(html) {
     const documentNode = new DOMParser().parseFromString(html, "text/html");
+    const printCardBacks = Boolean(document.getElementById("printCardBacks")?.checked);
+
     standardizePageGeometry(documentNode);
     normalizeProposalLayouts(documentNode);
     addOverlayBands(documentNode);
@@ -45,6 +47,7 @@
     isolateDoubleSidedReference(documentNode);
     appendMysticsRitePages(documentNode);
     compactSingleSidedPages(documentNode);
+    if (printCardBacks) appendPlayableAndTerritoryBacks(documentNode);
     addDuplexInstructions(documentNode);
     return `<!doctype html>\n${documentNode.documentElement.outerHTML}`;
   }
@@ -71,6 +74,12 @@
 .duplex-page{break-before:page!important;page-break-before:always!important;break-after:page!important;page-break-after:always!important;}
 .duplex-page.duplex-back-page:last-of-type{break-after:auto!important;page-break-after:auto!important;}
 .duplex-page .card-table{position:absolute;inset:0;}
+.deck-card-back-page{break-before:page!important;page-break-before:always!important;break-after:page!important;page-break-after:always!important;}
+.deck-card-back-page.first-page-back .card-table.two-row{height:7in!important;}
+.first-page-back-spacer{height:3.5in;}
+.gauntlet-card-back{position:relative;display:flex;align-items:center;justify-content:center;width:2.5in;height:3.5in;overflow:hidden;border:1px solid #111;background:#2b211b!important;box-shadow:inset 0 0 0 999px #2b211b;-webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact;}
+.gauntlet-card-back::before{content:"";position:absolute;inset:.12in;border:1px solid #c9b899;box-shadow:inset 0 0 0 1px rgba(201,184,153,.22);}
+.gauntlet-back-name{position:relative;z-index:1;display:block;writing-mode:vertical-rl;transform:rotate(180deg);color:#f5ede0;font-size:23pt;font-weight:900;line-height:1;letter-spacing:.12em;text-transform:uppercase;white-space:nowrap;text-shadow:0 1px 1px #000;}
 .proposal-card .proposal-banner{grid-row:1;}
 .proposal-card .proposal-title-row{grid-row:2;}
 .proposal-card .requirement{grid-row:3;}
@@ -255,6 +264,66 @@
     });
   }
 
+  function appendPlayableAndTerritoryBacks(documentNode) {
+    const pages = [
+      documentNode.querySelector(".first-page"),
+      ...documentNode.querySelectorAll(".card-page:not(.duplex-page):not(.deck-card-back-page)")
+    ].filter(Boolean);
+
+    pages.forEach((page, pageIndex) => {
+      const table = page.querySelector(".card-table");
+      if (!table) return;
+
+      const cells = [...table.querySelectorAll("td")];
+      const backSlots = [];
+
+      cells.forEach((cell, frontIndex) => {
+        if (!cell.querySelector(".main-card, .territory")) return;
+        backSlots.push(mirrorIndexForLongEdge(frontIndex));
+      });
+
+      if (!backSlots.length) return;
+
+      const rowCount = table.classList.contains("two-row") ? 2 : 3;
+      const isFirstPage = page.classList.contains("first-page");
+      const backCards = backSlots.map(() => makeGauntletCardBack(documentNode));
+      const backPage = makeDeckCardBackPage(documentNode, backCards, backSlots, rowCount, isFirstPage);
+      const pairName = `deck-cards-${pageIndex + 1}`;
+
+      page.classList.add("deck-card-front-page");
+      page.dataset.duplexPair = pairName;
+      backPage.dataset.duplexPair = pairName;
+      page.after(backPage);
+    });
+  }
+
+  function makeGauntletCardBack(documentNode) {
+    const card = documentNode.createElement("article");
+    card.className = "print-card gauntlet-card-back";
+    card.setAttribute("aria-label", "Gauntlet card back");
+
+    const name = documentNode.createElement("span");
+    name.className = "gauntlet-back-name";
+    name.textContent = "Gauntlet";
+    card.append(name);
+    return card;
+  }
+
+  function makeDeckCardBackPage(documentNode, cards, slotIndexes, rowCount, firstPageBack) {
+    const section = documentNode.createElement("section");
+    section.className = `card-page deck-card-back-page duplex-back-page${firstPageBack ? " first-page-back" : ""}`;
+
+    if (firstPageBack) {
+      const spacer = documentNode.createElement("div");
+      spacer.className = "first-page-back-spacer";
+      section.append(spacer);
+    }
+
+    const table = makeCardTable(documentNode, cards, slotIndexes, rowCount);
+    section.append(table);
+    return section;
+  }
+
   function makeDuplexPage(documentNode, card, slotIndex, pairName, side) {
     return makeDuplexPageWithCards(documentNode, [card], [slotIndex], pairName, side);
   }
@@ -263,12 +332,16 @@
     const section = documentNode.createElement("section");
     section.className = `card-page duplex-page duplex-${side}-page`;
     section.dataset.duplexPair = pairName;
+    section.append(makeCardTable(documentNode, cards, slotIndexes, 3));
+    return section;
+  }
 
+  function makeCardTable(documentNode, cards, slotIndexes, rowCount) {
     const table = documentNode.createElement("table");
-    table.className = "card-table three-row";
+    table.className = `card-table ${rowCount === 2 ? "two-row" : "three-row"}`;
     const body = documentNode.createElement("tbody");
 
-    for (let rowIndex = 0; rowIndex < 3; rowIndex += 1) {
+    for (let rowIndex = 0; rowIndex < rowCount; rowIndex += 1) {
       const row = documentNode.createElement("tr");
       for (let columnIndex = 0; columnIndex < COLUMNS; columnIndex += 1) {
         const cell = documentNode.createElement("td");
@@ -281,16 +354,19 @@
     }
 
     table.append(body);
-    section.append(table);
-    return section;
+    return table;
   }
 
   function addDuplexInstructions(documentNode) {
-    if (!documentNode.querySelector(".duplex-page")) return;
+    const hasCardBacks = Boolean(documentNode.querySelector(".deck-card-back-page"));
+    if (!documentNode.querySelector(".duplex-page") && !hasCardBacks) return;
 
     const summaryBlocks = [...documentNode.querySelectorAll(".summary-side .summary-block")];
     const printNote = summaryBlocks.find(block => /print note/i.test(block.textContent));
-    const instructionHtml = "<strong>Print note:</strong> Leader and supplemental cards are included. For paired cards, use Actual Size / 100%, disable headers and footers, and select <strong>Flip on long edge</strong>. Back positions are mirrored to their fronts.";
+    const backsNote = hasCardBacks
+      ? " Playable cards and Territories include mirrored Gauntlet backs."
+      : "";
+    const instructionHtml = `<strong>Print note:</strong> Leader and supplemental cards are included.${backsNote} For paired cards, use Actual Size / 100%, disable headers and footers, and select <strong>Flip on long edge</strong>. Back positions are mirrored to their fronts.`;
 
     if (printNote) {
       printNote.innerHTML = instructionHtml;
