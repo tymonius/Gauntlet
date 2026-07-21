@@ -1,7 +1,7 @@
 (() => {
   SOURCES.mystics = {
     label: "Mystics",
-    path: "../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md",
+    path: "../releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md",
     start: "## 7. Canonical Mystics card pool",
     end: "## 8. Package summary and development watchlist",
     headingLevel: 3

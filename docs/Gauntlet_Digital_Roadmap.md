@@ -3,7 +3,7 @@
 **Status:** Active post-v0.6.0 roadmap.  
 **Purpose:** Define the path from the current physical-game sources and browser tools to a versioned digital rules implementation.
 
-The [official v0.6.0 rulebook](../releases/v0.6/Gauntlet_v0.6.0_Rulebook.md), definitive faction guides, Neutral pool, and Territory pool remain authoritative. Digital behavior must follow those sources and generated canonical data.
+The [official v0.6.0 rulebook](../releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md), definitive faction guides, Neutral pool, and Territory pool remain authoritative. Digital behavior must follow those sources and generated canonical data.
 
 ---
 
@@ -11,7 +11,7 @@ The [official v0.6.0 rulebook](../releases/v0.6/Gauntlet_v0.6.0_Rulebook.md), de
 
 ### Canonical content
 
-- `releases/v0.6/Gauntlet_v0.6.0_Canonical_Data.json`
+- `releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json`
 - canonical Markdown rule and card sources
 - generated release manifest
 

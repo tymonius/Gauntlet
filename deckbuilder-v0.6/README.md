@@ -34,12 +34,12 @@ The development build supports:
 This folder does not create canonical v0.6 release data. It reads the active working Markdown sources at runtime:
 
 - `docs/Gauntlet_v0.6_Neutral_Card_Pool.md`
-- `releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`
-- `releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`
-- `releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`
-- `releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`
-- `releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`
-- `releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`
+- `releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`
+- `releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`
+- `releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`
+- `releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`
+- `releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`
+- `releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`
 - `docs/Gauntlet_v0.6_Territory_Pool.md`
 
 The Territory source is the authoritative working exact-text pool, but it is not yet canonical v0.6 release JSON. The deckbuilder therefore remains explicitly versioned as a development tool.

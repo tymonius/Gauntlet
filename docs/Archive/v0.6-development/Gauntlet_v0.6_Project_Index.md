@@ -10,17 +10,17 @@ Read this file first when resuming v0.6 work.
 
 ### Rules, cards, and Territories
 
-- **`../releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md`** — self-contained, release-facing shared rulebook draft intended to accompany completed faction guides. It consolidates the v0.5.7 core baseline and approved v0.6 core decisions, but is not yet canonical.
+- **`../releases/v0.6.0/Gauntlet_v0.6_Preliminary_Core_Rules.md`** — self-contained, release-facing shared rulebook draft intended to accompany completed faction guides. It consolidates the v0.5.7 core baseline and approved v0.6 core decisions, but is not yet canonical.
 
 1. **`Gauntlet_v0.6_Working_Rules.md`** — active v0.6 development-rules framework and superset. Later approved decisions recorded in definitive faction guides govern their factions until shared rules are rolled into the preliminary core rulebook.
 2. **`Gauntlet_v0.6_Neutral_Card_Pool.md`** — authoritative names, costs, metadata, and exact text for all 50 Neutral cards.
 3. **`Gauntlet_v0.6_Territory_Pool.md`** — authoritative names, complexity, watchlists, status, and exact text for all 25 Territories and Arenas.
-4. **`../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`** — definitive Military faction source: Military rules, General, Commandant, Orders, Command tracker, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are the release-formatted editions.
-5. **`../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`** — definitive Diplomat faction source: rules, Ambassador, Senator, Influence, Terms, Proposals / Treaty Articles, references, tracker, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are release-formatted editions.
-6. **`../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`** — definitive Inquisition faction source: Inquisition rules, Grand Inquisitor, Witch Hunter, Conviction, doctrine, Purge, Purification, supplemental components, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are the release-formatted editions.
-7. **`../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`** — definitive Mystics faction source: rules, Alchemist, Spirit Walker, Rites, Ritual, Invocation, Transmutation, supplemental components, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are release-formatted editions.
-8. **`../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`** — definitive Financier faction source: rules, Banker, Executive, Capital, Treasury, Deeds, Play the Market, Subsidize, Controlling Interest, components, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are the release-formatted editions.
-9. **`../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`** — definitive Intelligence faction source: Intelligence rules, Ranger, Spymaster, Intel, Missions, Operation Progress, Surveillance, Interference, Special Operation, references, tracker, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are release-formatted editions.
+4. **`../releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`** — definitive Military faction source: Military rules, General, Commandant, Orders, Command tracker, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are the release-formatted editions.
+5. **`../releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`** — definitive Diplomat faction source: rules, Ambassador, Senator, Influence, Terms, Proposals / Treaty Articles, references, tracker, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are release-formatted editions.
+6. **`../releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`** — definitive Inquisition faction source: Inquisition rules, Grand Inquisitor, Witch Hunter, Conviction, doctrine, Purge, Purification, supplemental components, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are the release-formatted editions.
+7. **`../releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`** — definitive Mystics faction source: rules, Alchemist, Spirit Walker, Rites, Ritual, Invocation, Transmutation, supplemental components, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are release-formatted editions.
+8. **`../releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`** — definitive Financier faction source: rules, Banker, Executive, Capital, Treasury, Deeds, Play the Market, Subsidize, Controlling Interest, components, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are the release-formatted editions.
+9. **`../releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`** — definitive Intelligence faction source: Intelligence rules, Ranger, Spymaster, Intel, Missions, Operation Progress, Surveillance, Interference, Special Operation, references, tracker, strategy, terminology, and the canonical twelve-card pool. The adjacent PDF and DOCX are release-formatted editions.
 10. **`card-reviews/STATUS.md`** — live playable-card checkpoint and unresolved blockers.
 11. **`Gauntlet_v0.6_Card_Metadata.md`** — consolidated allegiance, starter, complexity, uniqueness, and watchlist metadata for 122 current playable designs.
 12. **`card-reviews/COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md`** — completed Neutral pool audit.
@@ -58,7 +58,7 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 
 32. **`Gauntlet_Lore_Development_Notes.md`** — current incremental setting direction.
 33. **`Gauntlet_v0.6_Leader_Design_Bible.md`** — leader art and miniature direction.
-34. **`../releases/v0.6/faction-guides/`** — definitive release-guide packages for all six factions.
+34. **`../releases/v0.6.0/faction-guides/`** — definitive release-guide packages for all six factions.
 35. **`../faction-sheets/README.md`** — printable faction-sheet sources and instructions for all six factions.
 36. **`../images/`** — leader portraits and matching production sketches.
 37. **`Game_Design_Glossary.md`** — shared terminology.
@@ -97,7 +97,7 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - **War Crimes** is Military; **Standing Orders** is deferred.
 - The supplemental set uses either leader plus one shared sliding Command tracker.
 - `../faction-sheets/military.html` is the printable package derived from the definitive guide.
-- `../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md` is the definitive source; adjacent PDF and DOCX are release editions.
+- `../releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md` is the definitive source; adjacent PDF and DOCX are release editions.
 
 ### Diplomat checkpoint
 
@@ -108,7 +108,7 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - **Cordiality** is the Ambassador ability; **Recognition of Claims** is archived.
 - The supplemental set uses both leaders, nine Proposal / Treaty Article cards, references, and the sliding Influence tracker.
 - `../faction-sheets/diplomat.html` is the printable package derived from the definitive guide.
-- `../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md` is the definitive source; adjacent PDF and DOCX are release editions.
+- `../releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md` is the definitive source; adjacent PDF and DOCX are release editions.
 
 ### Inquisition checkpoint
 
@@ -119,7 +119,7 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - **Hellfire** divides Conviction between battle strength and Purification pressure.
 - The supplemental set uses either leader, two references, and one shared sliding 0–4 Conviction tracker. No token is used.
 - `../faction-sheets/inquisition.html` is the printable package derived from the definitive guide.
-- `../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` is the definitive source; adjacent PDF and DOCX are release editions.
+- `../releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` is the definitive source; adjacent PDF and DOCX are release editions.
 
 ### Mystics checkpoint
 
@@ -133,7 +133,7 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - The supplemental set uses one selected leader, one Mystics Reference, and three double-sided Rite cards. No token or resource tracker is used.
 - The guide defines bound cards, Graveyard entry, exchanges, additional Battle-card sources, repeated Battle effects, eligible copied effects, Overlay ownership, and dormant removal conditions.
 - `../faction-sheets/mystics.html` is the three-sheet printable package with duplex incomplete/completed Rite faces.
-- `../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` is the definitive source; matching PDF and DOCX are the release editions.
+- `../releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` is the definitive source; matching PDF and DOCX are the release editions.
 - Mystics is integrated into the v0.6 deckbuilder, including random decks, leader selection, faction components, Overlay treatment, and duplex Rite printing.
 
 ### Financier checkpoint
@@ -146,7 +146,7 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - Manifest Destiny Territories receive normal Deeds and expand Controlling Interest.
 - The supplemental set uses either leader, one Financier Reference, one public Capital Tracker, and eight identical full-size generic Deed Cards in a shared supply.
 - `../faction-sheets/financier.html` is the three-sheet printable package using dedicated Banker and Executive leader-card crops under `../images/leader-cards/`; the third 9-up sheet contains eight full-size Deed Cards and one blank slot.
-- `../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` is the definitive Financier source; the adjacent DOCX and PDF are release-formatted editions using the Banker and Executive sketches under `../images/sketches/`.
+- `../releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` is the definitive Financier source; the adjacent DOCX and PDF are release-formatted editions using the Banker and Executive sketches under `../images/sketches/`.
 
 ### Intelligence checkpoint
 
@@ -159,7 +159,7 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - **Spies, Fog of War, Disinformation, Deep Cover, and Sleeper Network** are the initial package watchlist.
 - The supplemental set uses either leader, a Mission Reference, an Operations Reference, and a dual Intel / Operation Progress tracker with two cut-out markers.
 - `../faction-sheets/intelligence.html` is the two-sheet printable package using dedicated Ranger and Spymaster leader-card crops under `../images/leader-cards/`.
-- `../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md` is the definitive Intelligence source; the adjacent DOCX and PDF are release-formatted editions.
+- `../releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md` is the definitive Intelligence source; the adjacent DOCX and PDF are release-formatted editions.
 - `Gauntlet_v0.6_Intelligence_Card_Pool.md` has been consolidated into the definitive guide and removed.
 
 ### Remaining blockers
@@ -176,7 +176,7 @@ Completed-package drafts and sidecars remain provenance only where retained. Mil
 - Territory activation, suppression, Overlays, dormant lower Overlays, and Ruins are consolidated in the Working Rules.
 - Current Territory watchlists include Old Battlefield, Grand Melee, and Monastery.
 - The Working Rules and preliminary core rulebook include independent Action and hand-commitment limits, voluntary Asset removal, no Conditions, Asset/Overlay persistence, negation, bounded copied-effect handling, revised Diplomat rules, current Inquisition and Financier rules, and stable Mystics bound-card, repeated-effect, and Overlay clarifications.
-- `../releases/v0.6/Gauntlet_v0.6_Preliminary_Core_Rules.md` is the self-contained player-facing shared-rules draft and contains integration summaries for Military, Diplomats, Inquisition, Mystics, and Financiers.
+- `../releases/v0.6.0/Gauntlet_v0.6_Preliminary_Core_Rules.md` is the self-contained player-facing shared-rules draft and contains integration summaries for Military, Diplomats, Inquisition, Mystics, and Financiers.
 
 ### Factions
 
@@ -203,7 +203,7 @@ Faction packages target **12 unique cards**, use **1 / 3 / 4 / 3 / 1** as a plan
 - The Leader Design Bible is the visual source of truth.
 - `images/` contains portraits and production sketches for all twelve leaders.
 - Browser-printable packages for all six factions are under `faction-sheets/`.
-- Definitive guide packages for all six factions are under `releases/v0.6/faction-guides/` in Markdown, DOCX, and PDF formats.
+- Definitive guide packages for all six factions are under `releases/v0.6.0/faction-guides/` in Markdown, DOCX, and PDF formats.
 
 ---
 

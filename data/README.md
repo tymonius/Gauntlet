@@ -14,7 +14,7 @@ It is preserved as implementation provenance and schema scaffolding. It is **not
 
 ## Current source
 
-Use `releases/v0.6/Gauntlet_v0.6.0_Canonical_Data.json` for structured v0.6.0 content. It is generated from the official rulebook, definitive faction guides, Neutral pool, and Territory pool.
+Use `releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json` for structured v0.6.0 content. It is generated from the official rulebook, definitive faction guides, Neutral pool, and Territory pool.
 
 The future digital implementation plan is in `docs/Gauntlet_Digital_Roadmap.md`.
 

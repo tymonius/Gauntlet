@@ -5,7 +5,7 @@ import { chromium } from 'playwright';
 // Release validation marker: rerun all card-sheet checks from the final source head.
 
 const ROOT = process.cwd();
-const OUT = path.join(ROOT, 'releases/v0.6');
+const OUT = path.join(ROOT, 'releases/v0.6.0');
 fs.mkdirSync(OUT, { recursive: true });
 
 const base = process.env.GAUNTLET_BASE_URL ?? 'http://127.0.0.1:8000';

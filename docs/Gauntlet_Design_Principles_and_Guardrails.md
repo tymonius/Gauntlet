@@ -3,7 +3,7 @@
 **Status:** Active design reference.  
 **Purpose:** Evaluate proposed rules, cards, factions, components, and digital features without duplicating the canonical rulebook or the current development tracker.
 
-Current rules live in the [official v0.6.0 rulebook](../releases/v0.6/Gauntlet_v0.6.0_Rulebook.md). Current testing priorities live in [Gauntlet Development Status](Gauntlet_Development_Status.md).
+Current rules live in the [official v0.6.0 rulebook](../releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md). Current testing priorities live in [Gauntlet Development Status](Gauntlet_Development_Status.md).
 
 ---
 

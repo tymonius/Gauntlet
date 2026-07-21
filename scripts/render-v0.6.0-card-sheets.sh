@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ROOT="$(pwd)"
-RELEASE="$ROOT/releases/v0.6"
+RELEASE="$ROOT/releases/v0.6.0"
 VALIDATION="$ROOT/build/v0.6.0/card-validation"
 mkdir -p "$VALIDATION"
 find "$VALIDATION" -maxdepth 1 -type f -name '*.png' -delete

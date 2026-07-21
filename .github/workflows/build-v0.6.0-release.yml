@@ -8,8 +8,8 @@ on:
       - scripts/build-v0.6.0-release.mjs
       - docs/Gauntlet_v0.6_Neutral_Card_Pool.md
       - docs/Gauntlet_v0.6_Territory_Pool.md
-      - releases/v0.6/Gauntlet_v0.6.0_Rulebook.md
-      - releases/v0.6/faction-guides/**
+      - releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md
+      - releases/v0.6.0/faction-guides/**
       - images/sketches/**
       - .github/workflows/build-v0.6.0-release.yml
   pull_request:
@@ -18,8 +18,8 @@ on:
       - scripts/build-v0.6.0-release.mjs
       - docs/Gauntlet_v0.6_Neutral_Card_Pool.md
       - docs/Gauntlet_v0.6_Territory_Pool.md
-      - releases/v0.6/Gauntlet_v0.6.0_Rulebook.md
-      - releases/v0.6/faction-guides/**
+      - releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md
+      - releases/v0.6.0/faction-guides/**
       - images/sketches/**
       - .github/workflows/build-v0.6.0-release.yml
   workflow_dispatch:
@@ -47,10 +47,10 @@ jobs:
           status=$?
           cat canonical-build.log
           if [ "$status" -ne 0 ]; then
-            cp canonical-build.log releases/v0.6/Gauntlet_v0.6.0_Build_Error.txt
+            cp canonical-build.log releases/v0.6.0/Gauntlet_v0.6.0_Build_Error.txt
             git config user.name "github-actions[bot]"
             git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add releases/v0.6/Gauntlet_v0.6.0_Build_Error.txt
+            git add releases/v0.6.0/Gauntlet_v0.6.0_Build_Error.txt
             git commit -m "Record v0.6.0 canonical build error [skip ci]" || true
             git push origin HEAD || true
             exit "$status"
@@ -58,14 +58,14 @@ jobs:
 
       - name: Commit generated outputs
         run: |
-          rm -f releases/v0.6/Gauntlet_v0.6.0_Build_Error.txt
-          if git diff --quiet -- releases/v0.6/Gauntlet_v0.6.0_Canonical_Data.json releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.md releases/v0.6/Gauntlet_v0.6.0_Manifest.json releases/v0.6/Gauntlet_v0.6.0_Build_Error.txt; then
+          rm -f releases/v0.6.0/Gauntlet_v0.6.0_Build_Error.txt
+          if git diff --quiet -- releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json releases/v0.6.0/Gauntlet_v0.6.0_Reference_Guide.md releases/v0.6.0/Gauntlet_v0.6.0_Manifest.json releases/v0.6.0/Gauntlet_v0.6.0_Build_Error.txt; then
             echo "Canonical outputs are current."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A releases/v0.6/Gauntlet_v0.6.0_Canonical_Data.json releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.md releases/v0.6/Gauntlet_v0.6.0_Manifest.json releases/v0.6/Gauntlet_v0.6.0_Build_Error.txt
+          git add -A releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json releases/v0.6.0/Gauntlet_v0.6.0_Reference_Guide.md releases/v0.6.0/Gauntlet_v0.6.0_Manifest.json releases/v0.6.0/Gauntlet_v0.6.0_Build_Error.txt
           git commit -m "Generate v0.6.0 canonical release data [skip ci]"
           git push origin HEAD
 
@@ -75,8 +75,8 @@ jobs:
           name: gauntlet-v0.6.0-canonical-data
           path: |
             canonical-build.log
-            releases/v0.6/Gauntlet_v0.6.0_Canonical_Data.json
-            releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.md
-            releases/v0.6/Gauntlet_v0.6.0_Manifest.json
-            releases/v0.6/Gauntlet_v0.6.0_Build_Error.txt
+            releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json
+            releases/v0.6.0/Gauntlet_v0.6.0_Reference_Guide.md
+            releases/v0.6.0/Gauntlet_v0.6.0_Manifest.json
+            releases/v0.6.0/Gauntlet_v0.6.0_Build_Error.txt
           if-no-files-found: ignore

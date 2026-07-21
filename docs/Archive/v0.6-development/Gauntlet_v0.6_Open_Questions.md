@@ -43,7 +43,7 @@ Remaining blockers:
 
 ## Military
 
-Definitive source: `../releases/v0.6/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`. The adjacent PDF and DOCX are the release-formatted editions. Earlier split Military pool, design, supplemental, selection, and approval documents have been consolidated and removed.
+Definitive source: `../releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`. The adjacent PDF and DOCX are the release-formatted editions. Earlier split Military pool, design, supplemental, selection, and approval documents have been consolidated and removed.
 
 Open questions:
 
@@ -65,7 +65,7 @@ Open questions:
 
 ## Diplomats
 
-Definitive source: `../releases/v0.6/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`. The adjacent PDF and DOCX are release-formatted editions. Earlier split Diplomat pool, design, and supplemental documents have been consolidated and removed.
+Definitive source: `../releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`. The adjacent PDF and DOCX are release-formatted editions. Earlier split Diplomat pool, design, and supplemental documents have been consolidated and removed.
 
 Open questions:
 
@@ -87,7 +87,7 @@ Open questions:
 
 ## Inquisition
 
-Definitive source: `../releases/v0.6/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`. The adjacent PDF and DOCX are release-formatted editions. Earlier split Inquisition pool, design, supplemental, and working-guide documents have been consolidated and removed.
+Definitive source: `../releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`. The adjacent PDF and DOCX are release-formatted editions. Earlier split Inquisition pool, design, supplemental, and working-guide documents have been consolidated and removed.
 
 Closed production decisions:
 
@@ -117,7 +117,7 @@ Open questions:
 
 ## Mystics
 
-Definitive source: `../releases/v0.6/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`. The adjacent PDF and DOCX are release-formatted editions. Earlier Mystics rules and card drafts are superseded where they conflict with the definitive guide.
+Definitive source: `../releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`. The adjacent PDF and DOCX are release-formatted editions. Earlier Mystics rules and card drafts are superseded where they conflict with the definitive guide.
 
 Closed package and production decisions:
 
@@ -154,7 +154,7 @@ Open questions:
 
 ## Financiers
 
-Definitive source: `../releases/v0.6/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`. The adjacent PDF and DOCX are the release-formatted editions. The earlier split Financier pool and design-note documents have been consolidated and removed.
+Definitive source: `../releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`. The adjacent PDF and DOCX are the release-formatted editions. The earlier split Financier pool and design-note documents have been consolidated and removed.
 
 Closed production decisions:
 
@@ -184,7 +184,7 @@ Open questions:
 
 ## Intelligence
 
-Definitive source: `../releases/v0.6/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`. The adjacent PDF and DOCX are release-formatted editions. The earlier split exact-text pool has been consolidated and removed.
+Definitive source: `../releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`. The adjacent PDF and DOCX are release-formatted editions. The earlier split exact-text pool has been consolidated and removed.
 
 Closed production decisions:
 

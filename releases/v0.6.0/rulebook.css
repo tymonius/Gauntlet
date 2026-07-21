@@ -1,0 +1,170 @@
+@page {
+  size: Letter;
+  margin: 0.68in 0.72in 0.68in 0.72in;
+  @bottom-center {
+    content: counter(page);
+    color: #666;
+    font-family: "Noto Sans", sans-serif;
+    font-size: 8pt;
+  }
+}
+
+@page:first {
+  @bottom-center { content: none; }
+}
+
+html {
+  font-family: "Noto Serif", serif;
+  font-size: 9.9pt;
+  line-height: 1.31;
+  color: #202124;
+}
+
+body {
+  margin: 0;
+  hyphens: auto;
+}
+
+#title-block-header {
+  min-height: 8.3in;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  page-break-after: always;
+}
+
+#title-block-header .title {
+  font-family: "Noto Sans", sans-serif;
+  font-size: 42pt;
+  letter-spacing: 0.12em;
+  margin: 0 0 0.18in 0;
+  color: #172235;
+}
+
+#title-block-header .subtitle {
+  font-family: "Noto Sans", sans-serif;
+  font-size: 17pt;
+  font-weight: 500;
+  color: #475569;
+  margin: 0;
+}
+
+#title-block-header .date {
+  font-family: "Noto Sans", sans-serif;
+  font-size: 10pt;
+  color: #64748b;
+  margin-top: 0.35in;
+}
+
+.page-break {
+  break-before: page;
+  page-break-before: always;
+  height: 0;
+}
+
+h1, h2, h3, h4 {
+  font-family: "Noto Sans", sans-serif;
+  color: #172235;
+  break-after: avoid-page;
+  page-break-after: avoid;
+}
+
+h1 {
+  font-size: 23pt;
+  line-height: 1.12;
+  margin: 0 0 0.20in 0;
+  padding-bottom: 0.07in;
+  border-bottom: 1.4pt solid #64748b;
+  break-before: page;
+  page-break-before: always;
+}
+
+h2 {
+  font-size: 16pt;
+  margin: 0.16in 0 0.07in 0;
+}
+
+h3 {
+  font-size: 12.5pt;
+  margin: 0.13in 0 0.04in 0;
+}
+
+h4 {
+  font-size: 10.7pt;
+  margin: 0.10in 0 0.03in 0;
+}
+
+p {
+  margin: 0.03in 0 0.075in 0;
+  orphans: 3;
+  widows: 3;
+}
+
+ul, ol {
+  margin: 0.04in 0 0.09in 0.24in;
+  padding-left: 0.14in;
+}
+
+li {
+  margin: 0.015in 0;
+}
+
+blockquote {
+  margin: 0.10in 0.18in;
+  padding: 0.07in 0.14in;
+  border-left: 3pt solid #64748b;
+  background: #f3f5f7;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.08in 0 0.14in 0;
+  font-size: 9pt;
+  break-inside: avoid-page;
+}
+
+th, td {
+  border: 0.6pt solid #aeb6c2;
+  padding: 0.05in 0.07in;
+  vertical-align: top;
+}
+
+th {
+  font-family: "Noto Sans", sans-serif;
+  font-weight: 700;
+  background: #e7ebf0;
+  color: #172235;
+}
+
+img {
+  display: block;
+  max-width: 72%;
+  max-height: 4.35in;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  margin: 0.10in auto 0.15in auto;
+  break-inside: avoid-page;
+}
+
+code {
+  font-family: "Noto Sans Mono", monospace;
+  font-size: 0.92em;
+}
+
+hr {
+  border: 0;
+  border-top: 0.7pt solid #c2c8d0;
+  margin: 0.15in 0;
+}
+
+strong {
+  color: #111827;
+}
+
+@media print {
+  a { color: inherit; text-decoration: none; }
+}

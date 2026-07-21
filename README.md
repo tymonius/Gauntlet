@@ -8,7 +8,7 @@ Gauntlet is a two-player tactical card-and-territory game about deck constructio
 
 **Current canonical version:** v0.6.0 — Faction Framework Release
 
-The complete package is under [`releases/v0.6/`](releases/v0.6/):
+The complete package is under [`releases/v0.6.0/`](releases/v0.6.0/):
 
 - official rulebook in Markdown, DOCX, and PDF;
 - quick-reference guide;
@@ -57,8 +57,8 @@ Scan to open the v0.6 Deckbuilder:
 
 ## Canonical source hierarchy
 
-1. [`releases/v0.6/Gauntlet_v0.6.0_Rulebook.md`](releases/v0.6/Gauntlet_v0.6.0_Rulebook.md) governs shared rules.
-2. The six definitive faction guides under [`releases/v0.6/faction-guides/`](releases/v0.6/faction-guides/) govern faction-specific rules and exact faction-card text.
+1. [`releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md`](releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md) governs shared rules.
+2. The six definitive faction guides under [`releases/v0.6.0/faction-guides/`](releases/v0.6.0/faction-guides/) govern faction-specific rules and exact faction-card text.
 3. [`docs/Gauntlet_v0.6_Neutral_Card_Pool.md`](docs/Gauntlet_v0.6_Neutral_Card_Pool.md) governs exact Neutral-card text.
 4. [`docs/Gauntlet_v0.6_Territory_Pool.md`](docs/Gauntlet_v0.6_Territory_Pool.md) governs exact Territory and Arena text.
 5. `Gauntlet_v0.6.0_Canonical_Data.json` is generated from those sources and must not be edited independently.
@@ -69,7 +69,7 @@ Generated PDFs, DOCX files, printable sheets, and deckbuilder output are derived
 
 ### `releases/`
 
-Versioned canonical and historical release packages. The current package is [`releases/v0.6/`](releases/v0.6/).
+Versioned canonical and historical release packages. The current package is [`releases/v0.6.0/`](releases/v0.6.0/).
 
 ### `docs/`
 
