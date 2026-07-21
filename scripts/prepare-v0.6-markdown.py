@@ -6,6 +6,17 @@ import re
 from pathlib import Path
 
 
+ONLINE_BLOCK = """
+## Online Tools and Updates
+
+The Gauntlet project repository, current release materials, and browser tools are available at **[gauntlet.run](https://gauntlet.run/)**.
+
+Build and validate v0.6 Decks with the **[Gauntlet Deckbuilder](https://gauntlet.run/deckbuilder-v0.6/)**.
+
+![QR code for the Gauntlet v0.6 Deckbuilder](images/qr/gauntlet-v0.6-deckbuilder.svg){ width=1.45in }
+"""
+
+
 def prepare_rulebook(source: str) -> str:
     source = source.replace("\r\n", "\n")
     parts = source.split("---", 1)
@@ -14,6 +25,10 @@ def prepare_rulebook(source: str) -> str:
     body = parts[1].lstrip("\n")
     body = body.replace("../../images/", "images/")
     body = body.replace("%20", " ")
+    marker = "\n---\n\n# Rules Conventions"
+    if marker not in body:
+        raise ValueError("Rulebook welcome-section marker not found")
+    body = body.replace(marker, f"\n{ONLINE_BLOCK}\n---\n\n# Rules Conventions", 1)
     frontmatter = """---
 title: GAUNTLET
 subtitle: Official Rulebook
@@ -40,7 +55,7 @@ lang: en-US
 <div class="docx-page-break"></div>
 
 """
-    return frontmatter + source.lstrip("\n")
+    return frontmatter + source.rstrip() + "\n\n" + ONLINE_BLOCK + "\n"
 
 
 def main() -> None:
