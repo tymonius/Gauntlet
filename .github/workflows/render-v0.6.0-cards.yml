@@ -5,7 +5,9 @@ on:
     branches: [main]
     paths:
       - releases/v0.6/Gauntlet_v0.6.0_Canonical_Data.json
-      - faction-sheets/**
+      - faction-sheets/*.html
+      - faction-sheets/*.css
+      - faction-sheets/*.js
       - images/**
       - scripts/build-v0.6.0-card-sheets.mjs
       - scripts/print-v0.6.0-card-sheets.mjs
