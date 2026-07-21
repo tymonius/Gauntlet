@@ -32,6 +32,10 @@ jobs:
           git ls-files -s > build/repository-cleanup-audit/tracked-files-with-blobs.txt
           git rev-parse HEAD > build/repository-cleanup-audit/head.txt
           git rev-parse HEAD^{tree} > build/repository-cleanup-audit/tree.txt
+          tar -czf build/repository-cleanup-audit/active-text-sources.tar.gz \
+            README.md docs data src \
+            faction-sheets/README.md deckbuilder/README.md deckbuilder-v0.6/README.md \
+            releases/v0.6/README.md
 
       - uses: actions/upload-artifact@v4
         with:
