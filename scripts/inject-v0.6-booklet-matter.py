@@ -21,9 +21,13 @@ def main() -> None:
     factions_divider = (
         release_dir / "rulebook-booklet-factions-divider.html"
     ).read_text(encoding="utf-8").strip()
-    spread_css = (
-        release_dir / "rulebook-booklet-spread-layout.css"
-    ).read_text(encoding="utf-8").strip()
+
+    spread_css_paths = sorted(release_dir.glob("rulebook-booklet-spread-*.css"))
+    if not spread_css_paths:
+        raise ValueError("No booklet spread-layout stylesheets were found")
+    spread_css = "\n\n".join(
+        path.read_text(encoding="utf-8").strip() for path in spread_css_paths
+    )
 
     # Keep this layout layer booklet-only without adding another stylesheet to
     # the shared Letter-PDF or DOCX generation paths.
