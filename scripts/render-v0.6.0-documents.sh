@@ -18,7 +18,7 @@ pandoc "$BUILD/rulebook-prepared.md" \
   --resource-path="$ROOT:$RELEASE" \
   --lua-filter="$ROOT/scripts/pagebreak.lua" \
   --reference-doc="$BUILD/reference.docx" \
-  --toc --toc-depth=2 \
+  --toc --toc-depth=1 \
   -o "$RELEASE/Gauntlet_v0.6.0_Rulebook.docx"
 
 pandoc "$BUILD/reference-prepared.md" \
@@ -32,15 +32,18 @@ pandoc "$BUILD/rulebook-prepared.md" \
   --from=gfm+raw_html \
   --resource-path="$ROOT:$RELEASE" \
   --lua-filter="$ROOT/scripts/pagebreak.lua" \
-  --standalone --toc --toc-depth=2 \
+  --standalone --section-divs --toc --toc-depth=1 \
   --css="$RELEASE/rulebook.css" \
+  --css="$RELEASE/rulebook-section-layout.css" \
   -o "$BUILD/rulebook.html"
 
 pandoc "$BUILD/reference-prepared.md" \
   --from=gfm+raw_html \
   --resource-path="$ROOT:$RELEASE" \
   --lua-filter="$ROOT/scripts/pagebreak.lua" \
-  --standalone --css="$RELEASE/rulebook.css" \
+  --standalone --section-divs \
+  --css="$RELEASE/rulebook.css" \
+  --css="$RELEASE/rulebook-section-layout.css" \
   -o "$BUILD/reference.html"
 
 weasyprint --base-url "$ROOT" "$BUILD/rulebook.html" "$RELEASE/Gauntlet_v0.6.0_Rulebook.pdf"
@@ -49,7 +52,7 @@ weasyprint --base-url "$ROOT" "$BUILD/reference.html" "$RELEASE/Gauntlet_v0.6.0_
 rulebook_pages="$(pdfinfo "$RELEASE/Gauntlet_v0.6.0_Rulebook.pdf" | awk '/^Pages:/ {print $2}')"
 reference_pages="$(pdfinfo "$RELEASE/Gauntlet_v0.6.0_Reference_Guide.pdf" | awk '/^Pages:/ {print $2}')"
 
-if (( rulebook_pages < 25 || rulebook_pages > 100 )); then
+if (( rulebook_pages < 22 || rulebook_pages > 30 )); then
   echo "Unexpected rulebook page count: $rulebook_pages" >&2
   exit 1
 fi
@@ -73,6 +76,11 @@ for ((page=1; page<=reference_pages; page++)); do
     exit 1
   fi
 done
+
+if pdftotext "$RELEASE/Gauntlet_v0.6.0_Rulebook.pdf" - | grep -Eq 'images/(sketches|qr)/|!\[[^]]+\]\('; then
+  echo "Rulebook contains unresolved image markup." >&2
+  exit 1
+fi
 
 pdftoppm -png -r 72 "$RELEASE/Gauntlet_v0.6.0_Rulebook.pdf" "$VALIDATION/rulebook-page"
 pdftoppm -png -r 90 "$RELEASE/Gauntlet_v0.6.0_Reference_Guide.pdf" "$VALIDATION/reference-page"

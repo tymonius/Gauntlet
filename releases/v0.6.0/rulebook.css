@@ -1,23 +1,54 @@
 @page {
   size: Letter;
-  margin: 0.68in 0.72in 0.68in 0.72in;
-  @bottom-center {
+  margin: 0.62in 0.66in 0.64in 0.66in;
+
+  @top-left {
+    content: "GAUNTLET";
+    color: #475569;
+    font-family: "Noto Sans", sans-serif;
+    font-size: 7.4pt;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+  }
+
+  @top-right {
+    content: string(chapter);
+    color: #64748b;
+    font-family: "Noto Sans", sans-serif;
+    font-size: 7.2pt;
+  }
+
+  @bottom-left {
+    content: "v0.6.0  •  OFFICIAL RULEBOOK";
+    color: #7b8491;
+    font-family: "Noto Sans", sans-serif;
+    font-size: 7pt;
+    letter-spacing: 0.05em;
+  }
+
+  @bottom-right {
     content: counter(page);
-    color: #666;
+    color: #5f6874;
     font-family: "Noto Sans", sans-serif;
     font-size: 8pt;
+    font-weight: 600;
   }
 }
 
 @page:first {
-  @bottom-center { content: none; }
+  margin: 0.48in;
+
+  @top-left { content: none; }
+  @top-right { content: none; }
+  @bottom-left { content: none; }
+  @bottom-right { content: none; }
 }
 
 html {
   font-family: "Noto Serif", serif;
-  font-size: 9.9pt;
+  font-size: 9.65pt;
   line-height: 1.31;
-  color: #202124;
+  color: #20242a;
 }
 
 body {
@@ -25,38 +56,141 @@ body {
   hyphens: auto;
 }
 
+/* Cover ------------------------------------------------------------------ */
+
 #title-block-header {
-  min-height: 8.3in;
+  position: relative;
+  box-sizing: border-box;
+  min-height: 9.92in;
+  padding: 2.28in 0.72in 0.7in;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
   text-align: center;
   page-break-after: always;
+  border: 1.4pt solid #172235;
+  background:
+    linear-gradient(180deg, rgba(23, 34, 53, 0.045), rgba(23, 34, 53, 0) 36%),
+    #fbfaf7;
+}
+
+#title-block-header::before {
+  content: "";
+  position: absolute;
+  inset: 0.18in;
+  border: 0.55pt solid #aeb6c2;
+}
+
+#title-block-header::after {
+  content: "";
+  width: 1.25in;
+  margin-top: 0.46in;
+  border-top: 4pt double #9a7a2f;
 }
 
 #title-block-header .title {
+  margin: 0;
   font-family: "Noto Sans", sans-serif;
-  font-size: 42pt;
-  letter-spacing: 0.12em;
-  margin: 0 0 0.18in 0;
+  font-size: 46pt;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.13em;
   color: #172235;
 }
 
 #title-block-header .subtitle {
+  margin: 0.24in 0 0;
   font-family: "Noto Sans", sans-serif;
   font-size: 17pt;
   font-weight: 500;
-  color: #475569;
-  margin: 0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #4b5563;
 }
 
 #title-block-header .date {
+  display: inline-block;
+  margin: 0.34in 0 0;
+  padding: 0.07in 0.18in;
+  border-top: 0.8pt solid #9aa4b2;
+  border-bottom: 0.8pt solid #9aa4b2;
   font-family: "Noto Sans", sans-serif;
-  font-size: 10pt;
-  color: #64748b;
-  margin-top: 0.35in;
+  font-size: 10.5pt;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  color: #475569;
 }
+
+/* Contents --------------------------------------------------------------- */
+
+nav#TOC {
+  min-height: 8.95in;
+  page-break-after: always;
+}
+
+nav#TOC::before {
+  content: "CONTENTS";
+  display: block;
+  margin: 0 0 0.25in;
+  padding: 0 0 0.10in;
+  border-bottom: 2pt solid #172235;
+  font-family: "Noto Sans", sans-serif;
+  font-size: 25pt;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  color: #172235;
+}
+
+nav#TOC > h1,
+nav#TOC > h2 {
+  display: none;
+}
+
+nav#TOC > ul {
+  margin: 0;
+  padding: 0;
+  columns: 2;
+  column-gap: 0.42in;
+  column-rule: 0.55pt solid #d6dbe1;
+  list-style: none;
+  font-family: "Noto Sans", sans-serif;
+  font-size: 9pt;
+  line-height: 1.22;
+}
+
+nav#TOC li {
+  margin: 0 0 0.055in;
+  break-inside: avoid;
+  page-break-inside: avoid;
+}
+
+nav#TOC li ul {
+  margin: 0.035in 0 0.095in 0.15in;
+  padding: 0;
+  list-style: none;
+  color: #5e6875;
+  font-size: 8.15pt;
+}
+
+nav#TOC a {
+  color: #273244;
+  text-decoration: none;
+}
+
+nav#TOC a[href="#military"]::before {
+  content: "FACTIONS";
+  display: block;
+  margin: 0.18in 0 0.08in;
+  padding-top: 0.10in;
+  border-top: 1pt solid #9aa4b2;
+  color: #6b7280;
+  font-size: 8pt;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+/* Flow and hierarchy ----------------------------------------------------- */
 
 .page-break {
   break-before: page;
@@ -72,99 +206,272 @@ h1, h2, h3, h4 {
 }
 
 h1 {
-  font-size: 23pt;
-  line-height: 1.12;
-  margin: 0 0 0.20in 0;
-  padding-bottom: 0.07in;
-  border-bottom: 1.4pt solid #64748b;
-  break-before: page;
-  page-break-before: always;
+  margin: 0.20in 0 0.16in;
+  padding: 0 0 0.07in;
+  border-bottom: 1.7pt solid #64748b;
+  font-size: 22pt;
+  line-height: 1.08;
+  string-set: chapter content();
 }
 
 h2 {
-  font-size: 16pt;
-  margin: 0.16in 0 0.07in 0;
+  margin: 0.14in 0 0.055in;
+  font-size: 14.5pt;
+  line-height: 1.12;
 }
 
 h3 {
-  font-size: 12.5pt;
-  margin: 0.13in 0 0.04in 0;
+  margin: 0.115in 0 0.035in;
+  font-size: 11.4pt;
+  line-height: 1.16;
 }
 
 h4 {
-  font-size: 10.7pt;
-  margin: 0.10in 0 0.03in 0;
+  margin: 0.09in 0 0.025in;
+  font-size: 10.2pt;
+  line-height: 1.16;
 }
 
 p {
-  margin: 0.03in 0 0.075in 0;
+  margin: 0.025in 0 0.065in;
   orphans: 3;
   widows: 3;
 }
 
+section.level1 > p:first-of-type {
+  color: #3c4654;
+  font-size: 9.9pt;
+}
+
 ul, ol {
-  margin: 0.04in 0 0.09in 0.24in;
-  padding-left: 0.14in;
+  margin: 0.035in 0 0.075in 0.21in;
+  padding-left: 0.13in;
 }
 
 li {
-  margin: 0.015in 0;
+  margin: 0.012in 0;
 }
 
-blockquote {
-  margin: 0.10in 0.18in;
-  padding: 0.07in 0.14in;
-  border-left: 3pt solid #64748b;
-  background: #f3f5f7;
-}
-
-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin: 0.08in 0 0.14in 0;
-  font-size: 9pt;
-  break-inside: avoid-page;
-}
-
-th, td {
-  border: 0.6pt solid #aeb6c2;
-  padding: 0.05in 0.07in;
-  vertical-align: top;
-}
-
-th {
-  font-family: "Noto Sans", sans-serif;
-  font-weight: 700;
-  background: #e7ebf0;
-  color: #172235;
-}
-
-img {
-  display: block;
-  max-width: 72%;
-  max-height: 4.35in;
-  width: auto;
-  height: auto;
-  object-fit: contain;
-  margin: 0.10in auto 0.15in auto;
-  break-inside: avoid-page;
-}
-
-code {
-  font-family: "Noto Sans Mono", monospace;
-  font-size: 0.92em;
+li > p {
+  margin-bottom: 0.02in;
 }
 
 hr {
+  margin: 0.12in 0;
   border: 0;
-  border-top: 0.7pt solid #c2c8d0;
-  margin: 0.15in 0;
+  border-top: 0.7pt solid #c8cdd4;
 }
 
 strong {
   color: #111827;
 }
 
+/* Two-column passages ---------------------------------------------------- */
+
+section.level1#components,
+section.level1#building-a-deck,
+section.level1#setup,
+section.level1#turn-structure,
+section.level1#movement,
+section.level1#territory-control,
+section.level1#game-zones,
+section.level1#actions-assets-and-overlays,
+section.level1#glossary {
+  columns: 2;
+  column-gap: 0.28in;
+  column-rule: 0.45pt solid #d9dde3;
+}
+
+section.level1#components > h1,
+section.level1#building-a-deck > h1,
+section.level1#setup > h1,
+section.level1#turn-structure > h1,
+section.level1#movement > h1,
+section.level1#territory-control > h1,
+section.level1#game-zones > h1,
+section.level1#actions-assets-and-overlays > h1,
+section.level1#glossary > h1,
+section.level1 table,
+section.level1 blockquote {
+  column-span: all;
+}
+
+section.level1#glossary p {
+  margin-bottom: 0.05in;
+  break-inside: avoid;
+}
+
+/* Callouts and tables ---------------------------------------------------- */
+
+blockquote {
+  position: relative;
+  box-sizing: border-box;
+  margin: 0.095in 0 0.12in;
+  padding: 0.09in 0.14in 0.09in 0.17in;
+  border: 0;
+  border-left: 4pt solid #8a95a3;
+  border-radius: 2pt;
+  background: #eef0f2;
+  color: #2e3743;
+  break-inside: avoid-page;
+}
+
+blockquote p:last-child {
+  margin-bottom: 0;
+}
+
+table {
+  width: 100%;
+  margin: 0.07in 0 0.12in;
+  border-collapse: collapse;
+  font-size: 8.65pt;
+  line-height: 1.24;
+  break-inside: avoid-page;
+}
+
+th, td {
+  padding: 0.045in 0.065in;
+  border: 0.55pt solid #aeb6c2;
+  vertical-align: top;
+}
+
+th {
+  font-family: "Noto Sans", sans-serif;
+  font-weight: 700;
+  color: #172235;
+  background: #dfe4e9;
+}
+
+tbody tr:nth-child(even) td {
+  background: #f6f7f8;
+}
+
+code {
+  font-family: "Noto Sans Mono", monospace;
+  font-size: 0.91em;
+}
+
+/* Images and leader profiles -------------------------------------------- */
+
+img {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 70%;
+  max-height: 4.25in;
+  margin: 0.08in auto 0.12in;
+  object-fit: contain;
+  break-inside: avoid-page;
+}
+
+img[alt*="QR code"] {
+  width: 1.28in;
+  max-width: 1.28in;
+  margin: 0.13in auto 0.10in;
+}
+
+section#general,
+section#commandant,
+section#ambassador,
+section#senator,
+section#banker,
+section#executive,
+section#ranger,
+section#spymaster,
+section#alchemist,
+section#spirit-walker,
+section#grand-inquisitor,
+section#witch-hunter {
+  overflow: hidden;
+}
+
+section#general > h2,
+section#commandant > h2,
+section#ambassador > h2,
+section#senator > h2,
+section#banker > h2,
+section#executive > h2,
+section#ranger > h2,
+section#spymaster > h2,
+section#alchemist > h2,
+section#spirit-walker > h2,
+section#grand-inquisitor > h2,
+section#witch-hunter > h2 {
+  margin-top: 0.02in;
+  padding-bottom: 0.06in;
+  border-bottom: 1pt solid #b7bec8;
+  font-size: 21pt;
+}
+
+section#general img,
+section#commandant img,
+section#ambassador img,
+section#senator img,
+section#banker img,
+section#executive img,
+section#ranger img,
+section#spymaster img,
+section#alchemist img,
+section#spirit-walker img,
+section#grand-inquisitor img,
+section#witch-hunter img {
+  float: left;
+  width: 43%;
+  max-width: 43%;
+  max-height: 6.55in;
+  margin: 0.06in 0.28in 0.13in 0;
+}
+
+section#general::after,
+section#commandant::after,
+section#ambassador::after,
+section#senator::after,
+section#banker::after,
+section#executive::after,
+section#ranger::after,
+section#spymaster::after,
+section#alchemist::after,
+section#spirit-walker::after,
+section#grand-inquisitor::after,
+section#witch-hunter::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+/* Faction section -------------------------------------------------------- */
+
+h1#military,
+h1#diplomats,
+h1#financiers,
+h1#intelligence,
+h1#mystics,
+h1#inquisition,
+h1#glossary {
+  break-before: page;
+  page-break-before: always;
+}
+
+h1#military::before {
+  content: "FACTIONS";
+  display: block;
+  margin-bottom: 0.14in;
+  color: #6b7280;
+  font-size: 9pt;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+h1#military { border-bottom-color: #8f2f2b; }
+h1#diplomats { border-bottom-color: #275487; }
+h1#financiers { border-bottom-color: #2f6b4d; }
+h1#intelligence { border-bottom-color: #3f454d; }
+h1#mystics { border-bottom-color: #60437d; }
+h1#inquisition { border-bottom-color: #9a7a2f; }
+
 @media print {
-  a { color: inherit; text-decoration: none; }
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
 }

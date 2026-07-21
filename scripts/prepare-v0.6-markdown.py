@@ -26,7 +26,6 @@ def prepare_rulebook(source: str) -> str:
         raise ValueError("Rulebook title separator not found")
     body = parts[1].lstrip("\n")
     body = body.replace("../../images/", "images/")
-    body = body.replace("%20", " ")
     marker = "\n---\n\n# Rules Conventions"
     if marker not in body:
         raise ValueError("Rulebook welcome-section marker not found")
