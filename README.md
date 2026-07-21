@@ -49,7 +49,6 @@ To run the Gauntlet, a player must defeat the opponent on their final Territory,
 
 - [Gauntlet v0.6 Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder-v0.6/) — build, validate, save, export, randomize, and print faction-era Decks.
 - [Gauntlet v0.6 Faction Sheets](https://tymonius.github.io/Gauntlet/faction-sheets/) — browser-printable faction cards and supplemental components.
-- [Gauntlet v0.5 Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder/) — historical pre-faction deckbuilder.
 
 Scan to open the v0.6 Deckbuilder:
 
