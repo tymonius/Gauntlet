@@ -1,0 +1,73 @@
+name: Rename v0.6 release directory
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  rename:
+    if: github.head_ref == 'agent/rename-release-directory-v0.6.0'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref }}
+
+      - name: Rename directory and update references
+        run: |
+          set -euo pipefail
+
+          if [ -d releases/v0.6 ]; then
+            test ! -e releases/v0.6.0
+            git mv releases/v0.6 releases/v0.6.0
+          fi
+
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          import subprocess
+
+          pattern = re.compile(r"releases/v0\.6(?!\.0)")
+          tracked = subprocess.check_output(["git", "ls-files", "-z"]).split(b"\0")
+
+          for raw in tracked:
+              if not raw:
+                  continue
+              path = Path(raw.decode())
+              if not path.is_file():
+                  continue
+              data = path.read_bytes()
+              if b"\0" in data:
+                  continue
+              try:
+                  text = data.decode("utf-8")
+              except UnicodeDecodeError:
+                  continue
+              updated, count = pattern.subn("releases/v0.6.0", text)
+              if count:
+                  path.write_text(updated, encoding="utf-8")
+          PY
+
+          test -d releases/v0.6.0
+          test ! -e releases/v0.6
+
+          if git grep -nP 'releases/v0\.6(?!\.0)' -- ':!docs/Archive/**'; then
+            echo 'Found an active reference to the old release directory.' >&2
+            exit 1
+          fi
+
+      - name: Commit renamed release directory
+        run: |
+          if git diff --quiet && git diff --cached --quiet; then
+            echo 'Release directory is already renamed.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Rename v0.6 release directory to v0.6.0'
+          git push origin HEAD
