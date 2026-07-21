@@ -20,7 +20,7 @@ jobs:
         run: |
           npm install
           npm install --no-save playwright
-          npx playwright install --with-deps chromium
+          npx playwright install chromium
           python3 -m pip install pypdf pymupdf pillow
       - name: Run repository checks
         run: |
@@ -80,7 +80,7 @@ jobs:
             const footer = document.querySelector('.sheet-footer');
             const sheetBox = sheet.getBoundingClientRect();
             const footerBox = footer.getBoundingClientRect();
-            const descendants = [...sheet.querySelectorAll('*')].filter(element => !element.closest('.screen-only'));
+            const descendants = [...sheet.querySelectorAll('*')];
             const lowest = Math.max(...descendants.map(element => element.getBoundingClientRect().bottom));
             return {
               width: sheetBox.width,
