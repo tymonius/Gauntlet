@@ -10,6 +10,8 @@ mkdir -p "$BUILD" "$VALIDATION"
 find "$VALIDATION" -maxdepth 1 -type f -name '*.png' -delete
 
 python3 scripts/prepare-v0.6-markdown.py rulebook "$RELEASE/Gauntlet_v0.6.0_Rulebook.md" "$BUILD/rulebook-prepared.md"
+printf '\n' >> "$BUILD/rulebook-prepared.md"
+cat "$RELEASE/rulebook-colophon.md" >> "$BUILD/rulebook-prepared.md"
 python3 scripts/prepare-v0.6-markdown.py reference "$RELEASE/Gauntlet_v0.6.0_Reference_Guide.md" "$BUILD/reference-prepared.md"
 python3 scripts/create-v0.6-reference-docx.py
 
@@ -35,6 +37,7 @@ pandoc "$BUILD/rulebook-prepared.md" \
   --standalone --section-divs --toc --toc-depth=1 \
   --css="$RELEASE/rulebook.css" \
   --css="$RELEASE/rulebook-section-layout.css" \
+  --css="$RELEASE/rulebook-colophon.css" \
   -o "$BUILD/rulebook.html"
 
 pandoc "$BUILD/rulebook-prepared.md" \
@@ -44,6 +47,7 @@ pandoc "$BUILD/rulebook-prepared.md" \
   --standalone --section-divs --toc --toc-depth=1 \
   --css="$RELEASE/rulebook.css" \
   --css="$RELEASE/rulebook-section-layout.css" \
+  --css="$RELEASE/rulebook-colophon.css" \
   --css="$RELEASE/rulebook-booklet.css" \
   --css="$RELEASE/rulebook-booklet-refinements.css" \
   -o "$BUILD/rulebook-booklet.html"
