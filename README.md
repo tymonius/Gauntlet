@@ -2,7 +2,7 @@
 
 Gauntlet is a two-player tactical card-and-territory game about deck construction, hidden battle commitments, territorial control, faction asymmetry, and running the Gauntlet.
 
-**Project site:** [tymonius.github.io/Gauntlet](https://tymonius.github.io/Gauntlet/) — the hosted site for Gauntlet repository materials, releases, and browser tools.
+**Project site:** [gauntlet.run](https://gauntlet.run/) — the custom URL for Gauntlet repository materials, releases, and browser tools.
 
 ## Canonical release
 
@@ -47,8 +47,8 @@ To run the Gauntlet, a player must defeat the opponent on their final Territory,
 
 ## Playtest tools
 
-- [Gauntlet v0.6 Deckbuilder](https://tymonius.github.io/Gauntlet/deckbuilder-v0.6/) — build, validate, save, export, randomize, and print faction-era Decks.
-- [Gauntlet v0.6 Faction Sheets](https://tymonius.github.io/Gauntlet/faction-sheets/) — browser-printable faction cards and supplemental components.
+- [Gauntlet v0.6 Deckbuilder](https://gauntlet.run/deckbuilder/) — build, validate, save, export, randomize, and print faction-era Decks.
+- [Gauntlet v0.6 Faction Sheets](https://gauntlet.run/faction-sheets/) — browser-printable faction cards and supplemental components.
 
 Scan to open the v0.6 Deckbuilder:
 
@@ -82,11 +82,11 @@ Browser-printable faction cards, Leader Cards, trackers, references, Deeds, Prop
 
 Leader portraits and production artwork. Canonical rulebook Leader sketches are under `images/sketches/`. QR codes for public tools are under `images/qr/`.
 
-### `deckbuilder-v0.6/`
+### `deckbuilder/`
 
 Faction-era browser deckbuilder. It reads the active canonical card and Territory sources and produces complete Deck packages.
 
-### `deckbuilder/`
+### `deckbuilder-v0.5/`
 
 Historical v0.5 deckbuilder.
 
@@ -122,7 +122,7 @@ python3 -m http.server 8000
 Then open:
 
 ```text
-http://localhost:8000/deckbuilder-v0.6/
+http://localhost:8000/deckbuilder/
 http://localhost:8000/faction-sheets/
 ```
 
