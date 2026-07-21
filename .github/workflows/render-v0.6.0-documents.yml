@@ -56,13 +56,18 @@ jobs:
       - name: Commit rendered documents
         run: |
           rm -f releases/v0.6/Gauntlet_v0.6.0_Document_Build_Error.txt
+          set +e
           node scripts/commit-generated-files.mjs \
             "Render v0.6.0 rulebook and reference guide [skip ci]" -- \
             releases/v0.6/Gauntlet_v0.6.0_Rulebook.docx \
             releases/v0.6/Gauntlet_v0.6.0_Rulebook.pdf \
             releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.docx \
             releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.pdf \
-            releases/v0.6/Gauntlet_v0.6.0_Document_Build_Error.txt
+            releases/v0.6/Gauntlet_v0.6.0_Document_Build_Error.txt \
+            > document-commit.log 2>&1
+          status=$?
+          cat document-commit.log
+          exit "$status"
 
       - uses: actions/upload-artifact@v4
         if: always()
@@ -70,6 +75,7 @@ jobs:
           name: gauntlet-v0.6.0-documents
           path: |
             document-build.log
+            document-commit.log
             releases/v0.6/Gauntlet_v0.6.0_Rulebook.docx
             releases/v0.6/Gauntlet_v0.6.0_Rulebook.pdf
             releases/v0.6/Gauntlet_v0.6.0_Reference_Guide.docx
