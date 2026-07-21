@@ -1,0 +1,44 @@
+name: Apply repository cleanup
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/apply-repository-cleanup.py
+      - .github/workflows/apply-repository-cleanup.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Apply and validate cleanup
+        run: python3 scripts/apply-repository-cleanup.py
+
+      - name: Commit cleanup results
+        run: |
+          node scripts/commit-generated-files.mjs \
+            "Consolidate active repository documentation [skip ci]" -- \
+            README.md \
+            docs/README.md \
+            docs/Archive/README.md \
+            docs/Archive/Gauntlet_Digital_Prototype_Roadmap.md \
+            docs/Gauntlet_Digital_Prototype_Roadmap.md \
+            docs/Gauntlet_Digital_Roadmap.md \
+            docs/Gauntlet_Lore_Development_Notes.md \
+            docs/Gauntlet_v0.6_Faction_Card_Design_Guide.md \
+            docs/Gauntlet_v0.6_Leader_Design_Bible.md \
+            docs/Gauntlet_v0.7_Parking_Lot.md \
+            data/README.md \
+            src/README.md \
+            faction-sheets/README.md
