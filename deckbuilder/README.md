@@ -24,6 +24,8 @@ Each preset contains:
 
 Choose a faction and Leader, then select **Load recommended deck**. The loaded Deck can be modified, saved, exported, copied as text, or printed immediately with its Leader and all required supplemental components. When the current Deck still exactly matches the pre-built preset, its strategy summary, first-game tip, and recommended Territory order from the player's end outward are also printed in the top informational section before the cards.
 
+Select **Print all 12 starter decks** to build one combined print job containing every complete recommended Leader Deck. Each of the twelve packages retains its own summary, strategy advice, ordered Territories, Leader Card, playable cards, and required faction components. The combined print job respects the current **Print card backs** checkbox.
+
 The presets are designed for onboarding and broad playtesting. They are recommended starting points, not claims of optimal competitive construction.
 
 ## Current scope
@@ -32,6 +34,7 @@ The Deckbuilder supports:
 
 - all six factions and twelve Leaders, with Leader-rule summaries;
 - twelve validated recommended starter Decks;
+- one-click combined printing of all twelve complete starter packages;
 - Neutral plus selected-faction card legality;
 - live parsing of all six definitive faction-guide Markdown sources;
 - card search and cost/allegiance filters;
@@ -89,7 +92,9 @@ The **Print / PDF** control opens a browser-printable Letter-size package and th
 - every required faction tracker, ledger, reference, and supplemental card; and
 - standardized 2.5 × 3.5-inch cut lines.
 
-Enable **Print card backs** to add mirrored reverse pages for playable cards and Territories. Print at Actual Size / 100%, disable browser headers and footers, and choose **Flip on long edge** for duplex pages.
+The **Print all 12 starter decks** control assembles the same complete output for every pre-built Deck into a single browser print job and restores the Deck currently open in the builder after generation.
+
+Enable **Print card backs** to add mirrored reverse pages for playable cards and Territories. This option also applies to the combined twelve-Deck print job. Print at Actual Size / 100%, disable browser headers and footers, and choose **Flip on long edge** for duplex pages.
 
 Faction packages render as follows:
 
