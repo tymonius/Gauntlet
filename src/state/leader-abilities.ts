@@ -3,6 +3,7 @@ import type {
   LeaderAbilityCost,
   LeaderAbilityTiming,
   LeaderAbilityUsageLimit,
+  LeaderAbilityUsageState,
   LegalLeaderAbilityOption,
   PlayerID,
 } from '../types';
@@ -29,20 +30,23 @@ export class LeaderAbilityError extends Error {
 
 export class LeaderAbilityRegistry {
   private readonly abilities = new Map<string, LeaderAbilityDefinition>();
-
   constructor(definitions: readonly LeaderAbilityDefinition[] = []) {
     for (const definition of definitions) this.register(definition);
   }
-
   register(definition: LeaderAbilityDefinition): void {
     if (this.abilities.has(definition.id)) throw new LeaderAbilityError(`Duplicate Leader ability: ${definition.id}.`);
     this.abilities.set(definition.id, definition);
   }
-
   get(id: string): LeaderAbilityDefinition | undefined { return this.abilities.get(id); }
   forLeader(leaderName?: string): LeaderAbilityDefinition[] {
     return leaderName ? [...this.abilities.values()].filter((ability) => ability.leaderName === leaderName) : [];
   }
+}
+
+function usageFor(game: GameState, playerId: PlayerID): LeaderAbilityUsageState {
+  const player = game.players[playerId];
+  player.leaderAbilityUsage ??= { turn: {}, battle: {} };
+  return player.leaderAbilityUsage;
 }
 
 function timingIsOpen(game: GameState, playerId: PlayerID, timing: LeaderAbilityTiming): boolean {
@@ -62,7 +66,7 @@ function timingIsOpen(game: GameState, playerId: PlayerID, timing: LeaderAbility
 }
 
 function usageAvailable(game: GameState, playerId: PlayerID, ability: LeaderAbilityDefinition): boolean {
-  const usage = game.players[playerId].leaderAbilityUsage;
+  const usage = usageFor(game, playerId);
   const limit = ability.usageLimit ?? 'none';
   if (limit === 'once_per_turn') return usage.turn[ability.id] !== game.turn;
   if (limit === 'once_per_battle') return Boolean(game.battle) && usage.battle[ability.id] !== game.battle?.id;
@@ -115,8 +119,9 @@ export function useLeaderAbility(
   if (ability.cost) spendFactionResource(game, playerId, ability.cost.resource, ability.cost.amount, `Leader ability: ${ability.name}`);
   ability.resolve(game, playerId);
 
-  if ((ability.usageLimit ?? 'none') === 'once_per_turn') player.leaderAbilityUsage.turn[ability.id] = game.turn;
-  if ((ability.usageLimit ?? 'none') === 'once_per_battle' && game.battle) player.leaderAbilityUsage.battle[ability.id] = game.battle.id;
+  const usage = usageFor(game, playerId);
+  if ((ability.usageLimit ?? 'none') === 'once_per_turn') usage.turn[ability.id] = game.turn;
+  if ((ability.usageLimit ?? 'none') === 'once_per_battle' && game.battle) usage.battle[ability.id] = game.battle.id;
 
   game.log.push({
     id: `${game.id}-event-${game.log.length + 1}`,
@@ -130,11 +135,11 @@ export function useLeaderAbility(
 }
 
 export function resetLeaderAbilityUsageForNewTurn(game: GameState, playerId: PlayerID): void {
-  game.players[playerId].leaderAbilityUsage.turn = {};
+  usageFor(game, playerId).turn = {};
 }
 
 export function resetLeaderAbilityUsageAfterBattle(game: GameState): void {
-  for (const player of Object.values(game.players)) player.leaderAbilityUsage.battle = {};
+  for (const playerId of Object.keys(game.players)) usageFor(game, playerId).battle = {};
 }
 
 export const defaultLeaderAbilityRegistry = new LeaderAbilityRegistry([
