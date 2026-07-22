@@ -3,6 +3,7 @@ export * from './zones';
 export * from './resources';
 export * from './leader';
 export * from './military';
+export * from './diplomats';
 export * from './player';
 export * from './board';
 export * from './battle';

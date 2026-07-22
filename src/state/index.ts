@@ -5,6 +5,7 @@ export * from './v06-setup';
 export * from './resources';
 export * from './leader-abilities';
 export * from './military-interactions';
+export * from './diplomat-terms';
 export * from './actions';
 export * from './draw';
 export { applyGameAction } from './apply';

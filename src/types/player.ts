@@ -1,6 +1,7 @@
 import type { CardID, PlayerID, TerritoryID } from './ids';
 import type { LeaderAbilityUsageState } from './leader';
 import type { MilitaryCardState } from './military';
+import type { DiplomatState } from './diplomats';
 import type { FactionResourceMap } from './resources';
 import type { PrivateZones, PublicZoneView } from './zones';
 
@@ -13,6 +14,7 @@ export interface PlayerState {
   leaderAbilityUsage?: LeaderAbilityUsageState;
   factionTriggerUsage?: Record<string, number>;
   military?: MilitaryCardState;
+  diplomats?: DiplomatState;
   zones: PrivateZones;
   controlledTerritories: TerritoryID[];
   occupiedSpaceId?: string;
@@ -30,6 +32,7 @@ export interface PublicPlayerView {
   resources?: FactionResourceMap;
   leaderAbilityUsage?: LeaderAbilityUsageState;
   military?: MilitaryCardState;
+  diplomats?: DiplomatState;
   zones: { deck: PublicZoneView; hand: PublicZoneView; discard: PublicZoneView; graveyard: PublicZoneView; assetBank: PublicZoneView; removed: PublicZoneView; };
   controlledTerritoryCount: number;
   controlledTerritories: TerritoryID[];
