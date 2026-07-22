@@ -1,4 +1,4 @@
-import type { GameAction } from './actions';
+import type { GameAction, StateAction } from './actions';
 import {
   applyGameAction as applyGameActionWithoutAutomation,
   GameActionError,
@@ -83,7 +83,7 @@ function finalizeLastStandResolution(result: ApplyGameActionResult, attacker?: P
   appendLastStandVictoryLog(result.state, attacker, defender);
 }
 
-export function applyGameAction(game: GameState, action: GameAction): ApplyGameActionResult {
+export function applyGameAction(game: GameState, action: StateAction): ApplyGameActionResult {
   if (action.type === 'use_leader_ability') {
     const next = structuredClone(game);
     useLeaderAbility(next, action.playerId, action.abilityId);
@@ -97,7 +97,6 @@ export function applyGameAction(game: GameState, action: GameAction): ApplyGameA
   markLastStand(result, action);
   runPostActionAutomationPipeline(result.state);
   finalizeLastStandResolution(result, prepared.attacker, prepared.defender);
-
   if (action.type === 'resolve_battle') resetLeaderAbilityUsageAfterBattle(result.state);
   if (action.type === 'end_turn') resetLeaderAbilityUsageForNewTurn(result.state, result.state.activePlayer);
   return result;
