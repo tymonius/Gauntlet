@@ -5,6 +5,8 @@ import {
   type ApplyGameActionResult,
 } from './reducer';
 import {
+  defaultLeaderAbilityRegistry,
+  legalLeaderAbilitiesFor,
   resetLeaderAbilityUsageAfterBattle,
   resetLeaderAbilityUsageForNewTurn,
   useLeaderAbility,
@@ -88,12 +90,29 @@ function applyMilitaryCommandTrigger(game: GameState, winner: PlayerID): void {
   gainFactionResource(game, winner, 'command', 1, 'First battle victory this turn');
 }
 
+function openPostBattleOrderWindow(game: GameState, winner: PlayerID): void {
+  const options = legalLeaderAbilitiesFor(game, winner).filter((option) => option.timing === 'after_battle');
+  if (options.length === 0) return;
+  game.pendingLeaderAbilityWindow = {
+    playerId: winner,
+    timing: 'after_battle',
+    battleId: game.recentBattleResult!.battleId,
+  };
+  game.priorityPlayer = winner;
+}
+
 function recordBattleAftermath(result: ApplyGameActionResult, battle?: BattleState): void {
   if (!battle) return;
   const winner = lastResolvedBattleWinner(result.state);
   if (!winner) return;
   result.state.recentBattleResult = recentBattleResult(result.state, battle, winner);
   applyMilitaryCommandTrigger(result.state, winner);
+  openPostBattleOrderWindow(result.state, winner);
+}
+
+function closePostBattleOrderWindow(game: GameState): void {
+  game.pendingLeaderAbilityWindow = undefined;
+  if (game.phase !== 'game_over') game.priorityPlayer = game.activePlayer;
 }
 
 function appendLastStandVictoryLog(game: GameState, winner: PlayerID, defeatedPlayer: PlayerID): void {
@@ -115,16 +134,32 @@ function finalizeLastStandResolution(result: ApplyGameActionResult, attacker?: P
   result.state.winner = attacker;
   result.state.phase = 'game_over';
   result.state.priorityPlayer = attacker;
+  result.state.pendingLeaderAbilityWindow = undefined;
   result.state.pendingAssetBankDiscards = undefined;
   appendLastStandVictoryLog(result.state, attacker, defender);
 }
 
 export function applyGameAction(game: GameState, action: StateAction): ApplyGameActionResult {
+  if (action.type === 'pass_leader_ability_window') {
+    if (game.pendingLeaderAbilityWindow?.playerId !== action.playerId) {
+      throw new GameActionError(`${action.playerId} has no Leader ability window to pass.`);
+    }
+    const next = structuredClone(game);
+    closePostBattleOrderWindow(next);
+    return { state: next };
+  }
+
   if (action.type === 'use_leader_ability') {
     const next = structuredClone(game);
+    const definition = defaultLeaderAbilityRegistry.get(action.abilityId);
     useLeaderAbility(next, action.playerId, action.abilityId);
+    if (definition?.timing === 'after_battle') closePostBattleOrderWindow(next);
     runPostActionAutomationPipeline(next);
     return { state: next };
+  }
+
+  if (game.pendingLeaderAbilityWindow) {
+    throw new GameActionError('Resolve or pass the pending post-battle Order window first.');
   }
 
   validateV06EndpointMovement(game, action);
@@ -140,6 +175,7 @@ export function applyGameAction(game: GameState, action: StateAction): ApplyGame
   if (action.type === 'resolve_battle') resetLeaderAbilityUsageAfterBattle(result.state);
   if (action.type === 'end_turn') {
     result.state.recentBattleResult = undefined;
+    result.state.pendingLeaderAbilityWindow = undefined;
     resetLeaderAbilityUsageForNewTurn(result.state, result.state.activePlayer);
   }
   return result;
