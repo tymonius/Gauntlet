@@ -26,7 +26,7 @@ export function enrichRecentBattleResult(result: RecentBattleResult, battle: Bat
 }
 
 function cardWasPlayed(result: RecentBattleResult, playerId: PlayerID, cardId: CardID): boolean {
-  return (result.battleHandCards[playerId] ?? []).includes(cardId) || (result.handCommittedCards[playerId] ?? []).includes(cardId);
+  return (result.battleHandCards?.[playerId] ?? []).includes(cardId) || (result.handCommittedCards?.[playerId] ?? []).includes(cardId);
 }
 
 function hasCardSource(game: GameState, playerId: PlayerID, cardId: CardID): boolean {
@@ -44,20 +44,20 @@ function activateNext(game: GameState): void {
   if (game.militaryChoiceQueue?.length === 0) game.militaryChoiceQueue = undefined;
 }
 
-export function buildMilitaryAftermathChoices(game: GameState, battle: BattleState): void {
+export function buildMilitaryAftermathChoices(game: GameState, _battle: BattleState): void {
   const result = game.recentBattleResult;
   if (!result) return;
   const winner = game.players[result.winner];
   const loser = game.players[result.loser];
 
   if (winner.factionId === 'military') {
-    const usedOrders = (result.ordersUsed[result.winner] ?? []).length > 0;
+    const usedOrders = (result.ordersUsed?.[result.winner] ?? []).length > 0;
     if (cardWasPlayed(result, result.winner, 'military-unbroken-ranks') && !usedOrders) {
       gainFactionResource(game, result.winner, 'command', 1, 'Unbroken Ranks');
     }
 
     if (cardWasPlayed(result, result.winner, 'military-battlefield-promotion')) {
-      const options = (result.battleHandCards[result.winner] ?? []).filter((card) => card !== 'military-battlefield-promotion' && winner.zones.discard.includes(card));
+      const options = (result.battleHandCards?.[result.winner] ?? []).filter((card) => card !== 'military-battlefield-promotion' && winner.zones.discard.includes(card));
       if (options.length > 0) queue(game, { kind: 'battlefield_promotion', playerId: result.winner, sourceCardId: 'military-battlefield-promotion', options });
     }
 
@@ -74,13 +74,14 @@ export function buildMilitaryAftermathChoices(game: GameState, battle: BattleSta
     }
 
     if (hasCardSource(game, result.winner, 'military-war-crimes')) {
-      queue(game, { kind: 'war_crimes', playerId: result.winner, sourceCardId: 'military-war-crimes', defeatedPlayer: result.loser, affectedCards: [...(result.battleHandCards[result.loser] ?? [])], options: ['use', 'pass'] });
+      queue(game, { kind: 'war_crimes', playerId: result.winner, sourceCardId: 'military-war-crimes', defeatedPlayer: result.loser, affectedCards: [...(result.battleHandCards?.[result.loser] ?? [])], options: ['use', 'pass'] });
     }
 
     if (result.winner === result.attacker && hasCardSource(game, result.winner, 'military-shock-and-awe')) {
       const loserSpace = game.board.spaces.find((space) => space.occupant === result.loser);
-      const extraRetreat = loserSpace && game.board.spaces.some((space) => space.index === loserSpace.index + result.retreatDirection && !space.occupant);
-      queue(game, { kind: 'shock_and_awe', playerId: result.winner, sourceCardId: 'military-shock-and-awe', location: result.location, defeatedPlayer: result.loser, options: extraRetreat ? ['breakthrough', 'consolidate'] : ['consolidate'] });
+      const extraRetreat = Boolean(loserSpace && game.board.spaces.some((space) => space.index === loserSpace.index + result.retreatDirection && !space.occupant));
+      const options: Array<'breakthrough' | 'consolidate'> = extraRetreat ? ['breakthrough', 'consolidate'] : ['consolidate'];
+      queue(game, { kind: 'shock_and_awe', playerId: result.winner, sourceCardId: 'military-shock-and-awe', location: result.location, defeatedPlayer: result.loser, options });
     }
   }
 
