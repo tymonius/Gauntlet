@@ -34,6 +34,9 @@ export function toPublicPlayerView(player: PlayerState): PublicPlayerView {
   return {
     id: player.id,
     name: player.name,
+    factionId: player.factionId,
+    leaderName: player.leaderName,
+    resources: structuredClone(player.resources),
     zones: {
       deck: hidden(player.zones.deck),
       hand: hidden(player.zones.hand),

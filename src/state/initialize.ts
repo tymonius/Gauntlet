@@ -9,6 +9,7 @@ import type {
   PlayerState,
   TerritoryID,
 } from '../types';
+import { createInitialFactionResources } from './resources';
 import { assertValidGameSetup } from './validation';
 
 export interface PlayerSetupInput {
@@ -65,6 +66,7 @@ function createPlayerState(
     name: input.name,
     factionId: input.factionId,
     leaderName: input.leaderName,
+    resources: createInitialFactionResources(input.factionId),
     zones: {
       deck,
       hand,
