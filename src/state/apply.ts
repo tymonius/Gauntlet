@@ -12,6 +12,7 @@ import {
   resetLeaderAbilityUsageForNewTurn,
   useLeaderAbility,
 } from './leader-abilities';
+import { buildMilitaryAftermathChoices, enrichRecentBattleResult, resolveMilitaryChoice } from './military-interactions';
 import { gainFactionResource } from './resources';
 import { runPostActionAutomationPipeline } from './pipeline';
 import { isOpponentBeyondGauntletSpace, isOwnBeyondGauntletSpace } from './v06-board';
@@ -63,7 +64,21 @@ function recentBattleResult(game: GameState, battle: BattleState, winner: Player
   const location = game.board.spaces.find((space) => space.id === battle.location)!;
   const origin = game.board.spaces.find((space) => space.id === battle.attackerOrigin)!;
   const attackerDirection = location.index > origin.index ? 1 : -1;
-  return { battleId: battle.id, turn: game.turn, winner, loser: winner === battle.attacker.playerId ? battle.defender.playerId : battle.attacker.playerId, attacker: battle.attacker.playerId, defender: battle.defender.playerId, location: battle.location, attackerOrigin: battle.attackerOrigin, retreatDirection: (winner === battle.attacker.playerId ? attackerDirection : -attackerDirection) as -1 | 1 };
+  const base: RecentBattleResult = {
+    battleId: battle.id,
+    turn: game.turn,
+    winner,
+    loser: winner === battle.attacker.playerId ? battle.defender.playerId : battle.attacker.playerId,
+    attacker: battle.attacker.playerId,
+    defender: battle.defender.playerId,
+    location: battle.location,
+    attackerOrigin: battle.attackerOrigin,
+    retreatDirection: (winner === battle.attacker.playerId ? attackerDirection : -attackerDirection) as -1 | 1,
+    battleHandCards: {},
+    handCommittedCards: {},
+    ordersUsed: {},
+  };
+  return enrichRecentBattleResult(base, battle, game);
 }
 
 function applyMilitaryCommandTrigger(game: GameState, winner: PlayerID): void {
@@ -76,6 +91,9 @@ function applyMilitaryCommandTrigger(game: GameState, winner: PlayerID): void {
 }
 
 function openPostBattleOrderWindow(game: GameState, winner: PlayerID): void {
+  if (game.pendingMilitaryChoice) return;
+  const restrictions = game.players[winner].military?.victoryRestrictions;
+  if (restrictions?.noOrders) return;
   const options = legalLeaderAbilitiesFor(game, winner).filter((option) => option.timing === 'after_battle');
   if (options.length === 0) return;
   game.pendingLeaderAbilityWindow = { playerId: winner, timing: 'after_battle', battleId: game.recentBattleResult!.battleId };
@@ -88,6 +106,7 @@ function recordBattleAftermath(result: ApplyGameActionResult, battle?: BattleSta
   if (!winner) return;
   result.state.recentBattleResult = recentBattleResult(result.state, battle, winner);
   applyMilitaryCommandTrigger(result.state, winner);
+  buildMilitaryAftermathChoices(result.state, battle);
   openPostBattleOrderWindow(result.state, winner);
 }
 
@@ -107,12 +126,21 @@ function finalizeLastStandResolution(result: ApplyGameActionResult, attacker?: P
   result.state.winner = attacker;
   result.state.phase = 'game_over';
   result.state.priorityPlayer = attacker;
+  result.state.pendingMilitaryChoice = undefined;
+  result.state.militaryChoiceQueue = undefined;
   result.state.pendingLeaderAbilityWindow = undefined;
   result.state.pendingAssetBankDiscards = undefined;
   appendLastStandVictoryLog(result.state, attacker, defender);
 }
 
 export function applyGameAction(game: GameState, action: StateAction): ApplyGameActionResult {
+  if (action.type === 'resolve_military_choice') {
+    const next = structuredClone(game);
+    resolveMilitaryChoice(next, action.playerId, action.choice, action.cardId);
+    if (!next.pendingMilitaryChoice && next.recentBattleResult) openPostBattleOrderWindow(next, next.recentBattleResult.winner);
+    runPostActionAutomationPipeline(next);
+    return { state: next };
+  }
   if (action.type === 'pass_leader_ability_window') {
     if (game.pendingLeaderAbilityWindow?.playerId !== action.playerId) throw new GameActionError(`${action.playerId} has no Leader ability window to pass.`);
     const next = structuredClone(game);
@@ -120,6 +148,7 @@ export function applyGameAction(game: GameState, action: StateAction): ApplyGame
     return { state: next };
   }
   if (action.type === 'use_leader_ability') {
+    if (game.pendingMilitaryChoice) throw new GameActionError('Resolve the pending Military card choice first.');
     const next = structuredClone(game);
     const definition = defaultLeaderAbilityRegistry.get(action.abilityId);
     useLeaderAbility(next, action.playerId, action.abilityId);
@@ -127,6 +156,7 @@ export function applyGameAction(game: GameState, action: StateAction): ApplyGame
     runPostActionAutomationPipeline(next);
     return { state: next };
   }
+  if (game.pendingMilitaryChoice) throw new GameActionError('Resolve the pending Military card choice first.');
   if (game.pendingLeaderAbilityWindow) throw new GameActionError('Resolve or pass the pending post-battle Order window first.');
 
   validateV06EndpointMovement(game, action);
@@ -145,7 +175,10 @@ export function applyGameAction(game: GameState, action: StateAction): ApplyGame
   if (action.type === 'resolve_battle') resetLeaderAbilityUsageAfterBattle(result.state);
   if (action.type === 'end_turn') {
     result.state.recentBattleResult = undefined;
+    result.state.pendingMilitaryChoice = undefined;
+    result.state.militaryChoiceQueue = undefined;
     result.state.pendingLeaderAbilityWindow = undefined;
+    for (const player of Object.values(result.state.players)) if (player.military) player.military.victoryRestrictions = undefined;
     resetLeaderAbilityUsageForNewTurn(result.state, result.state.activePlayer);
   }
   return result;
