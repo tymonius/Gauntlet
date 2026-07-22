@@ -9,12 +9,14 @@ import {
   resetLeaderAbilityUsageForNewTurn,
   useLeaderAbility,
 } from './leader-abilities';
+import { gainFactionResource } from './resources';
 import { runPostActionAutomationPipeline } from './pipeline';
 import { isOpponentBeyondGauntletSpace, isOwnBeyondGauntletSpace } from './v06-board';
-import type { GameEvent, GameState, PlayerID } from '../types';
+import type { BattleState, GameEvent, GameState, PlayerID, RecentBattleResult } from '../types';
 
 const LAST_STAND_DEFENDER_BONUS_EFFECT = 'last_stand_defender_bonus';
 const LAST_STAND_DEFENDER_BONUS = 1;
+const MILITARY_COMMAND_TRIGGER = 'military_first_battle_win';
 
 function validateV06EndpointMovement(game: GameState, action: GameAction): void {
   if (game.version !== 'v0.6.0' || action.type !== 'move_player') return;
@@ -60,6 +62,40 @@ function lastResolvedBattleWinner(game: GameState): PlayerID | undefined {
   return (event.payload as { winner?: PlayerID }).winner;
 }
 
+function recentBattleResult(game: GameState, battle: BattleState, winner: PlayerID): RecentBattleResult {
+  const location = game.board.spaces.find((space) => space.id === battle.location)!;
+  const origin = game.board.spaces.find((space) => space.id === battle.attackerOrigin)!;
+  const attackerDirection = location.index > origin.index ? 1 : -1;
+  return {
+    battleId: battle.id,
+    turn: game.turn,
+    winner,
+    loser: winner === battle.attacker.playerId ? battle.defender.playerId : battle.attacker.playerId,
+    attacker: battle.attacker.playerId,
+    defender: battle.defender.playerId,
+    location: battle.location,
+    attackerOrigin: battle.attackerOrigin,
+    retreatDirection: (winner === battle.attacker.playerId ? attackerDirection : -attackerDirection) as -1 | 1,
+  };
+}
+
+function applyMilitaryCommandTrigger(game: GameState, winner: PlayerID): void {
+  const player = game.players[winner];
+  if (player?.factionId !== 'military') return;
+  player.factionTriggerUsage ??= {};
+  if (player.factionTriggerUsage[MILITARY_COMMAND_TRIGGER] === game.turn) return;
+  player.factionTriggerUsage[MILITARY_COMMAND_TRIGGER] = game.turn;
+  gainFactionResource(game, winner, 'command', 1, 'First battle victory this turn');
+}
+
+function recordBattleAftermath(result: ApplyGameActionResult, battle?: BattleState): void {
+  if (!battle) return;
+  const winner = lastResolvedBattleWinner(result.state);
+  if (!winner) return;
+  result.state.recentBattleResult = recentBattleResult(result.state, battle, winner);
+  applyMilitaryCommandTrigger(result.state, winner);
+}
+
 function appendLastStandVictoryLog(game: GameState, winner: PlayerID, defeatedPlayer: PlayerID): void {
   game.log.push({
     id: `${game.id}-event-${game.log.length + 1}`,
@@ -93,11 +129,18 @@ export function applyGameAction(game: GameState, action: StateAction): ApplyGame
 
   validateV06EndpointMovement(game, action);
   const prepared = prepareLastStandResolution(game, action);
+  const battleBeforeResolution = action.type === 'resolve_battle' && prepared.game.battle
+    ? structuredClone(prepared.game.battle)
+    : undefined;
   const result = applyGameActionWithoutAutomation(prepared.game, action);
   markLastStand(result, action);
+  if (action.type === 'resolve_battle') recordBattleAftermath(result, battleBeforeResolution);
   runPostActionAutomationPipeline(result.state);
   finalizeLastStandResolution(result, prepared.attacker, prepared.defender);
   if (action.type === 'resolve_battle') resetLeaderAbilityUsageAfterBattle(result.state);
-  if (action.type === 'end_turn') resetLeaderAbilityUsageForNewTurn(result.state, result.state.activePlayer);
+  if (action.type === 'end_turn') {
+    result.state.recentBattleResult = undefined;
+    resetLeaderAbilityUsageForNewTurn(result.state, result.state.activePlayer);
+  }
   return result;
 }
