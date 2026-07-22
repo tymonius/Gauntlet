@@ -96,6 +96,6 @@ Faction packages render as follows:
 - **Military:** selected Leader Card and shared Command Tracker;
 - **Diplomats:** selected Leader Card, Influence Tracker, double-sided Reference card, nine Proposal fronts, and nine Treaty Article backs;
 - **Financiers:** selected Leader Card, Financier Reference, Capital Tracker, and eight generic Deed Cards;
-- **Intelligence:** selected Leader Card, Intel / Operation Progress tracker, Mission Reference, and Operations Reference;
+- **Intelligence:** selected Leader Card, Mission Reference, Operations Reference, sliding Intel Tracker, and sliding Operation Progress Tracker;
 - **Mystics:** selected Leader Card, Mystics Reference, and three double-sided Rite cards; and
 - **Inquisition:** selected Leader Card, Conviction Tracker, Doctrine Reference, and Purge Reference.
