@@ -35,9 +35,9 @@ export interface RecentBattleResult {
   location: SpaceID;
   attackerOrigin: SpaceID;
   retreatDirection: -1 | 1;
-  battleHandCards: Partial<Record<PlayerID, CardID[]>>;
-  handCommittedCards: Partial<Record<PlayerID, CardID[]>>;
-  ordersUsed: Partial<Record<PlayerID, string[]>>;
+  battleHandCards?: Partial<Record<PlayerID, CardID[]>>;
+  handCommittedCards?: Partial<Record<PlayerID, CardID[]>>;
+  ordersUsed?: Partial<Record<PlayerID, string[]>>;
 }
 
 export interface PendingLeaderAbilityWindow {
