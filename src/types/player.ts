@@ -1,4 +1,5 @@
 import type { CardID, PlayerID, TerritoryID } from './ids';
+import type { LeaderAbilityUsageState } from './leader';
 import type { FactionResourceMap } from './resources';
 import type { PrivateZones, PublicZoneView } from './zones';
 
@@ -8,6 +9,7 @@ export interface PlayerState {
   factionId?: string;
   leaderName?: string;
   resources?: FactionResourceMap;
+  leaderAbilityUsage: LeaderAbilityUsageState;
   zones: PrivateZones;
   controlledTerritories: TerritoryID[];
   occupiedSpaceId?: string;
@@ -23,6 +25,7 @@ export interface PublicPlayerView {
   factionId?: string;
   leaderName?: string;
   resources?: FactionResourceMap;
+  leaderAbilityUsage: LeaderAbilityUsageState;
   zones: {
     deck: PublicZoneView;
     hand: PublicZoneView;
