@@ -1,4 +1,5 @@
 import type { PlayerID, SpaceID, TerritoryID } from './ids';
+import type { TerritoryOverlayState } from './military';
 
 export type SpaceKind = 'heartland' | 'endpoint' | 'territory' | 'arena';
 export type EndpointRole = 'before_gauntlet' | 'beyond_gauntlet';
@@ -14,6 +15,7 @@ export interface BoardSpaceState {
   occupant?: PlayerID;
   revealed: boolean;
   capturePendingBy?: PlayerID;
+  overlays?: TerritoryOverlayState[];
 }
 
 export interface BoardState {
@@ -21,11 +23,5 @@ export interface BoardState {
   spaces: BoardSpaceState[];
 }
 
-export interface PublicBoardSpaceView extends BoardSpaceState {
-  territoryId?: TerritoryID;
-}
-
-export interface PublicBoardView {
-  layout: BoardState['layout'];
-  spaces: PublicBoardSpaceView[];
-}
+export interface PublicBoardSpaceView extends BoardSpaceState { territoryId?: TerritoryID; }
+export interface PublicBoardView { layout: BoardState['layout']; spaces: PublicBoardSpaceView[]; }
