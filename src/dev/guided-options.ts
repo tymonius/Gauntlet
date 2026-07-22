@@ -1,4 +1,4 @@
-import { militaryCardsById } from '../cards';
+import { militaryCardDefinitions } from '../cards';
 import type { GameState, PlayerID } from '../types';
 import type { StateAction } from '../state';
 import { toPrivateGameView } from '../state';
@@ -15,9 +15,9 @@ export function activeViewer(game: GameState): PlayerID {
 }
 
 function exactCardText(cardId: string): string | undefined {
-  const card = militaryCardsById.get(cardId);
+  const card = militaryCardDefinitions.find((candidate) => candidate.id === cardId);
   if (!card) return undefined;
-  const sections = [`${card.name} — Cost ${card.cost}`, `Action: ${card.action}`, `Battle: ${card.battle}`];
+  const sections: string[] = [`${card.name} — Cost ${card.cost}`, `Action: ${card.action}`, `Battle: ${card.battle}`];
   if (card.supplemental) sections.push(...card.supplemental);
   return sections.join('\n\n');
 }
@@ -110,7 +110,7 @@ export function buildGuidedOptions(game: GameState): GuidedOption[] {
   }
 
   if (game.pendingLeaderAbilityWindow?.playerId === playerId) {
-    for (const ability of view.legalLeaderAbilities ?? []) options.push({ label: `Use ${ability.label}`, action: { type: 'use_leader_ability', playerId, abilityId: ability.abilityId } });
+    for (const ability of view.legalLeaderAbilities ?? []) options.push({ label: `Use ${ability.name}`, action: { type: 'use_leader_ability', playerId, abilityId: ability.abilityId } });
     options.push({ label: 'Pass Leader ability window', action: { type: 'pass_leader_ability_window', playerId } });
     return options;
   }
