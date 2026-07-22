@@ -22,7 +22,7 @@ Each preset contains:
 - a short explanation of the Deck's plan; and
 - a first-game tip for the selected Leader.
 
-Choose a faction and Leader, then select **Load recommended deck**. The loaded Deck can be modified, saved, exported, copied as text, or printed immediately with its Leader and all required supplemental components.
+Choose a faction and Leader, then select **Load recommended deck**. The loaded Deck can be modified, saved, exported, copied as text, or printed immediately with its Leader and all required supplemental components. When the current Deck still exactly matches the pre-built preset, its strategy summary and first-game tip are also printed in the top informational section before the cards.
 
 The presets are designed for onboarding and broad playtesting. They are recommended starting points, not claims of optimal competitive construction.
 
@@ -82,6 +82,7 @@ The random generator accelerates broad playtesting. Use the recommended starter 
 The **Print / PDF** control opens a browser-printable Letter-size package and then opens the system print dialog. The package contains:
 
 - a Deck summary and list;
+- the starter strategy summary and first-game tip when the current Deck exactly matches a pre-built starter preset;
 - the selected Leader Card, including portrait and exact Leader rules;
 - one printable face for every playable-card copy;
 - the selected three Territories in their saved order;
