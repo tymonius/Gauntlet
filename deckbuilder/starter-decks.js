@@ -3,6 +3,11 @@
   let starterDecks = [];
   let loadError = null;
 
+  window.GAUNTLET_STARTER_DECKS = {
+    getSelectedDeck: selectedStarterDeck,
+    getMatchingCurrentDeck: matchingCurrentStarterDeck
+  };
+
   const baseRenderAll = renderAll;
   renderAll = function renderAllWithStarterDeck() {
     baseRenderAll();
@@ -21,6 +26,7 @@
       renderStarterDeckPreview();
       syncStarterDeckButton();
     });
+    installStarterPrintTips();
 
     try {
       const response = await fetch(STARTER_DECK_SOURCE, { cache: "no-store" });
@@ -41,6 +47,36 @@
       deck.factionId === state.factionId &&
       deck.leaderId === state.leaderId
     ) || null;
+  }
+
+  function matchingCurrentStarterDeck() {
+    const preset = selectedStarterDeck();
+    if (!preset || !state.cards.length || !state.territoryPool?.length) return null;
+
+    const currentCards = new Map();
+    for (const { card, qty } of deckEntries()) {
+      currentCards.set(card.name, (currentCards.get(card.name) || 0) + Number(qty));
+    }
+
+    const expectedCards = new Map();
+    for (const item of preset.cards || []) {
+      expectedCards.set(item.name, (expectedCards.get(item.name) || 0) + Number(item.quantity));
+    }
+
+    if (currentCards.size !== expectedCards.size) return null;
+    for (const [name, quantity] of expectedCards) {
+      if (currentCards.get(name) !== quantity) return null;
+    }
+
+    const currentTerritories = (state.territories || [])
+      .map(id => state.territoryPool.find(territory => territory.id === id)?.name)
+      .filter(Boolean);
+    const expectedTerritories = preset.territories || [];
+
+    if (currentTerritories.length !== expectedTerritories.length) return null;
+    if (currentTerritories.some((name, index) => name !== expectedTerritories[index])) return null;
+
+    return preset;
   }
 
   function starterDeckReady() {
@@ -108,6 +144,75 @@
       </div>
       <p class="starter-tip"><strong>First-game tip:</strong> ${escapeHtml(preset.firstGameTip)}</p>
     `;
+  }
+
+  function installStarterPrintTips() {
+    const button = document.getElementById("printDeckButton");
+    if (!button || button.dataset.starterPrintTipsInstalled === "true") return;
+
+    button.dataset.starterPrintTipsInstalled = "true";
+    button.addEventListener("click", prepareStarterPrintTips, true);
+  }
+
+  function prepareStarterPrintTips() {
+    const preset = matchingCurrentStarterDeck();
+    if (!preset) return;
+
+    const inheritedOpen = window.open;
+    const starterAwareOpen = function starterAwareOpen(...args) {
+      const printWindow = inheritedOpen.apply(window, args);
+      if (!printWindow) return printWindow;
+
+      const inheritedWrite = printWindow.document.write.bind(printWindow.document);
+      printWindow.document.write = html => inheritedWrite(addStarterStrategyToPrintDocument(html, preset));
+      return printWindow;
+    };
+
+    window.open = starterAwareOpen;
+    window.setTimeout(() => {
+      if (window.open === starterAwareOpen) window.open = inheritedOpen;
+    }, 0);
+  }
+
+  function addStarterStrategyToPrintDocument(html, preset) {
+    const documentNode = new DOMParser().parseFromString(html, "text/html");
+    const summary = documentNode.querySelector(".first-page-summary");
+    const summaryGrid = summary?.querySelector(".summary-grid");
+    const style = documentNode.querySelector("style");
+    if (!summary || !summaryGrid || !style) return html;
+
+    summary.classList.add("has-starter-strategy");
+
+    const strategy = documentNode.createElement("section");
+    strategy.className = "starter-print-strategy";
+    strategy.innerHTML = `
+      <div>
+        <h2>Starter strategy</h2>
+        <p>${escapeStarterHtml(preset.summary)}</p>
+      </div>
+      <div>
+        <h2>First-game tip</h2>
+        <p>${escapeStarterHtml(preset.firstGameTip)}</p>
+      </div>`;
+    summaryGrid.before(strategy);
+
+    style.textContent += `
+.first-page-summary.has-starter-strategy .summary-line{margin-bottom:.055in}
+.first-page-summary.has-starter-strategy .summary-grid{min-height:1.95in}
+.starter-print-strategy{display:grid;grid-template-columns:.9fr 1.45fr;gap:.18in;margin:0 0 .08in;padding:.065in .085in;border:1px solid #999;background:#f2f2f2!important;box-shadow:inset 0 0 0 999px #f2f2f2;font-size:7.25pt;line-height:1.18}
+.starter-print-strategy h2{margin:0 0 .025in;font-size:7.4pt}
+.starter-print-strategy p{margin:0}`;
+
+    return `<!doctype html>\n${documentNode.documentElement.outerHTML}`;
+  }
+
+  function escapeStarterHtml(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
   }
 
   function loadRecommendedDeck() {
