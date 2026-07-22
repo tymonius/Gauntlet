@@ -24,16 +24,16 @@ A Financier Deck includes:
 
 - one Financier Leader Card: **Banker** or **Executive**;
 - one **Financier Reference Card**;
-- one public **Capital Tracker** or equivalent number tracker;
+- one public **Capital Ledger**;
 - eight identical full-size **Deed Cards** in a shared supply; and
 - any Financier cards included in the Playable Deck.
 
-Deed Cards are supplemental components. They have no deckbuilding value and never enter a normal card zone.
+No Capital marker is used. Deed Cards are supplemental components. They have no deckbuilding value and never enter a normal card zone.
 
 ### Setup
 
-1. Place the chosen Leader Card, Financier Reference Card, and Capital Tracker near your play area.
-2. Set Capital to 0.
+1. Place the chosen Leader Card, Financier Reference Card, and Capital Ledger near your play area.
+2. Record starting Capital as 0 and record the current Capital limit.
 3. Place all eight Deed Cards in a shared unowned supply.
 4. Begin with an empty Treasury.
 
@@ -44,6 +44,12 @@ Deed Cards are supplemental components. They have no deckbuilding value and neve
 Capital is a public tracked value. It cannot fall below 0.
 
 Gain, spend, or lose Capital only when a rule or effect instructs you to do so.
+
+### Capital Ledger
+
+Record every Capital gain, spend, loss, and end-turn reduction as a transaction on the Capital Ledger. After each transaction, record the new running Balance. The final Balance entry is your current Capital.
+
+Record the current Capital limit in the separate limit field. Update that field whenever Territory control or the total deckbuilding value in your Treasury changes. The Ledger is public information and uses no marker.
 
 ### Capital limit
 
@@ -368,10 +374,10 @@ The following entries are the canonical v0.6 Financier names, costs, uniqueness,
 ### Turn reminders
 
 1. Resolve the Capture step.
-2. Gain 1 Capital per Deed owned.
+2. Gain 1 Capital per Deed owned and record the transaction on the Capital Ledger.
 3. Resolve the normal Draw step.
 4. During the Action Opportunity after movement, you may place a card in Treasury, buy one Deed, Play the Market, or use Hostile Takeover instead of playing a card for its Action effect.
-5. At the end of every turn, reduce Capital to the current Capital limit if necessary.
+5. At the end of every turn, reduce Capital to the current Capital limit if necessary and record that reduction.
 
 ### Subsidize
 
@@ -384,6 +390,7 @@ The following entries are the canonical v0.6 Financier names, costs, uniqueness,
 
 ### Reminders
 
+- Record every Capital transaction and running Balance on the public Capital Ledger.
 - Line of Credit can fund no more than half the purchase cost, rounded down.
 - Deed ownership is independent of Territory occupation and control.
 - Added Territories have normal Deeds.
