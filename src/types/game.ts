@@ -2,6 +2,7 @@ import type { BoardState, PublicBoardView } from './board';
 import type { BattleState, PublicBattleView } from './battle';
 import type { CardID, GameID, PlayerID, SpaceID } from './ids';
 import type { LegalLeaderAbilityOption } from './leader';
+import type { PendingMilitaryChoice } from './military';
 import type { PlayerState, PrivatePlayerView, PublicPlayerView } from './player';
 
 export type GamePhase = 'setup' | 'turn_start' | 'action_before_movement' | 'movement' | 'battle' | 'action_after_movement' | 'cleanup' | 'game_over';
@@ -34,6 +35,9 @@ export interface RecentBattleResult {
   location: SpaceID;
   attackerOrigin: SpaceID;
   retreatDirection: -1 | 1;
+  battleHandCards: Partial<Record<PlayerID, CardID[]>>;
+  handCommittedCards: Partial<Record<PlayerID, CardID[]>>;
+  ordersUsed: Partial<Record<PlayerID, string[]>>;
 }
 
 export interface PendingLeaderAbilityWindow {
@@ -53,6 +57,8 @@ export interface GameState {
   board: BoardState;
   battle?: BattleState;
   recentBattleResult?: RecentBattleResult;
+  pendingMilitaryChoice?: PendingMilitaryChoice;
+  militaryChoiceQueue?: PendingMilitaryChoice[];
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow;
   pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[];
@@ -79,6 +85,7 @@ export interface PublicGameView {
   battle?: PublicBattleView;
   legalActionPlays?: LegalActionPlayOption[];
   legalLeaderAbilities?: LegalLeaderAbilityOption[];
+  pendingMilitaryChoice?: PendingMilitaryChoice;
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow;
   pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[];
