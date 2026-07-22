@@ -27,17 +27,20 @@ An Intelligence Deck includes:
 - one Intelligence Leader Card: **Ranger** or **Spymaster**;
 - one **Mission Reference Card**;
 - one **Operations Reference Card**;
-- one **Intelligence Resource Tracker**;
-- one Intel marker and one Operation Progress marker; and
+- one sliding **Intel Tracker Card**;
+- one sliding **Operation Progress Tracker Card**; and
 - any Intelligence cards included in the Playable Deck.
+
+No Intel or Operation Progress markers are used.
 
 ## Setup
 
-1. Place the chosen Leader Card and both Reference Cards near your play area.
-2. Set Intel to 0.
-3. Set Operation Progress to 0.
+1. Place the chosen Leader Card near your play area.
+2. Place the Intel Tracker beneath the Operations Reference Card and fully cover it at 0.
+3. Place the Operation Progress Tracker beneath the Mission Reference Card and fully cover it at 0.
+4. As either value changes, slide the paired Reference Card upward until its bottom edge aligns with the current numbered line.
 
-Neither value has a maximum. If a value exceeds the printed tracker, use a die, note, or additional marker.
+The printed ranges are Intel 0–20 and Operation Progress 0–8. Neither value has a maximum. If a value exceeds its printed range, record only the excess separately while continuing to use the sliding tracker for the printed portion.
 
 Only an Intelligence card with a printed **Mission** requirement may become an Active Mission or Special Operation.
 
