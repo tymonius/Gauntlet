@@ -1,6 +1,6 @@
 import type { BoardState, PublicBoardView } from './board';
 import type { BattleState, PublicBattleView } from './battle';
-import type { CardID, GameID, PlayerID } from './ids';
+import type { CardID, GameID, PlayerID, SpaceID } from './ids';
 import type { LegalLeaderAbilityOption } from './leader';
 import type { PlayerState, PrivatePlayerView, PublicPlayerView } from './player';
 
@@ -24,6 +24,18 @@ export interface PendingAssetBankDiscard {
   options: CardID[];
 }
 
+export interface RecentBattleResult {
+  battleId: string;
+  turn: number;
+  winner: PlayerID;
+  loser: PlayerID;
+  attacker: PlayerID;
+  defender: PlayerID;
+  location: SpaceID;
+  attackerOrigin: SpaceID;
+  retreatDirection: -1 | 1;
+}
+
 export interface GameState {
   id: GameID;
   version: string;
@@ -34,6 +46,7 @@ export interface GameState {
   players: Record<PlayerID, PlayerState>;
   board: BoardState;
   battle?: BattleState;
+  recentBattleResult?: RecentBattleResult;
   pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[];
   winner?: PlayerID;
