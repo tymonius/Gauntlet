@@ -21,12 +21,13 @@ export type GameAction =
   | ResolveBattleAction
   | EndTurnAction;
 
-export type StateAction = GameAction | UseLeaderAbilityAction;
+export type StateAction = GameAction | UseLeaderAbilityAction | PassLeaderAbilityWindowAction;
 
 export interface DrawCardAction { type: 'draw_card'; playerId: PlayerID; count?: number; }
 export interface RevealSpaceAction { type: 'reveal_space'; playerId: PlayerID; spaceId: SpaceID; }
 export interface PlayActionCardAction { type: 'play_action_card'; playerId: PlayerID; cardId: CardID; targets?: ActionCardTarget[]; }
 export interface UseLeaderAbilityAction { type: 'use_leader_ability'; playerId: PlayerID; abilityId: string; }
+export interface PassLeaderAbilityWindowAction { type: 'pass_leader_ability_window'; playerId: PlayerID; }
 export interface ResolveAssetBankDiscardAction { type: 'resolve_asset_bank_discard'; playerId: PlayerID; cardIds: CardID[]; }
 export interface MovePlayerAction { type: 'move_player'; playerId: PlayerID; toSpaceId: SpaceID; }
 export interface CommitBattleHandCardAction { type: 'commit_battle_hand_card'; playerId: PlayerID; cardId: CardID; }
