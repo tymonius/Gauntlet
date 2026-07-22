@@ -1,4 +1,4 @@
-import type { CardID, PlayerID, SpaceID } from '../types';
+import type { CardID, PlayerID, ProposalID, SpaceID } from '../types';
 import type { BattleCardTarget } from '../effects';
 
 export type ActionCardTarget =
@@ -7,21 +7,13 @@ export type ActionCardTarget =
   | { kind: 'card'; cardId: CardID; owner: PlayerID };
 
 export type GameAction =
-  | DrawCardAction
-  | RevealSpaceAction
-  | PlayActionCardAction
-  | ResolveAssetBankDiscardAction
-  | MovePlayerAction
-  | CommitBattleHandCardAction
-  | PassBattleHandCommitAction
-  | DrawBattleCardsAction
-  | PlayBattleDrawCardAction
-  | PassBattleDrawPlayAction
-  | RollBattleDieAction
-  | ResolveBattleAction
-  | EndTurnAction;
+  | DrawCardAction | RevealSpaceAction | PlayActionCardAction | ResolveAssetBankDiscardAction
+  | MovePlayerAction | CommitBattleHandCardAction | PassBattleHandCommitAction
+  | DrawBattleCardsAction | PlayBattleDrawCardAction | PassBattleDrawPlayAction
+  | RollBattleDieAction | ResolveBattleAction | EndTurnAction;
 
-export type StateAction = GameAction | UseLeaderAbilityAction | PassLeaderAbilityWindowAction | ResolveMilitaryChoiceAction | ResolveMilitaryTimingChoiceAction;
+export type StateAction = GameAction | UseLeaderAbilityAction | PassLeaderAbilityWindowAction
+  | ResolveMilitaryChoiceAction | ResolveMilitaryTimingChoiceAction | ResolveDiplomatChoiceAction;
 
 export interface DrawCardAction { type: 'draw_card'; playerId: PlayerID; count?: number; }
 export interface RevealSpaceAction { type: 'reveal_space'; playerId: PlayerID; spaceId: SpaceID; }
@@ -30,6 +22,7 @@ export interface UseLeaderAbilityAction { type: 'use_leader_ability'; playerId: 
 export interface PassLeaderAbilityWindowAction { type: 'pass_leader_ability_window'; playerId: PlayerID; }
 export interface ResolveMilitaryChoiceAction { type: 'resolve_military_choice'; playerId: PlayerID; choice: string; cardId?: CardID; }
 export interface ResolveMilitaryTimingChoiceAction { type: 'resolve_military_timing_choice'; playerId: PlayerID; choice: string; cardId?: CardID; secondaryCardId?: CardID; }
+export interface ResolveDiplomatChoiceAction { type: 'resolve_diplomat_choice'; playerId: PlayerID; choice: string; proposalId?: ProposalID; amount?: number; cardIds?: CardID[]; }
 export interface ResolveAssetBankDiscardAction { type: 'resolve_asset_bank_discard'; playerId: PlayerID; cardIds: CardID[]; }
 export interface MovePlayerAction { type: 'move_player'; playerId: PlayerID; toSpaceId: SpaceID; }
 export interface CommitBattleHandCardAction { type: 'commit_battle_hand_card'; playerId: PlayerID; cardId: CardID; }
@@ -41,7 +34,4 @@ export interface RollBattleDieAction { type: 'roll_battle_die'; playerId: Player
 export interface ResolveBattleAction { type: 'resolve_battle'; playerId: PlayerID; battleCardTargets?: BattleCardTarget[]; }
 export interface EndTurnAction { type: 'end_turn'; playerId: PlayerID; }
 
-export interface ActionResult {
-  drawnCards?: CardID[];
-  battleDrawnCards?: CardID[];
-}
+export interface ActionResult { drawnCards?: CardID[]; battleDrawnCards?: CardID[]; }

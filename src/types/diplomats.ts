@@ -1,15 +1,9 @@
 import type { CardID, PlayerID, SpaceID } from './ids';
 
 export type ProposalID =
-  | 'de-escalation'
-  | 'orderly-withdrawal'
-  | 'capitulation'
-  | 'open-channels'
-  | 'mutual-disarmament'
-  | 'prisoner-exchange'
-  | 'rebuilding-pact'
-  | 'ultimatum'
-  | 'diplomatic-recognition';
+  | 'de-escalation' | 'orderly-withdrawal' | 'capitulation' | 'open-channels'
+  | 'mutual-disarmament' | 'prisoner-exchange' | 'rebuilding-pact'
+  | 'ultimatum' | 'diplomatic-recognition';
 
 export interface ProposalDefinition {
   id: ProposalID;
@@ -37,6 +31,10 @@ export interface ActiveTermsState {
   defender: PlayerID;
   response?: 'accepted' | 'refused';
   leverageSpent?: number;
+  refusedBattleDrawBonus?: number;
+  refusedBattleModifier?: number;
+  refusedLossDraw?: number;
+  refusedImmediateCapture?: boolean;
 }
 
 export type PendingDiplomatChoice =

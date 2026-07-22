@@ -1,21 +1,15 @@
 import { diplomatProposalDefinitions, diplomatProposalsById } from '../cards/diplomats';
-import type { GameEvent, GameState, PlayerID, ProposalDefinition, ProposalID } from '../types';
+import type { CardID, GameEvent, GameState, PlayerID, ProposalDefinition, ProposalID } from '../types';
+import { drawFromDeck } from './draw';
 import { gainFactionResource, spendFactionResource } from './resources';
 
-export class DiplomatTermsError extends Error {
-  constructor(message: string) { super(message); this.name = 'DiplomatTermsError'; }
-}
-
-function log(game: GameState, actor: PlayerID, type: string, message: string, payload?: unknown): void {
-  game.log.push({ id: `${game.id}-event-${game.log.length + 1}`, turn: game.turn, actor, type, message, payload, visibility: 'public' } satisfies GameEvent);
-}
-
+export class DiplomatTermsError extends Error { constructor(message: string) { super(message); this.name = 'DiplomatTermsError'; } }
+function log(game: GameState, actor: PlayerID, type: string, message: string, payload?: unknown): void { game.log.push({ id: `${game.id}-event-${game.log.length + 1}`, turn: game.turn, actor, type, message, payload, visibility: 'public' } satisfies GameEvent); }
+function draw(game: GameState, playerId: PlayerID, count: number): void { const result = drawFromDeck(game.players[playerId], { count }); game.players[playerId].zones.hand.push(...result.drawnCards); }
+function opponentFor(game: GameState, playerId: PlayerID): PlayerID { if (!game.battle) throw new DiplomatTermsError('There is no battle.'); return game.battle.attacker.playerId === playerId ? game.battle.defender.playerId : game.battle.attacker.playerId; }
 function proposalEligible(game: GameState, diplomatId: PlayerID, proposal: ProposalDefinition): boolean {
-  const battle = game.battle;
-  if (!battle) return false;
-  const diplomat = game.players[diplomatId];
-  const opponentId = battle.attacker.playerId === diplomatId ? battle.defender.playerId : battle.attacker.playerId;
-  const opponent = game.players[opponentId];
+  const battle = game.battle; if (!battle) return false;
+  const diplomat = game.players[diplomatId]; const opponentId = opponentFor(game, diplomatId); const opponent = game.players[opponentId];
   switch (proposal.id) {
     case 'orderly-withdrawal': return battle.attacker.playerId === diplomatId;
     case 'capitulation': return battle.defender.playerId === diplomatId;
@@ -23,82 +17,23 @@ function proposalEligible(game: GameState, diplomatId: PlayerID, proposal: Propo
     case 'mutual-disarmament': return diplomat.zones.hand.length > 0 && opponent.zones.hand.length > 0;
     case 'prisoner-exchange': return diplomat.zones.graveyard.length > 0 && opponent.zones.graveyard.length > 0;
     case 'rebuilding-pact': return diplomat.zones.hand.length > 0;
-    case 'diplomatic-recognition': {
-      const location = game.board.spaces.find((space) => space.id === battle.location);
-      return battle.defender.playerId === diplomatId && location?.kind === 'territory' && location.occupant === diplomatId && location.controller === opponentId;
-    }
+    case 'diplomatic-recognition': { const location = game.board.spaces.find((space) => space.id === battle.location); return battle.defender.playerId === diplomatId && location?.kind === 'territory' && location.occupant === diplomatId && location.controller === opponentId; }
     default: return true;
   }
 }
-
-export function eligibleProposals(game: GameState, diplomatId: PlayerID): ProposalID[] {
-  const player = game.players[diplomatId];
-  if (!player || player.factionId !== 'diplomats' || !game.battle || game.battle.stage !== 'hand_commit') return [];
-  const available = player.resources?.influence?.value ?? 0;
-  return diplomatProposalDefinitions.filter((proposal) => proposal.stake <= available && proposalEligible(game, diplomatId, proposal)).map((proposal) => proposal.id);
-}
-
-export function offerTerms(game: GameState, diplomatId: PlayerID, proposalId: ProposalID): void {
-  const proposal = diplomatProposalsById.get(proposalId);
-  const battle = game.battle;
-  if (!proposal || !battle || !eligibleProposals(game, diplomatId).includes(proposalId)) throw new DiplomatTermsError('That Proposal cannot be offered now.');
-  const opponentId = battle.attacker.playerId === diplomatId ? battle.defender.playerId : battle.attacker.playerId;
-  spendFactionResource(game, diplomatId, 'influence', proposal.stake, `Stake for ${proposal.name}`);
-  game.players[diplomatId].diplomats ??= { ratifiedProposals: [] };
-  game.players[diplomatId].diplomats!.activeTerms = {
-    diplomat: diplomatId, opponent: opponentId, proposalIds: [proposalId], selectedProposalId: proposalId,
-    stake: proposal.stake, contestedSpace: battle.location, attacker: battle.attacker.playerId, defender: battle.defender.playerId,
-  };
-  game.pendingDiplomatChoice = { kind: 'respond_to_terms', playerId: opponentId, diplomatId, proposalIds: [proposalId], stake: proposal.stake, options: ['accept', 'refuse'] };
-  game.priorityPlayer = opponentId;
-  log(game, diplomatId, 'terms_offered', `${game.players[diplomatId].name} offered ${proposal.name}.`, { proposalId, stake: proposal.stake });
-}
-
-export function respondToTerms(game: GameState, opponentId: PlayerID, response: 'accept' | 'refuse'): void {
-  const pending = game.pendingDiplomatChoice;
-  if (pending?.kind !== 'respond_to_terms' || pending.playerId !== opponentId) throw new DiplomatTermsError('No Terms response is pending.');
-  const diplomat = game.players[pending.diplomatId];
-  const terms = diplomat.diplomats?.activeTerms;
-  if (!terms) throw new DiplomatTermsError('Active Terms are missing.');
-  terms.response = response === 'accept' ? 'accepted' : 'refused';
-  game.pendingDiplomatChoice = undefined;
-  if (response === 'accept') {
-    const proposalId = terms.selectedProposalId!;
-    const newlyRatified = !diplomat.diplomats!.ratifiedProposals.includes(proposalId);
-    gainFactionResource(game, diplomat.id, 'influence', terms.stake, 'Return accepted Stake');
-    if (newlyRatified) {
-      diplomat.diplomats!.ratifiedProposals.push(proposalId);
-      gainFactionResource(game, diplomat.id, 'influence', terms.stake, 'New Treaty Article');
-    }
-    if (diplomat.leaderName === 'Ambassador' && diplomat.factionTriggerUsage?.ambassador_cordiality !== game.turn) {
-      diplomat.factionTriggerUsage ??= {};
-      diplomat.factionTriggerUsage.ambassador_cordiality = game.turn;
-      const card = diplomat.zones.deck.shift(); if (card) diplomat.zones.hand.push(card);
-    }
-    game.battle = undefined;
-    game.phase = 'action_after_movement';
-    game.priorityPlayer = game.activePlayer;
-    log(game, diplomat.id, 'terms_accepted', `${game.players[opponentId].name} accepted the Terms.`, { proposalId, newlyRatified });
-  } else {
-    game.priorityPlayer = terms.attacker;
-    log(game, opponentId, 'terms_refused', `${game.players[opponentId].name} refused the Terms.`, { proposalId: terms.selectedProposalId });
-  }
-}
-
-export function applyLeverage(game: GameState, diplomatId: PlayerID, amount: number): void {
-  const terms = game.players[diplomatId].diplomats?.activeTerms;
-  if (!game.battle || terms?.response !== 'refused' || !Number.isInteger(amount) || amount < 0) throw new DiplomatTermsError('Leverage is not available.');
-  spendFactionResource(game, diplomatId, 'influence', amount, 'Leverage');
-  const side = game.battle.attacker.playerId === diplomatId ? game.battle.attacker : game.battle.defender;
-  side.modifiers += amount;
-  terms.leverageSpent = amount;
-  log(game, diplomatId, 'leverage_used', `${game.players[diplomatId].name} spent ${amount} Influence on Leverage.`, { amount });
-}
-
-export function checkPeaceTreatyVictory(game: GameState, playerId: PlayerID): boolean {
-  const player = game.players[playerId];
-  if (player?.factionId !== 'diplomats' || (player.diplomats?.ratifiedProposals.length ?? 0) < 5) return false;
-  game.winner = playerId; game.phase = 'game_over'; game.priorityPlayer = playerId;
-  log(game, playerId, 'peace_treaty_completed', `${player.name} completed the Peace Treaty.`);
-  return true;
-}
+export function eligibleProposals(game: GameState, diplomatId: PlayerID): ProposalID[] { const player = game.players[diplomatId]; if (!player || player.factionId !== 'diplomats' || !game.battle || game.battle.stage !== 'hand_commit') return []; const available = player.resources?.influence?.value ?? 0; return diplomatProposalDefinitions.filter((proposal) => proposal.stake <= available && proposalEligible(game, diplomatId, proposal)).map((proposal) => proposal.id); }
+export function openDiplomatTermsWindow(game: GameState): boolean { if (!game.battle || game.pendingDiplomatChoice) return false; for (const playerId of [game.battle.attacker.playerId, game.battle.defender.playerId]) { const eligible = eligibleProposals(game, playerId); if (eligible.length) { game.pendingDiplomatChoice = { kind: 'offer_terms', playerId, opponentId: opponentFor(game, playerId), contestedSpace: game.battle.location, eligibleProposals: eligible, options: ['offer', 'decline'] }; game.priorityPlayer = playerId; return true; } } return false; }
+export function declineTerms(game: GameState, diplomatId: PlayerID): void { if (game.pendingDiplomatChoice?.kind !== 'offer_terms' || game.pendingDiplomatChoice.playerId !== diplomatId) throw new DiplomatTermsError('No Terms offer is pending.'); game.pendingDiplomatChoice = undefined; game.priorityPlayer = game.battle?.attacker.playerId ?? game.activePlayer; }
+export function offerTerms(game: GameState, diplomatId: PlayerID, proposalId: ProposalID): void { const proposal = diplomatProposalsById.get(proposalId); const battle = game.battle; if (!proposal || !battle || !eligibleProposals(game, diplomatId).includes(proposalId)) throw new DiplomatTermsError('That Proposal cannot be offered now.'); const opponentId = opponentFor(game, diplomatId); spendFactionResource(game, diplomatId, 'influence', proposal.stake, `Stake for ${proposal.name}`); game.players[diplomatId].diplomats ??= { ratifiedProposals: [] }; game.players[diplomatId].diplomats!.activeTerms = { diplomat: diplomatId, opponent: opponentId, proposalIds: [proposalId], selectedProposalId: proposalId, stake: proposal.stake, contestedSpace: battle.location, attacker: battle.attacker.playerId, defender: battle.defender.playerId }; game.pendingDiplomatChoice = { kind: 'respond_to_terms', playerId: opponentId, diplomatId, proposalIds: [proposalId], stake: proposal.stake, options: ['accept', 'refuse'] }; game.priorityPlayer = opponentId; log(game, diplomatId, 'terms_offered', `${game.players[diplomatId].name} offered ${proposal.name}.`, { proposalId, stake: proposal.stake }); }
+function direction(game: GameState): number { const b = game.battle!; const location = game.board.spaces.find(s => s.id === b.location)!; const origin = game.board.spaces.find(s => s.id === b.attackerOrigin)!; return Math.sign(location.index - origin.index); }
+function moveOccupant(game: GameState, playerId: PlayerID, toIndex: number): void { const from = game.board.spaces.find(s => s.occupant === playerId); const to = game.board.spaces.find(s => s.index === toIndex); if (!from || !to || to.occupant) return; delete from.occupant; to.occupant = playerId; game.players[playerId].occupiedSpaceId = to.id; }
+function withdraw(game: GameState, playerId: PlayerID): void { const b = game.battle!; if (playerId === b.attacker.playerId) return; const location = game.board.spaces.find(s => s.id === b.location)!; moveOccupant(game, playerId, location.index + direction(game)); }
+function occupyContested(game: GameState, playerId: PlayerID): void { const b = game.battle!; const location = game.board.spaces.find(s => s.id === b.location)!; const from = game.board.spaces.find(s => s.occupant === playerId); if (from && !location.occupant) { delete from.occupant; location.occupant = playerId; game.players[playerId].occupiedSpaceId = location.id; } }
+function captureContested(game: GameState, playerId: PlayerID, spaceId?: string): void { const activeSpaceId = spaceId ?? game.players[playerId].diplomats?.activeTerms?.contestedSpace ?? game.battle?.location; const space = game.board.spaces.find(s => s.id === activeSpaceId); if (!space?.territoryId) return; const old = space.controller; if (old && old !== playerId) game.players[old].controlledTerritories = game.players[old].controlledTerritories.filter(id => id !== space.territoryId); if (!game.players[playerId].controlledTerritories.includes(space.territoryId)) game.players[playerId].controlledTerritories.push(space.territoryId); space.controller = playerId; delete space.capturePendingBy; }
+function resolveAcceptedEffect(game: GameState, diplomatId: PlayerID, proposalId: ProposalID): void { const terms = game.players[diplomatId].diplomats!.activeTerms!; const opponent = terms.opponent; switch (proposalId) { case 'de-escalation': withdraw(game, terms.defender); draw(game, opponent, 1); break; case 'orderly-withdrawal': draw(game, opponent, 1); break; case 'capitulation': withdraw(game, diplomatId); occupyContested(game, opponent); draw(game, opponent, 1); break; case 'open-channels': withdraw(game, terms.defender); draw(game, opponent, 1); break; case 'mutual-disarmament': game.players[diplomatId].zones.discard.push(...game.players[diplomatId].zones.hand.splice(0, 1)); game.players[opponent].zones.discard.push(...game.players[opponent].zones.hand.splice(0, 1)); draw(game, opponent, 1); withdraw(game, terms.defender); break; case 'prisoner-exchange': { const a = game.players[diplomatId].zones.graveyard.shift(); const b = game.players[opponent].zones.graveyard.shift(); if (a) game.players[diplomatId].zones.discard.push(a); if (b) game.players[opponent].zones.discard.push(b); withdraw(game, terms.defender); break; } case 'rebuilding-pact': withdraw(game, terms.defender); break; case 'ultimatum': withdraw(game, opponent); occupyContested(game, diplomatId); break; case 'diplomatic-recognition': captureContested(game, diplomatId, terms.contestedSpace); withdraw(game, opponent); draw(game, opponent, 2); break; } }
+function applyRefusedEffect(game: GameState, diplomatId: PlayerID, proposalId: ProposalID): void { const terms = game.players[diplomatId].diplomats!.activeTerms!; const side = game.battle!.attacker.playerId === diplomatId ? game.battle!.attacker : game.battle!.defender; switch (proposalId) { case 'de-escalation': draw(game, diplomatId, 1); break; case 'orderly-withdrawal': side.modifiers += 1; terms.refusedBattleModifier = 1; break; case 'capitulation': terms.refusedLossDraw = 2; break; case 'open-channels': side.battleDrawCount += 1; terms.refusedBattleDrawBonus = 1; break; case 'mutual-disarmament': if (game.players[diplomatId].zones.hand.length) game.players[diplomatId].zones.discard.push(game.players[diplomatId].zones.hand.shift()!); side.battleDrawCount += 1; terms.refusedBattleDrawBonus = 1; break; case 'prisoner-exchange': break; case 'rebuilding-pact': break; case 'ultimatum': side.modifiers += 1; terms.refusedBattleModifier = 1; break; case 'diplomatic-recognition': terms.refusedImmediateCapture = true; break; } }
+export function respondToTerms(game: GameState, opponentId: PlayerID, response: 'accept' | 'refuse'): void { const pending = game.pendingDiplomatChoice; if (pending?.kind !== 'respond_to_terms' || pending.playerId !== opponentId) throw new DiplomatTermsError('No Terms response is pending.'); const diplomat = game.players[pending.diplomatId]; const terms = diplomat.diplomats?.activeTerms; if (!terms) throw new DiplomatTermsError('Active Terms are missing.'); const proposalId = terms.selectedProposalId!; terms.response = response === 'accept' ? 'accepted' : 'refused'; game.pendingDiplomatChoice = undefined; if (response === 'accept') { resolveAcceptedEffect(game, diplomat.id, proposalId); const newlyRatified = !diplomat.diplomats!.ratifiedProposals.includes(proposalId); gainFactionResource(game, diplomat.id, 'influence', terms.stake, 'Return accepted Stake'); if (newlyRatified) { diplomat.diplomats!.ratifiedProposals.push(proposalId); gainFactionResource(game, diplomat.id, 'influence', terms.stake, 'New Treaty Article'); } if (diplomat.leaderName === 'Ambassador' && diplomat.factionTriggerUsage?.ambassador_cordiality !== game.turn) { diplomat.factionTriggerUsage ??= {}; diplomat.factionTriggerUsage.ambassador_cordiality = game.turn; draw(game, diplomat.id, 1); } game.battle = undefined; game.phase = 'action_after_movement'; game.priorityPlayer = game.activePlayer; log(game, diplomat.id, 'terms_accepted', `${game.players[opponentId].name} accepted the Terms.`, { proposalId, newlyRatified }); } else { applyRefusedEffect(game, diplomat.id, proposalId); game.pendingDiplomatChoice = { kind: 'leverage', playerId: diplomat.id, maximum: diplomat.resources?.influence?.value ?? 0, options: Array.from({ length: (diplomat.resources?.influence?.value ?? 0) + 1 }, (_, i) => i) }; game.priorityPlayer = diplomat.id; log(game, opponentId, 'terms_refused', `${game.players[opponentId].name} refused the Terms.`, { proposalId }); } }
+export function applyLeverage(game: GameState, diplomatId: PlayerID, amount: number): void { const terms = game.players[diplomatId].diplomats?.activeTerms; if (!game.battle || terms?.response !== 'refused' || !Number.isInteger(amount) || amount < 0 || amount > (game.players[diplomatId].resources?.influence?.value ?? 0)) throw new DiplomatTermsError('Leverage is not available.'); spendFactionResource(game, diplomatId, 'influence', amount, 'Leverage'); const side = game.battle.attacker.playerId === diplomatId ? game.battle.attacker : game.battle.defender; side.modifiers += amount; terms.leverageSpent = amount; game.pendingDiplomatChoice = undefined; game.priorityPlayer = game.battle.attacker.playerId; log(game, diplomatId, 'leverage_used', `${game.players[diplomatId].name} spent ${amount} Influence on Leverage.`, { amount }); }
+export function resolveRefusedTermsBattle(game: GameState, winner: PlayerID): void { for (const diplomat of Object.values(game.players).filter(p => p.factionId === 'diplomats')) { const terms = diplomat.diplomats?.activeTerms; if (terms?.response !== 'refused') continue; const proposalId = terms.selectedProposalId!; if (winner === diplomat.id) { gainFactionResource(game, diplomat.id, 'influence', terms.stake, 'Return imposed Stake'); if (!diplomat.diplomats!.ratifiedProposals.includes(proposalId)) diplomat.diplomats!.ratifiedProposals.push(proposalId); gainFactionResource(game, diplomat.id, 'influence', proposalId === 'ultimatum' ? 2 : proposalId === 'diplomatic-recognition' ? 0 : 1, 'Imposed Proposal'); if (terms.refusedImmediateCapture) captureContested(game, diplomat.id, terms.contestedSpace); } else { if (terms.refusedLossDraw) draw(game, diplomat.id, terms.refusedLossDraw); if (diplomat.leaderName === 'Senator' && terms.stake > 0 && diplomat.factionTriggerUsage?.senator_political_capital !== game.turn) { diplomat.factionTriggerUsage ??= {}; diplomat.factionTriggerUsage.senator_political_capital = game.turn; game.pendingDiplomatChoice = { kind: 'political_capital', playerId: diplomat.id, lostStake: terms.stake, handOptions: [...diplomat.zones.hand] }; game.priorityPlayer = diplomat.id; } } if (!game.pendingDiplomatChoice) diplomat.diplomats!.activeTerms = undefined; } }
+export function resolvePoliticalCapital(game: GameState, playerId: PlayerID, cardIds: CardID[]): void { const pending = game.pendingDiplomatChoice; if (pending?.kind !== 'political_capital' || pending.playerId !== playerId || cardIds.length > pending.lostStake || cardIds.some(id => !pending.handOptions.includes(id))) throw new DiplomatTermsError('Invalid Political Capital choice.'); const player = game.players[playerId]; for (const id of cardIds) { const i = player.zones.hand.indexOf(id); if (i >= 0) { player.zones.hand.splice(i, 1); player.zones.graveyard.push(id); gainFactionResource(game, playerId, 'influence', 1, 'Political Capital'); } } player.diplomats!.activeTerms = undefined; game.pendingDiplomatChoice = undefined; game.priorityPlayer = game.activePlayer; }
+export function checkPeaceTreatyVictory(game: GameState, playerId: PlayerID): boolean { const player = game.players[playerId]; if (player?.factionId !== 'diplomats' || (player.diplomats?.ratifiedProposals.length ?? 0) < 5) return false; game.winner = playerId; game.phase = 'game_over'; game.priorityPlayer = playerId; log(game, playerId, 'peace_treaty_completed', `${player.name} completed the Peace Treaty.`); return true; }
