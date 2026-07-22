@@ -4,7 +4,7 @@ import { applyGameAction as applyGameActionWithoutAutomation, GameActionError, t
 import { defaultLeaderAbilityRegistry, legalLeaderAbilitiesFor, resetLeaderAbilityUsageAfterBattle, resetLeaderAbilityUsageForNewTurn, useLeaderAbility } from './leader-abilities';
 import { buildMilitaryAftermathChoices, enrichRecentBattleResult, resolveMilitaryChoice } from './military-interactions';
 import { maybeOpenBrothersSelection, openMilitaryAfterRevealWindows, openMilitaryPrecommitWindows, resolveMilitaryTimingChoice } from './military-timing';
-import { applyLeverage, checkPeaceTreatyVictory, declineTerms, offerTerms, openDiplomatTermsWindow, resolvePoliticalCapital, resolveRefusedTermsBattle, respondToTerms } from './diplomat-terms';
+import { applyLeverage, checkPeaceTreatyVictory, declineTerms, offerTerms, openDiplomatTermsWindow, resolvePoliticalCapital, resolveProposalCardChoice, resolveRefusedTermsBattle, respondToTerms } from './diplomat-terms';
 import { gainFactionResource } from './resources';
 import { runPostActionAutomationPipeline } from './pipeline';
 import { isOpponentBeyondGauntletSpace, isOwnBeyondGauntletSpace } from './v06-board';
@@ -61,7 +61,8 @@ export function applyGameAction(game: GameState, action: StateAction): ApplyGame
     if (pending.kind === 'offer_terms') { if (action.choice === 'decline') declineTerms(next, action.playerId); else if (action.choice === 'offer' && action.proposalId) offerTerms(next, action.playerId, action.proposalId); else throw new GameActionError('Choose an eligible Proposal or decline.'); }
     else if (pending.kind === 'respond_to_terms') respondToTerms(next, action.playerId, action.choice as 'accept' | 'refuse');
     else if (pending.kind === 'leverage') applyLeverage(next, action.playerId, action.amount ?? Number(action.choice));
-    else resolvePoliticalCapital(next, action.playerId, action.cardIds ?? []);
+    else if (pending.kind === 'political_capital') resolvePoliticalCapital(next, action.playerId, action.cardIds ?? []);
+    else resolveProposalCardChoice(next, action.playerId, action.cardIds ?? []);
     continueAfterDiplomatChoice(next); runPostActionAutomationPipeline(next); return { state: next };
   }
   if (action.type === 'resolve_military_timing_choice') { const next = structuredClone(game); resolveMilitaryTimingChoice(next, action.playerId, action.choice, action.cardId, action.secondaryCardId); maybeOpenBrothersSelection(next); openMilitaryAfterRevealWindows(next); runPostActionAutomationPipeline(next); return { state: next }; }
