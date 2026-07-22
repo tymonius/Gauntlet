@@ -12,37 +12,16 @@ import type {
 import { createInitialFactionResources } from './resources';
 import { assertValidGameSetup } from './validation';
 
-export interface PlayerSetupInput {
-  id: PlayerID;
-  name: string;
-  factionId?: string;
-  leaderName?: string;
-  deck: CardID[];
-  territories: TerritoryID[];
-}
-
-export interface InitializeGameInput {
-  id?: GameID;
-  version: string;
-  players: [PlayerSetupInput, PlayerSetupInput];
-  startingPlayer?: PlayerID;
-  openingHandSize?: number;
-  shuffleDecks?: boolean;
-  random?: () => number;
-}
+export interface PlayerSetupInput { id: PlayerID; name: string; factionId?: string; leaderName?: string; deck: CardID[]; territories: TerritoryID[]; }
+export interface InitializeGameInput { id?: GameID; version: string; players: [PlayerSetupInput, PlayerSetupInput]; startingPlayer?: PlayerID; openingHandSize?: number; shuffleDecks?: boolean; random?: () => number; }
 
 function identityShuffle<T>(items: T[]): T[] { return [...items]; }
 function fisherYatesShuffle<T>(items: T[], random: () => number): T[] {
   const shuffled = [...items];
-  for (let i = shuffled.length - 1; i > 0; i -= 1) {
-    const j = Math.floor(random() * (i + 1));
-    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-  }
+  for (let i = shuffled.length - 1; i > 0; i -= 1) { const j = Math.floor(random() * (i + 1)); [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]; }
   return shuffled;
 }
-function drawOpeningHand(deck: CardID[], openingHandSize: number) {
-  return { hand: deck.slice(0, openingHandSize), deck: deck.slice(openingHandSize) };
-}
+function drawOpeningHand(deck: CardID[], openingHandSize: number) { return { hand: deck.slice(0, openingHandSize), deck: deck.slice(openingHandSize) }; }
 
 function createPlayerState(input: PlayerSetupInput, openingHandSize: number, shuffle: (deck: CardID[]) => CardID[]): PlayerState {
   const shuffledDeck = shuffle(input.deck);
@@ -54,6 +33,8 @@ function createPlayerState(input: PlayerSetupInput, openingHandSize: number, shu
     leaderName: input.leaderName,
     resources: createInitialFactionResources(input.factionId),
     leaderAbilityUsage: { turn: {}, battle: {} },
+    factionTriggerUsage: {},
+    military: input.factionId === 'military' ? { storedCards: {}, freeOrderAbilityIds: [], pursuitBattleCount: 0 } : undefined,
     zones: { deck, hand, discard: [], graveyard: [], assetBank: [], removed: [] },
     controlledTerritories: [...input.territories],
     occupiedSpaceId: `${input.id}-heartland`,
@@ -86,18 +67,5 @@ export function initializeGame(input: InitializeGameInput): GameState {
   const shuffle = input.shuffleDecks === false ? identityShuffle<CardID> : (deck: CardID[]) => fisherYatesShuffle(deck, random);
   const [playerOne, playerTwo] = input.players;
   const startingPlayer = input.startingPlayer ?? playerOne.id;
-  return {
-    id: gameId,
-    version: input.version,
-    phase: 'turn_start',
-    turn: 1,
-    activePlayer: startingPlayer,
-    priorityPlayer: startingPlayer,
-    players: {
-      [playerOne.id]: createPlayerState(playerOne, openingHandSize, shuffle),
-      [playerTwo.id]: createPlayerState(playerTwo, openingHandSize, shuffle),
-    },
-    board: createStandardBoard(input.players),
-    log: createInitialLog(gameId, input.players),
-  };
+  return { id: gameId, version: input.version, phase: 'turn_start', turn: 1, activePlayer: startingPlayer, priorityPlayer: startingPlayer, players: { [playerOne.id]: createPlayerState(playerOne, openingHandSize, shuffle), [playerTwo.id]: createPlayerState(playerTwo, openingHandSize, shuffle) }, board: createStandardBoard(input.players), log: createInitialLog(gameId, input.players) };
 }

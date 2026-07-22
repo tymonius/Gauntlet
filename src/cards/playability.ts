@@ -12,65 +12,41 @@ export interface CardPlayRule {
   requiresTarget?: boolean;
 }
 
+const battleAndAction = (cardId: CardID, actionDestination: CardDestination, requiresTarget = false): CardPlayRule => ({
+  cardId,
+  timings: ['action', 'battle_hand_commit', 'battle_draw_play'],
+  allowedOrigins: ['hand', 'battle_draw'],
+  defaultDestinationByOrigin: { hand: actionDestination, battle_draw: 'discard' },
+  requiresTarget,
+});
+
 export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
-  'card-attrition': {
-    cardId: 'card-attrition',
-    timings: ['action', 'battle_hand_commit', 'battle_draw_play'],
-    allowedOrigins: ['hand', 'battle_draw'],
-    defaultDestinationByOrigin: {
-      hand: 'asset_bank',
-      battle_draw: 'discard',
-    },
-  },
-  'card-conscription': {
-    cardId: 'card-conscription',
-    timings: ['battle_hand_commit', 'battle_draw_play'],
-    allowedOrigins: ['hand', 'battle_draw'],
-    defaultDestinationByOrigin: {
-      hand: 'graveyard',
-      battle_draw: 'discard',
-    },
-  },
-  'card-embargo': {
-    cardId: 'card-embargo',
-    timings: ['battle_hand_commit', 'battle_draw_play'],
-    allowedOrigins: ['hand', 'battle_draw'],
-    defaultDestinationByOrigin: {
-      hand: 'graveyard',
-      battle_draw: 'discard',
-    },
-    requiresTarget: true,
-  },
-  'card-fortifications': {
-    cardId: 'card-fortifications',
-    timings: ['action', 'battle_hand_commit', 'battle_draw_play'],
-    allowedOrigins: ['hand', 'battle_draw'],
-    defaultDestinationByOrigin: {
-      hand: 'asset_bank',
-      battle_draw: 'discard',
-    },
-  },
-  'card-valor': {
-    cardId: 'card-valor',
-    timings: ['battle_hand_commit', 'battle_draw_play'],
-    allowedOrigins: ['hand', 'battle_draw'],
-    defaultDestinationByOrigin: {
-      hand: 'graveyard',
-      battle_draw: 'discard',
-    },
-  },
+  'card-attrition': battleAndAction('card-attrition', 'asset_bank'),
+  'card-conscription': { cardId: 'card-conscription', timings: ['battle_hand_commit', 'battle_draw_play'], allowedOrigins: ['hand', 'battle_draw'], defaultDestinationByOrigin: { hand: 'graveyard', battle_draw: 'discard' } },
+  'card-embargo': { cardId: 'card-embargo', timings: ['battle_hand_commit', 'battle_draw_play'], allowedOrigins: ['hand', 'battle_draw'], defaultDestinationByOrigin: { hand: 'graveyard', battle_draw: 'discard' }, requiresTarget: true },
+  'card-fortifications': battleAndAction('card-fortifications', 'asset_bank'),
+  'card-valor': { cardId: 'card-valor', timings: ['battle_hand_commit', 'battle_draw_play'], allowedOrigins: ['hand', 'battle_draw'], defaultDestinationByOrigin: { hand: 'graveyard', battle_draw: 'discard' } },
+
+  'military-unbroken-ranks': battleAndAction('military-unbroken-ranks', 'asset_bank'),
+  'military-battlefield-promotion': battleAndAction('military-battlefield-promotion', 'discard', true),
+  'military-encampment': battleAndAction('military-encampment', 'removed', true),
+  'military-rearguard': battleAndAction('military-rearguard', 'asset_bank'),
+  'military-brothers-in-arms': battleAndAction('military-brothers-in-arms', 'asset_bank'),
+  'military-field-command': battleAndAction('military-field-command', 'asset_bank'),
+  'military-reserve-force': battleAndAction('military-reserve-force', 'asset_bank', true),
+  'military-give-chase': battleAndAction('military-give-chase', 'graveyard'),
+  'military-hold-the-line': battleAndAction('military-hold-the-line', 'asset_bank'),
+  'military-countercharge': battleAndAction('military-countercharge', 'asset_bank'),
+  'military-war-crimes': battleAndAction('military-war-crimes', 'asset_bank'),
+  'military-shock-and-awe': battleAndAction('military-shock-and-awe', 'asset_bank'),
 };
 
-export function getCardPlayRule(cardId: CardID): CardPlayRule | undefined {
-  return coreCardPlayRules[cardId];
-}
-
+export function getCardPlayRule(cardId: CardID): CardPlayRule | undefined { return coreCardPlayRules[cardId]; }
 export function cardCanBePlayedAt(cardId: CardID, timing: CardPlayTiming, origin: CardPlayOrigin): boolean {
   const rule = getCardPlayRule(cardId);
   if (!rule) return true;
   return rule.timings.includes(timing) && rule.allowedOrigins.includes(origin);
 }
-
 export function destinationForCardPlay(cardId: CardID, origin: CardPlayOrigin): CardDestination {
   return getCardPlayRule(cardId)?.defaultDestinationByOrigin[origin] ?? 'discard';
 }
