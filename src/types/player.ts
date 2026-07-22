@@ -10,6 +10,7 @@ export interface PlayerState {
   leaderName?: string;
   resources?: FactionResourceMap;
   leaderAbilityUsage?: LeaderAbilityUsageState;
+  factionTriggerUsage?: Record<string, number>;
   zones: PrivateZones;
   controlledTerritories: TerritoryID[];
   occupiedSpaceId?: string;
