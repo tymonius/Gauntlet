@@ -1,17 +1,10 @@
 import type { BoardState, PublicBoardView } from './board';
 import type { BattleState, PublicBattleView } from './battle';
 import type { CardID, GameID, PlayerID } from './ids';
+import type { LegalLeaderAbilityOption } from './leader';
 import type { PlayerState, PrivatePlayerView, PublicPlayerView } from './player';
 
-export type GamePhase =
-  | 'setup'
-  | 'turn_start'
-  | 'action_before_movement'
-  | 'movement'
-  | 'battle'
-  | 'action_after_movement'
-  | 'cleanup'
-  | 'game_over';
+export type GamePhase = 'setup' | 'turn_start' | 'action_before_movement' | 'movement' | 'battle' | 'action_after_movement' | 'cleanup' | 'game_over';
 
 export interface GameEvent {
   id: string;
@@ -65,6 +58,7 @@ export interface PublicGameView {
   board: PublicBoardView;
   battle?: PublicBattleView;
   legalActionPlays?: LegalActionPlayOption[];
+  legalLeaderAbilities?: LegalLeaderAbilityOption[];
   pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[];
   winner?: PlayerID;
