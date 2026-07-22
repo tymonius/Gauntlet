@@ -42,16 +42,23 @@
       .find(card => /capital ledger/i.test(card.querySelector(".supplemental-header")?.textContent || ""));
     if (!ledger) return html;
 
+    const rows = Array.from({ length: 12 }, () => `
+      <div class="capital-ledger-row" role="row">
+        <span role="cell"></span><span role="cell"></span><span role="cell"></span>
+      </div>`).join("");
+
     ledger.classList.add("capital-ledger-card");
     ledger.innerHTML = `
       <header class="supplemental-header">Capital Ledger</header>
       <div class="capital-ledger-body">
         <div class="capital-ledger-instructions">Record every gain, spend, loss, and end-turn reduction. The final Balance is your current Capital.</div>
         <div class="capital-limit-field"><strong>Current Capital limit</strong><span aria-hidden="true"></span></div>
-        <table class="capital-ledger-table" aria-label="Capital transaction ledger">
-          <thead><tr><th>Transaction</th><th>+/−</th><th>Balance</th></tr></thead>
-          <tbody>${Array.from({ length: 12 }, () => "<tr><td></td><td></td><td></td></tr>").join("")}</tbody>
-        </table>
+        <div class="capital-ledger-grid" role="table" aria-label="Capital transaction ledger">
+          <div class="capital-ledger-row capital-ledger-head" role="row">
+            <strong role="columnheader">Transaction</strong><strong role="columnheader">+/−</strong><strong role="columnheader">Balance</strong>
+          </div>
+          ${rows}
+        </div>
         <div class="capital-ledger-reminder"><strong>Limit:</strong> controlled Territories + total Treasury value. Reduce excess only at the end of each turn.</div>
       </div>
       <footer class="reference-footer">Reusable supplemental ledger — no marker required</footer>`;
@@ -63,12 +70,11 @@
 .capital-ledger-instructions{font-size:5.25pt;line-height:1.12;margin-bottom:.04in;}
 .capital-limit-field{display:grid;grid-template-columns:1fr .62in;gap:.05in;align-items:end;margin-bottom:.045in;padding:.035in .045in;border:1px solid #777;font-size:5.25pt;text-transform:uppercase;letter-spacing:.035em;}
 .capital-limit-field span{height:.19in;border-bottom:1px solid #111;}
-.capital-ledger-table{width:100%;border-collapse:collapse;table-layout:fixed;font-size:4.8pt;}
-.capital-ledger-table th{height:.17in;padding:.015in .025in;border:1px solid #777;background:#ececec!important;text-transform:uppercase;letter-spacing:.035em;}
-.capital-ledger-table th:first-child{width:58%;}
-.capital-ledger-table th:nth-child(2){width:17%;}
-.capital-ledger-table th:nth-child(3){width:25%;}
-.capital-ledger-table td{height:.17in!important;min-height:.17in!important;max-height:.17in!important;border:1px solid #999!important;background:#fff!important;}
+.capital-ledger-grid{width:100%;font-size:4.8pt;}
+.capital-ledger-row{display:grid;grid-template-columns:58% 17% 25%;min-height:.17in;}
+.capital-ledger-row>*{display:flex;align-items:center;min-width:0;border-right:1px solid #999;border-bottom:1px solid #999;padding:.01in .025in;background:#fff!important;}
+.capital-ledger-row>*:first-child{border-left:1px solid #999;}
+.capital-ledger-head>*{justify-content:center;border-top:1px solid #777;border-color:#777;background:#ececec!important;text-transform:uppercase;letter-spacing:.035em;}
 .capital-ledger-reminder{margin-top:auto;padding-top:.035in;font-size:4.65pt;line-height:1.1;}
 .capital-ledger-card .reference-footer{background:#e1e1e1!important;color:#111!important;}`;
 
