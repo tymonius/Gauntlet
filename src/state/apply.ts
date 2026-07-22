@@ -4,6 +4,11 @@ import {
   GameActionError,
   type ApplyGameActionResult,
 } from './reducer';
+import {
+  resetLeaderAbilityUsageAfterBattle,
+  resetLeaderAbilityUsageForNewTurn,
+  useLeaderAbility,
+} from './leader-abilities';
 import { runPostActionAutomationPipeline } from './pipeline';
 import { isOpponentBeyondGauntletSpace, isOwnBeyondGauntletSpace } from './v06-board';
 import type { GameEvent, GameState, PlayerID } from '../types';
@@ -13,15 +18,12 @@ const LAST_STAND_DEFENDER_BONUS = 1;
 
 function validateV06EndpointMovement(game: GameState, action: GameAction): void {
   if (game.version !== 'v0.6.0' || action.type !== 'move_player') return;
-
   const destination = game.board.spaces.find((space) => space.id === action.toSpaceId);
   const origin = game.board.spaces.find((space) => space.occupant === action.playerId);
   if (!destination || !origin) return;
-
   if (isOwnBeyondGauntletSpace(destination, action.playerId)) {
     throw new GameActionError('A player cannot voluntarily withdraw beyond their own end of the Gauntlet.');
   }
-
   if (isOpponentBeyondGauntletSpace(destination, action.playerId)) {
     if (!destination.occupant || destination.occupant === action.playerId) {
       throw new GameActionError('A player advances beyond the Gauntlet only to initiate the opponent’s Last Stand.');
@@ -36,24 +38,12 @@ function markLastStand(result: ApplyGameActionResult, action: GameAction): void 
   if (result.state.version !== 'v0.6.0' || action.type !== 'move_player' || !result.state.battle) return;
   const location = result.state.board.spaces.find((space) => space.id === result.state.battle?.location);
   if (!location || !isOpponentBeyondGauntletSpace(location, action.playerId)) return;
-
   result.state.battle.lastStand = true;
   result.state.battle.tiePolicy = 'defender';
 }
 
-function prepareLastStandResolution(game: GameState, action: GameAction): {
-  game: GameState;
-  attacker?: PlayerID;
-  defender?: PlayerID;
-} {
-  if (
-    game.version !== 'v0.6.0'
-    || action.type !== 'resolve_battle'
-    || !game.battle?.lastStand
-  ) {
-    return { game };
-  }
-
+function prepareLastStandResolution(game: GameState, action: GameAction): { game: GameState; attacker?: PlayerID; defender?: PlayerID } {
+  if (game.version !== 'v0.6.0' || action.type !== 'resolve_battle' || !game.battle?.lastStand) return { game };
   const prepared = structuredClone(game);
   const battle = prepared.battle!;
   if (!battle.effectsResolved.includes(LAST_STAND_DEFENDER_BONUS_EFFECT)) {
@@ -61,12 +51,7 @@ function prepareLastStandResolution(game: GameState, action: GameAction): {
     battle.effectsResolved.push(LAST_STAND_DEFENDER_BONUS_EFFECT);
   }
   battle.tiePolicy = 'defender';
-
-  return {
-    game: prepared,
-    attacker: battle.attacker.playerId,
-    defender: battle.defender.playerId,
-  };
+  return { game: prepared, attacker: battle.attacker.playerId, defender: battle.defender.playerId };
 }
 
 function lastResolvedBattleWinner(game: GameState): PlayerID | undefined {
@@ -87,15 +72,10 @@ function appendLastStandVictoryLog(game: GameState, winner: PlayerID, defeatedPl
   } satisfies GameEvent);
 }
 
-function finalizeLastStandResolution(
-  result: ApplyGameActionResult,
-  attacker: PlayerID | undefined,
-  defender: PlayerID | undefined,
-): void {
+function finalizeLastStandResolution(result: ApplyGameActionResult, attacker?: PlayerID, defender?: PlayerID): void {
   if (!attacker || !defender) return;
   const winner = lastResolvedBattleWinner(result.state);
   if (winner !== attacker) return;
-
   result.state.winner = attacker;
   result.state.phase = 'game_over';
   result.state.priorityPlayer = attacker;
@@ -104,11 +84,21 @@ function finalizeLastStandResolution(
 }
 
 export function applyGameAction(game: GameState, action: GameAction): ApplyGameActionResult {
+  if (action.type === 'use_leader_ability') {
+    const next = structuredClone(game);
+    useLeaderAbility(next, action.playerId, action.abilityId);
+    runPostActionAutomationPipeline(next);
+    return { state: next };
+  }
+
   validateV06EndpointMovement(game, action);
   const prepared = prepareLastStandResolution(game, action);
   const result = applyGameActionWithoutAutomation(prepared.game, action);
   markLastStand(result, action);
   runPostActionAutomationPipeline(result.state);
   finalizeLastStandResolution(result, prepared.attacker, prepared.defender);
+
+  if (action.type === 'resolve_battle') resetLeaderAbilityUsageAfterBattle(result.state);
+  if (action.type === 'end_turn') resetLeaderAbilityUsageForNewTurn(result.state, result.state.activePlayer);
   return result;
 }
