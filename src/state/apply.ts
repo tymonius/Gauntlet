@@ -1,3 +1,4 @@
+import { applyMilitaryActionEffect, removeCapturedEncampments, resolveMilitaryEndTurn } from '../cards';
 import type { GameAction, StateAction } from './actions';
 import {
   applyGameAction as applyGameActionWithoutAutomation,
@@ -25,16 +26,10 @@ function validateV06EndpointMovement(game: GameState, action: GameAction): void 
   const destination = game.board.spaces.find((space) => space.id === action.toSpaceId);
   const origin = game.board.spaces.find((space) => space.occupant === action.playerId);
   if (!destination || !origin) return;
-  if (isOwnBeyondGauntletSpace(destination, action.playerId)) {
-    throw new GameActionError('A player cannot voluntarily withdraw beyond their own end of the Gauntlet.');
-  }
+  if (isOwnBeyondGauntletSpace(destination, action.playerId)) throw new GameActionError('A player cannot voluntarily withdraw beyond their own end of the Gauntlet.');
   if (isOpponentBeyondGauntletSpace(destination, action.playerId)) {
-    if (!destination.occupant || destination.occupant === action.playerId) {
-      throw new GameActionError('A player advances beyond the Gauntlet only to initiate the opponent’s Last Stand.');
-    }
-    if (origin.kind !== 'territory' || origin.controller !== action.playerId) {
-      throw new GameActionError('The final Territory must be captured before initiating the opponent’s Last Stand.');
-    }
+    if (!destination.occupant || destination.occupant === action.playerId) throw new GameActionError('A player advances beyond the Gauntlet only to initiate the opponent’s Last Stand.');
+    if (origin.kind !== 'territory' || origin.controller !== action.playerId) throw new GameActionError('The final Territory must be captured before initiating the opponent’s Last Stand.');
   }
 }
 
@@ -68,17 +63,7 @@ function recentBattleResult(game: GameState, battle: BattleState, winner: Player
   const location = game.board.spaces.find((space) => space.id === battle.location)!;
   const origin = game.board.spaces.find((space) => space.id === battle.attackerOrigin)!;
   const attackerDirection = location.index > origin.index ? 1 : -1;
-  return {
-    battleId: battle.id,
-    turn: game.turn,
-    winner,
-    loser: winner === battle.attacker.playerId ? battle.defender.playerId : battle.attacker.playerId,
-    attacker: battle.attacker.playerId,
-    defender: battle.defender.playerId,
-    location: battle.location,
-    attackerOrigin: battle.attackerOrigin,
-    retreatDirection: (winner === battle.attacker.playerId ? attackerDirection : -attackerDirection) as -1 | 1,
-  };
+  return { battleId: battle.id, turn: game.turn, winner, loser: winner === battle.attacker.playerId ? battle.defender.playerId : battle.attacker.playerId, attacker: battle.attacker.playerId, defender: battle.defender.playerId, location: battle.location, attackerOrigin: battle.attackerOrigin, retreatDirection: (winner === battle.attacker.playerId ? attackerDirection : -attackerDirection) as -1 | 1 };
 }
 
 function applyMilitaryCommandTrigger(game: GameState, winner: PlayerID): void {
@@ -93,11 +78,7 @@ function applyMilitaryCommandTrigger(game: GameState, winner: PlayerID): void {
 function openPostBattleOrderWindow(game: GameState, winner: PlayerID): void {
   const options = legalLeaderAbilitiesFor(game, winner).filter((option) => option.timing === 'after_battle');
   if (options.length === 0) return;
-  game.pendingLeaderAbilityWindow = {
-    playerId: winner,
-    timing: 'after_battle',
-    battleId: game.recentBattleResult!.battleId,
-  };
+  game.pendingLeaderAbilityWindow = { playerId: winner, timing: 'after_battle', battleId: game.recentBattleResult!.battleId };
   game.priorityPlayer = winner;
 }
 
@@ -116,15 +97,7 @@ function closePostBattleOrderWindow(game: GameState): void {
 }
 
 function appendLastStandVictoryLog(game: GameState, winner: PlayerID, defeatedPlayer: PlayerID): void {
-  game.log.push({
-    id: `${game.id}-event-${game.log.length + 1}`,
-    turn: game.turn,
-    actor: winner,
-    type: 'last_stand_won',
-    message: `${game.players[winner].name} won ${game.players[defeatedPlayer].name}’s Last Stand and ran the Gauntlet.`,
-    payload: { winner, defeatedPlayer },
-    visibility: 'public',
-  } satisfies GameEvent);
+  game.log.push({ id: `${game.id}-event-${game.log.length + 1}`, turn: game.turn, actor: winner, type: 'last_stand_won', message: `${game.players[winner].name} won ${game.players[defeatedPlayer].name}’s Last Stand and ran the Gauntlet.`, payload: { winner, defeatedPlayer }, visibility: 'public' } satisfies GameEvent);
 }
 
 function finalizeLastStandResolution(result: ApplyGameActionResult, attacker?: PlayerID, defender?: PlayerID): void {
@@ -141,14 +114,11 @@ function finalizeLastStandResolution(result: ApplyGameActionResult, attacker?: P
 
 export function applyGameAction(game: GameState, action: StateAction): ApplyGameActionResult {
   if (action.type === 'pass_leader_ability_window') {
-    if (game.pendingLeaderAbilityWindow?.playerId !== action.playerId) {
-      throw new GameActionError(`${action.playerId} has no Leader ability window to pass.`);
-    }
+    if (game.pendingLeaderAbilityWindow?.playerId !== action.playerId) throw new GameActionError(`${action.playerId} has no Leader ability window to pass.`);
     const next = structuredClone(game);
     closePostBattleOrderWindow(next);
     return { state: next };
   }
-
   if (action.type === 'use_leader_ability') {
     const next = structuredClone(game);
     const definition = defaultLeaderAbilityRegistry.get(action.abilityId);
@@ -157,19 +127,19 @@ export function applyGameAction(game: GameState, action: StateAction): ApplyGame
     runPostActionAutomationPipeline(next);
     return { state: next };
   }
-
-  if (game.pendingLeaderAbilityWindow) {
-    throw new GameActionError('Resolve or pass the pending post-battle Order window first.');
-  }
+  if (game.pendingLeaderAbilityWindow) throw new GameActionError('Resolve or pass the pending post-battle Order window first.');
 
   validateV06EndpointMovement(game, action);
   const prepared = prepareLastStandResolution(game, action);
-  const battleBeforeResolution = action.type === 'resolve_battle' && prepared.game.battle
-    ? structuredClone(prepared.game.battle)
-    : undefined;
+  const battleBeforeResolution = action.type === 'resolve_battle' && prepared.game.battle ? structuredClone(prepared.game.battle) : undefined;
+  const endingPlayer = action.type === 'end_turn' ? action.playerId : undefined;
   const result = applyGameActionWithoutAutomation(prepared.game, action);
+
+  if (action.type === 'play_action_card') applyMilitaryActionEffect(result.state, action.playerId, action.cardId, action.targets);
+  if (endingPlayer) resolveMilitaryEndTurn(result.state, endingPlayer);
   markLastStand(result, action);
   if (action.type === 'resolve_battle') recordBattleAftermath(result, battleBeforeResolution);
+  removeCapturedEncampments(result.state);
   runPostActionAutomationPipeline(result.state);
   finalizeLastStandResolution(result, prepared.attacker, prepared.defender);
   if (action.type === 'resolve_battle') resetLeaderAbilityUsageAfterBattle(result.state);
