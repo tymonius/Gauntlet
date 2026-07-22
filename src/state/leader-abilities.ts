@@ -1,4 +1,5 @@
 import type {
+  BoardSpaceState,
   GameState,
   LeaderAbilityCost,
   LeaderAbilityTiming,
@@ -57,7 +58,9 @@ function timingIsOpen(game: GameState, playerId: PlayerID, timing: LeaderAbility
       return game.phase === 'battle' && game.battle?.stage === 'dice'
         && (game.battle.attacker.playerId === playerId || game.battle.defender.playerId === playerId);
     case 'after_battle':
-      return game.phase === 'action_after_movement' && game.activePlayer === playerId;
+      return game.phase === 'action_after_movement'
+        && game.recentBattleResult?.winner === playerId
+        && game.pendingLeaderAbilityWindow?.playerId === playerId;
     case 'turn_start':
       return game.phase === 'turn_start' && game.activePlayer === playerId;
     case 'turn_end':
@@ -69,13 +72,62 @@ function usageAvailable(game: GameState, playerId: PlayerID, ability: LeaderAbil
   const usage = usageFor(game, playerId);
   const limit = ability.usageLimit ?? 'none';
   if (limit === 'once_per_turn') return usage.turn[ability.id] !== game.turn;
-  if (limit === 'once_per_battle') return Boolean(game.battle) && usage.battle[ability.id] !== game.battle?.id;
+  if (limit === 'once_per_battle') {
+    const battleId = game.battle?.id ?? game.recentBattleResult?.battleId;
+    return Boolean(battleId) && usage.battle[ability.id] !== battleId;
+  }
   return true;
 }
 
 function canPay(game: GameState, playerId: PlayerID, cost?: LeaderAbilityCost): boolean {
   if (!cost) return true;
   return (game.players[playerId].resources?.[cost.resource]?.value ?? 0) >= cost.amount;
+}
+
+function occupiedSpace(game: GameState, playerId: PlayerID): BoardSpaceState | undefined {
+  return game.board.spaces.find((space) => space.occupant === playerId);
+}
+
+function captureOccupiedTerritory(game: GameState, playerId: PlayerID): void {
+  const space = occupiedSpace(game, playerId);
+  if (!space || space.kind !== 'territory' || !space.territoryId || space.controller === playerId) return;
+  const previousController = space.controller;
+  if (previousController) {
+    game.players[previousController].controlledTerritories = game.players[previousController].controlledTerritories
+      .filter((territoryId) => territoryId !== space.territoryId);
+  }
+  if (!game.players[playerId].controlledTerritories.includes(space.territoryId)) {
+    game.players[playerId].controlledTerritories.push(space.territoryId);
+  }
+  space.controller = playerId;
+  delete space.capturePendingBy;
+  game.log.push({
+    id: `${game.id}-event-${game.log.length + 1}`,
+    turn: game.turn,
+    actor: playerId,
+    type: 'territory_captured',
+    message: `${game.players[playerId].name} captured ${space.territoryId} immediately with Fortify.`,
+    payload: { spaceId: space.id, territoryId: space.territoryId, previousController, controller: playerId, source: 'commandant-fortify' },
+    visibility: 'public',
+  });
+}
+
+function repelLoserOneAdditionalPosition(game: GameState): void {
+  const result = game.recentBattleResult;
+  if (!result) return;
+  const loser = game.players[result.loser];
+  const current = occupiedSpace(game, result.loser);
+  if (!current) return;
+  const destination = game.board.spaces.find((space) => space.index === current.index + result.retreatDirection);
+  if (!destination || destination.occupant) return;
+  current.occupant = undefined;
+  destination.occupant = result.loser;
+  loser.occupiedSpaceId = destination.id;
+  if (destination.kind === 'territory' && destination.controller && destination.controller !== result.loser) {
+    destination.capturePendingBy = result.loser;
+  } else if (destination.kind === 'territory' && destination.controller === result.loser) {
+    delete destination.capturePendingBy;
+  }
 }
 
 export function legalLeaderAbilitiesFor(
@@ -121,7 +173,10 @@ export function useLeaderAbility(
 
   const usage = usageFor(game, playerId);
   if ((ability.usageLimit ?? 'none') === 'once_per_turn') usage.turn[ability.id] = game.turn;
-  if ((ability.usageLimit ?? 'none') === 'once_per_battle' && game.battle) usage.battle[ability.id] = game.battle.id;
+  if ((ability.usageLimit ?? 'none') === 'once_per_battle') {
+    const battleId = game.battle?.id ?? game.recentBattleResult?.battleId;
+    if (battleId) usage.battle[ability.id] = battleId;
+  }
 
   game.log.push({
     id: `${game.id}-event-${game.log.length + 1}`,
@@ -144,11 +199,25 @@ export function resetLeaderAbilityUsageAfterBattle(game: GameState): void {
 
 export const defaultLeaderAbilityRegistry = new LeaderAbilityRegistry([
   {
+    id: 'general-onward',
+    leaderName: 'General',
+    name: 'Onward',
+    text: 'Move one additional position this turn. Resolve this movement one position at a time. It may initiate a battle.',
+    timing: 'action_opportunity',
+    usageLimit: 'once_per_turn',
+    cost: { resource: 'command', amount: 1 },
+    resolve: (game, playerId) => {
+      game.players[playerId].movementRemaining += 1;
+      game.phase = 'movement';
+    },
+  },
+  {
     id: 'general-rally',
     leaderName: 'General',
     name: 'Rally',
-    text: 'Before dice are rolled in a battle you initiated, spend 1 Command to add +1 to your battle total.',
+    text: 'Before dice are rolled in a battle you initiated, add +1 to your battle total.',
     timing: 'before_battle_dice',
+    usageLimit: 'once_per_battle',
     cost: { resource: 'command', amount: 1 },
     canUse: (game, playerId) => game.battle?.attacker.playerId === playerId,
     resolve: (game, playerId) => {
@@ -158,11 +227,26 @@ export const defaultLeaderAbilityRegistry = new LeaderAbilityRegistry([
     },
   },
   {
+    id: 'general-rout',
+    leaderName: 'General',
+    name: 'Rout',
+    text: 'After you win a battle you initiated, move one position toward the opponent’s end of the Gauntlet. This movement may initiate another battle.',
+    timing: 'after_battle',
+    usageLimit: 'once_per_battle',
+    cost: { resource: 'command', amount: 2 },
+    canUse: (game, playerId) => game.recentBattleResult?.winner === playerId && game.recentBattleResult.attacker === playerId,
+    resolve: (game, playerId) => {
+      game.players[playerId].movementRemaining += 1;
+      game.phase = 'movement';
+    },
+  },
+  {
     id: 'commandant-entrench',
     leaderName: 'Commandant',
     name: 'Entrench',
-    text: 'Before dice are rolled in a battle you did not initiate, spend 1 Command to add +1 to your battle total.',
+    text: 'Before dice are rolled in a battle you did not initiate, add +1 to your battle total.',
     timing: 'before_battle_dice',
+    usageLimit: 'once_per_battle',
     cost: { resource: 'command', amount: 1 },
     canUse: (game, playerId) => game.battle?.defender.playerId === playerId,
     resolve: (game, playerId) => {
@@ -170,5 +254,33 @@ export const defaultLeaderAbilityRegistry = new LeaderAbilityRegistry([
       const participant = game.battle.attacker.playerId === playerId ? game.battle.attacker : game.battle.defender;
       participant.modifiers += 1;
     },
+  },
+  {
+    id: 'commandant-repel',
+    leaderName: 'Commandant',
+    name: 'Repel',
+    text: 'After you win a battle you did not initiate, the defeated opponent retreats one additional position, if able.',
+    timing: 'after_battle',
+    usageLimit: 'once_per_battle',
+    cost: { resource: 'command', amount: 1 },
+    canUse: (game, playerId) => game.recentBattleResult?.winner === playerId
+      && game.recentBattleResult.defender === playerId
+      && Boolean(occupiedSpace(game, game.recentBattleResult.loser)),
+    resolve: (game) => repelLoserOneAdditionalPosition(game),
+  },
+  {
+    id: 'commandant-fortify',
+    leaderName: 'Commandant',
+    name: 'Fortify',
+    text: 'After you win a battle while occupying an enemy-controlled Territory, capture that Territory immediately.',
+    timing: 'after_battle',
+    usageLimit: 'once_per_battle',
+    cost: { resource: 'command', amount: 2 },
+    canUse: (game, playerId) => {
+      const space = occupiedSpace(game, playerId);
+      return game.recentBattleResult?.winner === playerId
+        && Boolean(space?.kind === 'territory' && space.controller && space.controller !== playerId);
+    },
+    resolve: (game, playerId) => captureOccupiedTerritory(game, playerId),
   },
 ]);
