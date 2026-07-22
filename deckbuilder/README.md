@@ -4,9 +4,9 @@ The browser Deckbuilder for the canonical Gauntlet v0.6.0 playtest release.
 
 Rendered tool:
 
-- `https://gauntlet.run/deckbuilder/`
+- `https://tymonius.github.io/Gauntlet/deckbuilder/`
 
-The former `https://gauntlet.run/deckbuilder-v0.6/` address remains as a compatibility redirect to the canonical URL.
+The former `/deckbuilder-v0.6/` address remains available as a compatibility route to the canonical tool.
 
 ## Recommended starter Decks
 
@@ -86,7 +86,7 @@ The **Print / PDF** control opens a browser-printable Letter-size package and th
 - the selected Leader Card, including portrait and exact Leader rules;
 - one printable face for every playable-card copy;
 - the selected three Territories in their saved order;
-- every required faction tracker, reference, and supplemental card; and
+- every required faction tracker, ledger, reference, and supplemental card; and
 - standardized 2.5 × 3.5-inch cut lines.
 
 Enable **Print card backs** to add mirrored reverse pages for playable cards and Territories. Print at Actual Size / 100%, disable browser headers and footers, and choose **Flip on long edge** for duplex pages.
@@ -95,7 +95,7 @@ Faction packages render as follows:
 
 - **Military:** selected Leader Card and shared Command Tracker;
 - **Diplomats:** selected Leader Card, Influence Tracker, double-sided Reference card, nine Proposal fronts, and nine Treaty Article backs;
-- **Financiers:** selected Leader Card, Financier Reference, Capital Tracker, and eight generic Deed Cards;
+- **Financiers:** selected Leader Card, Financier Reference, reusable Capital Ledger, and eight generic Deed Cards;
 - **Intelligence:** selected Leader Card, Mission Reference, Operations Reference, sliding Intel Tracker, and sliding Operation Progress Tracker;
 - **Mystics:** selected Leader Card, Mystics Reference, and three double-sided Rite cards; and
 - **Inquisition:** selected Leader Card, Conviction Tracker, Doctrine Reference, and Purge Reference.
