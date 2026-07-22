@@ -60,7 +60,8 @@
       "Selected Leader Card",
       "Mission Reference",
       "Operations Reference",
-      "Intel / Operation Progress Tracker"
+      "Intel sliding tracker",
+      "Operation Progress sliding tracker"
     ],
     leaderImages: {
       ranger: "https://tymonius.github.io/Gauntlet/images/leader-cards/ranger.jpg",
@@ -95,16 +96,29 @@
         ]
       },
       {
-        type: "reference",
-        id: "intelligence-resource-tracker",
-        title: "Intelligence Resources",
-        subtitle: "Intel / Operation Progress Tracker",
-        sections: [
-          { label: "Intel", text: "0  1  2  3  4  5  6  7  8  9  10  11  12  13  14  15  16  17  18  19  20" },
-          { label: "Operation Progress", text: "0  1  2  3  4  5  6  7  8" },
-          { label: "Tracking", text: "Place one marker on each track. Printed ranges are not maximums; use a die, note, or additional marker for larger values." }
-        ],
-        footer: "Supplemental tracker — no deckbuilding value"
+        type: "tracker",
+        id: "intelligence-intel-tracker",
+        title: "Intel Tracker",
+        note: "Place beneath the Operations Reference Card. Fully cover at 0. Slide the Reference upward until its bottom edge aligns with current Intel. Printed range: 0–20.",
+        zeroLabel: "0 — Fully covered",
+        compact: true,
+        steps: Array.from({ length: 20 }, (_, index) => ({
+          value: index + 1,
+          label: (index + 1) % 5 === 0 ? "Intel" : "",
+          position: (index + 1) * 0.15
+        }))
+      },
+      {
+        type: "tracker",
+        id: "intelligence-operation-progress-tracker",
+        title: "Operation Progress",
+        note: "Place beneath the Mission Reference Card. Fully cover at 0. Slide the Reference upward until its bottom edge aligns with current Operation Progress. Printed range: 0–8.",
+        zeroLabel: "0 — Fully covered",
+        steps: Array.from({ length: 8 }, (_, index) => ({
+          value: index + 1,
+          label: "Progress",
+          position: (index + 1) * 0.36
+        }))
       }
     ]
   };
