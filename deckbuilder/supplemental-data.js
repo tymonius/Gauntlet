@@ -146,7 +146,7 @@ window.GAUNTLET_V06_SUPPLEMENTALS = {
     summary: [
       "Selected Leader Card",
       "Financier Reference",
-      "Capital Tracker",
+      "Capital Ledger",
       "Eight full-size generic Deed Cards"
     ],
     leaderImages: {
@@ -164,7 +164,12 @@ window.GAUNTLET_V06_SUPPLEMENTALS = {
           { label: "Income & victory", text: "After captures, gain 1 Capital per owned Deed. Win when every Territory has a Deed Card on your side." }
         ]
       },
-      { type: "capital", id: "financier-capital-tracker", title: "Capital Tracker", note: "Track current Capital and Capital limit publicly. Capital has no fixed maximum." },
+      {
+        type: "capital",
+        id: "financier-capital-ledger",
+        title: "Capital Ledger",
+        note: "Record every Capital gain, spend, loss, and end-turn reduction as a transaction. The last Balance entry is current Capital. Record the current Capital limit separately."
+      },
       { type: "deed-set", id: "financier-deed-cards", title: "Deed", count: 8 }
     ]
   },
