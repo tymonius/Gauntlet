@@ -36,6 +36,12 @@ export interface RecentBattleResult {
   retreatDirection: -1 | 1;
 }
 
+export interface PendingLeaderAbilityWindow {
+  playerId: PlayerID;
+  timing: 'after_battle';
+  battleId: string;
+}
+
 export interface GameState {
   id: GameID;
   version: string;
@@ -47,6 +53,7 @@ export interface GameState {
   board: BoardState;
   battle?: BattleState;
   recentBattleResult?: RecentBattleResult;
+  pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow;
   pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[];
   winner?: PlayerID;
@@ -72,6 +79,7 @@ export interface PublicGameView {
   battle?: PublicBattleView;
   legalActionPlays?: LegalActionPlayOption[];
   legalLeaderAbilities?: LegalLeaderAbilityOption[];
+  pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow;
   pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[];
   winner?: PlayerID;
