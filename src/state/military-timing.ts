@@ -54,18 +54,18 @@ function playableBattleCards(cards: CardID[], origin: 'hand' | 'battle_draw'): C
 
 export function openMilitaryPrecommitWindows(game: GameState): void {
   if (!game.battle || game.battle.stage !== 'hand_commit') return;
+  const location = game.board.spaces.find((space) => space.id === game.battle?.location);
   for (const playerId of [game.battle.attacker.playerId, game.battle.defender.playerId]) {
     const player = game.players[playerId];
     if (player.factionId !== 'military') continue;
     if (player.zones.assetBank.includes(BROTHERS)) {
       queue(game, { kind: 'brothers_in_arms_precommit', playerId, sourceCardId: BROTHERS, options: ['use', 'pass'] });
     }
-    const location = game.board.spaces.find((space) => space.id === game.battle?.location);
     if (playerId === game.battle.defender.playerId && location?.kind === 'territory' && location.controller === playerId && player.zones.assetBank.includes(HOLD)) {
-      game.battle.effectsResolved.push(`offer:${HOLD}:${playerId}`);
+      queue(game, { kind: 'military_asset_precommit', playerId, sourceCardId: HOLD, options: ['use', 'pass'] });
     }
     if (playerId === game.battle.attacker.playerId && location?.kind === 'territory' && location.controller === opponentId(game, playerId) && player.zones.assetBank.includes(SHOCK)) {
-      game.battle.effectsResolved.push(`offer:${SHOCK}:${playerId}`);
+      queue(game, { kind: 'military_asset_precommit', playerId, sourceCardId: SHOCK, options: ['use', 'pass'] });
     }
   }
   activateNext(game);
@@ -78,12 +78,9 @@ export function maybeOpenBrothersSelection(game: GameState): void {
     if (game.battle.effectsResolved.includes(`selected:${BROTHERS}:${playerId}`)) continue;
     const side = participant(game, playerId);
     queue(game, {
-      kind: 'brothers_in_arms_selection',
-      playerId,
-      sourceCardId: BROTHERS,
+      kind: 'brothers_in_arms_selection', playerId, sourceCardId: BROTHERS,
       handOptions: playableBattleCards(game.players[playerId].zones.hand, 'hand'),
-      battleHandOptions: playableBattleCards(side.battleDraw, 'battle_draw'),
-      mayChooseNeither: true,
+      battleHandOptions: playableBattleCards(side.battleDraw, 'battle_draw'), mayChooseNeither: true,
     });
   }
   if (!game.pendingMilitaryTimingChoice) activateNext(game);
@@ -146,6 +143,13 @@ export function resolveMilitaryTimingChoice(game: GameState, playerId: PlayerID,
       game.battle.effectsResolved.push(`active:${BROTHERS}:${playerId}`);
       log(game, playerId, 'military_brothers_delayed', `${player.name} delayed their hand commitment with Brothers in Arms.`);
     }
+  } else if (pending.kind === 'military_asset_precommit') {
+    if (!pending.options.includes(choice as 'use' | 'pass')) throw new Error('Choose use or pass.');
+    if (choice === 'use') {
+      consumeAsset(game, playerId, pending.sourceCardId);
+      game.battle.effectsResolved.push(`active:${pending.sourceCardId}:${playerId}`);
+      log(game, playerId, 'military_asset_activated', `${player.name} activated ${pending.sourceCardId}.`, { cardId: pending.sourceCardId });
+    }
   } else if (pending.kind === 'brothers_in_arms_selection') {
     if (choice !== 'neither') {
       if (!cardId || !secondaryCardId || !pending.handOptions.includes(cardId) || !pending.battleHandOptions.includes(secondaryCardId)) throw new Error('Brothers in Arms requires one eligible hand card and one eligible Battle Hand card, or neither.');
@@ -195,13 +199,4 @@ export function resolveMilitaryTimingChoice(game: GameState, playerId: PlayerID,
   game.pendingMilitaryTimingChoice = undefined;
   activateNext(game);
   if (!game.pendingMilitaryTimingChoice) game.priorityPlayer = game.activePlayer;
-}
-
-export function activateOfferedMilitaryAsset(game: GameState, playerId: PlayerID, cardId: typeof HOLD | typeof SHOCK, use: boolean): void {
-  if (!game.battle?.effectsResolved.includes(`offer:${cardId}:${playerId}`)) throw new Error(`${cardId} is not currently offered.`);
-  game.battle.effectsResolved = game.battle.effectsResolved.filter((entry) => entry !== `offer:${cardId}:${playerId}`);
-  if (use) {
-    consumeAsset(game, playerId, cardId);
-    game.battle.effectsResolved.push(`active:${cardId}:${playerId}`);
-  }
 }
