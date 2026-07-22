@@ -1,13 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import type { BattleState, GameState } from '../types';
 import { initializeGame } from './initialize';
-import { applyLeverage, checkPeaceTreatyVictory, eligibleProposals, offerTerms, respondToTerms } from './diplomat-terms';
+import { applyLeverage, checkPeaceTreatyVictory, eligibleProposals, offerTerms, openDiplomatTermsWindow, resolvePoliticalCapital, respondToTerms } from './diplomat-terms';
 
-function game(): GameState {
+function game(leaderName: 'Ambassador' | 'Senator' = 'Ambassador'): GameState {
   const state = initializeGame({
     id: 'diplomat-test', version: '0.5.6-dev', shuffleDecks: false,
     players: [
-      { id: 'player_1', name: 'Diplomat', factionId: 'diplomats', leaderName: 'Ambassador', deck: ['d1','d2','d3','d4'], territories: ['d-t1','d-t2','d-t3'] },
+      { id: 'player_1', name: 'Diplomat', factionId: 'diplomats', leaderName, deck: ['d1','d2','d3','d4'], territories: ['d-t1','d-t2','d-t3'] },
       { id: 'player_2', name: 'Opponent', deck: ['o1','o2','o3','o4'], territories: ['o-t1','o-t2','o-t3'] },
     ],
   });
@@ -22,6 +22,12 @@ function game(): GameState {
 }
 
 describe('Diplomat Terms framework', () => {
+  it('opens a Terms choice automatically for an eligible Diplomat participant', () => {
+    const state = game();
+    expect(openDiplomatTermsWindow(state)).toBe(true);
+    expect(state.pendingDiplomatChoice).toMatchObject({ kind: 'offer_terms', playerId: 'player_1' });
+  });
+
   it('enumerates only eligible Proposals affordable with available Influence', () => {
     const state = game();
     expect(eligibleProposals(state, 'player_1')).toEqual(expect.arrayContaining(['de-escalation','orderly-withdrawal','open-channels','mutual-disarmament','rebuilding-pact']));
@@ -36,17 +42,18 @@ describe('Diplomat Terms framework', () => {
     expect(state.pendingDiplomatChoice).toMatchObject({ kind: 'respond_to_terms', playerId: 'player_2', proposalIds: ['open-channels'] });
   });
 
-  it('acceptance returns the Stake, ratifies the Proposal, grants the normal reward, and triggers Cordiality', () => {
+  it('acceptance resolves the Proposal, returns Stake, ratifies it, rewards Influence, and triggers Cordiality', () => {
     const state = game();
     offerTerms(state, 'player_1', 'open-channels');
     respondToTerms(state, 'player_2', 'accept');
     expect(state.players.player_1.resources?.influence?.value).toBe(2);
     expect(state.players.player_1.diplomats?.ratifiedProposals).toEqual(['open-channels']);
     expect(state.players.player_1.zones.hand).toHaveLength(4);
+    expect(state.players.player_2.zones.hand).toHaveLength(4);
     expect(state.battle).toBeUndefined();
   });
 
-  it('refusal preserves the Stake as unavailable and enables Leverage from remaining Influence', () => {
+  it('applies a refused Proposal bonus before optional Leverage', () => {
     const state = game();
     state.players.player_1.resources!.influence!.value = 3;
     offerTerms(state, 'player_1', 'ultimatum');
@@ -54,7 +61,16 @@ describe('Diplomat Terms framework', () => {
     state.battle!.stage = 'dice';
     applyLeverage(state, 'player_1', 1);
     expect(state.players.player_1.resources?.influence?.value).toBe(0);
-    expect(state.battle?.attacker.modifiers).toBe(1);
+    expect(state.battle?.attacker.modifiers).toBe(2);
+  });
+
+  it('resolves Senator Political Capital by sacrificing selected hand cards', () => {
+    const state = game('Senator');
+    state.pendingDiplomatChoice = { kind: 'political_capital', playerId: 'player_1', lostStake: 2, handOptions: [...state.players.player_1.zones.hand] };
+    state.players.player_1.resources!.influence!.value = 0;
+    resolvePoliticalCapital(state, 'player_1', ['d1','d2']);
+    expect(state.players.player_1.zones.graveyard).toEqual(expect.arrayContaining(['d1','d2']));
+    expect(state.players.player_1.resources?.influence?.value).toBe(2);
   });
 
   it('checks Peace Treaty victory only when five different Proposals are ratified', () => {
