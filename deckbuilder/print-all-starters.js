@@ -39,8 +39,12 @@
   }
 
   function isReady() {
+    const starterApi = window.GAUNTLET_STARTER_DECKS;
+    const starterTipsReady = typeof starterApi?.getSelectedDeck === "function" && Boolean(starterApi.getSelectedDeck());
+
     return Boolean(
       starterDecks.length === EXPECTED_DECK_COUNT &&
+      starterTipsReady &&
       state.cards?.length &&
       state.territoryPool?.length &&
       !document.getElementById("printDeckButton")?.disabled
