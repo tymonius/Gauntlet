@@ -11,7 +11,7 @@ These browser-printable sheets are separate from the versioned v0.5 deckbuilder.
 - [Open the rendered Inquisition faction sheets](https://tymonius.github.io/Gauntlet/faction-sheets/inquisition.html) — twelve Inquisition cards, Grand Inquisitor, Witch Hunter, two references, and the sliding Conviction tracker.
 - [Open the rendered Mystics faction sheets](https://tymonius.github.io/Gauntlet/faction-sheets/mystics.html) — twelve Mystics cards, Alchemist, Spirit Walker, the Mystics Reference, three incomplete Rite faces, and three mirrored completed Rite backs.
 - [Open the rendered Financier faction sheets](https://tymonius.github.io/Gauntlet/faction-sheets/financier.html) — twelve Financier cards, Banker, Executive, the Financier Reference, a public Capital Tracker, and eight full-size generic Deed cards.
-- [Open the rendered Intelligence faction sheets](https://tymonius.github.io/Gauntlet/faction-sheets/intelligence.html) — twelve Intelligence cards, Ranger, Spymaster, two references, and the dual Intel / Operation Progress tracker.
+- [Open the rendered Intelligence faction sheets](https://tymonius.github.io/Gauntlet/faction-sheets/intelligence.html) — twelve Intelligence cards, Ranger, Spymaster, two references, a sliding Intel Tracker, and a sliding Operation Progress Tracker.
 
 Use the rendered GitHub Pages links rather than GitHub's source-code view.
 
@@ -27,13 +27,21 @@ The sheets use a 3 × 3 grid. Supplemental cards are open information and do not
 
 ## Trackers and ownership cards
 
-Place a sliding tracker beneath the selected Leader Card. The Leader Card's bottom edge indicates the current value.
+Military, Diplomats, and Inquisition place their sliding tracker beneath the selected Leader Card. The Leader Card's bottom edge indicates the current value.
 
 - At **0**, align both cards so the tracker is fully covered.
-- Slide the Leader upward until its bottom edge aligns with the current numbered line.
+- Slide the covering card upward until its bottom edge aligns with the current numbered line.
 - No token or marker is used.
 
-Military tracks **0–2 Command**. Diplomats track **0–10 Influence**. Inquisition tracks **0–4 Conviction**. Intelligence uses a dual printed track for **Intel 0–20** and **Operation Progress 0–8** with separate cut-out markers; those printed ranges are not resource maximums.
+Military tracks **0–2 Command**. Diplomats track **0–10 Influence**. Inquisition tracks **0–4 Conviction**.
+
+Intelligence uses two sliding tracker stacks:
+
+- place the **Intel Tracker** beneath the **Operations Reference Card**;
+- place the **Operation Progress Tracker** beneath the **Mission Reference Card**;
+- fully cover each tracker at 0, then slide its paired Reference Card upward until the lower edge aligns with the current value.
+
+The printed Intelligence ranges are **Intel 0–20** and **Operation Progress 0–8**. Those printed ranges are not resource maximums, but ordinary play requires no markers.
 
 Financiers use a public **Capital Tracker** and eight full-size generic **Deed Cards**. Keep the Deeds in a shared supply, place one beside a Territory on its owner's side when purchased, move it across on a buyout, and return it to the supply when made unowned.
 
@@ -46,7 +54,7 @@ Mystics use no tracker or ledger. Completed Rites are flipped to their completed
 - `releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md` — definitive Inquisition rules, leaders, references, tracker, and playable-card text. The Inquisition sheets are derived from this guide.
 - `releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md` — definitive Mystics rules, leaders, Rites, reference, and playable-card text. The Mystics sheets are derived from this guide.
 - `releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md` — definitive Financier rules, leaders, Capital, Treasury, Deeds, reference, Capital Tracker, Deed-card requirements, and playable-card text. The Financier sheets are derived from this guide.
-- `releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md` — definitive Intelligence rules, leaders, Missions, references, tracker, and playable-card text. The Intelligence sheets are derived from this guide.
+- `releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md` — definitive Intelligence rules, leaders, Missions, references, trackers, and playable-card text. The Intelligence sheets are derived from this guide.
 - `releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md` — canonical shared rules.
 - `docs/Gauntlet_v0.6_Leader_Design_Bible.md` — leader art direction.
 
