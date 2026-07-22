@@ -46,11 +46,13 @@
       },
       ...(packageData.components || []).map(component => ({
         name: component.type === "deed-set" ? `${component.count || 8} × ${component.title}` : component.title,
-        meta: component.type === "tracker" || component.type === "capital" || /tracker/i.test(component.footer || component.subtitle || "")
-          ? "Supplemental tracker"
-          : component.type === "deed-set"
-            ? "Shared supplemental cards"
-            : "Supplemental reference"
+        meta: component.type === "capital" || /ledger/i.test(component.title || "")
+          ? "Supplemental ledger"
+          : component.type === "tracker" || /tracker/i.test(component.footer || component.subtitle || "")
+            ? "Supplemental tracker"
+            : component.type === "deed-set"
+              ? "Shared supplemental cards"
+              : "Supplemental reference"
       }))
     ];
 
