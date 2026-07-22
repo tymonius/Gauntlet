@@ -10,7 +10,6 @@ export type GameAction =
   | DrawCardAction
   | RevealSpaceAction
   | PlayActionCardAction
-  | UseLeaderAbilityAction
   | ResolveAssetBankDiscardAction
   | MovePlayerAction
   | CommitBattleHandCardAction
@@ -21,6 +20,8 @@ export type GameAction =
   | RollBattleDieAction
   | ResolveBattleAction
   | EndTurnAction;
+
+export type StateAction = GameAction | UseLeaderAbilityAction;
 
 export interface DrawCardAction { type: 'draw_card'; playerId: PlayerID; count?: number; }
 export interface RevealSpaceAction { type: 'reveal_space'; playerId: PlayerID; spaceId: SpaceID; }
