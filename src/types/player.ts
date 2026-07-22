@@ -9,7 +9,7 @@ export interface PlayerState {
   factionId?: string;
   leaderName?: string;
   resources?: FactionResourceMap;
-  leaderAbilityUsage: LeaderAbilityUsageState;
+  leaderAbilityUsage?: LeaderAbilityUsageState;
   zones: PrivateZones;
   controlledTerritories: TerritoryID[];
   occupiedSpaceId?: string;
@@ -25,7 +25,7 @@ export interface PublicPlayerView {
   factionId?: string;
   leaderName?: string;
   resources?: FactionResourceMap;
-  leaderAbilityUsage: LeaderAbilityUsageState;
+  leaderAbilityUsage?: LeaderAbilityUsageState;
   zones: {
     deck: PublicZoneView;
     hand: PublicZoneView;
