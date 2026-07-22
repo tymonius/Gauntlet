@@ -99,17 +99,29 @@ function renderOperationsReference(){
     <div class="reference-block"><strong>Reminder:</strong> Interference disrupts rather than destroys and creates no additional response window.</div>
   </div><div class="cut-note">Supplemental reference — no deckbuilding value</div></article>`;
 }
-function numbers(start,end){return Array.from({length:end-start+1},(_,i)=>start+i).map(n=>`<span>${n}</span>`).join('');}
-function renderTracker(){
-  return `<article class="print-card tracker-card"><div class="tracker-heading">Intelligence Resources</div><div class="eye-symbol">◉</div>
-    <div class="track-label">Intel</div><div class="number-track intel-track">${numbers(0,20)}</div>
-    <div class="track-label progress-label">Operation Progress</div><div class="number-track progress-track">${numbers(0,8)}</div>
-    <div class="tracker-note">Place one marker on each track. Printed ranges are not maximums; use a die, note, or additional marker for larger values.</div>
-    <div class="marker-row"><span class="cut-marker">I</span><span class="cut-marker">P</span><span class="marker-note">Cut-out markers</span></div>
-    <div class="cut-note">Supplemental tracker — no deckbuilding value</div></article>`;
+function renderSlidingTracker({title,cover,max,step,label,compact=false}){
+  const lines=Array.from({length:max},(_,index)=>{
+    const value=index+1;
+    const showLabel=!compact||value%5===0;
+    return `<div class="slide-step" style="bottom:${(value*step).toFixed(2)}in"><span class="slide-value">${value}</span>${showLabel?`<span class="slide-label">${escapeHtml(label)}</span>`:''}</div>`;
+  }).join('');
+  return `<article class="print-card tracker-card sliding-tracker${compact?' compact-tracker':''}">
+    <div class="tracker-heading">${escapeHtml(title)}</div>
+    <div class="tracker-instruction">Place beneath the ${escapeHtml(cover)}. Fully cover at 0, then slide that card upward until its bottom edge aligns with the current value.</div>
+    ${lines}
+    <div class="tracker-zero">0 — Fully covered</div>
+    <div class="cut-note">Sliding tracker — no marker required</div>
+  </article>`;
 }
 function renderSheets(){
-  const items=[...cards.map(renderFactionCard),...leaders.map(renderLeaderCard),renderMissionReference(),renderOperationsReference(),renderTracker()];
+  const items=[
+    ...cards.map(renderFactionCard),
+    ...leaders.map(renderLeaderCard),
+    renderMissionReference(),
+    renderOperationsReference(),
+    renderSlidingTracker({title:'Intel Tracker',cover:'Operations Reference Card',max:20,step:.15,label:'Intel',compact:true}),
+    renderSlidingTracker({title:'Operation Progress',cover:'Mission Reference Card',max:8,step:.36,label:'Progress'})
+  ];
   const root=document.getElementById('sheets');
   for(let i=0;i<Math.ceil(items.length/9);i++){
     const page=items.slice(i*9,i*9+9); while(page.length<9) page.push('<div class="print-card placeholder-card"></div>');
