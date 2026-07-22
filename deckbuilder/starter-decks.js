@@ -183,6 +183,10 @@
 
     summary.classList.add("has-starter-strategy");
 
+    const territoryOrder = (preset.territories || [])
+      .map((name, index) => `<span><strong>${index + 1}.</strong> ${escapeStarterHtml(name)}</span>`)
+      .join('<span class="starter-territory-arrow" aria-hidden="true">→</span>');
+
     const strategy = documentNode.createElement("section");
     strategy.className = "starter-print-strategy";
     strategy.innerHTML = `
@@ -193,15 +197,24 @@
       <div>
         <h2>First-game tip</h2>
         <p>${escapeStarterHtml(preset.firstGameTip)}</p>
+      </div>
+      <div class="starter-print-territories">
+        <h2>Recommended Territory order</h2>
+        <p><strong>From your end outward:</strong> ${territoryOrder}</p>
       </div>`;
     summaryGrid.before(strategy);
 
     style.textContent += `
-.first-page-summary.has-starter-strategy .summary-line{margin-bottom:.055in}
-.first-page-summary.has-starter-strategy .summary-grid{min-height:1.95in}
-.starter-print-strategy{display:grid;grid-template-columns:.9fr 1.45fr;gap:.18in;margin:0 0 .08in;padding:.065in .085in;border:1px solid #999;background:#f2f2f2!important;box-shadow:inset 0 0 0 999px #f2f2f2;font-size:7.25pt;line-height:1.18}
-.starter-print-strategy h2{margin:0 0 .025in;font-size:7.4pt}
-.starter-print-strategy p{margin:0}`;
+.first-page-summary.has-starter-strategy .summary-line{margin-bottom:.05in}
+.first-page-summary.has-starter-strategy .summary-grid{min-height:1.78in}
+.starter-print-strategy{display:grid;grid-template-columns:.9fr 1.45fr;gap:.055in .18in;margin:0 0 .065in;padding:.055in .085in;border:1px solid #999;background:#f2f2f2!important;box-shadow:inset 0 0 0 999px #f2f2f2;font-size:7.15pt;line-height:1.16}
+.starter-print-strategy h2{margin:0 0 .022in;font-size:7.25pt}
+.starter-print-strategy p{margin:0}
+.starter-print-territories{grid-column:1/-1;display:grid;grid-template-columns:1.48in 1fr;gap:.08in;align-items:baseline;padding-top:.045in;border-top:1px solid #bbb}
+.starter-print-territories h2{margin:0}
+.starter-print-territories p{font-size:6.75pt}
+.starter-print-territories span{white-space:nowrap}
+.starter-territory-arrow{display:inline-block;margin:0 .045in;font-weight:900}`;
 
     return `<!doctype html>\n${documentNode.documentElement.outerHTML}`;
   }
