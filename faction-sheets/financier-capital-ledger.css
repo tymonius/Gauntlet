@@ -1,0 +1,60 @@
+.capital-ledger-card{
+  padding:.075in;
+  color:var(--fin-ink);
+  background:var(--fin-paper)!important;
+}
+.capital-ledger-card .ledger-heading{
+  color:var(--fin-green);
+  border-bottom-color:var(--fin-gold);
+  margin-bottom:.04in;
+}
+.capital-ledger-instructions{
+  margin-bottom:.04in;
+  font:5.15pt/1.12 Georgia,'Times New Roman',serif;
+}
+.capital-limit-field{
+  display:grid;
+  grid-template-columns:1fr .62in;
+  gap:.05in;
+  align-items:end;
+  margin-bottom:.045in;
+  padding:.035in .045in;
+  border:.8pt solid var(--fin-green);
+  font-size:5pt;
+  letter-spacing:.035em;
+  text-transform:uppercase;
+}
+.capital-limit-field span{
+  height:.19in;
+  border-bottom:.8pt solid var(--fin-ink);
+}
+.capital-ledger-table{
+  width:100%;
+  border-collapse:collapse;
+  table-layout:fixed;
+  font-size:4.7pt;
+}
+.capital-ledger-table th{
+  height:.17in;
+  padding:.015in .025in;
+  border:.65pt solid var(--fin-green);
+  background:#e8dec9;
+  color:var(--fin-green);
+  text-transform:uppercase;
+  letter-spacing:.035em;
+}
+.capital-ledger-table th:first-child{width:58%}
+.capital-ledger-table th:nth-child(2){width:17%}
+.capital-ledger-table th:nth-child(3){width:25%}
+.capital-ledger-table td{
+  height:.17in;
+  border:.65pt solid #8f8778;
+  background:#fffdf8;
+}
+.capital-ledger-reminder{
+  margin-top:auto;
+  padding-top:.035in;
+  color:#473f33;
+  font:4.55pt/1.1 Georgia,'Times New Roman',serif;
+}
+.capital-ledger-card .cut-note{color:rgba(23,62,50,.55)}
