@@ -13,6 +13,7 @@ import {
   useLeaderAbility,
 } from './leader-abilities';
 import { buildMilitaryAftermathChoices, enrichRecentBattleResult, resolveMilitaryChoice } from './military-interactions';
+import { maybeOpenBrothersSelection, openMilitaryAfterRevealWindows, openMilitaryPrecommitWindows, resolveMilitaryTimingChoice } from './military-timing';
 import { gainFactionResource } from './resources';
 import { runPostActionAutomationPipeline } from './pipeline';
 import { isOpponentBeyondGauntletSpace, isOwnBeyondGauntletSpace } from './v06-board';
@@ -74,9 +75,7 @@ function recentBattleResult(game: GameState, battle: BattleState, winner: Player
     location: battle.location,
     attackerOrigin: battle.attackerOrigin,
     retreatDirection: (winner === battle.attacker.playerId ? attackerDirection : -attackerDirection) as -1 | 1,
-    battleHandCards: {},
-    handCommittedCards: {},
-    ordersUsed: {},
+    battleHandCards: {}, handCommittedCards: {}, ordersUsed: {},
   };
   return enrichRecentBattleResult(base, battle, game);
 }
@@ -91,19 +90,43 @@ function applyMilitaryCommandTrigger(game: GameState, winner: PlayerID): void {
 }
 
 function openPostBattleOrderWindow(game: GameState, winner: PlayerID): void {
-  if (game.pendingMilitaryChoice) return;
-  const restrictions = game.players[winner].military?.victoryRestrictions;
-  if (restrictions?.noOrders) return;
+  if (game.pendingMilitaryChoice || game.pendingMilitaryTimingChoice) return;
+  if (game.players[winner].military?.victoryRestrictions?.noOrders) return;
   const options = legalLeaderAbilitiesFor(game, winner).filter((option) => option.timing === 'after_battle');
   if (options.length === 0) return;
   game.pendingLeaderAbilityWindow = { playerId: winner, timing: 'after_battle', battleId: game.recentBattleResult!.battleId };
   game.priorityPlayer = winner;
 }
 
+function correctAddedCardDestinations(game: GameState, battle: BattleState): void {
+  for (const side of [battle.attacker, battle.defender]) {
+    const player = game.players[side.playerId];
+    for (const card of side.battleDrawPlayed.filter((played) => played.origin === 'hand')) {
+      const index = player.zones.discard.indexOf(card.cardId);
+      if (index >= 0) player.zones.discard.splice(index, 1);
+      if (!player.zones.graveyard.includes(card.cardId)) player.zones.graveyard.push(card.cardId);
+    }
+  }
+}
+
+function applyHoldTheLineLoss(game: GameState, battle: BattleState, winner: PlayerID): void {
+  const defender = battle.defender.playerId;
+  if (winner === defender || !battle.effectsResolved.includes(`hold_capture_if_lost:${defender}`)) return;
+  const space = game.board.spaces.find((candidate) => candidate.id === battle.location);
+  if (!space?.territoryId || space.kind !== 'territory') return;
+  const previous = space.controller;
+  if (previous && previous !== winner) game.players[previous].controlledTerritories = game.players[previous].controlledTerritories.filter((id) => id !== space.territoryId);
+  if (!game.players[winner].controlledTerritories.includes(space.territoryId)) game.players[winner].controlledTerritories.push(space.territoryId);
+  space.controller = winner;
+  delete space.capturePendingBy;
+}
+
 function recordBattleAftermath(result: ApplyGameActionResult, battle?: BattleState): void {
   if (!battle) return;
   const winner = lastResolvedBattleWinner(result.state);
   if (!winner) return;
+  correctAddedCardDestinations(result.state, battle);
+  applyHoldTheLineLoss(result.state, battle, winner);
   result.state.recentBattleResult = recentBattleResult(result.state, battle, winner);
   applyMilitaryCommandTrigger(result.state, winner);
   buildMilitaryAftermathChoices(result.state, battle);
@@ -128,12 +151,22 @@ function finalizeLastStandResolution(result: ApplyGameActionResult, attacker?: P
   result.state.priorityPlayer = attacker;
   result.state.pendingMilitaryChoice = undefined;
   result.state.militaryChoiceQueue = undefined;
+  result.state.pendingMilitaryTimingChoice = undefined;
+  result.state.militaryTimingChoiceQueue = undefined;
   result.state.pendingLeaderAbilityWindow = undefined;
   result.state.pendingAssetBankDiscards = undefined;
   appendLastStandVictoryLog(result.state, attacker, defender);
 }
 
 export function applyGameAction(game: GameState, action: StateAction): ApplyGameActionResult {
+  if (action.type === 'resolve_military_timing_choice') {
+    const next = structuredClone(game);
+    resolveMilitaryTimingChoice(next, action.playerId, action.choice, action.cardId, action.secondaryCardId);
+    maybeOpenBrothersSelection(next);
+    openMilitaryAfterRevealWindows(next);
+    runPostActionAutomationPipeline(next);
+    return { state: next };
+  }
   if (action.type === 'resolve_military_choice') {
     const next = structuredClone(game);
     resolveMilitaryChoice(next, action.playerId, action.choice, action.cardId);
@@ -148,7 +181,7 @@ export function applyGameAction(game: GameState, action: StateAction): ApplyGame
     return { state: next };
   }
   if (action.type === 'use_leader_ability') {
-    if (game.pendingMilitaryChoice) throw new GameActionError('Resolve the pending Military card choice first.');
+    if (game.pendingMilitaryChoice || game.pendingMilitaryTimingChoice) throw new GameActionError('Resolve the pending Military card choice first.');
     const next = structuredClone(game);
     const definition = defaultLeaderAbilityRegistry.get(action.abilityId);
     useLeaderAbility(next, action.playerId, action.abilityId);
@@ -156,18 +189,22 @@ export function applyGameAction(game: GameState, action: StateAction): ApplyGame
     runPostActionAutomationPipeline(next);
     return { state: next };
   }
-  if (game.pendingMilitaryChoice) throw new GameActionError('Resolve the pending Military card choice first.');
+  if (game.pendingMilitaryChoice || game.pendingMilitaryTimingChoice) throw new GameActionError('Resolve the pending Military card choice first.');
   if (game.pendingLeaderAbilityWindow) throw new GameActionError('Resolve or pass the pending post-battle Order window first.');
 
   validateV06EndpointMovement(game, action);
   const prepared = prepareLastStandResolution(game, action);
   const battleBeforeResolution = action.type === 'resolve_battle' && prepared.game.battle ? structuredClone(prepared.game.battle) : undefined;
+  const hadBattle = Boolean(prepared.game.battle);
   const endingPlayer = action.type === 'end_turn' ? action.playerId : undefined;
   const result = applyGameActionWithoutAutomation(prepared.game, action);
 
   if (action.type === 'play_action_card') applyMilitaryActionEffect(result.state, action.playerId, action.cardId, action.targets);
   if (endingPlayer) resolveMilitaryEndTurn(result.state, endingPlayer);
   markLastStand(result, action);
+  if (!hadBattle && result.state.battle) openMilitaryPrecommitWindows(result.state);
+  maybeOpenBrothersSelection(result.state);
+  openMilitaryAfterRevealWindows(result.state);
   if (action.type === 'resolve_battle') recordBattleAftermath(result, battleBeforeResolution);
   removeCapturedEncampments(result.state);
   runPostActionAutomationPipeline(result.state);
@@ -177,6 +214,8 @@ export function applyGameAction(game: GameState, action: StateAction): ApplyGame
     result.state.recentBattleResult = undefined;
     result.state.pendingMilitaryChoice = undefined;
     result.state.militaryChoiceQueue = undefined;
+    result.state.pendingMilitaryTimingChoice = undefined;
+    result.state.militaryTimingChoiceQueue = undefined;
     result.state.pendingLeaderAbilityWindow = undefined;
     for (const player of Object.values(result.state.players)) if (player.military) player.military.victoryRestrictions = undefined;
     resetLeaderAbilityUsageForNewTurn(result.state, result.state.activePlayer);

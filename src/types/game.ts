@@ -2,7 +2,7 @@ import type { BoardState, PublicBoardView } from './board';
 import type { BattleState, PublicBattleView } from './battle';
 import type { CardID, GameID, PlayerID, SpaceID } from './ids';
 import type { LegalLeaderAbilityOption } from './leader';
-import type { PendingMilitaryChoice } from './military';
+import type { PendingMilitaryChoice, PendingMilitaryTimingChoice } from './military';
 import type { PlayerState, PrivatePlayerView, PublicPlayerView } from './player';
 
 export type GamePhase = 'setup' | 'turn_start' | 'action_before_movement' | 'movement' | 'battle' | 'action_after_movement' | 'cleanup' | 'game_over';
@@ -59,6 +59,8 @@ export interface GameState {
   recentBattleResult?: RecentBattleResult;
   pendingMilitaryChoice?: PendingMilitaryChoice;
   militaryChoiceQueue?: PendingMilitaryChoice[];
+  pendingMilitaryTimingChoice?: PendingMilitaryTimingChoice;
+  militaryTimingChoiceQueue?: PendingMilitaryTimingChoice[];
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow;
   pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[];
@@ -86,6 +88,7 @@ export interface PublicGameView {
   legalActionPlays?: LegalActionPlayOption[];
   legalLeaderAbilities?: LegalLeaderAbilityOption[];
   pendingMilitaryChoice?: PendingMilitaryChoice;
+  pendingMilitaryTimingChoice?: PendingMilitaryTimingChoice;
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow;
   pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[];
