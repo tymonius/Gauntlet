@@ -41,4 +41,7 @@ export type PendingDiplomatChoice =
   | { kind: 'offer_terms'; playerId: PlayerID; opponentId: PlayerID; contestedSpace: SpaceID; eligibleProposals: ProposalID[]; options: Array<'offer' | 'decline'> }
   | { kind: 'respond_to_terms'; playerId: PlayerID; diplomatId: PlayerID; proposalIds: ProposalID[]; stake: number; options: Array<'accept' | 'refuse'> }
   | { kind: 'leverage'; playerId: PlayerID; maximum: number; options: number[] }
-  | { kind: 'political_capital'; playerId: PlayerID; lostStake: number; handOptions: CardID[] };
+  | { kind: 'political_capital'; playerId: PlayerID; lostStake: number; handOptions: CardID[] }
+  | { kind: 'mutual_disarmament'; playerId: PlayerID; diplomatId: PlayerID; opponentId: PlayerID; stage: 'diplomat' | 'opponent'; handOptions: CardID[] }
+  | { kind: 'prisoner_exchange'; playerId: PlayerID; diplomatId: PlayerID; opponentId: PlayerID; stage: 'diplomat' | 'opponent'; graveyardOptions: CardID[]; optional: true }
+  | { kind: 'rebuilding_pact'; playerId: PlayerID; diplomatId: PlayerID; opponentId: PlayerID; stage: 'diplomat' | 'opponent'; handOptions: CardID[]; optional: true };
