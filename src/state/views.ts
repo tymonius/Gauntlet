@@ -21,6 +21,7 @@ import type {
   PlayerState,
 } from '../types';
 import { canResolveIntelligenceAction } from './intelligence-action-cards';
+import { availableBattleHandCards } from './battle-hand-restrictions';
 import { legalLeaderAbilitiesFor } from './leader-abilities';
 
 const visible = <T>(cards: T[]) => ({ kind: 'visible' as const, cards });
@@ -128,7 +129,7 @@ function legalBattlePlaysForViewer(battle: BattleState, game: GameState, viewer?
   }
   if (battle.stage === 'battle_play_selection' && !participant.passedBattleDrawPlay && participant.battleDrawPlayed.length < participant.battleDrawPlayLimit) {
     return [
-      ...participant.battleDraw.filter((cardId) => cardCanBePlayedAt(cardId, 'battle_draw_play', 'battle_draw')).map((cardId) => ({ action: 'play_battle_draw_card' as const, cardId, origin: 'battle_draw' as const })),
+      ...availableBattleHandCards(battle, participant).filter((cardId) => cardCanBePlayedAt(cardId, 'battle_draw_play', 'battle_draw')).map((cardId) => ({ action: 'play_battle_draw_card' as const, cardId, origin: 'battle_draw' as const })),
       { action: 'pass_battle_draw_play' as const },
     ];
   }
