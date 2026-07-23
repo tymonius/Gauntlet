@@ -8,7 +8,8 @@ import type {
   IntelligenceBattleSource,
   PlayerID,
 } from '../types';
-import type { PlayBattleDrawCardAction, ResolveIntelligenceChoiceAction } from './actions';
+import type { PassBattleDrawPlayAction, PlayBattleDrawCardAction, ResolveIntelligenceChoiceAction } from './actions';
+import { battleHasUnresolvedSpies, openNextSpiesBattleWindow } from './intelligence-spies-battle';
 import { hasFactionResource, spendFactionResource } from './resources';
 
 export class IntelligenceBattleError extends Error {
@@ -93,7 +94,7 @@ function intelligenceOpponent(game: GameState, targetOwner: PlayerID): PlayerID 
   return candidate;
 }
 
-function revealDeferredBattleCards(game: GameState): void {
+export function revealDeferredBattleCards(game: GameState): void {
   const battle = game.battle;
   if (!battle || battle.stage !== 'normal_reveal') return;
   for (const participant of [battle.attacker, battle.defender]) {
@@ -104,21 +105,25 @@ function revealDeferredBattleCards(game: GameState): void {
   publicLog(game, battle.attacker.playerId, 'battle_cards_revealed', 'Battle cards were revealed.');
 }
 
-function continueBattle(game: GameState): void {
+export function continueIntelligenceBattle(game: GameState): void {
   if (game.pendingIntelligenceChoice) return;
+  if (openNextSpiesBattleWindow(game)) return;
   revealDeferredBattleCards(game);
 }
 
-export function shouldDeferBattleDrawReveal(game: GameState, action: PlayBattleDrawCardAction): boolean {
+function shouldDeferChoiceReveal(game: GameState, playerId: PlayerID, incomingCardId?: CardID): boolean {
   if (!game.battle || game.battle.stage !== 'battle_play_selection') return false;
-  if (!intelligenceOpponent(game, action.playerId)) return false;
-  const participant = participantFor(game, action.playerId);
-  return participant.battleDraw.includes(action.cardId);
+  if (intelligenceOpponent(game, playerId)) return true;
+  return battleHasUnresolvedSpies(game, incomingCardId);
 }
 
-export function prepareDeferredBattleDrawReveal(game: GameState, action: PlayBattleDrawCardAction): DeferredBattleDrawState | undefined {
-  if (!shouldDeferBattleDrawReveal(game, action)) return undefined;
-  const other = opponentParticipant(game, action.playerId);
+function prepareDeferredChoiceReveal(
+  game: GameState,
+  playerId: PlayerID,
+  incomingCardId?: CardID,
+): DeferredBattleDrawState | undefined {
+  if (!shouldDeferChoiceReveal(game, playerId, incomingCardId)) return undefined;
+  const other = opponentParticipant(game, playerId);
   const snapshot: DeferredBattleDrawState = {
     otherPlayerId: other.playerId,
     passedBattleDrawPlay: other.passedBattleDrawPlay,
@@ -129,6 +134,18 @@ export function prepareDeferredBattleDrawReveal(game: GameState, action: PlayBat
   other.battleDrawPlayLimit = Math.max(other.battleDrawPlayLimit, other.battleDrawPlayed.length + 1);
   if (other.battleDraw.length === 0) other.battleDraw = ['__deferred_intelligence_reveal__'];
   return snapshot;
+}
+
+export function shouldDeferBattleDrawReveal(game: GameState, action: PlayBattleDrawCardAction): boolean {
+  return shouldDeferChoiceReveal(game, action.playerId, action.cardId);
+}
+
+export function prepareDeferredBattleDrawReveal(game: GameState, action: PlayBattleDrawCardAction): DeferredBattleDrawState | undefined {
+  return prepareDeferredChoiceReveal(game, action.playerId, action.cardId);
+}
+
+export function prepareDeferredBattleDrawPassReveal(game: GameState, action: PassBattleDrawPlayAction): DeferredBattleDrawState | undefined {
+  return prepareDeferredChoiceReveal(game, action.playerId);
 }
 
 export function restoreDeferredBattleDrawReveal(game: GameState, snapshot?: DeferredBattleDrawState): void {
@@ -178,7 +195,7 @@ function resolveSurveillance(game: GameState, action: ResolveIntelligenceChoiceA
   if (!pending || pending.kind !== 'surveillance') throw new IntelligenceBattleError('There is no Surveillance choice to resolve.');
   if (action.choice === 'pass') {
     clearPending(game, pending.resumePriorityPlayer);
-    continueBattle(game);
+    continueIntelligenceBattle(game);
     return;
   }
   if (action.choice !== 'surveil') throw new IntelligenceBattleError('Choose whether to use Surveillance.');
@@ -232,7 +249,7 @@ function resolveInterference(game: GameState, action: ResolveIntelligenceChoiceA
   if (!pending || pending.kind !== 'interference') throw new IntelligenceBattleError('There is no Interference choice to resolve.');
   if (action.choice === 'pass') {
     clearPending(game, pending.resumePriorityPlayer);
-    continueBattle(game);
+    continueIntelligenceBattle(game);
     return;
   }
   if (action.choice !== 'interfere') throw new IntelligenceBattleError('Choose whether to use Interference.');
@@ -285,7 +302,7 @@ function progressAfterReplacement(game: GameState, source: IntelligenceBattleSou
   }
   if (completedBattleDrawPlay(battle.attacker) && completedBattleDrawPlay(battle.defender)) {
     battle.stage = 'normal_reveal';
-    revealDeferredBattleCards(game);
+    continueIntelligenceBattle(game);
   }
 }
 
@@ -312,5 +329,6 @@ export function resolveIntelligenceBattleChoice(game: GameState, action: Resolve
   if (!game.battle || game.battle.id !== pending.battleId) throw new IntelligenceBattleError('The Intelligence choice no longer matches the active battle.');
   if (pending.kind === 'surveillance') resolveSurveillance(game, action);
   else if (pending.kind === 'interference') resolveInterference(game, action);
-  else resolveReplacement(game, action);
+  else if (pending.kind === 'interference_replacement') resolveReplacement(game, action);
+  else throw new IntelligenceBattleError('The pending Intelligence choice is not a Surveillance or Interference choice.');
 }
