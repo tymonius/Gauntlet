@@ -73,6 +73,16 @@ export type PendingIntelligenceChoice =
       resumePriorityPlayer?: PlayerID;
     }
   | {
+      kind: 'operational_reassessment_battle';
+      playerId: PlayerID;
+      battleId: string;
+      sourceSlot: 'hand_commit' | 'battle_draw_played';
+      sourceIndex?: number;
+      eligibleCardIds: CardID[];
+      options: ['pass', 'select'];
+      resumePriorityPlayer?: PlayerID;
+    }
+  | {
       kind: 'mission_control';
       playerId: PlayerID;
       battleId?: never;
