@@ -1,7 +1,7 @@
 import { militaryCardDefinitions } from '../cards';
 import type { GameState, PlayerID } from '../types';
 import type { StateAction } from '../state';
-import { deedOwner, toPrivateGameView } from '../state';
+import { cardValue, deedOwner, toPrivateGameView } from '../state';
 
 export interface GuidedOption { label: string; action: StateAction; sourceCardId?: string; cardText?: string; }
 export function activeViewer(game: GameState): PlayerID { return game.priorityPlayer ?? game.activePlayer; }
@@ -11,16 +11,23 @@ function militaryOption(label: string, action: StateAction, sourceCardId: string
 function pendingFinancierOptions(game: GameState, playerId: PlayerID): GuidedOption[] | undefined {
   const pending = game.pendingFinancierChoice;
   if (!pending || pending.playerId !== playerId) return undefined;
-  const option = (label: string, choice: string, cardId?: string, amount?: number, spaceId?: string): GuidedOption => ({ label, action: { type: 'resolve_financier_choice', playerId, choice, cardId, amount, spaceId } });
+  const option = (label: string, choice: string, cardId?: string, amount?: number, spaceId?: string, cardIds?: string[]): GuidedOption => ({ label, action: { type: 'resolve_financier_choice', playerId, choice, cardId, amount, spaceId, cardIds } });
   switch (pending.kind) {
     case 'play_the_market': return pending.options.map((roll) => option(`Roll ${roll} for ${pending.cardId}`, String(roll), undefined, roll));
     case 'subsidize': return pending.options.map((bonus) => option(bonus === 0 ? 'Pass Subsidize' : `Subsidize for +${bonus}`, String(bonus), undefined, bonus));
     case 'liquidation_purchase': return [option('Decline the immediate Deed purchase', 'pass'), ...pending.spaceOptions.map((spaceId) => option(`Immediately buy the Deed to ${spaceId}`, 'purchase', undefined, undefined, spaceId))];
     case 'margin_loan_repayment': return [option(`Repay Margin Loan for ${pending.repaymentCost} Capital`, 'repay'), option(`Default and lose ${pending.collateralCardId}`, 'default')];
-    case 'deed_purchase': return [
-      option(`Pay ${pending.cost} Capital`, 'capital'),
-      ...pending.collateralOptions.map((cardId) => option(`Use ${cardId} as collateral`, 'collateral', cardId)),
-    ];
+    case 'leveraged_buyout_target': return pending.spaceOptions.map((spaceId) => option(`Buy the Deed to ${spaceId}`, 'select', undefined, undefined, spaceId));
+    case 'leveraged_buyout_collateral': {
+      const options: GuidedOption[] = [];
+      if (pending.capitalAvailable >= pending.cost) options.push(option(`Pay ${pending.cost} Capital with no collateral`, 'purchase', undefined, undefined, pending.spaceId, []));
+      for (const cardId of pending.collateralOptions) if (pending.capitalAvailable + cardValue(cardId) >= pending.cost) options.push(option(`Use ${cardId} as Leveraged Buyout collateral`, 'purchase', undefined, undefined, pending.spaceId, [cardId]));
+      const allValue = pending.collateralOptions.reduce((sum, cardId) => sum + cardValue(cardId), 0);
+      if (pending.collateralOptions.length > 1 && pending.capitalAvailable + allValue >= pending.cost) options.push(option(`Use all available collateral (${pending.collateralOptions.join(', ')})`, 'purchase', undefined, undefined, pending.spaceId, [...pending.collateralOptions]));
+      return options;
+    }
+    case 'corner_the_market_purchase': return [option('Stop buying Deeds', 'pass'), ...pending.spaceOptions.map((spaceId) => option(`Buy the Deed to ${spaceId}`, 'purchase', undefined, undefined, spaceId))];
+    case 'deed_purchase': return [option(`Pay ${pending.cost} Capital`, 'capital'), ...pending.collateralOptions.map((cardId) => option(`Use ${cardId} as collateral`, 'collateral', cardId))];
   }
 }
 
