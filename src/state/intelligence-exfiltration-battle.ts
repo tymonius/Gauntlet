@@ -85,10 +85,12 @@ function resumePriority(game: GameState, fallback?: PlayerID): PlayerID | undefi
 export function openExfiltrationBattleWindow(
   game: GameState,
   eligiblePlayers: PlayerID[],
+  expectedBattleId: string,
 ): boolean {
-  if (game.phase === 'game_over' || game.pendingIntelligenceChoice) return false;
-  const winner = game.recentBattleResult?.winner;
-  if (!winner || !eligiblePlayers.includes(winner)) return false;
+  if (game.phase === 'game_over' || game.pendingIntelligenceChoice || game.battle?.id === expectedBattleId) return false;
+  const result = game.recentBattleResult;
+  const winner = result?.winner;
+  if (!result || result.battleId !== expectedBattleId || !winner || !eligiblePlayers.includes(winner)) return false;
   const destinationId = exfiltrationBattleDestination(game, winner);
   if (!destinationId) return false;
 
@@ -96,7 +98,7 @@ export function openExfiltrationBattleWindow(
   game.pendingIntelligenceChoice = {
     kind: 'exfiltration_battle_withdraw',
     playerId: winner,
-    battleId: game.recentBattleResult!.battleId,
+    battleId: result.battleId,
     destinationId,
     options: ['pass', 'withdraw'],
     resumePriorityPlayer: previousPriority,
