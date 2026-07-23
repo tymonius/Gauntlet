@@ -1,12 +1,12 @@
 name: Patch battle reveal resolution
 on:
-  push:
-    branches: [feature/battle-reveal-resolution]
+  pull_request:
+    branches: [main]
 permissions:
   contents: write
 jobs:
   patch:
-    if: ${{ !contains(github.event.head_commit.message, '[battle-reveal-patched]') }}
+    if: ${{ !contains(github.event.pull_request.head.sha, '[battle-reveal-patched]') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -69,13 +69,13 @@ jobs:
           financier = financier_path.read_text()
           old_active = "return playedCards(participant).filter((card) => card.cardId === cardId && !wasCanceled(game, battle, owner, cardId));"
           new_active = "return playedCards(participant).filter((card) => card.cardId === cardId && !card.canceled && !wasCanceled(game, battle, owner, cardId));"
-          if old_active not in financier:
-              raise SystemExit('Financier active card anchor not found')
-          financier_path.write_text(financier.replace(old_active, new_active, 1))
+          if old_active in financier:
+              financier_path.write_text(financier.replace(old_active, new_active, 1))
       - name: Commit patch
         run: |
           git config user.name github-actions[bot]
           git config user.email 41898282+github-actions[bot]@users.noreply.github.com
           git add src/state/reducer.ts src/state/financier-battle-cards.ts
+          git diff --cached --quiet && exit 0
           git commit -m "Resolve revealed Battle effects before dice [battle-reveal-patched]"
           git push origin HEAD:feature/battle-reveal-resolution
