@@ -78,8 +78,8 @@ describe('Reconnaissance Battle effect', () => {
     expect(state.battle?.attacker.handCommit).toMatchObject({
       faceDown: false,
       earlyEffectResolved: true,
-      postRevealEffectResolved: undefined,
     });
+    expect(state.battle?.attacker.handCommit?.postRevealEffectResolved).toBeUndefined();
     expect(state.battle?.defender.handCommit).toMatchObject({ faceDown: false });
     expect(state.battle?.defender.modifiers).toBe(0);
 
