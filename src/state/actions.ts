@@ -18,7 +18,7 @@ export type StateAction = GameAction | ResolveBattleRevealAction | UseLeaderAbil
   | BeginPlayTheMarketAction | UseHostileTakeoverAction | ResolveFinancierChoiceAction;
 
 export type IntelligenceStateAction = StartIntelligenceMissionAction | CompleteIntelligenceMissionAction
-  | AbortIntelligenceMissionAction | CompleteSpecialOperationAction;
+  | AbortIntelligenceMissionAction | CompleteSpecialOperationAction | ResolveIntelligenceChoiceAction;
 
 export type AppStateAction = StateAction | IntelligenceStateAction;
 
@@ -40,6 +40,7 @@ export interface StartIntelligenceMissionAction { type: 'start_intelligence_miss
 export interface CompleteIntelligenceMissionAction { type: 'complete_intelligence_mission'; playerId: PlayerID; }
 export interface AbortIntelligenceMissionAction { type: 'abort_intelligence_mission'; playerId: PlayerID; }
 export interface CompleteSpecialOperationAction { type: 'complete_special_operation'; playerId: PlayerID; }
+export interface ResolveIntelligenceChoiceAction { type: 'resolve_intelligence_choice'; playerId: PlayerID; choice: string; cardId?: CardID; }
 export interface ResolveAssetBankDiscardAction { type: 'resolve_asset_bank_discard'; playerId: PlayerID; cardIds: CardID[]; }
 export interface MovePlayerAction { type: 'move_player'; playerId: PlayerID; toSpaceId: SpaceID; cardId?: CardID; }
 export interface CommitBattleHandCardAction { type: 'commit_battle_hand_card'; playerId: PlayerID; cardId: CardID; }

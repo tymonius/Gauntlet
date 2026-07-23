@@ -2,6 +2,7 @@ import type { BoardState, PublicBoardView } from './board';
 import type { BattleState, PublicBattleView } from './battle';
 import type { PendingDiplomatChoice } from './diplomats';
 import type { PendingFinancierChoice } from './financiers';
+import type { PendingIntelligenceChoice } from './intelligence';
 import type { CardID, GameID, PlayerID, SpaceID } from './ids';
 import type { LegalLeaderAbilityOption } from './leader';
 import type { PendingMilitaryChoice, PendingMilitaryTimingChoice } from './military';
@@ -20,6 +21,7 @@ export interface GameState {
   pendingMilitaryChoice?: PendingMilitaryChoice; militaryChoiceQueue?: PendingMilitaryChoice[];
   pendingMilitaryTimingChoice?: PendingMilitaryTimingChoice; militaryTimingChoiceQueue?: PendingMilitaryTimingChoice[];
   pendingDiplomatChoice?: PendingDiplomatChoice; pendingFinancierChoice?: PendingFinancierChoice; financierChoiceQueue?: PendingFinancierChoice[];
+  pendingIntelligenceChoice?: PendingIntelligenceChoice;
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow; pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[]; winner?: PlayerID;
 }

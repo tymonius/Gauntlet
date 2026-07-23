@@ -82,7 +82,6 @@ function revealPlayedCardToViewer(played: BattlePlayedCard | undefined, viewer?:
   if (!played) return undefined;
   if (!played.faceDown || played.owner === viewer) return played;
   if (viewer && played.visibleTo?.includes(viewer)) return played;
-  if (!viewer && played.visibleTo && played.visibleTo.length > 0) return { ...played, faceDown: false };
   return { faceDown: true };
 }
 
