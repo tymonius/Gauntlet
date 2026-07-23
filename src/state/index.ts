@@ -27,6 +27,7 @@ export * from './intelligence-fog-of-war-battle';
 export * from './intelligence-intercepted-orders-battle';
 export * from './intelligence-reconnaissance-battle';
 export * from './intelligence-exfiltration-battle';
+export * from './intelligence-subversion-battle';
 export * from './intelligence-pre-reveal';
 export * from './intelligence-post-reveal';
 export * from './intelligence-operational-reassessment-battle';
