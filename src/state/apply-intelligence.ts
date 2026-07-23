@@ -14,6 +14,7 @@ import {
   restoreDeferredBattleDrawReveal,
 } from './intelligence-battle';
 import { availableBattleHandCards } from './battle-hand-restrictions';
+import { applyBattleDiceRoll } from './battle-dice';
 import { openCensureChoiceAfterAction } from './diplomat-persistent';
 import { buildFinancierPreDiceChoices } from './financier-pre-dice';
 import { openNextFinancierChoice } from './financier-battle-cards';
@@ -196,8 +197,11 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
   if (action.type === 'play_action_card' && isIntegratedIntelligenceActionCard(action.cardId)) {
     return applyStandaloneIntelligenceAction(game, action);
   }
-  if (action.type === 'roll_battle_die' && game.battle?.stage === 'dice' && !game.battle.effectsResolved.includes('before_battle_resolution')) {
-    throw new GameActionError('Revealed Battle effects must resolve before dice are rolled.');
+  if (action.type === 'roll_battle_die') {
+    if (game.battle?.stage === 'dice' && !game.battle.effectsResolved.includes('before_battle_resolution')) {
+      throw new GameActionError('Revealed Battle effects must resolve before dice are rolled.');
+    }
+    return applyBattleDiceRoll(game, action);
   }
   if (action.type === 'play_battle_draw_card') return applyBattleDrawChoice(game, action);
 
