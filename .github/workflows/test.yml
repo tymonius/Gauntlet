@@ -6,9 +6,6 @@ on:
     branches:
       - main
 
-permissions:
-  contents: write
-
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -16,79 +13,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: feature/battle-reveal-resolution
-          fetch-depth: 0
-
-      - name: Patch explicit Battle reveal resolution
-        shell: python
-        run: |
-          from pathlib import Path
-          path = Path('src/state/reducer.ts')
-          text = path.read_text()
-
-          text = text.replace(
-              "function applyResolutionEffects(game: GameState, action: Extract<GameAction, { type: 'resolve_battle' }>) {",
-              "function applyResolutionEffects(game: GameState, action: Extract<GameAction, { type: 'resolve_battle' | 'resolve_battle_reveal' }>) {",
-              1,
-          )
-          text = text.replace(
-              "if (battle.effectsResolved.includes('before_battle_resolution')) {\n    return { activeModifiers: [], cancellations: [] };\n  }",
-              "if (battle.effectsResolved.includes('before_battle_resolution')) {\n    return { activeModifiers: battle.resolvedModifiers ?? [], cancellations: battle.resolvedCancellations ?? [] };\n  }",
-              1,
-          )
-          effect_anchor = "battle.attacker.modifiers += totalModifiersFor(activeModifiers, battle.attacker.playerId);\n  battle.defender.modifiers += totalModifiersFor(activeModifiers, battle.defender.playerId);\n  battle.effectsResolved.push('before_battle_resolution');"
-          effect_replacement = "battle.attacker.modifiers += totalModifiersFor(activeModifiers, battle.attacker.playerId);\n  battle.defender.modifiers += totalModifiersFor(activeModifiers, battle.defender.playerId);\n  battle.resolvedModifiers = activeModifiers;\n  battle.resolvedCancellations = effectResult.cancellations ?? [];\n  battle.effectsResolved.push('before_battle_resolution');"
-          if effect_anchor in text:
-              text = text.replace(effect_anchor, effect_replacement, 1)
-
-          roll_anchor = "function rollBattleDie(game: GameState, action: Extract<GameAction, { type: 'roll_battle_die' }>): ApplyGameActionResult {"
-          reveal_function = """function resolveBattleReveal(game: GameState, action: Extract<GameAction, { type: 'resolve_battle_reveal' }>): ApplyGameActionResult {
-  requireNoPendingAssetBankDiscards(game);
-  phaseAllowsAction(game, ['battle']);
-  if (!game.battle || game.battle.stage !== 'dice') throw new GameActionError('Battle cards are not ready to resolve.');
-  if (action.playerId !== game.battle.attacker.playerId && action.playerId !== game.battle.defender.playerId) throw new GameActionError(`${action.playerId} cannot resolve a battle they are not in.`);
-  if (game.battle.effectsResolved.includes('before_battle_resolution')) throw new GameActionError('Revealed Battle effects have already resolved.');
-
-  const { activeModifiers, cancellations } = applyResolutionEffects(game, action);
-  appendPublicLog(game, action.playerId, 'battle_reveal_resolved', 'Revealed Battle effects were resolved before dice were rolled.', {
-    battleId: game.battle.id,
-    modifiers: activeModifiers,
-    cancellations,
-  });
-  return { state: game };
-}
-
-"""
-          if 'function resolveBattleReveal' not in text:
-              if roll_anchor not in text:
-                  raise SystemExit('Roll function anchor not found')
-              text = text.replace(roll_anchor, reveal_function + roll_anchor, 1)
-
-          dispatch_anchor = "case 'roll_battle_die':\n      return rollBattleDie(next, action);"
-          dispatch_replacement = "case 'resolve_battle_reveal':\n      return resolveBattleReveal(next, action);\n    case 'roll_battle_die':\n      return rollBattleDie(next, action);"
-          if "case 'resolve_battle_reveal':" not in text:
-              if dispatch_anchor not in text:
-                  raise SystemExit('Reducer dispatch anchor not found')
-              text = text.replace(dispatch_anchor, dispatch_replacement, 1)
-          path.write_text(text)
-
-          financier_path = Path('src/state/financier-battle-cards.ts')
-          financier = financier_path.read_text()
-          old_active = "return playedCards(participant).filter((card) => card.cardId === cardId && !wasCanceled(game, battle, owner, cardId));"
-          new_active = "return playedCards(participant).filter((card) => card.cardId === cardId && !card.canceled && !wasCanceled(game, battle, owner, cardId));"
-          if old_active in financier:
-              financier_path.write_text(financier.replace(old_active, new_active, 1))
-
-      - name: Commit patch if needed
-        run: |
-          git config user.name github-actions[bot]
-          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
-          git add src/state/reducer.ts src/state/financier-battle-cards.ts
-          if ! git diff --cached --quiet; then
-            git commit -m "Resolve revealed Battle effects before dice [battle-reveal-patched]"
-            git push origin HEAD:feature/battle-reveal-resolution
-          fi
 
       - name: Setup Node
         uses: actions/setup-node@v4
