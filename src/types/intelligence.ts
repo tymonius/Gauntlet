@@ -79,4 +79,29 @@ export type PendingIntelligenceChoice =
       effectId: string;
       options: ['pass', 'ignore'];
       resumePriorityPlayer?: PlayerID;
+    }
+  | {
+      kind: 'spies_discard';
+      playerId: PlayerID;
+      battleId?: never;
+      opponentId: PlayerID;
+      inspectedHand: CardID[];
+      handOptions: CardID[];
+      options: ['select'];
+    }
+  | {
+      kind: 'assassins_discard';
+      playerId: PlayerID;
+      battleId?: never;
+      opponentId: PlayerID;
+      opponentHandOptions: CardID[];
+      options: ['select'];
+    }
+  | {
+      kind: 'operational_reassessment';
+      playerId: PlayerID;
+      battleId?: never;
+      returnedMissionCardId: CardID;
+      eligibleCardIds: CardID[];
+      options: ['select'];
     };

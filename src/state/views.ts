@@ -20,6 +20,7 @@ import type {
   PlayerID,
   PlayerState,
 } from '../types';
+import { canResolveIntelligenceAction } from './intelligence-action-cards';
 import { legalLeaderAbilitiesFor } from './leader-abilities';
 
 const visible = <T>(cards: T[]) => ({ kind: 'visible' as const, cards });
@@ -182,14 +183,34 @@ function legalActionPlaysForViewer(game: GameState, viewer?: PlayerID): LegalAct
   if (player.actionsRemaining < 1 || player.hasPlayedActionThisTurn) return undefined;
   return player.zones.hand
     .filter((cardId) => cardCanBePlayedAt(cardId, 'action', 'hand'))
+    .filter((cardId) => canResolveIntelligenceAction(game, viewer, cardId))
     .map((cardId) => ({ action: 'play_action_card' as const, cardId, origin: 'hand' as const, destination: destinationForCardPlay(cardId, 'hand'), requiresTarget: getCardPlayRule(cardId)?.requiresTarget ?? false }));
 }
 
+function publicLog(game: GameState): GameEvent[] {
+  return game.log.filter((event) => event.visibility === 'public').map((event) => structuredClone(event));
+}
+
+function privateLog(game: GameState, viewer: PlayerID): GameEvent[] {
+  return game.log
+    .filter((event) => event.visibility === 'public' || (event.visibility === 'private' && event.visibleTo?.includes(viewer)))
+    .map((event) => structuredClone(event));
+}
+
 export function toPublicGameView(game: GameState): PublicGameView {
-  return { id: game.id, version: game.version, phase: game.phase, turn: game.turn, activePlayer: game.activePlayer, priorityPlayer: game.priorityPlayer, players: Object.fromEntries(Object.values(game.players).map((player) => [player.id, toPublicPlayerView(player)])), board: toPublicBoardView(game.board), battle: game.battle ? toPublicBattleView(game.battle, game) : undefined, pendingMilitaryChoice: game.pendingMilitaryChoice, pendingMilitaryTimingChoice: game.pendingMilitaryTimingChoice, pendingDiplomatChoice: game.pendingDiplomatChoice, pendingFinancierChoice: game.pendingFinancierChoice, pendingLeaderAbilityWindow: game.pendingLeaderAbilityWindow, pendingAssetBankDiscards: game.pendingAssetBankDiscards, log: game.log.map((event): GameEvent => ({ ...event })), winner: game.winner };
+  return { id: game.id, version: game.version, phase: game.phase, turn: game.turn, activePlayer: game.activePlayer, priorityPlayer: game.priorityPlayer, players: Object.fromEntries(Object.values(game.players).map((player) => [player.id, toPublicPlayerView(player)])), board: toPublicBoardView(game.board), battle: game.battle ? toPublicBattleView(game.battle, game) : undefined, pendingMilitaryChoice: game.pendingMilitaryChoice, pendingMilitaryTimingChoice: game.pendingMilitaryTimingChoice, pendingDiplomatChoice: game.pendingDiplomatChoice, pendingFinancierChoice: game.pendingFinancierChoice, pendingLeaderAbilityWindow: game.pendingLeaderAbilityWindow, pendingAssetBankDiscards: game.pendingAssetBankDiscards, log: publicLog(game), winner: game.winner };
 }
 
 export function toPrivateGameView(game: GameState, viewer: PlayerID): PrivateGameView {
   const publicView = toPublicGameView(game);
-  return { ...publicView, viewer, players: { ...publicView.players, [viewer]: toPrivatePlayerView(game.players[viewer]) }, battle: game.battle ? toPrivateBattleView(game.battle, game, viewer) : undefined, legalActionPlays: legalActionPlaysForViewer(game, viewer), legalLeaderAbilities: legalLeaderAbilitiesFor(game, viewer) };
+  return {
+    ...publicView,
+    viewer,
+    players: { ...publicView.players, [viewer]: toPrivatePlayerView(game.players[viewer]) },
+    battle: game.battle ? toPrivateBattleView(game.battle, game, viewer) : undefined,
+    pendingIntelligenceChoice: game.pendingIntelligenceChoice?.playerId === viewer ? structuredClone(game.pendingIntelligenceChoice) : undefined,
+    legalActionPlays: legalActionPlaysForViewer(game, viewer),
+    legalLeaderAbilities: legalLeaderAbilitiesFor(game, viewer),
+    log: privateLog(game, viewer),
+  };
 }

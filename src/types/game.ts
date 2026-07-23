@@ -35,4 +35,8 @@ export interface PublicGameView {
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow; pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[]; winner?: PlayerID;
 }
-export interface PrivateGameView extends PublicGameView { viewer: PlayerID; players: Record<PlayerID, PublicPlayerView | PrivatePlayerView>; }
+export interface PrivateGameView extends PublicGameView {
+  viewer: PlayerID;
+  players: Record<PlayerID, PublicPlayerView | PrivatePlayerView>;
+  pendingIntelligenceChoice?: PendingIntelligenceChoice;
+}

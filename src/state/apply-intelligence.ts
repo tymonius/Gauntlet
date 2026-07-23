@@ -2,11 +2,18 @@ import type { GameState } from '../types';
 import type { AppStateAction, PlayBattleDrawCardAction } from './actions';
 import { applyGameAction as applyBaseGameAction } from './apply';
 import {
+  applyIntelligenceActionEffect,
+  canResolveIntelligenceAction,
+  isIntegratedIntelligenceActionCard,
+  resolveIntelligenceActionChoice,
+} from './intelligence-action-cards';
+import {
   openSurveillanceWindowAfterChoice,
   prepareDeferredBattleDrawReveal,
   resolveIntelligenceBattleChoice,
   restoreDeferredBattleDrawReveal,
 } from './intelligence-battle';
+import { openCensureChoiceAfterAction } from './diplomat-persistent';
 import { buildFinancierPreDiceChoices } from './financier-pre-dice';
 import { openNextFinancierChoice } from './financier-battle-cards';
 import { maybeOpenSubsidizeWindow } from './financier-integration';
@@ -15,7 +22,7 @@ import { recordFaceDownCardObservedBeforeReveal } from './intelligence-mission-t
 import { openMilitaryAfterRevealWindows } from './military-timing';
 import { abortIntelligenceMission, completeIntelligenceMission, completeSpecialOperation, startIntelligenceMission } from './intelligence-missions';
 import { runPostActionAutomationPipeline } from './pipeline';
-import { GameActionError, type ApplyGameActionResult } from './reducer';
+import { applyGameAction as applyReducerGameAction, GameActionError, type ApplyGameActionResult } from './reducer';
 
 function continueAfterIntelligenceReveal(game: GameState, previousStage?: string): void {
   if (previousStage === 'dice' || game.battle?.stage !== 'dice') return;
@@ -34,6 +41,23 @@ function applyBattleDrawChoice(game: GameState, action: PlayBattleDrawCardAction
   return result;
 }
 
+function applyStandaloneIntelligenceAction(
+  game: GameState,
+  action: Extract<AppStateAction, { type: 'play_action_card' }>,
+): ApplyGameActionResult {
+  if (game.pendingMilitaryChoice || game.pendingMilitaryTimingChoice || game.pendingDiplomatChoice || game.pendingFinancierChoice || game.pendingLeaderAbilityWindow) {
+    throw new GameActionError('Resolve the pending choice first.');
+  }
+  if (!canResolveIntelligenceAction(game, action.playerId, action.cardId)) {
+    throw new GameActionError(`${action.cardId} cannot resolve in the current state.`);
+  }
+  const result = applyReducerGameAction(game, action);
+  applyIntelligenceActionEffect(result.state, action.playerId, action.cardId);
+  if (!result.state.pendingIntelligenceChoice) openCensureChoiceAfterAction(result.state, action.playerId);
+  runPostActionAutomationPipeline(result.state);
+  return result;
+}
+
 export function applyGameAction(game: GameState, action: AppStateAction): ApplyGameActionResult {
   if (game.pendingIntelligenceChoice && action.type !== 'resolve_intelligence_choice') {
     throw new GameActionError('Resolve the pending Intelligence choice first.');
@@ -43,12 +67,15 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     const previousStage = next.battle?.stage;
     const pending = next.pendingIntelligenceChoice;
     const pendingKind = pending?.kind;
+    const wasActionChoice = pendingKind === 'spies_discard' || pendingKind === 'assassins_discard' || pendingKind === 'operational_reassessment';
     if (pendingKind === 'mission_control' || pendingKind === 'fieldcraft') resolveIntelligenceLeaderChoice(next, action);
+    else if (wasActionChoice) resolveIntelligenceActionChoice(next, action);
     else resolveIntelligenceBattleChoice(next, action);
     if (pending?.kind === 'surveillance' && action.choice === 'surveil') {
       recordFaceDownCardObservedBeforeReveal(next, action.playerId, pending.battleId, 'surveillance');
     }
-    if (pendingKind !== 'mission_control' && pendingKind !== 'fieldcraft') continueAfterIntelligenceReveal(next, previousStage);
+    if (!wasActionChoice && pendingKind !== 'mission_control' && pendingKind !== 'fieldcraft') continueAfterIntelligenceReveal(next, previousStage);
+    if (wasActionChoice && !next.pendingIntelligenceChoice) openCensureChoiceAfterAction(next, action.playerId);
     runPostActionAutomationPipeline(next);
     return { state: next };
   }
@@ -76,6 +103,9 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     completeSpecialOperation(next, action.playerId);
     runPostActionAutomationPipeline(next);
     return { state: next };
+  }
+  if (action.type === 'play_action_card' && isIntegratedIntelligenceActionCard(action.cardId)) {
+    return applyStandaloneIntelligenceAction(game, action);
   }
   if (action.type === 'roll_battle_die' && game.battle?.stage === 'dice' && !game.battle.effectsResolved.includes('before_battle_resolution')) {
     throw new GameActionError('Revealed Battle effects must resolve before dice are rolled.');
