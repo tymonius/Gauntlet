@@ -5,6 +5,7 @@ import type {
   GameState,
 } from '../types';
 import { resolveFogOfWarPreRevealCard } from './intelligence-fog-of-war-battle';
+import { resolveInterceptedOrdersPreRevealCard } from './intelligence-intercepted-orders-battle';
 import {
   resolveAssassinsPreRevealCard,
   resolveDisinformationPreRevealCard,
@@ -15,6 +16,7 @@ const EARLY_BATTLE_CARDS = {
   spies: 'intelligence-spies',
   fogOfWar: 'intelligence-fog-of-war',
   disinformation: 'intelligence-disinformation',
+  interceptedOrders: 'intelligence-intercepted-orders',
   assassins: 'intelligence-assassins',
 } as const;
 
@@ -33,6 +35,7 @@ function isEarlyCard(card: BattlePlayedCard): card is BattlePlayedCard & { cardI
   if (card.cardId === EARLY_BATTLE_CARDS.disinformation) return card.origin === 'hand';
   return card.cardId === EARLY_BATTLE_CARDS.spies
     || card.cardId === EARLY_BATTLE_CARDS.fogOfWar
+    || card.cardId === EARLY_BATTLE_CARDS.interceptedOrders
     || card.cardId === EARLY_BATTLE_CARDS.assassins;
 }
 
@@ -58,6 +61,7 @@ function nextPreRevealSource(game: GameState): PreRevealSource | undefined {
 function incomingBattleHandCardRequiresEarlyReveal(cardId?: CardID): boolean {
   return cardId === EARLY_BATTLE_CARDS.spies
     || cardId === EARLY_BATTLE_CARDS.fogOfWar
+    || cardId === EARLY_BATTLE_CARDS.interceptedOrders
     || cardId === EARLY_BATTLE_CARDS.assassins;
 }
 
@@ -80,6 +84,8 @@ export function openNextIntelligencePreRevealWindow(game: GameState): boolean {
       if (resolveSpiesPreRevealCard(game, source.participant, source.card)) return true;
     } else if (source.card.cardId === EARLY_BATTLE_CARDS.fogOfWar) {
       if (resolveFogOfWarPreRevealCard(game, source.participant, source.card)) return true;
+    } else if (source.card.cardId === EARLY_BATTLE_CARDS.interceptedOrders) {
+      if (resolveInterceptedOrdersPreRevealCard(game, source.participant, source.card)) return true;
     } else if (source.card.cardId === EARLY_BATTLE_CARDS.assassins) {
       resolveAssassinsPreRevealCard(game, source.participant, source.card);
     } else if (source.card.cardId === EARLY_BATTLE_CARDS.disinformation) {
