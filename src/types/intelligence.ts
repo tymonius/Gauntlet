@@ -1,4 +1,4 @@
-import type { CardID, PlayerID } from './ids';
+import type { CardID, PlayerID, SpaceID } from './ids';
 
 export type IntelligenceMissionKind = 'normal' | 'special_operation';
 export type IntelligenceBattleSource = 'hand' | 'battle_draw';
@@ -15,10 +15,16 @@ export interface IntelligenceMissionState extends PublicIntelligenceMissionView 
   evidence: string[];
 }
 
+export interface IgnoredTerritoryEffectsState {
+  turn: number;
+  effectKeys: string[];
+}
+
 export interface IntelligenceState {
   activeMission?: IntelligenceMissionState;
   specialOperation?: IntelligenceMissionState;
   surveillanceUsedBattleId?: string;
+  ignoredTerritoryEffects?: IgnoredTerritoryEffectsState;
 }
 
 export interface PublicIntelligenceState {
@@ -54,5 +60,22 @@ export type PendingIntelligenceChoice =
       removedCardId: CardID;
       eligibleCardIds: CardID[];
       options: ['pass', 'select'];
+      resumePriorityPlayer?: PlayerID;
+    }
+  | {
+      kind: 'mission_control';
+      playerId: PlayerID;
+      battleId?: never;
+      eligibleCardIds: CardID[];
+      options: ['pass', 'select'];
+      resumePriorityPlayer?: PlayerID;
+    }
+  | {
+      kind: 'fieldcraft';
+      playerId: PlayerID;
+      battleId?: never;
+      spaceId: SpaceID;
+      effectId: string;
+      options: ['pass', 'ignore'];
       resumePriorityPlayer?: PlayerID;
     };
