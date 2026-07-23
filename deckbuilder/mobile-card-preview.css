@@ -1,7 +1,6 @@
 @media (max-width: 760px) {
   body.mobile-card-preview-open {
     overflow: hidden;
-    touch-action: none;
   }
 
   .compact-card-row {
@@ -27,6 +26,7 @@
     margin: 0;
     overflow-y: auto;
     overscroll-behavior: contain;
+    touch-action: pan-y;
     -webkit-overflow-scrolling: touch;
     border-right: 0;
     border-bottom: 0;
