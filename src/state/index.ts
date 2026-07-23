@@ -19,6 +19,7 @@ export * from './intelligence-mission-triggers';
 export * from './intelligence-action-cards';
 export * from './intelligence-reactive-assets';
 export * from './battle-hand-restrictions';
+export * from './battle-dice';
 export * from './intelligence-battle';
 export * from './intelligence-leaders';
 export * from './actions';
