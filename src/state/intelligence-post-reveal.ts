@@ -6,6 +6,16 @@ import type {
 } from '../types';
 import { battleEffectCanStillResolve } from './intelligence-operational-reassessment-battle';
 import { reconnaissanceWithdrawalAvailable } from './intelligence-reconnaissance-battle';
+import {
+  applySubversionRestrictionForPlayer,
+  SUBVERSION_BATTLE_CARD,
+} from './intelligence-subversion-battle';
+import {
+  openTreasonWindow,
+  TREASON,
+  unresolvedTreasonAssetSource,
+  type TreasonAssetSource,
+} from './intelligence-treason';
 
 const POST_REVEAL_CARDS = {
   reconnaissance: 'intelligence-reconnaissance',
@@ -13,20 +23,22 @@ const POST_REVEAL_CARDS = {
 } as const;
 
 const LATE_REPLACEMENT_CARDS = new Set<CardID>([
-  'intelligence-subversion',
+  SUBVERSION_BATTLE_CARD,
+  TREASON,
 ]);
 
 type SourceSlot = 'hand_commit' | 'battle_draw_played';
+type PostRevealKind = 'reconnaissance' | 'operational_reassessment' | 'treason' | 'subversion';
 
-type PostRevealKind = 'reconnaissance' | 'operational_reassessment';
-
-interface PostRevealSource {
+interface PhysicalPostRevealSource {
   kind: PostRevealKind;
   participant: BattleParticipantState;
   card: BattlePlayedCard;
   sourceSlot: SourceSlot;
   sourceIndex?: number;
 }
+
+type PostRevealSource = PhysicalPostRevealSource | TreasonAssetSource;
 
 function active(card?: BattlePlayedCard): card is BattlePlayedCard {
   return Boolean(card && !card.canceled && !card.negated);
@@ -38,10 +50,12 @@ function sourceKind(card: BattlePlayedCard): PostRevealKind | undefined {
     && !card.postRevealEffectResolved) return 'reconnaissance';
   if (card.cardId === POST_REVEAL_CARDS.operationalReassessment
     && !card.earlyEffectResolved) return 'operational_reassessment';
+  if (card.cardId === TREASON && !card.postRevealEffectResolved) return 'treason';
+  if (card.cardId === SUBVERSION_BATTLE_CARD && !card.postRevealEffectResolved) return 'subversion';
   return undefined;
 }
 
-function unresolvedSource(participant: BattleParticipantState): PostRevealSource | undefined {
+function unresolvedPhysicalSource(participant: BattleParticipantState): PhysicalPostRevealSource | undefined {
   if (active(participant.handCommit)) {
     const kind = sourceKind(participant.handCommit);
     if (kind) {
@@ -70,10 +84,16 @@ function unresolvedSource(participant: BattleParticipantState): PostRevealSource
   return undefined;
 }
 
+function nextSourceForParticipant(game: GameState, participant: BattleParticipantState): PostRevealSource | undefined {
+  return unresolvedPhysicalSource(participant)
+    ?? unresolvedTreasonAssetSource(game, participant.playerId);
+}
+
 function nextSource(game: GameState): PostRevealSource | undefined {
   const battle = game.battle;
   if (!battle) return undefined;
-  return unresolvedSource(battle.attacker) ?? unresolvedSource(battle.defender);
+  return nextSourceForParticipant(game, battle.attacker)
+    ?? nextSourceForParticipant(game, battle.defender);
 }
 
 function operationalReassessmentOptions(game: GameState, playerId: string): CardID[] {
@@ -82,7 +102,7 @@ function operationalReassessmentOptions(game: GameState, playerId: string): Card
   ));
 }
 
-function openReconnaissance(game: GameState, source: PostRevealSource): boolean {
+function openReconnaissance(game: GameState, source: PhysicalPostRevealSource): boolean {
   const battle = game.battle!;
   source.card.postRevealEffectResolved = true;
   const canWithdraw = reconnaissanceWithdrawalAvailable(game, source.participant.playerId);
@@ -100,7 +120,7 @@ function openReconnaissance(game: GameState, source: PostRevealSource): boolean 
   return true;
 }
 
-function openOperationalReassessment(game: GameState, source: PostRevealSource): boolean {
+function openOperationalReassessment(game: GameState, source: PhysicalPostRevealSource): boolean {
   const battle = game.battle!;
   source.card.earlyEffectResolved = true;
   const eligibleCardIds = operationalReassessmentOptions(game, source.participant.playerId);
@@ -119,12 +139,35 @@ function openOperationalReassessment(game: GameState, source: PostRevealSource):
   return true;
 }
 
+function resolveSubversion(game: GameState, source: PhysicalPostRevealSource): void {
+  source.card.postRevealEffectResolved = true;
+  applySubversionRestrictionForPlayer(game, source.participant.playerId);
+}
+
 export function openNextIntelligencePostRevealWindow(game: GameState): boolean {
   if (!game.battle || game.battle.stage !== 'dice' || game.pendingIntelligenceChoice) return false;
   while (true) {
     const source = nextSource(game);
     if (!source) return false;
+    if (source.kind === 'asset') {
+      if (openTreasonWindow(game, source)) return true;
+      continue;
+    }
     if (source.kind === 'reconnaissance') return openReconnaissance(game, source);
-    if (openOperationalReassessment(game, source)) return true;
+    if (source.kind === 'operational_reassessment') {
+      if (openOperationalReassessment(game, source)) return true;
+      continue;
+    }
+    if (source.kind === 'treason') {
+      if (openTreasonWindow(game, {
+        kind: 'battle_card',
+        playerId: source.participant.playerId,
+        card: source.card,
+        sourceSlot: source.sourceSlot,
+        sourceIndex: source.sourceIndex,
+      })) return true;
+      continue;
+    }
+    resolveSubversion(game, source);
   }
 }
