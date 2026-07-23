@@ -14,7 +14,7 @@ import {
   restoreDeferredBattleDrawReveal,
 } from './intelligence-battle';
 import { availableBattleHandCards } from './battle-hand-restrictions';
-import { applyBattleDiceRoll } from './battle-dice';
+import { applyBattleDiceRoll, clearBattleDiceForReroll } from './battle-dice';
 import { openCensureChoiceAfterAction } from './diplomat-persistent';
 import { buildFinancierPreDiceChoices } from './financier-pre-dice';
 import { openNextFinancierChoice } from './financier-battle-cards';
@@ -212,5 +212,9 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     openSurveillanceWindowAfterChoice(result.state, action.playerId, action.cardId, 'hand');
   }
   if (action.type === 'draw_battle_cards') openInterceptedOrdersWindow(result.state, action.playerId);
+  if (action.type === 'resolve_battle' && result.state.battle?.stage === 'dice') {
+    clearBattleDiceForReroll(result.state.battle.attacker);
+    clearBattleDiceForReroll(result.state.battle.defender);
+  }
   return result;
 }
