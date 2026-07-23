@@ -1,11 +1,11 @@
 import { intelligenceCardsById, intelligenceMissionCardIds } from '../cards';
 import type { GameState, PlayerID } from '../types';
-import type { StateAction } from '../state/actions';
+import type { AppStateAction } from '../state/actions';
 import { specialOperationIntelCost, specialOperationReady } from '../state/intelligence-missions';
 
 export interface IntelligenceGuidedOption {
   label: string;
-  action: StateAction;
+  action: AppStateAction;
 }
 
 export function buildIntelligenceMissionOptions(game: GameState, playerId: PlayerID): IntelligenceGuidedOption[] {
