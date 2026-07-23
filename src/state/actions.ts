@@ -14,7 +14,8 @@ export type GameAction =
 
 export type StateAction = GameAction | UseLeaderAbilityAction | PassLeaderAbilityWindowAction
   | ResolveMilitaryChoiceAction | ResolveMilitaryTimingChoiceAction | ResolveDiplomatChoiceAction
-  | UseDiplomatCardAction;
+  | UseDiplomatCardAction | PlaceTreasuryCardAction | BeginDeedPurchaseAction
+  | BeginPlayTheMarketAction | UseHostileTakeoverAction | ResolveFinancierChoiceAction;
 
 export interface DrawCardAction { type: 'draw_card'; playerId: PlayerID; count?: number; }
 export interface RevealSpaceAction { type: 'reveal_space'; playerId: PlayerID; spaceId: SpaceID; }
@@ -25,6 +26,11 @@ export interface ResolveMilitaryChoiceAction { type: 'resolve_military_choice'; 
 export interface ResolveMilitaryTimingChoiceAction { type: 'resolve_military_timing_choice'; playerId: PlayerID; choice: string; cardId?: CardID; secondaryCardId?: CardID; }
 export interface ResolveDiplomatChoiceAction { type: 'resolve_diplomat_choice'; playerId: PlayerID; choice: string; proposalId?: ProposalID; amount?: number; cardIds?: CardID[]; cardId?: CardID; opponentId?: PlayerID; spaceId?: SpaceID; }
 export interface UseDiplomatCardAction { type: 'use_diplomat_card'; playerId: PlayerID; cardId: CardID; opponentId?: PlayerID; targetCardId?: CardID; spaceId?: SpaceID; proposalId?: ProposalID; }
+export interface PlaceTreasuryCardAction { type: 'place_treasury_card'; playerId: PlayerID; cardId: CardID; }
+export interface BeginDeedPurchaseAction { type: 'begin_deed_purchase'; playerId: PlayerID; spaceId: SpaceID; }
+export interface BeginPlayTheMarketAction { type: 'begin_play_the_market'; playerId: PlayerID; cardId: CardID; }
+export interface UseHostileTakeoverAction { type: 'use_hostile_takeover'; playerId: PlayerID; }
+export interface ResolveFinancierChoiceAction { type: 'resolve_financier_choice'; playerId: PlayerID; choice: string; cardId?: CardID; amount?: number; }
 export interface ResolveAssetBankDiscardAction { type: 'resolve_asset_bank_discard'; playerId: PlayerID; cardIds: CardID[]; }
 export interface MovePlayerAction { type: 'move_player'; playerId: PlayerID; toSpaceId: SpaceID; cardId?: CardID; }
 export interface CommitBattleHandCardAction { type: 'commit_battle_hand_card'; playerId: PlayerID; cardId: CardID; }
