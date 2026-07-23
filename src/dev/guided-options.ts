@@ -7,6 +7,19 @@ export interface GuidedOption { label: string; action: StateAction; sourceCardId
 export function activeViewer(game: GameState): PlayerID { return game.priorityPlayer ?? game.activePlayer; }
 function exactCardText(cardId: string): string | undefined { const card = militaryCardDefinitions.find((candidate) => candidate.id === cardId); if (!card) return undefined; const sections: string[] = [`${card.name} — Cost ${card.cost}`, `Action: ${card.action}`, `Battle: ${card.battle}`]; if (card.supplemental) sections.push(...card.supplemental); return sections.join('\n\n'); }
 function militaryOption(label: string, action: StateAction, sourceCardId: string): GuidedOption { return { label, action, sourceCardId, cardText: exactCardText(sourceCardId) }; }
+function affordableBattleCollateralSelections(cardIds: string[], capital: number, cost: number): string[][] {
+  const selections: string[][] = [];
+  const limit = Math.min(cardIds.length, 12);
+  for (let mask = 0; mask < (1 << limit); mask += 1) {
+    const selected = cardIds.slice(0, limit).filter((_, index) => (mask & (1 << index)) !== 0);
+    if (capital + selected.reduce((sum, cardId) => sum + cardValue(cardId), 0) >= cost) selections.push(selected);
+  }
+  if (cardIds.length > limit) {
+    const all = [...cardIds];
+    if (capital + all.reduce((sum, cardId) => sum + cardValue(cardId), 0) >= cost) selections.push(all);
+  }
+  return selections;
+}
 
 function pendingFinancierOptions(game: GameState, playerId: PlayerID): GuidedOption[] | undefined {
   const pending = game.pendingFinancierChoice;
@@ -19,6 +32,10 @@ function pendingFinancierOptions(game: GameState, playerId: PlayerID): GuidedOpt
     case 'margin_loan_repayment': return [option(`Repay Margin Loan for ${pending.repaymentCost} Capital`, 'repay'), option(`Default and lose ${pending.collateralCardId}`, 'default')];
     case 'battle_capital_gains': return pending.eligibleCardIds.map((cardId) => option(`Place ${cardId} in Treasury with Capital Gains`, cardId, cardId));
     case 'battle_monetary_crisis': return pending.handOptions.map((cardId) => option(`Keep ${cardId}; discard the rest`, cardId, cardId));
+    case 'battle_leveraged_buyout': return [
+      option('Decline the battle Leveraged Buyout', 'pass'),
+      ...affordableBattleCollateralSelections(pending.collateralOptions, pending.capitalAvailable, pending.cost).map((cardIds) => option(cardIds.length === 0 ? `Buy ${pending.spaceId} with Capital` : `Buy ${pending.spaceId} using ${cardIds.join(', ')} as collateral`, 'purchase', undefined, undefined, pending.spaceId, cardIds)),
+    ];
     case 'leveraged_buyout_target': return pending.spaceOptions.map((spaceId) => option(`Buy the Deed to ${spaceId}`, 'select', undefined, undefined, spaceId));
     case 'leveraged_buyout_collateral': {
       const options: GuidedOption[] = [];
