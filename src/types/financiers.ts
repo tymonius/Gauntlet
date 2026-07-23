@@ -39,4 +39,7 @@ export type PendingFinancierChoice =
   | { kind: 'subsidize'; playerId: PlayerID; battleId: string; maximumBonus: number; options: number[] }
   | { kind: 'liquidation_purchase'; playerId: PlayerID; spaceOptions: SpaceID[]; options: ['pass', 'purchase'] }
   | { kind: 'margin_loan_repayment'; playerId: PlayerID; loanId: string; collateralCardId: CardID; repaymentCost: number; options: ['repay', 'default'] }
-  | { kind: 'deed_purchase'; playerId: PlayerID; spaceId: SpaceID; cost: number; currentOwner?: PlayerID; collateralOptions: CardID[]; maximumCollateralContribution: number; hostileTakeover?: boolean; consumeAction?: boolean };
+  | { kind: 'leveraged_buyout_target'; playerId: PlayerID; spaceOptions: SpaceID[] }
+  | { kind: 'leveraged_buyout_collateral'; playerId: PlayerID; spaceId: SpaceID; cost: number; capitalAvailable: number; collateralOptions: CardID[]; minimumCollateralValue: number }
+  | { kind: 'corner_the_market_purchase'; playerId: PlayerID; spaceOptions: SpaceID[]; options: ['pass', 'purchase'] }
+  | { kind: 'deed_purchase'; playerId: PlayerID; spaceId: SpaceID; cost: number; currentOwner?: PlayerID; collateralOptions: CardID[]; maximumCollateralContribution: number; hostileTakeover?: boolean; consumeAction?: boolean; continuation?: 'corner_the_market' };
