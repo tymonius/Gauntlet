@@ -45,10 +45,10 @@ function draw(game: GameState, playerId: PlayerID, count: number): void {
 function stateFor(game: GameState, diplomatId: PlayerID): DiplomatTermsCardState {
   const diplomat = game.players[diplomatId];
   diplomat.diplomats ??= { ratifiedProposals: [] };
-  const state = (diplomat.diplomats as typeof diplomat.diplomats & { termsCards?: DiplomatTermsCardState }).termsCards;
+  const state = diplomat.diplomats.termsCards;
   if (state) return state;
   const created: DiplomatTermsCardState = { setAsideCards: [] };
-  (diplomat.diplomats as typeof diplomat.diplomats & { termsCards?: DiplomatTermsCardState }).termsCards = created;
+  diplomat.diplomats.termsCards = created;
   return created;
 }
 
@@ -156,7 +156,7 @@ export function resolveReactiveCardsAfterResponse(game: GameState, diplomatId: P
     else if (game.battle) {
       const side = game.battle.attacker.playerId === diplomatId ? game.battle.attacker : game.battle.defender;
       side.modifiers += 2;
-      side.battleDrawPlayed.push({ cardId: state.gunboatCard, owner: diplomatId, origin: 'hand', faceDown: false });
+      side.battleDrawPlayed.push({ cardId: state.gunboatCard, owner: diplomatId, origin: 'hand', faceDown: false, canceled: false });
     }
     state.gunboatCard = undefined;
   }
