@@ -47,6 +47,7 @@ export interface PublicPlayerView {
   movementRemaining: number;
 }
 
-export interface PrivatePlayerView extends PublicPlayerView {
-  private: { deck: CardID[]; hand: CardID[]; intelligence?: IntelligenceState; };
+export interface PrivatePlayerView extends Omit<PublicPlayerView, 'intelligence'> {
+  intelligence?: IntelligenceState;
+  private: { deck: CardID[]; hand: CardID[]; };
 }
