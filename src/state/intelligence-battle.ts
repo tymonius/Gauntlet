@@ -9,6 +9,7 @@ import type {
   PlayerID,
 } from '../types';
 import type { PassBattleDrawPlayAction, PlayBattleDrawCardAction, ResolveIntelligenceChoiceAction } from './actions';
+import { battleHasUnresolvedFogOfWar, openNextFogOfWarBattleWindow } from './intelligence-fog-of-war-battle';
 import { battleHasUnresolvedSpies, openNextSpiesBattleWindow } from './intelligence-spies-battle';
 import { hasFactionResource, spendFactionResource } from './resources';
 
@@ -107,6 +108,7 @@ export function revealDeferredBattleCards(game: GameState): void {
 
 export function continueIntelligenceBattle(game: GameState): void {
   if (game.pendingIntelligenceChoice) return;
+  if (openNextFogOfWarBattleWindow(game)) return;
   if (openNextSpiesBattleWindow(game)) return;
   revealDeferredBattleCards(game);
 }
@@ -114,7 +116,8 @@ export function continueIntelligenceBattle(game: GameState): void {
 function shouldDeferChoiceReveal(game: GameState, playerId: PlayerID, incomingCardId?: CardID): boolean {
   if (!game.battle || game.battle.stage !== 'battle_play_selection') return false;
   if (intelligenceOpponent(game, playerId)) return true;
-  return battleHasUnresolvedSpies(game, incomingCardId);
+  return battleHasUnresolvedFogOfWar(game, incomingCardId)
+    || battleHasUnresolvedSpies(game, incomingCardId);
 }
 
 function prepareDeferredChoiceReveal(

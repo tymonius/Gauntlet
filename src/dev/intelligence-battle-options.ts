@@ -49,6 +49,12 @@ export function buildIntelligenceBattleOptions(game: GameState, playerId: Player
       ...pending.eligibleCardIds.map((cardId) => action(`Replace the selected card with ${cardId}`, 'select', cardId)),
     ];
   }
+  if (pending.kind === 'fog_of_war_return') {
+  return [
+    action(`Return hand commitment ${pending.handCardId}`, 'return_hand'),
+    ...pending.battleHandCardIds.map((cardId) => action(`Return selected Battle Hand card ${cardId}`, 'return_battle_hand', cardId)),
+  ];
+}
   if (pending.kind === 'operational_reassessment_battle') {
     return [
       action('Keep Operational Reassessment in the battle', 'pass'),
