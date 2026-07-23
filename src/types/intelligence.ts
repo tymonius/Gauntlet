@@ -3,6 +3,13 @@ import type { CardID, PlayerID, SpaceID } from './ids';
 export type IntelligenceMissionKind = 'normal' | 'special_operation';
 export type IntelligenceBattleSource = 'hand' | 'battle_draw';
 
+export interface TreasonTargetOption {
+  targetKey: string;
+  cardId: CardID;
+  targetOwner: PlayerID;
+  targetOrigin: 'hand' | 'battle_draw' | 'replayed';
+}
+
 export interface PublicIntelligenceMissionView {
   faceDown?: true;
   kind: IntelligenceMissionKind;
@@ -129,6 +136,27 @@ export type PendingIntelligenceChoice =
       sourceIndex?: number;
       eligibleCardIds: CardID[];
       options: ['pass', 'select'];
+      resumePriorityPlayer?: PlayerID;
+    }
+  | {
+      kind: 'treason_battle_target';
+      playerId: PlayerID;
+      battleId: string;
+      sourceKind: 'battle_card' | 'asset';
+      sourceSlot?: 'hand_commit' | 'battle_draw_played';
+      sourceIndex?: number;
+      targetOptions: TreasonTargetOption[];
+      options: ['select'] | ['pass', 'select'];
+      resumePriorityPlayer?: PlayerID;
+    }
+  | {
+      kind: 'treason_reconnaissance_withdraw';
+      playerId: PlayerID;
+      battleId: string;
+      sourceSlot?: 'hand_commit' | 'battle_draw_played';
+      sourceIndex?: number;
+      canWithdraw: boolean;
+      options: ['stay'] | ['stay', 'withdraw'];
       resumePriorityPlayer?: PlayerID;
     }
   | {
