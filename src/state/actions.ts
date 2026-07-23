@@ -10,9 +10,9 @@ export type GameAction =
   | DrawCardAction | RevealSpaceAction | PlayActionCardAction | ResolveAssetBankDiscardAction
   | MovePlayerAction | CommitBattleHandCardAction | PassBattleHandCommitAction
   | DrawBattleCardsAction | PlayBattleDrawCardAction | PassBattleDrawPlayAction
-  | ResolveBattleRevealAction | RollBattleDieAction | ResolveBattleAction | EndTurnAction;
+  | RollBattleDieAction | ResolveBattleAction | EndTurnAction;
 
-export type StateAction = GameAction | UseLeaderAbilityAction | PassLeaderAbilityWindowAction
+export type StateAction = GameAction | ResolveBattleRevealAction | UseLeaderAbilityAction | PassLeaderAbilityWindowAction
   | ResolveMilitaryChoiceAction | ResolveMilitaryTimingChoiceAction | ResolveDiplomatChoiceAction
   | UseDiplomatCardAction | PlaceTreasuryCardAction | BeginDeedPurchaseAction
   | BeginPlayTheMarketAction | UseHostileTakeoverAction | ResolveFinancierChoiceAction;
