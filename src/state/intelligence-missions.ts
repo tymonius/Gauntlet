@@ -2,6 +2,8 @@ import { intelligenceCardsById, intelligenceMissionCardIds } from '../cards';
 import type { CardID, GameEvent, GameState, IntelligenceMissionKind, IntelligenceMissionState, PlayerID, PlayerState } from '../types';
 import { gainFactionResource, hasFactionResource, spendFactionResource } from './resources';
 
+const DEEP_COVER_CARD_ID = 'intelligence-deep-cover';
+
 export class IntelligenceMissionError extends Error {
   constructor(message: string) { super(message); this.name = 'IntelligenceMissionError'; }
 }
@@ -132,7 +134,7 @@ export function abortIntelligenceMission(game: GameState, playerId: PlayerID): v
   log(game, playerId, 'intelligence_mission_aborted', `${player.name} aborted ${card.name}.`, { cardId: mission.cardId, intelSpent: card.cost });
 }
 
-export function failIntelligenceMission(game: GameState, playerId: PlayerID, kind: IntelligenceMissionKind, reason: string): void {
+export function finalizeIntelligenceMissionFailure(game: GameState, playerId: PlayerID, kind: IntelligenceMissionKind, reason: string): void {
   const player = requireIntelligence(game, playerId);
   const mission = kind === 'normal' ? player.intelligence!.activeMission : player.intelligence!.specialOperation;
   if (!mission) return;
@@ -140,6 +142,25 @@ export function failIntelligenceMission(game: GameState, playerId: PlayerID, kin
   else player.intelligence!.specialOperation = undefined;
   player.zones.graveyard.push(mission.cardId);
   log(game, playerId, kind === 'normal' ? 'intelligence_mission_failed' : 'intelligence_special_operation_failed', `${player.name}’s ${kind === 'normal' ? 'Mission' : 'Special Operation'} failed.`, { cardId: mission.cardId, reason });
+}
+
+export function failIntelligenceMission(game: GameState, playerId: PlayerID, kind: IntelligenceMissionKind, reason: string): void {
+  const player = requireIntelligence(game, playerId);
+  const mission = kind === 'normal' ? player.intelligence!.activeMission : player.intelligence!.specialOperation;
+  if (!mission) return;
+  if (kind === 'normal' && !game.pendingIntelligenceChoice && player.zones.assetBank.includes(DEEP_COVER_CARD_ID)) {
+    game.pendingIntelligenceChoice = {
+      kind: 'deep_cover',
+      playerId,
+      missionCardId: mission.cardId,
+      reason,
+      options: ['pass', 'use'],
+    };
+    game.priorityPlayer = playerId;
+    log(game, playerId, 'intelligence_mission_failure_pending', `${player.name}’s Active Mission would fail.`);
+    return;
+  }
+  finalizeIntelligenceMissionFailure(game, playerId, kind, reason);
 }
 
 export function completeSpecialOperation(game: GameState, playerId: PlayerID): void {
