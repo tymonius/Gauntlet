@@ -3,7 +3,7 @@ import type { AppStateAction } from './actions';
 import { applyGameAction as applyBaseGameAction } from './apply';
 import { abortIntelligenceMission, completeIntelligenceMission, completeSpecialOperation, startIntelligenceMission } from './intelligence-missions';
 import { runPostActionAutomationPipeline } from './pipeline';
-import type { ApplyGameActionResult } from './reducer';
+import { GameActionError, type ApplyGameActionResult } from './reducer';
 
 export function applyGameAction(game: GameState, action: AppStateAction): ApplyGameActionResult {
   if (action.type === 'start_intelligence_mission') {
@@ -29,6 +29,9 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     completeSpecialOperation(next, action.playerId);
     runPostActionAutomationPipeline(next);
     return { state: next };
+  }
+  if (action.type === 'roll_battle_die' && game.battle?.stage === 'dice' && !game.battle.effectsResolved.includes('before_battle_resolution')) {
+    throw new GameActionError('Revealed Battle effects must resolve before dice are rolled.');
   }
   return applyBaseGameAction(game, action);
 }
