@@ -1,10 +1,15 @@
 (() => {
-  document.addEventListener("DOMContentLoaded", installIntelligencePortraitTransform);
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", installIntelligencePortraitTransform, { once: true });
+  } else {
+    installIntelligencePortraitTransform();
+  }
 
   function installIntelligencePortraitTransform() {
     const button = document.getElementById("printDeckButton");
-    if (!button) return;
+    if (!button || button.dataset.intelligencePortraitTransform === "true") return;
 
+    button.dataset.intelligencePortraitTransform = "true";
     button.addEventListener("click", () => {
       const inheritedOpen = window.open;
       let restored = false;
@@ -35,29 +40,38 @@
 
   function frameIntelligencePortraits(html) {
     const documentNode = new DOMParser().parseFromString(html, "text/html");
-    const style = documentNode.querySelector("style");
-    if (!style) return html;
-
     let found = false;
-    documentNode.querySelectorAll(".leader-card").forEach(card => {
-      const faction = card.querySelector(".leader-faction")?.textContent.trim().toLowerCase();
-      if (faction !== "intelligence leader") return;
 
-      const leaderName = card.querySelector(".leader-title")?.textContent.trim().toLowerCase();
-      card.classList.add("intelligence-leader-card");
-      if (leaderName === "ranger") card.classList.add("ranger-leader-card");
-      if (leaderName === "spymaster") card.classList.add("spymaster-leader-card");
+    documentNode.querySelectorAll(".leader-card .leader-art img").forEach(image => {
+      const leaderName = String(image.getAttribute("alt") || "").trim().toLowerCase();
+      if (leaderName !== "ranger" && leaderName !== "spymaster") return;
+
+      const card = image.closest(".leader-card");
+      const art = image.closest(".leader-art");
+      if (!card || !art) return;
+
       found = true;
+      card.classList.add("intelligence-leader-card", `${leaderName}-leader-card`);
+      card.style.setProperty("grid-template-rows", "1.37in 1fr .16in", "important");
+      art.style.setProperty("height", "1.37in", "important");
+      art.style.setProperty("min-height", "1.37in", "important");
+      art.style.setProperty("max-height", "1.37in", "important");
+
+      image.style.setProperty("position", "absolute", "important");
+      image.style.setProperty("left", "0", "important");
+      image.style.setProperty("right", "auto", "important");
+      image.style.setProperty("bottom", "auto", "important");
+      image.style.setProperty("top", leaderName === "ranger" ? "-.015in" : "-.01in", "important");
+      image.style.setProperty("width", "100%", "important");
+      image.style.setProperty("height", "auto", "important");
+      image.style.setProperty("min-width", "100%", "important");
+      image.style.setProperty("max-width", "none", "important");
+      image.style.setProperty("object-fit", "fill", "important");
+      image.style.setProperty("object-position", "initial", "important");
+      image.style.setProperty("transform", "none", "important");
     });
 
     if (!found) return html;
-
-    style.textContent += `
-.intelligence-leader-card{grid-template-rows:1.37in 1fr .16in!important;}
-.intelligence-leader-card .leader-art img{position:absolute!important;left:0!important;width:100%!important;height:auto!important;max-width:none!important;object-fit:fill!important;object-position:initial!important;}
-.ranger-leader-card .leader-art img{top:-.015in!important;}
-.spymaster-leader-card .leader-art img{top:-.01in!important;}`;
-
     return `<!doctype html>\n${documentNode.documentElement.outerHTML}`;
   }
 })();
