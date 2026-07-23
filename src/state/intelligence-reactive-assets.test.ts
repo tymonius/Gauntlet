@@ -5,6 +5,7 @@ import { initializeGame } from './initialize';
 import { failIntelligenceMission } from './intelligence-missions';
 import { openInterceptedOrdersWindow } from './intelligence-reactive-assets';
 import { setFactionResource } from './resources';
+import { createV06StandardBoard } from './v06-board';
 import { toPrivateGameView, toPublicGameView } from './views';
 
 function participant(playerId: PlayerID): BattleParticipantState {
@@ -24,30 +25,33 @@ function participant(playerId: PlayerID): BattleParticipantState {
 }
 
 function game(options: { leader?: 'Ranger' | 'Spymaster'; opponentFaction?: 'diplomats' } = {}): GameState {
+  const playerOne = {
+    id: 'player_1',
+    name: 'Intelligence',
+    factionId: 'intelligence',
+    leaderName: options.leader ?? 'Ranger',
+    deck: ['i1', 'i2', 'i3', 'i4'],
+    territories: ['t1', 't2', 't3'],
+  };
+  const playerTwo = {
+    id: 'player_2',
+    name: 'Opponent',
+    factionId: options.opponentFaction ?? 'military',
+    leaderName: options.opponentFaction === 'diplomats' ? 'Ambassador' : 'General',
+    deck: ['o1', 'o2', 'o3', 'o4'],
+    territories: ['t4', 't5', 't6'],
+  };
   const state = initializeGame({
     id: 'intelligence-reactive-assets',
     version: 'v0.6.0',
     shuffleDecks: false,
     openingHandSize: 0,
-    players: [
-      {
-        id: 'player_1',
-        name: 'Intelligence',
-        factionId: 'intelligence',
-        leaderName: options.leader ?? 'Ranger',
-        deck: ['i1', 'i2', 'i3', 'i4'],
-        territories: ['t1', 't2', 't3'],
-      },
-      {
-        id: 'player_2',
-        name: 'Opponent',
-        factionId: options.opponentFaction,
-        leaderName: options.opponentFaction === 'diplomats' ? 'Ambassador' : undefined,
-        deck: ['o1', 'o2', 'o3', 'o4'],
-        territories: ['t4', 't5', 't6'],
-      },
-    ],
+    players: [playerOne, playerTwo],
   });
+  const topology = createV06StandardBoard([playerOne, playerTwo]);
+  state.board = topology.board;
+  state.players.player_1.occupiedSpaceId = topology.startingSpaces.player_1;
+  state.players.player_2.occupiedSpaceId = topology.startingSpaces.player_2;
   state.activePlayer = 'player_1';
   state.priorityPlayer = 'player_1';
   return state;
