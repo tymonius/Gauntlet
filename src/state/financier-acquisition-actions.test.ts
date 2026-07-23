@@ -51,13 +51,17 @@ describe('Financier acquisition Action cards', () => {
 
   it('allows Leveraged Buyout collateral to pay the entire cost from Treasury', () => {
     let state = game();
-    state.players.player_1.financiers!.treasury = ['financiers-corner-the-market'];
+    const treasuryCardId = 'financiers-corner-the-market';
+    const treasuryCardIndex = state.players.player_1.zones.hand.indexOf(treasuryCardId);
+    expect(treasuryCardIndex).toBeGreaterThanOrEqual(0);
+    state.players.player_1.zones.hand.splice(treasuryCardIndex, 1);
+    state.players.player_1.financiers!.treasury.push(treasuryCardId);
     const target = state.board.spaces.find((space) => space.kind === 'territory' && space.controller === 'player_2')!;
     state = applyGameAction(state, { type: 'play_action_card', playerId: 'player_1', cardId: 'financiers-leveraged-buyout', targets: [{ kind: 'space', spaceId: target.id }] }).state;
     expect(state.pendingFinancierChoice).toMatchObject({ kind: 'leveraged_buyout_collateral', spaceId: target.id });
-    state = applyGameAction(state, { type: 'resolve_financier_choice', playerId: 'player_1', choice: 'purchase', cardIds: ['financiers-corner-the-market'] }).state;
-    expect(state.players.player_1.financiers?.treasury).not.toContain('financiers-corner-the-market');
-    expect(state.players.player_1.zones.graveyard).toContain('financiers-corner-the-market');
+    state = applyGameAction(state, { type: 'resolve_financier_choice', playerId: 'player_1', choice: 'purchase', cardIds: [treasuryCardId] }).state;
+    expect(state.players.player_1.financiers?.treasury).not.toContain(treasuryCardId);
+    expect(state.players.player_1.zones.graveyard).toContain(treasuryCardId);
     expect(state.players.player_1.financiers?.deedsOwned).toContain(target.id);
   });
 
