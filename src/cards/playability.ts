@@ -64,10 +64,10 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'financiers-tariffs': actionOnly('financiers-tariffs', 'asset_bank'),
   'financiers-divestment': actionOnly('financiers-divestment', 'discard', true),
   'financiers-margin-loan': actionOnly('financiers-margin-loan', 'asset_bank', true),
-  'financiers-leveraged-buyout': actionOnly('financiers-leveraged-buyout', 'discard'),
+  'financiers-leveraged-buyout': battleAndAction('financiers-leveraged-buyout', 'discard'),
   'financiers-foreclosure': battleAndAction('financiers-foreclosure', 'discard', true),
   'financiers-property-dues': actionOnly('financiers-property-dues', 'asset_bank'),
-  'financiers-corner-the-market': actionOnly('financiers-corner-the-market', 'discard'),
+  'financiers-corner-the-market': battleAndAction('financiers-corner-the-market', 'discard'),
 };
 
 export function getCardPlayRule(cardId: CardID): CardPlayRule | undefined { return coreCardPlayRules[cardId]; }
