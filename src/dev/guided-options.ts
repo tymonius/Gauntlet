@@ -96,7 +96,7 @@ function pendingMilitaryOptions(game: GameState, playerId: PlayerID): GuidedOpti
   const aftermath = game.pendingMilitaryChoice;
   if (aftermath?.playerId === playerId) {
     const base = (label: string, choice: string, cardId?: string) => militaryOption(label, { type: 'resolve_military_choice', playerId, choice, cardId }, aftermath.sourceCardId);
-    switch (aftermath.kind) { case 'battlefield_promotion': return aftermath.options.map((cardId) => base(`Return ${cardId} to hand`, cardId, cardId)); case 'countercharge': case 'war_crimes': return aftermath.options.map((choice) => base(`${choice === 'use' ? 'Use' : 'Pass'} ${aftermath.sourceCardId}`, choice)); case 'shock_and-awe': return aftermath.options.map((choice) => base(`Choose ${choice}`, choice)); }
+    switch (aftermath.kind) { case 'battlefield_promotion': return aftermath.options.map((cardId) => base(`Return ${cardId} to hand`, cardId, cardId)); case 'countercharge': case 'war_crimes': return aftermath.options.map((choice) => base(`${choice === 'use' ? 'Use' : 'Pass'} ${aftermath.sourceCardId}`, choice)); case 'shock_and_awe': return aftermath.options.map((choice) => base(`Choose ${choice}`, choice)); }
   }
   return undefined;
 }
