@@ -7,7 +7,7 @@ import type {
 } from '../types';
 
 const SUBVERSION = 'intelligence-subversion';
-const RESOLUTION_KEY = 'intelligence_subversion_restrictions';
+const RESOLUTION_PREFIX = 'intelligence_subversion_restriction:';
 
 function active(card?: BattlePlayedCard): card is BattlePlayedCard {
   return Boolean(card && !card.canceled && !card.negated);
@@ -36,18 +36,22 @@ export function bankedAssetUseAllowed(game: GameState, playerId: PlayerID): bool
 
 export function applySubversionBattleRestrictions(game: GameState): void {
   const battle = game.battle;
-  if (!battle || battle.effectsResolved.includes(RESOLUTION_KEY)) return;
+  if (!battle) return;
 
   const prohibited = new Set(battle.bankedAssetUseProhibited ?? []);
   for (const participant of [battle.attacker, battle.defender]) {
     if (!participantUsedSubversion(participant)) continue;
+    const resolutionKey = `${RESOLUTION_PREFIX}${participant.playerId}`;
+    if (battle.effectsResolved.includes(resolutionKey)) continue;
+
     const opponent = participant.playerId === battle.attacker.playerId
       ? battle.defender.playerId
       : battle.attacker.playerId;
-    if (prohibited.has(opponent)) continue;
-    prohibited.add(opponent);
-    publicLog(game, participant.playerId, opponent);
+    if (!prohibited.has(opponent)) {
+      prohibited.add(opponent);
+      publicLog(game, participant.playerId, opponent);
+    }
+    battle.effectsResolved.push(resolutionKey);
   }
   battle.bankedAssetUseProhibited = [...prohibited];
-  battle.effectsResolved.push(RESOLUTION_KEY);
 }
