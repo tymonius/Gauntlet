@@ -2,18 +2,29 @@ import type { GameState } from '../types';
 import type { AppStateAction } from './actions';
 import { applyGameAction as applyInterceptedOrdersGameAction } from './apply-intercepted-orders';
 import { resolveOperationalReassessmentBattleChoice } from './intelligence-operational-reassessment-battle';
-import { openNextIntelligencePostRevealWindow } from './intelligence-post-reveal';
+import { continueIntelligencePostRevealFlow } from './intelligence-post-reveal-flow';
 import { resolveReconnaissanceBattleChoice } from './intelligence-reconnaissance-battle';
-import { applySubversionBattleRestrictions } from './intelligence-subversion-battle';
+import { resolveTreasonChoice, resolveTreasonReconnaissanceChoice } from './intelligence-treason';
 import { runPostActionAutomationPipeline } from './pipeline';
 import type { ApplyGameActionResult } from './reducer';
+
+function hasPendingFactionWindow(game: GameState): boolean {
+  return Boolean(
+    game.pendingIntelligenceChoice
+    || game.pendingMilitaryChoice
+    || game.pendingMilitaryTimingChoice
+    || game.pendingDiplomatChoice
+    || game.pendingFinancierChoice
+    || game.pendingLeaderAbilityWindow,
+  );
+}
 
 export function applyGameAction(game: GameState, action: AppStateAction): ApplyGameActionResult {
   if (action.type === 'resolve_intelligence_choice'
     && game.pendingIntelligenceChoice?.kind === 'reconnaissance_battle_withdraw') {
     const next = structuredClone(game);
     const result = resolveReconnaissanceBattleChoice(next, action);
-    if (result === 'stay') openNextIntelligencePostRevealWindow(next);
+    if (result === 'stay') continueIntelligencePostRevealFlow(next);
     runPostActionAutomationPipeline(next);
     return { state: next };
   }
@@ -22,16 +33,33 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     && game.pendingIntelligenceChoice?.kind === 'operational_reassessment_battle') {
     const next = structuredClone(game);
     resolveOperationalReassessmentBattleChoice(next, action);
-    applySubversionBattleRestrictions(next);
-    openNextIntelligencePostRevealWindow(next);
+    continueIntelligencePostRevealFlow(next);
+    runPostActionAutomationPipeline(next);
+    return { state: next };
+  }
+
+  if (action.type === 'resolve_intelligence_choice'
+    && game.pendingIntelligenceChoice?.kind === 'treason_battle_target') {
+    const next = structuredClone(game);
+    resolveTreasonChoice(next, action);
+    if (!next.pendingIntelligenceChoice) continueIntelligencePostRevealFlow(next);
+    runPostActionAutomationPipeline(next);
+    return { state: next };
+  }
+
+  if (action.type === 'resolve_intelligence_choice'
+    && game.pendingIntelligenceChoice?.kind === 'treason_reconnaissance_withdraw') {
+    const next = structuredClone(game);
+    const result = resolveTreasonReconnaissanceChoice(next, action);
+    if (result === 'stay') continueIntelligencePostRevealFlow(next);
     runPostActionAutomationPipeline(next);
     return { state: next };
   }
 
   if (action.type === 'resolve_battle_reveal') {
     const next = structuredClone(game);
-    applySubversionBattleRestrictions(next);
-    if (openNextIntelligencePostRevealWindow(next)) {
+    continueIntelligencePostRevealFlow(next);
+    if (hasPendingFactionWindow(next)) {
       runPostActionAutomationPipeline(next);
       return { state: next };
     }
