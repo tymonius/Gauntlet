@@ -7,7 +7,7 @@ import { maybeOpenBrothersSelection, openMilitaryAfterRevealWindows, openMilitar
 import { applyLeverage, checkPeaceTreatyVictory, declineTerms, offerTerms, openDiplomatTermsWindow, resolvePoliticalCapital, resolveProposalCardChoice, resolveRefusedTermsBattle, respondToTerms } from './diplomat-terms';
 import { DIPLOMAT_REACTIVE_CARDS, resolveNonbindingResolution, resolveTradeConcessions, useDiplomaticLatitude, useGoodFaith, useGunboatDiplomacy, useNeutralObservers, useNonbindingResolution, useSafeConduct, useTradeConcessions } from './diplomat-cards';
 import { bankSanctionAfterRefusal, effectiveAssetBankLimit, openBlockadeMovementChoice, openCensureChoiceAfterAction, openDemilitarizedZoneUpkeep, playClemency, playDemilitarizedZone, removeBlockadesAfterControlChange, removeSanctionsAfterAcceptedTerms, requireDemilitarizedEntryCost, resolveBlockadeMovement, resolveClemency, resolveCensure, resolveDemilitarizedZoneBattle, resolveDemilitarizedZoneUpkeep, DIPLOMAT_PERSISTENT_CARDS } from './diplomat-persistent';
-import { applyFinancierActionEffect, resolveFinancierCardChoice, resolveFinancierCardTurnStart } from './financier-cards';
+import { applyFinancierActionEffect, reconcileFinancierCardState, requireTariffsMayLeavePlay, resolveFinancierCardChoice, resolveFinancierCardTurnStart, shouldSkipNormalDrawForTariffs } from './financier-cards';
 import { beginDeedPurchase, beginHostileTakeover, beginPlayTheMarket, clearFinancierBattleState, maybeOpenSubsidizeWindow, placeTreasuryCardAction, recordHostileTakeoverEligibility, resolveFinancierChoice, resolveFinancierEndTurn, resolveFinancierTurnStart } from './financier-integration';
 import { gainFactionResource } from './resources';
 import { runPostActionAutomationPipeline } from './pipeline';
@@ -115,6 +115,15 @@ function movementBlockadeSpace(game: GameState, playerId: PlayerID, origin?: Spa
   return undefined;
 }
 
+function skipTariffsDraw(game: GameState, playerId: PlayerID): ApplyGameActionResult {
+  if (game.activePlayer !== playerId || game.phase !== 'turn_start') throw new GameActionError('Tariffs can replace only your normal turn-start draw.');
+  const next = structuredClone(game);
+  next.phase = 'action_before_movement';
+  next.log.push({ id: `${next.id}-event-${next.log.length + 1}`, turn: next.turn, actor: playerId, type: 'financier_tariffs_draw_skipped', message: `${next.players[playerId].name} skipped their normal draw because Tariffs is banked.`, visibility: 'public' });
+  runPostActionAutomationPipeline(next);
+  return { state: next };
+}
+
 function applyFinancierStateAction(game: GameState, action: Extract<StateAction, { type: 'place_treasury_card' | 'begin_deed_purchase' | 'begin_play_the_market' | 'use_hostile_takeover' }>): void {
   if (action.type === 'place_treasury_card') placeTreasuryCardAction(game, action.playerId, action.cardId);
   else if (action.type === 'begin_deed_purchase') beginDeedPurchase(game, action.playerId, action.spaceId);
@@ -123,10 +132,10 @@ function applyFinancierStateAction(game: GameState, action: Extract<StateAction,
 }
 
 export function applyGameAction(game: GameState, action: StateAction): ApplyGameActionResult {
-  if (action.type === 'resolve_financier_choice') { const next = structuredClone(game); if (!resolveFinancierCardChoice(next, action)) resolveFinancierChoice(next, action); enforceDiplomatAssetLimits(next); runPostActionAutomationPipeline(next); return { state: next }; }
+  if (action.type === 'resolve_financier_choice') { const next = structuredClone(game); if (!resolveFinancierCardChoice(next, action)) resolveFinancierChoice(next, action); reconcileFinancierCardState(next); enforceDiplomatAssetLimits(next); runPostActionAutomationPipeline(next); return { state: next }; }
   if (action.type === 'place_treasury_card' || action.type === 'begin_deed_purchase' || action.type === 'begin_play_the_market' || action.type === 'use_hostile_takeover') {
     if (game.pendingMilitaryChoice || game.pendingMilitaryTimingChoice || game.pendingDiplomatChoice || game.pendingFinancierChoice || game.pendingLeaderAbilityWindow) throw new GameActionError('Resolve the pending choice first.');
-    const next = structuredClone(game); applyFinancierStateAction(next, action); enforceDiplomatAssetLimits(next); runPostActionAutomationPipeline(next); return { state: next };
+    const next = structuredClone(game); applyFinancierStateAction(next, action); reconcileFinancierCardState(next); enforceDiplomatAssetLimits(next); runPostActionAutomationPipeline(next); return { state: next };
   }
   if (action.type === 'use_diplomat_card') { const next = structuredClone(game); if (next.pendingDiplomatChoice && next.pendingDiplomatChoice.playerId !== action.playerId) throw new GameActionError('Resolve the pending Diplomat choice first.'); useDiplomatCard(next, action); enforceDiplomatAssetLimits(next); runPostActionAutomationPipeline(next); return { state: next }; }
   if (action.type === 'resolve_diplomat_choice') {
@@ -140,6 +149,8 @@ export function applyGameAction(game: GameState, action: StateAction): ApplyGame
   if (action.type === 'use_leader_ability') { if (game.pendingMilitaryChoice || game.pendingMilitaryTimingChoice || game.pendingDiplomatChoice || game.pendingFinancierChoice) throw new GameActionError('Resolve the pending faction choice first.'); const next = structuredClone(game); const definition = defaultLeaderAbilityRegistry.get(action.abilityId); useLeaderAbility(next, action.playerId, action.abilityId); if (definition?.timing === 'after_battle') closePostBattleOrderWindow(next); runPostActionAutomationPipeline(next); return { state: next }; }
   if (game.pendingMilitaryChoice || game.pendingMilitaryTimingChoice || game.pendingDiplomatChoice || game.pendingFinancierChoice) throw new GameActionError('Resolve the pending faction choice first.');
   if (game.pendingLeaderAbilityWindow) throw new GameActionError('Resolve or pass the pending post-battle Order window first.');
+  if (action.type === 'draw_card' && game.phase === 'turn_start' && shouldSkipNormalDrawForTariffs(game, action.playerId)) return skipTariffsDraw(game, action.playerId);
+  if (action.type === 'resolve_asset_bank_discard') requireTariffsMayLeavePlay(game, action.playerId, action.cardIds);
 
   validateV06EndpointMovement(game, action);
   const prepared = prepareLastStandResolution(game, action);
@@ -161,12 +172,12 @@ export function applyGameAction(game: GameState, action: StateAction): ApplyGame
   maybeOpenBrothersSelection(result.state); openMilitaryAfterRevealWindows(result.state); maybeOpenSubsidizeWindow(result.state);
   if (action.type === 'resolve_battle') recordBattleAftermath(result, battleBeforeResolution);
   if (endingPlayer && result.state.activePlayer !== endingPlayer) { resolveFinancierTurnStart(result.state, result.state.activePlayer); resolveFinancierCardTurnStart(result.state, result.state.activePlayer); }
-  removeCapturedEncampments(result.state); removeBlockadesAfterControlChange(result.state); enforceDiplomatAssetLimits(result.state); runPostActionAutomationPipeline(result.state); finalizeLastStandResolution(result, prepared.attacker, prepared.defender);
+  reconcileFinancierCardState(result.state); reconcileFinancierCardState(result.state); removeCapturedEncampments(result.state); removeBlockadesAfterControlChange(result.state); enforceDiplomatAssetLimits(result.state); runPostActionAutomationPipeline(result.state); finalizeLastStandResolution(result, prepared.attacker, prepared.defender);
   if (action.type === 'resolve_battle') resetLeaderAbilityUsageAfterBattle(result.state);
   if (action.type === 'end_turn') {
     result.state.recentBattleResult = undefined; result.state.pendingMilitaryChoice = undefined; result.state.militaryChoiceQueue = undefined; result.state.pendingMilitaryTimingChoice = undefined; result.state.militaryTimingChoiceQueue = undefined; result.state.pendingLeaderAbilityWindow = undefined;
     for (const player of Object.values(result.state.players)) { if (player.military) player.military.victoryRestrictions = undefined; if (player.id === result.state.activePlayer && checkPeaceTreatyVictory(result.state, player.id)) break; }
-    if (!result.state.pendingDiplomatChoice) openDemilitarizedZoneUpkeep(result.state, result.state.activePlayer);
+    if (!result.state.pendingDiplomatChoice && !result.state.pendingFinancierChoice) openDemilitarizedZoneUpkeep(result.state, result.state.activePlayer);
     resetLeaderAbilityUsageForNewTurn(result.state, result.state.activePlayer);
   }
   return result;

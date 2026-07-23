@@ -11,10 +11,12 @@ function militaryOption(label: string, action: StateAction, sourceCardId: string
 function pendingFinancierOptions(game: GameState, playerId: PlayerID): GuidedOption[] | undefined {
   const pending = game.pendingFinancierChoice;
   if (!pending || pending.playerId !== playerId) return undefined;
-  const option = (label: string, choice: string, cardId?: string, amount?: number): GuidedOption => ({ label, action: { type: 'resolve_financier_choice', playerId, choice, cardId, amount } });
+  const option = (label: string, choice: string, cardId?: string, amount?: number, spaceId?: string): GuidedOption => ({ label, action: { type: 'resolve_financier_choice', playerId, choice, cardId, amount, spaceId } });
   switch (pending.kind) {
     case 'play_the_market': return pending.options.map((roll) => option(`Roll ${roll} for ${pending.cardId}`, String(roll), undefined, roll));
     case 'subsidize': return pending.options.map((bonus) => option(bonus === 0 ? 'Pass Subsidize' : `Subsidize for +${bonus}`, String(bonus), undefined, bonus));
+    case 'liquidation_purchase': return [option('Decline the immediate Deed purchase', 'pass'), ...pending.spaceOptions.map((spaceId) => option(`Immediately buy the Deed to ${spaceId}`, 'purchase', undefined, undefined, spaceId))];
+    case 'margin_loan_repayment': return [option(`Repay Margin Loan for ${pending.repaymentCost} Capital`, 'repay'), option(`Default and lose ${pending.collateralCardId}`, 'default')];
     case 'deed_purchase': return [
       option(`Pay ${pending.cost} Capital`, 'capital'),
       ...pending.collateralOptions.map((cardId) => option(`Use ${cardId} as collateral`, 'collateral', cardId)),
