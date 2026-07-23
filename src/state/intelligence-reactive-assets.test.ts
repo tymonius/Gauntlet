@@ -174,7 +174,7 @@ describe('reactive Intelligence Assets', () => {
       targetOwner: 'player_2',
       battleHand: ['dup', 'dup', 'other'],
     });
-    expect(toPublicGameView(state).pendingIntelligenceChoice).toBeUndefined();
+    expect('pendingIntelligenceChoice' in toPublicGameView(state)).toBe(false);
 
     state = applyGameAction(state, { type: 'resolve_intelligence_choice', playerId: 'player_1', choice: 'use' }).state;
     state = applyGameAction(state, { type: 'resolve_intelligence_choice', playerId: 'player_1', choice: 'select', cardId: 'dup' }).state;
