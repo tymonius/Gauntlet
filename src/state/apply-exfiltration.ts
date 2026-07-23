@@ -19,9 +19,10 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
   }
 
   if (action.type === 'resolve_battle') {
+    const battleId = game.battle?.id;
     const eligiblePlayers = exfiltrationBattlePlayers(game);
     const result = applyPostRevealGameAction(game, action);
-    openExfiltrationBattleWindow(result.state, eligiblePlayers);
+    if (battleId) openExfiltrationBattleWindow(result.state, eligiblePlayers, battleId);
     return result;
   }
 
