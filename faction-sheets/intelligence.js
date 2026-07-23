@@ -63,8 +63,8 @@ const sharedLeaderRules = [
   ['Special Operation','When Progress exceeds opposing controlled Territories and you have no Active Mission, start an eligible Mission card as the Special Operation. Complete its requirement later and pay the final Intel cost to win.']
 ];
 const leaders = [
-  {name:'Ranger',image:'../images/leader-cards/ranger.jpg',motto:'Know the land before the battle begins.',ability:['Fieldcraft','Once per turn, when a Territory effect would affect you, your movement, or a battle involving you, spend 1 Intel to ignore that Territory effect until the end of the turn.']},
-  {name:'Spymaster',image:'../images/leader-cards/spymaster.jpg',motto:'Information never rests. Momentum is the weapon.',ability:['Mission Control','Once per turn, after completing a normal Mission, immediately start a new eligible Mission from hand without using an Action Opportunity. It cannot complete that turn and cannot be the Special Operation.']}
+  {name:'Ranger',image:'../images/ranger.png',motto:'Know the land before the battle begins.',ability:['Fieldcraft','Once per turn, when a Territory effect would affect you, your movement, or a battle involving you, spend 1 Intel to ignore that Territory effect until the end of the turn.']},
+  {name:'Spymaster',image:'../images/spymaster.png',motto:'Information never rests. Momentum is the weapon.',ability:['Mission Control','Once per turn, after completing a normal Mission, immediately start a new eligible Mission from hand without using an Action Opportunity. It cannot complete that turn and cannot be the Special Operation.']}
 ];
 
 function escapeHtml(value){return String(value).replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');}
