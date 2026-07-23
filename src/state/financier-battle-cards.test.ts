@@ -81,10 +81,10 @@ function game(attackerCards: CardID[] = [], defenderCards: CardID[] = [], attack
 
 describe('Financier Battle card foundations', () => {
   it('refunds Subsidize through Underwriting after a loss', () => {
-    const setup = game([], ['financiers-underwriting'], 1, 6);
+    const setup = game([], ['financiers-underwriting'], 6, 1);
     setup.state.players.player_2.factionId = 'financiers';
     setup.state.players.player_2.financiers = { treasury: [], deedsOwned: [], subsidizeBonusThisBattle: 2, subsidizeOfferedBattleId: setup.battle.id };
-    setup.state.players.player_2.resources = { capital: { value: 0, maximum: 99 } };
+    setup.state.players.player_2.resources = { capital: { key: 'capital', label: 'Capital', value: 0, minimum: 0, limitKind: 'dynamic' } };
     const result = applyGameAction(setup.state, { type: 'resolve_battle', playerId: 'player_1' }).state;
     expect(result.players.player_2.resources?.capital?.value).toBe(2);
     expect(result.log.some((event) => event.type === 'financier_underwriting_battle_refund')).toBe(true);
@@ -129,6 +129,8 @@ describe('Financier Battle card foundations', () => {
     setFactionResource(setup.state, 'player_1', 'capital', 1, 'test');
     setup.state.phase = 'battle';
     setup.state.battle!.stage = 'hand_commit';
+    setup.state.battle!.attacker.passedHandCommit = false;
+    setup.state.battle!.attacker.handCommit = undefined;
     expect(() => applyGameAction(setup.state, { type: 'commit_battle_hand_card', playerId: 'player_1', cardId: 'financiers-monetary-crisis' })).not.toThrow();
     expect(() => applyGameAction(setup.state, { type: 'commit_battle_hand_card', playerId: 'player_1', cardId: 'financiers-liquidation' })).toThrow();
   });
