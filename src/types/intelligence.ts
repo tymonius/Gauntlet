@@ -31,6 +31,7 @@ interface PendingIntelligenceBattleCard {
   targetOwner: PlayerID;
   targetCardId: CardID;
   targetSource: IntelligenceBattleSource;
+  resumePriorityPlayer?: PlayerID;
 }
 
 export type PendingIntelligenceChoice =
@@ -53,4 +54,5 @@ export type PendingIntelligenceChoice =
       removedCardId: CardID;
       eligibleCardIds: CardID[];
       options: ['pass', 'select'];
+      resumePriorityPlayer?: PlayerID;
     };
