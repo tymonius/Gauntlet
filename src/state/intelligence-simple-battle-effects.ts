@@ -36,19 +36,24 @@ function playedCards(participant: BattleParticipantState): BattlePlayedCard[] {
     .filter((card): card is BattlePlayedCard => active(card));
 }
 
-function hasActiveCard(participant: BattleParticipantState, cardId: string): boolean {
-  return playedCards(participant).some((card) => card.cardId === cardId);
-}
-
 function opposingParticipant(game: GameState, participant: BattleParticipantState): BattleParticipantState {
   const battle = game.battle!;
   return participant.playerId === battle.attacker.playerId ? battle.defender : battle.attacker;
 }
 
-function resolveAssassins(game: GameState, participant: BattleParticipantState): void {
-  if (!hasActiveCard(participant, SIMPLE_INTELLIGENCE_BATTLE_CARDS.assassins)) return;
+export function resolveAssassinsPreRevealCard(
+  game: GameState,
+  participant: BattleParticipantState,
+  card: BattlePlayedCard,
+): void {
+  if (!active(card)
+    || card.cardId !== SIMPLE_INTELLIGENCE_BATTLE_CARDS.assassins
+    || card.earlyEffectResolved) return;
+
+  card.faceDown = false;
+  card.earlyEffectResolved = true;
   const opponent = opposingParticipant(game, participant);
-  if (active(opponent.handCommit)) {
+  if (opponent.handCommit) {
     opponent.handCommit.faceDown = false;
     opponent.handCommit.negated = true;
     markBattleCardsObservedBeforeNormalReveal(game, opponent.playerId, [opponent.handCommit.cardId]);
@@ -56,7 +61,7 @@ function resolveAssassins(game: GameState, participant: BattleParticipantState):
       game,
       participant.playerId,
       'intelligence_assassins_negated_hand_commitment',
-      `${game.players[participant.playerId].name} revealed and negated ${opponent.handCommit.cardId} with Assassins.`,
+      `${game.players[participant.playerId].name} revealed Assassins and negated ${opponent.handCommit.cardId}.`,
       { targetOwner: opponent.playerId, targetCardId: opponent.handCommit.cardId },
     );
   } else {
@@ -65,39 +70,77 @@ function resolveAssassins(game: GameState, participant: BattleParticipantState):
       game,
       participant.playerId,
       'intelligence_assassins_disadvantage',
-      `${game.players[participant.playerId].name} gave ${game.players[opponent.playerId].name} disadvantage with Assassins.`,
+      `${game.players[participant.playerId].name} revealed Assassins and gave ${game.players[opponent.playerId].name} disadvantage.`,
       { targetPlayerId: opponent.playerId },
     );
   }
 }
 
-function resolveDisinformation(game: GameState, participant: BattleParticipantState): void {
-  const card = participant.handCommit;
-  if (!active(card) || card.cardId !== SIMPLE_INTELLIGENCE_BATTLE_CARDS.disinformation) return;
+export function resolveDisinformationPreRevealCard(
+  game: GameState,
+  participant: BattleParticipantState,
+  card: BattlePlayedCard,
+): void {
+  if (!active(card)
+    || card.cardId !== SIMPLE_INTELLIGENCE_BATTLE_CARDS.disinformation
+    || card.origin !== 'hand'
+    || card.earlyEffectResolved) return;
+
+  card.faceDown = false;
+  card.earlyEffectResolved = true;
   const opponent = opposingParticipant(game, participant);
-  if (!opponent.handCommit) return;
+  if (!opponent.handCommit) {
+    publicLog(
+      game,
+      participant.playerId,
+      'intelligence_disinformation_revealed_early',
+      `${game.players[participant.playerId].name} revealed Disinformation before the normal battle reveal.`,
+    );
+    return;
+  }
   participant.advantage = (participant.advantage ?? 0) + 1;
   publicLog(
     game,
     participant.playerId,
     'intelligence_disinformation_advantage',
-    `${game.players[participant.playerId].name} gained advantage with Disinformation.`,
+    `${game.players[participant.playerId].name} revealed Disinformation and gained advantage.`,
   );
 }
 
 function resolveDeepCover(game: GameState, participant: BattleParticipantState): void {
-  if (!hasActiveCard(participant, SIMPLE_INTELLIGENCE_BATTLE_CARDS.deepCover)) return;
-  const observed = playedCards(participant).some((card) => (
-    wasBattleCardObservedBeforeNormalReveal(game, participant.playerId, card.cardId)
+  const cards = playedCards(participant).filter((card) => (
+    card.cardId === SIMPLE_INTELLIGENCE_BATTLE_CARDS.deepCover
   ));
-  if (!observed) return;
-  participant.advantage = (participant.advantage ?? 0) + 1;
-  publicLog(
-    game,
-    participant.playerId,
-    'intelligence_deep_cover_advantage',
-    `${game.players[participant.playerId].name} gained advantage with Deep Cover.`,
-  );
+  for (const card of cards) {
+    if (card.earlyEffectResolved) continue;
+    card.earlyEffectResolved = true;
+    const observed = playedCards(participant).some((candidate) => (
+      wasBattleCardObservedBeforeNormalReveal(game, participant.playerId, candidate.cardId)
+    ));
+    if (!observed) continue;
+    participant.advantage = (participant.advantage ?? 0) + 1;
+    publicLog(
+      game,
+      participant.playerId,
+      'intelligence_deep_cover_advantage',
+      `${game.players[participant.playerId].name} gained advantage with Deep Cover.`,
+    );
+  }
+}
+
+function resolveUnprocessedFallbackEarlyEffects(game: GameState, participant: BattleParticipantState): void {
+  if (active(participant.handCommit)) {
+    if (participant.handCommit.cardId === SIMPLE_INTELLIGENCE_BATTLE_CARDS.assassins) {
+      resolveAssassinsPreRevealCard(game, participant, participant.handCommit);
+    } else if (participant.handCommit.cardId === SIMPLE_INTELLIGENCE_BATTLE_CARDS.disinformation) {
+      resolveDisinformationPreRevealCard(game, participant, participant.handCommit);
+    }
+  }
+  for (const card of participant.battleDrawPlayed) {
+    if (card.cardId === SIMPLE_INTELLIGENCE_BATTLE_CARDS.assassins) {
+      resolveAssassinsPreRevealCard(game, participant, card);
+    }
+  }
 }
 
 export function resolveSimpleIntelligenceRevealEffects(game: GameState): void {
@@ -105,10 +148,7 @@ export function resolveSimpleIntelligenceRevealEffects(game: GameState): void {
   if (!battle || battle.effectsResolved.includes(RESOLUTION_KEY)) return;
 
   const ordered = [battle.attacker, battle.defender];
-  for (const participant of ordered) {
-    resolveAssassins(game, participant);
-    resolveDisinformation(game, participant);
-  }
+  for (const participant of ordered) resolveUnprocessedFallbackEarlyEffects(game, participant);
   for (const participant of ordered) resolveDeepCover(game, participant);
   battle.effectsResolved.push(RESOLUTION_KEY);
 }
