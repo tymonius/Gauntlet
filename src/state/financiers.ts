@@ -49,22 +49,22 @@ export function deedCount(game: GameState, playerId: PlayerID): number {
   return financier(game, playerId).financiers!.deedsOwned.length;
 }
 
-export function deedCost(game: GameState, buyerId: PlayerID, spaceId: SpaceID): number {
+export function deedCost(game: GameState, buyerId: PlayerID, spaceId: SpaceID, positionModifierOverride?: number): number {
   const buyer = financier(game, buyerId);
   const space = game.board.spaces.find((candidate) => candidate.id === spaceId);
   if (!space || space.kind !== 'territory') throw new FinancierError('Deeds exist only for Territories in the Gauntlet.');
   const base = Math.min(deedCount(game, buyerId) + 1, 6);
-  const positionModifier = space.controller === buyerId ? -1 : space.occupant === buyerId ? 0 : 1;
+  const positionModifier = positionModifierOverride ?? (space.controller === buyerId ? -1 : space.occupant === buyerId ? 0 : 1);
   const owner = deedOwner(game, spaceId);
   const premium = owner && owner !== buyerId ? Math.min(deedCount(game, owner), 6) : 0;
   return Math.max(base + positionModifier + premium, 1);
 }
 
-export function buyDeed(game: GameState, buyerId: PlayerID, spaceId: SpaceID, collateralCardId?: CardID): number {
+export function buyDeed(game: GameState, buyerId: PlayerID, spaceId: SpaceID, collateralCardId?: CardID, positionModifierOverride?: number): number {
   const buyer = financier(game, buyerId);
   const owner = deedOwner(game, spaceId);
   if (owner === buyerId) throw new FinancierError('You already own this Deed.');
-  const cost = deedCost(game, buyerId, spaceId);
+  const cost = deedCost(game, buyerId, spaceId, positionModifierOverride);
   let collateralContribution = 0;
   if (collateralCardId !== undefined) {
     if (buyer.leaderName !== 'Banker' || buyer.financiers!.lineOfCreditUsedTurn === game.turn) throw new FinancierError('Line of Credit is not available.');
