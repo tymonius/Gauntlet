@@ -17,6 +17,8 @@ function pendingFinancierOptions(game: GameState, playerId: PlayerID): GuidedOpt
     case 'subsidize': return pending.options.map((bonus) => option(bonus === 0 ? 'Pass Subsidize' : `Subsidize for +${bonus}`, String(bonus), undefined, bonus));
     case 'liquidation_purchase': return [option('Decline the immediate Deed purchase', 'pass'), ...pending.spaceOptions.map((spaceId) => option(`Immediately buy the Deed to ${spaceId}`, 'purchase', undefined, undefined, spaceId))];
     case 'margin_loan_repayment': return [option(`Repay Margin Loan for ${pending.repaymentCost} Capital`, 'repay'), option(`Default and lose ${pending.collateralCardId}`, 'default')];
+    case 'battle_capital_gains': return pending.eligibleCardIds.map((cardId) => option(`Place ${cardId} in Treasury with Capital Gains`, cardId, cardId));
+    case 'battle_monetary_crisis': return pending.handOptions.map((cardId) => option(`Keep ${cardId}; discard the rest`, cardId, cardId));
     case 'leveraged_buyout_target': return pending.spaceOptions.map((spaceId) => option(`Buy the Deed to ${spaceId}`, 'select', undefined, undefined, spaceId));
     case 'leveraged_buyout_collateral': {
       const options: GuidedOption[] = [];

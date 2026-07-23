@@ -19,7 +19,7 @@ export interface GameState {
   players: Record<PlayerID, PlayerState>; board: BoardState; battle?: BattleState; recentBattleResult?: RecentBattleResult;
   pendingMilitaryChoice?: PendingMilitaryChoice; militaryChoiceQueue?: PendingMilitaryChoice[];
   pendingMilitaryTimingChoice?: PendingMilitaryTimingChoice; militaryTimingChoiceQueue?: PendingMilitaryTimingChoice[];
-  pendingDiplomatChoice?: PendingDiplomatChoice; pendingFinancierChoice?: PendingFinancierChoice;
+  pendingDiplomatChoice?: PendingDiplomatChoice; pendingFinancierChoice?: PendingFinancierChoice; financierChoiceQueue?: PendingFinancierChoice[];
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow; pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[]; winner?: PlayerID;
 }
