@@ -169,6 +169,6 @@ describe('Spies Battle effect', () => {
 
     continueIntelligenceBattle(state);
 
-    expect(state.players.player_1.intelligence?.activeMission?.evidence.some((entry) => entry.startsWith('spies:early-look:'))).toBe(true);
+    expect(state.players.player_1.intelligence?.activeMission?.evidence.some((entry) => entry.startsWith('spies:observed:battle-1:'))).toBe(true);
   });
 });
