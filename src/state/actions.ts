@@ -15,9 +15,12 @@ export type GameAction =
 export type StateAction = GameAction | ResolveBattleRevealAction | UseLeaderAbilityAction | PassLeaderAbilityWindowAction
   | ResolveMilitaryChoiceAction | ResolveMilitaryTimingChoiceAction | ResolveDiplomatChoiceAction
   | UseDiplomatCardAction | PlaceTreasuryCardAction | BeginDeedPurchaseAction
-  | BeginPlayTheMarketAction | UseHostileTakeoverAction | ResolveFinancierChoiceAction
-  | StartIntelligenceMissionAction | CompleteIntelligenceMissionAction | AbortIntelligenceMissionAction
-  | CompleteSpecialOperationAction;
+  | BeginPlayTheMarketAction | UseHostileTakeoverAction | ResolveFinancierChoiceAction;
+
+export type IntelligenceStateAction = StartIntelligenceMissionAction | CompleteIntelligenceMissionAction
+  | AbortIntelligenceMissionAction | CompleteSpecialOperationAction;
+
+export type AppStateAction = StateAction | IntelligenceStateAction;
 
 export interface DrawCardAction { type: 'draw_card'; playerId: PlayerID; count?: number; }
 export interface RevealSpaceAction { type: 'reveal_space'; playerId: PlayerID; spaceId: SpaceID; }
