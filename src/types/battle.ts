@@ -22,6 +22,7 @@ export interface BattlePlayedCard {
   faceDown: boolean;
   canceled: boolean;
   negated?: boolean;
+  earlyEffectResolved?: boolean;
   visibleTo?: PlayerID[];
 }
 
