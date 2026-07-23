@@ -1,12 +1,26 @@
 import { militaryCardDefinitions } from '../cards';
 import type { GameState, PlayerID } from '../types';
 import type { StateAction } from '../state';
-import { toPrivateGameView } from '../state';
+import { deedOwner, toPrivateGameView } from '../state';
 
 export interface GuidedOption { label: string; action: StateAction; sourceCardId?: string; cardText?: string; }
 export function activeViewer(game: GameState): PlayerID { return game.priorityPlayer ?? game.activePlayer; }
 function exactCardText(cardId: string): string | undefined { const card = militaryCardDefinitions.find((candidate) => candidate.id === cardId); if (!card) return undefined; const sections: string[] = [`${card.name} — Cost ${card.cost}`, `Action: ${card.action}`, `Battle: ${card.battle}`]; if (card.supplemental) sections.push(...card.supplemental); return sections.join('\n\n'); }
 function militaryOption(label: string, action: StateAction, sourceCardId: string): GuidedOption { return { label, action, sourceCardId, cardText: exactCardText(sourceCardId) }; }
+
+function pendingFinancierOptions(game: GameState, playerId: PlayerID): GuidedOption[] | undefined {
+  const pending = game.pendingFinancierChoice;
+  if (!pending || pending.playerId !== playerId) return undefined;
+  const option = (label: string, choice: string, cardId?: string, amount?: number): GuidedOption => ({ label, action: { type: 'resolve_financier_choice', playerId, choice, cardId, amount } });
+  switch (pending.kind) {
+    case 'play_the_market': return pending.options.map((roll) => option(`Roll ${roll} for ${pending.cardId}`, String(roll), undefined, roll));
+    case 'subsidize': return pending.options.map((bonus) => option(bonus === 0 ? 'Pass Subsidize' : `Subsidize for +${bonus}`, String(bonus), undefined, bonus));
+    case 'deed_purchase': return [
+      option(`Pay ${pending.cost} Capital`, 'capital'),
+      ...pending.collateralOptions.map((cardId) => option(`Use ${cardId} as collateral`, 'collateral', cardId)),
+    ];
+  }
+}
 
 function pendingDiplomatOptions(game: GameState, playerId: PlayerID): GuidedOption[] | undefined {
   const pending = game.pendingDiplomatChoice;
@@ -53,6 +67,7 @@ function pendingMilitaryOptions(game: GameState, playerId: PlayerID): GuidedOpti
 function adjacentSpaces(game: GameState, playerId: PlayerID) { const current = game.board.spaces.find((space) => space.occupant === playerId); if (!current) return []; return game.board.spaces.filter((space) => Math.abs(space.index - current.index) === 1); }
 export function buildGuidedOptions(game: GameState): GuidedOption[] {
   const playerId = activeViewer(game);
+  const financierPending = pendingFinancierOptions(game, playerId); if (financierPending) return financierPending;
   const diplomatPending = pendingDiplomatOptions(game, playerId); if (diplomatPending) return diplomatPending;
   const militaryPending = pendingMilitaryOptions(game, playerId); if (militaryPending) return militaryPending;
   const view = toPrivateGameView(game, playerId); const options: GuidedOption[] = [];
@@ -60,6 +75,15 @@ export function buildGuidedOptions(game: GameState): GuidedOption[] {
   if (game.pendingLeaderAbilityWindow?.playerId === playerId) { for (const ability of view.legalLeaderAbilities ?? []) options.push({ label: `Use ${ability.name}`, action: { type: 'use_leader_ability', playerId, abilityId: ability.abilityId } }); options.push({ label: 'Pass Leader ability window', action: { type: 'pass_leader_ability_window', playerId } }); return options; }
   if (game.phase === 'turn_start') options.push({ label: 'Draw 1 card', action: { type: 'draw_card', playerId } });
   if (game.phase === 'action_before_movement' || game.phase === 'action_after_movement') for (const play of view.legalActionPlays ?? []) options.push({ label: `Play Action ${play.cardId}`, action: { type: 'play_action_card', playerId, cardId: play.cardId } });
+  const player = game.players[playerId];
+  if (game.phase === 'action_after_movement' && player.factionId === 'financiers' && player.actionsRemaining > 0 && playerId === game.activePlayer) {
+    for (const cardId of player.zones.hand) {
+      options.push({ label: `Place ${cardId} in Treasury`, action: { type: 'place_treasury_card', playerId, cardId } });
+      options.push({ label: `Play the Market with ${cardId}`, action: { type: 'begin_play_the_market', playerId, cardId } });
+    }
+    for (const space of game.board.spaces.filter((candidate) => candidate.kind === 'territory' && deedOwner(game, candidate.id) !== playerId)) options.push({ label: `Buy Deed to ${space.id}`, action: { type: 'begin_deed_purchase', playerId, spaceId: space.id } });
+    if (player.financiers?.hostileTakeoverEligibleSpaceId) options.push({ label: `Hostile Takeover ${player.financiers.hostileTakeoverEligibleSpaceId}`, action: { type: 'use_hostile_takeover', playerId } });
+  }
   if (game.phase === 'movement') for (const space of adjacentSpaces(game, playerId)) options.push({ label: `Move to ${space.id}${space.occupant ? ` occupied by ${space.occupant}` : ''}`, action: { type: 'move_player', playerId, toSpaceId: space.id } });
   for (const play of view.battle?.legalBattlePlays ?? []) { if (play.action === 'commit_battle_hand_card' && play.cardId) options.push({ label: `Commit ${play.cardId} from hand`, action: { type: 'commit_battle_hand_card', playerId, cardId: play.cardId } }); else if (play.action === 'play_battle_draw_card' && play.cardId) options.push({ label: `Play battle-drawn ${play.cardId}`, action: { type: 'play_battle_draw_card', playerId, cardId: play.cardId } }); else if (play.action === 'pass_battle_hand_commit') options.push({ label: 'Pass hand commitment', action: { type: 'pass_battle_hand_commit', playerId } }); else if (play.action === 'pass_battle_draw_play') options.push({ label: 'Pass Battle Hand selection', action: { type: 'pass_battle_draw_play', playerId } }); }
   if (game.battle?.stage === 'battle_draw') options.push({ label: 'Draw Battle Hand', action: { type: 'draw_battle_cards', playerId } });

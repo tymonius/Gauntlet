@@ -9,6 +9,7 @@ export * from './diplomat-terms';
 export * from './diplomat-cards';
 export * from './diplomat-persistent';
 export * from './financiers';
+export * from './financier-integration';
 export * from './actions';
 export * from './draw';
 export { applyGameAction } from './apply';
