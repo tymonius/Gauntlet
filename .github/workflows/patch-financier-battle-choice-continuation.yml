@@ -1,0 +1,33 @@
+name: Patch Financier Battle choice continuation
+on:
+  push:
+    branches: [feature/financier-battle-acquisitions]
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: ${{ !contains(github.event.head_commit.message, '[battle-choice-continuation-patched]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/financier-battle-acquisitions
+          fetch-depth: 0
+      - name: Continue queued Battle choices
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path('src/state/apply.ts')
+          text = path.read_text()
+          old = "if (action.type === 'resolve_financier_choice') { const next = structuredClone(game); const wasBattleChoice = isFinancierBattleChoice(next.pendingFinancierChoice); if (!resolveFinancierBattleChoice(next, action) && !resolveFinancierAcquisitionChoice(next, action) && !resolveFinancierCardChoice(next, action)) resolveFinancierChoice(next, action); reconcileFinancierCardState(next); enforceDiplomatAssetLimits(next); if (wasBattleChoice && !next.pendingFinancierChoice && !next.pendingMilitaryChoice && next.recentBattleResult) openPostBattleOrderWindow(next, next.recentBattleResult.winner); runPostActionAutomationPipeline(next); return { state: next }; }"
+          new = "if (action.type === 'resolve_financier_choice') { const next = structuredClone(game); const wasBattleChoice = isFinancierBattleChoice(next.pendingFinancierChoice); if (!resolveFinancierBattleChoice(next, action) && !resolveFinancierAcquisitionChoice(next, action) && !resolveFinancierCardChoice(next, action)) resolveFinancierChoice(next, action); reconcileFinancierCardState(next); enforceDiplomatAssetLimits(next); if (wasBattleChoice && !next.pendingFinancierChoice) openNextFinancierChoice(next); if (wasBattleChoice && !next.pendingFinancierChoice && !next.pendingMilitaryChoice && next.recentBattleResult) openPostBattleOrderWindow(next, next.recentBattleResult.winner); runPostActionAutomationPipeline(next); return { state: next }; }"
+          if old not in text:
+              raise SystemExit('Financier Battle choice continuation target not found')
+          path.write_text(text.replace(old, new, 1))
+      - name: Commit patch
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add src/state/apply.ts
+          git commit -m "Continue queued Financier Battle choices [battle-choice-continuation-patched]"
+          git push origin HEAD:feature/financier-battle-acquisitions
