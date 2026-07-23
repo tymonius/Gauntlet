@@ -18,6 +18,16 @@ export interface DiplomatState {
   ratifiedProposals: ProposalID[];
   activeTerms?: ActiveTermsState;
   sanctionsAgainst?: Partial<Record<PlayerID, CardID[]>>;
+  termsCards?: {
+    setAsideCards: CardID[];
+    goodFaithCard?: CardID;
+    latitudeCard?: CardID;
+    nonbindingCard?: CardID;
+    tradeConcessionsCard?: CardID;
+    gunboatCard?: CardID;
+    neutralObserversUsed?: boolean;
+    safeConductAvailable?: boolean;
+  };
 }
 
 export interface ActiveTermsState {
@@ -44,4 +54,7 @@ export type PendingDiplomatChoice =
   | { kind: 'political_capital'; playerId: PlayerID; lostStake: number; handOptions: CardID[] }
   | { kind: 'mutual_disarmament'; playerId: PlayerID; diplomatId: PlayerID; opponentId: PlayerID; stage: 'diplomat' | 'opponent'; handOptions: CardID[] }
   | { kind: 'prisoner_exchange'; playerId: PlayerID; diplomatId: PlayerID; opponentId: PlayerID; stage: 'diplomat' | 'opponent'; graveyardOptions: CardID[]; optional: true }
-  | { kind: 'rebuilding_pact'; playerId: PlayerID; diplomatId: PlayerID; opponentId: PlayerID; stage: 'diplomat' | 'opponent'; handOptions: CardID[]; optional: true };
+  | { kind: 'rebuilding_pact'; playerId: PlayerID; diplomatId: PlayerID; opponentId: PlayerID; stage: 'diplomat' | 'opponent'; handOptions: CardID[]; optional: true }
+  | { kind: 'trade_concessions'; playerId: PlayerID; diplomatId: PlayerID; options: Array<'draw_two' | 'bank_asset'> }
+  | { kind: 'nonbinding_resolution'; playerId: PlayerID; diplomatId: PlayerID; proposalId: ProposalID; options: Array<'ratify' | 'decline_ratification'> }
+  | { kind: 'latitude_refusal'; playerId: PlayerID; diplomatId: PlayerID; proposalIds: ProposalID[] };
