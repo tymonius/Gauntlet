@@ -32,6 +32,9 @@ export function toPublicPlayerView(player: PlayerState): PublicPlayerView {
     leaderName: player.leaderName,
     resources: structuredClone(player.resources),
     leaderAbilityUsage: structuredClone(player.leaderAbilityUsage),
+    military: structuredClone(player.military),
+    diplomats: structuredClone(player.diplomats),
+    financiers: structuredClone(player.financiers),
     zones: {
       deck: hidden(player.zones.deck),
       hand: hidden(player.zones.hand),
@@ -103,62 +106,32 @@ function validBattleCardTargetsForViewer(battle: BattleState, viewer?: PlayerID)
   })));
 }
 
-function hasPendingAssetBankDiscard(game: GameState): boolean {
-  return Object.keys(game.pendingAssetBankDiscards ?? {}).length > 0;
-}
-
-function legalActionPlaysForViewer(game: GameState, viewer?: PlayerID): LegalActionPlayOption[] | undefined {
-  if (!viewer || hasPendingAssetBankDiscard(game) || game.activePlayer !== viewer) return undefined;
-  if (game.phase !== 'action_before_movement' && game.phase !== 'action_after_movement') return undefined;
-  const player = game.players[viewer];
-  if (!player || player.actionsRemaining < 1 || player.hasPlayedActionThisTurn || player.hasPlayedBattleThisTurn) return undefined;
-  const options = player.zones.hand
-    .filter((cardId) => cardCanBePlayedAt(cardId, 'action', 'hand'))
-    .map((cardId): LegalActionPlayOption => ({
-      action: 'play_action_card',
-      cardId,
-      origin: 'hand',
-      destination: destinationForCardPlay(cardId, 'hand'),
-      requiresTarget: getCardPlayRule(cardId)?.requiresTarget ?? false,
-    }));
-  return options.length > 0 ? options : undefined;
-}
-
-function legalBattlePlaysForViewer(game: GameState, battle: BattleState, viewer?: PlayerID): BattlePlayOption[] | undefined {
-  if (hasPendingAssetBankDiscard(game)) return undefined;
-  const viewerParticipant = battleParticipantForViewer(battle, viewer);
-  const player = viewer ? game.players[viewer] : undefined;
-  if (!viewerParticipant || !player) return undefined;
-  if (battle.stage === 'hand_commit') {
-    if (viewerParticipant.passedHandCommit || viewerParticipant.handCommit) return undefined;
+function legalBattlePlaysForViewer(battle: BattleState, game: GameState, viewer?: PlayerID): BattlePlayOption[] | undefined {
+  const participant = battleParticipantForViewer(battle, viewer);
+  if (!participant || !viewer || game.priorityPlayer !== viewer) return undefined;
+  if (battle.stage === 'hand_commit' && !participant.passedHandCommit && !participant.handCommit) {
     return [
-      ...player.zones.hand
-        .filter((cardId) => cardCanBePlayedAt(cardId, 'battle_hand_commit', 'hand'))
-        .map((cardId): BattlePlayOption => ({ action: 'commit_battle_hand_card', cardId, origin: 'hand' })),
-      { action: 'pass_battle_hand_commit' },
+      ...game.players[viewer].zones.hand.filter((cardId) => cardCanBePlayedAt(cardId, 'battle_hand_commit', 'hand')).map((cardId) => ({ action: 'commit_battle_hand_card' as const, cardId, origin: 'hand' as const })),
+      { action: 'pass_battle_hand_commit' as const },
     ];
   }
-  if (battle.stage === 'battle_play_selection') {
-    const playSlotsRemaining = Math.max(viewerParticipant.battleDrawPlayLimit - viewerParticipant.battleDrawPlayed.length, 0);
-    const playableCards = playSlotsRemaining > 0
-      ? viewerParticipant.battleDraw
-        .filter((cardId) => cardCanBePlayedAt(cardId, 'battle_draw_play', 'battle_draw'))
-        .map((cardId): BattlePlayOption => ({ action: 'play_battle_draw_card', cardId, origin: 'battle_draw' }))
-      : [];
-    if (viewerParticipant.passedBattleDrawPlay || playableCards.length === 0 && playSlotsRemaining === 0) return undefined;
-    return [...playableCards, { action: 'pass_battle_draw_play' }];
+  if (battle.stage === 'battle_play_selection' && !participant.passedBattleDrawPlay && participant.battleDrawPlayed.length < participant.battleDrawPlayLimit) {
+    return [
+      ...participant.battleDraw.filter((cardId) => cardCanBePlayedAt(cardId, 'battle_draw_play', 'battle_draw')).map((cardId) => ({ action: 'play_battle_draw_card' as const, cardId, origin: 'battle_draw' as const })),
+      { action: 'pass_battle_draw_play' as const },
+    ];
   }
   return undefined;
 }
 
-function toPublicBattleParticipantView(participant: BattleState['attacker'], viewer?: PlayerID): PublicBattleParticipantView {
+function toBattleParticipantView(participant: BattleParticipantState, viewer?: PlayerID): PublicBattleParticipantView {
   return {
     playerId: participant.playerId,
     passedHandCommit: participant.passedHandCommit,
     passedBattleDrawPlay: participant.passedBattleDrawPlay,
     handCommit: revealPlayedCardToViewer(participant.handCommit, viewer),
-    battleDrawCount: participant.battleDraw.length,
-    battleDrawPlayed: participant.battleDrawPlayed.map((card) => revealPlayedCardToViewer(card, viewer)!),
+    battleDrawCount: participant.battleDrawCount,
+    battleDrawPlayed: participant.battleDrawPlayed.map((card) => revealPlayedCardToViewer(card, viewer)!).filter(Boolean),
     battleDrawLimit: participant.battleDrawCount,
     battleDrawPlayLimit: participant.battleDrawPlayLimit,
     diceRoll: participant.diceRoll,
@@ -167,59 +140,46 @@ function toPublicBattleParticipantView(participant: BattleState['attacker'], vie
   };
 }
 
-export function toPublicBattleView(game: GameState, battle: BattleState, viewer?: PlayerID): PublicBattleView {
+export function toPublicBattleView(battle: BattleState, game?: GameState): PublicBattleView {
   return {
     id: battle.id,
     stage: battle.stage,
     location: battle.location,
     attackerOrigin: battle.attackerOrigin,
-    attacker: toPublicBattleParticipantView(battle.attacker, viewer),
-    defender: toPublicBattleParticipantView(battle.defender, viewer),
+    attacker: toBattleParticipantView(battle),
+    defender: toBattleParticipantView(battle),
     tiePolicy: battle.tiePolicy,
-    validBattleCardTargets: validBattleCardTargetsForViewer(battle, viewer),
-    legalBattlePlays: legalBattlePlaysForViewer(game, battle, viewer),
+    lastStand: battle.lastStand,
     winner: battle.winner,
     loser: battle.loser,
   };
 }
 
-function visibleLogFor(events: GameEvent[], viewer?: PlayerID): GameEvent[] {
-  return events.filter((event) => {
-    if (event.visibility === 'public') return true;
-    if (event.visibility === 'system') return viewer === undefined;
-    return viewer !== undefined && event.visibleTo?.includes(viewer);
-  });
+export function toPrivateBattleView(battle: BattleState, game: GameState, viewer: PlayerID): PublicBattleView {
+  return {
+    ...toPublicBattleView(battle, game),
+    attacker: toBattleParticipantView(battle.attacker, viewer),
+    defender: toBattleParticipantView(battle.defender, viewer),
+    validBattleCardTargets: validBattleCardTargetsForViewer(battle, viewer),
+    legalBattlePlays: legalBattlePlaysForViewer(battle, game, viewer),
+  };
+}
+
+function legalActionPlaysForViewer(game: GameState, viewer?: PlayerID): LegalActionPlayOption[] | undefined {
+  if (!viewer || game.activePlayer !== viewer || game.priorityPlayer !== viewer) return undefined;
+  if (game.phase !== 'action_before_movement' && game.phase !== 'action_after_movement') return undefined;
+  const player = game.players[viewer];
+  if (player.actionsRemaining < 1 || player.hasPlayedActionThisTurn) return undefined;
+  return player.zones.hand
+    .filter((cardId) => cardCanBePlayedAt(cardId, 'action', 'hand'))
+    .map((cardId) => ({ action: 'play_action_card' as const, cardId, origin: 'hand' as const, destination: destinationForCardPlay(cardId, 'hand'), requiresTarget: getCardPlayRule(cardId)?.requiresTarget ?? false }));
 }
 
 export function toPublicGameView(game: GameState): PublicGameView {
-  return {
-    id: game.id,
-    version: game.version,
-    phase: game.phase,
-    turn: game.turn,
-    activePlayer: game.activePlayer,
-    priorityPlayer: game.priorityPlayer,
-    players: Object.fromEntries(Object.entries(game.players).map(([id, player]) => [id, toPublicPlayerView(player)])),
-    board: toPublicBoardView(game.board),
-    battle: game.battle ? toPublicBattleView(game, game.battle) : undefined,
-    pendingAssetBankDiscards: game.pendingAssetBankDiscards,
-    log: visibleLogFor(game.log),
-    winner: game.winner,
-  };
+  return { id: game.id, version: game.version, phase: game.phase, turn: game.turn, activePlayer: game.activePlayer, priorityPlayer: game.priorityPlayer, players: Object.fromEntries(Object.values(game.players).map((player) => [player.id, toPublicPlayerView(player)])), board: toPublicBoardView(game.board), battle: game.battle ? toPublicBattleView(game.battle, game) : undefined, pendingMilitaryChoice: game.pendingMilitaryChoice, pendingMilitaryTimingChoice: game.pendingMilitaryTimingChoice, pendingDiplomatChoice: game.pendingDiplomatChoice, pendingLeaderAbilityWindow: game.pendingLeaderAbilityWindow, pendingAssetBankDiscards: game.pendingAssetBankDiscards, log: game.log.map((event): GameEvent => ({ ...event })), winner: game.winner };
 }
 
 export function toPrivateGameView(game: GameState, viewer: PlayerID): PrivateGameView {
-  const abilities = legalLeaderAbilitiesFor(game, viewer);
-  return {
-    ...toPublicGameView(game),
-    viewer,
-    players: Object.fromEntries(Object.entries(game.players).map(([id, player]) => [
-      id,
-      id === viewer ? toPrivatePlayerView(player) : toPublicPlayerView(player),
-    ])),
-    battle: game.battle ? toPublicBattleView(game, game.battle, viewer) : undefined,
-    legalActionPlays: legalActionPlaysForViewer(game, viewer),
-    legalLeaderAbilities: abilities.length > 0 ? abilities : undefined,
-    log: visibleLogFor(game.log, viewer),
-  };
+  const publicView = toPublicGameView(game);
+  return { ...publicView, viewer, players: { ...publicView.players, [viewer]: toPrivatePlayerView(game.players[viewer]) }, battle: game.battle ? toPrivateBattleView(game.battle, game, viewer) : undefined, legalActionPlays: legalActionPlaysForViewer(game, viewer), legalLeaderAbilities: legalLeaderAbilitiesFor(game, viewer) };
 }
