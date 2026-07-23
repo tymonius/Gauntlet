@@ -104,4 +104,54 @@ export type PendingIntelligenceChoice =
       returnedMissionCardId: CardID;
       eligibleCardIds: CardID[];
       options: ['select'];
+    }
+  | {
+      kind: 'exfiltration';
+      playerId: PlayerID;
+      battleId?: never;
+      after: 'complete' | 'abort';
+      options: ['pass', 'use'];
+    }
+  | {
+      kind: 'reconnaissance';
+      playerId: PlayerID;
+      battleId: string;
+      opponentId: PlayerID;
+      options: ['pass', 'use'];
+      resumePriorityPlayer?: PlayerID;
+    }
+  | {
+      kind: 'reconnaissance_withdraw';
+      playerId: PlayerID;
+      battleId: string;
+      opponentId: PlayerID;
+      inspectedHand: CardID[];
+      options: ['stay', 'withdraw'];
+      resumePriorityPlayer?: PlayerID;
+    }
+  | {
+      kind: 'intercepted_orders';
+      playerId: PlayerID;
+      battleId: string;
+      targetOwner: PlayerID;
+      battleHand: CardID[];
+      options: ['pass', 'use'];
+      resumePriorityPlayer?: PlayerID;
+    }
+  | {
+      kind: 'intercepted_orders_select';
+      playerId: PlayerID;
+      battleId: string;
+      targetOwner: PlayerID;
+      battleHandOptions: CardID[];
+      options: ['select'];
+      resumePriorityPlayer?: PlayerID;
+    }
+  | {
+      kind: 'deep_cover';
+      playerId: PlayerID;
+      battleId?: never;
+      missionCardId: CardID;
+      reason: string;
+      options: ['pass', 'use'];
     };
