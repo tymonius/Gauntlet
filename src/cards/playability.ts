@@ -28,8 +28,6 @@ const actionOnly = (cardId: CardID, destination: CardDestination, requiresTarget
   requiresTarget,
 });
 
-const disabled = (cardId: CardID): CardPlayRule => ({ cardId, timings: [], allowedOrigins: [], defaultDestinationByOrigin: {} });
-
 export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'card-attrition': battleAndAction('card-attrition', 'asset_bank'),
   'card-conscription': { cardId: 'card-conscription', timings: ['battle_hand_commit', 'battle_draw_play'], allowedOrigins: ['hand', 'battle_draw'], defaultDestinationByOrigin: { hand: 'graveyard', battle_draw: 'discard' } },
@@ -66,10 +64,10 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'financiers-tariffs': actionOnly('financiers-tariffs', 'asset_bank'),
   'financiers-divestment': actionOnly('financiers-divestment', 'discard', true),
   'financiers-margin-loan': actionOnly('financiers-margin-loan', 'asset_bank', true),
-  'financiers-leveraged-buyout': disabled('financiers-leveraged-buyout'),
+  'financiers-leveraged-buyout': actionOnly('financiers-leveraged-buyout', 'discard'),
   'financiers-foreclosure': actionOnly('financiers-foreclosure', 'discard', true),
   'financiers-property-dues': actionOnly('financiers-property-dues', 'asset_bank'),
-  'financiers-corner-the-market': disabled('financiers-corner-the-market'),
+  'financiers-corner-the-market': actionOnly('financiers-corner-the-market', 'discard'),
 };
 
 export function getCardPlayRule(cardId: CardID): CardPlayRule | undefined { return coreCardPlayRules[cardId]; }

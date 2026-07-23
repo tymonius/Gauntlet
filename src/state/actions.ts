@@ -30,7 +30,7 @@ export interface PlaceTreasuryCardAction { type: 'place_treasury_card'; playerId
 export interface BeginDeedPurchaseAction { type: 'begin_deed_purchase'; playerId: PlayerID; spaceId: SpaceID; }
 export interface BeginPlayTheMarketAction { type: 'begin_play_the_market'; playerId: PlayerID; cardId: CardID; }
 export interface UseHostileTakeoverAction { type: 'use_hostile_takeover'; playerId: PlayerID; }
-export interface ResolveFinancierChoiceAction { type: 'resolve_financier_choice'; playerId: PlayerID; choice: string; cardId?: CardID; amount?: number; spaceId?: SpaceID; }
+export interface ResolveFinancierChoiceAction { type: 'resolve_financier_choice'; playerId: PlayerID; choice: string; cardId?: CardID; cardIds?: CardID[]; amount?: number; spaceId?: SpaceID; }
 export interface ResolveAssetBankDiscardAction { type: 'resolve_asset_bank_discard'; playerId: PlayerID; cardIds: CardID[]; }
 export interface MovePlayerAction { type: 'move_player'; playerId: PlayerID; toSpaceId: SpaceID; cardId?: CardID; }
 export interface CommitBattleHandCardAction { type: 'commit_battle_hand_card'; playerId: PlayerID; cardId: CardID; }
