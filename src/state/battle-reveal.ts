@@ -1,6 +1,7 @@
 import { EffectRegistry, baseBattleEffectHandlers, totalModifiersFor } from '../effects';
 import type { CardID, GameEvent, GameState, PlayerID } from '../types';
 import type { ResolveBattleRevealAction } from './actions';
+import { applySubversionBattleRestrictions } from './intelligence-subversion-battle';
 import { GameActionError, type ApplyGameActionResult } from './reducer';
 
 function log(game: GameState, actor: PlayerID, type: string, message: string, payload?: unknown): void {
@@ -55,6 +56,7 @@ export function resolveBattleReveal(game: GameState, action: ResolveBattleReveal
     throw new GameActionError('Resolve pending Asset Bank discard choices first.');
   }
 
+  applySubversionBattleRestrictions(game);
   const effectResult = new EffectRegistry(baseBattleEffectHandlers).resolve({
     game,
     battle,
