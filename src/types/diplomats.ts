@@ -14,10 +14,20 @@ export interface ProposalDefinition {
   refused: string;
 }
 
+export interface DiplomatSanctionState {
+  cardId: CardID;
+  diplomatId: PlayerID;
+  opponentId: PlayerID;
+  territoryId?: string;
+  spaceId?: SpaceID;
+  censureLastTriggeredTurn?: number;
+}
+
 export interface DiplomatState {
   ratifiedProposals: ProposalID[];
   activeTerms?: ActiveTermsState;
   sanctionsAgainst?: Partial<Record<PlayerID, CardID[]>>;
+  sanctionStates?: DiplomatSanctionState[];
   termsCards?: {
     setAsideCards: CardID[];
     goodFaithCard?: CardID;
@@ -57,4 +67,8 @@ export type PendingDiplomatChoice =
   | { kind: 'rebuilding_pact'; playerId: PlayerID; diplomatId: PlayerID; opponentId: PlayerID; stage: 'diplomat' | 'opponent'; handOptions: CardID[]; optional: true }
   | { kind: 'trade_concessions'; playerId: PlayerID; diplomatId: PlayerID; options: Array<'draw_two' | 'bank_asset'> }
   | { kind: 'nonbinding_resolution'; playerId: PlayerID; diplomatId: PlayerID; proposalId: ProposalID; options: Array<'ratify' | 'decline_ratification'> }
-  | { kind: 'latitude_refusal'; playerId: PlayerID; diplomatId: PlayerID; proposalIds: ProposalID[] };
+  | { kind: 'latitude_refusal'; playerId: PlayerID; diplomatId: PlayerID; proposalIds: ProposalID[] }
+  | { kind: 'clemency'; playerId: PlayerID; diplomatId: PlayerID; cardId: CardID; options: Array<'release' | 'leave'> }
+  | { kind: 'censure'; playerId: PlayerID; diplomatId: PlayerID; options: Array<'discard' | 'diplomat_draw'> }
+  | { kind: 'demilitarized_zone_upkeep'; playerId: PlayerID; diplomatId: PlayerID; spaceId: SpaceID; options: Array<'discard' | 'withdraw'> }
+  | { kind: 'sanction_movement'; playerId: PlayerID; diplomatId: PlayerID; cardId: CardID; spaceId: SpaceID; options: Array<'discard' | 'influence'> };
