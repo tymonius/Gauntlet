@@ -13,7 +13,8 @@ export type GameAction =
   | RollBattleDieAction | ResolveBattleAction | EndTurnAction;
 
 export type StateAction = GameAction | UseLeaderAbilityAction | PassLeaderAbilityWindowAction
-  | ResolveMilitaryChoiceAction | ResolveMilitaryTimingChoiceAction | ResolveDiplomatChoiceAction;
+  | ResolveMilitaryChoiceAction | ResolveMilitaryTimingChoiceAction | ResolveDiplomatChoiceAction
+  | UseDiplomatCardAction;
 
 export interface DrawCardAction { type: 'draw_card'; playerId: PlayerID; count?: number; }
 export interface RevealSpaceAction { type: 'reveal_space'; playerId: PlayerID; spaceId: SpaceID; }
@@ -22,9 +23,10 @@ export interface UseLeaderAbilityAction { type: 'use_leader_ability'; playerId: 
 export interface PassLeaderAbilityWindowAction { type: 'pass_leader_ability_window'; playerId: PlayerID; }
 export interface ResolveMilitaryChoiceAction { type: 'resolve_military_choice'; playerId: PlayerID; choice: string; cardId?: CardID; }
 export interface ResolveMilitaryTimingChoiceAction { type: 'resolve_military_timing_choice'; playerId: PlayerID; choice: string; cardId?: CardID; secondaryCardId?: CardID; }
-export interface ResolveDiplomatChoiceAction { type: 'resolve_diplomat_choice'; playerId: PlayerID; choice: string; proposalId?: ProposalID; amount?: number; cardIds?: CardID[]; }
+export interface ResolveDiplomatChoiceAction { type: 'resolve_diplomat_choice'; playerId: PlayerID; choice: string; proposalId?: ProposalID; amount?: number; cardIds?: CardID[]; cardId?: CardID; opponentId?: PlayerID; spaceId?: SpaceID; }
+export interface UseDiplomatCardAction { type: 'use_diplomat_card'; playerId: PlayerID; cardId: CardID; opponentId?: PlayerID; targetCardId?: CardID; spaceId?: SpaceID; proposalId?: ProposalID; }
 export interface ResolveAssetBankDiscardAction { type: 'resolve_asset_bank_discard'; playerId: PlayerID; cardIds: CardID[]; }
-export interface MovePlayerAction { type: 'move_player'; playerId: PlayerID; toSpaceId: SpaceID; }
+export interface MovePlayerAction { type: 'move_player'; playerId: PlayerID; toSpaceId: SpaceID; cardId?: CardID; }
 export interface CommitBattleHandCardAction { type: 'commit_battle_hand_card'; playerId: PlayerID; cardId: CardID; }
 export interface PassBattleHandCommitAction { type: 'pass_battle_hand_commit'; playerId: PlayerID; }
 export interface DrawBattleCardsAction { type: 'draw_battle_cards'; playerId: PlayerID; count?: number; }
