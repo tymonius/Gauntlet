@@ -12,6 +12,7 @@ import {
   resolveDisinformationPreRevealCard,
 } from './intelligence-simple-battle-effects';
 import { resolveSpiesPreRevealCard } from './intelligence-spies-battle';
+import { resolveTreasonPreRevealCard } from './intelligence-treason';
 
 const EARLY_BATTLE_CARDS = {
   spies: 'intelligence-spies',
@@ -20,6 +21,7 @@ const EARLY_BATTLE_CARDS = {
   interceptedOrders: 'intelligence-intercepted-orders',
   reconnaissance: 'intelligence-reconnaissance',
   assassins: 'intelligence-assassins',
+  treason: 'intelligence-treason',
 } as const;
 
 type EarlyBattleCardId = typeof EARLY_BATTLE_CARDS[keyof typeof EARLY_BATTLE_CARDS];
@@ -39,7 +41,8 @@ function isEarlyCard(card: BattlePlayedCard): card is BattlePlayedCard & { cardI
     || card.cardId === EARLY_BATTLE_CARDS.fogOfWar
     || card.cardId === EARLY_BATTLE_CARDS.interceptedOrders
     || card.cardId === EARLY_BATTLE_CARDS.reconnaissance
-    || card.cardId === EARLY_BATTLE_CARDS.assassins;
+    || card.cardId === EARLY_BATTLE_CARDS.assassins
+    || card.cardId === EARLY_BATTLE_CARDS.treason;
 }
 
 function unresolvedSource(participant: BattleParticipantState): PreRevealSource | undefined {
@@ -66,7 +69,8 @@ function incomingBattleHandCardRequiresEarlyReveal(cardId?: CardID): boolean {
     || cardId === EARLY_BATTLE_CARDS.fogOfWar
     || cardId === EARLY_BATTLE_CARDS.interceptedOrders
     || cardId === EARLY_BATTLE_CARDS.reconnaissance
-    || cardId === EARLY_BATTLE_CARDS.assassins;
+    || cardId === EARLY_BATTLE_CARDS.assassins
+    || cardId === EARLY_BATTLE_CARDS.treason;
 }
 
 export function battleHasUnresolvedIntelligencePreReveal(
@@ -96,6 +100,8 @@ export function openNextIntelligencePreRevealWindow(game: GameState): boolean {
       resolveAssassinsPreRevealCard(game, source.participant, source.card);
     } else if (source.card.cardId === EARLY_BATTLE_CARDS.disinformation) {
       resolveDisinformationPreRevealCard(game, source.participant, source.card);
+    } else if (source.card.cardId === EARLY_BATTLE_CARDS.treason) {
+      resolveTreasonPreRevealCard(game, source.participant, source.card);
     }
   }
 }
