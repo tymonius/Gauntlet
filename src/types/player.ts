@@ -3,6 +3,7 @@ import type { LeaderAbilityUsageState } from './leader';
 import type { MilitaryCardState } from './military';
 import type { DiplomatState } from './diplomats';
 import type { FinancierState } from './financiers';
+import type { IntelligenceState, PublicIntelligenceState } from './intelligence';
 import type { FactionResourceMap } from './resources';
 import type { PrivateZones, PublicZoneView } from './zones';
 
@@ -17,6 +18,7 @@ export interface PlayerState {
   military?: MilitaryCardState;
   diplomats?: DiplomatState;
   financiers?: FinancierState;
+  intelligence?: IntelligenceState;
   zones: PrivateZones;
   controlledTerritories: TerritoryID[];
   occupiedSpaceId?: string;
@@ -36,6 +38,7 @@ export interface PublicPlayerView {
   military?: MilitaryCardState;
   diplomats?: DiplomatState;
   financiers?: FinancierState;
+  intelligence?: PublicIntelligenceState;
   zones: { deck: PublicZoneView; hand: PublicZoneView; discard: PublicZoneView; graveyard: PublicZoneView; assetBank: PublicZoneView; removed: PublicZoneView; };
   controlledTerritoryCount: number;
   controlledTerritories: TerritoryID[];
@@ -44,6 +47,7 @@ export interface PublicPlayerView {
   movementRemaining: number;
 }
 
-export interface PrivatePlayerView extends PublicPlayerView {
+export interface PrivatePlayerView extends Omit<PublicPlayerView, 'intelligence'> {
+  intelligence?: IntelligenceState;
   private: { deck: CardID[]; hand: CardID[]; };
 }
