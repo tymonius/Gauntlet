@@ -11,6 +11,7 @@ export * from './diplomat-persistent';
 export * from './financiers';
 export * from './financier-integration';
 export * from './financier-cards';
+export * from './financier-acquisition-cards';
 export * from './actions';
 export * from './draw';
 export { applyGameAction } from './apply';
