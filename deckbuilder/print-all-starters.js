@@ -195,6 +195,8 @@
     const first = parsed[0];
     if (!first) throw new Error("No starter Deck print documents were generated.");
 
+    parsed.forEach(frameIntelligencePortraits);
+
     const links = [...first.head.querySelectorAll("link")].map(link => link.outerHTML).join("\n");
     const styles = [...new Set(parsed.flatMap(documentNode =>
       [...documentNode.head.querySelectorAll("style")].map(style => style.textContent)
@@ -228,6 +230,36 @@ ${bodies}
 <script>${printScript}<\/script>
 </body>
 </html>`;
+  }
+
+  function frameIntelligencePortraits(documentNode) {
+    documentNode.querySelectorAll(".leader-card .leader-art img").forEach(image => {
+      const leaderName = String(image.getAttribute("alt") || "").trim().toLowerCase();
+      if (leaderName !== "ranger" && leaderName !== "spymaster") return;
+
+      const card = image.closest(".leader-card");
+      const art = image.closest(".leader-art");
+      if (!card || !art) return;
+
+      card.classList.add("intelligence-leader-card", `${leaderName}-leader-card`);
+      card.style.setProperty("grid-template-rows", "1.37in 1fr .16in", "important");
+      art.style.setProperty("height", "1.37in", "important");
+      art.style.setProperty("min-height", "1.37in", "important");
+      art.style.setProperty("max-height", "1.37in", "important");
+
+      image.style.setProperty("position", "absolute", "important");
+      image.style.setProperty("left", "0", "important");
+      image.style.setProperty("right", "auto", "important");
+      image.style.setProperty("top", leaderName === "ranger" ? "-.015in" : "-.01in", "important");
+      image.style.setProperty("bottom", "auto", "important");
+      image.style.setProperty("width", "100%", "important");
+      image.style.setProperty("height", "auto", "important");
+      image.style.setProperty("min-width", "100%", "important");
+      image.style.setProperty("max-width", "none", "important");
+      image.style.setProperty("object-fit", "fill", "important");
+      image.style.setProperty("object-position", "initial", "important");
+      image.style.setProperty("transform", "none", "important");
+    });
   }
 
   function escapeHtml(value) {
