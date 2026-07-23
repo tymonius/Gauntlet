@@ -4,8 +4,8 @@
     Executive: "../images/executive.png",
     Alchemist: "../images/alchemist.png",
     "Spirit Walker": "../images/spirit walker.png",
-    Ranger: "../images/leader-cards/ranger.jpg",
-    Spymaster: "../images/leader-cards/spymaster.jpg"
+    Ranger: "../images/ranger.png",
+    Spymaster: "../images/spymaster.png"
   };
 
   document.querySelectorAll(".leader-card").forEach(card => {
