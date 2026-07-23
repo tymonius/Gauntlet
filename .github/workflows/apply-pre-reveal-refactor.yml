@@ -1,0 +1,59 @@
+name: Apply pre-reveal scheduler refactor
+
+on:
+  push:
+    branches:
+      - refactor/intelligence-pre-reveal-order
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: refactor/intelligence-pre-reveal-order
+          fetch-depth: 0
+
+      - name: Patch shared scheduler integration
+        shell: python
+        run: |
+          from pathlib import Path
+
+          battle = Path('src/state/intelligence-battle.ts')
+          text = battle.read_text()
+          text = text.replace(
+              "import { battleHasUnresolvedFogOfWar, openNextFogOfWarBattleWindow } from './intelligence-fog-of-war-battle';\nimport { battleHasUnresolvedSpies, openNextSpiesBattleWindow } from './intelligence-spies-battle';",
+              "import { battleHasUnresolvedIntelligencePreReveal, openNextIntelligencePreRevealWindow } from './intelligence-pre-reveal';",
+          )
+          text = text.replace(
+              "  if (openNextFogOfWarBattleWindow(game)) return;\n  if (openNextSpiesBattleWindow(game)) return;",
+              "  if (openNextIntelligencePreRevealWindow(game)) return;",
+          )
+          text = text.replace(
+              "  return battleHasUnresolvedFogOfWar(game, incomingCardId)\n    || battleHasUnresolvedSpies(game, incomingCardId);",
+              "  return battleHasUnresolvedIntelligencePreReveal(game, incomingCardId);",
+          )
+          battle.write_text(text)
+
+          index = Path('src/state/index.ts')
+          text = index.read_text()
+          if "export * from './intelligence-pre-reveal';" not in text:
+              text = text.replace(
+                  "export * from './intelligence-fog-of-war-battle';\n",
+                  "export * from './intelligence-fog-of-war-battle';\nexport * from './intelligence-pre-reveal';\n",
+              )
+          index.write_text(text)
+
+          Path('.github/workflows/apply-pre-reveal-refactor.yml').unlink()
+
+      - name: Commit integration
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add src/state/intelligence-battle.ts src/state/index.ts .github/workflows/apply-pre-reveal-refactor.yml
+          git commit -m "Integrate unified Intelligence pre-reveal scheduler"
+          git push origin HEAD:refactor/intelligence-pre-reveal-order
