@@ -2,7 +2,7 @@ import type { GameState } from '../types';
 import type { AppStateAction } from './actions';
 import { applyGameAction as applyPostRevealGameAction } from './apply-post-reveal';
 import {
-  exfiltrationBattlePlayers,
+  exfiltrationBattleUses,
   openExfiltrationBattleWindow,
   resolveExfiltrationBattleChoice,
 } from './intelligence-exfiltration-battle';
@@ -20,9 +20,9 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
 
   if (action.type === 'resolve_battle') {
     const battleId = game.battle?.id;
-    const eligiblePlayers = exfiltrationBattlePlayers(game);
+    const usesByPlayer = exfiltrationBattleUses(game);
     const result = applyPostRevealGameAction(game, action);
-    if (battleId) openExfiltrationBattleWindow(result.state, eligiblePlayers, battleId);
+    if (battleId) openExfiltrationBattleWindow(result.state, usesByPlayer, battleId);
     return result;
   }
 
