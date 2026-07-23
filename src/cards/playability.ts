@@ -54,6 +54,19 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'diplomats-sanctions-embargo': actionOnly('diplomats-sanctions-embargo', 'asset_bank'),
   'diplomats-demilitarized-zone': actionOnly('diplomats-demilitarized-zone', 'removed'),
   'diplomats-sanctions-blockade': actionOnly('diplomats-sanctions-blockade', 'removed'),
+
+  'financiers-speculation': battleAndAction('financiers-speculation', 'removed', true),
+  'financiers-monetary-crisis': battleAndAction('financiers-monetary-crisis', 'discard'),
+  'financiers-liquidation': battleAndAction('financiers-liquidation', 'discard', true),
+  'financiers-underwriting': battleAndAction('financiers-underwriting', 'asset_bank'),
+  'financiers-capital-gains': battleAndAction('financiers-capital-gains', 'removed', true),
+  'financiers-tariffs': battleAndAction('financiers-tariffs', 'asset_bank'),
+  'financiers-divestment': battleAndAction('financiers-divestment', 'discard', true),
+  'financiers-margin-loan': battleAndAction('financiers-margin-loan', 'asset_bank', true),
+  'financiers-leveraged-buyout': battleAndAction('financiers-leveraged-buyout', 'discard', true),
+  'financiers-foreclosure': battleAndAction('financiers-foreclosure', 'discard', true),
+  'financiers-property-dues': battleAndAction('financiers-property-dues', 'asset_bank'),
+  'financiers-corner-the-market': battleAndAction('financiers-corner-the-market', 'discard'),
 };
 
 export function getCardPlayRule(cardId: CardID): CardPlayRule | undefined { return coreCardPlayRules[cardId]; }
