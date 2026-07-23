@@ -55,6 +55,20 @@ export interface BattlePlayOption {
   origin?: 'hand' | 'battle_draw';
 }
 
+export interface ResolvedBattleModifier {
+  playerId: PlayerID;
+  source: string;
+  amount: number;
+  reason: string;
+}
+
+export interface ResolvedBattleCancellation {
+  cardId: CardID;
+  owner: PlayerID;
+  source: string;
+  reason: string;
+}
+
 export interface BattleState {
   id: string;
   stage: BattleStage;
@@ -68,6 +82,8 @@ export interface BattleState {
   winner?: PlayerID;
   loser?: PlayerID;
   effectsResolved: string[];
+  resolvedModifiers?: ResolvedBattleModifier[];
+  resolvedCancellations?: ResolvedBattleCancellation[];
 }
 
 export interface PublicBattleParticipantView {
