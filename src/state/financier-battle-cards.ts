@@ -1,13 +1,16 @@
 import type { ResolveFinancierChoiceAction } from './actions';
 import type { BattlePlayedCard, BattleState, CardID, GameEvent, GameState, PendingFinancierChoice, PlayerID } from '../types';
-import { deedOwner } from './financiers';
+import { buildCornerTheMarketChoice } from './financier-acquisition-cards';
+import { buyDeed, cardValue, checkControllingInterest, deedCost, deedOwner } from './financiers';
 import { gainFactionResource } from './resources';
 
 export const FINANCIER_BATTLE_CARDS = {
   monetaryCrisis: 'financiers-monetary-crisis',
   underwriting: 'financiers-underwriting',
   capitalGains: 'financiers-capital-gains',
+  leveragedBuyout: 'financiers-leveraged-buyout',
   foreclosure: 'financiers-foreclosure',
+  cornerTheMarket: 'financiers-corner-the-market',
 } as const satisfies Record<string, CardID>;
 
 export class FinancierBattleCardError extends Error {
@@ -47,24 +50,44 @@ function removeOne(source: CardID[], cardId: CardID): boolean {
   return true;
 }
 
+function availableAfterBattle(game: GameState, playerId: PlayerID, cardIds: CardID[]): CardID[] {
+  const discard = [...game.players[playerId].zones.discard];
+  const graveyard = [...game.players[playerId].zones.graveyard];
+  return cardIds.filter((cardId) => removeOne(discard, cardId) || removeOne(graveyard, cardId));
+}
+
 function queueChoice(game: GameState, choice: PendingFinancierChoice): void {
   game.financierChoiceQueue ??= [];
   game.financierChoiceQueue.push(choice);
 }
 
+function refreshQueuedChoice(game: GameState, choice: PendingFinancierChoice): PendingFinancierChoice | undefined {
+  if (choice.kind !== 'battle_leveraged_buyout') return choice;
+  const collateralOptions = availableAfterBattle(game, choice.playerId, choice.collateralOptions);
+  const capitalAvailable = game.players[choice.playerId].resources?.capital?.value ?? 0;
+  if (capitalAvailable + collateralOptions.reduce((sum, cardId) => sum + cardValue(cardId), 0) < choice.cost) return undefined;
+  return { ...choice, collateralOptions, capitalAvailable, minimumCollateralValue: Math.max(choice.cost - capitalAvailable, 0) };
+}
+
 export function openNextFinancierChoice(game: GameState): boolean {
-  if (game.pendingFinancierChoice) return true;
-  if (game.pendingMilitaryChoice || game.pendingMilitaryTimingChoice || game.pendingDiplomatChoice || game.pendingLeaderAbilityWindow || game.pendingAssetBankDiscards) return false;
-  const next = game.financierChoiceQueue?.shift();
-  if (!next) {
+  if (game.phase === 'game_over') {
+    game.pendingFinancierChoice = undefined;
     game.financierChoiceQueue = undefined;
-    if (game.phase !== 'game_over') game.priorityPlayer = game.activePlayer;
     return false;
   }
-  game.pendingFinancierChoice = next;
-  game.priorityPlayer = next.playerId;
-  if (game.financierChoiceQueue?.length === 0) game.financierChoiceQueue = undefined;
-  return true;
+  if (game.pendingFinancierChoice) return true;
+  if (game.pendingMilitaryChoice || game.pendingMilitaryTimingChoice || game.pendingDiplomatChoice || game.pendingLeaderAbilityWindow || game.pendingAssetBankDiscards) return false;
+  while (game.financierChoiceQueue?.length) {
+    const refreshed = refreshQueuedChoice(game, game.financierChoiceQueue.shift()!);
+    if (!refreshed) continue;
+    game.pendingFinancierChoice = refreshed;
+    game.priorityPlayer = refreshed.playerId;
+    if (game.financierChoiceQueue.length === 0) game.financierChoiceQueue = undefined;
+    return true;
+  }
+  game.financierChoiceQueue = undefined;
+  game.priorityPlayer = game.activePlayer;
+  return false;
 }
 
 function forceForeclosureCapture(game: GameState, battle: BattleState, winner: PlayerID): void {
@@ -103,11 +126,41 @@ function queueCapitalGains(game: GameState, battle: BattleState, winner: PlayerI
     const candidates = [...allPlayed];
     const sourcePosition = candidates.indexOf(FINANCIER_BATTLE_CARDS.capitalGains);
     if (sourcePosition >= 0) candidates.splice(sourcePosition, 1);
-    const player = game.players[winner];
-    const eligibleCardIds = candidates.filter((cardId) => player.zones.discard.includes(cardId) || player.zones.graveyard.includes(cardId));
+    const eligibleCardIds = availableAfterBattle(game, winner, candidates);
     if (eligibleCardIds.length === 0) continue;
     queueChoice(game, { kind: 'battle_capital_gains', playerId: winner, battleId: battle.id, sourceCardId: FINANCIER_BATTLE_CARDS.capitalGains, eligibleCardIds });
   }
+}
+
+function queueLeveragedBuyout(game: GameState, battle: BattleState, winner: PlayerID): void {
+  if (winner !== battle.attacker.playerId) return;
+  if (activeCopies(game, battle, winner, FINANCIER_BATTLE_CARDS.leveragedBuyout).length === 0) return;
+  if (deedOwner(game, battle.location) === winner) return;
+  const participant = battle.attacker;
+  const candidates = playedCards(participant).map((card) => card.cardId);
+  const sourceIndex = candidates.indexOf(FINANCIER_BATTLE_CARDS.leveragedBuyout);
+  if (sourceIndex >= 0) candidates.splice(sourceIndex, 1);
+  const collateralOptions = availableAfterBattle(game, winner, candidates);
+  const cost = deedCost(game, winner, battle.location);
+  const capitalAvailable = game.players[winner].resources?.capital?.value ?? 0;
+  if (capitalAvailable + collateralOptions.reduce((sum, cardId) => sum + cardValue(cardId), 0) < cost) return;
+  queueChoice(game, {
+    kind: 'battle_leveraged_buyout',
+    playerId: winner,
+    battleId: battle.id,
+    spaceId: battle.location,
+    cost,
+    capitalAvailable,
+    collateralOptions,
+    minimumCollateralValue: Math.max(cost - capitalAvailable, 0),
+    options: ['pass', 'purchase'],
+  });
+}
+
+function queueCornerTheMarket(game: GameState, battle: BattleState, winner: PlayerID): void {
+  if (activeCopies(game, battle, winner, FINANCIER_BATTLE_CARDS.cornerTheMarket).length === 0) return;
+  const choice = buildCornerTheMarketChoice(game, winner, battle.id);
+  if (choice) queueChoice(game, choice);
 }
 
 function queueMonetaryCrisis(game: GameState, battle: BattleState): void {
@@ -124,6 +177,8 @@ export function buildFinancierBattleAftermath(game: GameState, battle: BattleSta
   resolveUnderwriting(game, battle, winner);
   forceForeclosureCapture(game, battle, winner);
   queueCapitalGains(game, battle, winner);
+  queueLeveragedBuyout(game, battle, winner);
+  queueCornerTheMarket(game, battle, winner);
   queueMonetaryCrisis(game, battle);
   openNextFinancierChoice(game);
 }
@@ -142,6 +197,48 @@ function resolveCapitalGains(game: GameState, action: ResolveFinancierChoiceActi
   if (!removeOne(player.zones.discard, cardId) && !removeOne(player.zones.graveyard, cardId)) throw new FinancierBattleCardError('That card is no longer available for Capital Gains.');
   player.financiers!.treasury.push(cardId);
   log(game, action.playerId, 'financier_capital_gains_battle', `${player.name} placed ${cardId} in Treasury through Capital Gains.`, { battleId: pending.battleId, cardId });
+  finishChoice(game);
+  return true;
+}
+
+function removeBattleCollateral(game: GameState, playerId: PlayerID, selected: CardID[]): number {
+  const player = game.players[playerId];
+  const discard = [...player.zones.discard];
+  const graveyard = [...player.zones.graveyard];
+  let contribution = 0;
+  for (const cardId of selected) {
+    if (!removeOne(discard, cardId) && !removeOne(graveyard, cardId)) throw new FinancierBattleCardError(`${cardId} is no longer available as battle collateral.`);
+    contribution += cardValue(cardId);
+  }
+  player.zones.discard = discard;
+  player.zones.graveyard = [...graveyard, ...selected];
+  return contribution;
+}
+
+function resolveLeveragedBuyout(game: GameState, action: ResolveFinancierChoiceAction): boolean {
+  const pending = game.pendingFinancierChoice;
+  if (!pending || pending.kind !== 'battle_leveraged_buyout' || pending.playerId !== action.playerId) return false;
+  if (action.choice === 'pass') {
+    log(game, action.playerId, 'financier_leveraged_buyout_battle_passed', `${game.players[action.playerId].name} declined the battle Leveraged Buyout.`, { battleId: pending.battleId });
+    finishChoice(game);
+    return true;
+  }
+  if (action.choice !== 'purchase') throw new FinancierBattleCardError('Choose to purchase the Deed or pass.');
+  const selected = action.cardIds ?? [];
+  const available = availableAfterBattle(game, action.playerId, pending.collateralOptions);
+  const availableCopy = [...available];
+  for (const cardId of selected) if (!removeOne(availableCopy, cardId)) throw new FinancierBattleCardError(`${cardId} is not eligible Leveraged Buyout collateral.`);
+  const contribution = selected.reduce((sum, cardId) => sum + cardValue(cardId), 0);
+  const capitalAvailable = game.players[action.playerId].resources?.capital?.value ?? 0;
+  if (capitalAvailable + contribution < pending.cost) throw new FinancierBattleCardError('Selected collateral does not cover the Deed cost.');
+  removeBattleCollateral(game, action.playerId, selected);
+  buyDeed(game, action.playerId, pending.spaceId, undefined, undefined, contribution);
+  log(game, action.playerId, 'financier_leveraged_buyout_battle_completed', `${game.players[action.playerId].name} bought the contested Deed through Leveraged Buyout.`, { battleId: pending.battleId, spaceId: pending.spaceId, collateral: selected, contribution });
+  if (checkControllingInterest(game, action.playerId)) {
+    game.pendingFinancierChoice = undefined;
+    game.financierChoiceQueue = undefined;
+    return true;
+  }
   finishChoice(game);
   return true;
 }
@@ -167,9 +264,15 @@ function resolveMonetaryCrisis(game: GameState, action: ResolveFinancierChoiceAc
 }
 
 export function resolveFinancierBattleChoice(game: GameState, action: ResolveFinancierChoiceAction): boolean {
-  return resolveCapitalGains(game, action) || resolveMonetaryCrisis(game, action);
+  return resolveCapitalGains(game, action)
+    || resolveLeveragedBuyout(game, action)
+    || resolveMonetaryCrisis(game, action);
 }
 
 export function isFinancierBattleChoice(choice: PendingFinancierChoice | undefined): boolean {
-  return choice?.kind === 'battle_capital_gains' || choice?.kind === 'battle_monetary_crisis';
+  return choice?.kind === 'battle_capital_gains'
+    || choice?.kind === 'battle_monetary_crisis'
+    || choice?.kind === 'battle_leveraged_buyout'
+    || choice?.kind === 'corner_the_market_purchase' && Boolean(choice.battleId)
+    || choice?.kind === 'deed_purchase' && choice.continuation === 'corner_the_market' && Boolean(choice.battleId);
 }

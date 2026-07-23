@@ -41,7 +41,8 @@ export type PendingFinancierChoice =
   | { kind: 'margin_loan_repayment'; playerId: PlayerID; loanId: string; collateralCardId: CardID; repaymentCost: number; options: ['repay', 'default'] }
   | { kind: 'leveraged_buyout_target'; playerId: PlayerID; spaceOptions: SpaceID[] }
   | { kind: 'leveraged_buyout_collateral'; playerId: PlayerID; spaceId: SpaceID; cost: number; capitalAvailable: number; collateralOptions: CardID[]; minimumCollateralValue: number }
-  | { kind: 'corner_the_market_purchase'; playerId: PlayerID; spaceOptions: SpaceID[]; options: ['pass', 'purchase'] }
-  | { kind: 'deed_purchase'; playerId: PlayerID; spaceId: SpaceID; cost: number; currentOwner?: PlayerID; collateralOptions: CardID[]; maximumCollateralContribution: number; hostileTakeover?: boolean; consumeAction?: boolean; continuation?: 'corner_the_market' }
+  | { kind: 'corner_the_market_purchase'; playerId: PlayerID; spaceOptions: SpaceID[]; options: ['pass', 'purchase']; battleId?: string }
+  | { kind: 'deed_purchase'; playerId: PlayerID; spaceId: SpaceID; cost: number; currentOwner?: PlayerID; collateralOptions: CardID[]; maximumCollateralContribution: number; hostileTakeover?: boolean; consumeAction?: boolean; continuation?: 'corner_the_market'; battleId?: string }
   | { kind: 'battle_capital_gains'; playerId: PlayerID; battleId: string; sourceCardId: CardID; eligibleCardIds: CardID[] }
-  | { kind: 'battle_monetary_crisis'; playerId: PlayerID; battleId: string; sourceOwner: PlayerID; handOptions: CardID[] };
+  | { kind: 'battle_monetary_crisis'; playerId: PlayerID; battleId: string; sourceOwner: PlayerID; handOptions: CardID[] }
+  | { kind: 'battle_leveraged_buyout'; playerId: PlayerID; battleId: string; spaceId: SpaceID; cost: number; capitalAvailable: number; collateralOptions: CardID[]; minimumCollateralValue: number; options: ['pass', 'purchase'] };
