@@ -1,0 +1,28 @@
+name: Inspect Intelligence portrait assets
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/inspect-intelligence-portrait-assets.yml"
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - name: Collect Intelligence portrait assets
+        run: |
+          mkdir -p proof
+          cp images/leader-cards/ranger.jpg proof/ranger.png
+          cp images/leader-cards/spymaster.jpg proof/spymaster.png
+          file proof/* | tee proof/metadata.txt
+          identify proof/* 2>&1 | tee -a proof/metadata.txt || true
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: intelligence-portrait-assets
+          path: proof/
