@@ -1,0 +1,42 @@
+name: Fix Financier investment integration
+on:
+  push:
+    branches: [feature/financier-investment-actions]
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: ${{ !contains(github.event.head_commit.message, '[investment-fixes-applied]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/financier-investment-actions
+          fetch-depth: 0
+      - name: Patch integration and fixture
+        shell: python
+        run: |
+          from pathlib import Path
+
+          apply_path = Path('src/state/apply.ts')
+          text = apply_path.read_text()
+          old = "const next = structuredClone(game); applyFinancierStateAction(next, action); enforceDiplomatAssetLimits(next); runPostActionAutomationPipeline(next); return { state: next };"
+          new = "const next = structuredClone(game); applyFinancierStateAction(next, action); reconcileFinancierCardState(next); enforceDiplomatAssetLimits(next); runPostActionAutomationPipeline(next); return { state: next };"
+          if old not in text:
+            raise SystemExit('Financier StateAction integration target not found')
+          apply_path.write_text(text.replace(old, new, 1))
+
+          test_path = Path('src/state/financier-investment-actions.test.ts')
+          tests = test_path.read_text()
+          old_deck = "  'financiers-property-dues',\n];"
+          new_deck = "  'financiers-property-dues',\n  'financiers-divestment',\n  'financiers-foreclosure',\n];"
+          if old_deck not in tests:
+            raise SystemExit('Investment test deck target not found')
+          test_path.write_text(tests.replace(old_deck, new_deck, 1))
+      - name: Commit fixes
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add src/state/apply.ts src/state/financier-investment-actions.test.ts
+          git commit -m "Fix Financier investment reconciliation and fixture [investment-fixes-applied]"
+          git push origin HEAD:feature/financier-investment-actions
