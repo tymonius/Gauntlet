@@ -19,7 +19,6 @@ export interface PublicIntelligenceMissionView {
   faceDown: true;
   kind: IntelligenceMissionKind;
   startedTurn: number;
-  requirementSatisfied: boolean;
 }
 
 export interface PublicIntelligenceState {
