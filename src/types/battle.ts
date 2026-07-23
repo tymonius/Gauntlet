@@ -35,8 +35,8 @@ export interface BattleParticipantState {
   battleDrawPlayed: BattlePlayedCard[];
   battleDrawCount: number;
   battleDrawPlayLimit: number;
-  advantage: number;
-  disadvantage: number;
+  advantage?: number;
+  disadvantage?: number;
   diceRolls?: number[];
   diceRoll?: number;
   rerollsRemaining: number;
