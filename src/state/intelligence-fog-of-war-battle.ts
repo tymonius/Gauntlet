@@ -46,6 +46,10 @@ function active(card?: BattlePlayedCard): card is BattlePlayedCard {
   return Boolean(card && !card.canceled && !card.negated);
 }
 
+function used(card?: BattlePlayedCard): card is BattlePlayedCard {
+  return Boolean(card && !card.canceled);
+}
+
 function participantFor(game: GameState, playerId: PlayerID): BattleParticipantState {
   const battle = game.battle;
   if (!battle) throw new FogOfWarBattleError('There is no active battle.');
@@ -80,7 +84,7 @@ function nextUnresolvedFogOfWar(game: GameState): { participant: BattleParticipa
 }
 
 function selectedBattleHandCards(participant: BattleParticipantState): BattlePlayedCard[] {
-  return participant.battleDrawPlayed.filter((card) => active(card) && card.origin === 'battle_draw');
+  return participant.battleDrawPlayed.filter((card) => used(card) && card.origin === 'battle_draw');
 }
 
 export function battleHasUnresolvedFogOfWar(game: GameState, incomingCardId?: CardID): boolean {
@@ -107,7 +111,7 @@ export function resolveFogOfWarPreRevealCard(
   );
 
   const opponent = opponentParticipant(game, participant.playerId);
-  const handCommit = active(opponent.handCommit) ? opponent.handCommit : undefined;
+  const handCommit = used(opponent.handCommit) ? opponent.handCommit : undefined;
   const battleHandCards = selectedBattleHandCards(opponent);
   if (!handCommit || battleHandCards.length === 0) return false;
 
@@ -133,7 +137,7 @@ export function openNextFogOfWarBattleWindow(game: GameState): boolean {
 function returnHandCommit(game: GameState, playerId: PlayerID, expectedCardId: CardID): CardID {
   const participant = participantFor(game, playerId);
   const card = participant.handCommit;
-  if (!active(card) || card.cardId !== expectedCardId) {
+  if (!used(card) || card.cardId !== expectedCardId) {
     throw new FogOfWarBattleError('The opposing hand commitment is no longer available to return.');
   }
   participant.handCommit = undefined;
@@ -145,7 +149,7 @@ function returnHandCommit(game: GameState, playerId: PlayerID, expectedCardId: C
 function returnBattleHandCard(game: GameState, playerId: PlayerID, cardId: CardID): CardID {
   const participant = participantFor(game, playerId);
   const index = participant.battleDrawPlayed.findIndex((candidate) => (
-    active(candidate) && candidate.origin === 'battle_draw' && candidate.cardId === cardId
+    used(candidate) && candidate.origin === 'battle_draw' && candidate.cardId === cardId
   ));
   if (index < 0) throw new FogOfWarBattleError('That selected Battle Hand card is no longer available to return.');
   const [returned] = participant.battleDrawPlayed.splice(index, 1);
