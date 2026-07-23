@@ -63,6 +63,8 @@ export function applyBattleDiceRoll(game: GameState, action: RollBattleDieAction
     throw new GameActionError('Battle dice are not currently open.');
   }
   const next = structuredClone(game);
+  const battle = next.battle;
+  if (!battle) throw new GameActionError('There is no active battle.');
   const participant = participantFor(next, action.playerId);
   if (participant.diceRoll !== undefined) throw new GameActionError(`${next.players[action.playerId].name} has already rolled.`);
 
@@ -90,8 +92,8 @@ export function applyBattleDiceRoll(game: GameState, action: RollBattleDieAction
     mode,
   });
 
-  if (next.battle.attacker.diceRoll !== undefined && next.battle.defender.diceRoll !== undefined) {
-    next.battle.stage = 'resolution';
+  if (battle.attacker.diceRoll !== undefined && battle.defender.diceRoll !== undefined) {
+    battle.stage = 'resolution';
   }
   return { state: next };
 }
