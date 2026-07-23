@@ -69,8 +69,16 @@ function nextUnresolvedSpies(game: GameState): { participant: BattleParticipantS
   const battle = game.battle;
   if (!battle) return undefined;
   for (const participant of [battle.attacker, battle.defender]) {
-    const card = participantCards(participant)
-      .find((candidate) => candidate.cardId === SPIES_CARD_ID && !candidate.earlyEffectResolved);
+    if (active(participant.handCommit)
+      && participant.handCommit.cardId === SPIES_CARD_ID
+      && !participant.handCommit.earlyEffectResolved) {
+      return { participant, card: participant.handCommit };
+    }
+    const card = participant.battleDrawPlayed.find((candidate) => (
+      active(candidate)
+      && candidate.cardId === SPIES_CARD_ID
+      && !candidate.earlyEffectResolved
+    ));
     if (card) return { participant, card };
   }
   return undefined;
@@ -100,46 +108,52 @@ export function battleHasUnresolvedSpies(game: GameState, incomingCardId?: CardI
   return Boolean(nextUnresolvedSpies(game));
 }
 
-export function openNextSpiesBattleWindow(game: GameState): boolean {
+export function resolveSpiesPreRevealCard(
+  game: GameState,
+  participant: BattleParticipantState,
+  card: BattlePlayedCard,
+): boolean {
   const battle = game.battle;
   if (!battle || game.pendingIntelligenceChoice) return false;
+  if (!active(card) || card.cardId !== SPIES_CARD_ID || card.earlyEffectResolved) return false;
 
-  while (true) {
-    const source = nextUnresolvedSpies(game);
-    if (!source) return false;
-    source.card.faceDown = false;
-    source.card.earlyEffectResolved = true;
-    const inspectedCards = inspectOpposingCards(game, source.participant.playerId);
-    publicLog(
-      game,
-      source.participant.playerId,
-      'intelligence_spies_revealed_early',
-      `${game.players[source.participant.playerId].name} revealed Spies before the normal battle reveal.`,
-    );
-    privateLog(
-      game,
-      source.participant.playerId,
-      'intelligence_spies_battle_inspection',
-      `You inspected ${inspectedCards.length} opposing face-down card${inspectedCards.length === 1 ? '' : 's'} with Spies.`,
-      { cards: inspectedCards },
-    );
+  card.faceDown = false;
+  card.earlyEffectResolved = true;
+  const inspectedCards = inspectOpposingCards(game, participant.playerId);
+  publicLog(
+    game,
+    participant.playerId,
+    'intelligence_spies_revealed_early',
+    `${game.players[participant.playerId].name} revealed Spies before the normal battle reveal.`,
+  );
+  privateLog(
+    game,
+    participant.playerId,
+    'intelligence_spies_battle_inspection',
+    `You inspected ${inspectedCards.length} opposing face-down card${inspectedCards.length === 1 ? '' : 's'} with Spies.`,
+    { cards: inspectedCards },
+  );
 
-    const currentSelected = source.participant.battleDrawPlayed.find((card) => active(card));
-    const eligibleCardIds = eligibleReplacements(source.participant);
-    if (!currentSelected || eligibleCardIds.length === 0) continue;
+  const currentSelected = participant.battleDrawPlayed.find((candidate) => active(candidate));
+  const eligibleCardIds = eligibleReplacements(participant);
+  if (!currentSelected || eligibleCardIds.length === 0) return false;
 
-    game.pendingIntelligenceChoice = {
-      kind: 'spies_battle_reselect',
-      playerId: source.participant.playerId,
-      battleId: battle.id,
-      currentSelectedCardId: currentSelected.cardId,
-      eligibleCardIds: [...new Set(eligibleCardIds)],
-      options: ['pass', 'select'],
-      resumePriorityPlayer: game.priorityPlayer,
-    };
-    game.priorityPlayer = source.participant.playerId;
-    return true;
-  }
+  game.pendingIntelligenceChoice = {
+    kind: 'spies_battle_reselect',
+    playerId: participant.playerId,
+    battleId: battle.id,
+    currentSelectedCardId: currentSelected.cardId,
+    eligibleCardIds: [...new Set(eligibleCardIds)],
+    options: ['pass', 'select'],
+    resumePriorityPlayer: game.priorityPlayer,
+  };
+  game.priorityPlayer = participant.playerId;
+  return true;
+}
+
+export function openNextSpiesBattleWindow(game: GameState): boolean {
+  const source = nextUnresolvedSpies(game);
+  return source ? resolveSpiesPreRevealCard(game, source.participant, source.card) : false;
 }
 
 function removeOne(cards: CardID[], cardId: CardID): boolean {
@@ -167,8 +181,8 @@ export function resolveSpiesBattleChoice(game: GameState, action: ResolveIntelli
     throw new IntelligenceSpiesBattleError('Choose an eligible replacement from the remaining Battle Hand or pass.');
   }
 
-  const currentIndex = participant.battleDrawPlayed.findIndex((card) => (
-    active(card) && card.cardId === pending.currentSelectedCardId
+  const currentIndex = participant.battleDrawPlayed.findIndex((candidate) => (
+    active(candidate) && candidate.cardId === pending.currentSelectedCardId
   ));
   if (currentIndex < 0) throw new IntelligenceSpiesBattleError('The currently selected Battle Hand card is no longer in the battle.');
   if (!removeOne(participant.battleDraw, action.cardId)) {
