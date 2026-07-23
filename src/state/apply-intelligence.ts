@@ -21,6 +21,7 @@ import { maybeOpenSubsidizeWindow } from './financier-integration';
 import { openMissionControlWindow, resolveIntelligenceLeaderChoice } from './intelligence-leaders';
 import { recordFaceDownCardObservedBeforeReveal } from './intelligence-mission-triggers';
 import {
+  INTELLIGENCE_REACTIVE_ASSETS,
   openExfiltrationWindow,
   openInterceptedOrdersWindow,
   openReconnaissanceWindow,
@@ -119,11 +120,33 @@ function isIntelligenceReactiveAssetChoice(kind?: string): boolean {
     || kind === 'deep_cover';
 }
 
+function preemptAutomaticBattleStartWindowsForReconnaissance(game: GameState): void {
+  const battle = game.battle;
+  if (!battle) return;
+  const attacker = game.players[battle.attacker.playerId];
+  if (!attacker?.intelligence || !attacker.zones.assetBank.includes(INTELLIGENCE_REACTIVE_ASSETS.reconnaissance)) return;
+  game.pendingDiplomatChoice = undefined;
+  game.pendingMilitaryTimingChoice = undefined;
+  game.militaryTimingChoiceQueue = undefined;
+  game.priorityPlayer = battle.attacker.playerId;
+  openReconnaissanceWindow(game);
+}
+
+function validateInterferenceReplacement(game: GameState, action: Extract<AppStateAction, { type: 'resolve_intelligence_choice' }>): void {
+  const pending = game.pendingIntelligenceChoice;
+  if (pending?.kind !== 'interference_replacement' || pending.source !== 'battle_draw' || action.choice !== 'select' || !action.cardId) return;
+  const battle = game.battle;
+  if (!battle || !availableBattleHandCards(battle, participantFor(game, pending.playerId)).includes(action.cardId)) {
+    throw new GameActionError(`${action.cardId} cannot be chosen from this Battle Hand.`);
+  }
+}
+
 export function applyGameAction(game: GameState, action: AppStateAction): ApplyGameActionResult {
   if (game.pendingIntelligenceChoice && action.type !== 'resolve_intelligence_choice') {
     throw new GameActionError('Resolve the pending Intelligence choice first.');
   }
   if (action.type === 'resolve_intelligence_choice') {
+    validateInterferenceReplacement(game, action);
     const next = structuredClone(game);
     const previousStage = next.battle?.stage;
     const pending = next.pendingIntelligenceChoice;
@@ -180,7 +203,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
 
   const hadBattle = Boolean(game.battle);
   const result = applyBaseGameAction(game, action);
-  if (action.type === 'move_player' && !hadBattle && result.state.battle) openReconnaissanceWindow(result.state);
+  if (action.type === 'move_player' && !hadBattle && result.state.battle) preemptAutomaticBattleStartWindowsForReconnaissance(result.state);
   if (action.type === 'commit_battle_hand_card') {
     openSurveillanceWindowAfterChoice(result.state, action.playerId, action.cardId, 'hand');
   }
