@@ -4,6 +4,7 @@ import { applyGameAction as applyInterceptedOrdersGameAction } from './apply-int
 import { resolveOperationalReassessmentBattleChoice } from './intelligence-operational-reassessment-battle';
 import { openNextIntelligencePostRevealWindow } from './intelligence-post-reveal';
 import { resolveReconnaissanceBattleChoice } from './intelligence-reconnaissance-battle';
+import { applySubversionBattleRestrictions } from './intelligence-subversion-battle';
 import { runPostActionAutomationPipeline } from './pipeline';
 import type { ApplyGameActionResult } from './reducer';
 
@@ -21,6 +22,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     && game.pendingIntelligenceChoice?.kind === 'operational_reassessment_battle') {
     const next = structuredClone(game);
     resolveOperationalReassessmentBattleChoice(next, action);
+    applySubversionBattleRestrictions(next);
     openNextIntelligencePostRevealWindow(next);
     runPostActionAutomationPipeline(next);
     return { state: next };
@@ -28,6 +30,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
 
   if (action.type === 'resolve_battle_reveal') {
     const next = structuredClone(game);
+    applySubversionBattleRestrictions(next);
     if (openNextIntelligencePostRevealWindow(next)) {
       runPostActionAutomationPipeline(next);
       return { state: next };
