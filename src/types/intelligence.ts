@@ -117,6 +117,7 @@ export type PendingIntelligenceChoice =
       playerId: PlayerID;
       battleId: string;
       destinationId: SpaceID;
+      remainingUses: number;
       options: ['pass', 'withdraw'];
       resumePriorityPlayer?: PlayerID;
     }

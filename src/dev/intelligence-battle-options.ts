@@ -74,8 +74,8 @@ export function buildIntelligenceBattleOptions(game: GameState, playerId: Player
   }
   if (pending.kind === 'exfiltration_battle_withdraw') {
     return [
-      action('Remain in the victorious position', 'pass'),
-      action('Withdraw one position with Exfiltration', 'withdraw'),
+      action('Do not retreat farther with this Exfiltration', 'pass'),
+      action('Retreat one additional position with Exfiltration', 'withdraw'),
     ];
   }
   if (pending.kind === 'operational_reassessment_battle') {
