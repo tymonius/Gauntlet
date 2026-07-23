@@ -2,10 +2,14 @@ import type { CardID } from './ids';
 
 export type IntelligenceMissionKind = 'normal' | 'special_operation';
 
-export interface IntelligenceMissionState {
-  cardId: CardID;
+export interface PublicIntelligenceMissionView {
+  faceDown: true;
   kind: IntelligenceMissionKind;
   startedTurn: number;
+}
+
+export interface IntelligenceMissionState extends PublicIntelligenceMissionView {
+  cardId: CardID;
   requirementSatisfied: boolean;
   evidence: string[];
 }
@@ -13,12 +17,6 @@ export interface IntelligenceMissionState {
 export interface IntelligenceState {
   activeMission?: IntelligenceMissionState;
   specialOperation?: IntelligenceMissionState;
-}
-
-export interface PublicIntelligenceMissionView {
-  faceDown: true;
-  kind: IntelligenceMissionKind;
-  startedTurn: number;
 }
 
 export interface PublicIntelligenceState {
