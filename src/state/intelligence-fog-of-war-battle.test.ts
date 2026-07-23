@@ -191,8 +191,8 @@ describe('Fog of War Battle effect', () => {
     expect(state.battle?.defender.handCommit).toMatchObject({
       cardId: 'intelligence-fog-of-war',
       faceDown: true,
-      earlyEffectResolved: undefined,
     });
+    expect(state.battle?.defender.handCommit?.earlyEffectResolved).toBeUndefined();
   });
 
   it('uses hand-commitment order before Battle Hand order for one player', () => {
