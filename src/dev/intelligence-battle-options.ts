@@ -67,6 +67,11 @@ export function buildIntelligenceBattleOptions(game: GameState, playerId: Player
       ...pending.eligibleCardIds.map((cardId) => action(`Choose replacement ${cardId}`, 'select', cardId)),
     ];
   }
+  if (pending.kind === 'reconnaissance_battle_withdraw') {
+    return pending.canWithdraw
+      ? [action('Remain in the battle', 'stay'), action('Withdraw and end the battle without a winner', 'withdraw')]
+      : [action('Remain in the battle', 'stay')];
+  }
   if (pending.kind === 'operational_reassessment_battle') {
     return [
       action('Keep Operational Reassessment in the battle', 'pass'),
