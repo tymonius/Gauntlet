@@ -10,6 +10,7 @@ import {
 import { buildFinancierPreDiceChoices } from './financier-pre-dice';
 import { openNextFinancierChoice } from './financier-battle-cards';
 import { maybeOpenSubsidizeWindow } from './financier-integration';
+import { openMissionControlWindow, resolveIntelligenceLeaderChoice } from './intelligence-leaders';
 import { openMilitaryAfterRevealWindows } from './military-timing';
 import { abortIntelligenceMission, completeIntelligenceMission, completeSpecialOperation, startIntelligenceMission } from './intelligence-missions';
 import { runPostActionAutomationPipeline } from './pipeline';
@@ -39,8 +40,10 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
   if (action.type === 'resolve_intelligence_choice') {
     const next = structuredClone(game);
     const previousStage = next.battle?.stage;
-    resolveIntelligenceBattleChoice(next, action);
-    continueAfterIntelligenceReveal(next, previousStage);
+    const pendingKind = next.pendingIntelligenceChoice?.kind;
+    if (pendingKind === 'mission_control' || pendingKind === 'fieldcraft') resolveIntelligenceLeaderChoice(next, action);
+    else resolveIntelligenceBattleChoice(next, action);
+    if (pendingKind !== 'mission_control' && pendingKind !== 'fieldcraft') continueAfterIntelligenceReveal(next, previousStage);
     runPostActionAutomationPipeline(next);
     return { state: next };
   }
@@ -53,6 +56,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
   if (action.type === 'complete_intelligence_mission') {
     const next = structuredClone(game);
     completeIntelligenceMission(next, action.playerId);
+    openMissionControlWindow(next, action.playerId);
     runPostActionAutomationPipeline(next);
     return { state: next };
   }
