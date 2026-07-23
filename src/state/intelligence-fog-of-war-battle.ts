@@ -9,15 +9,6 @@ import type {
 import type { ResolveIntelligenceChoiceAction } from './actions';
 
 const FOG_OF_WAR = 'intelligence-fog-of-war';
-const SPIES = 'intelligence-spies';
-
-type EarlyEffectKind = 'fog_of_war' | 'spies';
-
-interface EarlyEffectSource {
-  kind: EarlyEffectKind;
-  participant: BattleParticipantState;
-  card: BattlePlayedCard;
-}
 
 export class FogOfWarBattleError extends Error {
   constructor(message: string) {
@@ -55,29 +46,16 @@ function active(card?: BattlePlayedCard): card is BattlePlayedCard {
   return Boolean(card && !card.canceled && !card.negated);
 }
 
-function effectKind(cardId: CardID): EarlyEffectKind | undefined {
-  if (cardId === FOG_OF_WAR) return 'fog_of_war';
-  if (cardId === SPIES) return 'spies';
-  return undefined;
+function used(card?: BattlePlayedCard): card is BattlePlayedCard {
+  return Boolean(card && !card.canceled);
 }
 
-function unresolvedSource(participant: BattleParticipantState): EarlyEffectSource | undefined {
-  if (active(participant.handCommit) && !participant.handCommit.earlyEffectResolved) {
-    const kind = effectKind(participant.handCommit.cardId);
-    if (kind) return { kind, participant, card: participant.handCommit };
-  }
-  for (const card of participant.battleDrawPlayed) {
-    if (!active(card) || card.earlyEffectResolved) continue;
-    const kind = effectKind(card.cardId);
-    if (kind) return { kind, participant, card };
-  }
-  return undefined;
-}
-
-function nextEarlyEffect(game: GameState): EarlyEffectSource | undefined {
+function participantFor(game: GameState, playerId: PlayerID): BattleParticipantState {
   const battle = game.battle;
-  if (!battle) return undefined;
-  return unresolvedSource(battle.attacker) ?? unresolvedSource(battle.defender);
+  if (!battle) throw new FogOfWarBattleError('There is no active battle.');
+  if (battle.attacker.playerId === playerId) return battle.attacker;
+  if (battle.defender.playerId === playerId) return battle.defender;
+  throw new FogOfWarBattleError(`${playerId} is not participating in this battle.`);
 }
 
 function opponentParticipant(game: GameState, playerId: PlayerID): BattleParticipantState {
@@ -86,67 +64,80 @@ function opponentParticipant(game: GameState, playerId: PlayerID): BattlePartici
   return battle.attacker.playerId === playerId ? battle.defender : battle.attacker;
 }
 
+function nextUnresolvedFogOfWar(game: GameState): { participant: BattleParticipantState; card: BattlePlayedCard } | undefined {
+  const battle = game.battle;
+  if (!battle) return undefined;
+  for (const participant of [battle.attacker, battle.defender]) {
+    if (active(participant.handCommit)
+      && participant.handCommit.cardId === FOG_OF_WAR
+      && !participant.handCommit.earlyEffectResolved) {
+      return { participant, card: participant.handCommit };
+    }
+    const card = participant.battleDrawPlayed.find((candidate) => (
+      active(candidate)
+      && candidate.cardId === FOG_OF_WAR
+      && !candidate.earlyEffectResolved
+    ));
+    if (card) return { participant, card };
+  }
+  return undefined;
+}
+
 function selectedBattleHandCards(participant: BattleParticipantState): BattlePlayedCard[] {
-  return participant.battleDrawPlayed.filter((card) => active(card) && card.origin === 'battle_draw');
+  return participant.battleDrawPlayed.filter((card) => used(card) && card.origin === 'battle_draw');
 }
 
 export function battleHasUnresolvedFogOfWar(game: GameState, incomingCardId?: CardID): boolean {
   if (incomingCardId === FOG_OF_WAR) return true;
+  return Boolean(nextUnresolvedFogOfWar(game));
+}
+
+export function resolveFogOfWarPreRevealCard(
+  game: GameState,
+  participant: BattleParticipantState,
+  card: BattlePlayedCard,
+): boolean {
   const battle = game.battle;
-  if (!battle) return false;
-  return [battle.attacker, battle.defender].some((participant) => (
-    (active(participant.handCommit)
-      && participant.handCommit.cardId === FOG_OF_WAR
-      && !participant.handCommit.earlyEffectResolved)
-    || participant.battleDrawPlayed.some((card) => (
-      active(card) && card.cardId === FOG_OF_WAR && !card.earlyEffectResolved
-    ))
-  ));
+  if (!battle || game.pendingIntelligenceChoice) return false;
+  if (!active(card) || card.cardId !== FOG_OF_WAR || card.earlyEffectResolved) return false;
+
+  card.faceDown = false;
+  card.earlyEffectResolved = true;
+  publicLog(
+    game,
+    participant.playerId,
+    'intelligence_fog_of_war_revealed_early',
+    `${game.players[participant.playerId].name} revealed Fog of War before the normal battle reveal.`,
+  );
+
+  const opponent = opponentParticipant(game, participant.playerId);
+  const handCommit = used(opponent.handCommit) ? opponent.handCommit : undefined;
+  const battleHandCards = selectedBattleHandCards(opponent);
+  if (!handCommit || battleHandCards.length === 0) return false;
+
+  game.pendingIntelligenceChoice = {
+    kind: 'fog_of_war_return',
+    playerId: opponent.playerId,
+    fogOwnerId: participant.playerId,
+    battleId: battle.id,
+    handCardId: handCommit.cardId,
+    battleHandCardIds: battleHandCards.map((candidate) => candidate.cardId),
+    options: ['return_hand', 'return_battle_hand'],
+    resumePriorityPlayer: game.priorityPlayer,
+  };
+  game.priorityPlayer = opponent.playerId;
+  return true;
 }
 
 export function openNextFogOfWarBattleWindow(game: GameState): boolean {
-  const battle = game.battle;
-  if (!battle || battle.stage !== 'normal_reveal' || game.pendingIntelligenceChoice) return false;
-
-  while (true) {
-    const source = nextEarlyEffect(game);
-    if (!source || source.kind !== 'fog_of_war') return false;
-
-    source.card.faceDown = false;
-    source.card.earlyEffectResolved = true;
-    publicLog(
-      game,
-      source.participant.playerId,
-      'intelligence_fog_of_war_revealed_early',
-      `${game.players[source.participant.playerId].name} revealed Fog of War before the normal battle reveal.`,
-    );
-
-    const opponent = opponentParticipant(game, source.participant.playerId);
-    const handCommit = active(opponent.handCommit) ? opponent.handCommit : undefined;
-    const battleHandCards = selectedBattleHandCards(opponent);
-    if (!handCommit || battleHandCards.length === 0) continue;
-
-    game.pendingIntelligenceChoice = {
-      kind: 'fog_of_war_return',
-      playerId: opponent.playerId,
-      fogOwnerId: source.participant.playerId,
-      battleId: battle.id,
-      handCardId: handCommit.cardId,
-      battleHandCardIds: battleHandCards.map((card) => card.cardId),
-      options: ['return_hand', 'return_battle_hand'],
-      resumePriorityPlayer: game.priorityPlayer,
-    };
-    game.priorityPlayer = opponent.playerId;
-    return true;
-  }
+  const source = nextUnresolvedFogOfWar(game);
+  return source ? resolveFogOfWarPreRevealCard(game, source.participant, source.card) : false;
 }
 
 function returnHandCommit(game: GameState, playerId: PlayerID, expectedCardId: CardID): CardID {
-  const participant = opponentParticipant(game, game.pendingIntelligenceChoice?.kind === 'fog_of_war_return'
-    ? game.pendingIntelligenceChoice.fogOwnerId
-    : playerId);
+  const participant = participantFor(game, playerId);
   const card = participant.handCommit;
-  if (!active(card) || card.cardId !== expectedCardId) {
+  if (!used(card) || card.cardId !== expectedCardId) {
     throw new FogOfWarBattleError('The opposing hand commitment is no longer available to return.');
   }
   participant.handCommit = undefined;
@@ -155,16 +146,10 @@ function returnHandCommit(game: GameState, playerId: PlayerID, expectedCardId: C
   return card.cardId;
 }
 
-function returnBattleHandCard(
-  game: GameState,
-  playerId: PlayerID,
-  cardId: CardID,
-): CardID {
-  const participant = opponentParticipant(game, game.pendingIntelligenceChoice?.kind === 'fog_of_war_return'
-    ? game.pendingIntelligenceChoice.fogOwnerId
-    : playerId);
-  const index = participant.battleDrawPlayed.findIndex((card) => (
-    active(card) && card.origin === 'battle_draw' && card.cardId === cardId
+function returnBattleHandCard(game: GameState, playerId: PlayerID, cardId: CardID): CardID {
+  const participant = participantFor(game, playerId);
+  const index = participant.battleDrawPlayed.findIndex((candidate) => (
+    used(candidate) && candidate.origin === 'battle_draw' && candidate.cardId === cardId
   ));
   if (index < 0) throw new FogOfWarBattleError('That selected Battle Hand card is no longer available to return.');
   const [returned] = participant.battleDrawPlayed.splice(index, 1);
