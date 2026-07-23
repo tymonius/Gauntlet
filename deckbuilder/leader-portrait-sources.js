@@ -20,8 +20,8 @@
 
   if (packages.intelligence) {
     packages.intelligence.leaderImages = {
-      ranger: assetUrl("../images/leader-cards/ranger.jpg"),
-      spymaster: assetUrl("../images/leader-cards/spymaster.jpg")
+      ranger: assetUrl("../images/ranger.png"),
+      spymaster: assetUrl("../images/spymaster.png")
     };
   }
 })();
