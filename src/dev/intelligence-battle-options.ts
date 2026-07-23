@@ -44,11 +44,17 @@ export function buildIntelligenceBattleOptions(game: GameState, playerId: Player
     ];
   }
   if (pending.kind === 'spies_battle_reselect') {
-  return [
-    action('Keep the current Battle Hand selection', 'pass'),
-    ...pending.eligibleCardIds.map((cardId) => action(`Replace the selected card with ${cardId}`, 'select', cardId)),
-  ];
-}
+    return [
+      action('Keep the current Battle Hand selection', 'pass'),
+      ...pending.eligibleCardIds.map((cardId) => action(`Replace the selected card with ${cardId}`, 'select', cardId)),
+    ];
+  }
+  if (pending.kind === 'operational_reassessment_battle') {
+    return [
+      action('Keep Operational Reassessment in the battle', 'pass'),
+      ...pending.eligibleCardIds.map((cardId) => action(`Replace Operational Reassessment with ${cardId}`, 'select', cardId)),
+    ];
+  }
   if (pending.kind === 'mission_control') {
     return [
       action('Pass Mission Control', 'pass'),
