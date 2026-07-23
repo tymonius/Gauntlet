@@ -8,6 +8,7 @@ import { applyLeverage, checkPeaceTreatyVictory, declineTerms, offerTerms, openD
 import { DIPLOMAT_REACTIVE_CARDS, resolveNonbindingResolution, resolveTradeConcessions, useDiplomaticLatitude, useGoodFaith, useGunboatDiplomacy, useNeutralObservers, useNonbindingResolution, useSafeConduct, useTradeConcessions } from './diplomat-cards';
 import { bankSanctionAfterRefusal, effectiveAssetBankLimit, openBlockadeMovementChoice, openCensureChoiceAfterAction, openDemilitarizedZoneUpkeep, playClemency, playDemilitarizedZone, removeBlockadesAfterControlChange, removeSanctionsAfterAcceptedTerms, requireDemilitarizedEntryCost, resolveBlockadeMovement, resolveClemency, resolveCensure, resolveDemilitarizedZoneBattle, resolveDemilitarizedZoneUpkeep, DIPLOMAT_PERSISTENT_CARDS } from './diplomat-persistent';
 import { applyFinancierActionEffect, reconcileFinancierCardState, requireTariffsMayLeavePlay, resolveFinancierCardChoice, resolveFinancierCardTurnStart, shouldSkipNormalDrawForTariffs } from './financier-cards';
+import { applyFinancierAcquisitionActionEffect, resolveFinancierAcquisitionChoice } from './financier-acquisition-cards';
 import { beginDeedPurchase, beginHostileTakeover, beginPlayTheMarket, clearFinancierBattleState, maybeOpenSubsidizeWindow, placeTreasuryCardAction, recordHostileTakeoverEligibility, resolveFinancierChoice, resolveFinancierEndTurn, resolveFinancierTurnStart } from './financier-integration';
 import { gainFactionResource } from './resources';
 import { runPostActionAutomationPipeline } from './pipeline';
@@ -132,7 +133,7 @@ function applyFinancierStateAction(game: GameState, action: Extract<StateAction,
 }
 
 export function applyGameAction(game: GameState, action: StateAction): ApplyGameActionResult {
-  if (action.type === 'resolve_financier_choice') { const next = structuredClone(game); if (!resolveFinancierCardChoice(next, action)) resolveFinancierChoice(next, action); reconcileFinancierCardState(next); enforceDiplomatAssetLimits(next); runPostActionAutomationPipeline(next); return { state: next }; }
+  if (action.type === 'resolve_financier_choice') { const next = structuredClone(game); if (!resolveFinancierAcquisitionChoice(next, action) && !resolveFinancierCardChoice(next, action)) resolveFinancierChoice(next, action); reconcileFinancierCardState(next); enforceDiplomatAssetLimits(next); runPostActionAutomationPipeline(next); return { state: next }; }
   if (action.type === 'place_treasury_card' || action.type === 'begin_deed_purchase' || action.type === 'begin_play_the_market' || action.type === 'use_hostile_takeover') {
     if (game.pendingMilitaryChoice || game.pendingMilitaryTimingChoice || game.pendingDiplomatChoice || game.pendingFinancierChoice || game.pendingLeaderAbilityWindow) throw new GameActionError('Resolve the pending choice first.');
     const next = structuredClone(game); applyFinancierStateAction(next, action); reconcileFinancierCardState(next); enforceDiplomatAssetLimits(next); runPostActionAutomationPipeline(next); return { state: next };
@@ -161,7 +162,7 @@ export function applyGameAction(game: GameState, action: StateAction): ApplyGame
   const battleBeforeResolution = action.type === 'resolve_battle' && working.battle ? structuredClone(working.battle) : undefined;
   const hadBattle = Boolean(working.battle); const endingPlayer = action.type === 'end_turn' ? action.playerId : undefined;
   const result = applyGameActionWithoutAutomation(working, action);
-  if (action.type === 'play_action_card') { applyMilitaryActionEffect(result.state, action.playerId, action.cardId, action.targets); applyFinancierActionEffect(result.state, action.playerId, action.cardId, action.targets); openCensureChoiceAfterAction(result.state, action.playerId); }
+  if (action.type === 'play_action_card') { applyMilitaryActionEffect(result.state, action.playerId, action.cardId, action.targets); applyFinancierActionEffect(result.state, action.playerId, action.cardId, action.targets); applyFinancierAcquisitionActionEffect(result.state, action.playerId, action.cardId, action.targets); openCensureChoiceAfterAction(result.state, action.playerId); }
   if (endingPlayer) resolveMilitaryEndTurn(result.state, endingPlayer);
   markLastStand(result, action);
   if (action.type === 'move_player') {
