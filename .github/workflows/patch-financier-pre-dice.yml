@@ -1,0 +1,123 @@
+name: Patch Financier pre-dice integration
+
+on:
+  push:
+    branches: [feature/financier-pre-dice-battle-cards]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: ${{ !contains(github.event.head_commit.message, '[financier-pre-dice-wired]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/financier-pre-dice-battle-cards
+          fetch-depth: 0
+      - name: Wire effects, choices, cleanup, and tests
+        shell: python
+        run: |
+          from pathlib import Path
+
+          def replace_once(path, old, new, label):
+              text = path.read_text()
+              if old not in text:
+                  raise SystemExit(f'{label} anchor not found in {path}')
+              path.write_text(text.replace(old, new, 1))
+
+          apply = Path('src/state/apply.ts')
+          replace_once(
+              apply,
+              "import { buildFinancierBattleAftermath, isFinancierBattleChoice, openNextFinancierChoice, resolveFinancierBattleChoice } from './financier-battle-cards';",
+              "import { buildFinancierBattleAftermath, isFinancierBattleChoice, openNextFinancierChoice, resolveFinancierBattleChoice } from './financier-battle-cards';\nimport { buildFinancierPreDiceChoices, isFinancierPreDiceChoice, resolveFinancierPreDiceAftermath, resolveFinancierPreDiceChoice } from './financier-pre-dice';",
+              'pre-dice import',
+          )
+          replace_once(
+              apply,
+              "correctAddedCardDestinations(result.state, activeBattle); applyHoldTheLineLoss(result.state, activeBattle, winner); result.state.recentBattleResult = recentBattleResult(result.state, activeBattle, winner);",
+              "correctAddedCardDestinations(result.state, activeBattle); resolveFinancierPreDiceAftermath(result.state, activeBattle, winner); applyHoldTheLineLoss(result.state, activeBattle, winner); result.state.recentBattleResult = recentBattleResult(result.state, activeBattle, winner);",
+              'pre-dice aftermath',
+          )
+          replace_once(
+              apply,
+              "if (action.type === 'resolve_battle_reveal') { const next = structuredClone(game); const result = resolveBattleReveal(next, action); openMilitaryAfterRevealWindows(next); maybeOpenSubsidizeWindow(next); runPostActionAutomationPipeline(next); return result; }",
+              "if (action.type === 'resolve_battle_reveal') {\n    const next = structuredClone(game);\n    const result = resolveBattleReveal(next, action);\n    openMilitaryAfterRevealWindows(next);\n    buildFinancierPreDiceChoices(next);\n    openNextFinancierChoice(next);\n    if (!next.pendingFinancierChoice && !next.financierChoiceQueue?.length) maybeOpenSubsidizeWindow(next);\n    runPostActionAutomationPipeline(next);\n    return result;\n  }",
+              'reveal integration',
+          )
+          old_choice = "if (action.type === 'resolve_financier_choice') { const next = structuredClone(game); const wasBattleChoice = isFinancierBattleChoice(next.pendingFinancierChoice); if (!resolveFinancierBattleChoice(next, action) && !resolveFinancierAcquisitionChoice(next, action) && !resolveFinancierCardChoice(next, action)) resolveFinancierChoice(next, action); reconcileFinancierCardState(next); enforceDiplomatAssetLimits(next); if (wasBattleChoice && !next.pendingFinancierChoice) openNextFinancierChoice(next); if (wasBattleChoice && !next.pendingFinancierChoice && !next.pendingMilitaryChoice && next.recentBattleResult) openPostBattleOrderWindow(next, next.recentBattleResult.winner); runPostActionAutomationPipeline(next); return { state: next }; }"
+          new_choice = """if (action.type === 'resolve_financier_choice') {
+    const next = structuredClone(game);
+    const pending = next.pendingFinancierChoice;
+    const wasBattleChoice = isFinancierBattleChoice(pending);
+    const wasPreDiceChoice = isFinancierPreDiceChoice(pending);
+    const wasQueuedSubsidize = pending?.kind === 'subsidize' && Boolean(next.financierChoiceQueue?.length);
+    if (!resolveFinancierPreDiceChoice(next, action) && !resolveFinancierBattleChoice(next, action) && !resolveFinancierAcquisitionChoice(next, action) && !resolveFinancierCardChoice(next, action)) resolveFinancierChoice(next, action);
+    reconcileFinancierCardState(next);
+    enforceDiplomatAssetLimits(next);
+    if ((wasBattleChoice || wasPreDiceChoice || wasQueuedSubsidize) && !next.pendingFinancierChoice) openNextFinancierChoice(next);
+    if ((wasPreDiceChoice || wasQueuedSubsidize) && !next.pendingFinancierChoice && !next.financierChoiceQueue?.length) maybeOpenSubsidizeWindow(next);
+    if (wasBattleChoice && !next.pendingFinancierChoice && !next.pendingMilitaryChoice && next.recentBattleResult) openPostBattleOrderWindow(next, next.recentBattleResult.winner);
+    runPostActionAutomationPipeline(next);
+    return { state: next };
+  }"""
+          replace_once(apply, old_choice, new_choice, 'financier choice integration')
+          replace_once(
+              apply,
+              "if (action.type === 'resolve_military_timing_choice') { const next = structuredClone(game); resolveMilitaryTimingChoice(next, action.playerId, action.choice, action.cardId, action.secondaryCardId); maybeOpenBrothersSelection(next); openMilitaryAfterRevealWindows(next); maybeOpenSubsidizeWindow(next); runPostActionAutomationPipeline(next); return { state: next }; }",
+              "if (action.type === 'resolve_military_timing_choice') { const next = structuredClone(game); resolveMilitaryTimingChoice(next, action.playerId, action.choice, action.cardId, action.secondaryCardId); maybeOpenBrothersSelection(next); openMilitaryAfterRevealWindows(next); if (!next.pendingMilitaryTimingChoice) openNextFinancierChoice(next); if (!next.pendingFinancierChoice && !next.financierChoiceQueue?.length) maybeOpenSubsidizeWindow(next); runPostActionAutomationPipeline(next); return { state: next }; }",
+              'military continuation',
+          )
+
+          integration = Path('src/state/financier-integration.ts')
+          replace_once(
+              integration,
+              "  maybeOpenSubsidizeWindow(game);\n}",
+              "  if (!game.financierChoiceQueue?.length) maybeOpenSubsidizeWindow(game);\n}",
+              'subsidize queue guard',
+          )
+
+          guided = Path('src/dev/guided-options.ts')
+          guided_cases = """    case 'battle_speculation': return pending.options.map((choice) => option(choice === 'spend' ? 'Spend 1 Capital on Speculation' : 'Pass Speculation', choice));
+    case 'battle_liquidation': return [option('Pass Battle Liquidation', 'pass'), ...pending.treasuryOptions.map((cardId) => option(`Liquidate ${cardId}`, 'liquidate', cardId))];
+    case 'battle_tariffs': return [option(`Grant ${pending.ownerId} +1 from Tariffs`, 'grant_bonus'), ...pending.handOptions.map((cardId) => option(`Discard ${cardId} to avoid Tariffs`, 'discard', cardId))];
+    case 'battle_divestment': return [option('Pass Battle Divestment', 'pass'), ...pending.deedOptions.map((spaceId) => option(`Divest the Deed to ${spaceId}`, 'divest', undefined, undefined, spaceId))];
+    case 'battle_margin_loan': return [option('Pass Battle Margin Loan', 'pass'), ...pending.collateralOptions.map((cardId) => option(`Collateralize ${cardId}`, 'collateralize', cardId))];
+    case 'battle_property_dues': return [option(`Allow ${pending.ownerId} to collect 3 Capital`, 'pay_dues'), ...pending.handOptions.map((cardId) => option(`Discard ${cardId} to avoid Property Dues`, 'discard', cardId))];
+"""
+          replace_once(
+              guided,
+              "    case 'battle_capital_gains': return pending.eligibleCardIds.map((cardId) => option(`Place ${cardId} in Treasury with Capital Gains`, cardId, cardId));",
+              guided_cases + "    case 'battle_capital_gains': return pending.eligibleCardIds.map((cardId) => option(`Place ${cardId} in Treasury with Capital Gains`, cardId, cardId));",
+              'guided pre-dice cases',
+          )
+
+          index = Path('src/state/index.ts')
+          replace_once(
+              index,
+              "export * from './financier-battle-cards';",
+              "export * from './financier-battle-cards';\nexport * from './financier-pre-dice';",
+              'state export',
+          )
+
+          battle_test = Path('src/state/financier-battle-cards.test.ts')
+          replace_once(
+              battle_test,
+              "  it('enables only implemented Financier Battle modes', () => {",
+              "  it('enables the completed Financier Battle modes', () => {",
+              'battle playability test title',
+          )
+          replace_once(
+              battle_test,
+              "    expect(() => applyGameAction(setup.state, { type: 'commit_battle_hand_card', playerId: 'player_1', cardId: 'financiers-liquidation' })).toThrow();",
+              "    expect(() => applyGameAction(setup.state, { type: 'commit_battle_hand_card', playerId: 'player_1', cardId: 'financiers-liquidation' })).not.toThrow();",
+              'battle playability expectation',
+          )
+      - name: Commit integration
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add src/state/apply.ts src/state/financier-integration.ts src/dev/guided-options.ts src/state/index.ts src/state/financier-battle-cards.test.ts
+          git commit -m "Integrate Financier pre-dice battle choices [financier-pre-dice-wired]"
+          git push origin HEAD:feature/financier-pre-dice-battle-cards
