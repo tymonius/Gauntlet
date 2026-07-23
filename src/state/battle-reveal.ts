@@ -41,6 +41,9 @@ export function resolveBattleReveal(game: GameState, action: ResolveBattleReveal
   if (!game.battle || game.phase !== 'battle' || game.battle.stage !== 'dice') {
     throw new GameActionError('Battle cards are not ready to resolve.');
   }
+  if (game.pendingMilitaryChoice || game.pendingMilitaryTimingChoice || game.pendingDiplomatChoice || game.pendingFinancierChoice || game.pendingLeaderAbilityWindow) {
+    throw new GameActionError('Resolve the pending faction choice before resolving revealed Battle effects.');
+  }
   const battle = game.battle;
   if (action.playerId !== battle.attacker.playerId && action.playerId !== battle.defender.playerId) {
     throw new GameActionError(`${action.playerId} cannot resolve a battle they are not in.`);
