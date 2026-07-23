@@ -49,6 +49,7 @@ jobs:
           await page.locator('.compact-card-row').nth(3).click({ position: { x: 20, y: 20 } });
           const preview = page.locator('#cardPreview.mobile-open');
           await preview.waitFor({ state: 'visible' });
+          await page.waitForTimeout(250);
           await page.screenshot({ path: 'proof/mobile-card-preview.png', fullPage: false });
 
           const metrics = await preview.evaluate(element => {
@@ -63,6 +64,7 @@ jobs:
               height: box.height,
               position: style.position,
               overflowY: style.overflowY,
+              opacity: style.opacity,
               ariaHidden: element.getAttribute('aria-hidden'),
               role: element.getAttribute('role')
             };
@@ -70,15 +72,17 @@ jobs:
           console.log(JSON.stringify(metrics, null, 2));
 
           if (metrics.position !== 'fixed') throw new Error(`Expected fixed preview, got ${metrics.position}`);
-          if (metrics.bottom > 845 || metrics.bottom < 840) throw new Error(`Preview is not anchored to viewport bottom: ${metrics.bottom}`);
+          if (Math.abs(metrics.bottom - 844) > 1) throw new Error(`Preview is not anchored to viewport bottom: ${metrics.bottom}`);
           if (metrics.left !== 0 || Math.round(metrics.right) !== 390) throw new Error(`Preview does not span mobile viewport: ${JSON.stringify(metrics)}`);
           if (metrics.top < 0 || metrics.height > 660) throw new Error(`Preview height is outside expected mobile range: ${JSON.stringify(metrics)}`);
           if (metrics.overflowY !== 'auto') throw new Error(`Expected scrollable card text, got ${metrics.overflowY}`);
+          if (metrics.opacity !== '1') throw new Error(`Preview transition did not settle: ${metrics.opacity}`);
           if (metrics.ariaHidden !== 'false' || metrics.role !== 'dialog') throw new Error(`Dialog semantics missing: ${JSON.stringify(metrics)}`);
           if (!(await page.locator('.mobile-card-preview-backdrop.mobile-open').isVisible())) throw new Error('Backdrop did not open');
           if (!(await page.locator('.mobile-card-preview-close').isVisible())) throw new Error('Close button is missing');
 
           await page.locator('.mobile-card-preview-close').click();
+          await page.waitForTimeout(220);
           if (await page.locator('#cardPreview.mobile-open').count()) throw new Error('Preview did not close');
 
           await browser.close();
