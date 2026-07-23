@@ -1,0 +1,33 @@
+name: Fix Financier turn-start cleanup
+on:
+  push:
+    branches: [feature/financier-battle-foundations]
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: ${{ !contains(github.event.head_commit.message, '[turn-start-cleanup-fixed]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feature/financier-battle-foundations
+          fetch-depth: 0
+      - name: Preserve newly opened turn-start choices
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path('src/state/apply.ts')
+          text = path.read_text()
+          old = "result.state.pendingMilitaryTimingChoice = undefined; result.state.militaryTimingChoiceQueue = undefined; result.state.pendingFinancierChoice = undefined; result.state.financierChoiceQueue = undefined; result.state.pendingLeaderAbilityWindow = undefined;"
+          new = "result.state.pendingMilitaryTimingChoice = undefined; result.state.militaryTimingChoiceQueue = undefined; result.state.pendingLeaderAbilityWindow = undefined;"
+          if old not in text:
+              raise SystemExit('Turn-start cleanup target not found')
+          path.write_text(text.replace(old, new, 1))
+      - name: Commit fix
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add src/state/apply.ts
+          git commit -m "Preserve Financier turn-start choices [turn-start-cleanup-fixed]"
+          git push origin HEAD:feature/financier-battle-foundations
