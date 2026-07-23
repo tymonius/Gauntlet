@@ -65,6 +65,7 @@ export type PendingIntelligenceChoice =
   | {
       kind: 'mission_control';
       playerId: PlayerID;
+      battleId?: never;
       eligibleCardIds: CardID[];
       options: ['pass', 'select'];
       resumePriorityPlayer?: PlayerID;
@@ -72,6 +73,7 @@ export type PendingIntelligenceChoice =
   | {
       kind: 'fieldcraft';
       playerId: PlayerID;
+      battleId?: never;
       spaceId: SpaceID;
       effectId: string;
       options: ['pass', 'ignore'];
