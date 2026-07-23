@@ -31,7 +31,7 @@ function game() {
     openingHandSize: intelligenceDeck.length,
     players: [
       { id: 'player_1', name: 'Intelligence', factionId: 'intelligence', leaderName: 'Spymaster', deck: intelligenceDeck, territories: ['t1', 't2', 't3'] },
-      { id: 'player_2', name: 'Opponent', deck: ['o1', 'o2', 'o3', 'o4', 'o5', 'o6'], territories: ['t4', 't5', 't6'] },
+      { id: 'player_2', name: 'Opponent', deck: ['o1', 'o2', 'o3', 'o4', 'o5', 'o6', 'o7', 'o8', 'o9', 'o10', 'o11', 'o12'], territories: ['t4', 't5', 't6'] },
     ],
   });
   state.phase = 'action_after_movement';
