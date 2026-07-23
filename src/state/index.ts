@@ -13,6 +13,7 @@ export * from './financier-integration';
 export * from './financier-cards';
 export * from './financier-acquisition-cards';
 export * from './financier-battle-cards';
+export * from './financier-pre-dice';
 export * from './actions';
 export * from './draw';
 export { applyGameAction } from './apply';

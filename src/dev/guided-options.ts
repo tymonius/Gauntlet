@@ -31,6 +31,12 @@ function pendingFinancierOptions(game: GameState, playerId: PlayerID): GuidedOpt
     case 'subsidize': return pending.options.map((bonus) => option(bonus === 0 ? 'Pass Subsidize' : `Subsidize for +${bonus}`, String(bonus), undefined, bonus));
     case 'liquidation_purchase': return [option('Decline the immediate Deed purchase', 'pass'), ...pending.spaceOptions.map((spaceId) => option(`Immediately buy the Deed to ${spaceId}`, 'purchase', undefined, undefined, spaceId))];
     case 'margin_loan_repayment': return [option(`Repay Margin Loan for ${pending.repaymentCost} Capital`, 'repay'), option(`Default and lose ${pending.collateralCardId}`, 'default')];
+    case 'battle_speculation': return pending.options.map((choice) => option(choice === 'spend' ? 'Spend 1 Capital on Speculation' : 'Pass Speculation', choice));
+    case 'battle_liquidation': return [option('Pass Battle Liquidation', 'pass'), ...pending.treasuryOptions.map((cardId) => option(`Liquidate ${cardId}`, 'liquidate', cardId))];
+    case 'battle_tariffs': return [option(`Grant ${pending.ownerId} +1 from Tariffs`, 'grant_bonus'), ...pending.handOptions.map((cardId) => option(`Discard ${cardId} to avoid Tariffs`, 'discard', cardId))];
+    case 'battle_divestment': return [option('Pass Battle Divestment', 'pass'), ...pending.deedOptions.map((spaceId) => option(`Divest the Deed to ${spaceId}`, 'divest', undefined, undefined, spaceId))];
+    case 'battle_margin_loan': return [option('Pass Battle Margin Loan', 'pass'), ...pending.collateralOptions.map((cardId) => option(`Collateralize ${cardId}`, 'collateralize', cardId))];
+    case 'battle_property_dues': return [option(`Allow ${pending.ownerId} to collect 3 Capital`, 'pay_dues'), ...pending.handOptions.map((cardId) => option(`Discard ${cardId} to avoid Property Dues`, 'discard', cardId))];
     case 'battle_capital_gains': return pending.eligibleCardIds.map((cardId) => option(`Place ${cardId} in Treasury with Capital Gains`, cardId, cardId));
     case 'battle_monetary_crisis': return pending.handOptions.map((cardId) => option(`Keep ${cardId}; discard the rest`, cardId, cardId));
     case 'battle_leveraged_buyout': return [

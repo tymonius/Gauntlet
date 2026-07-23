@@ -56,17 +56,17 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'diplomats-demilitarized-zone': actionOnly('diplomats-demilitarized-zone', 'removed'),
   'diplomats-sanctions-blockade': actionOnly('diplomats-sanctions-blockade', 'removed'),
 
-  'financiers-speculation': actionOnly('financiers-speculation', 'removed', true),
+  'financiers-speculation': battleAndAction('financiers-speculation', 'removed', true),
   'financiers-monetary-crisis': battleAndAction('financiers-monetary-crisis', 'discard'),
-  'financiers-liquidation': actionOnly('financiers-liquidation', 'discard', true),
+  'financiers-liquidation': battleAndAction('financiers-liquidation', 'discard', true),
   'financiers-underwriting': battleAndAction('financiers-underwriting', 'asset_bank'),
   'financiers-capital-gains': battleAndAction('financiers-capital-gains', 'removed', true),
-  'financiers-tariffs': actionOnly('financiers-tariffs', 'asset_bank'),
-  'financiers-divestment': actionOnly('financiers-divestment', 'discard', true),
-  'financiers-margin-loan': actionOnly('financiers-margin-loan', 'asset_bank', true),
+  'financiers-tariffs': battleAndAction('financiers-tariffs', 'asset_bank'),
+  'financiers-divestment': battleAndAction('financiers-divestment', 'discard', true),
+  'financiers-margin-loan': battleAndAction('financiers-margin-loan', 'asset_bank', true),
   'financiers-leveraged-buyout': battleAndAction('financiers-leveraged-buyout', 'discard'),
   'financiers-foreclosure': battleAndAction('financiers-foreclosure', 'discard', true),
-  'financiers-property-dues': actionOnly('financiers-property-dues', 'asset_bank'),
+  'financiers-property-dues': battleAndAction('financiers-property-dues', 'asset_bank'),
   'financiers-corner-the-market': battleAndAction('financiers-corner-the-market', 'discard'),
 };
 

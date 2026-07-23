@@ -175,7 +175,7 @@ export function resolveFinancierChoice(game: GameState, action: ResolveFinancier
   }
   game.pendingFinancierChoice = undefined;
   if (game.phase !== 'game_over') game.priorityPlayer = game.activePlayer;
-  maybeOpenSubsidizeWindow(game);
+  if (!game.financierChoiceQueue?.length) maybeOpenSubsidizeWindow(game);
 }
 
 export function resolveFinancierEndTurn(game: GameState, endingPlayerId: PlayerID): void {

@@ -124,7 +124,7 @@ describe('Financier Battle card foundations', () => {
     expect(state.pendingFinancierChoice).toBeUndefined();
   });
 
-  it('enables only implemented Financier Battle modes', () => {
+  it('enables the completed Financier Battle modes', () => {
     const setup = game();
     setFactionResource(setup.state, 'player_1', 'capital', 1, 'test');
     setup.state.phase = 'battle';
@@ -132,6 +132,6 @@ describe('Financier Battle card foundations', () => {
     setup.state.battle!.attacker.passedHandCommit = false;
     setup.state.battle!.attacker.handCommit = undefined;
     expect(() => applyGameAction(setup.state, { type: 'commit_battle_hand_card', playerId: 'player_1', cardId: 'financiers-monetary-crisis' })).not.toThrow();
-    expect(() => applyGameAction(setup.state, { type: 'commit_battle_hand_card', playerId: 'player_1', cardId: 'financiers-liquidation' })).toThrow();
+    expect(() => applyGameAction(setup.state, { type: 'commit_battle_hand_card', playerId: 'player_1', cardId: 'financiers-liquidation' })).not.toThrow();
   });
 });
