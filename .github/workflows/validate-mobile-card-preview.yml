@@ -31,7 +31,7 @@ jobs:
           trap 'kill $SERVER_PID' EXIT
           sleep 2
           mkdir -p proof
-          cat > /tmp/validate-mobile-preview.mjs <<'EOF'
+          cat > validate-mobile-preview.mjs <<'EOF'
           import { chromium } from 'playwright';
 
           const browser = await chromium.launch({ headless: true });
@@ -83,7 +83,7 @@ jobs:
 
           await browser.close();
           EOF
-          node /tmp/validate-mobile-preview.mjs 2>&1 | tee proof/run.log
+          node validate-mobile-preview.mjs 2>&1 | tee proof/run.log
 
       - uses: actions/upload-artifact@v4
         if: always()
