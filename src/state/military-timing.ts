@@ -1,6 +1,7 @@
 import { cardCanBePlayedAt } from '../cards';
 import type { BattleParticipantState, BattlePlayedCard, CardID, GameEvent, GameState, PendingMilitaryTimingChoice, PlayerID } from '../types';
 import { drawFromDeck } from './draw';
+import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
 
 const BROTHERS = 'military-brothers-in-arms';
 const RESERVE = 'military-reserve-force';
@@ -35,6 +36,7 @@ function activateNext(game: GameState): void {
 }
 
 function consumeAsset(game: GameState, playerId: PlayerID, cardId: CardID): void {
+  if (!bankedAssetUseAllowed(game, playerId)) throw new Error(`${playerId} cannot use banked Assets during this battle.`);
   const player = game.players[playerId];
   const index = player.zones.assetBank.indexOf(cardId);
   if (index < 0) throw new Error(`${cardId} is not banked.`);
@@ -101,7 +103,7 @@ export function openMilitaryAfterRevealWindows(game: GameState): void {
     const player = game.players[playerId];
     if (player.factionId !== 'military') continue;
     const side = participant(game, playerId);
-    const stored = player.military?.storedCards[RESERVE];
+    const stored = bankedAssetUseAllowed(game, playerId) ? player.military?.storedCards[RESERVE] : undefined;
     const reservePlayed = side.battleDrawPlayed.some((card) => card.cardId === RESERVE);
     if (stored || reservePlayed) {
       queue(game, {
