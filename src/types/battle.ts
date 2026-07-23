@@ -79,6 +79,7 @@ export interface BattleState {
   tiePolicy: BattleTiePolicy;
   lastStand?: boolean;
   attackerHandCommitVisibleTo?: PlayerID[];
+  blockedBattleDrawCards?: Partial<Record<PlayerID, CardID[]>>;
   winner?: PlayerID;
   loser?: PlayerID;
   effectsResolved: string[];
