@@ -29,6 +29,8 @@
   }
 
   function handleDocumentClick(event) {
+    if (!(event.target instanceof Element)) return;
+
     const cardRow = event.target.closest(".compact-card-row");
     if (cardRow && !event.target.closest("button") && mobileQuery.matches) {
       window.requestAnimationFrame(() => openPreview());
@@ -77,7 +79,10 @@
     preview.setAttribute("aria-hidden", mobileQuery.matches ? "true" : "false");
 
     const selectedRow = document.querySelector(".compact-card-row.selected");
-    if (selectedRow instanceof HTMLElement) selectedRow.focus({ preventScroll: true });
+    if (selectedRow instanceof HTMLElement) {
+      selectedRow.tabIndex = -1;
+      selectedRow.focus({ preventScroll: true });
+    }
   }
 
   function ensureCloseButton() {
