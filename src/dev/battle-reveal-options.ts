@@ -1,5 +1,5 @@
 import type { BattleCardTarget } from '../effects';
-import type { BattleParticipantState, GameState, PlayerID } from '../types';
+import type { BattleParticipantState, BattlePlayedCard, GameState, PlayerID } from '../types';
 import type { StateAction } from '../state';
 
 export interface BattleRevealGuidedOption {
@@ -7,9 +7,9 @@ export interface BattleRevealGuidedOption {
   action: StateAction;
 }
 
-function activePlayedCards(participant: BattleParticipantState) {
+function activePlayedCards(participant: BattleParticipantState): BattlePlayedCard[] {
   return [participant.handCommit, ...participant.battleDrawPlayed]
-    .filter((card): card is NonNullable<typeof card> => Boolean(card) && !card.canceled);
+    .filter((card): card is BattlePlayedCard => card !== undefined && !card.canceled);
 }
 
 function hasEmbargo(participant: BattleParticipantState): boolean {
