@@ -1,0 +1,90 @@
+name: Validate mobile card preview
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/validate-mobile-card-preview.yml"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          lfs: true
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install chromium --with-deps
+
+      - name: Validate mobile card details
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -m http.server 8000 > /tmp/gauntlet-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          sleep 2
+          mkdir -p proof
+          cat > /tmp/validate-mobile-preview.mjs <<'EOF'
+          import { chromium } from 'playwright';
+
+          const browser = await chromium.launch({ headless: true });
+          const context = await browser.newContext({
+            viewport: { width: 390, height: 844 },
+            deviceScaleFactor: 2,
+            isMobile: true,
+            hasTouch: true
+          });
+          const page = await context.newPage();
+          await page.goto('http://127.0.0.1:8000/deckbuilder/', { waitUntil: 'networkidle' });
+          await page.locator('#app:not([hidden])').waitFor();
+          await page.locator('.compact-card-row').nth(3).click({ position: { x: 20, y: 20 } });
+          const preview = page.locator('#cardPreview.mobile-open');
+          await preview.waitFor({ state: 'visible' });
+
+          const metrics = await preview.evaluate(element => {
+            const box = element.getBoundingClientRect();
+            const style = getComputedStyle(element);
+            return {
+              top: box.top,
+              right: box.right,
+              bottom: box.bottom,
+              left: box.left,
+              width: box.width,
+              height: box.height,
+              position: style.position,
+              overflowY: style.overflowY,
+              ariaHidden: element.getAttribute('aria-hidden'),
+              role: element.getAttribute('role')
+            };
+          });
+
+          if (metrics.position !== 'fixed') throw new Error(`Expected fixed preview, got ${metrics.position}`);
+          if (metrics.bottom > 845 || metrics.bottom < 840) throw new Error(`Preview is not anchored to viewport bottom: ${metrics.bottom}`);
+          if (metrics.left !== 0 || Math.round(metrics.right) !== 390) throw new Error(`Preview does not span mobile viewport: ${JSON.stringify(metrics)}`);
+          if (metrics.top < 0 || metrics.height > 660) throw new Error(`Preview height is outside expected mobile range: ${JSON.stringify(metrics)}`);
+          if (metrics.overflowY !== 'auto') throw new Error(`Expected scrollable card text, got ${metrics.overflowY}`);
+          if (metrics.ariaHidden !== 'false' || metrics.role !== 'dialog') throw new Error(`Dialog semantics missing: ${JSON.stringify(metrics)}`);
+          if (!(await page.locator('.mobile-card-preview-backdrop.mobile-open').isVisible())) throw new Error('Backdrop did not open');
+          if (!(await page.locator('.mobile-card-preview-close').isVisible())) throw new Error('Close button is missing');
+
+          await page.screenshot({ path: 'proof/mobile-card-preview.png', fullPage: false });
+          await page.locator('.mobile-card-preview-close').click();
+          if (await page.locator('#cardPreview.mobile-open').count()) throw new Error('Preview did not close');
+
+          await browser.close();
+          console.log(JSON.stringify(metrics, null, 2));
+          EOF
+          node /tmp/validate-mobile-preview.mjs | tee proof/metrics.json
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: mobile-card-preview-proof
+          path: proof/
