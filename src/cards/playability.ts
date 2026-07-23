@@ -20,6 +20,13 @@ const battleAndAction = (cardId: CardID, actionDestination: CardDestination, req
   requiresTarget,
 });
 
+const actionOnly = (cardId: CardID, destination: CardDestination): CardPlayRule => ({
+  cardId,
+  timings: ['action'],
+  allowedOrigins: ['hand'],
+  defaultDestinationByOrigin: { hand: destination },
+});
+
 export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'card-attrition': battleAndAction('card-attrition', 'asset_bank'),
   'card-conscription': { cardId: 'card-conscription', timings: ['battle_hand_commit', 'battle_draw_play'], allowedOrigins: ['hand', 'battle_draw'], defaultDestinationByOrigin: { hand: 'graveyard', battle_draw: 'discard' } },
@@ -39,6 +46,14 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'military-countercharge': battleAndAction('military-countercharge', 'asset_bank'),
   'military-war-crimes': battleAndAction('military-war-crimes', 'asset_bank'),
   'military-shock-and-awe': battleAndAction('military-shock-and-awe', 'asset_bank'),
+
+  'diplomats-safe-conduct': actionOnly('diplomats-safe-conduct', 'asset_bank'),
+  'diplomats-neutral-observers': actionOnly('diplomats-neutral-observers', 'asset_bank'),
+  'diplomats-good-faith': actionOnly('diplomats-good-faith', 'asset_bank'),
+  'diplomats-sanctions-censure': actionOnly('diplomats-sanctions-censure', 'asset_bank'),
+  'diplomats-sanctions-embargo': actionOnly('diplomats-sanctions-embargo', 'asset_bank'),
+  'diplomats-demilitarized-zone': actionOnly('diplomats-demilitarized-zone', 'removed'),
+  'diplomats-sanctions-blockade': actionOnly('diplomats-sanctions-blockade', 'removed'),
 };
 
 export function getCardPlayRule(cardId: CardID): CardPlayRule | undefined { return coreCardPlayRules[cardId]; }
