@@ -204,8 +204,8 @@ describe('Exfiltration Battle effect', () => {
 
   it('does not offer an impossible withdrawal from the winner’s own end position', () => {
     let state = game();
-    const origin = state.board.spaces.find((space) => space.index === 6)!;
-    const location = state.board.spaces.find((space) => space.index === 7)!;
+    const origin = state.board.spaces.find((space) => space.index === 7)!;
+    const location = state.board.spaces.find((space) => space.index === 8)!;
     for (const space of state.board.spaces) space.occupant = undefined;
     origin.occupant = 'player_1';
     location.occupant = 'player_2';
@@ -221,7 +221,7 @@ describe('Exfiltration Battle effect', () => {
     state = applyGameAction(state, { type: 'resolve_battle', playerId: 'player_1' }).state;
 
     expect(state.recentBattleResult?.winner).toBe('player_2');
-    expect(state.players.player_2.occupiedSpaceId).toBe('space-7');
+    expect(state.players.player_2.occupiedSpaceId).toBe('player_2-before-gauntlet');
     expect(state.pendingIntelligenceChoice?.kind).not.toBe('exfiltration_battle_withdraw');
   });
 });
