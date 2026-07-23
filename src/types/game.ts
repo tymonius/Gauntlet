@@ -1,6 +1,7 @@
 import type { BoardState, PublicBoardView } from './board';
 import type { BattleState, PublicBattleView } from './battle';
 import type { PendingDiplomatChoice } from './diplomats';
+import type { PendingFinancierChoice } from './financiers';
 import type { CardID, GameID, PlayerID, SpaceID } from './ids';
 import type { LegalLeaderAbilityOption } from './leader';
 import type { PendingMilitaryChoice, PendingMilitaryTimingChoice } from './military';
@@ -18,7 +19,7 @@ export interface GameState {
   players: Record<PlayerID, PlayerState>; board: BoardState; battle?: BattleState; recentBattleResult?: RecentBattleResult;
   pendingMilitaryChoice?: PendingMilitaryChoice; militaryChoiceQueue?: PendingMilitaryChoice[];
   pendingMilitaryTimingChoice?: PendingMilitaryTimingChoice; militaryTimingChoiceQueue?: PendingMilitaryTimingChoice[];
-  pendingDiplomatChoice?: PendingDiplomatChoice;
+  pendingDiplomatChoice?: PendingDiplomatChoice; pendingFinancierChoice?: PendingFinancierChoice;
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow; pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[]; winner?: PlayerID;
 }
@@ -28,7 +29,7 @@ export interface PublicGameView {
   id: GameID; version: string; phase: GamePhase; turn: number; activePlayer: PlayerID; priorityPlayer?: PlayerID;
   players: Record<PlayerID, PublicPlayerView>; board: PublicBoardView; battle?: PublicBattleView;
   legalActionPlays?: LegalActionPlayOption[]; legalLeaderAbilities?: LegalLeaderAbilityOption[];
-  pendingMilitaryChoice?: PendingMilitaryChoice; pendingMilitaryTimingChoice?: PendingMilitaryTimingChoice; pendingDiplomatChoice?: PendingDiplomatChoice;
+  pendingMilitaryChoice?: PendingMilitaryChoice; pendingMilitaryTimingChoice?: PendingMilitaryTimingChoice; pendingDiplomatChoice?: PendingDiplomatChoice; pendingFinancierChoice?: PendingFinancierChoice;
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow; pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[]; winner?: PlayerID;
 }
