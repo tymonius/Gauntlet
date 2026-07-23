@@ -21,6 +21,7 @@ export interface BattlePlayedCard {
   origin: CardOrigin;
   faceDown: boolean;
   canceled: boolean;
+  negated?: boolean;
   visibleTo?: PlayerID[];
 }
 
@@ -34,6 +35,9 @@ export interface BattleParticipantState {
   battleDrawPlayed: BattlePlayedCard[];
   battleDrawCount: number;
   battleDrawPlayLimit: number;
+  advantage?: number;
+  disadvantage?: number;
+  diceRolls?: number[];
   diceRoll?: number;
   rerollsRemaining: number;
   modifiers: number;
@@ -96,6 +100,9 @@ export interface PublicBattleParticipantView {
   battleDrawPlayed: Array<BattlePlayedCard | { faceDown: true }>;
   battleDrawLimit: number;
   battleDrawPlayLimit: number;
+  advantage: number;
+  disadvantage: number;
+  diceRolls?: number[];
   diceRoll?: number;
   modifiers: number;
   retreated: boolean;
