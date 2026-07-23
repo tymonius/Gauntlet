@@ -33,17 +33,23 @@ function active(card?: BattlePlayedCard): card is BattlePlayedCard {
   return Boolean(card && !card.canceled && !card.negated);
 }
 
-function participantUsedExfiltration(participant: BattleParticipantState): boolean {
-  return active(participant.handCommit) && participant.handCommit.cardId === EXFILTRATION
-    || participant.battleDrawPlayed.some((card) => active(card) && card.cardId === EXFILTRATION);
+function participantExfiltrationCount(participant: BattleParticipantState): number {
+  return Number(active(participant.handCommit) && participant.handCommit.cardId === EXFILTRATION)
+    + participant.battleDrawPlayed.filter((card) => active(card) && card.cardId === EXFILTRATION).length;
+}
+
+export function exfiltrationBattleUses(game: GameState): Partial<Record<PlayerID, number>> {
+  const battle = game.battle;
+  if (!battle) return {};
+  return Object.fromEntries(
+    [battle.attacker, battle.defender]
+      .map((participant) => [participant.playerId, participantExfiltrationCount(participant)] as const)
+      .filter(([, count]) => count > 0),
+  );
 }
 
 export function exfiltrationBattlePlayers(game: GameState): PlayerID[] {
-  const battle = game.battle;
-  if (!battle) return [];
-  return [battle.attacker, battle.defender]
-    .filter((participant) => participantUsedExfiltration(participant))
-    .map((participant) => participant.playerId);
+  return Object.keys(exfiltrationBattleUses(game));
 }
 
 function currentSpace(game: GameState, playerId: PlayerID) {
@@ -84,34 +90,36 @@ function resumePriority(game: GameState, fallback?: PlayerID): PlayerID | undefi
 
 export function openExfiltrationBattleWindow(
   game: GameState,
-  eligiblePlayers: PlayerID[],
+  usesByPlayer: Partial<Record<PlayerID, number>>,
   expectedBattleId: string,
 ): boolean {
   if (game.phase === 'game_over' || game.pendingIntelligenceChoice || game.battle?.id === expectedBattleId) return false;
   const result = game.recentBattleResult;
-  const winner = result?.winner;
-  if (!result || result.battleId !== expectedBattleId || !winner || !eligiblePlayers.includes(winner)) return false;
-  const destinationId = exfiltrationBattleDestination(game, winner);
+  const loser = result?.loser;
+  const remainingUses = loser ? usesByPlayer[loser] ?? 0 : 0;
+  if (!result || result.battleId !== expectedBattleId || !loser || remainingUses < 1) return false;
+  const destinationId = exfiltrationBattleDestination(game, loser);
   if (!destinationId) return false;
 
   const previousPriority = game.priorityPlayer;
   game.pendingIntelligenceChoice = {
     kind: 'exfiltration_battle_withdraw',
-    playerId: winner,
+    playerId: loser,
     battleId: result.battleId,
     destinationId,
+    remainingUses,
     options: ['pass', 'withdraw'],
     resumePriorityPlayer: previousPriority,
   };
-  game.priorityPlayer = winner;
+  game.priorityPlayer = loser;
   return true;
 }
 
-function withdraw(game: GameState, playerId: PlayerID, destinationId: SpaceID): void {
+function retreatOneAdditionalPosition(game: GameState, playerId: PlayerID, destinationId: SpaceID): void {
   const current = currentSpace(game, playerId);
   const destination = game.board.spaces.find((space) => space.id === destinationId);
   if (!current || !destination || destination.occupant) {
-    throw new ExfiltrationBattleError('The Exfiltration withdrawal destination is no longer available.');
+    throw new ExfiltrationBattleError('The additional Exfiltration retreat destination is no longer available.');
   }
   current.occupant = undefined;
   destination.occupant = playerId;
@@ -119,10 +127,27 @@ function withdraw(game: GameState, playerId: PlayerID, destinationId: SpaceID): 
   publicLog(
     game,
     playerId,
-    'intelligence_exfiltration_battle_withdrawal',
-    `${game.players[playerId].name} withdrew one position with Exfiltration after winning the battle.`,
+    'intelligence_exfiltration_battle_retreat',
+    `${game.players[playerId].name} retreated one additional position with Exfiltration after losing the battle.`,
     { from: current.id, to: destination.id, battleId: game.recentBattleResult?.battleId },
   );
+}
+
+function openNextUse(game: GameState, playerId: PlayerID, remainingUses: number, fallback?: PlayerID): boolean {
+  if (remainingUses < 1) return false;
+  const destinationId = exfiltrationBattleDestination(game, playerId);
+  if (!destinationId) return false;
+  game.pendingIntelligenceChoice = {
+    kind: 'exfiltration_battle_withdraw',
+    playerId,
+    battleId: game.recentBattleResult?.battleId ?? '',
+    destinationId,
+    remainingUses,
+    options: ['pass', 'withdraw'],
+    resumePriorityPlayer: fallback,
+  };
+  game.priorityPlayer = playerId;
+  return true;
 }
 
 export function resolveExfiltrationBattleChoice(
@@ -135,12 +160,15 @@ export function resolveExfiltrationBattleChoice(
   }
 
   if (action.choice === 'withdraw') {
-    withdraw(game, action.playerId, pending.destinationId);
+    retreatOneAdditionalPosition(game, action.playerId, pending.destinationId);
   } else if (action.choice !== 'pass') {
-    throw new ExfiltrationBattleError('Choose whether to withdraw with Exfiltration.');
+    throw new ExfiltrationBattleError('Choose whether to retreat one additional position with Exfiltration.');
   }
 
   const fallback = pending.resumePriorityPlayer;
   game.pendingIntelligenceChoice = undefined;
-  if (game.phase !== 'game_over') game.priorityPlayer = resumePriority(game, fallback);
+  const remainingUses = pending.remainingUses - 1;
+  if (!openNextUse(game, action.playerId, remainingUses, fallback) && game.phase !== 'game_over') {
+    game.priorityPlayer = resumePriority(game, fallback);
+  }
 }
