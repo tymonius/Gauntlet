@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { CardID, GameState, IntelligenceMissionKind, PlayerID } from '../types';
+import type { CardID, GameState, IntelligenceMissionKind, PlayerID, SpaceID } from '../types';
 import { initializeGame } from './initialize';
 import {
   evaluateIntelligenceMissionRequirements,
@@ -32,6 +32,7 @@ interface BattleFacts {
   winner?: PlayerID;
   attacker?: PlayerID;
   defender?: PlayerID;
+  location?: SpaceID;
   ownHand?: CardID[];
   opposingHand?: CardID[];
   opposingBattleHand?: CardID[];
@@ -39,6 +40,8 @@ interface BattleFacts {
 
 function resolveBattle(state: GameState, facts: BattleFacts = {}): void {
   const battleId = facts.battleId ?? 'battle-1';
+  const defaultLocation = state.board.spaces.find((space) => space.kind === 'territory')!.id;
+  const attackerOrigin = state.board.spaces.find((space) => space.id !== defaultLocation)!.id;
   state.log.push({
     id: `${state.id}-event-${state.log.length + 1}`,
     turn: state.turn,
@@ -53,8 +56,8 @@ function resolveBattle(state: GameState, facts: BattleFacts = {}): void {
     loser: facts.winner === 'player_2' ? 'player_1' : 'player_2',
     attacker: facts.attacker ?? 'player_1',
     defender: facts.defender ?? 'player_2',
-    location: 'territory-3',
-    attackerOrigin: 'territory-2',
+    location: facts.location ?? defaultLocation,
+    attackerOrigin,
     retreatDirection: 1,
     handCommittedCards: {
       player_1: facts.ownHand ?? [],
@@ -94,9 +97,9 @@ describe('automatic Intelligence Mission requirements', () => {
 
   it('satisfies Reconnaissance after defending and winning on an enemy-controlled Territory', () => {
     const state = game('intelligence-reconnaissance');
-    const location = state.board.spaces.find((space) => space.id === 'territory-3')!;
+    const location = state.board.spaces.find((space) => space.kind === 'territory')!;
     location.controller = 'player_2';
-    resolveBattle(state, { attacker: 'player_2', defender: 'player_1' });
+    resolveBattle(state, { attacker: 'player_2', defender: 'player_1', location: location.id });
     expect(activeMission(state).requirementSatisfied).toBe(true);
   });
 
@@ -129,6 +132,8 @@ describe('automatic Intelligence Mission requirements', () => {
 
   it('does not use a battle that resolved before the Mission began', () => {
     const state = game('intelligence-disinformation');
+    const location = state.board.spaces.find((space) => space.kind === 'territory')!.id;
+    const attackerOrigin = state.board.spaces.find((space) => space.id !== location)!.id;
     state.log.push({ id: 'old-battle', turn: state.turn, type: 'battle_resolved', message: 'Old battle.', visibility: 'public' });
     activeMission(state).startedLogIndex = state.log.length;
     state.recentBattleResult = {
@@ -138,8 +143,8 @@ describe('automatic Intelligence Mission requirements', () => {
       loser: 'player_2',
       attacker: 'player_1',
       defender: 'player_2',
-      location: 'territory-3',
-      attackerOrigin: 'territory-2',
+      location,
+      attackerOrigin,
       retreatDirection: 1,
       handCommittedCards: { player_1: [], player_2: ['o1'] },
     };
