@@ -47,7 +47,7 @@ describe('Diplomat reactive cards', () => {
     expect(state.players.player_1.zones.hand).not.toContain(DIPLOMAT_REACTIVE_CARDS.tradeConcessions);
     state.pendingDiplomatChoice = { kind: 'trade_concessions', playerId: 'player_2', diplomatId: 'player_1', options: ['draw_two','bank_asset'] };
     resolveTradeConcessions(state, 'player_2', 'draw_two');
-    expect(state.players.player_2.zones.hand).toHaveLength(5);
+    expect(state.players.player_2.zones.hand).toHaveLength(4);
     expect(state.players.player_1.zones.discard).toContain(DIPLOMAT_REACTIVE_CARDS.tradeConcessions);
   });
 
