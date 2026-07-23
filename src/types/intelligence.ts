@@ -13,6 +13,7 @@ export interface IntelligenceMissionState extends PublicIntelligenceMissionView 
   cardId: CardID;
   requirementSatisfied: boolean;
   evidence: string[];
+  startedLogIndex?: number;
 }
 
 export interface IgnoredTerritoryEffectsState {
