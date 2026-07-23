@@ -1,8 +1,9 @@
 import type { GameState } from '../types';
+import { evaluateIntelligenceMissionRequirements } from './intelligence-mission-triggers';
 import { reconcileIntelligenceState } from './intelligence-missions';
 import { evaluateWinConditions } from './win';
 
-export type AutomationPipelineStep = 'turn_start' | 'intelligence_reconciliation' | 'win_conditions';
+export type AutomationPipelineStep = 'turn_start' | 'intelligence_reconciliation' | 'intelligence_mission_requirements' | 'win_conditions';
 
 export interface AutomationPipelineResult {
   steps: AutomationPipelineStep[];
@@ -21,6 +22,9 @@ export function runPostActionAutomationPipeline(game: GameState): AutomationPipe
 
   reconcileIntelligenceState(game);
   steps.push('intelligence_reconciliation');
+
+  evaluateIntelligenceMissionRequirements(game);
+  steps.push('intelligence_mission_requirements');
 
   if (!hasPendingAssetBankDiscards(game)) {
     evaluateWinConditions(game);
