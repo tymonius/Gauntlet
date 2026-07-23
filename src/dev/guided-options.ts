@@ -2,6 +2,7 @@ import { militaryCardDefinitions } from '../cards';
 import type { GameState, PlayerID } from '../types';
 import type { StateAction } from '../state';
 import { cardValue, deedOwner, toPrivateGameView } from '../state';
+import { buildBattleRevealOptions } from './battle-reveal-options';
 
 export interface GuidedOption { label: string; action: StateAction; sourceCardId?: string; cardText?: string; }
 export function activeViewer(game: GameState): PlayerID { return game.priorityPlayer ?? game.activePlayer; }
@@ -115,7 +116,10 @@ export function buildGuidedOptions(game: GameState): GuidedOption[] {
   if (game.phase === 'movement') for (const space of adjacentSpaces(game, playerId)) options.push({ label: `Move to ${space.id}${space.occupant ? ` occupied by ${space.occupant}` : ''}`, action: { type: 'move_player', playerId, toSpaceId: space.id } });
   for (const play of view.battle?.legalBattlePlays ?? []) { if (play.action === 'commit_battle_hand_card' && play.cardId) options.push({ label: `Commit ${play.cardId} from hand`, action: { type: 'commit_battle_hand_card', playerId, cardId: play.cardId } }); else if (play.action === 'play_battle_draw_card' && play.cardId) options.push({ label: `Play battle-drawn ${play.cardId}`, action: { type: 'play_battle_draw_card', playerId, cardId: play.cardId } }); else if (play.action === 'pass_battle_hand_commit') options.push({ label: 'Pass hand commitment', action: { type: 'pass_battle_hand_commit', playerId } }); else if (play.action === 'pass_battle_draw_play') options.push({ label: 'Pass Battle Hand selection', action: { type: 'pass_battle_draw_play', playerId } }); }
   if (game.battle?.stage === 'battle_draw') options.push({ label: 'Draw Battle Hand', action: { type: 'draw_battle_cards', playerId } });
-  if (game.battle?.stage === 'dice') for (const value of [1, 2, 3, 4, 5, 6]) options.push({ label: `Roll ${value}`, action: { type: 'roll_battle_die', playerId, value } });
+  if (game.battle?.stage === 'dice') {
+    if (!game.battle.effectsResolved.includes('before_battle_resolution')) options.push(...buildBattleRevealOptions(game, playerId));
+    else for (const value of [1, 2, 3, 4, 5, 6]) options.push({ label: `Roll ${value}`, action: { type: 'roll_battle_die', playerId, value } });
+  }
   if (game.battle?.stage === 'resolution') options.push({ label: 'Resolve battle', action: { type: 'resolve_battle', playerId } });
   if (game.phase !== 'battle' && game.phase !== 'game_over' && playerId === game.activePlayer) options.push({ label: 'End turn', action: { type: 'end_turn', playerId } });
   return options;
