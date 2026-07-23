@@ -60,11 +60,19 @@ export function deedCost(game: GameState, buyerId: PlayerID, spaceId: SpaceID, p
   return Math.max(base + positionModifier + premium, 1);
 }
 
-export function buyDeed(game: GameState, buyerId: PlayerID, spaceId: SpaceID, collateralCardId?: CardID, positionModifierOverride?: number): number {
+export function buyDeed(
+  game: GameState,
+  buyerId: PlayerID,
+  spaceId: SpaceID,
+  collateralCardId?: CardID,
+  positionModifierOverride?: number,
+  externalCollateralContribution = 0,
+): number {
   const buyer = financier(game, buyerId);
   const owner = deedOwner(game, spaceId);
   if (owner === buyerId) throw new FinancierError('You already own this Deed.');
   const cost = deedCost(game, buyerId, spaceId, positionModifierOverride);
+  if (!Number.isFinite(externalCollateralContribution) || externalCollateralContribution < 0) throw new FinancierError('External collateral contribution must be nonnegative.');
   let collateralContribution = 0;
   if (collateralCardId !== undefined) {
     if (buyer.leaderName !== 'Banker' || buyer.financiers!.lineOfCreditUsedTurn === game.turn) throw new FinancierError('Line of Credit is not available.');
@@ -77,10 +85,11 @@ export function buyDeed(game: GameState, buyerId: PlayerID, spaceId: SpaceID, co
     buyer.zones.discard.push(collateralCardId);
     buyer.financiers!.lineOfCreditUsedTurn = game.turn;
   }
-  spendFactionResource(game, buyerId, 'capital', cost - collateralContribution, `Buy Deed for ${spaceId}`);
+  const totalContribution = collateralContribution + externalCollateralContribution;
+  spendFactionResource(game, buyerId, 'capital', Math.max(cost - totalContribution, 0), `Buy Deed for ${spaceId}`);
   if (owner) game.players[owner].financiers!.deedsOwned = game.players[owner].financiers!.deedsOwned.filter((id) => id !== spaceId);
   buyer.financiers!.deedsOwned.push(spaceId);
-  log(game, buyerId, owner ? 'deed_bought_out' : 'deed_bought', `${buyer.name} acquired the Deed to ${spaceId}.`, { spaceId, cost, collateralContribution, previousOwner: owner });
+  log(game, buyerId, owner ? 'deed_bought_out' : 'deed_bought', `${buyer.name} acquired the Deed to ${spaceId}.`, { spaceId, cost, collateralContribution, externalCollateralContribution, previousOwner: owner });
   return cost;
 }
 
