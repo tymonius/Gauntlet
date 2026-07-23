@@ -25,8 +25,20 @@ export function buildIntelligenceBattleOptions(game: GameState, playerId: Player
       action(`Spend 2 Intel to Interfere with ${pending.targetCardId}`, 'interfere'),
     ];
   }
+  if (pending.kind === 'interference_replacement') {
+    return [
+      action('Choose no replacement card', 'pass'),
+      ...pending.eligibleCardIds.map((cardId) => action(`Choose replacement ${cardId}`, 'select', cardId)),
+    ];
+  }
+  if (pending.kind === 'mission_control') {
+    return [
+      action('Pass Mission Control', 'pass'),
+      ...pending.eligibleCardIds.map((cardId) => action(`Start ${cardId} with Mission Control`, 'select', cardId)),
+    ];
+  }
   return [
-    action('Choose no replacement card', 'pass'),
-    ...pending.eligibleCardIds.map((cardId) => action(`Choose replacement ${cardId}`, 'select', cardId)),
+    action('Allow the Territory effect', 'pass'),
+    action(`Spend 1 Intel to ignore ${pending.effectId}`, 'ignore'),
   ];
 }
