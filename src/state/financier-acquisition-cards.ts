@@ -1,5 +1,5 @@
 import type { ActionCardTarget, ResolveFinancierChoiceAction } from './actions';
-import type { CardID, GameEvent, GameState, PlayerID, SpaceID } from '../types';
+import type { CardID, GameEvent, GameState, PendingFinancierChoice, PlayerID, SpaceID } from '../types';
 import { cardValue, buyDeed, checkControllingInterest, deedCost, deedOwner } from './financiers';
 
 export const FINANCIER_ACQUISITION_CARDS = {
@@ -43,7 +43,7 @@ function lineOfCreditOptions(game: GameState, playerId: PlayerID, cost: number):
   return allCollateral(player).filter((cardId) => capital + Math.min(cardValue(cardId), Math.floor(cost / 2)) >= cost);
 }
 
-function standardPurchaseOptions(game: GameState, playerId: PlayerID): SpaceID[] {
+export function cornerTheMarketPurchaseOptions(game: GameState, playerId: PlayerID): SpaceID[] {
   const player = requireFinancier(game, playerId);
   const capital = player.resources?.capital?.value ?? 0;
   return game.board.spaces
@@ -87,21 +87,26 @@ function openLeveragedCollateral(game: GameState, playerId: PlayerID, spaceId: S
   game.priorityPlayer = playerId;
 }
 
-export function openCornerTheMarketChoice(game: GameState, playerId: PlayerID): boolean {
-  const spaceOptions = standardPurchaseOptions(game, playerId);
-  if (spaceOptions.length === 0) {
+export function buildCornerTheMarketChoice(game: GameState, playerId: PlayerID, battleId?: string): Extract<PendingFinancierChoice, { kind: 'corner_the_market_purchase' }> | undefined {
+  const spaceOptions = cornerTheMarketPurchaseOptions(game, playerId);
+  if (spaceOptions.length === 0) return undefined;
+  return { kind: 'corner_the_market_purchase', playerId, spaceOptions, options: ['pass', 'purchase'], battleId };
+}
+
+export function openCornerTheMarketChoice(game: GameState, playerId: PlayerID, battleId?: string): boolean {
+  const choice = buildCornerTheMarketChoice(game, playerId, battleId);
+  if (!choice) {
     game.pendingFinancierChoice = undefined;
     if (game.phase !== 'game_over') game.priorityPlayer = game.activePlayer;
     return false;
   }
-  game.pendingFinancierChoice = { kind: 'corner_the_market_purchase', playerId, spaceOptions, options: ['pass', 'purchase'] };
+  game.pendingFinancierChoice = choice;
   game.priorityPlayer = playerId;
   return true;
 }
 
-function openCornerDeedPurchase(game: GameState, playerId: PlayerID, spaceId: SpaceID): void {
-  const player = requireFinancier(game, playerId);
-  const available = standardPurchaseOptions(game, playerId);
+function openCornerDeedPurchase(game: GameState, playerId: PlayerID, spaceId: SpaceID, battleId?: string): void {
+  const available = cornerTheMarketPurchaseOptions(game, playerId);
   if (!available.includes(spaceId)) throw new FinancierAcquisitionError('Choose an affordable Deed or stop Corner the Market.');
   const cost = deedCost(game, playerId, spaceId);
   game.pendingFinancierChoice = {
@@ -114,6 +119,7 @@ function openCornerDeedPurchase(game: GameState, playerId: PlayerID, spaceId: Sp
     maximumCollateralContribution: Math.floor(cost / 2),
     consumeAction: false,
     continuation: 'corner_the_market',
+    battleId,
   };
   game.priorityPlayer = playerId;
 }
@@ -176,11 +182,11 @@ function resolveCornerSelection(game: GameState, action: ResolveFinancierChoiceA
   if (action.choice === 'pass') {
     game.pendingFinancierChoice = undefined;
     game.priorityPlayer = game.activePlayer;
-    log(game, action.playerId, 'financier_corner_the_market_ended', `${game.players[action.playerId].name} ended Corner the Market.`);
+    log(game, action.playerId, 'financier_corner_the_market_ended', `${game.players[action.playerId].name} ended Corner the Market.`, { battleId: pending.battleId });
     return true;
   }
   const spaceId = action.spaceId ?? action.choice;
-  openCornerDeedPurchase(game, action.playerId, spaceId);
+  openCornerDeedPurchase(game, action.playerId, spaceId, pending.battleId);
   return true;
 }
 
@@ -193,7 +199,7 @@ function resolveCornerDeedPurchase(game: GameState, action: ResolveFinancierChoi
   buyDeed(game, action.playerId, pending.spaceId, collateralCardId);
   game.pendingFinancierChoice = undefined;
   if (checkControllingInterest(game, action.playerId)) return true;
-  openCornerTheMarketChoice(game, action.playerId);
+  openCornerTheMarketChoice(game, action.playerId, pending.battleId);
   return true;
 }
 
