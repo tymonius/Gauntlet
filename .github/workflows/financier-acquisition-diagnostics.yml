@@ -1,0 +1,19 @@
+name: Financier acquisition diagnostics
+on:
+  pull_request:
+    branches: [main]
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - name: Capture tests
+        run: npm test > financier-acquisition-errors.txt 2>&1 || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: financier-acquisition-errors
+          path: financier-acquisition-errors.txt
