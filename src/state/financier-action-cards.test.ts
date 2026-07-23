@@ -19,7 +19,7 @@ function game(openingHandSize = 8): GameState {
     id: 'financier-action-cards', version: 'v0.6.0', shuffleDecks: false, openingHandSize,
     players: [
       { id: 'player_1', name: 'Financier', factionId: 'financiers', leaderName: 'Banker', deck: financierDeck, territories: ['t1', 't2', 't3'] },
-      { id: 'player_2', name: 'Opponent', deck: ['o1', 'o2', 'o3', 'o4', 'o5', 'o6'], territories: ['t4', 't5', 't6'] },
+      { id: 'player_2', name: 'Opponent', deck: ['o1', 'o2', 'o3', 'o4', 'o5', 'o6', 'o7', 'o8'], territories: ['t4', 't5', 't6'] },
     ],
   });
   for (const space of state.board.spaces) space.revealed = true;
@@ -43,7 +43,6 @@ describe('Financier Action cards', () => {
     expect(state.players.player_1.financiers?.speculations).toMatchObject([{ spaceId: target.id }]);
     expect(state.players.player_1.zones.removed).not.toContain('financiers-speculation');
 
-    target.occupant = 'player_1';
     state.board.spaces.find((space) => space.id === target.id)!.occupant = 'player_1';
     state = applyGameAction(state, { type: 'end_turn', playerId: 'player_1' }).state;
     state = applyGameAction(state, { type: 'end_turn', playerId: 'player_2' }).state;
