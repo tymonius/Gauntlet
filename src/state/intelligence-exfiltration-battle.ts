@@ -7,6 +7,7 @@ import type {
   SpaceID,
 } from '../types';
 import type { ResolveIntelligenceChoiceAction } from './actions';
+import { treasonCopyCount } from './intelligence-treason';
 
 const EXFILTRATION = 'intelligence-exfiltration';
 
@@ -33,9 +34,10 @@ function active(card?: BattlePlayedCard): card is BattlePlayedCard {
   return Boolean(card && !card.canceled && !card.negated);
 }
 
-function participantExfiltrationCount(participant: BattleParticipantState): number {
+function participantExfiltrationCount(game: GameState, participant: BattleParticipantState): number {
   return Number(active(participant.handCommit) && participant.handCommit.cardId === EXFILTRATION)
-    + participant.battleDrawPlayed.filter((card) => active(card) && card.cardId === EXFILTRATION).length;
+    + participant.battleDrawPlayed.filter((card) => active(card) && card.cardId === EXFILTRATION).length
+    + treasonCopyCount(game, participant.playerId, EXFILTRATION);
 }
 
 export function exfiltrationBattleUses(game: GameState): Partial<Record<PlayerID, number>> {
@@ -43,7 +45,7 @@ export function exfiltrationBattleUses(game: GameState): Partial<Record<PlayerID
   if (!battle) return {};
   return Object.fromEntries(
     [battle.attacker, battle.defender]
-      .map((participant) => [participant.playerId, participantExfiltrationCount(participant)] as const)
+      .map((participant) => [participant.playerId, participantExfiltrationCount(game, participant)] as const)
       .filter(([, count]) => count > 0),
   );
 }
