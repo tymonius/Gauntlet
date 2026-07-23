@@ -11,6 +11,7 @@ import { bankSanctionAfterRefusal, effectiveAssetBankLimit, openBlockadeMovement
 import { applyFinancierActionEffect, reconcileFinancierCardState, requireTariffsMayLeavePlay, resolveFinancierCardChoice, resolveFinancierCardTurnStart, shouldSkipNormalDrawForTariffs } from './financier-cards';
 import { applyFinancierAcquisitionActionEffect, resolveFinancierAcquisitionChoice } from './financier-acquisition-cards';
 import { buildFinancierBattleAftermath, isFinancierBattleChoice, openNextFinancierChoice, resolveFinancierBattleChoice } from './financier-battle-cards';
+import { buildFinancierPreDiceChoices, isFinancierPreDiceChoice, resolveFinancierPreDiceAftermath, resolveFinancierPreDiceChoice } from './financier-pre-dice';
 import { beginDeedPurchase, beginHostileTakeover, beginPlayTheMarket, clearFinancierBattleState, maybeOpenSubsidizeWindow, placeTreasuryCardAction, recordHostileTakeoverEligibility, resolveFinancierChoice, resolveFinancierEndTurn, resolveFinancierTurnStart } from './financier-integration';
 import { gainFactionResource } from './resources';
 import { runPostActionAutomationPipeline } from './pipeline';
@@ -62,7 +63,7 @@ function correctAddedCardDestinations(game: GameState, battle: BattleState): voi
 function applyHoldTheLineLoss(game: GameState, battle: BattleState, winner: PlayerID): void { const defender = battle.defender.playerId; if (winner === defender || !battle.effectsResolved.includes(`hold_capture_if_lost:${defender}`)) return; const space = game.board.spaces.find((candidate) => candidate.id === battle.location); if (!space?.territoryId || space.kind !== 'territory') return; const previous = space.controller; if (previous && previous !== winner) game.players[previous].controlledTerritories = game.players[previous].controlledTerritories.filter((id) => id !== space.territoryId); if (!game.players[winner].controlledTerritories.includes(space.territoryId)) game.players[winner].controlledTerritories.push(space.territoryId); space.controller = winner; delete space.capturePendingBy; }
 function recordBattleAftermath(result: ApplyGameActionResult, battle?: BattleState): void {
   if (!battle) return; const winner = lastResolvedBattleWinner(result.state); if (!winner) return; const activeBattle = activeBattleSnapshot(battle);
-  correctAddedCardDestinations(result.state, activeBattle); applyHoldTheLineLoss(result.state, activeBattle, winner); result.state.recentBattleResult = recentBattleResult(result.state, activeBattle, winner); applyMilitaryCommandTrigger(result.state, winner); resolveRefusedTermsBattle(result.state, winner); resolveDemilitarizedZoneBattle(result.state, activeBattle.location); removeBlockadesAfterControlChange(result.state); recordHostileTakeoverEligibility(result.state, activeBattle, winner); buildMilitaryAftermathChoices(result.state, activeBattle); buildFinancierBattleAftermath(result.state, activeBattle, winner); clearFinancierBattleState(result.state); openPostBattleOrderWindow(result.state, winner);
+  correctAddedCardDestinations(result.state, activeBattle); resolveFinancierPreDiceAftermath(result.state, activeBattle, winner); applyHoldTheLineLoss(result.state, activeBattle, winner); result.state.recentBattleResult = recentBattleResult(result.state, activeBattle, winner); applyMilitaryCommandTrigger(result.state, winner); resolveRefusedTermsBattle(result.state, winner); resolveDemilitarizedZoneBattle(result.state, activeBattle.location); removeBlockadesAfterControlChange(result.state); recordHostileTakeoverEligibility(result.state, activeBattle, winner); buildMilitaryAftermathChoices(result.state, activeBattle); buildFinancierBattleAftermath(result.state, activeBattle, winner); clearFinancierBattleState(result.state); openPostBattleOrderWindow(result.state, winner);
 }
 function closePostBattleOrderWindow(game: GameState): void { game.pendingLeaderAbilityWindow = undefined; if (game.phase !== 'game_over') game.priorityPlayer = game.activePlayer; }
 function appendLastStandVictoryLog(game: GameState, winner: PlayerID, defeatedPlayer: PlayerID): void { game.log.push({ id: `${game.id}-event-${game.log.length + 1}`, turn: game.turn, actor: winner, type: 'last_stand_won', message: `${game.players[winner].name} won ${game.players[defeatedPlayer].name}’s Last Stand and ran the Gauntlet.`, payload: { winner, defeatedPlayer }, visibility: 'public' } satisfies GameEvent); }
@@ -143,8 +144,31 @@ function applyFinancierStateAction(game: GameState, action: Extract<StateAction,
 }
 
 export function applyGameAction(game: GameState, action: StateAction): ApplyGameActionResult {
-  if (action.type === 'resolve_battle_reveal') { const next = structuredClone(game); const result = resolveBattleReveal(next, action); openMilitaryAfterRevealWindows(next); maybeOpenSubsidizeWindow(next); runPostActionAutomationPipeline(next); return result; }
-  if (action.type === 'resolve_financier_choice') { const next = structuredClone(game); const wasBattleChoice = isFinancierBattleChoice(next.pendingFinancierChoice); if (!resolveFinancierBattleChoice(next, action) && !resolveFinancierAcquisitionChoice(next, action) && !resolveFinancierCardChoice(next, action)) resolveFinancierChoice(next, action); reconcileFinancierCardState(next); enforceDiplomatAssetLimits(next); if (wasBattleChoice && !next.pendingFinancierChoice) openNextFinancierChoice(next); if (wasBattleChoice && !next.pendingFinancierChoice && !next.pendingMilitaryChoice && next.recentBattleResult) openPostBattleOrderWindow(next, next.recentBattleResult.winner); runPostActionAutomationPipeline(next); return { state: next }; }
+  if (action.type === 'resolve_battle_reveal') {
+    const next = structuredClone(game);
+    const result = resolveBattleReveal(next, action);
+    openMilitaryAfterRevealWindows(next);
+    buildFinancierPreDiceChoices(next);
+    openNextFinancierChoice(next);
+    if (!next.pendingFinancierChoice && !next.financierChoiceQueue?.length) maybeOpenSubsidizeWindow(next);
+    runPostActionAutomationPipeline(next);
+    return result;
+  }
+  if (action.type === 'resolve_financier_choice') {
+    const next = structuredClone(game);
+    const pending = next.pendingFinancierChoice;
+    const wasBattleChoice = isFinancierBattleChoice(pending);
+    const wasPreDiceChoice = isFinancierPreDiceChoice(pending);
+    const wasQueuedSubsidize = pending?.kind === 'subsidize' && Boolean(next.financierChoiceQueue?.length);
+    if (!resolveFinancierPreDiceChoice(next, action) && !resolveFinancierBattleChoice(next, action) && !resolveFinancierAcquisitionChoice(next, action) && !resolveFinancierCardChoice(next, action)) resolveFinancierChoice(next, action);
+    reconcileFinancierCardState(next);
+    enforceDiplomatAssetLimits(next);
+    if ((wasBattleChoice || wasPreDiceChoice || wasQueuedSubsidize) && !next.pendingFinancierChoice) openNextFinancierChoice(next);
+    if ((wasPreDiceChoice || wasQueuedSubsidize) && !next.pendingFinancierChoice && !next.financierChoiceQueue?.length) maybeOpenSubsidizeWindow(next);
+    if (wasBattleChoice && !next.pendingFinancierChoice && !next.pendingMilitaryChoice && next.recentBattleResult) openPostBattleOrderWindow(next, next.recentBattleResult.winner);
+    runPostActionAutomationPipeline(next);
+    return { state: next };
+  }
   if (action.type === 'place_treasury_card' || action.type === 'begin_deed_purchase' || action.type === 'begin_play_the_market' || action.type === 'use_hostile_takeover') {
     if (game.pendingMilitaryChoice || game.pendingMilitaryTimingChoice || game.pendingDiplomatChoice || game.pendingFinancierChoice || game.pendingLeaderAbilityWindow) throw new GameActionError('Resolve the pending choice first.');
     const next = structuredClone(game); applyFinancierStateAction(next, action); reconcileFinancierCardState(next); enforceDiplomatAssetLimits(next); runPostActionAutomationPipeline(next); return { state: next };
@@ -155,7 +179,7 @@ export function applyGameAction(game: GameState, action: StateAction): ApplyGame
     if (!pending || pending.playerId !== action.playerId) throw new GameActionError(`${action.playerId} has no pending Diplomat choice.`);
     resolveDiplomatPendingChoice(next, action); continueAfterDiplomatChoice(next); enforceDiplomatAssetLimits(next); maybeOpenSubsidizeWindow(next); runPostActionAutomationPipeline(next); return { state: next };
   }
-  if (action.type === 'resolve_military_timing_choice') { const next = structuredClone(game); resolveMilitaryTimingChoice(next, action.playerId, action.choice, action.cardId, action.secondaryCardId); maybeOpenBrothersSelection(next); openMilitaryAfterRevealWindows(next); maybeOpenSubsidizeWindow(next); runPostActionAutomationPipeline(next); return { state: next }; }
+  if (action.type === 'resolve_military_timing_choice') { const next = structuredClone(game); resolveMilitaryTimingChoice(next, action.playerId, action.choice, action.cardId, action.secondaryCardId); maybeOpenBrothersSelection(next); openMilitaryAfterRevealWindows(next); if (!next.pendingMilitaryTimingChoice) openNextFinancierChoice(next); if (!next.pendingFinancierChoice && !next.financierChoiceQueue?.length) maybeOpenSubsidizeWindow(next); runPostActionAutomationPipeline(next); return { state: next }; }
   if (action.type === 'resolve_military_choice') { const next = structuredClone(game); resolveMilitaryChoice(next, action.playerId, action.choice, action.cardId); if (!next.pendingMilitaryChoice) openNextFinancierChoice(next); if (!next.pendingMilitaryChoice && !next.pendingFinancierChoice && next.recentBattleResult) openPostBattleOrderWindow(next, next.recentBattleResult.winner); runPostActionAutomationPipeline(next); return { state: next }; }
   if (action.type === 'pass_leader_ability_window') { if (game.pendingLeaderAbilityWindow?.playerId !== action.playerId) throw new GameActionError(`${action.playerId} has no Leader ability window to pass.`); const next = structuredClone(game); closePostBattleOrderWindow(next); return { state: next }; }
   if (action.type === 'use_leader_ability') { if (game.pendingMilitaryChoice || game.pendingMilitaryTimingChoice || game.pendingDiplomatChoice || game.pendingFinancierChoice) throw new GameActionError('Resolve the pending faction choice first.'); const next = structuredClone(game); const definition = defaultLeaderAbilityRegistry.get(action.abilityId); useLeaderAbility(next, action.playerId, action.abilityId); if (definition?.timing === 'after_battle') closePostBattleOrderWindow(next); runPostActionAutomationPipeline(next); return { state: next }; }
