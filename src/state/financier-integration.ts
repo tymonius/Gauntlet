@@ -59,8 +59,15 @@ export function beginPlayTheMarket(game: GameState, playerId: PlayerID, cardId: 
   game.priorityPlayer = playerId;
 }
 
-export function beginDeedPurchase(game: GameState, playerId: PlayerID, spaceId: SpaceID, hostileTakeover = false): void {
-  requireAfterMovementAction(game, playerId);
+export interface OpenDeedPurchaseOptions {
+  hostileTakeover?: boolean;
+  consumeAction?: boolean;
+  requireActionOpportunity?: boolean;
+}
+
+export function openDeedPurchaseChoice(game: GameState, playerId: PlayerID, spaceId: SpaceID, options: OpenDeedPurchaseOptions = {}): void {
+  const { hostileTakeover = false, consumeAction = true, requireActionOpportunity = false } = options;
+  if (requireActionOpportunity) requireAfterMovementAction(game, playerId);
   const player = requireFinancier(game, playerId);
   const space = game.board.spaces.find((candidate) => candidate.id === spaceId);
   if (!space || space.kind !== 'territory') throw new FinancierIntegrationError('Choose a Territory in the Gauntlet.');
@@ -79,15 +86,21 @@ export function beginDeedPurchase(game: GameState, playerId: PlayerID, spaceId: 
     collateralOptions: affordableCollateral,
     maximumCollateralContribution: Math.floor(cost / 2),
     hostileTakeover,
+    consumeAction,
   };
   game.priorityPlayer = playerId;
 }
 
+export function beginDeedPurchase(game: GameState, playerId: PlayerID, spaceId: SpaceID, hostileTakeover = false): void {
+  openDeedPurchaseChoice(game, playerId, spaceId, { hostileTakeover, consumeAction: true, requireActionOpportunity: true });
+}
+
 export function beginHostileTakeover(game: GameState, playerId: PlayerID): void {
+  requireAfterMovementAction(game, playerId);
   const player = requireFinancier(game, playerId);
   const spaceId = player.financiers!.hostileTakeoverEligibleSpaceId;
   if (!spaceId) throw new FinancierIntegrationError('Hostile Takeover is not available.');
-  beginDeedPurchase(game, playerId, spaceId, true);
+  openDeedPurchaseChoice(game, playerId, spaceId, { hostileTakeover: true, consumeAction: true });
 }
 
 function completeHostileTakeover(game: GameState, playerId: PlayerID, spaceId: SpaceID): void {
@@ -149,14 +162,16 @@ export function resolveFinancierChoice(game: GameState, action: ResolveFinancier
     const player = requireFinancier(game, action.playerId);
     player.financiers!.subsidizeOfferedBattleId = pending.battleId;
     if (bonus > 0) subsidize(game, action.playerId, bonus);
-  } else {
+  } else if (pending.kind === 'deed_purchase') {
     const collateralCardId = action.choice === 'collateral' ? action.cardId : undefined;
     if (action.choice !== 'capital' && action.choice !== 'collateral') throw new FinancierIntegrationError('Choose Capital or an eligible collateral card.');
     if (collateralCardId && !pending.collateralOptions.includes(collateralCardId)) throw new FinancierIntegrationError('That card is not eligible collateral.');
     buyDeed(game, action.playerId, pending.spaceId, collateralCardId, pending.hostileTakeover ? 0 : undefined);
-    spendAction(game, action.playerId);
+    if (pending.consumeAction !== false) spendAction(game, action.playerId);
     if (pending.hostileTakeover) completeHostileTakeover(game, action.playerId, pending.spaceId);
     checkControllingInterest(game, action.playerId);
+  } else {
+    throw new FinancierIntegrationError(`Choice ${pending.kind} must be resolved by its card handler.`);
   }
   game.pendingFinancierChoice = undefined;
   if (game.phase !== 'game_over') game.priorityPlayer = game.activePlayer;

@@ -20,12 +20,15 @@ const battleAndAction = (cardId: CardID, actionDestination: CardDestination, req
   requiresTarget,
 });
 
-const actionOnly = (cardId: CardID, destination: CardDestination): CardPlayRule => ({
+const actionOnly = (cardId: CardID, destination: CardDestination, requiresTarget = false): CardPlayRule => ({
   cardId,
   timings: ['action'],
   allowedOrigins: ['hand'],
   defaultDestinationByOrigin: { hand: destination },
+  requiresTarget,
 });
+
+const disabled = (cardId: CardID): CardPlayRule => ({ cardId, timings: [], allowedOrigins: [], defaultDestinationByOrigin: {} });
 
 export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'card-attrition': battleAndAction('card-attrition', 'asset_bank'),
@@ -54,6 +57,19 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'diplomats-sanctions-embargo': actionOnly('diplomats-sanctions-embargo', 'asset_bank'),
   'diplomats-demilitarized-zone': actionOnly('diplomats-demilitarized-zone', 'removed'),
   'diplomats-sanctions-blockade': actionOnly('diplomats-sanctions-blockade', 'removed'),
+
+  'financiers-speculation': actionOnly('financiers-speculation', 'removed', true),
+  'financiers-monetary-crisis': actionOnly('financiers-monetary-crisis', 'discard'),
+  'financiers-liquidation': actionOnly('financiers-liquidation', 'discard', true),
+  'financiers-underwriting': actionOnly('financiers-underwriting', 'asset_bank'),
+  'financiers-capital-gains': disabled('financiers-capital-gains'),
+  'financiers-tariffs': disabled('financiers-tariffs'),
+  'financiers-divestment': actionOnly('financiers-divestment', 'discard', true),
+  'financiers-margin-loan': disabled('financiers-margin-loan'),
+  'financiers-leveraged-buyout': disabled('financiers-leveraged-buyout'),
+  'financiers-foreclosure': actionOnly('financiers-foreclosure', 'discard', true),
+  'financiers-property-dues': actionOnly('financiers-property-dues', 'asset_bank'),
+  'financiers-corner-the-market': disabled('financiers-corner-the-market'),
 };
 
 export function getCardPlayRule(cardId: CardID): CardPlayRule | undefined { return coreCardPlayRules[cardId]; }
