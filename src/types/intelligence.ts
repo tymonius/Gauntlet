@@ -73,6 +73,16 @@ export type PendingIntelligenceChoice =
       resumePriorityPlayer?: PlayerID;
     }
   | {
+      kind: 'fog_of_war_return';
+      playerId: PlayerID;
+      fogOwnerId: PlayerID;
+      battleId: string;
+      handCardId: CardID;
+      battleHandCardIds: CardID[];
+      options: ['return_hand', 'return_battle_hand'];
+      resumePriorityPlayer?: PlayerID;
+    }
+  | {
       kind: 'operational_reassessment_battle';
       playerId: PlayerID;
       battleId: string;
