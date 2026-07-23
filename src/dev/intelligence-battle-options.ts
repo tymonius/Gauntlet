@@ -43,6 +43,12 @@ export function buildIntelligenceBattleOptions(game: GameState, playerId: Player
       ...eligible.map((cardId) => action(`Choose replacement ${cardId}`, 'select', cardId)),
     ];
   }
+  if (pending.kind === 'spies_battle_reselect') {
+  return [
+    action('Keep the current Battle Hand selection', 'pass'),
+    ...pending.eligibleCardIds.map((cardId) => action(`Replace the selected card with ${cardId}`, 'select', cardId)),
+  ];
+}
   if (pending.kind === 'mission_control') {
     return [
       action('Pass Mission Control', 'pass'),
