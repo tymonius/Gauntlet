@@ -5,6 +5,7 @@ import { initializeGame } from './initialize';
 import { applyGameAction } from './apply';
 import { setFactionResource } from './resources';
 
+// Covers multi-card collateral and sequential acquisition resolution.
 const financierDeck = [
   'financiers-leveraged-buyout',
   'financiers-corner-the-market',
