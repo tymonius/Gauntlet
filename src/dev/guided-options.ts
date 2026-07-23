@@ -3,6 +3,7 @@ import type { GameState, PlayerID } from '../types';
 import type { AppStateAction } from '../state';
 import { cardValue, deedOwner, toPrivateGameView } from '../state';
 import { buildBattleRevealOptions } from './battle-reveal-options';
+import { buildIntelligenceBattleOptions } from './intelligence-battle-options';
 import { buildIntelligenceMissionOptions } from './intelligence-options';
 
 export interface GuidedOption { label: string; action: AppStateAction; sourceCardId?: string; cardText?: string; }
@@ -95,7 +96,7 @@ function pendingMilitaryOptions(game: GameState, playerId: PlayerID): GuidedOpti
   const aftermath = game.pendingMilitaryChoice;
   if (aftermath?.playerId === playerId) {
     const base = (label: string, choice: string, cardId?: string) => militaryOption(label, { type: 'resolve_military_choice', playerId, choice, cardId }, aftermath.sourceCardId);
-    switch (aftermath.kind) { case 'battlefield_promotion': return aftermath.options.map((cardId) => base(`Return ${cardId} to hand`, cardId, cardId)); case 'countercharge': case 'war_crimes': return aftermath.options.map((choice) => base(`${choice === 'use' ? 'Use' : 'Pass'} ${aftermath.sourceCardId}`, choice)); case 'shock_and_awe': return aftermath.options.map((choice) => base(`Choose ${choice}`, choice)); }
+    switch (aftermath.kind) { case 'battlefield_promotion': return aftermath.options.map((cardId) => base(`Return ${cardId} to hand`, cardId, cardId)); case 'countercharge': case 'war_crimes': return aftermath.options.map((choice) => base(`${choice === 'use' ? 'Use' : 'Pass'} ${aftermath.sourceCardId}`, choice)); case 'shock_and-awe': return aftermath.options.map((choice) => base(`Choose ${choice}`, choice)); }
   }
   return undefined;
 }
@@ -103,6 +104,7 @@ function pendingMilitaryOptions(game: GameState, playerId: PlayerID): GuidedOpti
 function adjacentSpaces(game: GameState, playerId: PlayerID) { const current = game.board.spaces.find((space) => space.occupant === playerId); if (!current) return []; return game.board.spaces.filter((space) => Math.abs(space.index - current.index) === 1); }
 export function buildGuidedOptions(game: GameState): GuidedOption[] {
   const playerId = activeViewer(game);
+  const intelligenceBattlePending = buildIntelligenceBattleOptions(game, playerId); if (intelligenceBattlePending) return intelligenceBattlePending;
   const financierPending = pendingFinancierOptions(game, playerId); if (financierPending) return financierPending;
   const diplomatPending = pendingDiplomatOptions(game, playerId); if (diplomatPending) return diplomatPending;
   const militaryPending = pendingMilitaryOptions(game, playerId); if (militaryPending) return militaryPending;
