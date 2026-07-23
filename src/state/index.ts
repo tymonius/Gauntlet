@@ -15,6 +15,7 @@ export * from './financier-acquisition-cards';
 export * from './financier-battle-cards';
 export * from './financier-pre-dice';
 export * from './intelligence-missions';
+export * from './intelligence-mission-triggers';
 export * from './intelligence-battle';
 export * from './intelligence-leaders';
 export * from './actions';

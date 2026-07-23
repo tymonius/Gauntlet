@@ -76,7 +76,7 @@ export function startIntelligenceMission(game: GameState, playerId: PlayerID, ca
   if (kind === 'special_operation' && !specialOperationReady(game, playerId)) throw new IntelligenceMissionError('Operation Progress must exceed the opponent’s controlled Territories to start a Special Operation.');
 
   removeOne(player.zones.hand, cardId);
-  const mission: IntelligenceMissionState = { cardId, kind, startedTurn: game.turn, requirementSatisfied: false, evidence: [] };
+  const mission: IntelligenceMissionState = { cardId, kind, startedTurn: game.turn, startedLogIndex: game.log.length, requirementSatisfied: false, evidence: [] };
   if (kind === 'normal') player.intelligence!.activeMission = mission;
   else player.intelligence!.specialOperation = mission;
   consumeAction(player);
@@ -90,17 +90,17 @@ export function startMissionControlMission(game: GameState, playerId: PlayerID, 
   if (player.intelligence!.activeMission || player.intelligence!.specialOperation) throw new IntelligenceMissionError('Only one Mission or Special Operation may be active.');
   if (!removeOne(player.zones.hand, cardId)) throw new IntelligenceMissionError(`${card.name} is not in hand.`);
 
-  player.intelligence!.activeMission = { cardId, kind: 'normal', startedTurn: game.turn, requirementSatisfied: false, evidence: [] };
+  player.intelligence!.activeMission = { cardId, kind: 'normal', startedTurn: game.turn, startedLogIndex: game.log.length, requirementSatisfied: false, evidence: [] };
   log(game, playerId, 'spymaster_mission_control_started', `${player.name} used Mission Control to start another face-down Mission.`, { cardId });
 }
 
 export function markIntelligenceMissionRequirement(game: GameState, playerId: PlayerID, evidence: string, kind: IntelligenceMissionKind = 'normal'): void {
   const player = requireIntelligence(game, playerId);
   const mission = kind === 'normal' ? player.intelligence!.activeMission : player.intelligence!.specialOperation;
-  if (!mission) return;
+  if (!mission || mission.requirementSatisfied) return;
   mission.requirementSatisfied = true;
   if (!mission.evidence.includes(evidence)) mission.evidence.push(evidence);
-  log(game, playerId, 'intelligence_mission_requirement_satisfied', `${player.name} satisfied a ${kind === 'normal' ? 'Mission' : 'Special Operation'} requirement.`, { kind, evidence });
+  log(game, playerId, 'intelligence_mission_requirement_satisfied', `${player.name} satisfied a ${kind === 'normal' ? 'Mission' : 'Special Operation'} requirement.`, { kind });
 }
 
 export function completeIntelligenceMission(game: GameState, playerId: PlayerID): void {
