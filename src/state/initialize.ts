@@ -16,6 +16,7 @@ function createPlayerState(input: PlayerSetupInput, openingHandSize: number, shu
     resources: createInitialFactionResources(input.factionId), leaderAbilityUsage: { turn: {}, battle: {} }, factionTriggerUsage: {},
     military: input.factionId === 'military' ? { storedCards: {}, freeOrderAbilityIds: [], pursuitBattleCount: 0 } : undefined,
     diplomats: input.factionId === 'diplomats' ? { ratifiedProposals: [], sanctionsAgainst: {} } : undefined,
+    financiers: input.factionId === 'financiers' ? { treasury: [], deedsOwned: [] } : undefined,
     zones: { deck, hand, discard: [], graveyard: [], assetBank: [], removed: [] }, controlledTerritories: [...input.territories],
     occupiedSpaceId: `${input.id}-heartland`, actionsRemaining: 1, movementRemaining: 1, hasPlayedActionThisTurn: false, hasPlayedBattleThisTurn: false,
   };
@@ -29,6 +30,7 @@ function createStandardBoard(players: [PlayerSetupInput, PlayerSetupInput]): Boa
   spaces.push({ id: `${playerTwo.id}-heartland`, index: spaces.length, kind: 'heartland', controller: playerTwo.id, occupant: playerTwo.id, revealed: true });
   return { layout: 'standard_1x6', spaces };
 }
+
 function createInitialLog(gameId: GameID, players: [PlayerSetupInput, PlayerSetupInput]): GameEvent[] { return [{ id: `${gameId}-event-setup`, turn: 1, type: 'game_initialized', message: `${players[0].name} and ${players[1].name} began a Gauntlet game.`, visibility: 'public' }]; }
 export function initializeGame(input: InitializeGameInput): GameState {
   assertValidGameSetup(input); const gameId = input.id ?? `game-${Date.now()}`; const openingHandSize = input.openingHandSize ?? 3; const random = input.random ?? Math.random;
