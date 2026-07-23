@@ -93,10 +93,11 @@ export function markIntelligenceMissionRequirement(game: GameState, playerId: Pl
 }
 
 export function completeIntelligenceMission(game: GameState, playerId: PlayerID): void {
-  const player = requireActionOpportunity(game, playerId);
-  const mission = player.intelligence!.activeMission;
+  const intelligencePlayer = requireIntelligence(game, playerId);
+  const mission = intelligencePlayer.intelligence!.activeMission;
   if (!mission) throw new IntelligenceMissionError('There is no Active Mission to complete.');
   if (mission.startedTurn === game.turn) throw new IntelligenceMissionError('A Mission cannot complete during the turn it begins.');
+  const player = requireActionOpportunity(game, playerId);
   if (!mission.requirementSatisfied) throw new IntelligenceMissionError('The Mission requirement has not been satisfied.');
   const card = missionDefinition(mission.cardId);
 
