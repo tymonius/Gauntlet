@@ -103,6 +103,16 @@ export type PendingIntelligenceChoice =
       resumePriorityPlayer?: PlayerID;
     }
   | {
+      kind: 'reconnaissance_battle_withdraw';
+      playerId: PlayerID;
+      battleId: string;
+      sourceSlot: 'hand_commit' | 'battle_draw_played';
+      sourceIndex?: number;
+      canWithdraw: boolean;
+      options: ['stay'] | ['stay', 'withdraw'];
+      resumePriorityPlayer?: PlayerID;
+    }
+  | {
       kind: 'operational_reassessment_battle';
       playerId: PlayerID;
       battleId: string;

@@ -23,6 +23,7 @@ export interface BattlePlayedCard {
   canceled: boolean;
   negated?: boolean;
   earlyEffectResolved?: boolean;
+  postRevealEffectResolved?: boolean;
   visibleTo?: PlayerID[];
 }
 
