@@ -124,6 +124,15 @@ function skipTariffsDraw(game: GameState, playerId: PlayerID): ApplyGameActionRe
   return { state: next };
 }
 
+function skipTariffsDraw(game: GameState, playerId: PlayerID): ApplyGameActionResult {
+  if (game.activePlayer !== playerId || game.phase !== 'turn_start') throw new GameActionError('Tariffs can replace only your normal turn-start draw.');
+  const next = structuredClone(game);
+  next.phase = 'action_before_movement';
+  next.log.push({ id: `${next.id}-event-${next.log.length + 1}`, turn: next.turn, actor: playerId, type: 'financier_tariffs_draw_skipped', message: `${next.players[playerId].name} skipped their normal draw because Tariffs is banked.`, visibility: 'public' });
+  runPostActionAutomationPipeline(next);
+  return { state: next };
+}
+
 function applyFinancierStateAction(game: GameState, action: Extract<StateAction, { type: 'place_treasury_card' | 'begin_deed_purchase' | 'begin_play_the_market' | 'use_hostile_takeover' }>): void {
   if (action.type === 'place_treasury_card') placeTreasuryCardAction(game, action.playerId, action.cardId);
   else if (action.type === 'begin_deed_purchase') beginDeedPurchase(game, action.playerId, action.spaceId);
@@ -172,7 +181,7 @@ export function applyGameAction(game: GameState, action: StateAction): ApplyGame
   maybeOpenBrothersSelection(result.state); openMilitaryAfterRevealWindows(result.state); maybeOpenSubsidizeWindow(result.state);
   if (action.type === 'resolve_battle') recordBattleAftermath(result, battleBeforeResolution);
   if (endingPlayer && result.state.activePlayer !== endingPlayer) { resolveFinancierTurnStart(result.state, result.state.activePlayer); resolveFinancierCardTurnStart(result.state, result.state.activePlayer); }
-  reconcileFinancierCardState(result.state); removeCapturedEncampments(result.state); removeBlockadesAfterControlChange(result.state); enforceDiplomatAssetLimits(result.state); runPostActionAutomationPipeline(result.state); finalizeLastStandResolution(result, prepared.attacker, prepared.defender);
+  reconcileFinancierCardState(result.state); reconcileFinancierCardState(result.state); removeCapturedEncampments(result.state); removeBlockadesAfterControlChange(result.state); enforceDiplomatAssetLimits(result.state); runPostActionAutomationPipeline(result.state); finalizeLastStandResolution(result, prepared.attacker, prepared.defender);
   if (action.type === 'resolve_battle') resetLeaderAbilityUsageAfterBattle(result.state);
   if (action.type === 'end_turn') {
     result.state.recentBattleResult = undefined; result.state.pendingMilitaryChoice = undefined; result.state.militaryChoiceQueue = undefined; result.state.pendingMilitaryTimingChoice = undefined; result.state.militaryTimingChoiceQueue = undefined; result.state.pendingLeaderAbilityWindow = undefined;
