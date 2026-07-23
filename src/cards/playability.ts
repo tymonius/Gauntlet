@@ -28,6 +28,13 @@ const actionOnly = (cardId: CardID, destination: CardDestination, requiresTarget
   requiresTarget,
 });
 
+const battleOnly = (cardId: CardID): CardPlayRule => ({
+  cardId,
+  timings: ['battle_hand_commit', 'battle_draw_play'],
+  allowedOrigins: ['hand', 'battle_draw'],
+  defaultDestinationByOrigin: { hand: 'graveyard', battle_draw: 'discard' },
+});
+
 export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'card-attrition': battleAndAction('card-attrition', 'asset_bank'),
   'card-conscription': { cardId: 'card-conscription', timings: ['battle_hand_commit', 'battle_draw_play'], allowedOrigins: ['hand', 'battle_draw'], defaultDestinationByOrigin: { hand: 'graveyard', battle_draw: 'discard' } },
@@ -68,6 +75,19 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'financiers-foreclosure': battleAndAction('financiers-foreclosure', 'discard', true),
   'financiers-property-dues': battleAndAction('financiers-property-dues', 'asset_bank'),
   'financiers-corner-the-market': battleAndAction('financiers-corner-the-market', 'discard'),
+
+  'intelligence-exfiltration': battleAndAction('intelligence-exfiltration', 'asset_bank'),
+  'intelligence-spies': battleAndAction('intelligence-spies', 'discard'),
+  'intelligence-fog-of-war': battleAndAction('intelligence-fog-of-war', 'removed', true),
+  'intelligence-disinformation': battleOnly('intelligence-disinformation'),
+  'intelligence-operational-reassessment': battleAndAction('intelligence-operational-reassessment', 'discard'),
+  'intelligence-intercepted-orders': battleAndAction('intelligence-intercepted-orders', 'asset_bank'),
+  'intelligence-reconnaissance': battleAndAction('intelligence-reconnaissance', 'asset_bank'),
+  'intelligence-deep-cover': battleAndAction('intelligence-deep-cover', 'asset_bank'),
+  'intelligence-assassins': battleAndAction('intelligence-assassins', 'discard'),
+  'intelligence-treason': battleAndAction('intelligence-treason', 'asset_bank'),
+  'intelligence-subversion': battleAndAction('intelligence-subversion', 'asset_bank'),
+  'intelligence-sleeper-network': actionOnly('intelligence-sleeper-network', 'asset_bank'),
 };
 
 export function getCardPlayRule(cardId: CardID): CardPlayRule | undefined { return coreCardPlayRules[cardId]; }

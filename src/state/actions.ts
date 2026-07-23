@@ -1,4 +1,4 @@
-import type { CardID, PlayerID, ProposalID, SpaceID } from '../types';
+import type { CardID, IntelligenceMissionKind, PlayerID, ProposalID, SpaceID } from '../types';
 import type { BattleCardTarget } from '../effects';
 
 export type ActionCardTarget =
@@ -17,6 +17,11 @@ export type StateAction = GameAction | ResolveBattleRevealAction | UseLeaderAbil
   | UseDiplomatCardAction | PlaceTreasuryCardAction | BeginDeedPurchaseAction
   | BeginPlayTheMarketAction | UseHostileTakeoverAction | ResolveFinancierChoiceAction;
 
+export type IntelligenceStateAction = StartIntelligenceMissionAction | CompleteIntelligenceMissionAction
+  | AbortIntelligenceMissionAction | CompleteSpecialOperationAction;
+
+export type AppStateAction = StateAction | IntelligenceStateAction;
+
 export interface DrawCardAction { type: 'draw_card'; playerId: PlayerID; count?: number; }
 export interface RevealSpaceAction { type: 'reveal_space'; playerId: PlayerID; spaceId: SpaceID; }
 export interface PlayActionCardAction { type: 'play_action_card'; playerId: PlayerID; cardId: CardID; targets?: ActionCardTarget[]; }
@@ -31,6 +36,10 @@ export interface BeginDeedPurchaseAction { type: 'begin_deed_purchase'; playerId
 export interface BeginPlayTheMarketAction { type: 'begin_play_the_market'; playerId: PlayerID; cardId: CardID; }
 export interface UseHostileTakeoverAction { type: 'use_hostile_takeover'; playerId: PlayerID; }
 export interface ResolveFinancierChoiceAction { type: 'resolve_financier_choice'; playerId: PlayerID; choice: string; cardId?: CardID; cardIds?: CardID[]; amount?: number; spaceId?: SpaceID; }
+export interface StartIntelligenceMissionAction { type: 'start_intelligence_mission'; playerId: PlayerID; cardId: CardID; kind: IntelligenceMissionKind; }
+export interface CompleteIntelligenceMissionAction { type: 'complete_intelligence_mission'; playerId: PlayerID; }
+export interface AbortIntelligenceMissionAction { type: 'abort_intelligence_mission'; playerId: PlayerID; }
+export interface CompleteSpecialOperationAction { type: 'complete_special_operation'; playerId: PlayerID; }
 export interface ResolveAssetBankDiscardAction { type: 'resolve_asset_bank_discard'; playerId: PlayerID; cardIds: CardID[]; }
 export interface MovePlayerAction { type: 'move_player'; playerId: PlayerID; toSpaceId: SpaceID; cardId?: CardID; }
 export interface CommitBattleHandCardAction { type: 'commit_battle_hand_card'; playerId: PlayerID; cardId: CardID; }

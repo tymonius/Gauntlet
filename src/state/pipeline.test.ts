@@ -27,7 +27,7 @@ describe('post-action automation pipeline', () => {
   it('records turn-start automation and win-condition evaluation when unblocked', () => {
     const game = createGame();
 
-    expect(runPostActionAutomationPipeline(game).steps).toEqual(['turn_start', 'win_conditions']);
+    expect(runPostActionAutomationPipeline(game).steps).toEqual(['turn_start', 'intelligence_reconciliation', 'win_conditions']);
   });
 
   it('defers win-condition evaluation while Asset Bank discard choices are pending', () => {
@@ -43,6 +43,6 @@ describe('post-action automation pipeline', () => {
       },
     };
 
-    expect(runPostActionAutomationPipeline(game).steps).toEqual(['turn_start']);
+    expect(runPostActionAutomationPipeline(game).steps).toEqual(['turn_start', 'intelligence_reconciliation']);
   });
 });

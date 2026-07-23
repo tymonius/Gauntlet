@@ -17,6 +17,7 @@ function createPlayerState(input: PlayerSetupInput, openingHandSize: number, shu
     military: input.factionId === 'military' ? { storedCards: {}, freeOrderAbilityIds: [], pursuitBattleCount: 0 } : undefined,
     diplomats: input.factionId === 'diplomats' ? { ratifiedProposals: [], sanctionsAgainst: {} } : undefined,
     financiers: input.factionId === 'financiers' ? { treasury: [], deedsOwned: [] } : undefined,
+    intelligence: input.factionId === 'intelligence' ? {} : undefined,
     zones: { deck, hand, discard: [], graveyard: [], assetBank: [], removed: [] }, controlledTerritories: [...input.territories],
     occupiedSpaceId: `${input.id}-heartland`, actionsRemaining: 1, movementRemaining: 1, hasPlayedActionThisTurn: false, hasPlayedBattleThisTurn: false,
   };

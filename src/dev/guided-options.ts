@@ -1,13 +1,14 @@
 import { militaryCardDefinitions } from '../cards';
 import type { GameState, PlayerID } from '../types';
-import type { StateAction } from '../state';
+import type { AppStateAction } from '../state';
 import { cardValue, deedOwner, toPrivateGameView } from '../state';
 import { buildBattleRevealOptions } from './battle-reveal-options';
+import { buildIntelligenceMissionOptions } from './intelligence-options';
 
-export interface GuidedOption { label: string; action: StateAction; sourceCardId?: string; cardText?: string; }
+export interface GuidedOption { label: string; action: AppStateAction; sourceCardId?: string; cardText?: string; }
 export function activeViewer(game: GameState): PlayerID { return game.priorityPlayer ?? game.activePlayer; }
 function exactCardText(cardId: string): string | undefined { const card = militaryCardDefinitions.find((candidate) => candidate.id === cardId); if (!card) return undefined; const sections: string[] = [`${card.name} — Cost ${card.cost}`, `Action: ${card.action}`, `Battle: ${card.battle}`]; if (card.supplemental) sections.push(...card.supplemental); return sections.join('\n\n'); }
-function militaryOption(label: string, action: StateAction, sourceCardId: string): GuidedOption { return { label, action, sourceCardId, cardText: exactCardText(sourceCardId) }; }
+function militaryOption(label: string, action: AppStateAction, sourceCardId: string): GuidedOption { return { label, action, sourceCardId, cardText: exactCardText(sourceCardId) }; }
 function affordableBattleCollateralSelections(cardIds: string[], capital: number, cost: number): string[][] {
   const selections: string[][] = [];
   const limit = Math.min(cardIds.length, 12);
@@ -60,7 +61,7 @@ function pendingFinancierOptions(game: GameState, playerId: PlayerID): GuidedOpt
 function pendingDiplomatOptions(game: GameState, playerId: PlayerID): GuidedOption[] | undefined {
   const pending = game.pendingDiplomatChoice;
   if (!pending || pending.playerId !== playerId) return undefined;
-  const option = (label: string, choice: string, extra: Partial<Extract<StateAction, { type: 'resolve_diplomat_choice' }>> = {}): GuidedOption => ({ label, action: { type: 'resolve_diplomat_choice', playerId, choice, ...extra } });
+  const option = (label: string, choice: string, extra: Partial<Extract<AppStateAction, { type: 'resolve_diplomat_choice' }>> = {}): GuidedOption => ({ label, action: { type: 'resolve_diplomat_choice', playerId, choice, ...extra } });
   switch (pending.kind) {
     case 'offer_terms': return [option('Decline to offer Terms', 'decline'), ...pending.eligibleProposals.map((proposalId) => option(`Offer ${proposalId}`, 'offer', { proposalId }))];
     case 'respond_to_terms': return pending.options.map((choice) => option(`${choice === 'accept' ? 'Accept' : 'Refuse'} Terms`, choice));
@@ -111,6 +112,7 @@ export function buildGuidedOptions(game: GameState): GuidedOption[] {
   if (game.phase === 'turn_start') options.push({ label: 'Draw 1 card', action: { type: 'draw_card', playerId } });
   if (game.phase === 'action_before_movement' || game.phase === 'action_after_movement') for (const play of view.legalActionPlays ?? []) options.push({ label: `Play Action ${play.cardId}`, action: { type: 'play_action_card', playerId, cardId: play.cardId } });
   const player = game.players[playerId];
+  options.push(...buildIntelligenceMissionOptions(game, playerId));
   if (game.phase === 'action_after_movement' && player.factionId === 'financiers' && player.actionsRemaining > 0 && playerId === game.activePlayer) {
     for (const cardId of player.zones.hand) {
       options.push({ label: `Place ${cardId} in Treasury`, action: { type: 'place_treasury_card', playerId, cardId } });

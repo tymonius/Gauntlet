@@ -15,6 +15,7 @@ import type {
   PublicBattleView,
   PublicBoardView,
   PublicGameView,
+  PublicIntelligenceState,
   PublicPlayerView,
   PlayerID,
   PlayerState,
@@ -23,6 +24,14 @@ import { legalLeaderAbilitiesFor } from './leader-abilities';
 
 const visible = <T>(cards: T[]) => ({ kind: 'visible' as const, cards });
 const hidden = <T>(cards: T[]) => ({ kind: 'hidden' as const, count: cards.length });
+
+function toPublicIntelligenceState(player: PlayerState): PublicIntelligenceState | undefined {
+  if (!player.intelligence) return undefined;
+  return {
+    activeMission: player.intelligence.activeMission ? { faceDown: true, kind: 'normal', startedTurn: player.intelligence.activeMission.startedTurn } : undefined,
+    specialOperation: player.intelligence.specialOperation ? { faceDown: true, kind: 'special_operation', startedTurn: player.intelligence.specialOperation.startedTurn } : undefined,
+  };
+}
 
 export function toPublicPlayerView(player: PlayerState): PublicPlayerView {
   return {
@@ -35,6 +44,7 @@ export function toPublicPlayerView(player: PlayerState): PublicPlayerView {
     military: structuredClone(player.military),
     diplomats: structuredClone(player.diplomats),
     financiers: structuredClone(player.financiers),
+    intelligence: toPublicIntelligenceState(player),
     zones: {
       deck: hidden(player.zones.deck),
       hand: hidden(player.zones.hand),
@@ -55,6 +65,7 @@ export function toPrivatePlayerView(player: PlayerState): PrivatePlayerView {
   const publicView = toPublicPlayerView(player);
   return {
     ...publicView,
+    intelligence: structuredClone(player.intelligence),
     zones: { ...publicView.zones, deck: hidden(player.zones.deck), hand: visible(player.zones.hand) },
     private: { deck: player.zones.deck, hand: player.zones.hand },
   };
