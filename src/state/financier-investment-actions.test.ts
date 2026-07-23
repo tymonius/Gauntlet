@@ -13,6 +13,8 @@ const financierDeck = [
   'financiers-liquidation',
   'financiers-underwriting',
   'financiers-property-dues',
+  'financiers-divestment',
+  'financiers-foreclosure',
 ];
 
 function game(): GameState {

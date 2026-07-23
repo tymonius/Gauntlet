@@ -135,7 +135,7 @@ export function applyGameAction(game: GameState, action: StateAction): ApplyGame
   if (action.type === 'resolve_financier_choice') { const next = structuredClone(game); if (!resolveFinancierCardChoice(next, action)) resolveFinancierChoice(next, action); reconcileFinancierCardState(next); enforceDiplomatAssetLimits(next); runPostActionAutomationPipeline(next); return { state: next }; }
   if (action.type === 'place_treasury_card' || action.type === 'begin_deed_purchase' || action.type === 'begin_play_the_market' || action.type === 'use_hostile_takeover') {
     if (game.pendingMilitaryChoice || game.pendingMilitaryTimingChoice || game.pendingDiplomatChoice || game.pendingFinancierChoice || game.pendingLeaderAbilityWindow) throw new GameActionError('Resolve the pending choice first.');
-    const next = structuredClone(game); applyFinancierStateAction(next, action); enforceDiplomatAssetLimits(next); runPostActionAutomationPipeline(next); return { state: next };
+    const next = structuredClone(game); applyFinancierStateAction(next, action); reconcileFinancierCardState(next); enforceDiplomatAssetLimits(next); runPostActionAutomationPipeline(next); return { state: next };
   }
   if (action.type === 'use_diplomat_card') { const next = structuredClone(game); if (next.pendingDiplomatChoice && next.pendingDiplomatChoice.playerId !== action.playerId) throw new GameActionError('Resolve the pending Diplomat choice first.'); useDiplomatCard(next, action); enforceDiplomatAssetLimits(next); runPostActionAutomationPipeline(next); return { state: next }; }
   if (action.type === 'resolve_diplomat_choice') {
