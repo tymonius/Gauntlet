@@ -1,11 +1,11 @@
 import type { GameState } from '../types';
-import type { StateAction } from './actions';
+import type { AppStateAction } from './actions';
 import { applyGameAction as applyBaseGameAction } from './apply';
 import { abortIntelligenceMission, completeIntelligenceMission, completeSpecialOperation, startIntelligenceMission } from './intelligence-missions';
 import { runPostActionAutomationPipeline } from './pipeline';
 import type { ApplyGameActionResult } from './reducer';
 
-export function applyGameAction(game: GameState, action: StateAction): ApplyGameActionResult {
+export function applyGameAction(game: GameState, action: AppStateAction): ApplyGameActionResult {
   if (action.type === 'start_intelligence_mission') {
     const next = structuredClone(game);
     startIntelligenceMission(next, action.playerId, action.cardId, action.kind);
