@@ -14,6 +14,7 @@ function hasPlayedCard(context: Parameters<EffectHandler['applies']>[0], playerI
 }
 
 function hasBankedAsset(game: GameState, playerId: PlayerID, cardId: CardID): boolean {
+  if (game.battle?.bankedAssetUseProhibited?.includes(playerId)) return false;
   return game.players[playerId]?.zones.assetBank.includes(cardId) ?? false;
 }
 

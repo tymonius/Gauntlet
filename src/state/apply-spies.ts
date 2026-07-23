@@ -7,6 +7,7 @@ import {
   restoreDeferredBattleDrawReveal,
 } from './intelligence-battle';
 import { resolveSpiesBattleChoice } from './intelligence-spies-battle';
+import { applySubversionBattleRestrictions } from './intelligence-subversion-battle';
 import { buildFinancierPreDiceChoices } from './financier-pre-dice';
 import { openNextFinancierChoice } from './financier-battle-cards';
 import { maybeOpenSubsidizeWindow } from './financier-integration';
@@ -16,6 +17,7 @@ import type { ApplyGameActionResult } from './reducer';
 
 function openPostRevealWindows(game: GameState, previousStage?: string): void {
   if (previousStage === 'dice' || game.battle?.stage !== 'dice') return;
+  applySubversionBattleRestrictions(game);
   openMilitaryAfterRevealWindows(game);
   buildFinancierPreDiceChoices(game);
   openNextFinancierChoice(game);

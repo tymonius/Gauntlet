@@ -12,6 +12,10 @@ const POST_REVEAL_CARDS = {
   operationalReassessment: 'intelligence-operational-reassessment',
 } as const;
 
+const LATE_REPLACEMENT_CARDS = new Set<CardID>([
+  'intelligence-subversion',
+]);
+
 type SourceSlot = 'hand_commit' | 'battle_draw_played';
 
 type PostRevealKind = 'reconnaissance' | 'operational_reassessment';
@@ -73,7 +77,9 @@ function nextSource(game: GameState): PostRevealSource | undefined {
 }
 
 function operationalReassessmentOptions(game: GameState, playerId: string): CardID[] {
-  return game.players[playerId].zones.hand.filter((cardId) => battleEffectCanStillResolve(cardId));
+  return game.players[playerId].zones.hand.filter((cardId) => (
+    battleEffectCanStillResolve(cardId) || LATE_REPLACEMENT_CARDS.has(cardId)
+  ));
 }
 
 function openReconnaissance(game: GameState, source: PostRevealSource): boolean {
