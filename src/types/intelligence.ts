@@ -3,7 +3,7 @@ import type { CardID } from './ids';
 export type IntelligenceMissionKind = 'normal' | 'special_operation';
 
 export interface PublicIntelligenceMissionView {
-  faceDown: true;
+  faceDown?: true;
   kind: IntelligenceMissionKind;
   startedTurn: number;
 }
