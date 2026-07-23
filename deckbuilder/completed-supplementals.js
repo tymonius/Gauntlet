@@ -64,8 +64,8 @@
       "Operation Progress sliding tracker"
     ],
     leaderImages: {
-      ranger: "https://tymonius.github.io/Gauntlet/images/leader-cards/ranger.jpg",
-      spymaster: "https://tymonius.github.io/Gauntlet/images/leader-cards/spymaster.jpg"
+      ranger: "https://tymonius.github.io/Gauntlet/images/ranger.png",
+      spymaster: "https://tymonius.github.io/Gauntlet/images/spymaster.png"
     },
     components: [
       {
