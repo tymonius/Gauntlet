@@ -93,6 +93,8 @@ describe('Financier gameplay integration', () => {
   it('opens Subsidize automatically before dice and blocks rolling until resolved', () => {
     let state = game();
     setBattle(state, 'battle_play_selection');
+    state.battle!.attacker.battleDraw = ['financiers-speculation'];
+    state.battle!.defender.battleDraw = ['financiers-liquidation'];
     setFactionResource(state, 'player_1', 'capital', 6, 'test');
     state = applyGameAction(state, { type: 'pass_battle_draw_play', playerId: 'player_1' }).state;
     state = applyGameAction(state, { type: 'pass_battle_draw_play', playerId: 'player_2' }).state;
