@@ -83,6 +83,26 @@ export type PendingIntelligenceChoice =
       resumePriorityPlayer?: PlayerID;
     }
   | {
+      kind: 'intercepted_orders_battle_select';
+      playerId: PlayerID;
+      opponentId: PlayerID;
+      battleId: string;
+      selectedCardIds: CardID[];
+      unselectedCardIds: CardID[];
+      options: ['select_selected', 'select_unselected'];
+      resumePriorityPlayer?: PlayerID;
+    }
+  | {
+      kind: 'intercepted_orders_battle_replacement';
+      playerId: PlayerID;
+      intelligencePlayerId: PlayerID;
+      battleId: string;
+      prohibitedCardId: CardID;
+      eligibleCardIds: CardID[];
+      options: ['pass', 'select'];
+      resumePriorityPlayer?: PlayerID;
+    }
+  | {
       kind: 'operational_reassessment_battle';
       playerId: PlayerID;
       battleId: string;

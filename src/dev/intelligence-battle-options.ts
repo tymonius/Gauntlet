@@ -50,11 +50,23 @@ export function buildIntelligenceBattleOptions(game: GameState, playerId: Player
     ];
   }
   if (pending.kind === 'fog_of_war_return') {
-  return [
-    action(`Return hand commitment ${pending.handCardId}`, 'return_hand'),
-    ...pending.battleHandCardIds.map((cardId) => action(`Return selected Battle Hand card ${cardId}`, 'return_battle_hand', cardId)),
-  ];
-}
+    return [
+      action(`Return hand commitment ${pending.handCardId}`, 'return_hand'),
+      ...pending.battleHandCardIds.map((cardId) => action(`Return selected Battle Hand card ${cardId}`, 'return_battle_hand', cardId)),
+    ];
+  }
+  if (pending.kind === 'intercepted_orders_battle_select') {
+    return [
+      ...pending.selectedCardIds.map((cardId) => action(`Prohibit selected ${cardId}`, 'select_selected', cardId)),
+      ...pending.unselectedCardIds.map((cardId) => action(`Prohibit unselected ${cardId}`, 'select_unselected', cardId)),
+    ];
+  }
+  if (pending.kind === 'intercepted_orders_battle_replacement') {
+    return [
+      action('Use no replacement Battle Hand card', 'pass'),
+      ...pending.eligibleCardIds.map((cardId) => action(`Choose replacement ${cardId}`, 'select', cardId)),
+    ];
+  }
   if (pending.kind === 'operational_reassessment_battle') {
     return [
       action('Keep Operational Reassessment in the battle', 'pass'),
