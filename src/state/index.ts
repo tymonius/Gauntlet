@@ -24,6 +24,7 @@ export * from './battle-observation';
 export * from './intelligence-simple-battle-effects';
 export * from './intelligence-spies-battle';
 export * from './intelligence-fog-of-war-battle';
+export * from './intelligence-pre-reveal';
 export * from './intelligence-operational-reassessment-battle';
 export * from './intelligence-battle';
 export * from './intelligence-leaders';
