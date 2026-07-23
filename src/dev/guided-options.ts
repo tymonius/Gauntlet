@@ -3,6 +3,7 @@ import type { GameState, PlayerID } from '../types';
 import type { StateAction } from '../state';
 import { cardValue, deedOwner, toPrivateGameView } from '../state';
 import { buildBattleRevealOptions } from './battle-reveal-options';
+import { buildIntelligenceMissionOptions } from './intelligence-options';
 
 export interface GuidedOption { label: string; action: StateAction; sourceCardId?: string; cardText?: string; }
 export function activeViewer(game: GameState): PlayerID { return game.priorityPlayer ?? game.activePlayer; }
@@ -111,6 +112,7 @@ export function buildGuidedOptions(game: GameState): GuidedOption[] {
   if (game.phase === 'turn_start') options.push({ label: 'Draw 1 card', action: { type: 'draw_card', playerId } });
   if (game.phase === 'action_before_movement' || game.phase === 'action_after_movement') for (const play of view.legalActionPlays ?? []) options.push({ label: `Play Action ${play.cardId}`, action: { type: 'play_action_card', playerId, cardId: play.cardId } });
   const player = game.players[playerId];
+  options.push(...buildIntelligenceMissionOptions(game, playerId));
   if (game.phase === 'action_after_movement' && player.factionId === 'financiers' && player.actionsRemaining > 0 && playerId === game.activePlayer) {
     for (const cardId of player.zones.hand) {
       options.push({ label: `Place ${cardId} in Treasury`, action: { type: 'place_treasury_card', playerId, cardId } });
