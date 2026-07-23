@@ -11,6 +11,7 @@ import { buildFinancierPreDiceChoices } from './financier-pre-dice';
 import { openNextFinancierChoice } from './financier-battle-cards';
 import { maybeOpenSubsidizeWindow } from './financier-integration';
 import { openMissionControlWindow, resolveIntelligenceLeaderChoice } from './intelligence-leaders';
+import { recordFaceDownCardObservedBeforeReveal } from './intelligence-mission-triggers';
 import { openMilitaryAfterRevealWindows } from './military-timing';
 import { abortIntelligenceMission, completeIntelligenceMission, completeSpecialOperation, startIntelligenceMission } from './intelligence-missions';
 import { runPostActionAutomationPipeline } from './pipeline';
@@ -40,9 +41,13 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
   if (action.type === 'resolve_intelligence_choice') {
     const next = structuredClone(game);
     const previousStage = next.battle?.stage;
-    const pendingKind = next.pendingIntelligenceChoice?.kind;
+    const pending = next.pendingIntelligenceChoice;
+    const pendingKind = pending?.kind;
     if (pendingKind === 'mission_control' || pendingKind === 'fieldcraft') resolveIntelligenceLeaderChoice(next, action);
     else resolveIntelligenceBattleChoice(next, action);
+    if (pending?.kind === 'surveillance' && action.choice === 'surveil') {
+      recordFaceDownCardObservedBeforeReveal(next, action.playerId, pending.battleId, 'surveillance');
+    }
     if (pendingKind !== 'mission_control' && pendingKind !== 'fieldcraft') continueAfterIntelligenceReveal(next, previousStage);
     runPostActionAutomationPipeline(next);
     return { state: next };
