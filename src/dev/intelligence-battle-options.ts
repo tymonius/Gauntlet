@@ -72,6 +72,12 @@ export function buildIntelligenceBattleOptions(game: GameState, playerId: Player
       ? [action('Remain in the battle', 'stay'), action('Withdraw and end the battle without a winner', 'withdraw')]
       : [action('Remain in the battle', 'stay')];
   }
+  if (pending.kind === 'exfiltration_battle_withdraw') {
+    return [
+      action('Remain in the victorious position', 'pass'),
+      action('Withdraw one position with Exfiltration', 'withdraw'),
+    ];
+  }
   if (pending.kind === 'operational_reassessment_battle') {
     return [
       action('Keep Operational Reassessment in the battle', 'pass'),

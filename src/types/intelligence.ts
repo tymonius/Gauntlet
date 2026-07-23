@@ -113,6 +113,14 @@ export type PendingIntelligenceChoice =
       resumePriorityPlayer?: PlayerID;
     }
   | {
+      kind: 'exfiltration_battle_withdraw';
+      playerId: PlayerID;
+      battleId: string;
+      destinationId: SpaceID;
+      options: ['pass', 'withdraw'];
+      resumePriorityPlayer?: PlayerID;
+    }
+  | {
       kind: 'operational_reassessment_battle';
       playerId: PlayerID;
       battleId: string;
