@@ -61,7 +61,10 @@ describe('first Intelligence Action cards', () => {
       opponentId: 'player_2',
       inspectedHand: ['opponent-secret-a', 'opponent-secret-b'],
     });
-    expect(buildGuidedOptions(state).map((option) => option.action.cardId).sort()).toEqual(['drawn-card', 'keep-card']);
+    expect(buildGuidedOptions(state)
+      .map((option) => ('cardId' in option.action ? option.action.cardId : undefined))
+      .filter((cardId): cardId is string => Boolean(cardId))
+      .sort()).toEqual(['drawn-card', 'keep-card']);
 
     const publicView = toPublicGameView(state);
     expect('pendingIntelligenceChoice' in publicView).toBe(false);
