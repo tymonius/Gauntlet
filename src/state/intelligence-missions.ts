@@ -83,6 +83,17 @@ export function startIntelligenceMission(game: GameState, playerId: PlayerID, ca
   log(game, playerId, kind === 'normal' ? 'intelligence_mission_started' : 'intelligence_special_operation_started', `${player.name} started a face-down ${kind === 'normal' ? 'Mission' : 'Special Operation'}.`, { kind });
 }
 
+export function startMissionControlMission(game: GameState, playerId: PlayerID, cardId: CardID): void {
+  const player = requireIntelligence(game, playerId);
+  const card = missionDefinition(cardId);
+  if (player.leaderName !== 'Spymaster') throw new IntelligenceMissionError('Only the Spymaster can use Mission Control.');
+  if (player.intelligence!.activeMission || player.intelligence!.specialOperation) throw new IntelligenceMissionError('Only one Mission or Special Operation may be active.');
+  if (!removeOne(player.zones.hand, cardId)) throw new IntelligenceMissionError(`${card.name} is not in hand.`);
+
+  player.intelligence!.activeMission = { cardId, kind: 'normal', startedTurn: game.turn, requirementSatisfied: false, evidence: [] };
+  log(game, playerId, 'spymaster_mission_control_started', `${player.name} used Mission Control to start another face-down Mission.`, { cardId });
+}
+
 export function markIntelligenceMissionRequirement(game: GameState, playerId: PlayerID, evidence: string, kind: IntelligenceMissionKind = 'normal'): void {
   const player = requireIntelligence(game, playerId);
   const mission = kind === 'normal' ? player.intelligence!.activeMission : player.intelligence!.specialOperation;
