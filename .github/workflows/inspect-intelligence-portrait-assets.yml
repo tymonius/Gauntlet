@@ -12,14 +12,34 @@ jobs:
       - uses: actions/checkout@v4
         with:
           lfs: true
+          fetch-depth: 0
 
-      - name: Collect Intelligence portrait assets
+      - name: Collect Intelligence portrait candidates
+        shell: bash
         run: |
-          mkdir -p proof
-          cp images/leader-cards/ranger.jpg proof/ranger.png
-          cp images/leader-cards/spymaster.jpg proof/spymaster.png
-          file proof/* | tee proof/metadata.txt
-          identify proof/* 2>&1 | tee -a proof/metadata.txt || true
+          set -o pipefail
+          mkdir -p proof/current proof/history
+          find images -type f \( -iname '*ranger*' -o -iname '*spymaster*' \) -print | sort | tee proof/current-paths.txt
+          while IFS= read -r path; do
+            mkdir -p "proof/current/$(dirname "$path")"
+            cp "$path" "proof/current/$path"
+          done < proof/current-paths.txt
+
+          git log --all --name-only --pretty=format: -- '*ranger*' '*spymaster*' | sed '/^$/d' | sort -u | tee proof/historical-paths.txt
+          git rev-list --all | while read commit; do
+            for path in images/leader-cards/ranger.jpg images/leader-cards/spymaster.jpg images/ranger.png images/spymaster.png images/sketches/ranger.png images/sketches/spymaster.png; do
+              if git cat-file -e "$commit:$path" 2>/dev/null; then
+                blob=$(git rev-parse "$commit:$path")
+                ext="${path##*.}"
+                out="proof/history/${path//\//_}-${blob}.${ext}"
+                if [ ! -f "$out" ]; then
+                  git show "$commit:$path" > "$out"
+                fi
+              fi
+            done
+          done
+
+          file proof/current-paths.txt proof/historical-paths.txt proof/current/images/**/* proof/history/* 2>&1 | tee proof/metadata.txt || true
 
       - uses: actions/upload-artifact@v4
         if: always()
