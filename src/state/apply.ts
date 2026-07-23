@@ -177,7 +177,7 @@ export function applyGameAction(game: GameState, action: StateAction): ApplyGame
   reconcileFinancierCardState(result.state); removeCapturedEncampments(result.state); removeBlockadesAfterControlChange(result.state); enforceDiplomatAssetLimits(result.state); runPostActionAutomationPipeline(result.state); finalizeLastStandResolution(result, prepared.attacker, prepared.defender);
   if (action.type === 'resolve_battle') resetLeaderAbilityUsageAfterBattle(result.state);
   if (action.type === 'end_turn') {
-    result.state.recentBattleResult = undefined; result.state.pendingMilitaryChoice = undefined; result.state.militaryChoiceQueue = undefined; result.state.pendingMilitaryTimingChoice = undefined; result.state.militaryTimingChoiceQueue = undefined; result.state.pendingFinancierChoice = undefined; result.state.financierChoiceQueue = undefined; result.state.pendingLeaderAbilityWindow = undefined;
+    result.state.recentBattleResult = undefined; result.state.pendingMilitaryChoice = undefined; result.state.militaryChoiceQueue = undefined; result.state.pendingMilitaryTimingChoice = undefined; result.state.militaryTimingChoiceQueue = undefined; result.state.pendingLeaderAbilityWindow = undefined;
     for (const player of Object.values(result.state.players)) { if (player.military) player.military.victoryRestrictions = undefined; if (player.id === result.state.activePlayer && checkPeaceTreatyVictory(result.state, player.id)) break; }
     if (!result.state.pendingDiplomatChoice && !result.state.pendingFinancierChoice) openDemilitarizedZoneUpkeep(result.state, result.state.activePlayer);
     resetLeaderAbilityUsageForNewTurn(result.state, result.state.activePlayer);
