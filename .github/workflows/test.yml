@@ -38,4 +38,16 @@ jobs:
           path: typecheck.log
 
       - name: Test
-        run: npm test
+        shell: bash
+        run: |
+          set +e
+          npm test 2>&1 | tee test.log
+          status=${PIPESTATUS[0]}
+          exit $status
+
+      - name: Upload test diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-diagnostics
+          path: test.log
