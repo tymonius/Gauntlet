@@ -64,6 +64,15 @@ export type PendingIntelligenceChoice =
       resumePriorityPlayer?: PlayerID;
     }
   | {
+      kind: 'spies_battle_reselect';
+      playerId: PlayerID;
+      battleId: string;
+      currentSelectedCardId: CardID;
+      eligibleCardIds: CardID[];
+      options: ['pass', 'select'];
+      resumePriorityPlayer?: PlayerID;
+    }
+  | {
       kind: 'mission_control';
       playerId: PlayerID;
       battleId?: never;
