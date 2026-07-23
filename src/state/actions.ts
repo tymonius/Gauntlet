@@ -10,7 +10,7 @@ export type GameAction =
   | DrawCardAction | RevealSpaceAction | PlayActionCardAction | ResolveAssetBankDiscardAction
   | MovePlayerAction | CommitBattleHandCardAction | PassBattleHandCommitAction
   | DrawBattleCardsAction | PlayBattleDrawCardAction | PassBattleDrawPlayAction
-  | RollBattleDieAction | ResolveBattleAction | EndTurnAction;
+  | ResolveBattleRevealAction | RollBattleDieAction | ResolveBattleAction | EndTurnAction;
 
 export type StateAction = GameAction | UseLeaderAbilityAction | PassLeaderAbilityWindowAction
   | ResolveMilitaryChoiceAction | ResolveMilitaryTimingChoiceAction | ResolveDiplomatChoiceAction
@@ -38,6 +38,7 @@ export interface PassBattleHandCommitAction { type: 'pass_battle_hand_commit'; p
 export interface DrawBattleCardsAction { type: 'draw_battle_cards'; playerId: PlayerID; count?: number; }
 export interface PlayBattleDrawCardAction { type: 'play_battle_draw_card'; playerId: PlayerID; cardId: CardID; }
 export interface PassBattleDrawPlayAction { type: 'pass_battle_draw_play'; playerId: PlayerID; }
+export interface ResolveBattleRevealAction { type: 'resolve_battle_reveal'; playerId: PlayerID; battleCardTargets?: BattleCardTarget[]; }
 export interface RollBattleDieAction { type: 'roll_battle_die'; playerId: PlayerID; value?: number; }
 export interface ResolveBattleAction { type: 'resolve_battle'; playerId: PlayerID; battleCardTargets?: BattleCardTarget[]; }
 export interface EndTurnAction { type: 'end_turn'; playerId: PlayerID; }
