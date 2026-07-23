@@ -20,6 +20,8 @@ export * from './intelligence-action-cards';
 export * from './intelligence-reactive-assets';
 export * from './battle-hand-restrictions';
 export * from './battle-dice';
+export * from './battle-observation';
+export * from './intelligence-simple-battle-effects';
 export * from './intelligence-battle';
 export * from './intelligence-leaders';
 export * from './actions';

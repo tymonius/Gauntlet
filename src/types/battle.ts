@@ -84,6 +84,7 @@ export interface BattleState {
   lastStand?: boolean;
   attackerHandCommitVisibleTo?: PlayerID[];
   blockedBattleDrawCards?: Partial<Record<PlayerID, CardID[]>>;
+  observedBeforeNormalReveal?: Partial<Record<PlayerID, CardID[]>>;
   winner?: PlayerID;
   loser?: PlayerID;
   effectsResolved: string[];

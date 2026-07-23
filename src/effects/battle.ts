@@ -3,8 +3,8 @@ import { validateEmbargoTargets } from './embargo';
 import type { BattleCardTarget, EffectHandler } from './types';
 
 function participantHasCard(participant: BattleParticipantState, cardId: CardID): boolean {
-  return participant.handCommit?.cardId === cardId && !participant.handCommit.canceled
-    || participant.battleDrawPlayed.some((played) => played.cardId === cardId && !played.canceled);
+  return participant.handCommit?.cardId === cardId && !participant.handCommit.canceled && !participant.handCommit.negated
+    || participant.battleDrawPlayed.some((played) => played.cardId === cardId && !played.canceled && !played.negated);
 }
 
 function hasPlayedCard(context: Parameters<EffectHandler['applies']>[0], playerId: PlayerID, cardId: CardID): boolean {
