@@ -21,6 +21,7 @@ export interface DiplomatSanctionState {
   territoryId?: string;
   spaceId?: SpaceID;
   censureLastTriggeredTurn?: number;
+  blockadeLastTriggeredTurn?: number;
 }
 
 export interface DiplomatState {

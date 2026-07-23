@@ -1,14 +1,16 @@
 import { applyMilitaryActionEffect, removeCapturedEncampments, resolveMilitaryEndTurn } from '../cards';
-import type { GameAction, StateAction } from './actions';
+import type { GameAction, StateAction, UseDiplomatCardAction } from './actions';
 import { applyGameAction as applyGameActionWithoutAutomation, GameActionError, type ApplyGameActionResult } from './reducer';
 import { defaultLeaderAbilityRegistry, legalLeaderAbilitiesFor, resetLeaderAbilityUsageAfterBattle, resetLeaderAbilityUsageForNewTurn, useLeaderAbility } from './leader-abilities';
 import { buildMilitaryAftermathChoices, enrichRecentBattleResult, resolveMilitaryChoice } from './military-interactions';
 import { maybeOpenBrothersSelection, openMilitaryAfterRevealWindows, openMilitaryPrecommitWindows, resolveMilitaryTimingChoice } from './military-timing';
 import { applyLeverage, checkPeaceTreatyVictory, declineTerms, offerTerms, openDiplomatTermsWindow, resolvePoliticalCapital, resolveProposalCardChoice, resolveRefusedTermsBattle, respondToTerms } from './diplomat-terms';
+import { DIPLOMAT_REACTIVE_CARDS, resolveNonbindingResolution, resolveTradeConcessions, useDiplomaticLatitude, useGoodFaith, useGunboatDiplomacy, useNeutralObservers, useNonbindingResolution, useSafeConduct, useTradeConcessions } from './diplomat-cards';
+import { bankSanctionAfterRefusal, effectiveAssetBankLimit, openBlockadeMovementChoice, openCensureChoiceAfterAction, openDemilitarizedZoneUpkeep, playClemency, playDemilitarizedZone, removeBlockadesAfterControlChange, removeSanctionsAfterAcceptedTerms, requireDemilitarizedEntryCost, resolveBlockadeMovement, resolveClemency, resolveCensure, resolveDemilitarizedZoneBattle, resolveDemilitarizedZoneUpkeep, DIPLOMAT_PERSISTENT_CARDS } from './diplomat-persistent';
 import { gainFactionResource } from './resources';
 import { runPostActionAutomationPipeline } from './pipeline';
 import { isOpponentBeyondGauntletSpace, isOwnBeyondGauntletSpace } from './v06-board';
-import type { BattleState, GameEvent, GameState, PlayerID, RecentBattleResult } from '../types';
+import type { BattleState, GameEvent, GameState, PlayerID, RecentBattleResult, SpaceID } from '../types';
 
 const LAST_STAND_DEFENDER_BONUS_EFFECT = 'last_stand_defender_bonus';
 const LAST_STAND_DEFENDER_BONUS = 1;
@@ -47,23 +49,76 @@ function correctAddedCardDestinations(game: GameState, battle: BattleState): voi
 function applyHoldTheLineLoss(game: GameState, battle: BattleState, winner: PlayerID): void { const defender = battle.defender.playerId; if (winner === defender || !battle.effectsResolved.includes(`hold_capture_if_lost:${defender}`)) return; const space = game.board.spaces.find((candidate) => candidate.id === battle.location); if (!space?.territoryId || space.kind !== 'territory') return; const previous = space.controller; if (previous && previous !== winner) game.players[previous].controlledTerritories = game.players[previous].controlledTerritories.filter((id) => id !== space.territoryId); if (!game.players[winner].controlledTerritories.includes(space.territoryId)) game.players[winner].controlledTerritories.push(space.territoryId); space.controller = winner; delete space.capturePendingBy; }
 function recordBattleAftermath(result: ApplyGameActionResult, battle?: BattleState): void {
   if (!battle) return; const winner = lastResolvedBattleWinner(result.state); if (!winner) return;
-  correctAddedCardDestinations(result.state, battle); applyHoldTheLineLoss(result.state, battle, winner); result.state.recentBattleResult = recentBattleResult(result.state, battle, winner); applyMilitaryCommandTrigger(result.state, winner); resolveRefusedTermsBattle(result.state, winner); buildMilitaryAftermathChoices(result.state, battle); openPostBattleOrderWindow(result.state, winner);
+  correctAddedCardDestinations(result.state, battle); applyHoldTheLineLoss(result.state, battle, winner); result.state.recentBattleResult = recentBattleResult(result.state, battle, winner); applyMilitaryCommandTrigger(result.state, winner); resolveRefusedTermsBattle(result.state, winner); resolveDemilitarizedZoneBattle(result.state, battle.location); removeBlockadesAfterControlChange(result.state); buildMilitaryAftermathChoices(result.state, battle); openPostBattleOrderWindow(result.state, winner);
 }
 function closePostBattleOrderWindow(game: GameState): void { game.pendingLeaderAbilityWindow = undefined; if (game.phase !== 'game_over') game.priorityPlayer = game.activePlayer; }
 function appendLastStandVictoryLog(game: GameState, winner: PlayerID, defeatedPlayer: PlayerID): void { game.log.push({ id: `${game.id}-event-${game.log.length + 1}`, turn: game.turn, actor: winner, type: 'last_stand_won', message: `${game.players[winner].name} won ${game.players[defeatedPlayer].name}’s Last Stand and ran the Gauntlet.`, payload: { winner, defeatedPlayer }, visibility: 'public' } satisfies GameEvent); }
 function finalizeLastStandResolution(result: ApplyGameActionResult, attacker?: PlayerID, defender?: PlayerID): void { if (!attacker || !defender || lastResolvedBattleWinner(result.state) !== attacker) return; result.state.winner = attacker; result.state.phase = 'game_over'; result.state.priorityPlayer = attacker; result.state.pendingMilitaryChoice = undefined; result.state.militaryChoiceQueue = undefined; result.state.pendingMilitaryTimingChoice = undefined; result.state.militaryTimingChoiceQueue = undefined; result.state.pendingDiplomatChoice = undefined; result.state.pendingLeaderAbilityWindow = undefined; result.state.pendingAssetBankDiscards = undefined; appendLastStandVictoryLog(result.state, attacker, defender); }
 function continueAfterDiplomatChoice(game: GameState): void { if (game.battle && !game.pendingDiplomatChoice) openMilitaryPrecommitWindows(game); }
 
+function enforceDiplomatAssetLimits(game: GameState): void {
+  for (const player of Object.values(game.players)) {
+    const limit = effectiveAssetBankLimit(game, player.id);
+    const excess = player.zones.assetBank.length - limit;
+    if (excess > 0) {
+      game.pendingAssetBankDiscards ??= {};
+      game.pendingAssetBankDiscards[player.id] = { playerId: player.id, limit, discardCount: excess, options: [...player.zones.assetBank] };
+    } else if (game.pendingAssetBankDiscards?.[player.id]) delete game.pendingAssetBankDiscards[player.id];
+  }
+  if (game.pendingAssetBankDiscards && Object.keys(game.pendingAssetBankDiscards).length === 0) game.pendingAssetBankDiscards = undefined;
+}
+
+function useDiplomatCard(game: GameState, action: UseDiplomatCardAction): void {
+  const { playerId, cardId } = action;
+  if (cardId === DIPLOMAT_PERSISTENT_CARDS.clemency) { if (!action.opponentId || !action.targetCardId) throw new GameActionError('Clemency requires an opponent and a Graveyard card.'); playClemency(game, playerId, action.opponentId, action.targetCardId); }
+  else if (cardId === DIPLOMAT_PERSISTENT_CARDS.demilitarizedZone) { if (!action.spaceId) throw new GameActionError('Demilitarized Zone requires a Territory.'); playDemilitarizedZone(game, playerId, action.spaceId); }
+  else if ([DIPLOMAT_PERSISTENT_CARDS.censure, DIPLOMAT_PERSISTENT_CARDS.embargo, DIPLOMAT_PERSISTENT_CARDS.blockade].includes(cardId as never)) { if (!action.opponentId) throw new GameActionError('A Sanction requires an opponent.'); bankSanctionAfterRefusal(game, playerId, action.opponentId, cardId, action.spaceId); }
+  else if (cardId === DIPLOMAT_REACTIVE_CARDS.tradeConcessions) useTradeConcessions(game, playerId);
+  else if (cardId === DIPLOMAT_REACTIVE_CARDS.goodFaith) { if (!action.targetCardId) throw new GameActionError('Good Faith requires a card from hand.'); useGoodFaith(game, playerId, action.targetCardId); }
+  else if (cardId === DIPLOMAT_REACTIVE_CARDS.diplomaticLatitude) { if (!action.proposalId) throw new GameActionError('Diplomatic Latitude requires a second Proposal.'); useDiplomaticLatitude(game, playerId, action.proposalId); }
+  else if (cardId === DIPLOMAT_REACTIVE_CARDS.nonbindingResolution) useNonbindingResolution(game, playerId);
+  else if (cardId === DIPLOMAT_REACTIVE_CARDS.gunboatDiplomacy) useGunboatDiplomacy(game, playerId);
+  else if (cardId === DIPLOMAT_REACTIVE_CARDS.neutralObservers) useNeutralObservers(game, playerId);
+  else if (cardId === DIPLOMAT_REACTIVE_CARDS.safeConduct) useSafeConduct(game, playerId);
+  else throw new GameActionError(`${cardId} is not an integrated Diplomat card.`);
+}
+
+function resolveDiplomatPendingChoice(game: GameState, action: Extract<StateAction, { type: 'resolve_diplomat_choice' }>): void {
+  const pending = game.pendingDiplomatChoice!;
+  if (pending.kind === 'offer_terms') { if (action.choice === 'decline') declineTerms(game, action.playerId); else if (action.choice === 'offer' && action.proposalId) offerTerms(game, action.playerId, action.proposalId); else throw new GameActionError('Choose an eligible Proposal or decline.'); }
+  else if (pending.kind === 'respond_to_terms') { const diplomatId = pending.diplomatId; const opponentId = pending.playerId; respondToTerms(game, action.playerId, action.choice as 'accept' | 'refuse'); if (action.choice === 'accept') removeSanctionsAfterAcceptedTerms(game, diplomatId, opponentId); }
+  else if (pending.kind === 'leverage') applyLeverage(game, action.playerId, action.amount ?? Number(action.choice));
+  else if (pending.kind === 'political_capital') resolvePoliticalCapital(game, action.playerId, action.cardIds ?? []);
+  else if (pending.kind === 'trade_concessions') resolveTradeConcessions(game, action.playerId, action.choice as 'draw_two' | 'bank_asset', action.cardId);
+  else if (pending.kind === 'nonbinding_resolution') resolveNonbindingResolution(game, action.playerId, action.choice as 'ratify' | 'decline_ratification');
+  else if (pending.kind === 'clemency') resolveClemency(game, action.playerId, action.choice as 'release' | 'leave');
+  else if (pending.kind === 'censure') resolveCensure(game, action.playerId, action.choice as 'discard' | 'diplomat_draw', action.cardId);
+  else if (pending.kind === 'demilitarized_zone_upkeep') resolveDemilitarizedZoneUpkeep(game, action.playerId, action.choice as 'discard' | 'withdraw', action.cardId);
+  else if (pending.kind === 'sanction_movement') resolveBlockadeMovement(game, action.playerId, action.choice as 'discard' | 'influence', action.cardId);
+  else if (pending.kind === 'latitude_refusal') {
+    if (!action.proposalId || !pending.proposalIds.includes(action.proposalId)) throw new GameActionError('Choose one of the offered Proposals.');
+    const terms = game.players[pending.diplomatId].diplomats?.activeTerms; if (!terms) throw new GameActionError('Active Terms are missing.');
+    terms.selectedProposalId = action.proposalId; game.players[pending.diplomatId].zones.discard.push(DIPLOMAT_REACTIVE_CARDS.diplomaticLatitude); game.pendingDiplomatChoice = undefined; game.priorityPlayer = pending.diplomatId;
+  } else resolveProposalCardChoice(game, action.playerId, action.cardIds ?? (action.cardId ? [action.cardId] : []));
+}
+
+function movementBlockadeSpace(game: GameState, playerId: PlayerID, origin?: SpaceID, destination?: SpaceID): SpaceID | undefined {
+  for (const spaceId of [origin, destination]) {
+    if (!spaceId) continue;
+    const already = game.log.some((event) => event.turn === game.turn && event.type === 'blockade_movement_triggered' && (event.payload as { playerId?: PlayerID })?.playerId === playerId);
+    if (already) return undefined;
+    const has = Object.values(game.players).flatMap((player) => player.diplomats?.sanctionStates ?? []).some((sanction) => sanction.opponentId === playerId && sanction.cardId === DIPLOMAT_PERSISTENT_CARDS.blockade && sanction.spaceId === spaceId);
+    if (has) return spaceId;
+  }
+  return undefined;
+}
+
 export function applyGameAction(game: GameState, action: StateAction): ApplyGameActionResult {
+  if (action.type === 'use_diplomat_card') { const next = structuredClone(game); if (next.pendingDiplomatChoice && next.pendingDiplomatChoice.playerId !== action.playerId) throw new GameActionError('Resolve the pending Diplomat choice first.'); useDiplomatCard(next, action); enforceDiplomatAssetLimits(next); runPostActionAutomationPipeline(next); return { state: next }; }
   if (action.type === 'resolve_diplomat_choice') {
     const next = structuredClone(game); const pending = next.pendingDiplomatChoice;
     if (!pending || pending.playerId !== action.playerId) throw new GameActionError(`${action.playerId} has no pending Diplomat choice.`);
-    if (pending.kind === 'offer_terms') { if (action.choice === 'decline') declineTerms(next, action.playerId); else if (action.choice === 'offer' && action.proposalId) offerTerms(next, action.playerId, action.proposalId); else throw new GameActionError('Choose an eligible Proposal or decline.'); }
-    else if (pending.kind === 'respond_to_terms') respondToTerms(next, action.playerId, action.choice as 'accept' | 'refuse');
-    else if (pending.kind === 'leverage') applyLeverage(next, action.playerId, action.amount ?? Number(action.choice));
-    else if (pending.kind === 'political_capital') resolvePoliticalCapital(next, action.playerId, action.cardIds ?? []);
-    else resolveProposalCardChoice(next, action.playerId, action.cardIds ?? []);
-    continueAfterDiplomatChoice(next); runPostActionAutomationPipeline(next); return { state: next };
+    resolveDiplomatPendingChoice(next, action); continueAfterDiplomatChoice(next); enforceDiplomatAssetLimits(next); runPostActionAutomationPipeline(next); return { state: next };
   }
   if (action.type === 'resolve_military_timing_choice') { const next = structuredClone(game); resolveMilitaryTimingChoice(next, action.playerId, action.choice, action.cardId, action.secondaryCardId); maybeOpenBrothersSelection(next); openMilitaryAfterRevealWindows(next); runPostActionAutomationPipeline(next); return { state: next }; }
   if (action.type === 'resolve_military_choice') { const next = structuredClone(game); resolveMilitaryChoice(next, action.playerId, action.choice, action.cardId); if (!next.pendingMilitaryChoice && next.recentBattleResult) openPostBattleOrderWindow(next, next.recentBattleResult.winner); runPostActionAutomationPipeline(next); return { state: next }; }
@@ -72,15 +127,31 @@ export function applyGameAction(game: GameState, action: StateAction): ApplyGame
   if (game.pendingMilitaryChoice || game.pendingMilitaryTimingChoice || game.pendingDiplomatChoice) throw new GameActionError('Resolve the pending faction choice first.');
   if (game.pendingLeaderAbilityWindow) throw new GameActionError('Resolve or pass the pending post-battle Order window first.');
 
-  validateV06EndpointMovement(game, action); const prepared = prepareLastStandResolution(game, action); const battleBeforeResolution = action.type === 'resolve_battle' && prepared.game.battle ? structuredClone(prepared.game.battle) : undefined; const hadBattle = Boolean(prepared.game.battle); const endingPlayer = action.type === 'end_turn' ? action.playerId : undefined; const result = applyGameActionWithoutAutomation(prepared.game, action);
-  if (action.type === 'play_action_card') applyMilitaryActionEffect(result.state, action.playerId, action.cardId, action.targets);
+  validateV06EndpointMovement(game, action);
+  const prepared = prepareLastStandResolution(game, action);
+  let working = prepared.game;
+  const originSpace = action.type === 'move_player' ? working.board.spaces.find((space) => space.occupant === action.playerId)?.id : undefined;
+  if (action.type === 'move_player') { working = structuredClone(working); requireDemilitarizedEntryCost(working, action.playerId, action.toSpaceId, action.cardId); }
+  const battleBeforeResolution = action.type === 'resolve_battle' && working.battle ? structuredClone(working.battle) : undefined;
+  const hadBattle = Boolean(working.battle); const endingPlayer = action.type === 'end_turn' ? action.playerId : undefined;
+  const result = applyGameActionWithoutAutomation(working, action);
+  if (action.type === 'play_action_card') { applyMilitaryActionEffect(result.state, action.playerId, action.cardId, action.targets); openCensureChoiceAfterAction(result.state, action.playerId); }
   if (endingPlayer) resolveMilitaryEndTurn(result.state, endingPlayer);
   markLastStand(result, action);
+  if (action.type === 'move_player') {
+    const blockadeSpace = movementBlockadeSpace(result.state, action.playerId, originSpace, action.toSpaceId);
+    if (blockadeSpace && openBlockadeMovementChoice(result.state, action.playerId, blockadeSpace)) result.state.log.push({ id: `${result.state.id}-event-${result.state.log.length + 1}`, turn: result.state.turn, actor: action.playerId, type: 'blockade_movement_triggered', message: 'Sanctions: Blockade triggered on movement.', payload: { playerId: action.playerId, spaceId: blockadeSpace }, visibility: 'public' });
+  }
   if (!hadBattle && result.state.battle) { if (!openDiplomatTermsWindow(result.state)) openMilitaryPrecommitWindows(result.state); }
   maybeOpenBrothersSelection(result.state); openMilitaryAfterRevealWindows(result.state);
   if (action.type === 'resolve_battle') recordBattleAftermath(result, battleBeforeResolution);
-  removeCapturedEncampments(result.state); runPostActionAutomationPipeline(result.state); finalizeLastStandResolution(result, prepared.attacker, prepared.defender);
+  removeCapturedEncampments(result.state); removeBlockadesAfterControlChange(result.state); enforceDiplomatAssetLimits(result.state); runPostActionAutomationPipeline(result.state); finalizeLastStandResolution(result, prepared.attacker, prepared.defender);
   if (action.type === 'resolve_battle') resetLeaderAbilityUsageAfterBattle(result.state);
-  if (action.type === 'end_turn') { result.state.recentBattleResult = undefined; result.state.pendingMilitaryChoice = undefined; result.state.militaryChoiceQueue = undefined; result.state.pendingMilitaryTimingChoice = undefined; result.state.militaryTimingChoiceQueue = undefined; result.state.pendingDiplomatChoice = undefined; result.state.pendingLeaderAbilityWindow = undefined; for (const player of Object.values(result.state.players)) { if (player.military) player.military.victoryRestrictions = undefined; if (player.id === result.state.activePlayer && checkPeaceTreatyVictory(result.state, player.id)) break; } resetLeaderAbilityUsageForNewTurn(result.state, result.state.activePlayer); }
+  if (action.type === 'end_turn') {
+    result.state.recentBattleResult = undefined; result.state.pendingMilitaryChoice = undefined; result.state.militaryChoiceQueue = undefined; result.state.pendingMilitaryTimingChoice = undefined; result.state.militaryTimingChoiceQueue = undefined; result.state.pendingLeaderAbilityWindow = undefined;
+    for (const player of Object.values(result.state.players)) { if (player.military) player.military.victoryRestrictions = undefined; if (player.id === result.state.activePlayer && checkPeaceTreatyVictory(result.state, player.id)) break; }
+    if (!result.state.pendingDiplomatChoice) openDemilitarizedZoneUpkeep(result.state, result.state.activePlayer);
+    resetLeaderAbilityUsageForNewTurn(result.state, result.state.activePlayer);
+  }
   return result;
 }
