@@ -99,6 +99,20 @@ describe('canonical battle dice pools', () => {
     });
   });
 
+  it('clears both selected and raw dice when a tied battle rerolls', () => {
+    let state = game();
+    state = applyGameAction(state, { type: 'roll_battle_die', playerId: 'player_1', values: [4] }).state;
+    state = applyGameAction(state, { type: 'roll_battle_die', playerId: 'player_2', values: [4] }).state;
+    expect(state.battle?.stage).toBe('resolution');
+
+    state = applyGameAction(state, { type: 'resolve_battle', playerId: 'player_1' }).state;
+    expect(state.battle?.stage).toBe('dice');
+    expect(state.battle?.attacker.diceRoll).toBeUndefined();
+    expect(state.battle?.attacker.diceRolls).toBeUndefined();
+    expect(state.battle?.defender.diceRoll).toBeUndefined();
+    expect(state.battle?.defender.diceRolls).toBeUndefined();
+  });
+
   it('selects directly from a supplied pool helper', () => {
     const state = game();
     state.battle!.attacker.advantage = 1;
