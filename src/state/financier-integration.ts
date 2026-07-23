@@ -65,17 +65,18 @@ export function beginDeedPurchase(game: GameState, playerId: PlayerID, spaceId: 
   const space = game.board.spaces.find((candidate) => candidate.id === spaceId);
   if (!space || space.kind !== 'territory') throw new FinancierIntegrationError('Choose a Territory in the Gauntlet.');
   if (deedOwner(game, spaceId) === playerId) throw new FinancierIntegrationError('You already own this Deed.');
-  if (hostileTakeover) {
-    if (player.leaderName !== 'Executive' || player.financiers!.hostileTakeoverEligibleSpaceId !== spaceId) throw new FinancierIntegrationError('Hostile Takeover is not available for this Territory.');
-  }
+  if (hostileTakeover && (player.leaderName !== 'Executive' || player.financiers!.hostileTakeoverEligibleSpaceId !== spaceId)) throw new FinancierIntegrationError('Hostile Takeover is not available for this Territory.');
   const cost = deedCost(game, playerId, spaceId, hostileTakeover ? 0 : undefined);
+  const capital = player.resources?.capital?.value ?? 0;
+  const affordableCollateral = collateralOptions(game, playerId).filter((cardId) => capital + collateralContributionFor(cardId, cost) >= cost);
+  if (capital < cost && affordableCollateral.length === 0) throw new FinancierIntegrationError(`You cannot pay the ${cost} Capital Deed cost.`);
   game.pendingFinancierChoice = {
     kind: 'deed_purchase',
     playerId,
     spaceId,
     cost,
     currentOwner: deedOwner(game, spaceId),
-    collateralOptions: collateralOptions(game, playerId),
+    collateralOptions: affordableCollateral,
     maximumCollateralContribution: Math.floor(cost / 2),
     hostileTakeover,
   };
@@ -93,9 +94,7 @@ function completeHostileTakeover(game: GameState, playerId: PlayerID, spaceId: S
   const space = game.board.spaces.find((candidate) => candidate.id === spaceId);
   if (!space?.territoryId) return;
   const previousController = space.controller;
-  if (previousController && previousController !== playerId) {
-    game.players[previousController].controlledTerritories = game.players[previousController].controlledTerritories.filter((id) => id !== space.territoryId);
-  }
+  if (previousController && previousController !== playerId) game.players[previousController].controlledTerritories = game.players[previousController].controlledTerritories.filter((id) => id !== space.territoryId);
   if (!game.players[playerId].controlledTerritories.includes(space.territoryId)) game.players[playerId].controlledTerritories.push(space.territoryId);
   space.controller = playerId;
   delete space.capturePendingBy;
@@ -107,9 +106,7 @@ export function recordHostileTakeoverEligibility(game: GameState, battle: Battle
   if (winner !== battle.attacker.playerId) return;
   const player = game.players[winner];
   const space = game.board.spaces.find((candidate) => candidate.id === battle.location);
-  if (!player?.financiers || player.leaderName !== 'Executive' || !space || space.kind !== 'territory') return;
-  const controllerAtResolution = space.controller;
-  if (controllerAtResolution === winner) return;
+  if (!player?.financiers || player.leaderName !== 'Executive' || !space || space.kind !== 'territory' || space.controller === winner) return;
   player.financiers.hostileTakeoverEligibleSpaceId = space.id;
   log(game, winner, 'hostile_takeover_available', `${player.name} may use Hostile Takeover on ${space.id}.`, { spaceId: space.id });
 }
@@ -119,6 +116,7 @@ export function maybeOpenSubsidizeWindow(game: GameState): boolean {
   for (const participant of [game.battle.attacker, game.battle.defender]) {
     const player = game.players[participant.playerId];
     if (player?.factionId !== 'financiers' || !player.financiers) continue;
+    if (player.financiers.subsidizeOfferedBattleId !== game.battle.id) player.financiers.subsidizeBonusThisBattle = undefined;
     if (player.financiers.subsidizeOfferedBattleId === game.battle.id) continue;
     const capital = player.resources?.capital?.value ?? 0;
     let maximumBonus = 0;
@@ -169,6 +167,7 @@ export function resolveFinancierEndTurn(game: GameState, endingPlayerId: PlayerI
   enforceCapitalLimit(game);
   const player = game.players[endingPlayerId];
   if (player?.financiers) player.financiers.hostileTakeoverEligibleSpaceId = undefined;
+  clearFinancierBattleState(game);
 }
 
 export function resolveFinancierTurnStart(game: GameState, playerId: PlayerID): number {
@@ -177,6 +176,6 @@ export function resolveFinancierTurnStart(game: GameState, playerId: PlayerID): 
   return gainDeedIncome(game, playerId);
 }
 
-export function collateralContributionFor(game: GameState, cardId: CardID, pendingCost: number): number {
+export function collateralContributionFor(cardId: CardID, pendingCost: number): number {
   return Math.min(cardValue(cardId), Math.floor(pendingCost / 2));
 }
