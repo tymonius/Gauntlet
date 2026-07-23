@@ -15,6 +15,7 @@ import {
 } from './intelligence-battle';
 import { availableBattleHandCards } from './battle-hand-restrictions';
 import { applyBattleDiceRoll, clearBattleDiceForReroll } from './battle-dice';
+import { markBattleCardsObservedBeforeNormalReveal } from './battle-observation';
 import { openCensureChoiceAfterAction } from './diplomat-persistent';
 import { buildFinancierPreDiceChoices } from './financier-pre-dice';
 import { openNextFinancierChoice } from './financier-battle-cards';
@@ -28,6 +29,11 @@ import {
   openReconnaissanceWindow,
   resolveIntelligenceReactiveAssetChoice,
 } from './intelligence-reactive-assets';
+import {
+  disinformationReturnOwners,
+  resolveSimpleIntelligenceRevealEffects,
+  returnDisinformationFromGraveyard,
+} from './intelligence-simple-battle-effects';
 import { openMilitaryAfterRevealWindows } from './military-timing';
 import { abortIntelligenceMission, completeIntelligenceMission, completeSpecialOperation, startIntelligenceMission } from './intelligence-missions';
 import { runPostActionAutomationPipeline } from './pipeline';
@@ -159,7 +165,11 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     else if (wasReactiveAssetChoice) resolveIntelligenceReactiveAssetChoice(next, action);
     else resolveIntelligenceBattleChoice(next, action);
     if (pending?.kind === 'surveillance' && action.choice === 'surveil') {
+      markBattleCardsObservedBeforeNormalReveal(next, pending.targetOwner, [pending.targetCardId]);
       recordFaceDownCardObservedBeforeReveal(next, action.playerId, pending.battleId, 'surveillance');
+    }
+    if (pending?.kind === 'intercepted_orders' && action.choice === 'use') {
+      markBattleCardsObservedBeforeNormalReveal(next, pending.targetOwner, pending.battleHand);
     }
     if (!wasActionChoice && !wasReactiveAssetChoice && pendingKind !== 'mission_control' && pendingKind !== 'fieldcraft') {
       continueAfterIntelligenceReveal(next, previousStage);
@@ -204,17 +214,26 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     return applyBattleDiceRoll(game, action);
   }
   if (action.type === 'play_battle_draw_card') return applyBattleDrawChoice(game, action);
+  if (action.type === 'resolve_battle_reveal') {
+    const next = structuredClone(game);
+    resolveSimpleIntelligenceRevealEffects(next);
+    return applyBaseGameAction(next, action);
+  }
 
   const hadBattle = Boolean(game.battle);
+  const disinformationOwners = action.type === 'resolve_battle' ? disinformationReturnOwners(game) : [];
   const result = applyBaseGameAction(game, action);
   if (action.type === 'move_player' && !hadBattle && result.state.battle) preemptAutomaticBattleStartWindowsForReconnaissance(result.state);
   if (action.type === 'commit_battle_hand_card') {
     openSurveillanceWindowAfterChoice(result.state, action.playerId, action.cardId, 'hand');
   }
   if (action.type === 'draw_battle_cards') openInterceptedOrdersWindow(result.state, action.playerId);
-  if (action.type === 'resolve_battle' && result.state.battle?.stage === 'dice') {
-    clearBattleDiceForReroll(result.state.battle.attacker);
-    clearBattleDiceForReroll(result.state.battle.defender);
+  if (action.type === 'resolve_battle') {
+    returnDisinformationFromGraveyard(result.state, disinformationOwners);
+    if (result.state.battle?.stage === 'dice') {
+      clearBattleDiceForReroll(result.state.battle.attacker);
+      clearBattleDiceForReroll(result.state.battle.defender);
+    }
   }
   return result;
 }
