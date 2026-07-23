@@ -6,6 +6,7 @@ export * from './resources';
 export * from './leader-abilities';
 export * from './military-interactions';
 export * from './diplomat-terms';
+export * from './diplomat-cards';
 export * from './actions';
 export * from './draw';
 export { applyGameAction } from './apply';
