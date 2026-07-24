@@ -12,6 +12,19 @@ import {
   resolveAccursedWagerChoice,
 } from './mystics-accursed-wager';
 import {
+  applyBlackCovenantAction,
+  correctBlackCovenantBattleSourceDestinations,
+  finishBlackCovenantBoundAction,
+  isBlackCovenantChoice,
+  openNextBlackCovenantBattleChoice,
+  prepareBlackCovenantBoundAction,
+  reconcileBlackCovenantBattleReleases,
+  reconcileBlackCovenantBindings,
+  requireBlackCovenantActionTarget,
+  resolveBlackCovenantBattleChoice,
+  useBlackCovenantBoundBattleCard,
+} from './mystics-black-covenant';
+import {
   applyCircleOfBonesAction,
   isCircleOfBonesChoice,
   openCircleOfBonesRerollIfReady,
@@ -142,11 +155,15 @@ function continueMysticsAutomation(
     queueSoulForSoulBattleEffects(result.state, priorBattle);
     queueSpiritHollowAfterBattle(result.state, priorBattle);
     queueNecromancyBattleEffects(result.state, priorBattle);
+    correctBlackCovenantBattleSourceDestinations(result.state, priorBattle);
   }
+  reconcileBlackCovenantBindings(result.state);
+  reconcileBlackCovenantBattleReleases(result.state);
   if (graveyardBefore) {
     registerGraveyardEntries(result.state, graveyardBefore, endedBattle ? priorBattle?.id : undefined);
   }
   reconcileRiteOfCrossingAtTurnStart(result.state);
+  openNextBlackCovenantBattleChoice(result.state);
   openNextRendTheVeilChoice(result.state);
   openPathsOfShadowChoiceIfReady(result.state);
   openNextGraveWardChoice(result.state);
@@ -157,6 +174,9 @@ function continueMysticsAutomation(
     queueInvocationForArcaneUse(result.state, arcaneUse.playerId, [arcaneUse.cardId]);
   }
   runPostActionAutomationPipeline(result.state);
+  reconcileBlackCovenantBindings(result.state);
+  reconcileBlackCovenantBattleReleases(result.state);
+  openNextBlackCovenantBattleChoice(result.state);
   openNextRendTheVeilChoice(result.state);
   openPathsOfShadowChoiceIfReady(result.state);
   openNextGraveWardChoice(result.state);
@@ -207,6 +227,10 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     else if (isPathsOfShadowChoice(pendingKind)) resolvePathsOfShadowChoice(next, action);
     else if (isSpiritHollowChoice(pendingKind)) resolveSpiritHollowChoice(next, action);
     else if (isCircleOfBonesChoice(pendingKind)) resolveCircleOfBonesChoice(next, action);
+    else if (isBlackCovenantChoice(pendingKind)) {
+      const boundCardId = resolveBlackCovenantBattleChoice(next, action);
+      if (boundCardId) replayedArcaneUse = { playerId: action.playerId, cardId: boundCardId };
+    }
     else if (isRendTheVeilChoice(pendingKind)) {
       const replayedCardId = resolveRendTheVeilChoice(next, action);
       if (replayedCardId) replayedArcaneUse = { playerId: action.playerId, cardId: replayedCardId };
@@ -227,6 +251,37 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
   }
   if (action.type === 'resolve_mystics_choice') {
     throw new GameActionError(`${action.playerId} has no pending Mystics choice.`);
+  }
+
+  if (action.type === 'use_mystic_black_covenant_action') {
+    const next = structuredClone(game);
+    const prepared = prepareBlackCovenantBoundAction(next, action);
+    const result = applyGameAction(next, {
+      type: 'play_action_card',
+      playerId: action.playerId,
+      cardId: prepared.cardId,
+      targets: prepared.targets,
+    });
+    finishBlackCovenantBoundAction(result.state, action.playerId, prepared);
+    return continueMysticsAutomation(
+      result,
+      undefined,
+      undefined,
+      graveyardBefore,
+      territoryControllersBefore,
+    );
+  }
+
+  if (action.type === 'use_mystic_black_covenant_battle') {
+    const next = structuredClone(game);
+    useBlackCovenantBoundBattleCard(next, action);
+    return continueMysticsAutomation(
+      { state: next },
+      undefined,
+      undefined,
+      graveyardBefore,
+      territoryControllersBefore,
+    );
   }
 
   if (action.type === 'begin_mystic_rite') {
@@ -261,6 +316,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     requireFatesTollActionTarget(game, action.playerId, action.cardId, action.targets);
     requireSoulForSoulActionTargets(game, action.playerId, action.cardId, action.targets);
     requirePathsOfShadowActionTarget(game, action.playerId, action.cardId, action.targets);
+    requireBlackCovenantActionTarget(game, action.playerId, action.cardId, action.targets);
     requireSpiritHollowActionTarget(game, action.playerId, action.cardId, action.targets);
     requireCircleOfBonesActionTarget(game, action.playerId, action.cardId, action.targets);
   }
@@ -281,6 +337,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     applyFatesTollAction(result.state, action.playerId, action.cardId, action.targets);
     applySoulForSoulAction(result.state, action.playerId, action.cardId, action.targets);
     applyPathsOfShadowAction(result.state, action.playerId, action.cardId, action.targets);
+    applyBlackCovenantAction(result.state, action.playerId, action.cardId, action.targets);
     applySpiritHollowAction(result.state, action.playerId, action.cardId, action.targets);
     applyCircleOfBonesAction(result.state, action.playerId, action.cardId, action.targets);
     applyNecromancyAction(result.state, action.playerId, action.cardId);
