@@ -280,7 +280,7 @@ export interface PendingWitchcraftChoice {
   playerId: PlayerID;
   battleId: string;
   sourceKind: 'battle_card' | 'asset';
-  sourceSlot?: 'hand_commit' | 'battle_draw_played';
+  sourceSlot?: 'hand_commit' | 'battle_draw_played' | 'asset';
   sourceIndex?: number;
   handOptions: CardID[];
   targetOptions: WitchcraftTargetOption[];
