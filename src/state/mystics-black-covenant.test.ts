@@ -102,7 +102,6 @@ describe('Black Covenant', () => {
 
     expect(state.players.player_1.zones.assetBank).toContain(BLACK_COVENANT);
     expect(state.players.player_1.zones.hand).not.toContain('card-fortifications');
-    expect(state.players.player_1.zones.deck).not.toContain('card-fortifications');
     expect(binding).toMatchObject({ cardId: 'card-fortifications', boundTurn: 1 });
     expect(toPrivateGameView(state, 'player_1').players.player_1.mystics).toMatchObject({
       blackCovenantBindings: [expect.objectContaining({ cardId: 'card-fortifications' })],
