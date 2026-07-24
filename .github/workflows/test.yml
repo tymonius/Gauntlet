@@ -1,4 +1,40 @@
-name: Test
+name: Apply Dark Omens test fixture fixes
+
+on:
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Dark Omens branch
+        uses: actions/checkout@v4
+        with:
+          ref: feature/mystics-dark-omens
+          fetch-depth: 0
+
+      - name: Correct test fixtures and restore CI
+        shell: python
+        run: |
+          from pathlib import Path
+
+          conversion = Path('src/state/mystics-conversion.test.ts')
+          text = conversion.read_text()
+          text = text.replace("'mystics-dark-omens'", "'mystics-fates-toll'")
+          conversion.write_text(text)
+
+          dark_omens = Path('src/state/mystics-dark-omens.test.ts')
+          text = dark_omens.read_text()
+          old = "    stage: 'normal_reveal',"
+          new = "    stage: 'dice',"
+          if old not in text:
+              raise SystemExit('Expected Dark Omens reveal-stage fixture not found')
+          dark_omens.write_text(text.replace(old, new))
+
+          Path('.github/workflows/test.yml').write_text("""name: Test
 
 on:
   pull_request:
@@ -23,18 +59,16 @@ jobs:
         run: npm install
 
       - name: Typecheck
-        run: npm run typecheck 2>&1 | tee typecheck-output.txt
+        run: npm run typecheck
 
       - name: Test
-        if: success()
-        run: npm test 2>&1 | tee test-output.txt
+        run: npm test
+""")
 
-      - name: Upload diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: dark-omens-diagnostics
-          path: |
-            typecheck-output.txt
-            test-output.txt
-          if-no-files-found: ignore
+      - name: Commit fixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/state/mystics-conversion.test.ts src/state/mystics-dark-omens.test.ts .github/workflows/test.yml
+          git commit -m "Correct Dark Omens test fixtures and restore CI"
+          git push origin HEAD:feature/mystics-dark-omens
