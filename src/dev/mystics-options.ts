@@ -171,5 +171,11 @@ export function buildPendingMysticsOptions(game: GameState, playerId: PlayerID):
       },
     ];
   }
+  if (pending.kind === 'accursed_wager_after_battle') {
+    return pending.handOptions.map((cardId) => ({
+      label: `Put ${cardId} in your Graveyard for Accursed Wager${pending.remaining > 1 ? ` (${pending.remaining} remaining)` : ''}`,
+      action: { type: 'resolve_mystics_choice' as const, playerId, choice: 'select', cardId },
+    }));
+  }
   return undefined;
 }
