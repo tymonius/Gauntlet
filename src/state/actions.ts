@@ -1,4 +1,4 @@
-import type { CardID, IntelligenceMissionKind, PlayerID, ProposalID, SpaceID } from '../types';
+import type { CardID, IntelligenceMissionKind, MysticRiteId, PlayerID, ProposalID, SpaceID } from '../types';
 import type { BattleCardTarget } from '../effects';
 
 export type ActionCardTarget =
@@ -20,7 +20,9 @@ export type StateAction = GameAction | ResolveBattleRevealAction | UseLeaderAbil
 export type IntelligenceStateAction = StartIntelligenceMissionAction | CompleteIntelligenceMissionAction
   | AbortIntelligenceMissionAction | CompleteSpecialOperationAction | ResolveIntelligenceChoiceAction;
 
-export type AppStateAction = StateAction | IntelligenceStateAction;
+export type MysticsStateAction = BeginMysticRiteAction | ResolveMysticsChoiceAction;
+
+export type AppStateAction = StateAction | IntelligenceStateAction | MysticsStateAction;
 
 export interface DrawCardAction { type: 'draw_card'; playerId: PlayerID; count?: number; }
 export interface RevealSpaceAction { type: 'reveal_space'; playerId: PlayerID; spaceId: SpaceID; }
@@ -41,6 +43,8 @@ export interface CompleteIntelligenceMissionAction { type: 'complete_intelligenc
 export interface AbortIntelligenceMissionAction { type: 'abort_intelligence_mission'; playerId: PlayerID; }
 export interface CompleteSpecialOperationAction { type: 'complete_special_operation'; playerId: PlayerID; }
 export interface ResolveIntelligenceChoiceAction { type: 'resolve_intelligence_choice'; playerId: PlayerID; choice: string; cardId?: CardID; targets?: ActionCardTarget[]; }
+export interface BeginMysticRiteAction { type: 'begin_mystic_rite'; playerId: PlayerID; riteId: MysticRiteId; cardId: CardID; secondaryCardId?: CardID; source?: 'hand' | 'discard'; }
+export interface ResolveMysticsChoiceAction { type: 'resolve_mystics_choice'; playerId: PlayerID; choice: string; cardId?: CardID; }
 export interface ResolveAssetBankDiscardAction { type: 'resolve_asset_bank_discard'; playerId: PlayerID; cardIds: CardID[]; }
 export interface MovePlayerAction { type: 'move_player'; playerId: PlayerID; toSpaceId: SpaceID; cardId?: CardID; }
 export interface CommitBattleHandCardAction { type: 'commit_battle_hand_card'; playerId: PlayerID; cardId: CardID; }
