@@ -35,6 +35,15 @@ function removeOne(cards: string[], cardId: string): boolean {
   return true;
 }
 
+function actionTargetsFromLatestLog(game: GameState, playerId: PlayerID): ActionCardTarget[] | undefined {
+  const event = [...game.log].reverse().find((candidate) => {
+    if (candidate.type !== 'play_action_card' || candidate.actor !== playerId) return false;
+    const payload = candidate.payload as { cardId?: string } | undefined;
+    return payload?.cardId === FOG_OF_WAR_OVERLAY;
+  });
+  return (event?.payload as { targets?: ActionCardTarget[] } | undefined)?.targets;
+}
+
 function targetSpaceId(targets?: ActionCardTarget[]): SpaceID | undefined {
   return targets?.find((target): target is Extract<ActionCardTarget, { kind: 'space' }> => target.kind === 'space')?.spaceId;
 }
@@ -55,7 +64,7 @@ export function playFogOfWarOverlay(
   playerId: PlayerID,
   targets?: ActionCardTarget[],
 ): void {
-  const spaceId = targetSpaceId(targets);
+  const spaceId = targetSpaceId(targets ?? actionTargetsFromLatestLog(game, playerId));
   if (!spaceId) throw new FogOfWarOverlayError('Fog of War requires a Territory target.');
   const space = game.board.spaces.find((candidate) => candidate.id === spaceId);
   if (!space || space.kind !== 'territory') throw new FogOfWarOverlayError('Fog of War must be placed on a Territory.');
@@ -130,7 +139,7 @@ export function activateFogOfWarOverlayForBattle(game: GameState): boolean {
       game,
       owners[0],
       'intelligence_fog_of_war_overlay_activated',
-      `Fog of War changed the commitment order for the battle.`,
+      'Fog of War changed the commitment order for the battle.',
       { spaceId: space.id, battleId: battle.id },
     );
   } else {
