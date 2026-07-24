@@ -88,6 +88,8 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'intelligence-treason': battleAndAction('intelligence-treason', 'asset_bank'),
   'intelligence-subversion': battleAndAction('intelligence-subversion', 'asset_bank'),
   'intelligence-sleeper-network': actionOnly('intelligence-sleeper-network', 'asset_bank'),
+
+  'mystics-dark-omens': battleAndAction('mystics-dark-omens', 'discard'),
 };
 
 export function getCardPlayRule(cardId: CardID): CardPlayRule | undefined { return coreCardPlayRules[cardId]; }
