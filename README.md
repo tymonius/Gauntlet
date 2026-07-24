@@ -32,7 +32,7 @@ Each player builds a Deck consisting of:
 
 The players secretly arrange their Territories, reveal all six, and join them into the Gauntlet. They then advance, fight battles, occupy enemy-controlled Territories, survive counterattacks, capture ground, and attempt to run the Gauntlet.
 
-To run the Gauntlet, a player must defeat the opponent on their final Territory, occupy and capture it, advance beyond the Territory column, and win the opponent's Last Stand.
+To run the Gauntlet, a player must defeat the opponent on their final Territory, occupy and capture it, advance beyond the Territory column, force the opponent to make a Last Stand, and win the resulting battle.
 
 ## Factions
 

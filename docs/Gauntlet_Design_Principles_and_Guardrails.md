@@ -17,7 +17,7 @@ Gauntlet is a tactical card-and-territory game about **running the Gauntlet**:
 - occupying opposing Territories;
 - surviving counterattacks;
 - converting occupation into control; and
-- defeating the opponent in their Last Stand.
+- forcing the opponent to make a Last Stand and winning the resulting battle.
 
 The game should feel tense, interactive, positional, and decisive. Where the Player Tokens stand, which Territories face each player, and which cards have been permanently committed should matter.
 

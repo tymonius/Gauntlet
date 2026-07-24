@@ -201,9 +201,9 @@ function buildReference(data) {
     '1. Win on the opponent’s final Territory.',
     '2. The opponent retreats beyond the Gauntlet; occupy the final Territory.',
     '3. Capture it at the start of the next turn if still occupied.',
-    '4. Advance beyond it to initiate the opponent’s Last Stand.',
-    '5. The defender has Defender’s Advantage and +1.',
-    '6. Win the Last Stand to run the Gauntlet and win.', '',
+    '4. Advance beyond it; the opponent makes a Last Stand.',
+    '5. During this battle, the defender has Defender’s Advantage and +1.',
+    '6. Win the battle to run the Gauntlet and win.', '',
     '## Factions', '',
     '| Faction | Resource / Progression | Victory | Leaders |',
     '|---|---|---|---|',
@@ -243,7 +243,7 @@ const canonical = {
     gauntlet: 'Six Territory Cards arranged in one column.',
     starting_position: 'Each Player Token begins immediately before that player’s end of the Gauntlet.',
     capture: 'At the start of a turn, capture a Territory occupied but not controlled.',
-    victory: 'Capture the opponent’s final Territory, advance beyond it, and win the opponent’s Last Stand.',
+    victory: 'Capture the opponent’s final Territory, advance beyond it, force the opponent to make a Last Stand, and win the resulting battle.',
     last_stand: { defender_advantage: true, defender_bonus: 1 }
   },
   battle: {
@@ -252,7 +252,7 @@ const canonical = {
     normal_battle_hand_choices: 1,
     hand_commitment_destination: 'Graveyard',
     battle_hand_destination: 'Discard Pile',
-    defender_advantage: 'The defending player wins tied battle totals when defending a Territory they control or during their Last Stand.'
+    defender_advantage: 'The defending player wins tied battle totals when defending a Territory they control or during a Last Stand battle.'
   },
   factions: factionMetadata.map(faction => ({ ...faction, card_count: counts[faction.name], source: sourceSpecs.find(spec => spec.id === faction.id)?.path })),
   card_pool_summary: cardPoolSummary,

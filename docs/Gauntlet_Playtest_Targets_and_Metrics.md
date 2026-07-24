@@ -135,7 +135,7 @@ Track separately:
 2. successful occupation through the opponent's counterattack turn;
 3. capture of the final Territory;
 4. attempts to advance beyond the Gauntlet; and
-5. Last Stands won by attacker and defender.
+5. Last Stand battles won by the attacker and defender.
 
 Investigate when the sequence is commonly misunderstood, rarely completed after reaching the final Territory, or routinely bypassed by effects not intended to replace it.
 
