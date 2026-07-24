@@ -20,7 +20,7 @@ export type StateAction = GameAction | ResolveBattleRevealAction | UseLeaderAbil
 export type IntelligenceStateAction = StartIntelligenceMissionAction | CompleteIntelligenceMissionAction
   | AbortIntelligenceMissionAction | CompleteSpecialOperationAction | ResolveIntelligenceChoiceAction;
 
-export type MysticsStateAction = BeginMysticRiteAction | ResolveMysticsChoiceAction;
+export type MysticsStateAction = BeginMysticRiteAction | ResolveMysticsChoiceAction | UseMysticTransmutationAction;
 
 export type AppStateAction = StateAction | IntelligenceStateAction | MysticsStateAction;
 
@@ -45,6 +45,7 @@ export interface CompleteSpecialOperationAction { type: 'complete_special_operat
 export interface ResolveIntelligenceChoiceAction { type: 'resolve_intelligence_choice'; playerId: PlayerID; choice: string; cardId?: CardID; targets?: ActionCardTarget[]; }
 export interface BeginMysticRiteAction { type: 'begin_mystic_rite'; playerId: PlayerID; riteId: MysticRiteId; cardId: CardID; secondaryCardId?: CardID; source?: 'hand' | 'discard'; }
 export interface ResolveMysticsChoiceAction { type: 'resolve_mystics_choice'; playerId: PlayerID; choice: string; cardId?: CardID; }
+export interface UseMysticTransmutationAction { type: 'use_mystic_transmutation'; playerId: PlayerID; cardId: CardID; }
 export interface ResolveAssetBankDiscardAction { type: 'resolve_asset_bank_discard'; playerId: PlayerID; cardIds: CardID[]; }
 export interface MovePlayerAction { type: 'move_player'; playerId: PlayerID; toSpaceId: SpaceID; cardId?: CardID; }
 export interface CommitBattleHandCardAction { type: 'commit_battle_hand_card'; playerId: PlayerID; cardId: CardID; }

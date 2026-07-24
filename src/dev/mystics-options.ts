@@ -1,6 +1,7 @@
+import { v06CanonicalContent } from '../content';
 import type { CardID, GameState, PlayerID } from '../types';
 import type { AppStateAction } from '../state';
-import { canBeginRiteOfCrossing, isArcaneCard } from '../state';
+import { canBeginRiteOfCrossing, canUseTransmutation, isArcaneCard } from '../state';
 
 export interface MysticGuidedOption {
   label: string;
@@ -37,11 +38,27 @@ function duplicateTitleInDeck(game: GameState, playerId: PlayerID, cardId: CardI
   return playableDeckCards(game, playerId).filter((candidate) => candidate === cardId).length >= 2;
 }
 
+function supplementalCard(cardId: CardID): boolean {
+  const card = v06CanonicalContent.cardsById.get(cardId);
+  return card?.allegiance?.toLowerCase() === 'supplemental'
+    || card?.card_form?.toLowerCase().includes('supplemental') === true;
+}
+
+function transmutationOptions(game: GameState, playerId: PlayerID): MysticGuidedOption[] {
+  if (!canUseTransmutation(game, playerId)) return [];
+  return game.players[playerId].zones.hand
+    .filter((cardId) => !supplementalCard(cardId))
+    .map((cardId) => ({
+      label: `Transmute ${cardId}`,
+      action: { type: 'use_mystic_transmutation' as const, playerId, cardId },
+    }));
+}
+
 export function buildMysticRiteOptions(game: GameState, playerId: PlayerID): MysticGuidedOption[] {
-  if (!riteWindowOpen(game, playerId)) return [];
+  const options: MysticGuidedOption[] = [...transmutationOptions(game, playerId)];
+  if (!riteWindowOpen(game, playerId)) return options;
   const player = game.players[playerId];
   const completed = new Set(player.mystics!.completedRites);
-  const options: MysticGuidedOption[] = [];
 
   if (!completed.has('rite_of_echoes')) {
     for (const graveyardCardId of player.zones.graveyard) {
@@ -120,6 +137,18 @@ export function buildPendingMysticsOptions(game: GameState, playerId: PlayerID):
       },
       ...pending.arcaneCardOptions.map((cardId) => ({
         label: `Sacrifice ${cardId} to preserve ${pending.riteId}`,
+        action: { type: 'resolve_mystics_choice' as const, playerId, choice: 'use', cardId },
+      })),
+    ];
+  }
+  if (pending.kind === 'invocation') {
+    return [
+      {
+        label: 'Pass Invocation',
+        action: { type: 'resolve_mystics_choice', playerId, choice: 'pass' },
+      },
+      ...pending.graveyardOptions.map((cardId) => ({
+        label: `Invoke ${cardId} to the Discard Pile`,
         action: { type: 'resolve_mystics_choice' as const, playerId, choice: 'use', cardId },
       })),
     ];
