@@ -10,6 +10,8 @@ import {
   captureInquisitionGraveyards,
   evaluatePurificationAfterNormalDraw,
 } from './inquisition-core';
+import { useInquisitionPurge } from './inquisition-purge';
+import { runPostActionAutomationPipeline } from './pipeline';
 import type { ApplyGameActionResult } from './reducer';
 
 function battleSnapshot(game: GameState): BattleState | undefined {
@@ -22,7 +24,15 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
   const arcaneActionUse = actionArcaneUse(game, action);
   const normalDraw = action.type === 'draw_card' && game.phase === 'turn_start';
 
-  const result = applyMysticsGameAction(game, action);
+  let result: ApplyGameActionResult;
+  if (action.type === 'use_inquisition_purge') {
+    const next = structuredClone(game);
+    useInquisitionPurge(next, action);
+    runPostActionAutomationPipeline(next);
+    result = { state: next };
+  } else {
+    result = applyMysticsGameAction(game, action);
+  }
   const endedBattle = Boolean(priorBattle && !result.state.battle);
 
   if (endedBattle && priorBattle) {
