@@ -1,5 +1,4 @@
-import assert from "node:assert/strict";
-import test from "node:test";
+import { expect, test } from "vitest";
 import {
   buildRulesCorpus,
   parseRulebookSections,
@@ -56,24 +55,24 @@ const canonicalData = {
 
 test("parses markdown into titled rulebook sections", () => {
   const sections = parseRulebookSections(rulebook, "https://example.test/rulebook.pdf");
-  assert.ok(sections.some((section) => section.title.includes("Movement")));
-  assert.ok(sections.some((section) => section.body.includes("occupied position")));
+  expect(sections.some((section) => section.title.includes("Movement"))).toBe(true);
+  expect(sections.some((section) => section.body.includes("occupied position"))).toBe(true);
 });
 
 test("ranks an exact card title above generic movement text", () => {
   const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown: rulebook });
   const results = retrieveRules(corpus, "Can Onward be used after a battle?", { limit: 4 });
-  assert.match(results[0].title, /Onward/i);
+  expect(results[0].title).toMatch(/Onward/i);
 });
 
 test("finds capture timing in the rulebook", () => {
   const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown: rulebook });
   const results = retrieveRules(corpus, "When is an occupied Territory captured?", { limit: 4 });
-  assert.ok(results.some((result) => result.title.includes("Capture")));
+  expect(results.some((result) => result.title.includes("Capture"))).toBe(true);
 });
 
 test("indexes canonical Territory text", () => {
   const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown: rulebook });
   const results = retrieveRules(corpus, "What does Command Tent do?", { limit: 3 });
-  assert.match(results[0].title, /Command Tent/i);
+  expect(results[0].title).toMatch(/Command Tent/i);
 });
