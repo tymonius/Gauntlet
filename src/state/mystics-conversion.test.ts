@@ -181,19 +181,19 @@ describe('Invocation', () => {
     let state = game('Spirit Walker');
     state.phase = 'action_before_movement';
     state.players.player_1.mystics!.completedRites = ['rite_of_echoes'];
-    state.players.player_1.zones.hand = ['mystics-fates-toll'];
+    state.players.player_1.zones.hand = ['mystics-accursed-wager'];
     state.players.player_1.zones.graveyard = ['card-valor'];
 
     state = applyGameAction(state, {
       type: 'play_action_card',
       playerId: 'player_1',
-      cardId: 'mystics-fates-toll',
+      cardId: 'mystics-accursed-wager',
     }).state;
 
     expect(state.pendingMysticsChoice).toMatchObject({
       kind: 'invocation',
       playerId: 'player_1',
-      sourceCardIds: ['mystics-fates-toll'],
+      sourceCardIds: ['mystics-accursed-wager'],
       graveyardOptions: ['card-valor'],
     });
     expect(toPrivateGameView(state, 'player_1').pendingMysticsChoice).toBeDefined();

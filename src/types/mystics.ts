@@ -41,6 +41,8 @@ export interface MysticsState {
   accursedWagerArmedCount?: number;
   accursedWagerBattleId?: string;
   accursedWagerBattleCount?: number;
+  fatesTollMovementTurn?: number;
+  fatesTollMovementRemaining?: number;
 }
 
 export interface PublicMysticsState {
@@ -106,9 +108,21 @@ export interface PendingAccursedWagerAftermath {
   remaining: number;
 }
 
+export interface PendingFatesTollChoice {
+  kind: 'fates_toll_reroll';
+  playerId: PlayerID;
+  battleId: string;
+  sourceKey: string;
+  oldRoll: number;
+  handOptions: CardID[];
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type PendingMysticsChoice =
   | PendingGuardiansOfTheCircleChoice
   | PendingInvocationChoice
   | PendingDarkOmensActionChoice
   | PendingDarkOmensBattleChoice
-  | PendingAccursedWagerChoice;
+  | PendingAccursedWagerChoice
+  | PendingFatesTollChoice;

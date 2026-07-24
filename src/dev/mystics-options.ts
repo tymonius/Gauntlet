@@ -177,5 +177,17 @@ export function buildPendingMysticsOptions(game: GameState, playerId: PlayerID):
       action: { type: 'resolve_mystics_choice' as const, playerId, choice: 'select', cardId },
     }));
   }
+  if (pending.kind === 'fates_toll_reroll') {
+    return [
+      {
+        label: `Keep the ${pending.oldRoll}`,
+        action: { type: 'resolve_mystics_choice', playerId, choice: 'pass' },
+      },
+      ...pending.handOptions.map((cardId) => ({
+        label: `Put ${cardId} in your Graveyard to reroll`,
+        action: { type: 'resolve_mystics_choice' as const, playerId, choice: 'use', cardId },
+      })),
+    ];
+  }
   return undefined;
 }
