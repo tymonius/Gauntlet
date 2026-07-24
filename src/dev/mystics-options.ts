@@ -1,7 +1,12 @@
 import { v06CanonicalContent } from '../content';
 import type { CardID, GameState, PlayerID } from '../types';
 import type { AppStateAction } from '../state';
-import { canBeginRiteOfCrossing, canUseTransmutation, isArcaneCard } from '../state';
+import {
+  canBeginRiteOfCrossing,
+  canUseTransmutation,
+  isArcaneCard,
+  spiritHollowActionTargets,
+} from '../state';
 
 export interface MysticGuidedOption {
   label: string;
@@ -107,11 +112,26 @@ function pathsOfShadowActionOptions(game: GameState, playerId: PlayerID): Mystic
     }));
 }
 
+function spiritHollowActionOptions(game: GameState, playerId: PlayerID): MysticGuidedOption[] {
+  if (!actionWindowOpen(game, playerId)) return [];
+  if (!game.players[playerId].zones.hand.includes('mystics-spirit-hollow')) return [];
+  return spiritHollowActionTargets(game, playerId).map((spaceId) => ({
+    label: `Spirit Hollow: place on ${spaceId}`,
+    action: {
+      type: 'play_action_card' as const,
+      playerId,
+      cardId: 'mystics-spirit-hollow',
+      targets: [{ kind: 'space' as const, spaceId }],
+    },
+  }));
+}
+
 export function buildMysticRiteOptions(game: GameState, playerId: PlayerID): MysticGuidedOption[] {
   const options: MysticGuidedOption[] = [
     ...transmutationOptions(game, playerId),
     ...soulForSoulActionOptions(game, playerId),
     ...pathsOfShadowActionOptions(game, playerId),
+    ...spiritHollowActionOptions(game, playerId),
   ];
   if (!riteWindowOpen(game, playerId)) return options;
   const player = game.players[playerId];
@@ -306,6 +326,31 @@ export function buildPendingMysticsOptions(game: GameState, playerId: PlayerID):
         action: { type: 'resolve_mystics_choice' as const, playerId, choice: 'move', spaceId },
       })),
     ];
+  }
+  if (pending.kind === 'spirit_hollow_after_cleanup') {
+    const options: MysticGuidedOption[] = [{
+      label: 'Pass Spirit Hollow',
+      action: { type: 'resolve_mystics_choice', playerId, choice: 'pass' },
+    }];
+    for (const handCardId of pending.handOptions) {
+      options.push({
+        label: `Put ${handCardId} in your Graveyard with Spirit Hollow`,
+        action: { type: 'resolve_mystics_choice', playerId, choice: 'use', cardId: handCardId },
+      });
+      for (const graveyardCardId of pending.graveyardOptions) {
+        options.push({
+          label: `Put ${handCardId} in your Graveyard and recover ${graveyardCardId} with Spirit Hollow`,
+          action: {
+            type: 'resolve_mystics_choice',
+            playerId,
+            choice: 'use',
+            cardId: handCardId,
+            secondaryCardId: graveyardCardId,
+          },
+        });
+      }
+    }
+    return options;
   }
   return undefined;
 }
