@@ -154,6 +154,10 @@ describe('Rend the Veil', () => {
       choice: 'use',
       cardId: 'card-valor',
     }).state;
+    state = applyGameAction(state, {
+      type: 'resolve_battle_reveal',
+      playerId: 'player_1',
+    }).state;
 
     state = applyGameAction(state, { type: 'roll_battle_die', playerId: 'player_1', value: 1 }).state;
     state = applyGameAction(state, { type: 'roll_battle_die', playerId: 'player_2', value: 2 }).state;
