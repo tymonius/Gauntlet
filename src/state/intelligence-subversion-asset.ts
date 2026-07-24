@@ -20,7 +20,7 @@ const ASSETS = {
   safeConduct: 'diplomats-safe-conduct',
 } as const satisfies Record<string, CardID>;
 
-interface SubversionAssetCandidate {
+export interface BankedAssetEffectCandidate {
   targetOwner: PlayerID;
   targetCardId: CardID;
   effectLabel: string;
@@ -90,15 +90,14 @@ function candidateIfBanked(
   targetCardId: CardID,
   effectLabel: string,
   negatedAction?: AppStateAction,
-): SubversionAssetCandidate | undefined {
+): BankedAssetEffectCandidate | undefined {
   if (targetCardId === SUBVERSION_ASSET) return undefined;
   if (!game.players[targetOwner]?.zones.assetBank.includes(targetCardId)) return undefined;
   if (game.battle && !bankedAssetUseAllowed(game, targetOwner)) return undefined;
-  if (!opposingSubversionOwner(game, targetOwner)) return undefined;
   return { targetOwner, targetCardId, effectLabel, negatedAction };
 }
 
-function intelligenceCandidate(game: GameState, action: Extract<AppStateAction, { type: 'resolve_intelligence_choice' }>): SubversionAssetCandidate | undefined {
+function intelligenceCandidate(game: GameState, action: Extract<AppStateAction, { type: 'resolve_intelligence_choice' }>): BankedAssetEffectCandidate | undefined {
   const pending = game.pendingIntelligenceChoice;
   if (!pending) return undefined;
   if (pending.kind === 'exfiltration' && action.choice === 'use') {
@@ -125,7 +124,7 @@ function intelligenceCandidate(game: GameState, action: Extract<AppStateAction, 
   return undefined;
 }
 
-function militaryTimingCandidate(game: GameState, action: Extract<AppStateAction, { type: 'resolve_military_timing_choice' }>): SubversionAssetCandidate | undefined {
+function militaryTimingCandidate(game: GameState, action: Extract<AppStateAction, { type: 'resolve_military_timing_choice' }>): BankedAssetEffectCandidate | undefined {
   const pending = game.pendingMilitaryTimingChoice;
   if (!pending || pending.playerId !== action.playerId) return undefined;
   if (pending.kind === 'brothers_in_arms_precommit' && action.choice === 'use') {
@@ -140,7 +139,7 @@ function militaryTimingCandidate(game: GameState, action: Extract<AppStateAction
   return undefined;
 }
 
-function militaryAftermathCandidate(game: GameState, action: Extract<AppStateAction, { type: 'resolve_military_choice' }>): SubversionAssetCandidate | undefined {
+function militaryAftermathCandidate(game: GameState, action: Extract<AppStateAction, { type: 'resolve_military_choice' }>): BankedAssetEffectCandidate | undefined {
   const pending = game.pendingMilitaryChoice;
   if (!pending || pending.playerId !== action.playerId) return undefined;
   if ((pending.kind === 'countercharge' || pending.kind === 'war_crimes') && action.choice === 'use') {
@@ -152,7 +151,7 @@ function militaryAftermathCandidate(game: GameState, action: Extract<AppStateAct
   return undefined;
 }
 
-function diplomatCandidate(game: GameState, action: Extract<AppStateAction, { type: 'use_diplomat_card' }>): SubversionAssetCandidate | undefined {
+function diplomatCandidate(game: GameState, action: Extract<AppStateAction, { type: 'use_diplomat_card' }>): BankedAssetEffectCandidate | undefined {
   if (![ASSETS.goodFaith, ASSETS.neutralObservers, ASSETS.safeConduct].includes(action.cardId as typeof ASSETS.goodFaith)) return undefined;
   return candidateIfBanked(game, action.playerId, action.cardId, action.cardId);
 }
@@ -167,7 +166,10 @@ function battleWinner(game: GameState): PlayerID | undefined {
   return battle.tiePolicy === 'defender' ? battle.defender.playerId : undefined;
 }
 
-function candidateForAction(game: GameState, action: AppStateAction): SubversionAssetCandidate | undefined {
+export function bankedAssetEffectCandidateForAction(
+  game: GameState,
+  action: AppStateAction,
+): BankedAssetEffectCandidate | undefined {
   if (action.type === 'resolve_intelligence_choice') return intelligenceCandidate(game, action);
   if (action.type === 'resolve_military_timing_choice') return militaryTimingCandidate(game, action);
   if (action.type === 'resolve_military_choice') return militaryAftermathCandidate(game, action);
@@ -192,7 +194,7 @@ function candidateForAction(game: GameState, action: AppStateAction): Subversion
 
 export function maybeOpenSubversionAssetWindow(game: GameState, action: AppStateAction): boolean {
   if (pendingChoice(game)) return false;
-  const candidate = candidateForAction(game, action);
+  const candidate = bankedAssetEffectCandidateForAction(game, action);
   if (!candidate) return false;
   const playerId = opposingSubversionOwner(game, candidate.targetOwner);
   if (!playerId) return false;
