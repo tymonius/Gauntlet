@@ -173,7 +173,7 @@ export function useInquisitionPurge(game: GameState, action: UseInquisitionPurge
   consumeActionOpportunity(game, action.playerId);
 
   if (action.mode === 'discard_top_to_graveyard') {
-    const cardId = opponent.zones.discard.pop()!;
+    const cardId = opponent.zones.discard.shift()!;
     opponent.zones.graveyard.push(cardId);
     publicLog(game, action.playerId, 'inquisition_purge_discard_top', `${player.name} moved the top card of ${opponent.name}'s Discard Pile to the Graveyard.`, { cardId, cost: 1 });
     return [cardId];
