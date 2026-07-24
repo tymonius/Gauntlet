@@ -61,10 +61,29 @@ jobs:
           fi
 
       - name: Validate code and generated data
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          npm install
-          npm run typecheck
-          npm test
+          set +e
+          {
+            npm install
+            npm run typecheck
+            npm test
+          } > /tmp/tests.log 2>&1
+          status=$?
+          set -e
+          cat /tmp/tests.log
+          if [ "$status" -ne 0 ]; then
+            {
+              echo '## Code/test failure'
+              echo
+              echo '```text'
+              tail -n 160 /tmp/tests.log
+              echo '```'
+            } > /tmp/test-failure.md
+            gh pr comment "${{ github.event.pull_request.number }}" --body-file /tmp/test-failure.md
+            exit "$status"
+          fi
 
       - name: Audit remaining awkward constructions
         run: |
