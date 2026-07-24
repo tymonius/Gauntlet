@@ -27,3 +27,14 @@ jobs:
 
       - name: Test
         run: npm test
+
+      - name: Package audit sources
+        if: always()
+        run: tar -czf intelligence-audit-source.tar.gz src releases/v0.6.0 docs package.json 2>/dev/null || tar -czf intelligence-audit-source.tar.gz src releases/v0.6.0 package.json
+
+      - name: Upload audit sources
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: intelligence-audit-source
+          path: intelligence-audit-source.tar.gz
