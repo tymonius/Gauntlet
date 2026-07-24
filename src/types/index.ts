@@ -6,6 +6,7 @@ export * from './military';
 export * from './diplomats';
 export * from './financiers';
 export * from './intelligence';
+export * from './mystics';
 export * from './player';
 export * from './board';
 export * from './battle';
