@@ -106,6 +106,28 @@ function pendingMilitaryOptions(game: GameState, playerId: PlayerID): GuidedOpti
   return undefined;
 }
 
+function pendingWitchcraftOptions(game: GameState, playerId: PlayerID): GuidedOption[] | undefined {
+  const pending = game.pendingMysticsChoice;
+  if (!pending || pending.kind !== 'witchcraft_repeat' || pending.playerId !== playerId) return undefined;
+  const options: GuidedOption[] = [];
+  if (pending.sourceKind === 'asset') {
+    options.push({ label: 'Pass Witchcraft', action: { type: 'resolve_mystics_choice', playerId, choice: 'pass' } });
+    for (const handCardId of pending.handOptions) {
+      for (const target of pending.targetOptions) {
+        options.push({
+          label: `Put ${handCardId} in your Graveyard to repeat ${target.cardId}`,
+          action: { type: 'resolve_mystics_choice', playerId, choice: 'repeat', targetKey: target.targetKey, cardId: handCardId },
+        });
+      }
+    }
+    return options;
+  }
+  return pending.targetOptions.map((target) => ({
+    label: `Repeat ${target.cardId} with Witchcraft`,
+    action: { type: 'resolve_mystics_choice' as const, playerId, choice: 'repeat', targetKey: target.targetKey },
+  }));
+}
+
 function pendingBlackCovenantOptions(game: GameState, playerId: PlayerID): GuidedOption[] | undefined {
   const pending = game.pendingMysticsChoice;
   if (!pending || pending.kind !== 'black_covenant_battle' || pending.playerId !== playerId) return undefined;
@@ -127,6 +149,7 @@ function pendingRendTheVeilOptions(game: GameState, playerId: PlayerID): GuidedO
 function adjacentSpaces(game: GameState, playerId: PlayerID) { const current = game.board.spaces.find((space) => space.occupant === playerId); if (!current) return []; return game.board.spaces.filter((space) => Math.abs(space.index - current.index) === 1); }
 export function buildGuidedOptions(game: GameState): GuidedOption[] {
   const playerId = activeViewer(game);
+  const witchcraftPending = pendingWitchcraftOptions(game, playerId); if (witchcraftPending) return witchcraftPending;
   const covenantPending = pendingBlackCovenantOptions(game, playerId); if (covenantPending) return covenantPending;
   const rendPending = pendingRendTheVeilOptions(game, playerId); if (rendPending) return rendPending;
   const mysticsPending = buildPendingMysticsOptions(game, playerId); if (mysticsPending) return mysticsPending;
