@@ -166,18 +166,22 @@ export function resolveMilitaryChoice(game: GameState, playerId: PlayerID, selec
   }
 
   if (pending.kind === 'shock_and_awe') {
-    consumeSource(game, playerId, pending.sourceCardId);
-    if (selected === 'breakthrough') {
-      if (!pending.options.includes('breakthrough')) throw new Error('Breakthrough is not legal because the opponent cannot retreat farther.');
-      moveOne(game, pending.defeatedPlayer, result.retreatDirection);
-      moveOne(game, playerId, result.retreatDirection);
-    } else if (selected === 'consolidate') {
-      captureLocation(game, playerId);
-      setFactionResource(game, playerId, 'command', 2, 'Shock and Awe — Consolidate');
-    } else throw new Error('Choose Breakthrough or Consolidate.');
-    game.players[playerId].military ??= { storedCards: {}, freeOrderAbilityIds: [], pursuitBattleCount: 0 };
-    game.players[playerId].military!.victoryRestrictions = { noMovement: true, noCapture: true, noOrders: true };
-    log(game, playerId, 'military_shock_and_awe', `${game.players[playerId].name} chose ${selected} for Shock and Awe.`);
+    if (selected === 'negated') {
+      log(game, playerId, 'military_shock_and_awe_negated', `${game.players[playerId].name}'s Shock and Awe effect was negated.`);
+    } else {
+      consumeSource(game, playerId, pending.sourceCardId);
+      if (selected === 'breakthrough') {
+        if (!pending.options.includes('breakthrough')) throw new Error('Breakthrough is not legal because the opponent cannot retreat farther.');
+        moveOne(game, pending.defeatedPlayer, result.retreatDirection);
+        moveOne(game, playerId, result.retreatDirection);
+      } else if (selected === 'consolidate') {
+        captureLocation(game, playerId);
+        setFactionResource(game, playerId, 'command', 2, 'Shock and Awe — Consolidate');
+      } else throw new Error('Choose Breakthrough or Consolidate.');
+      game.players[playerId].military ??= { storedCards: {}, freeOrderAbilityIds: [], pursuitBattleCount: 0 };
+      game.players[playerId].military!.victoryRestrictions = { noMovement: true, noCapture: true, noOrders: true };
+      log(game, playerId, 'military_shock_and_awe', `${game.players[playerId].name} chose ${selected} for Shock and Awe.`);
+    }
   }
 
   game.pendingMilitaryChoice = undefined;
