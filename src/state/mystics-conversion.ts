@@ -1,5 +1,6 @@
 import { v06CanonicalContent } from '../content';
 import type {
+  BattleParticipantState,
   BattlePlayedCard,
   BattleState,
   CardID,
@@ -70,7 +71,7 @@ function drawMateriaPrima(game: GameState, playerId: PlayerID): CardID | undefin
     playerId,
     'mystics_materia_prima_drawn',
     `${player.name} drew one card with Materia Prima.`,
-    { cardId, reshuffled: draw.reshuffled, exhausted: draw.exhausted },
+    { count: cardId ? 1 : 0, reshuffled: draw.reshuffled, exhausted: draw.exhausted },
   );
   return cardId;
 }
@@ -133,12 +134,20 @@ function supplementalCard(cardId: CardID): boolean {
     || card?.card_form?.toLowerCase().includes('supplemental') === true;
 }
 
-function battleParticipant(game: GameState, playerId: PlayerID) {
+function battleParticipant(game: GameState, playerId: PlayerID): BattleParticipantState {
   const battle = game.battle;
   if (!battle) throw new MysticsConversionError('There is no active battle.');
   if (battle.attacker.playerId === playerId) return battle.attacker;
   if (battle.defender.playerId === playerId) return battle.defender;
   throw new MysticsConversionError(`${playerId} is not involved in this battle.`);
+}
+
+function participantHasRolled(participant: BattleParticipantState): boolean {
+  return participant.diceRoll !== undefined || Boolean(participant.diceRolls?.length);
+}
+
+function battleDiceHaveBeenRolled(battle: BattleState): boolean {
+  return participantHasRolled(battle.attacker) || participantHasRolled(battle.defender);
 }
 
 export function canUseTransmutation(game: GameState, playerId: PlayerID): boolean {
@@ -147,8 +156,8 @@ export function canUseTransmutation(game: GameState, playerId: PlayerID): boolea
     if (!transmutationUnlocked(player.mystics)) return false;
     if (player.mystics.transmutationUsedTurn === game.turn) return false;
     if (!game.battle || game.battle.stage !== 'dice') return false;
-    const participant = battleParticipant(game, playerId);
-    if (participant.diceRoll !== undefined || participant.diceRolls?.length) return false;
+    battleParticipant(game, playerId);
+    if (battleDiceHaveBeenRolled(game.battle)) return false;
     return player.zones.hand.some((cardId) => !supplementalCard(cardId));
   } catch {
     return false;
@@ -167,8 +176,8 @@ export function useTransmutation(game: GameState, action: UseMysticTransmutation
     throw new MysticsConversionError('Transmutation may be used only before dice are rolled in a battle.');
   }
   const participant = battleParticipant(game, action.playerId);
-  if (participant.diceRoll !== undefined || participant.diceRolls?.length) {
-    throw new MysticsConversionError('Transmutation must be used before dice are rolled.');
+  if (battleDiceHaveBeenRolled(game.battle)) {
+    throw new MysticsConversionError('Transmutation must be used before any battle dice are rolled.');
   }
   if (supplementalCard(action.cardId)) {
     throw new MysticsConversionError('Supplemental cards cannot be used for Transmutation.');
@@ -195,7 +204,8 @@ export function queueInvocationForArcaneUse(
   playerId: PlayerID,
   sourceCardIds: CardID[],
 ): boolean {
-  const player = requireMystic(game, playerId);
+  const player = game.players[playerId];
+  if (!player || player.factionId !== 'mystics' || !player.mystics) return false;
   const arcaneSources = sourceCardIds.filter(isArcaneCard);
   if (arcaneSources.length === 0 || !invocationUnlocked(player.mystics)) return false;
   if (player.mystics.invocationUsedTurn === game.turn) return false;
@@ -209,7 +219,9 @@ export function queueInvocationForArcaneUse(
 
 export function openDeferredInvocationIfReady(game: GameState, playerId?: PlayerID): boolean {
   if (hasBlockingChoice(game)) return false;
-  const players = playerId ? [requireMystic(game, playerId)] : Object.values(game.players).filter((player) => player.factionId === 'mystics' && player.mystics);
+  const players = playerId
+    ? [game.players[playerId]].filter((player): player is PlayerState => Boolean(player?.factionId === 'mystics' && player.mystics))
+    : Object.values(game.players).filter((player) => player.factionId === 'mystics' && player.mystics);
   for (const player of players) {
     const mystics = player.mystics!;
     const sourceCardIds = mystics.invocationDeferredSourceCardIds ?? [];
@@ -279,6 +291,8 @@ export function queueInvocationForRevealedBattleCards(game: GameState): void {
   const battle = game.battle;
   if (!battle || battle.stage !== 'dice') return;
   for (const playerId of [battle.attacker.playerId, battle.defender.playerId]) {
+    const player = game.players[playerId];
+    if (!player || player.factionId !== 'mystics' || !player.mystics) continue;
     const key = `mystics_invocation_queued:${playerId}`;
     if (battle.effectsResolved.includes(key)) continue;
     battle.effectsResolved.push(key);
