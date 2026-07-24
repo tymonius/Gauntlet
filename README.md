@@ -47,6 +47,7 @@ To run the Gauntlet, a player must defeat the opponent on their final Territory,
 
 ## Playtest tools
 
+- [Gauntlet v0.6.0 Browser Rulebook](https://gauntlet.run/rulebook/) — searchable, responsive rendering of the complete canonical rulebook with direct section links and integrated Rules Arbiter access.
 - [Gauntlet v0.6.0 Rulebook (PDF)](releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf) — the complete official rules for the current release.
 - [Gauntlet v0.6 Rules Assistant](https://gauntlet.run/#rules-assistant) — ask about rules, cards, Leaders, faction systems, Territories, timing, and victory conditions using canonical v0.6.0 sources.
 - [Gauntlet v0.6 Deckbuilder](https://gauntlet.run/deckbuilder/) — load a recommended Leader Deck or build, validate, save, export, randomize, and print a custom Deck.
@@ -94,6 +95,10 @@ Faction-era browser deckbuilder. It reads the active canonical card and Territor
 
 Historical v0.5 deckbuilder.
 
+### `rulebook/`
+
+Responsive browser rulebook. It renders the canonical v0.6.0 Markdown source directly, with search, anchored navigation, print support, and Rules Arbiter access.
+
 ### `rules-assistant/`
 
 Static Rules Arbiter widget, canonical-source retrieval, regression tests, and a deployable serverless OpenAI endpoint. The browser automatically falls back to direct source lookup when the AI endpoint is unavailable.
@@ -131,6 +136,7 @@ Then open:
 
 ```text
 http://localhost:8000/
+http://localhost:8000/rulebook/
 http://localhost:8000/deckbuilder/
 http://localhost:8000/faction-sheets/
 http://localhost:8000/playtest/
