@@ -1,4 +1,4 @@
-import type { CardID, IntelligenceMissionKind, MysticRiteId, PlayerID, ProposalID, SpaceID } from '../types';
+import type { CardID, InquisitionPurgeMode, IntelligenceMissionKind, MysticRiteId, PlayerID, ProposalID, SpaceID } from '../types';
 import type { BattleCardTarget } from '../effects';
 
 export type ActionCardTarget =
@@ -24,7 +24,9 @@ export type MysticsStateAction = BeginMysticRiteAction | ResolveMysticsChoiceAct
   | UseMysticTransmutationAction | UseMysticGraveWardAssetAction
   | UseMysticBlackCovenantAction | UseMysticBlackCovenantBattleAction;
 
-export type AppStateAction = StateAction | IntelligenceStateAction | MysticsStateAction;
+export type InquisitionStateAction = UseInquisitionPurgeAction;
+
+export type AppStateAction = StateAction | IntelligenceStateAction | MysticsStateAction | InquisitionStateAction;
 
 export interface DrawCardAction { type: 'draw_card'; playerId: PlayerID; count?: number; }
 export interface RevealSpaceAction { type: 'reveal_space'; playerId: PlayerID; spaceId: SpaceID; }
@@ -51,6 +53,7 @@ export interface UseMysticTransmutationAction { type: 'use_mystic_transmutation'
 export interface UseMysticGraveWardAssetAction { type: 'use_mystic_grave_ward_asset'; playerId: PlayerID; choice: 'pass' | 'use'; entryId: string; }
 export interface UseMysticBlackCovenantAction { type: 'use_mystic_black_covenant_action'; playerId: PlayerID; bindingId: string; targets?: ActionCardTarget[]; }
 export interface UseMysticBlackCovenantBattleAction { type: 'use_mystic_black_covenant_battle'; playerId: PlayerID; bindingId: string; }
+export interface UseInquisitionPurgeAction { type: 'use_inquisition_purge'; playerId: PlayerID; mode: InquisitionPurgeMode; cardId?: CardID; }
 export interface ResolveAssetBankDiscardAction { type: 'resolve_asset_bank_discard'; playerId: PlayerID; cardIds: CardID[]; }
 export interface MovePlayerAction { type: 'move_player'; playerId: PlayerID; toSpaceId: SpaceID; cardId?: CardID; }
 export interface CommitBattleHandCardAction { type: 'commit_battle_hand_card'; playerId: PlayerID; cardId: CardID; }

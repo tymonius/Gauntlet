@@ -55,6 +55,7 @@ export * from './mystics-paths-of-shadow';
 export * from './mystics-spirit-hollow';
 export * from './mystics-witchcraft';
 export * from './inquisition-core';
+export * from './inquisition-purge';
 export * from './actions';
 export * from './draw';
 export { applyGameAction } from './apply-inquisition';
