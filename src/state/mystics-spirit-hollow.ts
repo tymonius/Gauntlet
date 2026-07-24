@@ -7,6 +7,7 @@ import type {
   PendingSpiritHollowChoice,
   PlayerID,
   SpaceID,
+  SpiritHollowChoiceState,
 } from '../types';
 import type { ActionCardTarget, ResolveMysticsChoiceAction } from './actions';
 import { triggerMateriaPrimaAfterHandSacrifice } from './mystics-conversion';
@@ -187,10 +188,7 @@ function hasBlockingWindow(game: GameState): boolean {
   );
 }
 
-function nextQueuedChoice(game: GameState): {
-  ownerId: PlayerID;
-  entry: NonNullable<NonNullable<GameState['players'][PlayerID]['mystics']>['spiritHollowChoiceQueue']>[number];
-} | undefined {
+function nextQueuedChoice(game: GameState): { ownerId: PlayerID; entry: SpiritHollowChoiceState } | undefined {
   for (const owner of Object.values(game.players)) {
     const queue = owner.mystics?.spiritHollowChoiceQueue;
     while (queue?.length) {
@@ -259,34 +257,35 @@ export function resolveSpiritHollowChoice(game: GameState, action: ResolveMystic
     throw new GameActionError('Choose whether to use Spirit Hollow.');
   }
 
+  const player = game.players[action.playerId];
+  if (action.choice === 'use') {
+    if (!action.cardId || !pending.handOptions.includes(action.cardId) || !player.zones.hand.includes(action.cardId)) {
+      throw new GameActionError('Choose an eligible card from your hand for Spirit Hollow.');
+    }
+    if (action.secondaryCardId && (
+      !pending.graveyardOptions.includes(action.secondaryCardId)
+      || !player.zones.graveyard.includes(action.secondaryCardId)
+    )) {
+      throw new GameActionError('Choose an eligible preexisting card from your Graveyard.');
+    }
+  }
+
   const resumePriority = pending.resumePriorityPlayer;
   game.pendingMysticsChoice = undefined;
   shiftMatchingQueue(game, pending);
   if (action.choice === 'pass') {
     game.priorityPlayer = resumePriority ?? game.activePlayer;
-    publicLog(game, action.playerId, 'mystics_spirit_hollow_passed', `${game.players[action.playerId].name} declined Spirit Hollow.`, {
+    publicLog(game, action.playerId, 'mystics_spirit_hollow_passed', `${player.name} declined Spirit Hollow.`, {
       battleId: pending.battleId,
       spaceId: pending.spaceId,
     });
     return;
   }
 
-  if (!action.cardId || !pending.handOptions.includes(action.cardId)) {
-    throw new GameActionError('Choose an eligible card from your hand for Spirit Hollow.');
-  }
-  if (action.secondaryCardId && !pending.graveyardOptions.includes(action.secondaryCardId)) {
-    throw new GameActionError('Choose an eligible preexisting card from your Graveyard.');
-  }
-  const player = game.players[action.playerId];
-  if (!removeOne(player.zones.hand, action.cardId)) {
-    throw new GameActionError('The chosen hand card is no longer available.');
-  }
-  player.zones.graveyard.push(action.cardId);
-
+  removeOne(player.zones.hand, action.cardId!);
+  player.zones.graveyard.push(action.cardId!);
   if (action.secondaryCardId) {
-    if (!removeOne(player.zones.graveyard, action.secondaryCardId)) {
-      throw new GameActionError('The chosen Graveyard card is no longer available.');
-    }
+    removeOne(player.zones.graveyard, action.secondaryCardId);
     player.zones.discard.push(action.secondaryCardId);
   }
   if (player.factionId === 'mystics' && player.mystics) {
