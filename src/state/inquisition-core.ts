@@ -12,7 +12,7 @@ import type {
 import { isArcaneCard } from './mystics-ritual';
 import { gainFactionResource } from './resources';
 
-export type GraveyardSnapshot = Record<PlayerID, CardID[]>;
+export type InquisitionGraveyardSnapshot = Record<PlayerID, CardID[]>;
 
 function publicLog(
   game: GameState,
@@ -63,7 +63,7 @@ function opponentInBattle(battle: BattleState, playerId: PlayerID): PlayerID | u
   return undefined;
 }
 
-export function captureInquisitionGraveyards(game: GameState): GraveyardSnapshot {
+export function captureInquisitionGraveyards(game: GameState): InquisitionGraveyardSnapshot {
   return Object.fromEntries(
     Object.values(game.players).map((player) => [player.id, [...player.zones.graveyard]]),
   );
@@ -102,7 +102,7 @@ export function applyCondemnationAfterBattle(game: GameState, battle: BattleStat
 export function awardNormalConvictionAfterBattle(
   game: GameState,
   battle: BattleState,
-  before: GraveyardSnapshot,
+  before: InquisitionGraveyardSnapshot,
 ): PlayerID[] {
   const awarded: PlayerID[] = [];
   for (const inquisitorId of inquisitionPlayers(game)) {
