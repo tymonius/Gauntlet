@@ -1,0 +1,23 @@
+a.faction-card {
+  display: flex;
+  flex-direction: column;
+  color: inherit;
+  text-decoration: none;
+  transition: transform .18s ease, border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+a.faction-card:hover,
+a.faction-card:focus-visible {
+  transform: translateY(-4px);
+  border-color: var(--faction);
+  background: rgba(255, 252, 244, .88);
+  box-shadow: 0 22px 52px rgba(55, 38, 18, .14);
+}
+.faction-card small { display: block; }
+.faction-card-link {
+  margin-top: auto;
+  padding-top: 22px;
+  color: var(--faction);
+  font-size: .78rem;
+  font-weight: 850;
+  letter-spacing: .04em;
+}
