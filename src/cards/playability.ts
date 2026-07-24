@@ -91,6 +91,7 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
 
   'mystics-dark-omens': battleAndAction('mystics-dark-omens', 'discard'),
   'mystics-accursed-wager': battleAndAction('mystics-accursed-wager', 'discard'),
+  'mystics-fates-toll': battleAndAction('mystics-fates-toll', 'discard', true),
 };
 
 export function getCardPlayRule(cardId: CardID): CardPlayRule | undefined { return coreCardPlayRules[cardId]; }
