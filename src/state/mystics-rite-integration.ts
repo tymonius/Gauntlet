@@ -125,7 +125,7 @@ export function reconcileMysticsAfterResolvedBattle(game: GameState, battle: Bat
       && rite.startedTurn < game.turn
       && usedMatchingEchoesCard(battle, playerId, rite.faceDownBoundCardId)) {
       completeBegunRite(game, playerId, 'rite_of_echoes');
-      if (game.phase === 'game_over') return;
+      if (game.winner) return;
       continue;
     }
 
@@ -133,7 +133,7 @@ export function reconcileMysticsAfterResolvedBattle(game: GameState, battle: Bat
       && rite.startedTurn < game.turn
       && cleanBloodVictory(game, playerId)) {
       completeBegunRite(game, playerId, 'rite_of_blood');
-      if (game.phase === 'game_over') return;
+      if (game.winner) return;
       continue;
     }
 
@@ -145,7 +145,7 @@ export function reconcileMysticsAfterResolvedBattle(game: GameState, battle: Bat
 }
 
 export function reconcileRiteOfCrossingAtTurnStart(game: GameState): void {
-  if (game.phase !== 'turn_start' || game.phase === 'game_over') return;
+  if (game.phase !== 'turn_start') return;
   const playerId = game.activePlayer;
   const player = game.players[playerId];
   const rite = player.mystics?.begunRite;
