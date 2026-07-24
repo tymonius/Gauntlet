@@ -184,7 +184,7 @@ function buildReference(data) {
     '1. Capture a Territory occupied but not controlled.',
     '2. Draw one card.',
     '3. Use the Action Opportunity before movement, if desired.',
-    '4. Advance, hold, or withdraw; resolve any battle.',
+    '4. Advance, hold, or withdraw. If movement begins a battle, resolve it immediately; the battle ends that movement and any remaining movement is lost unless an effect explicitly permits further movement.',
     '5. Use the Action Opportunity after movement if the first was unused.',
     '6. Resolve end-of-turn effects and discard down to three cards.', '',
     '## Battle', '',
