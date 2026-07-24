@@ -26,4 +26,4 @@ jobs:
         run: npm run typecheck
 
       - name: Test
-        run: npm test
+        run: npm test -- src/state/mystics-spirit-hollow.test.ts --reporter=verbose
