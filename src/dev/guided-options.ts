@@ -1,7 +1,14 @@
 import { militaryCardDefinitions } from '../cards';
 import type { GameState, PlayerID } from '../types';
 import type { AppStateAction } from '../state';
-import { cardValue, deedOwner, toPrivateGameView } from '../state';
+import {
+  blackCovenantActionBindings,
+  blackCovenantBattleBindings,
+  blackCovenantBindingCanUseAction,
+  cardValue,
+  deedOwner,
+  toPrivateGameView,
+} from '../state';
 import { buildBattleRevealOptions } from './battle-reveal-options';
 import { buildIntelligenceBattleOptions } from './intelligence-battle-options';
 import { buildIntelligenceMissionOptions } from './intelligence-options';
@@ -42,10 +49,7 @@ function pendingFinancierOptions(game: GameState, playerId: PlayerID): GuidedOpt
     case 'battle_property_dues': return [option(`Allow ${pending.ownerId} to collect 3 Capital`, 'pay_dues'), ...pending.handOptions.map((cardId) => option(`Discard ${cardId} to avoid Property Dues`, 'discard', cardId))];
     case 'battle_capital_gains': return pending.eligibleCardIds.map((cardId) => option(`Place ${cardId} in Treasury with Capital Gains`, cardId, cardId));
     case 'battle_monetary_crisis': return pending.handOptions.map((cardId) => option(`Keep ${cardId}; discard the rest`, cardId, cardId));
-    case 'battle_leveraged_buyout': return [
-      option('Decline the battle Leveraged Buyout', 'pass'),
-      ...affordableBattleCollateralSelections(pending.collateralOptions, pending.capitalAvailable, pending.cost).map((cardIds) => option(cardIds.length === 0 ? `Buy ${pending.spaceId} with Capital` : `Buy ${pending.spaceId} using ${cardIds.join(', ')} as collateral`, 'purchase', undefined, undefined, pending.spaceId, cardIds)),
-    ];
+    case 'battle_leveraged_buyout': return [option('Decline the battle Leveraged Buyout', 'pass'), ...affordableBattleCollateralSelections(pending.collateralOptions, pending.capitalAvailable, pending.cost).map((cardIds) => option(cardIds.length === 0 ? `Buy ${pending.spaceId} with Capital` : `Buy ${pending.spaceId} using ${cardIds.join(', ')} as collateral`, 'purchase', undefined, undefined, pending.spaceId, cardIds))];
     case 'leveraged_buyout_target': return pending.spaceOptions.map((spaceId) => option(`Buy the Deed to ${spaceId}`, 'select', undefined, undefined, spaceId));
     case 'leveraged_buyout_collateral': {
       const options: GuidedOption[] = [];
@@ -102,21 +106,28 @@ function pendingMilitaryOptions(game: GameState, playerId: PlayerID): GuidedOpti
   return undefined;
 }
 
+function pendingBlackCovenantOptions(game: GameState, playerId: PlayerID): GuidedOption[] | undefined {
+  const pending = game.pendingMysticsChoice;
+  if (!pending || pending.kind !== 'black_covenant_battle' || pending.playerId !== playerId) return undefined;
+  return [
+    { label: 'Bind no card with Black Covenant', action: { type: 'resolve_mystics_choice', playerId, choice: 'pass' } },
+    ...pending.handOptions.map((cardId) => ({ label: `Bind and reveal ${cardId} with Black Covenant`, action: { type: 'resolve_mystics_choice' as const, playerId, choice: 'bind', cardId } })),
+  ];
+}
+
 function pendingRendTheVeilOptions(game: GameState, playerId: PlayerID): GuidedOption[] | undefined {
   const pending = game.pendingMysticsChoice;
   if (!pending || pending.kind !== 'rend_the_veil' || pending.playerId !== playerId) return undefined;
   return [
     { label: 'Pass Rend the Veil', action: { type: 'resolve_mystics_choice', playerId, choice: 'pass' } },
-    ...pending.graveyardOptions.map((cardId) => ({
-      label: `Use ${cardId} from your Graveyard with Rend the Veil`,
-      action: { type: 'resolve_mystics_choice' as const, playerId, choice: 'use', cardId },
-    })),
+    ...pending.graveyardOptions.map((cardId) => ({ label: `Use ${cardId} from your Graveyard with Rend the Veil`, action: { type: 'resolve_mystics_choice' as const, playerId, choice: 'use', cardId } })),
   ];
 }
 
 function adjacentSpaces(game: GameState, playerId: PlayerID) { const current = game.board.spaces.find((space) => space.occupant === playerId); if (!current) return []; return game.board.spaces.filter((space) => Math.abs(space.index - current.index) === 1); }
 export function buildGuidedOptions(game: GameState): GuidedOption[] {
   const playerId = activeViewer(game);
+  const covenantPending = pendingBlackCovenantOptions(game, playerId); if (covenantPending) return covenantPending;
   const rendPending = pendingRendTheVeilOptions(game, playerId); if (rendPending) return rendPending;
   const mysticsPending = buildPendingMysticsOptions(game, playerId); if (mysticsPending) return mysticsPending;
   const intelligenceBattlePending = buildIntelligenceBattleOptions(game, playerId); if (intelligenceBattlePending) return intelligenceBattlePending;
@@ -127,25 +138,31 @@ export function buildGuidedOptions(game: GameState): GuidedOption[] {
   const discard = game.pendingAssetBankDiscards?.[playerId]; if (discard) { if (discard.discardCount === 1) for (const cardId of discard.options) options.push({ label: `Discard ${cardId} from Asset Bank`, action: { type: 'resolve_asset_bank_discard', playerId, cardIds: [cardId] } }); return options; }
   if (game.pendingLeaderAbilityWindow?.playerId === playerId) { for (const ability of view.legalLeaderAbilities ?? []) options.push({ label: `Use ${ability.name}`, action: { type: 'use_leader_ability', playerId, abilityId: ability.abilityId } }); options.push({ label: 'Pass Leader ability window', action: { type: 'pass_leader_ability_window', playerId } }); return options; }
   if (game.phase === 'turn_start') options.push({ label: 'Draw 1 card', action: { type: 'draw_card', playerId } });
-  if (game.phase === 'action_before_movement' || game.phase === 'action_after_movement') for (const play of view.legalActionPlays ?? []) options.push({ label: `Play Action ${play.cardId}`, action: { type: 'play_action_card', playerId, cardId: play.cardId } });
+  if (game.phase === 'action_before_movement' || game.phase === 'action_after_movement') {
+    for (const play of view.legalActionPlays ?? []) {
+      if (play.cardId === 'mystics-black-covenant') continue;
+      options.push({ label: `Play Action ${play.cardId}`, action: { type: 'play_action_card', playerId, cardId: play.cardId } });
+    }
+    if (view.legalActionPlays?.some((play) => play.cardId === 'mystics-black-covenant')) {
+      for (const cardId of game.players[playerId].zones.hand.filter((candidate) => candidate !== 'mystics-black-covenant')) {
+        options.push({ label: `Bind ${cardId} beneath Black Covenant`, action: { type: 'play_action_card', playerId, cardId: 'mystics-black-covenant', targets: [{ kind: 'card', owner: playerId, cardId }] } });
+      }
+    }
+  }
+  for (const binding of blackCovenantActionBindings(game, playerId).filter(blackCovenantBindingCanUseAction)) options.push({ label: `Release ${binding.cardId} from Black Covenant as an Action`, action: { type: 'use_mystic_black_covenant_action', playerId, bindingId: binding.id } });
+  for (const binding of blackCovenantBattleBindings(game, playerId)) options.push({ label: `Commit bound ${binding.cardId} from Black Covenant`, action: { type: 'use_mystic_black_covenant_battle', playerId, bindingId: binding.id } });
   const player = game.players[playerId];
   options.push(...buildIntelligenceMissionOptions(game, playerId));
   options.push(...buildMysticRiteOptions(game, playerId));
   if (game.phase === 'action_after_movement' && player.factionId === 'financiers' && player.actionsRemaining > 0 && playerId === game.activePlayer) {
-    for (const cardId of player.zones.hand) {
-      options.push({ label: `Place ${cardId} in Treasury`, action: { type: 'place_treasury_card', playerId, cardId } });
-      options.push({ label: `Play the Market with ${cardId}`, action: { type: 'begin_play_the_market', playerId, cardId } });
-    }
+    for (const cardId of player.zones.hand) { options.push({ label: `Place ${cardId} in Treasury`, action: { type: 'place_treasury_card', playerId, cardId } }); options.push({ label: `Play the Market with ${cardId}`, action: { type: 'begin_play_the_market', playerId, cardId } }); }
     for (const space of game.board.spaces.filter((candidate) => candidate.kind === 'territory' && deedOwner(game, candidate.id) !== playerId)) options.push({ label: `Buy Deed to ${space.id}`, action: { type: 'begin_deed_purchase', playerId, spaceId: space.id } });
     if (player.financiers?.hostileTakeoverEligibleSpaceId) options.push({ label: `Hostile Takeover ${player.financiers.hostileTakeoverEligibleSpaceId}`, action: { type: 'use_hostile_takeover', playerId } });
   }
   if (game.phase === 'movement') for (const space of adjacentSpaces(game, playerId)) options.push({ label: `Move to ${space.id}${space.occupant ? ` occupied by ${space.occupant}` : ''}`, action: { type: 'move_player', playerId, toSpaceId: space.id } });
   for (const play of view.battle?.legalBattlePlays ?? []) { if (play.action === 'commit_battle_hand_card' && play.cardId) options.push({ label: `Commit ${play.cardId} from hand`, action: { type: 'commit_battle_hand_card', playerId, cardId: play.cardId } }); else if (play.action === 'play_battle_draw_card' && play.cardId) options.push({ label: `Play battle-drawn ${play.cardId}`, action: { type: 'play_battle_draw_card', playerId, cardId: play.cardId } }); else if (play.action === 'pass_battle_hand_commit') options.push({ label: 'Pass hand commitment', action: { type: 'pass_battle_hand_commit', playerId } }); else if (play.action === 'pass_battle_draw_play') options.push({ label: 'Pass Battle Hand selection', action: { type: 'pass_battle_draw_play', playerId } }); }
   if (game.battle?.stage === 'battle_draw') options.push({ label: 'Draw Battle Hand', action: { type: 'draw_battle_cards', playerId } });
-  if (game.battle?.stage === 'dice') {
-    if (!game.battle.effectsResolved.includes('before_battle_resolution')) options.push(...buildBattleRevealOptions(game, playerId));
-    else for (const value of [1, 2, 3, 4, 5, 6]) options.push({ label: `Roll ${value}`, action: { type: 'roll_battle_die', playerId, value } });
-  }
+  if (game.battle?.stage === 'dice') { if (!game.battle.effectsResolved.includes('before_battle_resolution')) options.push(...buildBattleRevealOptions(game, playerId)); else for (const value of [1, 2, 3, 4, 5, 6]) options.push({ label: `Roll ${value}`, action: { type: 'roll_battle_die', playerId, value } }); }
   if (game.battle?.stage === 'resolution') options.push({ label: 'Resolve battle', action: { type: 'resolve_battle', playerId } });
   if (game.phase !== 'battle' && game.phase !== 'game_over' && playerId === game.activePlayer) options.push({ label: 'End turn', action: { type: 'end_turn', playerId } });
   return options;
