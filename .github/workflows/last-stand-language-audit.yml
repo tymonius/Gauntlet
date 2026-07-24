@@ -89,11 +89,12 @@ jobs:
       - name: Audit remaining awkward constructions
         run: |
           paths=(README.md index.html docs releases/v0.6.0 rulebook rules-assistant scripts src data deckbuilder deckbuilder-v0.6 faction-sheets playtest)
-          if git grep -n -E "win(s|ning)? (the |their |opponent.?s )?Last Stand|defeat(ing)? .* in (their|a final) Last Stand|initiat(e|ing).*Last Stand|Last Stands won|during their Last Stand|an attacking Last Stand win|a defending Last Stand win" -- "${paths[@]}" ':!docs/Archive/**' ':!*.pdf' ':!*.docx'; then
+          exclusions=(':!docs/Archive/**' ':!scripts/normalize-last-stand-language.py' ':!scripts/compact-last-stand-language.py' ':!*.pdf' ':!*.docx')
+          if git grep -n -E "win(s|ning)? (the |their |opponent.?s )?Last Stand|defeat(ing)? .* in (their|a final) Last Stand|initiat(e|ing).*Last Stand|Last Stands won|during their Last Stand|an attacking Last Stand win|a defending Last Stand win" -- "${paths[@]}" "${exclusions[@]}"; then
             echo 'Awkward Last Stand construction remains.' >&2
             exit 1
           fi
-          git grep -n -i 'last stand' -- "${paths[@]}" ':!docs/Archive/**' ':!*.pdf' ':!*.docx' || true
+          git grep -n -i 'last stand' -- "${paths[@]}" "${exclusions[@]}" || true
 
       - name: Upload visual-validation contact sheets
         uses: actions/upload-artifact@v4
