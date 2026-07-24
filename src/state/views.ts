@@ -86,7 +86,7 @@ export function toPublicBoardView(board: BoardState): PublicBoardView {
 }
 
 function revealPlayedCardToViewer(played: BattlePlayedCard | undefined, viewer?: PlayerID): BattlePlayedCard | { faceDown: true } | undefined {
-  if (!played) return undefined;
+  if (!played || played.virtual) return undefined;
   if (!played.faceDown || played.owner === viewer) return played;
   if (viewer && played.visibleTo?.includes(viewer)) return played;
   return { faceDown: true };
@@ -94,7 +94,7 @@ function revealPlayedCardToViewer(played: BattlePlayedCard | undefined, viewer?:
 
 function playedCards(participant: BattleParticipantState): BattlePlayedCard[] {
   return [participant.handCommit, ...participant.battleDrawPlayed]
-    .filter((card): card is BattlePlayedCard => card !== undefined && !card.canceled);
+    .filter((card): card is BattlePlayedCard => card !== undefined && !card.canceled && !card.virtual);
 }
 
 function battleParticipantForViewer(battle: BattleState, viewer?: PlayerID): BattleParticipantState | undefined {
@@ -148,7 +148,7 @@ function toBattleParticipantView(participant: BattleParticipantState, viewer?: P
     passedBattleDrawPlay: participant.passedBattleDrawPlay,
     handCommit: revealPlayedCardToViewer(participant.handCommit, viewer),
     battleDrawCount: participant.battleDrawCount,
-    battleDrawPlayed: participant.battleDrawPlayed.map((card) => revealPlayedCardToViewer(card, viewer)!).filter(Boolean),
+    battleDrawPlayed: participant.battleDrawPlayed.filter((card) => !card.virtual).map((card) => revealPlayedCardToViewer(card, viewer)!).filter(Boolean),
     battleDrawLimit: participant.battleDrawCount,
     battleDrawPlayLimit: participant.battleDrawPlayLimit,
     advantage: participant.advantage ?? 0,
