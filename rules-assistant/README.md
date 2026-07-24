@@ -11,7 +11,7 @@ The public widget is framework-free and can be loaded on any Gauntlet browser pa
 - `local-search.js` — shared canonical-source loader, document builder, and lexical retrieval.
 - `worker.js` — Cloudflare Worker backend using the OpenAI Responses API.
 - `wrangler.toml` — Worker deployment configuration.
-- `local-search.test.mjs` — focused retrieval regression tests.
+- `local-search.test.mjs` — focused Vitest retrieval regression tests.
 
 ## Source policy
 
@@ -76,7 +76,7 @@ The OpenAI key belongs only in the Worker secret store. It must never be added t
 From the repository root:
 
 ```bash
-node --test rules-assistant/local-search.test.mjs
+npm run test:rules-assistant
 python3 -m http.server 8000
 ```
 
