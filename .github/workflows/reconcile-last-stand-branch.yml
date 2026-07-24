@@ -1,0 +1,30 @@
+name: Reconcile Last Stand branch
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  reconcile:
+    if: github.event.pull_request.head.ref == 'agent/normalize-last-stand-language'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+          fetch-depth: 0
+          show-progress: false
+      - name: Merge latest main and remove this workflow
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git fetch origin main
+          git merge --no-edit -X ours origin/main -m 'Merge latest main into Last Stand language update'
+          rm .github/workflows/reconcile-last-stand-branch.yml
+          git add -A
+          git commit -m 'Remove temporary branch reconciliation workflow'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
