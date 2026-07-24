@@ -1,0 +1,24 @@
+name: Last Stand language audit
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
+          fetch-depth: 0
+      - name: Inventory Last Stand language
+        run: |
+          echo '=== Tracked-text occurrences ==='
+          git grep -n -i 'last stand' -- ':!*.pdf' ':!*.docx' || true
+          echo
+          echo '=== Release and rendering scripts ==='
+          find scripts -maxdepth 2 -type f -print | sort
