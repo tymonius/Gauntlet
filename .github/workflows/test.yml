@@ -1,50 +1,4 @@
-name: Repair Necromancy Typecheck
-
-on:
-  push:
-    branches:
-      - feature/mystics-necromancy
-
-permissions:
-  contents: write
-
-jobs:
-  repair:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout branch
-        uses: actions/checkout@v4
-        with:
-          ref: feature/mystics-necromancy
-          fetch-depth: 0
-
-      - name: Apply repair and restore standard CI
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          source = Path('src/state/mystics-necromancy.ts')
-          text = source.read_text()
-          old = "if (!pending || !isNecromancyChoice(pending.kind) || pending.playerId !== action.playerId) {"
-          new = """if (!pending
-              || (pending.kind !== 'necromancy_action' && pending.kind !== 'necromancy_battle')
-              || pending.playerId !== action.playerId) {"""
-          if old not in text:
-              raise SystemExit('Expected Necromancy type-guard line was not found.')
-          source.write_text(text.replace(old, new, 1))
-
-          test = Path('src/state/mystics-necromancy.test.ts')
-          text = test.read_text()
-          old = "expect(state.pendingMysticsChoice?.kind).toBe('necromancy_battle');"
-          new = "expect(state.pendingMysticsChoice).toMatchObject({ kind: 'necromancy_battle' });"
-          if old not in text:
-              raise SystemExit('Expected Necromancy test assertion was not found.')
-          test.write_text(text.replace(old, new, 1))
-
-          workflow = Path('.github/workflows/test.yml')
-          workflow.write_text("""name: Test
+name: Test
 
 on:
   pull_request:
@@ -73,11 +27,3 @@ jobs:
 
       - name: Test
         run: npm test
-""")
-          PY
-
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/state/mystics-necromancy.ts src/state/mystics-necromancy.test.ts .github/workflows/test.yml
-          git commit -m "Fix Necromancy type narrowing"
-          git push origin HEAD:feature/mystics-necromancy
