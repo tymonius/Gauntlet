@@ -51,6 +51,7 @@ export function toPublicPlayerView(player: PlayerState): PublicPlayerView {
     financiers: structuredClone(player.financiers),
     intelligence: toPublicIntelligenceState(player),
     mystics: toPublicMysticsState(player.mystics),
+    inquisition: structuredClone(player.inquisition),
     zones: {
       deck: hidden(player.zones.deck),
       hand: hidden(player.zones.hand),
@@ -73,6 +74,7 @@ export function toPrivatePlayerView(player: PlayerState): PrivatePlayerView {
     ...publicView,
     intelligence: structuredClone(player.intelligence),
     mystics: structuredClone(player.mystics),
+    inquisition: structuredClone(player.inquisition),
     zones: { ...publicView.zones, deck: hidden(player.zones.deck), hand: visible(player.zones.hand) },
     private: { deck: player.zones.deck, hand: player.zones.hand },
   };
