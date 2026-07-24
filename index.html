@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Gauntlet is a two-player tactical card-and-territory game of deck construction, hidden battle commitments, faction asymmetry, and territorial control." />
+  <title>Gauntlet — Run the Gauntlet</title>
+  <link rel="stylesheet" href="site.css" />
+  <link rel="stylesheet" href="rules-assistant/widget.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="Gauntlet home">
+      <span class="brand-mark" aria-hidden="true">G</span>
+      <span>Gauntlet</span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="#game">Game</a>
+      <a href="#factions">Factions</a>
+      <a href="#tools">Playtest tools</a>
+      <a href="https://github.com/tymonius/Gauntlet">Repository</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="hero-copy">
+        <p class="eyebrow">Canonical pre-release playtest edition · v0.6.0</p>
+        <h1 id="hero-title">Run the <span>Gauntlet.</span></h1>
+        <p class="hero-lede">
+          Build a faction Deck, form the battlefield from your Territories, and fight through the opponent's line before defeating them in their Last Stand.
+        </p>
+        <div class="hero-actions">
+          <a class="button primary" href="deckbuilder/">Build a Deck</a>
+          <a class="button secondary" href="releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf">Read the rulebook</a>
+        </div>
+        <dl class="edition-stats" aria-label="Current edition contents">
+          <div><dt>6</dt><dd>Factions</dd></div>
+          <div><dt>12</dt><dd>Leaders</dd></div>
+          <div><dt>122</dt><dd>Playable cards</dd></div>
+          <div><dt>25</dt><dd>Territories</dd></div>
+        </dl>
+      </div>
+
+      <div class="hero-illustration" aria-label="A six-Territory Gauntlet between two opposing sides">
+        <div class="token token-left" aria-hidden="true"></div>
+        <div class="gauntlet-column" aria-hidden="true">
+          <div class="territory military"><span>Territory</span></div>
+          <div class="territory diplomat"><span>Territory</span></div>
+          <div class="territory financier"><span>Territory</span></div>
+          <div class="territory mystic"><span>Territory</span></div>
+          <div class="territory intelligence"><span>Territory</span></div>
+          <div class="territory inquisition"><span>Territory</span></div>
+        </div>
+        <div class="token token-right" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section id="game" class="section game-overview">
+      <div class="section-heading">
+        <p class="eyebrow">A campaign in one contested column</p>
+        <h2>Every advance creates a decision.</h2>
+        <p>Gauntlet combines constructed Decks, hidden battle commitments, public territorial pressure, and faction-specific paths to victory.</p>
+      </div>
+      <div class="steps">
+        <article>
+          <span class="step-number">01</span>
+          <h3>Construct</h3>
+          <p>Choose a faction and Leader, build a 30+ card Playable Deck within 60 value, and select three different Territories.</p>
+        </article>
+        <article>
+          <span class="step-number">02</span>
+          <h3>Contend</h3>
+          <p>Advance, hold, or withdraw. Entering the opponent's position begins a battle of hidden commitments and tactical card effects.</p>
+        </article>
+        <article>
+          <span class="step-number">03</span>
+          <h3>Capture</h3>
+          <p>Occupy enemy-controlled Territories, survive the counterattack, and rotate captured ground to face you.</p>
+        </article>
+        <article>
+          <span class="step-number">04</span>
+          <h3>Break through</h3>
+          <p>Capture the opponent's final Territory, advance beyond the column, and win their Last Stand.</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="factions" class="section factions-section">
+      <div class="section-heading split-heading">
+        <div>
+          <p class="eyebrow">Six institutions · twelve Leaders</p>
+          <h2>Choose how you intend to win.</h2>
+        </div>
+        <p>Every faction remains engaged with the Gauntlet while adding its own resources, components, tactical identity, and—except Military—an additional victory route.</p>
+      </div>
+      <div class="faction-grid">
+        <article class="faction-card military">
+          <span class="faction-symbol" aria-hidden="true">⚔</span>
+          <h3>Military</h3>
+          <p>Command, Orders, pressure, movement, and decisive battle.</p>
+          <small>General · Commandant</small>
+        </article>
+        <article class="faction-card diplomats">
+          <span class="faction-symbol" aria-hidden="true">§</span>
+          <h3>Diplomats</h3>
+          <p>Influence, Terms, Proposals, concessions, and legitimacy.</p>
+          <small>Ambassador · Senator</small>
+        </article>
+        <article class="faction-card financiers">
+          <span class="faction-symbol" aria-hidden="true">◆</span>
+          <h3>Financiers</h3>
+          <p>Capital, Treasury, Deeds, leverage, and ownership.</p>
+          <small>Banker · Executive</small>
+        </article>
+        <article class="faction-card intelligence">
+          <span class="faction-symbol" aria-hidden="true">◉</span>
+          <h3>Intelligence</h3>
+          <p>Intel, Missions, surveillance, disruption, and secrecy.</p>
+          <small>Ranger · Spymaster</small>
+        </article>
+        <article class="faction-card mystics">
+          <span class="faction-symbol" aria-hidden="true">✦</span>
+          <h3>Mystics</h3>
+          <p>Rites, Invocation, Transmutation, and the Arcane.</p>
+          <small>Alchemist · Spirit Walker</small>
+        </article>
+        <article class="faction-card inquisition">
+          <span class="faction-symbol" aria-hidden="true">✠</span>
+          <h3>Inquisition</h3>
+          <p>Conviction, Condemnation, Purge, and suppression.</p>
+          <small>Grand Inquisitor · Witch Hunter</small>
+        </article>
+      </div>
+    </section>
+
+    <section id="rules-assistant" class="section assistant-section">
+      <div>
+        <p class="eyebrow">Rules support at the table</p>
+        <h2>Ask the Rules Arbiter.</h2>
+        <p>
+          Use the floating <strong>Ask the rules</strong> control to look up card text, battle timing, Territory interactions, faction systems, and victory conditions from the canonical v0.6.0 sources.
+        </p>
+        <p class="assistant-note">The source passages remain visible with every answer. When the AI service is unavailable, exact canonical source lookup still works in the browser.</p>
+      </div>
+      <button class="button primary assistant-open" type="button" data-open-rules-assistant>Ask a rule question</button>
+    </section>
+
+    <section id="tools" class="section tools-section">
+      <div class="section-heading">
+        <p class="eyebrow">Playtest resources</p>
+        <h2>Everything needed to put the game on the table.</h2>
+      </div>
+      <div class="tool-grid">
+        <a class="tool-card" href="deckbuilder/">
+          <span>Browser tool</span>
+          <h3>v0.6 Deckbuilder</h3>
+          <p>Load a recommended Leader Deck or build, validate, save, export, randomize, and print your own.</p>
+          <strong>Open Deckbuilder →</strong>
+        </a>
+        <a class="tool-card" href="faction-sheets/">
+          <span>Print components</span>
+          <h3>Faction Sheets</h3>
+          <p>Print Leader Cards, faction references, trackers, Proposals, Deeds, Missions, Rites, and other components.</p>
+          <strong>Open Faction Sheets →</strong>
+        </a>
+        <a class="tool-card" href="playtest/">
+          <span>Record results</span>
+          <h3>Playtest Sheet</h3>
+          <p>Use the one-page questionnaire after a game and preserve observations for structured testing.</p>
+          <strong>Open Playtest Sheet →</strong>
+        </a>
+        <a class="tool-card" href="releases/v0.6.0/">
+          <span>Canonical package</span>
+          <h3>v0.6.0 Release</h3>
+          <p>Download the official rulebook, references, printable cards, faction packages, canonical data, and manifest.</p>
+          <strong>Browse release →</strong>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <strong>Gauntlet</strong>
+      <p>Unpublished pre-release playtest project.</p>
+    </div>
+    <div class="footer-links">
+      <a href="docs/README.md">Documentation</a>
+      <a href="https://github.com/tymonius/Gauntlet">GitHub</a>
+      <a href="releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf">Rulebook PDF</a>
+    </div>
+    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  </footer>
+
+  <noscript>
+    <p class="noscript">JavaScript is required for the Rules Arbiter and interactive browser tools.</p>
+  </noscript>
+  <script type="module" src="rules-assistant/widget.js"></script>
+  <script>
+    document.addEventListener("click", (event) => {
+      const trigger = event.target.closest("[data-open-rules-assistant]");
+      if (!trigger) return;
+      document.querySelector(".ga-rules-launcher")?.click();
+    });
+  </script>
+</body>
+</html>
