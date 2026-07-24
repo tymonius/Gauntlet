@@ -26,22 +26,4 @@ jobs:
         run: npm run typecheck
 
       - name: Test
-        id: tests
-        shell: bash
-        run: |
-          set +e
-          npm test > rend-test-output.txt 2>&1
-          status=$?
-          cat rend-test-output.txt
-          echo "status=$status" >> "$GITHUB_OUTPUT"
-          exit 0
-
-      - name: Upload test diagnostics
-        uses: actions/upload-artifact@v4
-        with:
-          name: rend-test-output
-          path: rend-test-output.txt
-
-      - name: Preserve test result
-        if: steps.tests.outputs.status != '0'
-        run: exit 1
+        run: npm test
