@@ -60,6 +60,12 @@ export interface SpiritHollowChoiceState {
   playerId: PlayerID;
 }
 
+export interface NecromancyBattleEffectState {
+  battleId: string;
+  sourceKey: string;
+  sourceOrigin: 'hand' | 'battle_draw';
+}
+
 export interface MysticsState {
   completedRites: MysticRiteId[];
   begunRite?: BegunMysticRiteState;
@@ -82,6 +88,7 @@ export interface MysticsState {
   soulForSoulBattleQueue?: SoulForSoulBattleEffectState[];
   pathsOfShadowBattleQueue?: PathsOfShadowBattleEffectState[];
   spiritHollowChoiceQueue?: SpiritHollowChoiceState[];
+  necromancyBattleQueue?: NecromancyBattleEffectState[];
 }
 
 export interface PublicMysticsState {
@@ -222,6 +229,37 @@ export interface PendingCircleOfBonesChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface PendingRendTheVeilChoice {
+  kind: 'rend_the_veil';
+  playerId: PlayerID;
+  battleId: string;
+  sourceSlot: 'hand_commit' | 'battle_draw_played' | 'asset';
+  sourceIndex?: number;
+  graveyardOptions: CardID[];
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingNecromancyActionChoice {
+  kind: 'necromancy_action';
+  playerId: PlayerID;
+  sourceCardId: CardID;
+  graveyardOptions: CardID[];
+  options: ['bury', 'recover'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingNecromancyBattleChoice {
+  kind: 'necromancy_battle';
+  playerId: PlayerID;
+  battleId: string;
+  sourceKey: string;
+  sourceOrigin: 'hand' | 'battle_draw';
+  graveyardOptions: CardID[];
+  options: ['resolve'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type PendingMysticsChoice =
   | PendingGuardiansOfTheCircleChoice
   | PendingInvocationChoice
@@ -234,4 +272,7 @@ export type PendingMysticsChoice =
   | PendingSoulForSoulBattleChoice
   | PendingPathsOfShadowChoice
   | PendingSpiritHollowChoice
-  | PendingCircleOfBonesChoice;
+  | PendingCircleOfBonesChoice
+  | PendingRendTheVeilChoice
+  | PendingNecromancyActionChoice
+  | PendingNecromancyBattleChoice;

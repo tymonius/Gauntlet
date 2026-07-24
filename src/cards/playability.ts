@@ -94,9 +94,11 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'mystics-fates-toll': battleAndAction('mystics-fates-toll', 'discard', true),
   'mystics-grave-ward': battleAndAction('mystics-grave-ward', 'asset_bank'),
   'mystics-soul-for-soul': battleAndAction('mystics-soul-for-soul', 'discard', true),
+  'mystics-rend-the-veil': battleAndAction('mystics-rend-the-veil', 'asset_bank'),
   'mystics-paths-of-shadow': battleAndAction('mystics-paths-of-shadow', 'discard', true),
   'mystics-spirit-hollow': battleAndAction('mystics-spirit-hollow', 'removed', true),
   'mystics-circle-of-bones': battleAndAction('mystics-circle-of-bones', 'removed', true),
+  'mystics-necromancy': battleAndAction('mystics-necromancy', 'removed'),
 };
 
 export function getCardPlayRule(cardId: CardID): CardPlayRule | undefined { return coreCardPlayRules[cardId]; }

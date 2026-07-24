@@ -102,9 +102,22 @@ function pendingMilitaryOptions(game: GameState, playerId: PlayerID): GuidedOpti
   return undefined;
 }
 
+function pendingRendTheVeilOptions(game: GameState, playerId: PlayerID): GuidedOption[] | undefined {
+  const pending = game.pendingMysticsChoice;
+  if (!pending || pending.kind !== 'rend_the_veil' || pending.playerId !== playerId) return undefined;
+  return [
+    { label: 'Pass Rend the Veil', action: { type: 'resolve_mystics_choice', playerId, choice: 'pass' } },
+    ...pending.graveyardOptions.map((cardId) => ({
+      label: `Use ${cardId} from your Graveyard with Rend the Veil`,
+      action: { type: 'resolve_mystics_choice' as const, playerId, choice: 'use', cardId },
+    })),
+  ];
+}
+
 function adjacentSpaces(game: GameState, playerId: PlayerID) { const current = game.board.spaces.find((space) => space.occupant === playerId); if (!current) return []; return game.board.spaces.filter((space) => Math.abs(space.index - current.index) === 1); }
 export function buildGuidedOptions(game: GameState): GuidedOption[] {
   const playerId = activeViewer(game);
+  const rendPending = pendingRendTheVeilOptions(game, playerId); if (rendPending) return rendPending;
   const mysticsPending = buildPendingMysticsOptions(game, playerId); if (mysticsPending) return mysticsPending;
   const intelligenceBattlePending = buildIntelligenceBattleOptions(game, playerId); if (intelligenceBattlePending) return intelligenceBattlePending;
   const financierPending = pendingFinancierOptions(game, playerId); if (financierPending) return financierPending;

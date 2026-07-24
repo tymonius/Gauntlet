@@ -47,6 +47,13 @@ import {
   type GraveyardSnapshot,
 } from './mystics-grave-ward';
 import {
+  applyNecromancyAction,
+  isNecromancyChoice,
+  openNextNecromancyBattleChoice,
+  queueNecromancyBattleEffects,
+  resolveNecromancyChoice,
+} from './mystics-necromancy';
+import {
   applyPathsOfShadowAction,
   isPathsOfShadowChoice,
   openPathsOfShadowChoiceIfReady,
@@ -54,6 +61,11 @@ import {
   requirePathsOfShadowActionTarget,
   resolvePathsOfShadowChoice,
 } from './mystics-paths-of-shadow';
+import {
+  isRendTheVeilChoice,
+  openNextRendTheVeilChoice,
+  resolveRendTheVeilChoice,
+} from './mystics-rend-the-veil';
 import {
   applySoulForSoulAction,
   isSoulForSoulChoice,
@@ -129,23 +141,28 @@ function continueMysticsAutomation(
     queueGraveWardBattleEffects(result.state, priorBattle);
     queueSoulForSoulBattleEffects(result.state, priorBattle);
     queueSpiritHollowAfterBattle(result.state, priorBattle);
+    queueNecromancyBattleEffects(result.state, priorBattle);
   }
   if (graveyardBefore) {
     registerGraveyardEntries(result.state, graveyardBefore, endedBattle ? priorBattle?.id : undefined);
   }
   reconcileRiteOfCrossingAtTurnStart(result.state);
+  openNextRendTheVeilChoice(result.state);
   openPathsOfShadowChoiceIfReady(result.state);
   openNextGraveWardChoice(result.state);
   openNextSoulForSoulBattleChoice(result.state);
   openNextSpiritHollowChoice(result.state);
+  openNextNecromancyBattleChoice(result.state);
   if (arcaneUse && isArcaneCard(arcaneUse.cardId)) {
     queueInvocationForArcaneUse(result.state, arcaneUse.playerId, [arcaneUse.cardId]);
   }
   runPostActionAutomationPipeline(result.state);
+  openNextRendTheVeilChoice(result.state);
   openPathsOfShadowChoiceIfReady(result.state);
   openNextGraveWardChoice(result.state);
   openNextSoulForSoulBattleChoice(result.state);
   openNextSpiritHollowChoice(result.state);
+  openNextNecromancyBattleChoice(result.state);
   openNextDarkOmensBattleChoice(result.state);
   queueInvocationForRevealedBattleCards(result.state);
   openNextFatesTollReroll(result.state);
@@ -180,6 +197,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     }
     const next = structuredClone(game);
     const pendingKind = next.pendingMysticsChoice?.kind;
+    let replayedArcaneUse: ArcaneUse | undefined;
     if (pendingKind === 'invocation') resolveInvocationChoice(next, action);
     else if (isDarkOmensChoice(pendingKind)) resolveDarkOmensChoice(next, action);
     else if (isAccursedWagerChoice(pendingKind)) resolveAccursedWagerChoice(next, action);
@@ -189,11 +207,16 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     else if (isPathsOfShadowChoice(pendingKind)) resolvePathsOfShadowChoice(next, action);
     else if (isSpiritHollowChoice(pendingKind)) resolveSpiritHollowChoice(next, action);
     else if (isCircleOfBonesChoice(pendingKind)) resolveCircleOfBonesChoice(next, action);
+    else if (isRendTheVeilChoice(pendingKind)) {
+      const replayedCardId = resolveRendTheVeilChoice(next, action);
+      if (replayedCardId) replayedArcaneUse = { playerId: action.playerId, cardId: replayedCardId };
+    }
+    else if (isNecromancyChoice(pendingKind)) resolveNecromancyChoice(next, action);
     else resolveMysticsChoice(next, action);
     return continueMysticsAutomation(
       { state: next },
       undefined,
-      undefined,
+      replayedArcaneUse,
       graveyardBefore,
       territoryControllersBefore,
     );
@@ -260,6 +283,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     applyPathsOfShadowAction(result.state, action.playerId, action.cardId, action.targets);
     applySpiritHollowAction(result.state, action.playerId, action.cardId, action.targets);
     applyCircleOfBonesAction(result.state, action.playerId, action.cardId, action.targets);
+    applyNecromancyAction(result.state, action.playerId, action.cardId);
   }
   if (action.type === 'end_turn') {
     expireAccursedWagerAtEndTurn(result.state, action.playerId);
