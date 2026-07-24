@@ -48,6 +48,7 @@ To run the Gauntlet, a player must defeat the opponent on their final Territory,
 ## Playtest tools
 
 - [Gauntlet v0.6.0 Rulebook (PDF)](releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf) — the complete official rules for the current release.
+- [Gauntlet v0.6 Rules Assistant](https://gauntlet.run/#rules-assistant) — ask about rules, cards, Leaders, faction systems, Territories, timing, and victory conditions using canonical v0.6.0 sources.
 - [Gauntlet v0.6 Deckbuilder](https://gauntlet.run/deckbuilder/) — load a recommended Leader Deck or build, validate, save, export, randomize, and print a custom Deck.
 - [Gauntlet v0.6 Faction Sheets](https://gauntlet.run/faction-sheets/) — browser-printable faction cards and supplemental components.
 - [Gauntlet v0.6.0 Printable Playtest Sheet (PDF)](playtest/Gauntlet_v0.6.0_Playtest_Sheet.pdf) — one-page paper questionnaire designed to be printed and completed by hand.
@@ -93,6 +94,10 @@ Faction-era browser deckbuilder. It reads the active canonical card and Territor
 
 Historical v0.5 deckbuilder.
 
+### `rules-assistant/`
+
+Static Rules Arbiter widget, canonical-source retrieval, regression tests, and a deployable serverless OpenAI endpoint. The browser automatically falls back to direct source lookup when the AI endpoint is unavailable.
+
 ### `scripts/`
 
 Canonical-data generation, document rendering, card-sheet rendering, package validation, and release-production scripts.
@@ -125,10 +130,13 @@ python3 -m http.server 8000
 Then open:
 
 ```text
+http://localhost:8000/
 http://localhost:8000/deckbuilder/
 http://localhost:8000/faction-sheets/
 http://localhost:8000/playtest/
 ```
+
+The Rules Arbiter source-lookup mode works through the local server without an API key. Deploying the optional AI endpoint is documented in [`rules-assistant/README.md`](rules-assistant/README.md).
 
 For the legacy TypeScript prototype:
 
