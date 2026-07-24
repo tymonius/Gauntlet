@@ -14,6 +14,26 @@ export interface MysticGuidedOption {
   action: AppStateAction;
 }
 
+function selectionsUpTo(cards: CardID[], maximum: number): CardID[][] {
+  const selections: CardID[][] = [];
+  const seen = new Set<string>();
+  function visit(start: number, selected: CardID[]): void {
+    const key = JSON.stringify(selected);
+    if (!seen.has(key)) {
+      seen.add(key);
+      selections.push([...selected]);
+    }
+    if (selected.length >= maximum) return;
+    for (let index = start; index < cards.length; index += 1) {
+      selected.push(cards[index]);
+      visit(index + 1, selected);
+      selected.pop();
+    }
+  }
+  visit(0, []);
+  return selections;
+}
+
 function actionWindowOpen(game: GameState, playerId: PlayerID): boolean {
   const player = game.players[playerId];
   return Boolean(
@@ -388,6 +408,28 @@ export function buildPendingMysticsOptions(game: GameState, playerId: PlayerID):
       }
     }
     return options;
+  }
+  if (pending.kind === 'necromancy_action') {
+    return [
+      {
+        label: 'Place Necromancy beneath your Draw Pile, then draw one card',
+        action: { type: 'resolve_mystics_choice', playerId, choice: 'bury' },
+      },
+      ...selectionsUpTo(pending.graveyardOptions, 3).map((cardIds) => ({
+        label: cardIds.length === 0
+          ? 'Sacrifice your remaining hand and return no cards with Necromancy'
+          : `Sacrifice your remaining hand and return ${cardIds.join(', ')}`,
+        action: { type: 'resolve_mystics_choice' as const, playerId, choice: 'recover', cardIds },
+      })),
+    ];
+  }
+  if (pending.kind === 'necromancy_battle') {
+    return selectionsUpTo(pending.graveyardOptions, 3).map((cardIds) => ({
+      label: cardIds.length === 0
+        ? 'Resolve Necromancy and return no cards'
+        : `Resolve Necromancy and return ${cardIds.join(', ')}`,
+      action: { type: 'resolve_mystics_choice' as const, playerId, choice: 'resolve', cardIds },
+    }));
   }
   return undefined;
 }
