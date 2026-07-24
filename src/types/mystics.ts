@@ -37,6 +37,10 @@ export interface MysticsState {
   materiaPrimaUsedTurn?: number;
   materiaPrimaDeferredBattleId?: string;
   guardiansOfTheCircleUsedTurn?: number;
+  accursedWagerArmedTurn?: number;
+  accursedWagerArmedCount?: number;
+  accursedWagerBattleId?: string;
+  accursedWagerBattleCount?: number;
 }
 
 export interface PublicMysticsState {
@@ -85,8 +89,26 @@ export interface PendingDarkOmensBattleChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface PendingAccursedWagerChoice {
+  kind: 'accursed_wager_after_battle';
+  playerId: PlayerID;
+  battleId: string;
+  handOptions: CardID[];
+  remaining: number;
+  options: ['select'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingAccursedWagerAftermath {
+  kind: 'accursed_wager';
+  battleId: string;
+  loserId: PlayerID;
+  remaining: number;
+}
+
 export type PendingMysticsChoice =
   | PendingGuardiansOfTheCircleChoice
   | PendingInvocationChoice
   | PendingDarkOmensActionChoice
-  | PendingDarkOmensBattleChoice;
+  | PendingDarkOmensBattleChoice
+  | PendingAccursedWagerChoice;
