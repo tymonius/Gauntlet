@@ -32,6 +32,7 @@ export interface MysticsState {
   begunRite?: BegunMysticRiteState;
   riteCompletedTurn?: number;
   invocationUsedTurn?: number;
+  invocationDeferredSourceCardIds?: CardID[];
   transmutationUsedTurn?: number;
   materiaPrimaUsedTurn?: number;
   materiaPrimaDeferredBattleId?: string;
