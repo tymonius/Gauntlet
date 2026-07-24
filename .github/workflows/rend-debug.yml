@@ -1,0 +1,37 @@
+name: Rend diagnostics
+
+on:
+  push:
+    branches:
+      - agent/mystics-rend-the-veil
+
+jobs:
+  diagnostics:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install dependencies
+        run: npm install
+      - name: Run tests and capture output
+        id: tests
+        shell: bash
+        run: |
+          set +e
+          npm test > rend-test-output.txt 2>&1
+          status=$?
+          cat rend-test-output.txt
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+      - name: Upload test output
+        uses: actions/upload-artifact@v4
+        with:
+          name: rend-test-output
+          path: rend-test-output.txt
+      - name: Preserve test result
+        if: steps.tests.outputs.status != '0'
+        run: exit 1
