@@ -65,4 +65,28 @@ export interface PendingInvocationChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
-export type PendingMysticsChoice = PendingGuardiansOfTheCircleChoice | PendingInvocationChoice;
+export interface PendingDarkOmensActionChoice {
+  kind: 'dark_omens_action';
+  playerId: PlayerID;
+  drawnCardIds: CardID[];
+  sourceCardId: CardID;
+  restoreSourceToDiscard: boolean;
+  options: ['select'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingDarkOmensBattleChoice {
+  kind: 'dark_omens_battle';
+  playerId: PlayerID;
+  battleId: string;
+  sourceKey: string;
+  drawnCardId: CardID;
+  options: ['keep', 'sacrifice'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export type PendingMysticsChoice =
+  | PendingGuardiansOfTheCircleChoice
+  | PendingInvocationChoice
+  | PendingDarkOmensActionChoice
+  | PendingDarkOmensBattleChoice;
