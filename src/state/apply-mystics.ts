@@ -62,6 +62,11 @@ import {
   resolvePathsOfShadowChoice,
 } from './mystics-paths-of-shadow';
 import {
+  isRendTheVeilChoice,
+  openNextRendTheVeilChoice,
+  resolveRendTheVeilChoice,
+} from './mystics-rend-the-veil';
+import {
   applySoulForSoulAction,
   isSoulForSoulChoice,
   openNextSoulForSoulBattleChoice,
@@ -142,6 +147,7 @@ function continueMysticsAutomation(
     registerGraveyardEntries(result.state, graveyardBefore, endedBattle ? priorBattle?.id : undefined);
   }
   reconcileRiteOfCrossingAtTurnStart(result.state);
+  openNextRendTheVeilChoice(result.state);
   openPathsOfShadowChoiceIfReady(result.state);
   openNextGraveWardChoice(result.state);
   openNextSoulForSoulBattleChoice(result.state);
@@ -151,6 +157,7 @@ function continueMysticsAutomation(
     queueInvocationForArcaneUse(result.state, arcaneUse.playerId, [arcaneUse.cardId]);
   }
   runPostActionAutomationPipeline(result.state);
+  openNextRendTheVeilChoice(result.state);
   openPathsOfShadowChoiceIfReady(result.state);
   openNextGraveWardChoice(result.state);
   openNextSoulForSoulBattleChoice(result.state);
@@ -190,6 +197,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     }
     const next = structuredClone(game);
     const pendingKind = next.pendingMysticsChoice?.kind;
+    let replayedArcaneUse: ArcaneUse | undefined;
     if (pendingKind === 'invocation') resolveInvocationChoice(next, action);
     else if (isDarkOmensChoice(pendingKind)) resolveDarkOmensChoice(next, action);
     else if (isAccursedWagerChoice(pendingKind)) resolveAccursedWagerChoice(next, action);
@@ -199,12 +207,16 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     else if (isPathsOfShadowChoice(pendingKind)) resolvePathsOfShadowChoice(next, action);
     else if (isSpiritHollowChoice(pendingKind)) resolveSpiritHollowChoice(next, action);
     else if (isCircleOfBonesChoice(pendingKind)) resolveCircleOfBonesChoice(next, action);
+    else if (isRendTheVeilChoice(pendingKind)) {
+      const replayedCardId = resolveRendTheVeilChoice(next, action);
+      if (replayedCardId) replayedArcaneUse = { playerId: action.playerId, cardId: replayedCardId };
+    }
     else if (isNecromancyChoice(pendingKind)) resolveNecromancyChoice(next, action);
     else resolveMysticsChoice(next, action);
     return continueMysticsAutomation(
       { state: next },
       undefined,
-      undefined,
+      replayedArcaneUse,
       graveyardBefore,
       territoryControllersBefore,
     );
