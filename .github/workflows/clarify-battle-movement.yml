@@ -1,0 +1,75 @@
+name: Clarify battle movement rules
+
+on:
+  push:
+    branches:
+      - clarify-battle-ends-movement
+
+permissions:
+  contents: write
+
+jobs:
+  update-rules:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          ref: clarify-battle-ends-movement
+          fetch-depth: 0
+
+      - name: Clarify movement ending when battle begins
+        shell: python
+        run: |
+          from pathlib import Path
+
+          replacements = {
+              Path('releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md'): [
+                  (
+                      'Advance, hold, or withdraw. Resolve any battle caused by movement immediately.',
+                      'Advance, hold, or withdraw. Resolve any battle caused by movement immediately. When a battle begins, the current movement ends and any remaining movement is lost. After the battle, proceed to the Action Opportunity after movement unless a rule or effect explicitly permits further movement.'
+                  ),
+                  (
+                      'If an effect grants additional movement, resolve that movement one position at a time unless the effect states otherwise. Entering an occupied position begins a battle and normally pauses the current movement sequence until the battle is resolved.',
+                      'If an effect grants additional movement, resolve that movement one position at a time unless the effect states otherwise. Entering an occupied position begins a battle. When a battle begins, the current movement sequence ends and any remaining movement is lost. Movement does not resume after the battle unless a rule or effect explicitly permits movement afterward.'
+                  ),
+                  (
+                      'A battle begins when a player enters a position occupied by the opponent or when a rule explicitly begins one.',
+                      'A battle begins when a player enters a position occupied by the opponent or when a rule explicitly begins one. A battle begun by movement ends that movement immediately. Any movement after the battle must come from a rule or effect that explicitly permits it.'
+                  ),
+              ],
+              Path('releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md'): [
+                  (
+                      'A follow-up battle is a new battle. Resolve a new commitment step, form new Battle Hands, and apply all once-per-battle effects separately.',
+                      'A follow-up battle is a new battle. Resolve a new commitment step, form new Battle Hands, and apply all once-per-battle effects separately.\n\nUnder the core movement rules, beginning a battle ends the current movement sequence and any unused movement is lost. **Onward** therefore extends movement only until a battle begins. **Rout** and other effects that explicitly permit movement after a battle create a new movement sequence.'
+                  ),
+              ],
+              Path('releases/v0.6.0/Gauntlet_v0.6.0_Reference_Guide.md'): [
+                  (
+                      '4. Advance, hold, or withdraw; resolve any battle.',
+                      '4. Advance, hold, or withdraw. If movement begins a battle, resolve it immediately; the battle ends that movement and any remaining movement is lost unless an effect explicitly permits further movement.'
+                  ),
+              ],
+          }
+
+          for path, edits in replacements.items():
+              text = path.read_text(encoding='utf-8')
+              for old, new in edits:
+                  count = text.count(old)
+                  if count != 1:
+                      raise SystemExit(f'{path}: expected one occurrence, found {count}: {old}')
+                  text = text.replace(old, new)
+              path.write_text(text, encoding='utf-8')
+
+      - name: Commit rules clarification
+        run: |
+          rm .github/workflows/clarify-battle-movement.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md \
+                  releases/v0.6.0/Gauntlet_v0.6.0_Reference_Guide.md \
+                  releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md \
+                  .github/workflows/clarify-battle-movement.yml
+          git commit -m "Clarify that battles end movement"
+          git push origin HEAD:clarify-battle-ends-movement
