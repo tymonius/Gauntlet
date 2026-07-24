@@ -44,6 +44,7 @@ export * from './mystics-rite-integration';
 export * from './mystics-conversion';
 export * from './mystics-dark-omens';
 export * from './mystics-accursed-wager';
+export * from './mystics-black-covenant';
 export * from './mystics-circle-of-bones';
 export * from './mystics-fates-toll';
 export * from './mystics-grave-ward';

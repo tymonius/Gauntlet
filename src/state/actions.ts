@@ -21,7 +21,8 @@ export type IntelligenceStateAction = StartIntelligenceMissionAction | CompleteI
   | AbortIntelligenceMissionAction | CompleteSpecialOperationAction | ResolveIntelligenceChoiceAction;
 
 export type MysticsStateAction = BeginMysticRiteAction | ResolveMysticsChoiceAction
-  | UseMysticTransmutationAction | UseMysticGraveWardAssetAction;
+  | UseMysticTransmutationAction | UseMysticGraveWardAssetAction
+  | UseMysticBlackCovenantAction | UseMysticBlackCovenantBattleAction;
 
 export type AppStateAction = StateAction | IntelligenceStateAction | MysticsStateAction;
 
@@ -48,6 +49,8 @@ export interface BeginMysticRiteAction { type: 'begin_mystic_rite'; playerId: Pl
 export interface ResolveMysticsChoiceAction { type: 'resolve_mystics_choice'; playerId: PlayerID; choice: string; cardId?: CardID; cardIds?: CardID[]; secondaryCardId?: CardID; spaceId?: SpaceID; targetPlayerId?: PlayerID; value?: number; values?: number[]; }
 export interface UseMysticTransmutationAction { type: 'use_mystic_transmutation'; playerId: PlayerID; cardId: CardID; }
 export interface UseMysticGraveWardAssetAction { type: 'use_mystic_grave_ward_asset'; playerId: PlayerID; choice: 'pass' | 'use'; entryId: string; }
+export interface UseMysticBlackCovenantAction { type: 'use_mystic_black_covenant_action'; playerId: PlayerID; bindingId: string; targets?: ActionCardTarget[]; }
+export interface UseMysticBlackCovenantBattleAction { type: 'use_mystic_black_covenant_battle'; playerId: PlayerID; bindingId: string; }
 export interface ResolveAssetBankDiscardAction { type: 'resolve_asset_bank_discard'; playerId: PlayerID; cardIds: CardID[]; }
 export interface MovePlayerAction { type: 'move_player'; playerId: PlayerID; toSpaceId: SpaceID; cardId?: CardID; }
 export interface CommitBattleHandCardAction { type: 'commit_battle_hand_card'; playerId: PlayerID; cardId: CardID; }

@@ -66,6 +66,18 @@ export interface NecromancyBattleEffectState {
   sourceOrigin: 'hand' | 'battle_draw';
 }
 
+export interface BlackCovenantBindingState {
+  id: string;
+  cardId: CardID;
+  boundTurn: number;
+}
+
+export interface BlackCovenantBattleReleaseState {
+  battleId: string;
+  boundCardId: CardID;
+  covenantFromAsset: boolean;
+}
+
 export interface MysticsState {
   completedRites: MysticRiteId[];
   begunRite?: BegunMysticRiteState;
@@ -89,6 +101,9 @@ export interface MysticsState {
   pathsOfShadowBattleQueue?: PathsOfShadowBattleEffectState[];
   spiritHollowChoiceQueue?: SpiritHollowChoiceState[];
   necromancyBattleQueue?: NecromancyBattleEffectState[];
+  blackCovenantBindingSequence?: number;
+  blackCovenantBindings?: BlackCovenantBindingState[];
+  blackCovenantBattleReleases?: BlackCovenantBattleReleaseState[];
 }
 
 export interface PublicMysticsState {
@@ -240,6 +255,17 @@ export interface PendingRendTheVeilChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface PendingBlackCovenantBattleChoice {
+  kind: 'black_covenant_battle';
+  playerId: PlayerID;
+  battleId: string;
+  sourceSlot: 'hand_commit' | 'battle_draw_played';
+  sourceIndex?: number;
+  handOptions: CardID[];
+  options: ['pass', 'bind'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface PendingNecromancyActionChoice {
   kind: 'necromancy_action';
   playerId: PlayerID;
@@ -274,5 +300,6 @@ export type PendingMysticsChoice =
   | PendingSpiritHollowChoice
   | PendingCircleOfBonesChoice
   | PendingRendTheVeilChoice
+  | PendingBlackCovenantBattleChoice
   | PendingNecromancyActionChoice
   | PendingNecromancyBattleChoice;
