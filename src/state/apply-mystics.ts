@@ -47,6 +47,13 @@ import {
   type GraveyardSnapshot,
 } from './mystics-grave-ward';
 import {
+  applyNecromancyAction,
+  isNecromancyChoice,
+  openNextNecromancyBattleChoice,
+  queueNecromancyBattleEffects,
+  resolveNecromancyChoice,
+} from './mystics-necromancy';
+import {
   applyPathsOfShadowAction,
   isPathsOfShadowChoice,
   openPathsOfShadowChoiceIfReady,
@@ -129,6 +136,7 @@ function continueMysticsAutomation(
     queueGraveWardBattleEffects(result.state, priorBattle);
     queueSoulForSoulBattleEffects(result.state, priorBattle);
     queueSpiritHollowAfterBattle(result.state, priorBattle);
+    queueNecromancyBattleEffects(result.state, priorBattle);
   }
   if (graveyardBefore) {
     registerGraveyardEntries(result.state, graveyardBefore, endedBattle ? priorBattle?.id : undefined);
@@ -138,6 +146,7 @@ function continueMysticsAutomation(
   openNextGraveWardChoice(result.state);
   openNextSoulForSoulBattleChoice(result.state);
   openNextSpiritHollowChoice(result.state);
+  openNextNecromancyBattleChoice(result.state);
   if (arcaneUse && isArcaneCard(arcaneUse.cardId)) {
     queueInvocationForArcaneUse(result.state, arcaneUse.playerId, [arcaneUse.cardId]);
   }
@@ -146,6 +155,7 @@ function continueMysticsAutomation(
   openNextGraveWardChoice(result.state);
   openNextSoulForSoulBattleChoice(result.state);
   openNextSpiritHollowChoice(result.state);
+  openNextNecromancyBattleChoice(result.state);
   openNextDarkOmensBattleChoice(result.state);
   queueInvocationForRevealedBattleCards(result.state);
   openNextFatesTollReroll(result.state);
@@ -189,6 +199,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     else if (isPathsOfShadowChoice(pendingKind)) resolvePathsOfShadowChoice(next, action);
     else if (isSpiritHollowChoice(pendingKind)) resolveSpiritHollowChoice(next, action);
     else if (isCircleOfBonesChoice(pendingKind)) resolveCircleOfBonesChoice(next, action);
+    else if (isNecromancyChoice(pendingKind)) resolveNecromancyChoice(next, action);
     else resolveMysticsChoice(next, action);
     return continueMysticsAutomation(
       { state: next },
@@ -260,6 +271,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     applyPathsOfShadowAction(result.state, action.playerId, action.cardId, action.targets);
     applySpiritHollowAction(result.state, action.playerId, action.cardId, action.targets);
     applyCircleOfBonesAction(result.state, action.playerId, action.cardId, action.targets);
+    applyNecromancyAction(result.state, action.playerId, action.cardId);
   }
   if (action.type === 'end_turn') {
     expireAccursedWagerAtEndTurn(result.state, action.playerId);
