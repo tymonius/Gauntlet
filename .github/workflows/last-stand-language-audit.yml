@@ -9,16 +9,35 @@ on:
 jobs:
   audit:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: write
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref || github.ref }}
-          fetch-depth: 0
+          fetch-depth: 1
+          show-progress: false
       - name: Inventory Last Stand language
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          echo '=== Tracked-text occurrences ==='
-          git grep -n -i 'last stand' -- ':!*.pdf' ':!*.docx' || true
-          echo
-          echo '=== Release and rendering scripts ==='
-          find scripts -maxdepth 2 -type f -print | sort
+          {
+            echo '## Last Stand language audit'
+            echo
+            echo '```text'
+            git grep -n -i 'last stand' -- ':!*.pdf' ':!*.docx' || true
+            echo '```'
+            echo
+            echo '### Release and rendering scripts'
+            echo
+            echo '```text'
+            find scripts -maxdepth 2 -type f -print | sort
+            echo '```'
+          } > /tmp/last-stand-audit.md
+          cat /tmp/last-stand-audit.md
+          if [ -n "${{ github.event.pull_request.number }}" ]; then
+            gh pr comment "${{ github.event.pull_request.number }}" --body-file /tmp/last-stand-audit.md
+          fi
