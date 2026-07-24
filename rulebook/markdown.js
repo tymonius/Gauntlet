@@ -45,14 +45,15 @@ function createSlugger() {
 
 function renderInline(rawValue) {
   const tokens = [];
+  const breakToken = 'GAUNTLETLINEBREAKTOKEN';
   const stash = (html) => {
-    const token = `@@GAUNTLET_TOKEN_${tokens.length}@@`;
+    const token = `GAUNTLETINLINETOKEN${tokens.length}END`;
     tokens.push(html);
     return token;
   };
 
   let value = String(rawValue)
-    .replace(/ {2}\n/g, '@@GAUNTLET_BR@@')
+    .replace(/ {2}\n/g, breakToken)
     .replace(/\n/g, ' ')
     .replace(/`([^`]+)`/g, (_, code) => stash(`<code>${escapeHtml(code)}</code>`))
     .replace(/!\[([^\]]*)\]\(([^)]+)\)/g, (_, alt, url) => {
@@ -70,10 +71,10 @@ function renderInline(rawValue) {
     .replace(/__([^_]+)__/g, '<strong>$1</strong>')
     .replace(/(^|[^*])\*([^*]+)\*(?!\*)/g, '$1<em>$2</em>')
     .replace(/(^|[^_])_([^_]+)_(?!_)/g, '$1<em>$2</em>')
-    .replaceAll('@@GAUNTLET_BR@@', '<br />');
+    .replaceAll(breakToken, '<br />');
 
   tokens.forEach((html, index) => {
-    value = value.replaceAll(`@@GAUNTLET_TOKEN_${index}@@`, html);
+    value = value.replaceAll(`GAUNTLETINLINETOKEN${index}END`, html);
   });
 
   return value;
