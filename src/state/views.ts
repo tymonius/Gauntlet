@@ -218,6 +218,7 @@ export function toPrivateGameView(game: GameState, viewer: PlayerID): PrivateGam
     players: { ...publicView.players, [viewer]: toPrivatePlayerView(game.players[viewer]) },
     battle: game.battle ? toPrivateBattleView(game.battle, game, viewer) : undefined,
     pendingIntelligenceChoice: game.pendingIntelligenceChoice?.playerId === viewer ? structuredClone(game.pendingIntelligenceChoice) : undefined,
+    pendingMysticsChoice: game.pendingMysticsChoice?.playerId === viewer ? structuredClone(game.pendingMysticsChoice) : undefined,
     legalActionPlays: legalActionPlaysForViewer(game, viewer),
     legalLeaderAbilities: legalLeaderAbilitiesFor(game, viewer),
     log: privateLog(game, viewer),

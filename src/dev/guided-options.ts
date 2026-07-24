@@ -5,6 +5,7 @@ import { cardValue, deedOwner, toPrivateGameView } from '../state';
 import { buildBattleRevealOptions } from './battle-reveal-options';
 import { buildIntelligenceBattleOptions } from './intelligence-battle-options';
 import { buildIntelligenceMissionOptions } from './intelligence-options';
+import { buildMysticRiteOptions, buildPendingMysticsOptions } from './mystics-options';
 
 export interface GuidedOption { label: string; action: AppStateAction; sourceCardId?: string; cardText?: string; }
 export function activeViewer(game: GameState): PlayerID { return game.priorityPlayer ?? game.activePlayer; }
@@ -104,6 +105,7 @@ function pendingMilitaryOptions(game: GameState, playerId: PlayerID): GuidedOpti
 function adjacentSpaces(game: GameState, playerId: PlayerID) { const current = game.board.spaces.find((space) => space.occupant === playerId); if (!current) return []; return game.board.spaces.filter((space) => Math.abs(space.index - current.index) === 1); }
 export function buildGuidedOptions(game: GameState): GuidedOption[] {
   const playerId = activeViewer(game);
+  const mysticsPending = buildPendingMysticsOptions(game, playerId); if (mysticsPending) return mysticsPending;
   const intelligenceBattlePending = buildIntelligenceBattleOptions(game, playerId); if (intelligenceBattlePending) return intelligenceBattlePending;
   const financierPending = pendingFinancierOptions(game, playerId); if (financierPending) return financierPending;
   const diplomatPending = pendingDiplomatOptions(game, playerId); if (diplomatPending) return diplomatPending;
@@ -115,6 +117,7 @@ export function buildGuidedOptions(game: GameState): GuidedOption[] {
   if (game.phase === 'action_before_movement' || game.phase === 'action_after_movement') for (const play of view.legalActionPlays ?? []) options.push({ label: `Play Action ${play.cardId}`, action: { type: 'play_action_card', playerId, cardId: play.cardId } });
   const player = game.players[playerId];
   options.push(...buildIntelligenceMissionOptions(game, playerId));
+  options.push(...buildMysticRiteOptions(game, playerId));
   if (game.phase === 'action_after_movement' && player.factionId === 'financiers' && player.actionsRemaining > 0 && playerId === game.activePlayer) {
     for (const cardId of player.zones.hand) {
       options.push({ label: `Place ${cardId} in Treasury`, action: { type: 'place_treasury_card', playerId, cardId } });

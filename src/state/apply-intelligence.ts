@@ -1,5 +1,5 @@
 import type { BattleParticipantState, CardID, GameState, PlayerID } from '../types';
-import type { AppStateAction, PlayBattleDrawCardAction } from './actions';
+import type { AppStateAction, PlayBattleDrawCardAction, StateAction } from './actions';
 import { applyGameAction as applyBaseGameAction } from './apply';
 import {
   applyIntelligenceActionEffect,
@@ -222,7 +222,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
 
   const hadBattle = Boolean(game.battle);
   const disinformationOwners = action.type === 'resolve_battle' ? disinformationReturnOwners(game) : [];
-  const result = applyBaseGameAction(game, action);
+  const result = applyBaseGameAction(game, action as StateAction);
   if (action.type === 'move_player' && !hadBattle && result.state.battle) preemptAutomaticBattleStartWindowsForReconnaissance(result.state);
   if (action.type === 'commit_battle_hand_card') {
     openSurveillanceWindowAfterChoice(result.state, action.playerId, action.cardId, 'hand');
