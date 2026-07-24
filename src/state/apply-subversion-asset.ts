@@ -1,6 +1,6 @@
 import type { GameState } from '../types';
 import type { AppStateAction } from './actions';
-import { applyGameAction as applyFogOverlayGameAction } from './apply-fog-overlay';
+import { applyGameAction as applyGraveWardGameAction } from './apply-grave-ward';
 import {
   bankedAssetEffectCandidateForAction,
   isSubversionAssetChoice,
@@ -16,8 +16,8 @@ function applyAndRecordBankedAssetEffect(
   action: AppStateAction,
 ): ApplyGameActionResult {
   const candidate = bankedAssetEffectCandidateForAction(game, action);
-  const battleId = game.battle?.id;
-  const result = applyFogOverlayGameAction(game, action);
+  const battleId = candidate?.battleId ?? game.battle?.id;
+  const result = applyGraveWardGameAction(game, action);
 
   if (candidate && battleId) {
     recordBankedAssetUse(result.state, candidate.targetOwner, battleId, candidate.targetCardId);

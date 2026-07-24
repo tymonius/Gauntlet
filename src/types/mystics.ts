@@ -27,6 +27,20 @@ export type PublicBegunMysticRiteState =
   | RiteOfBloodState
   | RiteOfCrossingState;
 
+export interface GraveWardEntryState {
+  id: string;
+  cardId: CardID;
+  triggersRemaining: number;
+  battleId?: string;
+}
+
+export interface GraveWardBattleEffectState {
+  battleId: string;
+  sourceKey: string;
+  sourceOrigin: 'hand' | 'battle_draw';
+  handCommittedCardIds: CardID[];
+}
+
 export interface MysticsState {
   completedRites: MysticRiteId[];
   begunRite?: BegunMysticRiteState;
@@ -43,6 +57,9 @@ export interface MysticsState {
   accursedWagerBattleCount?: number;
   fatesTollMovementTurn?: number;
   fatesTollMovementRemaining?: number;
+  graveWardEntrySequence?: number;
+  graveWardEntries?: GraveWardEntryState[];
+  graveWardBattleQueue?: GraveWardBattleEffectState[];
 }
 
 export interface PublicMysticsState {
@@ -119,10 +136,33 @@ export interface PendingFatesTollChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface PendingGraveWardAssetChoice {
+  kind: 'grave_ward_asset';
+  playerId: PlayerID;
+  entryId: string;
+  cardId: CardID;
+  battleId?: string;
+  triggersRemaining: number;
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingGraveWardBattleChoice {
+  kind: 'grave_ward_battle';
+  playerId: PlayerID;
+  battleId: string;
+  sourceKey: string;
+  handOptions: CardID[];
+  options: ['select'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type PendingMysticsChoice =
   | PendingGuardiansOfTheCircleChoice
   | PendingInvocationChoice
   | PendingDarkOmensActionChoice
   | PendingDarkOmensBattleChoice
   | PendingAccursedWagerChoice
-  | PendingFatesTollChoice;
+  | PendingFatesTollChoice
+  | PendingGraveWardAssetChoice
+  | PendingGraveWardBattleChoice;

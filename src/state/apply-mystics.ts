@@ -1,6 +1,7 @@
 import type { BattleState, GameState, PlayerID } from '../types';
 import type { AppStateAction } from './actions';
 import { applyGameAction as applySubversionAssetGameAction } from './apply-subversion-asset';
+import { isSubversionAssetChoice } from './intelligence-subversion-asset';
 import {
   applyAccursedWagerAction,
   bindAccursedWagerToNewBattle,
@@ -26,6 +27,16 @@ import {
   requireFatesTollActionTarget,
   resolveFatesTollChoice,
 } from './mystics-fates-toll';
+import {
+  captureGraveyardSnapshot,
+  isGraveWardAssetChoice,
+  isGraveWardBattleChoice,
+  openNextGraveWardChoice,
+  queueGraveWardBattleEffects,
+  registerGraveyardEntries,
+  resolveGraveWardBattleChoice,
+  type GraveyardSnapshot,
+} from './mystics-grave-ward';
 import {
   openDeferredInvocationIfReady,
   queueInvocationForArcaneUse,
@@ -58,19 +69,29 @@ function continueMysticsAutomation(
   result: ApplyGameActionResult,
   priorBattle?: BattleState,
   arcaneUse?: ArcaneUse,
+  graveyardBefore?: GraveyardSnapshot,
 ): ApplyGameActionResult {
-  if (priorBattle
+  const endedBattle = Boolean(
+    priorBattle
     && !result.state.battle
-    && result.state.recentBattleResult?.battleId === priorBattle.id) {
+    && result.state.recentBattleResult?.battleId === priorBattle.id,
+  );
+  if (endedBattle && priorBattle) {
     resolveDeferredMateriaPrimaAfterBattle(result.state, priorBattle.id);
     reconcileMysticsAfterResolvedBattle(result.state, priorBattle);
     queueAccursedWagerAfterBattle(result.state, priorBattle);
+    queueGraveWardBattleEffects(result.state, priorBattle);
+  }
+  if (graveyardBefore) {
+    registerGraveyardEntries(result.state, graveyardBefore, endedBattle ? priorBattle?.id : undefined);
   }
   reconcileRiteOfCrossingAtTurnStart(result.state);
+  openNextGraveWardChoice(result.state);
   if (arcaneUse && isArcaneCard(arcaneUse.cardId)) {
     queueInvocationForArcaneUse(result.state, arcaneUse.playerId, [arcaneUse.cardId]);
   }
   runPostActionAutomationPipeline(result.state);
+  openNextGraveWardChoice(result.state);
   openNextDarkOmensBattleChoice(result.state);
   queueInvocationForRevealedBattleCards(result.state);
   openNextFatesTollReroll(result.state);
@@ -80,7 +101,18 @@ function continueMysticsAutomation(
 }
 
 export function applyGameAction(game: GameState, action: AppStateAction): ApplyGameActionResult {
-  if (game.pendingMysticsChoice) {
+  const graveyardBefore = captureGraveyardSnapshot(game);
+  const pendingMystics = game.pendingMysticsChoice;
+  if (pendingMystics) {
+    if (isGraveWardAssetChoice(pendingMystics)) {
+      const resolvingSubversion = isSubversionAssetChoice(game.pendingIntelligenceChoice)
+        && action.type === 'resolve_intelligence_choice';
+      if (action.type !== 'use_mystic_grave_ward_asset' && !resolvingSubversion) {
+        throw new GameActionError('Resolve the pending Grave Ward choice first.');
+      }
+      const result = applySubversionAssetGameAction(game, action);
+      return continueMysticsAutomation(result, undefined, undefined, graveyardBefore);
+    }
     if (action.type !== 'resolve_mystics_choice') {
       throw new GameActionError('Resolve the pending Mystics choice first.');
     }
@@ -90,10 +122,14 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     else if (isDarkOmensChoice(pendingKind)) resolveDarkOmensChoice(next, action);
     else if (isAccursedWagerChoice(pendingKind)) resolveAccursedWagerChoice(next, action);
     else if (isFatesTollChoice(pendingKind)) resolveFatesTollChoice(next, action);
+    else if (isGraveWardBattleChoice(pendingKind)) resolveGraveWardBattleChoice(next, action);
     else resolveMysticsChoice(next, action);
-    return continueMysticsAutomation({ state: next });
+    return continueMysticsAutomation({ state: next }, undefined, undefined, graveyardBefore);
   }
 
+  if (action.type === 'use_mystic_grave_ward_asset') {
+    throw new GameActionError(`${action.playerId} has no pending Grave Ward Asset choice.`);
+  }
   if (action.type === 'resolve_mystics_choice') {
     throw new GameActionError(`${action.playerId} has no pending Mystics choice.`);
   }
@@ -105,13 +141,13 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
       || (action.riteId === 'rite_of_crossing' && (action.source ?? 'hand') === 'hand')) {
       triggerMateriaPrimaAfterHandSacrifice(next, action.playerId, action.riteId);
     }
-    return continueMysticsAutomation({ state: next });
+    return continueMysticsAutomation({ state: next }, undefined, undefined, graveyardBefore);
   }
 
   if (action.type === 'use_mystic_transmutation') {
     const next = structuredClone(game);
     useTransmutation(next, action);
-    return continueMysticsAutomation({ state: next });
+    return continueMysticsAutomation({ state: next }, undefined, undefined, graveyardBefore);
   }
 
   if (action.type === 'play_action_card') {
@@ -139,5 +175,5 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
   const arcaneUse = action.type === 'play_action_card'
     ? { playerId: action.playerId, cardId: action.cardId }
     : undefined;
-  return continueMysticsAutomation(result, priorBattle, arcaneUse);
+  return continueMysticsAutomation(result, priorBattle, arcaneUse, graveyardBefore);
 }

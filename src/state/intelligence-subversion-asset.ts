@@ -18,6 +18,7 @@ const ASSETS = {
   goodFaith: 'diplomats-good-faith',
   neutralObservers: 'diplomats-neutral-observers',
   safeConduct: 'diplomats-safe-conduct',
+  graveWard: 'mystics-grave-ward',
 } as const satisfies Record<string, CardID>;
 
 export interface BankedAssetEffectCandidate {
@@ -25,6 +26,7 @@ export interface BankedAssetEffectCandidate {
   targetCardId: CardID;
   effectLabel: string;
   negatedAction?: AppStateAction;
+  battleId?: string;
 }
 
 export interface PendingSubversionAssetChoice {
@@ -35,6 +37,7 @@ export interface PendingSubversionAssetChoice {
   effectLabel: string;
   deferredAction: AppStateAction;
   negatedAction?: AppStateAction;
+  battleId?: string;
   priorIntelligenceChoice?: PendingIntelligenceChoice;
   resumePriorityPlayer?: PlayerID;
   options: ['pass', 'use'];
@@ -90,11 +93,12 @@ function candidateIfBanked(
   targetCardId: CardID,
   effectLabel: string,
   negatedAction?: AppStateAction,
+  battleId?: string,
 ): BankedAssetEffectCandidate | undefined {
   if (targetCardId === SUBVERSION_ASSET) return undefined;
   if (!game.players[targetOwner]?.zones.assetBank.includes(targetCardId)) return undefined;
   if (game.battle && !bankedAssetUseAllowed(game, targetOwner)) return undefined;
-  return { targetOwner, targetCardId, effectLabel, negatedAction };
+  return { targetOwner, targetCardId, effectLabel, negatedAction, battleId };
 }
 
 function intelligenceCandidate(game: GameState, action: Extract<AppStateAction, { type: 'resolve_intelligence_choice' }>): BankedAssetEffectCandidate | undefined {
@@ -156,6 +160,23 @@ function diplomatCandidate(game: GameState, action: Extract<AppStateAction, { ty
   return candidateIfBanked(game, action.playerId, action.cardId, action.cardId);
 }
 
+function graveWardCandidate(game: GameState, action: Extract<AppStateAction, { type: 'use_mystic_grave_ward_asset' }>): BankedAssetEffectCandidate | undefined {
+  const pending = game.pendingMysticsChoice;
+  if (!pending
+    || pending.kind !== 'grave_ward_asset'
+    || pending.playerId !== action.playerId
+    || pending.entryId !== action.entryId
+    || action.choice !== 'use') return undefined;
+  return candidateIfBanked(
+    game,
+    pending.playerId,
+    ASSETS.graveWard,
+    'Grave Ward',
+    { ...action, choice: 'pass' },
+    pending.battleId,
+  );
+}
+
 function battleWinner(game: GameState): PlayerID | undefined {
   const battle = game.battle;
   if (!battle || battle.stage !== 'resolution') return undefined;
@@ -174,6 +195,7 @@ export function bankedAssetEffectCandidateForAction(
   if (action.type === 'resolve_military_timing_choice') return militaryTimingCandidate(game, action);
   if (action.type === 'resolve_military_choice') return militaryAftermathCandidate(game, action);
   if (action.type === 'use_diplomat_card') return diplomatCandidate(game, action);
+  if (action.type === 'use_mystic_grave_ward_asset') return graveWardCandidate(game, action);
 
   if (action.type === 'resolve_battle_reveal' && game.battle?.stage === 'dice') {
     const defender = game.battle.defender.playerId;
@@ -208,6 +230,7 @@ export function maybeOpenSubversionAssetWindow(game: GameState, action: AppState
     effectLabel: candidate.effectLabel,
     deferredAction: structuredClone(action),
     negatedAction: candidate.negatedAction ? structuredClone(candidate.negatedAction) : undefined,
+    battleId: candidate.battleId,
     priorIntelligenceChoice,
     resumePriorityPlayer: game.priorityPlayer,
     options: ['pass', 'use'],
@@ -248,9 +271,10 @@ export function resolveSubversionAssetChoice(
   const target = game.players[pending.targetOwner];
   if (removeOne(target.zones.assetBank, pending.targetCardId)) target.zones.discard.push(pending.targetCardId);
 
-  if (game.battle) {
-    recordBankedAssetUse(game, pending.targetOwner, game.battle.id, pending.targetCardId);
-    recordBankedAssetUse(game, action.playerId, game.battle.id, SUBVERSION_ASSET);
+  const battleId = pending.battleId ?? game.battle?.id;
+  if (battleId) {
+    recordBankedAssetUse(game, pending.targetOwner, battleId, pending.targetCardId);
+    recordBankedAssetUse(game, action.playerId, battleId, SUBVERSION_ASSET);
   }
 
   publicLog(game, action.playerId, 'intelligence_subversion_asset_used', `${player.name} put Subversion in the Graveyard and negated ${pending.effectLabel}.`, {

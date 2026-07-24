@@ -189,5 +189,33 @@ export function buildPendingMysticsOptions(game: GameState, playerId: PlayerID):
       })),
     ];
   }
+  if (pending.kind === 'grave_ward_asset') {
+    return [
+      {
+        label: `Leave ${pending.cardId} in your Graveyard${pending.triggersRemaining > 1 ? ` (${pending.triggersRemaining} Grave Wards available)` : ''}`,
+        action: {
+          type: 'use_mystic_grave_ward_asset',
+          playerId,
+          choice: 'pass',
+          entryId: pending.entryId,
+        },
+      },
+      {
+        label: `Discard Grave Ward to move ${pending.cardId} to your Discard Pile`,
+        action: {
+          type: 'use_mystic_grave_ward_asset',
+          playerId,
+          choice: 'use',
+          entryId: pending.entryId,
+        },
+      },
+    ];
+  }
+  if (pending.kind === 'grave_ward_battle') {
+    return pending.handOptions.map((cardId) => ({
+      label: `Move ${cardId} from your Graveyard to your Discard Pile with Grave Ward`,
+      action: { type: 'resolve_mystics_choice' as const, playerId, choice: 'select', cardId },
+    }));
+  }
   return undefined;
 }
