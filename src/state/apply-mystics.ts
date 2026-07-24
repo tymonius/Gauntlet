@@ -2,6 +2,15 @@ import type { BattleState, GameState, PlayerID } from '../types';
 import type { AppStateAction } from './actions';
 import { applyGameAction as applySubversionAssetGameAction } from './apply-subversion-asset';
 import {
+  applyAccursedWagerAction,
+  bindAccursedWagerToNewBattle,
+  expireAccursedWagerAtEndTurn,
+  isAccursedWagerChoice,
+  openAccursedWagerAftermathIfReady,
+  queueAccursedWagerAfterBattle,
+  resolveAccursedWagerChoice,
+} from './mystics-accursed-wager';
+import {
   applyDarkOmensAction,
   isDarkOmensChoice,
   openNextDarkOmensBattleChoice,
@@ -45,6 +54,7 @@ function continueMysticsAutomation(
     && result.state.recentBattleResult?.battleId === priorBattle.id) {
     resolveDeferredMateriaPrimaAfterBattle(result.state, priorBattle.id);
     reconcileMysticsAfterResolvedBattle(result.state, priorBattle);
+    queueAccursedWagerAfterBattle(result.state, priorBattle);
   }
   reconcileRiteOfCrossingAtTurnStart(result.state);
   if (arcaneUse && isArcaneCard(arcaneUse.cardId)) {
@@ -53,6 +63,7 @@ function continueMysticsAutomation(
   runPostActionAutomationPipeline(result.state);
   openNextDarkOmensBattleChoice(result.state);
   queueInvocationForRevealedBattleCards(result.state);
+  openAccursedWagerAftermathIfReady(result.state);
   openDeferredInvocationIfReady(result.state);
   return result;
 }
@@ -66,6 +77,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     const pendingKind = next.pendingMysticsChoice?.kind;
     if (pendingKind === 'invocation') resolveInvocationChoice(next, action);
     else if (isDarkOmensChoice(pendingKind)) resolveDarkOmensChoice(next, action);
+    else if (isAccursedWagerChoice(pendingKind)) resolveAccursedWagerChoice(next, action);
     else resolveMysticsChoice(next, action);
     return continueMysticsAutomation({ state: next });
   }
@@ -92,9 +104,12 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
 
   const priorBattle = resolvedBattleSnapshot(game);
   const result = applySubversionAssetGameAction(game, action);
+  if (!priorBattle && result.state.battle) bindAccursedWagerToNewBattle(result.state);
   if (action.type === 'play_action_card') {
     applyDarkOmensAction(result.state, action.playerId, action.cardId);
+    applyAccursedWagerAction(result.state, action.playerId, action.cardId);
   }
+  if (action.type === 'end_turn') expireAccursedWagerAtEndTurn(result.state, action.playerId);
   const arcaneUse = action.type === 'play_action_card'
     ? { playerId: action.playerId, cardId: action.cardId }
     : undefined;
