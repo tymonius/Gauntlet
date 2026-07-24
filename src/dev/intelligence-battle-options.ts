@@ -1,6 +1,7 @@
 import type { GameState, PlayerID } from '../types';
 import type { AppStateAction } from '../state/actions';
 import { availableBattleHandCards } from '../state/battle-hand-restrictions';
+import { isSubversionAssetChoice } from '../state/intelligence-subversion-asset';
 
 export interface IntelligenceBattleGuidedOption {
   label: string;
@@ -22,6 +23,12 @@ export function buildIntelligenceBattleOptions(game: GameState, playerId: Player
     label,
     action: { type: 'resolve_intelligence_choice', playerId, choice, cardId },
   });
+  if (isSubversionAssetChoice(pending)) {
+    return [
+      action(`Allow ${pending.effectLabel} to resolve`, 'pass'),
+      action(`Use Subversion to negate ${pending.effectLabel}`, 'use'),
+    ];
+  }
   if (pending.kind === 'surveillance') {
     return [
       action('Pass Surveillance', 'pass'),
