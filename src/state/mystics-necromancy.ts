@@ -225,7 +225,9 @@ function resolveRecovery(
 
 export function resolveNecromancyChoice(game: GameState, action: ResolveMysticsChoiceAction): void {
   const pending = game.pendingMysticsChoice;
-  if (!pending || !isNecromancyChoice(pending.kind) || pending.playerId !== action.playerId) {
+  if (!pending
+    || (pending.kind !== 'necromancy_action' && pending.kind !== 'necromancy_battle')
+    || pending.playerId !== action.playerId) {
     throw new GameActionError(`${action.playerId} has no pending Necromancy choice.`);
   }
   const player = game.players[action.playerId];
