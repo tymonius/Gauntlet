@@ -28,16 +28,38 @@ export interface IgnoredTerritoryEffectsState {
   effectKeys: string[];
 }
 
+export interface SleeperNetworkActivationState {
+  mode: 'activate' | 'compromised';
+  removalDestination?: 'discard' | 'graveyard' | 'removed';
+  opposingActorId?: PlayerID;
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface SleeperNetworkState {
+  cards: CardID[];
+  bankedTurn: number;
+  startOfferTurn?: number;
+  endOfferTurn?: number;
+  activation?: SleeperNetworkActivationState;
+}
+
+export interface PublicSleeperNetworkState {
+  cardCount: number;
+  activating: boolean;
+}
+
 export interface IntelligenceState {
   activeMission?: IntelligenceMissionState;
   specialOperation?: IntelligenceMissionState;
   surveillanceUsedBattleId?: string;
   ignoredTerritoryEffects?: IgnoredTerritoryEffectsState;
+  sleeperNetwork?: SleeperNetworkState;
 }
 
 export interface PublicIntelligenceState {
   activeMission?: PublicIntelligenceMissionView;
   specialOperation?: PublicIntelligenceMissionView;
+  sleeperNetwork?: PublicSleeperNetworkState;
 }
 
 interface PendingIntelligenceBattleCard {
@@ -157,6 +179,48 @@ export type PendingIntelligenceChoice =
       sourceIndex?: number;
       canWithdraw: boolean;
       options: ['stay'] | ['stay', 'withdraw'];
+      resumePriorityPlayer?: PlayerID;
+    }
+  | {
+      kind: 'sleeper_network_initial_card';
+      playerId: PlayerID;
+      eligibleCardIds: CardID[];
+      options: ['select'];
+    }
+  | {
+      kind: 'sleeper_network_add_card';
+      playerId: PlayerID;
+      eligibleCardIds: CardID[];
+      options: ['pass', 'select'];
+    }
+  | {
+      kind: 'sleeper_network_capacity';
+      playerId: PlayerID;
+      discardCount: number;
+      cardOptions: CardID[];
+      options: ['select'];
+      resumePriorityPlayer?: PlayerID;
+    }
+  | {
+      kind: 'sleeper_network_activate';
+      playerId: PlayerID;
+      options: ['pass', 'activate'];
+      resumePriorityPlayer?: PlayerID;
+    }
+  | {
+      kind: 'sleeper_network_play_card';
+      playerId: PlayerID;
+      eligibleCardIds: CardID[];
+      options: ['finish', 'select'];
+      resumePriorityPlayer?: PlayerID;
+    }
+  | {
+      kind: 'sleeper_network_compromised';
+      playerId: PlayerID;
+      opposingActorId: PlayerID;
+      eligibleCardIds: CardID[];
+      removalDestination: 'discard' | 'graveyard' | 'removed';
+      options: ['pass', 'select'];
       resumePriorityPlayer?: PlayerID;
     }
   | {
