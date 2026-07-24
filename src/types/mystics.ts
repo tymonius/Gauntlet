@@ -32,8 +32,9 @@ export interface MysticsState {
   begunRite?: BegunMysticRiteState;
   riteCompletedTurn?: number;
   invocationUsedTurn?: number;
-  transmutationUsedBattleId?: string;
+  transmutationUsedTurn?: number;
   materiaPrimaUsedTurn?: number;
+  materiaPrimaDeferredBattleId?: string;
   guardiansOfTheCircleUsedTurn?: number;
 }
 
@@ -54,4 +55,13 @@ export interface PendingGuardiansOfTheCircleChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
-export type PendingMysticsChoice = PendingGuardiansOfTheCircleChoice;
+export interface PendingInvocationChoice {
+  kind: 'invocation';
+  playerId: PlayerID;
+  sourceCardIds: CardID[];
+  graveyardOptions: CardID[];
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export type PendingMysticsChoice = PendingGuardiansOfTheCircleChoice | PendingInvocationChoice;
