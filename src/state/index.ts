@@ -38,6 +38,7 @@ export * from './intelligence-post-reveal-flow';
 export * from './intelligence-operational-reassessment-battle';
 export * from './intelligence-battle';
 export * from './intelligence-leaders';
+export * from './mystics-ritual';
 export * from './actions';
 export * from './draw';
 export { applyGameAction } from './apply-subversion-asset';

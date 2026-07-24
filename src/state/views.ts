@@ -23,6 +23,7 @@ import type {
 import { canResolveIntelligenceAction } from './intelligence-action-cards';
 import { availableBattleHandCards } from './battle-hand-restrictions';
 import { legalLeaderAbilitiesFor } from './leader-abilities';
+import { toPublicMysticsState } from './mystics-ritual';
 
 const visible = <T>(cards: T[]) => ({ kind: 'visible' as const, cards });
 const hidden = <T>(cards: T[]) => ({ kind: 'hidden' as const, count: cards.length });
@@ -49,6 +50,7 @@ export function toPublicPlayerView(player: PlayerState): PublicPlayerView {
     diplomats: structuredClone(player.diplomats),
     financiers: structuredClone(player.financiers),
     intelligence: toPublicIntelligenceState(player),
+    mystics: toPublicMysticsState(player.mystics),
     zones: {
       deck: hidden(player.zones.deck),
       hand: hidden(player.zones.hand),
@@ -70,6 +72,7 @@ export function toPrivatePlayerView(player: PlayerState): PrivatePlayerView {
   return {
     ...publicView,
     intelligence: structuredClone(player.intelligence),
+    mystics: structuredClone(player.mystics),
     zones: { ...publicView.zones, deck: hidden(player.zones.deck), hand: visible(player.zones.hand) },
     private: { deck: player.zones.deck, hand: player.zones.hand },
   };
