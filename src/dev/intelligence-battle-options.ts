@@ -84,6 +84,20 @@ export function buildIntelligenceBattleOptions(game: GameState, playerId: Player
       ...pending.eligibleCardIds.map((cardId) => action(`Replace Operational Reassessment with ${cardId}`, 'select', cardId)),
     ];
   }
+  if (pending.kind === 'treason_battle_target') {
+    return [
+      ...(pending.sourceKind === 'asset' ? [action('Keep banked Treason', 'pass')] : []),
+      ...pending.targetOptions.map((target) => action(
+        `Negate and copy ${target.cardId} (${target.targetOrigin})`,
+        target.targetKey,
+      )),
+    ];
+  }
+  if (pending.kind === 'treason_reconnaissance_withdraw') {
+    return pending.canWithdraw
+      ? [action('Remain in the battle', 'stay'), action('Withdraw using copied Reconnaissance', 'withdraw')]
+      : [action('Remain in the battle', 'stay')];
+  }
   if (pending.kind === 'mission_control') {
     return [
       action('Pass Mission Control', 'pass'),
