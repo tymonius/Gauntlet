@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-8YYYZJGGPE');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Read the complete canonical Gauntlet v0.6.0 rulebook in a searchable, responsive browser format." />
+  <title>Gauntlet v0.6.0 Browser Rulebook</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="../rules-assistant/widget.css" />
+</head>
+<body>
+  <header class="rulebook-header">
+    <a class="brand" href="../" aria-label="Return to the Gauntlet home page">
+      <span class="brand-mark" aria-hidden="true">G</span>
+      <span>Gauntlet</span>
+    </a>
+    <div class="header-actions">
+      <a href="../deckbuilder/">Deckbuilder</a>
+      <a href="../faction-sheets/">Faction sheets</a>
+      <a href="../">Home</a>
+    </div>
+  </header>
+
+  <section class="rulebook-hero">
+    <div>
+      <p class="eyebrow">Canonical rules · version 0.6.0</p>
+      <h1>Official Browser Rulebook</h1>
+      <p class="hero-lede">The complete shared rules and faction systems, rendered directly from the canonical release source for comfortable reading at the table or on the go.</p>
+      <p class="source-status" data-rulebook-status aria-live="polite">Loading the canonical rulebook…</p>
+    </div>
+    <div class="hero-actions" aria-label="Rulebook actions">
+      <button type="button" data-open-rules-assistant>Ask the Rules Arbiter</button>
+      <a href="../releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf">Download PDF</a>
+      <button type="button" data-print-rulebook>Print</button>
+    </div>
+  </section>
+
+  <button class="toc-toggle" type="button" aria-expanded="false" aria-controls="rulebook-sidebar" data-toc-toggle>
+    Contents and search
+  </button>
+
+  <main class="rulebook-shell">
+    <aside id="rulebook-sidebar" class="rulebook-sidebar" data-rulebook-sidebar>
+      <form class="rulebook-search" role="search" data-rulebook-search>
+        <label for="rulebook-search-input">Search this rulebook</label>
+        <div>
+          <input id="rulebook-search-input" type="search" placeholder="Battle Hand, Assets, Last Stand…" autocomplete="off" />
+          <button type="submit">Search</button>
+        </div>
+        <p class="search-status" data-search-status aria-live="polite"></p>
+      </form>
+
+      <nav class="rulebook-toc" aria-label="Rulebook contents" data-rulebook-toc>
+        <span class="toc-loading">Loading contents…</span>
+      </nav>
+
+      <div class="source-links">
+        <strong>Canonical source</strong>
+        <a href="../releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md">Markdown</a>
+        <a href="../releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf">PDF</a>
+      </div>
+    </aside>
+
+    <article class="rulebook-content" data-rulebook-content aria-busy="true">
+      <div class="loading-card" role="status">
+        <span class="loading-mark" aria-hidden="true">G</span>
+        <div>
+          <strong>Opening the rulebook</strong>
+          <p>Loading the canonical v0.6.0 Markdown source.</p>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <p><strong>Gauntlet v0.6.0</strong> · Unpublished pre-release playtest project.</p>
+    <p>Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  </footer>
+
+  <noscript>
+    <div class="noscript">
+      JavaScript is required for the browser-rendered rulebook. Read the
+      <a href="../releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf">official PDF</a>
+      or the <a href="../releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md">canonical Markdown source</a>.
+    </div>
+  </noscript>
+
+  <script type="module" src="../rules-assistant/widget.js"></script>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
