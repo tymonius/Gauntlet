@@ -104,6 +104,8 @@ You initiated a battle if your movement or effect caused it to begin. If the opp
 
 A follow-up battle is a new battle. Resolve a new commitment step, form new Battle Hands, and apply all once-per-battle effects separately.
 
+Under the core movement rules, beginning a battle ends the current movement sequence and any unused movement is lost. **Onward** therefore extends movement only until a battle begins. **Rout** and other effects that explicitly permit movement after a battle create a new movement sequence.
+
 ## Territory terms
 
 - **Occupying an enemy-controlled Territory:** Your Player Token is on a Territory controlled by the opponent after you won there but before you captured it.

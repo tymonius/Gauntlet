@@ -161,7 +161,7 @@ The active player may use their normal Action Opportunity before moving.
 
 ## 4. Movement
 
-Advance, hold, or withdraw. Resolve any battle caused by movement immediately.
+Advance, hold, or withdraw. Resolve any battle caused by movement immediately. When a battle begins, the current movement ends and any remaining movement is lost. After the battle, proceed to the Action Opportunity after movement unless a rule or effect explicitly permits further movement.
 
 ## 5. Action Opportunity After Movement
 
@@ -189,7 +189,7 @@ A player cannot voluntarily withdraw beyond their end of the Gauntlet. Player To
 
 A **position** is any location a Player Token may occupy: each Territory, the position immediately before either end of the Gauntlet, or the position immediately beyond either end of the Gauntlet.
 
-If an effect grants additional movement, resolve that movement one position at a time unless the effect states otherwise. Entering an occupied position begins a battle and normally pauses the current movement sequence until the battle is resolved.
+If an effect grants additional movement, resolve that movement one position at a time unless the effect states otherwise. Entering an occupied position begins a battle. When a battle begins, the current movement sequence ends and any remaining movement is lost. Movement does not resume after the battle unless a rule or effect explicitly permits movement afterward.
 
 ## Entering an Occupied Territory
 
@@ -217,7 +217,7 @@ Unless an effect states otherwise, the losing player retreats one position away 
 
 # 6. Battles
 
-A battle begins when a player enters a position occupied by the opponent or when a rule explicitly begins one.
+A battle begins when a player enters a position occupied by the opponent or when a rule explicitly begins one. A battle begun by movement ends that movement immediately. Any movement after the battle must come from a rule or effect that explicitly permits it.
 
 The player whose movement or effect began the battle is the **attacking player**. The other player is the **defending player**.
 
