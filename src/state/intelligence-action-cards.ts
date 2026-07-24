@@ -1,7 +1,12 @@
 import { intelligenceMissionCardIds } from '../cards';
 import type { CardID, GameEvent, GameState, PlayerID, PlayerState } from '../types';
-import type { ResolveIntelligenceChoiceAction } from './actions';
+import type { ActionCardTarget, ResolveIntelligenceChoiceAction } from './actions';
 import { drawFromDeck } from './draw';
+import {
+  canPlaceFogOfWarOverlay,
+  FOG_OF_WAR_OVERLAY,
+  playFogOfWarOverlay,
+} from './intelligence-fog-overlay';
 import { recordOpponentHandLookOutsideBattle } from './intelligence-mission-triggers';
 import {
   beginSleeperNetwork,
@@ -11,6 +16,7 @@ import {
 
 export const INTELLIGENCE_ACTION_CARDS = {
   spies: 'intelligence-spies',
+  fogOfWar: FOG_OF_WAR_OVERLAY,
   operationalReassessment: 'intelligence-operational-reassessment',
   assassins: 'intelligence-assassins',
   sleeperNetwork: SLEEPER_NETWORK,
@@ -79,6 +85,7 @@ export function canResolveIntelligenceAction(game: GameState, playerId: PlayerID
   if (!isIntegratedIntelligenceActionCard(cardId)) return true;
   const player = game.players[playerId];
   if (player?.factionId !== 'intelligence' || !player.intelligence) return false;
+  if (cardId === INTELLIGENCE_ACTION_CARDS.fogOfWar) return canPlaceFogOfWarOverlay(game);
   if (cardId === INTELLIGENCE_ACTION_CARDS.operationalReassessment) return Boolean(player.intelligence.activeMission);
   if (cardId === INTELLIGENCE_ACTION_CARDS.sleeperNetwork) return canResolveSleeperNetworkAction(game, playerId);
   return true;
@@ -162,8 +169,14 @@ function playOperationalReassessment(game: GameState, playerId: PlayerID): void 
   }
 }
 
-export function applyIntelligenceActionEffect(game: GameState, playerId: PlayerID, cardId: CardID): void {
+export function applyIntelligenceActionEffect(
+  game: GameState,
+  playerId: PlayerID,
+  cardId: CardID,
+  targets?: ActionCardTarget[],
+): void {
   if (cardId === INTELLIGENCE_ACTION_CARDS.spies) playSpies(game, playerId);
+  else if (cardId === INTELLIGENCE_ACTION_CARDS.fogOfWar) playFogOfWarOverlay(game, playerId, targets);
   else if (cardId === INTELLIGENCE_ACTION_CARDS.operationalReassessment) playOperationalReassessment(game, playerId);
   else if (cardId === INTELLIGENCE_ACTION_CARDS.assassins) playAssassins(game, playerId);
   else if (cardId === INTELLIGENCE_ACTION_CARDS.sleeperNetwork) beginSleeperNetwork(game, playerId);
