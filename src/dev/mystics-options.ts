@@ -8,18 +8,23 @@ export interface MysticGuidedOption {
   action: AppStateAction;
 }
 
-function riteWindowOpen(game: GameState, playerId: PlayerID): boolean {
+function actionWindowOpen(game: GameState, playerId: PlayerID): boolean {
   const player = game.players[playerId];
   return Boolean(
     player?.factionId === 'mystics'
     && player.mystics
-    && !player.mystics.begunRite
-    && game.phase === 'action_after_movement'
+    && (game.phase === 'action_before_movement' || game.phase === 'action_after_movement')
     && game.activePlayer === playerId
     && game.priorityPlayer === playerId
     && player.actionsRemaining > 0
     && !player.hasPlayedActionThisTurn,
   );
+}
+
+function riteWindowOpen(game: GameState, playerId: PlayerID): boolean {
+  return actionWindowOpen(game, playerId)
+    && game.phase === 'action_after_movement'
+    && !game.players[playerId].mystics?.begunRite;
 }
 
 function playableDeckCards(game: GameState, playerId: PlayerID): CardID[] {
@@ -54,8 +59,37 @@ function transmutationOptions(game: GameState, playerId: PlayerID): MysticGuided
     }));
 }
 
+function soulForSoulActionOptions(game: GameState, playerId: PlayerID): MysticGuidedOption[] {
+  if (!actionWindowOpen(game, playerId)) return [];
+  const player = game.players[playerId];
+  if (!player.zones.hand.includes('mystics-soul-for-soul') || player.zones.graveyard.length < 1) return [];
+  const eligibleHand = [...player.zones.hand];
+  eligibleHand.splice(eligibleHand.indexOf('mystics-soul-for-soul'), 1);
+  const options: MysticGuidedOption[] = [];
+  for (const handCardId of [...new Set(eligibleHand)]) {
+    for (const graveyardCardId of [...new Set(player.zones.graveyard)]) {
+      options.push({
+        label: `Soul for Soul: exchange ${handCardId} with ${graveyardCardId}`,
+        action: {
+          type: 'play_action_card',
+          playerId,
+          cardId: 'mystics-soul-for-soul',
+          targets: [
+            { kind: 'card', owner: playerId, cardId: handCardId },
+            { kind: 'card', owner: playerId, cardId: graveyardCardId },
+          ],
+        },
+      });
+    }
+  }
+  return options;
+}
+
 export function buildMysticRiteOptions(game: GameState, playerId: PlayerID): MysticGuidedOption[] {
-  const options: MysticGuidedOption[] = [...transmutationOptions(game, playerId)];
+  const options: MysticGuidedOption[] = [
+    ...transmutationOptions(game, playerId),
+    ...soulForSoulActionOptions(game, playerId),
+  ];
   if (!riteWindowOpen(game, playerId)) return options;
   const player = game.players[playerId];
   const completed = new Set(player.mystics!.completedRites);
@@ -216,6 +250,27 @@ export function buildPendingMysticsOptions(game: GameState, playerId: PlayerID):
       label: `Move ${cardId} from your Graveyard to your Discard Pile with Grave Ward`,
       action: { type: 'resolve_mystics_choice' as const, playerId, choice: 'select', cardId },
     }));
+  }
+  if (pending.kind === 'soul_for_soul_battle') {
+    const options: MysticGuidedOption[] = [{
+      label: 'Pass Soul for Soul',
+      action: { type: 'resolve_mystics_choice', playerId, choice: 'pass' },
+    }];
+    for (const handCardId of pending.handOptions) {
+      for (const graveyardCardId of pending.graveyardOptions) {
+        options.push({
+          label: `Exchange ${handCardId} with ${graveyardCardId}`,
+          action: {
+            type: 'resolve_mystics_choice',
+            playerId,
+            choice: 'exchange',
+            cardId: handCardId,
+            secondaryCardId: graveyardCardId,
+          },
+        });
+      }
+    }
+    return options;
   }
   return undefined;
 }

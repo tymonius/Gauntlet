@@ -93,6 +93,7 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'mystics-accursed-wager': battleAndAction('mystics-accursed-wager', 'discard'),
   'mystics-fates-toll': battleAndAction('mystics-fates-toll', 'discard', true),
   'mystics-grave-ward': battleAndAction('mystics-grave-ward', 'asset_bank'),
+  'mystics-soul-for-soul': battleAndAction('mystics-soul-for-soul', 'discard', true),
 };
 
 export function getCardPlayRule(cardId: CardID): CardPlayRule | undefined { return coreCardPlayRules[cardId]; }

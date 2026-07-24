@@ -41,6 +41,13 @@ export interface GraveWardBattleEffectState {
   handCommittedCardIds: CardID[];
 }
 
+export interface SoulForSoulBattleEffectState {
+  battleId: string;
+  sourceKey: string;
+  sourceOrigin: 'hand' | 'battle_draw';
+  handCommittedCardIds: CardID[];
+}
+
 export interface MysticsState {
   completedRites: MysticRiteId[];
   begunRite?: BegunMysticRiteState;
@@ -60,6 +67,7 @@ export interface MysticsState {
   graveWardEntrySequence?: number;
   graveWardEntries?: GraveWardEntryState[];
   graveWardBattleQueue?: GraveWardBattleEffectState[];
+  soulForSoulBattleQueue?: SoulForSoulBattleEffectState[];
 }
 
 export interface PublicMysticsState {
@@ -157,6 +165,17 @@ export interface PendingGraveWardBattleChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface PendingSoulForSoulBattleChoice {
+  kind: 'soul_for_soul_battle';
+  playerId: PlayerID;
+  battleId: string;
+  sourceKey: string;
+  handOptions: CardID[];
+  graveyardOptions: CardID[];
+  options: ['pass', 'exchange'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type PendingMysticsChoice =
   | PendingGuardiansOfTheCircleChoice
   | PendingInvocationChoice
@@ -165,4 +184,5 @@ export type PendingMysticsChoice =
   | PendingAccursedWagerChoice
   | PendingFatesTollChoice
   | PendingGraveWardAssetChoice
-  | PendingGraveWardBattleChoice;
+  | PendingGraveWardBattleChoice
+  | PendingSoulForSoulBattleChoice;

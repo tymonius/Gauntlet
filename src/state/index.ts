@@ -45,6 +45,7 @@ export * from './mystics-dark-omens';
 export * from './mystics-accursed-wager';
 export * from './mystics-fates-toll';
 export * from './mystics-grave-ward';
+export * from './mystics-soul-for-soul';
 export * from './actions';
 export * from './draw';
 export { applyGameAction } from './apply-mystics';
