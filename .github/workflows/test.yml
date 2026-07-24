@@ -23,26 +23,7 @@ jobs:
         run: npm install
 
       - name: Typecheck
-        id: typecheck
-        shell: bash
-        run: |
-          set +e
-          npm run typecheck > inquisition-typecheck-output.txt 2>&1
-          status=$?
-          cat inquisition-typecheck-output.txt
-          echo "status=$status" >> "$GITHUB_OUTPUT"
-          exit 0
-
-      - name: Upload compiler diagnostics
-        uses: actions/upload-artifact@v4
-        with:
-          name: inquisition-typecheck-output
-          path: inquisition-typecheck-output.txt
-
-      - name: Preserve typecheck result
-        if: steps.typecheck.outputs.status != '0'
-        run: exit 1
+        run: npm run typecheck
 
       - name: Test
-        if: steps.typecheck.outputs.status == '0'
         run: npm test
