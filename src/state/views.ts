@@ -29,9 +29,11 @@ const hidden = <T>(cards: T[]) => ({ kind: 'hidden' as const, count: cards.lengt
 
 function toPublicIntelligenceState(player: PlayerState): PublicIntelligenceState | undefined {
   if (!player.intelligence) return undefined;
+  const sleeperNetwork = player.intelligence.sleeperNetwork;
   return {
     activeMission: player.intelligence.activeMission ? { faceDown: true, kind: 'normal', startedTurn: player.intelligence.activeMission.startedTurn } : undefined,
     specialOperation: player.intelligence.specialOperation ? { faceDown: true, kind: 'special_operation', startedTurn: player.intelligence.specialOperation.startedTurn } : undefined,
+    sleeperNetwork: sleeperNetwork ? { cardCount: sleeperNetwork.cards.length, activating: Boolean(sleeperNetwork.activation) } : undefined,
   };
 }
 

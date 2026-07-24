@@ -3,11 +3,17 @@ import type { CardID, GameEvent, GameState, PlayerID, PlayerState } from '../typ
 import type { ResolveIntelligenceChoiceAction } from './actions';
 import { drawFromDeck } from './draw';
 import { recordOpponentHandLookOutsideBattle } from './intelligence-mission-triggers';
+import {
+  beginSleeperNetwork,
+  canResolveSleeperNetworkAction,
+  SLEEPER_NETWORK,
+} from './intelligence-sleeper-network';
 
 export const INTELLIGENCE_ACTION_CARDS = {
   spies: 'intelligence-spies',
   operationalReassessment: 'intelligence-operational-reassessment',
   assassins: 'intelligence-assassins',
+  sleeperNetwork: SLEEPER_NETWORK,
 } as const;
 
 export class IntelligenceActionCardError extends Error {
@@ -74,6 +80,7 @@ export function canResolveIntelligenceAction(game: GameState, playerId: PlayerID
   const player = game.players[playerId];
   if (player?.factionId !== 'intelligence' || !player.intelligence) return false;
   if (cardId === INTELLIGENCE_ACTION_CARDS.operationalReassessment) return Boolean(player.intelligence.activeMission);
+  if (cardId === INTELLIGENCE_ACTION_CARDS.sleeperNetwork) return canResolveSleeperNetworkAction(game, playerId);
   return true;
 }
 
@@ -159,6 +166,7 @@ export function applyIntelligenceActionEffect(game: GameState, playerId: PlayerI
   if (cardId === INTELLIGENCE_ACTION_CARDS.spies) playSpies(game, playerId);
   else if (cardId === INTELLIGENCE_ACTION_CARDS.operationalReassessment) playOperationalReassessment(game, playerId);
   else if (cardId === INTELLIGENCE_ACTION_CARDS.assassins) playAssassins(game, playerId);
+  else if (cardId === INTELLIGENCE_ACTION_CARDS.sleeperNetwork) beginSleeperNetwork(game, playerId);
 }
 
 function resolveSpiesDiscard(game: GameState, action: ResolveIntelligenceChoiceAction): void {

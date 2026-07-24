@@ -21,7 +21,7 @@ export interface GameState {
   pendingMilitaryChoice?: PendingMilitaryChoice; militaryChoiceQueue?: PendingMilitaryChoice[];
   pendingMilitaryTimingChoice?: PendingMilitaryTimingChoice; militaryTimingChoiceQueue?: PendingMilitaryTimingChoice[];
   pendingDiplomatChoice?: PendingDiplomatChoice; pendingFinancierChoice?: PendingFinancierChoice; financierChoiceQueue?: PendingFinancierChoice[];
-  pendingIntelligenceChoice?: PendingIntelligenceChoice;
+  pendingIntelligenceChoice?: PendingIntelligenceChoice & { battleId?: string };
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow; pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[]; winner?: PlayerID;
 }
@@ -35,7 +35,7 @@ export interface PublicGameView {
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow; pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[]; winner?: PlayerID;
 }
-export interface PrivateGameView extends PublicGameView {
+export interface PrivateGameView extends Omit<PublicGameView, 'players'> {
   viewer: PlayerID;
   players: Record<PlayerID, PublicPlayerView | PrivatePlayerView>;
   pendingIntelligenceChoice?: PendingIntelligenceChoice;
