@@ -12,6 +12,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      issues: write
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
@@ -36,9 +37,26 @@ jobs:
           python -m pip install weasyprint python-docx pypdf Pillow
 
       - name: Regenerate and validate rulebook documents
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           . .venv/bin/activate
-          bash scripts/render-v0.6.0-documents.sh
+          set +e
+          bash scripts/render-v0.6.0-documents.sh > /tmp/render.log 2>&1
+          status=$?
+          set -e
+          cat /tmp/render.log
+          if [ "$status" -ne 0 ]; then
+            {
+              echo '## Document-rendering failure'
+              echo
+              echo '```text'
+              tail -n 120 /tmp/render.log
+              echo '```'
+            } > /tmp/render-failure.md
+            gh pr comment "${{ github.event.pull_request.number }}" --body-file /tmp/render-failure.md
+            exit "$status"
+          fi
 
       - name: Validate code and generated data
         run: |
