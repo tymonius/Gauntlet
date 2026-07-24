@@ -98,6 +98,36 @@ export function buildIntelligenceBattleOptions(game: GameState, playerId: Player
       ? [action('Remain in the battle', 'stay'), action('Withdraw using copied Reconnaissance', 'withdraw')]
       : [action('Remain in the battle', 'stay')];
   }
+  if (pending.kind === 'sleeper_network_initial_card') {
+    return pending.eligibleCardIds.map((cardId) => action(`Place ${cardId} beneath Sleeper Network`, 'select', cardId));
+  }
+  if (pending.kind === 'sleeper_network_add_card') {
+    return [
+      action('Add no card to Sleeper Network', 'pass'),
+      ...pending.eligibleCardIds.map((cardId) => action(`Place ${cardId} beneath Sleeper Network`, 'select', cardId)),
+    ];
+  }
+  if (pending.kind === 'sleeper_network_capacity') {
+    return pending.cardOptions.map((cardId) => action(`Discard hidden ${cardId} to restore capacity`, 'select', cardId));
+  }
+  if (pending.kind === 'sleeper_network_activate') {
+    return [
+      action('Keep Sleeper Network banked', 'pass'),
+      action('Activate Sleeper Network', 'activate'),
+    ];
+  }
+  if (pending.kind === 'sleeper_network_play_card') {
+    return [
+      action('Finish Sleeper Network activation', 'finish'),
+      ...pending.eligibleCardIds.map((cardId) => action(`Play ${cardId} from Sleeper Network`, 'select', cardId)),
+    ];
+  }
+  if (pending.kind === 'sleeper_network_compromised') {
+    return [
+      action('Play no card from the compromised Network', 'pass'),
+      ...pending.eligibleCardIds.map((cardId) => action(`Play ${cardId} before the Network leaves play`, 'select', cardId)),
+    ];
+  }
   if (pending.kind === 'mission_control') {
     return [
       action('Pass Mission Control', 'pass'),
