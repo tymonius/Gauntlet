@@ -41,6 +41,7 @@ export * from './intelligence-leaders';
 export * from './mystics-ritual';
 export * from './mystics-rite-integration';
 export * from './mystics-conversion';
+export * from './mystics-dark-omens';
 export * from './actions';
 export * from './draw';
 export { applyGameAction } from './apply-mystics';

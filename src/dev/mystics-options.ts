@@ -153,5 +153,23 @@ export function buildPendingMysticsOptions(game: GameState, playerId: PlayerID):
       })),
     ];
   }
+  if (pending.kind === 'dark_omens_action') {
+    return pending.drawnCardIds.map((cardId) => ({
+      label: `Put ${cardId} in your Graveyard with Dark Omens`,
+      action: { type: 'resolve_mystics_choice' as const, playerId, choice: 'select', cardId },
+    }));
+  }
+  if (pending.kind === 'dark_omens_battle') {
+    return [
+      {
+        label: `Keep ${pending.drawnCardId}`,
+        action: { type: 'resolve_mystics_choice', playerId, choice: 'keep' },
+      },
+      {
+        label: `Put ${pending.drawnCardId} in your Graveyard to gain advantage`,
+        action: { type: 'resolve_mystics_choice', playerId, choice: 'sacrifice', cardId: pending.drawnCardId },
+      },
+    ];
+  }
   return undefined;
 }

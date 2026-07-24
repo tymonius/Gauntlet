@@ -2,6 +2,12 @@ import type { BattleState, GameState, PlayerID } from '../types';
 import type { AppStateAction } from './actions';
 import { applyGameAction as applySubversionAssetGameAction } from './apply-subversion-asset';
 import {
+  applyDarkOmensAction,
+  isDarkOmensChoice,
+  openNextDarkOmensBattleChoice,
+  resolveDarkOmensChoice,
+} from './mystics-dark-omens';
+import {
   openDeferredInvocationIfReady,
   queueInvocationForArcaneUse,
   queueInvocationForRevealedBattleCards,
@@ -44,8 +50,9 @@ function continueMysticsAutomation(
   if (arcaneUse && isArcaneCard(arcaneUse.cardId)) {
     queueInvocationForArcaneUse(result.state, arcaneUse.playerId, [arcaneUse.cardId]);
   }
-  queueInvocationForRevealedBattleCards(result.state);
   runPostActionAutomationPipeline(result.state);
+  openNextDarkOmensBattleChoice(result.state);
+  queueInvocationForRevealedBattleCards(result.state);
   openDeferredInvocationIfReady(result.state);
   return result;
 }
@@ -56,7 +63,9 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
       throw new GameActionError('Resolve the pending Mystics choice first.');
     }
     const next = structuredClone(game);
-    if (next.pendingMysticsChoice?.kind === 'invocation') resolveInvocationChoice(next, action);
+    const pendingKind = next.pendingMysticsChoice?.kind;
+    if (pendingKind === 'invocation') resolveInvocationChoice(next, action);
+    else if (isDarkOmensChoice(pendingKind)) resolveDarkOmensChoice(next, action);
     else resolveMysticsChoice(next, action);
     return continueMysticsAutomation({ state: next });
   }
@@ -83,6 +92,9 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
 
   const priorBattle = resolvedBattleSnapshot(game);
   const result = applySubversionAssetGameAction(game, action);
+  if (action.type === 'play_action_card') {
+    applyDarkOmensAction(result.state, action.playerId, action.cardId);
+  }
   const arcaneUse = action.type === 'play_action_card'
     ? { playerId: action.playerId, cardId: action.cardId }
     : undefined;

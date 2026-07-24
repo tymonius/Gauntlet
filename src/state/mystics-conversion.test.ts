@@ -38,7 +38,7 @@ function game(leaderName = 'Alchemist'): GameState {
         name: 'Mystic',
         factionId: 'mystics',
         leaderName,
-        deck: ['card-valor', 'mystics-dark-omens', 'mystics-witchcraft'],
+        deck: ['card-valor', 'mystics-fates-toll', 'mystics-witchcraft'],
         territories: ['t1', 't2', 't3'],
       },
       {
@@ -46,7 +46,7 @@ function game(leaderName = 'Alchemist'): GameState {
         name: 'Opponent',
         factionId: 'military',
         leaderName: 'General',
-        deck: ['card-valor', 'mystics-dark-omens'],
+        deck: ['card-valor', 'mystics-fates-toll'],
         territories: ['t4', 't5', 't6'],
       },
     ],
@@ -181,19 +181,19 @@ describe('Invocation', () => {
     let state = game('Spirit Walker');
     state.phase = 'action_before_movement';
     state.players.player_1.mystics!.completedRites = ['rite_of_echoes'];
-    state.players.player_1.zones.hand = ['mystics-dark-omens'];
+    state.players.player_1.zones.hand = ['mystics-fates-toll'];
     state.players.player_1.zones.graveyard = ['card-valor'];
 
     state = applyGameAction(state, {
       type: 'play_action_card',
       playerId: 'player_1',
-      cardId: 'mystics-dark-omens',
+      cardId: 'mystics-fates-toll',
     }).state;
 
     expect(state.pendingMysticsChoice).toMatchObject({
       kind: 'invocation',
       playerId: 'player_1',
-      sourceCardIds: ['mystics-dark-omens'],
+      sourceCardIds: ['mystics-fates-toll'],
       graveyardOptions: ['card-valor'],
     });
     expect(toPrivateGameView(state, 'player_1').pendingMysticsChoice).toBeDefined();
@@ -222,7 +222,7 @@ describe('Invocation', () => {
     state.players.player_1.mystics!.completedRites = ['rite_of_echoes'];
     state.players.player_1.zones.graveyard = ['card-valor'];
 
-    expect(queueInvocationForArcaneUse(state, 'player_1', ['mystics-dark-omens'])).toBe(true);
+    expect(queueInvocationForArcaneUse(state, 'player_1', ['mystics-fates-toll'])).toBe(true);
     let next = applyGameAction(state, {
       type: 'resolve_mystics_choice',
       playerId: 'player_1',
@@ -237,14 +237,14 @@ describe('Invocation', () => {
       choice: 'use',
       cardId: 'card-valor',
     }).state;
-    expect(queueInvocationForArcaneUse(next, 'player_1', ['mystics-dark-omens'])).toBe(false);
+    expect(queueInvocationForArcaneUse(next, 'player_1', ['mystics-fates-toll'])).toBe(false);
   });
 
   it('ignores Arcane uses by non-Mystics players', () => {
     const state = game();
     state.players.player_2.zones.graveyard = ['card-valor'];
 
-    expect(queueInvocationForArcaneUse(state, 'player_2', ['mystics-dark-omens'])).toBe(false);
+    expect(queueInvocationForArcaneUse(state, 'player_2', ['mystics-fates-toll'])).toBe(false);
     expect(state.pendingMysticsChoice).toBeUndefined();
   });
 
@@ -254,7 +254,7 @@ describe('Invocation', () => {
     state.players.player_1.zones.graveyard = ['card-valor'];
     prepareDiceBattle(state);
     state.battle!.attacker.handCommit = {
-      cardId: 'mystics-dark-omens',
+      cardId: 'mystics-fates-toll',
       owner: 'player_1',
       origin: 'hand',
       faceDown: false,
@@ -276,7 +276,7 @@ describe('Invocation', () => {
     canceled.players.player_1.zones.graveyard = ['card-valor'];
     prepareDiceBattle(canceled);
     canceled.battle!.attacker.handCommit = {
-      cardId: 'mystics-dark-omens',
+      cardId: 'mystics-fates-toll',
       owner: 'player_1',
       origin: 'hand',
       faceDown: false,
