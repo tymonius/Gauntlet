@@ -5,8 +5,10 @@
   "type": "module",
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "test": "vitest run && node scripts/validate-starter-decks.mjs",
+    "test": "vitest run && node scripts/validate-starter-decks.mjs && node scripts/sync-google-analytics.mjs --check",
     "test:rules-assistant": "vitest run rules-assistant/local-search.test.mjs",
+    "analytics:sync": "node scripts/sync-google-analytics.mjs",
+    "analytics:check": "node scripts/sync-google-analytics.mjs --check",
     "test:watch": "vitest",
     "dev:cli": "tsx src/cli/dev-runner-v06.ts",
     "dev:gui": "tsx src/gui/dev-server-v06.ts"
