@@ -2,9 +2,14 @@ import type { BattleParticipantState, CardID, GameState, PlayerID } from '../typ
 import { validateEmbargoTargets } from './embargo';
 import type { BattleCardTarget, EffectHandler } from './types';
 
+function participantCardCount(participant: BattleParticipantState, cardId: CardID): number {
+  return [participant.handCommit, ...participant.battleDrawPlayed]
+    .filter((played) => played?.cardId === cardId && !played.canceled && !played.negated)
+    .length;
+}
+
 function participantHasCard(participant: BattleParticipantState, cardId: CardID): boolean {
-  return participant.handCommit?.cardId === cardId && !participant.handCommit.canceled && !participant.handCommit.negated
-    || participant.battleDrawPlayed.some((played) => played.cardId === cardId && !played.canceled && !played.negated);
+  return participantCardCount(participant, cardId) > 0;
 }
 
 function hasPlayedCard(context: Parameters<EffectHandler['applies']>[0], playerId: PlayerID, cardId: CardID): boolean {
@@ -29,7 +34,7 @@ function opposingParticipant(context: Parameters<EffectHandler['applies']>[0], o
 
 function findPlayedTarget(participant: BattleParticipantState, target: BattleCardTarget) {
   return [participant.handCommit, ...participant.battleDrawPlayed]
-    .find((played) => played?.cardId === target.targetCardId && played.owner === target.targetOwner && !played.canceled);
+    .find((played) => played?.cardId === target.targetCardId && played.owner === target.targetOwner && !played.canceled && !played.virtual);
 }
 
 function selectedEmbargoTarget(context: Parameters<EffectHandler['resolve']>[0], sourceOwner: PlayerID): BattleCardTarget | undefined {
@@ -47,7 +52,7 @@ function selectedEmbargoTarget(context: Parameters<EffectHandler['resolve']>[0],
 
 function battleDrawCardsFor(participant: BattleParticipantState): CardID[] {
   return [
-    ...participant.battleDrawPlayed.map((played) => played.cardId),
+    ...participant.battleDrawPlayed.filter((played) => !played.virtual).map((played) => played.cardId),
     ...participant.battleDraw,
   ];
 }
@@ -112,17 +117,18 @@ export const fortificationsBattleHandler: EffectHandler = {
   },
   resolve(context) {
     if (!context.battle) return {};
+    const count = participantCardCount(context.battle.defender, 'card-fortifications');
 
     return {
       modifiers: [
         {
           playerId: context.battle.defender.playerId,
           source: 'card-fortifications',
-          amount: 1,
-          reason: 'Fortifications Battle: defender gains +1.',
+          amount: count,
+          reason: `Fortifications Battle: defender gains +${count}.`,
         },
       ],
-      logMessages: ['Fortifications battle effect gave the defender +1.'],
+      logMessages: [`Fortifications battle effects gave the defender +${count}.`],
     };
   },
 };
@@ -139,17 +145,18 @@ export const valorBattleHandler: EffectHandler = {
     if (!context.battle) return {};
 
     const modifiers = [context.battle.attacker, context.battle.defender]
-      .filter((participant) => participantHasCard(participant, 'card-valor'))
-      .map((participant) => ({
+      .map((participant) => ({ participant, count: participantCardCount(participant, 'card-valor') }))
+      .filter(({ count }) => count > 0)
+      .map(({ participant, count }) => ({
         playerId: participant.playerId,
         source: 'card-valor',
-        amount: 2,
-        reason: 'Valor Battle: +2 to battle total.',
+        amount: 2 * count,
+        reason: `Valor Battle: +${2 * count} to battle total.`,
       }));
 
     return {
       modifiers,
-      logMessages: modifiers.map((modifier) => `Valor gave ${modifier.playerId} +2.`),
+      logMessages: modifiers.map((modifier) => `Valor gave ${modifier.playerId} +${modifier.amount}.`),
     };
   },
 };
@@ -228,7 +235,7 @@ export const attritionAssetHandler: EffectHandler = {
     const loser = context.battle.attacker.playerId === context.battle.loser
       ? context.battle.attacker
       : context.battle.defender;
-    const cards = loser.battleDrawPlayed.map((played) => played.cardId);
+    const cards = loser.battleDrawPlayed.filter((played) => !played.virtual).map((played) => played.cardId);
 
     return {
       destinationOverrides: cards.map((cardId) => ({
