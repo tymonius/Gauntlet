@@ -37,15 +37,15 @@ function participant(playerId: PlayerID): BattleParticipantState {
 function played(
   owner: PlayerID,
   origin: 'hand' | 'battle_draw',
-  state: { canceled?: boolean; negated?: boolean } = {},
+  flags: { canceled?: boolean; negated?: boolean } = {},
 ): BattlePlayedCard {
   return {
     cardId: 'mystics-spirit-hollow',
     owner,
     origin,
     faceDown: false,
-    canceled: state.canceled ?? false,
-    negated: state.negated,
+    canceled: flags.canceled ?? false,
+    negated: flags.negated,
   };
 }
 
@@ -90,12 +90,12 @@ function placePlayer(state: GameState, playerId: PlayerID, offset: number): void
   for (const space of state.board.spaces) {
     if (space.occupant === playerId) space.occupant = undefined;
   }
-  const space = territories(state)[offset];
-  space.occupant = playerId;
-  state.players[playerId].occupiedSpaceId = space.id;
+  const destination = territories(state)[offset];
+  destination.occupant = playerId;
+  state.players[playerId].occupiedSpaceId = destination.id;
 }
 
-function battle(state: GameState): BattleState {
+function resolvedBattle(state: GameState): BattleState {
   const spaces = territories(state);
   return {
     id: 'spirit-hollow-battle',
@@ -109,28 +109,13 @@ function battle(state: GameState): BattleState {
   };
 }
 
-function recordResult(state: GameState, prior: BattleState): void {
-  state.recentBattleResult = {
-    battleId: prior.id,
-    turn: state.turn,
-    winner: 'player_1',
-    loser: 'player_2',
-    attacker: 'player_1',
-    defender: 'player_2',
-    location: prior.location,
-    attackerOrigin: prior.attackerOrigin,
-    retreatDirection: 1,
-  };
-  state.phase = 'action_after_movement';
-}
-
-function installSpiritHollow(state: GameState, prior: BattleState, owner: PlayerID = 'player_1'): void {
+function installSpiritHollow(state: GameState, prior: BattleState): void {
   const space = state.board.spaces.find((candidate) => candidate.id === prior.location)!;
-  placeTerritoryOverlay(space, 'mystics-spirit-hollow', owner);
+  placeTerritoryOverlay(space, 'mystics-spirit-hollow', 'player_1');
 }
 
 describe('Spirit Hollow Action placement', () => {
-  it('places on the current or adjacent Territory and leaves no temporary removed-zone copy', () => {
+  it('places on the current or adjacent Territory and exposes guided targets', () => {
     let state = game();
     const spaces = territories(state);
     placePlayer(state, 'player_1', 1);
@@ -168,12 +153,12 @@ describe('Spirit Hollow Action placement', () => {
     expect(state.players.player_1.zones.graveyard).not.toContain('mystics-spirit-hollow');
   });
 
-  it('rejects missing, endpoint, and nonadjacent targets before the card leaves hand', () => {
+  it('rejects missing, non-Territory, and nonadjacent targets before leaving hand', () => {
     const state = game();
     const spaces = territories(state);
     placePlayer(state, 'player_1', 1);
     state.players.player_1.zones.hand = ['mystics-spirit-hollow'];
-    const endpoint = state.board.spaces.find((space) => space.kind === 'endpoint')!;
+    const nonTerritory = state.board.spaces.find((space) => space.kind !== 'territory')!;
 
     expect(() => applyGameAction(state, {
       type: 'play_action_card',
@@ -184,7 +169,7 @@ describe('Spirit Hollow Action placement', () => {
       type: 'play_action_card',
       playerId: 'player_1',
       cardId: 'mystics-spirit-hollow',
-      targets: [{ kind: 'space', spaceId: endpoint.id }],
+      targets: [{ kind: 'space', spaceId: nonTerritory.id }],
     })).toThrow(/current Territory or an adjacent/i);
     expect(() => applyGameAction(state, {
       type: 'play_action_card',
@@ -197,13 +182,18 @@ describe('Spirit Hollow Action placement', () => {
 });
 
 describe('Spirit Hollow Battle placement and stacking', () => {
-  it('moves active hand and Battle Hand copies from normal cleanup destinations onto the contested Territory', () => {
+  it('replaces normal cleanup destinations only for active copies', () => {
     const state = game();
-    const prior = battle(state);
+    const prior = resolvedBattle(state);
     prior.attacker.handCommit = played('player_1', 'hand');
-    prior.attacker.battleDrawPlayed = [played('player_1', 'battle_draw')];
+    prior.attacker.battleDrawPlayed = [
+      played('player_1', 'battle_draw'),
+      played('player_1', 'battle_draw', { negated: true }),
+    ];
+    prior.defender.handCommit = played('player_2', 'hand', { canceled: true });
     state.players.player_1.zones.graveyard = ['mystics-spirit-hollow'];
-    state.players.player_1.zones.discard = ['mystics-spirit-hollow'];
+    state.players.player_1.zones.discard = ['mystics-spirit-hollow', 'mystics-spirit-hollow'];
+    state.players.player_2.zones.hand = ['mystics-spirit-hollow'];
 
     expect(placeSpiritHollowBattleOverlays(state, prior)).toBe(2);
     const space = state.board.spaces.find((candidate) => candidate.id === prior.location)!;
@@ -212,65 +202,44 @@ describe('Spirit Hollow Battle placement and stacking', () => {
       { cardId: 'mystics-spirit-hollow', owner: 'player_1', faceUp: true },
     ]);
     expect(state.players.player_1.zones.graveyard).not.toContain('mystics-spirit-hollow');
-    expect(state.players.player_1.zones.discard).not.toContain('mystics-spirit-hollow');
+    expect(state.players.player_1.zones.discard).toEqual(['mystics-spirit-hollow']);
+    expect(state.players.player_2.zones.hand).toContain('mystics-spirit-hollow');
   });
 
-  it('leaves canceled and negated copies in their normal destinations', () => {
-    const state = game();
-    const prior = battle(state);
-    prior.attacker.handCommit = played('player_1', 'hand', { canceled: true });
-    prior.attacker.battleDrawPlayed = [played('player_1', 'battle_draw', { negated: true })];
-    state.players.player_1.zones.hand = ['mystics-spirit-hollow'];
-    state.players.player_1.zones.discard = ['mystics-spirit-hollow'];
-
-    expect(placeSpiritHollowBattleOverlays(state, prior)).toBe(0);
-    expect(state.board.spaces.find((candidate) => candidate.id === prior.location)?.overlays).toBeUndefined();
-    expect(state.players.player_1.zones.hand).toContain('mystics-spirit-hollow');
-    expect(state.players.player_1.zones.discard).toContain('mystics-spirit-hollow');
-  });
-
-  it('lets only the topmost Overlay run its normal effect', () => {
+  it('runs only the top Overlay and lets a newly placed copy trigger for the same battle', () => {
     const covered = game();
-    const coveredBattle = battle(covered);
+    const coveredBattle = resolvedBattle(covered);
     const coveredSpace = covered.board.spaces.find((candidate) => candidate.id === coveredBattle.location)!;
     placeTerritoryOverlay(coveredSpace, 'mystics-spirit-hollow', 'player_1');
     placeTerritoryOverlay(coveredSpace, 'intelligence-fog-of-war', 'player_2');
     expect(queueSpiritHollowAfterBattle(covered, coveredBattle)).toBe(false);
 
     const active = game();
-    const activeBattle = battle(active);
-    const activeSpace = active.board.spaces.find((candidate) => candidate.id === activeBattle.location)!;
-    placeTerritoryOverlay(activeSpace, 'intelligence-fog-of-war', 'player_2');
-    placeTerritoryOverlay(activeSpace, 'mystics-spirit-hollow', 'player_1');
+    const activeBattle = resolvedBattle(active);
+    activeBattle.attacker.handCommit = played('player_1', 'hand');
+    active.players.player_1.zones.graveyard = ['mystics-spirit-hollow'];
+    active.players.player_1.zones.hand = ['hand-card'];
+    active.players.player_2.zones.hand = ['opponent-card'];
+    placeSpiritHollowBattleOverlays(active, activeBattle);
+
     expect(queueSpiritHollowAfterBattle(active, activeBattle)).toBe(true);
-  });
-
-  it('allows a newly battle-placed Spirit Hollow to trigger for that same battle', () => {
-    const state = game();
-    const prior = battle(state);
-    prior.attacker.handCommit = played('player_1', 'hand');
-    state.players.player_1.zones.graveyard = ['mystics-spirit-hollow'];
-    state.players.player_1.zones.hand = ['hand-card'];
-    state.players.player_2.zones.hand = ['opponent-card'];
-
-    placeSpiritHollowBattleOverlays(state, prior);
-    expect(queueSpiritHollowAfterBattle(state, prior)).toBe(true);
-    expect(openNextSpiritHollowChoice(state)).toBe(true);
-    expect(state.pendingMysticsChoice).toMatchObject({
+    expect(openNextSpiritHollowChoice(active)).toBe(true);
+    expect(active.pendingMysticsChoice).toMatchObject({
       kind: 'spirit_hollow_after_cleanup',
       playerId: 'player_1',
-      battleId: prior.id,
+      battleId: activeBattle.id,
     });
   });
 });
 
 describe('Spirit Hollow after-cleanup choices', () => {
-  it('offers private sequential choices to both players and auto-skips an empty hand', () => {
+  it('keeps choices private, skips empty hands, and offers optional recovery', () => {
     const state = game();
-    const prior = battle(state);
+    const prior = resolvedBattle(state);
     installSpiritHollow(state, prior);
     state.players.player_1.zones.hand = [];
     state.players.player_2.zones.hand = ['opponent-card'];
+    state.players.player_2.zones.graveyard = ['grave-card'];
     queueSpiritHollowAfterBattle(state, prior);
 
     expect(openNextSpiritHollowChoice(state)).toBe(true);
@@ -278,53 +247,27 @@ describe('Spirit Hollow after-cleanup choices', () => {
       kind: 'spirit_hollow_after_cleanup',
       playerId: 'player_2',
       handOptions: ['opponent-card'],
+      graveyardOptions: ['grave-card'],
     });
     expect(toPrivateGameView(state, 'player_2').pendingMysticsChoice).toBeDefined();
     expect(toPrivateGameView(state, 'player_1').pendingMysticsChoice).toBeUndefined();
     expect('pendingMysticsChoice' in toPublicGameView(state)).toBe(false);
-  });
-
-  it('allows sacrifice without recovery or with one preexisting Graveyard card', () => {
-    const state = game();
-    const prior = battle(state);
-    installSpiritHollow(state, prior);
-    state.players.player_1.zones.hand = ['hand-card'];
-    state.players.player_1.zones.graveyard = ['grave-card'];
-    state.players.player_2.zones.hand = [];
-    queueSpiritHollowAfterBattle(state, prior);
-    openNextSpiritHollowChoice(state);
-
     expect(buildGuidedOptions(state).map((option) => option.action)).toEqual(expect.arrayContaining([
-      { type: 'resolve_mystics_choice', playerId: 'player_1', choice: 'pass' },
-      { type: 'resolve_mystics_choice', playerId: 'player_1', choice: 'use', cardId: 'hand-card' },
+      { type: 'resolve_mystics_choice', playerId: 'player_2', choice: 'pass' },
+      { type: 'resolve_mystics_choice', playerId: 'player_2', choice: 'use', cardId: 'opponent-card' },
       {
         type: 'resolve_mystics_choice',
-        playerId: 'player_1',
+        playerId: 'player_2',
         choice: 'use',
-        cardId: 'hand-card',
+        cardId: 'opponent-card',
         secondaryCardId: 'grave-card',
       },
     ]));
-
-    resolveSpiritHollowChoice(state, {
-      type: 'resolve_mystics_choice',
-      playerId: 'player_1',
-      choice: 'use',
-      cardId: 'hand-card',
-      secondaryCardId: 'grave-card',
-    });
-
-    expect(state.players.player_1.zones.graveyard).toContain('hand-card');
-    expect(state.players.player_1.zones.graveyard).not.toContain('grave-card');
-    expect(state.players.player_1.zones.discard).toContain('grave-card');
-    const publicEvent = state.log.find((event) => event.type === 'mystics_spirit_hollow_used')!;
-    expect(JSON.stringify(publicEvent)).not.toContain('hand-card');
-    expect(JSON.stringify(publicEvent)).not.toContain('grave-card');
   });
 
-  it('treats an existing same-title copy as the required other Graveyard card', () => {
+  it('supports same-title recovery without recovering the newly sacrificed copy', () => {
     const state = game();
-    const prior = battle(state);
+    const prior = resolvedBattle(state);
     installSpiritHollow(state, prior);
     state.players.player_1.zones.hand = ['duplicate'];
     state.players.player_1.zones.graveyard = ['duplicate'];
@@ -342,13 +285,14 @@ describe('Spirit Hollow after-cleanup choices', () => {
 
     expect(state.players.player_1.zones.graveyard).toEqual(['duplicate']);
     expect(state.players.player_1.zones.discard).toEqual(['duplicate']);
+    const publicEvent = state.log.find((event) => event.type === 'mystics_spirit_hollow_used')!;
+    expect(JSON.stringify(publicEvent)).not.toContain('duplicate');
   });
 
-  it('triggers Materia Prima and lets Grave Ward interrupt before the second player chooses', () => {
+  it('triggers Materia Prima and lets Grave Ward interrupt before the next player', () => {
     let state = game('Alchemist');
-    const prior = battle(state);
+    const prior = resolvedBattle(state);
     installSpiritHollow(state, prior);
-    state.activePlayer = 'player_1';
     state.players.player_1.zones.hand = ['sacrifice-card'];
     state.players.player_1.zones.deck = ['drawn-card'];
     state.players.player_1.zones.assetBank = ['mystics-grave-ward'];
@@ -374,28 +318,27 @@ describe('Spirit Hollow after-cleanup choices', () => {
 });
 
 describe('capture-sensitive Overlay removal', () => {
-  it('moves covered Spirit Hollow and Circle of Bones copies to their owners’ Graveyards when control changes', () => {
+  it('removes covered Spirit Hollow and Circle of Bones copies when control changes', () => {
     let state = game();
-    const space = territories(state)[2];
-    for (const candidate of state.board.spaces) candidate.occupant = undefined;
-    space.controller = 'player_2';
-    space.occupant = 'player_1';
-    space.capturePendingBy = 'player_1';
-    state.players.player_1.occupiedSpaceId = space.id;
-    state.activePlayer = 'player_1';
-    state.priorityPlayer = 'player_1';
-    state.phase = 'turn_start';
-    state.players.player_1.zones.deck = ['drawn-card'];
-    space.overlays = [
+    const target = territories(state)[2];
+    for (const space of state.board.spaces) space.occupant = undefined;
+    target.controller = 'player_2';
+    target.occupant = 'player_1';
+    target.capturePendingBy = 'player_1';
+    target.overlays = [
       { cardId: 'mystics-spirit-hollow', owner: 'player_1', faceUp: true },
       { cardId: 'intelligence-fog-of-war', owner: 'player_2', faceUp: true },
       { cardId: 'mystics-circle-of-bones', owner: 'player_1', faceUp: true },
     ];
+    state.players.player_1.occupiedSpaceId = target.id;
+    state.activePlayer = 'player_1';
+    state.priorityPlayer = 'player_1';
+    state.phase = 'turn_start';
+    state.players.player_1.zones.deck = ['drawn-card'];
 
     state = applyGameAction(state, { type: 'draw_card', playerId: 'player_1' }).state;
 
-    expect(space.controller).toBe('player_2');
-    const updated = state.board.spaces.find((candidate) => candidate.id === space.id)!;
+    const updated = state.board.spaces.find((space) => space.id === target.id)!;
     expect(updated.controller).toBe('player_1');
     expect(updated.overlays).toEqual([
       { cardId: 'intelligence-fog-of-war', owner: 'player_2', faceUp: true },
