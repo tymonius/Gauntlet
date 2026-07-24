@@ -32,7 +32,7 @@ jobs:
       - name: Install document-rendering dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y pandoc poppler-utils librsvg2-bin libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf-2.0-0 libffi-dev shared-mime-info
+          sudo apt-get install -y pandoc poppler-utils librsvg2-bin fonts-noto-core libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf-2.0-0 libffi-dev shared-mime-info
           python3 -m venv .venv
           . .venv/bin/activate
           python -m pip install --upgrade pip
