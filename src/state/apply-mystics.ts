@@ -12,6 +12,15 @@ import {
   resolveAccursedWagerChoice,
 } from './mystics-accursed-wager';
 import {
+  applyCircleOfBonesAction,
+  isCircleOfBonesChoice,
+  openCircleOfBonesRerollIfReady,
+  placeCircleOfBonesBattleOverlays,
+  removeCircleOfBonesCleanupCopies,
+  requireCircleOfBonesActionTarget,
+  resolveCircleOfBonesChoice,
+} from './mystics-circle-of-bones';
+import {
   applyDarkOmensAction,
   isDarkOmensChoice,
   openNextDarkOmensBattleChoice,
@@ -111,6 +120,7 @@ function continueMysticsAutomation(
     && result.state.recentBattleResult?.battleId === priorBattle.id,
   );
   if (endedBattle && priorBattle) {
+    removeCircleOfBonesCleanupCopies(result.state, priorBattle);
     resolveDeferredMateriaPrimaAfterBattle(result.state, priorBattle.id);
     reconcileMysticsAfterResolvedBattle(result.state, priorBattle);
     queuePathsOfShadowAfterBattle(result.state, priorBattle);
@@ -139,6 +149,7 @@ function continueMysticsAutomation(
   openNextDarkOmensBattleChoice(result.state);
   queueInvocationForRevealedBattleCards(result.state);
   openNextFatesTollReroll(result.state);
+  openCircleOfBonesRerollIfReady(result.state);
   openAccursedWagerAftermathIfReady(result.state);
   openDeferredInvocationIfReady(result.state);
   return result;
@@ -177,6 +188,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     else if (isSoulForSoulChoice(pendingKind)) resolveSoulForSoulBattleChoice(next, action);
     else if (isPathsOfShadowChoice(pendingKind)) resolvePathsOfShadowChoice(next, action);
     else if (isSpiritHollowChoice(pendingKind)) resolveSpiritHollowChoice(next, action);
+    else if (isCircleOfBonesChoice(pendingKind)) resolveCircleOfBonesChoice(next, action);
     else resolveMysticsChoice(next, action);
     return continueMysticsAutomation(
       { state: next },
@@ -227,12 +239,14 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     requireSoulForSoulActionTargets(game, action.playerId, action.cardId, action.targets);
     requirePathsOfShadowActionTarget(game, action.playerId, action.cardId, action.targets);
     requireSpiritHollowActionTarget(game, action.playerId, action.cardId, action.targets);
+    requireCircleOfBonesActionTarget(game, action.playerId, action.cardId, action.targets);
   }
   const priorBattle = resolvedBattleSnapshot(game);
   const usedFatesTollBonus = action.type === 'move_player'
     ? fatesTollMoveUsesBonus(game, action.playerId)
     : false;
   const result = applySubversionAssetGameAction(game, action);
+  if (action.type === 'resolve_battle_reveal') placeCircleOfBonesBattleOverlays(result.state);
   const battleStarted = !priorBattle && Boolean(result.state.battle);
   if (battleStarted) bindAccursedWagerToNewBattle(result.state);
   if (action.type === 'move_player') {
@@ -245,6 +259,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     applySoulForSoulAction(result.state, action.playerId, action.cardId, action.targets);
     applyPathsOfShadowAction(result.state, action.playerId, action.cardId, action.targets);
     applySpiritHollowAction(result.state, action.playerId, action.cardId, action.targets);
+    applyCircleOfBonesAction(result.state, action.playerId, action.cardId, action.targets);
   }
   if (action.type === 'end_turn') {
     expireAccursedWagerAtEndTurn(result.state, action.playerId);
