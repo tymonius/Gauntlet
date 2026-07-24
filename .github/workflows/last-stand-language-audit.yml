@@ -1,10 +1,9 @@
-name: Last Stand language audit
+name: Release tooling inventory
 
 on:
   pull_request:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   audit:
@@ -17,23 +16,18 @@ jobs:
       - name: Checkout branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref || github.ref }}
+          ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 1
           show-progress: false
-      - name: Inventory current Last Stand language
+      - name: Inventory release tooling
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           {
-            echo '## Current v0.6 Last Stand language audit'
+            echo '## Release tooling inventory'
             echo
             echo '```text'
-            git grep -n -i 'last stand' -- \
-              README.md index.html docs releases/v0.6.0 rulebook rules-assistant scripts src data deckbuilder deckbuilder-v0.6 faction-sheets playtest \
-              ':!docs/Archive/**' ':!*.pdf' ':!*.docx' || true
+            find scripts -maxdepth 2 -type f -print | sort
             echo '```'
-          } > /tmp/last-stand-audit.md
-          cat /tmp/last-stand-audit.md
-          if [ -n "${{ github.event.pull_request.number }}" ]; then
-            gh pr comment "${{ github.event.pull_request.number }}" --body-file /tmp/last-stand-audit.md
-          fi
+          } > /tmp/release-tooling.md
+          gh pr comment "${{ github.event.pull_request.number }}" --body-file /tmp/release-tooling.md
