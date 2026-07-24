@@ -1,7 +1,10 @@
 import type { GameState, PlayerID } from '../types';
 import type { AppStateAction } from '../state/actions';
 import { availableBattleHandCards } from '../state/battle-hand-restrictions';
-import { isSubversionAssetChoice } from '../state/intelligence-subversion-asset';
+import {
+  isSubversionAssetChoice,
+  type PendingSubversionAssetChoice,
+} from '../state/intelligence-subversion-asset';
 
 export interface IntelligenceBattleGuidedOption {
   label: string;
@@ -23,10 +26,13 @@ export function buildIntelligenceBattleOptions(game: GameState, playerId: Player
     label,
     action: { type: 'resolve_intelligence_choice', playerId, choice, cardId },
   });
-  if (isSubversionAssetChoice(pending)) {
+  const subversionPending = isSubversionAssetChoice(pending as unknown)
+    ? pending as unknown as PendingSubversionAssetChoice
+    : undefined;
+  if (subversionPending) {
     return [
-      action(`Allow ${pending.effectLabel} to resolve`, 'pass'),
-      action(`Use Subversion to negate ${pending.effectLabel}`, 'use'),
+      action(`Allow ${subversionPending.effectLabel} to resolve`, 'pass'),
+      action(`Use Subversion to negate ${subversionPending.effectLabel}`, 'use'),
     ];
   }
   if (pending.kind === 'surveillance') {
