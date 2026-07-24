@@ -25,6 +25,8 @@ export interface BattlePlayedCard {
   earlyEffectResolved?: boolean;
   postRevealEffectResolved?: boolean;
   visibleTo?: PlayerID[];
+  /** A repeated effect with no additional physical card or cleanup destination. */
+  virtual?: boolean;
 }
 
 export interface BattleParticipantState {

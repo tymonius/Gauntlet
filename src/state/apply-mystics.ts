@@ -97,6 +97,13 @@ import {
   resolveSpiritHollowChoice,
 } from './mystics-spirit-hollow';
 import {
+  correctWitchcraftBattleDestinations,
+  isWitchcraftChoice,
+  openNextWitchcraftChoice,
+  removeWitchcraftVirtualCleanupCopies,
+  resolveWitchcraftChoice,
+} from './mystics-witchcraft';
+import {
   openDeferredInvocationIfReady,
   queueInvocationForArcaneUse,
   queueInvocationForRevealedBattleCards,
@@ -156,6 +163,8 @@ function continueMysticsAutomation(
     queueSpiritHollowAfterBattle(result.state, priorBattle);
     queueNecromancyBattleEffects(result.state, priorBattle);
     correctBlackCovenantBattleSourceDestinations(result.state, priorBattle);
+    correctWitchcraftBattleDestinations(result.state, priorBattle);
+    removeWitchcraftVirtualCleanupCopies(result.state, priorBattle);
   }
   reconcileBlackCovenantBindings(result.state);
   reconcileBlackCovenantBattleReleases(result.state);
@@ -163,6 +172,7 @@ function continueMysticsAutomation(
     registerGraveyardEntries(result.state, graveyardBefore, endedBattle ? priorBattle?.id : undefined);
   }
   reconcileRiteOfCrossingAtTurnStart(result.state);
+  openNextWitchcraftChoice(result.state);
   openNextBlackCovenantBattleChoice(result.state);
   openNextRendTheVeilChoice(result.state);
   openPathsOfShadowChoiceIfReady(result.state);
@@ -176,6 +186,7 @@ function continueMysticsAutomation(
   runPostActionAutomationPipeline(result.state);
   reconcileBlackCovenantBindings(result.state);
   reconcileBlackCovenantBattleReleases(result.state);
+  openNextWitchcraftChoice(result.state);
   openNextBlackCovenantBattleChoice(result.state);
   openNextRendTheVeilChoice(result.state);
   openPathsOfShadowChoiceIfReady(result.state);
@@ -227,6 +238,10 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     else if (isPathsOfShadowChoice(pendingKind)) resolvePathsOfShadowChoice(next, action);
     else if (isSpiritHollowChoice(pendingKind)) resolveSpiritHollowChoice(next, action);
     else if (isCircleOfBonesChoice(pendingKind)) resolveCircleOfBonesChoice(next, action);
+    else if (isWitchcraftChoice(pendingKind)) {
+      queueInvocationForRevealedBattleCards(next);
+      resolveWitchcraftChoice(next, action);
+    }
     else if (isBlackCovenantChoice(pendingKind)) {
       const boundCardId = resolveBlackCovenantBattleChoice(next, action);
       if (boundCardId) replayedArcaneUse = { playerId: action.playerId, cardId: boundCardId };

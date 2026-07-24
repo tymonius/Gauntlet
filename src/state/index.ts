@@ -53,6 +53,7 @@ export * from './mystics-rend-the-veil';
 export * from './mystics-soul-for-soul';
 export * from './mystics-paths-of-shadow';
 export * from './mystics-spirit-hollow';
+export * from './mystics-witchcraft';
 export * from './actions';
 export * from './draw';
 export { applyGameAction } from './apply-mystics';
