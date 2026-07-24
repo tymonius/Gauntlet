@@ -33,6 +33,10 @@ describe('Intelligence Action legality', () => {
       evidence: [],
     };
     expect(canResolveIntelligenceAction(state, 'player_1', 'intelligence-operational-reassessment')).toBe(false);
+
+    state.players.player_1.zones.hand.push('card-valor');
+    expect(canResolveIntelligenceAction(state, 'player_1', 'intelligence-operational-reassessment')).toBe(false);
+
     state.players.player_1.zones.hand.push('intelligence-fog-of-war');
     expect(canResolveIntelligenceAction(state, 'player_1', 'intelligence-operational-reassessment')).toBe(true);
   });
