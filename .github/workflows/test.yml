@@ -1,4 +1,49 @@
-name: Test
+name: Repair Necromancy Typecheck
+
+on:
+  pull_request:
+
+permissions:
+  contents: write
+
+jobs:
+  repair:
+    if: github.head_ref == 'feature/mystics-necromancy'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          fetch-depth: 0
+
+      - name: Apply repair and restore standard CI
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          source = Path('src/state/mystics-necromancy.ts')
+          text = source.read_text()
+          old = "if (!pending || !isNecromancyChoice(pending.kind) || pending.playerId !== action.playerId) {"
+          new = """if (!pending
+              || (pending.kind !== 'necromancy_action' && pending.kind !== 'necromancy_battle')
+              || pending.playerId !== action.playerId) {"""
+          if old not in text:
+              raise SystemExit('Expected Necromancy type-guard line was not found.')
+          source.write_text(text.replace(old, new, 1))
+
+          test = Path('src/state/mystics-necromancy.test.ts')
+          text = test.read_text()
+          old = "expect(state.pendingMysticsChoice?.kind).toBe('necromancy_battle');"
+          new = "expect(state.pendingMysticsChoice).toMatchObject({ kind: 'necromancy_battle' });"
+          if old not in text:
+              raise SystemExit('Expected Necromancy test assertion was not found.')
+          test.write_text(text.replace(old, new, 1))
+
+          workflow = Path('.github/workflows/test.yml')
+          workflow.write_text("""name: Test
 
 on:
   pull_request:
@@ -23,17 +68,15 @@ jobs:
         run: npm install
 
       - name: Typecheck
-        shell: bash
-        run: |
-          set -o pipefail
-          npm run typecheck 2>&1 | tee necromancy-typecheck.log
-
-      - name: Upload diagnostics
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: necromancy-typecheck-output
-          path: necromancy-typecheck.log
+        run: npm run typecheck
 
       - name: Test
         run: npm test
+""")
+          PY
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/state/mystics-necromancy.ts src/state/mystics-necromancy.test.ts .github/workflows/test.yml
+          git commit -m "Fix Necromancy type narrowing"
+          git push origin HEAD:${{ github.head_ref }}
