@@ -50,9 +50,9 @@ function continueMysticsAutomation(
   if (arcaneUse && isArcaneCard(arcaneUse.cardId)) {
     queueInvocationForArcaneUse(result.state, arcaneUse.playerId, [arcaneUse.cardId]);
   }
-  queueInvocationForRevealedBattleCards(result.state);
   runPostActionAutomationPipeline(result.state);
   openNextDarkOmensBattleChoice(result.state);
+  queueInvocationForRevealedBattleCards(result.state);
   openDeferredInvocationIfReady(result.state);
   return result;
 }
