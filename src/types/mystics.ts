@@ -229,6 +229,17 @@ export interface PendingCircleOfBonesChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface PendingRendTheVeilChoice {
+  kind: 'rend_the_veil';
+  playerId: PlayerID;
+  battleId: string;
+  sourceSlot: 'hand_commit' | 'battle_draw_played' | 'asset';
+  sourceIndex?: number;
+  graveyardOptions: CardID[];
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface PendingNecromancyActionChoice {
   kind: 'necromancy_action';
   playerId: PlayerID;
@@ -262,5 +273,6 @@ export type PendingMysticsChoice =
   | PendingPathsOfShadowChoice
   | PendingSpiritHollowChoice
   | PendingCircleOfBonesChoice
+  | PendingRendTheVeilChoice
   | PendingNecromancyActionChoice
   | PendingNecromancyBattleChoice;
