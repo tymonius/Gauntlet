@@ -1,4 +1,4 @@
-import type { CardID, SpaceID } from './ids';
+import type { CardID, PlayerID, SpaceID } from './ids';
 
 export type MysticRiteId = 'rite_of_echoes' | 'rite_of_blood' | 'rite_of_crossing';
 
@@ -43,3 +43,15 @@ export interface PublicMysticsState {
   invocationUnlocked: boolean;
   transmutationUnlocked: boolean;
 }
+
+export interface PendingGuardiansOfTheCircleChoice {
+  kind: 'guardians_of_the_circle';
+  playerId: PlayerID;
+  battleId: string;
+  riteId: Exclude<MysticRiteId, 'rite_of_crossing'>;
+  arcaneCardOptions: CardID[];
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export type PendingMysticsChoice = PendingGuardiansOfTheCircleChoice;
