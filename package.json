@@ -6,6 +6,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run && node scripts/validate-starter-decks.mjs",
+    "test:rules-assistant": "vitest run rules-assistant/local-search.test.mjs",
     "test:watch": "vitest",
     "dev:cli": "tsx src/cli/dev-runner-v06.ts",
     "dev:gui": "tsx src/gui/dev-server-v06.ts"
