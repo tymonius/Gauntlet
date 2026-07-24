@@ -1,4 +1,4 @@
-name: Release tooling inventory
+name: Implement Last Stand language
 
 on:
   pull_request:
@@ -6,12 +6,12 @@ on:
       - main
 
 jobs:
-  audit:
+  implement:
+    if: github.event.pull_request.head.ref == 'agent/normalize-last-stand-language'
     runs-on: ubuntu-latest
     permissions:
-      contents: read
+      contents: write
       pull-requests: write
-      issues: write
     steps:
       - name: Checkout branch
         uses: actions/checkout@v4
@@ -19,15 +19,56 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref }}
           fetch-depth: 1
           show-progress: false
-      - name: Inventory release tooling
-        env:
-          GH_TOKEN: ${{ github.token }}
+
+      - name: Apply terminology changes
+        run: python3 scripts/normalize-last-stand-language.py
+
+      - name: Regenerate structured release files
+        run: node scripts/build-v0.6.0-release.mjs
+
+      - name: Install document-rendering dependencies
         run: |
-          {
-            echo '## Release tooling inventory'
-            echo
-            echo '```text'
-            find scripts -maxdepth 2 -type f -print | sort
-            echo '```'
-          } > /tmp/release-tooling.md
-          gh pr comment "${{ github.event.pull_request.number }}" --body-file /tmp/release-tooling.md
+          sudo apt-get update
+          sudo apt-get install -y pandoc poppler-utils libcairo2 libpango-1.0-0 libpangocairo-1.0-0 libgdk-pixbuf-2.0-0 libffi-dev shared-mime-info
+          python3 -m venv .venv
+          . .venv/bin/activate
+          python -m pip install --upgrade pip
+          python -m pip install weasyprint python-docx pypdf Pillow
+
+      - name: Regenerate and validate rulebook documents
+        run: |
+          . .venv/bin/activate
+          bash scripts/render-v0.6.0-documents.sh
+
+      - name: Validate code and generated data
+        run: |
+          npm install
+          npm run typecheck
+          npm test
+
+      - name: Audit remaining awkward constructions
+        run: |
+          paths=(README.md index.html docs releases/v0.6.0 rulebook rules-assistant scripts src data deckbuilder deckbuilder-v0.6 faction-sheets playtest)
+          if git grep -n -E "win(s|ning)? (the |their |opponent.?s )?Last Stand|defeat(ing)? .* in (their|a final) Last Stand|initiat(e|ing).*Last Stand|Last Stands won|during their Last Stand|an attacking Last Stand win|a defending Last Stand win" -- "${paths[@]}" ':!docs/Archive/**' ':!*.pdf' ':!*.docx'; then
+            echo 'Awkward Last Stand construction remains.' >&2
+            exit 1
+          fi
+          git grep -n -i 'last stand' -- "${paths[@]}" ':!docs/Archive/**' ':!*.pdf' ':!*.docx' || true
+
+      - name: Upload visual-validation contact sheets
+        uses: actions/upload-artifact@v4
+        with:
+          name: last-stand-document-contact-sheets
+          path: build/v0.6.0/validation/*contact*.png
+          if-no-files-found: error
+
+      - name: Remove one-time automation
+        run: rm scripts/normalize-last-stand-language.py .github/workflows/last-stand-language-audit.yml
+
+      - name: Commit generated changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Normalize Last Stand battle language'
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
