@@ -79,14 +79,22 @@
     linear-gradient(180deg, #f8f1e3, var(--ga-paper));
   box-shadow: 0 24px 70px rgba(20, 13, 8, 0.38);
   opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
   transform: translateY(10px) scale(0.985);
   transform-origin: bottom right;
-  transition: opacity 180ms ease, transform 180ms ease;
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease,
+    visibility 0s linear 180ms;
 }
 
 .ga-rules-assistant.is-open .ga-rules-panel {
   opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
   transform: translateY(0) scale(1);
+  transition-delay: 0s;
 }
 
 .ga-rules-header {
