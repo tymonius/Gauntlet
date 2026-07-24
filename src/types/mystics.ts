@@ -211,6 +211,17 @@ export interface PendingSpiritHollowChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface PendingCircleOfBonesChoice {
+  kind: 'circle_of_bones_reroll';
+  playerId: PlayerID;
+  battleId: string;
+  spaceId: SpaceID;
+  handOptions: CardID[];
+  targetPlayerOptions: PlayerID[];
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type PendingMysticsChoice =
   | PendingGuardiansOfTheCircleChoice
   | PendingInvocationChoice
@@ -222,4 +233,5 @@ export type PendingMysticsChoice =
   | PendingGraveWardBattleChoice
   | PendingSoulForSoulBattleChoice
   | PendingPathsOfShadowChoice
-  | PendingSpiritHollowChoice;
+  | PendingSpiritHollowChoice
+  | PendingCircleOfBonesChoice;

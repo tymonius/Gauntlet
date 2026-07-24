@@ -4,6 +4,7 @@ import type { AppStateAction } from '../state';
 import {
   canBeginRiteOfCrossing,
   canUseTransmutation,
+  circleOfBonesActionTargets,
   isArcaneCard,
   spiritHollowActionTargets,
 } from '../state';
@@ -126,12 +127,27 @@ function spiritHollowActionOptions(game: GameState, playerId: PlayerID): MysticG
   }));
 }
 
+function circleOfBonesActionOptions(game: GameState, playerId: PlayerID): MysticGuidedOption[] {
+  if (!actionWindowOpen(game, playerId)) return [];
+  if (!game.players[playerId].zones.hand.includes('mystics-circle-of-bones')) return [];
+  return circleOfBonesActionTargets(game, playerId).map((spaceId) => ({
+    label: `Circle of Bones: place on ${spaceId}`,
+    action: {
+      type: 'play_action_card' as const,
+      playerId,
+      cardId: 'mystics-circle-of-bones',
+      targets: [{ kind: 'space' as const, spaceId }],
+    },
+  }));
+}
+
 export function buildMysticRiteOptions(game: GameState, playerId: PlayerID): MysticGuidedOption[] {
   const options: MysticGuidedOption[] = [
     ...transmutationOptions(game, playerId),
     ...soulForSoulActionOptions(game, playerId),
     ...pathsOfShadowActionOptions(game, playerId),
     ...spiritHollowActionOptions(game, playerId),
+    ...circleOfBonesActionOptions(game, playerId),
   ];
   if (!riteWindowOpen(game, playerId)) return options;
   const player = game.players[playerId];
@@ -346,6 +362,27 @@ export function buildPendingMysticsOptions(game: GameState, playerId: PlayerID):
             choice: 'use',
             cardId: handCardId,
             secondaryCardId: graveyardCardId,
+          },
+        });
+      }
+    }
+    return options;
+  }
+  if (pending.kind === 'circle_of_bones_reroll') {
+    const options: MysticGuidedOption[] = [{
+      label: 'Pass Circle of Bones',
+      action: { type: 'resolve_mystics_choice', playerId, choice: 'pass' },
+    }];
+    for (const cardId of pending.handOptions) {
+      for (const targetPlayerId of pending.targetPlayerOptions) {
+        options.push({
+          label: `Put ${cardId} in your Graveyard and make ${game.players[targetPlayerId].name} reroll`,
+          action: {
+            type: 'resolve_mystics_choice',
+            playerId,
+            choice: 'use',
+            cardId,
+            targetPlayerId,
           },
         });
       }
