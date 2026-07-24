@@ -221,6 +221,7 @@ export function toPrivateGameView(game: GameState, viewer: PlayerID): PrivateGam
     battle: game.battle ? toPrivateBattleView(game.battle, game, viewer) : undefined,
     pendingIntelligenceChoice: game.pendingIntelligenceChoice?.playerId === viewer ? structuredClone(game.pendingIntelligenceChoice) : undefined,
     pendingMysticsChoice: game.pendingMysticsChoice?.playerId === viewer ? structuredClone(game.pendingMysticsChoice) : undefined,
+    pendingInquisitionChoice: game.pendingInquisitionChoice?.playerId === viewer ? structuredClone(game.pendingInquisitionChoice) : undefined,
     legalActionPlays: legalActionPlaysForViewer(game, viewer),
     legalLeaderAbilities: legalLeaderAbilitiesFor(game, viewer),
     log: privateLog(game, viewer),
