@@ -10,26 +10,55 @@ import {
   captureInquisitionGraveyards,
   evaluatePurificationAfterNormalDraw,
 } from './inquisition-core';
-import { useInquisitionPurge } from './inquisition-purge';
+import { resolveInquisitionChoice, useInquisitionPurge } from './inquisition-purge';
+import {
+  captureGraveyardSnapshot,
+  openNextGraveWardChoice,
+  registerGraveyardEntries,
+} from './mystics-grave-ward';
+import { reconcileBlackCovenantBindings } from './mystics-black-covenant';
 import { runPostActionAutomationPipeline } from './pipeline';
-import type { ApplyGameActionResult } from './reducer';
+import { GameActionError, type ApplyGameActionResult } from './reducer';
 
 function battleSnapshot(game: GameState): BattleState | undefined {
   return game.battle ? structuredClone(game.battle) : undefined;
 }
 
+function finishDirectInquisitionAction(
+  game: GameState,
+  mysticGraveyardsBefore: ReturnType<typeof captureGraveyardSnapshot>,
+): ApplyGameActionResult {
+  reconcileBlackCovenantBindings(game);
+  registerGraveyardEntries(game, mysticGraveyardsBefore);
+  openNextGraveWardChoice(game);
+  runPostActionAutomationPipeline(game);
+  return { state: game };
+}
+
 export function applyGameAction(game: GameState, action: AppStateAction): ApplyGameActionResult {
   const priorBattle = battleSnapshot(game);
   const graveyardsBefore = captureInquisitionGraveyards(game);
+  const mysticGraveyardsBefore = captureGraveyardSnapshot(game);
   const arcaneActionUse = actionArcaneUse(game, action);
   const normalDraw = action.type === 'draw_card' && game.phase === 'turn_start';
+
+  if (game.pendingInquisitionChoice) {
+    if (action.type !== 'resolve_inquisition_choice') {
+      throw new GameActionError('Resolve the pending Inquisition choice first.');
+    }
+    const next = structuredClone(game);
+    resolveInquisitionChoice(next, action);
+    return finishDirectInquisitionAction(next, mysticGraveyardsBefore);
+  }
+  if (action.type === 'resolve_inquisition_choice') {
+    throw new GameActionError(`${action.playerId} has no pending Inquisition choice.`);
+  }
 
   let result: ApplyGameActionResult;
   if (action.type === 'use_inquisition_purge') {
     const next = structuredClone(game);
     useInquisitionPurge(next, action);
-    runPostActionAutomationPipeline(next);
-    result = { state: next };
+    result = finishDirectInquisitionAction(next, mysticGraveyardsBefore);
   } else {
     result = applyMysticsGameAction(game, action);
   }
