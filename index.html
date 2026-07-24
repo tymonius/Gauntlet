@@ -14,6 +14,7 @@
   <meta name="description" content="Gauntlet is a two-player tactical card-and-territory game of deck construction, hidden battle commitments, faction asymmetry, and territorial control." />
   <title>Gauntlet — Run the Gauntlet</title>
   <link rel="stylesheet" href="site.css" />
+  <link rel="stylesheet" href="newsletter.css" />
   <link rel="stylesheet" href="rules-assistant/widget.css" />
 </head>
 <body>
@@ -25,6 +26,7 @@
     <nav aria-label="Primary navigation">
       <a href="#game">Game</a>
       <a href="#factions">Factions</a>
+      <a href="#updates">Updates</a>
       <a href="#tools">Playtest tools</a>
       <a href="https://github.com/tymonius/Gauntlet">Repository</a>
     </nav>
@@ -62,6 +64,48 @@
         </div>
         <div class="token token-right" aria-hidden="true"></div>
       </div>
+    </section>
+
+    <section id="updates" class="section newsletter-section" aria-labelledby="newsletter-title">
+      <div class="newsletter-copy">
+        <p class="eyebrow">Development dispatches</p>
+        <h2 id="newsletter-title">Follow Gauntlet's development.</h2>
+        <p>Get occasional project updates as the game moves from active development through expanded playtesting and toward release.</p>
+        <ul class="newsletter-topics" aria-label="Newsletter topics">
+          <li>Major rules and release updates</li>
+          <li>New cards, factions, and artwork</li>
+          <li>Playtest opportunities and milestones</li>
+        </ul>
+      </div>
+
+      <form
+        class="newsletter-form embeddable-buttondown-form"
+        action="https://buttondown.com/api/emails/embed-subscribe/gauntlet"
+        method="post"
+        data-newsletter-form
+      >
+        <label for="newsletter-email">Email address</label>
+        <div class="newsletter-fields">
+          <input
+            id="newsletter-email"
+            type="email"
+            name="email"
+            autocomplete="email"
+            inputmode="email"
+            placeholder="you@example.com"
+            aria-describedby="newsletter-note"
+            required
+          />
+          <button class="button primary" type="submit">Join the list</button>
+        </div>
+        <input type="hidden" name="embed" value="1" />
+        <input type="hidden" name="tag" value="gauntlet.run" />
+        <p id="newsletter-note" class="newsletter-note">
+          By subscribing, you agree to receive occasional Gauntlet project emails through
+          <a href="https://buttondown.com/gauntlet" target="_blank" rel="noopener noreferrer">Buttondown</a>.
+          Unsubscribe anytime.
+        </p>
+      </form>
     </section>
 
     <section id="game" class="section game-overview">
@@ -195,6 +239,7 @@
     </div>
     <div class="footer-links">
       <a href="docs/README.md">Documentation</a>
+      <a href="https://buttondown.com/gauntlet">Project updates</a>
       <a href="https://github.com/tymonius/Gauntlet">GitHub</a>
       <a href="releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf">Rulebook PDF</a>
     </div>
@@ -210,6 +255,15 @@
       const trigger = event.target.closest("[data-open-rules-assistant]");
       if (!trigger) return;
       document.querySelector(".ga-rules-launcher")?.click();
+    });
+
+    document.querySelector("[data-newsletter-form]")?.addEventListener("submit", () => {
+      if (typeof window.gtag !== "function") return;
+      window.gtag("event", "newsletter_signup_submit", {
+        newsletter_provider: "buttondown",
+        signup_location: "landing_page",
+        transport_type: "beacon"
+      });
     });
   </script>
 </body>
