@@ -104,6 +104,8 @@ export interface MysticsState {
   blackCovenantBindingSequence?: number;
   blackCovenantBindings?: BlackCovenantBindingState[];
   blackCovenantBattleReleases?: BlackCovenantBattleReleaseState[];
+  witchcraftAssetUseTurn?: number;
+  witchcraftAssetUsesThisTurn?: number;
 }
 
 export interface PublicMysticsState {
@@ -266,6 +268,26 @@ export interface PendingBlackCovenantBattleChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface WitchcraftTargetOption {
+  targetKey: string;
+  cardId: CardID;
+  sourceSlot: 'hand_commit' | 'battle_draw_played';
+  sourceIndex?: number;
+}
+
+export interface PendingWitchcraftChoice {
+  kind: 'witchcraft_repeat';
+  playerId: PlayerID;
+  battleId: string;
+  sourceKind: 'battle_card' | 'asset';
+  sourceSlot?: 'hand_commit' | 'battle_draw_played';
+  sourceIndex?: number;
+  handOptions: CardID[];
+  targetOptions: WitchcraftTargetOption[];
+  options: Array<'pass' | 'repeat'>;
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface PendingNecromancyActionChoice {
   kind: 'necromancy_action';
   playerId: PlayerID;
@@ -301,5 +323,6 @@ export type PendingMysticsChoice =
   | PendingCircleOfBonesChoice
   | PendingRendTheVeilChoice
   | PendingBlackCovenantBattleChoice
+  | PendingWitchcraftChoice
   | PendingNecromancyActionChoice
   | PendingNecromancyBattleChoice;
