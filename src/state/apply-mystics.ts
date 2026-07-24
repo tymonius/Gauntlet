@@ -38,6 +38,14 @@ import {
   type GraveyardSnapshot,
 } from './mystics-grave-ward';
 import {
+  applyPathsOfShadowAction,
+  isPathsOfShadowChoice,
+  openPathsOfShadowChoiceIfReady,
+  queuePathsOfShadowAfterBattle,
+  requirePathsOfShadowActionTarget,
+  resolvePathsOfShadowChoice,
+} from './mystics-paths-of-shadow';
+import {
   applySoulForSoulAction,
   isSoulForSoulChoice,
   openNextSoulForSoulBattleChoice,
@@ -87,6 +95,7 @@ function continueMysticsAutomation(
   if (endedBattle && priorBattle) {
     resolveDeferredMateriaPrimaAfterBattle(result.state, priorBattle.id);
     reconcileMysticsAfterResolvedBattle(result.state, priorBattle);
+    queuePathsOfShadowAfterBattle(result.state, priorBattle);
     queueAccursedWagerAfterBattle(result.state, priorBattle);
     queueGraveWardBattleEffects(result.state, priorBattle);
     queueSoulForSoulBattleEffects(result.state, priorBattle);
@@ -95,12 +104,14 @@ function continueMysticsAutomation(
     registerGraveyardEntries(result.state, graveyardBefore, endedBattle ? priorBattle?.id : undefined);
   }
   reconcileRiteOfCrossingAtTurnStart(result.state);
+  openPathsOfShadowChoiceIfReady(result.state);
   openNextGraveWardChoice(result.state);
   openNextSoulForSoulBattleChoice(result.state);
   if (arcaneUse && isArcaneCard(arcaneUse.cardId)) {
     queueInvocationForArcaneUse(result.state, arcaneUse.playerId, [arcaneUse.cardId]);
   }
   runPostActionAutomationPipeline(result.state);
+  openPathsOfShadowChoiceIfReady(result.state);
   openNextGraveWardChoice(result.state);
   openNextSoulForSoulBattleChoice(result.state);
   openNextDarkOmensBattleChoice(result.state);
@@ -135,6 +146,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     else if (isFatesTollChoice(pendingKind)) resolveFatesTollChoice(next, action);
     else if (isGraveWardBattleChoice(pendingKind)) resolveGraveWardBattleChoice(next, action);
     else if (isSoulForSoulChoice(pendingKind)) resolveSoulForSoulBattleChoice(next, action);
+    else if (isPathsOfShadowChoice(pendingKind)) resolvePathsOfShadowChoice(next, action);
     else resolveMysticsChoice(next, action);
     return continueMysticsAutomation({ state: next }, undefined, undefined, graveyardBefore);
   }
@@ -165,6 +177,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
   if (action.type === 'play_action_card') {
     requireFatesTollActionTarget(game, action.playerId, action.cardId, action.targets);
     requireSoulForSoulActionTargets(game, action.playerId, action.cardId, action.targets);
+    requirePathsOfShadowActionTarget(game, action.playerId, action.cardId, action.targets);
   }
   const priorBattle = resolvedBattleSnapshot(game);
   const usedFatesTollBonus = action.type === 'move_player'
@@ -181,6 +194,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     applyAccursedWagerAction(result.state, action.playerId, action.cardId);
     applyFatesTollAction(result.state, action.playerId, action.cardId, action.targets);
     applySoulForSoulAction(result.state, action.playerId, action.cardId, action.targets);
+    applyPathsOfShadowAction(result.state, action.playerId, action.cardId, action.targets);
   }
   if (action.type === 'end_turn') {
     expireAccursedWagerAtEndTurn(result.state, action.playerId);

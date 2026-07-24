@@ -45,7 +45,7 @@ export interface AbortIntelligenceMissionAction { type: 'abort_intelligence_miss
 export interface CompleteSpecialOperationAction { type: 'complete_special_operation'; playerId: PlayerID; }
 export interface ResolveIntelligenceChoiceAction { type: 'resolve_intelligence_choice'; playerId: PlayerID; choice: string; cardId?: CardID; targets?: ActionCardTarget[]; }
 export interface BeginMysticRiteAction { type: 'begin_mystic_rite'; playerId: PlayerID; riteId: MysticRiteId; cardId: CardID; secondaryCardId?: CardID; source?: 'hand' | 'discard'; }
-export interface ResolveMysticsChoiceAction { type: 'resolve_mystics_choice'; playerId: PlayerID; choice: string; cardId?: CardID; secondaryCardId?: CardID; value?: number; values?: number[]; }
+export interface ResolveMysticsChoiceAction { type: 'resolve_mystics_choice'; playerId: PlayerID; choice: string; cardId?: CardID; secondaryCardId?: CardID; spaceId?: SpaceID; value?: number; values?: number[]; }
 export interface UseMysticTransmutationAction { type: 'use_mystic_transmutation'; playerId: PlayerID; cardId: CardID; }
 export interface UseMysticGraveWardAssetAction { type: 'use_mystic_grave_ward_asset'; playerId: PlayerID; choice: 'pass' | 'use'; entryId: string; }
 export interface ResolveAssetBankDiscardAction { type: 'resolve_asset_bank_discard'; playerId: PlayerID; cardIds: CardID[]; }

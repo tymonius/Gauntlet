@@ -48,6 +48,12 @@ export interface SoulForSoulBattleEffectState {
   handCommittedCardIds: CardID[];
 }
 
+export interface PathsOfShadowBattleEffectState {
+  battleId: string;
+  normalRetreatSpaceId?: SpaceID;
+  spaceOptions: SpaceID[];
+}
+
 export interface MysticsState {
   completedRites: MysticRiteId[];
   begunRite?: BegunMysticRiteState;
@@ -68,6 +74,7 @@ export interface MysticsState {
   graveWardEntries?: GraveWardEntryState[];
   graveWardBattleQueue?: GraveWardBattleEffectState[];
   soulForSoulBattleQueue?: SoulForSoulBattleEffectState[];
+  pathsOfShadowBattleQueue?: PathsOfShadowBattleEffectState[];
 }
 
 export interface PublicMysticsState {
@@ -176,6 +183,16 @@ export interface PendingSoulForSoulBattleChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface PendingPathsOfShadowChoice {
+  kind: 'paths_of_shadow_battle';
+  playerId: PlayerID;
+  battleId: string;
+  normalRetreatSpaceId?: SpaceID;
+  spaceOptions: SpaceID[];
+  options: ['pass', 'move'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type PendingMysticsChoice =
   | PendingGuardiansOfTheCircleChoice
   | PendingInvocationChoice
@@ -185,4 +202,5 @@ export type PendingMysticsChoice =
   | PendingFatesTollChoice
   | PendingGraveWardAssetChoice
   | PendingGraveWardBattleChoice
-  | PendingSoulForSoulBattleChoice;
+  | PendingSoulForSoulBattleChoice
+  | PendingPathsOfShadowChoice;

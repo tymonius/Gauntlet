@@ -85,10 +85,33 @@ function soulForSoulActionOptions(game: GameState, playerId: PlayerID): MysticGu
   return options;
 }
 
+function pathsOfShadowActionOptions(game: GameState, playerId: PlayerID): MysticGuidedOption[] {
+  if (!actionWindowOpen(game, playerId)) return [];
+  const player = game.players[playerId];
+  if (!player.zones.hand.includes('mystics-paths-of-shadow')) return [];
+  return game.board.spaces
+    .filter((space) => (
+      space.kind === 'territory'
+      && space.controller === playerId
+      && !space.occupant
+      && space.id !== player.occupiedSpaceId
+    ))
+    .map((space) => ({
+      label: `Paths of Shadow: move to ${space.id}`,
+      action: {
+        type: 'play_action_card' as const,
+        playerId,
+        cardId: 'mystics-paths-of-shadow',
+        targets: [{ kind: 'space' as const, spaceId: space.id }],
+      },
+    }));
+}
+
 export function buildMysticRiteOptions(game: GameState, playerId: PlayerID): MysticGuidedOption[] {
   const options: MysticGuidedOption[] = [
     ...transmutationOptions(game, playerId),
     ...soulForSoulActionOptions(game, playerId),
+    ...pathsOfShadowActionOptions(game, playerId),
   ];
   if (!riteWindowOpen(game, playerId)) return options;
   const player = game.players[playerId];
@@ -271,6 +294,18 @@ export function buildPendingMysticsOptions(game: GameState, playerId: PlayerID):
       }
     }
     return options;
+  }
+  if (pending.kind === 'paths_of_shadow_battle') {
+    return [
+      {
+        label: `Retreat normally${pending.normalRetreatSpaceId ? ` to ${pending.normalRetreatSpaceId}` : ''}`,
+        action: { type: 'resolve_mystics_choice', playerId, choice: 'pass' },
+      },
+      ...pending.spaceOptions.map((spaceId) => ({
+        label: `Use Paths of Shadow to move to ${spaceId}`,
+        action: { type: 'resolve_mystics_choice' as const, playerId, choice: 'move', spaceId },
+      })),
+    ];
   }
   return undefined;
 }
