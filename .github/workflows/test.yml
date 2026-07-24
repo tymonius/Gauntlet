@@ -26,4 +26,14 @@ jobs:
         run: npm run typecheck
 
       - name: Test
-        run: npm test -- src/state/mystics-spirit-hollow.test.ts --reporter=verbose
+        shell: bash
+        run: |
+          set -o pipefail
+          npm test -- src/state/mystics-spirit-hollow.test.ts --reporter=verbose 2>&1 | tee spirit-hollow-test.log
+
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spirit-hollow-test-output
+          path: spirit-hollow-test.log
