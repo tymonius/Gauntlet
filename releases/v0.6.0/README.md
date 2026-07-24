@@ -28,6 +28,7 @@ Scan to open the Deckbuilder:
 
 ## Card and component sources
 
+- `Gauntlet_v0.6.0_Complete_Card_Reference.md` — generated one-file inventory of all 122 Playable Cards and 25 Territories/Arenas, with links to their governing sources.
 - `../../docs/Gauntlet_v0.6_Neutral_Card_Pool.md` — 50 canonical Neutral cards.
 - `../../docs/Gauntlet_v0.6_Territory_Pool.md` — 25 canonical Territories and Arenas.
 - `faction-guides/` — six definitive faction sources.
