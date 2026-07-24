@@ -13,6 +13,10 @@ function hasPlayedCard(context: Parameters<EffectHandler['applies']>[0], playerI
   return participantHasCard(participant, cardId);
 }
 
+function treasonCopiedEffect(context: Parameters<EffectHandler['applies']>[0], playerId: PlayerID, cardId: CardID): boolean {
+  return context.battle?.effectsResolved.includes(`treason_copy:${playerId}:${cardId}`) ?? false;
+}
+
 function hasBankedAsset(game: GameState, playerId: PlayerID, cardId: CardID): boolean {
   if (game.battle?.bankedAssetUseProhibited?.includes(playerId)) return false;
   return game.players[playerId]?.zones.assetBank.includes(cardId) ?? false;
@@ -188,7 +192,8 @@ export const attritionBattleHandler: EffectHandler = {
   timing: ['after_battle_resolution'],
   applies(context) {
     if (!context.battle?.winner || !context.battle.loser) return false;
-    return hasPlayedCard(context, context.battle.winner, 'card-attrition');
+    return hasPlayedCard(context, context.battle.winner, 'card-attrition')
+      || treasonCopiedEffect(context, context.battle.winner, 'card-attrition');
   },
   resolve(context) {
     if (!context.battle?.winner || !context.battle.loser) return {};
