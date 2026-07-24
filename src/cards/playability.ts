@@ -90,6 +90,7 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'intelligence-sleeper-network': actionOnly('intelligence-sleeper-network', 'asset_bank'),
 
   'mystics-dark-omens': battleAndAction('mystics-dark-omens', 'discard'),
+  'mystics-accursed-wager': battleAndAction('mystics-accursed-wager', 'discard'),
 };
 
 export function getCardPlayRule(cardId: CardID): CardPlayRule | undefined { return coreCardPlayRules[cardId]; }
