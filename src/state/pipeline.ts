@@ -7,7 +7,7 @@ import {
 } from './intelligence-sleeper-network';
 import { evaluateWinConditions } from './win';
 
-export type AutomationPipelineStep = 'turn_start' | 'intelligence_reconciliation' | 'sleeper_network_reconciliation' | 'intelligence_mission_requirements' | 'win_conditions';
+export type AutomationPipelineStep = 'turn_start' | 'intelligence_reconciliation' | 'intelligence_mission_requirements' | 'win_conditions';
 
 export interface AutomationPipelineResult {
   steps: AutomationPipelineStep[];
@@ -21,6 +21,9 @@ export function runPostActionAutomationPipeline(game: GameState): AutomationPipe
   const steps: AutomationPipelineStep[] = [];
 
   if (game.phase === 'turn_start') {
+    const activePlayer = game.players[game.activePlayer];
+    activePlayer.hasPlayedActionThisTurn = false;
+    activePlayer.hasPlayedBattleThisTurn = false;
     steps.push('turn_start');
   }
 
@@ -28,7 +31,6 @@ export function runPostActionAutomationPipeline(game: GameState): AutomationPipe
   steps.push('intelligence_reconciliation');
 
   reconcileSleeperNetworks(game);
-  steps.push('sleeper_network_reconciliation');
   maybeOpenSleeperNetworkStartTurnWindow(game);
 
   evaluateIntelligenceMissionRequirements(game);
