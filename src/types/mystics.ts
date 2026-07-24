@@ -30,6 +30,7 @@ export type PublicBegunMysticRiteState =
 export interface MysticsState {
   completedRites: MysticRiteId[];
   begunRite?: BegunMysticRiteState;
+  riteCompletedTurn?: number;
   invocationUsedTurn?: number;
   transmutationUsedBattleId?: string;
   materiaPrimaUsedTurn?: number;
