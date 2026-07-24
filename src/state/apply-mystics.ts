@@ -17,6 +17,16 @@ import {
   resolveDarkOmensChoice,
 } from './mystics-dark-omens';
 import {
+  applyFatesTollAction,
+  continueFatesTollMovement,
+  expireFatesTollMovement,
+  fatesTollMoveUsesBonus,
+  isFatesTollChoice,
+  openNextFatesTollReroll,
+  requireFatesTollActionTarget,
+  resolveFatesTollChoice,
+} from './mystics-fates-toll';
+import {
   openDeferredInvocationIfReady,
   queueInvocationForArcaneUse,
   queueInvocationForRevealedBattleCards,
@@ -63,6 +73,7 @@ function continueMysticsAutomation(
   runPostActionAutomationPipeline(result.state);
   openNextDarkOmensBattleChoice(result.state);
   queueInvocationForRevealedBattleCards(result.state);
+  openNextFatesTollReroll(result.state);
   openAccursedWagerAftermathIfReady(result.state);
   openDeferredInvocationIfReady(result.state);
   return result;
@@ -78,6 +89,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     if (pendingKind === 'invocation') resolveInvocationChoice(next, action);
     else if (isDarkOmensChoice(pendingKind)) resolveDarkOmensChoice(next, action);
     else if (isAccursedWagerChoice(pendingKind)) resolveAccursedWagerChoice(next, action);
+    else if (isFatesTollChoice(pendingKind)) resolveFatesTollChoice(next, action);
     else resolveMysticsChoice(next, action);
     return continueMysticsAutomation({ state: next });
   }
@@ -102,14 +114,28 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     return continueMysticsAutomation({ state: next });
   }
 
+  if (action.type === 'play_action_card') {
+    requireFatesTollActionTarget(game, action.playerId, action.cardId, action.targets);
+  }
   const priorBattle = resolvedBattleSnapshot(game);
+  const usedFatesTollBonus = action.type === 'move_player'
+    ? fatesTollMoveUsesBonus(game, action.playerId)
+    : false;
   const result = applySubversionAssetGameAction(game, action);
-  if (!priorBattle && result.state.battle) bindAccursedWagerToNewBattle(result.state);
+  const battleStarted = !priorBattle && Boolean(result.state.battle);
+  if (battleStarted) bindAccursedWagerToNewBattle(result.state);
+  if (action.type === 'move_player') {
+    continueFatesTollMovement(result.state, action.playerId, usedFatesTollBonus, battleStarted);
+  }
   if (action.type === 'play_action_card') {
     applyDarkOmensAction(result.state, action.playerId, action.cardId);
     applyAccursedWagerAction(result.state, action.playerId, action.cardId);
+    applyFatesTollAction(result.state, action.playerId, action.cardId, action.targets);
   }
-  if (action.type === 'end_turn') expireAccursedWagerAtEndTurn(result.state, action.playerId);
+  if (action.type === 'end_turn') {
+    expireAccursedWagerAtEndTurn(result.state, action.playerId);
+    expireFatesTollMovement(result.state, action.playerId);
+  }
   const arcaneUse = action.type === 'play_action_card'
     ? { playerId: action.playerId, cardId: action.cardId }
     : undefined;
