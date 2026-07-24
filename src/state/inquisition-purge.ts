@@ -1,3 +1,4 @@
+import { v06CanonicalContent } from '../content';
 import type {
   CardID,
   GameEvent,
@@ -5,15 +6,18 @@ import type {
   InquisitionPurgeMode,
   PlayerID,
 } from '../types';
-import type { UseInquisitionPurgeAction } from './actions';
-import { drawFromDeck } from './draw';
+import type {
+  ResolveInquisitionChoiceAction,
+  UseInquisitionPurgeAction,
+} from './actions';
 import { GameActionError } from './reducer';
 import { spendFactionResource } from './resources';
 
 export interface InquisitionPurgeOption {
   mode: InquisitionPurgeMode;
+  cost: 1 | 2 | 3 | 4;
   cardId?: CardID;
-  cost: number;
+  cardIds?: CardID[];
 }
 
 function publicLog(game: GameState, actor: PlayerID, type: string, message: string, payload?: unknown): void {
@@ -47,9 +51,14 @@ function opponentId(game: GameState, playerId: PlayerID): PlayerID {
   return opponent.id;
 }
 
+function cardValue(cardId: CardID): number {
+  return v06CanonicalContent.cardsById.get(cardId)?.cost ?? 0;
+}
+
 function hasBlockingWindow(game: GameState): boolean {
   return Boolean(
-    game.pendingMysticsChoice
+    game.pendingInquisitionChoice
+    || game.pendingMysticsChoice
     || game.pendingIntelligenceChoice
     || game.pendingMilitaryChoice
     || game.pendingMilitaryTimingChoice
@@ -60,41 +69,73 @@ function hasBlockingWindow(game: GameState): boolean {
   );
 }
 
-function purgesUsedThisTurn(game: GameState, playerId: PlayerID): number {
-  const state = game.players[playerId].inquisition;
-  if (!state || state.purgeUseTurn !== game.turn) return 0;
-  return state.purgesUsedThisTurn ?? 0;
-}
-
-export function inquisitionPurgeCost(game: GameState, playerId: PlayerID): number | undefined {
-  const player = game.players[playerId];
-  if (!player?.inquisition || player.factionId !== 'inquisition') return undefined;
-  const used = purgesUsedThisTurn(game, playerId);
-  if (used === 0) return 1;
-  if (used === 1 && player.leaderName === 'Grand Inquisitor') return 2;
-  return undefined;
-}
-
 export function canUseInquisitionPurge(game: GameState, playerId: PlayerID): boolean {
+  const player = game.players[playerId];
+  if (!player?.inquisition || player.factionId !== 'inquisition') return false;
   if (game.activePlayer !== playerId || game.priorityPlayer !== playerId) return false;
   if (game.phase !== 'action_before_movement' && game.phase !== 'action_after_movement') return false;
   if (hasBlockingWindow(game)) return false;
-  const cost = inquisitionPurgeCost(game, playerId);
-  if (cost === undefined) return false;
-  return (game.players[playerId].resources?.conviction?.value ?? 0) >= cost;
+  if (player.actionsRemaining < 1 || player.hasPlayedActionThisTurn || player.hasPlayedBattleThisTurn) return false;
+  return (player.resources?.conviction?.value ?? 0) > 0;
+}
+
+function discardSelections(cards: CardID[]): CardID[][] {
+  const options: CardID[][] = [];
+  for (let first = 0; first < cards.length; first += 1) {
+    if (cardValue(cards[first]) <= 2) options.push([cards[first]]);
+    for (let second = first + 1; second < cards.length; second += 1) {
+      const selected = [cards[first], cards[second]];
+      if (selected.reduce((sum, cardId) => sum + cardValue(cardId), 0) <= 2) options.push(selected);
+    }
+  }
+  return options;
 }
 
 export function legalInquisitionPurgeOptions(game: GameState, playerId: PlayerID): InquisitionPurgeOption[] {
   if (!canUseInquisitionPurge(game, playerId)) return [];
-  const cost = inquisitionPurgeCost(game, playerId)!;
+  const conviction = game.players[playerId].resources?.conviction?.value ?? 0;
   const opponent = game.players[opponentId(game, playerId)];
   const options: InquisitionPurgeOption[] = [];
-  if (opponent.zones.discard.length > 0) options.push({ mode: 'remove_discard_top', cost });
-  if (opponent.zones.hand.length > 0) options.push({ mode: 'random_hand_to_graveyard', cost });
-  for (const cardId of opponent.zones.graveyard) {
-    options.push({ mode: 'graveyard_to_deck_draw', cardId, cost });
+
+  if (conviction >= 1) {
+    if (opponent.zones.discard.length > 0) {
+      options.push({ mode: 'discard_top_to_graveyard', cost: 1 });
+      options.push(...discardSelections(opponent.zones.discard).map((cardIds) => ({
+        mode: 'discard_value_to_graveyard' as const,
+        cost: 1 as const,
+        cardIds,
+      })));
+    }
+  }
+  if (conviction >= 2) {
+    options.push(...opponent.zones.assetBank.map((cardId) => ({
+      mode: 'asset_to_graveyard' as const,
+      cost: 2 as const,
+      cardId,
+    })));
+  }
+  if (conviction >= 3 && opponent.zones.hand.length > 0) {
+    options.push({ mode: 'opponent_choose_hand_to_graveyard', cost: 3 });
+  }
+  if (conviction >= 4) {
+    options.push(...opponent.zones.hand.map((cardId) => ({
+      mode: 'choose_hand_to_graveyard' as const,
+      cost: 4 as const,
+      cardId,
+    })));
   }
   return options;
+}
+
+function sameMultiset(left: readonly CardID[] | undefined, right: readonly CardID[] | undefined): boolean {
+  if (!left || !right || left.length !== right.length) return false;
+  const remaining = [...right];
+  for (const cardId of left) {
+    const index = remaining.indexOf(cardId);
+    if (index < 0) return false;
+    remaining.splice(index, 1);
+  }
+  return remaining.length === 0;
 }
 
 function requireLegalOption(game: GameState, action: UseInquisitionPurgeAction): InquisitionPurgeOption {
@@ -103,81 +144,93 @@ function requireLegalOption(game: GameState, action: UseInquisitionPurgeAction):
   }
   const option = legalInquisitionPurgeOptions(game, action.playerId).find((candidate) => (
     candidate.mode === action.mode
-    && (candidate.mode !== 'graveyard_to_deck_draw' || candidate.cardId === action.cardId)
+    && (candidate.cardId === undefined || candidate.cardId === action.cardId)
+    && (candidate.cardIds === undefined || sameMultiset(candidate.cardIds, action.cardIds))
   ));
-  if (!option) throw new GameActionError('Choose an available Purge effect and target.');
+  if (!option) throw new GameActionError('Choose an available canonical Purge effect and target.');
   return option;
 }
 
-function recordPurgeUse(game: GameState, playerId: PlayerID): void {
-  const inquisition = game.players[playerId].inquisition!;
-  if (inquisition.purgeUseTurn !== game.turn) {
-    inquisition.purgeUseTurn = game.turn;
-    inquisition.purgesUsedThisTurn = 0;
+function consumeActionOpportunity(game: GameState, playerId: PlayerID): void {
+  const player = game.players[playerId];
+  player.actionsRemaining -= 1;
+  player.hasPlayedActionThisTurn = true;
+}
+
+function removeSelections(cards: CardID[], selected: readonly CardID[]): void {
+  for (const cardId of selected) {
+    const index = cards.indexOf(cardId);
+    if (index < 0) throw new GameActionError(`${cardId} is no longer available for Purge.`);
+    cards.splice(index, 1);
   }
-  inquisition.purgesUsedThisTurn = (inquisition.purgesUsedThisTurn ?? 0) + 1;
 }
 
-function removeChosen(cards: CardID[], cardId: CardID): void {
-  const index = cards.indexOf(cardId);
-  if (index < 0) throw new GameActionError(`${cardId} is no longer available.`);
-  cards.splice(index, 1);
-}
-
-export function useInquisitionPurge(
-  game: GameState,
-  action: UseInquisitionPurgeAction,
-  random: () => number = Math.random,
-): CardID {
+export function useInquisitionPurge(game: GameState, action: UseInquisitionPurgeAction): CardID[] {
   const option = requireLegalOption(game, action);
   const player = game.players[action.playerId];
   const opponent = game.players[opponentId(game, action.playerId)];
   spendFactionResource(game, action.playerId, 'conviction', option.cost, `Purge: ${action.mode}.`);
+  consumeActionOpportunity(game, action.playerId);
 
-  let affectedCardId: CardID;
-  if (action.mode === 'remove_discard_top') {
-    affectedCardId = opponent.zones.discard.pop()!;
-    opponent.zones.removed.push(affectedCardId);
-    publicLog(
-      game,
-      action.playerId,
-      'inquisition_purge_removed',
-      `${player.name} removed the top card of ${opponent.name}'s Discard Pile from the game.`,
-      { cardId: affectedCardId, cost: option.cost },
-    );
-  } else if (action.mode === 'random_hand_to_graveyard') {
-    const index = Math.min(Math.floor(random() * opponent.zones.hand.length), opponent.zones.hand.length - 1);
-    affectedCardId = opponent.zones.hand.splice(index, 1)[0];
-    opponent.zones.graveyard.push(affectedCardId);
-    publicLog(
-      game,
-      action.playerId,
-      'inquisition_purge_random_hand',
-      `${player.name} forced one random card from ${opponent.name}'s hand into the Graveyard.`,
-      { cardId: affectedCardId, cost: option.cost },
-    );
-  } else {
-    affectedCardId = action.cardId!;
-    removeChosen(opponent.zones.graveyard, affectedCardId);
-    opponent.zones.deck.push(affectedCardId);
-    const draw = drawFromDeck(opponent, { count: 1 });
-    opponent.zones.hand.push(...draw.drawnCards);
-    publicLog(
-      game,
-      action.playerId,
-      'inquisition_purge_recycled',
-      `${player.name} moved one card from ${opponent.name}'s Graveyard beneath their Draw Pile, then ${opponent.name} drew one card.`,
-      { cardId: affectedCardId, drawnCount: draw.drawnCards.length, cost: option.cost },
-    );
-    privateLog(
-      game,
-      opponent.id,
-      'inquisition_purge_recycled_private',
-      `You drew ${draw.drawnCards.join(', ') || 'no card'} after Purge.`,
-      { drawnCards: draw.drawnCards },
-    );
+  if (action.mode === 'discard_top_to_graveyard') {
+    const cardId = opponent.zones.discard.pop()!;
+    opponent.zones.graveyard.push(cardId);
+    publicLog(game, action.playerId, 'inquisition_purge_discard_top', `${player.name} moved the top card of ${opponent.name}'s Discard Pile to the Graveyard.`, { cardId, cost: 1 });
+    return [cardId];
   }
 
-  recordPurgeUse(game, action.playerId);
-  return affectedCardId;
+  if (action.mode === 'discard_value_to_graveyard') {
+    const cardIds = [...(action.cardIds ?? [])];
+    removeSelections(opponent.zones.discard, cardIds);
+    opponent.zones.graveyard.push(...cardIds);
+    publicLog(game, action.playerId, 'inquisition_purge_discard_value', `${player.name} moved ${cardIds.length} chosen card${cardIds.length === 1 ? '' : 's'} from ${opponent.name}'s Discard Pile to the Graveyard.`, { cardIds, totalValue: cardIds.reduce((sum, cardId) => sum + cardValue(cardId), 0), cost: 1 });
+    return cardIds;
+  }
+
+  if (action.mode === 'asset_to_graveyard') {
+    const cardId = action.cardId!;
+    removeSelections(opponent.zones.assetBank, [cardId]);
+    opponent.zones.graveyard.push(cardId);
+    publicLog(game, action.playerId, 'inquisition_purge_asset', `${player.name} moved one of ${opponent.name}'s Assets to the Graveyard.`, { cardId, cost: 2 });
+    return [cardId];
+  }
+
+  if (action.mode === 'opponent_choose_hand_to_graveyard') {
+    game.pendingInquisitionChoice = {
+      kind: 'purge_hand_choice',
+      playerId: opponent.id,
+      inquisitorId: action.playerId,
+      handOptions: [...opponent.zones.hand],
+      cost: 3,
+      options: ['select'],
+      resumePriorityPlayer: game.priorityPlayer,
+    };
+    game.priorityPlayer = opponent.id;
+    publicLog(game, action.playerId, 'inquisition_purge_hand_choice_opened', `${player.name} ordered ${opponent.name} to choose one card from hand for the Graveyard.`, { cost: 3 });
+    return [];
+  }
+
+  const cardId = action.cardId!;
+  removeSelections(opponent.zones.hand, [cardId]);
+  opponent.zones.graveyard.push(cardId);
+  publicLog(game, action.playerId, 'inquisition_purge_hand_selected', `${player.name} chose one card from ${opponent.name}'s hand for the Graveyard.`, { cardId, cost: 4 });
+  privateLog(game, action.playerId, 'inquisition_purge_hand_selected_private', `You chose ${cardId} from ${opponent.name}'s hand.`, { cardId });
+  return [cardId];
+}
+
+export function resolveInquisitionChoice(game: GameState, action: ResolveInquisitionChoiceAction): CardID {
+  const pending = game.pendingInquisitionChoice;
+  if (!pending || pending.kind !== 'purge_hand_choice' || pending.playerId !== action.playerId) {
+    throw new GameActionError(`${action.playerId} has no pending Inquisition choice.`);
+  }
+  if (!pending.handOptions.includes(action.cardId) || !game.players[action.playerId].zones.hand.includes(action.cardId)) {
+    throw new GameActionError('Choose a card that remains in your hand for Purge.');
+  }
+  removeSelections(game.players[action.playerId].zones.hand, [action.cardId]);
+  game.players[action.playerId].zones.graveyard.push(action.cardId);
+  game.pendingInquisitionChoice = undefined;
+  game.priorityPlayer = pending.resumePriorityPlayer ?? game.activePlayer;
+  publicLog(game, pending.inquisitorId, 'inquisition_purge_hand_choice_resolved', `${game.players[action.playerId].name} chose one card from hand for the Graveyard.`, { cardId: action.cardId, cost: 3 });
+  privateLog(game, action.playerId, 'inquisition_purge_hand_choice_private', `You chose ${action.cardId} for Purge.`, { cardId: action.cardId });
+  return action.cardId;
 }
