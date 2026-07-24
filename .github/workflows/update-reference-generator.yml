@@ -1,0 +1,42 @@
+name: Update reference guide generator
+
+on:
+  push:
+    branches:
+      - clarify-battle-ends-movement
+
+permissions:
+  contents: write
+
+jobs:
+  update-generator:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: clarify-battle-ends-movement
+          fetch-depth: 0
+
+      - name: Update generated reference wording
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('scripts/build-v0.6.0-release.mjs')
+          text = path.read_text(encoding='utf-8')
+          old = "    '4. Advance, hold, or withdraw; resolve any battle.',"
+          new = "    '4. Advance, hold, or withdraw. If movement begins a battle, resolve it immediately; the battle ends that movement and any remaining movement is lost unless an effect explicitly permits further movement.',"
+          count = text.count(old)
+          if count != 1:
+              raise SystemExit(f'Expected one reference-guide line, found {count}')
+          path.write_text(text.replace(old, new), encoding='utf-8')
+
+      - name: Commit generator update
+        run: |
+          rm .github/workflows/update-reference-generator.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/build-v0.6.0-release.mjs .github/workflows/update-reference-generator.yml
+          git commit -m "Keep movement clarification in generated reference guide"
+          git push origin HEAD:clarify-battle-ends-movement
