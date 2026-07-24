@@ -38,6 +38,7 @@ export interface GraveWardBattleEffectState {
   battleId: string;
   sourceKey: string;
   sourceOrigin: 'hand' | 'battle_draw';
+  handCommittedCardIds: CardID[];
 }
 
 export interface MysticsState {
@@ -56,6 +57,7 @@ export interface MysticsState {
   accursedWagerBattleCount?: number;
   fatesTollMovementTurn?: number;
   fatesTollMovementRemaining?: number;
+  graveWardEntrySequence?: number;
   graveWardEntries?: GraveWardEntryState[];
   graveWardBattleQueue?: GraveWardBattleEffectState[];
 }
