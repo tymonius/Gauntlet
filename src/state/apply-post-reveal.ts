@@ -63,6 +63,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
       runPostActionAutomationPipeline(next);
       return { state: next };
     }
+    return applyInterceptedOrdersGameAction(next, action);
   }
 
   return applyInterceptedOrdersGameAction(game, action);
