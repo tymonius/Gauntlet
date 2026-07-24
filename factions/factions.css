@@ -232,3 +232,17 @@
   .factions-intro { margin: 0 auto; padding: 70px 0 50px; }
   .faction-hub-card { min-height: 320px; }
 }
+
+/* Prefer the dedicated leader-card artwork used by current faction sheets. */
+.faction-military img[alt="General leader artwork"] { content: url("../images/general.png"); }
+.faction-military img[alt="Commandant leader artwork"] { content: url("../images/commandant.png"); }
+.faction-diplomats img[alt="Ambassador leader artwork"] { content: url("../images/ambassador.png"); }
+.faction-diplomats img[alt="Senator leader artwork"] { content: url("../images/senator.png"); }
+.faction-financiers img[alt="Banker leader artwork"] { content: url("../images/leader-cards/banker.svg"); }
+.faction-financiers img[alt="Executive leader artwork"] { content: url("../images/leader-cards/executive.svg"); }
+.faction-intelligence img[alt="Ranger leader artwork"] { content: url("../images/ranger.png"); }
+.faction-intelligence img[alt="Spymaster leader artwork"] { content: url("../images/spymaster.png"); }
+.faction-mystics img[alt="Alchemist leader artwork"] { content: url("../images/leader-cards/alchemist.svg"); }
+.faction-mystics img[alt="Spirit Walker leader artwork"] { content: url("../images/leader-cards/spirit-walker.svg"); }
+.faction-inquisition img[alt="Grand Inquisitor leader artwork"] { content: url("../images/leader-cards/grand_inquisitor.jpg"); }
+.faction-inquisition img[alt="Witch Hunter leader artwork"] { content: url("../images/leader-cards/witch_hunter.jpg"); }
