@@ -377,6 +377,6 @@ describe('Necromancy Battle cleanup', () => {
     state.pendingMysticsChoice = undefined;
     state.players.player_1.mystics!.invocationDeferredSourceCardIds = ['mystics-necromancy'];
     expect(openNextNecromancyBattleChoice(state)).toBe(true);
-    expect(state.pendingMysticsChoice?.kind).toBe('necromancy_battle');
+    expect(state.pendingMysticsChoice).toMatchObject({ kind: 'necromancy_battle' });
   });
 });
