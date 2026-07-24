@@ -98,7 +98,7 @@ describe('canonical v0.6 Last Stand resolution', () => {
     });
   });
 
-  it('ends the game only when the attacker wins the opponent’s Last Stand', () => {
+  it('ends the game only when the attacker wins a Last Stand battle', () => {
     const result = applyGameAction(lastStand(6, 3), {
       type: 'resolve_battle',
       playerId: 'player_1',

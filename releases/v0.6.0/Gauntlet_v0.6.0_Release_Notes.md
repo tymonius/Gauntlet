@@ -33,10 +33,10 @@ To run the Gauntlet, a player must:
 
 1. defeat the opponent on their final Territory;
 2. occupy and later capture that Territory;
-3. advance beyond the Territory column; and
-4. defeat the opponent in their Last Stand.
+3. advance beyond the Territory column, forcing the opponent to make a Last Stand; and
+4. win the resulting battle.
 
-During a Last Stand, the defender has Defender's Advantage and adds +1 to their battle total.
+During a Last Stand battle, the defender has Defender's Advantage and adds +1 to their battle total.
 
 ## Card system
 

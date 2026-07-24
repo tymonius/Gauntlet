@@ -10,7 +10,7 @@
 
 Gauntlet is a two-player tactical card game of deck construction, strategy, timing, and territorial control. Before the game begins, each player builds a Deck, chooses one of six factions and one of that faction's Leaders, and selects three Territories to form their side of the battlefield. Both players may choose the same faction or Leader.
 
-Victory belongs to the player who successfully runs the Gauntlet. To do so, advance through a contested line of Territories, overcome the opponent's defenses, and defeat them in a final Last Stand beyond the end of the Gauntlet. Along the way, capture Territories, develop Assets, employ faction mechanics, and decide when valuable cards are worth committing permanently to battle.
+Victory belongs to the player who runs the Gauntlet: cross the Territories, overcome the opponent's defenses, force them to make a Last Stand beyond the Gauntlet, and win the resulting battle. Along the way, capture Territories, develop Assets, employ faction mechanics, and decide when valuable cards are worth committing permanently to battle.
 
 The strength and composition of a Deck shape every decision that follows. Careful construction provides the tools to pursue a coherent plan, but victory also requires adapting that plan to the Territories, cards, and opportunities that emerge during play.
 
@@ -272,7 +272,7 @@ After selecting the die result, resolve rerolls and die-result changes in their 
 
 The player with the higher battle total wins.
 
-**Defender's Advantage:** If the battle totals are tied and the defending player controls the contested Territory, the defending player wins. The defending player also has Defender's Advantage during their Last Stand.
+**Defender's Advantage:** If the battle totals are tied and the defending player controls the contested Territory, the defending player wins. The defending player also has Defender's Advantage during a Last Stand battle.
 
 If a tie is not resolved by Defender's Advantage or another effect, both players reroll. Cards already used remain in effect.
 
@@ -348,7 +348,7 @@ Because a Territory is not captured immediately after a battle, its controller h
 
 # 8. Running the Gauntlet
 
-To run the Gauntlet, advance through the full Territory column, force the opponent beyond their end of the Gauntlet, capture the final Territory, and win the opponent's Last Stand.
+To run the Gauntlet, cross the Territory column, force the opponent beyond it, capture their final Territory, then force them to make a Last Stand and win the resulting battle.
 
 ## Forcing the Opponent Beyond the Gauntlet
 
@@ -356,18 +356,18 @@ When a player loses a battle while occupying the final Territory at their end of
 
 The winning player occupies the final Territory. The battle ends normally; the winning player does not immediately advance beyond the Gauntlet.
 
-If the winning player still occupies the final Territory at the start of their next turn, they capture it during the Capture step. During that turn's Movement step, they may advance beyond the final Territory to initiate the opponent's Last Stand.
+If the winning player still occupies the final Territory at the start of their next turn, they capture it during the Capture step. During that turn's Movement step, they may advance beyond the final Territory, forcing the opponent to make a Last Stand.
 
 ## Last Stand
 
-When a player advances beyond the final Territory to battle an opponent who has been forced beyond their end of the Gauntlet, that battle is the defending player's **Last Stand**.
+When a player advances beyond the final Territory to battle the opponent beyond the Gauntlet, the defender makes a **Last Stand**.
 
-During a Last Stand:
+During this battle:
 
 - the defending player has **Defender's Advantage**; and
 - the defending player adds **+1** to their battle total.
 
-If the attacking player wins the Last Stand, they have run the Gauntlet and immediately win the game.
+If the attacking player wins the battle, they have run the Gauntlet and immediately win the game.
 
 If the defending player wins, the attacking player retreats to the final Territory. Play continues normally.
 
@@ -955,7 +955,7 @@ No Action Opportunity occurs between the ended turn and this movement.
 
 **Deck:** A player's complete pregame package: faction, Leader, Playable Deck, three Territory Cards, and required supplemental components.
 
-**Defender's Advantage:** The defending player wins a tied battle total when they control the contested Territory or are defending during their Last Stand.
+**Defender's Advantage:** The defending player wins a tied battle total when they control the contested Territory or are defending during a Last Stand battle.
 
 **Disadvantage:** Roll one additional battle die for each net disadvantage and use the lowest result.
 
@@ -965,7 +965,7 @@ No Action Opportunity occurs between the ended turn and this movement.
 
 **Hold:** Remain in the current position during movement.
 
-**Last Stand:** The battle fought beyond a player's end of the Gauntlet after that player has been forced beyond the Territory column.
+**Last Stand:** The defender's response when an opponent advances beyond their captured final Territory. It begins a Last Stand battle.
 
 **Mission:** An Intelligence card with a printed Mission requirement while it is used as an Active Mission or Special Operation.
 
@@ -979,7 +979,7 @@ No Action Opportunity occurs between the ended turn and this movement.
 
 **Retreat:** Forced displacement after losing a battle. Retreat does not count as movement.
 
-**Run the Gauntlet:** Advance through the Territory column, capture the opponent's final Territory, and win the opponent's Last Stand.
+**Run the Gauntlet:** Capture the opponent's final Territory, force them to make a Last Stand, and win the resulting battle.
 
 **Territory:** One of the six cards forming the Gauntlet.
 
@@ -1025,6 +1025,6 @@ No Action Opportunity occurs between the ended turn and this movement.
 1. Win on the opponent's final Territory.
 2. The opponent retreats beyond the Gauntlet; occupy the final Territory.
 3. Capture it at the start of the next turn if still occupied.
-4. Advance beyond it to initiate the opponent's Last Stand.
-5. The defender has Defender's Advantage and +1.
-6. Win the Last Stand to run the Gauntlet and win the game.
+4. Advance beyond it; the opponent makes a Last Stand.
+5. During this battle, the defender has Defender's Advantage and +1.
+6. Win the battle to run the Gauntlet and win the game.

@@ -112,7 +112,7 @@ Under the core movement rules, beginning a battle ends the current movement sequ
 - **Defending a Territory you control:** Your Player Token occupied a Territory you control when the battle began.
 - **Enemy-controlled Territory:** A Territory currently controlled by the opponent, whether or not you occupy it.
 
-Effects that require a Territory do not apply during a Last Stand beyond the Gauntlet.
+Effects that require a Territory do not apply during a Last Stand battle beyond the Gauntlet.
 
 ## Encampment
 
@@ -290,7 +290,7 @@ Maximum 2. The first time each turn you win a battle, gain 1 Command. Spend Comm
 - Only the first Military victory during each turn generates Command.
 - Cards committed from hand normally go to the Graveyard.
 - Cards played from Battle Hands normally go to the Discard Pile.
-- Territory-only effects do not apply during a Last Stand beyond the Gauntlet.
+- Territory-only effects do not apply during a Last Stand battle beyond the Gauntlet.
 - Obey the movement, capture, and Order limits printed on War Crimes and Shock and Awe.
 
 ---

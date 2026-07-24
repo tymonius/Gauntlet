@@ -36,9 +36,9 @@
 1. Win on the opponent’s final Territory.
 2. The opponent retreats beyond the Gauntlet; occupy the final Territory.
 3. Capture it at the start of the next turn if still occupied.
-4. Advance beyond it to initiate the opponent’s Last Stand.
-5. The defender has Defender’s Advantage and +1.
-6. Win the Last Stand to run the Gauntlet and win.
+4. Advance beyond it; the opponent makes a Last Stand.
+5. During this battle, the defender has Defender’s Advantage and +1.
+6. Win the battle to run the Gauntlet and win.
 
 ## Factions
 

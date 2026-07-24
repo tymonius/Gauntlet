@@ -63,7 +63,7 @@ Each subsystem is classified as one of the following:
 | Starting positions | Replace | Tokens begin on Heartland spaces | Tokens begin immediately before the Territory at their end | Update board construction and movement tests |
 | Territory reveal | Replace | Spaces may begin hidden and be revealed during play | All six Territories are revealed simultaneously during setup and remain face up unless an effect says otherwise | Remove default exploration reveal flow; retain support for effects that conceal/reveal later |
 | Movement | Adapt | Adjacent movement with phase restrictions | Advance, Hold, or Withdraw; additional movement resolves one position at a time; tokens cannot pass through each other | Add explicit Hold and Withdraw; model before/beyond positions and movement interruption by battle |
-| Battle trigger | Retain/Adapt | Moving into opponent-occupied space begins battle | Entering any occupied position or explicit effect begins battle | Generalize location beyond Territory spaces, especially Last Stand |
+| Battle trigger | Retain/Adapt | Moving into opponent-occupied space begins battle | Entering any occupied position or explicit effect begins battle | Generalize location beyond Territory spaces, especially Last Stand battles |
 | Battle stages | Retain/Adapt | Enter, hand commit, battle draw, selection, reveal, effects, dice, result, cleanup | Begin-battle effects; attacker then defender hand commitment; attacker then defender forms Battle Hand and chooses; reveal; effects; dice; result; cleanup | Rename stages and enforce canonical sequential priority/order |
 | Normal hand | Retain | Private hand and hand commitments | Opening hand three, normal hand limit three, Action use and optional Battle commitment | Add Cleanup discard-to-three and exact draw rules |
 | Battle Hand | Adapt | Temporary battle-draw array | Separate temporary Battle Hand formed by drawing three; choose up to one; unchosen cards remain separate until cleanup | Rename data and API from `battleDraw` to `battleHand`; preserve origin tracking |
@@ -74,8 +74,8 @@ Each subsystem is classified as one of the following:
 | Negation | Add/Adapt | Partial effect handlers | Negated card has no effect but remains used and follows normal destination | Distinguish negation from cancellation in state and effects |
 | Effect repeat/copy | Adapt | Effect registry supports limited repeated effects | Canonical one-layer restrictions, choices/costs repeated, source destinations/status applied once | Add explicit resolution context and recursion-depth guard |
 | Dice | Adapt | One die, rerolls, modifiers | Advantage/disadvantage dice pools, chosen result, rerolls/result changes, then numerical modifiers | Add net advantage/disadvantage model and deterministic random requests |
-| Defender's Advantage | Adapt | Tie policy is `reroll` or `defender` | Defender wins ties only when defending a Territory they control, and during Last Stand | Compute from battle context rather than store a broad static policy |
-| Last Stand bonus | Add | No separate concept | Defender has Defender's Advantage and +1 during Last Stand | Add battle kind/context and modifier source |
+| Defender's Advantage | Adapt | Tie policy is `reroll` or `defender` | Defender wins ties only when defending a Territory they control or during a Last Stand battle | Compute from battle context rather than store a broad static policy |
+| Last Stand bonus | Add | No separate concept | The defender has Defender's Advantage and +1 during a Last Stand battle | Add battle kind/context and modifier source |
 | Battle result | Retain/Adapt | Winner/loser, retreats, occupation | Losing player retreats one position; winning attacker occupies contested Territory; winning defender remains | Generalize retreat direction and off-column positions |
 | Withdrawal | Add | Not clearly distinct from retreat | Voluntary withdrawal has attacker/defender-specific movement and is not retreat | Add explicit action/effect resolution separate from forced retreat |
 | Territory control | Retain | Controller independent of occupant | Facing determines controller; control does not require occupation | Preserve |
@@ -85,9 +85,9 @@ Each subsystem is classified as one of the following:
 | Territory orientation | Add | Controller stored, but facing/orientation not explicit | Territory faces controller and rotates on capture; Overlays rotate with it | Add orientation or derive it unambiguously from controller for interface/rendering |
 | Asset Bank | Retain/Adapt | Bank, limit based on controlled Territories, forced discard choice | Asset limit equals controlled Territories; occupied enemy Territory does not count; immediate discard-down; optional discard-an-Asset uses Action Opportunity | Preserve limit logic; add voluntary Asset discard action and canonical timing |
 | Overlays | Add | Not modeled | Persistent Territory attachments; top active; lower dormant; timers pause; rotate with Territory; ownership persists | Add attachment stack and Overlay lifecycle before faction/card completion |
-| Running the Gauntlet | Replace | Occupying opponent Heartland immediately wins | Force opponent beyond final Territory, capture final Territory, advance beyond column, then win Last Stand | Replace old endpoint and victory evaluator completely |
-| Last Stand | Add | Not modeled | Separate battle beyond Gauntlet after final Territory is captured; defender +1 and wins ties; defender victory sends attacker back to final Territory | Add explicit Last Stand initiation, battle context, outcome, and retry loop |
-| Shared victory evaluator | Adapt | Central evaluator exists | Standard Last Stand victory plus faction additional victory conditions | Keep registry/central hook; replace `opponent_heartland_occupied` reason and support multiple typed routes |
+| Running the Gauntlet | Replace | Occupying opponent Heartland immediately wins | Force the opponent beyond the final Territory, capture it, advance beyond the column, force the opponent to make a Last Stand, then win the resulting battle | Replace old endpoint and victory evaluator completely |
+| Last Stand | Add | Not modeled | After the final Territory is captured, advancing beyond the Gauntlet forces the opponent to make a Last Stand; in the resulting battle, the defender gains +1 and wins ties; a defender victory sends the attacker back to the final Territory | Add an explicit Last Stand battle context, outcome, and retry loop |
+| Shared victory evaluator | Adapt | Central evaluator exists | Standard victory through a Last Stand battle plus faction additional victory conditions | Keep registry/central hook; replace `opponent_heartland_occupied` reason and support multiple typed routes |
 | Military victory | Add | Not modeled | Standard run-the-Gauntlet victory only | Implement during Military faction phase |
 | Diplomat victory | Add | Not modeled | Peace Treaty | Defer until Diplomats implementation, but reserve typed victory route |
 | Financier victory | Add | Not modeled | Controlling Interest | Defer until Financiers implementation, but reserve typed victory route |
@@ -116,7 +116,7 @@ The following legacy assumptions are dangerous because they can make the prototy
    Canonical v0.6 uses positions immediately before and beyond each end of the Territory column. Last Stand is a battle, not a location named Heartland.
 
 2. **Occupying the opponent's endpoint wins immediately.**  
-   Victory requires forcing the opponent beyond the Gauntlet, capturing the final Territory, advancing beyond it, and winning Last Stand.
+   Victory requires forcing the opponent beyond the Gauntlet, capturing the final Territory, advancing beyond it, forcing the opponent to make a Last Stand, and winning the resulting battle.
 
 3. **Territories are hidden and revealed during movement.**  
    Canonical setup reveals all six simultaneously.
@@ -128,7 +128,7 @@ The following legacy assumptions are dangerous because they can make the prototy
    The canonical term and object are a separate temporary **Battle Hand**.
 
 6. **Tie policy can be assigned generally to a defender.**  
-   Defender's Advantage depends on control of the contested Territory or Last Stand context.
+   Defender's Advantage depends on control of the contested Territory or a Last Stand battle context.
 
 7. **Numerical die modifiers are the whole dice system.**  
    v0.6 requires advantage/disadvantage pools and an explicit result-modification order.
@@ -191,10 +191,10 @@ The following legacy assumptions are dangerous because they can make the prototy
 - Port retreat and add withdrawal.
 - Confirm delayed capture and counterattack windows.
 - Implement final-Territory force-back sequence.
-- Implement Last Stand initiation, +1, tie rule, outcomes, and repeat attempts.
+- Implement the transition into a Last Stand battle, its +1 and tie rules, its outcomes, and repeat attempts.
 - Replace standard victory evaluator.
 
-**Exit criterion:** a complete factionless/Neutral-only game can end only through the canonical Last Stand route.
+**Exit criterion:** a complete factionless/Neutral-only game can end only through the canonical Last Stand battle route.
 
 ### Milestone 6 — shared persistent systems
 
@@ -251,7 +251,7 @@ Recommended small-PR sequence:
 5. **Split Capture and Draw into explicit turn phases.**
 6. **Rename battle-draw state to Battle Hand without changing lifecycle behavior.**
 7. **Add advantage/disadvantage dice resolution.**
-8. **Replace immediate endpoint victory with final-Territory and Last Stand state.**
+8. **Replace immediate endpoint victory with final-Territory and Last Stand battle state.**
 9. **Add Overlay state and shared rules.**
 10. **Begin Military as the first complete faction implementation.**
 
@@ -280,10 +280,10 @@ The shared engine is ready for faction implementation only when all of the follo
 - Asset limits and immediate discard-down are enforced;
 - Overlays can be represented without faction code;
 - the defender can be forced beyond the final Territory;
-- the final Territory must be captured before Last Stand can be initiated;
-- Last Stand grants the defender Defender's Advantage and +1;
-- an attacking Last Stand win ends the game;
-- a defending Last Stand win returns the attacker to the final Territory and play continues;
+- the final Territory must be captured before the opponent can be forced to make a Last Stand;
+- during a Last Stand battle, the defender has Defender's Advantage and +1;
+- an attacker victory in a Last Stand battle ends the game;
+- a defender victory in a Last Stand battle returns the attacker to the final Territory and play continues;
 - unsupported effects are explicitly marked rather than silently ignored;
 - public/private views reveal no hidden information improperly; and
 - deterministic logs can replay representative shared-rule games.

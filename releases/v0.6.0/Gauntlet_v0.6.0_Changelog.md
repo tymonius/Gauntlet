@@ -21,11 +21,11 @@ This changelog records differences from the v0.5.7 canonical release. The v0.6.0
 - Retired the Heartland term and defined-area concept.
 - Defined the Gauntlet as the six-Territory column.
 - Players now begin immediately before their end of the Gauntlet.
-- Retained the established final-battle sequence under the name Last Stand.
-- Clarified that winning on the final Territory does not immediately begin the Last Stand.
+- Retained the established battle beyond the Gauntlet under the name Last Stand.
+- Clarified that winning on the final Territory does not immediately force the opponent to make a Last Stand.
 - The attacker must occupy and capture the final Territory, then advance beyond it on a later Movement step.
 - Renamed Homeland Advantage to Defender's Advantage.
-- Defender's Advantage remains the tie rule; the Last Stand's +1 is a separate bonus.
+- Defender's Advantage remains the tie rule; the +1 granted during a Last Stand battle is a separate bonus.
 - Standard victory is consistently called running the Gauntlet.
 
 ## Setup and Territories

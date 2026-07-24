@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <meta name="dcterms.date" content="2026-07-20" />
+  <title>GAUNTLET</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    div.columns{display: flex; gap: min(4vw, 1.5em);}
+    div.column{flex: auto; overflow-x: auto;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    /* The extra [class] is a hack that increases specificity enough to
+       override a similar rule in reveal.js */
+    ul.task-list[class]{list-style: none;}
+    ul.task-list li input[type="checkbox"] {
+      font-size: inherit;
+      width: 0.8em;
+      margin: 0 0.8em 0.2em -1.6em;
+      vertical-align: middle;
+    }
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <link rel="stylesheet" href="/home/runner/work/Gauntlet/Gauntlet/releases/v0.6.0/rulebook.css" />
+  <link rel="stylesheet" href="/home/runner/work/Gauntlet/Gauntlet/releases/v0.6.0/rulebook-section-layout.css" />
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">GAUNTLET</h1>
+<p class="subtitle">v0.6.0 Reference Guide</p>
+<p class="date">July 20, 2026</p>
+</header>
+<div class="page-break"></div>
+<section id="setup" class="level2">
+<h2>Setup</h2>
+<ol type="1">
+<li>Shuffle the Playable Deck to form the Draw Pile.</li>
+<li>Secretly arrange three Territories.</li>
+<li>Join both Territory lines and reveal all six.</li>
+<li>Prepare the Leader and supplemental components.</li>
+<li>Place the Player Token before that player’s end of the
+Gauntlet.</li>
+<li>Draw three cards.</li>
+<li>Roll to determine the first player; reroll ties.</li>
+</ol>
+</section>
+<section id="turn" class="level2">
+<h2>Turn</h2>
+<ol type="1">
+<li>Capture a Territory occupied but not controlled.</li>
+<li>Draw one card.</li>
+<li>Use the Action Opportunity before movement, if desired.</li>
+<li>Advance, hold, or withdraw. If movement begins a battle, resolve it
+immediately; the battle ends that movement and any remaining movement is
+lost unless an effect explicitly permits further movement.</li>
+<li>Use the Action Opportunity after movement if the first was
+unused.</li>
+<li>Resolve end-of-turn effects and discard down to three cards.</li>
+</ol>
+</section>
+<section id="battle" class="level2">
+<h2>Battle</h2>
+<ol type="1">
+<li>Resolve begin-battle effects.</li>
+<li>Attacker commits from hand or declines; defender does the same.</li>
+<li>Attacker forms a Battle Hand and chooses a card or declines;
+defender does the same.</li>
+<li>Resolve special reveal effects, then reveal all used cards.</li>
+<li>Resolve Battle effects.</li>
+<li>Roll battle dice; combine advantage and disadvantage, rerolls, and
+modifiers.</li>
+<li>Determine the winner; apply Defender’s Advantage where
+applicable.</li>
+<li>Resolve retreat and occupation.</li>
+<li>Put hand commitments in the Graveyard and all Battle Hand cards in
+the Discard Pile unless stated otherwise.</li>
+</ol>
+</section>
+<section id="running-the-gauntlet" class="level2">
+<h2>Running the Gauntlet</h2>
+<ol type="1">
+<li>Win on the opponent’s final Territory.</li>
+<li>The opponent retreats beyond the Gauntlet; occupy the final
+Territory.</li>
+<li>Capture it at the start of the next turn if still occupied.</li>
+<li>Advance beyond it; the opponent makes a Last Stand.</li>
+<li>During this battle, the defender has Defender’s Advantage and
++1.</li>
+<li>Win the battle to run the Gauntlet and win.</li>
+</ol>
+</section>
+<section id="factions" class="level2">
+<h2>Factions</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Faction</th>
+<th>Resource / Progression</th>
+<th>Victory</th>
+<th>Leaders</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Military</td>
+<td>Command (maximum 2)</td>
+<td>Run the Gauntlet.</td>
+<td>General, Commandant</td>
+</tr>
+<tr class="even">
+<td>Diplomats</td>
+<td>Influence (0–10)</td>
+<td>Run the Gauntlet or complete the Peace Treaty.</td>
+<td>Ambassador, Senator</td>
+</tr>
+<tr class="odd">
+<td>Financiers</td>
+<td>Capital (dynamic limit)</td>
+<td>Run the Gauntlet or achieve Controlling Interest.</td>
+<td>Banker, Executive</td>
+</tr>
+<tr class="even">
+<td>Intelligence</td>
+<td>Intel and Operation Progress</td>
+<td>Run the Gauntlet or complete a Special Operation.</td>
+<td>Ranger, Spymaster</td>
+</tr>
+<tr class="odd">
+<td>Mystics</td>
+<td>Three Rites; no resource</td>
+<td>Run the Gauntlet or complete Ritual.</td>
+<td>Alchemist, Spirit Walker</td>
+</tr>
+<tr class="even">
+<td>Inquisition</td>
+<td>Conviction (maximum 4)</td>
+<td>Run the Gauntlet or achieve Purification.</td>
+<td>Grand Inquisitor, Witch Hunter</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="card-pool" class="level2">
+<h2>Card Pool</h2>
+<table>
+<thead>
+<tr class="header">
+<th>Pool</th>
+<th style="text-align: right;">Cards</th>
+<th style="text-align: right;">Total value</th>
+<th>Unique cards</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Neutral</td>
+<td style="text-align: right;">50</td>
+<td style="text-align: right;">119</td>
+<td>Manifest Destiny</td>
+</tr>
+<tr class="even">
+<td>Military</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">35</td>
+<td>Shock and Awe</td>
+</tr>
+<tr class="odd">
+<td>Diplomats</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">35</td>
+<td>None</td>
+</tr>
+<tr class="even">
+<td>Financiers</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">36</td>
+<td>Corner the Market</td>
+</tr>
+<tr class="odd">
+<td>Intelligence</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">36</td>
+<td>Sleeper Network</td>
+</tr>
+<tr class="even">
+<td>Mystics</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">36</td>
+<td>Necromancy</td>
+</tr>
+<tr class="odd">
+<td>Inquisition</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">37</td>
+<td>None</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="territory-pool" class="level2">
+<h2>Territory Pool</h2>
+<ul>
+<li><strong>Quicksand</strong>: If a player begins their Movement step
+on Quicksand, they cannot voluntarily withdraw or move more than one
+position that turn. Forced displacement is unaffected.</li>
+<li><strong>Poisonous Gas</strong>: During a battle on Poisonous Gas,
+each player may use no more than one card for its Battle effect. A card
+chosen from a Battle Hand goes to its owner's Graveyard during cleanup
+instead of its normal destination. If a player chooses no card from
+their Battle Hand, they put one unchosen card from their initial Battle
+Hand in their Graveyard during cleanup, if able.</li>
+<li><strong>Difficult Terrain</strong>: When a player enters Difficult
+Terrain, their movement ends for the turn. A player who begins their
+turn there or enters it during their turn cannot play a card for its
+Action effect during the Action Opportunity after movement that
+turn.</li>
+<li><strong>Garrison</strong>: When Garrison's controller defends it,
+they draw one additional card when forming their initial Battle
+Hand.</li>
+<li><strong>Disrupted Supply Lines</strong>: While a player occupies
+Disrupted Supply Lines, only one banked Asset they control can be
+active. They choose which one remains active; all their other banked
+Assets are inactive until they leave.</li>
+<li><strong>Ruined Storehouse</strong>: Once during their Draw step, a
+player occupying Ruined Storehouse may draw the top card of their
+Discard Pile instead of drawing from their Draw Pile.</li>
+<li><strong>Field Hospital</strong>: During battle cleanup after a
+battle on Field Hospital, its controller may put one card they used that
+would enter their Graveyard in their Discard Pile instead.</li>
+<li><strong>Exposed Flank</strong>: When Exposed Flank's controller
+counterattacks an opponent occupying it, that opponent cannot commit a
+card from hand.</li>
+<li><strong>High Ground</strong>: The defending player in a battle on
+High Ground gains advantage.</li>
+<li><strong>Fortified Pass</strong>: When Fortified Pass's controller
+defends it, the attacking player's banked Assets are inactive during
+that battle.</li>
+<li><strong>Insurgency</strong>: While an opponent occupies Insurgency
+without controlling it, their banked Assets are inactive.</li>
+<li><strong>Watchtower</strong>: When Watchtower's controller defends
+it, the attacking player commits any card from hand face up instead of
+face down.</li>
+<li><strong>Supply Depot</strong>: During the Draw step, a player
+occupying and controlling Supply Depot draws one additional card as part
+of their normal draw.</li>
+<li><strong>Old Battlefield</strong>: During battle cleanup after a
+battle on Old Battlefield, its controller may put one unchosen card from
+their Battle Hand in their Graveyard instead of their Discard Pile.</li>
+<li><strong>Refuge</strong>: After a player voluntarily withdraws onto
+Refuge, they draw one card.</li>
+<li><strong>Command Tent</strong>: If a player begins their turn
+occupying and controlling Command Tent, they may play one card for its
+Action effect during the Action Opportunity before movement and one card
+for its Action effect during the Action Opportunity after movement that
+turn.</li>
+<li><strong>Monastery</strong>: While Monastery's controller occupies
+it, cards cannot leave either player's Graveyard. During battles on
+Monastery, cards with the Arcane trait have no effect.</li>
+<li><strong>Training Grounds</strong>: When Training Grounds's
+controller defends it, after forming their initial Battle Hand but
+before choosing a card from it, they may discard that entire Battle Hand
+and draw the same number of replacement cards. Those cards become their
+Battle Hand.</li>
+<li><strong>King's Road</strong>: A player who begins their turn on
+King's Road gains one additional position of movement during that turn's
+Movement step.</li>
+<li><strong>Toll Bridge</strong>: To voluntarily advance from Toll
+Bridge, a player must discard one card from hand. If they cannot, they
+cannot advance from it.</li>
+<li><strong>Smuggler's Pass</strong>: During an Action Opportunity,
+while occupying and controlling Smuggler's Pass, a player may stash one
+card from hand face down beneath it instead of playing a card for its
+Action effect. The stashed card does not count toward the hand limit.
+While that player occupies and controls Smuggler's Pass, they may play
+the stashed card for its Action effect or commit it during a battle as
+though it were in their hand. It counts as a card used from hand. At the
+start of the stashing player's turn, if they control Smuggler's Pass,
+they may return the stashed card to their hand. If they lose control of
+Smuggler's Pass, put the stashed card in its owner's Discard Pile. Only
+one card may be stashed here.</li>
+<li><strong>Arena: Spoils of War</strong> <em>(Arena)</em>: During
+battles on Spoils of War, Defender's Advantage does not apply. If battle
+totals are tied, reroll the battle dice. During battle cleanup, the
+winner may put one unchosen card from their Battle Hand in their hand
+instead of their Discard Pile.</li>
+<li><strong>Arena: No Quarter</strong> <em>(Arena)</em>: During battles
+on No Quarter, Defender's Advantage does not apply. If battle totals are
+tied, reroll the battle dice. The losing player retreats one additional
+position, if able.</li>
+<li><strong>Arena: Single Combat</strong> <em>(Arena)</em>: During
+battles on Single Combat, Defender's Advantage does not apply. If battle
+totals are tied, reroll the battle dice. All banked Assets are inactive
+during the battle.</li>
+<li><strong>Arena: Grand Melee</strong> <em>(Arena)</em>: During battles
+on Grand Melee, Defender's Advantage does not apply. If battle totals
+are tied, reroll the battle dice. Each player draws one additional card
+when forming their initial Battle Hand and may choose one additional
+card from it.</li>
+</ul>
+<p>Generated from the canonical v0.6.0 sources on July 20, 2026.</p>
+</section>
+<section id="online-tools-and-updates" class="level2">
+<h2>Online Tools and Updates</h2>
+<p>The Gauntlet project repository, current release materials, and
+browser tools are available at <strong><a
+href="https://gauntlet.run/">gauntlet.run</a></strong>.</p>
+<p>Build and validate v0.6 Decks with the <strong><a
+href="https://gauntlet.run/deckbuilder/">Gauntlet
+Deckbuilder</a></strong>.</p>
+</section>
+</body>
+</html>
