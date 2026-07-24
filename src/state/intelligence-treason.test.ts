@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 import type { BattleParticipantState, BattlePlayedCard, GameState, PlayerID } from '../types';
 import { applyGameAction } from './apply-exfiltration';
+import { continueIntelligenceBattle } from './intelligence-battle';
+import { continueIntelligencePostRevealFlow } from './intelligence-post-reveal-flow';
+import { openNextIntelligencePostRevealWindow } from './intelligence-post-reveal';
+import { openNextIntelligencePreRevealWindow } from './intelligence-pre-reveal';
 import { initializeGame } from './initialize';
 import { createV06StandardBoard } from './v06-board';
 
@@ -88,12 +92,14 @@ function openPostReveal(state: GameState): GameState {
 
 describe('Treason', () => {
   it('reveals before the normal reveal and then opens a mandatory target choice', () => {
-    let state = game();
+    const state = game();
     state.battle!.stage = 'normal_reveal';
     state.battle!.attacker.handCommit = played('intelligence-treason', 'player_1', 'hand', { faceDown: true });
     state.battle!.defender.handCommit = played('card-valor', 'player_2', 'hand', { faceDown: true });
 
-    state = applyGameAction(state, { type: 'resolve_battle_reveal', playerId: 'player_1' }).state;
+    openNextIntelligencePreRevealWindow(state);
+    continueIntelligenceBattle(state);
+    continueIntelligencePostRevealFlow(state);
 
     expect(state.battle?.attacker.handCommit).toMatchObject({
       cardId: 'intelligence-treason',
@@ -312,7 +318,7 @@ describe('Treason', () => {
   });
 
   it('does not offer recursive, cancellation, expired early-reveal, or card-adding effects', () => {
-    let state = game();
+    const state = game();
     state.battle!.attacker.handCommit = treasonFromHand('player_1');
     state.battle!.defender.handCommit = played('intelligence-assassins', 'player_2');
     state.battle!.defender.battleDrawPlayed = [
@@ -322,8 +328,9 @@ describe('Treason', () => {
       played('military-hold-the-line', 'player_2', 'battle_draw'),
     ];
 
-    state = openPostReveal(state);
+    const opened = openNextIntelligencePostRevealWindow(state);
 
+    expect(opened).toBe(false);
     expect(state.pendingIntelligenceChoice).toBeUndefined();
     expect(state.battle?.attacker.handCommit?.postRevealEffectResolved).toBe(true);
   });
