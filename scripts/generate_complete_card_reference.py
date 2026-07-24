@@ -24,7 +24,7 @@ FACTION_ORDER = [
 
 
 def github_slug(value: str) -> str:
-    """Approximate GitHub's Markdown heading slug for the card headings in source files."""
+    """Approximate GitHub's Markdown heading slug for source-document links."""
     value = value.lower()
     value = re.sub(r"[^\w\s-]", "", value, flags=re.UNICODE)
     value = re.sub(r"[\s_]+", "-", value)
@@ -33,22 +33,26 @@ def github_slug(value: str) -> str:
 
 def relative_source(source: str) -> str:
     """Return a source link relative to the release reference file."""
-    release_prefix = "releases/v0.6.0/"
-    if source.startswith(release_prefix):
-        return source[len(release_prefix) :]
-    if source.startswith("docs/"):
-        return f"../../{source}"
+    prefix = "releases/v0.6.0/"
+    if source.startswith(prefix):
+        return source[len(prefix) :]
     return f"../../{source}"
 
 
-def linked_name(name: str, source: str) -> str:
-    return f"[{name}]({relative_source(source)}#{github_slug(name)})"
+def linked_name(item: dict[str, Any]) -> str:
+    name = item["name"]
+    return f"[{name}]({relative_source(item['source'])}#{github_slug(name)})"
 
 
-def display(value: Any) -> str:
-    if value in (None, "", False):
-        return "—"
-    return str(value)
+def card_notes(card: dict[str, Any]) -> str:
+    notes = []
+    if card.get("trait"):
+        notes.append(f"{card['trait']} trait")
+    if card.get("card_form"):
+        notes.append(card["card_form"])
+    if card.get("unique"):
+        notes.append("Unique")
+    return ", ".join(notes) or "—"
 
 
 def build_reference(data: dict[str, Any]) -> str:
@@ -65,27 +69,16 @@ def build_reference(data: dict[str, Any]) -> str:
     lines = [
         f"# Gauntlet {data['version']} Complete Card Reference",
         "",
-        "> **Generated convenience reference.** This file provides a single Markdown inventory of every "
-        f"{data['version']} Playable Card, Territory, and Arena. It does not replace the governing card "
-        "sources. Exact player-facing card text remains controlled by the Neutral Card Pool, Territory "
-        "Pool, and definitive faction guides.",
+        "> **Generated convenience reference.** This is the one-file inventory of every "
+        f"{data['version']} Playable Card, Territory, and Arena. The linked Neutral Card "
+        "Pool, Territory Pool, and definitive faction guides remain the governing sources "
+        "for exact player-facing text.",
         "",
-        "## Contents",
+        "## Pool summary",
         "",
-        "- [Pool summary](#pool-summary)",
-        "- [Neutral cards](#neutral-cards)",
+        "| Pool | Designs | Governing source |",
+        "|---|---:|---|",
     ]
-    lines.extend(f"- [{faction}](#{github_slug(faction)})" for faction in FACTION_ORDER)
-    lines.extend(
-        [
-            "- [Territories and Arenas](#territories-and-arenas)",
-            "",
-            "## Pool summary",
-            "",
-            "| Pool | Designs | Governing source |",
-            "|---|---:|---|",
-        ]
-    )
 
     neutral_source = by_pool["Neutral"][0]["source"]
     lines.append(
@@ -112,68 +105,50 @@ def build_reference(data: dict[str, Any]) -> str:
             "",
             "## Neutral cards",
             "",
-            f"[Governing source]({relative_source(neutral_source)})",
-            "",
-            "| Card | Cost | Complexity | Trait | Unique |",
-            "|---|---:|---|---|:---:|",
+            "| Card | Cost | Complexity | Notes |",
+            "|---|---:|---|---|",
         ]
     )
 
     for card in by_pool["Neutral"]:
         lines.append(
-            f"| {linked_name(card['name'], card['source'])} | {card['cost']} | "
-            f"{display(card.get('complexity'))} | {display(card.get('trait'))} | "
-            f"{'Yes' if card.get('unique') else '—'} |"
+            f"| {linked_name(card)} | {card['cost']} | "
+            f"{card.get('complexity') or '—'} | {card_notes(card)} |"
         )
 
     for faction in FACTION_ORDER:
-        pool = by_pool[faction]
-        source = pool[0]["source"]
         lines.extend(
             [
                 "",
                 f"## {faction}",
                 "",
-                f"[Governing source]({relative_source(source)})",
-                "",
-                "| Card | Cost | Trait | Printed form | Unique |",
-                "|---|---:|---|---|:---:|",
+                "| Card | Cost | Notes |",
+                "|---|---:|---|",
             ]
         )
-        for card in pool:
-            lines.append(
-                f"| {linked_name(card['name'], card['source'])} | {card['cost']} | "
-                f"{display(card.get('trait'))} | {display(card.get('card_form'))} | "
-                f"{'Yes' if card.get('unique') else '—'} |"
-            )
+        for card in by_pool[faction]:
+            lines.append(f"| {linked_name(card)} | {card['cost']} | {card_notes(card)} |")
 
-    territory_source = territories[0]["source"]
     lines.extend(
         [
             "",
             "## Territories and Arenas",
             "",
-            f"[Governing source]({relative_source(territory_source)})",
-            "",
+            "| No. | Card | Type | Complexity |",
+            "|---:|---|---|---|",
         ]
     )
 
     for territory in territories:
-        lines.extend(
-            [
-                f"### {territory['number']}. "
-                f"{linked_name(territory['name'], territory['source'])}",
-                "",
-                f"**Type:** {'Arena' if territory['arena'] else 'Territory'}  ",
-                f"**Complexity:** {territory['complexity']}",
-                "",
-            ]
+        lines.append(
+            f"| {territory['number']} | {linked_name(territory)} | "
+            f"{'Arena' if territory['arena'] else 'Territory'} | "
+            f"{territory['complexity']} |"
         )
-        for paragraph in territory["text"].split("\n\n"):
-            lines.extend([paragraph, ""])
 
     lines.extend(
         [
+            "",
             "## Source hierarchy",
             "",
             "1. `Gauntlet_v0.6.0_Rulebook.md` governs shared rules.",
