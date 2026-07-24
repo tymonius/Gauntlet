@@ -224,7 +224,7 @@ function openActivationPlayChoice(game: GameState, playerId: PlayerID): boolean 
     kind: 'sleeper_network_play_card',
     playerId,
     eligibleCardIds,
-    options: ['finish', 'select'],
+    options: ['select'],
     resumePriorityPlayer: state.activation?.resumePriorityPlayer,
   };
   game.priorityPlayer = playerId;
@@ -362,11 +362,7 @@ export function resolveSleeperNetworkChoice(
   }
 
   if (pending.kind === 'sleeper_network_play_card') {
-    if (action.choice === 'finish') {
-      finishNetwork(game, action.playerId, 'activation_finished');
-      return { kind: 'none' };
-    }
-    if (action.choice !== 'select' || !action.cardId || !pending.eligibleCardIds.includes(action.cardId)) throw new SleeperNetworkError('Choose a legally resolvable Action card beneath Sleeper Network or finish.');
+    if (action.choice !== 'select' || !action.cardId || !pending.eligibleCardIds.includes(action.cardId)) throw new SleeperNetworkError('Choose a legally resolvable Action card beneath Sleeper Network.');
     const state = requireNetwork(game, action.playerId);
     if (!removeOne(state.cards, action.cardId)) throw new SleeperNetworkError('That card is no longer beneath Sleeper Network.');
     game.pendingIntelligenceChoice = undefined;

@@ -211,7 +211,7 @@ export type PendingIntelligenceChoice =
       kind: 'sleeper_network_play_card';
       playerId: PlayerID;
       eligibleCardIds: CardID[];
-      options: ['finish', 'select'];
+      options: ['select'];
       resumePriorityPlayer?: PlayerID;
     }
   | {
