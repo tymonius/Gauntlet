@@ -22,7 +22,9 @@ jobs:
           show-progress: false
 
       - name: Apply terminology changes
-        run: python3 scripts/normalize-last-stand-language.py
+        run: |
+          python3 scripts/normalize-last-stand-language.py
+          python3 scripts/compact-last-stand-language.py
 
       - name: Regenerate structured release files
         run: node scripts/build-v0.6.0-release.mjs
@@ -81,7 +83,7 @@ jobs:
           if-no-files-found: error
 
       - name: Remove one-time automation
-        run: rm scripts/normalize-last-stand-language.py .github/workflows/last-stand-language-audit.yml
+        run: rm scripts/normalize-last-stand-language.py scripts/compact-last-stand-language.py .github/workflows/last-stand-language-audit.yml
 
       - name: Commit generated changes
         run: |
