@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { GameState, PlayerID } from '../types';
 import { applyGameAction } from './apply-fog-overlay';
-import { FOG_OF_WAR_OVERLAY } from './intelligence-fog-overlay';
+import { consumeFogOfWarOverlayAfterBattle, FOG_OF_WAR_OVERLAY } from './intelligence-fog-overlay';
 import { initializeGame } from './initialize';
 import { createV06StandardBoard } from './v06-board';
 import { toPublicGameView } from './views';
@@ -129,8 +129,8 @@ describe('Fog of War Territory Overlay', () => {
     let state = startBattle(placeFog(game()));
 
     expect(state.battle?.fogOfWarOverlayOwner).toBe('player_1');
-    expect(territoryAt(state, 3).overlays ?? []).not.toContainEqual(expect.objectContaining({ cardId: FOG_OF_WAR_OVERLAY }));
-    expect(state.players.player_1.zones.discard).toContain(FOG_OF_WAR_OVERLAY);
+    expect(territoryAt(state, 3).overlays).toContainEqual(expect.objectContaining({ cardId: FOG_OF_WAR_OVERLAY }));
+    expect(state.players.player_1.zones.discard).not.toContain(FOG_OF_WAR_OVERLAY);
     expect(state.priorityPlayer).toBe('player_2');
 
     expect(() => applyGameAction(state, {
@@ -201,4 +201,28 @@ describe('Fog of War Territory Overlay', () => {
     state = applyGameAction(state, { type: 'pass_battle_draw_play', playerId: 'player_2' }).state;
     expect(state.priorityPlayer).toBe('player_1');
   });
+
+  it('moves the Overlay to Discard only after the fought battle ends', () => {
+    let state = startBattle(placeFog(game()));
+    state.battle!.stage = 'resolution';
+    state.battle!.attacker.diceRoll = 6;
+    state.battle!.defender.diceRoll = 1;
+    state.battle!.effectsResolved.push('before_battle_resolution');
+
+    state = applyGameAction(state, { type: 'resolve_battle', playerId: 'player_1' }).state;
+
+    expect(territoryAt(state, 3).overlays ?? []).not.toContainEqual(expect.objectContaining({ cardId: FOG_OF_WAR_OVERLAY }));
+    expect(state.players.player_1.zones.discard).toContain(FOG_OF_WAR_OVERLAY);
+  });
+
+  it('does not consume the Overlay when a battle ends before either player commits', () => {
+    const state = startBattle(placeFog(game()));
+    const battle = structuredClone(state.battle!);
+    state.battle = undefined;
+
+    expect(consumeFogOfWarOverlayAfterBattle(state, battle)).toBe(false);
+    expect(territoryAt(state, 3).overlays).toContainEqual(expect.objectContaining({ cardId: FOG_OF_WAR_OVERLAY }));
+    expect(state.players.player_1.zones.discard).not.toContain(FOG_OF_WAR_OVERLAY);
+  });
+
 });

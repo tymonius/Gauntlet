@@ -1,5 +1,6 @@
 import type {
   BattleParticipantState,
+  BattleState,
   GameEvent,
   GameState,
   PlayerID,
@@ -129,9 +130,6 @@ export function activateFogOfWarOverlayForBattle(game: GameState): boolean {
   const overlays = (space?.overlays ?? []).filter((overlay) => overlay.cardId === FOG_OF_WAR_OVERLAY);
   if (!space || overlays.length === 0) return false;
 
-  space.overlays = (space.overlays ?? []).filter((overlay) => overlay.cardId !== FOG_OF_WAR_OVERLAY);
-  for (const overlay of overlays) game.players[overlay.owner].zones.discard.push(overlay.cardId);
-
   const owners = [...new Set(overlays.map((overlay) => overlay.owner))];
   if (owners.length === 1) {
     battle.fogOfWarOverlayOwner = owners[0];
@@ -151,6 +149,33 @@ export function activateFogOfWarOverlayForBattle(game: GameState): boolean {
       { spaceId: space.id, battleId: battle.id, owners },
     );
   }
+  return true;
+}
+
+function fogBattleWasFought(battle: BattleState): boolean {
+  if (battle.stage !== 'hand_commit') return true;
+  return Boolean(
+    battle.attacker.handCommit
+    || battle.attacker.passedHandCommit
+    || battle.defender.handCommit
+    || battle.defender.passedHandCommit,
+  );
+}
+
+export function consumeFogOfWarOverlayAfterBattle(game: GameState, battle: BattleState): boolean {
+  const owner = battle.fogOfWarOverlayOwner;
+  if (!owner || !fogBattleWasFought(battle)) return false;
+  const space = game.board.spaces.find((candidate) => candidate.id === battle.location);
+  const index = space?.overlays?.findIndex((overlay) => (
+    overlay.cardId === FOG_OF_WAR_OVERLAY && overlay.owner === owner
+  )) ?? -1;
+  if (!space?.overlays || index < 0) return false;
+  space.overlays.splice(index, 1);
+  game.players[owner].zones.discard.push(FOG_OF_WAR_OVERLAY);
+  publicLog(game, owner, 'intelligence_fog_of_war_overlay_removed', 'Fog of War was removed after the battle fought on its Territory.', {
+    spaceId: space.id,
+    battleId: battle.id,
+  });
   return true;
 }
 

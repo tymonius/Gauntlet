@@ -189,8 +189,8 @@ describe('first Intelligence Action cards', () => {
     expect(state.players.player_1.zones.discard).toContain('intelligence-operational-reassessment');
   });
 
-  it('partially resolves Operational Reassessment when no different Mission is available', () => {
-    let state = game();
+  it('rejects Operational Reassessment when no different Mission is available without mutating state', () => {
+    const state = game();
     state.players.player_1.zones.hand = ['intelligence-operational-reassessment'];
     state.players.player_1.intelligence!.activeMission = {
       cardId: 'intelligence-spies',
@@ -200,15 +200,14 @@ describe('first Intelligence Action cards', () => {
       requirementSatisfied: false,
       evidence: [],
     };
+    const before = structuredClone(state);
 
-    state = applyGameAction(state, {
+    expect(() => applyGameAction(state, {
       type: 'play_action_card',
       playerId: 'player_1',
       cardId: 'intelligence-operational-reassessment',
-    }).state;
+    })).toThrow('cannot resolve in the current state');
 
-    expect(state.pendingIntelligenceChoice).toBeUndefined();
-    expect(state.players.player_1.intelligence?.activeMission).toBeUndefined();
-    expect(state.players.player_1.zones.hand).toContain('intelligence-spies');
+    expect(state).toEqual(before);
   });
 });

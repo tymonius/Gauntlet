@@ -86,7 +86,13 @@ export function canResolveIntelligenceAction(game: GameState, playerId: PlayerID
   const player = game.players[playerId];
   if (player?.factionId !== 'intelligence' || !player.intelligence) return false;
   if (cardId === INTELLIGENCE_ACTION_CARDS.fogOfWar) return canPlaceFogOfWarOverlay(game);
-  if (cardId === INTELLIGENCE_ACTION_CARDS.operationalReassessment) return Boolean(player.intelligence.activeMission);
+  if (cardId === INTELLIGENCE_ACTION_CARDS.operationalReassessment) {
+    return Boolean(player.intelligence.activeMission)
+      && player.zones.hand.some((candidate) => intelligenceMissionCardIds.has(candidate));
+  }
+  if (cardId === INTELLIGENCE_ACTION_CARDS.assassins) {
+    return Boolean(game.players[opponentId(game, playerId)]?.zones.hand.length);
+  }
   if (cardId === INTELLIGENCE_ACTION_CARDS.sleeperNetwork) return canResolveSleeperNetworkAction(game, playerId);
   return true;
 }
@@ -150,13 +156,17 @@ function playOperationalReassessment(game: GameState, playerId: PlayerID): void 
   const player = requireIntelligence(game, playerId);
   const mission = player.intelligence!.activeMission;
   if (!mission) throw new IntelligenceActionCardError('Operational Reassessment requires an Active Mission.');
+  const replacementMissionCards = player.zones.hand.filter((cardId) => intelligenceMissionCardIds.has(cardId));
+  if (replacementMissionCards.length === 0) {
+    throw new IntelligenceActionCardError('Operational Reassessment requires another eligible Mission card in hand.');
+  }
 
   player.intelligence!.activeMission = undefined;
   player.zones.hand.push(mission.cardId);
   privateLog(game, playerId, 'intelligence_reassessment_mission_returned', `You returned ${mission.cardId} to your hand.`, { cardId: mission.cardId });
   publicLog(game, playerId, 'intelligence_reassessment_used', `${player.name} returned their face-down Active Mission to hand.`);
 
-  const eligibleCardIds = [...new Set(player.zones.hand.filter((cardId) => cardId !== mission.cardId && intelligenceMissionCardIds.has(cardId)))];
+  const eligibleCardIds = [...new Set(replacementMissionCards)];
   if (eligibleCardIds.length > 0) {
     game.pendingIntelligenceChoice = {
       kind: 'operational_reassessment',

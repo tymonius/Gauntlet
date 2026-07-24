@@ -130,10 +130,7 @@ export function buildIntelligenceBattleOptions(game: GameState, playerId: Player
     ];
   }
   if (pending.kind === 'sleeper_network_play_card') {
-    return [
-      action('Finish Sleeper Network activation', 'finish'),
-      ...pending.eligibleCardIds.map((cardId) => action(`Play ${cardId} from Sleeper Network`, 'select', cardId)),
-    ];
+    return pending.eligibleCardIds.map((cardId) => action(`Play ${cardId} from Sleeper Network`, 'select', cardId));
   }
   if (pending.kind === 'sleeper_network_compromised') {
     return [

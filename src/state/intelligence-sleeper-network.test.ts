@@ -282,7 +282,7 @@ describe('Sleeper Network', () => {
     expect(state.players.player_1.intelligence?.sleeperNetwork).toBeUndefined();
   });
 
-  it('allows the player to stop an activation early and discard all remaining cards', () => {
+  it('requires every legally resolvable Action to be played before activation ends', () => {
     let state = bankNetwork(game());
     state.players.player_1.intelligence!.sleeperNetwork!.cards.push('intelligence-spies');
     state.turn = 3;
@@ -290,16 +290,16 @@ describe('Sleeper Network', () => {
     runPostActionAutomationPipeline(state);
     state = applyGameAction(state, { type: 'resolve_intelligence_choice', playerId: 'player_1', choice: 'activate' }).state;
 
-    state = applyGameAction(state, {
+    expect(state.pendingIntelligenceChoice).toMatchObject({
+      kind: 'sleeper_network_play_card',
+      options: ['select'],
+      eligibleCardIds: expect.arrayContaining(['card-attrition', 'intelligence-spies']),
+    });
+    expect(() => applyGameAction(state, {
       type: 'resolve_intelligence_choice',
       playerId: 'player_1',
       choice: 'finish',
-    }).state;
-
-    expect(state.players.player_1.zones.discard).toEqual(expect.arrayContaining([
-      'card-attrition',
-      'intelligence-spies',
-    ]));
-    expect(state.players.player_1.intelligence?.sleeperNetwork).toBeUndefined();
+    })).toThrow(/legally resolvable Action card/i);
+    expect(state.players.player_1.intelligence?.sleeperNetwork).toBeDefined();
   });
 });
