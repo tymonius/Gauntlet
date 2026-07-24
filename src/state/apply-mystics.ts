@@ -38,6 +38,14 @@ import {
   type GraveyardSnapshot,
 } from './mystics-grave-ward';
 import {
+  applySoulForSoulAction,
+  isSoulForSoulChoice,
+  openNextSoulForSoulBattleChoice,
+  queueSoulForSoulBattleEffects,
+  requireSoulForSoulActionTargets,
+  resolveSoulForSoulBattleChoice,
+} from './mystics-soul-for-soul';
+import {
   openDeferredInvocationIfReady,
   queueInvocationForArcaneUse,
   queueInvocationForRevealedBattleCards,
@@ -81,17 +89,20 @@ function continueMysticsAutomation(
     reconcileMysticsAfterResolvedBattle(result.state, priorBattle);
     queueAccursedWagerAfterBattle(result.state, priorBattle);
     queueGraveWardBattleEffects(result.state, priorBattle);
+    queueSoulForSoulBattleEffects(result.state, priorBattle);
   }
   if (graveyardBefore) {
     registerGraveyardEntries(result.state, graveyardBefore, endedBattle ? priorBattle?.id : undefined);
   }
   reconcileRiteOfCrossingAtTurnStart(result.state);
   openNextGraveWardChoice(result.state);
+  openNextSoulForSoulBattleChoice(result.state);
   if (arcaneUse && isArcaneCard(arcaneUse.cardId)) {
     queueInvocationForArcaneUse(result.state, arcaneUse.playerId, [arcaneUse.cardId]);
   }
   runPostActionAutomationPipeline(result.state);
   openNextGraveWardChoice(result.state);
+  openNextSoulForSoulBattleChoice(result.state);
   openNextDarkOmensBattleChoice(result.state);
   queueInvocationForRevealedBattleCards(result.state);
   openNextFatesTollReroll(result.state);
@@ -123,6 +134,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     else if (isAccursedWagerChoice(pendingKind)) resolveAccursedWagerChoice(next, action);
     else if (isFatesTollChoice(pendingKind)) resolveFatesTollChoice(next, action);
     else if (isGraveWardBattleChoice(pendingKind)) resolveGraveWardBattleChoice(next, action);
+    else if (isSoulForSoulChoice(pendingKind)) resolveSoulForSoulBattleChoice(next, action);
     else resolveMysticsChoice(next, action);
     return continueMysticsAutomation({ state: next }, undefined, undefined, graveyardBefore);
   }
@@ -152,6 +164,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
 
   if (action.type === 'play_action_card') {
     requireFatesTollActionTarget(game, action.playerId, action.cardId, action.targets);
+    requireSoulForSoulActionTargets(game, action.playerId, action.cardId, action.targets);
   }
   const priorBattle = resolvedBattleSnapshot(game);
   const usedFatesTollBonus = action.type === 'move_player'
@@ -167,6 +180,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     applyDarkOmensAction(result.state, action.playerId, action.cardId);
     applyAccursedWagerAction(result.state, action.playerId, action.cardId);
     applyFatesTollAction(result.state, action.playerId, action.cardId, action.targets);
+    applySoulForSoulAction(result.state, action.playerId, action.cardId, action.targets);
   }
   if (action.type === 'end_turn') {
     expireAccursedWagerAtEndTurn(result.state, action.playerId);
