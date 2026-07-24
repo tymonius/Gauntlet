@@ -64,7 +64,7 @@ function prepareRevealBattle(state: GameState, secondCopy = false): void {
   state.priorityPlayer = 'player_1';
   state.battle = {
     id: 'dark-omens-battle',
-    stage: 'normal_reveal',
+    stage: 'dice',
     location: territories[3].id,
     attackerOrigin: territories[2].id,
     attacker: participant('player_1'),
