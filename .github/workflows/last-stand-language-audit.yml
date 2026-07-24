@@ -20,21 +20,17 @@ jobs:
           ref: ${{ github.event.pull_request.head.ref || github.ref }}
           fetch-depth: 1
           show-progress: false
-      - name: Inventory Last Stand language
+      - name: Inventory current Last Stand language
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           {
-            echo '## Last Stand language audit'
+            echo '## Current v0.6 Last Stand language audit'
             echo
             echo '```text'
-            git grep -n -i 'last stand' -- ':!*.pdf' ':!*.docx' || true
-            echo '```'
-            echo
-            echo '### Release and rendering scripts'
-            echo
-            echo '```text'
-            find scripts -maxdepth 2 -type f -print | sort
+            git grep -n -i 'last stand' -- \
+              README.md index.html docs releases/v0.6.0 rulebook rules-assistant scripts src data deckbuilder deckbuilder-v0.6 faction-sheets playtest \
+              ':!docs/Archive/**' ':!*.pdf' ':!*.docx' || true
             echo '```'
           } > /tmp/last-stand-audit.md
           cat /tmp/last-stand-audit.md
