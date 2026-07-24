@@ -28,18 +28,18 @@ jobs:
           set -o pipefail
           npm run typecheck 2>&1 | tee typecheck-output.txt
 
-      - name: Focused Fate's Toll tests
+      - name: Test
         shell: bash
         run: |
           set -o pipefail
-          npx vitest run src/state/mystics-fates-toll.test.ts 2>&1 | tee fates-toll-output.txt
+          npm test 2>&1 | tee test-output.txt
 
       - name: Upload diagnostics
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: fates-toll-diagnostics
+          name: fates-toll-full-diagnostics
           path: |
             typecheck-output.txt
-            fates-toll-output.txt
+            test-output.txt
           if-no-files-found: ignore
