@@ -91,6 +91,11 @@ export interface BattleState {
   observedBeforeNormalReveal?: Partial<Record<PlayerID, CardID[]>>;
   bankedAssetUseProhibited?: PlayerID[];
   fogOfWarOverlayOwner?: PlayerID;
+  noMartyrsAssetInitialCounts?: Partial<Record<PlayerID, number>>;
+  noMartyrsAssetProcessedCounts?: Partial<Record<PlayerID, number>>;
+  noMartyrsAssetActivatedCounts?: Partial<Record<PlayerID, number>>;
+  lossRetreatEffectsSuppressedFor?: PlayerID[];
+  additionalRetreatPositions?: Partial<Record<PlayerID, number>>;
   winner?: PlayerID;
   loser?: PlayerID;
   effectsResolved: string[];
@@ -125,6 +130,11 @@ export interface PublicBattleView {
   tiePolicy: BattleTiePolicy;
   lastStand?: boolean;
   fogOfWarOverlayOwner?: PlayerID;
+  noMartyrsAssetInitialCounts?: Partial<Record<PlayerID, number>>;
+  noMartyrsAssetProcessedCounts?: Partial<Record<PlayerID, number>>;
+  noMartyrsAssetActivatedCounts?: Partial<Record<PlayerID, number>>;
+  lossRetreatEffectsSuppressedFor?: PlayerID[];
+  additionalRetreatPositions?: Partial<Record<PlayerID, number>>;
   validBattleCardTargets?: BattleCardTargetOption[];
   legalBattlePlays?: BattlePlayOption[];
   winner?: PlayerID;

@@ -6,6 +6,7 @@ import {
   inquisitionCardTitle,
   legalExcommunicationSelections,
   legalInquisitionPurgeOptions,
+  NO_MARTYRS,
   PENANCE,
 } from '../state';
 
@@ -140,6 +141,17 @@ export function buildPendingInquisitionOptions(
             cardId,
           },
         })),
+      ];
+    case 'no_martyrs_asset':
+      return [
+        {
+          label: 'Keep No Martyrs banked',
+          action: { type: 'resolve_inquisition_choice', playerId, choice: 'pass', cardId: NO_MARTYRS },
+        },
+        {
+          label: 'Discard No Martyrs for this battle',
+          action: { type: 'resolve_inquisition_choice', playerId, choice: 'use', cardId: NO_MARTYRS },
+        },
       ];
   }
 }

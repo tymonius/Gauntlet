@@ -200,6 +200,16 @@ export interface PendingInquisitionConfessionBattleChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+
+export interface PendingInquisitionNoMartyrsAssetChoice {
+  kind: 'no_martyrs_asset';
+  playerId: PlayerID;
+  battleId: string;
+  copyNumber: number;
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type PendingInquisitionChoice =
   | PendingInquisitionPurgeHandChoice
   | PendingInquisitionAccusationSelectChoice
@@ -212,6 +222,7 @@ export type PendingInquisitionChoice =
   | PendingInquisitionActOfFaithChoice
   | PendingInquisitionBurningAtTheStakeChoice
   | PendingInquisitionConfessionActionChoice
-  | PendingInquisitionConfessionBattleChoice;
+  | PendingInquisitionConfessionBattleChoice
+  | PendingInquisitionNoMartyrsAssetChoice;
 
 export type PublicInquisitionState = InquisitionState;

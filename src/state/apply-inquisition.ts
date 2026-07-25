@@ -70,6 +70,11 @@ import {
   queuePenanceBattleEffects,
   resolvePenanceChoice,
 } from './inquisition-penance';
+import {
+  isNoMartyrsChoice,
+  openNextNoMartyrsAssetChoice,
+  resolveNoMartyrsChoice,
+} from './inquisition-no-martyrs';
 import { resolveInquisitionChoice as resolveInquisitionPurgeChoice, useInquisitionPurge } from './inquisition-purge';
 import { continueIntelligenceBattle } from './intelligence-battle';
 import {
@@ -96,6 +101,7 @@ function continueInquisitionAutomation(result: ApplyGameActionResult): ApplyGame
   openNextGuiltByAssociationChoice(result.state);
   openNextActOfFaithChoice(result.state);
   openNextBurningAtTheStakeChoice(result.state);
+  openNextNoMartyrsAssetChoice(result.state);
   return result;
 }
 
@@ -132,6 +138,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     else if (isActOfFaithChoice(pendingKind)) resolveActOfFaithChoice(next, action);
     else if (isBurningAtTheStakeChoice(pendingKind)) resolveBurningAtTheStakeChoice(next, action);
     else if (isConfessionChoice(pendingKind)) resolveConfessionChoice(next, action);
+    else if (isNoMartyrsChoice(pendingKind)) resolveNoMartyrsChoice(next, action);
     else resolveInquisitionPurgeChoice(next, action);
     if (resumePreReveal) continueIntelligenceBattle(next);
     return finishDirectInquisitionAction(next, mysticGraveyardsBefore);

@@ -1,5 +1,6 @@
 import type { BattleState, CardID, GameEvent, GameState, PendingMilitaryChoice, PlayerID, RecentBattleResult } from '../types';
 import { gainFactionResource, setFactionResource } from './resources';
+import { lossOrRetreatBenefitsSuppressed } from './inquisition-no-martyrs';
 
 function log(game: GameState, actor: PlayerID, type: string, message: string, payload?: unknown): void {
   game.log.push({ id: `${game.id}-event-${game.log.length + 1}`, turn: game.turn, actor, type, message, payload, visibility: 'public' } satisfies GameEvent);
@@ -85,7 +86,9 @@ export function buildMilitaryAftermathChoices(game: GameState, _battle: BattleSt
     }
   }
 
-  if (loser.factionId === 'military' && cardWasPlayed(result, result.loser, 'military-rearguard')) {
+  if (loser.factionId === 'military'
+    && !lossOrRetreatBenefitsSuppressed(game, result.loser, result.battleId)
+    && cardWasPlayed(result, result.loser, 'military-rearguard')) {
     loser.zones.discard = loser.zones.discard.filter((card) => card !== 'military-rearguard');
     loser.zones.assetBank.push('military-rearguard');
     log(game, result.loser, 'military_rearguard_banked', `${loser.name} banked Rearguard after retreating.`);
