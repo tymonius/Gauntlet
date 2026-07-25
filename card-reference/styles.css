@@ -263,12 +263,26 @@
 }
 
 .reference-preview {
+  --preview-accent: var(--crimson-dark);
+  --preview-label-ink: #fff9ee;
   min-width: 0;
   padding: 34px;
   background:
     linear-gradient(135deg, rgba(255,255,255,.32), transparent 44%),
     rgba(244, 237, 222, .58);
 }
+
+.reference-preview[data-faction="military"] { --preview-accent: #9e262c; }
+.reference-preview[data-faction="diplomats"] { --preview-accent: #264f91; }
+.reference-preview[data-faction="financiers"] { --preview-accent: #227044; }
+.reference-preview[data-faction="intelligence"] { --preview-accent: #282827; }
+.reference-preview[data-faction="mystics"] { --preview-accent: #5d347e; }
+.reference-preview[data-faction="inquisition"] {
+  --preview-accent: #a67a27;
+  --preview-label-ink: #21170a;
+}
+.reference-preview[data-faction="neutral"] { --preview-accent: #96724a; }
+.reference-preview[data-faction="territory"] { --preview-accent: #755b37; }
 
 .reference-preview.empty-state,
 .reference-list.empty-state {
@@ -305,8 +319,8 @@
 
 .card-text-label {
   padding: 8px 11px;
-  color: #fff9ee;
-  background: var(--crimson-dark);
+  color: var(--preview-label-ink);
+  background: var(--preview-accent);
   font-size: .68rem;
   font-weight: 850;
   letter-spacing: .1em;
