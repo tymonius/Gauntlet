@@ -51,9 +51,38 @@ export interface PendingInquisitionAccusationDestinationChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface InquisitionPenanceBattleQueueEntry {
+  id: string;
+  battleId: string;
+  inquisitorId: PlayerID;
+  opponentId: PlayerID;
+}
+
+export interface PendingInquisitionPenanceActionChoice {
+  kind: 'penance_action';
+  playerId: PlayerID;
+  inquisitorId: PlayerID;
+  handOptions: CardID[];
+  options: ['sacrifice', 'conviction'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingInquisitionPenanceBattleChoice {
+  kind: 'penance_battle';
+  playerId: PlayerID;
+  inquisitorId: PlayerID;
+  battleId: string;
+  queueId: string;
+  handOptions: CardID[];
+  options: ['sacrifice', 'bonus'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type PendingInquisitionChoice =
   | PendingInquisitionPurgeHandChoice
   | PendingInquisitionAccusationSelectChoice
-  | PendingInquisitionAccusationDestinationChoice;
+  | PendingInquisitionAccusationDestinationChoice
+  | PendingInquisitionPenanceActionChoice
+  | PendingInquisitionPenanceBattleChoice;
 
 export type PublicInquisitionState = InquisitionState;

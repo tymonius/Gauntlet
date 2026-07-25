@@ -1,6 +1,6 @@
 import type { GameState, PlayerID } from '../types';
 import type { AppStateAction } from '../state';
-import { legalInquisitionPurgeOptions } from '../state';
+import { legalInquisitionPurgeOptions, PENANCE } from '../state';
 
 export interface InquisitionGuidedOption {
   label: string;
@@ -33,6 +33,28 @@ export function buildPendingInquisitionOptions(
         {
           label: `Put ${pending.cardId} in your Graveyard`,
           action: { type: 'resolve_inquisition_choice', playerId, choice: 'graveyard', cardId: pending.cardId },
+        },
+      ];
+    case 'penance_action':
+      return [
+        ...pending.handOptions.map((cardId) => ({
+          label: `Put ${cardId} from your hand in the Graveyard for Penance`,
+          action: { type: 'resolve_inquisition_choice' as const, playerId, choice: 'sacrifice', cardId },
+        })),
+        {
+          label: 'Refuse Penance; the Inquisition gains 1 Conviction',
+          action: { type: 'resolve_inquisition_choice', playerId, choice: 'conviction', cardId: PENANCE },
+        },
+      ];
+    case 'penance_battle':
+      return [
+        ...pending.handOptions.map((cardId) => ({
+          label: `Put ${cardId} from your hand in the Graveyard for Penance`,
+          action: { type: 'resolve_inquisition_choice' as const, playerId, choice: 'sacrifice', cardId },
+        })),
+        {
+          label: 'Refuse Penance; add +1 to the Inquisition battle total',
+          action: { type: 'resolve_inquisition_choice', playerId, choice: 'bonus', cardId: PENANCE },
         },
       ];
   }

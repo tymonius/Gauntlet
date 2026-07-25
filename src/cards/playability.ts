@@ -103,6 +103,7 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'mystics-necromancy': battleAndAction('mystics-necromancy', 'removed'),
 
   'inquisition-accusation': battleAndAction('inquisition-accusation', 'discard', true),
+  'inquisition-penance': battleAndAction('inquisition-penance', 'discard'),
 };
 
 export function getCardPlayRule(cardId: CardID): CardPlayRule | undefined { return coreCardPlayRules[cardId]; }
