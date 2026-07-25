@@ -1,6 +1,7 @@
 name: No Martyrs V2 Source Snapshot
 
 on:
+  pull_request:
   push:
     branches:
       - agent/inquisition-no-martyrs-v2
