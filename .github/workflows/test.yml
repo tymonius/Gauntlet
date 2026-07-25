@@ -26,17 +26,4 @@ jobs:
         run: npm run typecheck
 
       - name: Test
-        shell: bash
-        run: |
-          set +e
-          npm test > test-output.txt 2>&1
-          status=$?
-          cat test-output.txt
-          exit $status
-
-      - name: Upload test output
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: inquisition-audit-test-output
-          path: test-output.txt
+        run: npm test
