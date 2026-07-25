@@ -2,7 +2,7 @@ import type { BoardState, PublicBoardView } from './board';
 import type { BattleState, PublicBattleView } from './battle';
 import type { PendingDiplomatChoice } from './diplomats';
 import type { PendingFinancierChoice } from './financiers';
-import type { InquisitionAccusationQueueEntry, InquisitionActOfFaithBattleQueueEntry, InquisitionBurningAtTheStakeBattleQueueEntry, InquisitionDivineMercyBattleQueueEntry, InquisitionExcommunicationBattleQueueEntry, InquisitionGuiltByAssociationBattleQueueEntry, InquisitionPenanceBattleQueueEntry, PendingInquisitionChoice } from './inquisition';
+import type { InquisitionAccusationQueueEntry, InquisitionActOfFaithBattleQueueEntry, InquisitionBurningAtTheStakeBattleQueueEntry, InquisitionConfessionConstraint, InquisitionDivineMercyBattleQueueEntry, InquisitionExcommunicationBattleQueueEntry, InquisitionGuiltByAssociationBattleQueueEntry, InquisitionPenanceBattleQueueEntry, PendingInquisitionChoice } from './inquisition';
 import type { PendingIntelligenceChoice } from './intelligence';
 import type { CardID, GameID, PlayerID, SpaceID } from './ids';
 import type { LegalLeaderAbilityOption } from './leader';
@@ -26,6 +26,7 @@ export interface GameState {
   pendingIntelligenceChoice?: PendingIntelligenceChoice & { battleId?: string };
   pendingMysticsChoice?: PendingMysticsChoice; pendingMysticsAftermath?: PendingAccursedWagerAftermath;
   pendingInquisitionChoice?: PendingInquisitionChoice;
+  inquisitionConfessionConstraint?: InquisitionConfessionConstraint;
   inquisitionAccusationQueue?: InquisitionAccusationQueueEntry[];
   inquisitionPenanceQueue?: InquisitionPenanceBattleQueueEntry[];
   inquisitionDivineMercyQueue?: InquisitionDivineMercyBattleQueueEntry[];
