@@ -106,6 +106,7 @@ describe('Inquisition Accusation', () => {
       type: 'resolve_inquisition_choice',
       playerId: 'player_2',
       choice: 'top_deck',
+      cardId: 'card-valor',
     }).state;
 
     expect(state.players.player_2.zones.discard).toEqual([]);
@@ -170,6 +171,7 @@ describe('Inquisition Accusation', () => {
       type: 'resolve_inquisition_choice',
       playerId: 'player_2',
       choice: 'graveyard',
+      cardId: 'card-valor',
     }).state;
 
     expect(state.players.player_2.zones.discard).toEqual([]);
@@ -230,6 +232,7 @@ describe('Inquisition Accusation', () => {
       type: 'resolve_inquisition_choice',
       playerId: 'player_2',
       choice: 'top_deck',
+      cardId: 'card-valor',
     }).state;
 
     expect(state.pendingInquisitionChoice).toMatchObject({
@@ -277,6 +280,7 @@ describe('Inquisition Accusation', () => {
       type: 'resolve_inquisition_choice',
       playerId: 'player_2',
       choice: 'graveyard',
+      cardId: 'card-valor',
     }).state;
 
     expect(state.players.player_1.resources?.conviction?.value).toBe(1);
