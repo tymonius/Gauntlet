@@ -96,12 +96,32 @@ export interface PendingInquisitionDivineMercyBattleChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface InquisitionExcommunicationBattleQueueEntry {
+  id: string;
+  battleId: string;
+  inquisitorId: PlayerID;
+  opponentId: PlayerID;
+}
+
+export interface PendingInquisitionExcommunicationBattleChoice {
+  kind: 'excommunication_battle';
+  playerId: PlayerID;
+  opponentId: PlayerID;
+  battleId: string;
+  queueId: string;
+  discardOptions: CardID[];
+  valueLimit: 3;
+  options: ['select_cards'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type PendingInquisitionChoice =
   | PendingInquisitionPurgeHandChoice
   | PendingInquisitionAccusationSelectChoice
   | PendingInquisitionAccusationDestinationChoice
   | PendingInquisitionPenanceActionChoice
   | PendingInquisitionPenanceBattleChoice
-  | PendingInquisitionDivineMercyBattleChoice;
+  | PendingInquisitionDivineMercyBattleChoice
+  | PendingInquisitionExcommunicationBattleChoice;
 
 export type PublicInquisitionState = InquisitionState;

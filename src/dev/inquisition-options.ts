@@ -1,6 +1,11 @@
 import type { GameState, PlayerID } from '../types';
 import type { AppStateAction } from '../state';
-import { legalInquisitionPurgeOptions, PENANCE } from '../state';
+import {
+  EXCOMMUNICATION,
+  legalExcommunicationSelections,
+  legalInquisitionPurgeOptions,
+  PENANCE,
+} from '../state';
 
 export interface InquisitionGuidedOption {
   label: string;
@@ -61,6 +66,17 @@ export function buildPendingInquisitionOptions(
       return pending.graveyardOptions.map((cardId) => ({
         label: `Move ${cardId} from the opposing Graveyard to Discard and add +2`,
         action: { type: 'resolve_inquisition_choice', playerId, choice: 'select_card', cardId },
+      }));
+    case 'excommunication_battle':
+      return legalExcommunicationSelections(pending.discardOptions, pending.valueLimit).map((cardIds) => ({
+        label: `Excommunicate ${cardIds.join(', ')} after the battle`,
+        action: {
+          type: 'resolve_inquisition_choice',
+          playerId,
+          choice: 'select_cards',
+          cardId: EXCOMMUNICATION,
+          cardIds,
+        },
       }));
   }
 }
