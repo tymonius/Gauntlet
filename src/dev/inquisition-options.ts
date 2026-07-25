@@ -89,6 +89,16 @@ export function buildPendingInquisitionOptions(
           cardId,
         },
       }));
+    case 'act_of_faith':
+      return pending.revealedCards.map((cardId) => ({
+        label: `Put ${cardId} in the Graveyard; discard the other revealed cards`,
+        action: {
+          type: 'resolve_inquisition_choice',
+          playerId,
+          choice: 'select_graveyard',
+          cardId,
+        },
+      }));
   }
 }
 
