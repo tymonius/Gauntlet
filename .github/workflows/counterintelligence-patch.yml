@@ -1,0 +1,185 @@
+name: Apply Counterintelligence integration patch
+
+on:
+  push:
+    branches:
+      - agent/neutral-counterintelligence
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/neutral-counterintelligence
+          fetch-depth: 0
+
+      - name: Apply checked source patch
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace(path: str, old: str, new: str) -> None:
+              file = Path(path)
+              text = file.read_text()
+              if old not in text:
+                  raise SystemExit(f"Expected source block not found in {path}:\n{old}")
+              file.write_text(text.replace(old, new, 1))
+
+          replace(
+              'src/state/index.ts',
+              "export * from './neutral-contingency-plan';\nexport * from './actions';",
+              "export * from './neutral-contingency-plan';\nexport * from './neutral-counterintelligence';\nexport * from './actions';",
+          )
+
+          replace(
+              'src/state/intelligence-battle.ts',
+              "import { battleHasUnresolvedIntelligencePreReveal, openNextIntelligencePreRevealWindow } from './intelligence-pre-reveal';\nimport { hasFactionResource, spendFactionResource } from './resources';",
+              "import { battleHasUnresolvedIntelligencePreReveal, openNextIntelligencePreRevealWindow } from './intelligence-pre-reveal';\nimport { counterintelligenceBlocksFaceDownBattleCardInspection } from './neutral-counterintelligence';\nimport { hasFactionResource, spendFactionResource } from './resources';",
+          )
+          replace(
+              'src/state/intelligence-battle.ts',
+              "  const player = game.players[candidate];\n  if (player?.factionId !== 'intelligence' || !player.intelligence) return undefined;\n  if (player.intelligence.surveillanceUsedBattleId === battle.id) return undefined;",
+              "  const player = game.players[candidate];\n  if (player?.factionId !== 'intelligence' || !player.intelligence) return undefined;\n  if (counterintelligenceBlocksFaceDownBattleCardInspection(game, candidate, targetOwner)) return undefined;\n  if (player.intelligence.surveillanceUsedBattleId === battle.id) return undefined;",
+          )
+
+          replace(
+              'src/state/intelligence-spies-battle.ts',
+              "import { recordFaceDownCardObservedBeforeReveal } from './intelligence-mission-triggers';",
+              "import { recordFaceDownCardObservedBeforeReveal } from './intelligence-mission-triggers';\nimport {\n  counterintelligenceBlocksFaceDownBattleCardInspection,\n  logCounterintelligenceBlock,\n} from './neutral-counterintelligence';",
+          )
+          replace(
+              'src/state/intelligence-spies-battle.ts',
+              "function inspectOpposingCards(game: GameState, playerId: PlayerID): CardID[] {\n  const opponent = opposingParticipant(game, playerId);\n  const inspected = participantCards(opponent).filter((card) => card.faceDown);",
+              "function inspectOpposingCards(game: GameState, playerId: PlayerID): CardID[] {\n  const opponent = opposingParticipant(game, playerId);\n  if (counterintelligenceBlocksFaceDownBattleCardInspection(game, playerId, opponent.playerId)) {\n    logCounterintelligenceBlock(game, playerId, opponent.playerId, 'face_down_battle_card', 'Spies');\n    return [];\n  }\n  const inspected = participantCards(opponent).filter((card) => card.faceDown);",
+          )
+
+          replace(
+              'src/state/intelligence-simple-battle-effects.ts',
+              "import { markBattleCardsObservedBeforeNormalReveal, wasBattleCardObservedBeforeNormalReveal } from './battle-observation';",
+              "import { markBattleCardsObservedBeforeNormalReveal, wasBattleCardObservedBeforeNormalReveal } from './battle-observation';\nimport {\n  counterintelligenceBlocksFaceDownBattleCardInspection,\n  logCounterintelligenceBlock,\n} from './neutral-counterintelligence';",
+          )
+          replace(
+              'src/state/intelligence-simple-battle-effects.ts',
+              "  const opponent = opposingParticipant(game, participant);\n  if (opponent.handCommit) {\n    opponent.handCommit.faceDown = false;",
+              "  const opponent = opposingParticipant(game, participant);\n  if (opponent.handCommit) {\n    if (counterintelligenceBlocksFaceDownBattleCardInspection(game, participant.playerId, opponent.playerId)) {\n      logCounterintelligenceBlock(game, participant.playerId, opponent.playerId, 'face_down_battle_card', 'Assassins');\n      return;\n    }\n    opponent.handCommit.faceDown = false;",
+          )
+
+          replace(
+              'src/state/intelligence-action-cards.ts',
+              "import { recordOpponentHandLookOutsideBattle } from './intelligence-mission-triggers';",
+              "import { recordOpponentHandLookOutsideBattle } from './intelligence-mission-triggers';\nimport {\n  counterintelligenceBlocksHandInspection,\n  logCounterintelligenceBlock,\n} from './neutral-counterintelligence';",
+          )
+          replace(
+              'src/state/intelligence-action-cards.ts',
+              "function playSpies(game: GameState, playerId: PlayerID): void {\n  const player = requireIntelligence(game, playerId);\n  const opponent = game.players[opponentId(game, playerId)];\n  const inspectedHand = [...opponent.zones.hand];\n  recordOpponentHandLookOutsideBattle(game, playerId, 'Spies');\n  privateLog(game, playerId, 'intelligence_spies_hand_inspected', `You looked at ${opponent.name}’s hand.`, {\n    opponentId: opponent.id,\n    cards: inspectedHand,\n  });\n  publicLog(game, playerId, 'intelligence_spies_used', `${player.name} used Spies to inspect ${opponent.name}’s hand.`);",
+              "function playSpies(game: GameState, playerId: PlayerID): void {\n  const player = requireIntelligence(game, playerId);\n  const opponent = game.players[opponentId(game, playerId)];\n  const inspectionBlocked = counterintelligenceBlocksHandInspection(game, playerId, opponent.id);\n  const inspectedHand = inspectionBlocked ? [] : [...opponent.zones.hand];\n  if (inspectionBlocked) {\n    logCounterintelligenceBlock(game, playerId, opponent.id, 'hand', 'Spies');\n  } else {\n    recordOpponentHandLookOutsideBattle(game, playerId, 'Spies');\n    privateLog(game, playerId, 'intelligence_spies_hand_inspected', `You looked at ${opponent.name}’s hand.`, {\n      opponentId: opponent.id,\n      cards: inspectedHand,\n    });\n  }\n  publicLog(game, playerId, 'intelligence_spies_used', `${player.name} used Spies.`);",
+          )
+          replace(
+              'src/state/intelligence-action-cards.ts',
+              "function playAssassins(game: GameState, playerId: PlayerID): void {\n  const player = requireIntelligence(game, playerId);\n  const opponent = game.players[opponentId(game, playerId)];\n  const inspectedHand = [...opponent.zones.hand];\n  recordOpponentHandLookOutsideBattle(game, playerId, 'Assassins');",
+              "function playAssassins(game: GameState, playerId: PlayerID): void {\n  const player = requireIntelligence(game, playerId);\n  const opponent = game.players[opponentId(game, playerId)];\n  if (counterintelligenceBlocksHandInspection(game, playerId, opponent.id)) {\n    logCounterintelligenceBlock(game, playerId, opponent.id, 'hand', 'Assassins');\n    publicLog(game, playerId, 'intelligence_assassins_used', `${player.name} used Assassins, but Counterintelligence protected ${opponent.name}’s hand.`);\n    return;\n  }\n  const inspectedHand = [...opponent.zones.hand];\n  recordOpponentHandLookOutsideBattle(game, playerId, 'Assassins');",
+          )
+
+          replace(
+              'src/state/intelligence-intercepted-orders-battle.ts',
+              "import { recordFaceDownCardObservedBeforeReveal } from './intelligence-mission-triggers';",
+              "import { recordFaceDownCardObservedBeforeReveal } from './intelligence-mission-triggers';\nimport {\n  counterintelligenceBlocksBattleHandInspection,\n  logCounterintelligenceBlock,\n} from './neutral-counterintelligence';",
+          )
+          replace(
+              'src/state/intelligence-intercepted-orders-battle.ts',
+              "  const opponent = opponentParticipant(game, participant.playerId);\n  const selectedCards = selectedBattleHandCards(opponent);",
+              "  const opponent = opponentParticipant(game, participant.playerId);\n  if (counterintelligenceBlocksBattleHandInspection(game, participant.playerId, opponent.playerId)) {\n    logCounterintelligenceBlock(game, participant.playerId, opponent.playerId, 'battle_hand', 'Intercepted Orders');\n    return false;\n  }\n  const selectedCards = selectedBattleHandCards(opponent);",
+          )
+
+          replace(
+              'src/state/intelligence-reactive-assets.ts',
+              "import { openMilitaryPrecommitWindows } from './military-timing';",
+              "import { openMilitaryPrecommitWindows } from './military-timing';\nimport {\n  counterintelligenceBlocksBattleHandInspection,\n  counterintelligenceBlocksHandInspection,\n  logCounterintelligenceBlock,\n} from './neutral-counterintelligence';",
+          )
+          replace(
+              'src/state/intelligence-reactive-assets.ts',
+              "  if (!intelligencePlayer?.intelligence\n    || !intelligencePlayer.zones.assetBank.includes(INTELLIGENCE_REACTIVE_ASSETS.interceptedOrders)\n    || !target.hasDrawnBattleCards\n    || target.battleDraw.length === 0\n    || battle.effectsResolved.includes(effectKey)) return false;\n  battle.effectsResolved.push(effectKey);",
+              "  if (!intelligencePlayer?.intelligence\n    || !intelligencePlayer.zones.assetBank.includes(INTELLIGENCE_REACTIVE_ASSETS.interceptedOrders)\n    || !target.hasDrawnBattleCards\n    || target.battleDraw.length === 0\n    || battle.effectsResolved.includes(effectKey)) return false;\n  battle.effectsResolved.push(effectKey);\n  if (counterintelligenceBlocksBattleHandInspection(game, intelligencePlayerId, targetOwner)) {\n    logCounterintelligenceBlock(game, intelligencePlayerId, targetOwner, 'battle_hand', 'Intercepted Orders Asset');\n    return false;\n  }",
+          )
+          replace(
+              'src/state/intelligence-reactive-assets.ts',
+              "  recordBankedAssetUse(game, action.playerId, battle.id, INTELLIGENCE_REACTIVE_ASSETS.reconnaissance);\n  const inspectedHand = [...game.players[pending.opponentId].zones.hand];\n  privateLog(game, [action.playerId], action.playerId, 'intelligence_reconnaissance_hand_inspected', `You looked at ${game.players[pending.opponentId].name}’s hand.`, {\n    opponentId: pending.opponentId,\n    cards: inspectedHand,\n  });",
+              "  recordBankedAssetUse(game, action.playerId, battle.id, INTELLIGENCE_REACTIVE_ASSETS.reconnaissance);\n  const inspectionBlocked = counterintelligenceBlocksHandInspection(game, action.playerId, pending.opponentId);\n  const inspectedHand = inspectionBlocked ? [] : [...game.players[pending.opponentId].zones.hand];\n  if (inspectionBlocked) {\n    logCounterintelligenceBlock(game, action.playerId, pending.opponentId, 'hand', 'Reconnaissance');\n  } else {\n    privateLog(game, [action.playerId], action.playerId, 'intelligence_reconnaissance_hand_inspected', `You looked at ${game.players[pending.opponentId].name}’s hand.`, {\n      opponentId: pending.opponentId,\n      cards: inspectedHand,\n    });\n  }",
+          )
+
+          replace(
+              'src/state/inquisition-confession.ts',
+              "import type { ResolveInquisitionChoiceAction } from './actions';",
+              "import type { ResolveInquisitionChoiceAction } from './actions';\nimport {\n  counterintelligenceBlocksFaceDownBattleCardInspection,\n  counterintelligenceBlocksHandInspection,\n  logCounterintelligenceBlock,\n} from './neutral-counterintelligence';",
+          )
+          replace(
+              'src/state/inquisition-confession.ts',
+              "export function confessionActionOptions(game: GameState, inquisitorId: PlayerID): CardID[] {\n  const opponent = opponentId(game, inquisitorId);\n  return unique(game.players[opponent].zones.hand.filter((cardId) => cardCanBePlayedAt(cardId, 'battle_hand_commit', 'hand')));\n}",
+              "export function confessionActionOptions(game: GameState, inquisitorId: PlayerID): CardID[] {\n  const opponent = opponentId(game, inquisitorId);\n  if (counterintelligenceBlocksHandInspection(game, inquisitorId, opponent)) return [];\n  return unique(game.players[opponent].zones.hand.filter((cardId) => cardCanBePlayedAt(cardId, 'battle_hand_commit', 'hand')));\n}",
+          )
+          replace(
+              'src/state/inquisition-confession.ts',
+              "  const opponent = opponentId(game, inquisitorId);\n  const hand = [...game.players[opponent].zones.hand];\n  const handOptions = confessionActionOptions(game, inquisitorId);",
+              "  const opponent = opponentId(game, inquisitorId);\n  if (counterintelligenceBlocksHandInspection(game, inquisitorId, opponent)) {\n    logCounterintelligenceBlock(game, inquisitorId, opponent, 'hand', 'Confession');\n    return true;\n  }\n  const hand = [...game.players[opponent].zones.hand];\n  const handOptions = confessionActionOptions(game, inquisitorId);",
+          )
+          replace(
+              'src/state/inquisition-confession.ts',
+              "    const inquisitorId = source.participant.playerId;\n    const opponent = opposingParticipant(game, inquisitorId);\n    if (opponent.handCommit) opponent.handCommit.faceDown = false;",
+              "    const inquisitorId = source.participant.playerId;\n    const opponent = opposingParticipant(game, inquisitorId);\n    const handCommitProtected = Boolean(opponent.handCommit)\n      && counterintelligenceBlocksFaceDownBattleCardInspection(game, inquisitorId, opponent.playerId);\n    if (handCommitProtected) {\n      logCounterintelligenceBlock(game, inquisitorId, opponent.playerId, 'face_down_battle_card', 'Confession');\n    } else if (opponent.handCommit) {\n      opponent.handCommit.faceDown = false;\n    }",
+          )
+          replace(
+              'src/state/inquisition-confession.ts',
+              "        opponentHandCommitCardId: opponent.handCommit?.cardId,",
+              "        opponentHandCommitCardId: handCommitProtected ? undefined : opponent.handCommit?.cardId,",
+          )
+
+          replace(
+              'src/state/inquisition-burning-at-the-stake.ts',
+              "import { gainFactionResource } from './resources';",
+              "import { gainFactionResource } from './resources';\nimport {\n  counterintelligenceBlocksHandInspection,\n  logCounterintelligenceBlock,\n} from './neutral-counterintelligence';",
+          )
+          replace(
+              'src/state/inquisition-burning-at-the-stake.ts',
+              "function openBurningChoiceOrResolve(\n  game: GameState,\n  inquisitorId: PlayerID,\n  opponent: PlayerID,\n  source: 'action' | 'battle',\n  battleId?: string,\n  queueId?: string,\n): boolean {\n  const revealedHand = [...game.players[opponent].zones.hand];",
+              "function openBurningChoiceOrResolve(\n  game: GameState,\n  inquisitorId: PlayerID,\n  opponent: PlayerID,\n  source: 'action' | 'battle',\n  battleId?: string,\n  queueId?: string,\n): boolean {\n  if (counterintelligenceBlocksHandInspection(game, inquisitorId, opponent)) {\n    logCounterintelligenceBlock(game, inquisitorId, opponent, 'hand', 'Burning at the Stake');\n    return false;\n  }\n  const revealedHand = [...game.players[opponent].zones.hand];",
+          )
+
+          replace(
+              'src/state/inquisition-purge.ts',
+              "import { spendFactionResource } from './resources';",
+              "import { spendFactionResource } from './resources';\nimport { counterintelligenceBlocksHandInspection } from './neutral-counterintelligence';",
+          )
+          replace(
+              'src/state/inquisition-purge.ts',
+              "  if (affordable(4)) {\n    options.push(...opponent.zones.hand.map((cardId) => ({",
+              "  if (affordable(4) && !counterintelligenceBlocksHandInspection(game, playerId, opponent.id)) {\n    options.push(...opponent.zones.hand.map((cardId) => ({",
+          )
+
+          replace(
+              'src/state/reducer.ts',
+              "import { applyNoMartyrsOutcome } from './inquisition-no-martyrs';",
+              "import { applyNoMartyrsOutcome } from './inquisition-no-martyrs';\nimport { counterintelligenceBlocksFaceDownBattleCardInspection } from './neutral-counterintelligence';",
+          )
+          replace(
+              'src/state/reducer.ts',
+              "    const defenderId = destination.occupant;\n    const watchtowerMakesAttackerHandCommitFaceUp = isWatchtower(destination) && destination.controller === defenderId;",
+              "    const defenderId = destination.occupant;\n    const watchtowerMakesAttackerHandCommitFaceUp = isWatchtower(destination)\n      && destination.controller === defenderId\n      && !counterintelligenceBlocksFaceDownBattleCardInspection(game, defenderId, action.playerId);",
+          )
+
+          Path('.github/workflows/counterintelligence-patch.yml').unlink()
+          PY
+
+      - name: Commit patch
+        shell: bash
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -m "Integrate Counterintelligence protections"
+          git push origin HEAD:agent/neutral-counterintelligence
