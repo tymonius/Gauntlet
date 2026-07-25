@@ -165,7 +165,7 @@ export function buildGuidedOptions(game: GameState): GuidedOption[] {
   if (game.phase === 'turn_start') options.push({ label: 'Draw 1 card', action: { type: 'draw_card', playerId } });
   if (game.phase === 'action_before_movement' || game.phase === 'action_after_movement') {
     for (const play of view.legalActionPlays ?? []) {
-      if (play.cardId === 'mystics-black-covenant' || play.cardId === 'inquisition-accusation') continue;
+      if (play.cardId === 'mystics-black-covenant' || play.cardId === 'inquisition-accusation' || play.cardId === 'inquisition-divine-mercy') continue;
       options.push({ label: `Play Action ${play.cardId}`, action: { type: 'play_action_card', playerId, cardId: play.cardId } });
     }
     if (view.legalActionPlays?.some((play) => play.cardId === 'mystics-black-covenant')) {
@@ -173,10 +173,15 @@ export function buildGuidedOptions(game: GameState): GuidedOption[] {
         options.push({ label: `Bind ${cardId} beneath Black Covenant`, action: { type: 'play_action_card', playerId, cardId: 'mystics-black-covenant', targets: [{ kind: 'card', owner: playerId, cardId }] } });
       }
     }
-    if (view.legalActionPlays?.some((play) => play.cardId === 'inquisition-accusation')) {
-      const opponent = Object.values(game.players).find((candidate) => candidate.id !== playerId);
-      if (opponent) for (const cardId of opponent.zones.discard) {
+    const opponent = Object.values(game.players).find((candidate) => candidate.id !== playerId);
+    if (opponent && view.legalActionPlays?.some((play) => play.cardId === 'inquisition-accusation')) {
+      for (const cardId of opponent.zones.discard) {
         options.push({ label: `Play Accusation targeting ${cardId}`, action: { type: 'play_action_card', playerId, cardId: 'inquisition-accusation', targets: [{ kind: 'card', owner: opponent.id, cardId }] } });
+      }
+    }
+    if (opponent && view.legalActionPlays?.some((play) => play.cardId === 'inquisition-divine-mercy')) {
+      for (const cardId of opponent.zones.graveyard) {
+        options.push({ label: `Play Divine Mercy targeting ${cardId}`, action: { type: 'play_action_card', playerId, cardId: 'inquisition-divine-mercy', targets: [{ kind: 'card', owner: opponent.id, cardId }] } });
       }
     }
   }
