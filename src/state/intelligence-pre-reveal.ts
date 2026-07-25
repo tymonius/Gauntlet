@@ -4,6 +4,10 @@ import type {
   CardID,
   GameState,
 } from '../types';
+import {
+  battleHasUnresolvedConfessionPreReveal,
+  openNextConfessionPreRevealWindow,
+} from './inquisition-confession';
 import { resolveFogOfWarPreRevealCard } from './intelligence-fog-of-war-battle';
 import { resolveInterceptedOrdersPreRevealCard } from './intelligence-intercepted-orders-battle';
 import { resolveReconnaissancePreRevealCard } from './intelligence-reconnaissance-battle';
@@ -77,12 +81,15 @@ export function battleHasUnresolvedIntelligencePreReveal(
   game: GameState,
   incomingBattleHandCardId?: CardID,
 ): boolean {
-  return incomingBattleHandCardRequiresEarlyReveal(incomingBattleHandCardId)
+  return battleHasUnresolvedConfessionPreReveal(game, incomingBattleHandCardId)
+    || incomingBattleHandCardRequiresEarlyReveal(incomingBattleHandCardId)
     || Boolean(nextPreRevealSource(game));
 }
 
 export function openNextIntelligencePreRevealWindow(game: GameState): boolean {
-  if (!game.battle || game.battle.stage !== 'normal_reveal' || game.pendingIntelligenceChoice) return false;
+  if (!game.battle || game.battle.stage !== 'normal_reveal') return false;
+  if (game.pendingInquisitionChoice || game.pendingIntelligenceChoice) return true;
+  if (openNextConfessionPreRevealWindow(game)) return true;
 
   while (true) {
     const source = nextPreRevealSource(game);
