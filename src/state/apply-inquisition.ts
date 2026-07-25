@@ -74,6 +74,12 @@ import {
   resolveHeresyChoice,
 } from './inquisition-heresy';
 import {
+  consumeRelentlessPursuitRequest,
+  isFinalJudgmentChoice,
+  resolveFinalJudgmentChoice,
+  resumeRelentlessPursuitTurnStart,
+} from './inquisition-leaders';
+import {
   applyPenanceAction,
   isPenanceChoice,
   openNextPenanceChoice,
@@ -118,6 +124,10 @@ function continueInquisitionAutomation(result: ApplyGameActionResult): ApplyGame
   openNextActOfFaithChoice(result.state);
   openNextBurningAtTheStakeChoice(result.state);
   openNextNoMartyrsAssetChoice(result.state);
+  resumeRelentlessPursuitTurnStart(result.state);
+  if (result.state.pendingInquisitionChoice) {
+    result.state.priorityPlayer = result.state.pendingInquisitionChoice.playerId;
+  }
   return result;
 }
 
@@ -130,6 +140,49 @@ function finishDirectInquisitionAction(
   openNextGraveWardChoice(game);
   runPostActionAutomationPipeline(game);
   return continueInquisitionAutomation({ state: game });
+}
+
+function executeRelentlessPursuit(result: ApplyGameActionResult): ApplyGameActionResult {
+  const request = consumeRelentlessPursuitRequest(result.state);
+  if (!request) return result;
+
+  const ended = applyMysticsGameAction(result.state, {
+    type: 'end_turn',
+    playerId: request.loserId,
+  });
+  const next = ended.state;
+  if (next.activePlayer !== request.playerId) {
+    throw new GameActionError('Relentless Pursuit did not pass the turn to the Witch Hunter.');
+  }
+
+  const current = next.board.spaces.find((space) => space.occupant === request.playerId);
+  const destination = current
+    ? next.board.spaces.find((space) => space.index === current.index + request.direction)
+    : undefined;
+  if (!current || !destination) {
+    throw new GameActionError('Relentless Pursuit has no legal adjacent position.');
+  }
+
+  next.players[request.playerId].movementRemaining += 1;
+  next.phase = 'movement';
+  next.priorityPlayer = request.playerId;
+  const moved = applyMysticsGameAction(next, {
+    type: 'move_player',
+    playerId: request.playerId,
+    toSpaceId: destination.id,
+  });
+
+  if (moved.state.battle) {
+    moved.state.inquisitionRelentlessPursuitResume = {
+      playerId: request.playerId,
+      turn: moved.state.turn,
+    };
+  } else {
+    moved.state.recentBattleResult = undefined;
+    moved.state.phase = 'turn_start';
+    moved.state.priorityPlayer = request.playerId;
+  }
+  return moved;
 }
 
 export function applyGameAction(game: GameState, action: AppStateAction): ApplyGameActionResult {
@@ -149,7 +202,8 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     const resumePostReveal = pendingKind === 'tyranny_negate'
       || pendingKind === 'heresy_replay'
       || pendingKind === 'hellfire_battle';
-    if (isAccusationChoice(pendingKind)) resolveAccusationChoice(next, action);
+    if (isFinalJudgmentChoice(pendingKind)) resolveFinalJudgmentChoice(next, action);
+    else if (isAccusationChoice(pendingKind)) resolveAccusationChoice(next, action);
     else if (isPenanceChoice(pendingKind)) resolvePenanceChoice(next, action);
     else if (isDivineMercyChoice(pendingKind)) resolveDivineMercyChoice(next, action);
     else if (isExcommunicationChoice(pendingKind)) resolveExcommunicationChoice(next, action);
@@ -193,6 +247,9 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     result = finishDirectInquisitionAction(next, mysticGraveyardsBefore);
   } else {
     result = applyMysticsGameAction(game, action);
+  }
+  if (action.type === 'use_leader_ability') {
+    result = executeRelentlessPursuit(result);
   }
 
   if (action.type === 'play_action_card') {
