@@ -58,6 +58,7 @@ export * from './inquisition-core';
 export * from './inquisition-purge';
 export * from './inquisition-accusation';
 export * from './inquisition-penance';
+export * from './inquisition-divine-mercy';
 export * from './actions';
 export * from './draw';
 export { applyGameAction } from './apply-inquisition';
