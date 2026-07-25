@@ -10,6 +10,8 @@ export type InquisitionPurgeMode =
 export interface InquisitionState {
   /** Turn on which normal after-battle Conviction was last gained. */
   convictionBattleGainTurn?: number;
+  tyrannyAssetUseTurn?: number;
+  tyrannyAssetUsesThisTurn?: number;
 }
 
 export interface InquisitionConfessionConstraint {
@@ -201,6 +203,27 @@ export interface PendingInquisitionConfessionBattleChoice {
 }
 
 
+
+export interface InquisitionTyrannyTargetOption {
+  targetKey: string;
+  cardId: CardID;
+  owner: PlayerID;
+  sourceSlot: 'hand_commit' | 'battle_draw_played';
+  sourceIndex?: number;
+}
+
+export interface PendingInquisitionTyrannyChoice {
+  kind: 'tyranny_negate';
+  playerId: PlayerID;
+  battleId: string;
+  sourceKind: 'battle_card' | 'asset';
+  sourceSlot?: 'hand_commit' | 'battle_draw_played';
+  sourceIndex?: number;
+  targetOptions: InquisitionTyrannyTargetOption[];
+  options: ['negate'] | ['pass', 'negate'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface PendingInquisitionNoMartyrsAssetChoice {
   kind: 'no_martyrs_asset';
   playerId: PlayerID;
@@ -223,6 +246,7 @@ export type PendingInquisitionChoice =
   | PendingInquisitionBurningAtTheStakeChoice
   | PendingInquisitionConfessionActionChoice
   | PendingInquisitionConfessionBattleChoice
+  | PendingInquisitionTyrannyChoice
   | PendingInquisitionNoMartyrsAssetChoice;
 
 export type PublicInquisitionState = InquisitionState;

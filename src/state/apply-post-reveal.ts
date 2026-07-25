@@ -11,6 +11,7 @@ import type { ApplyGameActionResult } from './reducer';
 function hasPendingFactionWindow(game: GameState): boolean {
   return Boolean(
     game.pendingIntelligenceChoice
+    || game.pendingInquisitionChoice
     || game.pendingMilitaryChoice
     || game.pendingMilitaryTimingChoice
     || game.pendingDiplomatChoice

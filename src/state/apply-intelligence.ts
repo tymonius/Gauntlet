@@ -17,9 +17,6 @@ import { availableBattleHandCards } from './battle-hand-restrictions';
 import { applyBattleDiceRoll, clearBattleDiceForReroll } from './battle-dice';
 import { markBattleCardsObservedBeforeNormalReveal } from './battle-observation';
 import { openCensureChoiceAfterAction } from './diplomat-persistent';
-import { buildFinancierPreDiceChoices } from './financier-pre-dice';
-import { openNextFinancierChoice } from './financier-battle-cards';
-import { maybeOpenSubsidizeWindow } from './financier-integration';
 import { openMissionControlWindow, resolveIntelligenceLeaderChoice } from './intelligence-leaders';
 import { recordFaceDownCardObservedBeforeReveal } from './intelligence-mission-triggers';
 import {
@@ -34,17 +31,14 @@ import {
   resolveSimpleIntelligenceRevealEffects,
   returnDisinformationFromGraveyard,
 } from './intelligence-simple-battle-effects';
-import { openMilitaryAfterRevealWindows } from './military-timing';
+import { continueIntelligencePostRevealFlow } from './intelligence-post-reveal-flow';
 import { abortIntelligenceMission, completeIntelligenceMission, completeSpecialOperation, startIntelligenceMission } from './intelligence-missions';
 import { runPostActionAutomationPipeline } from './pipeline';
 import { applyGameAction as applyReducerGameAction, GameActionError, type ApplyGameActionResult } from './reducer';
 
 function continueAfterIntelligenceReveal(game: GameState, previousStage?: string): void {
   if (previousStage === 'dice' || game.battle?.stage !== 'dice') return;
-  openMilitaryAfterRevealWindows(game);
-  buildFinancierPreDiceChoices(game);
-  openNextFinancierChoice(game);
-  if (!game.pendingFinancierChoice && !game.financierChoiceQueue?.length) maybeOpenSubsidizeWindow(game);
+  continueIntelligencePostRevealFlow(game);
 }
 
 function participantFor(game: GameState, playerId: PlayerID): BattleParticipantState {

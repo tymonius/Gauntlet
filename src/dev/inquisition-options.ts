@@ -8,6 +8,7 @@ import {
   legalInquisitionPurgeOptions,
   NO_MARTYRS,
   PENANCE,
+  TYRANNY,
 } from '../state';
 
 export interface InquisitionGuidedOption {
@@ -139,6 +140,23 @@ export function buildPendingInquisitionOptions(
             playerId,
             choice: 'replace',
             cardId,
+          },
+        })),
+      ];
+    case 'tyranny_negate':
+      return [
+        ...(pending.sourceKind === 'asset' ? [{
+          label: 'Keep Tyranny banked',
+          action: { type: 'resolve_inquisition_choice' as const, playerId, choice: 'pass', cardId: TYRANNY },
+        }] : []),
+        ...pending.targetOptions.map((target) => ({
+          label: `Negate ${target.cardId} with Tyranny`,
+          action: {
+            type: 'resolve_inquisition_choice' as const,
+            playerId,
+            choice: 'negate',
+            cardId: TYRANNY,
+            targetKey: target.targetKey,
           },
         })),
       ];
