@@ -9,6 +9,7 @@ import type {
   GameState,
   PlayerID,
 } from '../types';
+import { HERESY } from './inquisition-heresy';
 import { isArcaneCard } from './mystics-ritual';
 import { gainFactionResource } from './resources';
 
@@ -30,6 +31,10 @@ function publicLog(
     payload,
     visibility: 'public',
   } satisfies GameEvent);
+}
+
+function arcaneTraitCard(cardId: CardID): boolean {
+  return cardId === HERESY || isArcaneCard(cardId);
 }
 
 function removeLast(cards: CardID[], cardId: CardID): boolean {
@@ -138,7 +143,7 @@ export function awardBlasphemyForRevealedBattleCards(game: GameState): number {
     const opponentId = opponentInBattle(battle, inquisitorId);
     if (!opponentId) continue;
     for (const { key, card } of physicalBattleCards(battle, opponentId)) {
-      if (card.faceDown || !isArcaneCard(card.cardId)) continue;
+      if (card.faceDown || !arcaneTraitCard(card.cardId)) continue;
       const marker = blasphemyMarker(inquisitorId, key);
       if (battle.effectsResolved.includes(marker)) continue;
       battle.effectsResolved.push(marker);
@@ -156,11 +161,11 @@ function blackCovenantBoundActionCard(game: GameState, playerId: PlayerID, bindi
 /** Returns a face-up Action-effect card use visible from the submitted action. */
 export function actionArcaneUse(game: GameState, action: AppStateAction): { playerId: PlayerID; cardId: CardID } | undefined {
   if (action.type === 'play_action_card') {
-    return isArcaneCard(action.cardId) ? { playerId: action.playerId, cardId: action.cardId } : undefined;
+    return arcaneTraitCard(action.cardId) ? { playerId: action.playerId, cardId: action.cardId } : undefined;
   }
   if (action.type === 'use_mystic_black_covenant_action') {
     const cardId = blackCovenantBoundActionCard(game, action.playerId, action.bindingId);
-    return cardId && isArcaneCard(cardId) ? { playerId: action.playerId, cardId } : undefined;
+    return cardId && arcaneTraitCard(cardId) ? { playerId: action.playerId, cardId } : undefined;
   }
   return undefined;
 }
