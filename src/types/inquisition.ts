@@ -21,12 +21,29 @@ export interface InquisitionConfessionConstraint {
   expiresTurn: number;
 }
 
+export interface InquisitionFinalJudgmentPurgeOption {
+  mode: InquisitionPurgeMode;
+  originalCost: 1 | 2 | 3 | 4;
+  effectiveCost: 1 | 2 | 3;
+  cardId?: CardID;
+  cardIds?: CardID[];
+}
+
+export interface PendingInquisitionFinalJudgmentChoice {
+  kind: 'final_judgment_purge';
+  playerId: PlayerID;
+  battleId: string;
+  purgeOptions: InquisitionFinalJudgmentPurgeOption[];
+  options: ['select_purge'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface PendingInquisitionPurgeHandChoice {
   kind: 'purge_hand_choice';
   playerId: PlayerID;
   inquisitorId: PlayerID;
   handOptions: CardID[];
-  cost: 3;
+  cost: number;
   options: ['select'];
   resumePriorityPlayer?: PlayerID;
 }
@@ -261,6 +278,7 @@ export interface PendingInquisitionHeresyChoice {
 }
 
 export type PendingInquisitionChoice =
+  | PendingInquisitionFinalJudgmentChoice
   | PendingInquisitionPurgeHandChoice
   | PendingInquisitionAccusationSelectChoice
   | PendingInquisitionAccusationDestinationChoice
