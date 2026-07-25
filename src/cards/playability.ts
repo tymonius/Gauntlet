@@ -112,6 +112,7 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'inquisition-confession': battleAndAction('inquisition-confession', 'discard'),
   'inquisition-no-martyrs': battleAndAction('inquisition-no-martyrs', 'asset_bank'),
   'inquisition-tyranny': battleAndAction('inquisition-tyranny', 'asset_bank'),
+  'inquisition-heresy': battleOnly('inquisition-heresy'),
   'inquisition-hellfire': battleAndAction('inquisition-hellfire', 'discard'),
 };
 

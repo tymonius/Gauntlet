@@ -4,6 +4,7 @@ import {
   CONFESSION,
   EXCOMMUNICATION,
   HELLFIRE,
+  HERESY,
   inquisitionCardTitle,
   legalExcommunicationSelections,
   legalInquisitionPurgeOptions,
@@ -197,6 +198,27 @@ export function buildPendingInquisitionOptions(
           },
         }))
       )).flat();
+    case 'heresy_replay':
+      return [
+        {
+          label: 'Do not spend Conviction on Heresy',
+          action: {
+            type: 'resolve_inquisition_choice',
+            playerId,
+            choice: 'pass',
+            cardId: HERESY,
+          },
+        },
+        ...pending.graveyardOptions.map((cardId) => ({
+          label: `Spend 4 Conviction to resolve ${cardId} from the opposing Graveyard`,
+          action: {
+            type: 'resolve_inquisition_choice' as const,
+            playerId,
+            choice: 'replay',
+            cardId,
+          },
+        })),
+      ];
   }
 }
 

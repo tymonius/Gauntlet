@@ -9,6 +9,7 @@ import type {
 } from '../types';
 import type { ResolveInquisitionChoiceAction } from './actions';
 import { cardValue } from './financiers';
+import { HERESY } from './inquisition-heresy';
 import { isArcaneCard } from './mystics-ritual';
 import { gainFactionResource } from './resources';
 import { GameActionError } from './reducer';
@@ -73,7 +74,7 @@ function resolveBurningCard(
   }
   game.players[opponent].zones.graveyard.push(cardId);
   if (source === 'battle') awardNormalBattleConvictionIfEligible(game, inquisitorId, battleId);
-  const arcane = isArcaneCard(cardId);
+  const arcane = cardId === HERESY || isArcaneCard(cardId);
   if (arcane) {
     gainFactionResource(game, inquisitorId, 'conviction', 1, `Burning at the Stake condemned Arcane card ${cardId}.`);
   }

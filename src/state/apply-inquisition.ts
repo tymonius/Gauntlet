@@ -70,6 +70,10 @@ import {
   resolveHellfireChoice,
 } from './inquisition-hellfire';
 import {
+  isHeresyChoice,
+  resolveHeresyChoice,
+} from './inquisition-heresy';
+import {
   applyPenanceAction,
   isPenanceChoice,
   openNextPenanceChoice,
@@ -142,7 +146,9 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     const next = structuredClone(game);
     const pendingKind = next.pendingInquisitionChoice?.kind;
     const resumePreReveal = pendingKind === 'confession_battle';
-    const resumePostReveal = pendingKind === 'tyranny_negate' || pendingKind === 'hellfire_battle';
+    const resumePostReveal = pendingKind === 'tyranny_negate'
+      || pendingKind === 'heresy_replay'
+      || pendingKind === 'hellfire_battle';
     if (isAccusationChoice(pendingKind)) resolveAccusationChoice(next, action);
     else if (isPenanceChoice(pendingKind)) resolvePenanceChoice(next, action);
     else if (isDivineMercyChoice(pendingKind)) resolveDivineMercyChoice(next, action);
@@ -153,6 +159,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     else if (isConfessionChoice(pendingKind)) resolveConfessionChoice(next, action);
     else if (isNoMartyrsChoice(pendingKind)) resolveNoMartyrsChoice(next, action);
     else if (isTyrannyChoice(pendingKind)) resolveTyrannyChoice(next, action);
+    else if (isHeresyChoice(pendingKind)) resolveHeresyChoice(next, action);
     else if (isHellfireChoice(pendingKind)) resolveHellfireChoice(next, action);
     else resolveInquisitionPurgeChoice(next, action);
     if (resumePreReveal) continueIntelligenceBattle(next);
