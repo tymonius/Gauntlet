@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-8YYYZJGGPE');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Search and browse every canonical Gauntlet v0.6.0 playable card and Territory." />
+  <title>Gauntlet Card Reference</title>
+  <link rel="stylesheet" href="../site.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../" aria-label="Gauntlet home">
+      <span class="brand-mark" aria-hidden="true">G</span>
+      <span>Gauntlet</span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="../">Home</a>
+      <a href="../rulebook/">Rules</a>
+      <a href="../deckbuilder/">Deckbuilder</a>
+      <a href="https://github.com/tymonius/Gauntlet">Repository</a>
+    </nav>
+  </header>
+
+  <main class="reference-main">
+    <section class="reference-hero" aria-labelledby="reference-title">
+      <div>
+        <p class="eyebrow">Canonical v0.6.0 lookup tool</p>
+        <h1 id="reference-title">Card <span>Reference.</span></h1>
+        <p class="reference-lede">Search every playable card and Territory without opening the Deckbuilder. Results are loaded directly from the same canonical sources.</p>
+      </div>
+      <div class="source-status" aria-live="polite">
+        <span>Source status</span>
+        <strong id="dataStatus">Loading canonical sources…</strong>
+      </div>
+    </section>
+
+    <section id="app" class="reference-app" hidden>
+      <form class="filter-panel" id="filters" role="search">
+        <div class="filter-heading">
+          <div>
+            <p class="eyebrow">Find a card</p>
+            <h2>Filters</h2>
+          </div>
+          <button id="clearFilters" class="text-button" type="button">Clear</button>
+        </div>
+
+        <label class="search-field">
+          Search
+          <input id="searchInput" type="search" placeholder="Name, effect, trait, or keyword" autocomplete="off" />
+        </label>
+
+        <label>
+          Reference type
+          <select id="typeFilter">
+            <option value="all">Playable cards + Territories</option>
+            <option value="card">Playable cards only</option>
+            <option value="territory">Territories only</option>
+          </select>
+        </label>
+
+        <label>
+          Faction
+          <select id="factionFilter">
+            <option value="all">All factions</option>
+            <option value="neutral">Neutral</option>
+            <option value="military">Military</option>
+            <option value="diplomats">Diplomats</option>
+            <option value="financiers">Financiers</option>
+            <option value="intelligence">Intelligence</option>
+            <option value="mystics">Mystics</option>
+            <option value="inquisition">Inquisition</option>
+          </select>
+        </label>
+
+        <label>
+          Cost
+          <select id="costFilter">
+            <option value="all">All costs</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </label>
+
+        <label>
+          Complexity
+          <select id="complexityFilter">
+            <option value="all">All complexity levels</option>
+          </select>
+        </label>
+
+        <div class="reference-metrics" aria-label="Reference totals">
+          <div><strong id="cardTotal">0</strong><span>Playable cards</span></div>
+          <div><strong id="territoryTotal">0</strong><span>Territories</span></div>
+        </div>
+      </form>
+
+      <section class="browser-panel" aria-label="Card reference results">
+        <div class="browser-heading">
+          <div>
+            <p class="eyebrow">Canonical results</p>
+            <h2><span id="resultCount">0</span> matches</h2>
+          </div>
+          <p id="resultSummary" class="result-summary"></p>
+        </div>
+
+        <div class="reference-browser">
+          <div id="resultList" class="reference-list" role="listbox" aria-label="Reference results"></div>
+          <article id="preview" class="reference-preview empty-state" aria-live="polite">Select a result to view its canonical text.</article>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <strong>Gauntlet</strong>
+      <p>Unpublished pre-release playtest project.</p>
+    </div>
+    <div class="footer-links">
+      <a href="../rulebook/">Browser Rulebook</a>
+      <a href="../deckbuilder/">Deckbuilder</a>
+      <a href="../releases/v0.6.0/">v0.6.0 Release</a>
+      <a href="https://github.com/tymonius/Gauntlet">GitHub</a>
+    </div>
+    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  </footer>
+
+  <noscript>
+    <p class="noscript">JavaScript is required to load and search the canonical card sources.</p>
+  </noscript>
+  <script src="app.js" defer></script>
+</body>
+</html>
