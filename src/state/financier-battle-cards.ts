@@ -3,6 +3,7 @@ import type { BattlePlayedCard, BattleState, CardID, GameEvent, GameState, Pendi
 import { buildCornerTheMarketChoice } from './financier-acquisition-cards';
 import { buyDeed, cardValue, checkControllingInterest, deedCost, deedOwner } from './financiers';
 import { gainFactionResource } from './resources';
+import { lossOrRetreatBenefitsSuppressed } from './inquisition-no-martyrs';
 
 export const FINANCIER_BATTLE_CARDS = {
   monetaryCrisis: 'financiers-monetary-crisis',
@@ -109,6 +110,7 @@ function forceForeclosureCapture(game: GameState, battle: BattleState, winner: P
 function resolveUnderwriting(game: GameState, battle: BattleState, winner: PlayerID): void {
   const loser = winner === battle.attacker.playerId ? battle.defender.playerId : battle.attacker.playerId;
   const player = game.players[loser];
+  if (lossOrRetreatBenefitsSuppressed(game, loser, battle.id)) return;
   const bonus = player?.financiers?.subsidizeBonusThisBattle ?? 0;
   if (bonus < 1) return;
   const copies = activeCopies(game, battle, loser, FINANCIER_BATTLE_CARDS.underwriting).length;

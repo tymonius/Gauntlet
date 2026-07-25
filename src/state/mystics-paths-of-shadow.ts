@@ -9,6 +9,7 @@ import type {
 } from '../types';
 import type { ActionCardTarget, ResolveMysticsChoiceAction } from './actions';
 import { GameActionError } from './reducer';
+import { lossOrRetreatBenefitsSuppressed } from './inquisition-no-martyrs';
 
 export const PATHS_OF_SHADOW = 'mystics-paths-of-shadow';
 
@@ -148,6 +149,7 @@ export function queuePathsOfShadowAfterBattle(game: GameState, battle: BattleSta
   if (!result || result.battleId !== battle.id) return;
   const player = game.players[result.loser];
   if (player?.factionId !== 'mystics' || !player.mystics) return;
+  if (lossOrRetreatBenefitsSuppressed(game, result.loser, battle.id)) return;
   if (activePathsOfShadowCount(game, battle, result.loser) < 1) return;
 
   const spaceOptions = controlledOpenTerritories(game, result.loser);

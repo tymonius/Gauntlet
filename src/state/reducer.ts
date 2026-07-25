@@ -20,6 +20,7 @@ import type {
 } from '../types';
 import type { ActionResult, GameAction } from './actions';
 import { drawFromDeck } from './draw';
+import { applyNoMartyrsOutcome } from './inquisition-no-martyrs';
 
 export class GameActionError extends Error {
   constructor(message: string) {
@@ -306,19 +307,29 @@ function maybeRevealAfterBattleDrawPlay(game: GameState): void {
   if (bothParticipants(game, hasCompletedBattleDrawPlay)) revealBattleCards(game);
 }
 
-function findRetreatSpace(game: GameState, loser: PlayerID): BoardSpaceState | undefined {
+function findRetreatSpace(game: GameState, loser: PlayerID, additionalPositions = 0): BoardSpaceState | undefined {
   if (!game.battle) return undefined;
 
   const battle = game.battle;
   const location = findSpace(game, battle.location);
   const attackerOrigin = findSpace(game, battle.attackerOrigin);
   const directionFromAttacker = location.index > attackerOrigin.index ? 1 : -1;
-  const retreatIndex = loser === battle.attacker.playerId
-    ? attackerOrigin.index
-    : location.index + directionFromAttacker;
+  const loserIsAttacker = loser === battle.attacker.playerId;
 
-  const retreatSpace = game.board.spaces.find((space) => space.index === retreatIndex);
-  if (!retreatSpace || retreatSpace.occupant) return undefined;
+  let retreatSpace: BoardSpaceState | undefined;
+  if (loserIsAttacker) {
+    retreatSpace = attackerOrigin;
+  } else {
+    retreatSpace = game.board.spaces.find((space) => space.index === location.index + directionFromAttacker);
+    if (!retreatSpace || retreatSpace.occupant) return undefined;
+  }
+
+  const extraDirection = loserIsAttacker ? -directionFromAttacker : directionFromAttacker;
+  for (let step = 0; step < additionalPositions; step += 1) {
+    const next = game.board.spaces.find((space) => space.index === retreatSpace!.index + extraDirection);
+    if (!next || next.occupant) break;
+    retreatSpace = next;
+  }
   return retreatSpace;
 }
 
@@ -687,10 +698,12 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
   const winnerState = requirePlayer(game, winner);
   const loserState = requirePlayer(game, loser);
   const loserParticipant = getBattleParticipant(game, loser);
-  const retreatSpace = findRetreatSpace(game, loser);
 
   battle.winner = winner;
   battle.loser = loser;
+  applyNoMartyrsOutcome(game, battle, winner, loser);
+  const additionalRetreatPositions = battle.additionalRetreatPositions?.[loser] ?? 0;
+  const retreatSpace = findRetreatSpace(game, loser, additionalRetreatPositions);
   loserParticipant.retreated = true;
 
   if (winner === battle.attacker.playerId) {
@@ -707,14 +720,16 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
       loserState.occupiedSpaceId = undefined;
     }
   } else {
-    attackerOrigin.occupant = battle.attacker.playerId;
-    updateCaptureStatusForOccupiedSpace(attackerOrigin, battle.attacker.playerId);
     winnerState.occupiedSpaceId = location.id;
     updateCaptureStatusForOccupiedSpace(location, winner);
     if (retreatSpace) {
+      if (retreatSpace.id !== attackerOrigin.id) attackerOrigin.occupant = undefined;
       retreatSpace.occupant = loser;
       loserState.occupiedSpaceId = retreatSpace.id;
       updateCaptureStatusForOccupiedSpace(retreatSpace, loser);
+    } else {
+      attackerOrigin.occupant = undefined;
+      loserState.occupiedSpaceId = undefined;
     }
   }
 
@@ -754,6 +769,8 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
     modifiers: activeModifiers,
     cancellations,
     destinationOverrides,
+    lossRetreatEffectsSuppressedFor: battle.lossRetreatEffectsSuppressedFor,
+    additionalRetreatPositions: battle.additionalRetreatPositions,
   });
   game.battle = undefined;
   game.phase = 'action_after_movement';
