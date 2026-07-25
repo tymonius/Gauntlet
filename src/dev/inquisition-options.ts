@@ -1,6 +1,7 @@
 import type { GameState, PlayerID } from '../types';
 import type { AppStateAction } from '../state';
 import {
+  CONFESSION,
   EXCOMMUNICATION,
   inquisitionCardTitle,
   legalExcommunicationSelections,
@@ -109,6 +110,37 @@ export function buildPendingInquisitionOptions(
           cardId,
         },
       }));
+    case 'confession_action':
+      return pending.handOptions.map((cardId) => ({
+        label: `Choose ${cardId} for Confession until end of turn`,
+        action: {
+          type: 'resolve_inquisition_choice',
+          playerId,
+          choice: 'select_card',
+          cardId,
+        },
+      }));
+    case 'confession_battle':
+      return [
+        {
+          label: 'Keep the original hand commitment',
+          action: {
+            type: 'resolve_inquisition_choice',
+            playerId,
+            choice: 'pass',
+            cardId: CONFESSION,
+          },
+        },
+        ...pending.replacementOptions.map((cardId) => ({
+          label: `Return ${pending.originalCommitCardId} to hand and replace it face up with ${cardId}`,
+          action: {
+            type: 'resolve_inquisition_choice' as const,
+            playerId,
+            choice: 'replace',
+            cardId,
+          },
+        })),
+      ];
   }
 }
 

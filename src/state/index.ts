@@ -63,6 +63,7 @@ export * from './inquisition-excommunication';
 export * from './inquisition-guilt-by-association';
 export * from './inquisition-act-of-faith';
 export * from './inquisition-burning-at-the-stake';
+export * from './inquisition-confession';
 export * from './actions';
 export * from './draw';
 export { applyGameAction } from './apply-inquisition';
