@@ -153,6 +153,26 @@ export interface PendingInquisitionActOfFaithChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface InquisitionBurningAtTheStakeBattleQueueEntry {
+  id: string;
+  battleId: string;
+  inquisitorId: PlayerID;
+  opponentId: PlayerID;
+}
+
+export interface PendingInquisitionBurningAtTheStakeChoice {
+  kind: 'burning_at_the_stake';
+  playerId: PlayerID;
+  opponentId: PlayerID;
+  source: 'action' | 'battle';
+  revealedHand: CardID[];
+  highestValueOptions: CardID[];
+  battleId?: string;
+  queueId?: string;
+  options: ['select_highest'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type PendingInquisitionChoice =
   | PendingInquisitionPurgeHandChoice
   | PendingInquisitionAccusationSelectChoice
@@ -162,6 +182,7 @@ export type PendingInquisitionChoice =
   | PendingInquisitionDivineMercyBattleChoice
   | PendingInquisitionExcommunicationBattleChoice
   | PendingInquisitionGuiltByAssociationBattleChoice
-  | PendingInquisitionActOfFaithChoice;
+  | PendingInquisitionActOfFaithChoice
+  | PendingInquisitionBurningAtTheStakeChoice;
 
 export type PublicInquisitionState = InquisitionState;
