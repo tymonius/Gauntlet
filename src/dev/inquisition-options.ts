@@ -57,6 +57,11 @@ export function buildPendingInquisitionOptions(
           action: { type: 'resolve_inquisition_choice', playerId, choice: 'bonus', cardId: PENANCE },
         },
       ];
+    case 'divine_mercy_battle':
+      return pending.graveyardOptions.map((cardId) => ({
+        label: `Move ${cardId} from the opposing Graveyard to Discard and add +2`,
+        action: { type: 'resolve_inquisition_choice', playerId, choice: 'select_card', cardId },
+      }));
   }
 }
 
