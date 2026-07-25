@@ -202,8 +202,6 @@ export interface PendingInquisitionConfessionBattleChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
-
-
 export interface InquisitionTyrannyTargetOption {
   targetKey: string;
   cardId: CardID;
@@ -233,6 +231,25 @@ export interface PendingInquisitionNoMartyrsAssetChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface PendingInquisitionHellfireActionChoice {
+  kind: 'hellfire_action';
+  playerId: PlayerID;
+  opponentId: PlayerID;
+  maxSpend: number;
+  options: ['spend'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingInquisitionHellfireBattleChoice {
+  kind: 'hellfire_battle';
+  playerId: PlayerID;
+  opponentId: PlayerID;
+  battleId: string;
+  maxSpend: number;
+  options: ['allocate'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type PendingInquisitionChoice =
   | PendingInquisitionPurgeHandChoice
   | PendingInquisitionAccusationSelectChoice
@@ -247,6 +264,8 @@ export type PendingInquisitionChoice =
   | PendingInquisitionConfessionActionChoice
   | PendingInquisitionConfessionBattleChoice
   | PendingInquisitionTyrannyChoice
-  | PendingInquisitionNoMartyrsAssetChoice;
+  | PendingInquisitionNoMartyrsAssetChoice
+  | PendingInquisitionHellfireActionChoice
+  | PendingInquisitionHellfireBattleChoice;
 
 export type PublicInquisitionState = InquisitionState;

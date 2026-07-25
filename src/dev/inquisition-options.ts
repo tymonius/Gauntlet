@@ -3,6 +3,7 @@ import type { AppStateAction } from '../state';
 import {
   CONFESSION,
   EXCOMMUNICATION,
+  HELLFIRE,
   inquisitionCardTitle,
   legalExcommunicationSelections,
   legalInquisitionPurgeOptions,
@@ -171,6 +172,31 @@ export function buildPendingInquisitionOptions(
           action: { type: 'resolve_inquisition_choice', playerId, choice: 'use', cardId: NO_MARTYRS },
         },
       ];
+    case 'hellfire_action':
+      return Array.from({ length: pending.maxSpend + 1 }, (_, amount) => ({
+        label: `Spend ${amount} Conviction; put up to ${amount} opposing Draw Pile card${amount === 1 ? '' : 's'} in the Graveyard`,
+        action: {
+          type: 'resolve_inquisition_choice' as const,
+          playerId,
+          choice: 'spend',
+          cardId: HELLFIRE,
+          amount,
+        },
+      }));
+    case 'hellfire_battle':
+      return Array.from({ length: pending.maxSpend + 1 }, (_, amount) => (
+        Array.from({ length: amount + 1 }, (_, delayedCount) => ({
+          label: `Spend ${amount} Conviction: +${amount - delayedCount} battle total; ${delayedCount} delayed Graveyard card${delayedCount === 1 ? '' : 's'} if you win`,
+          action: {
+            type: 'resolve_inquisition_choice' as const,
+            playerId,
+            choice: 'allocate',
+            cardId: HELLFIRE,
+            amount,
+            secondaryAmount: delayedCount,
+          },
+        }))
+      )).flat();
   }
 }
 

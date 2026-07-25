@@ -64,6 +64,12 @@ import {
   resolveGuiltByAssociationChoice,
 } from './inquisition-guilt-by-association';
 import {
+  applyHellfireAction,
+  applyHellfireAfterBattle,
+  isHellfireChoice,
+  resolveHellfireChoice,
+} from './inquisition-hellfire';
+import {
   applyPenanceAction,
   isPenanceChoice,
   openNextPenanceChoice,
@@ -136,7 +142,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     const next = structuredClone(game);
     const pendingKind = next.pendingInquisitionChoice?.kind;
     const resumePreReveal = pendingKind === 'confession_battle';
-    const resumePostReveal = pendingKind === 'tyranny_negate';
+    const resumePostReveal = pendingKind === 'tyranny_negate' || pendingKind === 'hellfire_battle';
     if (isAccusationChoice(pendingKind)) resolveAccusationChoice(next, action);
     else if (isPenanceChoice(pendingKind)) resolvePenanceChoice(next, action);
     else if (isDivineMercyChoice(pendingKind)) resolveDivineMercyChoice(next, action);
@@ -147,6 +153,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     else if (isConfessionChoice(pendingKind)) resolveConfessionChoice(next, action);
     else if (isNoMartyrsChoice(pendingKind)) resolveNoMartyrsChoice(next, action);
     else if (isTyrannyChoice(pendingKind)) resolveTyrannyChoice(next, action);
+    else if (isHellfireChoice(pendingKind)) resolveHellfireChoice(next, action);
     else resolveInquisitionPurgeChoice(next, action);
     if (resumePreReveal) continueIntelligenceBattle(next);
     if (resumePostReveal) continueIntelligencePostRevealFlow(next);
@@ -190,11 +197,13 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     applyActOfFaithAction(result.state, action.playerId, action.cardId);
     applyBurningAtTheStakeAction(result.state, action.playerId, action.cardId);
     applyConfessionAction(result.state, action.playerId, action.cardId);
+    applyHellfireAction(result.state, action.playerId, action.cardId);
   }
 
   const endedBattle = Boolean(priorBattle && !result.state.battle);
   if (endedBattle && priorBattle) {
     applyCondemnationAfterBattle(result.state, priorBattle);
+    applyHellfireAfterBattle(result.state, priorBattle);
     awardNormalConvictionAfterBattle(result.state, priorBattle, graveyardsBefore);
     queueAccusationBattleEffects(result.state, priorBattle);
     queueExcommunicationBattleEffects(result.state, priorBattle);

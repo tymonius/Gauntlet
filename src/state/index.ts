@@ -66,6 +66,7 @@ export * from './inquisition-burning-at-the-stake';
 export * from './inquisition-confession';
 export * from './inquisition-no-martyrs';
 export * from './inquisition-tyranny';
+export * from './inquisition-hellfire';
 export * from './actions';
 export * from './draw';
 export { applyGameAction } from './apply-inquisition';
