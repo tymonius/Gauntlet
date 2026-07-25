@@ -56,7 +56,6 @@ const state = {
   type: "all",
   faction: "all",
   cost: "all",
-  complexity: "all",
   selectedId: null
 };
 
@@ -75,12 +74,12 @@ async function init() {
     ]);
 
     state.entries = [...cardPools.flat(), ...territories].sort(sortEntries);
-    populateComplexityOptions();
     applyHashSelection();
 
-    el.cardTotal.textContent = state.entries.filter(entry => entry.type === "card").length;
+    const cardCount = state.entries.filter(entry => entry.type === "card").length;
+    el.cardTotal.textContent = cardCount;
     el.territoryTotal.textContent = territories.length;
-    el.dataStatus.textContent = `${el.cardTotal.textContent} playable cards + ${territories.length} Territories loaded`;
+    el.dataStatus.textContent = `${cardCount} playable cards + ${territories.length} Territories loaded`;
     el.app.hidden = false;
     render();
   } catch (error) {
@@ -96,8 +95,8 @@ async function init() {
 function cacheElements() {
   for (const id of [
     "app", "dataStatus", "filters", "searchInput", "typeFilter", "factionFilter",
-    "costFilter", "complexityFilter", "clearFilters", "cardTotal", "territoryTotal",
-    "resultCount", "resultSummary", "resultList", "preview"
+    "costFilter", "clearFilters", "cardTotal", "territoryTotal", "resultCount",
+    "resultSummary", "resultList", "preview"
   ]) el[id] = document.getElementById(id);
 }
 
@@ -118,10 +117,6 @@ function bindEvents() {
   });
   el.costFilter.addEventListener("change", () => {
     state.cost = el.costFilter.value;
-    render();
-  });
-  el.complexityFilter.addEventListener("change", () => {
-    state.complexity = el.complexityFilter.value;
     render();
   });
   el.clearFilters.addEventListener("click", clearFilters);
@@ -165,12 +160,6 @@ function parseCardPool(markdown, faction, source) {
     const costMatch = block.match(/\*\*Cost:\*\*\s*(\d+)/i);
     if (!costMatch) return [];
 
-    const complexity = metadataValue(block, "Complexity") || "Unspecified";
-    const trait = metadataValue(block, "Trait") || "";
-    const form = metadataValue(block, "Card form") || "";
-    const unique = /\*\*Unique:\*\*/i.test(block);
-    const sections = parseQuotedSections(block);
-
     return [{
       id: `${faction}-${slugify(name)}`,
       type: "card",
@@ -178,11 +167,10 @@ function parseCardPool(markdown, faction, source) {
       faction,
       factionLabel: source.label,
       cost: Number(costMatch[1]),
-      complexity,
-      trait,
-      form,
-      unique,
-      sections,
+      trait: metadataValue(block, "Trait") || "",
+      form: metadataValue(block, "Card form") || "",
+      unique: /\*\*Unique:\*\*/i.test(block),
+      sections: parseQuotedSections(block),
       source: source.path
     }];
   });
@@ -205,7 +193,6 @@ function parseTerritoryPool(markdown) {
       faction: "territory",
       factionLabel: name.startsWith("Arena:") ? "Arena" : "Territory",
       arena: name.startsWith("Arena:"),
-      complexity: metadataValue(block, "Complexity") || "Unspecified",
       status: metadataValue(block, "Status") || "Approved",
       watchlist: metadataValue(block, "Watchlist") || "None",
       sections: {
@@ -259,35 +246,15 @@ function cleanInlineMarkdown(text) {
     .trim();
 }
 
-function populateComplexityOptions() {
-  const values = [...new Set(state.entries.map(entry => entry.complexity).filter(Boolean))]
-    .sort((a, b) => complexityRank(a) - complexityRank(b) || a.localeCompare(b));
-
-  el.complexityFilter.insertAdjacentHTML(
-    "beforeend",
-    values.map(value => `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`).join("")
-  );
-}
-
-function complexityRank(value) {
-  const normalized = value.toLowerCase();
-  if (normalized.includes("low")) return 1;
-  if (normalized.includes("medium")) return 2;
-  if (normalized.includes("high")) return 3;
-  return 4;
-}
-
 function clearFilters() {
   state.query = "";
   state.type = "all";
   state.faction = "all";
   state.cost = "all";
-  state.complexity = "all";
   el.searchInput.value = "";
   el.typeFilter.value = "all";
   el.factionFilter.value = "all";
   el.costFilter.value = "all";
-  el.complexityFilter.value = "all";
   syncFilterAvailability();
   render();
 }
@@ -309,13 +276,11 @@ function filteredEntries() {
     if (state.type !== "all" && entry.type !== state.type) return false;
     if (state.faction !== "all" && (entry.type !== "card" || entry.faction !== state.faction)) return false;
     if (state.cost !== "all" && (entry.type !== "card" || entry.cost !== Number(state.cost))) return false;
-    if (state.complexity !== "all" && entry.complexity !== state.complexity) return false;
     if (!state.query) return true;
 
     const searchable = [
       entry.name,
       entry.factionLabel,
-      entry.complexity,
       entry.trait || "",
       entry.form || "",
       entry.watchlist || "",
@@ -356,7 +321,6 @@ function render() {
         <span class="reference-row-meta">
           <span class="pill">${escapeHtml(entry.factionLabel)}</span>
           ${entry.type === "card" ? `<span class="pill">Cost ${entry.cost}</span>` : ""}
-          <span class="pill">${escapeHtml(entry.complexity)}</span>
         </span>
       </span>
       <span class="reference-row-arrow" aria-hidden="true">›</span>
@@ -374,7 +338,6 @@ function buildResultSummary() {
   if (state.type !== "all") parts.push(state.type === "card" ? "playable cards only" : "Territories only");
   if (state.faction !== "all") parts.push(CARD_SOURCES[state.faction]?.label || state.faction);
   if (state.cost !== "all") parts.push(`cost ${state.cost}`);
-  if (state.complexity !== "all") parts.push(state.complexity);
   return parts.length ? parts.join(" · ") : "All canonical playable cards and Territories.";
 }
 
@@ -409,7 +372,6 @@ function renderPreview(entry) {
     <div class="preview-meta">
       ${entry.type === "card" ? `<span class="pill">Cost ${entry.cost}</span>` : `<span class="pill">${entry.arena ? "Arena" : "Territory"}</span>`}
       <span class="pill">${escapeHtml(entry.factionLabel)}</span>
-      <span class="pill">${escapeHtml(entry.complexity)}</span>
       ${entry.form ? `<span class="pill">${escapeHtml(entry.form)}</span>` : ""}
       ${entry.trait ? `<span class="pill">${escapeHtml(entry.trait)} trait</span>` : ""}
       ${entry.unique ? '<span class="pill">Unique</span>' : ""}
