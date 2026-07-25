@@ -18,6 +18,13 @@ import {
   captureInquisitionGraveyards,
   evaluatePurificationAfterNormalDraw,
 } from './inquisition-core';
+import {
+  applyPenanceAction,
+  isPenanceChoice,
+  openNextPenanceChoice,
+  queuePenanceBattleEffects,
+  resolvePenanceChoice,
+} from './inquisition-penance';
 import { resolveInquisitionChoice as resolveInquisitionPurgeChoice, useInquisitionPurge } from './inquisition-purge';
 import {
   captureGraveyardSnapshot,
@@ -33,6 +40,8 @@ function battleSnapshot(game: GameState): BattleState | undefined {
 }
 
 function continueInquisitionAutomation(result: ApplyGameActionResult): ApplyGameActionResult {
+  queuePenanceBattleEffects(result.state);
+  openNextPenanceChoice(result.state);
   openNextAccusationChoice(result.state);
   return result;
 }
@@ -62,6 +71,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     const next = structuredClone(game);
     const pendingKind = next.pendingInquisitionChoice?.kind;
     if (isAccusationChoice(pendingKind)) resolveAccusationChoice(next, action);
+    else if (isPenanceChoice(pendingKind)) resolvePenanceChoice(next, action);
     else resolveInquisitionPurgeChoice(next, action);
     return finishDirectInquisitionAction(next, mysticGraveyardsBefore);
   }
@@ -84,6 +94,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
 
   if (action.type === 'play_action_card') {
     applyAccusationAction(result.state, action.playerId, accusationTarget);
+    applyPenanceAction(result.state, action.playerId, action.cardId);
   }
 
   const endedBattle = Boolean(priorBattle && !result.state.battle);
