@@ -4,6 +4,8 @@ on:
   workflow_dispatch:
   push:
     branches: [agent/diagnose-faction-portrait-render]
+  pull_request:
+    branches: [main]
 
 jobs:
   render:
