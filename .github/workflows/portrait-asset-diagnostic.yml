@@ -1,37 +1,53 @@
-name: Portrait asset diagnostic
+name: Apply portrait cache fix
 
 on:
   pull_request:
     branches: [main]
 
 jobs:
-  collect:
+  apply:
+    if: github.head_ref == 'agent/fix-faction-page-portrait-loading'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Record inventory
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Version faction portrait URLs
         run: |
           python - <<'PY'
-          import json, struct
           from pathlib import Path
 
-          rows = []
-          for path in sorted(Path('images').iterdir()):
-              if not path.is_file():
-                  continue
-              row = {'name': path.name, 'bytes': path.stat().st_size}
-              if path.suffix.lower() == '.png':
-                  data = path.read_bytes()[:24]
-                  if data.startswith(b'\x89PNG') and len(data) >= 24:
-                      row['width'], row['height'] = struct.unpack('>II', data[16:24])
-              rows.append(row)
-          Path('portrait-diagnostic').mkdir()
-          Path('portrait-diagnostic/inventory.json').write_text(json.dumps(rows, indent=2))
+          replacements = {
+              'factions/financiers/index.html': {
+                  '../../images/banker.png': '../../images/banker.png?v=20260725',
+                  '../../images/executive.png': '../../images/executive.png?v=20260725',
+              },
+              'factions/mystics/index.html': {
+                  '../../images/alchemist.png': '../../images/alchemist.png?v=20260725',
+                  '../../images/spirit walker.png': '../../images/spirit walker.png?v=20260725',
+              },
+              'factions/inquisition/index.html': {
+                  '../../images/grand inquisitor.png': '../../images/grand inquisitor.png?v=20260725',
+                  '../../images/witch hunter.png': '../../images/witch hunter.png?v=20260725',
+              },
+          }
+
+          for filename, changes in replacements.items():
+              path = Path(filename)
+              text = path.read_text()
+              for old, new in changes.items():
+                  text = text.replace(old, new)
+              path.write_text(text)
           PY
-      - name: Collect top-level leader assets
+      - name: Remove temporary diagnostics
         run: |
-          cp images/*.png portrait-diagnostic/
-      - uses: actions/upload-artifact@v4
-        with:
-          name: portrait-assets
-          path: portrait-diagnostic/
+          rm -f src/image-assets-diagnostic.test.ts
+          rm -f .github/workflows/portrait-asset-diagnostic.yml
+      - name: Commit fix to PR branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add factions/financiers/index.html factions/mystics/index.html factions/inquisition/index.html
+          git add -u src/image-assets-diagnostic.test.ts .github/workflows/portrait-asset-diagnostic.yml
+          git commit -m "Refresh faction portrait assets"
+          git push origin HEAD:${{ github.head_ref }}
