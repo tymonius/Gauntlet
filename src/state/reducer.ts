@@ -21,6 +21,7 @@ import type {
 import type { ActionResult, GameAction } from './actions';
 import { drawFromDeck } from './draw';
 import { applyNoMartyrsOutcome } from './inquisition-no-martyrs';
+import { counterintelligenceBlocksFaceDownBattleCardInspection } from './neutral-counterintelligence';
 
 export class GameActionError extends Error {
   constructor(message: string) {
@@ -512,7 +513,9 @@ function movePlayer(game: GameState, action: Extract<GameAction, { type: 'move_p
 
   if (destination.occupant && destination.occupant !== action.playerId) {
     const defenderId = destination.occupant;
-    const watchtowerMakesAttackerHandCommitFaceUp = isWatchtower(destination) && destination.controller === defenderId;
+    const watchtowerMakesAttackerHandCommitFaceUp = isWatchtower(destination)
+      && destination.controller === defenderId
+      && !counterintelligenceBlocksFaceDownBattleCardInspection(game, defenderId, action.playerId);
     player.movementRemaining -= 1;
     game.phase = 'battle';
     game.priorityPlayer = action.playerId;

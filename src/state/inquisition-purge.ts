@@ -13,6 +13,7 @@ import type {
 } from './actions';
 import { GameActionError } from './reducer';
 import { spendFactionResource } from './resources';
+import { counterintelligenceBlocksHandInspection } from './neutral-counterintelligence';
 
 export interface InquisitionPurgeOption {
   mode: InquisitionPurgeMode;
@@ -131,7 +132,7 @@ function buildPurgeOptions(game: GameState, playerId: PlayerID, discount: 0 | 1)
   if (affordable(3) && opponent.zones.hand.length > 0) {
     options.push({ mode: 'opponent_choose_hand_to_graveyard', cost: 3 });
   }
-  if (affordable(4)) {
+  if (affordable(4) && !counterintelligenceBlocksHandInspection(game, playerId, opponent.id)) {
     options.push(...opponent.zones.hand.map((cardId) => ({
       mode: 'choose_hand_to_graveyard' as const,
       cost: 4 as const,

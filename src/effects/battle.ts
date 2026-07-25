@@ -200,6 +200,35 @@ export const contingencyPlanBattleHandler: EffectHandler = {
   },
 };
 
+export const counterintelligenceBattleHandler: EffectHandler = {
+  id: 'neutral_counterintelligence_battle',
+  timing: ['before_battle_resolution'],
+  applies(context) {
+    if (!context.battle) return false;
+    return participantHasCard(context.battle.attacker, 'neutral-counterintelligence')
+      || participantHasCard(context.battle.defender, 'neutral-counterintelligence');
+  },
+  resolve(context) {
+    if (!context.battle) return {};
+    const modifiers = [context.battle.attacker, context.battle.defender]
+      .map((participant) => ({
+        participant,
+        count: participantCardCount(participant, 'neutral-counterintelligence'),
+      }))
+      .filter(({ count }) => count > 0)
+      .map(({ participant, count }) => ({
+        playerId: participant.playerId,
+        source: 'neutral-counterintelligence',
+        amount: count,
+        reason: `Counterintelligence Battle: +${count} to battle total.`,
+      }));
+    return {
+      modifiers,
+      logMessages: modifiers.map((modifier) => `Counterintelligence gave ${modifier.playerId} +${modifier.amount}.`),
+    };
+  },
+};
+
 export const tradeBanBattleHandler: EffectHandler = {
   id: 'trade_ban_battle',
   timing: ['before_battle_resolution'],
@@ -295,6 +324,7 @@ export const baseBattleEffectHandlers: EffectHandler[] = [
   fortificationsBattleHandler,
   valorBattleHandler,
   contingencyPlanBattleHandler,
+  counterintelligenceBattleHandler,
   attritionBattleHandler,
   attritionAssetHandler,
 ];

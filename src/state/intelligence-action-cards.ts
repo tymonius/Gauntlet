@@ -9,6 +9,10 @@ import {
 } from './intelligence-fog-overlay';
 import { recordOpponentHandLookOutsideBattle } from './intelligence-mission-triggers';
 import {
+  counterintelligenceBlocksHandInspection,
+  logCounterintelligenceBlock,
+} from './neutral-counterintelligence';
+import {
   beginSleeperNetwork,
   canResolveSleeperNetworkAction,
   SLEEPER_NETWORK,
@@ -100,13 +104,18 @@ export function canResolveIntelligenceAction(game: GameState, playerId: PlayerID
 function playSpies(game: GameState, playerId: PlayerID): void {
   const player = requireIntelligence(game, playerId);
   const opponent = game.players[opponentId(game, playerId)];
-  const inspectedHand = [...opponent.zones.hand];
-  recordOpponentHandLookOutsideBattle(game, playerId, 'Spies');
-  privateLog(game, playerId, 'intelligence_spies_hand_inspected', `You looked at ${opponent.name}’s hand.`, {
-    opponentId: opponent.id,
-    cards: inspectedHand,
-  });
-  publicLog(game, playerId, 'intelligence_spies_used', `${player.name} used Spies to inspect ${opponent.name}’s hand.`);
+  const inspectionBlocked = counterintelligenceBlocksHandInspection(game, playerId, opponent.id);
+  const inspectedHand = inspectionBlocked ? [] : [...opponent.zones.hand];
+  if (inspectionBlocked) {
+    logCounterintelligenceBlock(game, playerId, opponent.id, 'hand', 'Spies');
+  } else {
+    recordOpponentHandLookOutsideBattle(game, playerId, 'Spies');
+    privateLog(game, playerId, 'intelligence_spies_hand_inspected', `You looked at ${opponent.name}’s hand.`, {
+      opponentId: opponent.id,
+      cards: inspectedHand,
+    });
+  }
+  publicLog(game, playerId, 'intelligence_spies_used', `${player.name} used Spies.`);
 
   const draw = drawFromDeck(player, { count: 1 });
   player.zones.hand.push(...draw.drawnCards);
@@ -132,6 +141,11 @@ function playSpies(game: GameState, playerId: PlayerID): void {
 function playAssassins(game: GameState, playerId: PlayerID): void {
   const player = requireIntelligence(game, playerId);
   const opponent = game.players[opponentId(game, playerId)];
+  if (counterintelligenceBlocksHandInspection(game, playerId, opponent.id)) {
+    logCounterintelligenceBlock(game, playerId, opponent.id, 'hand', 'Assassins');
+    publicLog(game, playerId, 'intelligence_assassins_used', `${player.name} used Assassins, but Counterintelligence protected ${opponent.name}’s hand.`);
+    return;
+  }
   const inspectedHand = [...opponent.zones.hand];
   recordOpponentHandLookOutsideBattle(game, playerId, 'Assassins');
   privateLog(game, playerId, 'intelligence_assassins_hand_inspected', `You looked at ${opponent.name}’s hand.`, {

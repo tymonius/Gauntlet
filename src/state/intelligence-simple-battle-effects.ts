@@ -6,6 +6,10 @@ import type {
   PlayerID,
 } from '../types';
 import { markBattleCardsObservedBeforeNormalReveal, wasBattleCardObservedBeforeNormalReveal } from './battle-observation';
+import {
+  counterintelligenceBlocksFaceDownBattleCardInspection,
+  logCounterintelligenceBlock,
+} from './neutral-counterintelligence';
 
 export const SIMPLE_INTELLIGENCE_BATTLE_CARDS = {
   disinformation: 'intelligence-disinformation',
@@ -54,6 +58,10 @@ export function resolveAssassinsPreRevealCard(
   card.earlyEffectResolved = true;
   const opponent = opposingParticipant(game, participant);
   if (opponent.handCommit) {
+    if (counterintelligenceBlocksFaceDownBattleCardInspection(game, participant.playerId, opponent.playerId)) {
+      logCounterintelligenceBlock(game, participant.playerId, opponent.playerId, 'face_down_battle_card', 'Assassins');
+      return;
+    }
     opponent.handCommit.faceDown = false;
     opponent.handCommit.negated = true;
     markBattleCardsObservedBeforeNormalReveal(game, opponent.playerId, [opponent.handCommit.cardId]);
