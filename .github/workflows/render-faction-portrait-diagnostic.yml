@@ -1,67 +1,46 @@
-name: Render faction portrait diagnostic
+name: Apply faction portrait fix
 
 on:
-  workflow_dispatch:
   push:
     branches: [agent/diagnose-faction-portrait-render]
-  pull_request:
-    branches: [main]
+
+permissions:
+  contents: write
 
 jobs:
-  render:
+  apply:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
         with:
-          node-version: 22
-      - name: Install Chromium renderer
+          ref: agent/diagnose-faction-portrait-render
+      - name: Remove obsolete leader-card overrides
         run: |
-          npm install --no-save playwright@1.52.0
-          npx playwright install --with-deps chromium
-      - name: Render pages and record image state
+          python3 - <<'PY'
+          from pathlib import Path
+
+          css_path = Path('factions/factions.css')
+          css = css_path.read_text()
+          css = css.replace(
+              '/* Prefer the dedicated leader-card artwork used by current faction sheets. */',
+              '/* Normalize legacy page references to the current top-level portrait assets. */'
+          )
+          css = '\n'.join(
+              line for line in css.splitlines()
+              if '../images/leader-cards/' not in line
+          ) + '\n'
+          css_path.write_text(css)
+
+          for page in ('financiers', 'mystics', 'inquisition'):
+              path = Path('factions') / page / 'index.html'
+              html = path.read_text().replace('.png?v=20260725', '.png')
+              path.write_text(html)
+          PY
+          rm .github/workflows/render-faction-portrait-diagnostic.yml
+      - name: Commit confirmed fix
         run: |
-          python3 -m http.server 4173 >/tmp/gauntlet-http.log 2>&1 &
-          cat > render-faction-portraits.mjs <<'JS'
-          import { chromium } from 'playwright';
-          import fs from 'node:fs';
-          const browser = await chromium.launch({headless:true});
-          const pages = ['diplomats','financiers','mystics','inquisition'];
-          const report = {};
-          for (const name of pages) {
-            const page = await browser.newPage({viewport:{width:1365,height:960}, deviceScaleFactor:1});
-            await page.goto(`http://127.0.0.1:4173/factions/${name}/`, {waitUntil:'networkidle'});
-            report[name] = await page.locator('.hero-leader-art img').evaluateAll(imgs => imgs.map(img => {
-              const cs = getComputedStyle(img);
-              const r = img.getBoundingClientRect();
-              return {
-                src: img.getAttribute('src'),
-                currentSrc: img.currentSrc,
-                complete: img.complete,
-                naturalWidth: img.naturalWidth,
-                naturalHeight: img.naturalHeight,
-                rect: {x:r.x,y:r.y,width:r.width,height:r.height},
-                objectFit: cs.objectFit,
-                objectPosition: cs.objectPosition,
-                display: cs.display,
-                opacity: cs.opacity,
-                visibility: cs.visibility
-              };
-            }));
-            await page.screenshot({path:`${name}.png`, fullPage:true});
-            await page.close();
-          }
-          fs.writeFileSync('portrait-render-report.json', JSON.stringify(report,null,2));
-          await browser.close();
-          JS
-          node render-faction-portraits.mjs
-          rm render-faction-portraits.mjs
-      - uses: actions/upload-artifact@v4
-        with:
-          name: faction-portrait-render
-          path: |
-            diplomats.png
-            financiers.png
-            mystics.png
-            inquisition.png
-            portrait-render-report.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add factions/factions.css factions/financiers/index.html factions/mystics/index.html factions/inquisition/index.html .github/workflows/render-faction-portrait-diagnostic.yml
+          git commit -m "Stop overriding faction portraits with leader-card assets"
+          git push origin HEAD:agent/diagnose-faction-portrait-render
