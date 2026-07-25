@@ -19,6 +19,14 @@ import {
   evaluatePurificationAfterNormalDraw,
 } from './inquisition-core';
 import {
+  applyDivineMercyAction,
+  isDivineMercyChoice,
+  openNextDivineMercyChoice,
+  queueDivineMercyBattleEffects,
+  requireDivineMercyActionTarget,
+  resolveDivineMercyChoice,
+} from './inquisition-divine-mercy';
+import {
   applyPenanceAction,
   isPenanceChoice,
   openNextPenanceChoice,
@@ -42,6 +50,8 @@ function battleSnapshot(game: GameState): BattleState | undefined {
 function continueInquisitionAutomation(result: ApplyGameActionResult): ApplyGameActionResult {
   queuePenanceBattleEffects(result.state);
   openNextPenanceChoice(result.state);
+  queueDivineMercyBattleEffects(result.state);
+  openNextDivineMercyChoice(result.state);
   openNextAccusationChoice(result.state);
   return result;
 }
@@ -72,6 +82,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     const pendingKind = next.pendingInquisitionChoice?.kind;
     if (isAccusationChoice(pendingKind)) resolveAccusationChoice(next, action);
     else if (isPenanceChoice(pendingKind)) resolvePenanceChoice(next, action);
+    else if (isDivineMercyChoice(pendingKind)) resolveDivineMercyChoice(next, action);
     else resolveInquisitionPurgeChoice(next, action);
     return finishDirectInquisitionAction(next, mysticGraveyardsBefore);
   }
@@ -81,6 +92,9 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
 
   const accusationTarget = action.type === 'play_action_card'
     ? requireAccusationActionTarget(game, action.playerId, action.cardId, action.targets)
+    : undefined;
+  const divineMercyTarget = action.type === 'play_action_card'
+    ? requireDivineMercyActionTarget(game, action.playerId, action.cardId, action.targets)
     : undefined;
 
   let result: ApplyGameActionResult;
@@ -95,6 +109,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
   if (action.type === 'play_action_card') {
     applyAccusationAction(result.state, action.playerId, accusationTarget);
     applyPenanceAction(result.state, action.playerId, action.cardId);
+    applyDivineMercyAction(result.state, action.playerId, divineMercyTarget);
   }
 
   const endedBattle = Boolean(priorBattle && !result.state.battle);
