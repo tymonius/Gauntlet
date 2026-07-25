@@ -44,10 +44,44 @@ function prepareLastStandResolution(game: GameState, action: GameAction): { game
   if (!battle.effectsResolved.includes(LAST_STAND_DEFENDER_BONUS_EFFECT)) { battle.defender.modifiers += LAST_STAND_DEFENDER_BONUS; battle.effectsResolved.push(LAST_STAND_DEFENDER_BONUS_EFFECT); }
   battle.tiePolicy = 'defender'; return { game: prepared, attacker: battle.attacker.playerId, defender: battle.defender.playerId };
 }
-function lastResolvedBattleWinner(game: GameState): PlayerID | undefined { const event = [...game.log].reverse().find((candidate) => candidate.type === 'battle_resolved'); return event?.payload && typeof event.payload === 'object' ? (event.payload as { winner?: PlayerID }).winner : undefined; }
+interface ResolvedBattlePayload {
+  winner?: PlayerID;
+  lossRetreatEffectsSuppressedFor?: PlayerID[];
+  additionalRetreatPositions?: Partial<Record<PlayerID, number>>;
+}
+
+function lastResolvedBattlePayload(game: GameState): ResolvedBattlePayload | undefined {
+  const event = [...game.log].reverse().find((candidate) => candidate.type === 'battle_resolved');
+  return event?.payload && typeof event.payload === 'object'
+    ? event.payload as ResolvedBattlePayload
+    : undefined;
+}
+
+function lastResolvedBattleWinner(game: GameState): PlayerID | undefined {
+  return lastResolvedBattlePayload(game)?.winner;
+}
+
 function recentBattleResult(game: GameState, battle: BattleState, winner: PlayerID): RecentBattleResult {
-  const location = game.board.spaces.find((space) => space.id === battle.location)!; const origin = game.board.spaces.find((space) => space.id === battle.attackerOrigin)!; const attackerDirection = location.index > origin.index ? 1 : -1;
-  return enrichRecentBattleResult({ battleId: battle.id, turn: game.turn, winner, loser: winner === battle.attacker.playerId ? battle.defender.playerId : battle.attacker.playerId, attacker: battle.attacker.playerId, defender: battle.defender.playerId, location: battle.location, attackerOrigin: battle.attackerOrigin, retreatDirection: (winner === battle.attacker.playerId ? attackerDirection : -attackerDirection) as -1 | 1, battleHandCards: {}, handCommittedCards: {}, ordersUsed: {}, lossRetreatEffectsSuppressedFor: battle.lossRetreatEffectsSuppressedFor, additionalRetreatPositions: battle.additionalRetreatPositions }, battle, game);
+  const location = game.board.spaces.find((space) => space.id === battle.location)!;
+  const origin = game.board.spaces.find((space) => space.id === battle.attackerOrigin)!;
+  const attackerDirection = location.index > origin.index ? 1 : -1;
+  const resolved = lastResolvedBattlePayload(game);
+  return enrichRecentBattleResult({
+    battleId: battle.id,
+    turn: game.turn,
+    winner,
+    loser: winner === battle.attacker.playerId ? battle.defender.playerId : battle.attacker.playerId,
+    attacker: battle.attacker.playerId,
+    defender: battle.defender.playerId,
+    location: battle.location,
+    attackerOrigin: battle.attackerOrigin,
+    retreatDirection: (winner === battle.attacker.playerId ? attackerDirection : -attackerDirection) as -1 | 1,
+    battleHandCards: {},
+    handCommittedCards: {},
+    ordersUsed: {},
+    lossRetreatEffectsSuppressedFor: resolved?.lossRetreatEffectsSuppressedFor ?? battle.lossRetreatEffectsSuppressedFor,
+    additionalRetreatPositions: resolved?.additionalRetreatPositions ?? battle.additionalRetreatPositions,
+  }, battle, game);
 }
 function activeBattleSnapshot(battle: BattleState): BattleState {
   const active = structuredClone(battle);
