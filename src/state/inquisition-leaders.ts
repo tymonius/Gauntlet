@@ -4,7 +4,10 @@ import type {
   PlayerID,
 } from '../types';
 import type { ResolveInquisitionChoiceAction } from './actions';
-import type { LeaderAbilityDefinition } from './leader-abilities';
+import {
+  defaultLeaderAbilityRegistry,
+  type LeaderAbilityDefinition,
+} from './leader-abilities';
 import {
   legalFinalJudgmentPurgeOptions,
   useFinalJudgmentPurge,
@@ -92,6 +95,12 @@ export const inquisitionLeaderAbilityDefinitions: readonly LeaderAbilityDefiniti
   },
 ];
 
+for (const definition of inquisitionLeaderAbilityDefinitions) {
+  if (!defaultLeaderAbilityRegistry.get(definition.id)) {
+    defaultLeaderAbilityRegistry.register(definition);
+  }
+}
+
 export function isFinalJudgmentChoice(kind: unknown): kind is 'final_judgment_purge' {
   return kind === 'final_judgment_purge';
 }
@@ -128,4 +137,42 @@ export function consumeRelentlessPursuitRequest(game: GameState) {
   const request = game.inquisitionRelentlessPursuitRequest;
   game.inquisitionRelentlessPursuitRequest = undefined;
   return request;
+}
+
+function pursuitResumeBlocked(game: GameState): boolean {
+  return Boolean(
+    game.battle
+    || game.pendingInquisitionChoice
+    || game.pendingMysticsChoice
+    || game.pendingIntelligenceChoice
+    || game.pendingMilitaryChoice
+    || game.pendingMilitaryTimingChoice
+    || game.pendingDiplomatChoice
+    || game.pendingFinancierChoice
+    || game.pendingLeaderAbilityWindow
+    || game.inquisitionAccusationQueue?.length
+    || game.inquisitionPenanceQueue?.length
+    || game.inquisitionDivineMercyQueue?.length
+    || game.inquisitionExcommunicationQueue?.length
+    || game.inquisitionGuiltByAssociationQueue?.length
+    || game.inquisitionActOfFaithQueue?.length
+    || game.inquisitionBurningAtTheStakeQueue?.length
+    || Object.keys(game.pendingAssetBankDiscards ?? {}).length > 0,
+  );
+}
+
+export function resumeRelentlessPursuitTurnStart(game: GameState): boolean {
+  const resume = game.inquisitionRelentlessPursuitResume;
+  if (!resume || pursuitResumeBlocked(game)) return false;
+  if (game.activePlayer !== resume.playerId || game.turn !== resume.turn) {
+    game.inquisitionRelentlessPursuitResume = undefined;
+    return false;
+  }
+  game.inquisitionRelentlessPursuitResume = undefined;
+  game.recentBattleResult = undefined;
+  if (game.phase !== 'game_over') {
+    game.phase = 'turn_start';
+    game.priorityPlayer = resume.playerId;
+  }
+  return true;
 }
