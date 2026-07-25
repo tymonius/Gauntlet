@@ -52,7 +52,16 @@ function opponentId(game: GameState, playerId: PlayerID): PlayerID {
 }
 
 function cardValue(cardId: CardID): number {
-  return v06CanonicalContent.cardsById.get(cardId)?.cost ?? 0;
+  const direct = v06CanonicalContent.cardsById.get(cardId)?.cost;
+  if (direct !== undefined) return direct;
+
+  // The current digital engine still uses the legacy `card-*` IDs for the
+  // shared Neutral foundation. Resolve those IDs against the canonical v0.6
+  // `neutral-*` data so combined-value effects use printed values.
+  if (cardId.startsWith('card-')) {
+    return v06CanonicalContent.cardsById.get(`neutral-${cardId.slice('card-'.length)}`)?.cost ?? 0;
+  }
+  return 0;
 }
 
 function hasBlockingWindow(game: GameState): boolean {
@@ -173,7 +182,7 @@ export function useInquisitionPurge(game: GameState, action: UseInquisitionPurge
   consumeActionOpportunity(game, action.playerId);
 
   if (action.mode === 'discard_top_to_graveyard') {
-    const cardId = opponent.zones.discard.shift()!;
+    const cardId = opponent.zones.discard.pop()!;
     opponent.zones.graveyard.push(cardId);
     publicLog(game, action.playerId, 'inquisition_purge_discard_top', `${player.name} moved the top card of ${opponent.name}'s Discard Pile to the Graveyard.`, { cardId, cost: 1 });
     return [cardId];
