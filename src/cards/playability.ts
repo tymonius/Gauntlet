@@ -101,6 +101,8 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'mystics-spirit-hollow': battleAndAction('mystics-spirit-hollow', 'removed', true),
   'mystics-circle-of-bones': battleAndAction('mystics-circle-of-bones', 'removed', true),
   'mystics-necromancy': battleAndAction('mystics-necromancy', 'removed'),
+
+  'inquisition-accusation': battleAndAction('inquisition-accusation', 'discard', true),
 };
 
 export function getCardPlayRule(cardId: CardID): CardPlayRule | undefined { return coreCardPlayRules[cardId]; }

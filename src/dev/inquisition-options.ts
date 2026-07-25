@@ -13,10 +13,29 @@ export function buildPendingInquisitionOptions(
 ): InquisitionGuidedOption[] | undefined {
   const pending = game.pendingInquisitionChoice;
   if (!pending || pending.playerId !== playerId) return undefined;
-  return pending.handOptions.map((cardId) => ({
-    label: `Choose ${cardId} from your hand for Purge`,
-    action: { type: 'resolve_inquisition_choice', playerId, cardId },
-  }));
+  switch (pending.kind) {
+    case 'purge_hand_choice':
+      return pending.handOptions.map((cardId) => ({
+        label: `Choose ${cardId} from your hand for Purge`,
+        action: { type: 'resolve_inquisition_choice', playerId, cardId },
+      }));
+    case 'accusation_select_card':
+      return pending.discardOptions.map((cardId) => ({
+        label: `Accuse ${cardId} in the opposing Discard Pile`,
+        action: { type: 'resolve_inquisition_choice', playerId, choice: 'select_card', cardId },
+      }));
+    case 'accusation_destination':
+      return [
+        {
+          label: `Put ${pending.cardId} on top of your Draw Pile`,
+          action: { type: 'resolve_inquisition_choice', playerId, choice: 'top_deck', cardId: pending.cardId },
+        },
+        {
+          label: `Put ${pending.cardId} in your Graveyard`,
+          action: { type: 'resolve_inquisition_choice', playerId, choice: 'graveyard', cardId: pending.cardId },
+        },
+      ];
+  }
 }
 
 export function buildInquisitionPurgeOptions(

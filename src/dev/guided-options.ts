@@ -10,6 +10,7 @@ import {
   toPrivateGameView,
 } from '../state';
 import { buildBattleRevealOptions } from './battle-reveal-options';
+import { buildInquisitionPurgeOptions, buildPendingInquisitionOptions } from './inquisition-options';
 import { buildIntelligenceBattleOptions } from './intelligence-battle-options';
 import { buildIntelligenceMissionOptions } from './intelligence-options';
 import { buildMysticRiteOptions, buildPendingMysticsOptions } from './mystics-options';
@@ -149,6 +150,7 @@ function pendingRendTheVeilOptions(game: GameState, playerId: PlayerID): GuidedO
 function adjacentSpaces(game: GameState, playerId: PlayerID) { const current = game.board.spaces.find((space) => space.occupant === playerId); if (!current) return []; return game.board.spaces.filter((space) => Math.abs(space.index - current.index) === 1); }
 export function buildGuidedOptions(game: GameState): GuidedOption[] {
   const playerId = activeViewer(game);
+  const inquisitionPending = buildPendingInquisitionOptions(game, playerId); if (inquisitionPending) return inquisitionPending;
   const witchcraftPending = pendingWitchcraftOptions(game, playerId); if (witchcraftPending) return witchcraftPending;
   const covenantPending = pendingBlackCovenantOptions(game, playerId); if (covenantPending) return covenantPending;
   const rendPending = pendingRendTheVeilOptions(game, playerId); if (rendPending) return rendPending;
@@ -163,12 +165,18 @@ export function buildGuidedOptions(game: GameState): GuidedOption[] {
   if (game.phase === 'turn_start') options.push({ label: 'Draw 1 card', action: { type: 'draw_card', playerId } });
   if (game.phase === 'action_before_movement' || game.phase === 'action_after_movement') {
     for (const play of view.legalActionPlays ?? []) {
-      if (play.cardId === 'mystics-black-covenant') continue;
+      if (play.cardId === 'mystics-black-covenant' || play.cardId === 'inquisition-accusation') continue;
       options.push({ label: `Play Action ${play.cardId}`, action: { type: 'play_action_card', playerId, cardId: play.cardId } });
     }
     if (view.legalActionPlays?.some((play) => play.cardId === 'mystics-black-covenant')) {
       for (const cardId of game.players[playerId].zones.hand.filter((candidate) => candidate !== 'mystics-black-covenant')) {
         options.push({ label: `Bind ${cardId} beneath Black Covenant`, action: { type: 'play_action_card', playerId, cardId: 'mystics-black-covenant', targets: [{ kind: 'card', owner: playerId, cardId }] } });
+      }
+    }
+    if (view.legalActionPlays?.some((play) => play.cardId === 'inquisition-accusation')) {
+      const opponent = Object.values(game.players).find((candidate) => candidate.id !== playerId);
+      if (opponent) for (const cardId of opponent.zones.discard) {
+        options.push({ label: `Play Accusation targeting ${cardId}`, action: { type: 'play_action_card', playerId, cardId: 'inquisition-accusation', targets: [{ kind: 'card', owner: opponent.id, cardId }] } });
       }
     }
   }
@@ -177,6 +185,7 @@ export function buildGuidedOptions(game: GameState): GuidedOption[] {
   const player = game.players[playerId];
   options.push(...buildIntelligenceMissionOptions(game, playerId));
   options.push(...buildMysticRiteOptions(game, playerId));
+  options.push(...buildInquisitionPurgeOptions(game, playerId));
   if (game.phase === 'action_after_movement' && player.factionId === 'financiers' && player.actionsRemaining > 0 && playerId === game.activePlayer) {
     for (const cardId of player.zones.hand) { options.push({ label: `Place ${cardId} in Treasury`, action: { type: 'place_treasury_card', playerId, cardId } }); options.push({ label: `Play the Market with ${cardId}`, action: { type: 'begin_play_the_market', playerId, cardId } }); }
     for (const space of game.board.spaces.filter((candidate) => candidate.kind === 'territory' && deedOwner(game, candidate.id) !== playerId)) options.push({ label: `Buy Deed to ${space.id}`, action: { type: 'begin_deed_purchase', playerId, spaceId: space.id } });

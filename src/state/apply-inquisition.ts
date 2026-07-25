@@ -2,6 +2,14 @@ import type { BattleState, GameState } from '../types';
 import type { AppStateAction } from './actions';
 import { applyGameAction as applyMysticsGameAction } from './apply-mystics';
 import {
+  applyAccusationAction,
+  isAccusationChoice,
+  openNextAccusationChoice,
+  queueAccusationBattleEffects,
+  requireAccusationActionTarget,
+  resolveAccusationChoice,
+} from './inquisition-accusation';
+import {
   actionArcaneUse,
   applyCondemnationAfterBattle,
   awardBlasphemyForActionUse,
@@ -10,7 +18,7 @@ import {
   captureInquisitionGraveyards,
   evaluatePurificationAfterNormalDraw,
 } from './inquisition-core';
-import { resolveInquisitionChoice, useInquisitionPurge } from './inquisition-purge';
+import { resolveInquisitionChoice as resolveInquisitionPurgeChoice, useInquisitionPurge } from './inquisition-purge';
 import {
   captureGraveyardSnapshot,
   openNextGraveWardChoice,
@@ -24,6 +32,11 @@ function battleSnapshot(game: GameState): BattleState | undefined {
   return game.battle ? structuredClone(game.battle) : undefined;
 }
 
+function continueInquisitionAutomation(result: ApplyGameActionResult): ApplyGameActionResult {
+  openNextAccusationChoice(result.state);
+  return result;
+}
+
 function finishDirectInquisitionAction(
   game: GameState,
   mysticGraveyardsBefore: ReturnType<typeof captureGraveyardSnapshot>,
@@ -32,7 +45,7 @@ function finishDirectInquisitionAction(
   registerGraveyardEntries(game, mysticGraveyardsBefore);
   openNextGraveWardChoice(game);
   runPostActionAutomationPipeline(game);
-  return { state: game };
+  return continueInquisitionAutomation({ state: game });
 }
 
 export function applyGameAction(game: GameState, action: AppStateAction): ApplyGameActionResult {
@@ -47,12 +60,18 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
       throw new GameActionError('Resolve the pending Inquisition choice first.');
     }
     const next = structuredClone(game);
-    resolveInquisitionChoice(next, action);
+    const pendingKind = next.pendingInquisitionChoice?.kind;
+    if (isAccusationChoice(pendingKind)) resolveAccusationChoice(next, action);
+    else resolveInquisitionPurgeChoice(next, action);
     return finishDirectInquisitionAction(next, mysticGraveyardsBefore);
   }
   if (action.type === 'resolve_inquisition_choice') {
     throw new GameActionError(`${action.playerId} has no pending Inquisition choice.`);
   }
+
+  const accusationTarget = action.type === 'play_action_card'
+    ? requireAccusationActionTarget(game, action.playerId, action.cardId, action.targets)
+    : undefined;
 
   let result: ApplyGameActionResult;
   if (action.type === 'use_inquisition_purge') {
@@ -62,11 +81,16 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
   } else {
     result = applyMysticsGameAction(game, action);
   }
-  const endedBattle = Boolean(priorBattle && !result.state.battle);
 
+  if (action.type === 'play_action_card') {
+    applyAccusationAction(result.state, action.playerId, accusationTarget);
+  }
+
+  const endedBattle = Boolean(priorBattle && !result.state.battle);
   if (endedBattle && priorBattle) {
     applyCondemnationAfterBattle(result.state, priorBattle);
     awardNormalConvictionAfterBattle(result.state, priorBattle, graveyardsBefore);
+    queueAccusationBattleEffects(result.state, priorBattle);
   }
 
   awardBlasphemyForActionUse(result.state, arcaneActionUse);
@@ -76,5 +100,5 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     evaluatePurificationAfterNormalDraw(result.state, action.playerId, result.result?.drawnCards);
   }
 
-  return result;
+  return continueInquisitionAutomation(result);
 }
