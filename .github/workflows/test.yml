@@ -26,4 +26,11 @@ jobs:
         run: npm run typecheck
 
       - name: Test
-        run: npm test
+        run: npm test 2>&1 | tee no-martyrs-test-output.txt
+
+      - name: Upload test diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: no-martyrs-test-output
+          path: no-martyrs-test-output.txt
