@@ -361,11 +361,13 @@ function applyHashSelection() {
 function renderPreview(entry) {
   if (!entry) {
     el.preview.className = "reference-preview empty-state";
+    delete el.preview.dataset.faction;
     el.preview.textContent = "Select a result to view its canonical text.";
     return;
   }
 
   el.preview.className = "reference-preview";
+  el.preview.dataset.faction = entry.faction;
   el.preview.innerHTML = `
     <p class="preview-kicker">${entry.type === "territory" ? "Territory reference" : `${escapeHtml(entry.factionLabel)} card`}</p>
     <h3>${escapeHtml(entry.name)}</h3>
