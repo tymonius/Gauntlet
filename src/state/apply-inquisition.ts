@@ -24,6 +24,13 @@ import {
   resolveBurningAtTheStakeChoice,
 } from './inquisition-burning-at-the-stake';
 import {
+  applyConfessionAction,
+  clearExpiredConfessionConstraint,
+  isConfessionChoice,
+  resolveConfessionChoice,
+  validateConfessionHandCommit,
+} from './inquisition-confession';
+import {
   actionArcaneUse,
   applyCondemnationAfterBattle,
   awardBlasphemyForActionUse,
@@ -64,6 +71,7 @@ import {
   resolvePenanceChoice,
 } from './inquisition-penance';
 import { resolveInquisitionChoice as resolveInquisitionPurgeChoice, useInquisitionPurge } from './inquisition-purge';
+import { continueIntelligenceBattle } from './intelligence-battle';
 import {
   captureGraveyardSnapshot,
   openNextGraveWardChoice,
@@ -78,6 +86,7 @@ function battleSnapshot(game: GameState): BattleState | undefined {
 }
 
 function continueInquisitionAutomation(result: ApplyGameActionResult): ApplyGameActionResult {
+  clearExpiredConfessionConstraint(result.state);
   queuePenanceBattleEffects(result.state);
   openNextPenanceChoice(result.state);
   queueDivineMercyBattleEffects(result.state);
@@ -114,6 +123,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     }
     const next = structuredClone(game);
     const pendingKind = next.pendingInquisitionChoice?.kind;
+    const resumePreReveal = pendingKind === 'confession_battle';
     if (isAccusationChoice(pendingKind)) resolveAccusationChoice(next, action);
     else if (isPenanceChoice(pendingKind)) resolvePenanceChoice(next, action);
     else if (isDivineMercyChoice(pendingKind)) resolveDivineMercyChoice(next, action);
@@ -121,11 +131,16 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     else if (isGuiltByAssociationChoice(pendingKind)) resolveGuiltByAssociationChoice(next, action);
     else if (isActOfFaithChoice(pendingKind)) resolveActOfFaithChoice(next, action);
     else if (isBurningAtTheStakeChoice(pendingKind)) resolveBurningAtTheStakeChoice(next, action);
+    else if (isConfessionChoice(pendingKind)) resolveConfessionChoice(next, action);
     else resolveInquisitionPurgeChoice(next, action);
+    if (resumePreReveal) continueIntelligenceBattle(next);
     return finishDirectInquisitionAction(next, mysticGraveyardsBefore);
   }
   if (action.type === 'resolve_inquisition_choice') {
     throw new GameActionError(`${action.playerId} has no pending Inquisition choice.`);
+  }
+  if (action.type === 'commit_battle_hand_card') {
+    validateConfessionHandCommit(game, action.playerId, action.cardId);
   }
 
   const accusationTarget = action.type === 'play_action_card'
@@ -158,6 +173,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     applyGuiltByAssociationAction(result.state, action.playerId, guiltByAssociationTarget);
     applyActOfFaithAction(result.state, action.playerId, action.cardId);
     applyBurningAtTheStakeAction(result.state, action.playerId, action.cardId);
+    applyConfessionAction(result.state, action.playerId, action.cardId);
   }
 
   const endedBattle = Boolean(priorBattle && !result.state.battle);
