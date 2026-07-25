@@ -8,6 +8,11 @@ import type {
   PlayerID,
 } from '../types';
 import type { ResolveInquisitionChoiceAction } from './actions';
+import {
+  counterintelligenceBlocksFaceDownBattleCardInspection,
+  counterintelligenceBlocksHandInspection,
+  logCounterintelligenceBlock,
+} from './neutral-counterintelligence';
 
 export const CONFESSION = 'inquisition-confession';
 
@@ -76,6 +81,7 @@ function unique(cards: CardID[]): CardID[] {
 
 export function confessionActionOptions(game: GameState, inquisitorId: PlayerID): CardID[] {
   const opponent = opponentId(game, inquisitorId);
+  if (counterintelligenceBlocksHandInspection(game, inquisitorId, opponent)) return [];
   return unique(game.players[opponent].zones.hand.filter((cardId) => cardCanBePlayedAt(cardId, 'battle_hand_commit', 'hand')));
 }
 
@@ -120,6 +126,10 @@ export function applyConfessionAction(game: GameState, inquisitorId: PlayerID, c
     throw new ConfessionError('Only an Inquisition player can use Confession.');
   }
   const opponent = opponentId(game, inquisitorId);
+  if (counterintelligenceBlocksHandInspection(game, inquisitorId, opponent)) {
+    logCounterintelligenceBlock(game, inquisitorId, opponent, 'hand', 'Confession');
+    return true;
+  }
   const hand = [...game.players[opponent].zones.hand];
   const handOptions = confessionActionOptions(game, inquisitorId);
   publicLog(
@@ -227,7 +237,13 @@ export function openNextConfessionPreRevealWindow(game: GameState): boolean {
     source.card.faceDown = false;
     const inquisitorId = source.participant.playerId;
     const opponent = opposingParticipant(game, inquisitorId);
-    if (opponent.handCommit) opponent.handCommit.faceDown = false;
+    const handCommitProtected = Boolean(opponent.handCommit)
+      && counterintelligenceBlocksFaceDownBattleCardInspection(game, inquisitorId, opponent.playerId);
+    if (handCommitProtected) {
+      logCounterintelligenceBlock(game, inquisitorId, opponent.playerId, 'face_down_battle_card', 'Confession');
+    } else if (opponent.handCommit) {
+      opponent.handCommit.faceDown = false;
+    }
     publicLog(
       game,
       inquisitorId,
@@ -236,7 +252,7 @@ export function openNextConfessionPreRevealWindow(game: GameState): boolean {
       {
         battleId: battle.id,
         opponentId: opponent.playerId,
-        opponentHandCommitCardId: opponent.handCommit?.cardId,
+        opponentHandCommitCardId: handCommitProtected ? undefined : opponent.handCommit?.cardId,
       },
     );
 

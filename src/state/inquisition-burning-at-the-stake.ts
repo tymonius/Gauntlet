@@ -12,6 +12,10 @@ import { cardValue } from './financiers';
 import { HERESY } from './inquisition-heresy';
 import { isArcaneCard } from './mystics-ritual';
 import { gainFactionResource } from './resources';
+import {
+  counterintelligenceBlocksHandInspection,
+  logCounterintelligenceBlock,
+} from './neutral-counterintelligence';
 import { GameActionError } from './reducer';
 
 export const BURNING_AT_THE_STAKE = 'inquisition-burning-at-the-stake';
@@ -95,6 +99,10 @@ function openBurningChoiceOrResolve(
   battleId?: string,
   queueId?: string,
 ): boolean {
+  if (counterintelligenceBlocksHandInspection(game, inquisitorId, opponent)) {
+    logCounterintelligenceBlock(game, inquisitorId, opponent, 'hand', 'Burning at the Stake');
+    return false;
+  }
   const revealedHand = [...game.players[opponent].zones.hand];
   publicLog(
     game,

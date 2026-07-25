@@ -10,6 +10,10 @@ import type {
 import type { ResolveIntelligenceChoiceAction } from './actions';
 import { markBattleCardsObservedBeforeNormalReveal } from './battle-observation';
 import { recordFaceDownCardObservedBeforeReveal } from './intelligence-mission-triggers';
+import {
+  counterintelligenceBlocksFaceDownBattleCardInspection,
+  logCounterintelligenceBlock,
+} from './neutral-counterintelligence';
 
 const SPIES_CARD_ID = 'intelligence-spies';
 
@@ -91,6 +95,10 @@ function eligibleReplacements(participant: BattleParticipantState): CardID[] {
 
 function inspectOpposingCards(game: GameState, playerId: PlayerID): CardID[] {
   const opponent = opposingParticipant(game, playerId);
+  if (counterintelligenceBlocksFaceDownBattleCardInspection(game, playerId, opponent.playerId)) {
+    logCounterintelligenceBlock(game, playerId, opponent.playerId, 'face_down_battle_card', 'Spies');
+    return [];
+  }
   const inspected = participantCards(opponent).filter((card) => card.faceDown);
   for (const card of inspected) {
     card.visibleTo = [...new Set([...(card.visibleTo ?? []), playerId])];

@@ -15,6 +15,10 @@ import {
 } from './battle-hand-restrictions';
 import { markBattleCardsObservedBeforeNormalReveal } from './battle-observation';
 import { recordFaceDownCardObservedBeforeReveal } from './intelligence-mission-triggers';
+import {
+  counterintelligenceBlocksBattleHandInspection,
+  logCounterintelligenceBlock,
+} from './neutral-counterintelligence';
 
 const INTERCEPTED_ORDERS = 'intelligence-intercepted-orders';
 
@@ -104,6 +108,10 @@ export function resolveInterceptedOrdersPreRevealCard(
   );
 
   const opponent = opponentParticipant(game, participant.playerId);
+  if (counterintelligenceBlocksBattleHandInspection(game, participant.playerId, opponent.playerId)) {
+    logCounterintelligenceBlock(game, participant.playerId, opponent.playerId, 'battle_hand', 'Intercepted Orders');
+    return false;
+  }
   const selectedCards = selectedBattleHandCards(opponent);
   const unselectedCards = [...opponent.battleDraw];
   if (selectedCards.length === 0 && unselectedCards.length === 0) return false;

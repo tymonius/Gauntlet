@@ -70,6 +70,7 @@ export * from './inquisition-tyranny';
 export * from './inquisition-heresy';
 export * from './inquisition-hellfire';
 export * from './neutral-contingency-plan';
+export * from './neutral-counterintelligence';
 export * from './actions';
 export * from './draw';
 export { applyGameAction } from './apply-neutral';

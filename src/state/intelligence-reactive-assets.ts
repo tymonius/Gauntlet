@@ -6,6 +6,11 @@ import { openMissionControlWindow } from './intelligence-leaders';
 import { recordBankedAssetUse } from './intelligence-mission-triggers';
 import { finalizeIntelligenceMissionFailure } from './intelligence-missions';
 import { openMilitaryPrecommitWindows } from './military-timing';
+import {
+  counterintelligenceBlocksBattleHandInspection,
+  counterintelligenceBlocksHandInspection,
+  logCounterintelligenceBlock,
+} from './neutral-counterintelligence';
 
 export const INTELLIGENCE_REACTIVE_ASSETS = {
   exfiltration: 'intelligence-exfiltration',
@@ -140,6 +145,10 @@ export function openInterceptedOrdersWindow(game: GameState, targetOwner: Player
     || target.battleDraw.length === 0
     || battle.effectsResolved.includes(effectKey)) return false;
   battle.effectsResolved.push(effectKey);
+  if (counterintelligenceBlocksBattleHandInspection(game, intelligencePlayerId, targetOwner)) {
+    logCounterintelligenceBlock(game, intelligencePlayerId, targetOwner, 'battle_hand', 'Intercepted Orders Asset');
+    return false;
+  }
   game.pendingIntelligenceChoice = {
     kind: 'intercepted_orders',
     playerId: intelligencePlayerId,
@@ -184,11 +193,16 @@ function resolveReconnaissance(game: GameState, action: ResolveIntelligenceChoic
   removeOne(player.zones.assetBank, INTELLIGENCE_REACTIVE_ASSETS.reconnaissance);
   player.zones.discard.push(INTELLIGENCE_REACTIVE_ASSETS.reconnaissance);
   recordBankedAssetUse(game, action.playerId, battle.id, INTELLIGENCE_REACTIVE_ASSETS.reconnaissance);
-  const inspectedHand = [...game.players[pending.opponentId].zones.hand];
-  privateLog(game, [action.playerId], action.playerId, 'intelligence_reconnaissance_hand_inspected', `You looked at ${game.players[pending.opponentId].name}’s hand.`, {
-    opponentId: pending.opponentId,
-    cards: inspectedHand,
-  });
+  const inspectionBlocked = counterintelligenceBlocksHandInspection(game, action.playerId, pending.opponentId);
+  const inspectedHand = inspectionBlocked ? [] : [...game.players[pending.opponentId].zones.hand];
+  if (inspectionBlocked) {
+    logCounterintelligenceBlock(game, action.playerId, pending.opponentId, 'hand', 'Reconnaissance');
+  } else {
+    privateLog(game, [action.playerId], action.playerId, 'intelligence_reconnaissance_hand_inspected', `You looked at ${game.players[pending.opponentId].name}’s hand.`, {
+      opponentId: pending.opponentId,
+      cards: inspectedHand,
+    });
+  }
   publicLog(game, action.playerId, 'intelligence_reconnaissance_used', `${player.name} used Reconnaissance before hand commitments.`);
   game.pendingIntelligenceChoice = {
     kind: 'reconnaissance_withdraw',

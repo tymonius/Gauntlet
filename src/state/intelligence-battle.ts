@@ -10,6 +10,7 @@ import type {
 } from '../types';
 import type { PassBattleDrawPlayAction, PlayBattleDrawCardAction, ResolveIntelligenceChoiceAction } from './actions';
 import { battleHasUnresolvedIntelligencePreReveal, openNextIntelligencePreRevealWindow } from './intelligence-pre-reveal';
+import { counterintelligenceBlocksFaceDownBattleCardInspection } from './neutral-counterintelligence';
 import { hasFactionResource, spendFactionResource } from './resources';
 
 export class IntelligenceBattleError extends Error {
@@ -89,6 +90,7 @@ function intelligenceOpponent(game: GameState, targetOwner: PlayerID): PlayerID 
   const candidate = opponentParticipant(game, targetOwner).playerId;
   const player = game.players[candidate];
   if (player?.factionId !== 'intelligence' || !player.intelligence) return undefined;
+  if (counterintelligenceBlocksFaceDownBattleCardInspection(game, candidate, targetOwner)) return undefined;
   if (player.intelligence.surveillanceUsedBattleId === battle.id) return undefined;
   if (!hasFactionResource(player, 'intel', 1)) return undefined;
   return candidate;
