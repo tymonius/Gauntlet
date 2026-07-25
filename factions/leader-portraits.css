@@ -1,0 +1,13 @@
+/* Dedicated leader-card artwork used by the faction-learning pages. */
+.hero-leader-art img.faction-leader-portrait,
+.leader-profile-art img.faction-leader-portrait {
+  object-fit: cover;
+  object-position: center;
+}
+
+/* The Financier crops need slightly higher focal points to retain the faces. */
+.faction-financiers img.faction-leader-banker { object-position: center 18%; }
+.faction-financiers img.faction-leader-executive { object-position: center 12%; }
+
+/* Keep the Inquisition subjects framed consistently with their faction sheets. */
+.faction-inquisition img.faction-leader-portrait { object-position: center 27%; }
