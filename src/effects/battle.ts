@@ -161,6 +161,45 @@ export const valorBattleHandler: EffectHandler = {
   },
 };
 
+export const contingencyPlanBattleHandler: EffectHandler = {
+  id: 'neutral_contingency_plan_battle',
+  timing: ['before_battle_resolution'],
+  applies(context) {
+    if (!context.battle) return false;
+    return [context.battle.attacker, context.battle.defender].some((participant) => {
+      const opponent = participant.playerId === context.battle!.attacker.playerId
+        ? context.battle!.defender
+        : context.battle!.attacker;
+      return participantCardCount(participant, 'neutral-contingency-plan') > 0
+        && context.game.players[opponent.playerId].controlledTerritories.length
+          > context.game.players[participant.playerId].controlledTerritories.length;
+    });
+  },
+  resolve(context) {
+    if (!context.battle) return {};
+    const modifiers = [context.battle.attacker, context.battle.defender].flatMap((participant) => {
+      const opponent = participant.playerId === context.battle!.attacker.playerId
+        ? context.battle!.defender
+        : context.battle!.attacker;
+      const count = participantCardCount(participant, 'neutral-contingency-plan');
+      const isBehind = context.game.players[opponent.playerId].controlledTerritories.length
+        > context.game.players[participant.playerId].controlledTerritories.length;
+      if (count === 0 || !isBehind) return [];
+      return [{
+        playerId: participant.playerId,
+        source: 'neutral-contingency-plan',
+        amount: count,
+        reason: `Contingency Plan Battle: +${count} while the opponent controls more Territories.`,
+      }];
+    });
+
+    return {
+      modifiers,
+      logMessages: modifiers.map((modifier) => `Contingency Plan gave ${modifier.playerId} +${modifier.amount}.`),
+    };
+  },
+};
+
 export const tradeBanBattleHandler: EffectHandler = {
   id: 'trade_ban_battle',
   timing: ['before_battle_resolution'],
@@ -255,6 +294,7 @@ export const baseBattleEffectHandlers: EffectHandler[] = [
   fortificationsAssetHandler,
   fortificationsBattleHandler,
   valorBattleHandler,
+  contingencyPlanBattleHandler,
   attritionBattleHandler,
   attritionAssetHandler,
 ];
