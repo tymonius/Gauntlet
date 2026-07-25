@@ -16,6 +16,8 @@ export interface GameEvent { id: string; turn: number; actor?: PlayerID; type: s
 export interface PendingAssetBankDiscard { playerId: PlayerID; limit: number; discardCount: number; options: CardID[]; }
 export interface RecentBattleResult { battleId: string; turn: number; winner: PlayerID; loser: PlayerID; attacker: PlayerID; defender: PlayerID; location: SpaceID; attackerOrigin: SpaceID; retreatDirection: -1 | 1; battleHandCards?: Partial<Record<PlayerID, CardID[]>>; handCommittedCards?: Partial<Record<PlayerID, CardID[]>>; ordersUsed?: Partial<Record<PlayerID, string[]>>; lossRetreatEffectsSuppressedFor?: PlayerID[]; additionalRetreatPositions?: Partial<Record<PlayerID, number>>; }
 export interface PendingLeaderAbilityWindow { playerId: PlayerID; timing: 'after_battle'; battleId: string; }
+export interface InquisitionRelentlessPursuitRequest { playerId: PlayerID; loserId: PlayerID; direction: -1 | 1; }
+export interface InquisitionRelentlessPursuitResume { playerId: PlayerID; turn: number; }
 
 export interface GameState {
   id: GameID; version: string; phase: GamePhase; turn: number; activePlayer: PlayerID; priorityPlayer?: PlayerID;
@@ -34,6 +36,8 @@ export interface GameState {
   inquisitionGuiltByAssociationQueue?: InquisitionGuiltByAssociationBattleQueueEntry[];
   inquisitionActOfFaithQueue?: InquisitionActOfFaithBattleQueueEntry[];
   inquisitionBurningAtTheStakeQueue?: InquisitionBurningAtTheStakeBattleQueueEntry[];
+  inquisitionRelentlessPursuitRequest?: InquisitionRelentlessPursuitRequest;
+  inquisitionRelentlessPursuitResume?: InquisitionRelentlessPursuitResume;
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow; pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[]; winner?: PlayerID;
 }

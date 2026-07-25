@@ -3,6 +3,7 @@ import type { AppStateAction } from '../state';
 import {
   CONFESSION,
   EXCOMMUNICATION,
+  FINAL_JUDGMENT_SENTINEL,
   HELLFIRE,
   HERESY,
   inquisitionCardTitle,
@@ -25,6 +26,17 @@ export function buildPendingInquisitionOptions(
   const pending = game.pendingInquisitionChoice;
   if (!pending || pending.playerId !== playerId) return undefined;
   switch (pending.kind) {
+    case 'final_judgment_purge':
+      return pending.purgeOptions.map((option) => ({
+        label: `Final Judgment: pay ${option.effectiveCost} Conviction for ${option.mode} (normally ${option.originalCost})`,
+        action: {
+          type: 'resolve_inquisition_choice',
+          playerId,
+          choice: option.mode,
+          cardId: option.cardId ?? FINAL_JUDGMENT_SENTINEL,
+          cardIds: option.cardIds,
+        },
+      }));
     case 'purge_hand_choice':
       return pending.handOptions.map((cardId) => ({
         label: `Choose ${cardId} from your hand for Purge`,
