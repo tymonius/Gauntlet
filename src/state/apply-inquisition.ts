@@ -10,6 +10,13 @@ import {
   resolveAccusationChoice,
 } from './inquisition-accusation';
 import {
+  applyActOfFaithAction,
+  isActOfFaithChoice,
+  openNextActOfFaithChoice,
+  queueActOfFaithBattleEffects,
+  resolveActOfFaithChoice,
+} from './inquisition-act-of-faith';
+import {
   actionArcaneUse,
   applyCondemnationAfterBattle,
   awardBlasphemyForActionUse,
@@ -71,6 +78,7 @@ function continueInquisitionAutomation(result: ApplyGameActionResult): ApplyGame
   openNextAccusationChoice(result.state);
   openNextExcommunicationChoice(result.state);
   openNextGuiltByAssociationChoice(result.state);
+  openNextActOfFaithChoice(result.state);
   return result;
 }
 
@@ -103,6 +111,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     else if (isDivineMercyChoice(pendingKind)) resolveDivineMercyChoice(next, action);
     else if (isExcommunicationChoice(pendingKind)) resolveExcommunicationChoice(next, action);
     else if (isGuiltByAssociationChoice(pendingKind)) resolveGuiltByAssociationChoice(next, action);
+    else if (isActOfFaithChoice(pendingKind)) resolveActOfFaithChoice(next, action);
     else resolveInquisitionPurgeChoice(next, action);
     return finishDirectInquisitionAction(next, mysticGraveyardsBefore);
   }
@@ -138,6 +147,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     applyDivineMercyAction(result.state, action.playerId, divineMercyTarget);
     applyExcommunicationAction(result.state, action.playerId, excommunicationTarget);
     applyGuiltByAssociationAction(result.state, action.playerId, guiltByAssociationTarget);
+    applyActOfFaithAction(result.state, action.playerId, action.cardId);
   }
 
   const endedBattle = Boolean(priorBattle && !result.state.battle);
@@ -147,6 +157,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     queueAccusationBattleEffects(result.state, priorBattle);
     queueExcommunicationBattleEffects(result.state, priorBattle);
     queueGuiltByAssociationBattleEffects(result.state, priorBattle);
+    queueActOfFaithBattleEffects(result.state, priorBattle);
   }
 
   awardBlasphemyForActionUse(result.state, arcaneActionUse);
