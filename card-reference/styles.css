@@ -281,7 +281,10 @@
   --preview-accent: #a67a27;
   --preview-label-ink: #21170a;
 }
-.reference-preview[data-faction="neutral"] { --preview-accent: #96724a; }
+.reference-preview[data-faction="neutral"] {
+  --preview-accent: ivory;
+  --preview-label-ink: #2d271f;
+}
 .reference-preview[data-faction="territory"] { --preview-accent: #755b37; }
 
 .reference-preview.empty-state,
