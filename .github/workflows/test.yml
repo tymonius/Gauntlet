@@ -21,9 +21,17 @@ jobs:
           fetch-depth: 0
 
       - name: Apply staged No Martyrs implementation
-        if: ${{ hashFiles('.github/no-martyrs-v2-patch/part01') != '' }}
+        if: ${{ hashFiles('.github/no-martyrs-v2-patch/fix03-00') != '' }}
         run: |
-          cat .github/no-martyrs-v2-patch/part* | base64 --decode > /tmp/no-martyrs-v2.patch
+          cat \
+            .github/no-martyrs-v2-patch/part01 \
+            .github/no-martyrs-v2-patch/part02 \
+            .github/no-martyrs-v2-patch/fix03-* \
+            .github/no-martyrs-v2-patch/part04 \
+            .github/no-martyrs-v2-patch/fix05-* \
+            .github/no-martyrs-v2-patch/fix06-* \
+            .github/no-martyrs-v2-patch/part07 \
+            | base64 --decode > /tmp/no-martyrs-v2.patch
           patch -p1 --batch < /tmp/no-martyrs-v2.patch
           rm -rf .github/no-martyrs-v2-patch
           rm -f .github/workflows/no-martyrs-v2-source.yml
