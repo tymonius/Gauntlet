@@ -22,7 +22,7 @@ jobs:
       - name: Render pages and record image state
         run: |
           python3 -m http.server 4173 >/tmp/gauntlet-http.log 2>&1 &
-          cat > /tmp/render.mjs <<'JS'
+          cat > render-faction-portraits.mjs <<'JS'
           import { chromium } from 'playwright';
           import fs from 'node:fs';
           const browser = await chromium.launch({headless:true});
@@ -54,7 +54,8 @@ jobs:
           fs.writeFileSync('portrait-render-report.json', JSON.stringify(report,null,2));
           await browser.close();
           JS
-          node /tmp/render.mjs
+          node render-faction-portraits.mjs
+          rm render-faction-portraits.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: faction-portrait-render
