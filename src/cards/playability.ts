@@ -36,6 +36,8 @@ const battleOnly = (cardId: CardID): CardPlayRule => ({
 });
 
 export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
+  'neutral-contingency-plan': battleAndAction('neutral-contingency-plan', 'asset_bank'),
+
   'card-attrition': battleAndAction('card-attrition', 'asset_bank'),
   'card-conscription': { cardId: 'card-conscription', timings: ['battle_hand_commit', 'battle_draw_play'], allowedOrigins: ['hand', 'battle_draw'], defaultDestinationByOrigin: { hand: 'graveyard', battle_draw: 'discard' } },
   'card-embargo': { cardId: 'card-embargo', timings: ['battle_hand_commit', 'battle_draw_play'], allowedOrigins: ['hand', 'battle_draw'], defaultDestinationByOrigin: { hand: 'graveyard', battle_draw: 'discard' }, requiresTarget: true },
