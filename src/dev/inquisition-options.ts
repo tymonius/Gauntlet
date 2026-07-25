@@ -99,6 +99,16 @@ export function buildPendingInquisitionOptions(
           cardId,
         },
       }));
+    case 'burning_at_the_stake':
+      return pending.highestValueOptions.map((cardId) => ({
+        label: `Put highest-value card ${cardId} in the opponent’s Graveyard`,
+        action: {
+          type: 'resolve_inquisition_choice',
+          playerId,
+          choice: 'select_highest',
+          cardId,
+        },
+      }));
   }
 }
 

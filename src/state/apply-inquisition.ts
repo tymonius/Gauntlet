@@ -17,6 +17,13 @@ import {
   resolveActOfFaithChoice,
 } from './inquisition-act-of-faith';
 import {
+  applyBurningAtTheStakeAction,
+  isBurningAtTheStakeChoice,
+  openNextBurningAtTheStakeChoice,
+  queueBurningAtTheStakeBattleEffects,
+  resolveBurningAtTheStakeChoice,
+} from './inquisition-burning-at-the-stake';
+import {
   actionArcaneUse,
   applyCondemnationAfterBattle,
   awardBlasphemyForActionUse,
@@ -79,6 +86,7 @@ function continueInquisitionAutomation(result: ApplyGameActionResult): ApplyGame
   openNextExcommunicationChoice(result.state);
   openNextGuiltByAssociationChoice(result.state);
   openNextActOfFaithChoice(result.state);
+  openNextBurningAtTheStakeChoice(result.state);
   return result;
 }
 
@@ -112,6 +120,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     else if (isExcommunicationChoice(pendingKind)) resolveExcommunicationChoice(next, action);
     else if (isGuiltByAssociationChoice(pendingKind)) resolveGuiltByAssociationChoice(next, action);
     else if (isActOfFaithChoice(pendingKind)) resolveActOfFaithChoice(next, action);
+    else if (isBurningAtTheStakeChoice(pendingKind)) resolveBurningAtTheStakeChoice(next, action);
     else resolveInquisitionPurgeChoice(next, action);
     return finishDirectInquisitionAction(next, mysticGraveyardsBefore);
   }
@@ -148,6 +157,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     applyExcommunicationAction(result.state, action.playerId, excommunicationTarget);
     applyGuiltByAssociationAction(result.state, action.playerId, guiltByAssociationTarget);
     applyActOfFaithAction(result.state, action.playerId, action.cardId);
+    applyBurningAtTheStakeAction(result.state, action.playerId, action.cardId);
   }
 
   const endedBattle = Boolean(priorBattle && !result.state.battle);
@@ -158,6 +168,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     queueExcommunicationBattleEffects(result.state, priorBattle);
     queueGuiltByAssociationBattleEffects(result.state, priorBattle);
     queueActOfFaithBattleEffects(result.state, priorBattle);
+    queueBurningAtTheStakeBattleEffects(result.state, priorBattle);
   }
 
   awardBlasphemyForActionUse(result.state, arcaneActionUse);

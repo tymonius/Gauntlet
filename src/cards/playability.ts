@@ -108,6 +108,7 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'inquisition-excommunication': battleAndAction('inquisition-excommunication', 'discard', true),
   'inquisition-guilt-by-association': battleAndAction('inquisition-guilt-by-association', 'discard', true),
   'inquisition-act-of-faith': battleAndAction('inquisition-act-of-faith', 'discard'),
+  'inquisition-burning-at-the-stake': battleAndAction('inquisition-burning-at-the-stake', 'discard'),
 };
 
 export function getCardPlayRule(cardId: CardID): CardPlayRule | undefined { return coreCardPlayRules[cardId]; }
