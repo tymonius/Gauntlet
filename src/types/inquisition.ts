@@ -22,5 +22,38 @@ export interface PendingInquisitionPurgeHandChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
-export type PendingInquisitionChoice = PendingInquisitionPurgeHandChoice;
+export interface InquisitionAccusationQueueEntry {
+  id: string;
+  battleId: string;
+  inquisitorId: PlayerID;
+  opponentId: PlayerID;
+}
+
+export interface PendingInquisitionAccusationSelectChoice {
+  kind: 'accusation_select_card';
+  playerId: PlayerID;
+  opponentId: PlayerID;
+  discardOptions: CardID[];
+  queueId: string;
+  battleId: string;
+  options: ['select_card'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingInquisitionAccusationDestinationChoice {
+  kind: 'accusation_destination';
+  playerId: PlayerID;
+  inquisitorId: PlayerID;
+  cardId: CardID;
+  queueId?: string;
+  battleId?: string;
+  options: ['top_deck', 'graveyard'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export type PendingInquisitionChoice =
+  | PendingInquisitionPurgeHandChoice
+  | PendingInquisitionAccusationSelectChoice
+  | PendingInquisitionAccusationDestinationChoice;
+
 export type PublicInquisitionState = InquisitionState;
