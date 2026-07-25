@@ -169,53 +169,53 @@ describe('canonical Inquisition audit', () => {
   it('executes Relentless Pursuit before the Witch Hunter normal turn-start draw', () => {
     let state = game('Witch Hunter');
     clearOccupants(state);
-    place(state, 'player_1', 2);
-    place(state, 'player_2', 4);
-    state.activePlayer = 'player_1';
-    postBattle(state, 'player_2', 'player_1', 'player_2', -1);
-    state.players.player_2.resources!.conviction!.value = 2;
+    place(state, 'player_2', 2);
+    place(state, 'player_1', 4);
+    state.activePlayer = 'player_2';
+    postBattle(state, 'player_1', 'player_2', 'player_1', -1);
+    state.players.player_1.resources!.conviction!.value = 2;
 
-    expect(legalLeaderAbilitiesFor(state, 'player_2').map((option) => option.abilityId))
+    expect(legalLeaderAbilitiesFor(state, 'player_1').map((option) => option.abilityId))
       .toContain(RELENTLESS_PURSUIT_ABILITY_ID);
 
     state = applyGameAction(state, {
       type: 'use_leader_ability',
-      playerId: 'player_2',
+      playerId: 'player_1',
       abilityId: RELENTLESS_PURSUIT_ABILITY_ID,
     }).state;
 
-    expect(state.activePlayer).toBe('player_2');
+    expect(state.activePlayer).toBe('player_1');
     expect(state.turn).toBe(2);
     expect(state.phase).toBe('turn_start');
-    expect(state.priorityPlayer).toBe('player_2');
-    expect(state.players.player_2.occupiedSpaceId)
+    expect(state.priorityPlayer).toBe('player_1');
+    expect(state.players.player_1.occupiedSpaceId)
       .toBe(state.board.spaces.find((space) => space.index === 3)?.id);
-    expect(state.players.player_2.movementRemaining).toBe(1);
-    expect(state.players.player_2.resources?.conviction?.value).toBe(0);
+    expect(state.players.player_1.movementRemaining).toBe(1);
+    expect(state.players.player_1.resources?.conviction?.value).toBe(0);
   });
 
   it('starts a normal battle when Relentless Pursuit moves into the defeated opponent', () => {
     let state = game('Witch Hunter');
     clearOccupants(state);
-    place(state, 'player_1', 3);
-    place(state, 'player_2', 4);
-    state.activePlayer = 'player_1';
-    postBattle(state, 'player_2', 'player_1', 'player_2', -1);
-    state.players.player_2.resources!.conviction!.value = 2;
+    place(state, 'player_2', 3);
+    place(state, 'player_1', 4);
+    state.activePlayer = 'player_2';
+    postBattle(state, 'player_1', 'player_2', 'player_1', -1);
+    state.players.player_1.resources!.conviction!.value = 2;
 
     state = applyGameAction(state, {
       type: 'use_leader_ability',
-      playerId: 'player_2',
+      playerId: 'player_1',
       abilityId: RELENTLESS_PURSUIT_ABILITY_ID,
     }).state;
 
     expect(state.phase).toBe('battle');
     expect(state.battle).toMatchObject({
-      attacker: { playerId: 'player_2' },
-      defender: { playerId: 'player_1' },
+      attacker: { playerId: 'player_1' },
+      defender: { playerId: 'player_2' },
       stage: 'hand_commit',
     });
-    expect(state.inquisitionRelentlessPursuitResume).toEqual({ playerId: 'player_2', turn: 2 });
+    expect(state.inquisitionRelentlessPursuitResume).toEqual({ playerId: 'player_1', turn: 2 });
 
     state.battle = undefined;
     state.phase = 'action_after_movement';
@@ -224,16 +224,16 @@ describe('canonical Inquisition audit', () => {
     expect(state.inquisitionRelentlessPursuitResume).toBeUndefined();
   });
 
-  it('does not offer Relentless Pursuit without sufficient Conviction or the required defensive win', () => {
+  it('does not offer Relentless Pursuit without sufficient Conviction', () => {
     const state = game('Witch Hunter');
     clearOccupants(state);
-    place(state, 'player_1', 2);
-    place(state, 'player_2', 4);
-    state.activePlayer = 'player_1';
-    postBattle(state, 'player_2', 'player_2', 'player_1', -1);
-    state.players.player_2.resources!.conviction!.value = 1;
+    place(state, 'player_2', 2);
+    place(state, 'player_1', 4);
+    state.activePlayer = 'player_2';
+    postBattle(state, 'player_1', 'player_2', 'player_1', -1);
+    state.players.player_1.resources!.conviction!.value = 1;
 
-    expect(legalLeaderAbilitiesFor(state, 'player_2').map((option) => option.abilityId))
+    expect(legalLeaderAbilitiesFor(state, 'player_1').map((option) => option.abilityId))
       .not.toContain(RELENTLESS_PURSUIT_ABILITY_ID);
   });
 });
