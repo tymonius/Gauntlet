@@ -28,11 +28,11 @@ export function buildPendingInquisitionOptions(
       return [
         {
           label: `Put ${pending.cardId} on top of your Draw Pile`,
-          action: { type: 'resolve_inquisition_choice', playerId, choice: 'top_deck' },
+          action: { type: 'resolve_inquisition_choice', playerId, choice: 'top_deck', cardId: pending.cardId },
         },
         {
           label: `Put ${pending.cardId} in your Graveyard`,
-          action: { type: 'resolve_inquisition_choice', playerId, choice: 'graveyard' },
+          action: { type: 'resolve_inquisition_choice', playerId, choice: 'graveyard', cardId: pending.cardId },
         },
       ];
   }
