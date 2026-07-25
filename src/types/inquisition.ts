@@ -78,11 +78,30 @@ export interface PendingInquisitionPenanceBattleChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface InquisitionDivineMercyBattleQueueEntry {
+  id: string;
+  battleId: string;
+  inquisitorId: PlayerID;
+  opponentId: PlayerID;
+}
+
+export interface PendingInquisitionDivineMercyBattleChoice {
+  kind: 'divine_mercy_battle';
+  playerId: PlayerID;
+  opponentId: PlayerID;
+  battleId: string;
+  queueId: string;
+  graveyardOptions: CardID[];
+  options: ['select_card'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type PendingInquisitionChoice =
   | PendingInquisitionPurgeHandChoice
   | PendingInquisitionAccusationSelectChoice
   | PendingInquisitionAccusationDestinationChoice
   | PendingInquisitionPenanceActionChoice
-  | PendingInquisitionPenanceBattleChoice;
+  | PendingInquisitionPenanceBattleChoice
+  | PendingInquisitionDivineMercyBattleChoice;
 
 export type PublicInquisitionState = InquisitionState;
