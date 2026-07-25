@@ -60,6 +60,7 @@ export * from './inquisition-accusation';
 export * from './inquisition-penance';
 export * from './inquisition-divine-mercy';
 export * from './inquisition-excommunication';
+export * from './inquisition-guilt-by-association';
 export * from './actions';
 export * from './draw';
 export { applyGameAction } from './apply-inquisition';
