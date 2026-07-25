@@ -1,0 +1,20 @@
+name: No Martyrs Source Snapshot
+
+on:
+  push:
+    branches:
+      - agent/inquisition-no-martyrs
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Package source
+        run: zip -r no-martyrs-source.zip src package.json package-lock.json .github/workflows/test.yml
+      - name: Upload source
+        uses: actions/upload-artifact@v4
+        with:
+          name: no-martyrs-source
+          path: no-martyrs-source.zip
