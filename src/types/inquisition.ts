@@ -134,6 +134,25 @@ export interface PendingInquisitionGuiltByAssociationBattleChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface InquisitionActOfFaithBattleQueueEntry {
+  id: string;
+  battleId: string;
+  inquisitorId: PlayerID;
+  opponentId: PlayerID;
+}
+
+export interface PendingInquisitionActOfFaithChoice {
+  kind: 'act_of_faith';
+  playerId: PlayerID;
+  opponentId: PlayerID;
+  source: 'action' | 'battle';
+  revealedCards: CardID[];
+  battleId?: string;
+  queueId?: string;
+  options: ['select_graveyard'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type PendingInquisitionChoice =
   | PendingInquisitionPurgeHandChoice
   | PendingInquisitionAccusationSelectChoice
@@ -142,6 +161,7 @@ export type PendingInquisitionChoice =
   | PendingInquisitionPenanceBattleChoice
   | PendingInquisitionDivineMercyBattleChoice
   | PendingInquisitionExcommunicationBattleChoice
-  | PendingInquisitionGuiltByAssociationBattleChoice;
+  | PendingInquisitionGuiltByAssociationBattleChoice
+  | PendingInquisitionActOfFaithChoice;
 
 export type PublicInquisitionState = InquisitionState;
