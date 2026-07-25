@@ -75,8 +75,13 @@ import {
   openNextNoMartyrsAssetChoice,
   resolveNoMartyrsChoice,
 } from './inquisition-no-martyrs';
+import {
+  isTyrannyChoice,
+  resolveTyrannyChoice,
+} from './inquisition-tyranny';
 import { resolveInquisitionChoice as resolveInquisitionPurgeChoice, useInquisitionPurge } from './inquisition-purge';
 import { continueIntelligenceBattle } from './intelligence-battle';
+import { continueIntelligencePostRevealFlow } from './intelligence-post-reveal-flow';
 import {
   captureGraveyardSnapshot,
   openNextGraveWardChoice,
@@ -91,6 +96,7 @@ function battleSnapshot(game: GameState): BattleState | undefined {
 }
 
 function continueInquisitionAutomation(result: ApplyGameActionResult): ApplyGameActionResult {
+  continueIntelligencePostRevealFlow(result.state);
   clearExpiredConfessionConstraint(result.state);
   queuePenanceBattleEffects(result.state);
   openNextPenanceChoice(result.state);
@@ -130,6 +136,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     const next = structuredClone(game);
     const pendingKind = next.pendingInquisitionChoice?.kind;
     const resumePreReveal = pendingKind === 'confession_battle';
+    const resumePostReveal = pendingKind === 'tyranny_negate';
     if (isAccusationChoice(pendingKind)) resolveAccusationChoice(next, action);
     else if (isPenanceChoice(pendingKind)) resolvePenanceChoice(next, action);
     else if (isDivineMercyChoice(pendingKind)) resolveDivineMercyChoice(next, action);
@@ -139,8 +146,10 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     else if (isBurningAtTheStakeChoice(pendingKind)) resolveBurningAtTheStakeChoice(next, action);
     else if (isConfessionChoice(pendingKind)) resolveConfessionChoice(next, action);
     else if (isNoMartyrsChoice(pendingKind)) resolveNoMartyrsChoice(next, action);
+    else if (isTyrannyChoice(pendingKind)) resolveTyrannyChoice(next, action);
     else resolveInquisitionPurgeChoice(next, action);
     if (resumePreReveal) continueIntelligenceBattle(next);
+    if (resumePostReveal) continueIntelligencePostRevealFlow(next);
     return finishDirectInquisitionAction(next, mysticGraveyardsBefore);
   }
   if (action.type === 'resolve_inquisition_choice') {
