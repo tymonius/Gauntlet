@@ -250,6 +250,16 @@ export interface PendingInquisitionHellfireBattleChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface PendingInquisitionHeresyChoice {
+  kind: 'heresy_replay';
+  playerId: PlayerID;
+  opponentId: PlayerID;
+  battleId: string;
+  graveyardOptions: CardID[];
+  options: ['pass', 'replay'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type PendingInquisitionChoice =
   | PendingInquisitionPurgeHandChoice
   | PendingInquisitionAccusationSelectChoice
@@ -266,6 +276,7 @@ export type PendingInquisitionChoice =
   | PendingInquisitionTyrannyChoice
   | PendingInquisitionNoMartyrsAssetChoice
   | PendingInquisitionHellfireActionChoice
-  | PendingInquisitionHellfireBattleChoice;
+  | PendingInquisitionHellfireBattleChoice
+  | PendingInquisitionHeresyChoice;
 
 export type PublicInquisitionState = InquisitionState;
