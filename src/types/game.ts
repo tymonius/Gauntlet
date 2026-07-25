@@ -14,7 +14,7 @@ export type GamePhase = 'setup' | 'turn_start' | 'action_before_movement' | 'mov
 
 export interface GameEvent { id: string; turn: number; actor?: PlayerID; type: string; message: string; payload?: unknown; visibility: 'public' | 'private' | 'system'; visibleTo?: PlayerID[]; }
 export interface PendingAssetBankDiscard { playerId: PlayerID; limit: number; discardCount: number; options: CardID[]; }
-export interface RecentBattleResult { battleId: string; turn: number; winner: PlayerID; loser: PlayerID; attacker: PlayerID; defender: PlayerID; location: SpaceID; attackerOrigin: SpaceID; retreatDirection: -1 | 1; battleHandCards?: Partial<Record<PlayerID, CardID[]>>; handCommittedCards?: Partial<Record<PlayerID, CardID[]>>; ordersUsed?: Partial<Record<PlayerID, string[]>>; }
+export interface RecentBattleResult { battleId: string; turn: number; winner: PlayerID; loser: PlayerID; attacker: PlayerID; defender: PlayerID; location: SpaceID; attackerOrigin: SpaceID; retreatDirection: -1 | 1; battleHandCards?: Partial<Record<PlayerID, CardID[]>>; handCommittedCards?: Partial<Record<PlayerID, CardID[]>>; ordersUsed?: Partial<Record<PlayerID, string[]>>; lossRetreatEffectsSuppressedFor?: PlayerID[]; additionalRetreatPositions?: Partial<Record<PlayerID, number>>; }
 export interface PendingLeaderAbilityWindow { playerId: PlayerID; timing: 'after_battle'; battleId: string; }
 
 export interface GameState {
