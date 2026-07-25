@@ -54,7 +54,7 @@ export interface UseMysticGraveWardAssetAction { type: 'use_mystic_grave_ward_as
 export interface UseMysticBlackCovenantAction { type: 'use_mystic_black_covenant_action'; playerId: PlayerID; bindingId: string; targets?: ActionCardTarget[]; }
 export interface UseMysticBlackCovenantBattleAction { type: 'use_mystic_black_covenant_battle'; playerId: PlayerID; bindingId: string; }
 export interface UseInquisitionPurgeAction { type: 'use_inquisition_purge'; playerId: PlayerID; mode: InquisitionPurgeMode; cardId?: CardID; cardIds?: CardID[]; }
-export interface ResolveInquisitionChoiceAction { type: 'resolve_inquisition_choice'; playerId: PlayerID; choice?: string; cardId?: CardID; }
+export interface ResolveInquisitionChoiceAction { type: 'resolve_inquisition_choice'; playerId: PlayerID; choice?: string; cardId: CardID; }
 export interface ResolveAssetBankDiscardAction { type: 'resolve_asset_bank_discard'; playerId: PlayerID; cardIds: CardID[]; }
 export interface MovePlayerAction { type: 'move_player'; playerId: PlayerID; toSpaceId: SpaceID; cardId?: CardID; }
 export interface CommitBattleHandCardAction { type: 'commit_battle_hand_card'; playerId: PlayerID; cardId: CardID; }
