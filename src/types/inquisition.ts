@@ -12,6 +12,13 @@ export interface InquisitionState {
   convictionBattleGainTurn?: number;
 }
 
+export interface InquisitionConfessionConstraint {
+  inquisitorId: PlayerID;
+  opponentId: PlayerID;
+  cardId: CardID;
+  expiresTurn: number;
+}
+
 export interface PendingInquisitionPurgeHandChoice {
   kind: 'purge_hand_choice';
   playerId: PlayerID;
@@ -173,6 +180,26 @@ export interface PendingInquisitionBurningAtTheStakeChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface PendingInquisitionConfessionActionChoice {
+  kind: 'confession_action';
+  playerId: PlayerID;
+  opponentId: PlayerID;
+  handOptions: CardID[];
+  options: ['select_card'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingInquisitionConfessionBattleChoice {
+  kind: 'confession_battle';
+  playerId: PlayerID;
+  opponentId: PlayerID;
+  battleId: string;
+  replacementOptions: CardID[];
+  originalCommitCardId: CardID;
+  options: ['pass', 'replace'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type PendingInquisitionChoice =
   | PendingInquisitionPurgeHandChoice
   | PendingInquisitionAccusationSelectChoice
@@ -183,6 +210,8 @@ export type PendingInquisitionChoice =
   | PendingInquisitionExcommunicationBattleChoice
   | PendingInquisitionGuiltByAssociationBattleChoice
   | PendingInquisitionActOfFaithChoice
-  | PendingInquisitionBurningAtTheStakeChoice;
+  | PendingInquisitionBurningAtTheStakeChoice
+  | PendingInquisitionConfessionActionChoice
+  | PendingInquisitionConfessionBattleChoice;
 
 export type PublicInquisitionState = InquisitionState;
