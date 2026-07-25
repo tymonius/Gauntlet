@@ -1,0 +1,37 @@
+name: Portrait asset diagnostic
+
+on:
+  pull_request:
+    branches: [main]
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Record inventory
+        run: |
+          python - <<'PY'
+          import json, struct
+          from pathlib import Path
+
+          rows = []
+          for path in sorted(Path('images').iterdir()):
+              if not path.is_file():
+                  continue
+              row = {'name': path.name, 'bytes': path.stat().st_size}
+              if path.suffix.lower() == '.png':
+                  data = path.read_bytes()[:24]
+                  if data.startswith(b'\x89PNG') and len(data) >= 24:
+                      row['width'], row['height'] = struct.unpack('>II', data[16:24])
+              rows.append(row)
+          Path('portrait-diagnostic').mkdir()
+          Path('portrait-diagnostic/inventory.json').write_text(json.dumps(rows, indent=2))
+          PY
+      - name: Collect top-level leader assets
+        run: |
+          cp images/*.png portrait-diagnostic/
+      - uses: actions/upload-artifact@v4
+        with:
+          name: portrait-assets
+          path: portrait-diagnostic/
