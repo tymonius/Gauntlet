@@ -191,7 +191,9 @@ export function openNextAccusationChoice(game: GameState): boolean {
   return false;
 }
 
-export function isAccusationChoice(kind: unknown): boolean {
+export function isAccusationChoice(
+  kind: unknown,
+): kind is 'accusation_select_card' | 'accusation_destination' {
   return kind === 'accusation_select_card' || kind === 'accusation_destination';
 }
 
@@ -209,12 +211,14 @@ function awardBattleConvictionIfEligible(
 
 export function resolveAccusationChoice(game: GameState, action: ResolveInquisitionChoiceAction): void {
   const pending = game.pendingInquisitionChoice;
-  if (!pending || !isAccusationChoice(pending.kind) || pending.playerId !== action.playerId) {
+  if (!pending
+    || (pending.kind !== 'accusation_select_card' && pending.kind !== 'accusation_destination')
+    || pending.playerId !== action.playerId) {
     throw new GameActionError(`${action.playerId} has no pending Accusation choice.`);
   }
 
   if (pending.kind === 'accusation_select_card') {
-    if (action.choice !== 'select_card' || !action.cardId) {
+    if (action.choice !== 'select_card') {
       throw new GameActionError('Choose one card from the opponent’s Discard Pile for Accusation.');
     }
     if (!pending.discardOptions.includes(action.cardId)
@@ -245,6 +249,9 @@ export function resolveAccusationChoice(game: GameState, action: ResolveInquisit
 
   if (action.choice !== 'top_deck' && action.choice !== 'graveyard') {
     throw new GameActionError('Choose whether the accused card goes on top of the Draw Pile or into the Graveyard.');
+  }
+  if (action.cardId !== pending.cardId) {
+    throw new GameActionError('Resolve the currently accused card.');
   }
   const opponent = game.players[pending.playerId];
   if (!removeOne(opponent.zones.discard, pending.cardId)) {
