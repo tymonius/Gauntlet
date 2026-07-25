@@ -22,6 +22,7 @@ import type {
 } from '../types';
 import { canResolveIntelligenceAction } from './intelligence-action-cards';
 import { availableBattleHandCards } from './battle-hand-restrictions';
+import { confessionLegalHandCommitCards } from './inquisition-confession';
 import { legalLeaderAbilitiesFor } from './leader-abilities';
 import { toPublicMysticsState } from './mystics-ritual';
 
@@ -129,8 +130,9 @@ function legalBattlePlaysForViewer(battle: BattleState, game: GameState, viewer?
   const participant = battleParticipantForViewer(battle, viewer);
   if (!participant || !viewer || game.priorityPlayer !== viewer) return undefined;
   if (battle.stage === 'hand_commit' && !participant.passedHandCommit && !participant.handCommit) {
+    const legalHandCards = game.players[viewer].zones.hand.filter((cardId) => cardCanBePlayedAt(cardId, 'battle_hand_commit', 'hand'));
     return [
-      ...game.players[viewer].zones.hand.filter((cardId) => cardCanBePlayedAt(cardId, 'battle_hand_commit', 'hand')).map((cardId) => ({ action: 'commit_battle_hand_card' as const, cardId, origin: 'hand' as const })),
+      ...confessionLegalHandCommitCards(game, viewer, legalHandCards).map((cardId) => ({ action: 'commit_battle_hand_card' as const, cardId, origin: 'hand' as const })),
       { action: 'pass_battle_hand_commit' as const },
     ];
   }
