@@ -2,6 +2,7 @@ import type { GameState, PlayerID } from '../types';
 import type { AppStateAction } from '../state';
 import {
   EXCOMMUNICATION,
+  inquisitionCardTitle,
   legalExcommunicationSelections,
   legalInquisitionPurgeOptions,
   PENANCE,
@@ -76,6 +77,16 @@ export function buildPendingInquisitionOptions(
           choice: 'select_cards',
           cardId: EXCOMMUNICATION,
           cardIds,
+        },
+      }));
+    case 'guilt_by_association_battle':
+      return pending.usedCardOptions.map((cardId) => ({
+        label: `Move every ${inquisitionCardTitle(cardId)} in the opposing Discard Pile to the Graveyard`,
+        action: {
+          type: 'resolve_inquisition_choice',
+          playerId,
+          choice: 'select_title',
+          cardId,
         },
       }));
   }

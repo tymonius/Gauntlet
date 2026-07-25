@@ -35,6 +35,14 @@ import {
   resolveExcommunicationChoice,
 } from './inquisition-excommunication';
 import {
+  applyGuiltByAssociationAction,
+  isGuiltByAssociationChoice,
+  openNextGuiltByAssociationChoice,
+  queueGuiltByAssociationBattleEffects,
+  requireGuiltByAssociationActionTarget,
+  resolveGuiltByAssociationChoice,
+} from './inquisition-guilt-by-association';
+import {
   applyPenanceAction,
   isPenanceChoice,
   openNextPenanceChoice,
@@ -62,6 +70,7 @@ function continueInquisitionAutomation(result: ApplyGameActionResult): ApplyGame
   openNextDivineMercyChoice(result.state);
   openNextAccusationChoice(result.state);
   openNextExcommunicationChoice(result.state);
+  openNextGuiltByAssociationChoice(result.state);
   return result;
 }
 
@@ -93,6 +102,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     else if (isPenanceChoice(pendingKind)) resolvePenanceChoice(next, action);
     else if (isDivineMercyChoice(pendingKind)) resolveDivineMercyChoice(next, action);
     else if (isExcommunicationChoice(pendingKind)) resolveExcommunicationChoice(next, action);
+    else if (isGuiltByAssociationChoice(pendingKind)) resolveGuiltByAssociationChoice(next, action);
     else resolveInquisitionPurgeChoice(next, action);
     return finishDirectInquisitionAction(next, mysticGraveyardsBefore);
   }
@@ -109,6 +119,9 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
   const excommunicationTarget = action.type === 'play_action_card'
     ? requireExcommunicationActionTarget(game, action.playerId, action.cardId, action.targets)
     : undefined;
+  const guiltByAssociationTarget = action.type === 'play_action_card'
+    ? requireGuiltByAssociationActionTarget(game, action.playerId, action.cardId, action.targets)
+    : undefined;
 
   let result: ApplyGameActionResult;
   if (action.type === 'use_inquisition_purge') {
@@ -124,6 +137,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     applyPenanceAction(result.state, action.playerId, action.cardId);
     applyDivineMercyAction(result.state, action.playerId, divineMercyTarget);
     applyExcommunicationAction(result.state, action.playerId, excommunicationTarget);
+    applyGuiltByAssociationAction(result.state, action.playerId, guiltByAssociationTarget);
   }
 
   const endedBattle = Boolean(priorBattle && !result.state.battle);
@@ -132,6 +146,7 @@ export function applyGameAction(game: GameState, action: AppStateAction): ApplyG
     awardNormalConvictionAfterBattle(result.state, priorBattle, graveyardsBefore);
     queueAccusationBattleEffects(result.state, priorBattle);
     queueExcommunicationBattleEffects(result.state, priorBattle);
+    queueGuiltByAssociationBattleEffects(result.state, priorBattle);
   }
 
   awardBlasphemyForActionUse(result.state, arcaneActionUse);

@@ -7,6 +7,7 @@ import {
   blackCovenantBindingCanUseAction,
   cardValue,
   deedOwner,
+  inquisitionCardTitle,
   legalExcommunicationSelections,
   toPrivateGameView,
 } from '../state';
@@ -166,7 +167,11 @@ export function buildGuidedOptions(game: GameState): GuidedOption[] {
   if (game.phase === 'turn_start') options.push({ label: 'Draw 1 card', action: { type: 'draw_card', playerId } });
   if (game.phase === 'action_before_movement' || game.phase === 'action_after_movement') {
     for (const play of view.legalActionPlays ?? []) {
-      if (play.cardId === 'mystics-black-covenant' || play.cardId === 'inquisition-accusation' || play.cardId === 'inquisition-divine-mercy' || play.cardId === 'inquisition-excommunication') continue;
+      if (play.cardId === 'mystics-black-covenant'
+        || play.cardId === 'inquisition-accusation'
+        || play.cardId === 'inquisition-divine-mercy'
+        || play.cardId === 'inquisition-excommunication'
+        || play.cardId === 'inquisition-guilt-by-association') continue;
       options.push({ label: `Play Action ${play.cardId}`, action: { type: 'play_action_card', playerId, cardId: play.cardId } });
     }
     if (view.legalActionPlays?.some((play) => play.cardId === 'mystics-black-covenant')) {
@@ -194,6 +199,23 @@ export function buildGuidedOptions(game: GameState): GuidedOption[] {
             playerId,
             cardId: 'inquisition-excommunication',
             targets: cardIds.map((cardId) => ({ kind: 'card' as const, owner: opponent.id, cardId })),
+          },
+        });
+      }
+    }
+    if (opponent && view.legalActionPlays?.some((play) => play.cardId === 'inquisition-guilt-by-association')) {
+      const seenTitles = new Set<string>();
+      for (const cardId of opponent.zones.discard) {
+        const title = inquisitionCardTitle(cardId);
+        if (seenTitles.has(title)) continue;
+        seenTitles.add(title);
+        options.push({
+          label: `Play Guilt by Association targeting ${title}`,
+          action: {
+            type: 'play_action_card',
+            playerId,
+            cardId: 'inquisition-guilt-by-association',
+            targets: [{ kind: 'card', owner: opponent.id, cardId }],
           },
         });
       }
