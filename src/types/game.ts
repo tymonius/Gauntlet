@@ -2,7 +2,7 @@ import type { BoardState, PublicBoardView } from './board';
 import type { BattleState, PublicBattleView } from './battle';
 import type { PendingDiplomatChoice } from './diplomats';
 import type { PendingFinancierChoice } from './financiers';
-import type { InquisitionAccusationQueueEntry, InquisitionDivineMercyBattleQueueEntry, InquisitionPenanceBattleQueueEntry, PendingInquisitionChoice } from './inquisition';
+import type { InquisitionAccusationQueueEntry, InquisitionDivineMercyBattleQueueEntry, InquisitionExcommunicationBattleQueueEntry, InquisitionPenanceBattleQueueEntry, PendingInquisitionChoice } from './inquisition';
 import type { PendingIntelligenceChoice } from './intelligence';
 import type { CardID, GameID, PlayerID, SpaceID } from './ids';
 import type { LegalLeaderAbilityOption } from './leader';
@@ -29,6 +29,7 @@ export interface GameState {
   inquisitionAccusationQueue?: InquisitionAccusationQueueEntry[];
   inquisitionPenanceQueue?: InquisitionPenanceBattleQueueEntry[];
   inquisitionDivineMercyQueue?: InquisitionDivineMercyBattleQueueEntry[];
+  inquisitionExcommunicationQueue?: InquisitionExcommunicationBattleQueueEntry[];
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow; pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[]; winner?: PlayerID;
 }
