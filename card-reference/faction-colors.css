@@ -1,0 +1,14 @@
+.preview-kicker {
+  color: var(--preview-accent);
+}
+
+.reference-row[data-faction="neutral"] {
+  --row-accent: ivory;
+}
+
+.reference-preview[data-faction="neutral"] .preview-kicker {
+  display: inline-block;
+  padding: 3px 6px;
+  color: var(--preview-label-ink);
+  background: var(--preview-accent);
+}
