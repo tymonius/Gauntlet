@@ -23,17 +23,7 @@ jobs:
         run: npm install
 
       - name: Typecheck
-        shell: bash
-        run: |
-          set -o pipefail
-          npm run typecheck 2>&1 | tee pathfinders-typecheck.log
-
-      - name: Upload typecheck output
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: pathfinders-typecheck-output
-          path: pathfinders-typecheck.log
+        run: npm run typecheck
 
       - name: Test
         run: npm test
