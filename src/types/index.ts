@@ -8,6 +8,7 @@ export * from './financiers';
 export * from './intelligence';
 export * from './mystics';
 export * from './inquisition';
+export * from './neutral';
 export * from './player';
 export * from './board';
 export * from './battle';
