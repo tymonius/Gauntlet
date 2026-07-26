@@ -129,5 +129,28 @@ export function buildPendingNeutralOptions(
           },
         })),
       ];
+
+    case 'supplies_asset':
+      return [
+        {
+          label: 'Use no more banked Supplies this turn',
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'pass' },
+        },
+        {
+          label: 'Discard one banked Supplies and draw two cards',
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'use' },
+        },
+      ];
+
+    case 'supplies_battle_discard':
+      return pending.cardOptions.map((cardId) => ({
+        label: `Discard ${cardId} after drawing with Supplies`,
+        action: {
+          type: 'resolve_neutral_choice' as const,
+          playerId,
+          choice: 'select_card' as const,
+          cardId,
+        },
+      }));
   }
 }
