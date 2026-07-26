@@ -22,12 +22,27 @@ function overlaySuppressesPrintedEffect(space: BoardSpaceState): boolean {
   )) ?? false;
 }
 
+function canonicalTerritoryIdCandidates(territoryId: string): string[] {
+  const candidates = new Set([territoryId]);
+  if (territoryId.startsWith('territory-')) {
+    candidates.add(territoryId.slice('territory-'.length));
+  } else {
+    candidates.add(`territory-${territoryId}`);
+  }
+  return [...candidates];
+}
+
+/**
+ * Returns true for both canonical v0.6 Territory IDs and the legacy unprefixed
+ * IDs still accepted by older engine rules and tests.
+ */
 export function territoryHasPrintedEffect(space?: BoardSpaceState): boolean {
   if (!space
     || !space.revealed
     || (space.kind !== 'territory' && space.kind !== 'arena')
     || !space.territoryId) return false;
-  return v06CanonicalContent.territoriesById.has(space.territoryId);
+  return canonicalTerritoryIdCandidates(space.territoryId)
+    .some((territoryId) => v06CanonicalContent.territoriesById.has(territoryId));
 }
 
 /**
