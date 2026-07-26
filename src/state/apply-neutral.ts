@@ -1,4 +1,4 @@
-import type { GameState } from '../types';
+import type { GameState, PlayerID } from '../types';
 import type {
   AppStateAction,
   FinishMovementAction,
@@ -94,6 +94,11 @@ export type NeutralAppStateAction = AppStateAction | FinishMovementAction | Reso
 function continueNeutralChoices(game: GameState): void {
   openNextSuppliesChoice(game);
   openNextRedemptionChoice(game);
+}
+
+function latestResolvedBattleWinner(game: GameState): PlayerID | undefined {
+  const event = [...game.log].reverse().find((candidate) => candidate.type === 'battle_resolved');
+  return (event?.payload as { winner?: PlayerID } | undefined)?.winner;
 }
 
 /**
@@ -262,7 +267,12 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     applyRallyingCryBattleEffects(result.state);
   }
   if (action.type === 'resolve_battle' && priorBattle && priorBattleId && !result.state.battle) {
-    applyConsolidationAfterBattle(result.state, priorBattle, priorBattleController);
+    applyConsolidationAfterBattle(
+      result.state,
+      priorBattle,
+      priorBattleController,
+      latestResolvedBattleWinner(result.state),
+    );
     applyRedemptionBattleReturns(result.state, priorBattleId);
     applyReservesBattleTopdecks(result.state, priorBattleId);
     queueSuppliesBattleEffects(result.state, priorBattle);
