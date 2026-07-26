@@ -38,10 +38,11 @@ export function preparePathfindersAction(
 ): SpaceID | undefined {
   if (action.cardId !== PATHFINDERS) return undefined;
   const targets = action.targets ?? [];
-  if (targets.length !== 1 || targets[0].kind !== 'space') {
+  const target = targets[0];
+  if (targets.length !== 1 || !target || target.kind !== 'space') {
     throw new GameActionError('Pathfinders requires exactly one Territory target.');
   }
-  const space = game.board.spaces.find((candidate) => candidate.id === targets[0].spaceId);
+  const space = game.board.spaces.find((candidate) => candidate.id === target.spaceId);
   if (!space || (space.kind !== 'territory' && space.kind !== 'arena')) {
     throw new GameActionError('Pathfinders can target only a Territory.');
   }
