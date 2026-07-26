@@ -45,6 +45,14 @@ import {
   registerRedemptionDiscardEntries,
   resolveRedemptionChoice,
 } from './neutral-redemption';
+import {
+  applyReservesAction,
+  applyReservesBattleTopdecks,
+  prepareReservesAction,
+  prepareReservesBattleResolution,
+  RESERVES,
+  resolveReservesChoice,
+} from './neutral-reserves';
 import { type ApplyGameActionResult, GameActionError } from './reducer';
 import {
   clearExpiredPathfindersSuppressions,
@@ -63,7 +71,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
       throw new GameActionError('Resolve the pending Neutral choice first.');
     }
     const next = structuredClone(game);
-    const resolved = resolveRedemptionChoice(next, action);
+    const resolved = game.pendingNeutralChoice.kind.startsWith('reserves_')
+      ? resolveReservesChoice(next, action)
+      : resolveRedemptionChoice(next, action);
     if (resolved.deferredBattleAction) {
       return applyGameAction(next, resolved.deferredBattleAction);
     }
@@ -95,6 +105,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   const preparedRallyingCry = action.type === 'play_action_card' && action.cardId === RALLYING_CRY
     ? prepareRallyingCryAction(game, action)
     : undefined;
+  const preparedReserves = action.type === 'play_action_card' && action.cardId === RESERVES
+    ? prepareReservesAction(game, action)
+    : undefined;
 
   const restrictedBefore = action.type === 'move_player'
     ? game.players[action.playerId]?.nonBattleMovementRemaining ?? 0
@@ -110,6 +123,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'resolve_battle') {
     const prepared = structuredClone(game);
     if (prepareRedemptionBattleResolution(prepared, action)) {
+      return { state: prepared };
+    }
+    if (prepareReservesBattleResolution(prepared, action)) {
       return { state: prepared };
     }
     gameForApplication = prepared;
@@ -129,6 +145,10 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   if (action.type === 'play_action_card' && preparedRallyingCry) {
     const drawnCards = applyRallyingCryAction(result.state, action.playerId, preparedRallyingCry);
+    result.result = { ...(result.result ?? {}), drawnCards };
+  }
+  if (action.type === 'play_action_card' && preparedReserves) {
+    const drawnCards = applyReservesAction(result.state, action.playerId, preparedReserves);
     result.result = { ...(result.result ?? {}), drawnCards };
   }
   if (action.type === 'move_player') {
@@ -157,6 +177,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   if (action.type === 'resolve_battle' && priorBattleId && !result.state.battle) {
     applyRedemptionBattleReturns(result.state, priorBattleId);
+    applyReservesBattleTopdecks(result.state, priorBattleId);
   }
 
   if (discardBefore) {

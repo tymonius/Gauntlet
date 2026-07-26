@@ -78,4 +78,40 @@ describe('guided Neutral choices', () => {
     ));
     expect(selections).toContainEqual(['card-valor', 'card-valor']);
   });
+
+  it('offers each Reserves Action top-deck option', () => {
+    const state = game();
+    state.priorityPlayer = 'player_1';
+    state.pendingNeutralChoice = {
+      kind: 'reserves_action',
+      playerId: 'player_1',
+      cardOptions: ['card-valor', 'card-fortifications'],
+      options: ['select_card'],
+    };
+
+    expect(buildGuidedOptions(state).map((option) => option.action)).toEqual([
+      { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'select_card', cardId: 'card-valor' },
+      { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'select_card', cardId: 'card-fortifications' },
+    ]);
+  });
+
+  it('offers pass and each Reserves Battle cleanup option', () => {
+    const state = game();
+    state.priorityPlayer = 'player_1';
+    state.pendingNeutralChoice = {
+      kind: 'reserves_battle',
+      playerId: 'player_1',
+      battleId: 'battle-reserves',
+      cardOptions: ['card-valor', 'card-fortifications'],
+      triggersRemaining: 1,
+      resolverPlayerId: 'player_2',
+      options: ['pass', 'use'],
+    };
+
+    expect(buildGuidedOptions(state).map((option) => option.action)).toEqual([
+      { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'pass' },
+      { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'use', cardId: 'card-valor' },
+      { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'use', cardId: 'card-fortifications' },
+    ]);
+  });
 });

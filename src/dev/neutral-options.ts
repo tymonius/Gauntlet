@@ -47,13 +47,43 @@ export function buildPendingNeutralOptions(
     ];
   }
 
-  return selectionsOfSize(pending.cardOptions, pending.selectCount).map((cardIds) => ({
-    label: `Protect ${cardIds.join(', ')} with Redemption`,
-    action: {
-      type: 'resolve_neutral_choice' as const,
-      playerId,
-      choice: 'select_cards' as const,
-      cardIds,
+  if (pending.kind === 'redemption_battle') {
+    return selectionsOfSize(pending.cardOptions, pending.selectCount).map((cardIds) => ({
+      label: `Protect ${cardIds.join(', ')} with Redemption`,
+      action: {
+        type: 'resolve_neutral_choice' as const,
+        playerId,
+        choice: 'select_cards' as const,
+        cardIds,
+      },
+    }));
+  }
+
+  if (pending.kind === 'reserves_action') {
+    return pending.cardOptions.map((cardId) => ({
+      label: `Put ${cardId} on top of your Draw Pile with Reserves`,
+      action: {
+        type: 'resolve_neutral_choice' as const,
+        playerId,
+        choice: 'select_card' as const,
+        cardId,
+      },
+    }));
+  }
+
+  return [
+    {
+      label: 'Preserve no Battle Hand card with Reserves',
+      action: { type: 'resolve_neutral_choice', playerId, choice: 'pass' },
     },
-  }));
+    ...pending.cardOptions.map((cardId) => ({
+      label: `Put ${cardId} on top of your Draw Pile with Reserves`,
+      action: {
+        type: 'resolve_neutral_choice' as const,
+        playerId,
+        choice: 'use' as const,
+        cardId,
+      },
+    })),
+  ];
 }
