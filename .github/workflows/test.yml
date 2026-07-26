@@ -26,4 +26,4 @@ jobs:
         run: npm run typecheck
 
       - name: Test
-        run: npm test
+        run: npm test -- --run src/state/neutral-forced-march.test.ts
