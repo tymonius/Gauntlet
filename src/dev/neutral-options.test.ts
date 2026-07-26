@@ -171,4 +171,40 @@ describe('guided Neutral choices', () => {
       { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'replace', cardId: 'card-fortifications' },
     ]);
   });
+
+  it('offers Supplies Asset pass and use choices', () => {
+    const state = game();
+    state.priorityPlayer = 'player_1';
+    state.pendingNeutralChoice = {
+      kind: 'supplies_asset',
+      playerId: 'player_1',
+      entryId: 'supplies-asset-1',
+      triggersRemaining: 2,
+      options: ['pass', 'use'],
+    };
+
+    expect(buildGuidedOptions(state).map((option) => option.action)).toEqual([
+      { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'pass' },
+      { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'use' },
+    ]);
+  });
+
+  it('offers each mandatory Supplies Battle discard', () => {
+    const state = game();
+    state.priorityPlayer = 'player_1';
+    state.pendingNeutralChoice = {
+      kind: 'supplies_battle_discard',
+      playerId: 'player_1',
+      entryId: 'supplies-battle-1',
+      battleId: 'battle-supplies',
+      cardOptions: ['card-valor', 'card-fortifications'],
+      triggersRemaining: 1,
+      options: ['select_card'],
+    };
+
+    expect(buildGuidedOptions(state).map((option) => option.action)).toEqual([
+      { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'select_card', cardId: 'card-valor' },
+      { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'select_card', cardId: 'card-fortifications' },
+    ]);
+  });
 });
