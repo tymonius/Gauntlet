@@ -179,7 +179,9 @@ describe('Neutral Pathfinders', () => {
     state.phase = 'movement';
 
     state.board.spaces.find((space) => space.id === 'player_2-heartland')!.occupant = undefined;
-    state.board.spaces.find((space) => space.id === 'space-1')!.occupant = 'player_2';
+    const watchtower = state.board.spaces.find((space) => space.id === 'space-1')!;
+    watchtower.controller = 'player_2';
+    watchtower.occupant = 'player_2';
     state.players.player_2.occupiedSpaceId = 'space-1';
 
     state = applyGameAction(state, {
@@ -197,7 +199,9 @@ describe('Neutral Pathfinders', () => {
     revealTerritory(state, 'space-1', 'territory-watchtower');
     state.phase = 'movement';
     state.board.spaces.find((space) => space.id === 'player_2-heartland')!.occupant = undefined;
-    state.board.spaces.find((space) => space.id === 'space-1')!.occupant = 'player_2';
+    const watchtower = state.board.spaces.find((space) => space.id === 'space-1')!;
+    watchtower.controller = 'player_2';
+    watchtower.occupant = 'player_2';
     state.players.player_2.occupiedSpaceId = 'space-1';
 
     state = applyGameAction(state, {
