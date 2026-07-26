@@ -213,6 +213,10 @@ function privateLog(game: GameState, viewer: PlayerID): GameEvent[] {
     .map((event) => structuredClone(event));
 }
 
+function scoutingReportChoiceIsPrivate(game: GameState): boolean {
+  return game.pendingNeutralChoice?.kind.startsWith('scouting_report_') ?? false;
+}
+
 export function toPublicGameView(game: GameState): PublicGameView {
   return {
     id: game.id,
@@ -225,7 +229,7 @@ export function toPublicGameView(game: GameState): PublicGameView {
     board: toPublicBoardView(game.board),
     battle: game.battle ? toPublicBattleView(game.battle, game) : undefined,
     neutralPathfindersSuppressions: structuredClone(game.neutralPathfindersSuppressions),
-    pendingNeutralChoice: structuredClone(game.pendingNeutralChoice),
+    pendingNeutralChoice: scoutingReportChoiceIsPrivate(game) ? undefined : structuredClone(game.pendingNeutralChoice),
     pendingMilitaryChoice: game.pendingMilitaryChoice,
     pendingMilitaryTimingChoice: game.pendingMilitaryTimingChoice,
     pendingDiplomatChoice: game.pendingDiplomatChoice,
@@ -244,6 +248,9 @@ export function toPrivateGameView(game: GameState, viewer: PlayerID): PrivateGam
     viewer,
     players: { ...publicView.players, [viewer]: toPrivatePlayerView(game.players[viewer]) },
     battle: game.battle ? toPrivateBattleView(game.battle, game, viewer) : undefined,
+    pendingNeutralChoice: game.pendingNeutralChoice?.playerId === viewer
+      ? structuredClone(game.pendingNeutralChoice)
+      : publicView.pendingNeutralChoice,
     pendingIntelligenceChoice: game.pendingIntelligenceChoice?.playerId === viewer ? structuredClone(game.pendingIntelligenceChoice) : undefined,
     pendingMysticsChoice: game.pendingMysticsChoice?.playerId === viewer ? structuredClone(game.pendingMysticsChoice) : undefined,
     pendingInquisitionChoice: game.pendingInquisitionChoice?.playerId === viewer ? structuredClone(game.pendingInquisitionChoice) : undefined,
