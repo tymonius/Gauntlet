@@ -5,6 +5,7 @@ import type {
   ResolveNeutralChoiceAction,
 } from './actions';
 import { applyGameAction as applyFactionGameAction } from './apply-inquisition';
+import { continueIntelligenceBattle } from './intelligence-battle';
 import { applyContingencyPlanAssetLimitDraw } from './neutral-contingency-plan';
 import { applyFealtyBattleEffects } from './neutral-fealty';
 import {
@@ -53,6 +54,12 @@ import {
   RESERVES,
   resolveReservesChoice,
 } from './neutral-reserves';
+import {
+  applyScoutingReportAction,
+  prepareScoutingReportAction,
+  resolveScoutingReportChoice,
+  SCOUTING_REPORT,
+} from './neutral-scouting-report';
 import { type ApplyGameActionResult, GameActionError } from './reducer';
 import {
   clearExpiredPathfindersSuppressions,
@@ -71,11 +78,17 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
       throw new GameActionError('Resolve the pending Neutral choice first.');
     }
     const next = structuredClone(game);
-    const resolved = game.pendingNeutralChoice.kind.startsWith('reserves_')
-      ? resolveReservesChoice(next, action)
-      : resolveRedemptionChoice(next, action);
+    const pendingKind = game.pendingNeutralChoice.kind;
+    const resolved = pendingKind.startsWith('scouting_report_')
+      ? resolveScoutingReportChoice(next, action)
+      : pendingKind.startsWith('reserves_')
+        ? resolveReservesChoice(next, action)
+        : resolveRedemptionChoice(next, action);
     if (resolved.deferredBattleAction) {
       return applyGameAction(next, resolved.deferredBattleAction);
+    }
+    if ('resumeBattleReveal' in resolved && resolved.resumeBattleReveal) {
+      continueIntelligenceBattle(next);
     }
     return { state: next };
   }
@@ -107,6 +120,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     : undefined;
   const preparedReserves = action.type === 'play_action_card' && action.cardId === RESERVES
     ? prepareReservesAction(game, action)
+    : undefined;
+  const preparedScoutingReport = action.type === 'play_action_card' && action.cardId === SCOUTING_REPORT
+    ? prepareScoutingReportAction(game, action)
     : undefined;
 
   const restrictedBefore = action.type === 'move_player'
@@ -150,6 +166,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'play_action_card' && preparedReserves) {
     const drawnCards = applyReservesAction(result.state, action.playerId, preparedReserves);
     result.result = { ...(result.result ?? {}), drawnCards };
+  }
+  if (action.type === 'play_action_card' && preparedScoutingReport) {
+    applyScoutingReportAction(result.state, action.playerId, preparedScoutingReport);
   }
   if (action.type === 'move_player') {
     const battle = result.state.battle;
