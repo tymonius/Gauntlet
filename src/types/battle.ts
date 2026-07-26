@@ -87,6 +87,8 @@ export interface BattleState {
   tiePolicy: BattleTiePolicy;
   lastStand?: boolean;
   attackerHandCommitVisibleTo?: PlayerID[];
+  /** Players who may only pass during the hand-commit step. */
+  handCommitProhibitedFor?: PlayerID[];
   blockedBattleDrawCards?: Partial<Record<PlayerID, CardID[]>>;
   observedBeforeNormalReveal?: Partial<Record<PlayerID, CardID[]>>;
   bankedAssetUseProhibited?: PlayerID[];
@@ -129,6 +131,7 @@ export interface PublicBattleView {
   defender: PublicBattleParticipantView;
   tiePolicy: BattleTiePolicy;
   lastStand?: boolean;
+  handCommitProhibitedFor?: PlayerID[];
   fogOfWarOverlayOwner?: PlayerID;
   noMartyrsAssetInitialCounts?: Partial<Record<PlayerID, number>>;
   noMartyrsAssetProcessedCounts?: Partial<Record<PlayerID, number>>;

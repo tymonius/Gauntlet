@@ -70,6 +70,7 @@ export * from './inquisition-no-martyrs';
 export * from './inquisition-tyranny';
 export * from './inquisition-heresy';
 export * from './inquisition-hellfire';
+export * from './neutral-advance-guard';
 export * from './neutral-contingency-plan';
 export * from './neutral-counterintelligence';
 export * from './neutral-fealty';
