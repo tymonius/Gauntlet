@@ -317,7 +317,9 @@ export function resolveRedemptionChoice(
     resolveAssetChoice(game, action);
     return {};
   }
-  if (pending.playerId !== action.playerId || action.choice !== 'select_cards') {
+  if (pending.kind !== 'redemption_battle'
+    || pending.playerId !== action.playerId
+    || action.choice !== 'select_cards') {
     throw new GameActionError(`${action.playerId} has no matching Redemption Battle choice.`);
   }
   const selected = action.cardIds ?? [];
