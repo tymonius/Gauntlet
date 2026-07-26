@@ -60,9 +60,10 @@ export interface PublicGameView {
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow; pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[]; winner?: PlayerID;
 }
-export interface PrivateGameView extends Omit<PublicGameView, 'players'> {
+export interface PrivateGameView extends Omit<PublicGameView, 'players' | 'pendingNeutralChoice'> {
   viewer: PlayerID;
   players: Record<PlayerID, PublicPlayerView | PrivatePlayerView>;
+  pendingNeutralChoice?: PendingNeutralChoice;
   pendingIntelligenceChoice?: PendingIntelligenceChoice;
   pendingMysticsChoice?: PendingMysticsChoice;
   pendingInquisitionChoice?: PendingInquisitionChoice;
