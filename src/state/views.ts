@@ -214,7 +214,26 @@ function privateLog(game: GameState, viewer: PlayerID): GameEvent[] {
 }
 
 export function toPublicGameView(game: GameState): PublicGameView {
-  return { id: game.id, version: game.version, phase: game.phase, turn: game.turn, activePlayer: game.activePlayer, priorityPlayer: game.priorityPlayer, players: Object.fromEntries(Object.values(game.players).map((player) => [player.id, toPublicPlayerView(player)])), board: toPublicBoardView(game.board), battle: game.battle ? toPublicBattleView(game.battle, game) : undefined, pendingMilitaryChoice: game.pendingMilitaryChoice, pendingMilitaryTimingChoice: game.pendingMilitaryTimingChoice, pendingDiplomatChoice: game.pendingDiplomatChoice, pendingFinancierChoice: game.pendingFinancierChoice, pendingLeaderAbilityWindow: game.pendingLeaderAbilityWindow, pendingAssetBankDiscards: game.pendingAssetBankDiscards, log: publicLog(game), winner: game.winner };
+  return {
+    id: game.id,
+    version: game.version,
+    phase: game.phase,
+    turn: game.turn,
+    activePlayer: game.activePlayer,
+    priorityPlayer: game.priorityPlayer,
+    players: Object.fromEntries(Object.values(game.players).map((player) => [player.id, toPublicPlayerView(player)])),
+    board: toPublicBoardView(game.board),
+    battle: game.battle ? toPublicBattleView(game.battle, game) : undefined,
+    neutralPathfindersSuppressions: structuredClone(game.neutralPathfindersSuppressions),
+    pendingMilitaryChoice: game.pendingMilitaryChoice,
+    pendingMilitaryTimingChoice: game.pendingMilitaryTimingChoice,
+    pendingDiplomatChoice: game.pendingDiplomatChoice,
+    pendingFinancierChoice: game.pendingFinancierChoice,
+    pendingLeaderAbilityWindow: game.pendingLeaderAbilityWindow,
+    pendingAssetBankDiscards: game.pendingAssetBankDiscards,
+    log: publicLog(game),
+    winner: game.winner,
+  };
 }
 
 export function toPrivateGameView(game: GameState, viewer: PlayerID): PrivateGameView {

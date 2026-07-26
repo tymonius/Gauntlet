@@ -18,6 +18,7 @@ export interface RecentBattleResult { battleId: string; turn: number; winner: Pl
 export interface PendingLeaderAbilityWindow { playerId: PlayerID; timing: 'after_battle'; battleId: string; }
 export interface InquisitionRelentlessPursuitRequest { playerId: PlayerID; loserId: PlayerID; direction: -1 | 1; }
 export interface InquisitionRelentlessPursuitResume { playerId: PlayerID; turn: number; }
+export interface NeutralPathfindersSuppression { playerId: PlayerID; spaceId: SpaceID; turn: number; }
 
 export interface GameState {
   id: GameID; version: string; phase: GamePhase; turn: number; activePlayer: PlayerID; priorityPlayer?: PlayerID;
@@ -38,6 +39,7 @@ export interface GameState {
   inquisitionBurningAtTheStakeQueue?: InquisitionBurningAtTheStakeBattleQueueEntry[];
   inquisitionRelentlessPursuitRequest?: InquisitionRelentlessPursuitRequest;
   inquisitionRelentlessPursuitResume?: InquisitionRelentlessPursuitResume;
+  neutralPathfindersSuppressions?: NeutralPathfindersSuppression[];
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow; pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[]; winner?: PlayerID;
 }
@@ -47,6 +49,7 @@ export interface PublicGameView {
   id: GameID; version: string; phase: GamePhase; turn: number; activePlayer: PlayerID; priorityPlayer?: PlayerID;
   players: Record<PlayerID, PublicPlayerView>; board: PublicBoardView; battle?: PublicBattleView;
   legalActionPlays?: LegalActionPlayOption[]; legalLeaderAbilities?: LegalLeaderAbilityOption[];
+  neutralPathfindersSuppressions?: NeutralPathfindersSuppression[];
   pendingMilitaryChoice?: PendingMilitaryChoice; pendingMilitaryTimingChoice?: PendingMilitaryTimingChoice; pendingDiplomatChoice?: PendingDiplomatChoice; pendingFinancierChoice?: PendingFinancierChoice;
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow; pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[]; winner?: PlayerID;
