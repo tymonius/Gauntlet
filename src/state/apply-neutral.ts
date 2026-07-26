@@ -14,6 +14,12 @@ import {
   requireBattleCapableMovement,
   requireForcedMarchActionTiming,
 } from './neutral-forced-march';
+import {
+  applyNewRecruitsAction,
+  applyNewRecruitsBattleEffects,
+  NEW_RECRUITS,
+  prepareNewRecruitsAction,
+} from './neutral-new-recruits';
 import { type ApplyGameActionResult } from './reducer';
 
 export type NeutralAppStateAction = AppStateAction | FinishMovementAction;
@@ -32,6 +38,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'play_action_card' && action.cardId === FORCED_MARCH) {
     requireForcedMarchActionTiming(game, action.playerId);
   }
+  const preparedNewRecruits = action.type === 'play_action_card' && action.cardId === NEW_RECRUITS
+    ? prepareNewRecruitsAction(game, action)
+    : undefined;
 
   const restrictedBefore = action.type === 'move_player'
     ? game.players[action.playerId]?.nonBattleMovementRemaining ?? 0
@@ -48,6 +57,10 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'play_action_card' && action.cardId === FORCED_MARCH) {
     applyForcedMarchAction(result.state, action.playerId);
   }
+  if (action.type === 'play_action_card' && preparedNewRecruits) {
+    const drawnCards = applyNewRecruitsAction(result.state, action.playerId, preparedNewRecruits);
+    result.result = { ...(result.result ?? {}), drawnCards };
+  }
   if (action.type === 'move_player') {
     reconcileForcedMarchMove(result.state, action.playerId, initiatedBattle, restrictedBefore);
   }
@@ -60,6 +73,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'resolve_battle_reveal') {
     applyFealtyBattleEffects(result.state);
     applyForcedMarchBattleEffects(result.state);
+    applyNewRecruitsBattleEffects(result.state);
   }
 
   return result;
