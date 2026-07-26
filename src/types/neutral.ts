@@ -1,5 +1,38 @@
 import type { CardID, PlayerID } from './ids';
 
+export type DecoysAssetZone = 'asset_bank' | 'hand' | 'discard' | 'graveyard' | 'removed';
+
+export interface DecoysAssetExit {
+  exitId: string;
+  cardId: CardID;
+  destination?: Exclude<DecoysAssetZone, 'asset_bank'>;
+}
+
+export interface DecoysSourceLocation {
+  sourceId: string;
+  zone: DecoysAssetZone;
+}
+
+export interface DecoysAssetQueueEntry {
+  id: string;
+  playerId: PlayerID;
+  sourcePlayerId: PlayerID;
+  affectedAssets: DecoysAssetExit[];
+  decoySources: DecoysSourceLocation[];
+  triggersRemaining: number;
+}
+
+export interface PendingDecoysAssetChoice {
+  kind: 'decoys_asset';
+  playerId: PlayerID;
+  sourcePlayerId: PlayerID;
+  entryId: string;
+  assetOptions: DecoysAssetExit[];
+  triggersRemaining: number;
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface RedemptionDiscardQueueEntry {
   id: string;
   playerId: PlayerID;
@@ -131,6 +164,7 @@ export interface PendingSuppliesBattleDiscardChoice {
 }
 
 export type PendingNeutralChoice =
+  | PendingDecoysAssetChoice
   | PendingRedemptionAssetChoice
   | PendingRedemptionBattleChoice
   | PendingReservesActionChoice
