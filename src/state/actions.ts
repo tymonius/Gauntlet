@@ -25,9 +25,8 @@ export type MysticsStateAction = BeginMysticRiteAction | ResolveMysticsChoiceAct
   | UseMysticBlackCovenantAction | UseMysticBlackCovenantBattleAction;
 
 export type InquisitionStateAction = UseInquisitionPurgeAction | ResolveInquisitionChoiceAction;
-export type NeutralStateAction = FinishMovementAction;
 
-export type AppStateAction = StateAction | IntelligenceStateAction | MysticsStateAction | InquisitionStateAction | NeutralStateAction;
+export type AppStateAction = StateAction | IntelligenceStateAction | MysticsStateAction | InquisitionStateAction;
 
 export interface DrawCardAction { type: 'draw_card'; playerId: PlayerID; count?: number; }
 export interface RevealSpaceAction { type: 'reveal_space'; playerId: PlayerID; spaceId: SpaceID; }
