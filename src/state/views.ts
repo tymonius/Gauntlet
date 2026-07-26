@@ -68,6 +68,7 @@ export function toPublicPlayerView(player: PlayerState): PublicPlayerView {
     actionsRemaining: player.actionsRemaining,
     movementRemaining: player.movementRemaining,
     nonBattleMovementRemaining: player.nonBattleMovementRemaining,
+    advanceGuardMovementRemaining: player.advanceGuardMovementRemaining,
   };
 }
 
@@ -132,6 +133,9 @@ function legalBattlePlaysForViewer(battle: BattleState, game: GameState, viewer?
   const participant = battleParticipantForViewer(battle, viewer);
   if (!participant || !viewer || game.priorityPlayer !== viewer) return undefined;
   if (battle.stage === 'hand_commit' && !participant.passedHandCommit && !participant.handCommit) {
+    if (battle.handCommitProhibitedFor?.includes(viewer)) {
+      return [{ action: 'pass_battle_hand_commit' as const }];
+    }
     const legalHandCards = game.players[viewer].zones.hand.filter((cardId) => cardCanBePlayedAt(cardId, 'battle_hand_commit', 'hand'));
     return [
       ...confessionLegalHandCommitCards(game, viewer, legalHandCards).map((cardId) => ({ action: 'commit_battle_hand_card' as const, cardId, origin: 'hand' as const })),
@@ -176,6 +180,7 @@ export function toPublicBattleView(battle: BattleState, game?: GameState): Publi
     defender: toBattleParticipantView(battle.defender),
     tiePolicy: battle.tiePolicy,
     lastStand: battle.lastStand,
+    handCommitProhibitedFor: battle.handCommitProhibitedFor ? [...battle.handCommitProhibitedFor] : undefined,
     winner: battle.winner,
     loser: battle.loser,
   };
