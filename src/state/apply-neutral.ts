@@ -24,6 +24,12 @@ import {
   prepareConsolidationAction,
 } from './neutral-consolidation';
 import { applyContingencyPlanAssetLimitDraw } from './neutral-contingency-plan';
+import {
+  captureDecoysAssetSnapshot,
+  openNextDecoysChoice,
+  registerDecoysAssetExits,
+  resolveDecoysChoice,
+} from './neutral-decoys';
 import { applyFealtyBattleEffects } from './neutral-fealty';
 import {
   applyForcedMarchAction,
@@ -92,6 +98,7 @@ import {
 export type NeutralAppStateAction = AppStateAction | FinishMovementAction | ResolveNeutralChoiceAction;
 
 function continueNeutralChoices(game: GameState): void {
+  openNextDecoysChoice(game);
   openNextSuppliesChoice(game);
   openNextRedemptionChoice(game);
 }
@@ -112,13 +119,15 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     }
     const next = structuredClone(game);
     const pendingKind = game.pendingNeutralChoice.kind;
-    const resolved = pendingKind.startsWith('supplies_')
-      ? (resolveSuppliesChoice(next, action), {})
-      : pendingKind.startsWith('scouting_report_')
-        ? resolveScoutingReportChoice(next, action)
-        : pendingKind.startsWith('reserves_')
-          ? resolveReservesChoice(next, action)
-          : resolveRedemptionChoice(next, action);
+    const resolved = pendingKind === 'decoys_asset'
+      ? (resolveDecoysChoice(next, action), {})
+      : pendingKind.startsWith('supplies_')
+        ? (resolveSuppliesChoice(next, action), {})
+        : pendingKind.startsWith('scouting_report_')
+          ? resolveScoutingReportChoice(next, action)
+          : pendingKind.startsWith('reserves_')
+            ? resolveReservesChoice(next, action)
+            : resolveRedemptionChoice(next, action);
     if ('deferredBattleAction' in resolved && resolved.deferredBattleAction) {
       return applyGameAction(next, resolved.deferredBattleAction);
     }
@@ -141,6 +150,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
 
   const effectSourcePlayerId = redemptionEffectSourcePlayer(game, action);
   const discardBefore = effectSourcePlayerId ? captureDiscardSnapshot(game) : undefined;
+  const assetsBefore = effectSourcePlayerId ? captureDecoysAssetSnapshot(game) : undefined;
   const priorBattle = game.battle ? structuredClone(game.battle) : undefined;
   const priorBattleId = priorBattle?.id;
   const priorBattleController = priorBattle
@@ -281,6 +291,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     queueSuppliesAfterNormalDraw(result.state, action.playerId);
   }
 
+  if (assetsBefore) {
+    registerDecoysAssetExits(result.state, assetsBefore, effectSourcePlayerId);
+  }
   if (discardBefore) {
     registerRedemptionDiscardEntries(result.state, discardBefore, effectSourcePlayerId);
   }
