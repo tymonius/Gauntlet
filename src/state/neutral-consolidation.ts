@@ -108,9 +108,10 @@ export function applyConsolidationAction(
 export function applyConsolidationAfterBattle(
   game: GameState,
   battle: BattleState,
-  controllerBeforeBattle?: PlayerID,
+  controllerBeforeBattle: PlayerID | undefined,
+  winnerId: PlayerID | undefined,
 ): CardID[] {
-  if (battle.winner !== battle.attacker.playerId) return [];
+  if (winnerId !== battle.attacker.playerId) return [];
   if (controllerBeforeBattle !== battle.defender.playerId) return [];
   const location = game.board.spaces.find((space) => space.id === battle.location);
   if (location?.kind !== 'territory') return [];
