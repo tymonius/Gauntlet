@@ -39,6 +39,7 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'neutral-contingency-plan': battleAndAction('neutral-contingency-plan', 'asset_bank'),
   'neutral-counterintelligence': battleAndAction('neutral-counterintelligence', 'asset_bank'),
   'neutral-fealty': battleAndAction('neutral-fealty', 'asset_bank'),
+  'neutral-forced-march': battleAndAction('neutral-forced-march', 'discard'),
 
   'card-attrition': battleAndAction('card-attrition', 'asset_bank'),
   'card-conscription': { cardId: 'card-conscription', timings: ['battle_hand_commit', 'battle_draw_play'], allowedOrigins: ['hand', 'battle_draw'], defaultDestinationByOrigin: { hand: 'graveyard', battle_draw: 'discard' } },
