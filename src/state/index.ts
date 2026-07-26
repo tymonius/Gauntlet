@@ -72,6 +72,7 @@ export * from './inquisition-hellfire';
 export * from './neutral-contingency-plan';
 export * from './neutral-counterintelligence';
 export * from './neutral-fealty';
+export * from './neutral-forced-march';
 export * from './actions';
 export * from './draw';
 export { applyGameAction } from './apply-neutral';
