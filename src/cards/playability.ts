@@ -36,6 +36,7 @@ const battleOnly = (cardId: CardID): CardPlayRule => ({
 });
 
 export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
+  'neutral-advance-guard': battleAndAction('neutral-advance-guard', 'discard'),
   'neutral-contingency-plan': battleAndAction('neutral-contingency-plan', 'asset_bank'),
   'neutral-counterintelligence': battleAndAction('neutral-counterintelligence', 'asset_bank'),
   'neutral-fealty': battleAndAction('neutral-fealty', 'asset_bank'),
