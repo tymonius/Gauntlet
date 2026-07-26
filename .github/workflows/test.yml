@@ -26,4 +26,14 @@ jobs:
         run: npm run typecheck
 
       - name: Test
-        run: npm test
+        shell: bash
+        run: |
+          set -o pipefail
+          npm test -- --run src/state/neutral-reserves.test.ts 2>&1 | tee reserves-test.log
+
+      - name: Upload test output
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: reserves-test-output
+          path: reserves-test.log
