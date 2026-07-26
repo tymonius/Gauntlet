@@ -8,6 +8,7 @@ import type { CardID, GameID, PlayerID, SpaceID } from './ids';
 import type { LegalLeaderAbilityOption } from './leader';
 import type { PendingMilitaryChoice, PendingMilitaryTimingChoice } from './military';
 import type { PendingAccursedWagerAftermath, PendingMysticsChoice } from './mystics';
+import type { PendingNeutralChoice, RedemptionBattleReturns, RedemptionDiscardQueueEntry } from './neutral';
 import type { PlayerState, PrivatePlayerView, PublicPlayerView } from './player';
 
 export type GamePhase = 'setup' | 'turn_start' | 'action_before_movement' | 'movement' | 'battle' | 'action_after_movement' | 'cleanup' | 'game_over';
@@ -29,6 +30,7 @@ export interface GameState {
   pendingIntelligenceChoice?: PendingIntelligenceChoice & { battleId?: string };
   pendingMysticsChoice?: PendingMysticsChoice; pendingMysticsAftermath?: PendingAccursedWagerAftermath;
   pendingInquisitionChoice?: PendingInquisitionChoice;
+  pendingNeutralChoice?: PendingNeutralChoice;
   inquisitionConfessionConstraint?: InquisitionConfessionConstraint;
   inquisitionAccusationQueue?: InquisitionAccusationQueueEntry[];
   inquisitionPenanceQueue?: InquisitionPenanceBattleQueueEntry[];
@@ -40,6 +42,8 @@ export interface GameState {
   inquisitionRelentlessPursuitRequest?: InquisitionRelentlessPursuitRequest;
   inquisitionRelentlessPursuitResume?: InquisitionRelentlessPursuitResume;
   neutralPathfindersSuppressions?: NeutralPathfindersSuppression[];
+  neutralRedemptionDiscardQueue?: RedemptionDiscardQueueEntry[];
+  neutralRedemptionBattleReturns?: RedemptionBattleReturns;
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow; pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[]; winner?: PlayerID;
 }
@@ -50,6 +54,7 @@ export interface PublicGameView {
   players: Record<PlayerID, PublicPlayerView>; board: PublicBoardView; battle?: PublicBattleView;
   legalActionPlays?: LegalActionPlayOption[]; legalLeaderAbilities?: LegalLeaderAbilityOption[];
   neutralPathfindersSuppressions?: NeutralPathfindersSuppression[];
+  pendingNeutralChoice?: PendingNeutralChoice;
   pendingMilitaryChoice?: PendingMilitaryChoice; pendingMilitaryTimingChoice?: PendingMilitaryTimingChoice; pendingDiplomatChoice?: PendingDiplomatChoice; pendingFinancierChoice?: PendingFinancierChoice;
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow; pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
   log: GameEvent[]; winner?: PlayerID;

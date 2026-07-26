@@ -83,8 +83,11 @@ describe('battle reveal resolution', () => {
       && option.action.battleCardTargets?.some((target) => target.targetCardId === 'card-valor')
     ));
     expect(cancelValor).toBeDefined();
+    if (!cancelValor || cancelValor.action.type !== 'resolve_battle_reveal') {
+      throw new Error('Expected a guided battle-reveal action targeting Valor.');
+    }
 
-    state = applyGameAction(state, cancelValor!.action).state;
+    state = applyGameAction(state, cancelValor.action).state;
     expect(state.battle?.defender.handCommit?.canceled).toBe(true);
     expect(state.battle?.defender.modifiers).toBe(0);
     expect(state.battle?.resolvedCancellations).toEqual(expect.arrayContaining([
@@ -108,7 +111,10 @@ describe('battle reveal resolution', () => {
     state.players.player_2.financiers = { treasury: [], deedsOwned: [] };
     state.players.player_2.resources = { capital: { key: 'capital', label: 'Capital', value: 0, minimum: 0, limitKind: 'dynamic' } };
     const option = buildGuidedOptions(state).find((candidate) => candidate.action.type === 'resolve_battle_reveal');
-    state = applyGameAction(state, option!.action).state;
+    if (!option || option.action.type !== 'resolve_battle_reveal') {
+      throw new Error('Expected a guided battle-reveal action.');
+    }
+    state = applyGameAction(state, option.action).state;
     expect(state.battle?.defender.handCommit?.canceled).toBe(true);
     expect(state.pendingFinancierChoice).toBeUndefined();
   });

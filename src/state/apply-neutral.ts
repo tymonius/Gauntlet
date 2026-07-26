@@ -1,5 +1,9 @@
 import type { GameState } from '../types';
-import type { AppStateAction, FinishMovementAction } from './actions';
+import type {
+  AppStateAction,
+  FinishMovementAction,
+  ResolveNeutralChoiceAction,
+} from './actions';
 import { applyGameAction as applyFactionGameAction } from './apply-inquisition';
 import { applyContingencyPlanAssetLimitDraw } from './neutral-contingency-plan';
 import { applyFealtyBattleEffects } from './neutral-fealty';
@@ -32,24 +36,52 @@ import {
   prepareRallyingCryAction,
   RALLYING_CRY,
 } from './neutral-rallying-cry';
-import { type ApplyGameActionResult } from './reducer';
+import {
+  applyRedemptionBattleReturns,
+  captureDiscardSnapshot,
+  openNextRedemptionChoice,
+  prepareRedemptionBattleResolution,
+  redemptionEffectSourcePlayer,
+  registerRedemptionDiscardEntries,
+  resolveRedemptionChoice,
+} from './neutral-redemption';
+import { type ApplyGameActionResult, GameActionError } from './reducer';
 import {
   clearExpiredPathfindersSuppressions,
   territoryPrintedEffectIsActive,
 } from './territory-printed-effects';
 
-export type NeutralAppStateAction = AppStateAction | FinishMovementAction;
+export type NeutralAppStateAction = AppStateAction | FinishMovementAction | ResolveNeutralChoiceAction;
 
 /**
  * Outermost card-integration layer for canonical Neutral cards. Neutral effects
  * apply to every faction and therefore sit above the faction-specific stack.
  */
 export function applyGameAction(game: GameState, action: NeutralAppStateAction): ApplyGameActionResult {
+  if (game.pendingNeutralChoice) {
+    if (action.type !== 'resolve_neutral_choice') {
+      throw new GameActionError('Resolve the pending Neutral choice first.');
+    }
+    const next = structuredClone(game);
+    const resolved = resolveRedemptionChoice(next, action);
+    if (resolved.deferredBattleAction) {
+      return applyGameAction(next, resolved.deferredBattleAction);
+    }
+    return { state: next };
+  }
+  if (action.type === 'resolve_neutral_choice') {
+    throw new GameActionError(`${action.playerId} has no pending Neutral choice.`);
+  }
+
   if (action.type === 'finish_movement') {
     const next = structuredClone(game);
     finishRemainingMovement(next, action.playerId);
     return { state: next };
   }
+
+  const effectSourcePlayerId = redemptionEffectSourcePlayer(game, action);
+  const discardBefore = effectSourcePlayerId ? captureDiscardSnapshot(game) : undefined;
+  const priorBattleId = game.battle?.id;
 
   if (action.type === 'play_action_card' && action.cardId === FORCED_MARCH) {
     requireForcedMarchActionTiming(game, action.playerId);
@@ -74,7 +106,16 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     requireBattleCapableMovement(game, action.playerId, action.toSpaceId);
   }
 
-  const result = applyFactionGameAction(game, action);
+  let gameForApplication = game;
+  if (action.type === 'resolve_battle') {
+    const prepared = structuredClone(game);
+    if (prepareRedemptionBattleResolution(prepared, action)) {
+      return { state: prepared };
+    }
+    gameForApplication = prepared;
+  }
+
+  const result = applyFactionGameAction(gameForApplication, action);
 
   if (action.type === 'play_action_card' && action.cardId === FORCED_MARCH) {
     applyForcedMarchAction(result.state, action.playerId);
@@ -114,6 +155,13 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     applyPathfindersBattleEffects(result.state);
     applyRallyingCryBattleEffects(result.state);
   }
+  if (action.type === 'resolve_battle' && priorBattleId && !result.state.battle) {
+    applyRedemptionBattleReturns(result.state, priorBattleId);
+  }
 
+  if (discardBefore) {
+    registerRedemptionDiscardEntries(result.state, discardBefore, effectSourcePlayerId);
+  }
+  openNextRedemptionChoice(result.state);
   return result;
 }

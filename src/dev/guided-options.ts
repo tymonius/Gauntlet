@@ -1,6 +1,6 @@
 import { militaryCardDefinitions } from '../cards';
 import type { GameState, PlayerID } from '../types';
-import type { AppStateAction } from '../state';
+import type { NeutralAppStateAction } from '../state';
 import {
   blackCovenantActionBindings,
   blackCovenantBattleBindings,
@@ -16,11 +16,12 @@ import { buildInquisitionPurgeOptions, buildPendingInquisitionOptions } from './
 import { buildIntelligenceBattleOptions } from './intelligence-battle-options';
 import { buildIntelligenceMissionOptions } from './intelligence-options';
 import { buildMysticRiteOptions, buildPendingMysticsOptions } from './mystics-options';
+import { buildPendingNeutralOptions } from './neutral-options';
 
-export interface GuidedOption { label: string; action: AppStateAction; sourceCardId?: string; cardText?: string; }
+export interface GuidedOption { label: string; action: NeutralAppStateAction; sourceCardId?: string; cardText?: string; }
 export function activeViewer(game: GameState): PlayerID { return game.priorityPlayer ?? game.activePlayer; }
 function exactCardText(cardId: string): string | undefined { const card = militaryCardDefinitions.find((candidate) => candidate.id === cardId); if (!card) return undefined; const sections: string[] = [`${card.name} — Cost ${card.cost}`, `Action: ${card.action}`, `Battle: ${card.battle}`]; if (card.supplemental) sections.push(...card.supplemental); return sections.join('\n\n'); }
-function militaryOption(label: string, action: AppStateAction, sourceCardId: string): GuidedOption { return { label, action, sourceCardId, cardText: exactCardText(sourceCardId) }; }
+function militaryOption(label: string, action: NeutralAppStateAction, sourceCardId: string): GuidedOption { return { label, action, sourceCardId, cardText: exactCardText(sourceCardId) }; }
 function affordableBattleCollateralSelections(cardIds: string[], capital: number, cost: number): string[][] {
   const selections: string[][] = [];
   const limit = Math.min(cardIds.length, 12);
@@ -70,7 +71,7 @@ function pendingFinancierOptions(game: GameState, playerId: PlayerID): GuidedOpt
 function pendingDiplomatOptions(game: GameState, playerId: PlayerID): GuidedOption[] | undefined {
   const pending = game.pendingDiplomatChoice;
   if (!pending || pending.playerId !== playerId) return undefined;
-  const option = (label: string, choice: string, extra: Partial<Extract<AppStateAction, { type: 'resolve_diplomat_choice' }>> = {}): GuidedOption => ({ label, action: { type: 'resolve_diplomat_choice', playerId, choice, ...extra } });
+  const option = (label: string, choice: string, extra: Partial<Extract<NeutralAppStateAction, { type: 'resolve_diplomat_choice' }>> = {}): GuidedOption => ({ label, action: { type: 'resolve_diplomat_choice', playerId, choice, ...extra } });
   switch (pending.kind) {
     case 'offer_terms': return [option('Decline to offer Terms', 'decline'), ...pending.eligibleProposals.map((proposalId) => option(`Offer ${proposalId}`, 'offer', { proposalId }))];
     case 'respond_to_terms': return pending.options.map((choice) => option(`${choice === 'accept' ? 'Accept' : 'Refuse'} Terms`, choice));
@@ -152,6 +153,7 @@ function pendingRendTheVeilOptions(game: GameState, playerId: PlayerID): GuidedO
 function adjacentSpaces(game: GameState, playerId: PlayerID) { const current = game.board.spaces.find((space) => space.occupant === playerId); if (!current) return []; return game.board.spaces.filter((space) => Math.abs(space.index - current.index) === 1); }
 export function buildGuidedOptions(game: GameState): GuidedOption[] {
   const playerId = activeViewer(game);
+  const neutralPending = buildPendingNeutralOptions(game, playerId); if (neutralPending) return neutralPending;
   const inquisitionPending = buildPendingInquisitionOptions(game, playerId); if (inquisitionPending) return inquisitionPending;
   const witchcraftPending = pendingWitchcraftOptions(game, playerId); if (witchcraftPending) return witchcraftPending;
   const covenantPending = pendingBlackCovenantOptions(game, playerId); if (covenantPending) return covenantPending;

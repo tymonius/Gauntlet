@@ -225,6 +225,7 @@ export function toPublicGameView(game: GameState): PublicGameView {
     board: toPublicBoardView(game.board),
     battle: game.battle ? toPublicBattleView(game.battle, game) : undefined,
     neutralPathfindersSuppressions: structuredClone(game.neutralPathfindersSuppressions),
+    pendingNeutralChoice: structuredClone(game.pendingNeutralChoice),
     pendingMilitaryChoice: game.pendingMilitaryChoice,
     pendingMilitaryTimingChoice: game.pendingMilitaryTimingChoice,
     pendingDiplomatChoice: game.pendingDiplomatChoice,

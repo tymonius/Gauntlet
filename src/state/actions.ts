@@ -58,6 +58,7 @@ export interface ResolveInquisitionChoiceAction { type: 'resolve_inquisition_cho
 export interface ResolveAssetBankDiscardAction { type: 'resolve_asset_bank_discard'; playerId: PlayerID; cardIds: CardID[]; }
 export interface MovePlayerAction { type: 'move_player'; playerId: PlayerID; toSpaceId: SpaceID; cardId?: CardID; }
 export interface FinishMovementAction { type: 'finish_movement'; playerId: PlayerID; }
+export interface ResolveNeutralChoiceAction { type: 'resolve_neutral_choice'; playerId: PlayerID; choice: 'pass' | 'use' | 'select_cards'; cardId?: CardID; cardIds?: CardID[]; }
 export interface CommitBattleHandCardAction { type: 'commit_battle_hand_card'; playerId: PlayerID; cardId: CardID; }
 export interface PassBattleHandCommitAction { type: 'pass_battle_hand_commit'; playerId: PlayerID; }
 export interface DrawBattleCardsAction { type: 'draw_battle_cards'; playerId: PlayerID; count?: number; }
