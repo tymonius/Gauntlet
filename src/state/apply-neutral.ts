@@ -1,4 +1,4 @@
-import type { GameState } from '../types';
+import type { GameState, PlayerID } from '../types';
 import type {
   AppStateAction,
   FinishMovementAction,
@@ -17,6 +17,12 @@ import {
   requireAdvanceGuardActionTiming,
   requireAdvanceGuardHandCommitAllowed,
 } from './neutral-advance-guard';
+import {
+  applyConsolidationAction,
+  applyConsolidationAfterBattle,
+  CONSOLIDATION,
+  prepareConsolidationAction,
+} from './neutral-consolidation';
 import { applyContingencyPlanAssetLimitDraw } from './neutral-contingency-plan';
 import { applyFealtyBattleEffects } from './neutral-fealty';
 import {
@@ -90,6 +96,11 @@ function continueNeutralChoices(game: GameState): void {
   openNextRedemptionChoice(game);
 }
 
+function latestResolvedBattleWinner(game: GameState): PlayerID | undefined {
+  const event = [...game.log].reverse().find((candidate) => candidate.type === 'battle_resolved');
+  return (event?.payload as { winner?: PlayerID } | undefined)?.winner;
+}
+
 /**
  * Outermost card-integration layer for canonical Neutral cards. Neutral effects
  * apply to every faction and therefore sit above the faction-specific stack.
@@ -132,6 +143,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   const discardBefore = effectSourcePlayerId ? captureDiscardSnapshot(game) : undefined;
   const priorBattle = game.battle ? structuredClone(game.battle) : undefined;
   const priorBattleId = priorBattle?.id;
+  const priorBattleController = priorBattle
+    ? game.board.spaces.find((space) => space.id === priorBattle.location)?.controller
+    : undefined;
   const normalDraw = action.type === 'draw_card' && game.phase === 'turn_start';
 
   if (action.type === 'play_action_card' && action.cardId === FORCED_MARCH) {
@@ -145,6 +159,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   const preparedAdvanceGuard = action.type === 'play_action_card' && action.cardId === ADVANCE_GUARD
     ? prepareAdvanceGuardAction(game, action)
+    : undefined;
+  const preparedConsolidation = action.type === 'play_action_card' && action.cardId === CONSOLIDATION
+    ? prepareConsolidationAction(game, action)
     : undefined;
   const preparedNewRecruits = action.type === 'play_action_card' && action.cardId === NEW_RECRUITS
     ? prepareNewRecruitsAction(game, action)
@@ -191,6 +208,10 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
 
   if (action.type === 'play_action_card' && preparedAdvanceGuard) {
     applyAdvanceGuardAction(result.state, action.playerId, preparedAdvanceGuard);
+  }
+  if (action.type === 'play_action_card' && preparedConsolidation) {
+    const drawnCards = applyConsolidationAction(result.state, action.playerId, preparedConsolidation);
+    result.result = { ...(result.result ?? {}), drawnCards };
   }
   if (action.type === 'play_action_card' && action.cardId === FORCED_MARCH) {
     applyForcedMarchAction(result.state, action.playerId);
@@ -246,6 +267,12 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     applyRallyingCryBattleEffects(result.state);
   }
   if (action.type === 'resolve_battle' && priorBattle && priorBattleId && !result.state.battle) {
+    applyConsolidationAfterBattle(
+      result.state,
+      priorBattle,
+      priorBattleController,
+      latestResolvedBattleWinner(result.state),
+    );
     applyRedemptionBattleReturns(result.state, priorBattleId);
     applyReservesBattleTopdecks(result.state, priorBattleId);
     queueSuppliesBattleEffects(result.state, priorBattle);
