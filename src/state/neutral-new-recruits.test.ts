@@ -8,7 +8,7 @@ import type {
 } from '../types';
 import { applyGameAction } from './apply-neutral';
 import { initializeGame } from './initialize';
-import { NEW_RECRUITS } from './neutral-new-recruits';
+import { applyNewRecruitsBattleEffects, NEW_RECRUITS } from './neutral-new-recruits';
 import { toPrivateGameView } from './views';
 
 const OTHER = 'card-valor';
@@ -218,10 +218,7 @@ describe('Neutral New Recruits', () => {
       type: 'resolve_battle_reveal',
       playerId: 'player_1',
     }).state;
-    state = applyGameAction(state, {
-      type: 'resolve_battle_reveal',
-      playerId: 'player_1',
-    }).state;
+    applyNewRecruitsBattleEffects(state);
 
     expect(state.battle?.attacker.modifiers).toBe(0);
     expect(state.battle?.effectsResolved.filter((key) => key === 'neutral_new_recruits_battle')).toHaveLength(1);
