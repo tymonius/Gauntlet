@@ -97,6 +97,39 @@ export interface PendingScoutingReportBattleReplaceChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface SuppliesAssetQueueEntry {
+  id: string;
+  playerId: PlayerID;
+  triggersRemaining: number;
+}
+
+export interface SuppliesBattleQueueEntry {
+  id: string;
+  playerId: PlayerID;
+  battleId: string;
+  triggersRemaining: number;
+}
+
+export interface PendingSuppliesAssetChoice {
+  kind: 'supplies_asset';
+  playerId: PlayerID;
+  entryId: string;
+  triggersRemaining: number;
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingSuppliesBattleDiscardChoice {
+  kind: 'supplies_battle_discard';
+  playerId: PlayerID;
+  entryId: string;
+  battleId: string;
+  cardOptions: CardID[];
+  triggersRemaining: number;
+  options: ['select_card'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type PendingNeutralChoice =
   | PendingRedemptionAssetChoice
   | PendingRedemptionBattleChoice
@@ -104,7 +137,9 @@ export type PendingNeutralChoice =
   | PendingReservesBattleChoice
   | PendingScoutingReportActionChoice
   | PendingScoutingReportBattleInspectChoice
-  | PendingScoutingReportBattleReplaceChoice;
+  | PendingScoutingReportBattleReplaceChoice
+  | PendingSuppliesAssetChoice
+  | PendingSuppliesBattleDiscardChoice;
 
 export interface RedemptionBattleReturns {
   battleId: string;
