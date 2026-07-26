@@ -25,6 +25,7 @@ import { availableBattleHandCards } from './battle-hand-restrictions';
 import { confessionLegalHandCommitCards } from './inquisition-confession';
 import { legalLeaderAbilitiesFor } from './leader-abilities';
 import { toPublicMysticsState } from './mystics-ritual';
+import { canResolveNewRecruitsAction, NEW_RECRUITS } from './neutral-new-recruits';
 
 const visible = <T>(cards: T[]) => ({ kind: 'visible' as const, cards });
 const hidden = <T>(cards: T[]) => ({ kind: 'hidden' as const, count: cards.length });
@@ -66,6 +67,7 @@ export function toPublicPlayerView(player: PlayerState): PublicPlayerView {
     occupiedSpaceId: player.occupiedSpaceId,
     actionsRemaining: player.actionsRemaining,
     movementRemaining: player.movementRemaining,
+    nonBattleMovementRemaining: player.nonBattleMovementRemaining,
   };
 }
 
@@ -197,6 +199,7 @@ function legalActionPlaysForViewer(game: GameState, viewer?: PlayerID): LegalAct
   return player.zones.hand
     .filter((cardId) => cardCanBePlayedAt(cardId, 'action', 'hand'))
     .filter((cardId) => canResolveIntelligenceAction(game, viewer, cardId))
+    .filter((cardId) => cardId !== NEW_RECRUITS || canResolveNewRecruitsAction(game, viewer))
     .map((cardId) => ({ action: 'play_action_card' as const, cardId, origin: 'hand' as const, destination: destinationForCardPlay(cardId, 'hand'), requiresTarget: getCardPlayRule(cardId)?.requiresTarget ?? false }));
 }
 
