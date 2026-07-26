@@ -191,7 +191,7 @@ describe('Neutral Reserves', () => {
     }).state;
 
     expect(state.battle).toBeUndefined();
-    expect(state.players.player_1.zones.deck).toEqual([]);
+    expect(state.players.player_1.zones.deck).toEqual([RESERVES, RESERVES, FIRST, SECOND, DRAWN]);
     expect(state.players.player_1.zones.discard).toEqual(expect.arrayContaining([FIRST, SECOND]));
     expect(state.players.player_1.zones.graveyard).toContain(RESERVES);
   });
