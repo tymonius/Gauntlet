@@ -81,6 +81,7 @@ export * from './neutral-redemption';
 export * from './actions';
 export * from './draw';
 export { applyGameAction } from './apply-neutral';
+export type { NeutralAppStateAction } from './apply-neutral';
 export { GameActionError } from './reducer';
 export type { ApplyGameActionResult } from './reducer';
 export * from './pipeline';
