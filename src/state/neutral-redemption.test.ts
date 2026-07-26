@@ -96,6 +96,8 @@ function beginResolvedBattle(
   state: GameState,
   defenderPlayed: BattlePlayedCard[],
 ): void {
+  // Isolate Redemption from the Inquisition's separate Condemnation destination override.
+  state.players.player_1.inquisition = undefined;
   for (const space of state.board.spaces) space.occupant = undefined;
   state.board.spaces.find((space) => space.id === 'space-1')!.occupant = 'player_1';
   state.board.spaces.find((space) => space.id === 'space-2')!.occupant = 'player_2';
@@ -289,7 +291,7 @@ describe('Neutral Redemption', () => {
     expect(state.players.player_2.zones.discard).not.toContain(SECOND);
   });
 
-  it('does not protect canceled, unnegated, hand-committed, or Redemption source cards', () => {
+  it('does not protect canceled, unnegated, or Redemption source cards', () => {
     let state = game();
     beginResolvedBattle(state, [
       played(FIRST, 'player_2', 'battle_draw', { canceled: true, negated: true }),
