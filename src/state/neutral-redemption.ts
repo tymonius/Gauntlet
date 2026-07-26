@@ -240,7 +240,7 @@ export function prepareRedemptionBattleResolution(
       kind: 'redemption_battle',
       playerId: participant.playerId,
       battleId: battle.id,
-      cardOptions: unique(candidates),
+      cardOptions: [...candidates],
       selectCount,
       resolverPlayerId: action.playerId,
       battleCardTargets: action.battleCardTargets?.map((target) => ({ ...target })),
