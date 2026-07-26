@@ -21,7 +21,7 @@ function createPlayerState(input: PlayerSetupInput, openingHandSize: number, shu
     mystics: input.factionId === 'mystics' ? { completedRites: [] } : undefined,
     inquisition: input.factionId === 'inquisition' ? {} : undefined,
     zones: { deck, hand, discard: [], graveyard: [], assetBank: [], removed: [] }, controlledTerritories: [...input.territories],
-    occupiedSpaceId: `${input.id}-heartland`, actionsRemaining: 1, movementRemaining: 1, hasPlayedActionThisTurn: false, hasPlayedBattleThisTurn: false,
+    occupiedSpaceId: `${input.id}-heartland`, actionsRemaining: 1, movementRemaining: 1, nonBattleMovementRemaining: 0, hasPlayedActionThisTurn: false, hasPlayedBattleThisTurn: false,
   };
 }
 
