@@ -28,6 +28,8 @@ export interface PlayerState {
   occupiedSpaceId?: string;
   actionsRemaining: number;
   movementRemaining: number;
+  /** Movement positions that may not be spent to initiate a battle. */
+  nonBattleMovementRemaining?: number;
   hasPlayedActionThisTurn: boolean;
   hasPlayedBattleThisTurn: boolean;
 }
@@ -51,6 +53,7 @@ export interface PublicPlayerView {
   occupiedSpaceId?: string;
   actionsRemaining: number;
   movementRemaining: number;
+  nonBattleMovementRemaining?: number;
 }
 
 export interface PrivatePlayerView extends Omit<PublicPlayerView, 'intelligence' | 'mystics' | 'inquisition'> {
