@@ -59,4 +59,23 @@ describe('guided Neutral choices', () => {
       ['card-fortifications', 'card-attrition'],
     ]));
   });
+
+  it('preserves physical multiplicity for duplicate Battle targets', () => {
+    const state = game();
+    state.priorityPlayer = 'player_2';
+    state.pendingNeutralChoice = {
+      kind: 'redemption_battle',
+      playerId: 'player_2',
+      battleId: 'battle-duplicates',
+      cardOptions: ['card-valor', 'card-valor', 'card-fortifications'],
+      selectCount: 2,
+      resolverPlayerId: 'player_1',
+      options: ['select_cards'],
+    };
+
+    const selections = buildGuidedOptions(state).map((option) => (
+      option.action.type === 'resolve_neutral_choice' ? option.action.cardIds : undefined
+    ));
+    expect(selections).toContainEqual(['card-valor', 'card-valor']);
+  });
 });
