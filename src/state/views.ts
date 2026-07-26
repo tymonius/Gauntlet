@@ -25,6 +25,7 @@ import { availableBattleHandCards } from './battle-hand-restrictions';
 import { confessionLegalHandCommitCards } from './inquisition-confession';
 import { legalLeaderAbilitiesFor } from './leader-abilities';
 import { toPublicMysticsState } from './mystics-ritual';
+import { cancellationCandidatesWithDecoysPriority } from './neutral-decoys-battle';
 import { canResolveNewRecruitsAction, NEW_RECRUITS } from './neutral-new-recruits';
 
 const visible = <T>(cards: T[]) => ({ kind: 'visible' as const, cards });
@@ -117,7 +118,7 @@ function validBattleCardTargetsForViewer(battle: BattleState, viewer?: PlayerID)
   const opponent = viewerParticipant.playerId === battle.attacker.playerId ? battle.defender : battle.attacker;
   const embargoCards = playedCards(viewerParticipant).filter((card) => card.cardId === 'card-embargo');
   if (embargoCards.length === 0) return undefined;
-  const opposingCards = playedCards(opponent);
+  const opposingCards = cancellationCandidatesWithDecoysPriority(opponent);
   if (opposingCards.length === 0) return undefined;
   return embargoCards.flatMap((source) => opposingCards.map((target) => ({
     sourceCardId: source.cardId,
