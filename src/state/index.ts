@@ -73,6 +73,7 @@ export * from './neutral-contingency-plan';
 export * from './neutral-counterintelligence';
 export * from './neutral-fealty';
 export * from './neutral-forced-march';
+export * from './neutral-new-recruits';
 export * from './actions';
 export * from './draw';
 export { applyGameAction } from './apply-neutral';
