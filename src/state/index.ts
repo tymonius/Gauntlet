@@ -79,6 +79,7 @@ export * from './neutral-pathfinders';
 export * from './neutral-rallying-cry';
 export * from './neutral-redemption';
 export * from './neutral-reserves';
+export * from './neutral-scouting-report';
 export * from './actions';
 export * from './draw';
 export { applyGameAction } from './apply-neutral';

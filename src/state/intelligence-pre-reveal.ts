@@ -17,6 +17,10 @@ import {
 } from './intelligence-simple-battle-effects';
 import { resolveSpiesPreRevealCard } from './intelligence-spies-battle';
 import { resolveTreasonPreRevealCard } from './intelligence-treason';
+import {
+  battleHasUnresolvedScoutingReportPreReveal,
+  openNextScoutingReportPreRevealWindow,
+} from './neutral-scouting-report';
 
 const EARLY_BATTLE_CARDS = {
   spies: 'intelligence-spies',
@@ -81,14 +85,16 @@ export function battleHasUnresolvedIntelligencePreReveal(
   game: GameState,
   incomingBattleHandCardId?: CardID,
 ): boolean {
-  return battleHasUnresolvedConfessionPreReveal(game, incomingBattleHandCardId)
+  return battleHasUnresolvedScoutingReportPreReveal(game, incomingBattleHandCardId)
+    || battleHasUnresolvedConfessionPreReveal(game, incomingBattleHandCardId)
     || incomingBattleHandCardRequiresEarlyReveal(incomingBattleHandCardId)
     || Boolean(nextPreRevealSource(game));
 }
 
 export function openNextIntelligencePreRevealWindow(game: GameState): boolean {
   if (!game.battle || game.battle.stage !== 'normal_reveal') return false;
-  if (game.pendingInquisitionChoice || game.pendingIntelligenceChoice) return true;
+  if (game.pendingNeutralChoice || game.pendingInquisitionChoice || game.pendingIntelligenceChoice) return true;
+  if (openNextScoutingReportPreRevealWindow(game)) return true;
   if (openNextConfessionPreRevealWindow(game)) return true;
 
   while (true) {

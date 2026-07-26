@@ -114,4 +114,61 @@ describe('guided Neutral choices', () => {
       { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'use', cardId: 'card-fortifications' },
     ]);
   });
+
+  it('offers all Scouting Report Action inspection modes', () => {
+    const state = game();
+    state.priorityPlayer = 'player_1';
+    state.pendingNeutralChoice = {
+      kind: 'scouting_report_action',
+      playerId: 'player_1',
+      opponentId: 'player_2',
+      options: ['inspect_own_draw', 'inspect_opponent_draw', 'inspect_opponent_hand'],
+    };
+
+    expect(buildGuidedOptions(state).map((option) => option.action)).toEqual([
+      { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'inspect_own_draw' },
+      { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'inspect_opponent_draw' },
+      { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'inspect_opponent_hand' },
+    ]);
+  });
+
+  it('uses physical target keys for Scouting Report Battle inspection', () => {
+    const state = game();
+    state.priorityPlayer = 'player_1';
+    state.pendingNeutralChoice = {
+      kind: 'scouting_report_battle_inspect',
+      playerId: 'player_1',
+      battleId: 'battle-scouting',
+      sourceKey: 'player_1:hand',
+      targetOptions: [
+        { targetKey: 'player_2:hand', targetOwner: 'player_2', targetSource: 'hand' },
+        { targetKey: 'player_2:battle_draw:0', targetOwner: 'player_2', targetSource: 'battle_draw' },
+      ],
+      options: ['inspect'],
+    };
+
+    expect(buildGuidedOptions(state).map((option) => option.action)).toEqual([
+      { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'inspect', targetKey: 'player_2:hand' },
+      { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'inspect', targetKey: 'player_2:battle_draw:0' },
+    ]);
+  });
+
+  it('offers pass and each Scouting Report replacement', () => {
+    const state = game();
+    state.priorityPlayer = 'player_1';
+    state.pendingNeutralChoice = {
+      kind: 'scouting_report_battle_replace',
+      playerId: 'player_1',
+      battleId: 'battle-scouting',
+      sourceKey: 'player_1:hand',
+      replacementOptions: ['card-valor', 'card-fortifications'],
+      options: ['pass', 'replace'],
+    };
+
+    expect(buildGuidedOptions(state).map((option) => option.action)).toEqual([
+      { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'pass' },
+      { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'replace', cardId: 'card-valor' },
+      { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'replace', cardId: 'card-fortifications' },
+    ]);
+  });
 });

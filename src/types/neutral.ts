@@ -58,11 +58,53 @@ export interface PendingReservesBattleChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export type ScoutingReportActionMode =
+  | 'inspect_own_draw'
+  | 'inspect_opponent_draw'
+  | 'inspect_opponent_hand';
+
+export interface PendingScoutingReportActionChoice {
+  kind: 'scouting_report_action';
+  playerId: PlayerID;
+  opponentId: PlayerID;
+  options: ScoutingReportActionMode[];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface ScoutingReportBattleTargetOption {
+  targetKey: string;
+  targetOwner: PlayerID;
+  targetSource: 'hand' | 'battle_draw';
+}
+
+export interface PendingScoutingReportBattleInspectChoice {
+  kind: 'scouting_report_battle_inspect';
+  playerId: PlayerID;
+  battleId: string;
+  sourceKey: string;
+  targetOptions: ScoutingReportBattleTargetOption[];
+  options: ['inspect'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingScoutingReportBattleReplaceChoice {
+  kind: 'scouting_report_battle_replace';
+  playerId: PlayerID;
+  battleId: string;
+  sourceKey: string;
+  replacementOptions: CardID[];
+  options: ['pass', 'replace'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type PendingNeutralChoice =
   | PendingRedemptionAssetChoice
   | PendingRedemptionBattleChoice
   | PendingReservesActionChoice
-  | PendingReservesBattleChoice;
+  | PendingReservesBattleChoice
+  | PendingScoutingReportActionChoice
+  | PendingScoutingReportBattleInspectChoice
+  | PendingScoutingReportBattleReplaceChoice;
 
 export interface RedemptionBattleReturns {
   battleId: string;

@@ -45,6 +45,7 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'neutral-rallying-cry': battleAndAction('neutral-rallying-cry', 'discard'),
   'neutral-redemption': battleAndAction('neutral-redemption', 'asset_bank'),
   'neutral-reserves': battleAndAction('neutral-reserves', 'discard'),
+  'neutral-scouting-report': battleAndAction('neutral-scouting-report', 'discard'),
 
   'card-attrition': battleAndAction('card-attrition', 'asset_bank'),
   'card-conscription': { cardId: 'card-conscription', timings: ['battle_hand_commit', 'battle_draw_play'], allowedOrigins: ['hand', 'battle_draw'], defaultDestinationByOrigin: { hand: 'graveyard', battle_draw: 'discard' } },
