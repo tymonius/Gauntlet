@@ -10,6 +10,10 @@ import {
   counterintelligenceBlocksFaceDownBattleCardInspection,
   logCounterintelligenceBlock,
 } from './neutral-counterintelligence';
+import {
+  fealtyPreventsOpposingCardDisadvantage,
+  logFealtyDisadvantagePrevention,
+} from './neutral-fealty';
 
 export const SIMPLE_INTELLIGENCE_BATTLE_CARDS = {
   disinformation: 'intelligence-disinformation',
@@ -72,6 +76,8 @@ export function resolveAssassinsPreRevealCard(
       `${game.players[participant.playerId].name} revealed Assassins and negated ${opponent.handCommit.cardId}.`,
       { targetOwner: opponent.playerId, targetCardId: opponent.handCommit.cardId },
     );
+  } else if (fealtyPreventsOpposingCardDisadvantage(game, participant.playerId, opponent.playerId)) {
+    logFealtyDisadvantagePrevention(game, participant.playerId, opponent.playerId, 'Assassins');
   } else {
     opponent.disadvantage = (opponent.disadvantage ?? 0) + 1;
     publicLog(
