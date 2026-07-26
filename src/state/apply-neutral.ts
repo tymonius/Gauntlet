@@ -20,7 +20,17 @@ import {
   NEW_RECRUITS,
   prepareNewRecruitsAction,
 } from './neutral-new-recruits';
+import {
+  applyPathfindersAction,
+  applyPathfindersBattleEffects,
+  PATHFINDERS,
+  preparePathfindersAction,
+} from './neutral-pathfinders';
 import { type ApplyGameActionResult } from './reducer';
+import {
+  clearExpiredPathfindersSuppressions,
+  territoryPrintedEffectIsActive,
+} from './territory-printed-effects';
 
 export type NeutralAppStateAction = AppStateAction | FinishMovementAction;
 
@@ -40,6 +50,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   const preparedNewRecruits = action.type === 'play_action_card' && action.cardId === NEW_RECRUITS
     ? prepareNewRecruitsAction(game, action)
+    : undefined;
+  const preparedPathfinders = action.type === 'play_action_card' && action.cardId === PATHFINDERS
+    ? preparePathfindersAction(game, action)
     : undefined;
 
   const restrictedBefore = action.type === 'move_player'
@@ -61,11 +74,22 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     const drawnCards = applyNewRecruitsAction(result.state, action.playerId, preparedNewRecruits);
     result.result = { ...(result.result ?? {}), drawnCards };
   }
+  if (action.type === 'play_action_card' && preparedPathfinders) {
+    applyPathfindersAction(result.state, action.playerId, preparedPathfinders);
+  }
   if (action.type === 'move_player') {
+    const battle = result.state.battle;
+    if (battle?.attackerHandCommitVisibleTo) {
+      const destination = result.state.board.spaces.find((space) => space.id === action.toSpaceId);
+      if (!territoryPrintedEffectIsActive(result.state, destination, action.playerId)) {
+        battle.attackerHandCommitVisibleTo = undefined;
+      }
+    }
     reconcileForcedMarchMove(result.state, action.playerId, initiatedBattle, restrictedBefore);
   }
   if (action.type === 'end_turn') {
     clearRestrictedMovementForTurnTransition(result.state, action.playerId);
+    clearExpiredPathfindersSuppressions(result.state);
   }
   if (action.type === 'resolve_asset_bank_discard') {
     applyContingencyPlanAssetLimitDraw(result.state, action.playerId, action.cardIds);
@@ -74,6 +98,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     applyFealtyBattleEffects(result.state);
     applyForcedMarchBattleEffects(result.state);
     applyNewRecruitsBattleEffects(result.state);
+    applyPathfindersBattleEffects(result.state);
   }
 
   return result;
