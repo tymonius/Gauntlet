@@ -60,6 +60,12 @@ import {
   resolveScoutingReportChoice,
   SCOUTING_REPORT,
 } from './neutral-scouting-report';
+import {
+  openNextSuppliesChoice,
+  queueSuppliesAfterNormalDraw,
+  queueSuppliesBattleEffects,
+  resolveSuppliesChoice,
+} from './neutral-supplies';
 import { type ApplyGameActionResult, GameActionError } from './reducer';
 import {
   clearExpiredPathfindersSuppressions,
@@ -67,6 +73,11 @@ import {
 } from './territory-printed-effects';
 
 export type NeutralAppStateAction = AppStateAction | FinishMovementAction | ResolveNeutralChoiceAction;
+
+function continueNeutralChoices(game: GameState): void {
+  openNextSuppliesChoice(game);
+  openNextRedemptionChoice(game);
+}
 
 /**
  * Outermost card-integration layer for canonical Neutral cards. Neutral effects
@@ -79,17 +90,20 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     }
     const next = structuredClone(game);
     const pendingKind = game.pendingNeutralChoice.kind;
-    const resolved = pendingKind.startsWith('scouting_report_')
-      ? resolveScoutingReportChoice(next, action)
-      : pendingKind.startsWith('reserves_')
-        ? resolveReservesChoice(next, action)
-        : resolveRedemptionChoice(next, action);
+    const resolved = pendingKind.startsWith('supplies_')
+      ? (resolveSuppliesChoice(next, action), {})
+      : pendingKind.startsWith('scouting_report_')
+        ? resolveScoutingReportChoice(next, action)
+        : pendingKind.startsWith('reserves_')
+          ? resolveReservesChoice(next, action)
+          : resolveRedemptionChoice(next, action);
     if ('deferredBattleAction' in resolved && resolved.deferredBattleAction) {
       return applyGameAction(next, resolved.deferredBattleAction);
     }
     if ('resumeBattleReveal' in resolved && resolved.resumeBattleReveal) {
       continueIntelligenceBattle(next);
     }
+    continueNeutralChoices(next);
     return { state: next };
   }
   if (action.type === 'resolve_neutral_choice') {
@@ -104,7 +118,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
 
   const effectSourcePlayerId = redemptionEffectSourcePlayer(game, action);
   const discardBefore = effectSourcePlayerId ? captureDiscardSnapshot(game) : undefined;
-  const priorBattleId = game.battle?.id;
+  const priorBattle = game.battle ? structuredClone(game.battle) : undefined;
+  const priorBattleId = priorBattle?.id;
+  const normalDraw = action.type === 'draw_card' && game.phase === 'turn_start';
 
   if (action.type === 'play_action_card' && action.cardId === FORCED_MARCH) {
     requireForcedMarchActionTiming(game, action.playerId);
@@ -194,14 +210,18 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     applyPathfindersBattleEffects(result.state);
     applyRallyingCryBattleEffects(result.state);
   }
-  if (action.type === 'resolve_battle' && priorBattleId && !result.state.battle) {
+  if (action.type === 'resolve_battle' && priorBattle && priorBattleId && !result.state.battle) {
     applyRedemptionBattleReturns(result.state, priorBattleId);
     applyReservesBattleTopdecks(result.state, priorBattleId);
+    queueSuppliesBattleEffects(result.state, priorBattle);
+  }
+  if (normalDraw) {
+    queueSuppliesAfterNormalDraw(result.state, action.playerId);
   }
 
   if (discardBefore) {
     registerRedemptionDiscardEntries(result.state, discardBefore, effectSourcePlayerId);
   }
-  openNextRedemptionChoice(result.state);
+  continueNeutralChoices(result.state);
   return result;
 }

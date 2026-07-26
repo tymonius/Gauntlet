@@ -213,8 +213,13 @@ function privateLog(game: GameState, viewer: PlayerID): GameEvent[] {
     .map((event) => structuredClone(event));
 }
 
-function scoutingReportChoiceIsPrivate(game: GameState): boolean {
-  return game.pendingNeutralChoice?.kind.startsWith('scouting_report_') ?? false;
+function neutralChoiceIsPrivate(game: GameState): boolean {
+  const kind = game.pendingNeutralChoice?.kind;
+  return Boolean(
+    kind?.startsWith('scouting_report_')
+    || kind?.startsWith('reserves_')
+    || kind?.startsWith('supplies_'),
+  );
 }
 
 export function toPublicGameView(game: GameState): PublicGameView {
@@ -229,7 +234,7 @@ export function toPublicGameView(game: GameState): PublicGameView {
     board: toPublicBoardView(game.board),
     battle: game.battle ? toPublicBattleView(game.battle, game) : undefined,
     neutralPathfindersSuppressions: structuredClone(game.neutralPathfindersSuppressions),
-    pendingNeutralChoice: scoutingReportChoiceIsPrivate(game) ? undefined : structuredClone(game.pendingNeutralChoice),
+    pendingNeutralChoice: neutralChoiceIsPrivate(game) ? undefined : structuredClone(game.pendingNeutralChoice),
     pendingMilitaryChoice: game.pendingMilitaryChoice,
     pendingMilitaryTimingChoice: game.pendingMilitaryTimingChoice,
     pendingDiplomatChoice: game.pendingDiplomatChoice,
