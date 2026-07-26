@@ -1,5 +1,5 @@
 import type { GameState } from '../types';
-import type { AppStateAction } from './actions';
+import type { AppStateAction, FinishMovementAction } from './actions';
 import { applyGameAction as applyFactionGameAction } from './apply-inquisition';
 import { applyContingencyPlanAssetLimitDraw } from './neutral-contingency-plan';
 import { applyFealtyBattleEffects } from './neutral-fealty';
@@ -16,11 +16,13 @@ import {
 } from './neutral-forced-march';
 import { type ApplyGameActionResult } from './reducer';
 
+export type NeutralAppStateAction = AppStateAction | FinishMovementAction;
+
 /**
  * Outermost card-integration layer for canonical Neutral cards. Neutral effects
  * apply to every faction and therefore sit above the faction-specific stack.
  */
-export function applyGameAction(game: GameState, action: AppStateAction): ApplyGameActionResult {
+export function applyGameAction(game: GameState, action: NeutralAppStateAction): ApplyGameActionResult {
   if (action.type === 'finish_movement') {
     const next = structuredClone(game);
     finishRemainingMovement(next, action.playerId);
