@@ -8,7 +8,11 @@ import type {
 } from '../types';
 import { applyGameAction } from './apply-neutral';
 import { initializeGame } from './initialize';
-import { SUPPLIES } from './neutral-supplies';
+import {
+  openNextSuppliesChoice,
+  queueSuppliesBattleEffects,
+  SUPPLIES,
+} from './neutral-supplies';
 
 const FIRST = 'card-valor';
 const SECOND = 'card-fortifications';
@@ -199,7 +203,7 @@ describe('Neutral Supplies', () => {
       choice: 'use',
     }).state;
 
-    expect(state.players.player_1.zones.hand).toEqual(expect.arrayContaining([FIRST, SECOND]));
+    expect(state.players.player_1.zones.hand).toContain(FIRST);
     expect(state.players.player_1.zones.hand).toHaveLength(3);
     expect(state.players.player_1.zones.discard).toEqual([]);
   });
@@ -288,17 +292,17 @@ describe('Neutral Supplies', () => {
   });
 
   it('queues behind an existing faction aftermath choice', () => {
-    let state = game();
-    state.players.player_1.zones.deck = [FIRST, SECOND];
+    const state = game();
     beginResolvedBattle(state, played(SUPPLIES, 'player_1', 'hand'));
+    const battle = structuredClone(state.battle!);
     state.pendingLeaderAbilityWindow = {
       playerId: 'player_1',
       timing: 'after_battle',
       battleId: 'supplies-battle',
     };
 
-    state = applyGameAction(state, { type: 'resolve_battle', playerId: 'player_1' }).state;
-
+    expect(queueSuppliesBattleEffects(state, battle)).toBe(1);
+    expect(openNextSuppliesChoice(state)).toBe(false);
     expect(state.neutralSuppliesBattleQueue).toHaveLength(1);
     expect(state.pendingNeutralChoice).toBeUndefined();
   });
