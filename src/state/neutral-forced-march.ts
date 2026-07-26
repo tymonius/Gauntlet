@@ -98,7 +98,9 @@ export function reconcileForcedMarchMove(
   if (restrictedBefore > 0) {
     player.nonBattleMovementRemaining = Math.max(restrictedBefore - 1, 0);
   }
-  game.phase = player.movementRemaining > 0 ? 'movement' : 'action_after_movement';
+  if (game.phase !== 'game_over') {
+    game.phase = player.movementRemaining > 0 ? 'movement' : 'action_after_movement';
+  }
 }
 
 export function finishRemainingMovement(game: GameState, playerId: PlayerID): void {
