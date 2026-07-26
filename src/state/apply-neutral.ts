@@ -26,6 +26,12 @@ import {
   PATHFINDERS,
   preparePathfindersAction,
 } from './neutral-pathfinders';
+import {
+  applyRallyingCryAction,
+  applyRallyingCryBattleEffects,
+  prepareRallyingCryAction,
+  RALLYING_CRY,
+} from './neutral-rallying-cry';
 import { type ApplyGameActionResult } from './reducer';
 import {
   clearExpiredPathfindersSuppressions,
@@ -54,6 +60,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   const preparedPathfinders = action.type === 'play_action_card' && action.cardId === PATHFINDERS
     ? preparePathfindersAction(game, action)
     : undefined;
+  const preparedRallyingCry = action.type === 'play_action_card' && action.cardId === RALLYING_CRY
+    ? prepareRallyingCryAction(game, action)
+    : undefined;
 
   const restrictedBefore = action.type === 'move_player'
     ? game.players[action.playerId]?.nonBattleMovementRemaining ?? 0
@@ -77,6 +86,10 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'play_action_card' && preparedPathfinders) {
     applyPathfindersAction(result.state, action.playerId, preparedPathfinders);
   }
+  if (action.type === 'play_action_card' && preparedRallyingCry) {
+    const drawnCards = applyRallyingCryAction(result.state, action.playerId, preparedRallyingCry);
+    result.result = { ...(result.result ?? {}), drawnCards };
+  }
   if (action.type === 'move_player') {
     const battle = result.state.battle;
     if (battle?.attackerHandCommitVisibleTo) {
@@ -99,6 +112,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     applyForcedMarchBattleEffects(result.state);
     applyNewRecruitsBattleEffects(result.state);
     applyPathfindersBattleEffects(result.state);
+    applyRallyingCryBattleEffects(result.state);
   }
 
   return result;

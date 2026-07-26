@@ -76,6 +76,7 @@ export * from './neutral-fealty';
 export * from './neutral-forced-march';
 export * from './neutral-new-recruits';
 export * from './neutral-pathfinders';
+export * from './neutral-rallying-cry';
 export * from './actions';
 export * from './draw';
 export { applyGameAction } from './apply-neutral';
