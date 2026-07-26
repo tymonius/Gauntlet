@@ -6,6 +6,17 @@ import type {
 } from './actions';
 import { applyGameAction as applyFactionGameAction } from './apply-inquisition';
 import { continueIntelligenceBattle } from './intelligence-battle';
+import {
+  ADVANCE_GUARD,
+  applyAdvanceGuardAction,
+  applyAdvanceGuardBattleEffects,
+  clearAdvanceGuardMovement,
+  moveUsesAdvanceGuardPosition,
+  prepareAdvanceGuardAction,
+  reconcileAdvanceGuardMove,
+  requireAdvanceGuardActionTiming,
+  requireAdvanceGuardHandCommitAllowed,
+} from './neutral-advance-guard';
 import { applyContingencyPlanAssetLimitDraw } from './neutral-contingency-plan';
 import { applyFealtyBattleEffects } from './neutral-fealty';
 import {
@@ -113,6 +124,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'finish_movement') {
     const next = structuredClone(game);
     finishRemainingMovement(next, action.playerId);
+    clearAdvanceGuardMovement(next, action.playerId);
     return { state: next };
   }
 
@@ -125,6 +137,15 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'play_action_card' && action.cardId === FORCED_MARCH) {
     requireForcedMarchActionTiming(game, action.playerId);
   }
+  if (action.type === 'play_action_card' && action.cardId === ADVANCE_GUARD) {
+    requireAdvanceGuardActionTiming(game, action.playerId);
+  }
+  if (action.type === 'commit_battle_hand_card') {
+    requireAdvanceGuardHandCommitAllowed(game, action.playerId);
+  }
+  const preparedAdvanceGuard = action.type === 'play_action_card' && action.cardId === ADVANCE_GUARD
+    ? prepareAdvanceGuardAction(game, action)
+    : undefined;
   const preparedNewRecruits = action.type === 'play_action_card' && action.cardId === NEW_RECRUITS
     ? prepareNewRecruitsAction(game, action)
     : undefined;
@@ -144,6 +165,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   const restrictedBefore = action.type === 'move_player'
     ? game.players[action.playerId]?.nonBattleMovementRemaining ?? 0
     : 0;
+  const usedAdvanceGuardPosition = action.type === 'move_player'
+    ? moveUsesAdvanceGuardPosition(game, action.playerId)
+    : false;
   const initiatedBattle = action.type === 'move_player'
     ? forcedMarchMoveWouldInitiateBattle(game, action.playerId, action.toSpaceId)
     : false;
@@ -165,6 +189,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
 
   const result = applyFactionGameAction(gameForApplication, action);
 
+  if (action.type === 'play_action_card' && preparedAdvanceGuard) {
+    applyAdvanceGuardAction(result.state, action.playerId, preparedAdvanceGuard);
+  }
   if (action.type === 'play_action_card' && action.cardId === FORCED_MARCH) {
     applyForcedMarchAction(result.state, action.playerId);
   }
@@ -195,15 +222,23 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
       }
     }
     reconcileForcedMarchMove(result.state, action.playerId, initiatedBattle, restrictedBefore);
+    reconcileAdvanceGuardMove(
+      result.state,
+      action.playerId,
+      usedAdvanceGuardPosition,
+      initiatedBattle,
+    );
   }
   if (action.type === 'end_turn') {
     clearRestrictedMovementForTurnTransition(result.state, action.playerId);
+    clearAdvanceGuardMovement(result.state, action.playerId);
     clearExpiredPathfindersSuppressions(result.state);
   }
   if (action.type === 'resolve_asset_bank_discard') {
     applyContingencyPlanAssetLimitDraw(result.state, action.playerId, action.cardIds);
   }
   if (action.type === 'resolve_battle_reveal') {
+    applyAdvanceGuardBattleEffects(result.state);
     applyFealtyBattleEffects(result.state);
     applyForcedMarchBattleEffects(result.state);
     applyNewRecruitsBattleEffects(result.state);
