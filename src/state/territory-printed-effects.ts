@@ -23,7 +23,10 @@ function overlaySuppressesPrintedEffect(space: BoardSpaceState): boolean {
 }
 
 export function territoryHasPrintedEffect(space?: BoardSpaceState): boolean {
-  if (!space || (space.kind !== 'territory' && space.kind !== 'arena') || !space.territoryId) return false;
+  if (!space
+    || !space.revealed
+    || (space.kind !== 'territory' && space.kind !== 'arena')
+    || !space.territoryId) return false;
   return v06CanonicalContent.territoriesById.has(space.territoryId);
 }
 
