@@ -84,7 +84,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
       : pendingKind.startsWith('reserves_')
         ? resolveReservesChoice(next, action)
         : resolveRedemptionChoice(next, action);
-    if (resolved.deferredBattleAction) {
+    if ('deferredBattleAction' in resolved && resolved.deferredBattleAction) {
       return applyGameAction(next, resolved.deferredBattleAction);
     }
     if ('resumeBattleReveal' in resolved && resolved.resumeBattleReveal) {
