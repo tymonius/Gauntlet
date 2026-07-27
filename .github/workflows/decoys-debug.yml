@@ -1,0 +1,19 @@
+name: Decoys Debug
+
+on:
+  push:
+    branches:
+      - agent/neutral-decoys
+
+jobs:
+  decoys:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run focused Decoys suite
+        shell: bash
+        run: |
+          set -o pipefail
+          git clone --quiet --depth 1 --branch agent/neutral-decoys https://github.com/tymonius/Gauntlet.git repo
+          cd repo
+          npm install --silent
+          npm test -- --run src/state/neutral-decoys.test.ts
