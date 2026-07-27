@@ -56,17 +56,22 @@ export function resolveBattleReveal(game: GameState, action: ResolveBattleReveal
     throw new GameActionError('Resolve pending Asset Bank discard choices first.');
   }
 
-  applySubversionBattleRestrictions(game);
-  const effectResult = new EffectRegistry(baseBattleEffectHandlers).resolve({
+  const context = {
     game,
     battle,
-    timing: 'before_battle_resolution',
+    timing: 'before_battle_resolution' as const,
     actor: action.playerId,
     location: battle.location,
     battleCardTargets: action.battleCardTargets,
-  });
-  const cancellations = effectResult.cancellations ?? [];
+  };
+  const initialResult = new EffectRegistry(baseBattleEffectHandlers).resolve(context);
+  const cancellations = initialResult.cancellations ?? [];
   const canceled = cancelPlayedCards(game, cancellations);
+  applySubversionBattleRestrictions(game);
+  const nonCancellationHandlers = baseBattleEffectHandlers.filter((handler) => (
+    handler.id !== 'neutral_disruption_battle' && handler.id !== 'trade_ban_battle'
+  ));
+  const effectResult = new EffectRegistry(nonCancellationHandlers).resolve(context);
   const modifiers = (effectResult.modifiers ?? [])
     .filter((modifier) => !canceled.has(`${modifier.playerId}:${String(modifier.source)}`));
 
@@ -76,6 +81,9 @@ export function resolveBattleReveal(game: GameState, action: ResolveBattleReveal
   battle.resolvedCancellations = cancellations;
   battle.effectsResolved.push('before_battle_resolution');
 
+  for (const cancellation of cancellations) {
+    log(game, action.playerId, 'effect_resolved', `${cancellation.source} canceled ${cancellation.cardId}.`);
+  }
   for (const message of effectResult.logMessages ?? []) log(game, action.playerId, 'effect_resolved', message);
   log(game, action.playerId, 'battle_reveal_resolved', 'Revealed Battle effects were resolved before dice were rolled.', {
     battleId: battle.id,

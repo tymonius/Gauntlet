@@ -1,6 +1,7 @@
 import type { ActionCardTarget, ResolveFinancierChoiceAction } from './actions';
 import type { CardID, GameEvent, GameState, PlayerID, SpaceID } from '../types';
 import { drawFromDeck } from './draw';
+import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
 import { cardValue, deedCost, deedOwner } from './financiers';
 import { openDeedPurchaseChoice } from './financier-integration';
 import { gainFactionResource, spendFactionResource } from './resources';
@@ -324,7 +325,8 @@ export function resolveFinancierCardChoice(game: GameState, action: ResolveFinan
 }
 
 export function shouldSkipNormalDrawForTariffs(game: GameState, playerId: PlayerID): boolean {
-  return game.players[playerId]?.zones.assetBank.includes(FINANCIER_CARDS.tariffs) ?? false;
+  return bankedAssetUseAllowed(game, playerId)
+    && (game.players[playerId]?.zones.assetBank.includes(FINANCIER_CARDS.tariffs) ?? false);
 }
 
 export function requireTariffsMayLeavePlay(game: GameState, playerId: PlayerID, cardIds: CardID[]): void {

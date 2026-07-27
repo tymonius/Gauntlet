@@ -1,6 +1,7 @@
 import { intelligenceCardsById, intelligenceMissionCardIds } from '../cards';
 import type { CardID, GameEvent, GameState, IntelligenceMissionKind, IntelligenceMissionState, PlayerID, PlayerState } from '../types';
 import { gainFactionResource, hasFactionResource, spendFactionResource } from './resources';
+import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
 
 const DEEP_COVER_CARD_ID = 'intelligence-deep-cover';
 
@@ -28,7 +29,7 @@ function requireIntelligence(game: GameState, playerId: PlayerID): PlayerState {
 
 function requireActionOpportunity(game: GameState, playerId: PlayerID): PlayerState {
   const player = requireIntelligence(game, playerId);
-  if (game.activePlayer !== playerId || game.priorityPlayer !== playerId) throw new IntelligenceMissionError('It is not this player’s Action Opportunity.');
+  if (game.activePlayer !== playerId || game.priorityPlayer !== playerId) throw new IntelligenceMissionError('Lt is not this player’s Action Opportunity.');
   if (game.phase !== 'action_after_movement' || player.actionsRemaining < 1) throw new IntelligenceMissionError('Missions require the Action Opportunity after movement.');
   if (player.hasPlayedActionThisTurn || player.hasPlayedBattleThisTurn) throw new IntelligenceMissionError('This player has already played a card this turn.');
   return player;
@@ -148,7 +149,7 @@ export function failIntelligenceMission(game: GameState, playerId: PlayerID, kin
   const player = requireIntelligence(game, playerId);
   const mission = kind === 'normal' ? player.intelligence!.activeMission : player.intelligence!.specialOperation;
   if (!mission) return;
-  if (kind === 'normal' && !game.pendingIntelligenceChoice && player.zones.assetBank.includes(DEEP_COVER_CARD_ID)) {
+  if (kind === 'normal' && !game.pendingIntelligenceChoice && bankedAssetUseAllowed(game, playerId) && player.zones.assetBank.includes(DEEP_COVER_CARD_ID)) {
     game.pendingIntelligenceChoice = {
       kind: 'deep_cover',
       playerId,

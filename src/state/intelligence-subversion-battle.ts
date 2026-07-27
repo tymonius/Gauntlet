@@ -5,6 +5,8 @@ import type {
   GameState,
   PlayerID,
 } from '../types';
+import { applyIllegalOccupationBattleEffects } from './neutral-illegal-occupation';
+export { bankedAssetUseAllowed } from './banked-assets';
 
 export const SUBVERSION_BATTLE_CARD = 'intelligence-subversion';
 export const SUBVERSION_RESOLUTION_PREFIX = 'intelligence_subversion_restriction:';
@@ -28,10 +30,6 @@ function publicLog(game: GameState, actor: PlayerID, target: PlayerID): void {
     payload: { targetPlayerId: target },
     visibility: 'public',
   } satisfies GameEvent);
-}
-
-export function bankedAssetUseAllowed(game: GameState, playerId: PlayerID): boolean {
-  return !game.battle?.bankedAssetUseProhibited?.includes(playerId);
 }
 
 export function subversionRestrictionResolved(game: GameState, playerId: PlayerID): boolean {
@@ -66,4 +64,5 @@ export function applySubversionBattleRestrictions(game: GameState): void {
   for (const participant of [battle.attacker, battle.defender]) {
     if (participantUsedSubversion(participant)) applySubversionRestrictionForPlayer(game, participant.playerId);
   }
+  applyIllegalOccupationBattleEffects(game);
 }

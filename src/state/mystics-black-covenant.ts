@@ -155,7 +155,7 @@ export function applyBlackCovenantAction(
 }
 
 export function blackCovenantActionBindings(game: GameState, playerId: PlayerID): BlackCovenantBindingState[] {
-  if (game.activePlayer !== playerId || game.priorityPlayer !== playerId) return [];
+  if (game.activePlayer !== playerId || game.priorityPlayer !== playerId || !bankedAssetUseAllowed(game, playerId)) return [];
   if (game.phase !== 'action_before_movement' && game.phase !== 'action_after_movement') return [];
   return (game.players[playerId].mystics?.blackCovenantBindings ?? []).filter((binding) => (
     cardCanBePlayedAt(binding.cardId, 'action', 'hand')

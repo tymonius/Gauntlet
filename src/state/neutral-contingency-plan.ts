@@ -1,5 +1,6 @@
 import type { CardID, GameEvent, GameState, PlayerID } from '../types';
 import { drawFromDeck } from './draw';
+import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
 
 export const CONTINGENCY_PLAN = 'neutral-contingency-plan';
 
@@ -13,6 +14,7 @@ export function applyContingencyPlanAssetLimitDraw(
   playerId: PlayerID,
   discardedCardIds: readonly CardID[],
 ): CardID[] {
+  if (!bankedAssetUseAllowed(game, playerId)) return [];
   const copyCount = discardedCardIds.filter((cardId) => cardId === CONTINGENCY_PLAN).length;
   if (copyCount === 0) return [];
 

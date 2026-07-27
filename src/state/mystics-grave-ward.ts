@@ -10,6 +10,7 @@ import type {
   ResolveMysticsChoiceAction,
   UseMysticGraveWardAssetAction,
 } from './actions';
+import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
 
 export const GRAVE_WARD_CARD_ID = 'mystics-grave-ward';
 
@@ -86,7 +87,12 @@ export function registerGraveyardEntries(
   let registered = 0;
   for (const player of Object.values(game.players)) {
     const mystics = player.mystics;
-    if (!mystics) continue;
+    const battleSuppressed = Boolean(
+      battleId
+      && game.recentBattleResult?.battleId === battleId
+      && game.recentBattleResult.bankedAssetUseProhibitedFor?.includes(player.id),
+    );
+    if (!mystics || battleSuppressed || !bankedAssetUseAllowed(game, player.id)) continue;
     const triggerCount = player.zones.assetBank.filter((cardId) => cardId === GRAVE_WARD_CARD_ID).length;
     if (triggerCount < 1) continue;
     const entered = multisetDifference(player.zones.graveyard, before[player.id] ?? []);
@@ -176,7 +182,7 @@ function entryFor(game: GameState, playerId: PlayerID, entryId: string) {
 function openAssetEntry(game: GameState, playerId: PlayerID): boolean {
   const player = game.players[playerId];
   const mystics = player.mystics;
-  if (!mystics?.graveWardEntries?.length) return false;
+  if (!mystics?.graveWardEntries?.length || !bankedAssetUseAllowed(game, playerId)) return false;
 
   while (mystics.graveWardEntries.length > 0) {
     const entry = mystics.graveWardEntries[0];

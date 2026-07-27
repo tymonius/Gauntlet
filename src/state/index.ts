@@ -1,4 +1,5 @@
 export * from './views';
+export * from './banked-assets';
 export * from './initialize';
 export * from './validation';
 export * from './v06-setup';
@@ -79,6 +80,7 @@ export * from './neutral-decoys-battle';
 export * from './neutral-disruption';
 export * from './neutral-entrenchment';
 export * from './neutral-foothold';
+export * from './neutral-illegal-occupation';
 export * from './neutral-fealty';
 export * from './neutral-forced-march';
 export * from './neutral-new-recruits';

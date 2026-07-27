@@ -59,7 +59,7 @@ export function openMilitaryPrecommitWindows(game: GameState): void {
   const location = game.board.spaces.find((space) => space.id === game.battle?.location);
   for (const playerId of [game.battle.attacker.playerId, game.battle.defender.playerId]) {
     const player = game.players[playerId];
-    if (player.factionId !== 'military') continue;
+    if (player.factionId !== 'military' || !bankedAssetUseAllowed(game, playerId)) continue;
     if (player.zones.assetBank.includes(BROTHERS)) {
       queue(game, { kind: 'brothers_in_arms_precommit', playerId, sourceCardId: BROTHERS, options: ['use', 'pass'] });
     }
