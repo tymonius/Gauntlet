@@ -1,22 +1,27 @@
-name: Verify Illegal Occupation Source
+name: Finalize Illegal Occupation Source
 
 on:
   pull_request:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
-  verify-source:
+  finalize:
     if: github.head_ref == 'agent/neutral-illegal-occupation'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: agent/neutral-illegal-occupation
-      - name: Package source
+      - name: Correct and clean source branch
         run: |
-          zip -qr illegal-occupation-source.zip src package.json package-lock.json tsconfig.json vitest.config.ts
-      - uses: actions/upload-artifact@v4
-        with:
-          name: illegal-occupation-source
-          path: illegal-occupation-source.zip
+          sed -i "s/'Lt is not this player’s Action Opportunity\.'/'It is not this player’s Action Opportunity.'/" src/state/intelligence-missions.ts
+          rm -f deployment-capture.txt
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/state/intelligence-missions.ts deployment-capture.txt
+          git commit -m "Finalize Illegal Occupation source"
+          git push origin HEAD:agent/neutral-illegal-occupation
