@@ -17,10 +17,16 @@ export function cancellationCandidatesWithDecoysPriority(
   return decoys.length > 0 ? decoys : active;
 }
 
+export function cancellationTargetCardIdsWithDecoysPriority(
+  participant: BattleParticipantState,
+): CardID[] {
+  return cancellationCandidatesWithDecoysPriority(participant)
+    .map((card) => card.cardId);
+}
+
 export function cancellationTargetAllowedByDecoys(
   participant: BattleParticipantState,
   cardId: CardID,
 ): boolean {
-  return cancellationCandidatesWithDecoysPriority(participant)
-    .some((card) => card.cardId === cardId);
+  return cancellationTargetCardIdsWithDecoysPriority(participant).includes(cardId);
 }
