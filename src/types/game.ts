@@ -37,7 +37,7 @@ export interface GameState {
   inquisitionPenanceQueue?: InquisitionPenanceBattleQueueEntry[];
   inquisitionDivineMercyQueue?: InquisitionDivineMercyBattleQueueEntry[];
   inquisitionExcommunicationQueue?: InquisitionExcommunicationBattleQueueEntry[];
-  inquisitionGuiltByAssociationQueue?: InquisitionGuiltByAssociationQueueEntry[];
+  inquisitionGuiltByAssociationQueue?: InquisitionGuiltByAssociationBattleQueueEntry[];
   inquisitionActOfFaithQueue?: InquisitionActOfFaithBattleQueueEntry[];
   inquisitionBurningAtTheStakeQueue?: InquisitionBurningAtTheStakeBattleQueueEntry[];
   inquisitionRelentlessPursuitRequest?: InquisitionRelentlessPursuitRequest;
