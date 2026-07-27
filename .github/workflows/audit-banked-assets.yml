@@ -18,10 +18,13 @@ jobs:
           ref: agent/neutral-illegal-occupation
       - name: Apply implementation
         run: |
+          if [ ! -f .github/illegal-occupation-files.b64 ]; then
+            echo "Implementation archive already applied."
+            exit 0
+          fi
           base64 -d .github/illegal-occupation-files.b64 | tar -xz
           rm -f .github/illegal-occupation-files.b64
           rm -f .github/banked-asset-audit-trigger.txt
-          rm -f .github/workflows/audit-banked-assets.yml
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
