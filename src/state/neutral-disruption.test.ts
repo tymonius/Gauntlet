@@ -7,7 +7,7 @@ import type {
   GameState,
   PlayerID,
 } from '../types';
-import { applyGameAction } from './apply-disruption';
+import { applyGameAction } from './apply-neutral';
 import { initializeGame } from './initialize';
 import { DISRUPTION } from './neutral-disruption';
 
