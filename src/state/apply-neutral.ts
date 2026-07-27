@@ -3,6 +3,7 @@ import type {
   AppStateAction,
   FinishMovementAction,
   ResolveNeutralChoiceAction,
+  UseNeutralReinforcementsAssetAction,
 } from './actions';
 import { applyGameAction as applyFactionGameAction } from './apply-inquisition';
 import { continueIntelligenceBattle } from './intelligence-battle';
@@ -92,6 +93,13 @@ import {
   resolveRedemptionChoice,
 } from './neutral-redemption';
 import {
+  clearReinforcementsActionOpportunity,
+  consumeReinforcementsActionOpportunity,
+  prepareReinforcementsBattleReveal,
+  resolveReinforcementsChoice,
+  useReinforcementsAsset,
+} from './neutral-reinforcements';
+import {
   applyReservesAction,
   applyReservesBattleTopdecks,
   prepareReservesAction,
@@ -117,7 +125,7 @@ import {
   territoryPrintedEffectIsActive,
 } from './territory-printed-effects';
 
-export type NeutralAppStateAction = AppStateAction | FinishMovementAction | ResolveNeutralChoiceAction;
+export type NeutralAppStateAction = AppStateAction | FinishMovementAction | ResolveNeutralChoiceAction | UseNeutralReinforcementsAssetAction;
 
 function continueNeutralChoices(game: GameState): void {
   openPalisadeWallAssetChoice(game);
@@ -151,6 +159,8 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
           ? (resolveFootholdChoice(next, action), {})
           : pendingKind === 'palisade_wall_asset'
             ? (resolvePalisadeWallChoice(next, action), {})
+            : pendingKind === 'reinforcements_battle'
+              ? resolveReinforcementsChoice(next, action)
             : pendingKind.startsWith('scouting_report_')
               ? resolveScoutingReportChoice(next, action)
               : pendingKind.startsWith('reserves_')
@@ -167,6 +177,18 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   if (action.type === 'resolve_neutral_choice') {
     throw new GameActionError(`${action.playerId} has no pending Neutral choice.`);
+  }
+
+  if (action.type === 'use_neutral_reinforcements_asset') {
+    const next = structuredClone(game);
+    useReinforcementsAsset(next, action);
+    return { state: next };
+  }
+
+  if (action.type === 'resolve_battle_reveal') {
+    const prepared = structuredClone(game);
+    if (prepareReinforcementsBattleReveal(prepared, action)) return { state: prepared };
+    game = prepared;
   }
 
   if (action.type === 'finish_movement') {
@@ -253,6 +275,10 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
 
   const result = applyFactionGameAction(gameForApplication, action);
 
+  if (action.type === 'play_action_card') {
+    consumeReinforcementsActionOpportunity(result.state, action.playerId);
+  }
+
   if (action.type === 'play_action_card' && preparedAdvanceGuard) {
     applyAdvanceGuardAction(result.state, action.playerId, preparedAdvanceGuard);
   }
@@ -308,6 +334,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     );
   }
   if (action.type === 'end_turn') {
+    clearReinforcementsActionOpportunity(result.state, action.playerId);
     clearRestrictedMovementForTurnTransition(result.state, action.playerId);
     clearAdvanceGuardMovement(result.state, action.playerId);
     clearExpiredPathfindersSuppressions(result.state);

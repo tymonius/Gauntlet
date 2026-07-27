@@ -168,6 +168,9 @@ export function buildGuidedOptions(game: GameState): GuidedOption[] {
   if (game.pendingLeaderAbilityWindow?.playerId === playerId) { for (const ability of view.legalLeaderAbilities ?? []) options.push({ label: `Use ${ability.name}`, action: { type: 'use_leader_ability', playerId, abilityId: ability.abilityId } }); options.push({ label: 'Pass Leader ability window', action: { type: 'pass_leader_ability_window', playerId } }); return options; }
   if (game.phase === 'turn_start') options.push({ label: 'Draw 1 card', action: { type: 'draw_card', playerId } });
   if (game.phase === 'action_before_movement' || game.phase === 'action_after_movement') {
+    for (const use of view.legalNeutralAssetUses ?? []) {
+      options.push({ label: `Discard ${use.cardId} for an additional Action Opportunity`, action: { type: use.action, playerId } });
+    }
     for (const play of view.legalActionPlays ?? []) {
       if (play.cardId === 'mystics-black-covenant'
         || play.cardId === 'inquisition-accusation'
