@@ -36,7 +36,11 @@ test("serves the private review shell without exposing data", async () => {
   const response = await worker.fetch(new Request("https://rules.example/admin"), {});
   expect(response.status).toBe(200);
   expect(response.headers.get("X-Robots-Tag")).toContain("noindex");
-  expect(await response.text()).toContain("Rules interaction review");
+  const html = await response.text();
+  expect(html).toContain("Rules interaction review");
+  expect(html).toContain("Review with ChatGPT");
+  expect(html).toContain("gauntlet.rules-review-bundle.v1");
+  expect(html).toContain("anonymous session identifiers");
 });
 
 test("reports whether interaction logging is configured", async () => {
