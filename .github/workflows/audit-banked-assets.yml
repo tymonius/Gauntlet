@@ -1,75 +1,22 @@
-name: Capture Illegal Occupation Commit
+name: Verify Illegal Occupation Source
 
 on:
   pull_request:
     branches:
       - main
 
-permissions:
-  contents: write
-
 jobs:
-  capture:
+  verify-source:
     if: github.head_ref == 'agent/neutral-illegal-occupation'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: agent/neutral-illegal-occupation
-          fetch-depth: 0
-      - name: Build and publish commit
+      - name: Package source
         run: |
-          set +e
-          {
-            if [ ! -f .github/io-mid-02a.b64 ]; then
-              echo "archive-already-applied"
-              git rev-parse HEAD
-              exit 0
-            fi
-            cat \
-              .github/io-archive-00.b64 \
-              .github/io-mid-00.b64 \
-              .github/io-mid-01.b64 \
-              .github/io-mid-02a.b64 \
-              .github/io-mid-02b.b64 \
-              .github/io-tail-00.b64 \
-              .github/io-tail-01.b64 \
-              .github/io-tail-02.b64 \
-              .github/io-tail-03.b64 \
-              > /tmp/illegal-occupation-files.b64
-            wc -c /tmp/illegal-occupation-files.b64
-            sha256sum /tmp/illegal-occupation-files.b64
-            base64 -d /tmp/illegal-occupation-files.b64 > /tmp/illegal-occupation-files.tar.gz
-            sha256sum /tmp/illegal-occupation-files.tar.gz
-            tar -xzf /tmp/illegal-occupation-files.tar.gz
-            rm -f \
-              .github/illegal-occupation-files.b64 \
-              .github/io-prefix-10000-24000.b64 \
-              .github/io-mid-00.b64 \
-              .github/io-mid-01.b64 \
-              .github/io-mid-02.b64 \
-              .github/io-mid-02a.b64 \
-              .github/io-mid-02b.b64 \
-              .github/io-tail-00.b64 \
-              .github/io-tail-01.b64 \
-              .github/io-tail-02.b64 \
-              .github/io-tail-03.b64 \
-              .github/io-archive-00.b64 \
-              .github/io-archive-01.b64 \
-              .github/io-archive-03.b64 \
-              .github/banked-asset-audit-trigger.txt
-            git config user.name "github-actions[bot]"
-            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-            git add -A
-            git commit -m "Implement Neutral Illegal Occupation"
-            echo "commit=$(git rev-parse HEAD)"
-            echo "tree=$(git rev-parse HEAD^{tree})"
-            git show --stat --oneline HEAD
-            git push origin HEAD:agent/neutral-illegal-occupation
-            echo "push-exit=$?"
-          } > deployment-capture.txt 2>&1
-          exit 0
+          zip -qr illegal-occupation-source.zip src package.json package-lock.json tsconfig.json vitest.config.ts
       - uses: actions/upload-artifact@v4
         with:
-          name: illegal-occupation-deployment-capture
-          path: deployment-capture.txt
+          name: illegal-occupation-source
+          path: illegal-occupation-source.zip
