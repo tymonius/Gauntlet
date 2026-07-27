@@ -42,6 +42,16 @@ function opponentId(game: GameState, playerId: PlayerID): PlayerID | undefined {
   return Object.keys(game.players).find((candidate) => candidate !== playerId);
 }
 
+function playerStartIndex(game: GameState, playerId: PlayerID): number | undefined {
+  return game.board.spaces.find((space) => (
+    space.kind === 'endpoint'
+    && space.endpointOwner === playerId
+    && space.endpointRole === 'before_gauntlet'
+  ))?.index ?? game.board.spaces.find((space) => (
+    space.kind === 'heartland' && space.controller === playerId
+  ))?.index;
+}
+
 function movementIsAdvance(
   game: GameState,
   playerId: PlayerID,
@@ -50,13 +60,9 @@ function movementIsAdvance(
 ): boolean {
   const origin = game.board.spaces.find((space) => space.id === originSpaceId);
   const destination = game.board.spaces.find((space) => space.id === destinationSpaceId);
-  const ownStart = game.board.spaces.find((space) => (
-    space.kind === 'endpoint'
-    && space.endpointOwner === playerId
-    && space.endpointRole === 'before_gauntlet'
-  ));
-  if (!origin || !destination || !ownStart) return false;
-  return Math.abs(destination.index - ownStart.index) > Math.abs(origin.index - ownStart.index);
+  const startIndex = playerStartIndex(game, playerId);
+  if (!origin || !destination || startIndex === undefined) return false;
+  return Math.abs(destination.index - startIndex) > Math.abs(origin.index - startIndex);
 }
 
 function ownerTokenAdjacentTo(game: GameState, ownerId: PlayerID, destinationSpaceId: SpaceID): boolean {
