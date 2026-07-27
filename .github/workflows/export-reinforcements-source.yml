@@ -1,0 +1,22 @@
+name: Export Reinforcements Source
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  export-source:
+    if: github.head_ref == 'agent/neutral-reinforcements'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/neutral-reinforcements
+      - name: Package source
+        run: |
+          zip -qr reinforcements-source.zip src package.json package-lock.json tsconfig.json vitest.config.ts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: reinforcements-source
+          path: reinforcements-source.zip
