@@ -1,30 +1,33 @@
-name: Deploy Palisade Wall
+name: Diagnose Palisade Wall Deployment
 
 on:
   pull_request:
     branches:
       - main
 
-permissions:
-  contents: write
-
 jobs:
-  deploy:
+  diagnose:
     if: github.head_ref == 'agent/neutral-palisade-wall'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: agent/neutral-palisade-wall
-      - name: Apply implementation
+      - name: Inspect staged archive
         run: |
-          echo "64762942d0f7e2d498796ab70608a85c01d6ef0cb09824607d7486d316375472  .github/palisade-files.b64" | sha256sum -c -
-          base64 -d .github/palisade-files.b64 > /tmp/palisade-files.tar.gz
-          echo "5ced1f09abd2d9f7b5d85ebdbfa1523f1f643c0ca7bd164df669f7914dc506f5  /tmp/palisade-files.tar.gz" | sha256sum -c -
-          tar -xzf /tmp/palisade-files.tar.gz
-          rm -f .github/palisade-files.b64
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Implement Neutral Palisade Wall"
-          git push origin HEAD:agent/neutral-palisade-wall
+          set +e
+          {
+            wc -c .github/palisade-files.b64
+            sha256sum .github/palisade-files.b64
+            base64 -d .github/palisade-files.b64 > /tmp/palisade-files.tar.gz
+            echo "decode-exit=$?"
+            wc -c /tmp/palisade-files.tar.gz
+            sha256sum /tmp/palisade-files.tar.gz
+            tar -tzf /tmp/palisade-files.tar.gz
+            echo "tar-exit=$?"
+          } > palisade-deploy-diagnostic.txt 2>&1
+          exit 0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: palisade-deploy-diagnostic
+          path: palisade-deploy-diagnostic.txt
