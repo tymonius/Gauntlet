@@ -1,4 +1,4 @@
-name: Diagnose Illegal Occupation Chunks
+name: Diagnose Illegal Occupation Prefix
 
 on:
   pull_request:
@@ -13,37 +13,20 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: agent/neutral-illegal-occupation
-      - name: Inspect staged chunks
+      - name: Inspect prefix candidates
         run: |
-          set +e
           {
             for file in \
-              .github/illegal-occupation-files.b64 \
-              .github/io-tail-00.b64 \
-              .github/io-tail-01.b64 \
-              .github/io-tail-02.b64 \
-              .github/io-tail-03.b64; do
+              .github/io-archive-00.b64 \
+              .github/io-archive-01.b64 \
+              .github/io-archive-03.b64; do
               wc -c "$file"
               sha256sum "$file"
+              head -c 40 "$file"; echo
+              tail -c 40 "$file"; echo
             done
-            cat \
-              .github/illegal-occupation-files.b64 \
-              .github/io-tail-00.b64 \
-              .github/io-tail-01.b64 \
-              .github/io-tail-02.b64 \
-              .github/io-tail-03.b64 \
-              > /tmp/illegal-occupation-files.b64
-            wc -c /tmp/illegal-occupation-files.b64
-            sha256sum /tmp/illegal-occupation-files.b64
-            base64 -d /tmp/illegal-occupation-files.b64 > /tmp/illegal-occupation-files.tar.gz
-            echo "decode-exit=$?"
-            wc -c /tmp/illegal-occupation-files.tar.gz
-            sha256sum /tmp/illegal-occupation-files.tar.gz
-            tar -tzf /tmp/illegal-occupation-files.tar.gz | head -50
-            echo "tar-exit=${PIPESTATUS[0]}"
-          } > chunk-diagnostic.txt 2>&1
-          exit 0
+          } > prefix-diagnostic.txt 2>&1
       - uses: actions/upload-artifact@v4
         with:
-          name: illegal-occupation-chunk-diagnostic
-          path: chunk-diagnostic.txt
+          name: illegal-occupation-prefix-diagnostic
+          path: prefix-diagnostic.txt
