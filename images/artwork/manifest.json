@@ -101,6 +101,23 @@
       "notes": "Exact approved source image; no crop, frame, text overlay, or recompression."
     },
     {
+      "id": "reference-environment-forest-ambush",
+      "title": "Forest Ambush",
+      "status": "approved-final",
+      "usage": "environment-reference",
+      "component_type": "Visual-development reference",
+      "canonical_component": false,
+      "allegiance": "Intelligence",
+      "path": "images/artwork/reference/environments/forest-ambush-scene.png",
+      "format": "png",
+      "width": 1484,
+      "height": 1060,
+      "bytes": 2556090,
+      "sha256": "3a8a66835084c985479a384abd72554cacf9af87e999e360ec0227bd7a157327",
+      "approved": "2026-07-27",
+      "notes": "Approved standalone scene. Reads as an ambush rather than the canonical Assassins card illustration."
+    },
+    {
       "id": "reference-environment-inquisition-tribunal",
       "title": "Inquisition Tribunal",
       "status": "approved-final",
