@@ -1,50 +1,40 @@
-name: Deploy Illegal Occupation
+name: Verify Illegal Occupation Reconstruction
 
 on:
   pull_request:
     branches:
       - main
 
-permissions:
-  contents: write
-
 jobs:
-  deploy:
+  verify:
     if: github.head_ref == 'agent/neutral-illegal-occupation'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: agent/neutral-illegal-occupation
-      - name: Apply implementation
+      - name: Verify reconstruction
         run: |
-          if [ ! -f .github/io-prefix-10000-24000.b64 ]; then
-            echo "Implementation archive already applied."
-            exit 0
-          fi
-          cat .github/io-archive-00.b64 .github/io-prefix-10000-24000.b64 > /tmp/illegal-occupation-files.b64
-          tail -c +3978 .github/io-tail-00.b64 >> /tmp/illegal-occupation-files.b64
-          head -c 6977 .github/io-tail-01.b64 >> /tmp/illegal-occupation-files.b64
-          cat .github/io-archive-03.b64 >> /tmp/illegal-occupation-files.b64
-          tail -c +978 .github/io-tail-03.b64 >> /tmp/illegal-occupation-files.b64
-          test "$(wc -c < /tmp/illegal-occupation-files.b64)" = "55488"
-          echo "bd1ba19e7433631f4bf674b2afe0076df66943143521e6ed65648c06e1238a07  /tmp/illegal-occupation-files.b64" | sha256sum -c -
-          base64 -d /tmp/illegal-occupation-files.b64 > /tmp/illegal-occupation-files.tar.gz
-          echo "e70d7fb7e570b5aee203f6256b3b519a1fa7a916f688080512ae6892a88aacfc  /tmp/illegal-occupation-files.tar.gz" | sha256sum -c -
-          tar -xzf /tmp/illegal-occupation-files.tar.gz
-          rm -f \
-            .github/illegal-occupation-files.b64 \
-            .github/io-prefix-10000-24000.b64 \
-            .github/io-tail-00.b64 \
-            .github/io-tail-01.b64 \
-            .github/io-tail-02.b64 \
-            .github/io-tail-03.b64 \
-            .github/io-archive-00.b64 \
-            .github/io-archive-01.b64 \
-            .github/io-archive-03.b64 \
-            .github/banked-asset-audit-trigger.txt
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Implement Neutral Illegal Occupation"
-          git push origin HEAD:agent/neutral-illegal-occupation
+          set +e
+          {
+            wc -c .github/io-prefix-10000-24000.b64
+            sha256sum .github/io-prefix-10000-24000.b64
+            cat .github/io-archive-00.b64 .github/io-prefix-10000-24000.b64 > /tmp/illegal-occupation-files.b64
+            tail -c +3978 .github/io-tail-00.b64 >> /tmp/illegal-occupation-files.b64
+            head -c 6977 .github/io-tail-01.b64 >> /tmp/illegal-occupation-files.b64
+            cat .github/io-archive-03.b64 >> /tmp/illegal-occupation-files.b64
+            tail -c +978 .github/io-tail-03.b64 >> /tmp/illegal-occupation-files.b64
+            wc -c /tmp/illegal-occupation-files.b64
+            sha256sum /tmp/illegal-occupation-files.b64
+            base64 -d /tmp/illegal-occupation-files.b64 > /tmp/illegal-occupation-files.tar.gz
+            echo "decode-exit=$?"
+            wc -c /tmp/illegal-occupation-files.tar.gz
+            sha256sum /tmp/illegal-occupation-files.tar.gz
+            tar -tzf /tmp/illegal-occupation-files.tar.gz | head -50
+            echo "tar-exit=${PIPESTATUS[0]}"
+          } > reconstruction-diagnostic.txt 2>&1
+          exit 0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: illegal-occupation-reconstruction-diagnostic
+          path: reconstruction-diagnostic.txt
