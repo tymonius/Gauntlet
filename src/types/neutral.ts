@@ -71,6 +71,23 @@ export interface PendingRedemptionBattleChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface FootholdAssetQueueEntry {
+  id: string;
+  playerId: PlayerID;
+  battleId: string;
+  triggersRemaining: number;
+}
+
+export interface PendingFootholdAssetChoice {
+  kind: 'foothold_asset';
+  playerId: PlayerID;
+  entryId: string;
+  battleId: string;
+  triggersRemaining: number;
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface PendingReservesActionChoice {
   kind: 'reserves_action';
   playerId: PlayerID;
@@ -167,6 +184,7 @@ export type PendingNeutralChoice =
   | PendingDecoysAssetChoice
   | PendingRedemptionAssetChoice
   | PendingRedemptionBattleChoice
+  | PendingFootholdAssetChoice
   | PendingReservesActionChoice
   | PendingReservesBattleChoice
   | PendingScoutingReportActionChoice
