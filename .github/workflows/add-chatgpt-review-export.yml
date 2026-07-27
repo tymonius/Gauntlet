@@ -1,0 +1,189 @@
+name: Add ChatGPT Review Export
+
+on:
+  push:
+    branches:
+      - agent/chatgpt-review-export
+
+permissions:
+  contents: write
+
+jobs:
+  implement:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/chatgpt-review-export
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Wire export into Worker and dashboard
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          worker = Path('rules-assistant/worker.js')
+          text = worker.read_text(encoding='utf-8')
+          old = 'import { ADMIN_PAGE } from "./admin-page.js";\n'
+          if 'import { buildReviewBundle } from "./review-bundle.js";' not in text:
+              if old not in text:
+                  raise SystemExit('Worker import insertion point was not found.')
+              text = text.replace(old, old + 'import { buildReviewBundle } from "./review-bundle.js";\n', 1)
+
+          old = '''  if (request.method === "GET" && url.pathname === "/api/admin/export") {
+    return exportAdminData(env, url, origin);
+  }
+'''
+          if 'url.pathname === "/api/admin/review-bundle"' not in text:
+              if old not in text:
+                  raise SystemExit('Admin export route insertion point was not found.')
+              text = text.replace(old, old + '''
+  if (request.method === "GET" && url.pathname === "/api/admin/review-bundle") {
+    return exportReviewBundle(env, url, origin);
+  }
+''', 1)
+
+          marker = 'async function exportAdminData(env, url, origin) {'
+          if 'async function exportReviewBundle(' not in text:
+              if marker not in text:
+                  raise SystemExit('exportAdminData marker was not found.')
+              review_function = r'''async function exportReviewBundle(env, url, origin) {
+  const conditions = [];
+  const params = [];
+  const filters = {};
+  const q = String(url.searchParams.get("q") || "").trim().slice(0, 200);
+  const reviewStatus = String(url.searchParams.get("reviewStatus") || "").trim();
+  const feedback = String(url.searchParams.get("feedback") || "").trim();
+  const rulingStatus = String(url.searchParams.get("rulingStatus") || "").trim();
+  const confidence = String(url.searchParams.get("confidence") || "").trim();
+  const version = String(url.searchParams.get("version") || "").trim().slice(0, 40);
+  const limit = Math.max(1, Math.min(Number(url.searchParams.get("limit")) || 500, 1000));
+
+  if (q) {
+    conditions.push("(question LIKE ? OR answer LIKE ?)");
+    params.push(`%${q}%`, `%${q}%`);
+    filters.q = q;
+  }
+  if (REVIEW_STATUSES.has(reviewStatus)) {
+    conditions.push("review_status = ?");
+    params.push(reviewStatus);
+    filters.reviewStatus = reviewStatus;
+  }
+  if (FEEDBACK_RATINGS.has(feedback)) {
+    conditions.push("feedback_rating = ?");
+    params.push(feedback);
+    filters.feedback = feedback;
+  } else if (feedback === "none") {
+    conditions.push("feedback_rating IS NULL");
+    filters.feedback = feedback;
+  }
+  if (["explicit", "inferred", "unresolved"].includes(rulingStatus)) {
+    conditions.push("ruling_status = ?");
+    params.push(rulingStatus);
+    filters.rulingStatus = rulingStatus;
+  }
+  if (["high", "medium", "low"].includes(confidence)) {
+    conditions.push("confidence = ?");
+    params.push(confidence);
+    filters.confidence = confidence;
+  }
+  if (version) {
+    conditions.push("game_version = ?");
+    params.push(version);
+    filters.version = version;
+  }
+
+  const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
+  const [interactions, count] = await Promise.all([
+    env.DB.prepare(`
+      SELECT
+        id, created_at, question, answer, game_version, ruling_status, confidence,
+        answer_mode, model, feedback_rating, feedback_comment, review_status,
+        issue_types_json, reviewer_notes, resolution
+      FROM rules_interactions
+      ${where}
+      ORDER BY created_at DESC
+      LIMIT ?
+    `).bind(...params, limit).all(),
+    env.DB.prepare(`SELECT COUNT(*) AS count FROM rules_interactions ${where}`).bind(...params).first()
+  ]);
+  const rows = (interactions.results || []).map(parseInteractionRow);
+  const ids = rows.map((row) => row.id);
+  let sources = [];
+  if (ids.length) {
+    const placeholders = ids.map(() => "?").join(",");
+    const sourceRows = await env.DB.prepare(`
+      SELECT interaction_id, ordinal, source_id, title, source_path, source_url, excerpt
+      FROM rules_interaction_sources
+      WHERE interaction_id IN (${placeholders})
+      ORDER BY interaction_id, ordinal
+    `).bind(...ids).all();
+    sources = sourceRows.results || [];
+  }
+
+  const bundle = buildReviewBundle({
+    interactions: rows,
+    sources,
+    filters,
+    matchedCount: Number(count?.count || 0)
+  });
+  return jsonResponse(bundle, 200, origin, {
+    "Content-Disposition": `attachment; filename="gauntlet-rules-chatgpt-review-${new Date().toISOString().slice(0, 10)}.json"`
+  });
+}
+
+'''
+              text = text.replace(marker, review_function + marker, 1)
+          worker.write_text(text, encoding='utf-8')
+
+          admin = Path('rules-assistant/admin-page.js')
+          text = admin.read_text(encoding='utf-8')
+          old = '<div class="actions"><button id="export-json" class="btn alt">Export JSON</button><button id="export-csv" class="btn alt">Export CSV</button><button id="logout" class="btn">Lock</button></div>'
+          if 'id="review-chatgpt"' not in text:
+              if old not in text:
+                  raise SystemExit('Admin header button insertion point was not found.')
+              text = text.replace(old, '<div class="actions"><button id="review-chatgpt" class="btn">Review with ChatGPT</button><button id="export-json" class="btn alt">Export JSON</button><button id="export-csv" class="btn alt">Export CSV</button><button id="logout" class="btn">Lock</button></div>', 1)
+
+          old = "  function download(format){api('/api/admin/export?format='+format).then(function(r){var d=r.headers.get('Content-Disposition')||'',m=/filename=\"([^\"]+)\"/.exec(d);return r.blob().then(function(b){return{b:b,n:m?m[1]:'gauntlet-rules-export.'+format}})}).then(function(f){var u=URL.createObjectURL(f.b),a=document.createElement('a');a.href=u;a.download=f.n;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},1000)}).catch(function(e){document.getElementById('dash-status').textContent=e.message})}\n"
+          if 'function reviewBundle()' not in text:
+              if old not in text:
+                  raise SystemExit('Admin download function insertion point was not found.')
+              addition = "  function reviewBundle(){var p=query();p.delete('offset');p.set('limit','500');var status=document.getElementById('dash-status');status.textContent='Preparing sanitized ChatGPT review bundle…';api('/api/admin/review-bundle?'+p).then(function(r){var d=r.headers.get('Content-Disposition')||'',m=/filename=\"([^\"]+)\"/.exec(d);return r.blob().then(function(b){return{b:b,n:m?m[1]:'gauntlet-rules-chatgpt-review.json'}})}).then(function(f){var u=URL.createObjectURL(f.b),a=document.createElement('a');a.href=u;a.download=f.n;document.body.appendChild(a);a.click();a.remove();setTimeout(function(){URL.revokeObjectURL(u)},1000);status.textContent='Review bundle downloaded. Upload it to ChatGPT and ask for a Gauntlet Rules Arbiter review.'}).catch(function(e){status.textContent=e.message})}\n"
+              text = text.replace(old, old + addition, 1)
+
+          old = "document.getElementById('export-json').onclick=function(){download('json')};"
+          if "document.getElementById('review-chatgpt').onclick=reviewBundle;" not in text:
+              if old not in text:
+                  raise SystemExit('Admin event binding insertion point was not found.')
+              text = text.replace(old, "document.getElementById('review-chatgpt').onclick=reviewBundle;" + old, 1)
+          admin.write_text(text, encoding='utf-8')
+
+          readme = Path('rules-assistant/README.md')
+          text = readme.read_text(encoding='utf-8')
+          old = '- JSON and CSV exports.\n'
+          if '**Review with ChatGPT** export' not in text:
+              if old not in text:
+                  raise SystemExit('README dashboard list insertion point was not found.')
+              text = text.replace(old, '- a **Review with ChatGPT** export that applies the current filters and downloads a sanitized, source-complete review bundle;\n' + old, 1)
+          old = 'The dashboard shell is publicly retrievable, but no interaction data or mutation endpoint is accessible without the admin bearer token.'
+          if 'preserves interaction IDs for matching recommendations' not in text:
+              if old not in text:
+                  raise SystemExit('README privacy insertion point was not found.')
+              text = text.replace(old, 'The ChatGPT review bundle preserves interaction IDs for matching recommendations back to the dashboard, but omits anonymous session identifiers, previous-interaction links, review-history row IDs, and all IP/safety-identifier data. It includes a strict response schema and the exact source excerpts recorded with each answer.\n\n' + old, 1)
+          readme.write_text(text, encoding='utf-8')
+          PY
+      - name: Validate
+        run: |
+          node --check rules-assistant/worker.js
+          node --check rules-assistant/admin-page.js
+          node --check rules-assistant/review-bundle.js
+          npm test -- --run
+      - name: Commit implementation
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add rules-assistant/worker.js rules-assistant/admin-page.js rules-assistant/README.md
+          git commit -m "Add ChatGPT review bundle export"
+          git push
