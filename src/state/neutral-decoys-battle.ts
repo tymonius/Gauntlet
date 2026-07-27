@@ -20,8 +20,10 @@ export function cancellationCandidatesWithDecoysPriority(
 export function cancellationTargetCardIdsWithDecoysPriority(
   participant: BattleParticipantState,
 ): CardID[] {
-  return cancellationCandidatesWithDecoysPriority(participant)
-    .map((card) => card.cardId);
+  return [...new Set(
+    cancellationCandidatesWithDecoysPriority(participant)
+      .map((card) => card.cardId),
+  )];
 }
 
 export function cancellationTargetAllowedByDecoys(
