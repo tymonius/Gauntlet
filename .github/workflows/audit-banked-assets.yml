@@ -12,9 +12,15 @@ jobs:
       - uses: actions/checkout@v4
       - name: Find Asset activity checks
         run: |
-          echo '=== assetBank.includes ==='
-          grep -R -n "assetBank\.includes" src/state src/cards src/types || true
-          echo '=== bankedAssetUseProhibited ==='
-          grep -R -n "bankedAssetUseProhibited" src/state src/cards src/types || true
-          echo '=== bankedAssetUseAllowed ==='
-          grep -R -n "bankedAssetUseAllowed" src/state src/cards src/types || true
+          {
+            echo '=== assetBank.includes ==='
+            grep -R -n "assetBank\.includes" src/state src/cards src/types || true
+            echo '=== bankedAssetUseProhibited ==='
+            grep -R -n "bankedAssetUseProhibited" src/state src/cards src/types || true
+            echo '=== bankedAssetUseAllowed ==='
+            grep -R -n "bankedAssetUseAllowed" src/state src/cards src/types || true
+          } > banked-asset-audit.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: banked-asset-audit
+          path: banked-asset-audit.txt
