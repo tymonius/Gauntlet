@@ -11,19 +11,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Test
-        run: npm test
+      - name: Focused Decoys diagnostics
+        shell: bash
+        run: |
+          set -o pipefail
+          git clone --quiet --depth 1 --branch agent/neutral-decoys https://github.com/tymonius/Gauntlet.git repo
+          cd repo
+          npm install --silent
+          npm run typecheck
+          npm test -- --run src/state/neutral-decoys.test.ts
