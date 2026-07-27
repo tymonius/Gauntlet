@@ -28,6 +28,7 @@ import { legalLeaderAbilitiesFor } from './leader-abilities';
 import { toPublicMysticsState } from './mystics-ritual';
 import { cancellationCandidatesWithDecoysPriority } from './neutral-decoys-battle';
 import { canResolveDisruptionAction, DISRUPTION } from './neutral-disruption';
+import { entrenchmentActionPlayProhibited } from './neutral-entrenchment';
 import { canResolveNewRecruitsAction, NEW_RECRUITS } from './neutral-new-recruits';
 
 const visible = <T>(cards: T[]) => ({ kind: 'visible' as const, cards });
@@ -202,6 +203,7 @@ export function toPrivateBattleView(battle: BattleState, game: GameState, viewer
 function legalActionPlaysForViewer(game: GameState, viewer?: PlayerID): LegalActionPlayOption[] | undefined {
   if (!viewer || game.activePlayer !== viewer || game.priorityPlayer !== viewer) return undefined;
   if (game.phase !== 'action_before_movement' && game.phase !== 'action_after_movement') return undefined;
+  if (entrenchmentActionPlayProhibited(game, viewer)) return undefined;
   const player = game.players[viewer];
   if (player.actionsRemaining < 1 || player.hasPlayedActionThisTurn) return undefined;
   return player.zones.hand
@@ -243,6 +245,7 @@ export function toPublicGameView(game: GameState): PublicGameView {
     board: toPublicBoardView(game.board),
     battle: game.battle ? toPublicBattleView(game.battle, game) : undefined,
     neutralPathfindersSuppressions: structuredClone(game.neutralPathfindersSuppressions),
+    neutralEntrenchmentActionLocks: structuredClone(game.neutralEntrenchmentActionLocks),
     pendingNeutralChoice: neutralChoiceIsPrivate(game) ? undefined : structuredClone(game.pendingNeutralChoice),
     pendingMilitaryChoice: game.pendingMilitaryChoice,
     pendingMilitaryTimingChoice: game.pendingMilitaryTimingChoice,
