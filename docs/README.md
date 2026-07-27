@@ -22,6 +22,7 @@ When a derived PDF, printable sheet, deckbuilder entry, or digital implementatio
 - [Design Principles and Guardrails](Gauntlet_Design_Principles_and_Guardrails.md) — durable game-design constraints.
 - [Visual Design Language](Gauntlet_Visual_Design_Language.md) — approved graphic and component principles for faction identity, cards, print materials, and interfaces.
 - [Illustration Art Direction](Gauntlet_Illustration_Art_Direction.md) — shared visual-world standards for architecture, clothing, technology, environments, faction depiction, and card illustration.
+- [Illustration Color Addendum](Gauntlet_Illustration_Color_Addendum.md) — approved color-richness standard balancing historical realism with attractive, collectible card art.
 - [Faction Card Design Guide](Gauntlet_v0.6_Faction_Card_Design_Guide.md) — standards for faction-card pools and future revisions.
 - [Playtest Targets and Metrics](Gauntlet_Playtest_Targets_and_Metrics.md) — complete evidence targets and thresholds for controlled testing.
 - [One-Page Playtest Sheet](../playtest/) — the routine paper questionnaire, designed to be printed and completed by hand.
