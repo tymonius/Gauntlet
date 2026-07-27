@@ -7,6 +7,8 @@ import { REINFORCEMENTS } from './neutral-reinforcements';
 
 const VALOR = 'card-valor';
 const FORTIFICATIONS = 'card-fortifications';
+const ENTRENCHMENT = 'neutral-entrenchment';
+const ILLEGAL_OCCUPATION = 'neutral-illegal-occupation';
 const DISRUPTION = 'neutral-disruption';
 
 function game(): GameState {
@@ -16,7 +18,7 @@ function game(): GameState {
     openingHandSize: 0,
     shuffleDecks: false,
     players: [
-      { id: 'player_1', name: 'Attacker', factionId: 'military', leaderName: 'General', deck: [VALOR, FORTIFICATIONS, REINFORCEMENTS], territories: ['p1-one', 'p1-two', 'p1-three'] },
+      { id: 'player_1', name: 'Attacker', factionId: 'military', leaderName: 'General', deck: [VALOR, FORTIFICATIONS, ENTRENCHMENT, REINFORCEMENTS], territories: ['p1-one', 'p1-two', 'p1-three'] },
       { id: 'player_2', name: 'Defender', factionId: 'intelligence', leaderName: 'Ranger', deck: ['d1', 'd2', 'd3'], territories: ['p2-one', 'p2-two', 'p2-three'] },
     ],
   });
@@ -86,12 +88,12 @@ describe('Neutral Reinforcements', () => {
   it('discards a banked copy to permit exactly one additional Action card', () => {
     let state = game();
     state.players.player_1.zones.assetBank = [REINFORCEMENTS];
-    state.players.player_1.zones.hand = [FORTIFICATIONS, VALOR];
+    state.players.player_1.zones.hand = [FORTIFICATIONS, ENTRENCHMENT];
     state = applyGameAction(state, { type: 'play_action_card', playerId: 'player_1', cardId: FORTIFICATIONS }).state;
     state = applyGameAction(state, { type: 'use_neutral_reinforcements_asset', playerId: 'player_1' }).state;
     expect(state.players.player_1.zones.discard).toContain(REINFORCEMENTS);
     expect(state.neutralReinforcementsActionOpportunity).toMatchObject({ playerId: 'player_1' });
-    state = applyGameAction(state, { type: 'play_action_card', playerId: 'player_1', cardId: VALOR }).state;
+    state = applyGameAction(state, { type: 'play_action_card', playerId: 'player_1', cardId: ENTRENCHMENT }).state;
     expect(state.neutralReinforcementsActionOpportunity).toBeUndefined();
     expect(() => applyGameAction(state, { type: 'play_action_card', playerId: 'player_1', cardId: REINFORCEMENTS })).toThrow(/already played a card|does not have/);
   });
@@ -103,13 +105,14 @@ describe('Neutral Reinforcements', () => {
 
     const inactive = game();
     inactive.players.player_1.zones.assetBank = [REINFORCEMENTS];
+    inactive.players.player_2.zones.assetBank = [ILLEGAL_OCCUPATION];
     inactive.players.player_1.actionsRemaining = 0;
     inactive.players.player_1.hasPlayedActionThisTurn = true;
     for (const space of inactive.board.spaces) space.occupant = undefined;
     const occupiedTerritory = inactive.board.spaces.find((space) => space.kind === 'territory')!;
-    occupiedTerritory.controller = 'player_1';
-    occupiedTerritory.occupant = 'player_2';
-    inactive.players.player_2.occupiedSpaceId = occupiedTerritory.id;
+    occupiedTerritory.controller = 'player_2';
+    occupiedTerritory.occupant = 'player_1';
+    inactive.players.player_1.occupiedSpaceId = occupiedTerritory.id;
     expect(() => applyGameAction(inactive, { type: 'use_neutral_reinforcements_asset', playerId: 'player_1' })).toThrow(/cannot create/);
   });
 
