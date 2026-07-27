@@ -1,9 +1,9 @@
 name: Audit banked Assets
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/neutral-illegal-occupation
+      - main
 
 jobs:
   audit:
