@@ -43,6 +43,13 @@ import {
 } from './neutral-entrenchment';
 import { applyFealtyBattleEffects } from './neutral-fealty';
 import {
+  applyFootholdBattleCleanupDraw,
+  applyFootholdBattleEffects,
+  openNextFootholdChoice,
+  queueFootholdAssetChoices,
+  resolveFootholdChoice,
+} from './neutral-foothold';
+import {
   applyForcedMarchAction,
   applyForcedMarchBattleEffects,
   clearRestrictedMovementForTurnTransition,
@@ -111,6 +118,7 @@ export type NeutralAppStateAction = AppStateAction | FinishMovementAction | Reso
 function continueNeutralChoices(game: GameState): void {
   openNextDecoysChoice(game);
   openNextSuppliesChoice(game);
+  openNextFootholdChoice(game);
   openNextRedemptionChoice(game);
 }
 
@@ -134,11 +142,13 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
       ? (resolveDecoysChoice(next, action), {})
       : pendingKind.startsWith('supplies_')
         ? (resolveSuppliesChoice(next, action), {})
-        : pendingKind.startsWith('scouting_report_')
-          ? resolveScoutingReportChoice(next, action)
-          : pendingKind.startsWith('reserves_')
-            ? resolveReservesChoice(next, action)
-            : resolveRedemptionChoice(next, action);
+        : pendingKind === 'foothold_asset'
+          ? (resolveFootholdChoice(next, action), {})
+          : pendingKind.startsWith('scouting_report_')
+            ? resolveScoutingReportChoice(next, action)
+            : pendingKind.startsWith('reserves_')
+              ? resolveReservesChoice(next, action)
+              : resolveRedemptionChoice(next, action);
     if ('deferredBattleAction' in resolved && resolved.deferredBattleAction) {
       return applyGameAction(next, resolved.deferredBattleAction);
     }
@@ -303,17 +313,31 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     applyAdvanceGuardBattleEffects(result.state);
     applyEntrenchmentBattleEffects(result.state);
     applyFealtyBattleEffects(result.state);
+    applyFootholdBattleEffects(result.state);
     applyForcedMarchBattleEffects(result.state);
     applyNewRecruitsBattleEffects(result.state);
     applyPathfindersBattleEffects(result.state);
     applyRallyingCryBattleEffects(result.state);
   }
   if (action.type === 'resolve_battle' && priorBattle && priorBattleId && !result.state.battle) {
+    const winnerId = latestResolvedBattleWinner(result.state);
     applyConsolidationAfterBattle(
       result.state,
       priorBattle,
       priorBattleController,
-      latestResolvedBattleWinner(result.state),
+      winnerId,
+    );
+    applyFootholdBattleCleanupDraw(
+      result.state,
+      priorBattle,
+      priorBattleController,
+      winnerId,
+    );
+    queueFootholdAssetChoices(
+      result.state,
+      priorBattle,
+      priorBattleController,
+      winnerId,
     );
     applyRedemptionBattleReturns(result.state, priorBattleId);
     applyReservesBattleTopdecks(result.state, priorBattleId);
