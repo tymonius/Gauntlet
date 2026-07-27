@@ -1,0 +1,20 @@
+name: Audit banked Assets
+
+on:
+  push:
+    branches:
+      - agent/neutral-illegal-occupation
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Find Asset activity checks
+        run: |
+          echo '=== assetBank.includes ==='
+          grep -R -n "assetBank\.includes" src/state src/cards src/types || true
+          echo '=== bankedAssetUseProhibited ==='
+          grep -R -n "bankedAssetUseProhibited" src/state src/cards src/types || true
+          echo '=== bankedAssetUseAllowed ==='
+          grep -R -n "bankedAssetUseAllowed" src/state src/cards src/types || true
