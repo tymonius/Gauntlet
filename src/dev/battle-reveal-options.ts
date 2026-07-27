@@ -1,48 +1,82 @@
 import type { BattleCardTarget } from '../effects';
+import {
+  activeBattleCancellationCards,
+  activePlayedCards,
+} from '../effects/embargo';
 import type { BattleParticipantState, BattlePlayedCard, GameState, PlayerID } from '../types';
 import type { StateAction } from '../state';
-import { cancellationCandidatesWithDecoysPriority } from '../state/neutral-decoys-battle';
 
 export interface BattleRevealGuidedOption {
   label: string;
   action: StateAction;
 }
 
-function activePlayedCards(participant: BattleParticipantState): BattlePlayedCard[] {
-  return [participant.handCommit, ...participant.battleDrawPlayed]
-    .filter((card): card is BattlePlayedCard => card !== undefined && !card.canceled);
+function uniqueAssignments(assignments: BattleCardTarget[][]): BattleCardTarget[][] {
+  return [...new Map(assignments.map((assignment) => [JSON.stringify(assignment), assignment])).values()];
 }
 
-function hasEmbargo(participant: BattleParticipantState): boolean {
-  return activePlayedCards(participant).some((card) => card.cardId === 'card-embargo');
+function removePhysicalCard(cards: BattlePlayedCard[], selected: BattlePlayedCard): BattlePlayedCard[] {
+  const index = cards.indexOf(selected);
+  if (index < 0) return cards;
+  return [...cards.slice(0, index), ...cards.slice(index + 1)];
 }
 
-function targetOptions(source: BattleParticipantState, opponent: BattleParticipantState): BattleCardTarget[] {
-  if (!hasEmbargo(source)) return [];
-  return cancellationCandidatesWithDecoysPriority(opponent).map((target) => ({
-    sourceCardId: 'card-embargo',
-    sourceOwner: source.playerId,
-    targetCardId: target.cardId,
-    targetOwner: opponent.playerId,
-  }));
+function targetAssignments(
+  source: BattleParticipantState,
+  opponent: BattleParticipantState,
+): BattleCardTarget[][] {
+  const sources = activeBattleCancellationCards(source);
+  const targets = activePlayedCards(opponent);
+  const targetCount = Math.min(sources.length, targets.length);
+  if (targetCount === 0) return [[]];
+
+  function build(
+    sourceIndex: number,
+    remainingTargets: BattlePlayedCard[],
+    selected: BattleCardTarget[],
+  ): BattleCardTarget[][] {
+    if (sourceIndex >= targetCount) return [selected];
+    const decoys = remainingTargets.filter((card) => card.cardId === 'neutral-decoys');
+    const eligible = decoys.length > 0 ? decoys : remainingTargets;
+    const sourceCard = sources[sourceIndex];
+    return eligible.flatMap((target) => build(
+      sourceIndex + 1,
+      removePhysicalCard(remainingTargets, target),
+      [...selected, {
+        sourceCardId: sourceCard.cardId,
+        sourceOwner: source.playerId,
+        targetCardId: target.cardId,
+        targetOwner: opponent.playerId,
+      }],
+    ));
+  }
+
+  return uniqueAssignments(build(0, targets, []));
 }
 
 function targetCombinations(game: GameState): BattleCardTarget[][] {
   const battle = game.battle;
   if (!battle) return [[]];
   const groups = [
-    targetOptions(battle.attacker, battle.defender),
-    targetOptions(battle.defender, battle.attacker),
-  ].filter((group) => group.length > 0);
-  if (groups.length === 0) return [[]];
-  return groups.reduce<BattleCardTarget[][]>((combinations, group) => (
-    combinations.flatMap((combination) => group.map((target) => [...combination, target]))
-  ), [[]]);
+    targetAssignments(battle.attacker, battle.defender),
+    targetAssignments(battle.defender, battle.attacker),
+  ];
+  return uniqueAssignments(groups.reduce<BattleCardTarget[][]>((combinations, group) => (
+    combinations.flatMap((combination) => group.map((targets) => [...combination, ...targets]))
+  ), [[]]));
+}
+
+function sourceName(cardId: string): string {
+  if (cardId === 'card-embargo') return 'Embargo';
+  if (cardId === 'neutral-disruption') return 'Disruption';
+  return cardId;
 }
 
 function targetLabel(targets: BattleCardTarget[]): string {
   if (targets.length === 0) return 'Resolve revealed Battle effects';
-  return `Resolve revealed effects: ${targets.map((target) => `${target.sourceOwner}'s Embargo cancels ${target.targetOwner}'s ${target.targetCardId}`).join('; ')}`;
+  return `Resolve revealed effects: ${targets.map((target) => (
+    `${target.sourceOwner}'s ${sourceName(target.sourceCardId)} cancels ${target.targetOwner}'s ${target.targetCardId}`
+  )).join('; ')}`;
 }
 
 export function buildBattleRevealOptions(game: GameState, playerId: PlayerID): BattleRevealGuidedOption[] {

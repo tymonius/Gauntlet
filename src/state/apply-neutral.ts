@@ -30,6 +30,11 @@ import {
   registerDecoysAssetExits,
   resolveDecoysChoice,
 } from './neutral-decoys';
+import {
+  applyDisruptionAction,
+  DISRUPTION,
+  prepareDisruptionAction,
+} from './neutral-disruption';
 import { applyFealtyBattleEffects } from './neutral-fealty';
 import {
   applyForcedMarchAction,
@@ -173,6 +178,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   const preparedConsolidation = action.type === 'play_action_card' && action.cardId === CONSOLIDATION
     ? prepareConsolidationAction(game, action)
     : undefined;
+  const preparedDisruption = action.type === 'play_action_card' && action.cardId === DISRUPTION
+    ? prepareDisruptionAction(game, action)
+    : undefined;
   const preparedNewRecruits = action.type === 'play_action_card' && action.cardId === NEW_RECRUITS
     ? prepareNewRecruitsAction(game, action)
     : undefined;
@@ -222,6 +230,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'play_action_card' && preparedConsolidation) {
     const drawnCards = applyConsolidationAction(result.state, action.playerId, preparedConsolidation);
     result.result = { ...(result.result ?? {}), drawnCards };
+  }
+  if (action.type === 'play_action_card' && preparedDisruption) {
+    applyDisruptionAction(result.state, action.playerId, preparedDisruption);
   }
   if (action.type === 'play_action_card' && action.cardId === FORCED_MARCH) {
     applyForcedMarchAction(result.state, action.playerId);
