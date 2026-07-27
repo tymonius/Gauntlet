@@ -1,57 +1,106 @@
-# Gauntlet v0.5 Deckbuilder
+# Gauntlet v0.6.0 Deckbuilder
 
-A lightweight static browser tool for building and validating pre-faction Gauntlet decks.
+The browser Deckbuilder for the canonical Gauntlet v0.6.0 playtest release.
+
+Rendered tool:
+
+- `https://tymonius.github.io/Gauntlet/deckbuilder/`
+
+The former `/deckbuilder-v0.6/` address remains available as a compatibility route to the canonical tool.
+
+## Recommended starter Decks
+
+The Deckbuilder includes one complete recommended first-game Deck for each of the twelve faction Leaders.
+
+Each preset contains:
+
+- exactly 30 playable cards;
+- exactly 60 total deckbuilding value;
+- only Basic Neutral cards;
+- exactly three different Basic Territories, with no more than one Arena;
+- an ordered Territory line;
+- a short explanation of the Deck's plan; and
+- a first-game tip for the selected Leader.
+
+Choose a faction and Leader, then select **Load recommended deck**. The loaded Deck can be modified, saved, exported, copied as text, or printed immediately with its Leader and all required supplemental components. When the current Deck still exactly matches the pre-built preset, its strategy summary, first-game tip, and recommended Territory order from the player's end outward are also printed in the top informational section before the cards.
+
+Select **Print all 12 starter decks** to build one combined print job containing every complete recommended Leader Deck. Each of the twelve packages retains its own summary, strategy advice, ordered Territories, Leader Card, playable cards, and required faction components. The combined print job respects the current **Print card backs** checkbox.
+
+The presets are designed for onboarding and broad playtesting. They are recommended starting points, not claims of optimal competitive construction.
 
 ## Current scope
 
-The current mode targets the v0.5 playtest line and loads canonical v0.5.6 data from:
+The Deckbuilder supports:
 
-- `releases/v0.5.6/Gauntlet_v0.5.6_Canonical_Data.json`
+- all six factions and twelve Leaders, with Leader-rule summaries;
+- twelve validated recommended starter Decks;
+- one-click combined printing of all twelve complete starter packages;
+- Neutral plus selected-faction card legality;
+- live parsing of all six definitive faction-guide Markdown sources;
+- card search and cost/allegiance filters;
+- duplicate quantities and Unique enforcement;
+- 30-card / 60-value playable-card validation;
+- random valid 30-card test Decks for the selected faction and Leader;
+- random Decks containing 6–10 faction cards, no more than three copies of a non-Unique title, and no more than one copy of a Unique title;
+- all 25 canonical v0.6.0 Territories;
+- Territory search, standard/Arena filtering, previews, and watchlist display;
+- exactly-three-Territory validation with a maximum of one Arena;
+- selected Territories and faction supplemental packages in the Current deck display;
+- Territory-aware local saves, JSON import/export, and text Deck lists;
+- browser Print / PDF export for the complete playable Deck, Territories, selected Leader Card, and required faction supplemental cards;
+- optional duplex backs for every playable card and Territory; and
+- local save/load/delete.
 
-It supports:
+## Runtime sources
 
-- searching and filtering available cards;
-- adding duplicate main-deck cards;
-- tracking deck size and point total;
-- selecting exactly three different Territories;
-- enforcing the one-Arena maximum;
-- enforcing unique-card limits from canonical data;
-- generating random legal test decks;
-- saving, loading, and deleting decks in browser storage;
-- copying decklists as text;
-- importing and exporting deck JSON;
-- printable card and Territory layouts for browser print-to-PDF.
+The browser tool reads the canonical Markdown sources at runtime so card and Territory text remains synchronized with the release:
 
-## File structure
+- `docs/Gauntlet_v0.6_Neutral_Card_Pool.md`
+- `releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`
+- `releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`
+- `releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`
+- `releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`
+- `releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`
+- `releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`
+- `docs/Gauntlet_v0.6_Territory_Pool.md`
 
-The implementation is intentionally small and framework-free:
+Recommended starter compositions live in `deckbuilder/starter-decks.json`. The repository test command validates them against `releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json`.
 
-- `index.html` — application structure and controls;
-- `styles.css` — base tokens and shared styling;
-- `components.css` — consolidated builder, browser, validation, deck-list, and responsive component styling;
-- `app.js` — core state, canonical-data loading, validation, persistence, text/JSON export, and baseline rendering;
-- `features.js` — compact browsers, random-deck generation, and print/PDF features.
+## Random test Decks
 
-The former sequence of small cleanup and print-override files has been consolidated into `components.css` and `features.js` so the active implementation is easier to understand and maintain.
+The **Random deck** control preserves the selected faction and Leader, replaces the current playable cards and Territories after confirmation, and generates:
 
-## Running locally
+- exactly 30 playable cards;
+- no more than 60 total deckbuilding value;
+- a faction presence of 6–10 cards;
+- varied titles through a soft three-copy limit;
+- normal Unique enforcement;
+- exactly three different Territories; and
+- either no Arena or one Arena.
 
-Because the app fetches JSON data from the repository, open it through a local web server rather than directly from the filesystem.
+The random generator accelerates broad playtesting. Use the recommended starter preset for a coherent first-game strategy.
 
-From the repository root:
+## Print / PDF export
 
-```bash
-python3 -m http.server 8000
-```
+The **Print / PDF** control opens a browser-printable Letter-size package and then opens the system print dialog. The package contains:
 
-Then open:
+- a Deck summary and list;
+- the starter strategy summary, first-game tip, and recommended Territory order when the current Deck exactly matches a pre-built starter preset;
+- the selected Leader Card, including portrait and exact Leader rules;
+- one printable face for every playable-card copy;
+- the selected three Territories in their saved order;
+- every required faction tracker, ledger, reference, and supplemental card; and
+- standardized 2.5 × 3.5-inch cut lines.
 
-```text
-http://localhost:8000/deckbuilder/
-```
+The **Print all 12 starter decks** control assembles the same complete output for every pre-built Deck into a single browser print job and restores the Deck currently open in the builder after generation.
 
-## Version policy
+Enable **Print card backs** to add mirrored reverse pages for playable cards and Territories. This option also applies to the combined twelve-Deck print job. Print at Actual Size / 100%, disable browser headers and footers, and choose **Flip on long edge** for duplex pages.
 
-Saved decks include a `gameVersion` and `ruleset` field. A deck should be viewed and edited in the mode for which it was built rather than silently migrated.
+Faction packages render as follows:
 
-The intended upgrade path is a shared UI shell with a separate v0.6+ data and validation mode once factions, leaders, card legality, and canonical v0.6 data are stable. The current v0.5 mode should remain available as a legacy playtest tool.
+- **Military:** selected Leader Card and shared Command Tracker;
+- **Diplomats:** selected Leader Card, Influence Tracker, double-sided Reference card, nine Proposal fronts, and nine Treaty Article backs;
+- **Financiers:** selected Leader Card, Financier Reference, reusable Capital Ledger, and eight generic Deed Cards;
+- **Intelligence:** selected Leader Card, Mission Reference, Operations Reference, sliding Intel Tracker, and sliding Operation Progress Tracker;
+- **Mystics:** selected Leader Card, Mystics Reference, and three double-sided Rite cards; and
+- **Inquisition:** selected Leader Card, Conviction Tracker, Doctrine Reference, and Purge Reference.

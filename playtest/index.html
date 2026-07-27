@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-8YYYZJGGPE');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Gauntlet v0.6.0 Playtest Sheet</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header screen-only">
+    <div>
+      <p class="eyebrow">Gauntlet playtest tool</p>
+      <h1>Printable Playtest Sheet</h1>
+      <p class="lede">Print one copy after each game and complete it by hand.</p>
+    </div>
+    <button type="button" onclick="window.print()">Print / Save PDF</button>
+  </header>
+
+  <main class="sheet-shell">
+    <section class="playtest-sheet" aria-labelledby="sheet-title">
+      <header class="sheet-title">
+        <div>
+          <p class="eyebrow">Official v0.6.0 human-playtest questionnaire</p>
+          <h2 id="sheet-title">Gauntlet Playtest Sheet</h2>
+        </div>
+        <p><strong>Record the problem before proposing a fix.</strong><br />One unusual game is evidence, not a verdict.</p>
+      </header>
+
+      <section class="meta-section ruled-section">
+        <div class="meta-grid">
+          <div class="line-field"><span>Date</span><span class="write-line"></span></div>
+          <div class="line-field"><span>Session / group</span><span class="write-line"></span></div>
+          <div class="line-field short"><span>Play time</span><span class="write-line"></span><span>min</span></div>
+        </div>
+        <div class="choice-row test-types">
+          <strong>Test type</strong>
+          <span class="choice"><i class="paper-box"></i> First game / onboarding</span>
+          <span class="choice"><i class="paper-box"></i> Repeated matchup</span>
+          <span class="choice"><i class="paper-box"></i> Leader comparison</span>
+          <span class="choice"><i class="paper-box"></i> Custom Deck</span>
+          <span class="choice"><i class="paper-box"></i> Rules / components</span>
+        </div>
+      </section>
+
+      <section class="players-grid ruled-section">
+        <article class="player-card player-a">
+          <h3>Player A</h3>
+          <div class="line-field"><span>Name / ID</span><span class="write-line"></span></div>
+          <div class="line-field"><span>Faction / Leader</span><span class="write-line"></span></div>
+          <div class="line-field"><span>Deck</span><span class="write-line"></span></div>
+          <div class="choice-row compact">
+            <strong>Recommended starter?</strong>
+            <span class="choice"><i class="paper-circle"></i> Yes</span>
+            <span class="choice"><i class="paper-circle"></i> Modified</span>
+            <span class="choice"><i class="paper-circle"></i> No</span>
+          </div>
+        </article>
+
+        <article class="player-card player-b">
+          <h3>Player B</h3>
+          <div class="line-field"><span>Name / ID</span><span class="write-line"></span></div>
+          <div class="line-field"><span>Faction / Leader</span><span class="write-line"></span></div>
+          <div class="line-field"><span>Deck</span><span class="write-line"></span></div>
+          <div class="choice-row compact">
+            <strong>Recommended starter?</strong>
+            <span class="choice"><i class="paper-circle"></i> Yes</span>
+            <span class="choice"><i class="paper-circle"></i> Modified</span>
+            <span class="choice"><i class="paper-circle"></i> No</span>
+          </div>
+        </article>
+      </section>
+
+      <section class="outcome-section ruled-section">
+        <h3>Outcome</h3>
+        <div class="outcome-top">
+          <div class="choice-row compact"><strong>First player</strong><span class="choice"><i class="paper-circle"></i> A</span><span class="choice"><i class="paper-circle"></i> B</span></div>
+          <div class="choice-row compact"><strong>Winner</strong><span class="choice"><i class="paper-circle"></i> A</span><span class="choice"><i class="paper-circle"></i> B</span><span class="choice"><i class="paper-circle"></i> Stopped</span></div>
+          <div class="line-field stat"><span>Rounds</span><span class="write-line"></span></div>
+          <div class="line-field stat"><span>Battles</span><span class="write-line"></span></div>
+          <div class="line-field stat"><span>Rule lookups</span><span class="write-line"></span></div>
+        </div>
+        <div class="choice-row victory-routes">
+          <strong>Victory route</strong>
+          <span class="choice"><i class="paper-box"></i> Ran the Gauntlet</span>
+          <span class="choice"><i class="paper-box"></i> Peace Treaty</span>
+          <span class="choice"><i class="paper-box"></i> Controlling Interest</span>
+          <span class="choice"><i class="paper-box"></i> Special Operation</span>
+          <span class="choice"><i class="paper-box"></i> Ritual</span>
+          <span class="choice"><i class="paper-box"></i> Purification</span>
+          <span class="choice"><i class="paper-box"></i> Concession / stopped</span>
+        </div>
+      </section>
+
+      <section class="ratings-section ruled-section">
+        <h3>Player ratings <span>Circle one number for each player: 1 = poor, 3 = acceptable, 5 = excellent</span></h3>
+        <table class="ratings-table">
+          <thead>
+            <tr><th>Question</th><th>Player A</th><th>Player B</th><th>Question</th><th>Player A</th><th>Player B</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Overall fun</td><td><span class="rating-scale">1 2 3 4 5</span></td><td><span class="rating-scale">1 2 3 4 5</span></td>
+              <td>Pacing</td><td><span class="rating-scale">1 2 3 4 5</span></td><td><span class="rating-scale">1 2 3 4 5</span></td>
+            </tr>
+            <tr>
+              <td>Meaningful decisions</td><td><span class="rating-scale">1 2 3 4 5</span></td><td><span class="rating-scale">1 2 3 4 5</span></td>
+              <td>Battle tension</td><td><span class="rating-scale">1 2 3 4 5</span></td><td><span class="rating-scale">1 2 3 4 5</span></td>
+            </tr>
+            <tr>
+              <td>Faction / Leader clarity</td><td><span class="rating-scale">1 2 3 4 5</span></td><td><span class="rating-scale">1 2 3 4 5</span></td>
+              <td>Would play again</td><td><span class="rating-scale">1 2 3 4 5</span></td><td><span class="rating-scale">1 2 3 4 5</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="warning-section ruled-section">
+        <h3>Did any of these occur?</h3>
+        <div class="warning-grid">
+          <span class="choice"><i class="paper-box"></i> Winner clear long before the end</span>
+          <span class="choice"><i class="paper-box"></i> Repetitive or low-stakes battles</span>
+          <span class="choice"><i class="paper-box"></i> Player had no meaningful options</span>
+          <span class="choice"><i class="paper-box"></i> Attacking felt consistently futile</span>
+          <span class="choice"><i class="paper-box"></i> Territory / Asset loss snowballed too hard</span>
+          <span class="choice"><i class="paper-box"></i> Additional victory felt solitaire or irrelevant</span>
+          <span class="choice"><i class="paper-box"></i> Card flow or Graveyard pressure broke down</span>
+          <span class="choice"><i class="paper-box"></i> Rules text or components interrupted play</span>
+        </div>
+      </section>
+
+      <section class="feedback-grid">
+        <article>
+          <h3>What worked best?</h3>
+          <div class="writing-box"></div>
+        </article>
+        <article>
+          <h3>What dragged, frustrated, or felt weak?</h3>
+          <div class="writing-box"></div>
+        </article>
+        <article>
+          <h3>What was confusing or required a ruling?</h3>
+          <div class="writing-box"></div>
+        </article>
+        <article>
+          <h3>Anything too strong, too weak, or too automatic?</h3>
+          <div class="writing-box"></div>
+        </article>
+        <article>
+          <h3>Best moment / hardest decision</h3>
+          <div class="writing-box"></div>
+        </article>
+        <article>
+          <h3>Most important thing to investigate next</h3>
+          <div class="writing-box"></div>
+        </article>
+      </section>
+
+      <footer class="sheet-footer">
+        <span>Detailed testing targets: docs/Gauntlet_Playtest_Targets_and_Metrics.md</span>
+        <strong>gauntlet.run/playtest/</strong>
+      </footer>
+    </section>
+  </main>
+</body>
+</html>

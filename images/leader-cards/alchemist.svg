@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="552" viewBox="0 0 1000 552">
+  <defs>
+    <radialGradient id="bg" cx="58%" cy="36%" r="80%">
+      <stop offset="0" stop-color="#566145"/>
+      <stop offset="1" stop-color="#171a14"/>
+    </radialGradient>
+    <linearGradient id="top" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#11140f" stop-opacity=".9"/>
+      <stop offset=".18" stop-color="#11140f" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="shade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset=".38" stop-color="#11140f" stop-opacity="0"/>
+      <stop offset="1" stop-color="#0c0e0a" stop-opacity=".84"/>
+    </linearGradient>
+    <clipPath id="portrait"><rect width="1000" height="552" rx="4"/></clipPath>
+  </defs>
+  <rect width="1000" height="552" fill="url(#bg)"/>
+  <g clip-path="url(#portrait)">
+    <image href="../alchemist.png" x="-1040" y="0" width="2977" height="2654" preserveAspectRatio="none"/>
+  </g>
+  <rect width="1000" height="34" fill="#12150f" opacity=".96"/>
+  <rect width="1000" height="552" fill="url(#top)"/>
+  <rect width="1000" height="552" fill="url(#shade)"/>
+</svg>

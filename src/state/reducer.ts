@@ -20,6 +20,8 @@ import type {
 } from '../types';
 import type { ActionResult, GameAction } from './actions';
 import { drawFromDeck } from './draw';
+import { applyNoMartyrsOutcome } from './inquisition-no-martyrs';
+import { counterintelligenceBlocksFaceDownBattleCardInspection } from './neutral-counterintelligence';
 
 export class GameActionError extends Error {
   constructor(message: string) {
@@ -306,19 +308,29 @@ function maybeRevealAfterBattleDrawPlay(game: GameState): void {
   if (bothParticipants(game, hasCompletedBattleDrawPlay)) revealBattleCards(game);
 }
 
-function findRetreatSpace(game: GameState, loser: PlayerID): BoardSpaceState | undefined {
+function findRetreatSpace(game: GameState, loser: PlayerID, additionalPositions = 0): BoardSpaceState | undefined {
   if (!game.battle) return undefined;
 
   const battle = game.battle;
   const location = findSpace(game, battle.location);
   const attackerOrigin = findSpace(game, battle.attackerOrigin);
   const directionFromAttacker = location.index > attackerOrigin.index ? 1 : -1;
-  const retreatIndex = loser === battle.attacker.playerId
-    ? attackerOrigin.index
-    : location.index + directionFromAttacker;
+  const loserIsAttacker = loser === battle.attacker.playerId;
 
-  const retreatSpace = game.board.spaces.find((space) => space.index === retreatIndex);
-  if (!retreatSpace || retreatSpace.occupant) return undefined;
+  let retreatSpace: BoardSpaceState | undefined;
+  if (loserIsAttacker) {
+    retreatSpace = attackerOrigin;
+  } else {
+    retreatSpace = game.board.spaces.find((space) => space.index === location.index + directionFromAttacker);
+    if (!retreatSpace || retreatSpace.occupant) return undefined;
+  }
+
+  const extraDirection = loserIsAttacker ? -directionFromAttacker : directionFromAttacker;
+  for (let step = 0; step < additionalPositions; step += 1) {
+    const next = game.board.spaces.find((space) => space.index === retreatSpace!.index + extraDirection);
+    if (!next || next.occupant) break;
+    retreatSpace = next;
+  }
   return retreatSpace;
 }
 
@@ -448,7 +460,11 @@ function playActionCard(game: GameState, action: Extract<GameAction, { type: 'pl
   if (!player.zones.hand.includes(action.cardId)) throw new GameActionError(`${player.name} does not have that card in hand.`);
   if (!cardCanBePlayedAt(action.cardId, 'action', 'hand')) throw new GameActionError(`${action.cardId} cannot be played as an Action card.`);
   if (player.actionsRemaining < 1) throw new GameActionError(`${player.name} has no actions remaining.`);
-  if (player.hasPlayedActionThisTurn || player.hasPlayedBattleThisTurn) throw new GameActionError(`${player.name} has already played a card this turn.`);
+  const reinforcementsOpportunity = game.neutralReinforcementsActionOpportunity?.playerId === action.playerId
+    && game.neutralReinforcementsActionOpportunity.turn === game.turn;
+  if ((player.hasPlayedActionThisTurn || player.hasPlayedBattleThisTurn) && !reinforcementsOpportunity) {
+    throw new GameActionError(`${player.name} has already played a card this turn.`);
+  }
 
   player.zones.hand = player.zones.hand.filter((cardId) => cardId !== action.cardId);
   const destination = pushActionCardToDestination(player, action.cardId);
@@ -501,7 +517,9 @@ function movePlayer(game: GameState, action: Extract<GameAction, { type: 'move_p
 
   if (destination.occupant && destination.occupant !== action.playerId) {
     const defenderId = destination.occupant;
-    const watchtowerMakesAttackerHandCommitFaceUp = isWatchtower(destination) && destination.controller === defenderId;
+    const watchtowerMakesAttackerHandCommitFaceUp = isWatchtower(destination)
+      && destination.controller === defenderId
+      && !counterintelligenceBlocksFaceDownBattleCardInspection(game, defenderId, action.playerId);
     player.movementRemaining -= 1;
     game.phase = 'battle';
     game.priorityPlayer = action.playerId;
@@ -687,10 +705,12 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
   const winnerState = requirePlayer(game, winner);
   const loserState = requirePlayer(game, loser);
   const loserParticipant = getBattleParticipant(game, loser);
-  const retreatSpace = findRetreatSpace(game, loser);
 
   battle.winner = winner;
   battle.loser = loser;
+  applyNoMartyrsOutcome(game, battle, winner, loser);
+  const additionalRetreatPositions = battle.additionalRetreatPositions?.[loser] ?? 0;
+  const retreatSpace = findRetreatSpace(game, loser, additionalRetreatPositions);
   loserParticipant.retreated = true;
 
   if (winner === battle.attacker.playerId) {
@@ -707,14 +727,16 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
       loserState.occupiedSpaceId = undefined;
     }
   } else {
-    attackerOrigin.occupant = battle.attacker.playerId;
-    updateCaptureStatusForOccupiedSpace(attackerOrigin, battle.attacker.playerId);
     winnerState.occupiedSpaceId = location.id;
     updateCaptureStatusForOccupiedSpace(location, winner);
     if (retreatSpace) {
+      if (retreatSpace.id !== attackerOrigin.id) attackerOrigin.occupant = undefined;
       retreatSpace.occupant = loser;
       loserState.occupiedSpaceId = retreatSpace.id;
       updateCaptureStatusForOccupiedSpace(retreatSpace, loser);
+    } else {
+      attackerOrigin.occupant = undefined;
+      loserState.occupiedSpaceId = undefined;
     }
   }
 
@@ -754,6 +776,8 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
     modifiers: activeModifiers,
     cancellations,
     destinationOverrides,
+    lossRetreatEffectsSuppressedFor: battle.lossRetreatEffectsSuppressedFor,
+    additionalRetreatPositions: battle.additionalRetreatPositions,
   });
   game.battle = undefined;
   game.phase = 'action_after_movement';

@@ -1,0 +1,82 @@
+.ga-rules-feedback {
+  margin-top: 11px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(100, 72, 42, 0.18);
+  font: 12px/1.4 system-ui, sans-serif;
+}
+
+.ga-rules-feedback > p:first-child {
+  margin: 0 0 7px;
+  color: #5c5145;
+  font-weight: 750;
+}
+
+.ga-rules-feedback-buttons,
+.ga-rules-feedback-comment > div {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.ga-rules-feedback button {
+  min-height: 30px;
+  padding: 5px 9px;
+  border: 1px solid rgba(108, 72, 31, 0.4);
+  border-radius: 8px;
+  background: rgba(255, 251, 240, 0.78);
+  color: #5a3d20;
+  cursor: pointer;
+  font: 750 11px/1 system-ui, sans-serif;
+}
+
+.ga-rules-feedback button:hover {
+  background: rgba(198, 154, 75, 0.16);
+}
+
+.ga-rules-feedback button:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.ga-rules-feedback-comment {
+  display: grid;
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.ga-rules-feedback-comment[hidden] {
+  display: none;
+}
+
+.ga-rules-feedback-comment label {
+  display: grid;
+  gap: 4px;
+  color: #5c5145;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.ga-rules-feedback-comment textarea {
+  width: 100%;
+  min-height: 58px;
+  max-height: 120px;
+  resize: vertical;
+  border: 1px solid #a88658;
+  border-radius: 8px;
+  background: #fffdf8;
+  color: #211c17;
+  padding: 8px 9px;
+  font: 12px/1.35 system-ui, sans-serif;
+}
+
+.ga-rules-feedback-status {
+  min-height: 17px;
+  margin: 7px 0 0;
+  color: #684b28;
+  font-size: 11px;
+}
+
+.ga-rules-feedback.is-complete > p:first-child,
+.ga-rules-feedback.is-complete .ga-rules-feedback-buttons {
+  display: none;
+}

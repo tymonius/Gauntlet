@@ -1,0 +1,321 @@
+/* Final pagination refinements for the half-letter booklet edition. */
+
+/* Horizontal rules separate top-level Markdown chapters in the source. The
+   booklet already gives every chapter a ruled heading, and a trailing rule can
+   otherwise be pushed onto a page by itself immediately before a forced
+   faction opener. */
+hr {
+  display: none;
+}
+
+/* The section and its heading both inherit page-break rules from the Letter
+   edition. The section itself owns the break; its heading should not request
+   another one. */
+section.level1[id$="-military"] > h1,
+section.level1[id$="-diplomats"] > h1,
+section.level1[id$="-financiers"] > h1,
+section.level1[id$="-intelligence"] > h1,
+section.level1[id$="-mystics"] > h1,
+section.level1[id$="-inquisition"] > h1,
+section.level1[id$="-glossary"] > h1 {
+  break-before: auto;
+  page-break-before: auto;
+}
+
+/* Game Zones misses the preceding page by one short closing paragraph.
+   Tighten only this reference-style section so it closes cleanly before the
+   deliberately new-page Actions chapter. */
+section.level1[id$="-game-zones"] {
+  font-size: 8.72pt;
+  line-height: 1.22;
+}
+
+section.level1[id$="-game-zones"] > h1 {
+  margin-top: 0.085in;
+  margin-bottom: 0.075in;
+  padding-bottom: 0.045in;
+  font-size: 16.6pt;
+}
+
+section.level1[id$="-game-zones"] h2 {
+  margin-top: 0.075in;
+  margin-bottom: 0.025in;
+  font-size: 11.35pt;
+}
+
+section.level1[id$="-game-zones"] p {
+  margin-bottom: 0.038in;
+}
+
+/* Front matter ----------------------------------------------------------- */
+
+@page inside-front {
+  size: 5.5in 8.5in;
+  margin: 0.46in 0.52in 0.48in 0.40in;
+
+  @top-left { content: none; }
+  @top-right { content: none; }
+  @bottom-left { content: none; }
+  @bottom-right { content: none; }
+}
+
+section#copyright-and-use.inside-front-cover {
+  page: inside-front;
+  box-sizing: border-box;
+  min-height: 7.56in;
+  max-width: none;
+  margin: 0;
+  padding: 0 0.08in 0.04in;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  break-before: page;
+  page-break-before: always;
+  break-after: page;
+  page-break-after: always;
+  font-size: 7.75pt;
+  line-height: 1.34;
+}
+
+section#copyright-and-use.inside-front-cover h6 {
+  margin-bottom: 0.15in;
+  font-size: 10.6pt;
+}
+
+section#copyright-and-use.inside-front-cover h6::before {
+  width: 0.62in;
+  margin-bottom: 0.12in;
+  border-top-width: 2.5pt;
+}
+
+section#copyright-and-use.inside-front-cover p {
+  margin-bottom: 0.082in;
+  max-width: none;
+}
+
+section#copyright-and-use.inside-front-cover p:last-child {
+  margin-top: 0.09in;
+  font-size: 8.3pt;
+}
+
+/* Keep the compact reference on the final interior page after the Glossary.
+   This reclaims the page used by the new inside-front-cover colophon while
+   preserving the established 32-page imposition. */
+section#quick-reference {
+  break-before: auto;
+  page-break-before: auto;
+  break-inside: auto;
+  page-break-inside: auto;
+  margin-top: 0.10in;
+  font-size: 7.65pt;
+  line-height: 1.15;
+}
+
+section#quick-reference > h1 {
+  margin-top: 0.08in;
+  margin-bottom: 0.07in;
+  padding-bottom: 0.045in;
+  font-size: 15.2pt;
+}
+
+section#quick-reference h2 {
+  margin-top: 0.065in;
+  margin-bottom: 0.018in;
+  font-size: 9.7pt;
+}
+
+section#quick-reference ol,
+section#quick-reference ul {
+  margin-top: 0.018in;
+  margin-bottom: 0.035in;
+  line-height: 1.13;
+}
+
+/* Deckbuilder access ----------------------------------------------------- */
+
+/* Keep the printed desktop address visually attached to the QR code while
+   retaining ordinary linear Markdown for accessible DOCX output. */
+section#online-tools-and-updates img[alt*="QR code"] {
+  float: left;
+  width: 1.08in;
+  max-width: 1.08in;
+  margin: 0.02in 0.16in 0.08in 0;
+}
+
+section#online-tools-and-updates > p:last-child {
+  box-sizing: border-box;
+  min-height: 1.10in;
+  margin: 0.01in 0 0.08in;
+  padding-top: 0.36in;
+  font-family: "Noto Sans", sans-serif;
+  font-size: 8.35pt;
+  line-height: 1.22;
+  color: #273244;
+}
+
+section#online-tools-and-updates::after {
+  content: "";
+  display: block;
+  clear: both;
+}
+
+/* Leader pairing --------------------------------------------------------- */
+
+/* Begin each near-fitting pair on a fresh page. The enlarged portraits still
+   leave both profiles comfortably on one page while using the available space
+   more deliberately. */
+section#ranger,
+section#alchemist {
+  break-before: page;
+  page-break-before: always;
+}
+
+section#ranger,
+section#spymaster,
+section#alchemist,
+section#spirit-walker {
+  margin-top: 0.055in;
+  font-size: 8.15pt;
+  line-height: 1.16;
+}
+
+section#ranger > h2,
+section#alchemist > h2 {
+  margin-bottom: 0.032in;
+  padding-bottom: 0.032in;
+  font-size: 13.5pt;
+}
+
+section#spymaster > h2,
+section#spirit-walker > h2 {
+  margin-bottom: 0.030in;
+  padding-bottom: 0.030in;
+  font-size: 13.1pt;
+}
+
+section#ranger h3,
+section#spymaster h3,
+section#alchemist h3,
+section#spirit-walker h3 {
+  margin-top: 0.042in;
+  margin-bottom: 0.012in;
+  font-size: 8.8pt;
+}
+
+section#ranger p,
+section#spymaster p,
+section#alchemist p,
+section#spirit-walker p {
+  margin-bottom: 0.027in;
+}
+
+section#ranger img,
+section#alchemist img {
+  width: 44%;
+  max-width: 44%;
+  max-height: 3.10in;
+  margin-right: 0.10in;
+}
+
+section#spymaster img,
+section#spirit-walker img {
+  width: 42%;
+  max-width: 42%;
+  max-height: 2.95in;
+  margin-right: 0.10in;
+}
+
+section#spymaster,
+section#spirit-walker {
+  margin-top: 0.05in;
+  padding-top: 0.05in;
+}
+
+/* Back cover ------------------------------------------------------------- */
+
+@page back-cover {
+  size: 5.5in 8.5in;
+  margin: 0.30in;
+
+  @top-left { content: none; }
+  @top-right { content: none; }
+  @bottom-left { content: none; }
+  @bottom-right { content: none; }
+}
+
+section#booklet-back-cover {
+  page: back-cover;
+  position: relative;
+  box-sizing: border-box;
+  min-height: 7.90in;
+  margin: 0;
+  padding: 0.58in 0.42in 0.44in;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  break-before: page;
+  page-break-before: always;
+  border: 1.15pt solid #172235;
+  background:
+    linear-gradient(0deg, rgba(23, 34, 53, 0.045), rgba(23, 34, 53, 0) 36%),
+    #fbfaf7;
+  font-family: "Noto Sans", sans-serif;
+  text-align: center;
+  color: #475569;
+}
+
+section#booklet-back-cover::before {
+  content: "";
+  position: absolute;
+  inset: 0.14in;
+  border: 0.55pt solid #aeb6c2;
+}
+
+.booklet-back-cover-imprint {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  padding-top: 0.18in;
+}
+
+.booklet-back-cover-imprint::before {
+  content: "";
+  display: block;
+  width: 0.92in;
+  margin: 0 auto 0.18in;
+  border-top: 3pt double #9a7a2f;
+}
+
+.booklet-back-cover-imprint p {
+  margin: 0;
+}
+
+.booklet-back-cover-title {
+  font-size: 15.5pt;
+  font-weight: 800;
+  line-height: 1;
+  letter-spacing: 0.16em;
+  color: #172235;
+}
+
+.booklet-back-cover-edition {
+  margin-top: 0.11in !important;
+  font-size: 7.6pt;
+  font-weight: 700;
+  letter-spacing: 0.055em;
+  text-transform: uppercase;
+}
+
+.booklet-back-cover-credit {
+  margin-top: 0.075in !important;
+  font-size: 7.2pt;
+}
+
+.booklet-back-cover-url {
+  margin-top: 0.12in !important;
+  font-size: 8.1pt;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  color: #172235;
+}

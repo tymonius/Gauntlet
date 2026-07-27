@@ -1,0 +1,15 @@
+import type { ProposalDefinition, ProposalID } from '../types';
+
+export const diplomatProposalDefinitions: readonly ProposalDefinition[] = [
+  { id: 'de-escalation', name: 'De-escalation', stake: 0, requirement: 'None.', accepted: 'Both players withdraw. The opponent draws one card.', refused: 'Draw one card.' },
+  { id: 'orderly-withdrawal', name: 'Orderly Withdrawal', stake: 0, requirement: 'You must be attacking.', accepted: 'You withdraw. The opponent remains in or occupies the contested position, then draws one card.', refused: 'Add +1 to your battle total.' },
+  { id: 'capitulation', name: 'Capitulation', stake: 0, requirement: 'You must be defending.', accepted: 'You withdraw. The opponent remains in or occupies the contested position, then draws one card.', refused: 'If you lose, draw two cards.' },
+  { id: 'open-channels', name: 'Open Channels', stake: 1, requirement: 'You must have a card in hand.', accepted: 'Both players reveal their hands, then withdraw. The opponent draws one card.', refused: "Look at the opponent's hand. When forming your Battle Hand, draw one additional card before choosing a card from it." },
+  { id: 'mutual-disarmament', name: 'Mutual Disarmament', stake: 1, requirement: 'Both players must have a card in hand.', accepted: 'Each player discards one card from hand. The opponent draws one card, then both players withdraw.', refused: 'You may discard one card from hand. If you do, when forming your Battle Hand, draw one additional card before choosing a card from it.' },
+  { id: 'prisoner-exchange', name: 'Prisoner Exchange', stake: 1, requirement: 'Each player must have a card in their Graveyard.', accepted: 'Each player may move one card from their Graveyard to their Discard Pile. Then both players withdraw.', refused: 'If you lose, you may move one card from your Graveyard to your Discard Pile.' },
+  { id: 'rebuilding-pact', name: 'Rebuilding Pact', stake: 1, requirement: 'You must have a card in hand that can be banked as an Asset.', accepted: 'Each player may bank one eligible card from hand as an Asset without using an Action Opportunity. Then both players withdraw.', refused: 'After the battle, you may bank one eligible card from hand as an Asset without using an Action Opportunity.' },
+  { id: 'ultimatum', name: 'Ultimatum', stake: 2, requirement: 'None.', accepted: 'The opponent withdraws. You remain in or occupy the contested position.', refused: 'Add +1 to your battle total. If you win and newly ratify this Proposal, gain 2 Influence instead of 1.' },
+  { id: 'diplomatic-recognition', name: 'Diplomatic Recognition', stake: 2, requirement: 'You must be defending a counterattack on a Territory you occupy that the opponent controlled immediately before you occupied it.', accepted: 'Capture that Territory immediately. The opponent withdraws, then draws two cards.', refused: 'If you win, capture that Territory immediately, but gain no Influence for imposing this Proposal.' },
+] as const;
+
+export const diplomatProposalsById = new Map<ProposalID, ProposalDefinition>(diplomatProposalDefinitions.map((proposal) => [proposal.id, proposal]));

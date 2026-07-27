@@ -21,7 +21,12 @@ export interface BattlePlayedCard {
   origin: CardOrigin;
   faceDown: boolean;
   canceled: boolean;
+  negated?: boolean;
+  earlyEffectResolved?: boolean;
+  postRevealEffectResolved?: boolean;
   visibleTo?: PlayerID[];
+  /** A repeated effect with no additional physical card or cleanup destination. */
+  virtual?: boolean;
 }
 
 export interface BattleParticipantState {
@@ -34,6 +39,9 @@ export interface BattleParticipantState {
   battleDrawPlayed: BattlePlayedCard[];
   battleDrawCount: number;
   battleDrawPlayLimit: number;
+  advantage?: number;
+  disadvantage?: number;
+  diceRolls?: number[];
   diceRoll?: number;
   rerollsRemaining: number;
   modifiers: number;
@@ -55,6 +63,20 @@ export interface BattlePlayOption {
   origin?: 'hand' | 'battle_draw';
 }
 
+export interface ResolvedBattleModifier {
+  playerId: PlayerID;
+  source: string;
+  amount: number;
+  reason: string;
+}
+
+export interface ResolvedBattleCancellation {
+  cardId: CardID;
+  owner: PlayerID;
+  source: string;
+  reason: string;
+}
+
 export interface BattleState {
   id: string;
   stage: BattleStage;
@@ -63,10 +85,24 @@ export interface BattleState {
   attacker: BattleParticipantState;
   defender: BattleParticipantState;
   tiePolicy: BattleTiePolicy;
+  lastStand?: boolean;
   attackerHandCommitVisibleTo?: PlayerID[];
+  /** Players who may only pass during the hand-commit step. */
+  handCommitProhibitedFor?: PlayerID[];
+  blockedBattleDrawCards?: Partial<Record<PlayerID, CardID[]>>;
+  observedBeforeNormalReveal?: Partial<Record<PlayerID, CardID[]>>;
+  bankedAssetUseProhibited?: PlayerID[];
+  fogOfWarOverlayOwner?: PlayerID;
+  noMartyrsAssetInitialCounts?: Partial<Record<PlayerID, number>>;
+  noMartyrsAssetProcessedCounts?: Partial<Record<PlayerID, number>>;
+  noMartyrsAssetActivatedCounts?: Partial<Record<PlayerID, number>>;
+  lossRetreatEffectsSuppressedFor?: PlayerID[];
+  additionalRetreatPositions?: Partial<Record<PlayerID, number>>;
   winner?: PlayerID;
   loser?: PlayerID;
   effectsResolved: string[];
+  resolvedModifiers?: ResolvedBattleModifier[];
+  resolvedCancellations?: ResolvedBattleCancellation[];
 }
 
 export interface PublicBattleParticipantView {
@@ -78,6 +114,9 @@ export interface PublicBattleParticipantView {
   battleDrawPlayed: Array<BattlePlayedCard | { faceDown: true }>;
   battleDrawLimit: number;
   battleDrawPlayLimit: number;
+  advantage: number;
+  disadvantage: number;
+  diceRolls?: number[];
   diceRoll?: number;
   modifiers: number;
   retreated: boolean;
@@ -91,6 +130,14 @@ export interface PublicBattleView {
   attacker: PublicBattleParticipantView;
   defender: PublicBattleParticipantView;
   tiePolicy: BattleTiePolicy;
+  lastStand?: boolean;
+  handCommitProhibitedFor?: PlayerID[];
+  fogOfWarOverlayOwner?: PlayerID;
+  noMartyrsAssetInitialCounts?: Partial<Record<PlayerID, number>>;
+  noMartyrsAssetProcessedCounts?: Partial<Record<PlayerID, number>>;
+  noMartyrsAssetActivatedCounts?: Partial<Record<PlayerID, number>>;
+  lossRetreatEffectsSuppressedFor?: PlayerID[];
+  additionalRetreatPositions?: Partial<Record<PlayerID, number>>;
   validBattleCardTargets?: BattleCardTargetOption[];
   legalBattlePlays?: BattlePlayOption[];
   winner?: PlayerID;

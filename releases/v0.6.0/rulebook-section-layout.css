@@ -1,0 +1,315 @@
+/* Section-aware overrides applied after rulebook.css.
+   Pandoc prefixes numbered level-one heading IDs with the section number. */
+
+.page-break {
+  display: none;
+  height: 0;
+  break-before: auto;
+  page-break-before: auto;
+}
+
+/* Contents labels -------------------------------------------------------- */
+
+nav#TOC a[href$="-military"]::before {
+  content: "FACTIONS";
+  display: block;
+  margin: 0.18in 0 0.08in;
+  padding-top: 0.10in;
+  border-top: 1pt solid #9aa4b2;
+  color: #6b7280;
+  font-size: 8pt;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+/* Compact two-column rules passages ------------------------------------- */
+
+section.level1[id$="-components"],
+section.level1[id$="-building-a-deck"],
+section.level1[id$="-setup"],
+section.level1[id$="-turn-structure"],
+section.level1[id$="-movement"],
+section.level1[id$="-territory-control"],
+section.level1[id$="-game-zones"],
+section.level1[id$="-actions-assets-and-overlays"],
+section.level1[id$="-glossary"],
+section#quick-reference {
+  columns: 2;
+  column-gap: 0.28in;
+  column-rule: 0.45pt solid #d9dde3;
+}
+
+section.level1[id$="-components"] > h1,
+section.level1[id$="-building-a-deck"] > h1,
+section.level1[id$="-setup"] > h1,
+section.level1[id$="-turn-structure"] > h1,
+section.level1[id$="-movement"] > h1,
+section.level1[id$="-territory-control"] > h1,
+section.level1[id$="-game-zones"] > h1,
+section.level1[id$="-actions-assets-and-overlays"] > h1,
+section.level1[id$="-glossary"] > h1,
+section#quick-reference > h1,
+section.level1 table,
+section.level1 blockquote {
+  column-span: all;
+}
+
+section.level1[id$="-glossary"] p {
+  margin-bottom: 0.05in;
+  break-inside: avoid;
+}
+
+section#quick-reference {
+  break-before: page;
+  page-break-before: always;
+}
+
+/* Pagination refinements ------------------------------------------------- */
+
+/* Keep a new chapter heading with its opening passage wherever possible. */
+section.level1 > h1 + p,
+section.level1 > h1 + section.level2,
+section.level2 > h2 + p,
+section.level2 > h2 + ol,
+section.level2 > h2 + ul {
+  break-before: avoid-page;
+  page-break-before: avoid;
+}
+
+/* This compact chapter fits comfortably on one page and should never leave
+   its title stranded at the foot of Game Zones. */
+section.level1[id$="-actions-assets-and-overlays"] {
+  break-before: page;
+  page-break-before: always;
+}
+
+/* Turn Structure misses a single page by only its Cleanup paragraph in the
+   default rhythm. Tighten this section locally rather than shrinking the book. */
+section.level1[id$="-turn-structure"] {
+  font-size: 9.25pt;
+  line-height: 1.24;
+}
+
+section.level1[id$="-turn-structure"] h2 {
+  margin-top: 0.085in;
+  margin-bottom: 0.03in;
+  font-size: 13.3pt;
+}
+
+section.level1[id$="-turn-structure"] p {
+  margin-bottom: 0.045in;
+}
+
+section.level1[id$="-turn-structure"] ol,
+section.level1[id$="-turn-structure"] ul {
+  margin-top: 0.025in;
+  margin-bottom: 0.05in;
+}
+
+/* Faction openers -------------------------------------------------------- */
+
+section.level1[id$="-military"],
+section.level1[id$="-diplomats"],
+section.level1[id$="-financiers"],
+section.level1[id$="-intelligence"],
+section.level1[id$="-mystics"],
+section.level1[id$="-inquisition"],
+section.level1[id$="-glossary"] {
+  break-before: page;
+  page-break-before: always;
+}
+
+section.level1[id$="-military"] > h1,
+section.level1[id$="-diplomats"] > h1,
+section.level1[id$="-financiers"] > h1,
+section.level1[id$="-intelligence"] > h1,
+section.level1[id$="-mystics"] > h1,
+section.level1[id$="-inquisition"] > h1,
+section.level1[id$="-glossary"] > h1 {
+  break-before: page;
+  page-break-before: always;
+}
+
+section.level1[id$="-military"] > h1::before {
+  content: "FACTIONS";
+  display: block;
+  margin-bottom: 0.14in;
+  color: #6b7280;
+  font-size: 9pt;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+}
+
+section.level1[id$="-military"] > h1 { border-bottom-color: #8f2f2b; }
+section.level1[id$="-diplomats"] > h1 { border-bottom-color: #275487; }
+section.level1[id$="-financiers"] > h1 { border-bottom-color: #2f6b4d; }
+section.level1[id$="-intelligence"] > h1 { border-bottom-color: #3f454d; }
+section.level1[id$="-mystics"] > h1 { border-bottom-color: #60437d; }
+section.level1[id$="-inquisition"] > h1 { border-bottom-color: #9a7a2f; }
+
+/* Leader profiles ------------------------------------------------------- */
+
+section#general,
+section#commandant,
+section#ambassador,
+section#senator,
+section#banker,
+section#executive,
+section#ranger,
+section#spymaster,
+section#alchemist,
+section#spirit-walker,
+section#grand-inquisitor,
+section#witch-hunter {
+  margin-top: 0.12in;
+  font-size: 8.9pt;
+  line-height: 1.21;
+  break-inside: avoid-page;
+  page-break-inside: avoid;
+}
+
+section#general > h2,
+section#commandant > h2,
+section#ambassador > h2,
+section#senator > h2,
+section#banker > h2,
+section#executive > h2,
+section#ranger > h2,
+section#spymaster > h2,
+section#alchemist > h2,
+section#spirit-walker > h2,
+section#grand-inquisitor > h2,
+section#witch-hunter > h2 {
+  margin-top: 0;
+  margin-bottom: 0.045in;
+  padding-bottom: 0.045in;
+  font-size: 17.5pt;
+}
+
+section#general h3,
+section#commandant h3,
+section#ambassador h3,
+section#senator h3,
+section#banker h3,
+section#executive h3,
+section#ranger h3,
+section#spymaster h3,
+section#alchemist h3,
+section#spirit-walker h3,
+section#grand-inquisitor h3,
+section#witch-hunter h3 {
+  margin-top: 0.065in;
+  margin-bottom: 0.02in;
+  font-size: 10.3pt;
+}
+
+section#general p,
+section#commandant p,
+section#ambassador p,
+section#senator p,
+section#banker p,
+section#executive p,
+section#ranger p,
+section#spymaster p,
+section#alchemist p,
+section#spirit-walker p,
+section#grand-inquisitor p,
+section#witch-hunter p {
+  margin-bottom: 0.04in;
+}
+
+section#general img,
+section#commandant img,
+section#ambassador img,
+section#senator img,
+section#banker img,
+section#executive img,
+section#ranger img,
+section#spymaster img,
+section#alchemist img,
+section#spirit-walker img,
+section#grand-inquisitor img,
+section#witch-hunter img {
+  width: 32%;
+  max-width: 32%;
+  max-height: 3.15in;
+  margin: 0.035in 0.22in 0.08in 0;
+}
+
+/* The second Leader follows the first whenever the pair fits. A quiet rule
+   separates paired profiles without forcing a new page. */
+section#commandant,
+section#senator,
+section#executive,
+section#spymaster,
+section#spirit-walker,
+section#witch-hunter {
+  clear: both;
+  margin-top: 0.07in;
+  padding-top: 0.07in;
+  border-top: 0.7pt solid #c8cdd4;
+  break-before: auto;
+  page-break-before: auto;
+}
+
+section#commandant > h2,
+section#senator > h2,
+section#executive > h2,
+section#spymaster > h2,
+section#spirit-walker > h2,
+section#witch-hunter > h2 {
+  margin-bottom: 0.035in;
+  padding-bottom: 0.035in;
+  font-size: 16.5pt;
+}
+
+section#commandant img,
+section#senator img,
+section#executive img,
+section#spymaster img,
+section#spirit-walker img,
+section#witch-hunter img {
+  width: 28%;
+  max-width: 28%;
+  max-height: 2.72in;
+  margin: 0.025in 0.20in 0.055in 0;
+}
+
+/* These two first portraits were the only remaining blockers to pairing both
+   Leaders on the same page. Their text remains at the standard Leader size. */
+section#general img,
+section#banker img {
+  width: 29%;
+  max-width: 29%;
+  max-height: 2.55in;
+}
+
+section#general ul,
+section#commandant ul,
+section#ambassador ul,
+section#senator ul,
+section#banker ul,
+section#executive ul,
+section#ranger ul,
+section#spymaster ul,
+section#alchemist ul,
+section#spirit-walker ul,
+section#grand-inquisitor ul,
+section#witch-hunter ul,
+section#general ol,
+section#commandant ol,
+section#ambassador ol,
+section#senator ol,
+section#banker ol,
+section#executive ol,
+section#ranger ol,
+section#spymaster ol,
+section#alchemist ol,
+section#spirit-walker ol,
+section#grand-inquisitor ol,
+section#witch-hunter ol {
+  overflow: visible;
+  margin: 0.025in 0 0.045in;
+  padding-left: 0;
+  list-style-position: inside;
+}

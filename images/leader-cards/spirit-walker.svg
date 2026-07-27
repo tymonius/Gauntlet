@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="552" viewBox="0 0 1000 552">
+  <defs>
+    <radialGradient id="bg" cx="52%" cy="34%" r="82%">
+      <stop offset="0" stop-color="#5a493c"/>
+      <stop offset="1" stop-color="#1b1512"/>
+    </radialGradient>
+    <linearGradient id="top" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#16110f" stop-opacity=".92"/>
+      <stop offset=".16" stop-color="#16110f" stop-opacity="0"/>
+    </linearGradient>
+    <linearGradient id="shade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset=".36" stop-color="#191210" stop-opacity="0"/>
+      <stop offset="1" stop-color="#0f0b09" stop-opacity=".86"/>
+    </linearGradient>
+    <clipPath id="portrait"><rect width="1000" height="552" rx="4"/></clipPath>
+  </defs>
+  <rect width="1000" height="552" fill="url(#bg)"/>
+  <g clip-path="url(#portrait)">
+    <image href="../spirit walker.png" x="-1448" y="-59" width="4297" height="3223" preserveAspectRatio="none"/>
+  </g>
+  <rect width="1000" height="72" fill="#17100e" opacity=".68"/>
+  <rect width="1000" height="34" fill="#17100e" opacity=".96"/>
+  <rect width="1000" height="552" fill="url(#top)"/>
+  <rect width="1000" height="552" fill="url(#shade)"/>
+</svg>

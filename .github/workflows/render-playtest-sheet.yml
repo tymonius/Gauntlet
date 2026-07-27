@@ -1,0 +1,110 @@
+name: Render printable playtest sheet
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - playtest/index.html
+      - playtest/styles.css
+      - .github/workflows/render-playtest-sheet.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - playtest/index.html
+      - playtest/styles.css
+      - .github/workflows/render-playtest-sheet.yml
+      - README.md
+      - playtest/README.md
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: render-playtest-sheet-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install rendering tools
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+          python3 -m pip install pypdf
+
+      - name: Serve repository
+        run: |
+          python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
+
+      - name: Render Letter-size PDF
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from 'playwright';
+
+          const browser = await chromium.launch({ headless: true });
+          const page = await browser.newPage({ viewport: { width: 1275, height: 1650 } });
+          const errors = [];
+          page.on('pageerror', error => errors.push(error.message));
+          page.on('console', message => {
+            if (message.type() === 'error') errors.push(message.text());
+          });
+
+          await page.goto('http://127.0.0.1:8000/playtest/', { waitUntil: 'networkidle' });
+          await page.emulateMedia({ media: 'print' });
+          await page.pdf({
+            path: 'playtest/Gauntlet_v0.6.0_Playtest_Sheet.pdf',
+            format: 'Letter',
+            printBackground: true,
+            preferCSSPageSize: true,
+            margin: { top: '0', right: '0', bottom: '0', left: '0' }
+          });
+          await browser.close();
+
+          if (errors.length) {
+            throw new Error(`Browser rendering errors:\n${errors.join('\n')}`);
+          }
+          NODE
+
+      - name: Validate PDF
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+          from pypdf import PdfReader
+
+          path = Path('playtest/Gauntlet_v0.6.0_Playtest_Sheet.pdf')
+          if not path.exists() or path.stat().st_size < 20_000:
+              raise SystemExit('Generated PDF is missing or unexpectedly small')
+          reader = PdfReader(str(path))
+          if len(reader.pages) != 1:
+              raise SystemExit(f'Expected exactly one page, found {len(reader.pages)}')
+          page = reader.pages[0]
+          width = float(page.mediabox.width)
+          height = float(page.mediabox.height)
+          if abs(width - 612) > 2 or abs(height - 792) > 2:
+              raise SystemExit(f'Expected Letter size, found {width} x {height} points')
+          text = (page.extract_text() or '').strip()
+          if len(text) < 300:
+              raise SystemExit(f'Generated PDF contains too little extractable content: {len(text)} characters')
+          print(f'Validated {path}: one Letter-size page, {path.stat().st_size} bytes, {len(text)} text characters.')
+          PY
+
+      - name: Commit generated PDF on main
+        if: github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node scripts/commit-generated-files.mjs \
+            "Render printable playtest sheet PDF" \
+            -- playtest/Gauntlet_v0.6.0_Playtest_Sheet.pdf

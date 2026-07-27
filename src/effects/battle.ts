@@ -1,10 +1,16 @@
 import type { BattleParticipantState, CardID, GameState, PlayerID } from '../types';
+import { bankedAssetUseAllowed } from '../state/banked-assets';
 import { validateEmbargoTargets } from './embargo';
 import type { BattleCardTarget, EffectHandler } from './types';
 
+function participantCardCount(participant: BattleParticipantState, cardId: CardID): number {
+  return [participant.handCommit, ...participant.battleDrawPlayed]
+    .filter((played) => played?.cardId === cardId && !played.canceled && !played.negated)
+    .length;
+}
+
 function participantHasCard(participant: BattleParticipantState, cardId: CardID): boolean {
-  return participant.handCommit?.cardId === cardId && !participant.handCommit.canceled
-    || participant.battleDrawPlayed.some((played) => played.cardId === cardId && !played.canceled);
+  return participantCardCount(participant, cardId) > 0;
 }
 
 function hasPlayedCard(context: Parameters<EffectHandler['applies']>[0], playerId: PlayerID, cardId: CardID): boolean {
@@ -13,8 +19,13 @@ function hasPlayedCard(context: Parameters<EffectHandler['applies']>[0], playerI
   return participantHasCard(participant, cardId);
 }
 
+function treasonCopiedEffect(context: Parameters<EffectHandler['applies']>[0], playerId: PlayerID, cardId: CardID): boolean {
+  return context.battle?.effectsResolved.includes(`treason_copy:${playerId}:${cardId}`) ?? false;
+}
+
 function hasBankedAsset(game: GameState, playerId: PlayerID, cardId: CardID): boolean {
-  return game.players[playerId]?.zones.assetBank.includes(cardId) ?? false;
+  return bankedAssetUseAllowed(game, playerId)
+    && (game.players[playerId]?.zones.assetBank.includes(cardId) ?? false);
 }
 
 function opposingParticipant(context: Parameters<EffectHandler['applies']>[0], owner: PlayerID): BattleParticipantState | undefined {
@@ -24,7 +35,7 @@ function opposingParticipant(context: Parameters<EffectHandler['applies']>[0], o
 
 function findPlayedTarget(participant: BattleParticipantState, target: BattleCardTarget) {
   return [participant.handCommit, ...participant.battleDrawPlayed]
-    .find((played) => played?.cardId === target.targetCardId && played.owner === target.targetOwner && !played.canceled);
+    .find((played) => played?.cardId === target.targetCardId && played.owner === target.targetOwner && !played.canceled && !played.virtual);
 }
 
 function selectedEmbargoTarget(context: Parameters<EffectHandler['resolve']>[0], sourceOwner: PlayerID): BattleCardTarget | undefined {
@@ -42,7 +53,7 @@ function selectedEmbargoTarget(context: Parameters<EffectHandler['resolve']>[0],
 
 function battleDrawCardsFor(participant: BattleParticipantState): CardID[] {
   return [
-    ...participant.battleDrawPlayed.map((played) => played.cardId),
+    ...participant.battleDrawPlayed.filter((played) => !played.virtual).map((played) => played.cardId),
     ...participant.battleDraw,
   ];
 }
@@ -107,17 +118,18 @@ export const fortificationsBattleHandler: EffectHandler = {
   },
   resolve(context) {
     if (!context.battle) return {};
+    const count = participantCardCount(context.battle.defender, 'card-fortifications');
 
     return {
       modifiers: [
         {
           playerId: context.battle.defender.playerId,
           source: 'card-fortifications',
-          amount: 1,
-          reason: 'Fortifications Battle: defender gains +1.',
+          amount: count,
+          reason: `Fortifications Battle: defender gains +${count}.`,
         },
       ],
-      logMessages: ['Fortifications battle effect gave the defender +1.'],
+      logMessages: [`Fortifications battle effects gave the defender +${count}.`],
     };
   },
 };
@@ -134,17 +146,86 @@ export const valorBattleHandler: EffectHandler = {
     if (!context.battle) return {};
 
     const modifiers = [context.battle.attacker, context.battle.defender]
-      .filter((participant) => participantHasCard(participant, 'card-valor'))
-      .map((participant) => ({
+      .map((participant) => ({ participant, count: participantCardCount(participant, 'card-valor') }))
+      .filter(({ count }) => count > 0)
+      .map(({ participant, count }) => ({
         playerId: participant.playerId,
         source: 'card-valor',
-        amount: 2,
-        reason: 'Valor Battle: +2 to battle total.',
+        amount: 2 * count,
+        reason: `Valor Battle: +${2 * count} to battle total.`,
       }));
 
     return {
       modifiers,
-      logMessages: modifiers.map((modifier) => `Valor gave ${modifier.playerId} +2.`),
+      logMessages: modifiers.map((modifier) => `Valor gave ${modifier.playerId} +${modifier.amount}.`),
+    };
+  },
+};
+
+export const contingencyPlanBattleHandler: EffectHandler = {
+  id: 'neutral_contingency_plan_battle',
+  timing: ['before_battle_resolution'],
+  applies(context) {
+    if (!context.battle) return false;
+    return [context.battle.attacker, context.battle.defender].some((participant) => {
+      const opponent = participant.playerId === context.battle!.attacker.playerId
+        ? context.battle!.defender
+        : context.battle!.attacker;
+      return participantCardCount(participant, 'neutral-contingency-plan') > 0
+        && context.game.players[opponent.playerId].controlledTerritories.length
+          > context.game.players[participant.playerId].controlledTerritories.length;
+    });
+  },
+  resolve(context) {
+    if (!context.battle) return {};
+    const modifiers = [context.battle.attacker, context.battle.defender].flatMap((participant) => {
+      const opponent = participant.playerId === context.battle!.attacker.playerId
+        ? context.battle!.defender
+        : context.battle!.attacker;
+      const count = participantCardCount(participant, 'neutral-contingency-plan');
+      const isBehind = context.game.players[opponent.playerId].controlledTerritories.length
+        > context.game.players[participant.playerId].controlledTerritories.length;
+      if (count === 0 || !isBehind) return [];
+      return [{
+        playerId: participant.playerId,
+        source: 'neutral-contingency-plan',
+        amount: count,
+        reason: `Contingency Plan Battle: +${count} while the opponent controls more Territories.`,
+      }];
+    });
+
+    return {
+      modifiers,
+      logMessages: modifiers.map((modifier) => `Contingency Plan gave ${modifier.playerId} +${modifier.amount}.`),
+    };
+  },
+};
+
+export const counterintelligenceBattleHandler: EffectHandler = {
+  id: 'neutral_counterintelligence_battle',
+  timing: ['before_battle_resolution'],
+  applies(context) {
+    if (!context.battle) return false;
+    return participantHasCard(context.battle.attacker, 'neutral-counterintelligence')
+      || participantHasCard(context.battle.defender, 'neutral-counterintelligence');
+  },
+  resolve(context) {
+    if (!context.battle) return {};
+    const modifiers = [context.battle.attacker, context.battle.defender]
+      .map((participant) => ({
+        participant,
+        count: participantCardCount(participant, 'neutral-counterintelligence'),
+      }))
+      .filter(({ count }) => count > 0)
+      .map(({ participant, count }) => ({
+        playerId: participant.playerId,
+        source: 'neutral-counterintelligence',
+        amount: count,
+        reason: `Counterintelligence Battle: +${count} to battle total.`,
+      }));
+    return {
+      modifiers,
+      logMessages: modifiers.map((modifier) => `Counterintelligence gave ${modifier.playerId} +${modifier.amount}.`),
     };
   },
 };
@@ -187,7 +268,8 @@ export const attritionBattleHandler: EffectHandler = {
   timing: ['after_battle_resolution'],
   applies(context) {
     if (!context.battle?.winner || !context.battle.loser) return false;
-    return hasPlayedCard(context, context.battle.winner, 'card-attrition');
+    return hasPlayedCard(context, context.battle.winner, 'card-attrition')
+      || treasonCopiedEffect(context, context.battle.winner, 'card-attrition');
   },
   resolve(context) {
     if (!context.battle?.winner || !context.battle.loser) return {};
@@ -222,7 +304,7 @@ export const attritionAssetHandler: EffectHandler = {
     const loser = context.battle.attacker.playerId === context.battle.loser
       ? context.battle.attacker
       : context.battle.defender;
-    const cards = loser.battleDrawPlayed.map((played) => played.cardId);
+    const cards = loser.battleDrawPlayed.filter((played) => !played.virtual).map((played) => played.cardId);
 
     return {
       destinationOverrides: cards.map((cardId) => ({
@@ -242,6 +324,8 @@ export const baseBattleEffectHandlers: EffectHandler[] = [
   fortificationsAssetHandler,
   fortificationsBattleHandler,
   valorBattleHandler,
+  contingencyPlanBattleHandler,
+  counterintelligenceBattleHandler,
   attritionBattleHandler,
   attritionAssetHandler,
 ];

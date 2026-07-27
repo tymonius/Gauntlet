@@ -3,7 +3,7 @@
 **Status:** Working production-facing art and miniature direction for the v0.6 faction leader roster  
 **Purpose:** Define the visual identity, tabletop miniature silhouette, and player-facing character direction for all twelve v0.6 faction leaders.
 
-This document records the current character design direction for the twelve v0.6 faction leaders. It should be used alongside `docs/Gauntlet_v0.6_Working_Rules.md`, which remains the source of truth for rules text and leader abilities.
+This document records the current character design direction for the twelve v0.6 faction Leaders. The [official rulebook](../releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md) and [definitive faction guides](../releases/v0.6.0/faction-guides/) govern rules text and Leader abilities.
 
 ---
 
@@ -69,7 +69,7 @@ These are not strict faction colors, but production tendencies.
 | Military | Blue, brass, leather, smoke, field earth, polished weapons |
 | Diplomats | Navy, ivory, parchment, wax seals, laurel, polished wood |
 | Inquisition | Black, charcoal, brown leather, smoke, ash, iron, candlelight |
-| Arcane | Bone, charcoal, dark red, green glass, brass, smoke, ritual marks |
+| Mystics | Bone, charcoal, dark red, green glass, brass, smoke, ritual marks |
 | Financiers | Dark green, burgundy, navy, brass, parchment, ledgers, wax |
 | Intelligence | Muted green, ink black, parchment, walnut wood, brass, coded papers |
 
@@ -502,12 +502,12 @@ The Grand Inquisitor condemns. The Witch Hunter pursues.
 
 ---
 
-# Arcane Leaders
+# Mystic Leaders
 
 ## 10. Alchemist
 
-**Faction:** Arcane  
-**Mechanical anchor:** Sacrifice, Transmutation, and turning cards sent from hand to Graveyard into fuel. Ability name TBD.  
+**Faction:** Mystics  
+**Mechanical anchor:** Sacrifice, Transmutation, and turning cards sent from hand to Graveyard into fuel. **Materia Prima.**  
 **Core identity:** Experiment, transmutation, disciplined occult science.
 
 ### Design Thesis
@@ -582,8 +582,8 @@ The Alchemist experiments with matter. The Spirit Walker invokes unseen forces.
 
 ## 11. Spirit Walker
 
-**Faction:** Arcane  
-**Mechanical anchor:** Ritual protection, Graveyard contact, and preserving a begun Rite through sacrifice. Ability name TBD.  
+**Faction:** Mystics  
+**Mechanical anchor:** Ritual protection, Graveyard contact, and preserving a begun Rite through sacrifice. **Guardians of the Circle.**  
 **Core identity:** Ritual endurance, unseen communion, protective invocation.
 
 ### Design Thesis
@@ -986,7 +986,7 @@ The Ranger sees the field. The Spymaster moves the network.
 | Military | General | Commandant | Attack vs defense |
 | Diplomats | Ambassador | Senator | Personal diplomacy vs institutional legitimacy |
 | Inquisition | Grand Inquisitor | Witch Hunter | Judgment vs pursuit |
-| Arcane | Alchemist | Spirit Walker | Experiment vs invocation |
+| Mystics | Alchemist | Spirit Walker | Experiment vs invocation |
 | Financiers | Banker | Executive | Leverage vs control |
 | Intelligence | Ranger | Spymaster | Fieldcraft vs network command |
 
@@ -1014,7 +1014,7 @@ Bases should reinforce role, not overwhelm the character.
 | Military | Battlefield / fortification |
 | Diplomats | Papers / seals / chamber or diplomatic table |
 | Inquisition | Ash / writs / smoke / tribunal or trail |
-| Arcane | Lab apparatus / ritual circle |
+| Mystics | Lab apparatus / ritual circle |
 | Financiers | Ledgers / strongboxes / crates / trade goods |
 | Intelligence | Terrain markers / maps / cipher tools |
 
