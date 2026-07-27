@@ -1,6 +1,7 @@
 import type { BattleCardTarget } from '../effects';
 import type { BattleParticipantState, BattlePlayedCard, GameState, PlayerID } from '../types';
 import type { StateAction } from '../state';
+import { cancellationCandidatesWithDecoysPriority } from '../state/neutral-decoys-battle';
 
 export interface BattleRevealGuidedOption {
   label: string;
@@ -18,7 +19,7 @@ function hasEmbargo(participant: BattleParticipantState): boolean {
 
 function targetOptions(source: BattleParticipantState, opponent: BattleParticipantState): BattleCardTarget[] {
   if (!hasEmbargo(source)) return [];
-  return activePlayedCards(opponent).map((target) => ({
+  return cancellationCandidatesWithDecoysPriority(opponent).map((target) => ({
     sourceCardId: 'card-embargo',
     sourceOwner: source.playerId,
     targetCardId: target.cardId,

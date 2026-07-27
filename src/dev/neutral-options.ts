@@ -35,6 +35,23 @@ export function buildPendingNeutralOptions(
   if (!pending || pending.playerId !== playerId) return undefined;
 
   switch (pending.kind) {
+    case 'decoys_asset':
+      return [
+        {
+          label: 'Do not use this Decoys copy',
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'pass' },
+        },
+        ...pending.assetOptions.map((asset) => ({
+          label: `Discard Decoys instead of ${asset.cardId}`,
+          action: {
+            type: 'resolve_neutral_choice' as const,
+            playerId,
+            choice: 'use' as const,
+            targetKey: asset.exitId,
+          },
+        })),
+      ];
+
     case 'redemption_asset':
       return [
         {

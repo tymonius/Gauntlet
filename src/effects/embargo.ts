@@ -1,5 +1,6 @@
 import type { BattleParticipantState, CardID, PlayerID } from '../types';
 import type { BattleCardTarget, EffectContext } from './types';
+import { cancellationTargetAllowedByDecoys } from '../state/neutral-decoys-battle';
 
 function participantHasCard(participant: BattleParticipantState, cardId: CardID): boolean {
   return participant.handCommit?.cardId === cardId && !participant.handCommit.canceled
@@ -27,7 +28,8 @@ function activePlayedCards(participant: BattleParticipantState) {
 
 function hasTargetCard(participant: BattleParticipantState, target: BattleCardTarget): boolean {
   return activePlayedCards(participant)
-    .some((played) => played.cardId === target.targetCardId && played.owner === target.targetOwner);
+    .some((played) => played.cardId === target.targetCardId && played.owner === target.targetOwner)
+    && cancellationTargetAllowedByDecoys(participant, target.targetCardId);
 }
 
 export function validateEmbargoTargets(context: EffectContext): void {
@@ -44,7 +46,11 @@ export function validateEmbargoTargets(context: EffectContext): void {
 
     const other = otherParticipant(context, target.sourceOwner);
     if (!other || other.playerId !== target.targetOwner || !hasTargetCard(other, target)) {
-      throw new Error('Invalid Embargo target.');
+      throw new Error(
+        other && activePlayedCards(other).some((played) => played.cardId === target.targetCardId)
+          ? 'Decoys must be canceled before another active Battle card.'
+          : 'Invalid Embargo target.',
+      );
     }
   }
 

@@ -8,7 +8,7 @@ import type { CardID, GameID, PlayerID, SpaceID } from './ids';
 import type { LegalLeaderAbilityOption } from './leader';
 import type { PendingMilitaryChoice, PendingMilitaryTimingChoice } from './military';
 import type { PendingAccursedWagerAftermath, PendingMysticsChoice } from './mystics';
-import type { PendingNeutralChoice, RedemptionBattleReturns, RedemptionDiscardQueueEntry, ReservesBattleTopdecks, SuppliesAssetQueueEntry, SuppliesBattleQueueEntry } from './neutral';
+import type { DecoysAssetQueueEntry, PendingNeutralChoice, RedemptionBattleReturns, RedemptionDiscardQueueEntry, ReservesBattleTopdecks, SuppliesAssetQueueEntry, SuppliesBattleQueueEntry } from './neutral';
 import type { PlayerState, PrivatePlayerView, PublicPlayerView } from './player';
 
 export type GamePhase = 'setup' | 'turn_start' | 'action_before_movement' | 'movement' | 'battle' | 'action_after_movement' | 'cleanup' | 'game_over';
@@ -42,6 +42,7 @@ export interface GameState {
   inquisitionRelentlessPursuitRequest?: InquisitionRelentlessPursuitRequest;
   inquisitionRelentlessPursuitResume?: InquisitionRelentlessPursuitResume;
   neutralPathfindersSuppressions?: NeutralPathfindersSuppression[];
+  neutralDecoysAssetQueue?: DecoysAssetQueueEntry[];
   neutralRedemptionDiscardQueue?: RedemptionDiscardQueueEntry[];
   neutralRedemptionBattleReturns?: RedemptionBattleReturns;
   neutralReservesBattleTopdecks?: ReservesBattleTopdecks;
