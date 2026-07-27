@@ -88,6 +88,16 @@ export interface PendingFootholdAssetChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+
+export interface PendingPalisadeWallAssetChoice {
+  kind: 'palisade_wall_asset';
+  playerId: PlayerID;
+  battleId: string;
+  targetPlayerId: PlayerID;
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface PendingReservesActionChoice {
   kind: 'reserves_action';
   playerId: PlayerID;
@@ -185,6 +195,7 @@ export type PendingNeutralChoice =
   | PendingRedemptionAssetChoice
   | PendingRedemptionBattleChoice
   | PendingFootholdAssetChoice
+  | PendingPalisadeWallAssetChoice
   | PendingReservesActionChoice
   | PendingReservesBattleChoice
   | PendingScoutingReportActionChoice
