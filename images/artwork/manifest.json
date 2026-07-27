@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "description": "Production inventory of approved final Gauntlet artwork stored under images/artwork/.",
+  "status_values": [
+    "approved-final",
+    "superseded"
+  ],
+  "usage_values": [
+    "card",
+    "territory",
+    "arena",
+    "faction-reference",
+    "leader-reference",
+    "environment-reference",
+    "promotional"
+  ],
+  "assets": []
+}
