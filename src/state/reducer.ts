@@ -460,7 +460,11 @@ function playActionCard(game: GameState, action: Extract<GameAction, { type: 'pl
   if (!player.zones.hand.includes(action.cardId)) throw new GameActionError(`${player.name} does not have that card in hand.`);
   if (!cardCanBePlayedAt(action.cardId, 'action', 'hand')) throw new GameActionError(`${action.cardId} cannot be played as an Action card.`);
   if (player.actionsRemaining < 1) throw new GameActionError(`${player.name} has no actions remaining.`);
-  if (player.hasPlayedActionThisTurn || player.hasPlayedBattleThisTurn) throw new GameActionError(`${player.name} has already played a card this turn.`);
+  const reinforcementsOpportunity = game.neutralReinforcementsActionOpportunity?.playerId === action.playerId
+    && game.neutralReinforcementsActionOpportunity.turn === game.turn;
+  if ((player.hasPlayedActionThisTurn || player.hasPlayedBattleThisTurn) && !reinforcementsOpportunity) {
+    throw new GameActionError(`${player.name} has already played a card this turn.`);
+  }
 
   player.zones.hand = player.zones.hand.filter((cardId) => cardId !== action.cardId);
   const destination = pushActionCardToDestination(player, action.cardId);

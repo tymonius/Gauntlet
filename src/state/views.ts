@@ -10,6 +10,7 @@ import type {
   GameEvent,
   GameState,
   LegalActionPlayOption,
+  LegalNeutralAssetUseOption,
   PrivateGameView,
   PrivatePlayerView,
   PublicBattleParticipantView,
@@ -29,6 +30,7 @@ import { toPublicMysticsState } from './mystics-ritual';
 import { cancellationCandidatesWithDecoysPriority } from './neutral-decoys-battle';
 import { canResolveDisruptionAction, DISRUPTION } from './neutral-disruption';
 import { entrenchmentActionPlayProhibited } from './neutral-entrenchment';
+import { canUseReinforcementsAsset, REINFORCEMENTS, reinforcementsActionOpportunityActive } from './neutral-reinforcements';
 import { canResolveNewRecruitsAction, NEW_RECRUITS } from './neutral-new-recruits';
 
 const visible = <T>(cards: T[]) => ({ kind: 'visible' as const, cards });
@@ -205,13 +207,19 @@ function legalActionPlaysForViewer(game: GameState, viewer?: PlayerID): LegalAct
   if (game.phase !== 'action_before_movement' && game.phase !== 'action_after_movement') return undefined;
   if (entrenchmentActionPlayProhibited(game, viewer)) return undefined;
   const player = game.players[viewer];
-  if (player.actionsRemaining < 1 || player.hasPlayedActionThisTurn) return undefined;
+  const extraOpportunity = reinforcementsActionOpportunityActive(game, viewer);
+  if (player.actionsRemaining < 1 || ((player.hasPlayedActionThisTurn || player.hasPlayedBattleThisTurn) && !extraOpportunity)) return undefined;
   return player.zones.hand
     .filter((cardId) => cardCanBePlayedAt(cardId, 'action', 'hand'))
     .filter((cardId) => canResolveIntelligenceAction(game, viewer, cardId))
     .filter((cardId) => cardId !== DISRUPTION || canResolveDisruptionAction(game, viewer))
     .filter((cardId) => cardId !== NEW_RECRUITS || canResolveNewRecruitsAction(game, viewer))
     .map((cardId) => ({ action: 'play_action_card' as const, cardId, origin: 'hand' as const, destination: destinationForCardPlay(cardId, 'hand'), requiresTarget: getCardPlayRule(cardId)?.requiresTarget ?? false }));
+}
+
+function legalNeutralAssetUsesForViewer(game: GameState, viewer?: PlayerID): LegalNeutralAssetUseOption[] | undefined {
+  if (!viewer || !canUseReinforcementsAsset(game, viewer)) return undefined;
+  return [{ action: 'use_neutral_reinforcements_asset', cardId: REINFORCEMENTS }];
 }
 
 function publicLog(game: GameState): GameEvent[] {
@@ -246,6 +254,7 @@ export function toPublicGameView(game: GameState): PublicGameView {
     battle: game.battle ? toPublicBattleView(game.battle, game) : undefined,
     neutralPathfindersSuppressions: structuredClone(game.neutralPathfindersSuppressions),
     neutralEntrenchmentActionLocks: structuredClone(game.neutralEntrenchmentActionLocks),
+    neutralReinforcementsActionOpportunity: structuredClone(game.neutralReinforcementsActionOpportunity),
     pendingNeutralChoice: neutralChoiceIsPrivate(game) ? undefined : structuredClone(game.pendingNeutralChoice),
     pendingMilitaryChoice: game.pendingMilitaryChoice,
     pendingMilitaryTimingChoice: game.pendingMilitaryTimingChoice,
@@ -272,6 +281,7 @@ export function toPrivateGameView(game: GameState, viewer: PlayerID): PrivateGam
     pendingMysticsChoice: game.pendingMysticsChoice?.playerId === viewer ? structuredClone(game.pendingMysticsChoice) : undefined,
     pendingInquisitionChoice: game.pendingInquisitionChoice?.playerId === viewer ? structuredClone(game.pendingInquisitionChoice) : undefined,
     legalActionPlays: legalActionPlaysForViewer(game, viewer),
+    legalNeutralAssetUses: legalNeutralAssetUsesForViewer(game, viewer),
     legalLeaderAbilities: legalLeaderAbilitiesFor(game, viewer),
     log: privateLog(game, viewer),
   };

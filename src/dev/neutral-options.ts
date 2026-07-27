@@ -75,6 +75,18 @@ export function buildPendingNeutralOptions(
         },
       }));
 
+    case 'reinforcements_battle':
+      return [
+        {
+          label: `Keep ${pending.drawnCardId} in the Battle Hand`,
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'pass' },
+        },
+        ...(pending.canPlay ? [{
+          label: `Reveal ${pending.drawnCardId} with Reinforcements`,
+          action: { type: 'resolve_neutral_choice' as const, playerId, choice: 'use' as const },
+        }] : []),
+      ];
+
     case 'reserves_action':
       return pending.cardOptions.map((cardId) => ({
         label: `Put ${cardId} on top of your Draw Pile with Reserves`,

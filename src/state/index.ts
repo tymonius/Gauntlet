@@ -82,6 +82,7 @@ export * from './neutral-entrenchment';
 export * from './neutral-foothold';
 export * from './neutral-illegal-occupation';
 export * from './neutral-palisade-wall';
+export * from './neutral-reinforcements';
 export * from './neutral-fealty';
 export * from './neutral-forced-march';
 export * from './neutral-new-recruits';

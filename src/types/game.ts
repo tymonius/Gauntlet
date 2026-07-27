@@ -21,6 +21,7 @@ export interface InquisitionRelentlessPursuitRequest { playerId: PlayerID; loser
 export interface InquisitionRelentlessPursuitResume { playerId: PlayerID; turn: number; }
 export interface NeutralPathfindersSuppression { playerId: PlayerID; spaceId: SpaceID; turn: number; }
 export interface NeutralEntrenchmentActionLock { playerId: PlayerID; sourcePlayerId: PlayerID; turn: number; }
+export interface NeutralReinforcementsActionOpportunity { playerId: PlayerID; turn: number; }
 
 export interface GameState {
   id: GameID; version: string; phase: GamePhase; turn: number; activePlayer: PlayerID; priorityPlayer?: PlayerID;
@@ -44,6 +45,7 @@ export interface GameState {
   inquisitionRelentlessPursuitResume?: InquisitionRelentlessPursuitResume;
   neutralPathfindersSuppressions?: NeutralPathfindersSuppression[];
   neutralEntrenchmentActionLocks?: NeutralEntrenchmentActionLock[];
+  neutralReinforcementsActionOpportunity?: NeutralReinforcementsActionOpportunity;
   neutralDecoysAssetQueue?: DecoysAssetQueueEntry[];
   neutralFootholdAssetQueue?: FootholdAssetQueueEntry[];
   neutralRedemptionDiscardQueue?: RedemptionDiscardQueueEntry[];
@@ -55,13 +57,15 @@ export interface GameState {
   log: GameEvent[]; winner?: PlayerID;
 }
 
+export interface LegalNeutralAssetUseOption { action: 'use_neutral_reinforcements_asset'; cardId: CardID; }
 export interface LegalActionPlayOption { action: 'play_action_card'; cardId: CardID; origin: 'hand'; destination: 'discard' | 'graveyard' | 'hand' | 'removed' | 'asset_bank'; requiresTarget: boolean; }
 export interface PublicGameView {
   id: GameID; version: string; phase: GamePhase; turn: number; activePlayer: PlayerID; priorityPlayer?: PlayerID;
   players: Record<PlayerID, PublicPlayerView>; board: PublicBoardView; battle?: PublicBattleView;
-  legalActionPlays?: LegalActionPlayOption[]; legalLeaderAbilities?: LegalLeaderAbilityOption[];
+  legalActionPlays?: LegalActionPlayOption[]; legalNeutralAssetUses?: LegalNeutralAssetUseOption[]; legalLeaderAbilities?: LegalLeaderAbilityOption[];
   neutralPathfindersSuppressions?: NeutralPathfindersSuppression[];
   neutralEntrenchmentActionLocks?: NeutralEntrenchmentActionLock[];
+  neutralReinforcementsActionOpportunity?: NeutralReinforcementsActionOpportunity;
   pendingNeutralChoice?: PendingNeutralChoice;
   pendingMilitaryChoice?: PendingMilitaryChoice; pendingMilitaryTimingChoice?: PendingMilitaryTimingChoice; pendingDiplomatChoice?: PendingDiplomatChoice; pendingFinancierChoice?: PendingFinancierChoice;
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow; pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;

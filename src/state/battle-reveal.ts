@@ -5,6 +5,8 @@ import { applySubversionBattleRestrictions } from './intelligence-subversion-bat
 import { applyPalisadeWallBattleEffects } from './neutral-palisade-wall';
 import { GameActionError, type ApplyGameActionResult } from './reducer';
 
+export const BATTLE_REVEAL_CANCELLATIONS_RESOLVED = 'battle_reveal_cancellations_resolved';
+
 function log(game: GameState, actor: PlayerID, type: string, message: string, payload?: unknown): void {
   game.log.push({
     id: `${game.id}-event-${game.log.length + 1}`,
@@ -17,29 +19,7 @@ function log(game: GameState, actor: PlayerID, type: string, message: string, pa
   } satisfies GameEvent);
 }
 
-function cancelPlayedCards(game: GameState, cancellations: Array<{ cardId: CardID; owner: PlayerID }>): Set<string> {
-  const canceled = new Set<string>();
-  const battle = game.battle;
-  if (!battle) return canceled;
-
-  for (const cancellation of cancellations) {
-    const participant = battle.attacker.playerId === cancellation.owner
-      ? battle.attacker
-      : battle.defender.playerId === cancellation.owner
-        ? battle.defender
-        : undefined;
-    if (!participant) continue;
-    const target = [participant.handCommit, ...participant.battleDrawPlayed]
-      .find((card) => card?.cardId === cancellation.cardId && !card.canceled);
-    if (!target) continue;
-    target.canceled = true;
-    canceled.add(`${target.owner}:${target.cardId}`);
-  }
-
-  return canceled;
-}
-
-export function resolveBattleReveal(game: GameState, action: ResolveBattleRevealAction): ApplyGameActionResult {
+function validateBattleReveal(game: GameState, action: ResolveBattleRevealAction): void {
   if (!game.battle || game.phase !== 'battle' || game.battle.stage !== 'dice') {
     throw new GameActionError('Battle cards are not ready to resolve.');
   }
@@ -56,6 +36,36 @@ export function resolveBattleReveal(game: GameState, action: ResolveBattleReveal
   if (game.pendingAssetBankDiscards && Object.keys(game.pendingAssetBankDiscards).length > 0) {
     throw new GameActionError('Resolve pending Asset Bank discard choices first.');
   }
+}
+
+function cancelPlayedCards(game: GameState, cancellations: Array<{ cardId: CardID; owner: PlayerID }>): void {
+  const battle = game.battle;
+  if (!battle) return;
+
+  for (const cancellation of cancellations) {
+    const participant = battle.attacker.playerId === cancellation.owner
+      ? battle.attacker
+      : battle.defender.playerId === cancellation.owner
+        ? battle.defender
+        : undefined;
+    if (!participant) continue;
+    const target = [participant.handCommit, ...participant.battleDrawPlayed]
+      .find((card) => card?.cardId === cancellation.cardId && !card.canceled);
+    if (target) target.canceled = true;
+  }
+}
+
+/**
+ * Cancellation and negation resolve first. Reinforcements uses the pause after
+ * this pass so a canceled or negated copy cannot draw an additional card.
+ */
+export function resolveBattleRevealCancellations(
+  game: GameState,
+  action: ResolveBattleRevealAction,
+): void {
+  validateBattleReveal(game, action);
+  const battle = game.battle!;
+  if (battle.effectsResolved.includes(BATTLE_REVEAL_CANCELLATIONS_RESOLVED)) return;
 
   const context = {
     game,
@@ -67,30 +77,45 @@ export function resolveBattleReveal(game: GameState, action: ResolveBattleReveal
   };
   const initialResult = new EffectRegistry(baseBattleEffectHandlers).resolve(context);
   const cancellations = initialResult.cancellations ?? [];
-  const canceled = cancelPlayedCards(game, cancellations);
+  cancelPlayedCards(game, cancellations);
   applySubversionBattleRestrictions(game);
   applyPalisadeWallBattleEffects(game);
-  const nonCancellationHandlers = baseBattleEffectHandlers.filter((handler) => (
-    handler.id !== 'neutral_disruption_battle' && handler.id !== 'trade_ban_battle'
-  ));
-  const effectResult = new EffectRegistry(nonCancellationHandlers).resolve(context);
-  const modifiers = (effectResult.modifiers ?? [])
-    .filter((modifier) => !canceled.has(`${modifier.playerId}:${String(modifier.source)}`));
-
-  battle.attacker.modifiers += totalModifiersFor(modifiers, battle.attacker.playerId);
-  battle.defender.modifiers += totalModifiersFor(modifiers, battle.defender.playerId);
-  battle.resolvedModifiers = modifiers;
   battle.resolvedCancellations = cancellations;
-  battle.effectsResolved.push('before_battle_resolution');
+  battle.effectsResolved.push(BATTLE_REVEAL_CANCELLATIONS_RESOLVED);
 
   for (const cancellation of cancellations) {
     log(game, action.playerId, 'effect_resolved', `${cancellation.source} canceled ${cancellation.cardId}.`);
   }
+}
+
+export function resolveBattleReveal(game: GameState, action: ResolveBattleRevealAction): ApplyGameActionResult {
+  validateBattleReveal(game, action);
+  resolveBattleRevealCancellations(game, action);
+  const battle = game.battle!;
+  const context = {
+    game,
+    battle,
+    timing: 'before_battle_resolution' as const,
+    actor: action.playerId,
+    location: battle.location,
+    battleCardTargets: action.battleCardTargets,
+  };
+  const nonCancellationHandlers = baseBattleEffectHandlers.filter((handler) => (
+    handler.id !== 'neutral_disruption_battle' && handler.id !== 'trade_ban_battle'
+  ));
+  const effectResult = new EffectRegistry(nonCancellationHandlers).resolve(context);
+  const modifiers = effectResult.modifiers ?? [];
+
+  battle.attacker.modifiers += totalModifiersFor(modifiers, battle.attacker.playerId);
+  battle.defender.modifiers += totalModifiersFor(modifiers, battle.defender.playerId);
+  battle.resolvedModifiers = modifiers;
+  battle.effectsResolved.push('before_battle_resolution');
+
   for (const message of effectResult.logMessages ?? []) log(game, action.playerId, 'effect_resolved', message);
   log(game, action.playerId, 'battle_reveal_resolved', 'Revealed Battle effects were resolved before dice were rolled.', {
     battleId: battle.id,
     modifiers,
-    cancellations,
+    cancellations: battle.resolvedCancellations ?? [],
   });
   return { state: game };
 }

@@ -1,3 +1,4 @@
+import type { BattleCardTarget } from '../effects';
 import type { CardID, PlayerID } from './ids';
 
 export type DecoysAssetZone = 'asset_bank' | 'hand' | 'discard' | 'graveyard' | 'removed';
@@ -94,6 +95,19 @@ export interface PendingPalisadeWallAssetChoice {
   playerId: PlayerID;
   battleId: string;
   targetPlayerId: PlayerID;
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+
+export interface PendingReinforcementsBattleChoice {
+  kind: 'reinforcements_battle';
+  playerId: PlayerID;
+  battleId: string;
+  drawnCardId: CardID;
+  canPlay: boolean;
+  resolverPlayerId: PlayerID;
+  battleCardTargets?: BattleCardTarget[];
   options: ['pass', 'use'];
   resumePriorityPlayer?: PlayerID;
 }
@@ -196,6 +210,7 @@ export type PendingNeutralChoice =
   | PendingRedemptionBattleChoice
   | PendingFootholdAssetChoice
   | PendingPalisadeWallAssetChoice
+  | PendingReinforcementsBattleChoice
   | PendingReservesActionChoice
   | PendingReservesBattleChoice
   | PendingScoutingReportActionChoice
