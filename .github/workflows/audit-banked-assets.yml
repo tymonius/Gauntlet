@@ -13,8 +13,8 @@ jobs:
       - name: Find Asset activity checks
         run: |
           {
-            echo '=== assetBank.includes ==='
-            grep -R -n "assetBank\.includes" src/state src/cards src/types || true
+            echo '=== all assetBank references ==='
+            grep -R -n "assetBank" src/state src/cards src/types || true
             echo '=== bankedAssetUseProhibited ==='
             grep -R -n "bankedAssetUseProhibited" src/state src/cards src/types || true
             echo '=== bankedAssetUseAllowed ==='
