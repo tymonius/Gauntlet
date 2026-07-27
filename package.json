@@ -6,7 +6,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "test": "vitest run && node scripts/validate-starter-decks.mjs && node scripts/sync-google-analytics.mjs --check",
-    "test:rules-assistant": "vitest run rules-assistant/local-search.test.mjs",
+    "test:rules-assistant": "vitest run rules-assistant/*.test.mjs",
     "analytics:sync": "node scripts/sync-google-analytics.mjs",
     "analytics:check": "node scripts/sync-google-analytics.mjs --check",
     "test:watch": "vitest",

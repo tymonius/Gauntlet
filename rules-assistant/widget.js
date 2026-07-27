@@ -5,8 +5,10 @@ import {
   retrieveRules
 } from "./local-search.js";
 
+const configuredApiEndpoint = window.GAUNTLET_RULES_ASSISTANT_ENDPOINT || "/api/rules";
 const CONFIG = {
-  apiEndpoint: window.GAUNTLET_RULES_ASSISTANT_ENDPOINT || "/api/rules",
+  apiEndpoint: configuredApiEndpoint,
+  feedbackEndpoint: window.GAUNTLET_RULES_FEEDBACK_ENDPOINT || inferFeedbackEndpoint(configuredApiEndpoint),
   assistantName: "Rules Arbiter",
   version: "v0.6.0",
   maxQuestionLength: 600,
@@ -40,10 +42,12 @@ class GauntletRulesAssistant {
     this.busy = false;
     this.isOpen = false;
     this.elements = {};
+    this.sessionId = getOrCreateSessionId();
   }
 
   mount() {
     if (document.querySelector("[data-gauntlet-rules-assistant]")) return;
+    ensureFeedbackStyles();
     this.render();
     this.bindEvents();
   }
@@ -66,7 +70,7 @@ class GauntletRulesAssistant {
           <button class="ga-rules-close" type="button" aria-label="Close rules assistant">×</button>
         </header>
         <div class="ga-rules-notice">
-          Answers are grounded in the canonical ${escapeHtml(CONFIG.version)} sources. Printed rules and component text remain authoritative.
+          Answers use the canonical ${escapeHtml(CONFIG.version)} sources. Questions, answers, and optional feedback may be anonymously logged to improve the rules and this tool. Printed rules and component text remain authoritative.
         </div>
         <div class="ga-rules-messages" aria-live="polite" aria-label="Rules conversation"></div>
         <div class="ga-rules-suggestions" aria-label="Suggested questions"></div>
@@ -172,6 +176,8 @@ class GauntletRulesAssistant {
 
   clear() {
     this.history = [];
+    this.sessionId = createSessionId();
+    storeSessionId(this.sessionId);
     this.renderWelcome();
     this.renderSuggestions();
     this.elements.input.value = "";
@@ -228,7 +234,11 @@ class GauntletRulesAssistant {
         const response = await fetch(CONFIG.apiEndpoint, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question, history: this.history.slice(-6) })
+          body: JSON.stringify({
+            question,
+            history: this.history.slice(-6),
+            sessionId: this.sessionId
+          })
         });
         if (response.ok) {
           const payload = await response.json();
@@ -303,6 +313,10 @@ class GauntletRulesAssistant {
       article.append(this.createSources(message.sources));
     }
 
+    if (message.role !== "user" && message.interactionId && CONFIG.feedbackEndpoint) {
+      article.append(this.createFeedback(message.interactionId));
+    }
+
     return article;
   }
 
@@ -333,6 +347,89 @@ class GauntletRulesAssistant {
     return details;
   }
 
+  createFeedback(interactionId) {
+    const section = document.createElement("section");
+    section.className = "ga-rules-feedback";
+    section.innerHTML = `
+      <p>Did this answer your question?</p>
+      <div class="ga-rules-feedback-buttons">
+        <button type="button" data-rating="yes">Yes</button>
+        <button type="button" data-rating="unclear">Unclear</button>
+        <button type="button" data-rating="incorrect">Incorrect</button>
+      </div>
+      <form class="ga-rules-feedback-comment" hidden>
+        <label>Optional comment
+          <textarea rows="2" maxlength="1200" placeholder="What was unclear or incorrect?"></textarea>
+        </label>
+        <div>
+          <button type="submit">Send feedback</button>
+          <button type="button" data-cancel>Cancel</button>
+        </div>
+      </form>
+      <p class="ga-rules-feedback-status" aria-live="polite"></p>
+    `;
+
+    let selectedRating = null;
+    const buttons = [...section.querySelectorAll("[data-rating]")];
+    const form = section.querySelector("form");
+    const textarea = section.querySelector("textarea");
+    const status = section.querySelector(".ga-rules-feedback-status");
+
+    const finish = (text) => {
+      buttons.forEach((button) => { button.disabled = true; });
+      form.hidden = true;
+      status.textContent = text;
+      section.classList.add("is-complete");
+    };
+
+    for (const button of buttons) {
+      button.addEventListener("click", async () => {
+        selectedRating = button.dataset.rating;
+        if (selectedRating === "yes") {
+          status.textContent = "Sending…";
+          try {
+            await this.submitFeedback(interactionId, selectedRating, "");
+            finish("Thank you.");
+          } catch {
+            status.textContent = "Feedback could not be saved.";
+          }
+          return;
+        }
+        form.hidden = false;
+        textarea.focus();
+      });
+    }
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!selectedRating) return;
+      status.textContent = "Sending…";
+      try {
+        await this.submitFeedback(interactionId, selectedRating, textarea.value);
+        finish("Thank you. This answer has been flagged for review.");
+      } catch {
+        status.textContent = "Feedback could not be saved.";
+      }
+    });
+
+    form.querySelector("[data-cancel]").addEventListener("click", () => {
+      form.hidden = true;
+      selectedRating = null;
+      textarea.value = "";
+    });
+
+    return section;
+  }
+
+  async submitFeedback(interactionId, rating, comment) {
+    const response = await fetch(CONFIG.feedbackEndpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ interactionId, rating, comment: String(comment || "").trim() })
+    });
+    if (!response.ok) throw new Error("Feedback request failed.");
+  }
+
   setStatus(text, isError = false) {
     this.elements.status.textContent = text;
     this.elements.status.classList.toggle("is-error", isError);
@@ -343,6 +440,56 @@ class GauntletRulesAssistant {
       this.elements.messages.scrollTop = this.elements.messages.scrollHeight;
     });
   }
+}
+
+function ensureFeedbackStyles() {
+  if (document.querySelector('link[data-gauntlet-rules-feedback-styles]')) return;
+  const link = document.createElement("link");
+  link.rel = "stylesheet";
+  link.href = new URL("./feedback.css", import.meta.url).href;
+  link.dataset.gauntletRulesFeedbackStyles = "";
+  document.head.append(link);
+}
+
+function inferFeedbackEndpoint(apiEndpoint) {
+  if (!apiEndpoint) return null;
+  try {
+    const url = new URL(apiEndpoint, window.location.href);
+    url.pathname = url.pathname.replace(/\/(api\/)?rules\/?$/, (match, apiPrefix) => `/${apiPrefix || ""}feedback`);
+    return apiEndpoint.startsWith("http") ? url.toString() : `${url.pathname}${url.search}`;
+  } catch {
+    return null;
+  }
+}
+
+function getOrCreateSessionId() {
+  const stored = readStoredSessionId();
+  if (stored) return stored;
+  const created = createSessionId();
+  storeSessionId(created);
+  return created;
+}
+
+function readStoredSessionId() {
+  try {
+    const value = sessionStorage.getItem("gauntlet_rules_session_id");
+    return /^[a-zA-Z0-9_-]{8,80}$/.test(value || "") ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+function storeSessionId(value) {
+  try {
+    sessionStorage.setItem("gauntlet_rules_session_id", value);
+  } catch {
+    // Session grouping is optional when browser storage is unavailable.
+  }
+}
+
+function createSessionId() {
+  if (typeof crypto?.randomUUID === "function") return crypto.randomUUID();
+  return `session_${Date.now()}_${Math.random().toString(36).slice(2, 12)}`;
 }
 
 function formatStatus(status) {
