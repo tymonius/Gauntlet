@@ -1,4 +1,5 @@
 import { cardCanBePlayedAt, destinationForCardPlay, getCardPlayRule } from '../cards';
+import { activeBattleCancellationCards } from '../effects/embargo';
 import type {
   BattleCardTargetOption,
   BattleParticipantState,
@@ -26,6 +27,7 @@ import { confessionLegalHandCommitCards } from './inquisition-confession';
 import { legalLeaderAbilitiesFor } from './leader-abilities';
 import { toPublicMysticsState } from './mystics-ritual';
 import { cancellationCandidatesWithDecoysPriority } from './neutral-decoys-battle';
+import { canResolveDisruptionAction, DISRUPTION } from './neutral-disruption';
 import { canResolveNewRecruitsAction, NEW_RECRUITS } from './neutral-new-recruits';
 
 const visible = <T>(cards: T[]) => ({ kind: 'visible' as const, cards });
@@ -116,11 +118,11 @@ function validBattleCardTargetsForViewer(battle: BattleState, viewer?: PlayerID)
   if (!viewerParticipant) return undefined;
   if (battle.stage !== 'dice' && battle.stage !== 'resolution') return undefined;
   const opponent = viewerParticipant.playerId === battle.attacker.playerId ? battle.defender : battle.attacker;
-  const embargoCards = playedCards(viewerParticipant).filter((card) => card.cardId === 'card-embargo');
-  if (embargoCards.length === 0) return undefined;
+  const cancellationCards = activeBattleCancellationCards(viewerParticipant);
+  if (cancellationCards.length === 0) return undefined;
   const opposingCards = cancellationCandidatesWithDecoysPriority(opponent);
   if (opposingCards.length === 0) return undefined;
-  return embargoCards.flatMap((source) => opposingCards.map((target) => ({
+  return cancellationCards.flatMap((source) => opposingCards.map((target) => ({
     sourceCardId: source.cardId,
     sourceOwner: source.owner,
     sourceOrigin: source.origin,
@@ -205,6 +207,7 @@ function legalActionPlaysForViewer(game: GameState, viewer?: PlayerID): LegalAct
   return player.zones.hand
     .filter((cardId) => cardCanBePlayedAt(cardId, 'action', 'hand'))
     .filter((cardId) => canResolveIntelligenceAction(game, viewer, cardId))
+    .filter((cardId) => cardId !== DISRUPTION || canResolveDisruptionAction(game, viewer))
     .filter((cardId) => cardId !== NEW_RECRUITS || canResolveNewRecruitsAction(game, viewer))
     .map((cardId) => ({ action: 'play_action_card' as const, cardId, origin: 'hand' as const, destination: destinationForCardPlay(cardId, 'hand'), requiresTarget: getCardPlayRule(cardId)?.requiresTarget ?? false }));
 }
