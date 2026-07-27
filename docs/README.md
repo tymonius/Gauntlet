@@ -20,11 +20,12 @@ When a derived PDF, printable sheet, deckbuilder entry, or digital implementatio
 
 - [Development Status](Gauntlet_Development_Status.md) — current post-release priorities and playtest watchlist.
 - [Design Principles and Guardrails](Gauntlet_Design_Principles_and_Guardrails.md) — durable game-design constraints.
-- [Visual Design Language](Gauntlet_Visual_Design_Language.md) — approved visual principles for faction identity, components, interfaces, and illustration.
+- [Visual Design Language](Gauntlet_Visual_Design_Language.md) — approved graphic and component principles for faction identity, cards, print materials, and interfaces.
+- [Illustration Art Direction](Gauntlet_Illustration_Art_Direction.md) — shared visual-world standards for architecture, clothing, technology, environments, faction depiction, and card illustration.
 - [Faction Card Design Guide](Gauntlet_v0.6_Faction_Card_Design_Guide.md) — standards for faction-card pools and future revisions.
 - [Playtest Targets and Metrics](Gauntlet_Playtest_Targets_and_Metrics.md) — complete evidence targets and thresholds for controlled testing.
 - [One-Page Playtest Sheet](../playtest/) — the routine paper questionnaire, designed to be printed and completed by hand.
-- [Leader Design Bible](Gauntlet_v0.6_Leader_Design_Bible.md) — current Leader art and character direction.
+- [Leader Design Bible](Gauntlet_v0.6_Leader_Design_Bible.md) — current individual Leader art, silhouette, prop, pose, and miniature direction.
 - [Lore Development Notes](Gauntlet_Lore_Development_Notes.md) — incremental setting development.
 - [Digital Roadmap](Gauntlet_Digital_Roadmap.md) — future canonical engine and interface direction.
 - [v0.7 Parking Lot](Gauntlet_v0.7_Parking_Lot.md) — deferred modules and post-v0.6 concepts.
