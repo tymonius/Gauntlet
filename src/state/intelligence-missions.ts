@@ -29,7 +29,7 @@ function requireIntelligence(game: GameState, playerId: PlayerID): PlayerState {
 
 function requireActionOpportunity(game: GameState, playerId: PlayerID): PlayerState {
   const player = requireIntelligence(game, playerId);
-  if (game.activePlayer !== playerId || game.priorityPlayer !== playerId) throw new IntelligenceMissionError('Lt is not this player’s Action Opportunity.');
+  if (game.activePlayer !== playerId || game.priorityPlayer !== playerId) throw new IntelligenceMissionError('It is not this player’s Action Opportunity.');
   if (game.phase !== 'action_after_movement' || player.actionsRemaining < 1) throw new IntelligenceMissionError('Missions require the Action Opportunity after movement.');
   if (player.hasPlayedActionThisTurn || player.hasPlayedBattleThisTurn) throw new IntelligenceMissionError('This player has already played a card this turn.');
   return player;

@@ -1,7 +1,0 @@
-55488 /tmp/illegal-occupation-files.b64
-7cda97589c5ca3b64ef28fbf7cc3d869ee106f04ade8cc0d0c7d0e44f2da4ad8  /tmp/illegal-occupation-files.b64
-d4d08a4c6552483cf3ede33d933a0ec40eafab118cbcb94bd4cd78fa313c0b1c  /tmp/illegal-occupation-files.tar.gz
-
-gzip: stdin: invalid compressed data--crc error
-tar: Child returned status 1
-tar: Error is not recoverable: exiting now
