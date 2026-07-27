@@ -77,6 +77,7 @@ export * from './neutral-counterintelligence';
 export * from './neutral-decoys';
 export * from './neutral-decoys-battle';
 export * from './neutral-disruption';
+export * from './neutral-entrenchment';
 export * from './neutral-fealty';
 export * from './neutral-forced-march';
 export * from './neutral-new-recruits';

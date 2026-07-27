@@ -35,6 +35,12 @@ import {
   DISRUPTION,
   prepareDisruptionAction,
 } from './neutral-disruption';
+import {
+  applyEntrenchmentBattleEffects,
+  applyEntrenchmentMovementTrigger,
+  clearExpiredEntrenchmentLocks,
+  requireEntrenchmentActionAllowed,
+} from './neutral-entrenchment';
 import { applyFealtyBattleEffects } from './neutral-fealty';
 import {
   applyForcedMarchAction,
@@ -162,7 +168,13 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     ? game.board.spaces.find((space) => space.id === priorBattle.location)?.controller
     : undefined;
   const normalDraw = action.type === 'draw_card' && game.phase === 'turn_start';
+  const movementOriginSpaceId = action.type === 'move_player'
+    ? game.board.spaces.find((space) => space.occupant === action.playerId)?.id
+    : undefined;
 
+  if (action.type === 'play_action_card') {
+    requireEntrenchmentActionAllowed(game, action.playerId);
+  }
   if (action.type === 'play_action_card' && action.cardId === FORCED_MARCH) {
     requireForcedMarchActionTiming(game, action.playerId);
   }
@@ -270,17 +282,26 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
       usedAdvanceGuardPosition,
       initiatedBattle,
     );
+    applyEntrenchmentMovementTrigger(
+      result.state,
+      action.playerId,
+      movementOriginSpaceId,
+      action.toSpaceId,
+      initiatedBattle,
+    );
   }
   if (action.type === 'end_turn') {
     clearRestrictedMovementForTurnTransition(result.state, action.playerId);
     clearAdvanceGuardMovement(result.state, action.playerId);
     clearExpiredPathfindersSuppressions(result.state);
+    clearExpiredEntrenchmentLocks(result.state);
   }
   if (action.type === 'resolve_asset_bank_discard') {
     applyContingencyPlanAssetLimitDraw(result.state, action.playerId, action.cardIds);
   }
   if (action.type === 'resolve_battle_reveal') {
     applyAdvanceGuardBattleEffects(result.state);
+    applyEntrenchmentBattleEffects(result.state);
     applyFealtyBattleEffects(result.state);
     applyForcedMarchBattleEffects(result.state);
     applyNewRecruitsBattleEffects(result.state);
