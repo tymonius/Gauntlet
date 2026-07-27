@@ -10,17 +10,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Find Asset activity checks
+      - name: Create source snapshot
         run: |
-          {
-            echo '=== all assetBank references ==='
-            grep -R -n "assetBank" src/state src/cards src/types || true
-            echo '=== bankedAssetUseProhibited ==='
-            grep -R -n "bankedAssetUseProhibited" src/state src/cards src/types || true
-            echo '=== bankedAssetUseAllowed ==='
-            grep -R -n "bankedAssetUseAllowed" src/state src/cards src/types || true
-          } > banked-asset-audit.txt
+          zip -qr gauntlet-source-snapshot.zip src package.json package-lock.json tsconfig.json vitest.config.ts
       - uses: actions/upload-artifact@v4
         with:
-          name: banked-asset-audit
-          path: banked-asset-audit.txt
+          name: gauntlet-source-snapshot
+          path: gauntlet-source-snapshot.zip
