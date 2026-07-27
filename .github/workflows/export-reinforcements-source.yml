@@ -24,12 +24,14 @@ jobs:
           fi
           echo "3dfed7ed6fce7088e95b087b0a338306a3b859a5ece036dcd236738a2b8dd088  .github/reinforcements-new-00.b64" | sha256sum -c -
           echo "47cb410f3085c857958bc32dc472c730016f4e90af0042ddb2106812ace64a47  .github/reinforcements-new-02.b64" | sha256sum -c -
-          echo "2eba0e06d2e77c70ac82528613bdb6107541c3f5ed9229ead0cea3e26679c423  .github/reinforcements-new-01.b64" | sha256sum -c -
+          echo "90794db3e4efe809e2b7965e1163595829197d9853f2f5012d4fdf9c06dcf586  .github/reinforcements-new-01a.b64" | sha256sum -c -
+          echo "dd1f0a09d7aa8d0b5cdf0b92cfb780a9538d85246253719c506f431754a3b7c4  .github/reinforcements-new-01b.b64" | sha256sum -c -
           echo "d03ebf999879d3da54678cc219b6ccb53ea7ab5ad851914c44e5d99e1be87656  .github/reinforcements-new-03.b64" | sha256sum -c -
           cat \
             .github/reinforcements-new-00.b64 \
             .github/reinforcements-new-02.b64 \
-            .github/reinforcements-new-01.b64 \
+            .github/reinforcements-new-01a.b64 \
+            .github/reinforcements-new-01b.b64 \
             .github/reinforcements-new-03.b64 \
             > /tmp/reinforcements-impl.b64
           test "$(wc -c < /tmp/reinforcements-impl.b64)" = "38608"
@@ -41,6 +43,8 @@ jobs:
             .github/reinforcements-00.b64 \
             .github/reinforcements-new-00.b64 \
             .github/reinforcements-new-01.b64 \
+            .github/reinforcements-new-01a.b64 \
+            .github/reinforcements-new-01b.b64 \
             .github/reinforcements-new-02.b64 \
             .github/reinforcements-new-03.b64
           git config user.name "github-actions[bot]"
