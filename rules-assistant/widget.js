@@ -5,7 +5,7 @@ import {
   retrieveRules
 } from "./local-search.js";
 
-const configuredApiEndpoint = window.GAUNTLET_RULES_ASSISTANT_ENDPOINT || "/api/rules";
+const configuredApiEndpoint = window.GAUNTLET_RULES_ASSISTANT_ENDPOINT || "https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/rules";
 const CONFIG = {
   apiEndpoint: configuredApiEndpoint,
   feedbackEndpoint: window.GAUNTLET_RULES_FEEDBACK_ENDPOINT || inferFeedbackEndpoint(configuredApiEndpoint),
