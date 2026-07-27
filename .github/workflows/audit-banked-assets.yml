@@ -1,66 +1,47 @@
-name: Deploy Illegal Occupation
+name: Diagnose Illegal Occupation Final Chunks
 
 on:
   pull_request:
     branches:
       - main
 
-permissions:
-  contents: write
-
 jobs:
-  deploy:
+  diagnose:
     if: github.head_ref == 'agent/neutral-illegal-occupation'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: agent/neutral-illegal-occupation
-      - name: Apply implementation
+      - name: Inspect all chunks
         run: |
-          if [ ! -f .github/io-mid-00.b64 ]; then
-            echo "Implementation archive already applied."
-            exit 0
-          fi
-          echo "ff6c55c480b9458da73ceea4913cf7c580ee20afd1bc4be5838214deb946b9bd  .github/io-archive-00.b64" | sha256sum -c -
-          echo "353445c7c47a8b033e17083082290c1de787128d4a4568593c645821745c4856  .github/io-mid-00.b64" | sha256sum -c -
-          echo "79bcb2e0fdf0831ee3b2709966858a18781592d6b2a1adb3d2a405744715edbc  .github/io-mid-01.b64" | sha256sum -c -
-          echo "f6f3745b6113bcebff547a42abf9123eeab60f2f688bdf37696f456f6cec5757  .github/io-mid-02.b64" | sha256sum -c -
-          echo "4f8cd47803f0321053337e9ca959a80cbe0f125099d2bb0e0c463fabc58c1766  .github/io-tail-00.b64" | sha256sum -c -
-          echo "faf953a43ea8e62441c3f0e7f6ff79f10908b703eda66f5c71e47382e14dbc18  .github/io-tail-01.b64" | sha256sum -c -
-          echo "84ad1cff422be741a2dee1a04b5e84cdbfdd8400938a6b256efa3d00925b8dfe  .github/io-tail-02.b64" | sha256sum -c -
-          echo "1b351dde5fb5d8148e1662a6d452a41a857f57ee17c8d74435ca58776cf57c0a  .github/io-tail-03.b64" | sha256sum -c -
-          cat \
-            .github/io-archive-00.b64 \
-            .github/io-mid-00.b64 \
-            .github/io-mid-01.b64 \
-            .github/io-mid-02.b64 \
-            .github/io-tail-00.b64 \
-            .github/io-tail-01.b64 \
-            .github/io-tail-02.b64 \
-            .github/io-tail-03.b64 \
-            > /tmp/illegal-occupation-files.b64
-          test "$(wc -c < /tmp/illegal-occupation-files.b64)" = "55488"
-          echo "bd1ba19e7433631f4bf674b2afe0076df66943143521e6ed65648c06e1238a07  /tmp/illegal-occupation-files.b64" | sha256sum -c -
-          base64 -d /tmp/illegal-occupation-files.b64 > /tmp/illegal-occupation-files.tar.gz
-          echo "e70d7fb7e570b5aee203f6256b3b519a1fa7a916f688080512ae6892a88aacfc  /tmp/illegal-occupation-files.tar.gz" | sha256sum -c -
-          tar -xzf /tmp/illegal-occupation-files.tar.gz
-          rm -f \
-            .github/illegal-occupation-files.b64 \
-            .github/io-prefix-10000-24000.b64 \
-            .github/io-mid-00.b64 \
-            .github/io-mid-01.b64 \
-            .github/io-mid-02.b64 \
-            .github/io-tail-00.b64 \
-            .github/io-tail-01.b64 \
-            .github/io-tail-02.b64 \
-            .github/io-tail-03.b64 \
-            .github/io-archive-00.b64 \
-            .github/io-archive-01.b64 \
-            .github/io-archive-03.b64 \
-            .github/banked-asset-audit-trigger.txt
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Implement Neutral Illegal Occupation"
-          git push origin HEAD:agent/neutral-illegal-occupation
+          {
+            for file in \
+              .github/io-archive-00.b64 \
+              .github/io-mid-00.b64 \
+              .github/io-mid-01.b64 \
+              .github/io-mid-02.b64 \
+              .github/io-tail-00.b64 \
+              .github/io-tail-01.b64 \
+              .github/io-tail-02.b64 \
+              .github/io-tail-03.b64; do
+              wc -c "$file"
+              sha256sum "$file"
+            done
+            cat \
+              .github/io-archive-00.b64 \
+              .github/io-mid-00.b64 \
+              .github/io-mid-01.b64 \
+              .github/io-mid-02.b64 \
+              .github/io-tail-00.b64 \
+              .github/io-tail-01.b64 \
+              .github/io-tail-02.b64 \
+              .github/io-tail-03.b64 \
+              > /tmp/illegal-occupation-files.b64
+            wc -c /tmp/illegal-occupation-files.b64
+            sha256sum /tmp/illegal-occupation-files.b64
+          } > final-chunk-diagnostic.txt 2>&1
+      - uses: actions/upload-artifact@v4
+        with:
+          name: illegal-occupation-final-chunk-diagnostic
+          path: final-chunk-diagnostic.txt
