@@ -2,6 +2,7 @@ import { EffectRegistry, baseBattleEffectHandlers, totalModifiersFor } from '../
 import type { CardID, GameEvent, GameState, PlayerID } from '../types';
 import type { ResolveBattleRevealAction } from './actions';
 import { applySubversionBattleRestrictions } from './intelligence-subversion-battle';
+import { applyPalisadeWallBattleEffects } from './neutral-palisade-wall';
 import { GameActionError, type ApplyGameActionResult } from './reducer';
 
 function log(game: GameState, actor: PlayerID, type: string, message: string, payload?: unknown): void {
@@ -68,6 +69,7 @@ export function resolveBattleReveal(game: GameState, action: ResolveBattleReveal
   const cancellations = initialResult.cancellations ?? [];
   const canceled = cancelPlayedCards(game, cancellations);
   applySubversionBattleRestrictions(game);
+  applyPalisadeWallBattleEffects(game);
   const nonCancellationHandlers = baseBattleEffectHandlers.filter((handler) => (
     handler.id !== 'neutral_disruption_battle' && handler.id !== 'trade_ban_battle'
   ));

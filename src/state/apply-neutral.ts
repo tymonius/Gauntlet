@@ -50,6 +50,10 @@ import {
   resolveFootholdChoice,
 } from './neutral-foothold';
 import {
+  openPalisadeWallAssetChoice,
+  resolvePalisadeWallChoice,
+} from './neutral-palisade-wall';
+import {
   applyForcedMarchAction,
   applyForcedMarchBattleEffects,
   clearRestrictedMovementForTurnTransition,
@@ -116,6 +120,7 @@ import {
 export type NeutralAppStateAction = AppStateAction | FinishMovementAction | ResolveNeutralChoiceAction;
 
 function continueNeutralChoices(game: GameState): void {
+  openPalisadeWallAssetChoice(game);
   openNextDecoysChoice(game);
   openNextSuppliesChoice(game);
   openNextFootholdChoice(game);
@@ -144,11 +149,13 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
         ? (resolveSuppliesChoice(next, action), {})
         : pendingKind === 'foothold_asset'
           ? (resolveFootholdChoice(next, action), {})
-          : pendingKind.startsWith('scouting_report_')
-            ? resolveScoutingReportChoice(next, action)
-            : pendingKind.startsWith('reserves_')
-              ? resolveReservesChoice(next, action)
-              : resolveRedemptionChoice(next, action);
+          : pendingKind === 'palisade_wall_asset'
+            ? (resolvePalisadeWallChoice(next, action), {})
+            : pendingKind.startsWith('scouting_report_')
+              ? resolveScoutingReportChoice(next, action)
+              : pendingKind.startsWith('reserves_')
+                ? resolveReservesChoice(next, action)
+                : resolveRedemptionChoice(next, action);
     if ('deferredBattleAction' in resolved && resolved.deferredBattleAction) {
       return applyGameAction(next, resolved.deferredBattleAction);
     }
