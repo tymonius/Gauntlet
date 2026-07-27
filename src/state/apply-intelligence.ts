@@ -34,6 +34,7 @@ import {
 import { continueIntelligencePostRevealFlow } from './intelligence-post-reveal-flow';
 import { abortIntelligenceMission, completeIntelligenceMission, completeSpecialOperation, startIntelligenceMission } from './intelligence-missions';
 import { runPostActionAutomationPipeline } from './pipeline';
+import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
 import { applyGameAction as applyReducerGameAction, GameActionError, type ApplyGameActionResult } from './reducer';
 
 function continueAfterIntelligenceReveal(game: GameState, previousStage?: string): void {
@@ -125,7 +126,7 @@ function preemptAutomaticBattleStartWindowsForReconnaissance(game: GameState): v
   const battle = game.battle;
   if (!battle) return;
   const attacker = game.players[battle.attacker.playerId];
-  if (!attacker?.intelligence || !attacker.zones.assetBank.includes(INTELLIGENCE_REACTIVE_ASSETS.reconnaissance)) return;
+  if (!attacker?.intelligence || !bankedAssetUseAllowed(game, battle.attacker.playerId) || !attacker.zones.assetBank.includes(INTELLIGENCE_REACTIVE_ASSETS.reconnaissance)) return;
   game.pendingDiplomatChoice = undefined;
   game.pendingMilitaryTimingChoice = undefined;
   game.militaryTimingChoiceQueue = undefined;

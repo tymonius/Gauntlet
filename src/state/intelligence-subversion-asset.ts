@@ -83,6 +83,7 @@ function opposingSubversionOwner(game: GameState, targetOwner: PlayerID): Player
     player.id !== targetOwner
     && player.factionId === 'intelligence'
     && player.intelligence
+    && bankedAssetUseAllowed(game, player.id)
     && player.zones.assetBank.includes(SUBVERSION_ASSET)
   ))?.id;
 }
@@ -97,7 +98,7 @@ function candidateIfBanked(
 ): BankedAssetEffectCandidate | undefined {
   if (targetCardId === SUBVERSION_ASSET) return undefined;
   if (!game.players[targetOwner]?.zones.assetBank.includes(targetCardId)) return undefined;
-  if (game.battle && !bankedAssetUseAllowed(game, targetOwner)) return undefined;
+  if (!bankedAssetUseAllowed(game, targetOwner)) return undefined;
   return { targetOwner, targetCardId, effectLabel, negatedAction, battleId };
 }
 

@@ -1,6 +1,7 @@
 import { diplomatProposalsById } from '../cards';
 import type { CardID, GameEvent, GameState, PlayerID, ProposalID } from '../types';
 import { drawFromDeck } from './draw';
+import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
 import { gainFactionResource } from './resources';
 import { resolveRefusedTermsWithoutWinner } from './diplomat-terms';
 
@@ -75,6 +76,7 @@ export function useTradeConcessions(game: GameState, diplomatId: PlayerID): void
 
 export function useGoodFaith(game: GameState, diplomatId: PlayerID, cardId: CardID): void {
   requireBeforeResponse(game, diplomatId);
+  if (!bankedAssetUseAllowed(game, diplomatId)) throw new Error('Good Faith is inactive.');
   const player = game.players[diplomatId];
   const assetId = DIPLOMAT_REACTIVE_CARDS.goodFaith;
   removeOne(player.zones.assetBank, assetId);
@@ -196,6 +198,7 @@ export function resolveNonbindingResolution(game: GameState, opponentId: PlayerI
 }
 
 export function useNeutralObservers(game: GameState, diplomatId: PlayerID): void {
+  if (!bankedAssetUseAllowed(game, diplomatId)) throw new Error('Neutral Observers is inactive.');
   const terms = activeTerms(game, diplomatId);
   if (terms.response !== 'refused' || !game.battle || game.battle.stage !== 'hand_commit') throw new Error('Neutral Observers is only available after Terms are refused and before hand commitments.');
   const player = game.players[diplomatId];
@@ -208,6 +211,7 @@ export function useNeutralObservers(game: GameState, diplomatId: PlayerID): void
 }
 
 export function useSafeConduct(game: GameState, diplomatId: PlayerID): void {
+  if (!bankedAssetUseAllowed(game, diplomatId)) throw new Error('Safe Conduct is inactive.');
   const player = game.players[diplomatId];
   if (!player.zones.assetBank.includes(DIPLOMAT_REACTIVE_CARDS.safeConduct)) throw new Error('Safe Conduct is not banked.');
   removeOne(player.zones.assetBank, DIPLOMAT_REACTIVE_CARDS.safeConduct);

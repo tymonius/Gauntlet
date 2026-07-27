@@ -1,6 +1,7 @@
 import type { BattleState, CardID, GameEvent, GameState, PendingMilitaryChoice, PlayerID, RecentBattleResult } from '../types';
 import { gainFactionResource, setFactionResource } from './resources';
 import { lossOrRetreatBenefitsSuppressed } from './inquisition-no-martyrs';
+import { bankedAssetUseAllowed } from './banked-assets';
 
 function log(game: GameState, actor: PlayerID, type: string, message: string, payload?: unknown): void {
   game.log.push({ id: `${game.id}-event-${game.log.length + 1}`, turn: game.turn, actor, type, message, payload, visibility: 'public' } satisfies GameEvent);
@@ -23,6 +24,7 @@ export function enrichRecentBattleResult(result: RecentBattleResult, battle: Bat
     battleHandCards: Object.fromEntries(ids.map((id) => [id, playedBattleHandCards(battle, id)])),
     handCommittedCards: Object.fromEntries(ids.map((id) => [id, committedHandCards(battle, id)])),
     ordersUsed: Object.fromEntries(ids.map((id) => [id, Object.keys(game.players[id].leaderAbilityUsage?.battle ?? {})])),
+    bankedAssetUseProhibitedFor: ids.filter((id) => !bankedAssetUseAllowed(game, id)),
   };
 }
 
@@ -31,7 +33,10 @@ function cardWasPlayed(result: RecentBattleResult, playerId: PlayerID, cardId: C
 }
 
 function hasCardSource(game: GameState, playerId: PlayerID, cardId: CardID): boolean {
-  return cardWasPlayed(game.recentBattleResult!, playerId, cardId) || game.players[playerId].zones.assetBank.includes(cardId);
+  const result = game.recentBattleResult!;
+  const bankedSourceActive = !result.bankedAssetUseProhibitedFor?.includes(playerId)
+    && game.players[playerId].zones.assetBank.includes(cardId);
+  return cardWasPlayed(result, playerId, cardId) || bankedSourceActive;
 }
 
 function queue(game: GameState, choice: PendingMilitaryChoice): void {

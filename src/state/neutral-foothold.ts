@@ -9,6 +9,7 @@ import type {
 } from '../types';
 import type { ResolveNeutralChoiceAction } from './actions';
 import { drawFromDeck } from './draw';
+import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
 import { GameActionError } from './reducer';
 
 export const FOOTHOLD = 'neutral-foothold';
@@ -145,7 +146,7 @@ export function queueFootholdAssetChoices(
   const playerId = battle.defender.playerId;
   if (winnerId !== playerId) return 0;
   if (!defenderOccupiesUncontrolledTerritory(game, battle, controllerBeforeBattle)) return 0;
-  if (battle.bankedAssetUseProhibited?.includes(playerId)) return 0;
+  if (battle.bankedAssetUseProhibited?.includes(playerId) || !bankedAssetUseAllowed(game, playerId)) return 0;
   if (game.neutralFootholdAssetQueue?.some((entry) => entry.battleId === battle.id && entry.playerId === playerId)) return 0;
 
   const count = game.players[playerId].zones.assetBank.filter((cardId) => cardId === FOOTHOLD).length;
@@ -163,6 +164,7 @@ export function queueFootholdAssetChoices(
 
 function trimQueue(game: GameState): void {
   const retained = (game.neutralFootholdAssetQueue ?? []).filter((entry) => {
+    if (!bankedAssetUseAllowed(game, entry.playerId)) return false;
     const available = game.players[entry.playerId]?.zones.assetBank.filter((cardId) => cardId === FOOTHOLD).length ?? 0;
     entry.triggersRemaining = Math.min(entry.triggersRemaining, available);
     return entry.triggersRemaining > 0;
