@@ -129,6 +129,13 @@ import {
   resolveScorchedEarthChoice,
 } from './neutral-scorched-earth';
 import {
+  applySeditionBattleBonuses,
+  prepareSeditionBattleReveal,
+  queueSeditionActionChoice,
+  resolveSeditionChoice,
+  SEDITION,
+} from './neutral-sedition';
+import {
   applyRousingSpeechBattleEffects,
   captureRousingSpeechAssetSnapshot,
   openNextRousingSpeechChoice,
@@ -206,9 +213,11 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
                 ? (resolveRequisitionChoice(next, action), {})
                 : pendingKind.startsWith('rousing_speech_')
                   ? (resolveRousingSpeechChoice(next, action), {})
-                  : pendingKind === 'scorched_earth_asset'
-                    ? (resolveScorchedEarthChoice(next, action), {})
-                    : pendingKind.startsWith('salvage_')
+                  : pendingKind.startsWith('sedition_')
+                    ? resolveSeditionChoice(next, action)
+                    : pendingKind === 'scorched_earth_asset'
+                      ? (resolveScorchedEarthChoice(next, action), {})
+                      : pendingKind.startsWith('salvage_')
                       ? (resolveSalvageChoice(next, action), {})
                       : pendingKind.startsWith('scouting_report_')
                       ? resolveScoutingReportChoice(next, action)
@@ -239,6 +248,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'resolve_battle_reveal') {
     const prepared = structuredClone(game);
     if (prepareReinforcementsBattleReveal(prepared, action)) return { state: prepared };
+    if (prepareSeditionBattleReveal(prepared, action)) return { state: prepared };
     game = prepared;
   }
 
@@ -392,6 +402,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'play_action_card' && preparedSalvage) {
     applySalvageAction(result.state, action.playerId, preparedSalvage);
   }
+  if (action.type === 'play_action_card' && action.cardId === SEDITION) {
+    queueSeditionActionChoice(result.state, action.playerId);
+  }
   if (action.type === 'move_player') {
     const battle = result.state.battle;
     if (battle?.attackerHandCommitVisibleTo) {
@@ -432,6 +445,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     );
   }
   if (action.type === 'resolve_battle_reveal') {
+    applySeditionBattleBonuses(result.state);
     applyAdvanceGuardBattleEffects(result.state);
     applyEntrenchmentBattleEffects(result.state);
     applyFealtyBattleEffects(result.state);

@@ -92,6 +92,10 @@ export interface BattleState {
   blockedBattleDrawCards?: Partial<Record<PlayerID, CardID[]>>;
   observedBeforeNormalReveal?: Partial<Record<PlayerID, CardID[]>>;
   bankedAssetUseProhibited?: PlayerID[];
+  /** Physical face-up Asset copies made inactive by Sedition for this battle. */
+  seditionInactiveAssets?: Partial<Record<PlayerID, CardID[]>>;
+  /** Deferred +1 fallbacks applied after the remaining reveal effects resolve. */
+  seditionBonusByPlayer?: Partial<Record<PlayerID, number>>;
   fogOfWarOverlayOwner?: PlayerID;
   noMartyrsAssetInitialCounts?: Partial<Record<PlayerID, number>>;
   noMartyrsAssetProcessedCounts?: Partial<Record<PlayerID, number>>;
@@ -132,6 +136,7 @@ export interface PublicBattleView {
   tiePolicy: BattleTiePolicy;
   lastStand?: boolean;
   handCommitProhibitedFor?: PlayerID[];
+  seditionInactiveAssets?: Partial<Record<PlayerID, CardID[]>>;
   fogOfWarOverlayOwner?: PlayerID;
   noMartyrsAssetInitialCounts?: Partial<Record<PlayerID, number>>;
   noMartyrsAssetProcessedCounts?: Partial<Record<PlayerID, number>>;

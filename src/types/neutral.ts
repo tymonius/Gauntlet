@@ -256,6 +256,39 @@ export interface PendingSalvageBattleDiscardChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface SeditionBattleQueueEntry {
+  id: string;
+  sourcePlayerId: PlayerID;
+  targetPlayerId: PlayerID;
+  battleId: string;
+  triggersRemaining: number;
+  resolverPlayerId: PlayerID;
+  battleCardTargets?: BattleCardTarget[];
+}
+
+export interface PendingSeditionActionChoice {
+  kind: 'sedition_action';
+  playerId: PlayerID;
+  sourcePlayerId: PlayerID;
+  cardOptions: CardID[];
+  options: ['select_card'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingSeditionBattleChoice {
+  kind: 'sedition_battle';
+  playerId: PlayerID;
+  sourcePlayerId: PlayerID;
+  entryId: string;
+  battleId: string;
+  cardOptions: CardID[];
+  triggersRemaining: number;
+  resolverPlayerId: PlayerID;
+  battleCardTargets?: BattleCardTarget[];
+  options: ['select_card'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface ScorchedEarthAssetQueueEntry {
   id: string;
   playerId: PlayerID;
@@ -334,6 +367,8 @@ export type PendingNeutralChoice =
   | PendingSalvageActionDiscardChoice
   | PendingSalvageBattleChoice
   | PendingSalvageBattleDiscardChoice
+  | PendingSeditionActionChoice
+  | PendingSeditionBattleChoice
   | PendingScorchedEarthAssetChoice
   | PendingSuppliesAssetChoice
   | PendingSuppliesBattleDiscardChoice;

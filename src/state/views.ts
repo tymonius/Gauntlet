@@ -188,6 +188,7 @@ export function toPublicBattleView(battle: BattleState, game?: GameState): Publi
     tiePolicy: battle.tiePolicy,
     lastStand: battle.lastStand,
     handCommitProhibitedFor: battle.handCommitProhibitedFor ? [...battle.handCommitProhibitedFor] : undefined,
+    seditionInactiveAssets: battle.seditionInactiveAssets ? structuredClone(battle.seditionInactiveAssets) : undefined,
     winner: battle.winner,
     loser: battle.loser,
   };
