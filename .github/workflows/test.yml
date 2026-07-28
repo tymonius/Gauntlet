@@ -1,4 +1,4 @@
-name: Diagnose Salvage Runtime
+name: Diagnose Salvage Regression
 
 on:
   pull_request:
@@ -22,15 +22,15 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Capture focused test
+      - name: Capture full test suite
         run: |
           set +e
-          npx vitest run src/state/neutral-salvage.test.ts > salvage-runtime-output.txt 2>&1
-          echo "exit=$?" >> salvage-runtime-output.txt
+          npm test > salvage-full-output.txt 2>&1
+          echo "exit=$?" >> salvage-full-output.txt
           exit 0
 
-      - name: Upload focused output
+      - name: Upload full output
         uses: actions/upload-artifact@v4
         with:
-          name: salvage-runtime-output
-          path: salvage-runtime-output.txt
+          name: salvage-full-output
+          path: salvage-full-output.txt
