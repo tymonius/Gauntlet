@@ -12,7 +12,10 @@ export function bankedAssetUseAllowed(game: GameState, playerId: PlayerID): bool
 export function activeBankedAssetCopies(game: GameState, playerId: PlayerID, cardId: CardID): number {
   if (!bankedAssetUseAllowed(game, playerId)) return 0;
   const player = game.players[playerId];
-  return player ? faceUpAssetCopies(player, cardId) : 0;
+  if (!player) return 0;
+  const seditionSuppressed = game.battle?.seditionInactiveAssets?.[playerId]
+    ?.filter((candidate) => candidate === cardId).length ?? 0;
+  return Math.max(0, faceUpAssetCopies(player, cardId) - seditionSuppressed);
 }
 
 export function bankedAssetCardUseAllowed(game: GameState, playerId: PlayerID, cardId: CardID): boolean {
