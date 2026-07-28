@@ -105,5 +105,6 @@ export * from './pipeline';
 export * from './win';
 
 export * from './neutral-sabotage';
+export * from './neutral-salvage';
 
 export * from './battle-cancellation';

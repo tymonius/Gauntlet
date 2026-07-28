@@ -115,6 +115,14 @@ import {
   SABOTAGE,
 } from './neutral-sabotage';
 import {
+  applySalvageAction,
+  openNextSalvageChoice,
+  prepareSalvageAction,
+  queueSalvageBattleChoices,
+  resolveSalvageChoice,
+  SALVAGE,
+} from './neutral-salvage';
+import {
   applyRousingSpeechBattleEffects,
   captureRousingSpeechAssetSnapshot,
   openNextRousingSpeechChoice,
@@ -155,6 +163,7 @@ function continueNeutralChoices(game: GameState): void {
   openNextDecoysChoice(game);
   openNextRequisitionChoice(game);
   openNextRousingSpeechChoice(game);
+  openNextSalvageChoice(game);
   openNextSuppliesChoice(game);
   openNextFootholdChoice(game);
   openNextRedemptionChoice(game);
@@ -190,7 +199,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
                 ? (resolveRequisitionChoice(next, action), {})
                 : pendingKind.startsWith('rousing_speech_')
                   ? (resolveRousingSpeechChoice(next, action), {})
-                  : pendingKind.startsWith('scouting_report_')
+                  : pendingKind.startsWith('salvage_')
+                    ? (resolveSalvageChoice(next, action), {})
+                    : pendingKind.startsWith('scouting_report_')
                     ? resolveScoutingReportChoice(next, action)
                     : pendingKind.startsWith('reserves_')
                       ? resolveReservesChoice(next, action)
@@ -296,6 +307,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   const preparedSabotage = action.type === 'play_action_card' && action.cardId === SABOTAGE
     ? prepareSabotageAction(game, action)
     : undefined;
+  const preparedSalvage = action.type === 'play_action_card' && action.cardId === SALVAGE
+    ? prepareSalvageAction(game, action)
+    : undefined;
 
   const restrictedBefore = action.type === 'move_player'
     ? game.players[action.playerId]?.nonBattleMovementRemaining ?? 0
@@ -365,6 +379,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   if (action.type === 'play_action_card' && preparedSabotage) {
     applySabotageAction(result.state, action.playerId, preparedSabotage);
+  }
+  if (action.type === 'play_action_card' && preparedSalvage) {
+    applySalvageAction(result.state, action.playerId, preparedSalvage);
   }
   if (action.type === 'move_player') {
     const battle = result.state.battle;
@@ -439,6 +456,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     );
     applyRedemptionBattleReturns(result.state, priorBattleId);
     applyReservesBattleTopdecks(result.state, priorBattleId);
+    queueSalvageBattleChoices(result.state, priorBattle, winnerId);
     queueSuppliesBattleEffects(result.state, priorBattle);
   }
   if (normalDraw) {
