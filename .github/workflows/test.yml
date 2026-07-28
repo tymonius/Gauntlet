@@ -17,7 +17,7 @@ jobs:
 
       - name: Record staging integrity
         run: |
-          set -u
+          set +e
           {
             for file in \
               .github/sedition-00.b64 \
@@ -41,15 +41,15 @@ jobs:
             base64 -d /tmp/sedition-files.b64 > /tmp/sedition-files.tar.gz 2> /tmp/decode-error.txt
             echo "DECODE_EXIT $?"
             cat /tmp/decode-error.txt
-            if [ -f /tmp/sedition-files.tar.gz ]; then
-              wc -c /tmp/sedition-files.tar.gz
-              sha256sum /tmp/sedition-files.tar.gz
-              gzip -t /tmp/sedition-files.tar.gz
-              echo "GZIP_EXIT $?"
-            fi
+            wc -c /tmp/sedition-files.tar.gz
+            sha256sum /tmp/sedition-files.tar.gz
+            gzip -t /tmp/sedition-files.tar.gz
+            echo "GZIP_EXIT $?"
           } > sedition-staging-diagnostic.txt 2>&1
+          exit 0
 
       - name: Upload diagnostic
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: sedition-staging-diagnostic
