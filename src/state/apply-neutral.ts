@@ -100,6 +100,14 @@ import {
   useReinforcementsAsset,
 } from './neutral-reinforcements';
 import {
+  applyRequisitionAction,
+  openNextRequisitionChoice,
+  prepareRequisitionAction,
+  queueRequisitionBattleChoices,
+  REQUISITION,
+  resolveRequisitionChoice,
+} from './neutral-requisition';
+import {
   applyReservesAction,
   applyReservesBattleTopdecks,
   prepareReservesAction,
@@ -130,6 +138,7 @@ export type NeutralAppStateAction = AppStateAction | FinishMovementAction | Reso
 function continueNeutralChoices(game: GameState): void {
   openPalisadeWallAssetChoice(game);
   openNextDecoysChoice(game);
+  openNextRequisitionChoice(game);
   openNextSuppliesChoice(game);
   openNextFootholdChoice(game);
   openNextRedemptionChoice(game);
@@ -161,11 +170,13 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
             ? (resolvePalisadeWallChoice(next, action), {})
             : pendingKind === 'reinforcements_battle'
               ? resolveReinforcementsChoice(next, action)
-            : pendingKind.startsWith('scouting_report_')
-              ? resolveScoutingReportChoice(next, action)
-              : pendingKind.startsWith('reserves_')
-                ? resolveReservesChoice(next, action)
-                : resolveRedemptionChoice(next, action);
+              : pendingKind === 'requisition_battle'
+                ? (resolveRequisitionChoice(next, action), {})
+                : pendingKind.startsWith('scouting_report_')
+                  ? resolveScoutingReportChoice(next, action)
+                  : pendingKind.startsWith('reserves_')
+                    ? resolveReservesChoice(next, action)
+                    : resolveRedemptionChoice(next, action);
     if ('deferredBattleAction' in resolved && resolved.deferredBattleAction) {
       return applyGameAction(next, resolved.deferredBattleAction);
     }
@@ -241,6 +252,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   const preparedRallyingCry = action.type === 'play_action_card' && action.cardId === RALLYING_CRY
     ? prepareRallyingCryAction(game, action)
     : undefined;
+  const preparedRequisition = action.type === 'play_action_card' && action.cardId === REQUISITION
+    ? prepareRequisitionAction(game, action)
+    : undefined;
   const preparedReserves = action.type === 'play_action_card' && action.cardId === RESERVES
     ? prepareReservesAction(game, action)
     : undefined;
@@ -303,6 +317,10 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     const drawnCards = applyRallyingCryAction(result.state, action.playerId, preparedRallyingCry);
     result.result = { ...(result.result ?? {}), drawnCards };
   }
+  if (action.type === 'play_action_card' && preparedRequisition) {
+    const drawnCards = applyRequisitionAction(result.state, action.playerId, preparedRequisition);
+    result.result = { ...(result.result ?? {}), drawnCards };
+  }
   if (action.type === 'play_action_card' && preparedReserves) {
     const drawnCards = applyReservesAction(result.state, action.playerId, preparedReserves);
     result.result = { ...(result.result ?? {}), drawnCards };
@@ -352,6 +370,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     applyNewRecruitsBattleEffects(result.state);
     applyPathfindersBattleEffects(result.state);
     applyRallyingCryBattleEffects(result.state);
+    queueRequisitionBattleChoices(result.state);
   }
   if (action.type === 'resolve_battle' && priorBattle && priorBattleId && !result.state.battle) {
     const winnerId = latestResolvedBattleWinner(result.state);
