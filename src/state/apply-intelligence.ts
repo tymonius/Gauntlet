@@ -7,6 +7,7 @@ import {
   isIntegratedIntelligenceActionCard,
   resolveIntelligenceActionChoice,
 } from './intelligence-action-cards';
+import { bankedAssetCardUseAllowed } from './banked-assets';
 import {
   openSurveillanceWindowAfterChoice,
   prepareDeferredBattleDrawReveal,
@@ -126,7 +127,7 @@ function preemptAutomaticBattleStartWindowsForReconnaissance(game: GameState): v
   const battle = game.battle;
   if (!battle) return;
   const attacker = game.players[battle.attacker.playerId];
-  if (!attacker?.intelligence || !bankedAssetUseAllowed(game, battle.attacker.playerId) || !attacker.zones.assetBank.includes(INTELLIGENCE_REACTIVE_ASSETS.reconnaissance)) return;
+  if (!attacker?.intelligence || !bankedAssetCardUseAllowed(game, battle.attacker.playerId, INTELLIGENCE_REACTIVE_ASSETS.reconnaissance)) return;
   game.pendingDiplomatChoice = undefined;
   game.pendingMilitaryTimingChoice = undefined;
   game.militaryTimingChoiceQueue = undefined;

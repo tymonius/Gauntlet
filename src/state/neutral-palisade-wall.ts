@@ -6,7 +6,7 @@ import type {
   PlayerID,
 } from '../types';
 import type { ResolveNeutralChoiceAction } from './actions';
-import { bankedAssetUseAllowed } from './banked-assets';
+import { bankedAssetCardUseAllowed, bankedAssetUseAllowed } from './banked-assets';
 import { counterintelligenceAssetActive } from './neutral-counterintelligence';
 import { GameActionError } from './reducer';
 
@@ -80,7 +80,7 @@ export function openPalisadeWallAssetChoice(game: GameState): boolean {
   battle.effectsResolved.push(marker);
 
   const defender = game.players[battle.defender.playerId];
-  if (!defender.zones.assetBank.includes(PALISADE_WALL)) return false;
+  if (!bankedAssetCardUseAllowed(game, defender.id, PALISADE_WALL)) return false;
   if (!bankedAssetUseAllowed(game, defender.id)) return false;
   if (!bankedAssetUseAllowed(game, battle.attacker.playerId)) return false;
 

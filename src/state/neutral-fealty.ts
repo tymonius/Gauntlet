@@ -6,14 +6,13 @@ import type {
   PlayerID,
   ResolvedBattleModifier,
 } from '../types';
-import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
+import { bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
 
 export const FEALTY = 'neutral-fealty';
 const FEALTY_BATTLE_RESOLUTION = 'neutral_fealty_battle';
 
 function hasActiveFealtyAsset(game: GameState, playerId: PlayerID): boolean {
-  return bankedAssetUseAllowed(game, playerId)
-    && (game.players[playerId]?.zones.assetBank.includes(FEALTY) ?? false);
+  return bankedAssetCardUseAllowed(game, playerId, FEALTY);
 }
 
 function activeFealty(card?: BattlePlayedCard): card is BattlePlayedCard {

@@ -9,6 +9,7 @@ import type { BattleCardTarget, EffectContext } from './types';
 export const BATTLE_CANCELLATION_CARD_IDS = [
   'card-embargo',
   'neutral-disruption',
+  'neutral-sabotage',
 ] as const satisfies readonly CardID[];
 
 export function isBattleCancellationCard(cardId: CardID): boolean {
@@ -47,7 +48,13 @@ function removeOne<T>(items: T[], predicate: (item: T) => boolean): T | undefine
 }
 
 function cardName(cardId: CardID): string {
-  return cardId === 'card-embargo' ? 'Embargo' : cardId === 'neutral-disruption' ? 'Disruption' : cardId;
+  return cardId === 'card-embargo'
+    ? 'Embargo'
+    : cardId === 'neutral-disruption'
+      ? 'Disruption'
+      : cardId === 'neutral-sabotage'
+        ? 'Sabotage'
+        : cardId;
 }
 
 function missingTargetMessage(sources: BattlePlayedCard[]): string {

@@ -10,7 +10,7 @@ import type {
 } from '../types';
 import type { ResolveInquisitionChoiceAction } from './actions';
 import { recordBankedAssetUse } from './intelligence-mission-triggers';
-import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
+import { bankedAssetUseAllowed, activeBankedAssetCopies, bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
 import { hasFactionResource, spendFactionResource } from './resources';
 import { GameActionError } from './reducer';
 
@@ -118,8 +118,7 @@ function assetUsesThisTurn(game: GameState, playerId: PlayerID): number {
 }
 
 function availableAssetCount(game: GameState, playerId: PlayerID): number {
-  if (!bankedAssetUseAllowed(game, playerId)) return 0;
-  const banked = game.players[playerId].zones.assetBank.filter((cardId) => cardId === TYRANNY).length;
+  const banked = activeBankedAssetCopies(game, playerId, TYRANNY);
   return Math.max(banked - assetUsesThisTurn(game, playerId), 0);
 }
 
@@ -255,7 +254,7 @@ export function resolveTyrannyChoice(game: GameState, action: ResolveInquisition
   }
   const target = currentTarget(game, pending, action.targetKey);
   if (pending.sourceKind === 'asset') {
-    if (!bankedAssetUseAllowed(game, action.playerId)) {
+    if (!bankedAssetCardUseAllowed(game, action.playerId, TYRANNY)) {
       throw new GameActionError('Banked Asset use is prohibited in this battle.');
     }
     spendFactionResource(game, action.playerId, 'conviction', 1, TYRANNY);

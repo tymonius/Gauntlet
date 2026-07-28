@@ -9,7 +9,7 @@ import type {
 } from '../types';
 import type { ResolveNeutralChoiceAction } from './actions';
 import { drawFromDeck } from './draw';
-import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
+import { activeBankedAssetCopies, bankedAssetUseAllowed } from './intelligence-subversion-battle';
 import { GameActionError } from './reducer';
 
 export const FOOTHOLD = 'neutral-foothold';
@@ -149,7 +149,7 @@ export function queueFootholdAssetChoices(
   if (battle.bankedAssetUseProhibited?.includes(playerId) || !bankedAssetUseAllowed(game, playerId)) return 0;
   if (game.neutralFootholdAssetQueue?.some((entry) => entry.battleId === battle.id && entry.playerId === playerId)) return 0;
 
-  const count = game.players[playerId].zones.assetBank.filter((cardId) => cardId === FOOTHOLD).length;
+  const count = activeBankedAssetCopies(game, playerId, FOOTHOLD);
   if (count < 1) return 0;
   const queue = game.neutralFootholdAssetQueue ?? [];
   queue.push({
@@ -165,7 +165,7 @@ export function queueFootholdAssetChoices(
 function trimQueue(game: GameState): void {
   const retained = (game.neutralFootholdAssetQueue ?? []).filter((entry) => {
     if (!bankedAssetUseAllowed(game, entry.playerId)) return false;
-    const available = game.players[entry.playerId]?.zones.assetBank.filter((cardId) => cardId === FOOTHOLD).length ?? 0;
+    const available = activeBankedAssetCopies(game, entry.playerId, FOOTHOLD);
     entry.triggersRemaining = Math.min(entry.triggersRemaining, available);
     return entry.triggersRemaining > 0;
   });

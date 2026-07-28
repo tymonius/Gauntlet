@@ -15,7 +15,7 @@ import type {
   UseMysticBlackCovenantAction,
   UseMysticBlackCovenantBattleAction,
 } from './actions';
-import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
+import { bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
 import { GameActionError } from './reducer';
 
 export const BLACK_COVENANT = 'mystics-black-covenant';
@@ -155,7 +155,7 @@ export function applyBlackCovenantAction(
 }
 
 export function blackCovenantActionBindings(game: GameState, playerId: PlayerID): BlackCovenantBindingState[] {
-  if (game.activePlayer !== playerId || game.priorityPlayer !== playerId || !bankedAssetUseAllowed(game, playerId)) return [];
+  if (game.activePlayer !== playerId || game.priorityPlayer !== playerId || !bankedAssetCardUseAllowed(game, playerId, BLACK_COVENANT)) return [];
   if (game.phase !== 'action_before_movement' && game.phase !== 'action_after_movement') return [];
   return (game.players[playerId].mystics?.blackCovenantBindings ?? []).filter((binding) => (
     cardCanBePlayedAt(binding.cardId, 'action', 'hand')
@@ -165,7 +165,7 @@ export function blackCovenantActionBindings(game: GameState, playerId: PlayerID)
 export function blackCovenantBattleBindings(game: GameState, playerId: PlayerID): BlackCovenantBindingState[] {
   if (!game.battle || game.battle.stage !== 'hand_commit') return [];
   if (game.battle.attacker.playerId !== playerId && game.battle.defender.playerId !== playerId) return [];
-  if (!bankedAssetUseAllowed(game, playerId)) return [];
+  if (!bankedAssetCardUseAllowed(game, playerId, BLACK_COVENANT)) return [];
   return (game.players[playerId].mystics?.blackCovenantBindings ?? []).filter((binding) => (
     cardCanBePlayedAt(binding.cardId, 'battle_hand_commit', 'hand')
   ));

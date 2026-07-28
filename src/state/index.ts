@@ -103,3 +103,7 @@ export { GameActionError } from './reducer';
 export type { ApplyGameActionResult } from './reducer';
 export * from './pipeline';
 export * from './win';
+
+export * from './neutral-sabotage';
+
+export * from './battle-cancellation';

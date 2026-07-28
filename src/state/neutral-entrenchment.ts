@@ -5,7 +5,7 @@ import type {
   PlayerID,
   SpaceID,
 } from '../types';
-import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
+import { bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
 import { GameActionError } from './reducer';
 
 export const ENTRENCHMENT = 'neutral-entrenchment';
@@ -86,7 +86,7 @@ export function applyEntrenchmentMovementTrigger(
 
   const ownerId = opponentId(game, movingPlayerId);
   const owner = ownerId ? game.players[ownerId] : undefined;
-  if (!owner || !owner.zones.assetBank.includes(ENTRENCHMENT) || !bankedAssetUseAllowed(game, owner.id)) return false;
+  if (!owner || !bankedAssetCardUseAllowed(game, owner.id, ENTRENCHMENT)) return false;
   if (!ownerTokenAdjacentTo(game, owner.id, destinationSpaceId)) return false;
 
   const movingPlayer = game.players[movingPlayerId];

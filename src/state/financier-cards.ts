@@ -1,7 +1,7 @@
 import type { ActionCardTarget, ResolveFinancierChoiceAction } from './actions';
 import type { CardID, GameEvent, GameState, PlayerID, SpaceID } from '../types';
 import { drawFromDeck } from './draw';
-import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
+import { activeBankedAssetCopies, bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
 import { cardValue, deedCost, deedOwner } from './financiers';
 import { openDeedPurchaseChoice } from './financier-integration';
 import { gainFactionResource, spendFactionResource } from './resources';
@@ -236,7 +236,11 @@ function resolveCapitalGains(game: GameState, playerId: PlayerID): void {
 function openNextMarginLoanRepayment(game: GameState, playerId: PlayerID): boolean {
   if (game.pendingFinancierChoice) return false;
   const player = requireFinancier(game, playerId);
-  const loan = (player.financiers!.marginLoans ?? []).find((candidate) => candidate.resolvesTurn <= game.turn);
+  const activeLoanCount = activeBankedAssetCopies(game, playerId, FINANCIER_CARDS.marginLoan);
+  if (activeLoanCount < 1) return false;
+  const loan = (player.financiers!.marginLoans ?? [])
+    .slice(0, activeLoanCount)
+    .find((candidate) => candidate.resolvesTurn <= game.turn);
   if (!loan) return false;
   game.pendingFinancierChoice = { kind: 'margin_loan_repayment', playerId, loanId: loan.loanId, collateralCardId: loan.collateralCardId, repaymentCost: loan.collateralValue + 3, options: ['repay', 'default'] };
   game.priorityPlayer = playerId;
@@ -325,8 +329,7 @@ export function resolveFinancierCardChoice(game: GameState, action: ResolveFinan
 }
 
 export function shouldSkipNormalDrawForTariffs(game: GameState, playerId: PlayerID): boolean {
-  return bankedAssetUseAllowed(game, playerId)
-    && (game.players[playerId]?.zones.assetBank.includes(FINANCIER_CARDS.tariffs) ?? false);
+  return bankedAssetCardUseAllowed(game, playerId, FINANCIER_CARDS.tariffs);
 }
 
 export function requireTariffsMayLeavePlay(game: GameState, playerId: PlayerID, cardIds: CardID[]): void {

@@ -1,6 +1,6 @@
 import type { CardID, GameEvent, GameState, PendingIntelligenceChoice, PlayerID } from '../types';
 import type { AppStateAction, ResolveIntelligenceChoiceAction } from './actions';
-import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
+import { bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
 import { recordBankedAssetUse } from './intelligence-mission-triggers';
 
 export const SUBVERSION_ASSET = 'intelligence-subversion';
@@ -83,8 +83,7 @@ function opposingSubversionOwner(game: GameState, targetOwner: PlayerID): Player
     player.id !== targetOwner
     && player.factionId === 'intelligence'
     && player.intelligence
-    && bankedAssetUseAllowed(game, player.id)
-    && player.zones.assetBank.includes(SUBVERSION_ASSET)
+    && bankedAssetCardUseAllowed(game, player.id, SUBVERSION_ASSET)
   ))?.id;
 }
 
@@ -97,8 +96,7 @@ function candidateIfBanked(
   battleId?: string,
 ): BankedAssetEffectCandidate | undefined {
   if (targetCardId === SUBVERSION_ASSET) return undefined;
-  if (!game.players[targetOwner]?.zones.assetBank.includes(targetCardId)) return undefined;
-  if (!bankedAssetUseAllowed(game, targetOwner)) return undefined;
+  if (!bankedAssetCardUseAllowed(game, targetOwner, targetCardId)) return undefined;
   return { targetOwner, targetCardId, effectLabel, negatedAction, battleId };
 }
 

@@ -6,7 +6,7 @@ import type {
   PlayerID,
 } from '../types';
 import { applyIllegalOccupationBattleEffects } from './neutral-illegal-occupation';
-export { bankedAssetUseAllowed } from './banked-assets';
+export { activeBankedAssetCopies, bankedAssetCardUseAllowed, bankedAssetUseAllowed } from './banked-assets';
 
 export const SUBVERSION_BATTLE_CARD = 'intelligence-subversion';
 export const SUBVERSION_RESOLUTION_PREFIX = 'intelligence_subversion_restriction:';

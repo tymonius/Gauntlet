@@ -5,7 +5,7 @@ import { openDiplomatTermsWindow } from './diplomat-terms';
 import { openMissionControlWindow } from './intelligence-leaders';
 import { recordBankedAssetUse } from './intelligence-mission-triggers';
 import { finalizeIntelligenceMissionFailure } from './intelligence-missions';
-import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
+import { bankedAssetUseAllowed, bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
 import { openMilitaryPrecommitWindows } from './military-timing';
 import {
   counterintelligenceBlocksBattleHandInspection,
@@ -105,8 +105,7 @@ function continueBattleStart(game: GameState): void {
 
 export function openExfiltrationWindow(game: GameState, playerId: PlayerID, after: 'complete' | 'abort'): boolean {
   const player = game.players[playerId];
-  if (!player?.intelligence || game.pendingIntelligenceChoice || !bankedAssetUseAllowed(game, playerId)) return false;
-  if (!player.zones.assetBank.includes(INTELLIGENCE_REACTIVE_ASSETS.exfiltration)) return false;
+  if (!player?.intelligence || game.pendingIntelligenceChoice || !bankedAssetCardUseAllowed(game, playerId, INTELLIGENCE_REACTIVE_ASSETS.exfiltration)) return false;
   if (!withdrawalDestination(game, playerId)) return false;
   game.pendingIntelligenceChoice = { kind: 'exfiltration', playerId, after, options: ['pass', 'use'] };
   game.priorityPlayer = playerId;
@@ -119,7 +118,7 @@ export function openReconnaissanceWindow(game: GameState): boolean {
   const playerId = battle.attacker.playerId;
   const player = game.players[playerId];
   const effectKey = `reconnaissance_window:${playerId}`;
-  if (!player?.intelligence || !bankedAssetUseAllowed(game, playerId) || !player.zones.assetBank.includes(INTELLIGENCE_REACTIVE_ASSETS.reconnaissance) || battle.effectsResolved.includes(effectKey)) return false;
+  if (!player?.intelligence || !bankedAssetCardUseAllowed(game, playerId, INTELLIGENCE_REACTIVE_ASSETS.reconnaissance) || battle.effectsResolved.includes(effectKey)) return false;
   battle.effectsResolved.push(effectKey);
   game.pendingIntelligenceChoice = {
     kind: 'reconnaissance',
@@ -141,8 +140,7 @@ export function openInterceptedOrdersWindow(game: GameState, targetOwner: Player
   const target = battleParticipant(game, targetOwner);
   const effectKey = `intercepted_orders_window:${intelligencePlayerId}:${targetOwner}`;
   if (!intelligencePlayer?.intelligence
-    || !bankedAssetUseAllowed(game, intelligencePlayerId)
-    || !intelligencePlayer.zones.assetBank.includes(INTELLIGENCE_REACTIVE_ASSETS.interceptedOrders)
+    || !bankedAssetCardUseAllowed(game, intelligencePlayerId, INTELLIGENCE_REACTIVE_ASSETS.interceptedOrders)
     || !target.hasDrawnBattleCards
     || target.battleDraw.length === 0
     || battle.effectsResolved.includes(effectKey)) return false;

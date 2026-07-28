@@ -31,3 +31,14 @@ export function faceUpAssetCopies(player: PlayerState, cardId: CardID): number {
   const total = player.zones.assetBank.filter((candidate) => candidate === cardId).length;
   return Math.max(0, total - faceDownAssetCount(player, cardId));
 }
+
+/** Removes stale face-down markers for cards no longer in the Asset Bank. */
+export function reconcileFaceDownAssets(player: PlayerState): void {
+  const remaining = [...player.zones.assetBank];
+  const reconciled: CardID[] = [];
+  for (const cardId of player.faceDownAssets ?? []) {
+    if (!removeOne(remaining, cardId)) continue;
+    reconciled.push(cardId);
+  }
+  player.faceDownAssets = reconciled.length > 0 ? reconciled : undefined;
+}

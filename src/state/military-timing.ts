@@ -1,7 +1,7 @@
 import { cardCanBePlayedAt } from '../cards';
 import type { BattleParticipantState, BattlePlayedCard, CardID, GameEvent, GameState, PendingMilitaryTimingChoice, PlayerID } from '../types';
 import { drawFromDeck } from './draw';
-import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
+import { bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
 
 const BROTHERS = 'military-brothers-in-arms';
 const RESERVE = 'military-reserve-force';
@@ -36,7 +36,7 @@ function activateNext(game: GameState): void {
 }
 
 function consumeAsset(game: GameState, playerId: PlayerID, cardId: CardID): void {
-  if (!bankedAssetUseAllowed(game, playerId)) throw new Error(`${playerId} cannot use banked Assets during this battle.`);
+  if (!bankedAssetCardUseAllowed(game, playerId, cardId)) throw new Error(`${playerId} cannot use ${cardId} during this battle.`);
   const player = game.players[playerId];
   const index = player.zones.assetBank.indexOf(cardId);
   if (index < 0) throw new Error(`${cardId} is not banked.`);
@@ -59,14 +59,14 @@ export function openMilitaryPrecommitWindows(game: GameState): void {
   const location = game.board.spaces.find((space) => space.id === game.battle?.location);
   for (const playerId of [game.battle.attacker.playerId, game.battle.defender.playerId]) {
     const player = game.players[playerId];
-    if (player.factionId !== 'military' || !bankedAssetUseAllowed(game, playerId)) continue;
-    if (player.zones.assetBank.includes(BROTHERS)) {
+    if (player.factionId !== 'military') continue;
+    if (bankedAssetCardUseAllowed(game, playerId, BROTHERS)) {
       queue(game, { kind: 'brothers_in_arms_precommit', playerId, sourceCardId: BROTHERS, options: ['use', 'pass'] });
     }
-    if (playerId === game.battle.defender.playerId && location?.kind === 'territory' && location.controller === playerId && player.zones.assetBank.includes(HOLD)) {
+    if (playerId === game.battle.defender.playerId && location?.kind === 'territory' && location.controller === playerId && bankedAssetCardUseAllowed(game, playerId, HOLD)) {
       queue(game, { kind: 'military_asset_precommit', playerId, sourceCardId: HOLD, options: ['use', 'pass'] });
     }
-    if (playerId === game.battle.attacker.playerId && location?.kind === 'territory' && location.controller === opponentId(game, playerId) && player.zones.assetBank.includes(SHOCK)) {
+    if (playerId === game.battle.attacker.playerId && location?.kind === 'territory' && location.controller === opponentId(game, playerId) && bankedAssetCardUseAllowed(game, playerId, SHOCK)) {
       queue(game, { kind: 'military_asset_precommit', playerId, sourceCardId: SHOCK, options: ['use', 'pass'] });
     }
   }
@@ -103,7 +103,7 @@ export function openMilitaryAfterRevealWindows(game: GameState): void {
     const player = game.players[playerId];
     if (player.factionId !== 'military') continue;
     const side = participant(game, playerId);
-    const stored = bankedAssetUseAllowed(game, playerId) ? player.military?.storedCards[RESERVE] : undefined;
+    const stored = bankedAssetCardUseAllowed(game, playerId, RESERVE) ? player.military?.storedCards[RESERVE] : undefined;
     const reservePlayed = side.battleDrawPlayed.some((card) => card.cardId === RESERVE);
     if (stored || reservePlayed) {
       queue(game, {

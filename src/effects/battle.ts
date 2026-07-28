@@ -1,5 +1,5 @@
 import type { BattleParticipantState, CardID, GameState, PlayerID } from '../types';
-import { bankedAssetUseAllowed } from '../state/banked-assets';
+import { bankedAssetCardUseAllowed } from '../state/banked-assets';
 import { validateEmbargoTargets } from './embargo';
 import type { BattleCardTarget, EffectHandler } from './types';
 
@@ -24,8 +24,7 @@ function treasonCopiedEffect(context: Parameters<EffectHandler['applies']>[0], p
 }
 
 function hasBankedAsset(game: GameState, playerId: PlayerID, cardId: CardID): boolean {
-  return bankedAssetUseAllowed(game, playerId)
-    && (game.players[playerId]?.zones.assetBank.includes(cardId) ?? false);
+  return bankedAssetCardUseAllowed(game, playerId, cardId);
 }
 
 function opposingParticipant(context: Parameters<EffectHandler['applies']>[0], owner: PlayerID): BattleParticipantState | undefined {

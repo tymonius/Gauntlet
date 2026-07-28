@@ -1,8 +1,9 @@
 import { EffectRegistry, baseBattleEffectHandlers, totalModifiersFor } from '../effects';
-import type { CardID, GameEvent, GameState, PlayerID } from '../types';
+import type { GameEvent, GameState, PlayerID } from '../types';
 import type { ResolveBattleRevealAction } from './actions';
 import { applySubversionBattleRestrictions } from './intelligence-subversion-battle';
 import { applyPalisadeWallBattleEffects } from './neutral-palisade-wall';
+import { applyBattleCancellations } from './battle-cancellation';
 import { GameActionError, type ApplyGameActionResult } from './reducer';
 
 export const BATTLE_REVEAL_CANCELLATIONS_RESOLVED = 'battle_reveal_cancellations_resolved';
@@ -38,22 +39,6 @@ function validateBattleReveal(game: GameState, action: ResolveBattleRevealAction
   }
 }
 
-function cancelPlayedCards(game: GameState, cancellations: Array<{ cardId: CardID; owner: PlayerID }>): void {
-  const battle = game.battle;
-  if (!battle) return;
-
-  for (const cancellation of cancellations) {
-    const participant = battle.attacker.playerId === cancellation.owner
-      ? battle.attacker
-      : battle.defender.playerId === cancellation.owner
-        ? battle.defender
-        : undefined;
-    if (!participant) continue;
-    const target = [participant.handCommit, ...participant.battleDrawPlayed]
-      .find((card) => card?.cardId === cancellation.cardId && !card.canceled);
-    if (target) target.canceled = true;
-  }
-}
 
 /**
  * Cancellation and negation resolve first. Reinforcements uses the pause after
@@ -77,7 +62,7 @@ export function resolveBattleRevealCancellations(
   };
   const initialResult = new EffectRegistry(baseBattleEffectHandlers).resolve(context);
   const cancellations = initialResult.cancellations ?? [];
-  cancelPlayedCards(game, cancellations);
+  applyBattleCancellations(game, cancellations);
   applySubversionBattleRestrictions(game);
   applyPalisadeWallBattleEffects(game);
   battle.resolvedCancellations = cancellations;
@@ -101,7 +86,9 @@ export function resolveBattleReveal(game: GameState, action: ResolveBattleReveal
     battleCardTargets: action.battleCardTargets,
   };
   const nonCancellationHandlers = baseBattleEffectHandlers.filter((handler) => (
-    handler.id !== 'neutral_disruption_battle' && handler.id !== 'trade_ban_battle'
+    handler.id !== 'neutral_disruption_battle'
+    && handler.id !== 'neutral_sabotage_battle'
+    && handler.id !== 'trade_ban_battle'
   ));
   const effectResult = new EffectRegistry(nonCancellationHandlers).resolve(context);
   const modifiers = effectResult.modifiers ?? [];
