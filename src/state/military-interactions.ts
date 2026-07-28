@@ -2,6 +2,7 @@ import type { BattleState, CardID, GameEvent, GameState, PendingMilitaryChoice, 
 import { gainFactionResource, setFactionResource } from './resources';
 import { lossOrRetreatBenefitsSuppressed } from './inquisition-no-martyrs';
 import { bankedAssetCardUseAllowed, bankedAssetUseAllowed } from './banked-assets';
+import { openStandGroundForMilitaryMovement } from './neutral-stand-ground';
 
 function log(game: GameState, actor: PlayerID, type: string, message: string, payload?: unknown): void {
   game.log.push({ id: `${game.id}-event-${game.log.length + 1}`, turn: game.turn, actor, type, message, payload, visibility: 'public' } satisfies GameEvent);
@@ -25,6 +26,9 @@ export function enrichRecentBattleResult(result: RecentBattleResult, battle: Bat
     handCommittedCards: Object.fromEntries(ids.map((id) => [id, committedHandCards(battle, id)])),
     ordersUsed: Object.fromEntries(ids.map((id) => [id, Object.keys(game.players[id].leaderAbilityUsage?.battle ?? {})])),
     bankedAssetUseProhibitedFor: ids.filter((id) => !bankedAssetUseAllowed(game, id)),
+    seditionInactiveAssets: battle.seditionInactiveAssets
+      ? structuredClone(battle.seditionInactiveAssets)
+      : undefined,
   };
 }
 
@@ -160,6 +164,7 @@ export function resolveMilitaryChoice(game: GameState, playerId: PlayerID, selec
   }
 
   if (pending.kind === 'war_crimes' && selected === 'use') {
+    if (openStandGroundForMilitaryMovement(game, pending, selected, cardId)) return;
     consumeSource(game, playerId, pending.sourceCardId);
     const defeated = game.players[pending.defeatedPlayer];
     for (const affected of pending.affectedCards) {
@@ -167,7 +172,7 @@ export function resolveMilitaryChoice(game: GameState, playerId: PlayerID, selec
       if (index >= 0) defeated.zones.discard.splice(index, 1);
       if (!defeated.zones.graveyard.includes(affected)) defeated.zones.graveyard.push(affected);
     }
-    moveOne(game, pending.defeatedPlayer, result.retreatDirection);
+    if (!pending.standGroundPrevented) moveOne(game, pending.defeatedPlayer, result.retreatDirection);
     game.players[playerId].military ??= { storedCards: {}, freeOrderAbilityIds: [], pursuitBattleCount: 0 };
     game.players[playerId].military!.victoryRestrictions = { noMovement: true, noCapture: true, noOrders: true };
     log(game, playerId, 'military_war_crimes', `${game.players[playerId].name} used War Crimes.`, { affectedCards: pending.affectedCards });
@@ -177,10 +182,13 @@ export function resolveMilitaryChoice(game: GameState, playerId: PlayerID, selec
     if (selected === 'negated') {
       log(game, playerId, 'military_shock_and_awe_negated', `${game.players[playerId].name}'s Shock and Awe effect was negated.`);
     } else {
-      consumeSource(game, playerId, pending.sourceCardId);
       if (selected === 'breakthrough') {
         if (!pending.options.includes('breakthrough')) throw new Error('Breakthrough is not legal because the opponent cannot retreat farther.');
-        moveOne(game, pending.defeatedPlayer, result.retreatDirection);
+        if (openStandGroundForMilitaryMovement(game, pending, selected, cardId)) return;
+      }
+      consumeSource(game, playerId, pending.sourceCardId);
+      if (selected === 'breakthrough') {
+        if (!pending.standGroundPrevented) moveOne(game, pending.defeatedPlayer, result.retreatDirection);
         moveOne(game, playerId, result.retreatDirection);
       } else if (selected === 'consolidate') {
         captureLocation(game, playerId);

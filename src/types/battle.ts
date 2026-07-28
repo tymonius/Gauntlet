@@ -102,6 +102,8 @@ export interface BattleState {
   noMartyrsAssetActivatedCounts?: Partial<Record<PlayerID, number>>;
   lossRetreatEffectsSuppressedFor?: PlayerID[];
   additionalRetreatPositions?: Partial<Record<PlayerID, number>>;
+  standGroundNoMartyrsInitialCounts?: Partial<Record<PlayerID, number>>;
+  standGroundNoMartyrsProcessedCounts?: Partial<Record<PlayerID, number>>;
   winner?: PlayerID;
   loser?: PlayerID;
   effectsResolved: string[];

@@ -349,6 +349,31 @@ export interface PendingSuppliesBattleDiscardChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+
+export interface PendingStandGroundMovementChoice {
+  kind: 'stand_ground_movement';
+  playerId: PlayerID;
+  sourcePlayerId: PlayerID;
+  sourceCardId: CardID;
+  battleId: string;
+  movementKind: 'no_martyrs' | 'war_crimes' | 'shock_and_awe';
+  triggersRemaining: number;
+  options: ['pass', 'use'];
+  resume:
+    | {
+      kind: 'resolve_battle';
+      playerId: PlayerID;
+      battleCardTargets?: BattleCardTarget[];
+    }
+    | {
+      kind: 'resolve_military_choice';
+      playerId: PlayerID;
+      choice: string;
+      cardId?: CardID;
+    };
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type PendingNeutralChoice =
   | PendingDecoysAssetChoice
   | PendingRedemptionAssetChoice
@@ -369,6 +394,7 @@ export type PendingNeutralChoice =
   | PendingSalvageBattleDiscardChoice
   | PendingSeditionActionChoice
   | PendingSeditionBattleChoice
+  | PendingStandGroundMovementChoice
   | PendingScorchedEarthAssetChoice
   | PendingSuppliesAssetChoice
   | PendingSuppliesBattleDiscardChoice;

@@ -24,8 +24,8 @@ export interface MilitaryCardState {
 export type PendingMilitaryChoice =
   | { kind: 'battlefield_promotion'; playerId: PlayerID; sourceCardId: CardID; options: CardID[] }
   | { kind: 'countercharge'; playerId: PlayerID; sourceCardId: CardID; options: Array<'use' | 'pass'> }
-  | { kind: 'war_crimes'; playerId: PlayerID; sourceCardId: CardID; defeatedPlayer: PlayerID; affectedCards: CardID[]; options: Array<'use' | 'pass'> }
-  | { kind: 'shock_and_awe'; playerId: PlayerID; sourceCardId: CardID; location: SpaceID; defeatedPlayer: PlayerID; options: Array<'breakthrough' | 'consolidate'> };
+  | { kind: 'war_crimes'; playerId: PlayerID; sourceCardId: CardID; defeatedPlayer: PlayerID; affectedCards: CardID[]; options: Array<'use' | 'pass'>; standGroundResolved?: boolean; standGroundPrevented?: boolean }
+  | { kind: 'shock_and_awe'; playerId: PlayerID; sourceCardId: CardID; location: SpaceID; defeatedPlayer: PlayerID; options: Array<'breakthrough' | 'consolidate'>; standGroundResolved?: boolean; standGroundPrevented?: boolean };
 
 export type PendingMilitaryTimingChoice =
   | { kind: 'brothers_in_arms_precommit'; playerId: PlayerID; sourceCardId: 'military-brothers-in-arms'; options: Array<'use' | 'pass'> }

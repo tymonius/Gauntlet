@@ -129,6 +129,10 @@ import {
   resolveScorchedEarthChoice,
 } from './neutral-scorched-earth';
 import {
+  applyStandGroundBattleEffects,
+  resolveStandGroundChoice,
+} from './neutral-stand-ground';
+import {
   applySeditionBattleBonuses,
   prepareSeditionBattleReveal,
   queueSeditionActionChoice,
@@ -215,6 +219,8 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
                   ? (resolveRousingSpeechChoice(next, action), {})
                   : pendingKind.startsWith('sedition_')
                     ? resolveSeditionChoice(next, action)
+                    : pendingKind === 'stand_ground_movement'
+                      ? resolveStandGroundChoice(next, action)
                     : pendingKind === 'scorched_earth_asset'
                       ? (resolveScorchedEarthChoice(next, action), {})
                       : pendingKind.startsWith('salvage_')
@@ -226,6 +232,12 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
                         : resolveRedemptionChoice(next, action);
     if ('deferredBattleAction' in resolved && resolved.deferredBattleAction) {
       return applyGameAction(next, resolved.deferredBattleAction);
+    }
+    const deferredMilitaryAction = 'deferredMilitaryAction' in resolved
+      ? resolved.deferredMilitaryAction as NeutralAppStateAction | undefined
+      : undefined;
+    if (deferredMilitaryAction) {
+      return applyGameAction(next, deferredMilitaryAction);
     }
     if ('resumeBattleReveal' in resolved && resolved.resumeBattleReveal) {
       continueIntelligenceBattle(next);
@@ -446,6 +458,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   if (action.type === 'resolve_battle_reveal') {
     applySeditionBattleBonuses(result.state);
+    applyStandGroundBattleEffects(result.state);
     applyAdvanceGuardBattleEffects(result.state);
     applyEntrenchmentBattleEffects(result.state);
     applyFealtyBattleEffects(result.state);
