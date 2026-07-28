@@ -17,18 +17,7 @@ jobs:
       - name: Package engine source
         run: |
           set -euo pipefail
-          tar -czf /tmp/gauntlet-engine.tar.gz \
-            src \
-            package.json \
-            package-lock.json \
-            tsconfig.json \
-            vite.config.ts \
-            vitest.config.ts 2>/dev/null || \
-          tar -czf /tmp/gauntlet-engine.tar.gz \
-            src \
-            package.json \
-            package-lock.json \
-            tsconfig.json
+          tar -czf /tmp/gauntlet-engine.tar.gz src package.json tsconfig.json
       - name: Upload engine source
         uses: actions/upload-artifact@v4
         with:
