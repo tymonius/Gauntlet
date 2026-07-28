@@ -289,8 +289,8 @@ describe('Neutral Strategic Withdrawal', () => {
       played(STRATEGIC_WITHDRAWAL, 'player_1'),
     ]);
     for (const space of blocked.board.spaces) space.occupant = undefined;
-    const beyond = blocked.board.spaces.find((space) => space.id === 'player_1-beyond-gauntlet')!;
-    const before = blocked.board.spaces.find((space) => space.id === 'player_1-before-gauntlet')!;
+    const beyond = blocked.board.spaces.find((space) => space.id === 'player_1-heartland')!;
+    const before = blocked.board.spaces.find((space) => space.id === 'space-1')!;
     beyond.occupant = 'player_1';
     before.occupant = 'player_2';
     blocked.players.player_1.occupiedSpaceId = beyond.id;
