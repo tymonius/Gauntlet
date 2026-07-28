@@ -1,0 +1,27 @@
+name: Export Strategic Withdrawal Base
+
+on:
+  push:
+    branches:
+      - agent/neutral-strategic-withdrawal-v2
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create engine archive
+        run: |
+          set -euo pipefail
+          tar -czf gauntlet-engine.tar.gz src package.json tsconfig.json
+          sha256sum gauntlet-engine.tar.gz > gauntlet-engine.sha256
+
+      - name: Upload engine archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: strategic-withdrawal-base
+          path: |
+            gauntlet-engine.tar.gz
+            gauntlet-engine.sha256
