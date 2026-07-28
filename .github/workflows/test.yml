@@ -1,4 +1,4 @@
-name: Finalize Salvage Runtime Fixes
+name: Apply Salvage Runtime Fixes
 
 on:
   pull_request:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  finalize:
+  apply:
     if: github.head_ref == 'agent/neutral-salvage'
     runs-on: ubuntu-latest
     steps:
@@ -19,59 +19,13 @@ jobs:
           ref: agent/neutral-salvage
           fetch-depth: 0
 
-      - name: Apply fixes and restore CI
+      - name: Materialize corrected files and restore CI
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          python - <<'PY'
-          from pathlib import Path
-
-          path = Path('src/state/neutral-salvage.ts')
-          text = path.read_text()
-          old = """export interface PreparedSalvageAction {
-            targetCardId: CardID;
-          }"""
-          new = """export interface PreparedSalvageAction {
-            targetCardId: CardID;
-            sourceCopiesInHandBeforePlay: number;
-          }"""
-          if old not in text:
-              raise SystemExit('PreparedSalvageAction anchor missing')
-          text = text.replace(old, new, 1)
-          old = "  return { targetCardId: targets[0].cardId };"
-          new = """  return {
-            targetCardId: targets[0].cardId,
-            sourceCopiesInHandBeforePlay: player.zones.hand.filter((cardId) => cardId === SALVAGE).length,
-          };"""
-          if old not in text:
-              raise SystemExit('prepare return anchor missing')
-          text = text.replace(old, new, 1)
-          old = """  const player = game.players[playerId];
-            if (!removeOne(player.zones.discard, prepared.targetCardId)) {"""
-          new = """  const player = game.players[playerId];
-            const sourceCopiesExpectedInHand = Math.max(0, prepared.sourceCopiesInHandBeforePlay - 1);
-            let sourceCopiesInHand = player.zones.hand.filter((cardId) => cardId === SALVAGE).length;
-            while (sourceCopiesInHand < sourceCopiesExpectedInHand) {
-              player.zones.hand.push(SALVAGE);
-              sourceCopiesInHand += 1;
-            }
-            if (!removeOne(player.zones.discard, prepared.targetCardId)) {"""
-          if old not in text:
-              raise SystemExit('apply action anchor missing')
-          path.write_text(text.replace(old, new, 1))
-
-          path = Path('src/state/neutral-salvage.test.ts')
-          text = path.read_text()
-          old = """  it('stacks sequentially and never re-offers a recovered card that was discarded', () => {
-            let state = game();
-            beginResolvedBattle("""
-          new = """  it('stacks sequentially and never re-offers a recovered card that was discarded', () => {
-            let state = game();
-            state.players.player_1.zones.hand = [THIRD];
-            beginResolvedBattle("""
-          if old not in text:
-              raise SystemExit('stacked fixture anchor missing')
-          path.write_text(text.replace(old, new, 1))
-          PY
+          gh api "repos/${GITHUB_REPOSITORY}/git/blobs/e785dec33b8175d503772f75cffe4324c64356cc" --jq .content | base64 -d > src/state/neutral-salvage.ts
+          gh api "repos/${GITHUB_REPOSITORY}/git/blobs/0bbf2ec5e0926a883e2e540a0d842c4c4d444870" --jq .content | base64 -d > src/state/neutral-salvage.test.ts
           git fetch origin main
           git checkout origin/main -- .github/workflows/test.yml
           git diff --check
