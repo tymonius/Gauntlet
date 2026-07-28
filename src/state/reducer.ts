@@ -23,6 +23,7 @@ import { drawFromDeck } from './draw';
 import { applyNoMartyrsOutcome } from './inquisition-no-martyrs';
 import { counterintelligenceBlocksFaceDownBattleCardInspection } from './neutral-counterintelligence';
 import { openStandGroundForNoMartyrsMovement } from './neutral-stand-ground';
+import { openStrategicWithdrawalAfterRetreat } from './neutral-strategic-withdrawal';
 
 export class GameActionError extends Error {
   constructor(message: string) {
@@ -716,39 +717,47 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
 
   battle.winner = winner;
   battle.loser = loser;
-  applyNoMartyrsOutcome(game, battle, winner, loser);
-  if (openStandGroundForNoMartyrsMovement(game, battle, loser, winner, action)) {
-    return { state: game };
-  }
-  const additionalRetreatPositions = battle.additionalRetreatPositions?.[loser] ?? 0;
-  const retreatSpace = findRetreatSpace(game, loser, additionalRetreatPositions);
-  loserParticipant.retreated = true;
-
-  if (winner === battle.attacker.playerId) {
-    attackerOrigin.occupant = undefined;
-    location.occupant = winner;
-    winnerState.occupiedSpaceId = location.id;
-    updateCaptureStatusForOccupiedSpace(location, winner);
-
-    if (retreatSpace) {
-      retreatSpace.occupant = loser;
-      loserState.occupiedSpaceId = retreatSpace.id;
-      updateCaptureStatusForOccupiedSpace(retreatSpace, loser);
-    } else {
-      loserState.occupiedSpaceId = undefined;
+  const movementResolutionKey = 'battle_outcome_movement_resolved';
+  if (!battle.effectsResolved.includes(movementResolutionKey)) {
+    applyNoMartyrsOutcome(game, battle, winner, loser);
+    if (openStandGroundForNoMartyrsMovement(game, battle, loser, winner, action)) {
+      return { state: game };
     }
-  } else {
-    winnerState.occupiedSpaceId = location.id;
-    updateCaptureStatusForOccupiedSpace(location, winner);
-    if (retreatSpace) {
-      if (retreatSpace.id !== attackerOrigin.id) attackerOrigin.occupant = undefined;
-      retreatSpace.occupant = loser;
-      loserState.occupiedSpaceId = retreatSpace.id;
-      updateCaptureStatusForOccupiedSpace(retreatSpace, loser);
-    } else {
+    const additionalRetreatPositions = battle.additionalRetreatPositions?.[loser] ?? 0;
+    const retreatSpace = findRetreatSpace(game, loser, additionalRetreatPositions);
+    loserParticipant.retreated = true;
+
+    if (winner === battle.attacker.playerId) {
       attackerOrigin.occupant = undefined;
-      loserState.occupiedSpaceId = undefined;
+      location.occupant = winner;
+      winnerState.occupiedSpaceId = location.id;
+      updateCaptureStatusForOccupiedSpace(location, winner);
+
+      if (retreatSpace) {
+        retreatSpace.occupant = loser;
+        loserState.occupiedSpaceId = retreatSpace.id;
+        updateCaptureStatusForOccupiedSpace(retreatSpace, loser);
+      } else {
+        loserState.occupiedSpaceId = undefined;
+      }
+    } else {
+      winnerState.occupiedSpaceId = location.id;
+      updateCaptureStatusForOccupiedSpace(location, winner);
+      if (retreatSpace) {
+        if (retreatSpace.id !== attackerOrigin.id) attackerOrigin.occupant = undefined;
+        retreatSpace.occupant = loser;
+        loserState.occupiedSpaceId = retreatSpace.id;
+        updateCaptureStatusForOccupiedSpace(retreatSpace, loser);
+      } else {
+        attackerOrigin.occupant = undefined;
+        loserState.occupiedSpaceId = undefined;
+      }
     }
+    battle.effectsResolved.push(movementResolutionKey);
+  }
+
+  if (openStrategicWithdrawalAfterRetreat(game, battle, loser, action)) {
+    return { state: game };
   }
 
   const { destinationOverrides } = applyPostResolutionEffects(game, action);
@@ -756,15 +765,21 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
   for (const participant of [battle.attacker, battle.defender]) {
     const player = requirePlayer(game, participant.playerId);
     if (participant.handCommit) {
-      if (participant.handCommit.canceled) player.zones.hand.push(participant.handCommit.cardId);
-      else player.zones.graveyard.push(participant.handCommit.cardId);
+      pushCardToDestination(
+        player,
+        participant.handCommit.cardId,
+        participant.handCommit.cleanupDestination
+          ?? (participant.handCommit.canceled ? 'hand' : 'graveyard'),
+      );
     }
 
     for (const played of participant.battleDrawPlayed) {
       pushCardToDestination(
         player,
         played.cardId,
-        destinationOverrideFor(destinationOverrides, participant.playerId, played.cardId) ?? 'discard',
+        played.cleanupDestination
+          ?? destinationOverrideFor(destinationOverrides, participant.playerId, played.cardId)
+          ?? 'discard',
       );
     }
 
