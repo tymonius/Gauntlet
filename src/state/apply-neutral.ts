@@ -108,6 +108,13 @@ import {
   resolveRequisitionChoice,
 } from './neutral-requisition';
 import {
+  applySabotageAction,
+  prepareSabotageAction,
+  reconcileSabotageAssetState,
+  restoreSabotagedAssetsAtTurnStart,
+  SABOTAGE,
+} from './neutral-sabotage';
+import {
   applyRousingSpeechBattleEffects,
   captureRousingSpeechAssetSnapshot,
   openNextRousingSpeechChoice,
@@ -134,6 +141,7 @@ import {
   queueSuppliesBattleEffects,
   resolveSuppliesChoice,
 } from './neutral-supplies';
+import { activeBankedAssetCopies } from './banked-assets';
 import { type ApplyGameActionResult, GameActionError } from './reducer';
 import {
   clearExpiredPathfindersSuppressions,
@@ -193,6 +201,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     if ('resumeBattleReveal' in resolved && resolved.resumeBattleReveal) {
       continueIntelligenceBattle(next);
     }
+    reconcileSabotageAssetState(next);
     continueNeutralChoices(next);
     return { state: next };
   }
@@ -203,6 +212,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'use_neutral_reinforcements_asset') {
     const next = structuredClone(game);
     useReinforcementsAsset(next, action);
+    reconcileSabotageAssetState(next);
     return { state: next };
   }
 
@@ -216,7 +226,15 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     const next = structuredClone(game);
     finishRemainingMovement(next, action.playerId);
     clearAdvanceGuardMovement(next, action.playerId);
+    reconcileSabotageAssetState(next);
     return { state: next };
+  }
+
+  if (game.phase === 'turn_start') {
+    const restored = structuredClone(game);
+    restoreSabotagedAssetsAtTurnStart(restored);
+    reconcileSabotageAssetState(restored);
+    game = restored;
   }
 
   const rousingSpeechAssetsBefore = captureRousingSpeechAssetSnapshot(game);
@@ -228,6 +246,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   const priorBattleController = priorBattle
     ? game.board.spaces.find((space) => space.id === priorBattle.location)?.controller
     : undefined;
+  const contingencyPlanActiveCopiesBefore = action.type === 'resolve_asset_bank_discard'
+    ? activeBankedAssetCopies(game, action.playerId, 'neutral-contingency-plan')
+    : 0;
   const normalDraw = action.type === 'draw_card' && game.phase === 'turn_start';
   const movementOriginSpaceId = action.type === 'move_player'
     ? game.board.spaces.find((space) => space.occupant === action.playerId)?.id
@@ -271,6 +292,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     : undefined;
   const preparedScoutingReport = action.type === 'play_action_card' && action.cardId === SCOUTING_REPORT
     ? prepareScoutingReportAction(game, action)
+    : undefined;
+  const preparedSabotage = action.type === 'play_action_card' && action.cardId === SABOTAGE
+    ? prepareSabotageAction(game, action)
     : undefined;
 
   const restrictedBefore = action.type === 'move_player'
@@ -339,6 +363,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'play_action_card' && preparedScoutingReport) {
     applyScoutingReportAction(result.state, action.playerId, preparedScoutingReport);
   }
+  if (action.type === 'play_action_card' && preparedSabotage) {
+    applySabotageAction(result.state, action.playerId, preparedSabotage);
+  }
   if (action.type === 'move_player') {
     const battle = result.state.battle;
     if (battle?.attackerHandCommitVisibleTo) {
@@ -368,9 +395,15 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     clearAdvanceGuardMovement(result.state, action.playerId);
     clearExpiredPathfindersSuppressions(result.state);
     clearExpiredEntrenchmentLocks(result.state);
+    restoreSabotagedAssetsAtTurnStart(result.state);
   }
   if (action.type === 'resolve_asset_bank_discard') {
-    applyContingencyPlanAssetLimitDraw(result.state, action.playerId, action.cardIds);
+    applyContingencyPlanAssetLimitDraw(
+      result.state,
+      action.playerId,
+      action.cardIds,
+      contingencyPlanActiveCopiesBefore,
+    );
   }
   if (action.type === 'resolve_battle_reveal') {
     applyAdvanceGuardBattleEffects(result.state);
@@ -412,6 +445,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     queueSuppliesAfterNormalDraw(result.state, action.playerId);
   }
 
+  reconcileSabotageAssetState(result.state);
   registerRousingSpeechAssetTriggers(
     result.state,
     rousingSpeechAssetsBefore,

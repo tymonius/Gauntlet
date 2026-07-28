@@ -13,7 +13,7 @@ import { wasBattleCardObservedBeforeNormalReveal } from './battle-observation';
 import { reconnaissanceWithdrawalAvailable } from './intelligence-reconnaissance-battle';
 import {
   applyCopiedSubversionRestriction,
-  bankedAssetUseAllowed,
+  activeBankedAssetCopies,
   subversionRestrictionResolved,
 } from './intelligence-subversion-battle';
 import { gainFactionResource } from './resources';
@@ -188,7 +188,7 @@ function assetInitialCount(game: GameState, playerId: PlayerID): number {
   const prefix = `${ASSET_INITIAL_PREFIX}${playerId}:`;
   const existing = battle.effectsResolved.find((entry) => entry.startsWith(prefix));
   if (existing) return Number(existing.slice(prefix.length));
-  const count = game.players[playerId].zones.assetBank.filter((cardId) => cardId === TREASON).length;
+  const count = activeBankedAssetCopies(game, playerId, TREASON);
   battle.effectsResolved.push(`${prefix}${count}`);
   return count;
 }
@@ -198,7 +198,7 @@ function assetProcessedCount(game: GameState, playerId: PlayerID): number {
 }
 
 export function unresolvedTreasonAssetSource(game: GameState, playerId: PlayerID): TreasonAssetSource | undefined {
-  if (!game.battle || !bankedAssetUseAllowed(game, playerId)) return undefined;
+  if (!game.battle) return undefined;
   return assetProcessedCount(game, playerId) < assetInitialCount(game, playerId)
     ? { kind: 'asset', playerId }
     : undefined;

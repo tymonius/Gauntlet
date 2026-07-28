@@ -12,7 +12,7 @@ import {
   addReplayedBattleCard,
   replayableBattleEffectsIn,
 } from './battle-effect-replay';
-import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
+import { activeBankedAssetCopies } from './intelligence-subversion-battle';
 import { GameActionError } from './reducer';
 
 export const REND_THE_VEIL = 'mystics-rend-the-veil';
@@ -77,7 +77,7 @@ function assetInitialCount(game: GameState, playerId: PlayerID): number {
   const prefix = `${ASSET_INITIAL_PREFIX}${playerId}:`;
   const existing = battle.effectsResolved.find((entry) => entry.startsWith(prefix));
   if (existing) return Number(existing.slice(prefix.length));
-  const count = game.players[playerId].zones.assetBank.filter((cardId) => cardId === REND_THE_VEIL).length;
+  const count = activeBankedAssetCopies(game, playerId, REND_THE_VEIL);
   battle.effectsResolved.push(`${prefix}${count}`);
   return count;
 }
@@ -87,7 +87,6 @@ function assetProcessedCount(game: GameState, playerId: PlayerID): number {
 }
 
 function unresolvedAssetSource(game: GameState, playerId: PlayerID): RendSource | undefined {
-  if (!bankedAssetUseAllowed(game, playerId)) return undefined;
   return assetProcessedCount(game, playerId) < assetInitialCount(game, playerId)
     ? { playerId, sourceSlot: 'asset' }
     : undefined;

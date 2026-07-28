@@ -5,7 +5,7 @@ import type {
   GameState,
   PlayerID,
 } from '../types';
-import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
+import { bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
 
 export const COUNTERINTELLIGENCE = 'neutral-counterintelligence';
 
@@ -35,8 +35,7 @@ function participantFor(game: GameState, playerId: PlayerID): BattleParticipantS
 export function counterintelligenceAssetActive(game: GameState, playerId: PlayerID): boolean {
   const player = game.players[playerId];
   return Boolean(
-    player?.zones.assetBank.includes(COUNTERINTELLIGENCE)
-    && bankedAssetUseAllowed(game, playerId),
+    bankedAssetCardUseAllowed(game, playerId, COUNTERINTELLIGENCE),
   );
 }
 

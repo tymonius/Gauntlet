@@ -7,7 +7,7 @@ import type {
   SleeperNetworkState,
 } from '../types';
 import type { ActionCardTarget, ResolveIntelligenceChoiceAction } from './actions';
-import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
+import { bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
 
 export const SLEEPER_NETWORK = 'intelligence-sleeper-network';
 
@@ -140,7 +140,7 @@ function attachFromHand(game: GameState, playerId: PlayerID, cardId: CardID): vo
 }
 
 export function maybeOpenSleeperNetworkEndTurnWindow(game: GameState, playerId: PlayerID): boolean {
-  if (hasPendingWindow(game) || game.activePlayer !== playerId || !bankedAssetUseAllowed(game, playerId)) return false;
+  if (hasPendingWindow(game) || game.activePlayer !== playerId || !bankedAssetCardUseAllowed(game, playerId, SLEEPER_NETWORK)) return false;
   const state = network(game, playerId);
   const player = game.players[playerId];
   if (!state || state.activation || state.bankedTurn >= game.turn || state.endOfferTurn === game.turn) return false;
@@ -160,8 +160,7 @@ export function maybeOpenSleeperNetworkStartTurnWindow(game: GameState): boolean
   if (game.phase !== 'turn_start' || hasPendingWindow(game)) return false;
   const playerId = game.activePlayer;
   const state = network(game, playerId);
-  if (!state || state.activation || !bankedAssetUseAllowed(game, playerId) || state.bankedTurn >= game.turn || state.startOfferTurn === game.turn) return false;
-  if (!game.players[playerId].zones.assetBank.includes(SLEEPER_NETWORK)) return false;
+  if (!state || state.activation || !bankedAssetCardUseAllowed(game, playerId, SLEEPER_NETWORK) || state.bankedTurn >= game.turn || state.startOfferTurn === game.turn) return false;
   state.startOfferTurn = game.turn;
   game.pendingIntelligenceChoice = {
     kind: 'sleeper_network_activate',
@@ -249,7 +248,7 @@ export function beginCompromisedSleeperNetwork(
 ): boolean {
   if (hasPendingWindow(game)) return false;
   const state = network(game, playerId);
-  if (!state || state.activation || !bankedAssetUseAllowed(game, playerId) || !game.players[playerId].zones.assetBank.includes(SLEEPER_NETWORK)) return false;
+  if (!state || state.activation || !bankedAssetCardUseAllowed(game, playerId, SLEEPER_NETWORK)) return false;
   const eligibleCardIds = legalSleeperNetworkActionCards(game, playerId);
   state.activation = {
     mode: 'compromised',

@@ -5,6 +5,7 @@ import type {
   GameState,
   PlayerID,
 } from '../types';
+import { faceUpAssetCopies } from './asset-facing';
 
 export const ILLEGAL_OCCUPATION = 'neutral-illegal-occupation';
 const ILLEGAL_OCCUPATION_BATTLE_RESOLUTION = 'neutral_illegal_occupation_battle';
@@ -54,8 +55,7 @@ export function illegalOccupationSourceFor(
   if (!occupied || occupied.kind !== 'territory') return undefined;
   const sourcePlayerId = occupied.controller;
   if (!sourcePlayerId || sourcePlayerId === targetPlayerId) return undefined;
-  const source = game.players[sourcePlayerId];
-  if (!source?.zones.assetBank.includes(ILLEGAL_OCCUPATION)) return undefined;
+  if (faceUpAssetCopies(game.players[sourcePlayerId], ILLEGAL_OCCUPATION) < 1) return undefined;
   if (game.battle?.bankedAssetUseProhibited?.includes(sourcePlayerId)) return undefined;
   return sourcePlayerId;
 }

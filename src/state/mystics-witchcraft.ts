@@ -10,7 +10,7 @@ import type {
   WitchcraftTargetOption,
 } from '../types';
 import type { ResolveMysticsChoiceAction } from './actions';
-import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
+import { activeBankedAssetCopies } from './intelligence-subversion-battle';
 import { sacrificeMysticHandCard } from './mystics-conversion';
 import { GameActionError } from './reducer';
 
@@ -148,8 +148,7 @@ function assetUsesThisTurn(game: GameState, playerId: PlayerID): number {
 }
 
 function availableAssetCount(game: GameState, playerId: PlayerID): number {
-  if (!bankedAssetUseAllowed(game, playerId)) return 0;
-  const banked = game.players[playerId].zones.assetBank.filter((cardId) => cardId === WITCHCRAFT).length;
+  const banked = activeBankedAssetCopies(game, playerId, WITCHCRAFT);
   return Math.max(banked - assetUsesThisTurn(game, playerId), 0);
 }
 

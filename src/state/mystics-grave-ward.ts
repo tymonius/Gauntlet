@@ -10,7 +10,7 @@ import type {
   ResolveMysticsChoiceAction,
   UseMysticGraveWardAssetAction,
 } from './actions';
-import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
+import { activeBankedAssetCopies, bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
 
 export const GRAVE_WARD_CARD_ID = 'mystics-grave-ward';
 
@@ -92,8 +92,8 @@ export function registerGraveyardEntries(
       && game.recentBattleResult?.battleId === battleId
       && game.recentBattleResult.bankedAssetUseProhibitedFor?.includes(player.id),
     );
-    if (!mystics || battleSuppressed || !bankedAssetUseAllowed(game, player.id)) continue;
-    const triggerCount = player.zones.assetBank.filter((cardId) => cardId === GRAVE_WARD_CARD_ID).length;
+    if (!mystics || battleSuppressed || !bankedAssetCardUseAllowed(game, player.id, GRAVE_WARD_CARD_ID)) continue;
+    const triggerCount = activeBankedAssetCopies(game, player.id, GRAVE_WARD_CARD_ID);
     if (triggerCount < 1) continue;
     const entered = multisetDifference(player.zones.graveyard, before[player.id] ?? []);
     if (entered.length < 1) continue;
@@ -182,11 +182,11 @@ function entryFor(game: GameState, playerId: PlayerID, entryId: string) {
 function openAssetEntry(game: GameState, playerId: PlayerID): boolean {
   const player = game.players[playerId];
   const mystics = player.mystics;
-  if (!mystics?.graveWardEntries?.length || !bankedAssetUseAllowed(game, playerId)) return false;
+  if (!mystics?.graveWardEntries?.length || !bankedAssetCardUseAllowed(game, playerId, GRAVE_WARD_CARD_ID)) return false;
 
   while (mystics.graveWardEntries.length > 0) {
     const entry = mystics.graveWardEntries[0];
-    const assetCount = player.zones.assetBank.filter((cardId) => cardId === GRAVE_WARD_CARD_ID).length;
+    const assetCount = activeBankedAssetCopies(game, playerId, GRAVE_WARD_CARD_ID);
     if (!player.zones.graveyard.includes(entry.cardId) || entry.triggersRemaining < 1 || assetCount < 1) {
       mystics.graveWardEntries.shift();
       continue;

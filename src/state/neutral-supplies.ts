@@ -9,7 +9,7 @@ import type {
 } from '../types';
 import type { ResolveNeutralChoiceAction } from './actions';
 import { drawFromDeck } from './draw';
-import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
+import { activeBankedAssetCopies, bankedAssetUseAllowed } from './intelligence-subversion-battle';
 import { GameActionError } from './reducer';
 
 export const SUPPLIES = 'neutral-supplies';
@@ -70,7 +70,7 @@ function activeCopyCount(participant: BattleParticipantState): number {
 export function queueSuppliesAfterNormalDraw(game: GameState, playerId: PlayerID): number {
   if (game.phase === 'game_over' || !bankedAssetUseAllowed(game, playerId)) return 0;
   const player = game.players[playerId];
-  const count = player?.zones.assetBank.filter((cardId) => cardId === SUPPLIES).length ?? 0;
+  const count = activeBankedAssetCopies(game, playerId, SUPPLIES);
   if (count < 1) return 0;
   const queue = game.neutralSuppliesAssetQueue ?? [];
   queue.push({
@@ -103,7 +103,7 @@ export function queueSuppliesBattleEffects(game: GameState, battle: BattleState)
 function trimAssetQueue(game: GameState): void {
   const retained = (game.neutralSuppliesAssetQueue ?? []).filter((entry) => {
     if (!bankedAssetUseAllowed(game, entry.playerId)) return false;
-    const available = game.players[entry.playerId]?.zones.assetBank.filter((cardId) => cardId === SUPPLIES).length ?? 0;
+    const available = activeBankedAssetCopies(game, entry.playerId, SUPPLIES);
     entry.triggersRemaining = Math.min(entry.triggersRemaining, available);
     return entry.triggersRemaining > 0;
   });

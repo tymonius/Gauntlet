@@ -190,7 +190,7 @@ describe('Inquisition No Martyrs', () => {
     expect(openNextNoMartyrsAssetChoice(state)).toBe(false);
     expect(state.pendingInquisitionChoice).toBeUndefined();
     expect(state.players.player_1.zones.assetBank).toEqual([NO_MARTYRS]);
-    expect(state.battle.noMartyrsAssetProcessedCounts?.player_1).toBe(1);
+    expect(state.battle.noMartyrsAssetProcessedCounts?.player_1).toBe(0);
   });
 
   it('counts active physical Battle copies and activated Assets while ignoring canceled, negated, and virtual copies', () => {

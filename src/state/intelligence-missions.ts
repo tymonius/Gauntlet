@@ -1,7 +1,7 @@
 import { intelligenceCardsById, intelligenceMissionCardIds } from '../cards';
 import type { CardID, GameEvent, GameState, IntelligenceMissionKind, IntelligenceMissionState, PlayerID, PlayerState } from '../types';
 import { gainFactionResource, hasFactionResource, spendFactionResource } from './resources';
-import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
+import { bankedAssetUseAllowed, bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
 
 const DEEP_COVER_CARD_ID = 'intelligence-deep-cover';
 
@@ -149,7 +149,7 @@ export function failIntelligenceMission(game: GameState, playerId: PlayerID, kin
   const player = requireIntelligence(game, playerId);
   const mission = kind === 'normal' ? player.intelligence!.activeMission : player.intelligence!.specialOperation;
   if (!mission) return;
-  if (kind === 'normal' && !game.pendingIntelligenceChoice && bankedAssetUseAllowed(game, playerId) && player.zones.assetBank.includes(DEEP_COVER_CARD_ID)) {
+  if (kind === 'normal' && !game.pendingIntelligenceChoice && bankedAssetCardUseAllowed(game, playerId, DEEP_COVER_CARD_ID)) {
     game.pendingIntelligenceChoice = {
       kind: 'deep_cover',
       playerId,

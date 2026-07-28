@@ -11,7 +11,7 @@ import type {
   ResolveNeutralChoiceAction,
   UseNeutralReinforcementsAssetAction,
 } from './actions';
-import { bankedAssetUseAllowed } from './banked-assets';
+import { bankedAssetCardUseAllowed } from './banked-assets';
 import { resolveBattleRevealCancellations } from './battle-reveal';
 import { drawFromDeck } from './draw';
 import { GameActionError } from './reducer';
@@ -21,6 +21,7 @@ export const REINFORCEMENTS = 'neutral-reinforcements';
 const TOO_LATE_AFTER_REVEAL = new Set([
   'card-embargo',
   'neutral-disruption',
+  'neutral-sabotage',
   'neutral-palisade-wall',
   'neutral-scouting-report',
   'intelligence-spies',
@@ -85,8 +86,7 @@ export function canUseReinforcementsAsset(game: GameState, playerId: PlayerID): 
   if (!player || game.activePlayer !== playerId || game.priorityPlayer !== playerId) return false;
   if (game.phase !== 'action_before_movement' && game.phase !== 'action_after_movement') return false;
   if (reinforcementsActionOpportunityActive(game, playerId)) return false;
-  if (!bankedAssetUseAllowed(game, playerId)) return false;
-  if (!player.zones.assetBank.includes(REINFORCEMENTS)) return false;
+  if (!bankedAssetCardUseAllowed(game, playerId, REINFORCEMENTS)) return false;
   return player.actionsRemaining < 1 || player.hasPlayedActionThisTurn || player.hasPlayedBattleThisTurn;
 }
 

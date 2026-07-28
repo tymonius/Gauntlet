@@ -218,6 +218,15 @@ export interface PendingScoutingReportBattleReplaceChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+
+export interface NeutralSabotageAssetSuppression {
+  id: string;
+  sourcePlayerId: PlayerID;
+  targetPlayerId: PlayerID;
+  cardId: CardID;
+  appliedTurn: number;
+}
+
 export interface SuppliesAssetQueueEntry {
   id: string;
   playerId: PlayerID;

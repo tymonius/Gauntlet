@@ -7,7 +7,7 @@ import type {
 } from '../types';
 import type { ResolveInquisitionChoiceAction } from './actions';
 import { recordBankedAssetUse } from './intelligence-mission-triggers';
-import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
+import { bankedAssetUseAllowed, activeBankedAssetCopies, bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
 
 export const NO_MARTYRS = 'inquisition-no-martyrs';
 
@@ -38,7 +38,7 @@ function removeOne(cards: string[], cardId: string): boolean {
 }
 
 function countBankedCopies(game: GameState, playerId: PlayerID): number {
-  return game.players[playerId].zones.assetBank.filter((cardId) => cardId === NO_MARTYRS).length;
+  return activeBankedAssetCopies(game, playerId, NO_MARTYRS);
 }
 
 function ensureAssetCounters(battle: BattleState, game: GameState, playerId: PlayerID): void {
@@ -117,7 +117,7 @@ export function resolveNoMartyrsChoice(game: GameState, action: ResolveInquisiti
   }
   ensureAssetCounters(battle, game, pending.playerId);
   if (action.choice === 'use') {
-    if (!bankedAssetUseAllowed(game, pending.playerId)) {
+    if (!bankedAssetCardUseAllowed(game, pending.playerId, NO_MARTYRS)) {
       throw new NoMartyrsError('Banked Asset use is prohibited in this battle.');
     }
     if (!removeOne(game.players[pending.playerId].zones.assetBank, NO_MARTYRS)) {

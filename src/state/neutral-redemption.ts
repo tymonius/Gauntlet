@@ -12,7 +12,7 @@ import type {
   ResolveBattleAction,
   ResolveNeutralChoiceAction,
 } from './actions';
-import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
+import { activeBankedAssetCopies, bankedAssetUseAllowed } from './intelligence-subversion-battle';
 import { GameActionError } from './reducer';
 
 export const REDEMPTION = 'neutral-redemption';
@@ -134,7 +134,7 @@ export function registerRedemptionDiscardEntries(
   for (const player of Object.values(game.players)) {
     if (player.id === sourcePlayerId) continue;
     if (!bankedAssetUseAllowed(game, player.id)) continue;
-    const assetCount = player.zones.assetBank.filter((cardId) => cardId === REDEMPTION).length;
+    const assetCount = activeBankedAssetCopies(game, player.id, REDEMPTION);
     if (assetCount < 1) continue;
 
     const entered = multisetDifference(player.zones.discard, before[player.id] ?? []);
@@ -160,7 +160,7 @@ function trimDiscardQueue(game: GameState): void {
     const player = game.players[entry.playerId];
     if (!player || entry.triggersRemaining < 1) return false;
     if (!bankedAssetUseAllowed(game, player.id)) return false;
-    const assetCount = player.zones.assetBank.filter((cardId) => cardId === REDEMPTION).length;
+    const assetCount = activeBankedAssetCopies(game, player.id, REDEMPTION);
     if (assetCount < 1) return false;
     const available = [...player.zones.discard];
     const eligible = entry.cardIds.filter((cardId) => removeOne(available, cardId));

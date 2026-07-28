@@ -38,6 +38,8 @@ export interface CardCancellation {
   owner: PlayerID;
   source: CardID | SpaceID | string;
   reason: string;
+  destination?: 'discard' | 'graveyard' | 'hand' | 'removed';
+  immediate?: boolean;
 }
 
 export interface DestinationOverride {
