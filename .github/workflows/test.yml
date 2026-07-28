@@ -1,42 +1,29 @@
-name: Finalize Salvage Test Fix
+name: Test
 
 on:
   pull_request:
+  push:
     branches:
       - main
 
-permissions:
-  contents: write
-
 jobs:
-  finalize:
-    if: github.head_ref == 'agent/neutral-salvage'
+  test:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: agent/neutral-salvage
-          fetch-depth: 0
 
-      - name: Correct assertion and restore CI
-        run: |
-          set -euo pipefail
-          python - <<'PY'
-          from pathlib import Path
-          path = Path('src/state/neutral-salvage.test.ts')
-          text = path.read_text()
-          old = 'expect(state.player_1.zones.discard).toEqual([SALVAGE, SALVAGE]);'
-          new = 'expect(state.players.player_1.zones.discard).toEqual([SALVAGE, SALVAGE]);'
-          if old not in text:
-              raise SystemExit('Salvage assertion typo not found')
-          path.write_text(text.replace(old, new, 1))
-          PY
-          git fetch origin main
-          git checkout origin/main -- .github/workflows/test.yml
-          git diff --check
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Fix Salvage test assertion"
-          git push origin HEAD:agent/neutral-salvage
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test

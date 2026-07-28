@@ -144,7 +144,7 @@ describe('Neutral Salvage', () => {
       type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'select_card', cardId: SALVAGE,
     }).state;
     expect(state.players.player_1.zones.hand).toEqual([SALVAGE]);
-    expect(state.player_1.zones.discard).toEqual([SALVAGE, SALVAGE]);
+    expect(state.players.player_1.zones.discard).toEqual([SALVAGE, SALVAGE]);
   });
 
   it('rejects opposing, missing, and non-discard Action targets', () => {
