@@ -1,0 +1,28 @@
+name: Diagnose Sabotage Tests
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  diagnose:
+    if: github.head_ref == 'agent/neutral-sabotage'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Run focused tests
+        run: |
+          set +e
+          npm test -- src/state/neutral-sabotage.test.ts > sabotage-test-output.txt 2>&1
+          echo "exit=$?" >> sabotage-test-output.txt
+          exit 0
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sabotage-test-output
+          path: sabotage-test-output.txt
