@@ -15,6 +15,7 @@ export const SALVAGE = 'neutral-salvage';
 
 export interface PreparedSalvageAction {
   targetCardId: CardID;
+  sourceCopiesInHandBeforePlay: number;
 }
 
 function appendPublicLog(
@@ -86,7 +87,10 @@ export function prepareSalvageAction(
   if (!player.zones.discard.includes(targets[0].cardId)) {
     throw new GameActionError('The chosen Salvage card is not in your Discard Pile.');
   }
-  return { targetCardId: targets[0].cardId };
+  return {
+    targetCardId: targets[0].cardId,
+    sourceCopiesInHandBeforePlay: player.zones.hand.filter((cardId) => cardId === SALVAGE).length,
+  };
 }
 
 export function applySalvageAction(
@@ -95,6 +99,12 @@ export function applySalvageAction(
   prepared: PreparedSalvageAction,
 ): void {
   const player = game.players[playerId];
+  const sourceCopiesExpectedInHand = Math.max(0, prepared.sourceCopiesInHandBeforePlay - 1);
+  let sourceCopiesInHand = player.zones.hand.filter((cardId) => cardId === SALVAGE).length;
+  while (sourceCopiesInHand < sourceCopiesExpectedInHand) {
+    player.zones.hand.push(SALVAGE);
+    sourceCopiesInHand += 1;
+  }
   if (!removeOne(player.zones.discard, prepared.targetCardId)) {
     throw new GameActionError(`${prepared.targetCardId} is no longer in your Discard Pile.`);
   }

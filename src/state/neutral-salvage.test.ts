@@ -204,6 +204,7 @@ describe('Neutral Salvage', () => {
 
   it('stacks sequentially and never re-offers a recovered card that was discarded', () => {
     let state = game();
+    state.players.player_1.zones.hand = [THIRD];
     beginResolvedBattle(
       state,
       played(SALVAGE, 'player_1', 'hand'),

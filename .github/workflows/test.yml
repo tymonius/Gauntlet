@@ -1,36 +1,29 @@
-name: Apply Salvage Runtime Fixes
+name: Test
 
 on:
   pull_request:
+  push:
     branches:
       - main
 
-permissions:
-  contents: write
-
 jobs:
-  apply:
-    if: github.head_ref == 'agent/neutral-salvage'
+  test:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: agent/neutral-salvage
-          fetch-depth: 0
 
-      - name: Materialize corrected files and restore CI
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          gh api "repos/${GITHUB_REPOSITORY}/git/blobs/e785dec33b8175d503772f75cffe4324c64356cc" --jq .content | base64 -d > src/state/neutral-salvage.ts
-          gh api "repos/${GITHUB_REPOSITORY}/git/blobs/0bbf2ec5e0926a883e2e540a0d842c4c4d444870" --jq .content | base64 -d > src/state/neutral-salvage.test.ts
-          git fetch origin main
-          git checkout origin/main -- .github/workflows/test.yml
-          git diff --check
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Fix Salvage duplicate and stacked cleanup cases"
-          git push origin HEAD:agent/neutral-salvage
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
