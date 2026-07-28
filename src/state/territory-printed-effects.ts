@@ -1,5 +1,6 @@
 import { v06CanonicalContent } from '../content/v06';
 import type { BoardSpaceState, GameState, PlayerID, SpaceID } from '../types';
+import { topTerritoryOverlay } from './territory-overlays';
 
 function pathfindersSuppressionApplies(
   game: GameState,
@@ -17,9 +18,7 @@ function pathfindersSuppressionApplies(
 }
 
 function overlaySuppressesPrintedEffect(space: BoardSpaceState): boolean {
-  return space.overlays?.some((overlay) => (
-    overlay.faceUp && overlay.cardId === 'neutral-siege-weaponry'
-  )) ?? false;
+  return Boolean(topTerritoryOverlay(space));
 }
 
 export function territoryHasPrintedEffect(space?: BoardSpaceState): boolean {

@@ -1,5 +1,5 @@
 import type { BattleCardTarget } from '../effects';
-import type { CardID, PlayerID } from './ids';
+import type { CardID, PlayerID, SpaceID } from './ids';
 
 export type DecoysAssetZone = 'asset_bank' | 'hand' | 'discard' | 'graveyard' | 'removed';
 
@@ -256,6 +256,25 @@ export interface PendingSalvageBattleDiscardChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface ScorchedEarthAssetQueueEntry {
+  id: string;
+  playerId: PlayerID;
+  battleId: string;
+  spaceId: SpaceID;
+  triggersRemaining: number;
+}
+
+export interface PendingScorchedEarthAssetChoice {
+  kind: 'scorched_earth_asset';
+  playerId: PlayerID;
+  entryId: string;
+  battleId: string;
+  spaceId: SpaceID;
+  triggersRemaining: number;
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface NeutralSabotageAssetSuppression {
   id: string;
   sourcePlayerId: PlayerID;
@@ -315,6 +334,7 @@ export type PendingNeutralChoice =
   | PendingSalvageActionDiscardChoice
   | PendingSalvageBattleChoice
   | PendingSalvageBattleDiscardChoice
+  | PendingScorchedEarthAssetChoice
   | PendingSuppliesAssetChoice
   | PendingSuppliesBattleDiscardChoice;
 

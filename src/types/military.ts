@@ -1,9 +1,13 @@
 import type { CardID, PlayerID, SpaceID } from './ids';
 
+export type TerritoryOverlayKind = 'standard' | 'ruins';
+
 export interface TerritoryOverlayState {
   cardId: CardID;
   owner: PlayerID;
   faceUp: boolean;
+  /** Explicit role for overlays whose physical card becomes persistent Ruins. */
+  kind?: TerritoryOverlayKind;
 }
 
 export interface MilitaryCardState {

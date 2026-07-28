@@ -1,45 +1,29 @@
-name: Deploy Scorched Earth
+name: Test
 
 on:
   pull_request:
+  push:
     branches:
       - main
 
-permissions:
-  contents: write
-
 jobs:
-  deploy:
-    if: github.head_ref == 'agent/neutral-scorched-earth'
+  test:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: agent/neutral-scorched-earth
-          fetch-depth: 0
 
-      - name: Verify and deploy source
-        run: |
-          set -euo pipefail
-          echo '16539a9b328504d09c4c3dbb3b068fac21e94e41e09108630acc9b57c5ac57a6  .github/scorched-earth-00.b64' | sha256sum -c -
-          echo '7fe903c343328c1cc4855608113f20bc80ba16d9f53ba2a81bcf6ebd16123af9  .github/scorched-earth-01.b64' | sha256sum -c -
-          echo 'a9f8cbc59284c220a481400ec92f2ca29ef6d2992471af1306916667a546758a  .github/scorched-earth-02.b64' | sha256sum -c -
-          echo 'be5757384afaf94cc8794a8ae4c514bb3642d80022c010cd5fd225d2a5b4fc22  .github/scorched-earth-03.b64' | sha256sum -c -
-          echo '42934d6e5009c628ed33609d6b015088ab5643fd9097e8b69997a791d3c8cb44  .github/scorched-earth-04.b64' | sha256sum -c -
-          cat .github/scorched-earth-0*.b64 > /tmp/scorched-earth-files.b64
-          test "$(wc -c < /tmp/scorched-earth-files.b64)" -eq 29152
-          echo '143a262ca3144a71267c4dd12d5bcdc4c1b89ab0a4fecd99c93cd2f7fca9a11d  /tmp/scorched-earth-files.b64' | sha256sum -c -
-          base64 -d /tmp/scorched-earth-files.b64 > /tmp/scorched-earth-files.tar.gz
-          test "$(wc -c < /tmp/scorched-earth-files.tar.gz)" -eq 21864
-          echo 'a05fe2e3a9001a121b39bee1cf549331f4c2cf2f7510d47f051f08ced191e680  /tmp/scorched-earth-files.tar.gz' | sha256sum -c -
-          tar -xzf /tmp/scorched-earth-files.tar.gz
-          rm .github/scorched-earth-0*.b64
-          git fetch origin main
-          git checkout origin/main -- .github/workflows/test.yml
-          git diff --check
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add -A
-          git commit -m 'Implement Neutral Scorched Earth'
-          git push origin HEAD:agent/neutral-scorched-earth
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test

@@ -123,6 +123,12 @@ import {
   SALVAGE,
 } from './neutral-salvage';
 import {
+  applyScorchedEarthBattleRuins,
+  openNextScorchedEarthChoice,
+  queueScorchedEarthAssetChoices,
+  resolveScorchedEarthChoice,
+} from './neutral-scorched-earth';
+import {
   applyRousingSpeechBattleEffects,
   captureRousingSpeechAssetSnapshot,
   openNextRousingSpeechChoice,
@@ -163,6 +169,7 @@ function continueNeutralChoices(game: GameState): void {
   openNextDecoysChoice(game);
   openNextRequisitionChoice(game);
   openNextRousingSpeechChoice(game);
+  openNextScorchedEarthChoice(game);
   openNextSalvageChoice(game);
   openNextSuppliesChoice(game);
   openNextFootholdChoice(game);
@@ -199,13 +206,15 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
                 ? (resolveRequisitionChoice(next, action), {})
                 : pendingKind.startsWith('rousing_speech_')
                   ? (resolveRousingSpeechChoice(next, action), {})
-                  : pendingKind.startsWith('salvage_')
-                    ? (resolveSalvageChoice(next, action), {})
-                    : pendingKind.startsWith('scouting_report_')
-                    ? resolveScoutingReportChoice(next, action)
-                    : pendingKind.startsWith('reserves_')
-                      ? resolveReservesChoice(next, action)
-                      : resolveRedemptionChoice(next, action);
+                  : pendingKind === 'scorched_earth_asset'
+                    ? (resolveScorchedEarthChoice(next, action), {})
+                    : pendingKind.startsWith('salvage_')
+                      ? (resolveSalvageChoice(next, action), {})
+                      : pendingKind.startsWith('scouting_report_')
+                      ? resolveScoutingReportChoice(next, action)
+                      : pendingKind.startsWith('reserves_')
+                        ? resolveReservesChoice(next, action)
+                        : resolveRedemptionChoice(next, action);
     if ('deferredBattleAction' in resolved && resolved.deferredBattleAction) {
       return applyGameAction(next, resolved.deferredBattleAction);
     }
@@ -436,6 +445,18 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   if (action.type === 'resolve_battle' && priorBattle && priorBattleId && !result.state.battle) {
     const winnerId = latestResolvedBattleWinner(result.state);
+    applyScorchedEarthBattleRuins(
+      result.state,
+      priorBattle,
+      priorBattleController,
+      winnerId,
+    );
+    queueScorchedEarthAssetChoices(
+      result.state,
+      priorBattle,
+      priorBattleController,
+      winnerId,
+    );
     applyConsolidationAfterBattle(
       result.state,
       priorBattle,

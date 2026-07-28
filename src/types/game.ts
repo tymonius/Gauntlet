@@ -8,7 +8,7 @@ import type { CardID, GameID, PlayerID, SpaceID } from './ids';
 import type { LegalLeaderAbilityOption } from './leader';
 import type { PendingMilitaryChoice, PendingMilitaryTimingChoice } from './military';
 import type { PendingAccursedWagerAftermath, PendingMysticsChoice } from './mystics';
-import type { DecoysAssetQueueEntry, FootholdAssetQueueEntry, PendingNeutralChoice, RedemptionBattleReturns, RedemptionDiscardQueueEntry, RequisitionBattleQueueEntry, RousingSpeechAssetQueueEntry, NeutralSabotageAssetSuppression, ReservesBattleTopdecks, SalvageBattleQueueEntry, SuppliesAssetQueueEntry, SuppliesBattleQueueEntry } from './neutral';
+import type { DecoysAssetQueueEntry, FootholdAssetQueueEntry, PendingNeutralChoice, RedemptionBattleReturns, RedemptionDiscardQueueEntry, RequisitionBattleQueueEntry, RousingSpeechAssetQueueEntry, NeutralSabotageAssetSuppression, ReservesBattleTopdecks, SalvageBattleQueueEntry, ScorchedEarthAssetQueueEntry, SuppliesAssetQueueEntry, SuppliesBattleQueueEntry } from './neutral';
 import type { PlayerState, PrivatePlayerView, PublicPlayerView } from './player';
 
 export type GamePhase = 'setup' | 'turn_start' | 'action_before_movement' | 'movement' | 'battle' | 'action_after_movement' | 'cleanup' | 'game_over';
@@ -53,6 +53,7 @@ export interface GameState {
   neutralRousingSpeechAssetQueue?: RousingSpeechAssetQueueEntry[];
   neutralSabotageAssetSuppressions?: NeutralSabotageAssetSuppression[];
   neutralSalvageBattleQueue?: SalvageBattleQueueEntry[];
+  neutralScorchedEarthAssetQueue?: ScorchedEarthAssetQueueEntry[];
   neutralRedemptionBattleReturns?: RedemptionBattleReturns;
   neutralReservesBattleTopdecks?: ReservesBattleTopdecks;
   neutralSuppliesAssetQueue?: SuppliesAssetQueueEntry[];
