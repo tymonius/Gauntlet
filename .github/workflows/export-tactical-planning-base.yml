@@ -23,7 +23,8 @@ jobs:
         run: |
           set -euo pipefail
           echo '7a561503137e71a68ad8acb14789156f8764a51aa53d4296eca4042aa02ffe06  .github/tactical-planning-00.b64' | sha256sum -c -
-          echo 'af05242707e989201ac3a8de4857cc590cb51b26d2e70fd469a30603a63896a9  .github/tactical-planning-01.b64' | sha256sum -c -
+          echo '54400c575edd5a16a2d4a25ca0dea6c42029b261ab404bb88946c154914487c9  .github/tactical-planning-01a.b64' | sha256sum -c -
+          echo '6b0e0100811c531a05dfc2c5722cde4049c4199b9fc93ef03f3cf5c50dfc68f4  .github/tactical-planning-01b.b64' | sha256sum -c -
           echo 'e8858455ec30b16a7d81d1ac861b0c8cd5ed80b072e462cb03a132ef0168aa7d  .github/tactical-planning-02.b64' | sha256sum -c -
           echo 'ba726e3bb4673634dba5d99b1b9b80d64aa857a00f0d749fac6909d478918be7  .github/tactical-planning-03.b64' | sha256sum -c -
           echo 'e4cfce48f79c5af324969519d3dcd1987f3f750f8387386720ea1c1b5a25ee84  .github/tactical-planning-04.b64' | sha256sum -c -
@@ -39,7 +40,25 @@ jobs:
           echo '46892da9fdad04ebae4de9b8d334c1c237bace1526b81fac03feee07fa7ef3f4  .github/tactical-planning-14.b64' | sha256sum -c -
           echo '8a30aa1154082f015f6d61442b8e719cc689b369d39be29fd0b7ebb408d46503  .github/tactical-planning-15.b64' | sha256sum -c -
 
-          cat .github/tactical-planning-{00..15}.b64 > /tmp/tactical-planning.b64
+          cat \
+            .github/tactical-planning-00.b64 \
+            .github/tactical-planning-01a.b64 \
+            .github/tactical-planning-01b.b64 \
+            .github/tactical-planning-02.b64 \
+            .github/tactical-planning-03.b64 \
+            .github/tactical-planning-04.b64 \
+            .github/tactical-planning-05.b64 \
+            .github/tactical-planning-06.b64 \
+            .github/tactical-planning-07.b64 \
+            .github/tactical-planning-08.b64 \
+            .github/tactical-planning-09.b64 \
+            .github/tactical-planning-10.b64 \
+            .github/tactical-planning-11.b64 \
+            .github/tactical-planning-12.b64 \
+            .github/tactical-planning-13.b64 \
+            .github/tactical-planning-14.b64 \
+            .github/tactical-planning-15.b64 \
+            > /tmp/tactical-planning.b64
           test "$(wc -c < /tmp/tactical-planning.b64)" -eq 26272
           echo '75be678808bd147e785792490541f81e374632d4fbd77cd78a3f30f677413591  /tmp/tactical-planning.b64' | sha256sum -c -
           base64 -d /tmp/tactical-planning.b64 > /tmp/tactical-planning.tar.gz
