@@ -92,7 +92,7 @@ describe('Neutral Tactical Planning', () => {
       timings: ['action', 'battle_hand_commit', 'battle_draw_play'],
       allowedOrigins: ['hand', 'battle_draw'],
       defaultDestinationByOrigin: { hand: 'discard', battle_draw: 'discard' },
-      requiresTarget: undefined,
+      requiresTarget: false,
     });
   });
 
