@@ -1,0 +1,34 @@
+name: Export Tactical Planning Base
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  export:
+    if: github.head_ref == 'agent/neutral-tactical-planning'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Package Tactical Planning base files
+        run: |
+          set -euo pipefail
+          tar -czf /tmp/tactical-planning-base.tar.gz \
+            src/cards/playability.ts \
+            src/types/neutral.ts \
+            src/state/index.ts \
+            src/state/views.ts \
+            src/state/reducer.ts \
+            src/state/apply-neutral.ts \
+            package.json \
+            tsconfig.json \
+            releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json
+      - name: Upload base files
+        uses: actions/upload-artifact@v4
+        with:
+          name: tactical-planning-base
+          path: /tmp/tactical-planning-base.tar.gz
