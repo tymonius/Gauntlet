@@ -31,7 +31,8 @@ jobs:
           echo '2b55d7b2c7183c6256bcd109cacb305b08bd16b74e236025392770300c4ea5d6  .github/strategic-withdrawal-06.b64' | sha256sum -c -
           echo '4bf8aa84b1e3cca21c4ce01dd478cfd936b3db57fa584a1d3003e522717314f6  .github/strategic-withdrawal-07.b64' | sha256sum -c -
           echo 'fb880963e8a206769c7ea02c37dc1c79932c0f21fa2a8d0438970a97792895bc  .github/strategic-withdrawal-08.b64' | sha256sum -c -
-          echo 'b17247d00089e1ac29d8e4baaaa4ea58e81e3e0285081020ca8628c89cabba90  .github/strategic-withdrawal-09.b64' | sha256sum -c -
+          echo '63c2a5abcf2ed46de56086be11e5b2af1b0063a738a961ea56e28b264ce62688  .github/strategic-withdrawal-09a.b64' | sha256sum -c -
+          echo 'ef1d0044af5f250b3a34bebc24d5bfed72fb51de17525318fd38c12d7d1476ad  .github/strategic-withdrawal-09b.b64' | sha256sum -c -
           echo '72964d255121c3fe863def6bce7715ebe742094ceaea5e18906ea5900c2b8dea  .github/strategic-withdrawal-10.b64' | sha256sum -c -
           echo 'f4d04203df3583067159360827a593b9d9f50e3f3924fbaf0e25f5521926d3e8  .github/strategic-withdrawal-11.b64' | sha256sum -c -
           echo '04e0da41c5b410af5afe1daef70359dfb4cc52da31d960fbf598f1b40792bd9d  .github/strategic-withdrawal-12.b64' | sha256sum -c -
@@ -53,7 +54,8 @@ jobs:
             .github/strategic-withdrawal-06.b64 \
             .github/strategic-withdrawal-07.b64 \
             .github/strategic-withdrawal-08.b64 \
-            .github/strategic-withdrawal-09.b64 \
+            .github/strategic-withdrawal-09a.b64 \
+            .github/strategic-withdrawal-09b.b64 \
             .github/strategic-withdrawal-10.b64 \
             .github/strategic-withdrawal-11.b64 \
             .github/strategic-withdrawal-12.b64 \
