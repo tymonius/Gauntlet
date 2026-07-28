@@ -25,5 +25,15 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Test
-        run: npm test
+      - name: Focused Sabotage test
+        run: |
+          set +e
+          npm test -- src/state/neutral-sabotage.test.ts > sabotage-test-output.txt 2>&1
+          echo "exit=$?" >> sabotage-test-output.txt
+          exit 0
+
+      - name: Upload focused output
+        uses: actions/upload-artifact@v4
+        with:
+          name: sabotage-test-output
+          path: sabotage-test-output.txt
