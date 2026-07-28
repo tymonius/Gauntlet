@@ -164,11 +164,14 @@ export function applyNoMartyrsOutcome(
   const sourceCount = activeBattleCopies(battle, winner)
     + (battle.noMartyrsAssetActivatedCounts?.[winner] ?? 0);
   if (sourceCount < 1) return 0;
+  const resolutionKey = `inquisition_no_martyrs_outcome:${winner}:${loser}`;
+  if (battle.effectsResolved.includes(resolutionKey)) return sourceCount;
   battle.lossRetreatEffectsSuppressedFor = [
     ...new Set([...(battle.lossRetreatEffectsSuppressedFor ?? []), loser]),
   ];
   battle.additionalRetreatPositions ??= {};
   battle.additionalRetreatPositions[loser] = (battle.additionalRetreatPositions[loser] ?? 0) + sourceCount;
+  battle.effectsResolved.push(resolutionKey);
   publicLog(
     game,
     winner,

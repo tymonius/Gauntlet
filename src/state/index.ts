@@ -108,5 +108,6 @@ export * from './neutral-sabotage';
 export * from './neutral-salvage';
 export * from './neutral-scorched-earth';
 export * from './neutral-sedition';
+export * from './neutral-stand-ground';
 
 export * from './battle-cancellation';

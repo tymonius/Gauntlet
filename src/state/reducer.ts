@@ -22,6 +22,7 @@ import type { ActionResult, GameAction } from './actions';
 import { drawFromDeck } from './draw';
 import { applyNoMartyrsOutcome } from './inquisition-no-martyrs';
 import { counterintelligenceBlocksFaceDownBattleCardInspection } from './neutral-counterintelligence';
+import { openStandGroundForNoMartyrsMovement } from './neutral-stand-ground';
 
 export class GameActionError extends Error {
   constructor(message: string) {
@@ -716,6 +717,9 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
   battle.winner = winner;
   battle.loser = loser;
   applyNoMartyrsOutcome(game, battle, winner, loser);
+  if (openStandGroundForNoMartyrsMovement(game, battle, loser, winner, action)) {
+    return { state: game };
+  }
   const additionalRetreatPositions = battle.additionalRetreatPositions?.[loser] ?? 0;
   const retreatSpace = findRetreatSpace(game, loser, additionalRetreatPositions);
   loserParticipant.retreated = true;
