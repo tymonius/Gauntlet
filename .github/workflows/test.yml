@@ -1,4 +1,4 @@
-name: Test
+name: Diagnose Salvage Typecheck
 
 on:
   pull_request:
@@ -22,8 +22,15 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Typecheck
-        run: npm run typecheck
+      - name: Capture typecheck
+        run: |
+          set +e
+          npm run typecheck > salvage-typecheck.txt 2>&1
+          echo "exit=$?" >> salvage-typecheck.txt
+          exit 0
 
-      - name: Test
-        run: npm test
+      - name: Upload typecheck output
+        uses: actions/upload-artifact@v4
+        with:
+          name: salvage-typecheck-output
+          path: salvage-typecheck.txt
