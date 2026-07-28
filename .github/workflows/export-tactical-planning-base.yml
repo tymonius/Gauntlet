@@ -25,7 +25,8 @@ jobs:
           echo '7a561503137e71a68ad8acb14789156f8764a51aa53d4296eca4042aa02ffe06  .github/tactical-planning-00.b64' | sha256sum -c -
           echo '54400c575edd5a16a2d4a25ca0dea6c42029b261ab404bb88946c154914487c9  .github/tactical-planning-01a.b64' | sha256sum -c -
           echo '6b0e0100811c531a05dfc2c5722cde4049c4199b9fc93ef03f3cf5c50dfc68f4  .github/tactical-planning-01b.b64' | sha256sum -c -
-          echo 'e8858455ec30b16a7d81d1ac861b0c8cd5ed80b072e462cb03a132ef0168aa7d  .github/tactical-planning-02.b64' | sha256sum -c -
+          echo 'b9da6c753a69596893c7b2583b21b121f012e6444f465e9687a7ac71b6e6e449  .github/tactical-planning-02a.b64' | sha256sum -c -
+          echo 'e21ffb1eea7479ee085b9c8bfee21d36afcf082b5597af2c23dc00217fdf6e89  .github/tactical-planning-02b.b64' | sha256sum -c -
           echo 'ba726e3bb4673634dba5d99b1b9b80d64aa857a00f0d749fac6909d478918be7  .github/tactical-planning-03.b64' | sha256sum -c -
           echo 'e4cfce48f79c5af324969519d3dcd1987f3f750f8387386720ea1c1b5a25ee84  .github/tactical-planning-04.b64' | sha256sum -c -
           echo 'bd1918a86ef64355879e9dcdbc310ea3a453122ad23af64fa856f959839cc435  .github/tactical-planning-05.b64' | sha256sum -c -
@@ -44,7 +45,8 @@ jobs:
             .github/tactical-planning-00.b64 \
             .github/tactical-planning-01a.b64 \
             .github/tactical-planning-01b.b64 \
-            .github/tactical-planning-02.b64 \
+            .github/tactical-planning-02a.b64 \
+            .github/tactical-planning-02b.b64 \
             .github/tactical-planning-03.b64 \
             .github/tactical-planning-04.b64 \
             .github/tactical-planning-05.b64 \
