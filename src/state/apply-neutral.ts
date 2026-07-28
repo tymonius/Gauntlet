@@ -133,6 +133,12 @@ import {
   resolveStandGroundChoice,
 } from './neutral-stand-ground';
 import {
+  applyStrategicWithdrawalAction,
+  prepareStrategicWithdrawalAction,
+  resolveStrategicWithdrawalChoice,
+  STRATEGIC_WITHDRAWAL,
+} from './neutral-strategic-withdrawal';
+import {
   applySeditionBattleBonuses,
   prepareSeditionBattleReveal,
   queueSeditionActionChoice,
@@ -221,6 +227,8 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
                     ? resolveSeditionChoice(next, action)
                     : pendingKind === 'stand_ground_movement'
                       ? resolveStandGroundChoice(next, action)
+                      : pendingKind === 'strategic_withdrawal_battle'
+                        ? resolveStrategicWithdrawalChoice(next, action)
                     : pendingKind === 'scorched_earth_asset'
                       ? (resolveScorchedEarthChoice(next, action), {})
                       : pendingKind.startsWith('salvage_')
@@ -341,6 +349,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   const preparedSalvage = action.type === 'play_action_card' && action.cardId === SALVAGE
     ? prepareSalvageAction(game, action)
     : undefined;
+  const preparedStrategicWithdrawal = action.type === 'play_action_card' && action.cardId === STRATEGIC_WITHDRAWAL
+    ? prepareStrategicWithdrawalAction(game, action)
+    : undefined;
 
   const restrictedBefore = action.type === 'move_player'
     ? game.players[action.playerId]?.nonBattleMovementRemaining ?? 0
@@ -413,6 +424,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   if (action.type === 'play_action_card' && preparedSalvage) {
     applySalvageAction(result.state, action.playerId, preparedSalvage);
+  }
+  if (action.type === 'play_action_card' && preparedStrategicWithdrawal) {
+    applyStrategicWithdrawalAction(result.state, action.playerId, preparedStrategicWithdrawal);
   }
   if (action.type === 'play_action_card' && action.cardId === SEDITION) {
     queueSeditionActionChoice(result.state, action.playerId);

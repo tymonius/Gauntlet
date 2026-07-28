@@ -25,6 +25,8 @@ export interface BattlePlayedCard {
   earlyEffectResolved?: boolean;
   postRevealEffectResolved?: boolean;
   visibleTo?: PlayerID[];
+  /** A card-specific replacement for this physical card's battle-cleanup destination. */
+  cleanupDestination?: 'discard' | 'graveyard' | 'hand' | 'removed';
   /** A repeated effect with no additional physical card or cleanup destination. */
   virtual?: boolean;
 }

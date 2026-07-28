@@ -350,6 +350,29 @@ export interface PendingSuppliesBattleDiscardChoice {
 }
 
 
+
+export interface StrategicWithdrawalBattleTargetOption {
+  targetKey: string;
+  cardId: CardID;
+  origin: 'hand' | 'battle_draw' | 'replayed';
+}
+
+export interface PendingStrategicWithdrawalBattleChoice {
+  kind: 'strategic_withdrawal_battle';
+  playerId: PlayerID;
+  battleId: string;
+  triggerSourceKey: string;
+  sourceKeysRemaining: string[];
+  targetOptions: StrategicWithdrawalBattleTargetOption[];
+  retreatDirection: -1 | 1;
+  options: ['pass', 'use'];
+  resume: {
+    playerId: PlayerID;
+    battleCardTargets?: BattleCardTarget[];
+  };
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface PendingStandGroundMovementChoice {
   kind: 'stand_ground_movement';
   playerId: PlayerID;
@@ -395,6 +418,7 @@ export type PendingNeutralChoice =
   | PendingSeditionActionChoice
   | PendingSeditionBattleChoice
   | PendingStandGroundMovementChoice
+  | PendingStrategicWithdrawalBattleChoice
   | PendingScorchedEarthAssetChoice
   | PendingSuppliesAssetChoice
   | PendingSuppliesBattleDiscardChoice;
