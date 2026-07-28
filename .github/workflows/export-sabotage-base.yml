@@ -1,4 +1,4 @@
-name: Diagnose Sabotage Patch
+name: Export Partial Sabotage Patch
 
 on:
   pull_request:
@@ -6,41 +6,21 @@ on:
       - main
 
 jobs:
-  diagnose:
+  export:
     if: github.head_ref == 'agent/neutral-sabotage'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: agent/neutral-sabotage
-          fetch-depth: 0
-      - name: Inspect staged patch
+      - name: Decode partial patch
         run: |
           set +e
-          {
-            for file in .github/sabotage-patch-0{0..4}.b64; do
-              wc -c "$file"
-              sha256sum "$file"
-            done
-            cat .github/sabotage-patch-0{0..4}.b64 > /tmp/sabotage.patch.b64
-            wc -c /tmp/sabotage.patch.b64
-            sha256sum /tmp/sabotage.patch.b64
-            base64 -d /tmp/sabotage.patch.b64 > /tmp/sabotage.patch.gz
-            echo "decode-exit=$?"
-            wc -c /tmp/sabotage.patch.gz
-            sha256sum /tmp/sabotage.patch.gz
-            gzip -t /tmp/sabotage.patch.gz
-            echo "gzip-test-exit=$?"
-            gzip -dc /tmp/sabotage.patch.gz > /tmp/sabotage.patch
-            echo "gunzip-exit=$?"
-            wc -c /tmp/sabotage.patch
-            sha256sum /tmp/sabotage.patch
-            head -40 /tmp/sabotage.patch
-            git apply --check /tmp/sabotage.patch
-            echo "git-apply-check-exit=$?"
-          } > sabotage-patch-diagnostic.txt 2>&1
+          cat .github/sabotage-patch-0{0..4}.b64 > /tmp/sabotage.patch.b64
+          base64 -d /tmp/sabotage.patch.b64 > /tmp/sabotage.patch.gz
+          gzip -dc /tmp/sabotage.patch.gz > sabotage-partial.patch
           exit 0
       - uses: actions/upload-artifact@v4
         with:
-          name: sabotage-patch-diagnostic
-          path: sabotage-patch-diagnostic.txt
+          name: sabotage-partial-patch
+          path: sabotage-partial.patch
