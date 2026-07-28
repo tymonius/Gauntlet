@@ -424,7 +424,295 @@ Splashy moments can make a game exciting, but too many can reduce control or cla
 
 ---
 
-## 9. Especially Useful Terms for Gauntlet
+## 9. Common Card-Game Jargon
+
+These are informal terms frequently used by experienced card-game players. They are useful in design and playtest discussion, but formal rules should generally use precise game-specific language instead.
+
+### Drawing and deck flow
+
+#### Topdeck / topdecking
+
+To draw a particularly useful card from the top of the deck at the moment it is needed.
+
+Players may also say they are **topdecking** when their hand is empty and they must rely on each new draw.
+
+#### Topdeck mode
+
+A state where a player has few or no cards in hand and is mostly limited to whatever they draw each turn.
+
+#### Deck out / decking out
+
+To run out of cards when a player is required to draw.
+
+Whether decking out causes an immediate loss, an incomplete draw, or another result depends on the game's rules.
+
+#### Mill
+
+To move cards directly from the top of a deck into a discard pile, Graveyard, or similar zone without drawing or playing them normally.
+
+Mill effects are often used to cause deck exhaustion, deny future draws, or support strategies that benefit from cards leaving the deck.
+
+#### Self-mill
+
+Using mill effects on your own deck, usually because cards in the discard pile or Graveyard can be useful later.
+
+#### Deck thinning
+
+Reducing the number of cards remaining in a deck so that desired cards make up a larger share of future draws.
+
+In *Gauntlet*, permanent card destinations can thin a deck even when thinning was not the player's primary goal.
+
+#### Cycle / cycling
+
+Exchanging a card for another card or draw, usually to improve hand quality rather than gain card advantage.
+
+This term can also refer more broadly to moving repeatedly through a deck, so context matters.
+
+#### Cantrip
+
+A card that performs a small effect and then replaces itself by drawing another card.
+
+A cantrip usually improves options or advances a plan without reducing the number of cards in hand.
+
+#### Tutor
+
+An effect that searches a deck for a particular card or type of card.
+
+Tutors increase consistency because they make important cards easier to find.
+
+#### Dig
+
+To look through or draw several cards in search of a needed answer, threat, or combo piece.
+
+Digging is less precise than tutoring but usually sees more cards than an ordinary draw.
+
+#### Filter / card filtering
+
+To improve hand quality by drawing, looking at, discarding, returning, or exchanging cards without necessarily increasing the total number held.
+
+#### Mulligan
+
+A pregame opportunity to replace some or all opening cards in order to avoid an unusable starting hand.
+
+#### Recursion
+
+Returning cards from a discard pile, Graveyard, or other used-card zone so they can be played again.
+
+#### Graveyard hate
+
+Cards or effects designed to prevent, punish, or disrupt strategies that use the Graveyard as a resource.
+
+### Hand quality and card advantage
+
+#### Brick / bricked hand
+
+A card or hand that cannot be used effectively in the current situation.
+
+A deck can also **brick** when it draws the wrong mix of cards and fails to function as intended.
+
+#### Dead card / dead draw
+
+A card that currently has no useful target, legal use, or meaningful effect.
+
+A dead draw is the act of drawing such a card when another option was needed.
+
+#### Live draw
+
+A card that would meaningfully improve the current position if drawn.
+
+#### Gas
+
+Informal shorthand for useful cards or resources that allow a player to keep making strong plays.
+
+A player who is “out of gas” has few meaningful options left.
+
+#### Card advantage
+
+Having access to more usable cards than the opponent, or gaining more cards from an exchange than were spent.
+
+Card advantage is one part of card economy; it does not automatically equal board position or tempo.
+
+#### Two-for-one
+
+A play where one card or action answers, removes, or gains the value of two opposing cards.
+
+The phrase can also describe any exchange where one player spends one resource and the opponent effectively loses two.
+
+#### Trade / trade off
+
+An exchange in which each player loses or spends comparable cards, resources, or board pieces.
+
+A favorable trade leaves one player with better value, tempo, or position afterward.
+
+#### Hand attack
+
+Effects that reveal, discard, steal, disable, or otherwise interfere with cards in an opponent's hand.
+
+### Deck construction and strategy
+
+#### Archetype
+
+A recognizable deck or strategy family defined by its overall game plan rather than one exact card list.
+
+Common broad archetypes include aggro, midrange, control, combo, tempo, and attrition.
+
+#### Aggro
+
+A strategy that applies pressure quickly and tries to win before slower plans become established.
+
+#### Midrange
+
+A flexible strategy built around efficient, individually strong plays that can pressure slower decks and outlast faster ones.
+
+#### Control
+
+A strategy that prioritizes surviving, answering threats, restricting options, and eventually winning from a stable position.
+
+#### Combo
+
+A strategy built around assembling cards or effects that become much stronger together, sometimes producing a decisive result immediately.
+
+#### Tempo deck / tempo strategy
+
+A strategy that gains advantage by combining pressure with efficient disruption, forcing the opponent to spend turns responding.
+
+#### Attrition strategy
+
+A strategy that wins by gradually exhausting the opponent's cards, resources, or useful options.
+
+#### Toolbox deck
+
+A deck containing several specialized answers that can be searched for, selected, or accessed when needed.
+
+#### Cost curve / curve
+
+The distribution of cards across different costs or stages of usefulness.
+
+A good curve helps a deck make productive plays throughout the game rather than drawing too many cards that compete for the same timing or resources.
+
+#### Playset
+
+The maximum commonly permitted number of copies of one card, or a complete set of that many copies.
+
+The exact number depends on the game's deck-construction rules.
+
+#### Singleton
+
+A deck-building restriction or style that allows only one copy of each card, apart from stated exceptions.
+
+#### Redundancy
+
+Including multiple cards that perform similar roles so the deck can execute its plan consistently even without drawing one specific card.
+
+#### Tech card
+
+A card included mainly to improve a particular matchup, answer a common strategy, or address an expected metagame problem.
+
+#### Splash
+
+Including a small number of cards from another faction, color, class, or strategy package without making it the deck's primary identity.
+
+This only applies where the game's deck-construction rules permit mixing.
+
+#### Win-more
+
+A card or effect that is powerful mainly when its player is already far ahead, but does little to create a lead or recover from behind.
+
+“Win-more” is usually criticism that the deck slot could be spent on something more useful.
+
+### Playing and evaluating a game
+
+#### Line / line of play
+
+A planned sequence of decisions intended to produce a particular result.
+
+Players may compare several possible lines before choosing one.
+
+#### Sequencing
+
+The order in which cards, actions, movement, or effects are used.
+
+Good sequencing preserves options and avoids revealing information or spending resources too early.
+
+#### Play around
+
+To make decisions that reduce the impact of a suspected opposing card or response.
+
+Playing around everything is usually impossible, so players weigh probability against the cost of caution.
+
+#### Read
+
+An inference about an opponent's hidden cards, intentions, or likely next action based on their behavior and prior decisions.
+
+#### Overextend
+
+To commit too many cards or resources to one push, leaving too little protection against a reversal or counterattack.
+
+#### Blowout
+
+A play or sequence that creates a much larger swing than the opponent expected, often because several committed resources are defeated at once.
+
+#### Lethal
+
+A position or sequence that can win the game immediately if not stopped.
+
+Even in games without life totals, players may use “lethal” informally for a decisive winning attack or completed alternate win condition.
+
+#### Clock
+
+The number of turns an opponent has to stop a threat before it wins the game or creates an overwhelming advantage.
+
+#### Out
+
+A card, roll, or sequence that can escape a losing position or answer a specific threat.
+
+A player with several possible answers may say they have several **outs**.
+
+#### Misplay
+
+A decision that was worse than another reasonably available option, especially based on information available at the time.
+
+A bad outcome caused only by hidden information or unfavorable randomness is not necessarily a misplay.
+
+#### High-roll / low-roll
+
+An unusually favorable or unfavorable random result.
+
+The terms can refer to dice, card draws, or any other variable outcome.
+
+### Competitive and community shorthand
+
+#### Metagame / meta
+
+The strategies, decks, cards, and expectations that are common in a particular play environment.
+
+The meta affects deck construction because players prepare for what they expect others to use.
+
+#### Matchup
+
+How two particular decks, factions, or strategies tend to perform against each other.
+
+A deck can be strong overall but still have a poor matchup against a specific opponent.
+
+#### Mirror match
+
+A game between two players using the same faction, archetype, or very similar decks.
+
+#### Pilot
+
+To play a particular deck or strategy.
+
+A deck may be powerful but difficult to pilot well.
+
+#### Netdeck
+
+To use or closely copy a deck list found online rather than building it independently.
+
+The term can be neutral, descriptive, or mildly critical depending on context.
+
+---
+
+## 10. Especially Useful Terms for Gauntlet
 
 The most useful terms for discussing *Gauntlet* are likely:
 
@@ -438,12 +726,20 @@ The most useful terms for discussing *Gauntlet* are likely:
 - **Counterplay** — can the opponent respond meaningfully?
 - **Interaction** — are players affecting each other or playing separately?
 - **Hidden information** — what does one player know that the other does not?
+- **Topdeck mode** — is a player relying on one new draw at a time?
+- **Deck out / deck exhaustion** — what happens when usable draw resources run out?
+- **Deck thinning** — how are card destinations changing future draw quality?
+- **Card advantage** — who has access to more usable cards?
+- **Archetype** — what overall plan is the deck built to execute?
+- **Sequencing** — in what order should movement, cards, and faction abilities be used?
+- **Play around** — which opposing response is worth respecting?
+- **Outs** — what draws, rolls, or plays can still change the result?
 - **Cognitive load** — how much must players track or remember?
 - **Pacing** — is the game moving toward a satisfying conclusion?
 
 ---
 
-## 10. Short Genre Description for Gauntlet
+## 11. Short Genre Description for Gauntlet
 
 A concise technical description:
 
