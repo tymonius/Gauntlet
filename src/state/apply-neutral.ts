@@ -227,6 +227,12 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     return { state: next };
   }
 
+  if (action.type === 'resolve_battle_reveal') {
+    const prepared = structuredClone(game);
+    if (prepareReinforcementsBattleReveal(prepared, action)) return { state: prepared };
+    game = prepared;
+  }
+
   if (action.type === 'finish_movement') {
     const next = structuredClone(game);
     finishRemainingMovement(next, action.playerId);
@@ -246,7 +252,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   const effectSourcePlayerId = redemptionEffectSourcePlayer(game, action);
   const discardBefore = effectSourcePlayerId ? captureDiscardSnapshot(game) : undefined;
   const assetsBefore = effectSourcePlayerId ? captureDecoysAssetSnapshot(game) : undefined;
-  const priorBattle = action.type === 'resolve_battle' ? game.battle : undefined;
+  const priorBattle = game.battle ? structuredClone(game.battle) : undefined;
   const priorBattleId = priorBattle?.id;
   const priorBattleController = priorBattle
     ? game.board.spaces.find((space) => space.id === priorBattle.location)?.controller
@@ -259,17 +265,18 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     ? game.board.spaces.find((space) => space.occupant === action.playerId)?.id
     : undefined;
 
+  if (action.type === 'play_action_card') {
+    requireEntrenchmentActionAllowed(game, action.playerId);
+  }
+  if (action.type === 'play_action_card' && action.cardId === FORCED_MARCH) {
+    requireForcedMarchActionTiming(game, action.playerId);
+  }
   if (action.type === 'play_action_card' && action.cardId === ADVANCE_GUARD) {
     requireAdvanceGuardActionTiming(game, action.playerId);
   }
   if (action.type === 'commit_battle_hand_card') {
     requireAdvanceGuardHandCommitAllowed(game, action.playerId);
   }
-  if (action.type === 'play_action_card') {
-    requireEntrenchmentActionAllowed(game, action.playerId);
-    requireForcedMarchActionTiming(game, action.playerId);
-  }
-
   const preparedAdvanceGuard = action.type === 'play_action_card' && action.cardId === ADVANCE_GUARD
     ? prepareAdvanceGuardAction(game, action)
     : undefined;

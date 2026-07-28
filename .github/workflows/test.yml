@@ -1,101 +1,29 @@
-name: Restore Salvage Integration
+name: Test
 
 on:
   pull_request:
+  push:
     branches:
       - main
 
-permissions:
-  contents: write
-
 jobs:
-  restore:
-    if: github.head_ref == 'agent/neutral-salvage'
+  test:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: agent/neutral-salvage
-          fetch-depth: 0
 
-      - name: Restore current main integration and apply Salvage hooks
-        run: |
-          set -euo pipefail
-          git fetch origin main
-          git checkout origin/main -- src/state/apply-neutral.ts .github/workflows/test.yml
-          cat > /tmp/salvage-integration.patch <<'PATCH'
-          diff --git a/src/state/apply-neutral.ts b/src/state/apply-neutral.ts
-          index 6766562..e913bc1 100644
-          --- a/src/state/apply-neutral.ts
-          +++ b/src/state/apply-neutral.ts
-          @@ -114,6 +114,14 @@ import {
-             restoreSabotagedAssetsAtTurnStart,
-             SABOTAGE,
-           } from './neutral-sabotage';
-          +import {
-          +  applySalvageAction,
-          +  openNextSalvageChoice,
-          +  prepareSalvageAction,
-          +  queueSalvageBattleChoices,
-          +  resolveSalvageChoice,
-          +  SALVAGE,
-          +} from './neutral-salvage';
-           import {
-             applyRousingSpeechBattleEffects,
-             captureRousingSpeechAssetSnapshot,
-          @@ -155,6 +163,7 @@ function continueNeutralChoices(game: GameState): void {
-             openNextDecoysChoice(game);
-             openNextRequisitionChoice(game);
-             openNextRousingSpeechChoice(game);
-          +  openNextSalvageChoice(game);
-             openNextSuppliesChoice(game);
-             openNextFootholdChoice(game);
-             openNextRedemptionChoice(game);
-          @@ -190,7 +199,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
-                           ? (resolveRequisitionChoice(next, action), {})
-                           : pendingKind.startsWith('rousing_speech_')
-                             ? (resolveRousingSpeechChoice(next, action), {})
-          -                  : pendingKind.startsWith('scouting_report_')
-          +                  : pendingKind.startsWith('salvage_')
-          +                    ? (resolveSalvageChoice(next, action), {})
-          +                    : pendingKind.startsWith('scouting_report_')
-                               ? resolveScoutingReportChoice(next, action)
-                               : pendingKind.startsWith('reserves_')
-                                 ? resolveReservesChoice(next, action)
-          @@ -296,6 +307,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
-             const preparedSabotage = action.type === 'play_action_card' && action.cardId === SABOTAGE
-               ? prepareSabotageAction(game, action)
-               : undefined;
-          +  const preparedSalvage = action.type === 'play_action_card' && action.cardId === SALVAGE
-          +    ? prepareSalvageAction(game, action)
-          +    : undefined;
-           
-             const restrictedBefore = action.type === 'move_player'
-               ? game.players[action.playerId]?.nonBattleMovementRemaining ?? 0
-          @@ -366,6 +380,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
-             if (action.type === 'play_action_card' && preparedSabotage) {
-               applySabotageAction(result.state, action.playerId, preparedSabotage);
-             }
-          +  if (action.type === 'play_action_card' && preparedSalvage) {
-          +    applySalvageAction(result.state, action.playerId, preparedSalvage);
-          +  }
-             if (action.type === 'move_player') {
-               const battle = result.state.battle;
-               if (battle?.attackerHandCommitVisibleTo) {
-          @@ -439,6 +456,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
-               );
-               applyRedemptionBattleReturns(result.state, priorBattleId);
-               applyReservesBattleTopdecks(result.state, priorBattleId);
-          +    queueSalvageBattleChoices(result.state, priorBattle, winnerId);
-               queueSuppliesBattleEffects(result.state, priorBattle);
-             }
-             if (normalDraw) {
-          PATCH
-          git apply /tmp/salvage-integration.patch
-          git diff --check
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Restore current Neutral integration with Salvage hooks"
-          git push origin HEAD:agent/neutral-salvage
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
