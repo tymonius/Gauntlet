@@ -1,7 +1,6 @@
 import type { EffectHandler } from './types';
 import { activePlayedCards, validateBattleCancellationTargets } from './embargo';
 
-// Final CI trigger after regression assertion corrections.
 export const sabotageBattleHandler: EffectHandler = {
   id: 'neutral_sabotage_battle',
   timing: ['before_battle_resolution'],
