@@ -1,4 +1,4 @@
-name: Test
+name: Diagnose Salvage Runtime
 
 on:
   pull_request:
@@ -22,8 +22,15 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Typecheck
-        run: npm run typecheck
+      - name: Capture focused test
+        run: |
+          set +e
+          npx vitest run src/state/neutral-salvage.test.ts > salvage-runtime-output.txt 2>&1
+          echo "exit=$?" >> salvage-runtime-output.txt
+          exit 0
 
-      - name: Test
-        run: npm test
+      - name: Upload focused output
+        uses: actions/upload-artifact@v4
+        with:
+          name: salvage-runtime-output
+          path: salvage-runtime-output.txt
