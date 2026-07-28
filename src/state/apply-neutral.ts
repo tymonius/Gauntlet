@@ -139,6 +139,12 @@ import {
   STRATEGIC_WITHDRAWAL,
 } from './neutral-strategic-withdrawal';
 import {
+  applyTacticalPlanningAction,
+  prepareTacticalPlanningAction,
+  resolveTacticalPlanningChoice,
+  TACTICAL_PLANNING,
+} from './neutral-tactical-planning';
+import {
   applySeditionBattleBonuses,
   prepareSeditionBattleReveal,
   queueSeditionActionChoice,
@@ -229,6 +235,8 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
                       ? resolveStandGroundChoice(next, action)
                       : pendingKind === 'strategic_withdrawal_battle'
                         ? resolveStrategicWithdrawalChoice(next, action)
+                        : pendingKind === 'tactical_planning_action'
+                          ? (resolveTacticalPlanningChoice(next, action), {})
                     : pendingKind === 'scorched_earth_asset'
                       ? (resolveScorchedEarthChoice(next, action), {})
                       : pendingKind.startsWith('salvage_')
@@ -352,6 +360,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   const preparedStrategicWithdrawal = action.type === 'play_action_card' && action.cardId === STRATEGIC_WITHDRAWAL
     ? prepareStrategicWithdrawalAction(game, action)
     : undefined;
+  const preparedTacticalPlanning = action.type === 'play_action_card' && action.cardId === TACTICAL_PLANNING
+    ? prepareTacticalPlanningAction(game, action)
+    : undefined;
 
   const restrictedBefore = action.type === 'move_player'
     ? game.players[action.playerId]?.nonBattleMovementRemaining ?? 0
@@ -427,6 +438,10 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   if (action.type === 'play_action_card' && preparedStrategicWithdrawal) {
     applyStrategicWithdrawalAction(result.state, action.playerId, preparedStrategicWithdrawal);
+  }
+  if (action.type === 'play_action_card' && preparedTacticalPlanning) {
+    const drawnCards = applyTacticalPlanningAction(result.state, action.playerId, preparedTacticalPlanning);
+    result.result = { ...(result.result ?? {}), drawnCards };
   }
   if (action.type === 'play_action_card' && action.cardId === SEDITION) {
     queueSeditionActionChoice(result.state, action.playerId);

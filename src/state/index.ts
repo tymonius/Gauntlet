@@ -110,5 +110,6 @@ export * from './neutral-scorched-earth';
 export * from './neutral-sedition';
 export * from './neutral-stand-ground';
 export * from './neutral-strategic-withdrawal';
+export * from './neutral-tactical-planning';
 
 export * from './battle-cancellation';

@@ -98,6 +98,17 @@ export function buildPendingNeutralOptions(
         },
       }));
 
+    case 'tactical_planning_action':
+      return pending.cardOptions.map((cardId) => ({
+        label: `Put ${cardId} on the bottom of your Draw Pile with Tactical Planning`,
+        action: {
+          type: 'resolve_neutral_choice' as const,
+          playerId,
+          choice: 'select_card' as const,
+          cardId,
+        },
+      }));
+
     case 'reserves_battle':
       return [
         {
