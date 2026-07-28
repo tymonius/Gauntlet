@@ -96,7 +96,7 @@ describe('Neutral Sabotage', () => {
     expect(getCardPlayRule(SABOTAGE)).toMatchObject({
       timings: ['action', 'battle_hand_commit', 'battle_draw_play'],
       defaultDestinationByOrigin: { hand: 'discard', battle_draw: 'discard' },
-      actionRequiresTarget: true,
+      requiresTarget: true,
     });
   });
 
