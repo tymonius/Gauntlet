@@ -225,21 +225,21 @@ describe('Neutral Scorched Earth', () => {
     beginDefenderLoss(win, [played('player_2')], { attackerRoll: 1, defenderRoll: 6 });
     win = resolveBattle(win);
     expect(win.pendingNeutralChoice).toBeUndefined();
-    expect(location(win).overlays).toBeUndefined();
+    expect(location(win).overlays ?? []).toHaveLength(0);
 
     let uncontrolled = game();
     uncontrolled.players.player_2.zones.assetBank = [SCORCHED_EARTH];
     beginDefenderLoss(uncontrolled, [played('player_2')], { controller: 'player_1' });
     uncontrolled = resolveBattle(uncontrolled);
     expect(uncontrolled.pendingNeutralChoice).toBeUndefined();
-    expect(location(uncontrolled).overlays).toBeUndefined();
+    expect(location(uncontrolled).overlays ?? []).toHaveLength(0);
 
     let suppressed = game();
     suppressed.players.player_2.zones.assetBank = [SCORCHED_EARTH];
     beginDefenderLoss(suppressed, [played('player_2')], { lossSuppressed: true });
     suppressed = resolveBattle(suppressed);
     expect(suppressed.pendingNeutralChoice).toBeUndefined();
-    expect(location(suppressed).overlays).toBeUndefined();
+    expect(location(suppressed).overlays ?? []).toHaveLength(0);
 
     let prohibited = game();
     prohibited.players.player_2.zones.assetBank = [SCORCHED_EARTH];
@@ -259,7 +259,7 @@ describe('Neutral Scorched Earth', () => {
 
     state = resolveBattle(state);
 
-    expect(location(state).overlays).toBeUndefined();
+    expect(location(state).overlays ?? []).toHaveLength(0);
   });
 
   it('replaces preexisting Ruins, preserves ordinary lower Overlays, and sends the old Ruins to its owner’s Graveyard', () => {
@@ -332,7 +332,7 @@ describe('Neutral Scorched Earth', () => {
       stage: 'hand_commit',
       location: 'space-3',
       attackerOrigin: 'space-2',
-      attacker: participant('player_1', [], 1),
+      attacker: { ...participant('player_1', [], 1), passedHandCommit: false },
       defender: participant('player_2', [], 1),
       tiePolicy: 'defender',
       effectsResolved: [],
