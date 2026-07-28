@@ -1,0 +1,35 @@
+name: Export Stand Ground Base
+
+on:
+  push:
+    branches:
+      - agent/neutral-stand-ground
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Package engine source
+        run: |
+          set -euo pipefail
+          tar -czf /tmp/gauntlet-engine.tar.gz \
+            src \
+            package.json \
+            package-lock.json \
+            tsconfig.json \
+            vite.config.ts \
+            vitest.config.ts 2>/dev/null || \
+          tar -czf /tmp/gauntlet-engine.tar.gz \
+            src \
+            package.json \
+            package-lock.json \
+            tsconfig.json
+      - name: Upload engine source
+        uses: actions/upload-artifact@v4
+        with:
+          name: stand-ground-base
+          path: /tmp/gauntlet-engine.tar.gz
