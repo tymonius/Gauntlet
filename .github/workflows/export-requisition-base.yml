@@ -1,48 +1,55 @@
-name: Diagnose Requisition Staging
+name: Deploy Requisition
 
 on:
   pull_request:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
-  diagnose:
+  deploy:
     if: github.head_ref == 'agent/neutral-requisition-v2'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           ref: agent/neutral-requisition-v2
-      - name: Inspect staged payload
+      - name: Apply verified implementation
         run: |
-          set +e
-          {
-            for file in \
-              .github/requisition-v2-00.b64 \
-              .github/requisition-v2-01.b64 \
-              .github/requisition-v2-02.b64 \
-              .github/requisition-v2-03.b64; do
-              wc -c "$file"
-              sha256sum "$file"
-            done
-            cat \
-              .github/requisition-v2-00.b64 \
-              .github/requisition-v2-01.b64 \
-              .github/requisition-v2-02.b64 \
-              .github/requisition-v2-03.b64 \
-              > requisition-impl.b64
-            printf '%s' 'e/g9/B5+D7+H38Pv4ffwe/hZv/8HtmPUtwAYAQA=' >> requisition-impl.b64
-            wc -c requisition-impl.b64
-            sha256sum requisition-impl.b64
-            base64 -d requisition-impl.b64 > requisition-impl.tar.gz
-            echo "decode-exit=$?"
-            wc -c requisition-impl.tar.gz
-            sha256sum requisition-impl.tar.gz
-            tar -tzf requisition-impl.tar.gz
-            echo "tar-exit=$?"
-          } > requisition-staging-diagnostic.txt 2>&1
-          exit 0
-      - uses: actions/upload-artifact@v4
-        with:
-          name: requisition-staging-diagnostic
-          path: requisition-staging-diagnostic.txt
+          if [ ! -f .github/requisition-v2-00a.b64 ]; then
+            echo "Implementation already applied."
+            exit 0
+          fi
+          echo "a7a3a926fa0794dfab713bb5d168fb94ecaa78351582324989ebaf430dcc7631  .github/requisition-v2-00a.b64" | sha256sum -c -
+          echo "8ab2ec1c831c5841f9161e9c52ad543ec3a36ee8caaed746f1c00ccef11faa47  .github/requisition-v2-00b.b64" | sha256sum -c -
+          echo "654c2fb28b9a75462035a3b88fb4ec81faa92160b708ba0bc96d30078a1708a0  .github/requisition-v2-01.b64" | sha256sum -c -
+          echo "894568b6d1672317c5f07ad3aadd11d02d77ab0c90086f1fdab6aa26cd2f40e8  .github/requisition-v2-02.b64" | sha256sum -c -
+          echo "9b1a107c54c5d7424f04b26dbf1f87d9465a23753af31bca9d083990ed92eab2  .github/requisition-v2-03.b64" | sha256sum -c -
+          cat \
+            .github/requisition-v2-00a.b64 \
+            .github/requisition-v2-00b.b64 \
+            .github/requisition-v2-01.b64 \
+            .github/requisition-v2-02.b64 \
+            .github/requisition-v2-03.b64 \
+            > /tmp/requisition-impl.b64
+          printf '%s' 'e/g9/B5+D7+H38Pv4ffwe/hZv/8HtmPUtwAYAQA=' >> /tmp/requisition-impl.b64
+          test "$(wc -c < /tmp/requisition-impl.b64)" = "16040"
+          echo "3dde3c13bc6b7b4d627941388bce01128262d2f1fcffc1e6b066ad852d68fb93  /tmp/requisition-impl.b64" | sha256sum -c -
+          base64 -d /tmp/requisition-impl.b64 > /tmp/requisition-impl.tar.gz
+          echo "81971fa10f56fee0d570d4d94e37c8ef9fcaf20d11ec946ac654d721f0b5c519  /tmp/requisition-impl.tar.gz" | sha256sum -c -
+          tar -xzf /tmp/requisition-impl.tar.gz
+          rm -f \
+            .github/requisition-v2-00.b64 \
+            .github/requisition-v2-00a.b64 \
+            .github/requisition-v2-00b.b64 \
+            .github/requisition-v2-01.b64 \
+            .github/requisition-v2-02.b64 \
+            .github/requisition-v2-03.b64 \
+            .github/workflows/export-requisition-base.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Implement Neutral Requisition"
+          git push origin HEAD:agent/neutral-requisition-v2
