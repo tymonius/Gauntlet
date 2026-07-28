@@ -108,6 +108,13 @@ import {
   resolveRequisitionChoice,
 } from './neutral-requisition';
 import {
+  applyRousingSpeechBattleEffects,
+  captureRousingSpeechAssetSnapshot,
+  openNextRousingSpeechChoice,
+  registerRousingSpeechAssetTriggers,
+  resolveRousingSpeechChoice,
+} from './neutral-rousing-speech';
+import {
   applyReservesAction,
   applyReservesBattleTopdecks,
   prepareReservesAction,
@@ -139,6 +146,7 @@ function continueNeutralChoices(game: GameState): void {
   openPalisadeWallAssetChoice(game);
   openNextDecoysChoice(game);
   openNextRequisitionChoice(game);
+  openNextRousingSpeechChoice(game);
   openNextSuppliesChoice(game);
   openNextFootholdChoice(game);
   openNextRedemptionChoice(game);
@@ -172,11 +180,13 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
               ? resolveReinforcementsChoice(next, action)
               : pendingKind === 'requisition_battle'
                 ? (resolveRequisitionChoice(next, action), {})
-                : pendingKind.startsWith('scouting_report_')
-                  ? resolveScoutingReportChoice(next, action)
-                  : pendingKind.startsWith('reserves_')
-                    ? resolveReservesChoice(next, action)
-                    : resolveRedemptionChoice(next, action);
+                : pendingKind.startsWith('rousing_speech_')
+                  ? (resolveRousingSpeechChoice(next, action), {})
+                  : pendingKind.startsWith('scouting_report_')
+                    ? resolveScoutingReportChoice(next, action)
+                    : pendingKind.startsWith('reserves_')
+                      ? resolveReservesChoice(next, action)
+                      : resolveRedemptionChoice(next, action);
     if ('deferredBattleAction' in resolved && resolved.deferredBattleAction) {
       return applyGameAction(next, resolved.deferredBattleAction);
     }
@@ -209,6 +219,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     return { state: next };
   }
 
+  const rousingSpeechAssetsBefore = captureRousingSpeechAssetSnapshot(game);
   const effectSourcePlayerId = redemptionEffectSourcePlayer(game, action);
   const discardBefore = effectSourcePlayerId ? captureDiscardSnapshot(game) : undefined;
   const assetsBefore = effectSourcePlayerId ? captureDecoysAssetSnapshot(game) : undefined;
@@ -370,6 +381,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     applyNewRecruitsBattleEffects(result.state);
     applyPathfindersBattleEffects(result.state);
     applyRallyingCryBattleEffects(result.state);
+    applyRousingSpeechBattleEffects(result.state);
     queueRequisitionBattleChoices(result.state);
   }
   if (action.type === 'resolve_battle' && priorBattle && priorBattleId && !result.state.battle) {
@@ -400,6 +412,11 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     queueSuppliesAfterNormalDraw(result.state, action.playerId);
   }
 
+  registerRousingSpeechAssetTriggers(
+    result.state,
+    rousingSpeechAssetsBefore,
+    action.playerId,
+  );
   if (assetsBefore) {
     registerDecoysAssetExits(result.state, assetsBefore, effectSourcePlayerId);
   }

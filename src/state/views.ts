@@ -68,6 +68,7 @@ export function toPublicPlayerView(player: PlayerState): PublicPlayerView {
       assetBank: visible(player.zones.assetBank),
       removed: visible(player.zones.removed),
     },
+    faceDownAssets: player.faceDownAssets ? [...player.faceDownAssets] : undefined,
     controlledTerritoryCount: player.controlledTerritories.length,
     controlledTerritories: player.controlledTerritories,
     occupiedSpaceId: player.occupiedSpaceId,
@@ -237,7 +238,8 @@ function neutralChoiceIsPrivate(game: GameState): boolean {
   return Boolean(
     kind?.startsWith('scouting_report_')
     || kind?.startsWith('reserves_')
-    || kind?.startsWith('supplies_'),
+    || kind?.startsWith('supplies_')
+    || kind === 'rousing_speech_discard',
   );
 }
 

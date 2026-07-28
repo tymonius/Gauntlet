@@ -130,6 +130,35 @@ export interface PendingRequisitionBattleChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+
+export interface RousingSpeechAssetQueueEntry {
+  id: string;
+  playerId: PlayerID;
+  sourcePlayerId: PlayerID;
+  triggersRemaining: number;
+}
+
+export interface PendingRousingSpeechAssetChoice {
+  kind: 'rousing_speech_asset';
+  playerId: PlayerID;
+  sourcePlayerId: PlayerID;
+  entryId: string;
+  triggersRemaining: number;
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingRousingSpeechDiscardChoice {
+  kind: 'rousing_speech_discard';
+  playerId: PlayerID;
+  sourcePlayerId: PlayerID;
+  entryId: string;
+  cardOptions: CardID[];
+  triggersRemaining: number;
+  options: ['select_card'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface PendingReservesActionChoice {
   kind: 'reserves_action';
   playerId: PlayerID;
@@ -230,6 +259,8 @@ export type PendingNeutralChoice =
   | PendingPalisadeWallAssetChoice
   | PendingReinforcementsBattleChoice
   | PendingRequisitionBattleChoice
+  | PendingRousingSpeechAssetChoice
+  | PendingRousingSpeechDiscardChoice
   | PendingReservesActionChoice
   | PendingReservesBattleChoice
   | PendingScoutingReportActionChoice
