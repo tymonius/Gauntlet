@@ -14,12 +14,13 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: main
-      - name: Package engine source
+      - name: Package canonical runtime inputs
         run: |
           set -euo pipefail
-          tar -czf /tmp/gauntlet-engine.tar.gz src package.json tsconfig.json
-      - name: Upload engine source
+          tar -czf /tmp/stand-ground-runtime.tar.gz \
+            releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json
+      - name: Upload canonical runtime inputs
         uses: actions/upload-artifact@v4
         with:
-          name: stand-ground-base
-          path: /tmp/gauntlet-engine.tar.gz
+          name: stand-ground-runtime
+          path: /tmp/stand-ground-runtime.tar.gz
