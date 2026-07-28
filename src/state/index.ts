@@ -1,5 +1,6 @@
 export * from './views';
 export * from './banked-assets';
+export * from './asset-facing';
 export * from './initialize';
 export * from './validation';
 export * from './v06-setup';
@@ -84,6 +85,7 @@ export * from './neutral-illegal-occupation';
 export * from './neutral-palisade-wall';
 export * from './neutral-reinforcements';
 export * from './neutral-requisition';
+export * from './neutral-rousing-speech';
 export * from './neutral-fealty';
 export * from './neutral-forced-march';
 export * from './neutral-new-recruits';

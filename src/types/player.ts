@@ -24,6 +24,8 @@ export interface PlayerState {
   mystics?: MysticsState;
   inquisition?: InquisitionState;
   zones: PrivateZones;
+  /** Physical banked Asset copies currently turned face down. */
+  faceDownAssets?: CardID[];
   controlledTerritories: TerritoryID[];
   occupiedSpaceId?: string;
   actionsRemaining: number;
@@ -50,6 +52,7 @@ export interface PublicPlayerView {
   mystics?: PublicMysticsState;
   inquisition?: PublicInquisitionState;
   zones: { deck: PublicZoneView; hand: PublicZoneView; discard: PublicZoneView; graveyard: PublicZoneView; assetBank: PublicZoneView; removed: PublicZoneView; };
+  faceDownAssets?: CardID[];
   controlledTerritoryCount: number;
   controlledTerritories: TerritoryID[];
   occupiedSpaceId?: string;

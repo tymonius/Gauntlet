@@ -48,6 +48,7 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'neutral-palisade-wall': battleAndAction('neutral-palisade-wall', 'asset_bank'),
   'neutral-reinforcements': battleAndAction('neutral-reinforcements', 'asset_bank'),
   'neutral-requisition': battleAndAction('neutral-requisition', 'discard', true),
+  'neutral-rousing-speech': battleAndAction('neutral-rousing-speech', 'asset_bank'),
   'neutral-fealty': battleAndAction('neutral-fealty', 'asset_bank'),
   'neutral-forced-march': battleAndAction('neutral-forced-march', 'discard'),
   'neutral-new-recruits': battleAndAction('neutral-new-recruits', 'discard', true),
