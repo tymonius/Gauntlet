@@ -240,6 +240,7 @@ function neutralChoiceIsPrivate(game: GameState): boolean {
     kind?.startsWith('scouting_report_')
     || kind?.startsWith('reserves_')
     || kind?.startsWith('supplies_')
+    || kind?.startsWith('tactical_planning_')
     || kind === 'rousing_speech_discard',
   );
 }

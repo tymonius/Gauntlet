@@ -95,6 +95,22 @@ describe('guided Neutral choices', () => {
     ]);
   });
 
+  it('offers each Tactical Planning bottom-deck option', () => {
+    const state = game();
+    state.priorityPlayer = 'player_1';
+    state.pendingNeutralChoice = {
+      kind: 'tactical_planning_action',
+      playerId: 'player_1',
+      cardOptions: ['card-valor', 'card-fortifications'],
+      options: ['select_card'],
+    };
+
+    expect(buildGuidedOptions(state).map((option) => option.action)).toEqual([
+      { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'select_card', cardId: 'card-valor' },
+      { type: 'resolve_neutral_choice', playerId: 'player_1', choice: 'select_card', cardId: 'card-fortifications' },
+    ]);
+  });
+
   it('offers pass and each Reserves Battle cleanup option', () => {
     const state = game();
     state.priorityPlayer = 'player_1';

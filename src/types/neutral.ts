@@ -167,6 +167,14 @@ export interface PendingReservesActionChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface PendingTacticalPlanningActionChoice {
+  kind: 'tactical_planning_action';
+  playerId: PlayerID;
+  cardOptions: CardID[];
+  options: ['select_card'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface PendingReservesBattleChoice {
   kind: 'reserves_battle';
   playerId: PlayerID;
@@ -419,6 +427,7 @@ export type PendingNeutralChoice =
   | PendingSeditionBattleChoice
   | PendingStandGroundMovementChoice
   | PendingStrategicWithdrawalBattleChoice
+  | PendingTacticalPlanningActionChoice
   | PendingScorchedEarthAssetChoice
   | PendingSuppliesAssetChoice
   | PendingSuppliesBattleDiscardChoice;

@@ -128,6 +128,9 @@ function playedCardIds(participant: BattleParticipantState): string[] {
 }
 
 function applyBattleSetupEffects(participant: BattleParticipantState): void {
+  if (!participant.hasDrawnBattleCards && participant.handCommit?.cardId === 'neutral-tactical-planning') {
+    participant.battleDrawCount += 1;
+  }
   if (playedCardIds(participant).includes('card-conscription')) {
     participant.battleDrawCount = Math.max(participant.battleDrawCount, 4);
     participant.battleDrawPlayLimit = Math.max(participant.battleDrawPlayLimit, 2);
