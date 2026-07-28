@@ -1,0 +1,22 @@
+name: Export Sabotage Base
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  export:
+    if: github.head_ref == 'agent/neutral-sabotage'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/neutral-sabotage
+      - name: Package development source
+        run: |
+          zip -qr sabotage-base.zip src package.json package-lock.json tsconfig.json vitest.config.ts
+      - uses: actions/upload-artifact@v4
+        with:
+          name: sabotage-base-source
+          path: sabotage-base.zip
