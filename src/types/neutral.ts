@@ -219,6 +219,43 @@ export interface PendingScoutingReportBattleReplaceChoice {
 }
 
 
+export interface SalvageBattleQueueEntry {
+  id: string;
+  playerId: PlayerID;
+  battleId: string;
+  cardIds: CardID[];
+  triggersRemaining: number;
+}
+
+export interface PendingSalvageActionDiscardChoice {
+  kind: 'salvage_action_discard';
+  playerId: PlayerID;
+  cardOptions: CardID[];
+  options: ['select_card'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingSalvageBattleChoice {
+  kind: 'salvage_battle';
+  playerId: PlayerID;
+  entryId: string;
+  battleId: string;
+  cardOptions: CardID[];
+  triggersRemaining: number;
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingSalvageBattleDiscardChoice {
+  kind: 'salvage_battle_discard';
+  playerId: PlayerID;
+  entryId: string;
+  battleId: string;
+  cardOptions: CardID[];
+  options: ['select_card'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface NeutralSabotageAssetSuppression {
   id: string;
   sourcePlayerId: PlayerID;
@@ -275,6 +312,9 @@ export type PendingNeutralChoice =
   | PendingScoutingReportActionChoice
   | PendingScoutingReportBattleInspectChoice
   | PendingScoutingReportBattleReplaceChoice
+  | PendingSalvageActionDiscardChoice
+  | PendingSalvageBattleChoice
+  | PendingSalvageBattleDiscardChoice
   | PendingSuppliesAssetChoice
   | PendingSuppliesBattleDiscardChoice;
 
