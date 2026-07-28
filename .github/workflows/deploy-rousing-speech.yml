@@ -1,0 +1,27 @@
+name: Deploy Rousing Speech
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    if: github.head_ref == 'agent/neutral-rousing-speech'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/neutral-rousing-speech
+          fetch-depth: 0
+      - name: Record Git object identifiers
+        run: |
+          echo "head=$(git rev-parse HEAD)" > rousing-git-objects.txt
+          echo "tree=$(git rev-parse HEAD^{tree})" >> rousing-git-objects.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: rousing-git-objects
+          path: rousing-git-objects.txt
