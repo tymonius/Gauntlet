@@ -1,0 +1,32 @@
+name: Export Requisition Source
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  export:
+    if: github.head_ref == 'agent/neutral-requisition'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/neutral-requisition
+      - name: Reconstruct staged archive
+        run: |
+          cat \
+            .github/requisition-00.b64 \
+            .github/requisition-01.b64 \
+            .github/requisition-02.b64 \
+            > /tmp/requisition-files.b64
+          base64 -d /tmp/requisition-files.b64 > /tmp/requisition-files.tar.gz
+          tar -tzf /tmp/requisition-files.tar.gz
+          cp /tmp/requisition-files.tar.gz requisition-files.tar.gz
+          sha256sum /tmp/requisition-files.b64 /tmp/requisition-files.tar.gz > requisition-checksums.txt
+      - uses: actions/upload-artifact@v4
+        with:
+          name: requisition-staged-source
+          path: |
+            requisition-files.tar.gz
+            requisition-checksums.txt
