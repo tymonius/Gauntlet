@@ -23,7 +23,8 @@ jobs:
         run: |
           set -euo pipefail
           echo '235a87e6d032722b26e39b89ea49d5e6448c2a399c13453720fc0a225be298f9  .github/stand-ground-final-00.b64' | sha256sum -c -
-          echo '5ac19f1c9c3481d38833533fad7dcf1dd618b03da402270da43a61ca970fb07b  .github/stand-ground-final-01.b64' | sha256sum -c -
+          echo '6060259b663d09c7182222028b4f53335ae9f774c41cdb1cffae02aa15de8c39  .github/stand-ground-final-01a.b64' | sha256sum -c -
+          echo '44dd7e16c373fbeeb5ee030bb8b1ba53106d2ae349734ae62f04260525ebab20  .github/stand-ground-final-01b.b64' | sha256sum -c -
           echo 'bf6efb4dc194644d790b0211316ad244d18ba3abfa04050d2f94ee2a5408059e  .github/stand-ground-final-02.b64' | sha256sum -c -
           echo '5d6a72e30e526a661a6a4ce6296279d1b58a762b0202baf889b1527b305c9770  .github/stand-ground-final-03.b64' | sha256sum -c -
           echo '7a0ec8fed81271605ade8edb622de2756a3dbec71750644f11c49fc820360097  .github/stand-ground-final-04.b64' | sha256sum -c -
@@ -37,7 +38,8 @@ jobs:
 
           cat \
             .github/stand-ground-final-00.b64 \
-            .github/stand-ground-final-01.b64 \
+            .github/stand-ground-final-01a.b64 \
+            .github/stand-ground-final-01b.b64 \
             .github/stand-ground-final-02.b64 \
             .github/stand-ground-final-03.b64 \
             .github/stand-ground-final-04.b64 \
