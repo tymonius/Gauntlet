@@ -106,5 +106,6 @@ export * from './win';
 
 export * from './neutral-sabotage';
 export * from './neutral-salvage';
+export * from './neutral-scorched-earth';
 
 export * from './battle-cancellation';

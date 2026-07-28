@@ -49,6 +49,13 @@ function requirePlayer(game: GameState, playerId: PlayerID) {
   return player;
 }
 
+function removeOneCard(cards: CardID[], cardId: CardID): boolean {
+  const index = cards.indexOf(cardId);
+  if (index < 0) return false;
+  cards.splice(index, 1);
+  return true;
+}
+
 function findSpace(game: GameState, spaceId: SpaceID): BoardSpaceState {
   const space = game.board.spaces.find((candidate) => candidate.id === spaceId);
   if (!space) throw new GameActionError(`Unknown space: ${spaceId}.`);
@@ -466,7 +473,7 @@ function playActionCard(game: GameState, action: Extract<GameAction, { type: 'pl
     throw new GameActionError(`${player.name} has already played a card this turn.`);
   }
 
-  player.zones.hand = player.zones.hand.filter((cardId) => cardId !== action.cardId);
+  removeOneCard(player.zones.hand, action.cardId);
   const destination = pushActionCardToDestination(player, action.cardId);
   player.actionsRemaining -= 1;
   player.hasPlayedActionThisTurn = true;
@@ -564,7 +571,7 @@ function commitBattleHandCard(game: GameState, action: Extract<GameAction, { typ
 
   const isAttackerHandCommit = action.playerId === game.battle.attacker.playerId;
   const isFaceUpWatchtowerCommit = isAttackerHandCommit && Boolean(game.battle.attackerHandCommitVisibleTo);
-  player.zones.hand = player.zones.hand.filter((cardId) => cardId !== action.cardId);
+  removeOneCard(player.zones.hand, action.cardId);
   participant.handCommit = {
     cardId: action.cardId,
     owner: action.playerId,
@@ -631,7 +638,7 @@ function playBattleDrawCard(game: GameState, action: Extract<GameAction, { type:
   if (!participant.battleDraw.includes(action.cardId)) throw new GameActionError(`${player.name} did not draw that battle card.`);
   requireCardPlayable(action.cardId, 'battle_draw_play', 'battle_draw');
 
-  participant.battleDraw = participant.battleDraw.filter((cardId) => cardId !== action.cardId);
+  removeOneCard(participant.battleDraw, action.cardId);
   participant.battleDrawPlayed.push({ cardId: action.cardId, owner: action.playerId, origin: 'battle_draw', faceDown: true, canceled: false });
   applyBattleSetupEffects(participant);
   player.hasPlayedBattleThisTurn = true;

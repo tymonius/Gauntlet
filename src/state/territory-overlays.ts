@@ -4,8 +4,13 @@ import type {
   GameState,
   PlayerID,
   SpaceID,
+  TerritoryOverlayKind,
   TerritoryOverlayState,
 } from '../types';
+
+const LEGACY_RUINS_OVERLAY_CARDS = new Set([
+  'neutral-siege-weaponry',
+]);
 
 export const CAPTURE_REMOVED_OVERLAYS = new Set([
   'mystics-spirit-hollow',
@@ -36,16 +41,71 @@ export function topTerritoryOverlay(space?: BoardSpaceState): TerritoryOverlaySt
   return space?.overlays?.at(-1);
 }
 
+export function isRuinsOverlay(overlay?: TerritoryOverlayState): boolean {
+  return Boolean(overlay && (
+    overlay.kind === 'ruins'
+    || LEGACY_RUINS_OVERLAY_CARDS.has(overlay.cardId)
+  ));
+}
+
 export function placeTerritoryOverlay(
   space: BoardSpaceState,
   cardId: string,
   owner: PlayerID,
+  options: { faceUp?: boolean; kind?: TerritoryOverlayKind } = {},
 ): TerritoryOverlayState {
   if (space.kind !== 'territory') throw new Error('Territory Overlays can be placed only on Territories.');
-  const overlay: TerritoryOverlayState = { cardId, owner, faceUp: true };
+  const overlay: TerritoryOverlayState = {
+    cardId,
+    owner,
+    faceUp: options.faceUp ?? true,
+  };
+  if (options.kind) overlay.kind = options.kind;
   space.overlays ??= [];
   space.overlays.push(overlay);
   return overlay;
+}
+
+/**
+ * Places one physical card as the Territory's sole Ruins Overlay. Existing
+ * Ruins are removed even when dormant beneath another Overlay, because a
+ * Territory cannot be doubly ruined.
+ */
+export function placeRuinsOverlay(
+  game: GameState,
+  space: BoardSpaceState,
+  cardId: string,
+  owner: PlayerID,
+): { overlay: TerritoryOverlayState; replaced: TerritoryOverlayState[] } {
+  if (space.kind !== 'territory') throw new Error('Ruins can be placed only on Territories.');
+  const replaced: TerritoryOverlayState[] = [];
+  const retained: TerritoryOverlayState[] = [];
+  for (const overlay of space.overlays ?? []) {
+    if (!isRuinsOverlay(overlay)) {
+      retained.push(overlay);
+      continue;
+    }
+    replaced.push(overlay);
+    game.players[overlay.owner]?.zones.graveyard.push(overlay.cardId);
+    publicLog(
+      game,
+      owner,
+      'territory_ruins_replaced',
+      `${overlay.cardId} entered its owner's Graveyard when new Ruins were placed on ${space.id}.`,
+      {
+        spaceId: space.id,
+        removedCardId: overlay.cardId,
+        removedOwner: overlay.owner,
+        replacementCardId: cardId,
+        replacementOwner: owner,
+      },
+    );
+  }
+  space.overlays = retained.length > 0 ? retained : undefined;
+  return {
+    overlay: placeTerritoryOverlay(space, cardId, owner, { kind: 'ruins' }),
+    replaced,
+  };
 }
 
 export function captureTerritoryControllerSnapshot(game: GameState): TerritoryControllerSnapshot {
