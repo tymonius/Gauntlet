@@ -11,23 +11,23 @@
   </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Gauntlet v0.6.0 Deckbuilder</title>
+  <title>Gauntlet v0.6.1 Deckbuilder</title>
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="territories.css" />
   <link rel="stylesheet" href="print-options.css" />
   <link rel="stylesheet" href="starter-decks.css" />
-  <link rel="stylesheet" href="mobile-card-preview.css?v=20260723-2" />
+  <link rel="stylesheet" href="mobile-card-preview.css?v=20260729-1" />
 </head>
 <body>
   <header class="site-header">
     <div>
       <p class="eyebrow">Gauntlet playtest tool</p>
-      <h1>v0.6.0 Deckbuilder</h1>
+      <h1>v0.6.1 Deckbuilder</h1>
       <p class="lede">Choose a faction and Leader, load a recommended starter Deck, or build your own.</p>
     </div>
     <div class="status-card" aria-live="polite">
       <span>Source status</span>
-      <strong id="dataStatus">Loading canonical sources…</strong>
+      <strong id="dataStatus">Loading canonical v0.6.1 sources…</strong>
     </div>
   </header>
 
@@ -44,15 +44,15 @@
           <p class="muted">Every Leader has a complete recommended first-game Deck.</p>
         </div>
         <div class="button-row setup-actions">
-          <button id="starterDeckButton" type="button" disabled>Load recommended deck</button>
-          <button id="randomDeckButton" type="button" class="secondary" disabled>Random deck</button>
-          <button id="printAllStarterDecksButton" type="button" class="secondary" disabled>Print all 12 starter decks</button>
+          <button id="starterDeckButton" type="button" disabled>Load recommended Deck</button>
+          <button id="randomDeckButton" type="button" class="secondary" disabled>Random Deck</button>
+          <button id="printAllStarterDecksButton" type="button" class="secondary" disabled>Print all 12 starter Decks</button>
         </div>
       </div>
       <div class="setup-grid">
         <label>
           Deck name
-          <input id="deckName" type="text" maxlength="80" placeholder="Untitled v0.6.0 Deck" />
+          <input id="deckName" type="text" maxlength="80" placeholder="Untitled v0.6.1 Deck" />
         </label>
         <label>
           Faction
@@ -69,7 +69,7 @@
 
     <section class="dashboard" aria-label="Deck summary">
       <article class="metric-card">
-        <span>Main deck</span>
+        <span>Main Deck</span>
         <strong><span id="cardCount">0</span> / 30+</strong>
       </article>
       <article class="metric-card">
@@ -97,7 +97,7 @@
           <ul id="validationList" class="validation-list"></ul>
         </section>
         <section>
-          <h3>Saved decks</h3>
+          <h3>Saved Decks</h3>
           <select id="savedDeckSelect"></select>
           <div class="button-row">
             <button id="saveDeckButton" type="button">Save</button>
@@ -116,7 +116,7 @@
             <input id="printCardBacks" type="checkbox" />
             <span>Print card backs</span>
           </label>
-          <textarea id="importJson" rows="4" placeholder="Paste an exported v0.6 Deck JSON here"></textarea>
+          <textarea id="importJson" rows="4" placeholder="Paste an exported v0.6.1 Deck JSON here"></textarea>
           <button id="importJsonButton" type="button" class="secondary full-width">Import JSON</button>
         </section>
       </div>
@@ -135,7 +135,7 @@
           <div class="filters">
             <label>
               Search
-              <input id="cardSearch" type="search" placeholder="Name or card text" />
+              <input id="cardSearch" type="search" placeholder="Name, Gambit, Tactic, or card text" />
             </label>
             <label>
               Allegiance
@@ -159,7 +159,7 @@
           </div>
           <div class="card-browser">
             <div id="availableCards" class="compact-card-list"></div>
-            <aside id="cardPreview" class="card-preview empty-state">Select a card to view its canonical text.</aside>
+            <aside id="cardPreview" class="card-preview empty-state">Select a card to view its canonical v0.6.1 text.</aside>
           </div>
         </section>
 
@@ -190,7 +190,7 @@
           </div>
           <div class="territory-browser">
             <div id="territoryList" class="compact-territory-list empty-state">Loading Territories…</div>
-            <aside id="territoryPreview" class="territory-preview empty-state">Select a Territory to view its canonical text.</aside>
+            <aside id="territoryPreview" class="territory-preview empty-state">Select a Territory to view its canonical v0.6.1 text.</aside>
           </div>
         </section>
       </div>
@@ -199,8 +199,8 @@
         <section class="panel">
           <div class="panel-heading">
             <div>
-              <h2>Current deck</h2>
-              <p class="muted">Playable cards count toward deck size and value. Leader and supplemental cards do not.</p>
+              <h2>Current Deck</h2>
+              <p class="muted">Playable cards count toward Deck size and value. Leader and supplemental cards do not.</p>
             </div>
             <button id="clearDeckButton" type="button" class="secondary danger">Clear cards</button>
           </div>
@@ -213,10 +213,10 @@
     </section>
   </main>
 
-  <script src="app.js" defer></script>
-  <script src="mobile-card-preview.js?v=20260723-2" defer></script>
-  <script src="completed-factions.js?v=20260718-1" defer></script>
-  <script src="territories.js" defer></script>
+  <script src="app.js?v=20260729-1" defer></script>
+  <script src="mobile-card-preview.js?v=20260729-1" defer></script>
+  <script src="completed-factions.js?v=20260729-1" defer></script>
+  <script src="territories.js?v=20260729-1" defer></script>
   <script src="random-deck.js" defer></script>
   <script src="supplemental-data.js?v=20260722-1" defer></script>
   <script src="completed-supplementals.js?v=20260723-1" defer></script>
@@ -229,7 +229,7 @@
   <script src="print-intelligence-trackers.js?v=20260722-1" defer></script>
   <script src="print-capital-ledger.js?v=20260722-1" defer></script>
   <script src="print-card-back-orientation.js?v=20260722-1" defer></script>
-  <script src="starter-decks.js?v=20260722-2" defer></script>
+  <script src="starter-decks.js?v=20260729-1" defer></script>
   <script src="print-all-starters.js?v=20260723-2" defer></script>
   <script src="print-window-portrait-fixes.js?v=20260723-1" defer></script>
 </body>
