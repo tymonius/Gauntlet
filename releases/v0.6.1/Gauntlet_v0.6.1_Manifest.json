@@ -1,0 +1,52 @@
+{
+  "version": "v0.6.1",
+  "name": "First Playtest Revision",
+  "status": "draft",
+  "publication_date": null,
+  "playable_card_designs": 122,
+  "neutral_cards": 50,
+  "faction_cards": 72,
+  "territories": 25,
+  "arenas": 4,
+  "factions": 6,
+  "leaders": 12,
+  "governing_sources": [
+    "Gauntlet_v0.6.1_Rulebook.md",
+    "../../docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
+    "../../docs/Gauntlet_v0.6.1_Territory_Pool.md",
+    "faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
+    "faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
+    "faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
+    "faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
+    "faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
+    "faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md"
+  ],
+  "current_outputs": [
+    "README.md",
+    "Gauntlet_v0.6.1_Rulebook.md",
+    "Gauntlet_v0.6.1_Reference_Guide.md",
+    "Gauntlet_v0.6.1_Release_Notes.md",
+    "Gauntlet_v0.6.1_Changelog.md",
+    "Gauntlet_v0.6.1_Manifest.json"
+  ],
+  "pending_generated_outputs": [
+    "Gauntlet_v0.6.1_Canonical_Data.json",
+    "Gauntlet_v0.6.1_Complete_Card_Reference.md",
+    "Gauntlet_v0.6.1_Rulebook.docx",
+    "Gauntlet_v0.6.1_Rulebook.pdf",
+    "Gauntlet_v0.6.1_Reference_Guide.pdf",
+    "printable card and component sheets",
+    "Deckbuilder data",
+    "browser rulebook and card reference",
+    "Rules Arbiter source package",
+    "digital-engine data"
+  ],
+  "validation": {
+    "source_audit_complete": false,
+    "canonical_data_generated": false,
+    "automated_checks_passed": false,
+    "visual_checks_passed": false,
+    "browser_checks_passed": false,
+    "ready_for_publication": false
+  }
+}
