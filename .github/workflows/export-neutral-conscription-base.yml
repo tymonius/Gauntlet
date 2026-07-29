@@ -24,14 +24,15 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          wc -c .github/neutral-conscription-archive-*.b64
-          sha256sum .github/neutral-conscription-archive-*.b64
           cat > "$RUNNER_TEMP/conscription-chunk-checksums" <<'EOF'
           ebfcad2bc77681653d1abf14110b8b45c7f6f919efeb4767fc610a84e3eed000  .github/neutral-conscription-archive-00.b64
           0151a9af4ba2b06e5a4fa76ea72673798171503bf581e4ab98c247ce1f675a43  .github/neutral-conscription-archive-01.b64
           419370ba63cb4ffe724f4d54c14f361175bd13db78e5660980169ed42cc87f5c  .github/neutral-conscription-archive-02.b64
           78d3de554cc49c0f9b6f1f0cf4ec72563f466e7b7a4a2d940b84479196a0c82a  .github/neutral-conscription-archive-03.b64
-          d5c750336443c97a6d8d4485e57d9bfcda7b55367e4a55a6d0d75f6a0f1f106b  .github/neutral-conscription-archive-04.b64
+          46c3b5362d728adad488523eefe7c28c990ac7d74b5cf6738d30da042843679a  .github/neutral-conscription-archive-04.b64
+          6a1d208011536a8e1156aab8e9c8f6df3b35fd4672427013362f2c38a47edc84  .github/neutral-conscription-archive-05.b64
+          2028cb8b3f7c4d8173b83a1d919c778ab082eee1b3e2d2bc272834528a37bfda  .github/neutral-conscription-archive-06.b64
+          b261975ce8de94a8bf8727744748eecec8e406166e250266c70d5db57c3a7694  .github/neutral-conscription-archive-07.b64
           EOF
           sha256sum --check "$RUNNER_TEMP/conscription-chunk-checksums"
           cat .github/neutral-conscription-archive-*.b64 > "$RUNNER_TEMP/conscription-changes.b64"
