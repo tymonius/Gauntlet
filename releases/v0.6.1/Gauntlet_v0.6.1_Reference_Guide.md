@@ -85,6 +85,7 @@ Card-specific text overrides the normal destination.
 - Defending player moves one position toward their own end; attacker occupies the contested position.
 - If both withdraw, move attacker first, then defender.
 - Use normal battle-card cleanup unless stated otherwise.
+- Withdrawal caused during opening effects before a pending battle uses the same movement, but no battle or Aftermath occurs.
 
 ### Retreat after a loss
 
@@ -107,7 +108,7 @@ Card-specific text overrides the normal destination.
 
 ## Assets and Overlays
 
-- Asset limit equals Territories controlled, minimum 2.
+- Asset limit equals the number of Territories controlled.
 - When banking at the limit, a player may discard one controlled Asset to make room during the same Action Opportunity unless an effect prevents it from leaving play.
 - An Overlay is controlled by the controller of its Territory.
 - Overlay control changes with the Territory; ownership does not.
