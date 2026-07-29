@@ -27,6 +27,58 @@ jobs:
         with:
           python-version: "3.12"
 
+      - name: Apply shared-rulebook clarifications if needed
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md")
+          text = path.read_text(encoding="utf-8")
+
+          headings_old = '''- **Mission:** use only as instructed by Intelligence rules.
+
+          Playing a card for one printed effect does not activate its other printed effects unless a rule says otherwise.'''.replace("          ", "")
+          headings_new = '''- **Mission:** use only as instructed by Intelligence rules.
+
+          Faction guides and individual cards may define additional printed headings, such as **Terms**, **Asset**, **Overlay**, **Loan**, or **Effect**. Those headings use the timing and procedure stated by their governing text. They do not make a card eligible as a Gambit or Tactic unless the card also has an eligible Gambit, Tactic, or Battle effect.
+
+          Playing a card for one printed effect does not activate its other printed effects unless a rule says otherwise.'''.replace("          ", "")
+          if headings_old in text:
+              text = text.replace(headings_old, headings_new, 1)
+
+          withdrawal_old = '''- if both withdraw, move the attacker first, then the defender.
+
+          If a battle following refused Terms ends through withdrawal, return the Stake and do not impose or ratify the Proposal unless a specific rule says otherwise.'''.replace("          ", "")
+          withdrawal_new = '''- if both withdraw, move the attacker first, then the defender.
+
+          ### Withdrawal during opening effects
+
+          If an effect causes one or both players to withdraw during opening effects and prevents the pending battle, use the same attacker and defender movement above. Because no battle is fought:
+
+          - no player wins, loses, or retreats;
+          - no battle or Aftermath triggers occur; and
+          - no battle-card destinations or cleanup occur.
+
+          The established attacker and defender roles are used only to determine the withdrawal movement. Resolve any remaining instructions from the effect or accepted Terms after that movement.
+
+          If a battle following refused Terms ends through withdrawal, return the Stake and do not impose or ratify the Proposal unless a specific rule says otherwise.'''.replace("          ", "")
+          if withdrawal_old in text:
+              text = text.replace(withdrawal_old, withdrawal_new, 1)
+
+          path.write_text(text, encoding="utf-8")
+          PY
+
+      - name: Commit rulebook clarifications when changed
+        run: |
+          git add releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Clarify faction headings and opening-effect withdrawal"
+          git push origin HEAD:${{ github.head_ref || github.ref_name }}
+
       - name: Generate and validate v0.6.1 data
         run: python scripts/generate_v061_release.py
 
