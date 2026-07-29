@@ -24,6 +24,7 @@ export interface NeutralEntrenchmentActionLock { playerId: PlayerID; sourcePlaye
 export interface NeutralReinforcementsActionOpportunity { playerId: PlayerID; turn: number; }
 export interface NeutralInsurrectionActionOpportunity { playerId: PlayerID; turn: number; }
 export interface NeutralLiberationActionOpportunity { playerId: PlayerID; turn: number; remaining: number; }
+export interface NeutralProtractedSiegeCaptureResolution { capturingPlayerId: PlayerID; spaceId: SpaceID; sourceOwner: PlayerID; requestId: string; overlayCountBefore: number; }
 
 export interface GameState {
   id: GameID; version: string; phase: GamePhase; turn: number; activePlayer: PlayerID; priorityPlayer?: PlayerID;
@@ -50,6 +51,7 @@ export interface GameState {
   neutralReinforcementsActionOpportunity?: NeutralReinforcementsActionOpportunity;
   neutralInsurrectionActionOpportunity?: NeutralInsurrectionActionOpportunity;
   neutralLiberationActionOpportunity?: NeutralLiberationActionOpportunity;
+  neutralProtractedSiegeCaptureResolution?: NeutralProtractedSiegeCaptureResolution;
   neutralCounterworksOverlayQueue?: CounterworksOverlayPlacementRequest[];
   neutralCourtMartialQueue?: CourtMartialCleanupRequest[];
   neutralDecoysAssetQueue?: DecoysAssetQueueEntry[];
@@ -80,6 +82,7 @@ export interface PublicGameView {
   neutralReinforcementsActionOpportunity?: NeutralReinforcementsActionOpportunity;
   neutralInsurrectionActionOpportunity?: NeutralInsurrectionActionOpportunity;
   neutralLiberationActionOpportunity?: NeutralLiberationActionOpportunity;
+  neutralProtractedSiegeCaptureResolution?: NeutralProtractedSiegeCaptureResolution;
   pendingNeutralChoice?: PendingNeutralChoice;
   pendingMilitaryChoice?: PendingMilitaryChoice; pendingMilitaryTimingChoice?: PendingMilitaryTimingChoice; pendingDiplomatChoice?: PendingDiplomatChoice; pendingFinancierChoice?: PendingFinancierChoice;
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow; pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;

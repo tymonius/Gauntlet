@@ -88,6 +88,12 @@ import {
   liberationActionOpportunityActive,
 } from './neutral-liberation';
 import {
+  continueProtractedSiegeCaptureResolution,
+  queueProtractedSiegeBattleOverlays,
+  removeAbandonedProtractedSiegeOverlays,
+  resolveProtractedSiegeChoice,
+} from './neutral-protracted-siege';
+import {
   applyFootholdBattleCleanupDraw,
   applyFootholdBattleEffects,
   openNextFootholdChoice,
@@ -229,7 +235,7 @@ import {
   resolveSuppliesChoice,
 } from './neutral-supplies';
 import { activeBankedAssetCopies } from './banked-assets';
-import { type ApplyGameActionResult, GameActionError } from './reducer';
+import { confirmPendingCapturesFor, type ApplyGameActionResult, GameActionError } from './reducer';
 import {
   clearExpiredPathfindersSuppressions,
   territoryPrintedEffectIsActive,
@@ -240,6 +246,15 @@ export type NeutralAppStateAction = AppStateAction | FinishMovementAction | Reso
 function continueNeutralChoices(game: GameState): void {
   processCounterworksOverlayQueue(game);
   if (game.pendingNeutralChoice) return;
+  const captureResume = continueProtractedSiegeCaptureResolution(game);
+  if (captureResume) {
+    confirmPendingCapturesFor(
+      game,
+      captureResume.capturingPlayerId,
+      captureResume.skipAssetWindowSpaceId,
+    );
+    if (game.pendingNeutralChoice) return;
+  }
   processCourtMartialCleanupQueue(game);
   if (game.pendingNeutralChoice) return;
   openPalisadeWallAssetChoice(game);
@@ -309,6 +324,8 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
                               ? resolveCounterworksChoice(next, action)
                               : pendingKind.startsWith('court_martial_')
                                 ? (resolveCourtMartialChoice(next, action), {})
+                              : pendingKind === 'protracted_siege_capture'
+                                ? { resumeCapture: resolveProtractedSiegeChoice(next, action) }
                           : pendingKind === 'valor_battle'
                             ? (resolveValorChoice(next, action), {})
                     : pendingKind === 'scorched_earth_asset'
@@ -332,7 +349,15 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     if ('resumeBattleReveal' in resolved && resolved.resumeBattleReveal) {
       continueIntelligenceBattle(next);
     }
+    if ('resumeCapture' in resolved && resolved.resumeCapture) {
+      confirmPendingCapturesFor(
+        next,
+        resolved.resumeCapture.capturingPlayerId,
+        resolved.resumeCapture.skipAssetWindowSpaceId,
+      );
+    }
     reconcileSabotageAssetState(next);
+    removeAbandonedProtractedSiegeOverlays(next);
     continueNeutralChoices(next);
     return { state: next };
   }
@@ -637,6 +662,12 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
       priorBattleController,
       winnerId,
     );
+    queueProtractedSiegeBattleOverlays(
+      result.state,
+      priorBattle,
+      priorBattleController,
+      winnerId,
+    );
     applyConsolidationAfterBattle(
       result.state,
       priorBattle,
@@ -676,6 +707,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (discardBefore) {
     registerRedemptionDiscardEntries(result.state, discardBefore, effectSourcePlayerId);
   }
+  removeAbandonedProtractedSiegeOverlays(result.state);
   continueNeutralChoices(result.state);
   return result;
 }
