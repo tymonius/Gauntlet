@@ -40,8 +40,15 @@ jobs:
           echo "cd1a2b5fe9eac888897fb41a2ef8b7ff0ea6700c57a3ddaf34fc31268881e928  $RUNNER_TEMP/changes.tar.gz" | sha256sum --check
           tar -xzf "$RUNNER_TEMP/changes.tar.gz"
 
-          echo "e47d973ac7bc037a924bf5a2d7a79a26f8490f08713150a5583a5dabcc0a37d0  .github/neutral-contraband-fix-00.b64" | sha256sum --check
-          cp .github/neutral-contraband-fix-00.b64 "$RUNNER_TEMP/test-fix.b64"
+          cat > "$RUNNER_TEMP/fix-checksums" <<'EOF'
+          64b9a150d1838d0852e30546ed7b5dc5c2baf05b25ae890e1e5b9430a707b461  .github/neutral-contraband-fix-00.b64
+          55315765c3e871177bb549a031f1298d3e815f55d33b199d6ddf65e81a8d5c3a  .github/neutral-contraband-fix-01.b64
+          dab3ab3c198d732e5e8b27d18c9bf3b6822c57ea329f3c7509be70b9aa9afeb6  .github/neutral-contraband-fix-02.b64
+          3fc23f20b441e12c6188fa3e8fd719be280bc52ac194fe75f2940a3f71f95984  .github/neutral-contraband-fix-03.b64
+          EOF
+          sha256sum --check "$RUNNER_TEMP/fix-checksums"
+          cat .github/neutral-contraband-fix-*.b64 > "$RUNNER_TEMP/test-fix.b64"
+          echo "e47d973ac7bc037a924bf5a2d7a79a26f8490f08713150a5583a5dabcc0a37d0  $RUNNER_TEMP/test-fix.b64" | sha256sum --check
           base64 --decode "$RUNNER_TEMP/test-fix.b64" > "$RUNNER_TEMP/test-fix.tar.gz"
           echo "9c7eb0e4735f7138215e7a86db938a872d340c5aff7161e15d2f9ed93fc3b248  $RUNNER_TEMP/test-fix.tar.gz" | sha256sum --check
           tar -xzf "$RUNNER_TEMP/test-fix.tar.gz"
