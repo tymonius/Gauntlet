@@ -6,6 +6,12 @@ on:
       - fix/homepage-hero-asset
     paths:
       - '.github/workflows/rebuild-homepage-hero.yml'
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.hero-fix/**'
+      - '.github/workflows/rebuild-homepage-hero.yml'
 
 permissions:
   contents: write
