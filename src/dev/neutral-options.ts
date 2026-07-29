@@ -122,6 +122,30 @@ export function buildPendingNeutralOptions(
       }));
 
 
+    case 'court_martial_asset':
+      return [
+        {
+          label: 'Do not use any Court Martial Asset',
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'pass' },
+        },
+        {
+          label: 'Discard Court Martial and force one additional retreat',
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'use' },
+        },
+      ];
+
+    case 'court_martial_retreat':
+      return [
+        {
+          label: 'Allow the additional retreat',
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'pass' },
+        },
+        {
+          label: 'Discard Stand Ground and prevent this additional retreat',
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'use' },
+        },
+      ];
+
     case 'counterworks_asset':
       return [
         {

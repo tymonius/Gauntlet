@@ -190,6 +190,35 @@ export interface PendingContrabandBattleChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface CourtMartialCleanupRequest {
+  id: string;
+  sourcePlayerId: PlayerID;
+  targetPlayerId: PlayerID;
+  battleId: string;
+  source: 'battle' | 'asset';
+  assetConsumed?: boolean;
+}
+
+export interface PendingCourtMartialAssetChoice {
+  kind: 'court_martial_asset';
+  playerId: PlayerID;
+  battleId: string;
+  requestId: string;
+  targetPlayerId: PlayerID;
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingCourtMartialRetreatChoice {
+  kind: 'court_martial_retreat';
+  playerId: PlayerID;
+  battleId: string;
+  requestId: string;
+  sourcePlayerId: PlayerID;
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface PendingTacticalPlanningActionChoice {
   kind: 'tactical_planning_action';
   playerId: PlayerID;
@@ -521,6 +550,8 @@ export type PendingNeutralChoice =
   | PendingContrabandBattleChoice
   | PendingCounterworksAssetChoice
   | PendingCounterworksBattleChoice
+  | PendingCourtMartialAssetChoice
+  | PendingCourtMartialRetreatChoice
   | PendingValorBattleChoice
   | PendingScorchedEarthAssetChoice
   | PendingSuppliesAssetChoice

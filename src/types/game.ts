@@ -8,7 +8,7 @@ import type { CardID, GameID, PlayerID, SpaceID } from './ids';
 import type { LegalLeaderAbilityOption } from './leader';
 import type { PendingMilitaryChoice, PendingMilitaryTimingChoice } from './military';
 import type { PendingAccursedWagerAftermath, PendingMysticsChoice } from './mystics';
-import type { CounterworksOverlayPlacementRequest, DecoysAssetQueueEntry, FootholdAssetQueueEntry, PendingNeutralChoice, RedemptionBattleReturns, RedemptionDiscardQueueEntry, RequisitionBattleQueueEntry, RousingSpeechAssetQueueEntry, NeutralSabotageAssetSuppression, ReservesBattleTopdecks, SalvageBattleQueueEntry, ScorchedEarthAssetQueueEntry, SeditionBattleQueueEntry, SuppliesAssetQueueEntry, SuppliesBattleQueueEntry } from './neutral';
+import type { CounterworksOverlayPlacementRequest, CourtMartialCleanupRequest, DecoysAssetQueueEntry, FootholdAssetQueueEntry, PendingNeutralChoice, RedemptionBattleReturns, RedemptionDiscardQueueEntry, RequisitionBattleQueueEntry, RousingSpeechAssetQueueEntry, NeutralSabotageAssetSuppression, ReservesBattleTopdecks, SalvageBattleQueueEntry, ScorchedEarthAssetQueueEntry, SeditionBattleQueueEntry, SuppliesAssetQueueEntry, SuppliesBattleQueueEntry } from './neutral';
 import type { PlayerState, PrivatePlayerView, PublicPlayerView } from './player';
 
 export type GamePhase = 'setup' | 'turn_start' | 'action_before_movement' | 'movement' | 'battle' | 'action_after_movement' | 'cleanup' | 'game_over';
@@ -47,6 +47,7 @@ export interface GameState {
   neutralEntrenchmentActionLocks?: NeutralEntrenchmentActionLock[];
   neutralReinforcementsActionOpportunity?: NeutralReinforcementsActionOpportunity;
   neutralCounterworksOverlayQueue?: CounterworksOverlayPlacementRequest[];
+  neutralCourtMartialQueue?: CourtMartialCleanupRequest[];
   neutralDecoysAssetQueue?: DecoysAssetQueueEntry[];
   neutralFootholdAssetQueue?: FootholdAssetQueueEntry[];
   neutralRedemptionDiscardQueue?: RedemptionDiscardQueueEntry[];

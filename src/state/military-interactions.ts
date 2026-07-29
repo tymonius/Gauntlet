@@ -26,7 +26,10 @@ export function enrichRecentBattleResult(result: RecentBattleResult, battle: Bat
     battleHandCards: Object.fromEntries(ids.map((id) => [id, playedBattleHandCards(battle, id)])),
     handCommittedCards: Object.fromEntries(ids.map((id) => [id, committedHandCards(battle, id)])),
     ordersUsed: Object.fromEntries(ids.map((id) => [id, Object.keys(game.players[id].leaderAbilityUsage?.battle ?? {})])),
-    bankedAssetUseProhibitedFor: ids.filter((id) => !bankedAssetUseAllowed(game, id)),
+    bankedAssetUseProhibitedFor: ids.filter((id) => (
+      battle.bankedAssetUseProhibited?.includes(id)
+      || !bankedAssetUseAllowed(game, id)
+    )),
     seditionInactiveAssets: battle.seditionInactiveAssets
       ? structuredClone(battle.seditionInactiveAssets)
       : undefined,

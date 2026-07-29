@@ -36,6 +36,12 @@ import {
   resolveCounterworksChoice,
 } from './neutral-counterworks';
 import {
+  applyCourtMartialBattleEffects,
+  processCourtMartialCleanupQueue,
+  queueCourtMartialCleanup,
+  resolveCourtMartialChoice,
+} from './neutral-court-martial';
+import {
   applyConscriptionAction,
   beginConscriptionAssetPlay,
   CONSCRIPTION,
@@ -213,6 +219,8 @@ export type NeutralAppStateAction = AppStateAction | FinishMovementAction | Reso
 function continueNeutralChoices(game: GameState): void {
   processCounterworksOverlayQueue(game);
   if (game.pendingNeutralChoice) return;
+  processCourtMartialCleanupQueue(game);
+  if (game.pendingNeutralChoice) return;
   openPalisadeWallAssetChoice(game);
   openNextDecoysChoice(game);
   openNextRequisitionChoice(game);
@@ -276,6 +284,8 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
                             ? resolveContrabandChoice(next, action)
                             : pendingKind.startsWith('counterworks_')
                               ? resolveCounterworksChoice(next, action)
+                              : pendingKind.startsWith('court_martial_')
+                                ? (resolveCourtMartialChoice(next, action), {})
                           : pendingKind === 'valor_battle'
                             ? (resolveValorChoice(next, action), {})
                     : pendingKind === 'scorched_earth_asset'
@@ -544,6 +554,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     applyStandGroundBattleEffects(result.state);
     applyAdvanceGuardBattleEffects(result.state);
     applyEntrenchmentBattleEffects(result.state);
+    applyCourtMartialBattleEffects(result.state);
     applyFealtyBattleEffects(result.state);
     applyFootholdBattleEffects(result.state);
     applyForcedMarchBattleEffects(result.state);
@@ -555,6 +566,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   if (action.type === 'resolve_battle' && priorBattle && priorBattleId && !result.state.battle) {
     const winnerId = latestResolvedBattleWinner(result.state);
+    queueCourtMartialCleanup(result.state, priorBattle, winnerId);
     applyValorAssetDraw(result.state, priorBattle, winnerId);
     applyScorchedEarthBattleRuins(
       result.state,
