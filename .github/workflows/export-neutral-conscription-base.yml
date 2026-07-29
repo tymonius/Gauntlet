@@ -1,0 +1,32 @@
+name: Export Neutral Conscription Base
+
+on:
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  export:
+    if: github.head_ref == 'agent/neutral-conscription' || github.ref_name == 'agent/neutral-conscription'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: agent/neutral-conscription
+
+      - name: Create repository archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          tar --exclude=.git -czf gauntlet-repository.tar.gz .
+          sha256sum gauntlet-repository.tar.gz > gauntlet-repository.sha256
+
+      - name: Upload repository archive
+        uses: actions/upload-artifact@v4
+        with:
+          name: neutral-conscription-base
+          path: |
+            gauntlet-repository.tar.gz
+            gauntlet-repository.sha256
