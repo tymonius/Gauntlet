@@ -38,6 +38,22 @@ jobs:
           sudo apt-get install -y pandoc libreoffice-writer poppler-utils fonts-liberation
           python -m pip install python-docx pypdf pymupdf
 
+      - name: Normalize the generated table style
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('scripts/build_v061_documents.py')
+          text = path.read_text(encoding='utf-8')
+          old = '    table = document.styles["Table"]'
+          new = '    table = ensure_style(document, "Table", WD_STYLE_TYPE.TABLE)'
+          if new not in text:
+              if old not in text:
+                  raise SystemExit('Document table-style anchor not found')
+              text = text.replace(old, new, 1)
+              path.write_text(text, encoding='utf-8')
+          PY
+
       - name: Build DOCX and PDF files
         run: python scripts/build_v061_documents.py
 
@@ -92,6 +108,7 @@ jobs:
       - name: Commit generated release documents when changed
         run: |
           git add \
+            scripts/build_v061_documents.py \
             releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.docx \
             releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf \
             releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.docx \
