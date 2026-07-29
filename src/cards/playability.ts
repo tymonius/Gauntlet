@@ -66,6 +66,7 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'neutral-insurrection': battleAndAction('neutral-insurrection', 'discard'),
   'neutral-liberation': battleAndAction('neutral-liberation', 'asset_bank'),
   'neutral-protracted-siege': battleAndAction('neutral-protracted-siege', 'asset_bank'),
+  'neutral-resistance': battleAndAction('neutral-resistance', 'asset_bank'),
   'neutral-fealty': battleAndAction('neutral-fealty', 'asset_bank'),
   'neutral-forced-march': battleAndAction('neutral-forced-march', 'discard'),
   'neutral-new-recruits': battleAndAction('neutral-new-recruits', 'discard', true),

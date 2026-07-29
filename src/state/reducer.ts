@@ -30,6 +30,7 @@ import {
   consumeProtractedSiegeOverlayForCapture,
   openProtractedSiegeCaptureChoice,
 } from './neutral-protracted-siege';
+import { prepareResistanceBattleCleanup } from './neutral-resistance';
 
 export class GameActionError extends Error {
   constructor(message: string) {
@@ -774,6 +775,7 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
 
   battle.winner = winner;
   battle.loser = loser;
+  prepareResistanceBattleCleanup(game, battle, winner);
   const movementResolutionKey = 'battle_outcome_movement_resolved';
   if (!battle.effectsResolved.includes(movementResolutionKey)) {
     applyNoMartyrsOutcome(game, battle, winner, loser);

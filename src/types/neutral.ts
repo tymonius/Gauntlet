@@ -551,6 +551,23 @@ export interface PendingProtractedSiegeCaptureChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface ResistanceBattleCleanupEntry {
+  id: string;
+  battleId: string;
+  playerId: PlayerID;
+  normalDestination: 'discard' | 'graveyard';
+}
+
+export interface PendingResistanceBattleChoice {
+  kind: 'resistance_battle';
+  playerId: PlayerID;
+  entryId: string;
+  battleId: string;
+  cardOptions: CardID[];
+  options: ['pass', 'select_card'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type PendingNeutralChoice =
   | PendingDecoysAssetChoice
   | PendingRedemptionAssetChoice
@@ -584,6 +601,7 @@ export type PendingNeutralChoice =
   | PendingValorBattleChoice
   | PendingScorchedEarthAssetChoice
   | PendingProtractedSiegeCaptureChoice
+  | PendingResistanceBattleChoice
   | PendingSuppliesAssetChoice
   | PendingSuppliesBattleDiscardChoice;
 

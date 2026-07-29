@@ -94,6 +94,12 @@ import {
   resolveProtractedSiegeChoice,
 } from './neutral-protracted-siege';
 import {
+  applyResistanceAssetBattleHandDraw,
+  applyResistanceBattleEffects,
+  processResistanceCleanupQueue,
+  resolveResistanceChoice,
+} from './neutral-resistance';
+import {
   applyFootholdBattleCleanupDraw,
   applyFootholdBattleEffects,
   openNextFootholdChoice,
@@ -257,6 +263,8 @@ function continueNeutralChoices(game: GameState): void {
   }
   processCourtMartialCleanupQueue(game);
   if (game.pendingNeutralChoice) return;
+  processResistanceCleanupQueue(game);
+  if (game.pendingNeutralChoice) return;
   openPalisadeWallAssetChoice(game);
   openNextDecoysChoice(game);
   openNextRequisitionChoice(game);
@@ -290,8 +298,14 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     if (action.type !== 'resolve_neutral_choice') {
       throw new GameActionError('Resolve the pending Neutral choice first.');
     }
-    const next = structuredClone(game);
     const pendingKind = game.pendingNeutralChoice.kind;
+    const resistanceRousingBefore = pendingKind === 'resistance_battle'
+      ? captureRousingSpeechAssetSnapshot(game)
+      : undefined;
+    const resistanceDecoysBefore = pendingKind === 'resistance_battle'
+      ? captureDecoysAssetSnapshot(game)
+      : undefined;
+    const next = structuredClone(game);
     const resolved = pendingKind === 'decoys_asset'
       ? (resolveDecoysChoice(next, action), {})
       : pendingKind.startsWith('supplies_')
@@ -326,6 +340,8 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
                                 ? (resolveCourtMartialChoice(next, action), {})
                               : pendingKind === 'protracted_siege_capture'
                                 ? { resumeCapture: resolveProtractedSiegeChoice(next, action) }
+                              : pendingKind === 'resistance_battle'
+                                ? (resolveResistanceChoice(next, action), {})
                           : pendingKind === 'valor_battle'
                             ? (resolveValorChoice(next, action), {})
                     : pendingKind === 'scorched_earth_asset'
@@ -355,6 +371,12 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
         resolved.resumeCapture.capturingPlayerId,
         resolved.resumeCapture.skipAssetWindowSpaceId,
       );
+    }
+    if (resistanceRousingBefore) {
+      registerRousingSpeechAssetTriggers(next, resistanceRousingBefore, action.playerId);
+    }
+    if (resistanceDecoysBefore) {
+      registerDecoysAssetExits(next, resistanceDecoysBefore, action.playerId);
     }
     reconcileSabotageAssetState(next);
     removeAbandonedProtractedSiegeOverlays(next);
@@ -604,6 +626,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
       initiatedBattle,
     );
     applyFortificationsAssetBattleHandLimit(result.state);
+    applyResistanceAssetBattleHandDraw(result.state);
   }
   if (action.type === 'end_turn') {
     clearReinforcementsActionOpportunity(result.state, action.playerId);
@@ -631,6 +654,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     applyCourtMartialBattleEffects(result.state);
     applyFortificationsBattleEffects(result.state);
     applyInsurrectionBattleEffects(result.state);
+    applyResistanceBattleEffects(result.state);
     applyFealtyBattleEffects(result.state);
     applyFootholdBattleEffects(result.state);
     applyForcedMarchBattleEffects(result.state);
@@ -695,6 +719,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     queueSuppliesAfterNormalDraw(result.state, action.playerId);
   }
 
+  processResistanceCleanupQueue(result.state);
   reconcileSabotageAssetState(result.state);
   registerRousingSpeechAssetTriggers(
     result.state,
