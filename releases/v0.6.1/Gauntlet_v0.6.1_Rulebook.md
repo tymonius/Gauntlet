@@ -42,6 +42,8 @@ A card may have several printed effects. The way the card enters play determines
 - **Battle:** use as either a Gambit or Tactic.
 - **Mission:** use only as instructed by Intelligence rules.
 
+Faction guides and individual cards may define additional printed headings, such as **Terms**, **Asset**, **Overlay**, **Loan**, or **Effect**. Those headings use the timing and procedure stated by their governing text. They do not make a card eligible as a Gambit or Tactic unless the card also has an eligible Gambit, Tactic, or Battle effect.
+
 Playing a card for one printed effect does not activate its other printed effects unless a rule says otherwise.
 
 Setting a Gambit or choosing a Tactic places the card in battle. It does not resolve immediately unless stated. A face-up Gambit or Tactic still waits for its normal reveal timing unless an effect says otherwise.
@@ -490,6 +492,16 @@ Movement:
 - an attacking player returns to the position from which they entered;
 - a defending player moves one position toward their own end, and the attacker occupies the contested position;
 - if both withdraw, move the attacker first, then the defender.
+
+### Withdrawal during opening effects
+
+If an effect causes one or both players to withdraw during opening effects and prevents the pending battle, use the same attacker and defender movement above. Because no battle is fought:
+
+- no player wins, loses, or retreats;
+- no battle or Aftermath triggers occur; and
+- no battle-card destinations or cleanup occur.
+
+The established attacker and defender roles are used only to determine the withdrawal movement. Resolve any remaining instructions from the effect or accepted Terms after that movement.
 
 If a battle following refused Terms ends through withdrawal, return the Stake and do not impose or ratify the Proposal unless a specific rule says otherwise.
 
