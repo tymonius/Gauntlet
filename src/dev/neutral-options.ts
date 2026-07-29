@@ -110,6 +110,17 @@ export function buildPendingNeutralOptions(
         },
       }));
 
+    case 'contraband_battle':
+      return pending.cardOptions.map((cardId) => ({
+        label: `Replace Contraband with ${cardId} from your Discard Pile`,
+        action: {
+          type: 'resolve_neutral_choice' as const,
+          playerId,
+          choice: 'select_card' as const,
+          cardId,
+        },
+      }));
+
     case 'conscription_action':
       return [
         {

@@ -176,6 +176,20 @@ export interface PendingConscriptionActionChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export type ContrabandBattleSource =
+  | { zone: 'hand_commit' }
+  | { zone: 'battle_draw_played'; index: number };
+
+export interface PendingContrabandBattleChoice {
+  kind: 'contraband_battle';
+  playerId: PlayerID;
+  battleId: string;
+  source: ContrabandBattleSource;
+  cardOptions: CardID[];
+  options: ['select_card'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface PendingTacticalPlanningActionChoice {
   kind: 'tactical_planning_action';
   playerId: PlayerID;
@@ -448,6 +462,7 @@ export type PendingNeutralChoice =
   | PendingStrategicWithdrawalBattleChoice
   | PendingTacticalPlanningActionChoice
   | PendingConscriptionActionChoice
+  | PendingContrabandBattleChoice
   | PendingValorBattleChoice
   | PendingScorchedEarthAssetChoice
   | PendingSuppliesAssetChoice

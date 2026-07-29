@@ -260,6 +260,7 @@ function neutralChoiceIsPrivate(game: GameState): boolean {
     || kind?.startsWith('supplies_')
     || kind?.startsWith('tactical_planning_')
     || kind?.startsWith('conscription_')
+    || kind?.startsWith('contraband_')
     || kind === 'rousing_speech_discard',
   );
 }
