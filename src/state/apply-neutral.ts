@@ -26,6 +26,12 @@ import {
 } from './neutral-consolidation';
 import { applyContingencyPlanAssetLimitDraw } from './neutral-contingency-plan';
 import {
+  applyContrabandAction,
+  CONTRABAND,
+  prepareContrabandAction,
+  resolveContrabandChoice,
+} from './neutral-contraband';
+import {
   applyConscriptionAction,
   beginConscriptionAssetPlay,
   CONSCRIPTION,
@@ -260,6 +266,8 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
                           ? (resolveTacticalPlanningChoice(next, action), {})
                           : pendingKind === 'conscription_action'
                             ? (resolveConscriptionChoice(next, action), {})
+                          : pendingKind === 'contraband_battle'
+                            ? resolveContrabandChoice(next, action)
                           : pendingKind === 'valor_battle'
                             ? (resolveValorChoice(next, action), {})
                     : pendingKind === 'scorched_earth_asset'
@@ -391,6 +399,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   const preparedConscription = action.type === 'play_action_card' && action.cardId === CONSCRIPTION
     ? prepareConscriptionAction(game, action)
     : undefined;
+  const preparedContraband = action.type === 'play_action_card' && action.cardId === CONTRABAND
+    ? prepareContrabandAction(game, action)
+    : undefined;
 
   const restrictedBefore = action.type === 'move_player'
     ? game.players[action.playerId]?.nonBattleMovementRemaining ?? 0
@@ -474,6 +485,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'play_action_card' && preparedConscription) {
     const drawnCards = applyConscriptionAction(result.state, action.playerId, preparedConscription);
     result.result = { ...(result.result ?? {}), drawnCards };
+  }
+  if (action.type === 'play_action_card' && preparedContraband) {
+    applyContrabandAction(result.state, action.playerId, preparedContraband);
   }
   if (action.type === 'play_action_card' && action.cardId === SEDITION) {
     queueSeditionActionChoice(result.state, action.playerId);
