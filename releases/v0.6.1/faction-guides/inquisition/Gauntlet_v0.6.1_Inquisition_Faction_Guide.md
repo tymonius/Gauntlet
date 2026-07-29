@@ -6,7 +6,7 @@
 
 ## How it works
 
-The Inquisition gains **Conviction** when opposing cards are permanently lost after battles. It also sends opposing Tactics to the Graveyard through **Condemnation** and gains additional Conviction when the opponent plays Arcane cards through **Blasphemy**.
+The Inquisition gains **Conviction** when opposing cards are permanently lost after battles. It also sends opposing Tactics to the Graveyard through **Condemnation** and gains additional Conviction when the opponent plays or reveals Arcane cards through **Blasphemy**.
 
 Spend Conviction on **Purges** that remove cards and Assets. If the opponent eventually cannot make their normal start-of-turn draw because both their Draw Pile and Discard Pile are empty, win through **Purification**.
 
@@ -62,11 +62,9 @@ Opposing Gambits already go to the Graveyard normally. Cards remaining in the op
 
 ### Blasphemy
 
-> **Blasphemy:** Whenever an opponent plays a card with the Arcane trait, gain 1 Conviction.
+> **Blasphemy:** Whenever an opponent plays a card with the Arcane trait for its Action effect, or an Arcane Gambit or Tactic they control is revealed, gain 1 Conviction.
 
-This gain is outside the normal once-per-turn Conviction gain but cannot exceed 4.
-
-When an Arcane Gambit or Tactic is played face down, gain the Conviction when the card is revealed. Arcane is a trait, not faction allegiance.
+This gain is outside the normal once-per-turn Conviction gain but cannot exceed 4. An Arcane card resolved only through a copied effect is not played or revealed as a Gambit or Tactic and does not trigger Blasphemy unless the effect says otherwise. Arcane is a trait, not faction allegiance.
 
 ### Purge
 
@@ -94,7 +92,7 @@ A failed Reserve draw or effect-generated draw does not trigger Purification.
 **Archetype:** Judgment, Purge, and permanent removal  
 **Motto:** *We judge. We purge.*
 
-> **Final Judgment:** Once per turn, during the Aftermath of a battle you won, after cards follow their normal destinations, you may immediately Purge without using an Action Opportunity. Reduce that Purge's Conviction cost by 1, to a minimum of 1.
+> **Final Judgment:** Once per turn, during the Aftermath of a battle you won, after cards follow their destinations, you may immediately Purge without using an Action Opportunity. Reduce that Purge's Conviction cost by 1, to a minimum of 1.
 
 The normal Conviction gain from that battle may resolve before Final Judgment.
 
@@ -188,7 +186,7 @@ Withdrawal does not activate No Martyrs.
 
 > **Action:** Choose one card in the opponent's Discard Pile. Put every card there with that title in their Graveyard.
 >
-> **Battle:** During the Aftermath of the battle, choose one opposing Gambit, Tactic, or other card played during this battle. Put every card in the opponent's Discard Pile with that title in their Graveyard.
+> **Battle:** During the Aftermath of the battle, choose one opposing Gambit, Tactic, or other card the opponent controlled in this battle. Put every card in the opponent's Discard Pile with that title in their Graveyard.
 
 ## Act of Faith
 
@@ -245,7 +243,7 @@ Each Conviction provides only one chosen benefit.
 - Conviction maximum 4.
 - First qualifying opposing Graveyard entry each turn gives 1 normal Conviction.
 - Condemnation sends opposing Tactics to the Graveyard.
-- Blasphemy triggers when an opposing Arcane card is played; face-down battle cards trigger when revealed.
+- Blasphemy triggers from opposing Arcane Action cards and revealed Arcane Gambits or Tactics.
 - Final Judgment occurs after battle-card destinations.
 - Withdrawal has no loser and does not trigger victory-, loss-, or retreat-based abilities.
 - Purification checks only the opponent's normal start-of-turn draw.
