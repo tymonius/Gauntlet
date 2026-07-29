@@ -6,6 +6,7 @@ on:
       - rules/v0.6.1-playtest-revision
     paths:
       - .github/workflows/sync-v061-deckbuilder.yml
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -45,10 +46,6 @@ jobs:
           text = text.replace(
               'start: "## 6. Canonical Financier card pool",\n    end: "## 7. Card-pool summary",\n    headingLevel: 3',
               'start: "# 6. Canonical Financier card pool",\n    end: "# 7. Quick reference",\n    headingLevel: 2'
-          )
-          text = text.replace(
-              'const STORAGE_KEY = "gauntlet-v0.6.1-decks";',
-              'const STORAGE_KEY = "gauntlet-v0.6.1-decks";'
           )
           app.write_text(text, encoding='utf-8')
 
