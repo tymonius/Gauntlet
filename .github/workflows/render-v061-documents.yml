@@ -8,6 +8,7 @@ on:
       - "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md"
       - "releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.md"
       - "scripts/build_v061_documents.py"
+      - "scripts/finalize_v061_docx.py"
       - ".github/workflows/render-v061-documents.yml"
   workflow_dispatch:
 
@@ -38,20 +39,44 @@ jobs:
           sudo apt-get install -y pandoc libreoffice-writer poppler-utils fonts-liberation
           python -m pip install python-docx pypdf pymupdf
 
-      - name: Normalize the generated table style
+      - name: Normalize document generation
         run: |
           python - <<'PY'
           from pathlib import Path
 
           path = Path('scripts/build_v061_documents.py')
           text = path.read_text(encoding='utf-8')
-          old = '    table = document.styles["Table"]'
-          new = '    table = ensure_style(document, "Table", WD_STYLE_TYPE.TABLE)'
-          if new not in text:
-              if old not in text:
+
+          old_table = '    table = document.styles["Table"]'
+          new_table = '    table = ensure_style(document, "Table", WD_STYLE_TYPE.TABLE)'
+          if new_table not in text:
+              if old_table not in text:
                   raise SystemExit('Document table-style anchor not found')
-              text = text.replace(old, new, 1)
-              path.write_text(text, encoding='utf-8')
+              text = text.replace(old_table, new_table, 1)
+
+          if 'import sys\n' not in text:
+              import_anchor = 'import subprocess\n'
+              if import_anchor not in text:
+                  raise SystemExit('Document import anchor not found')
+              text = text.replace(import_anchor, import_anchor + 'import sys\n', 1)
+
+          finalize_call = '''    if include_toc:
+              run(
+                  [
+                      sys.executable,
+                      str(ROOT / "scripts" / "finalize_v061_docx.py"),
+                      str(output_docx),
+                  ],
+                  cwd=ROOT,
+              )
+          '''.replace('          ', '')
+          build_anchor = '    run(command, cwd=ROOT)\n\n'
+          if finalize_call not in text:
+              if build_anchor not in text:
+                  raise SystemExit('Document build anchor not found')
+              text = text.replace(build_anchor, build_anchor + finalize_call + '\n', 1)
+
+          path.write_text(text, encoding='utf-8')
           PY
 
       - name: Build DOCX and PDF files
@@ -92,6 +117,12 @@ jobs:
                   raise SystemExit(f'Obsolete text found in {pdf_path}')
               if 'Gambit' not in pdf_text or 'Tactic' not in pdf_text or 'Aftermath' not in pdf_text:
                   raise SystemExit(f'Core v0.6.1 terms missing from {pdf_path}')
+              if stem.endswith('Rulebook'):
+                  if 'Table of Contents' not in pdf_text or '15. Full Faction Rules' not in pdf_text:
+                      raise SystemExit('Rulebook PDF does not contain the generated static contents page')
+                  first_page_text = reader.pages[0].extract_text() or ''
+                  if first_page_text.count('Official Rulebook') > 1:
+                      raise SystemExit('Rulebook PDF still repeats its Markdown title block')
               print(f'Validated {stem}: {len(reader.pages)} PDF pages, {len(pdf_text)} extracted characters.')
           PY
 
@@ -109,6 +140,7 @@ jobs:
         run: |
           git add \
             scripts/build_v061_documents.py \
+            scripts/finalize_v061_docx.py \
             releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.docx \
             releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf \
             releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.docx \
