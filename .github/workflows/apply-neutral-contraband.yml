@@ -40,11 +40,18 @@ jobs:
           echo "cd1a2b5fe9eac888897fb41a2ef8b7ff0ea6700c57a3ddaf34fc31268881e928  $RUNNER_TEMP/changes.tar.gz" | sha256sum --check
           tar -xzf "$RUNNER_TEMP/changes.tar.gz"
 
+          echo "e47d973ac7bc037a924bf5a2d7a79a26f8490f08713150a5583a5dabcc0a37d0  .github/neutral-contraband-fix-00.b64" | sha256sum --check
+          cp .github/neutral-contraband-fix-00.b64 "$RUNNER_TEMP/test-fix.b64"
+          base64 --decode "$RUNNER_TEMP/test-fix.b64" > "$RUNNER_TEMP/test-fix.tar.gz"
+          echo "9c7eb0e4735f7138215e7a86db938a872d340c5aff7161e15d2f9ed93fc3b248  $RUNNER_TEMP/test-fix.tar.gz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/test-fix.tar.gz"
+
       - name: Remove temporary staging files
         shell: bash
         run: |
           set -euo pipefail
           rm -f .github/neutral-contraband-archive-*.b64
+          rm -f .github/neutral-contraband-fix-*.b64
           rm -f .github/neutral-contraband-placeholder
           rm -f .github/workflows/apply-neutral-contraband.yml
 
