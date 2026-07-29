@@ -1,20 +1,14 @@
 #!/usr/bin/env python3
 """Generate and validate Gauntlet v0.6.1 structured release data.
 
-The governing Markdown sources remain authoritative. This script parses their exact
-card and Territory entries, carries forward stable non-text metadata from v0.6.0,
-and generates:
+Governing Markdown remains authoritative. This standard-library script parses the
+v0.6.1 Neutral, faction, and Territory sources; carries forward stable metadata
+from v0.6.0; validates counts, values, Unique cards, and obsolete terminology;
+and writes the canonical JSON and complete-card inventory.
 
-- releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json
-- releases/v0.6.1/Gauntlet_v0.6.1_Complete_Card_Reference.md
-
-Run from anywhere inside the repository:
-
+Usage:
     python scripts/generate_v061_release.py
     python scripts/generate_v061_release.py --check
-
-The --check mode generates in memory and fails when the tracked outputs differ.
-Only the Python standard library is required.
 """
 
 from __future__ import annotations
@@ -33,7 +27,14 @@ VERSION = "v0.6.1"
 RELEASE_NAME = "First Playtest Revision"
 STATUS = "Draft pre-release playtest edition"
 
-EXPECTED_CARD_COUNTS = {
+BASELINE = "releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json"
+CANONICAL_OUTPUT = "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json"
+REFERENCE_OUTPUT = "releases/v0.6.1/Gauntlet_v0.6.1_Complete_Card_Reference.md"
+NEUTRAL_SOURCE = "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
+TERRITORY_SOURCE = "docs/Gauntlet_v0.6.1_Territory_Pool.md"
+RULEBOOK_SOURCE = "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md"
+
+EXPECTED_COUNTS = {
     "Neutral": 50,
     "Military": 12,
     "Diplomats": 12,
@@ -42,8 +43,7 @@ EXPECTED_CARD_COUNTS = {
     "Mystics": 12,
     "Inquisition": 12,
 }
-
-EXPECTED_TOTAL_VALUES = {
+EXPECTED_VALUES = {
     "Neutral": 119,
     "Military": 35,
     "Diplomats": 35,
@@ -52,7 +52,6 @@ EXPECTED_TOTAL_VALUES = {
     "Mystics": 36,
     "Inquisition": 37,
 }
-
 EXPECTED_UNIQUE = {
     "Neutral": ["Manifest Destiny"],
     "Military": ["Shock and Awe"],
@@ -63,14 +62,13 @@ EXPECTED_UNIQUE = {
     "Inquisition": [],
 }
 
-FACTION_CONFIG: dict[str, dict[str, Any]] = {
+FACTIONS: dict[str, dict[str, Any]] = {
     "Military": {
         "id": "military",
         "color": "crimson red",
         "resource": "Command (maximum 2)",
         "leaders": ["General", "Commandant"],
         "victory": "Run the Gauntlet.",
-        "source": "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
         "path": "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
     },
     "Diplomats": {
@@ -79,7 +77,6 @@ FACTION_CONFIG: dict[str, dict[str, Any]] = {
         "resource": "Influence (0–10)",
         "leaders": ["Ambassador", "Senator"],
         "victory": "Run the Gauntlet or complete the Peace Treaty.",
-        "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
         "path": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
     },
     "Financiers": {
@@ -88,7 +85,6 @@ FACTION_CONFIG: dict[str, dict[str, Any]] = {
         "resource": "Capital (dynamic limit)",
         "leaders": ["Banker", "Executive"],
         "victory": "Run the Gauntlet or achieve Controlling Interest.",
-        "source": "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
         "path": "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
     },
     "Intelligence": {
@@ -97,7 +93,6 @@ FACTION_CONFIG: dict[str, dict[str, Any]] = {
         "resource": "Intel and Operation Progress",
         "leaders": ["Ranger", "Spymaster"],
         "victory": "Run the Gauntlet or complete a Special Operation.",
-        "source": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
         "path": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
     },
     "Mystics": {
@@ -106,7 +101,6 @@ FACTION_CONFIG: dict[str, dict[str, Any]] = {
         "resource": None,
         "leaders": ["Alchemist", "Spirit Walker"],
         "victory": "Run the Gauntlet or complete the Ritual of Ascendance.",
-        "source": "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
         "path": "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
     },
     "Inquisition": {
@@ -115,18 +109,11 @@ FACTION_CONFIG: dict[str, dict[str, Any]] = {
         "resource": "Conviction (maximum 4)",
         "leaders": ["Grand Inquisitor", "Witch Hunter"],
         "victory": "Run the Gauntlet or achieve Purification.",
-        "source": "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
         "path": "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
     },
 }
 
-NEUTRAL_SOURCE = "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
-TERRITORY_SOURCE = "docs/Gauntlet_v0.6.1_Territory_Pool.md"
-BASELINE_DATA = "releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json"
-CANONICAL_OUTPUT = "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json"
-REFERENCE_OUTPUT = "releases/v0.6.1/Gauntlet_v0.6.1_Complete_Card_Reference.md"
-
-EFFECT_LABELS = {
+PRINTED_LABELS = {
     "Action",
     "Gambit",
     "Tactic",
@@ -146,54 +133,50 @@ EFFECT_LABELS = {
     "Completion",
 }
 
-STALE_TERMS: tuple[tuple[str, re.Pattern[str]], ...] = (
-    ("Battle Hand", re.compile(r"\bBattle Hand(?:s)?\b", re.IGNORECASE)),
-    ("hand commitment", re.compile(r"\bhand commitment(?:s)?\b", re.IGNORECASE)),
-    ("battle cleanup", re.compile(r"\bbattle cleanup\b", re.IGNORECASE)),
-    ("Heartland", re.compile(r"\bHeartland(?:s)?\b", re.IGNORECASE)),
-    ("breakthrough victory", re.compile(r"\bbreakthrough victory\b", re.IGNORECASE)),
-)
+OBSOLETE = {
+    "Battle Hand": re.compile(r"\bBattle Hand(?:s)?\b", re.IGNORECASE),
+    "hand commitment": re.compile(r"\bhand commitment(?:s)?\b", re.IGNORECASE),
+    "battle cleanup": re.compile(r"\bbattle cleanup\b", re.IGNORECASE),
+    "Heartland": re.compile(r"\bHeartland(?:s)?\b", re.IGNORECASE),
+    "breakthrough victory": re.compile(r"\bbreakthrough victory\b", re.IGNORECASE),
+}
 
 
 class GenerationError(RuntimeError):
-    """Raised when a governing source cannot be parsed or validated."""
+    pass
 
 
 @dataclass
-class ParsedEntry:
+class Entry:
     name: str
     source: str
     cost: int | None = None
     complexity: str | None = None
     trait: str | None = None
     card_form: str | None = None
-    unique: bool = False
     unique_rule: str | None = None
     effects: list[dict[str, str]] = field(default_factory=list)
     notes: list[str] = field(default_factory=list)
     arena: bool = False
 
+    @property
+    def unique(self) -> bool:
+        return self.unique_rule is not None
 
-def repo_root() -> Path:
+
+def root_dir() -> Path:
     return Path(__file__).resolve().parents[1]
 
 
-def read_text(root: Path, relative: str) -> str:
+def read(root: Path, relative: str) -> str:
     path = root / relative
     if not path.is_file():
         raise GenerationError(f"Missing source: {relative}")
     return path.read_text(encoding="utf-8")
 
 
-def slugify(value: str) -> str:
-    value = value.lower().replace("’", "").replace("'", "")
-    value = re.sub(r"[^a-z0-9\s-]", "", value)
-    value = re.sub(r"[\s-]+", "-", value).strip("-")
-    return value
-
-
-def strip_markdown(text: str) -> str:
-    text = text.strip()
+def plain(text: str) -> str:
+    text = text.strip().rstrip("  ")
     text = re.sub(r"\*\*(.*?)\*\*", r"\1", text)
     text = re.sub(r"\*(.*?)\*", r"\1", text)
     text = re.sub(r"`([^`]*)`", r"\1", text)
@@ -201,143 +184,160 @@ def strip_markdown(text: str) -> str:
     return text.strip()
 
 
-def split_h2_sections(text: str) -> list[tuple[str, str]]:
+def slug(text: str) -> str:
+    text = text.lower().replace("’", "").replace("'", "")
+    text = re.sub(r"[^a-z0-9\s-]", "", text)
+    return re.sub(r"[\s-]+", "-", text).strip("-")
+
+
+def h2_sections(text: str) -> list[tuple[str, str]]:
     matches = list(re.finditer(r"^##\s+(.+?)\s*$", text, re.MULTILINE))
-    sections: list[tuple[str, str]] = []
+    result: list[tuple[str, str]] = []
     for index, match in enumerate(matches):
-        start = match.end()
         end = matches[index + 1].start() if index + 1 < len(matches) else len(text)
-        sections.append((match.group(1).strip(), text[start:end]))
-    return sections
+        result.append((plain(match.group(1)), text[match.end() : end]))
+    return result
 
 
-def metadata_value(section: str, label: str) -> str | None:
-    pattern = re.compile(rf"^\*\*{re.escape(label)}:\*\*\s*(.+?)\s*$", re.MULTILINE)
-    match = pattern.search(section)
-    if not match:
-        return None
-    return strip_markdown(match.group(1).rstrip("  "))
+def metadata(section: str, label: str) -> str | None:
+    match = re.search(
+        rf"^\*\*{re.escape(label)}:\*\*\s*(.+?)\s*$", section, re.MULTILINE
+    )
+    return plain(match.group(1)) if match else None
 
 
-def parse_blockquote_effects(section: str) -> tuple[list[dict[str, str]], list[str]]:
+def quote_effects(section: str) -> tuple[list[dict[str, str]], list[str]]:
+    """Parse labeled and unlabeled player-facing blockquote text.
+
+    Cards such as Sanctions and all Territories intentionally use unlabeled text.
+    Those passages are represented as one effect labeled ``Text``.
+    """
+
     effects: list[dict[str, str]] = []
-    notes: list[str] = []
-    current_label: str | None = None
-    current_lines: list[str] = []
+    unlabeled: list[str] = []
+    label: str | None = None
+    lines: list[str] = []
 
-    def flush() -> None:
-        nonlocal current_label, current_lines
-        if current_label is not None:
-            text = "\n".join(current_lines).strip()
-            effects.append({"label": current_label, "text": text})
-        current_label = None
-        current_lines = []
+    def flush_labeled() -> None:
+        nonlocal label, lines
+        if label is not None:
+            effects.append({"label": label, "text": "\n".join(lines).strip()})
+        label = None
+        lines = []
 
-    for raw_line in section.splitlines():
-        if not raw_line.startswith(">"):
+    for raw in section.splitlines():
+        if not raw.startswith(">"):
             continue
-        line = raw_line[1:]
+        line = raw[1:]
         if line.startswith(" "):
             line = line[1:]
-        label_match = re.match(r"^\*\*([^*]+):\*\*\s*(.*)$", line)
-        if label_match and strip_markdown(label_match.group(1)) in EFFECT_LABELS:
-            flush()
-            current_label = strip_markdown(label_match.group(1))
-            remainder = strip_markdown(label_match.group(2))
+        match = re.match(r"^\*\*([^*]+):\*\*\s*(.*)$", line)
+        candidate = plain(match.group(1)) if match else None
+        if match and candidate in PRINTED_LABELS:
+            flush_labeled()
+            label = candidate
+            remainder = plain(match.group(2))
             if remainder:
-                current_lines.append(remainder)
-            continue
-        if current_label is not None:
-            current_lines.append(strip_markdown(line))
+                lines.append(remainder)
+        elif label is not None:
+            lines.append(plain(line))
         elif line.strip():
-            notes.append(strip_markdown(line))
+            unlabeled.append(plain(line))
 
-    flush()
-    return effects, notes
+    flush_labeled()
+    if unlabeled:
+        effects.insert(0, {"label": "Text", "text": "\n".join(unlabeled).strip()})
+    return effects, []
 
 
-def parse_card_source(text: str, allegiance: str, source: str) -> list[ParsedEntry]:
-    entries: list[ParsedEntry] = []
-    for raw_name, section in split_h2_sections(text):
-        cost_text = metadata_value(section, "Cost")
+def trim_after_card_pool(text: str) -> str:
+    start = re.search(r"^#\s+\d+\.\s+Canonical .* card pool\s*$", text, re.MULTILINE)
+    if not start:
+        return text
+    body = text[start.end() :]
+    end = re.search(r"^#\s+(?:\d+\.\s+)?(?:Quick reference|Appendix)\b.*$", body, re.MULTILINE)
+    return body[: end.start()] if end else body
+
+
+def prose_notes(section: str) -> list[str]:
+    cleaned = re.sub(
+        r"^\*\*(?:Cost|Complexity|Trait|Card form|Unique):\*\*.*$",
+        "",
+        section,
+        flags=re.MULTILINE,
+    )
+    cleaned = re.sub(r"^>.*$", "", cleaned, flags=re.MULTILINE)
+    cleaned = re.sub(r"^#.*$", "", cleaned, flags=re.MULTILINE)
+    notes = []
+    for line in cleaned.splitlines():
+        value = plain(line)
+        if value and value != "---" and not value.startswith("|"):
+            notes.append(value)
+    return notes
+
+
+def parse_cards(text: str, allegiance: str, source: str) -> list[Entry]:
+    text = trim_after_card_pool(text) if allegiance != "Neutral" else text
+    entries: list[Entry] = []
+    for name, section in h2_sections(text):
+        cost_text = metadata(section, "Cost")
         if cost_text is None:
             continue
-        try:
-            cost = int(re.match(r"\d+", cost_text).group(0))  # type: ignore[union-attr]
-        except (AttributeError, ValueError) as exc:
-            raise GenerationError(f"Invalid cost for {allegiance} card {raw_name!r}: {cost_text!r}") from exc
-
-        unique_rule = metadata_value(section, "Unique")
-        effects, quote_notes = parse_blockquote_effects(section)
-        if not effects:
-            raise GenerationError(f"No printed effects found for {allegiance} card {raw_name!r}")
-
-        metadata_lines = re.compile(
-            r"^\*\*(Cost|Complexity|Trait|Card form|Unique):\*\*.*$", re.MULTILINE
-        )
-        remainder = metadata_lines.sub("", section)
-        remainder = re.sub(r"^>.*$", "", remainder, flags=re.MULTILINE)
-        remainder = re.sub(r"^#.*$", "", remainder, flags=re.MULTILINE)
-        prose_notes = [
-            strip_markdown(line)
-            for line in remainder.splitlines()
-            if strip_markdown(line)
-            and not line.strip().startswith("---")
-            and not line.strip().startswith("|")
-        ]
-
-        entries.append(
-            ParsedEntry(
-                name=strip_markdown(raw_name),
-                source=source,
-                cost=cost,
-                complexity=metadata_value(section, "Complexity"),
-                trait=metadata_value(section, "Trait"),
-                card_form=metadata_value(section, "Card form"),
-                unique=unique_rule is not None,
-                unique_rule=unique_rule,
-                effects=effects,
-                notes=quote_notes + prose_notes,
-            )
-        )
-    return entries
-
-
-def parse_territories(text: str, source: str) -> list[ParsedEntry]:
-    entries: list[ParsedEntry] = []
-    for raw_heading, section in split_h2_sections(text):
-        match = re.match(r"^(\d+)\.\s+(.+)$", raw_heading)
+        match = re.match(r"\d+", cost_text)
         if not match:
-            continue
-        number = int(match.group(1))
-        name = strip_markdown(match.group(2))
-        complexity = metadata_value(section, "Complexity")
-        effects, notes = parse_blockquote_effects(section)
-        if complexity is None or not effects:
-            raise GenerationError(f"Incomplete Territory entry: {raw_heading}")
+            raise GenerationError(f"Invalid cost for {allegiance} card {name}: {cost_text}")
+        effects, quote_notes = quote_effects(section)
+        if not effects:
+            raise GenerationError(f"No printed text found for {allegiance} card {name}")
         entries.append(
-            ParsedEntry(
+            Entry(
                 name=name,
                 source=source,
-                complexity=complexity,
+                cost=int(match.group(0)),
+                complexity=metadata(section, "Complexity"),
+                trait=metadata(section, "Trait"),
+                card_form=metadata(section, "Card form"),
+                unique_rule=metadata(section, "Unique"),
                 effects=effects,
-                notes=notes,
-                arena=number >= 22 or name.startswith("Arena:"),
+                notes=quote_notes + prose_notes(section),
             )
         )
     return entries
 
 
-def normalize_effect_key(label: str) -> str:
-    return slugify(label).replace("-", "_")
+def parse_territories(text: str) -> list[Entry]:
+    entries: list[Entry] = []
+    for heading, section in h2_sections(text):
+        match = re.match(r"^(\d+)\.\s+(.+)$", heading)
+        if not match:
+            continue
+        effects, notes = quote_effects(section)
+        complexity = metadata(section, "Complexity")
+        if not complexity or not effects:
+            raise GenerationError(f"Incomplete Territory entry: {heading}")
+        number = int(match.group(1))
+        entries.append(
+            Entry(
+                name=plain(match.group(2)),
+                source=TERRITORY_SOURCE,
+                complexity=complexity,
+                effects=effects,
+                notes=notes + prose_notes(section),
+                arena=number >= 22,
+            )
+        )
+    return entries
 
 
-def card_to_json(entry: ParsedEntry, allegiance: str, old: dict[str, Any] | None) -> dict[str, Any]:
-    data: dict[str, Any] = copy.deepcopy(old) if old else {}
-    card_id = data.get("id") or f"{slugify(allegiance)}-{slugify(entry.name)}"
+def effect_key(label: str) -> str:
+    return slug(label).replace("-", "_")
+
+
+def card_json(entry: Entry, allegiance: str, old: dict[str, Any] | None) -> dict[str, Any]:
+    data = copy.deepcopy(old) if old else {}
     data.update(
         {
-            "id": card_id,
+            "id": data.get("id") or f"{slug(allegiance)}-{slug(entry.name)}",
             "name": entry.name,
             "allegiance": allegiance,
             "cost": entry.cost,
@@ -350,12 +350,12 @@ def card_to_json(entry: ParsedEntry, allegiance: str, old: dict[str, Any] | None
             "source": entry.source,
         }
     )
-
-    old_effect_keys = {
+    for key in (
+        "text",
         "action",
-        "battle",
         "gambit",
         "tactic",
+        "battle",
         "mission",
         "terms",
         "accepted",
@@ -369,11 +369,10 @@ def card_to_json(entry: ParsedEntry, allegiance: str, old: dict[str, Any] | None
         "other_removal",
         "effect",
         "completion",
-    }
-    for key in old_effect_keys:
+    ):
         data.pop(key, None)
     for effect in entry.effects:
-        data[normalize_effect_key(effect["label"])] = effect["text"]
+        data[effect_key(effect["label"])] = effect["text"]
     if entry.notes:
         data["rules_notes"] = entry.notes
     else:
@@ -381,16 +380,17 @@ def card_to_json(entry: ParsedEntry, allegiance: str, old: dict[str, Any] | None
     return data
 
 
-def territory_to_json(entry: ParsedEntry, old: dict[str, Any] | None) -> dict[str, Any]:
-    data: dict[str, Any] = copy.deepcopy(old) if old else {}
+def territory_json(entry: Entry, old: dict[str, Any] | None) -> dict[str, Any]:
+    data = copy.deepcopy(old) if old else {}
+    full_text = "\n\n".join(effect["text"] for effect in entry.effects)
     data.update(
         {
-            "id": data.get("id") or f"territory-{slugify(entry.name)}",
+            "id": data.get("id") or f"territory-{slug(entry.name)}",
             "name": entry.name,
             "type": "Arena" if entry.arena else "Territory",
             "arena": entry.arena,
             "complexity": entry.complexity,
-            "text": "\n\n".join(effect["text"] for effect in entry.effects),
+            "text": full_text,
             "effects": entry.effects,
             "source": entry.source,
         }
@@ -402,34 +402,35 @@ def territory_to_json(entry: ParsedEntry, old: dict[str, Any] | None) -> dict[st
     return data
 
 
-def build_pool_summary(cards: list[dict[str, Any]]) -> dict[str, Any]:
-    summary: dict[str, Any] = {}
-    for allegiance in EXPECTED_CARD_COUNTS:
+def pool_summary(cards: list[dict[str, Any]]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for allegiance in EXPECTED_COUNTS:
         pool = [card for card in cards if card["allegiance"] == allegiance]
         curve = Counter(str(card["cost"]) for card in pool)
-        summary[allegiance] = {
+        result[allegiance] = {
             "count": len(pool),
-            "total_value": sum(int(card["cost"]) for card in pool),
+            "total_value": sum(card["cost"] for card in pool),
             "unique": [card["name"] for card in pool if card.get("unique")],
             "cost_curve": dict(sorted(curve.items(), key=lambda item: int(item[0]))),
         }
-    return summary
+    return result
 
 
-def leader_image(name: str) -> str:
-    return f"images/sketches/{name.lower()}.png"
-
-
-def build_factions(old_factions: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
+def factions_json(old_factions: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
     old_by_name = {item.get("name"): item for item in old_factions}
-    factions: list[dict[str, Any]] = []
-    for allegiance, config in FACTION_CONFIG.items():
+    result = []
+    for allegiance, config in FACTIONS.items():
         data = copy.deepcopy(old_by_name.get(allegiance, {}))
-        leaders = []
         old_leaders = {item.get("name"): item for item in data.get("leaders", [])}
+        leaders = []
         for name in config["leaders"]:
             leader = copy.deepcopy(old_leaders.get(name, {}))
-            leader.update({"name": name, "image": leader.get("image") or leader_image(name)})
+            leader.update(
+                {
+                    "name": name,
+                    "image": leader.get("image") or f"images/sketches/{name.lower()}.png",
+                }
+            )
             leaders.append(leader)
         data.update(
             {
@@ -439,81 +440,54 @@ def build_factions(old_factions: Iterable[dict[str, Any]]) -> list[dict[str, Any
                 "resource": config["resource"],
                 "leaders": leaders,
                 "victory": config["victory"],
-                "card_count": EXPECTED_CARD_COUNTS[allegiance],
-                "source": config["source"],
+                "card_count": EXPECTED_COUNTS[allegiance],
+                "source": config["path"],
             }
         )
-        factions.append(data)
-    return factions
+        result.append(data)
+    return result
 
 
-def validate_sources(root: Path, source_paths: Iterable[str]) -> list[str]:
-    errors: list[str] = []
-    for relative in source_paths:
-        text = read_text(root, relative)
-        for label, pattern in STALE_TERMS:
+def source_errors(root: Path, paths: Iterable[str]) -> list[str]:
+    errors = []
+    for relative in paths:
+        text = read(root, relative)
+        for label, pattern in OBSOLETE.items():
             for match in pattern.finditer(text):
                 line = text.count("\n", 0, match.start()) + 1
                 errors.append(f"{relative}:{line}: obsolete term {label!r}")
     return errors
 
 
-def validate_cards(cards: list[dict[str, Any]]) -> list[str]:
-    errors: list[str] = []
+def data_errors(cards: list[dict[str, Any]], territories: list[dict[str, Any]]) -> list[str]:
+    errors = []
     names = Counter(card["name"] for card in cards)
-    for name, count in names.items():
-        if count > 1:
-            errors.append(f"Duplicate playable-card title: {name} ({count})")
-
-    summary = build_pool_summary(cards)
-    for allegiance, expected_count in EXPECTED_CARD_COUNTS.items():
+    errors.extend(f"Duplicate playable-card title: {name}" for name, count in names.items() if count > 1)
+    summary = pool_summary(cards)
+    for allegiance in EXPECTED_COUNTS:
         actual = summary[allegiance]
-        if actual["count"] != expected_count:
-            errors.append(
-                f"{allegiance}: expected {expected_count} cards, found {actual['count']}"
-            )
-        if actual["total_value"] != EXPECTED_TOTAL_VALUES[allegiance]:
-            errors.append(
-                f"{allegiance}: expected total value {EXPECTED_TOTAL_VALUES[allegiance]}, "
-                f"found {actual['total_value']}"
-            )
+        if actual["count"] != EXPECTED_COUNTS[allegiance]:
+            errors.append(f"{allegiance}: expected {EXPECTED_COUNTS[allegiance]} cards, found {actual['count']}")
+        if actual["total_value"] != EXPECTED_VALUES[allegiance]:
+            errors.append(f"{allegiance}: expected value {EXPECTED_VALUES[allegiance]}, found {actual['total_value']}")
         if sorted(actual["unique"]) != sorted(EXPECTED_UNIQUE[allegiance]):
-            errors.append(
-                f"{allegiance}: expected Unique cards {EXPECTED_UNIQUE[allegiance]}, "
-                f"found {actual['unique']}"
-            )
-
-    for card in cards:
-        labels = [effect["label"] for effect in card["effects"]]
-        if not labels:
-            errors.append(f"{card['name']}: no effects")
-        if card["cost"] not in {1, 2, 3, 4, 5}:
-            errors.append(f"{card['name']}: invalid cost {card['cost']}")
-    return errors
-
-
-def validate_territories(territories: list[dict[str, Any]]) -> list[str]:
-    errors: list[str] = []
+            errors.append(f"{allegiance}: expected Unique {EXPECTED_UNIQUE[allegiance]}, found {actual['unique']}")
+    if len(cards) != 122:
+        errors.append(f"Expected 122 playable cards, found {len(cards)}")
     if len(territories) != 25:
         errors.append(f"Expected 25 Territories/Arenas, found {len(territories)}")
     arena_count = sum(bool(item.get("arena")) for item in territories)
     if arena_count != 4:
         errors.append(f"Expected 4 Arenas, found {arena_count}")
-    names = Counter(item["name"] for item in territories)
-    for name, count in names.items():
-        if count > 1:
-            errors.append(f"Duplicate Territory title: {name} ({count})")
+    territory_names = Counter(item["name"] for item in territories)
+    errors.extend(f"Duplicate Territory title: {name}" for name, count in territory_names.items() if count > 1)
     return errors
 
 
-def markdown_anchor(name: str) -> str:
-    return slugify(name)
-
-
 def reference_notes(card: dict[str, Any]) -> str:
-    notes: list[str] = []
+    notes = []
     if card.get("card_form"):
-        notes.append(str(card["card_form"]))
+        notes.append(card["card_form"])
     if card.get("trait"):
         notes.append(f"{card['trait']} trait")
     if card.get("unique"):
@@ -521,19 +495,19 @@ def reference_notes(card: dict[str, Any]) -> str:
     return "; ".join(notes) if notes else "—"
 
 
-def relative_reference_link(allegiance: str, card: dict[str, Any]) -> str:
+def card_link(allegiance: str, card: dict[str, Any]) -> str:
     if allegiance == "Neutral":
-        source = "../../docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
+        path = "../../docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
     else:
-        source = FACTION_CONFIG[allegiance]["source"].removeprefix("releases/v0.6.1/")
-    return f"{source}#{markdown_anchor(card['name'])}"
+        path = FACTIONS[allegiance]["path"].removeprefix("releases/v0.6.1/")
+    return f"{path}#{slug(card['name'])}"
 
 
 def build_reference(cards: list[dict[str, Any]], territories: list[dict[str, Any]]) -> str:
-    lines: list[str] = [
+    lines = [
         "# Gauntlet v0.6.1 Complete Card Reference",
         "",
-        "> **Generated convenience reference.** This is the one-file inventory of every v0.6.1 Playable Card, Territory, and Arena. The linked Neutral Card Pool, Territory Pool, and definitive faction guides remain the governing sources for exact player-facing text.",
+        "> **Generated convenience reference.** This is the one-file inventory of every v0.6.1 Playable Card, Territory, and Arena. The linked governing sources remain authoritative for exact player-facing text.",
         "",
         "## Pool summary",
         "",
@@ -541,11 +515,9 @@ def build_reference(cards: list[dict[str, Any]], territories: list[dict[str, Any
         "|---|---:|---|",
         "| Neutral | 50 | [Neutral Card Pool](../../docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md) |",
     ]
-    for allegiance in FACTION_CONFIG:
-        config = FACTION_CONFIG[allegiance]
-        label = f"{allegiance} faction guide"
-        link = config["source"].removeprefix("releases/v0.6.1/")
-        lines.append(f"| {allegiance} | 12 | [{label}]({link}) |")
+    for allegiance, config in FACTIONS.items():
+        path = config["path"].removeprefix("releases/v0.6.1/")
+        lines.append(f"| {allegiance} | 12 | [{allegiance} faction guide]({path}) |")
     lines.extend(
         [
             "| **Playable-card total** | **122** | — |",
@@ -555,67 +527,42 @@ def build_reference(cards: list[dict[str, Any]], territories: list[dict[str, Any
             "",
         ]
     )
-
-    for allegiance in EXPECTED_CARD_COUNTS:
+    for allegiance in EXPECTED_COUNTS:
         heading = "Neutral cards" if allegiance == "Neutral" else allegiance
         lines.extend([f"## {heading}", "", "| Card | Cost | Complexity | Notes |", "|---|---:|---|---|"])
         for card in [item for item in cards if item["allegiance"] == allegiance]:
-            link = relative_reference_link(allegiance, card)
-            complexity = card.get("complexity") or "—"
             lines.append(
-                f"| [{card['name']}]({link}) | {card['cost']} | {complexity} | {reference_notes(card)} |"
+                f"| [{card['name']}]({card_link(allegiance, card)}) | {card['cost']} | "
+                f"{card.get('complexity') or '—'} | {reference_notes(card)} |"
             )
         lines.append("")
-
     lines.extend(["## Territories and Arenas", "", "| Territory | Category | Complexity |", "|---|---|---|"])
     for territory in territories:
-        link = f"../../docs/Gauntlet_v0.6.1_Territory_Pool.md#{markdown_anchor(territory['name'])}"
+        link = f"../../docs/Gauntlet_v0.6.1_Territory_Pool.md#{slug(territory['name'])}"
         category = "Arena" if territory.get("arena") else "Territory"
         lines.append(f"| [{territory['name']}]({link}) | {category} | {territory['complexity']} |")
-    lines.extend(
-        [
-            "",
-            "---",
-            "",
-            "Generated from the v0.6.1 governing Markdown sources. Do not edit this file independently.",
-            "",
-        ]
-    )
+    lines.extend(["", "---", "", "Generated from the v0.6.1 governing Markdown sources. Do not edit independently.", ""])
     return "\n".join(lines)
 
 
-def build_data(root: Path) -> tuple[dict[str, Any], str, list[str]]:
-    baseline_path = root / BASELINE_DATA
-    baseline = json.loads(baseline_path.read_text(encoding="utf-8"))
-
-    neutral_entries = parse_card_source(
-        read_text(root, NEUTRAL_SOURCE), "Neutral", NEUTRAL_SOURCE
-    )
-    entries_by_allegiance: dict[str, list[ParsedEntry]] = {"Neutral": neutral_entries}
-    for allegiance, config in FACTION_CONFIG.items():
-        entries_by_allegiance[allegiance] = parse_card_source(
-            read_text(root, config["path"]), allegiance, config["source"]
-        )
-
-    old_cards_by_key = {
-        (card.get("allegiance"), card.get("name")): card for card in baseline.get("cards", [])
+def build(root: Path) -> tuple[dict[str, Any], str, list[str]]:
+    baseline = json.loads(read(root, BASELINE))
+    parsed: dict[str, list[Entry]] = {
+        "Neutral": parse_cards(read(root, NEUTRAL_SOURCE), "Neutral", NEUTRAL_SOURCE)
     }
-    cards: list[dict[str, Any]] = []
-    for allegiance in EXPECTED_CARD_COUNTS:
-        for entry in entries_by_allegiance[allegiance]:
-            cards.append(
-                card_to_json(entry, allegiance, old_cards_by_key.get((allegiance, entry.name)))
-            )
+    for allegiance, config in FACTIONS.items():
+        parsed[allegiance] = parse_cards(read(root, config["path"]), allegiance, config["path"])
 
-    territory_entries = parse_territories(
-        read_text(root, TERRITORY_SOURCE), TERRITORY_SOURCE
-    )
-    baseline_territories = baseline.get("territories", [])
-    old_territories_by_name = {item.get("name"): item for item in baseline_territories}
-    territories = [
-        territory_to_json(entry, old_territories_by_name.get(entry.name))
-        for entry in territory_entries
+    old_cards = {(item.get("allegiance"), item.get("name")): item for item in baseline.get("cards", [])}
+    cards = [
+        card_json(entry, allegiance, old_cards.get((allegiance, entry.name)))
+        for allegiance in EXPECTED_COUNTS
+        for entry in parsed[allegiance]
     ]
+
+    territory_entries = parse_territories(read(root, TERRITORY_SOURCE))
+    old_territories = {item.get("name"): item for item in baseline.get("territories", [])}
+    territories = [territory_json(entry, old_territories.get(entry.name)) for entry in territory_entries]
 
     data = copy.deepcopy(baseline)
     data.update(
@@ -643,19 +590,18 @@ def build_data(root: Path) -> tuple[dict[str, Any], str, list[str]]:
                 ],
                 "defender_advantage": "The defender wins tied battle totals when defending a Territory they control or during a Last Stand battle.",
             },
-            "factions": build_factions(baseline.get("factions", [])),
-            "card_pool_summary": build_pool_summary(cards),
+            "factions": factions_json(baseline.get("factions", [])),
+            "card_pool_summary": pool_summary(cards),
             "cards": cards,
             "territories": territories,
             "governing_sources": {
-                "rulebook": "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md",
+                "rulebook": RULEBOOK_SOURCE,
                 "neutral_cards": NEUTRAL_SOURCE,
                 "territories": TERRITORY_SOURCE,
-                "faction_guides": [config["source"] for config in FACTION_CONFIG.values()],
+                "faction_guides": [config["path"] for config in FACTIONS.values()],
             },
         }
     )
-
     battlefield = copy.deepcopy(data.get("battlefield", {}))
     battlefield.update(
         {
@@ -667,30 +613,16 @@ def build_data(root: Path) -> tuple[dict[str, Any], str, list[str]]:
     )
     data["battlefield"] = battlefield
 
-    source_paths = [
-        "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md",
-        NEUTRAL_SOURCE,
-        TERRITORY_SOURCE,
-        *(config["path"] for config in FACTION_CONFIG.values()),
-    ]
-    errors = validate_sources(root, source_paths)
-    errors.extend(validate_cards(cards))
-    errors.extend(validate_territories(territories))
-
-    reference = build_reference(cards, territories)
-    return data, reference, errors
+    source_paths = [RULEBOOK_SOURCE, NEUTRAL_SOURCE, TERRITORY_SOURCE, *(config["path"] for config in FACTIONS.values())]
+    errors = source_errors(root, source_paths) + data_errors(cards, territories)
+    return data, build_reference(cards, territories), errors
 
 
-def render_json(data: dict[str, Any]) -> str:
-    return json.dumps(data, indent=2, ensure_ascii=False) + "\n"
-
-
-def compare_output(path: Path, expected: str) -> bool:
+def compare(path: Path, expected: str) -> bool:
     if not path.is_file():
         print(f"MISSING: {path}", file=sys.stderr)
         return False
-    actual = path.read_text(encoding="utf-8")
-    if actual != expected:
+    if path.read_text(encoding="utf-8") != expected:
         print(f"OUT OF DATE: {path}", file=sys.stderr)
         return False
     return True
@@ -698,47 +630,35 @@ def compare_output(path: Path, expected: str) -> bool:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument(
-        "--check",
-        action="store_true",
-        help="Fail if tracked generated outputs differ instead of writing them.",
-    )
+    parser.add_argument("--check", action="store_true", help="Fail instead of writing when generated outputs differ.")
     args = parser.parse_args()
-
-    root = repo_root()
+    root = root_dir()
     try:
-        data, reference, errors = build_data(root)
+        data, reference, errors = build(root)
     except (GenerationError, json.JSONDecodeError, OSError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
-
     if errors:
         print("v0.6.1 source validation failed:", file=sys.stderr)
         for error in errors:
             print(f"- {error}", file=sys.stderr)
         return 1
 
-    canonical_text = render_json(data)
+    canonical = json.dumps(data, indent=2, ensure_ascii=False) + "\n"
     canonical_path = root / CANONICAL_OUTPUT
     reference_path = root / REFERENCE_OUTPUT
-
     if args.check:
-        clean = compare_output(canonical_path, canonical_text)
-        clean = compare_output(reference_path, reference) and clean
-        if not clean:
+        valid = compare(canonical_path, canonical) and compare(reference_path, reference)
+        if not valid:
             print("Run python scripts/generate_v061_release.py and commit the outputs.", file=sys.stderr)
             return 1
     else:
         canonical_path.parent.mkdir(parents=True, exist_ok=True)
-        canonical_path.write_text(canonical_text, encoding="utf-8")
+        canonical_path.write_text(canonical, encoding="utf-8")
         reference_path.write_text(reference, encoding="utf-8")
         print(f"Wrote {canonical_path.relative_to(root)}")
         print(f"Wrote {reference_path.relative_to(root)}")
-
-    print(
-        "Validated 122 playable cards, 25 Territories/Arenas, six factions, "
-        "card-pool values, Unique cards, and obsolete terminology."
-    )
+    print("Validated 122 playable cards, 25 Territories/Arenas, six factions, pool values, Unique cards, and obsolete terminology.")
     return 0
 
 
