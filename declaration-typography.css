@@ -30,7 +30,6 @@
 }
 
 .factions-section .declaration-overline {
-  font-size: .9em;
   word-spacing: .55em;
 }
 
@@ -50,7 +49,7 @@
   }
 
   .factions-section .declaration-overline {
-    font-size: .86em;
+    font-size: .9em;
     word-spacing: .7em;
   }
 }
