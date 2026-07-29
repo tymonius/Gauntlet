@@ -2,6 +2,11 @@ import { destinationForCardPlay } from '../cards';
 import type { CardID, DiplomatSanctionState, GameEvent, GameState, PlayerID, SpaceID } from '../types';
 import { drawFromDeck } from './draw';
 import { gainFactionResource } from './resources';
+import {
+  counterworksOverlayInactive,
+  processCounterworksOverlayQueue,
+  queueCounterworksOverlayPlacement,
+} from './neutral-counterworks';
 
 export const DIPLOMAT_PERSISTENT_CARDS = {
   clemency: 'diplomats-clemency',
@@ -77,11 +82,14 @@ export function playDemilitarizedZone(game: GameState, diplomatId: PlayerID, spa
   const space = game.board.spaces.find((candidate) => candidate.id === spaceId);
   if (!space || space.kind !== 'territory') throw new Error('Demilitarized Zone must be played on a Territory.');
   if (!diplomat.zones.hand.includes(DIPLOMAT_PERSISTENT_CARDS.demilitarizedZone)) throw new Error('Demilitarized Zone is not in hand.');
-  removeOne(diplomat.zones.hand, DIPLOMAT_PERSISTENT_CARDS.demilitarizedZone);
-  space.overlays ??= [];
-  space.overlays.push({ cardId: DIPLOMAT_PERSISTENT_CARDS.demilitarizedZone, owner: diplomatId, faceUp: true });
-  for (const playerId of Object.keys(game.players)) if (space.occupant === playerId) withdrawFrom(game, playerId, space.index);
-  log(game, diplomatId, 'demilitarized_zone_played', `${diplomat.name} established a Demilitarized Zone.`, { spaceId, placedTurn: game.turn });
+  queueCounterworksOverlayPlacement(game, {
+    kind: 'demilitarized_zone',
+    playerId: diplomatId,
+    cardId: DIPLOMAT_PERSISTENT_CARDS.demilitarizedZone,
+    spaceId,
+    source: { zone: 'hand' },
+  });
+  processCounterworksOverlayQueue(game);
 }
 
 function withdrawFrom(game: GameState, playerId: PlayerID, fromIndex: number): void {
@@ -114,11 +122,13 @@ export function requireDemilitarizedEntryCost(game: GameState, playerId: PlayerI
   player.zones.discard.push(discardedCardId);
 }
 
-export function resolveDemilitarizedZoneBattle(game: GameState, spaceId: SpaceID): void {
+export function resolveDemilitarizedZoneBattle(game: GameState, spaceId: SpaceID, battleId?: string): void {
   const space = game.board.spaces.find((candidate) => candidate.id === spaceId);
-  const overlay = space?.overlays?.find((candidate) => candidate.cardId === DIPLOMAT_PERSISTENT_CARDS.demilitarizedZone);
+  const index = space?.overlays?.findIndex((candidate) => candidate.cardId === DIPLOMAT_PERSISTENT_CARDS.demilitarizedZone) ?? -1;
+  const overlay = index >= 0 ? space?.overlays?.[index] : undefined;
   if (!space || !overlay) return;
-  space.overlays = space.overlays!.filter((candidate) => candidate !== overlay);
+  if (counterworksOverlayInactive(game, spaceId, overlay, index, battleId)) return;
+  space.overlays!.splice(index, 1);
   game.players[overlay.owner].zones.discard.push(overlay.cardId);
 }
 
@@ -153,16 +163,23 @@ export function bankSanctionAfterRefusal(game: GameState, diplomatId: PlayerID, 
   if (cardId === DIPLOMAT_PERSISTENT_CARDS.blockade) {
     const space = game.board.spaces.find((candidate) => candidate.id === spaceId);
     if (!space || !space.revealed || space.controller !== opponentId || space.kind !== 'territory') throw new Error('Blockade requires a revealed Territory the opponent controls.');
-    removeOne(diplomat.zones.hand, cardId);
-    space.overlays ??= [];
-    space.overlays.push({ cardId, owner: diplomatId, faceUp: true });
-    addSanction(game, { cardId, diplomatId, opponentId, territoryId: space.territoryId, spaceId });
+    queueCounterworksOverlayPlacement(game, {
+      kind: 'blockade',
+      playerId: diplomatId,
+      cardId,
+      spaceId: space.id,
+      source: { zone: 'hand' },
+      opponentId,
+    });
+    processCounterworksOverlayQueue(game);
   } else {
     removeOne(diplomat.zones.hand, cardId);
     diplomat.zones.assetBank.push(cardId);
     addSanction(game, { cardId, diplomatId, opponentId });
   }
-  log(game, diplomatId, 'sanction_applied', `${diplomat.name} applied ${cardId}.`, { opponentId, spaceId });
+  if (cardId !== DIPLOMAT_PERSISTENT_CARDS.blockade) {
+    log(game, diplomatId, 'sanction_applied', `${diplomat.name} applied ${cardId}.`, { opponentId, spaceId });
+  }
 }
 
 export function effectiveAssetBankLimit(game: GameState, playerId: PlayerID): number {

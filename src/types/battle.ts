@@ -24,6 +24,9 @@ export interface BattlePlayedCard {
   negated?: boolean;
   earlyEffectResolved?: boolean;
   postRevealEffectResolved?: boolean;
+  /** True once this card's Overlay placement attempt has completed, whether placed or prevented. */
+  overlayPlacementCompleted?: boolean;
+  overlayPlacementPrevented?: boolean;
   visibleTo?: PlayerID[];
   /** A card-specific replacement for this physical card's battle-cleanup destination. */
   cleanupDestination?: 'discard' | 'graveyard' | 'hand' | 'removed';
@@ -83,6 +86,22 @@ export interface ResolvedBattleCancellation {
   reason: string;
 }
 
+
+export interface CounterworksInactiveOverlay {
+  battleId: string;
+  spaceId: SpaceID;
+  index: number;
+  cardId: CardID;
+  owner: PlayerID;
+}
+
+export interface CounterworksOverlayPrevention {
+  battleId: string;
+  playerId: PlayerID;
+  spaceId: SpaceID;
+  consumed?: boolean;
+}
+
 export interface BattleState {
   id: string;
   stage: BattleStage;
@@ -103,6 +122,8 @@ export interface BattleState {
   /** Deferred +1 fallbacks applied after the remaining reveal effects resolve. */
   seditionBonusByPlayer?: Partial<Record<PlayerID, number>>;
   fogOfWarOverlayOwner?: PlayerID;
+  counterworksInactiveOverlays?: CounterworksInactiveOverlay[];
+  counterworksOverlayPreventions?: CounterworksOverlayPrevention[];
   noMartyrsAssetInitialCounts?: Partial<Record<PlayerID, number>>;
   noMartyrsAssetProcessedCounts?: Partial<Record<PlayerID, number>>;
   noMartyrsAssetActivatedCounts?: Partial<Record<PlayerID, number>>;
@@ -146,6 +167,8 @@ export interface PublicBattleView {
   handCommitProhibitedFor?: PlayerID[];
   seditionInactiveAssets?: Partial<Record<PlayerID, CardID[]>>;
   fogOfWarOverlayOwner?: PlayerID;
+  counterworksInactiveOverlays?: CounterworksInactiveOverlay[];
+  counterworksOverlayPreventions?: CounterworksOverlayPrevention[];
   noMartyrsAssetInitialCounts?: Partial<Record<PlayerID, number>>;
   noMartyrsAssetProcessedCounts?: Partial<Record<PlayerID, number>>;
   noMartyrsAssetActivatedCounts?: Partial<Record<PlayerID, number>>;
