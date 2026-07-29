@@ -8,48 +8,54 @@
  */
 .hero-title-accent {
   display: block;
-  margin-top: .03em;
-  padding-left: .1em;
+  margin-top: .01em;
+  padding-left: .15em;
   color: var(--crimson);
   font-family: var(--declaration);
-  font-size: 1.06em;
+  font-size: 1.42em;
   font-style: normal;
   font-weight: 400;
-  line-height: .92;
+  line-height: .84;
   letter-spacing: 0;
 }
 
 .declaration-overline {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
   font-family: var(--declaration);
-  font-size: clamp(2.15rem, 3.6vw, 3.4rem);
+  font-size: clamp(3.2rem, 5.2vw, 5rem);
   font-weight: 400;
-  line-height: .96;
+  line-height: .9;
   letter-spacing: 0;
   text-transform: none;
 }
 
 .factions-section .declaration-overline {
-  word-spacing: .55em;
+  font-size: clamp(2.9rem, 4.5vw, 4.35rem);
+  word-spacing: 1em;
 }
 
 .assistant-section .declaration-overline {
   color: #d7b783;
+  font-size: clamp(3.35rem, 5vw, 4.8rem);
 }
 
 @media (max-width: 620px) {
   .hero-title-accent {
-    margin-top: .04em;
-    padding-left: .12em;
-    font-size: 1.02em;
+    margin-top: .02em;
+    padding-left: .18em;
+    font-size: 1.45em;
   }
 
   .declaration-overline {
-    font-size: clamp(2rem, 9.4vw, 2.8rem);
+    font-size: clamp(3rem, 13.5vw, 4.1rem);
   }
 
   .factions-section .declaration-overline {
-    font-size: .9em;
-    word-spacing: .7em;
+    font-size: clamp(2.75rem, 11.5vw, 3.5rem);
+    word-spacing: 1.05em;
+  }
+
+  .assistant-section .declaration-overline {
+    font-size: clamp(3rem, 13vw, 3.9rem);
   }
 }
