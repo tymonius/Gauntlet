@@ -18,6 +18,7 @@ on:
       - "scripts/sync_v061_deckbuilder.py"
       - "scripts/sync_v061_rules_assistant.py"
       - "scripts/validate_v061_release.py"
+      - "scripts/validate_v061_playtest_sessions.py"
       - ".github/workflows/generate-v061-release.yml"
   pull_request:
     branches:
@@ -36,6 +37,7 @@ on:
       - "scripts/sync_v061_deckbuilder.py"
       - "scripts/sync_v061_rules_assistant.py"
       - "scripts/validate_v061_release.py"
+      - "scripts/validate_v061_playtest_sessions.py"
       - ".github/workflows/generate-v061-release.yml"
   workflow_dispatch:
 
@@ -108,7 +110,9 @@ jobs:
         run: npm run test:deckbuilder
 
       - name: Validate v0.6.1 source package
-        run: python scripts/validate_v061_release.py
+        run: |
+          python scripts/validate_v061_release.py
+          python scripts/validate_v061_playtest_sessions.py
 
       - name: Upload generated release data
         uses: actions/upload-artifact@v4
