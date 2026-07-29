@@ -565,6 +565,7 @@ def build(root: Path) -> tuple[dict[str, Any], str, list[str]]:
     territories = [territory_json(entry, old_territories.get(entry.name)) for entry in territory_entries]
 
     data = copy.deepcopy(baseline)
+    data.pop("source_files", None)
     data.update(
         {
             "version": VERSION,
