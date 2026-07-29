@@ -1,0 +1,36 @@
+/* Shared gameplay showcase artwork */
+.gameplay-showcase {
+  margin: 0 0 48px;
+  border: 1px solid rgba(49, 42, 32, .28);
+  background: #211810;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.gameplay-showcase img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.gameplay-showcase figcaption {
+  margin: 0;
+  padding: 14px 18px 15px;
+  color: rgba(255, 248, 237, .8);
+  background: linear-gradient(90deg, #211810, #332319);
+  font-family: var(--serif);
+  font-size: .9rem;
+  font-style: italic;
+  letter-spacing: .01em;
+}
+
+@media (max-width: 620px) {
+  .gameplay-showcase {
+    margin-bottom: 32px;
+  }
+
+  .gameplay-showcase figcaption {
+    padding: 12px 14px 13px;
+    font-size: .82rem;
+  }
+}
