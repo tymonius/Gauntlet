@@ -6,7 +6,6 @@ import { recordBankedAssetUse } from './intelligence-mission-triggers';
 export const SUBVERSION_ASSET = 'intelligence-subversion';
 
 const ASSETS = {
-  attrition: 'card-attrition',
   fortifications: 'card-fortifications',
   tariffs: 'financiers-tariffs',
   exfiltration: 'intelligence-exfiltration',
@@ -20,6 +19,8 @@ const ASSETS = {
   safeConduct: 'diplomats-safe-conduct',
   graveWard: 'mystics-grave-ward',
 } as const satisfies Record<string, CardID>;
+
+const ATTRITION_ASSETS = ['neutral-attrition', 'card-attrition'] as const satisfies readonly CardID[];
 
 export interface BankedAssetEffectCandidate {
   targetOwner: PlayerID;
@@ -98,6 +99,18 @@ function candidateIfBanked(
   if (targetCardId === SUBVERSION_ASSET) return undefined;
   if (!bankedAssetCardUseAllowed(game, targetOwner, targetCardId)) return undefined;
   return { targetOwner, targetCardId, effectLabel, negatedAction, battleId };
+}
+
+function attritionCandidate(
+  game: GameState,
+  targetOwner: PlayerID,
+  action: AppStateAction,
+): BankedAssetEffectCandidate | undefined {
+  for (const cardId of ATTRITION_ASSETS) {
+    const candidate = candidateIfBanked(game, targetOwner, cardId, 'Attrition', action);
+    if (candidate) return candidate;
+  }
+  return undefined;
 }
 
 function intelligenceCandidate(game: GameState, action: Extract<AppStateAction, { type: 'resolve_intelligence_choice' }>): BankedAssetEffectCandidate | undefined {
@@ -203,7 +216,7 @@ export function bankedAssetEffectCandidateForAction(
 
   if (action.type === 'resolve_battle') {
     const winner = battleWinner(game);
-    if (winner) return candidateIfBanked(game, winner, ASSETS.attrition, 'Attrition', action);
+    if (winner) return attritionCandidate(game, winner, action);
   }
 
   if (action.type === 'draw_card' && game.phase === 'turn_start') {

@@ -57,6 +57,52 @@ function battleDrawCardsFor(participant: BattleParticipantState): CardID[] {
   ];
 }
 
+interface BattleHandCleanupTarget {
+  cardId: CardID;
+  zone: 'battle_draw_played' | 'battle_draw';
+  index: number;
+}
+
+function initialBattleHandTargets(participant: BattleParticipantState): BattleHandCleanupTarget[] {
+  if (!participant.initialBattleHand) {
+    return [
+      ...participant.battleDrawPlayed
+        .map((played, index) => ({ played, index }))
+        .filter(({ played }) => !played.virtual && played.origin === 'battle_draw')
+        .map(({ played, index }) => ({ cardId: played.cardId, zone: 'battle_draw_played' as const, index })),
+      ...participant.battleDraw.map((cardId, index) => ({ cardId, zone: 'battle_draw' as const, index })),
+    ];
+  }
+
+  const remaining = new Map<CardID, number>();
+  for (const cardId of participant.initialBattleHand) {
+    remaining.set(cardId, (remaining.get(cardId) ?? 0) + 1);
+  }
+  const targets: BattleHandCleanupTarget[] = [];
+  for (const [index, played] of participant.battleDrawPlayed.entries()) {
+    if (played.virtual || played.fromInitialBattleHand === false) continue;
+    if (played.origin !== 'battle_draw' && played.fromInitialBattleHand !== true) continue;
+    const available = remaining.get(played.cardId) ?? 0;
+    if (played.fromInitialBattleHand !== true && available < 1) continue;
+    if (available > 0) remaining.set(played.cardId, available - 1);
+    targets.push({ cardId: played.cardId, zone: 'battle_draw_played', index });
+  }
+  for (const [index, cardId] of participant.battleDraw.entries()) {
+    const available = remaining.get(cardId) ?? 0;
+    if (available < 1) continue;
+    remaining.set(cardId, available - 1);
+    targets.push({ cardId, zone: 'battle_draw', index });
+  }
+  return targets;
+}
+
+function chosenBattleHandTargets(participant: BattleParticipantState): BattleHandCleanupTarget[] {
+  return participant.battleDrawPlayed
+    .map((played, index) => ({ played, index }))
+    .filter(({ played }) => !played.virtual && played.origin === 'battle_draw')
+    .map(({ played, index }) => ({ cardId: played.cardId, zone: 'battle_draw_played' as const, index }));
+}
+
 export const heartlandDefenseBonusHandler: EffectHandler = {
   id: 'heartland_defense_bonus',
   timing: ['before_battle_resolution'],
@@ -317,6 +363,65 @@ export const attritionAssetHandler: EffectHandler = {
   },
 };
 
+
+export const neutralAttritionBattleHandler: EffectHandler = {
+  id: 'neutral_attrition_battle',
+  timing: ['after_battle_resolution'],
+  applies(context) {
+    if (!context.battle?.winner || !context.battle.loser) return false;
+    return hasPlayedCard(context, context.battle.winner, 'neutral-attrition')
+      || treasonCopiedEffect(context, context.battle.winner, 'neutral-attrition');
+  },
+  resolve(context) {
+    if (!context.battle?.winner || !context.battle.loser) return {};
+    const loser = context.battle.attacker.playerId === context.battle.loser
+      ? context.battle.attacker
+      : context.battle.defender;
+    const targets = initialBattleHandTargets(loser);
+    return {
+      destinationOverrides: targets.map((target) => ({
+        cardId: target.cardId,
+        owner: loser.playerId,
+        destination: 'graveyard' as const,
+        reason: "Attrition Battle: every card from the losing opponent's initial Battle Hand goes to the Graveyard.",
+        target: { zone: target.zone, index: target.index },
+        force: true,
+      })),
+      logMessages: targets.length > 0
+        ? ["Attrition sent the losing opponent's initial Battle Hand to the Graveyard."]
+        : [],
+    };
+  },
+};
+
+export const neutralAttritionAssetHandler: EffectHandler = {
+  id: 'neutral_attrition_asset',
+  timing: ['after_battle_resolution'],
+  applies(context) {
+    if (!context.battle?.winner || !context.battle.loser) return false;
+    return hasBankedAsset(context.game, context.battle.winner, 'neutral-attrition');
+  },
+  resolve(context) {
+    if (!context.battle?.winner || !context.battle.loser) return {};
+    const loser = context.battle.attacker.playerId === context.battle.loser
+      ? context.battle.attacker
+      : context.battle.defender;
+    const targets = chosenBattleHandTargets(loser);
+    return {
+      destinationOverrides: targets.map((target) => ({
+        cardId: target.cardId,
+        owner: loser.playerId,
+        destination: 'graveyard' as const,
+        reason: 'Attrition Asset: chosen Battle Hand cards go to the Graveyard instead of the Discard Pile.',
+        target: { zone: target.zone, index: target.index },
+      })),
+      logMessages: targets.length > 0
+        ? ["Attrition sent the losing opponent's chosen Battle Hand cards to the Graveyard."]
+        : [],
+    };
+  },
+};
+
 export const baseBattleEffectHandlers: EffectHandler[] = [
   tradeBanBattleHandler,
   heartlandDefenseBonusHandler,
@@ -327,4 +432,6 @@ export const baseBattleEffectHandlers: EffectHandler[] = [
   counterintelligenceBattleHandler,
   attritionBattleHandler,
   attritionAssetHandler,
+  neutralAttritionBattleHandler,
+  neutralAttritionAssetHandler,
 ];

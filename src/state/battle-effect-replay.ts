@@ -18,6 +18,7 @@ const replayableBattleEffectIds = new Set<CardID>([
   'card-valor',
   'card-fortifications',
   'card-attrition',
+  'neutral-attrition',
 ]);
 
 export function participantForBattle(game: GameState, playerId: PlayerID): BattleParticipantState {

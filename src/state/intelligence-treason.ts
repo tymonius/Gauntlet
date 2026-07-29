@@ -100,6 +100,7 @@ function copiedEffectCanResolve(
   switch (target.cardId) {
     case 'card-valor':
     case 'card-attrition':
+    case 'neutral-attrition':
     case 'intelligence-exfiltration':
       return true;
     case 'card-fortifications':
