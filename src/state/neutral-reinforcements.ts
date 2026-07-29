@@ -212,6 +212,7 @@ export function resolveReinforcementsChoice(
       origin: 'battle_draw',
       faceDown: false,
       canceled: false,
+      fromInitialBattleHand: false,
     });
     publicLog(
       game,

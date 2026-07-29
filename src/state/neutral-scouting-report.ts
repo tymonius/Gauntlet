@@ -454,6 +454,7 @@ function resolveBattleReplaceChoice(
     origin: 'battle_draw',
     faceDown: true,
     canceled: false,
+    fromInitialBattleHand: true,
   });
 
   appendPublicLog(

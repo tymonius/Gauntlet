@@ -269,6 +269,7 @@ export function resolveInterceptedOrdersBattleReplacement(
       origin: 'battle_draw',
       faceDown: true,
       canceled: false,
+      fromInitialBattleHand: true,
     });
     participant.passedBattleDrawPlay = false;
     replacementCardId = action.cardId;

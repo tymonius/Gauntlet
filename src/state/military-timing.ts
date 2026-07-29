@@ -88,9 +88,22 @@ export function maybeOpenBrothersSelection(game: GameState): void {
   if (!game.pendingMilitaryTimingChoice) activateNext(game);
 }
 
-function addAfterRevealCard(game: GameState, playerId: PlayerID, cardId: CardID, origin: 'hand' | 'battle_draw'): void {
+function addAfterRevealCard(
+  game: GameState,
+  playerId: PlayerID,
+  cardId: CardID,
+  origin: 'hand' | 'battle_draw',
+  fromInitialBattleHand = false,
+): void {
   const side = participant(game, playerId);
-  const played: BattlePlayedCard = { cardId, owner: playerId, origin, faceDown: false, canceled: false };
+  const played: BattlePlayedCard = {
+    cardId,
+    owner: playerId,
+    origin,
+    faceDown: false,
+    canceled: false,
+    fromInitialBattleHand: origin === 'battle_draw' ? fromInitialBattleHand : undefined,
+  };
   side.battleDrawPlayed.push(played);
 }
 
@@ -158,7 +171,7 @@ export function resolveMilitaryTimingChoice(game: GameState, playerId: PlayerID,
       player.zones.hand.splice(player.zones.hand.indexOf(cardId), 1);
       side.battleDraw.splice(side.battleDraw.indexOf(secondaryCardId), 1);
       side.handCommit = { cardId, owner: playerId, origin: 'hand', faceDown: false, canceled: false };
-      addAfterRevealCard(game, playerId, secondaryCardId, 'battle_draw');
+      addAfterRevealCard(game, playerId, secondaryCardId, 'battle_draw', true);
     }
     side.passedBattleDrawPlay = true;
     game.battle.effectsResolved.push(`selected:${BROTHERS}:${playerId}`);

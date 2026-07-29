@@ -94,6 +94,7 @@ function createBattleParticipant(playerId: PlayerID): BattleParticipantState {
     hasDrawnBattleCards: false,
     battleDraw: [],
     battleDrawPlayed: [],
+    initialBattleHand: [],
     battleDrawCount: 3,
     battleDrawPlayLimit: 1,
     rerollsRemaining: 0,
@@ -418,8 +419,18 @@ function destinationOverrideFor(
   overrides: NonNullable<ReturnType<EffectRegistry['resolve']>['destinationOverrides']>,
   owner: PlayerID,
   cardId: string,
-): 'discard' | 'graveyard' | 'hand' | 'removed' | undefined {
-  return overrides.find((override) => override.owner === owner && override.cardId === cardId)?.destination;
+  target: { zone: 'battle_draw_played' | 'battle_draw'; index: number },
+) {
+  return overrides.find((override) => (
+    override.owner === owner
+    && override.cardId === cardId
+    && override.target?.zone === target.zone
+    && override.target.index === target.index
+  )) ?? overrides.find((override) => (
+    override.owner === owner
+    && override.cardId === cardId
+    && override.target === undefined
+  ));
 }
 
 function drawCards(game: GameState, action: Extract<GameAction, { type: 'draw_card' }>): ApplyGameActionResult {
@@ -620,6 +631,7 @@ function drawBattleCards(game: GameState, action: Extract<GameAction, { type: 'd
 
   const result = drawFromDeck(player, { count });
   participant.battleDraw = result.drawnCards;
+  participant.initialBattleHand = [...result.drawnCards];
   participant.hasDrawnBattleCards = true;
 
   appendPublicLog(game, action.playerId, 'draw_battle_cards', `${player.name} drew ${result.drawnCards.length} battle card${result.drawnCards.length === 1 ? '' : 's'}.`, {
@@ -644,7 +656,14 @@ function playBattleDrawCard(game: GameState, action: Extract<GameAction, { type:
   requireCardPlayable(action.cardId, 'battle_draw_play', 'battle_draw');
 
   removeOneCard(participant.battleDraw, action.cardId);
-  participant.battleDrawPlayed.push({ cardId: action.cardId, owner: action.playerId, origin: 'battle_draw', faceDown: true, canceled: false });
+  participant.battleDrawPlayed.push({
+    cardId: action.cardId,
+    owner: action.playerId,
+    origin: 'battle_draw',
+    faceDown: true,
+    canceled: false,
+    fromInitialBattleHand: true,
+  });
   applyBattleSetupEffects(participant);
   player.hasPlayedBattleThisTurn = true;
 
@@ -776,22 +795,30 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
       );
     }
 
-    for (const played of participant.battleDrawPlayed) {
+    for (const [index, played] of participant.battleDrawPlayed.entries()) {
+      const override = destinationOverrideFor(
+        destinationOverrides,
+        participant.playerId,
+        played.cardId,
+        { zone: 'battle_draw_played', index },
+      );
       pushCardToDestination(
         player,
         played.cardId,
-        played.cleanupDestination
-          ?? destinationOverrideFor(destinationOverrides, participant.playerId, played.cardId)
-          ?? 'discard',
+        override?.force
+          ? override.destination
+          : played.cleanupDestination ?? override?.destination ?? 'discard',
       );
     }
 
-    for (const cardId of participant.battleDraw) {
-      pushCardToDestination(
-        player,
+    for (const [index, cardId] of participant.battleDraw.entries()) {
+      const override = destinationOverrideFor(
+        destinationOverrides,
+        participant.playerId,
         cardId,
-        destinationOverrideFor(destinationOverrides, participant.playerId, cardId) ?? 'discard',
+        { zone: 'battle_draw', index },
       );
+      pushCardToDestination(player, cardId, override?.destination ?? 'discard');
     }
   }
 

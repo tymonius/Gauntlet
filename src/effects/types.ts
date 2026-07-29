@@ -47,6 +47,10 @@ export interface DestinationOverride {
   owner: PlayerID;
   destination: 'discard' | 'graveyard' | 'hand' | 'removed';
   reason: string;
+  /** Target one physical cleanup slot instead of every matching card ID. */
+  target?: { zone: 'battle_draw_played' | 'battle_draw'; index: number };
+  /** Resolve before card-specific cleanup replacements such as return-to-hand effects. */
+  force?: boolean;
 }
 
 export interface EffectResult {

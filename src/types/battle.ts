@@ -29,6 +29,8 @@ export interface BattlePlayedCard {
   cleanupDestination?: 'discard' | 'graveyard' | 'hand' | 'removed';
   /** A repeated effect with no additional physical card or cleanup destination. */
   virtual?: boolean;
+  /** True when this physical card came from the Battle Hand first formed for this battle. */
+  fromInitialBattleHand?: boolean;
 }
 
 export interface BattleParticipantState {
@@ -39,6 +41,8 @@ export interface BattleParticipantState {
   handCommit?: BattlePlayedCard;
   battleDraw: CardID[];
   battleDrawPlayed: BattlePlayedCard[];
+  /** Snapshot of the Battle Hand first formed for this battle, before later cards are added. */
+  initialBattleHand?: CardID[];
   battleDrawCount: number;
   battleDrawPlayLimit: number;
   advantage?: number;

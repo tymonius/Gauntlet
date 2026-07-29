@@ -205,6 +205,7 @@ export function resolveSpiesBattleChoice(game: GameState, action: ResolveIntelli
     origin: 'battle_draw',
     faceDown: true,
     canceled: false,
+    fromInitialBattleHand: true,
   });
   privateLog(
     game,

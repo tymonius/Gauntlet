@@ -291,7 +291,14 @@ function selectReplacement(game: GameState, pending: Extract<NonNullable<GameSta
   const index = participant.battleDraw.indexOf(cardId);
   if (index < 0) throw new IntelligenceBattleError('The replacement card is no longer in the Battle Hand.');
   participant.battleDraw.splice(index, 1);
-  participant.battleDrawPlayed.push({ cardId, owner: pending.playerId, origin: 'battle_draw', faceDown: true, canceled: false });
+  participant.battleDrawPlayed.push({
+    cardId,
+    owner: pending.playerId,
+    origin: 'battle_draw',
+    faceDown: true,
+    canceled: false,
+    fromInitialBattleHand: true,
+  });
   participant.passedBattleDrawPlay = false;
 }
 
