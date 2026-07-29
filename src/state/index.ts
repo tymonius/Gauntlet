@@ -75,6 +75,7 @@ export * from './inquisition-hellfire';
 export * from './neutral-advance-guard';
 export * from './neutral-consolidation';
 export * from './neutral-contingency-plan';
+export * from './neutral-conscription';
 export * from './neutral-counterintelligence';
 export * from './neutral-decoys';
 export * from './neutral-decoys-battle';

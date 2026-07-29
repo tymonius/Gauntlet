@@ -26,6 +26,14 @@ import {
 } from './neutral-consolidation';
 import { applyContingencyPlanAssetLimitDraw } from './neutral-contingency-plan';
 import {
+  applyConscriptionAction,
+  beginConscriptionAssetPlay,
+  CONSCRIPTION,
+  finishConscriptionAssetPlay,
+  prepareConscriptionAction,
+  resolveConscriptionChoice,
+} from './neutral-conscription';
+import {
   captureDecoysAssetSnapshot,
   openNextDecoysChoice,
   registerDecoysAssetExits,
@@ -215,6 +223,13 @@ function latestResolvedBattleWinner(game: GameState): PlayerID | undefined {
  * apply to every faction and therefore sit above the faction-specific stack.
  */
 export function applyGameAction(game: GameState, action: NeutralAppStateAction): ApplyGameActionResult {
+  if (game.pendingNeutralChoice?.kind === 'conscription_action' && action.type === 'play_action_card') {
+    const next = structuredClone(game);
+    const snapshot = beginConscriptionAssetPlay(next, action);
+    const result = applyGameAction(next, action);
+    finishConscriptionAssetPlay(result.state, action.playerId, snapshot);
+    return result;
+  }
   if (game.pendingNeutralChoice) {
     if (action.type !== 'resolve_neutral_choice') {
       throw new GameActionError('Resolve the pending Neutral choice first.');
@@ -243,6 +258,8 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
                         ? resolveStrategicWithdrawalChoice(next, action)
                         : pendingKind === 'tactical_planning_action'
                           ? (resolveTacticalPlanningChoice(next, action), {})
+                          : pendingKind === 'conscription_action'
+                            ? (resolveConscriptionChoice(next, action), {})
                           : pendingKind === 'valor_battle'
                             ? (resolveValorChoice(next, action), {})
                     : pendingKind === 'scorched_earth_asset'
@@ -371,6 +388,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   const preparedTacticalPlanning = action.type === 'play_action_card' && action.cardId === TACTICAL_PLANNING
     ? prepareTacticalPlanningAction(game, action)
     : undefined;
+  const preparedConscription = action.type === 'play_action_card' && action.cardId === CONSCRIPTION
+    ? prepareConscriptionAction(game, action)
+    : undefined;
 
   const restrictedBefore = action.type === 'move_player'
     ? game.players[action.playerId]?.nonBattleMovementRemaining ?? 0
@@ -449,6 +469,10 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   if (action.type === 'play_action_card' && preparedTacticalPlanning) {
     const drawnCards = applyTacticalPlanningAction(result.state, action.playerId, preparedTacticalPlanning);
+    result.result = { ...(result.result ?? {}), drawnCards };
+  }
+  if (action.type === 'play_action_card' && preparedConscription) {
+    const drawnCards = applyConscriptionAction(result.state, action.playerId, preparedConscription);
     result.result = { ...(result.result ?? {}), drawnCards };
   }
   if (action.type === 'play_action_card' && action.cardId === SEDITION) {
