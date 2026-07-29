@@ -50,13 +50,13 @@ The July 27 session used the recommended Spymaster and Ambassador Decks. It last
 
 ## Current priorities
 
-### 1. v0.6.1 source synchronization
+### 1. v0.6.1 finalization and publication
 
-- Fold the approved shared battle rules into the governing rulebook.
-- Fold each completed faction audit into its definitive faction guide and exact card text.
-- Update Neutral cards, Territories, and supplemental components affected by timing, Asset, Overlay, Gambit, or Tactic terminology.
-- Regenerate canonical data, printable sheets, reference guides, browser tools, and Rules Arbiter sources.
-- Visually inspect every regenerated player-facing artifact before publishing v0.6.1.
+- Run the source synchronization, canonical-data generation, automated tests, and strict release validators on the completed branch.
+- Regenerate the rulebook, reference guide, playtest sheet, player mat, printable cards, and supplemental components from the synchronized governing sources.
+- Visually inspect every regenerated player-facing artifact at intended print size and at desktop/mobile browser widths.
+- Synchronize the revision branch with current `main` website, artwork, print, and digital-implementation work before merging.
+- Keep v0.6.0 canonical until the full v0.6.1 package passes those checks and is published.
 
 ### 2. Physical and human playtesting
 
@@ -89,7 +89,17 @@ The July 27 session used the recommended Spymaster and Ambassador Decks. It last
 - Watch the Inquisition–Mystics relationship for healthy counterplay rather than a hard lock.
 - Confirm that Territory-scaled Asset capacity accelerates games without making recovery implausible.
 
-### 6. Product, onboarding, and table organization
+### 6. Unified visual identity and production design
+
+- Use the [Visual Identity and Design System](Gauntlet_Visual_Identity_and_Design_System.md) as the roadmap for one coherent language across cards, printed components, the rulebook, the website, browser tools, the digital implementation, the playmat, packaging, and promotional material.
+- Complete the Gauntlet wordmark, compact mark, typography system, core palette, faction palettes, shape language, material language, spacing scale, and accessibility standards.
+- Build and test the card-front system using both short and text-heavy examples, then adapt it to faction cards, Assets, Overlays, Territories, Leaders, and supplemental components.
+- Design the universal card back, Proposal and other required reverses, final faction emblems, functional icons, resource icons, and state markers.
+- Consolidate shared website and tool styles only after the foundations are stable enough to avoid repeated migration work.
+- Apply the system to the rulebook, reference sheets, instructional diagrams, tokens, trackers, standees, miniature bases, playmat, packaging, and marketing derivatives in the documented implementation sequence.
+- Test all print assets at final physical size and all digital applications at desktop and mobile widths, including color-blind, low-ink, contrast, keyboard, and reduced-motion validation where applicable.
+
+### 7. Product, onboarding, and table organization
 
 - Maintain tested recommended Decks for Leaders or factions.
 - Present concise faction introductions before first-game faction selection.
@@ -97,14 +107,23 @@ The July 27 session used the recommended Spymaster and Ambassador Decks. It last
 - Produce a player mat or compact reference showing Deck, Discard Pile, Graveyard, Hand, Asset Bank, Leader/Mission, faction-specific areas, Reserve, Gambit, and Tactic zones.
 - Determine the best faction pairing and component scope for a future starter product only after revised first-game testing.
 
-### 7. Playtest and Rules Arbiter infrastructure
+### 8. Playtest and Rules Arbiter infrastructure
 
-- Generate a unique single-use QR code and human-readable serial for each printed playtest sheet.
-- Let the first scan create the session and later scans join it.
-- Link all Rules Arbiter questions and answers to that session automatically.
-- Retire the QR code when the session closes.
-- Store Arbiter questions, answers, citations, version, and Explicit/Inferred/Unresolved status for review.
-- Separate instruction/setup time, game time, and total time in the session record.
+Implemented on the v0.6.1 revision branch:
+
+- a batch generator creates one live digital session, unique QR code, and human-readable serial for each formal printed sheet;
+- the public QR contains only the join URL while the facilitator receives a private host manifest;
+- participants may join the session, record game timing/status events, and ask the v0.6.1 Rules Arbiter;
+- Rules Arbiter questions, answers, citations, version, and Explicit/Inferred/Unresolved status are linked automatically to the session and sheet serial;
+- closing a session preserves its records while rejecting future joins and playtest events, retiring the printed QR code; and
+- raw join and host credentials are not stored in the database.
+
+Remaining production work:
+
+- apply the shared D1 migration;
+- configure Cloudflare and facilitator secrets;
+- deploy and health-check both Workers; and
+- test an end-to-end generated sheet, scan, join, Arbiter question, session closure, and post-closure rejection before formal use.
 
 ## Change discipline
 
