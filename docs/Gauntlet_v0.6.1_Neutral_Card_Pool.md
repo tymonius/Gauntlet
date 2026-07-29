@@ -40,9 +40,9 @@
 
 > **Action:** Bank Counterintelligence as an Asset. Opposing effects cannot reveal your Hand, Reserve, face-down Gambits or Tactics, or face-down Territories. This does not prevent reveals required by the rules.
 >
-> **Battle:** Add +1 to your battle total. Until the normal reveal for this card's stage, opposing effects cannot reveal your face-down Gambits or Tactics in this battle.
+> **Battle:** If an opposing effect would reveal Counterintelligence or another face-down Gambit or Tactic you control at Counterintelligence's reveal stage before the normal reveal, reveal Counterintelligence and prevent that entire effect. Add +1 to your battle total.
 
-When Counterintelligence prevents a revealing effect, it prevents that entire opposing effect. It does not prevent a card from being set face up by a rule such as Watchtower.
+Counterintelligence does not prevent a card from being set face up by a rule such as Watchtower.
 
 ## Fealty
 
@@ -96,7 +96,7 @@ When Counterintelligence prevents a revealing effect, it prevents that entire op
 
 > **Action:** Bank Redemption as an Asset. When an opposing effect puts one or more of your other cards in your Discard Pile, you may discard Redemption. If you do, return one of those cards to your Hand after the effect resolves.
 >
-> **Battle:** If an opposing effect negates one other Tactic you chose and that card would enter your Discard Pile, return it to your Hand during the Aftermath instead.
+> **Battle:** If an opposing effect negates one other Tactic you chose and that card would enter your Discard Pile, return it to your Hand during the Aftermath of the battle instead.
 
 ## Reserves
 
@@ -197,7 +197,7 @@ When Counterintelligence prevents a revealing effect, it prevents that entire op
 
 > **Action:** Bank Palisade Wall as an Asset. During opening effects when you are the defender, you may discard it. If you do, the opponent's banked Assets are inactive during that battle.
 >
-> **Battle:** If you are the defender, negate one opposing Gambit whose effect has not resolved. If there is no eligible Gambit, gain advantage instead.
+> **Battle:** When Palisade Wall is revealed, before other effects at that reveal stage resolve, if you are the defender, negate one opposing Gambit whose effect has not resolved. If there is no eligible Gambit, gain advantage instead.
 
 ## Reinforcements
 
@@ -282,7 +282,7 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 
 > **Action:** Return one banked Asset you control to your Hand. If you do, move one additional position this turn.
 >
-> **Battle:** During the Aftermath of the battle, if you lose, after your normal retreat you may move one additional position toward your own end. If you do, return one other card you played during this battle to your Hand instead of putting it in its normal destination.
+> **Battle:** During the Aftermath of the battle, if you lose, after your normal retreat you may move one additional position toward your own end. If you do, return one other card you controlled in this battle to your Hand instead of putting it in its normal destination.
 
 ## Tactical Planning
 
@@ -309,7 +309,7 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 **Cost:** 3  
 **Complexity:** Advanced
 
-> **Action:** Bank Attrition as an Asset. During the Aftermath after the opponent loses a battle against you, put each opposing Tactic from that battle in their Graveyard instead of their Discard Pile.
+> **Action:** Bank Attrition as an Asset. During the Aftermath of a battle the opponent lost against you, put each opposing Tactic from that battle in their Graveyard instead of their Discard Pile.
 >
 > **Battle:** During the Aftermath of the battle, if the opponent loses, put every card from their initial Reserve in their Graveyard instead of its normal destination.
 
@@ -329,7 +329,7 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 
 > **Action:** Return one card from your Discard Pile to your Hand.
 >
-> **Battle:** When Contraband is revealed, choose one eligible card in your Discard Pile whose Battle effect can still resolve at this stage. Put Contraband in your Graveyard and place the chosen card face up in Contraband's role. During the Aftermath, put the chosen card in your Graveyard unless its text gives another destination.
+> **Battle:** When Contraband is revealed, choose one eligible card in your Discard Pile whose Battle effect can still resolve at this stage. Put Contraband in your Graveyard and place the chosen card face up in Contraband's role. During the Aftermath of the battle, put the chosen card in your Graveyard unless its text gives another destination.
 
 ## Counterworks
 
@@ -345,7 +345,7 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 **Cost:** 3  
 **Complexity:** Basic
 
-> **Action:** Bank Court Martial as an Asset. During the Aftermath after an opponent loses against you and completes their normal retreat, you may discard Court Martial. If you do, they retreat one additional position, if able.
+> **Action:** Bank Court Martial as an Asset. During the Aftermath of a battle an opponent lost against you, after their normal retreat, you may discard Court Martial. If you do, they retreat one additional position, if able.
 >
 > **Battle:** The opponent gains disadvantage during this battle. If they lose, after their normal retreat they retreat one additional position, if able.
 
@@ -384,7 +384,7 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 
 > **Action:** Bank Protracted Siege as an Asset. When an opponent would capture a Territory you control during their Capture step, you may place Protracted Siege on that Territory as an Overlay. If you do, that capture does not occur. During their next Capture step, they capture it normally if they still occupy it.
 >
-> **Battle:** During the Aftermath, if you lose while defending a Territory you control, place Protracted Siege on that Territory as an Overlay instead of putting it in its normal destination. The opponent does not capture it during their next Capture step. During their following Capture step, they capture it normally if they still occupy it.
+> **Battle:** During the Aftermath of the battle, if you lose while defending a Territory you control, place Protracted Siege on that Territory as an Overlay instead of putting it in its normal destination. The opponent does not capture it during their next Capture step. During their following Capture step, they capture it normally if they still occupy it.
 >
 > After it delays one Capture step, or if the occupier leaves first, put Protracted Siege in its owner's Graveyard.
 
@@ -395,20 +395,20 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 
 > **Action:** Bank Resistance as an Asset. When counterattacking an opponent occupying a Territory you control, draw two additional cards when forming your Reserve.
 >
-> **Battle:** If you are counterattacking an opponent occupying a Territory you control, gain advantage. During the Aftermath, if you win, bank Resistance as an Asset instead of putting it in its normal destination.
+> **Battle:** If you are counterattacking an opponent occupying a Territory you control, gain advantage. During the Aftermath of the battle, if you win, bank Resistance as an Asset instead of putting it in its normal destination.
 
-If your Asset Bank is full, you may discard one Asset to make room.
+If your Asset Bank is full, you may use the normal Asset-replacement rule to make room.
 
 ## Resourcefulness
 
 **Cost:** 3  
 **Complexity:** Advanced
 
-> **Action:** Bank Resourcefulness as an Asset. You may have only one banked Resourcefulness. The first time during each of your turns that you play a cost-1 card for its Action, Gambit, Tactic, or Battle effect, draw one card.
+> **Action:** Bank Resourcefulness as an Asset. You may have only one banked Resourcefulness. The first time during each of your turns that a cost-1 card you play, set, or choose resolves its Action, Gambit, Tactic, or Battle effect, draw one card.
 >
-> **Battle:** If another active card you played in this battle has cost 1, gain advantage.
+> **Battle:** If another active card you control in this battle has cost 1, gain advantage.
 
-A face-down Gambit or Tactic triggers the Asset when it is revealed and played for its printed effect.
+A copied effect does not trigger Resourcefulness unless the cost-1 card itself is played, set, or chosen again.
 
 # Cost 4
 
@@ -442,7 +442,7 @@ Effects already resolved are not undone.
 
 > **Action:** Bank Assimilation as an Asset. During the Aftermath of a battle you initiated and won on a Territory the opponent controls, you may put Assimilation in your Graveyard. If you do, capture that Territory instead of occupying it.
 >
-> **Battle:** During the Aftermath, if you win as the attacker on a Territory the opponent controls, capture that Territory instead of occupying it. Put Assimilation in your Graveyard after the capture resolves.
+> **Battle:** During the Aftermath of the battle, if you win as the attacker on a Territory the opponent controls, capture that Territory instead of occupying it. Put Assimilation in your Graveyard after the capture resolves.
 
 ## Capital Punishment
 
@@ -451,7 +451,7 @@ Effects already resolved are not undone.
 
 > **Action:** If you won a battle this turn, choose one opposing Asset and put it in its owner's Graveyard.
 >
-> **Battle:** When Capital Punishment is revealed, before other effects at that stage resolve, negate one opposing Gambit or Tactic whose effect has not resolved. During the Aftermath, if you won, put the chosen card in its owner's Graveyard instead of its normal destination.
+> **Battle:** When Capital Punishment is revealed, before other effects at that stage resolve, negate one opposing Gambit or Tactic whose effect has not resolved. During the Aftermath of the battle, if you won, put the chosen card in its owner's Graveyard instead of its normal destination.
 
 ## Invasion
 
@@ -491,7 +491,7 @@ If both players exchange results, no exchange occurs.
 
 > **Action:** Place Siege Weaponry face up on the nearest enemy-controlled Territory ahead of you with an active printed effect. While it remains there, that printed Territory effect is inactive. The next time you attack there, put Siege Weaponry in its owner's Graveyard if you lose. If you win, or if you capture the Territory without a battle, turn Siege Weaponry face down; it becomes a Ruins Overlay.
 >
-> **Battle:** If you are attacking on an enemy-controlled Territory, place Siege Weaponry face up on it. That Territory's printed effect is inactive during this battle. During the Aftermath, if you win, turn Siege Weaponry face down; it becomes a Ruins Overlay instead of putting it in its normal destination.
+> **Battle:** If you are attacking on an enemy-controlled Territory, place Siege Weaponry face up on it. That Territory's printed effect is inactive during this battle. During the Aftermath of the battle, if you win, turn Siege Weaponry face down; it becomes a Ruins Overlay instead of putting it in its normal destination.
 
 # Cost 5
 
@@ -503,7 +503,7 @@ If both players exchange results, no exchange occurs.
 
 > **Action:** As an additional cost, put every other card in your Hand in your Graveyard. Then put banked Assets you control in your Graveyard until you have put at least three cards there this way, including at least one Asset. Add Manifest Destiny to your end of the Gauntlet. It becomes a blank Territory under your control.
 >
-> **Battle:** During the Aftermath, if you win as the attacker on a Territory the opponent controls, insert Manifest Destiny between the contested Territory and the position from which you attacked. It becomes a blank Territory under your control instead of putting it in its normal destination.
+> **Battle:** During the Aftermath of the battle, if you win as the attacker on a Territory the opponent controls, insert Manifest Destiny between the contested Territory and the position from which you attacked. It becomes a blank Territory under your control instead of putting it in its normal destination.
 
 Manifest Destiny is a normal Territory after entering the Gauntlet and has a normal Deed.
 
