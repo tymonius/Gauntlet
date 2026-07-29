@@ -75,6 +75,8 @@ export interface ResolveNeutralChoiceAction {
   cardId?: CardID;
   cardIds?: CardID[];
   targetKey?: string;
+  value?: number;
+  values?: number[];
 }
 export interface CommitBattleHandCardAction { type: 'commit_battle_hand_card'; playerId: PlayerID; cardId: CardID; }
 export interface PassBattleHandCommitAction { type: 'pass_battle_hand_commit'; playerId: PlayerID; }

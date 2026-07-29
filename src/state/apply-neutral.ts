@@ -145,6 +145,11 @@ import {
   TACTICAL_PLANNING,
 } from './neutral-tactical-planning';
 import {
+  applyValorAssetDraw,
+  openNextValorReroll,
+  resolveValorChoice,
+} from './neutral-valor';
+import {
   applySeditionBattleBonuses,
   prepareSeditionBattleReveal,
   queueSeditionActionChoice,
@@ -197,6 +202,7 @@ function continueNeutralChoices(game: GameState): void {
   openNextSuppliesChoice(game);
   openNextFootholdChoice(game);
   openNextRedemptionChoice(game);
+  openNextValorReroll(game);
 }
 
 function latestResolvedBattleWinner(game: GameState): PlayerID | undefined {
@@ -237,6 +243,8 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
                         ? resolveStrategicWithdrawalChoice(next, action)
                         : pendingKind === 'tactical_planning_action'
                           ? (resolveTacticalPlanningChoice(next, action), {})
+                          : pendingKind === 'valor_battle'
+                            ? (resolveValorChoice(next, action), {})
                     : pendingKind === 'scorched_earth_asset'
                       ? (resolveScorchedEarthChoice(next, action), {})
                       : pendingKind.startsWith('salvage_')
@@ -501,6 +509,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   if (action.type === 'resolve_battle' && priorBattle && priorBattleId && !result.state.battle) {
     const winnerId = latestResolvedBattleWinner(result.state);
+    applyValorAssetDraw(result.state, priorBattle, winnerId);
     applyScorchedEarthBattleRuins(
       result.state,
       priorBattle,

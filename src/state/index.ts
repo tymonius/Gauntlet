@@ -111,5 +111,6 @@ export * from './neutral-sedition';
 export * from './neutral-stand-ground';
 export * from './neutral-strategic-withdrawal';
 export * from './neutral-tactical-planning';
+export * from './neutral-valor';
 
 export * from './battle-cancellation';

@@ -405,6 +405,16 @@ export interface PendingStandGroundMovementChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface PendingValorBattleChoice {
+  kind: 'valor_battle';
+  playerId: PlayerID;
+  battleId: string;
+  sourceKey: string;
+  oldRoll: number;
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type PendingNeutralChoice =
   | PendingDecoysAssetChoice
   | PendingRedemptionAssetChoice
@@ -428,6 +438,7 @@ export type PendingNeutralChoice =
   | PendingStandGroundMovementChoice
   | PendingStrategicWithdrawalBattleChoice
   | PendingTacticalPlanningActionChoice
+  | PendingValorBattleChoice
   | PendingScorchedEarthAssetChoice
   | PendingSuppliesAssetChoice
   | PendingSuppliesBattleDiscardChoice;

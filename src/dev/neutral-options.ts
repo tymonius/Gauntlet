@@ -109,6 +109,23 @@ export function buildPendingNeutralOptions(
         },
       }));
 
+    case 'valor_battle':
+      return [
+        {
+          label: 'Keep the current battle die with Valor',
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'pass' },
+        },
+        ...[1, 2, 3, 4, 5, 6].map((value) => ({
+          label: `Reroll with Valor and use ${value}`,
+          action: {
+            type: 'resolve_neutral_choice' as const,
+            playerId,
+            choice: 'use' as const,
+            value,
+          },
+        })),
+      ];
+
     case 'reserves_battle':
       return [
         {
