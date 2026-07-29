@@ -25,9 +25,9 @@ body {
 
 .hero-title-accent {
   display: block;
-  width: calc(100% + .2em);
+  width: calc(100% + .12em);
   margin-top: .01em;
-  margin-left: -.2em;
+  margin-left: -.12em;
   color: var(--crimson);
   font-family: var(--declaration);
   font-size: 1.42em;
@@ -38,6 +38,8 @@ body {
 }
 
 .declaration-overline {
+  width: max-content;
+  max-width: 100%;
   margin-bottom: 20px;
   font-family: var(--declaration);
   font-size: clamp(3.2rem, 5.2vw, 5rem);
@@ -109,9 +111,9 @@ body {
 
 @media (max-width: 620px) {
   .hero-title-accent {
-    width: calc(100% + .22em);
+    width: calc(100% + .14em);
     margin-top: .02em;
-    margin-left: -.22em;
+    margin-left: -.14em;
     font-size: 1.45em;
   }
 
