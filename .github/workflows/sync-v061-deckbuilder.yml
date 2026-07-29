@@ -6,6 +6,12 @@ on:
       - rules/v0.6.1-playtest-revision
     paths:
       - .github/workflows/sync-v061-deckbuilder.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - .github/workflows/sync-v061-deckbuilder.yml
+      - deckbuilder/**
   workflow_dispatch:
 
 permissions:
@@ -18,7 +24,7 @@ jobs:
       - name: Checkout revision branch
         uses: actions/checkout@v4
         with:
-          ref: rules/v0.6.1-playtest-revision
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Update Deckbuilder version and governing sources
         run: |
@@ -106,5 +112,8 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add deckbuilder/
+          if git diff --cached --quiet; then
+            exit 0
+          fi
           git commit -m "Sync Deckbuilder sources and version to v0.6.1"
-          git push origin HEAD:rules/v0.6.1-playtest-revision
+          git push origin HEAD:${{ github.head_ref || github.ref_name }}
