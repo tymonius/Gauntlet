@@ -26,6 +26,11 @@ import { openStandGroundForNoMartyrsMovement } from './neutral-stand-ground';
 import { openStrategicWithdrawalAfterRetreat } from './neutral-strategic-withdrawal';
 import { openFortificationsAfterRetreat } from './neutral-fortifications';
 import { battleIsCounterattack, liberationActionOpportunityActive } from './neutral-liberation';
+import {
+  consumeProtractedSiegeOverlayForCapture,
+  openProtractedSiegeCaptureChoice,
+} from './neutral-protracted-siege';
+import { prepareResistanceBattleCleanup } from './neutral-resistance';
 
 export class GameActionError extends Error {
   constructor(message: string) {
@@ -245,7 +250,11 @@ function updateCaptureStatusForOccupiedSpace(space: BoardSpaceState, occupant: P
   space.capturePendingBy = occupant;
 }
 
-function confirmPendingCapturesFor(game: GameState, playerId: PlayerID): void {
+export function confirmPendingCapturesFor(
+  game: GameState,
+  playerId: PlayerID,
+  skipProtractedSiegeAssetWindowSpaceId?: SpaceID,
+): void {
   const capturingPlayer = requirePlayer(game, playerId);
 
   for (const space of game.board.spaces) {
@@ -262,6 +271,14 @@ function confirmPendingCapturesFor(game: GameState, playerId: PlayerID): void {
       delete space.capturePendingBy;
       continue;
     }
+
+    if (consumeProtractedSiegeOverlayForCapture(game, space, playerId)) continue;
+    if (openProtractedSiegeCaptureChoice(
+      game,
+      space,
+      playerId,
+      skipProtractedSiegeAssetWindowSpaceId,
+    )) return;
 
     if (previousController) removeControlledTerritory(requirePlayer(game, previousController), space.territoryId);
     addControlledTerritory(capturingPlayer, space.territoryId);
@@ -758,6 +775,7 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
 
   battle.winner = winner;
   battle.loser = loser;
+  prepareResistanceBattleCleanup(game, battle, winner);
   const movementResolutionKey = 'battle_outcome_movement_resolved';
   if (!battle.effectsResolved.includes(movementResolutionKey)) {
     applyNoMartyrsOutcome(game, battle, winner, loser);

@@ -8,6 +8,8 @@ export interface TerritoryOverlayState {
   faceUp: boolean;
   /** Explicit role for overlays whose physical card becomes persistent Ruins. */
   kind?: TerritoryOverlayKind;
+  /** Occupier whose pending capture this Overlay tracks, when applicable. */
+  captureDelayOccupier?: PlayerID;
 }
 
 export interface MilitaryCardState {

@@ -498,6 +498,8 @@ export type CounterworksOverlayPlacementKind =
   | 'spirit_hollow_battle'
   | 'scorched_earth_battle'
   | 'scorched_earth_asset'
+  | 'protracted_siege_battle'
+  | 'protracted_siege_asset'
   | 'military_encampment_action'
   | 'military_encampment_battle';
 
@@ -510,6 +512,7 @@ export interface CounterworksOverlayPlacementRequest {
   source: CounterworksOverlaySource;
   opponentId?: PlayerID;
   battleId?: string;
+  captureOccupierId?: PlayerID;
 }
 
 export interface CounterworksOverlayOption {
@@ -536,6 +539,32 @@ export interface PendingCounterworksBattleChoice {
   sourceKey: string;
   overlayOptions: CounterworksOverlayOption[];
   options: ['deactivate_overlay', 'prevent_overlay'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingProtractedSiegeCaptureChoice {
+  kind: 'protracted_siege_capture';
+  playerId: PlayerID;
+  capturingPlayerId: PlayerID;
+  spaceId: SpaceID;
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface ResistanceBattleCleanupEntry {
+  id: string;
+  battleId: string;
+  playerId: PlayerID;
+  normalDestination: 'discard' | 'graveyard';
+}
+
+export interface PendingResistanceBattleChoice {
+  kind: 'resistance_battle';
+  playerId: PlayerID;
+  entryId: string;
+  battleId: string;
+  cardOptions: CardID[];
+  options: ['pass', 'select_card'];
   resumePriorityPlayer?: PlayerID;
 }
 
@@ -571,6 +600,8 @@ export type PendingNeutralChoice =
   | PendingFortificationsBattleChoice
   | PendingValorBattleChoice
   | PendingScorchedEarthAssetChoice
+  | PendingProtractedSiegeCaptureChoice
+  | PendingResistanceBattleChoice
   | PendingSuppliesAssetChoice
   | PendingSuppliesBattleDiscardChoice;
 

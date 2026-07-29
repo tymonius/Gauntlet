@@ -6,50 +6,145 @@
  * Declaration is a flavor face, not an interface or reading face.
  * Georgia remains the structural heading font.
  */
+html,
+body {
+  overflow-x: hidden;
+}
+
+@supports (overflow: clip) {
+  html,
+  body {
+    overflow-x: clip;
+  }
+}
+
+.hero-copy {
+  position: relative;
+  z-index: 3;
+}
+
 .hero-title-accent {
   display: block;
-  margin-top: .03em;
-  padding-left: .1em;
+  width: calc(100% + .2em);
+  margin-top: .01em;
+  margin-left: -.2em;
   color: var(--crimson);
   font-family: var(--declaration);
-  font-size: 1.06em;
+  font-size: 1.42em;
   font-style: normal;
   font-weight: 400;
-  line-height: .92;
+  line-height: .84;
   letter-spacing: 0;
 }
 
 .declaration-overline {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
   font-family: var(--declaration);
-  font-size: clamp(2.15rem, 3.6vw, 3.4rem);
+  font-size: clamp(3.2rem, 5.2vw, 5rem);
   font-weight: 400;
-  line-height: .96;
+  line-height: .9;
   letter-spacing: 0;
   text-transform: none;
 }
 
+/* Keep each faction phrase normally spaced while separating the two phrases. */
 .factions-section .declaration-overline {
-  word-spacing: .55em;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  column-gap: clamp(1.5rem, 3.5vw, 3rem);
+  row-gap: 0;
+  font-size: 0;
+}
+
+.factions-section .declaration-overline::before,
+.factions-section .declaration-overline::after {
+  color: var(--crimson);
+  font-family: var(--declaration);
+  font-size: clamp(2.9rem, 4.5vw, 4.35rem);
+  font-weight: 400;
+  line-height: .9;
+  white-space: nowrap;
+}
+
+.factions-section .declaration-overline::before {
+  content: "Six institutions ·";
+}
+
+.factions-section .declaration-overline::after {
+  content: "twelve Leaders";
 }
 
 .assistant-section .declaration-overline {
   color: #d7b783;
+  font-size: clamp(3.35rem, 5vw, 4.8rem);
+  line-height: .72;
+}
+
+/* Let the transparent Leader artwork break out of its nominal frame. */
+.hero-illustration {
+  z-index: 2;
+}
+
+.hero-illustration-image {
+  width: 126%;
+  right: -12%;
+  bottom: -24px;
+}
+
+@media (max-width: 900px) {
+  .hero-illustration {
+    max-width: 680px;
+    margin-top: -10px;
+  }
+
+  .hero-illustration-image {
+    width: 120%;
+    right: auto;
+    left: 52%;
+    bottom: -18px;
+    transform: translateX(-50%);
+  }
 }
 
 @media (max-width: 620px) {
   .hero-title-accent {
-    margin-top: .04em;
-    padding-left: .12em;
-    font-size: 1.02em;
+    width: calc(100% + .22em);
+    margin-top: .02em;
+    margin-left: -.22em;
+    font-size: 1.45em;
   }
 
   .declaration-overline {
-    font-size: clamp(2rem, 9.4vw, 2.8rem);
+    font-size: clamp(3rem, 13.5vw, 4.1rem);
   }
 
   .factions-section .declaration-overline {
-    font-size: .9em;
-    word-spacing: .7em;
+    column-gap: clamp(1.25rem, 6vw, 2rem);
+  }
+
+  .factions-section .declaration-overline::before,
+  .factions-section .declaration-overline::after {
+    font-size: clamp(2.75rem, 11.5vw, 3.5rem);
+  }
+
+  .assistant-section .declaration-overline {
+    font-size: clamp(3rem, 13vw, 3.9rem);
+    line-height: .68;
+  }
+
+  .hero {
+    gap: 26px;
+  }
+
+  .hero-illustration {
+    width: 100%;
+    margin-top: -18px;
+  }
+
+  .hero-illustration-image {
+    width: 124%;
+    left: 52%;
+    bottom: -12px;
   }
 }
