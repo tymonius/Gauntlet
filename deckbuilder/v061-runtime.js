@@ -1,5 +1,5 @@
 (() => {
-  const oldStorageKey = "gauntlet-v0.6.0-decks";
+  const oldStorageKey = "gauntlet-v0.6.1-decks";
   const storageKey = "gauntlet-v0.6.1-decks";
   const originalStorage = {
     getItem: Storage.prototype.getItem,

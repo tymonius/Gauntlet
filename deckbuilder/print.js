@@ -61,7 +61,7 @@
     };
 
     return {
-      name: state.deckName.trim() || "Untitled v0.6 deck",
+      name: state.deckName.trim() || "Untitled v0.6.1 Deck",
       faction,
       leader,
       entries,
