@@ -19,6 +19,7 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      PLAYTEST_SESSION_ADMIN_TOKEN: ${{ secrets.PLAYTEST_SESSION_ADMIN_TOKEN }}
     steps:
       - name: Check out v0.6.1 revision
         uses: actions/checkout@v4
@@ -34,6 +35,12 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      - name: Verify deployment secrets
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not configured"; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "CLOUDFLARE_ACCOUNT_ID is not configured"; exit 1; }
+          test -n "$PLAYTEST_SESSION_ADMIN_TOKEN" || { echo "PLAYTEST_SESSION_ADMIN_TOKEN is not configured"; exit 1; }
 
       - name: Install validation and Worker tooling
         run: |
@@ -60,6 +67,12 @@ jobs:
       - name: Deploy formal playtest session service
         run: npx wrangler deploy --config workers/playtest-sessions/wrangler.toml
 
+      - name: Configure facilitator session-creation secret
+        run: >-
+          printf '%s' "$PLAYTEST_SESSION_ADMIN_TOKEN" |
+          npx wrangler secret put SESSION_ADMIN_TOKEN
+          --config workers/playtest-sessions/wrangler.toml
+
       - name: Verify production health endpoints
         run: |
           curl --fail --retry 8 --retry-delay 4 --retry-all-errors \
@@ -81,9 +94,6 @@ jobs:
           if not sessions.get('database'):
               raise SystemExit(f'Playtest session D1 binding unavailable: {sessions}')
           if not sessions.get('sessionCreationConfigured'):
-              raise SystemExit(
-                  'SESSION_ADMIN_TOKEN is not configured for gauntlet-playtest-sessions. '
-                  'Set it with wrangler secret put before considering deployment complete.'
-              )
+              raise SystemExit(f'Playtest session creation secret unavailable: {sessions}')
           print('Verified production v0.6.1 Rules Arbiter and formal playtest session Workers.')
           PY
