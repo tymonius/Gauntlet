@@ -10,7 +10,7 @@ const CONFIG = {
   apiEndpoint: configuredApiEndpoint,
   feedbackEndpoint: window.GAUNTLET_RULES_FEEDBACK_ENDPOINT || inferFeedbackEndpoint(configuredApiEndpoint),
   assistantName: "Rules Arbiter",
-  version: "v0.6.0",
+  version: "v0.6.1",
   maxQuestionLength: 600,
   localResultLimit: 5,
   ...window.GAUNTLET_RULES_ASSISTANT_CONFIG
@@ -18,7 +18,7 @@ const CONFIG = {
 
 const SUGGESTED_QUESTIONS = [
   "When is an occupied Territory captured?",
-  "What happens to cards used in battle?",
+  "Where do Gambits and Tactics go?",
   "Can Onward continue after a battle?",
   "How does defender advantage work?"
 ];
@@ -43,6 +43,7 @@ class GauntletRulesAssistant {
     this.isOpen = false;
     this.elements = {};
     this.sessionId = getOrCreateSessionId();
+    this.playtestContext = getPlaytestContext();
   }
 
   mount() {
@@ -70,7 +71,7 @@ class GauntletRulesAssistant {
           <button class="ga-rules-close" type="button" aria-label="Close rules assistant">×</button>
         </header>
         <div class="ga-rules-notice">
-          Answers use the canonical ${escapeHtml(CONFIG.version)} sources. Questions, answers, and optional feedback may be anonymously logged to improve the rules and this tool. Printed rules and component text remain authoritative.
+          Answers use the canonical ${escapeHtml(CONFIG.version)} sources. Questions, answers, citations, ruling status, and optional feedback may be logged to improve the rules and this tool. When opened from a formal playtest session, the sheet serial and session identifier are included automatically. Printed rules and component text remain authoritative.
         </div>
         <div class="ga-rules-messages" aria-live="polite" aria-label="Rules conversation"></div>
         <div class="ga-rules-suggestions" aria-label="Suggested questions"></div>
@@ -130,7 +131,7 @@ class GauntletRulesAssistant {
     this.elements.messages.innerHTML = "";
     this.appendMessage({
       role: "assistant",
-      answer: "Ask me about the v0.6.0 rulebook, cards, Leaders, faction systems, Territories, battle timing, or victory conditions.",
+      answer: "Ask me about the v0.6.1 rulebook, cards, Leaders, faction systems, Territories, Gambits, Tactics, battle timing, or victory conditions.",
       rulingStatus: "welcome",
       sources: []
     });
@@ -237,7 +238,10 @@ class GauntletRulesAssistant {
           body: JSON.stringify({
             question,
             history: this.history.slice(-6),
-            sessionId: this.sessionId
+            sessionId: this.sessionId,
+            rulesVersion: CONFIG.version,
+            playtestSessionId: this.playtestContext.sessionId,
+            sheetSerial: this.playtestContext.sheetSerial
           })
         });
         if (response.ok) {
@@ -425,7 +429,15 @@ class GauntletRulesAssistant {
     const response = await fetch(CONFIG.feedbackEndpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ interactionId, rating, comment: String(comment || "").trim() })
+      body: JSON.stringify({
+        interactionId,
+        rating,
+        comment: String(comment || "").trim(),
+        sessionId: this.sessionId,
+        rulesVersion: CONFIG.version,
+        playtestSessionId: this.playtestContext.sessionId,
+        sheetSerial: this.playtestContext.sheetSerial
+      })
     });
     if (!response.ok) throw new Error("Feedback request failed.");
   }
@@ -462,6 +474,48 @@ function inferFeedbackEndpoint(apiEndpoint) {
   }
 }
 
+function getPlaytestContext() {
+  const params = new URLSearchParams(window.location.search);
+  const sessionId = firstValidContextValue([
+    params.get("playtestSession"),
+    params.get("session"),
+    readSessionContext("gauntlet_playtest_session_id")
+  ]);
+  const sheetSerial = firstValidContextValue([
+    params.get("sheet"),
+    params.get("serial"),
+    readSessionContext("gauntlet_playtest_sheet_serial")
+  ]);
+
+  if (sessionId) storeSessionContext("gauntlet_playtest_session_id", sessionId);
+  if (sheetSerial) storeSessionContext("gauntlet_playtest_sheet_serial", sheetSerial);
+  return { sessionId, sheetSerial };
+}
+
+function firstValidContextValue(values) {
+  for (const value of values) {
+    const normalized = String(value || "").trim();
+    if (/^[a-zA-Z0-9_.:-]{3,120}$/.test(normalized)) return normalized;
+  }
+  return null;
+}
+
+function readSessionContext(key) {
+  try {
+    return sessionStorage.getItem(key);
+  } catch {
+    return null;
+  }
+}
+
+function storeSessionContext(key, value) {
+  try {
+    sessionStorage.setItem(key, value);
+  } catch {
+    // Formal-session linkage is optional when browser storage is unavailable.
+  }
+}
+
 function getOrCreateSessionId() {
   const stored = readStoredSessionId();
   if (stored) return stored;
@@ -495,7 +549,7 @@ function createSessionId() {
 function formatStatus(status) {
   return {
     explicit: "Explicit rule",
-    inferred: "Interpretation",
+    inferred: "Inferred ruling",
     unresolved: "Unresolved",
     source_lookup: "Direct source lookup"
   }[status] || status;
