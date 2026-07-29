@@ -1,0 +1,58 @@
+name: Rebuild homepage hero asset
+
+on:
+  push:
+    branches:
+      - fix/homepage-hero-asset
+    paths:
+      - '.github/workflows/rebuild-homepage-hero.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repair branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/homepage-hero-asset
+
+      - name: Reconstruct and validate WebP
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .hero-fix/*.b64 | tr -d '\r\n' | base64 --decode > images/artwork/site/homepage-hero-three-leaders.webp
+          echo '7dce4a9721c827267ce99bb29f6650b262a4dec3f6ecab7c43a2e4b95daf7e03  images/artwork/site/homepage-hero-three-leaders.webp' | sha256sum --check
+          test "$(head -c 4 images/artwork/site/homepage-hero-three-leaders.webp)" = 'RIFF'
+          test "$(dd if=images/artwork/site/homepage-hero-three-leaders.webp bs=1 skip=8 count=4 status=none)" = 'WEBP'
+
+      - name: Bust stale asset caches
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('factions/homepage.css')
+          css = path.read_text()
+          old = 'homepage-hero-three-leaders.webp")'
+          new = 'homepage-hero-three-leaders.webp?v=2")'
+          if old not in css and new not in css:
+              raise SystemExit('Expected hero URL not found in homepage CSS')
+          path.write_text(css.replace(old, new))
+          PY
+
+      - name: Remove temporary repair files
+        shell: bash
+        run: |
+          rm -rf .hero-fix
+          rm .github/workflows/rebuild-homepage-hero.yml
+
+      - name: Commit repaired asset
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git commit -m 'Repair homepage hero image asset'
+          git push origin HEAD:fix/homepage-hero-asset
