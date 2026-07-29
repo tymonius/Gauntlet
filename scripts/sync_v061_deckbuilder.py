@@ -2,9 +2,9 @@
 """Synchronize the browser Deckbuilder with the v0.6.1 governing sources.
 
 The Deckbuilder continues to parse the governing Markdown at runtime. This script
-updates version labels, source paths, parser boundaries, and saved-Deck metadata,
-then validates that all 12 recommended Decks still contain at least 30 cards and
-exactly three Territories.
+updates version labels, source paths, parser boundaries, saved-Deck metadata,
+and required runtime/printing integrations, then validates all 12 recommended
+Decks.
 """
 
 from __future__ import annotations
@@ -70,6 +70,35 @@ def patch_territories() -> bool:
     return False
 
 
+def patch_index() -> bool:
+    path = DECKBUILDER / "index.html"
+    original = path.read_text(encoding="utf-8")
+    text = original
+
+    pairing_marker = '  <script src="print-reference-placement.js?v=20260722-1" defer></script>\n'
+    pairing_script = '  <script src="print-duplex-sheet-pairing.js?v=20260729-1" defer></script>\n'
+    if pairing_script not in text:
+        if pairing_marker not in text:
+            raise RuntimeError("Deckbuilder print-reference script marker not found")
+        text = text.replace(pairing_marker, pairing_marker + pairing_script, 1)
+
+    app_markers = [
+        '  <script src="app.js?v=20260729-1" defer></script>\n',
+        '  <script src="app.js" defer></script>\n',
+    ]
+    runtime_script = '  <script src="v061-runtime.js?v=20260729-1" defer></script>\n'
+    if runtime_script not in text:
+        marker = next((candidate for candidate in app_markers if candidate in text), None)
+        if not marker:
+            raise RuntimeError("Deckbuilder app-script marker not found")
+        text = text.replace(marker, marker + runtime_script, 1)
+
+    if text != original:
+        path.write_text(text, encoding="utf-8")
+        return True
+    return False
+
+
 def validate() -> list[str]:
     errors: list[str] = []
     app = (DECKBUILDER / "app.js").read_text(encoding="utf-8")
@@ -104,6 +133,13 @@ def validate() -> list[str]:
         if source not in combined:
             errors.append(f"Missing Deckbuilder source path: {source}")
 
+    for required_file in ("v061-runtime.js", "print-duplex-sheet-pairing.js"):
+        if not (DECKBUILDER / required_file).is_file():
+            errors.append(f"Missing Deckbuilder runtime file: {required_file}")
+    for required_script in ("v061-runtime.js?v=20260729-1", "print-duplex-sheet-pairing.js?v=20260729-1"):
+        if required_script not in index:
+            errors.append(f"Deckbuilder index does not load {required_script}")
+
     starters = json.loads(
         (DECKBUILDER / "starter-decks.json").read_text(encoding="utf-8")
     )
@@ -137,6 +173,12 @@ def main() -> int:
         changed.append("deckbuilder/app.js")
     if patch_territories():
         changed.append("deckbuilder/territories.js")
+    try:
+        if patch_index():
+            changed.append("deckbuilder/index.html")
+    except RuntimeError as exc:
+        print(f"Deckbuilder v0.6.1 synchronization failed: {exc}", file=sys.stderr)
+        return 1
 
     errors = validate()
     if errors:
@@ -152,7 +194,7 @@ def main() -> int:
             print(f"- {path}")
     else:
         print("Deckbuilder sources were already synchronized.")
-    print("Validated v0.6.1 source paths and 12 recommended Decks.")
+    print("Validated v0.6.1 source paths, current print fixes, and 12 recommended Decks.")
     return 0
 
 
