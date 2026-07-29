@@ -25,6 +25,7 @@ import { counterintelligenceBlocksFaceDownBattleCardInspection } from './neutral
 import { openStandGroundForNoMartyrsMovement } from './neutral-stand-ground';
 import { openStrategicWithdrawalAfterRetreat } from './neutral-strategic-withdrawal';
 import { openFortificationsAfterRetreat } from './neutral-fortifications';
+import { battleIsCounterattack, liberationActionOpportunityActive } from './neutral-liberation';
 
 export class GameActionError extends Error {
   constructor(message: string) {
@@ -129,11 +130,18 @@ function playedCardIds(participant: BattleParticipantState): string[] {
     .filter((cardId): cardId is string => Boolean(cardId));
 }
 
-function applyBattleSetupEffects(participant: BattleParticipantState): void {
+function applyBattleSetupEffects(game: GameState, participant: BattleParticipantState): void {
   if (!participant.hasDrawnBattleCards && participant.handCommit?.cardId === 'neutral-tactical-planning') {
     participant.battleDrawCount += 1;
   }
   if (!participant.hasDrawnBattleCards && participant.handCommit?.cardId === 'neutral-conscription') {
+    participant.battleDrawCount += 1;
+    participant.battleDrawPlayLimit += 1;
+  }
+  if (!participant.hasDrawnBattleCards
+    && participant.handCommit?.cardId === 'neutral-liberation'
+    && game.battle?.attacker.playerId === participant.playerId
+    && battleIsCounterattack(game, game.battle)) {
     participant.battleDrawCount += 1;
     participant.battleDrawPlayLimit += 1;
   }
@@ -492,9 +500,11 @@ function playActionCard(game: GameState, action: Extract<GameAction, { type: 'pl
     && game.neutralReinforcementsActionOpportunity.turn === game.turn;
   const insurrectionOpportunity = game.neutralInsurrectionActionOpportunity?.playerId === action.playerId
     && game.neutralInsurrectionActionOpportunity.turn === game.turn;
+  const liberationOpportunity = liberationActionOpportunityActive(game, action.playerId);
   if ((player.hasPlayedActionThisTurn || player.hasPlayedBattleThisTurn)
     && !reinforcementsOpportunity
-    && !insurrectionOpportunity) {
+    && !insurrectionOpportunity
+    && !liberationOpportunity) {
     throw new GameActionError(`${player.name} has already played a card this turn.`);
   }
 
@@ -604,7 +614,7 @@ function commitBattleHandCard(game: GameState, action: Extract<GameAction, { typ
     faceDown: !isFaceUpWatchtowerCommit,
     canceled: false,
   };
-  applyBattleSetupEffects(participant);
+  applyBattleSetupEffects(game, participant);
   player.hasPlayedBattleThisTurn = true;
 
   appendPublicLog(game, action.playerId, 'commit_battle_hand_card', `${player.name} committed a card from hand ${isFaceUpWatchtowerCommit ? 'face up' : 'face down'}.`);
@@ -673,7 +683,7 @@ function playBattleDrawCard(game: GameState, action: Extract<GameAction, { type:
     canceled: false,
     fromInitialBattleHand: true,
   });
-  applyBattleSetupEffects(participant);
+  applyBattleSetupEffects(game, participant);
   player.hasPlayedBattleThisTurn = true;
 
   appendPublicLog(game, action.playerId, 'play_battle_draw_card', `${player.name} selected a battle-draw card face down.`);
