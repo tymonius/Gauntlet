@@ -25,9 +25,11 @@ REQUIRED = [
     "playtest/index.html",
     "playtest/session/index.html",
     "playtest/session/styles.css",
+    "playtest/session/privacy.js",
     "playtest/session/app.js",
     "playtest/batch/index.html",
     "playtest/batch/styles.css",
+    "playtest/batch/qrcode-loader.js",
     "playtest/batch/app.js",
     "package.json",
 ]
@@ -106,11 +108,24 @@ def main() -> int:
     require_markers(
         "playtest/session/index.html",
         [
+            'name="referrer" content="no-referrer"',
+            'name="robots" content="noindex, nofollow"',
             "Join session",
             "Ask the Rules Arbiter",
             "Close session",
             "Designed for review, not surveillance",
+            'src="privacy.js',
             "../../rules-assistant/widget.js",
+        ],
+        errors,
+    )
+    require_markers(
+        "playtest/session/privacy.js",
+        [
+            'url.searchParams.get("host")',
+            'sessionStorage.setItem(`${storagePrefix}_host`, hostKey)',
+            'url.searchParams.delete("host")',
+            "history.replaceState",
         ],
         errors,
     )
@@ -132,11 +147,23 @@ def main() -> int:
     require_markers(
         "playtest/batch/index.html",
         [
+            'name="referrer" content="no-referrer"',
+            'name="robots" content="noindex, nofollow"',
             "Number of sheets",
             "Facilitator creation key",
             "Download host manifest",
             "Print all sheets",
+            'src="qrcode-loader.js',
+        ],
+        errors,
+    )
+    require_markers(
+        "playtest/batch/qrcode-loader.js",
+        [
             "qrcode@1.5.4",
+            'script.referrerPolicy = "no-referrer"',
+            "async toDataURL",
+            "The QR renderer could not be downloaded",
         ],
         errors,
     )
@@ -178,7 +205,13 @@ def main() -> int:
     if "ALLOWED_ORIGINS" not in session_toml:
         errors.append("Playtest session Worker is missing its allowed-origin list")
 
+    session_html = read("playtest/session/index.html")
     batch_html = read("playtest/batch/index.html")
+    for relative, html in (("playtest/session/index.html", session_html), ("playtest/batch/index.html", batch_html)):
+        if "googletagmanager" in html or "gtag(" in html:
+            errors.append(f"{relative}: private formal-playtest page must not load analytics")
+    if "cdn.jsdelivr.net/npm/qrcode" in batch_html:
+        errors.append("QR library must be deferred through the local privacy-preserving loader")
     if "integrity=" in batch_html and "qrcode" in batch_html:
         errors.append("QR library uses an unverified Subresource Integrity value")
     if 'type="password"' not in batch_html:
@@ -208,8 +241,8 @@ def main() -> int:
 
     print(
         "Validated v0.6.1 formal playtest sessions: shared D1 migration, hashed credentials, "
-        "authorized batch creation, unique sheet serials, QR rendering, join/close workflow, "
-        "governing Rules Arbiter linkage, and automated tests."
+        "authorized batch creation, unique sheet serials, privacy-safe QR rendering, join/close "
+        "workflow, governing Rules Arbiter linkage, and automated tests."
     )
     return 0
 
