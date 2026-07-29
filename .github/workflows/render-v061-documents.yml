@@ -81,7 +81,8 @@ jobs:
               if 'Gambit' not in pdf_text or 'Tactic' not in pdf_text or 'Aftermath' not in pdf_text:
                   raise SystemExit(f'Core v0.6.1 terms missing from {pdf_path}')
               if stem.endswith('Rulebook'):
-                  if 'Table of Contents' not in pdf_text or '15. Full Faction Rules' not in pdf_text:
+                  final_section = '15. Standard Language and Reference Rules'
+                  if 'Table of Contents' not in pdf_text or final_section not in pdf_text:
                       raise SystemExit('Rulebook PDF does not contain the generated static contents page')
                   first_page_text = reader.pages[0].extract_text() or ''
                   if first_page_text.count('Official Rulebook') > 1:
