@@ -13,11 +13,15 @@ ROOT = Path(__file__).resolve().parents[1]
 REQUIRED = [
     "rules-assistant/migrations/0001_rules_interactions.sql",
     "rules-assistant/migrations/0002_playtest_sessions.sql",
+    "rules-assistant/worker-v061.js",
+    "rules-assistant/worker.test.mjs",
+    "rules-assistant/wrangler.toml",
     "workers/playtest-sessions/wrangler.toml",
     "workers/playtest-sessions/package.json",
     "workers/playtest-sessions/README.md",
     "workers/playtest-sessions/src/index.js",
     "workers/playtest-sessions/src/index.test.mjs",
+    "playtest/README.md",
     "playtest/index.html",
     "playtest/session/index.html",
     "playtest/session/styles.css",
@@ -64,6 +68,21 @@ def main() -> int:
             "CREATE TABLE IF NOT EXISTS playtest_session_events",
             "CREATE TABLE IF NOT EXISTS playtest_arbiter_links",
             "FOREIGN KEY (interaction_id) REFERENCES rules_interactions(id)",
+        ],
+        errors,
+    )
+
+    require_markers(
+        "rules-assistant/worker-v061.js",
+        [
+            'const RULES_VERSION = "v0.6.1"',
+            "canonical v0.6.1 pre-release playtest edition",
+            "The current v0.6.1 rules do not specify this clearly",
+            "sanitizePlaytestContext(payload)",
+            "playtest_session_id, sheet_serial",
+            "linkFormalPlaytest",
+            "INSERT OR IGNORE INTO playtest_arbiter_links",
+            "Reveal and resolution are different timings",
         ],
         errors,
     )
@@ -124,7 +143,7 @@ def main() -> int:
     require_markers(
         "playtest/batch/app.js",
         [
-            "SESSION_ADMIN_TOKEN" if False else "Authorization",
+            "Authorization",
             "Bearer ${adminToken}",
             "createQrCode(created.joinUrl)",
             "sensitive: true",
@@ -137,6 +156,7 @@ def main() -> int:
     require_markers(
         "playtest/index.html",
         [
+            'href="batch/"',
             'id="session-qr"',
             'id="sheet-serial"',
             "params.get('serial')",
@@ -145,15 +165,17 @@ def main() -> int:
         errors,
     )
 
-    worker_toml = read("workers/playtest-sessions/wrangler.toml")
+    session_toml = read("workers/playtest-sessions/wrangler.toml")
     rules_toml = read("rules-assistant/wrangler.toml")
-    database_ids = re.findall(r'database_id\s*=\s*"([^"]+)"', worker_toml)
+    database_ids = re.findall(r'database_id\s*=\s*"([^"]+)"', session_toml)
     rules_database_ids = re.findall(r'database_id\s*=\s*"([^"]+)"', rules_toml)
     if not database_ids or database_ids != rules_database_ids:
         errors.append("Playtest session Worker must use the same D1 database as the Rules Arbiter")
-    if "SESSION_ADMIN_TOKEN" in worker_toml:
+    if 'main = "worker-v061.js"' not in rules_toml:
+        errors.append("Rules Arbiter wrangler.toml does not deploy worker-v061.js")
+    if "SESSION_ADMIN_TOKEN" in session_toml:
         errors.append("SESSION_ADMIN_TOKEN must be a Worker secret, not committed in wrangler.toml")
-    if "ALLOWED_ORIGINS" not in worker_toml:
+    if "ALLOWED_ORIGINS" not in session_toml:
         errors.append("Playtest session Worker is missing its allowed-origin list")
 
     batch_html = read("playtest/batch/index.html")
@@ -187,7 +209,7 @@ def main() -> int:
     print(
         "Validated v0.6.1 formal playtest sessions: shared D1 migration, hashed credentials, "
         "authorized batch creation, unique sheet serials, QR rendering, join/close workflow, "
-        "Rules Arbiter linkage, and automated tests."
+        "governing Rules Arbiter linkage, and automated tests."
     )
     return 0
 
