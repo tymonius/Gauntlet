@@ -6,7 +6,7 @@ For the current playable release, begin with the [v0.6.0 release package](../rel
 
 ## Canonical v0.6.0 sources
 
-These files govern the current game:
+These files govern the current published game:
 
 1. [Official Rulebook](../releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md) — shared rules.
 2. [Definitive faction guides](../releases/v0.6.0/faction-guides/) — faction rules, Leaders, supplemental components, and exact faction-card text.
@@ -15,6 +15,12 @@ These files govern the current game:
 5. [Canonical Data](../releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json) — generated structured data; do not edit independently.
 
 When a derived PDF, printable sheet, deckbuilder entry, or digital implementation conflicts with these sources, correct the governing source and regenerate the derived artifact.
+
+## Active v0.6.1 implementation
+
+- [v0.6.1 Implementation Ledger](Gauntlet_v0.6.1_Implementation_Ledger.md) — approved first-playtest corrections and synchronization checklist while the patch is being folded into the governing sources.
+
+The ledger does not override the published v0.6.0 package. It should be removed or archived after its approved text has been incorporated into the v0.6.1 rulebook, faction guides, exact card sources, and generated artifacts.
 
 ## Active development documents and tools
 
