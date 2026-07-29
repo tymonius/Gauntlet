@@ -19,8 +19,9 @@ When a derived PDF, printable sheet, deckbuilder entry, or digital implementatio
 ## Active v0.6.1 implementation
 
 - [v0.6.1 Implementation Ledger](Gauntlet_v0.6.1_Implementation_Ledger.md) — approved first-playtest corrections and synchronization checklist while the patch is being folded into the governing sources.
+- [v0.6.1 Rulebook Layering Standard](Gauntlet_v0.6.1_Rulebook_Layering_Standard.md) — approved **How it works / Complete rules** structure for combining first-game teaching with technical reference.
 
-The ledger does not override the published v0.6.0 package. It should be removed or archived after its approved text has been incorporated into the v0.6.1 rulebook, faction guides, exact card sources, and generated artifacts.
+These implementation documents do not override the published v0.6.0 package. They should be removed or archived after their approved material has been incorporated into the v0.6.1 rulebook, faction guides, exact card sources, and generated artifacts.
 
 ## Active development documents and tools
 
