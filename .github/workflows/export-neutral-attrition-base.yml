@@ -24,15 +24,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          wc -c .github/neutral-attrition-implementation-piece-*.b64
-          sha256sum .github/neutral-attrition-implementation-piece-*.b64
           cat > /tmp/neutral-attrition-piece-checksums <<'EOF'
           6ada0c7cf6c5e2fdaebbc08d1f49ea89d48858000c0fd4e54ed3d0e8818c01bb  .github/neutral-attrition-implementation-piece-00.b64
-          d8a7b288885b49bd46a0780dbe468f061806e354dfbc3aabf44a58527a95a10d  .github/neutral-attrition-implementation-piece-01.b64
+          e14bbc76e753a232b1ff8e70a07db800352da8fa059e031617f8272517885d5e  .github/neutral-attrition-implementation-piece-01a.b64
+          dfe23e12342db0cb04b5c43931f4cba82d8b27ed36b06c693d4eda58ef97da0d  .github/neutral-attrition-implementation-piece-01b.b64
+          0c11b871984cf29de51dbb5aeb2cff0f6c73a23125bfca4899cf8f40d021599b  .github/neutral-attrition-implementation-piece-01c.b64
           19543c2abd0301b6d6bfb1a05ee1f789528df2c34f62c688bc613c1c3b78e1f2  .github/neutral-attrition-implementation-piece-02.b64
           d161449560e65a1446036569b92e64143d5dbd81443eec7800b080aede835a9c  .github/neutral-attrition-implementation-piece-03.b64
           217e7cf991983f6c306a8ec5853771d8243960e53dfd079fd7927003f54ad7b8  .github/neutral-attrition-implementation-piece-04.b64
-          e5c1fad9c970354b16be8a9891831e1bc6c7f08ba38d75f7bae66ff9853de230  .github/neutral-attrition-implementation-piece-05.b64
+          b2316809945a91ef707f9447fde9e36522d48659c194d02a0e24a5131c1a9eed  .github/neutral-attrition-implementation-piece-05a.b64
+          f07736592d8088c230c67e1ea2312c3490f3e943c83159d91d5d2233b90bd08b  .github/neutral-attrition-implementation-piece-05b.b64
+          ef02c3ed01088b19970fde77f4a127d29b6cf707cc1bfe1b8dbeb0e21a64daf5  .github/neutral-attrition-implementation-piece-05c.b64
           9b46adb9eb5f157cd05c07d6acd084dd07f0b967f6d91eac2018bd2c9c6c225c  .github/neutral-attrition-implementation-piece-06.b64
           EOF
           sha256sum --check /tmp/neutral-attrition-piece-checksums
