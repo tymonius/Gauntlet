@@ -1,8 +1,12 @@
-# Gauntlet v0.6.1 Playtest Sheet
+# Gauntlet v0.6.1 Playtest Tools
 
-Public print page: `https://gauntlet.run/playtest/`
+Public pages:
 
-This directory contains the official routine human-playtest questionnaire for the v0.6.1 playtest release. It is designed to be printed on one side of Letter paper and completed by hand after a completed or stopped session.
+- Printable sheet: `https://gauntlet.run/playtest/`
+- Formal session page: `https://gauntlet.run/playtest/session/?code=<SESSION-TOKEN>`
+- Coded batch generator: `https://gauntlet.run/playtest/batch/`
+
+This directory contains the official routine human-playtest questionnaire and its linked formal-session workflow for the v0.6.1 playtest release. The questionnaire is designed to be printed on one side of Letter paper and completed by hand after a completed or stopped session.
 
 Until v0.6.1 is published, the public site may continue to display the v0.6.0 sheet from `main`. The v0.6.1 source is being validated in PR #260.
 
@@ -16,19 +20,31 @@ The PDF is generated from `index.html` and `styles.css` by `.github/workflows/re
 
 ## Unique session codes
 
-Each formal printed sheet should receive:
+Each formal printed sheet receives:
 
-- one unique single-use QR code;
-- one short human-readable sheet serial; and
-- one linked digital session record.
+- one unique join QR code;
+- one short human-readable sheet serial;
+- one linked digital session record; and
+- one private host key retained in the facilitator's batch manifest.
 
-The first scan creates or opens the digital session associated with that sheet. Later scans join the same session. Rules Arbiter questions asked through the linked session should be attached automatically. Closing the session retires the QR code so it cannot be reused for another playtest.
+The batch generator creates the digital session before printing. Scanning a sheet opens or joins that pre-existing session. Rules Arbiter questions asked through the linked session are attached automatically. Closing the session preserves its record but blocks future joins and playtest events, retiring the printed QR code.
 
 The human-readable serial is a fallback for damaged QR codes, manual session lookup, and reconciliation between a paper sheet and digital records.
 
+### Coded batch procedure
+
+1. Deploy and configure the playtest-session Worker described in [`workers/playtest-sessions/README.md`](../workers/playtest-sessions/README.md).
+2. Open `/playtest/batch/` and enter the number of sheets, an optional batch label, and the facilitator creation key.
+3. Generate the batch. Every resulting session is live immediately.
+4. Download the private host manifest before printing or leaving the page.
+5. Print the rendered sheets.
+6. After each session, open its host URL from the manifest and close it. The QR code is then retired.
+
+The QR contains only the public join URL. The host key and host URL appear only in the downloaded facilitator manifest and must not be distributed with the player sheets.
+
 ### Print-page parameters
 
-The print source accepts optional query parameters for generated formal sheets:
+The single-sheet print source accepts optional query parameters:
 
 ```text
 /playtest/?serial=G061-000123&qr=<URL-ENCODED-QR-IMAGE-URL>
@@ -38,7 +54,19 @@ The print source accepts optional query parameters for generated formal sheets:
 - `qr` supplies the QR-code image displayed in the reserved square.
 - With neither parameter, the page renders a blank reusable worksheet with a placeholder QR area.
 
-A production batch generator should create unique values and render one PDF or printed copy per session. It must not reuse a code across sheets.
+The batch generator does not depend on remote QR-image URLs. It creates QR images in the browser and inserts them directly into cloned copies of the governing sheet template.
+
+## Digital session page
+
+The session page allows participants to:
+
+- join as a player, facilitator, or observer, with an optional name or playtest ID;
+- record game start, completion, or a stopped-game reason;
+- save short factual session notes;
+- ask the v0.6.1 Rules Arbiter with automatic session linkage; and
+- view the session's participant and Arbiter-question counts.
+
+A session opened with its private host URL also exposes the close-and-retire control. Closed sessions remain readable but reject new participants and playtest events.
 
 ## What the sheet captures
 
@@ -81,7 +109,7 @@ External-interruption sessions should be retained for qualitative, onboarding, r
 
 ## Rules Arbiter linkage
 
-When the sheet is linked to a digital session, every Arbiter record should retain:
+Every linked Arbiter record retains:
 
 - exact question and answer;
 - v0.6.1 rules version;
@@ -90,6 +118,8 @@ When the sheet is linked to a digital session, every Arbiter record should retai
 - session identifier and sheet serial;
 - whether the ruling changed play; and
 - reviewer correction or follow-up.
+
+The governing `rules-assistant/worker-v061.js` stores the formal-session context with the interaction and links it into `playtest_arbiter_links`. The session page also performs an idempotent linkage request after a successful answer, so loss of one linkage path does not silently detach the ruling from the sheet.
 
 The Rules Arbiter must not invent precedence. An unresolved interaction remains unresolved until a governing source is amended.
 
