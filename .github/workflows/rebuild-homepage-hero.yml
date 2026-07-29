@@ -29,10 +29,34 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .hero-fix/*.b64 | tr -d '\r\n' | base64 --decode --ignore-garbage > images/artwork/site/homepage-hero-three-leaders.webp
-          echo '7dce4a9721c827267ce99bb29f6650b262a4dec3f6ecab7c43a2e4b95daf7e03  images/artwork/site/homepage-hero-three-leaders.webp' | sha256sum --check
-          test "$(head -c 4 images/artwork/site/homepage-hero-three-leaders.webp)" = 'RIFF'
-          test "$(dd if=images/artwork/site/homepage-hero-three-leaders.webp bs=1 skip=8 count=4 status=none)" = 'WEBP'
+          python - <<'PY'
+          import base64
+          import hashlib
+          from pathlib import Path
+
+          files = sorted(Path('.hero-fix').glob('*.b64'))
+          pieces = [path.read_text() for path in files]
+          for path, piece in zip(files, pieces):
+              print(f'{path}: {len(piece)} characters')
+
+          text = ''.join(pieces)
+          alphabet = set('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=')
+          filtered = ''.join(ch for ch in text if ch in alphabet)
+          core = filtered.replace('=', '')
+          padded = core + '=' * ((4 - len(core) % 4) % 4)
+          print(f'filtered base64 length: {len(filtered)}; normalized length: {len(padded)}')
+
+          raw = base64.b64decode(padded)
+          digest = hashlib.sha256(raw).hexdigest()
+          print(f'decoded bytes: {len(raw)}; sha256: {digest}')
+          expected = '7dce4a9721c827267ce99bb29f6650b262a4dec3f6ecab7c43a2e4b95daf7e03'
+          if digest != expected:
+              raise SystemExit(f'Unexpected hero digest: {digest}')
+          if raw[:4] != b'RIFF' or raw[8:12] != b'WEBP':
+              raise SystemExit('Rebuilt file is not a valid WebP container')
+
+          Path('images/artwork/site/homepage-hero-three-leaders.webp').write_bytes(raw)
+          PY
 
       - name: Bust stale asset caches
         shell: bash
