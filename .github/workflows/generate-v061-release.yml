@@ -1,6 +1,18 @@
 name: Generate and validate v0.6.1 sources
 
 on:
+  push:
+    branches:
+      - rules/v0.6.1-playtest-revision
+    paths:
+      - "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
+      - "docs/Gauntlet_v0.6.1_Territory_Pool.md"
+      - "releases/v0.6.1/**"
+      - "rules-assistant/**"
+      - "deckbuilder/**"
+      - "scripts/generate_v061_release.py"
+      - "scripts/sync_v061_deckbuilder.py"
+      - ".github/workflows/generate-v061-release.yml"
   pull_request:
     branches:
       - main
