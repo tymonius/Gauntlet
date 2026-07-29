@@ -3,8 +3,8 @@
 
 The Deckbuilder continues to parse the governing Markdown at runtime. This script
 updates version labels, source paths, parser boundaries, saved-Deck metadata,
-and required runtime/printing integrations, then validates all 12 recommended
-Decks.
+legacy battle vocabulary, and required runtime/printing integrations, then
+validates all 12 recommended Decks.
 """
 
 from __future__ import annotations
@@ -17,6 +17,19 @@ ROOT = Path(__file__).resolve().parents[1]
 DECKBUILDER = ROOT / "deckbuilder"
 TEXT_SUFFIXES = {".js", ".json", ".html", ".css", ".md"}
 
+LEGACY_REPLACEMENTS = (
+    ("move one space toward their Heartland", "move one position toward their end"),
+    ("move one space toward the enemy Heartland", "move one position toward the opponent's end"),
+    ("Battle Hands", "Reserves"),
+    ("Battle Hand", "Reserve"),
+    ("hand commitments", "Gambits"),
+    ("hand commitment", "Gambit"),
+    ("battle-drawn cards", "Tactics"),
+    ("battle-drawn card", "Tactic"),
+    ("battle draw cards", "Reserve cards"),
+    ("battle draw card", "Reserve card"),
+)
+
 
 def update_text(path: Path) -> bool:
     original = path.read_text(encoding="utf-8")
@@ -26,6 +39,8 @@ def update_text(path: Path) -> bool:
     text = text.replace("v0.6-dev", "v0.6.1")
     text = text.replace("gauntlet-v0.6-dev-deck", "gauntlet-v0.6.1-deck")
     text = text.replace("Untitled v0.6 deck", "Untitled v0.6.1 Deck")
+    for legacy, current in LEGACY_REPLACEMENTS:
+        text = text.replace(legacy, current)
     if text != original:
         path.write_text(text, encoding="utf-8")
         return True
@@ -114,6 +129,8 @@ def validate() -> list[str]:
         "Battle Hand",
         "hand commitment",
         "move one space toward their Heartland",
+        "move one space toward the enemy Heartland",
+        "battle-drawn card",
     ]
     for term in forbidden:
         if term in combined:
