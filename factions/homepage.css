@@ -21,3 +21,36 @@ a.faction-card:focus-visible {
   font-weight: 850;
   letter-spacing: .04em;
 }
+
+/* Approved homepage hero artwork */
+.hero {
+  grid-template-columns: minmax(0, .92fr) minmax(500px, 1.08fr);
+  gap: 18px;
+}
+.hero-illustration {
+  min-height: 620px;
+  display: block;
+  position: relative;
+  background:
+    url("../images/artwork/site/homepage-hero-three-leaders.webp")
+    center bottom / contain no-repeat;
+  filter: drop-shadow(0 28px 34px rgba(35, 23, 10, .2));
+}
+.hero-illustration::before { display: none; }
+.hero-illustration > * { display: none; }
+
+@media (max-width: 900px) {
+  .hero { grid-template-columns: 1fr; }
+  .hero-illustration {
+    width: min(100%, 760px);
+    min-height: 560px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 620px) {
+  .hero-illustration {
+    min-height: 420px;
+    background-position: center bottom;
+  }
+}
