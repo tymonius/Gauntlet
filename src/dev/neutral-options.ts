@@ -193,6 +193,19 @@ export function buildPendingNeutralOptions(
           })),
       ];
 
+
+    case 'fortifications_battle':
+      return [
+        {
+          label: 'Do not withdraw farther with Fortifications',
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'pass' },
+        },
+        {
+          label: 'Withdraw one additional position with Fortifications',
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'use' },
+        },
+      ];
+
     case 'valor_battle':
       return [
         {
