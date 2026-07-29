@@ -8,29 +8,30 @@
  */
 .hero-title-accent {
   display: block;
-  margin-top: .04em;
-  padding-left: .08em;
+  margin-top: .03em;
+  padding-left: .1em;
   color: var(--crimson);
   font-family: var(--declaration);
-  font-size: .82em;
+  font-size: 1.06em;
   font-style: normal;
   font-weight: 400;
-  line-height: .96;
+  line-height: .92;
   letter-spacing: 0;
 }
 
 .declaration-overline {
-  margin-bottom: 14px;
+  margin-bottom: 18px;
   font-family: var(--declaration);
-  font-size: clamp(1.3rem, 2.15vw, 1.95rem);
+  font-size: clamp(2.15rem, 3.6vw, 3.4rem);
   font-weight: 400;
-  line-height: 1.02;
+  line-height: .96;
   letter-spacing: 0;
   text-transform: none;
 }
 
 .factions-section .declaration-overline {
-  word-spacing: .28em;
+  font-size: .9em;
+  word-spacing: .55em;
 }
 
 .assistant-section .declaration-overline {
@@ -39,16 +40,17 @@
 
 @media (max-width: 620px) {
   .hero-title-accent {
-    margin-top: .06em;
-    padding-left: .1em;
-    font-size: .78em;
+    margin-top: .04em;
+    padding-left: .12em;
+    font-size: 1.02em;
   }
 
   .declaration-overline {
-    font-size: clamp(1.2rem, 5.8vw, 1.65rem);
+    font-size: clamp(2rem, 9.4vw, 2.8rem);
   }
 
   .factions-section .declaration-overline {
-    word-spacing: .34em;
+    font-size: .86em;
+    word-spacing: .7em;
   }
 }
