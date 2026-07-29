@@ -77,7 +77,7 @@ test("rejects requests for a different rules version before retrieval", async ()
     },
     body: JSON.stringify({
       question: "Where does a Gambit go?",
-      rulesVersion: "v0.6.0"
+      rulesVersion: "v0.6.2"
     })
   }), {
     OPENAI_API_KEY: "test-key",
