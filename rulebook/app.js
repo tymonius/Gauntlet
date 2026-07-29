@@ -1,6 +1,7 @@
 import { renderMarkdown } from './markdown.js';
 
-const SOURCE_URL = '../releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md';
+const SOURCE_URL = '../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md';
+const PDF_URL = '../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf';
 const content = document.querySelector('[data-rulebook-content]');
 const toc = document.querySelector('[data-rulebook-toc]');
 const status = document.querySelector('[data-rulebook-status]');
@@ -169,15 +170,18 @@ async function loadRulebook() {
     decorateHeadings();
     observeSections();
 
-    const sectionCount = rendered.headings.filter(({ level }) => level === 1).length - 1;
-    status.textContent = `Canonical v0.6.0 · ${sectionCount} sections · rendered from the official Markdown source`;
+    const sectionCount = Math.max(
+      0,
+      rendered.headings.filter(({ level, id }) => level === 1 && id !== 'gauntlet' && id !== 'official-rulebook').length
+    );
+    status.textContent = `Canonical v0.6.1 · ${sectionCount} sections · rendered from the official Markdown source`;
   } catch (error) {
     console.error(error);
     content.removeAttribute('aria-busy');
     content.innerHTML = `
       <section class="load-error" role="alert">
         <h1>The browser rulebook could not be loaded.</h1>
-        <p>Use the <a href="../releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf">official PDF</a> or <a href="${SOURCE_URL}">canonical Markdown source</a>.</p>
+        <p>Use the <a href="${PDF_URL}">official PDF</a> or <a href="${SOURCE_URL}">canonical Markdown source</a>.</p>
       </section>
     `;
     status.textContent = 'Rulebook unavailable';
