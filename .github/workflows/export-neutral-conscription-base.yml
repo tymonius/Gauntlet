@@ -16,17 +16,17 @@ jobs:
         with:
           ref: agent/neutral-conscription
 
-      - name: Create repository archive
+      - name: Create engine archive
         shell: bash
         run: |
           set -euo pipefail
-          tar --exclude=.git -czf "$RUNNER_TEMP/gauntlet-repository.tar.gz" .
-          sha256sum "$RUNNER_TEMP/gauntlet-repository.tar.gz" > "$RUNNER_TEMP/gauntlet-repository.sha256"
+          tar -czf "$RUNNER_TEMP/gauntlet-engine.tar.gz" src package.json tsconfig.json releases/v0.6.0
+          sha256sum "$RUNNER_TEMP/gauntlet-engine.tar.gz" > "$RUNNER_TEMP/gauntlet-engine.sha256"
 
-      - name: Upload repository archive
+      - name: Upload engine archive
         uses: actions/upload-artifact@v4
         with:
-          name: neutral-conscription-base
+          name: neutral-conscription-engine
           path: |
-            ${{ runner.temp }}/gauntlet-repository.tar.gz
-            ${{ runner.temp }}/gauntlet-repository.sha256
+            ${{ runner.temp }}/gauntlet-engine.tar.gz
+            ${{ runner.temp }}/gauntlet-engine.sha256
