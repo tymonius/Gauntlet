@@ -58,6 +58,7 @@ export const coreCardPlayRules: Record<CardID, CardPlayRule> = {
   'neutral-tactical-planning': battleAndAction('neutral-tactical-planning', 'discard'),
   'neutral-valor': battleAndAction('neutral-valor', 'asset_bank'),
   'neutral-attrition': battleAndAction('neutral-attrition', 'asset_bank'),
+  'neutral-conscription': battleAndAction('neutral-conscription', 'discard'),
   'neutral-fealty': battleAndAction('neutral-fealty', 'asset_bank'),
   'neutral-forced-march': battleAndAction('neutral-forced-march', 'discard'),
   'neutral-new-recruits': battleAndAction('neutral-new-recruits', 'discard', true),

@@ -29,6 +29,7 @@ import { legalLeaderAbilitiesFor } from './leader-abilities';
 import { toPublicMysticsState } from './mystics-ritual';
 import { cancellationCandidatesWithDecoysPriority } from './neutral-decoys-battle';
 import { canResolveDisruptionAction, DISRUPTION } from './neutral-disruption';
+import { conscriptionAssetCardCanBePlayed } from './neutral-conscription';
 import { entrenchmentActionPlayProhibited } from './neutral-entrenchment';
 import { canUseReinforcementsAsset, REINFORCEMENTS, reinforcementsActionOpportunityActive } from './neutral-reinforcements';
 import { canResolveNewRecruitsAction, NEW_RECRUITS } from './neutral-new-recruits';
@@ -209,6 +210,23 @@ function legalActionPlaysForViewer(game: GameState, viewer?: PlayerID): LegalAct
   if (game.phase !== 'action_before_movement' && game.phase !== 'action_after_movement') return undefined;
   if (entrenchmentActionPlayProhibited(game, viewer)) return undefined;
   const player = game.players[viewer];
+  const conscription = game.pendingNeutralChoice?.kind === 'conscription_action'
+    && game.pendingNeutralChoice.playerId === viewer
+    ? game.pendingNeutralChoice
+    : undefined;
+  if (conscription) {
+    return player.zones.hand
+      .filter((cardId) => conscription.cardOptions.includes(cardId))
+      .filter(conscriptionAssetCardCanBePlayed)
+      .filter((cardId, index, cards) => cards.indexOf(cardId) === index)
+      .map((cardId) => ({
+        action: 'play_action_card' as const,
+        cardId,
+        origin: 'hand' as const,
+        destination: 'asset_bank' as const,
+        requiresTarget: getCardPlayRule(cardId)?.requiresTarget ?? false,
+      }));
+  }
   const extraOpportunity = reinforcementsActionOpportunityActive(game, viewer);
   if (player.actionsRemaining < 1 || ((player.hasPlayedActionThisTurn || player.hasPlayedBattleThisTurn) && !extraOpportunity)) return undefined;
   return player.zones.hand
@@ -241,6 +259,7 @@ function neutralChoiceIsPrivate(game: GameState): boolean {
     || kind?.startsWith('reserves_')
     || kind?.startsWith('supplies_')
     || kind?.startsWith('tactical_planning_')
+    || kind?.startsWith('conscription_')
     || kind === 'rousing_speech_discard',
   );
 }

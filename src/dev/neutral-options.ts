@@ -1,3 +1,4 @@
+import { getCardPlayRule } from '../cards';
 import type { CardID, GameState, PlayerID } from '../types';
 import type { NeutralAppStateAction } from '../state';
 
@@ -108,6 +109,24 @@ export function buildPendingNeutralOptions(
           cardId,
         },
       }));
+
+    case 'conscription_action':
+      return [
+        {
+          label: 'Play no Asset with Conscription',
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'pass' },
+        },
+        ...pending.cardOptions
+          .filter((cardId) => !(getCardPlayRule(cardId)?.requiresTarget ?? false))
+          .map((cardId) => ({
+            label: `Immediately play ${cardId} as an Asset with Conscription`,
+            action: {
+              type: 'play_action_card' as const,
+              playerId,
+              cardId,
+            },
+          })),
+      ];
 
     case 'valor_battle':
       return [
