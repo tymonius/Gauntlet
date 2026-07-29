@@ -29,7 +29,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat .hero-fix/*.b64 | tr -d '\r\n' | base64 --decode > images/artwork/site/homepage-hero-three-leaders.webp
+          cat .hero-fix/*.b64 | tr -d '\r\n' | base64 --decode --ignore-garbage > images/artwork/site/homepage-hero-three-leaders.webp
           echo '7dce4a9721c827267ce99bb29f6650b262a4dec3f6ecab7c43a2e4b95daf7e03  images/artwork/site/homepage-hero-three-leaders.webp' | sha256sum --check
           test "$(head -c 4 images/artwork/site/homepage-hero-three-leaders.webp)" = 'RIFF'
           test "$(dd if=images/artwork/site/homepage-hero-three-leaders.webp bs=1 skip=8 count=4 status=none)" = 'WEBP'
