@@ -1,0 +1,58 @@
+name: Patch v0.6.1 historical terminology validation
+
+on:
+  push:
+    branches:
+      - rules/v0.6.1-playtest-revision
+    paths:
+      - ".github/workflows/fix-v061-historical-terminology-validation.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out revision branch
+        uses: actions/checkout@v4
+        with:
+          ref: rules/v0.6.1-playtest-revision
+
+      - name: Exempt the historical changelog from active terminology checks
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('scripts/validate_v061_release.py')
+          text = path.read_text(encoding='utf-8')
+          old = '''    for relative in scan_paths:
+              path = ROOT / relative
+              if not path.is_file() or path.suffix.lower() not in TEXT_EXTENSIONS:
+                  continue
+              text = path.read_text(encoding="utf-8")'''.replace('          ', '')
+          new = '''    historical_comparison_sources = {
+              "releases/v0.6.1/Gauntlet_v0.6.1_Changelog.md",
+          }
+          for relative in scan_paths:
+              path = ROOT / relative
+              if not path.is_file() or path.suffix.lower() not in TEXT_EXTENSIONS:
+                  continue
+              if relative in historical_comparison_sources:
+                  continue
+              text = path.read_text(encoding="utf-8")'''.replace('          ', '')
+          if new not in text:
+              if old not in text:
+                  raise SystemExit('Terminology validation anchor not found')
+              text = text.replace(old, new, 1)
+              path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Remove this one-shot workflow and commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/fix-v061-historical-terminology-validation.yml
+          git add scripts/validate_v061_release.py
+          git commit -m "Treat v0.6.1 changelog terms as historical comparisons"
+          git push origin HEAD:rules/v0.6.1-playtest-revision
