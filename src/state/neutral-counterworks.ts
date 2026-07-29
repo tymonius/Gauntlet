@@ -102,6 +102,7 @@ function preventionList(game: GameState, battleId?: string) {
 }
 
 function consumeBattlePrevention(game: GameState, request: CounterworksOverlayPlacementRequest): boolean {
+  if (request.kind === 'protracted_siege_asset') return false;
   const battleId = placementBattleId(game, request);
   const prevention = preventionList(game, battleId)?.find((candidate) => (
     !candidate.consumed
@@ -216,9 +217,13 @@ function finalizePlacement(game: GameState, request: CounterworksOverlayPlacemen
   }
 
   const isRuins = request.kind === 'scorched_earth_battle' || request.kind === 'scorched_earth_asset';
-  const replaced = isRuins
-    ? placeRuinsOverlay(game, space, request.cardId, request.playerId).replaced
-    : (placeTerritoryOverlay(space, request.cardId, request.playerId), []);
+  const ruinsPlacement = isRuins
+    ? placeRuinsOverlay(game, space, request.cardId, request.playerId)
+    : undefined;
+  const placedOverlay = ruinsPlacement?.overlay
+    ?? placeTerritoryOverlay(space, request.cardId, request.playerId);
+  const replaced = ruinsPlacement?.replaced ?? [];
+  if (request.captureOccupierId) placedOverlay.captureDelayOccupier = request.captureOccupierId;
 
   if (request.kind === 'demilitarized_zone') {
     for (const playerId of Object.keys(game.players)) {
@@ -237,6 +242,8 @@ function finalizePlacement(game: GameState, request: CounterworksOverlayPlacemen
     log(game, request.playerId, 'mystics_spirit_hollow_placed', `${game.players[request.playerId].name} placed Spirit Hollow on ${space.id}.`, { cardId: request.cardId, spaceId: space.id, battleId: request.battleId, source: request.source.zone });
   } else if (request.kind.startsWith('scorched_earth')) {
     log(game, request.playerId, request.kind === 'scorched_earth_asset' ? 'neutral_scorched_earth_asset_used' : 'neutral_scorched_earth_battle_ruins', `${game.players[request.playerId].name} placed Scorched Earth as Ruins on ${space.id}.`, { battleId: request.battleId, spaceId: space.id, replacedRuins: replaced.map((overlay) => ({ cardId: overlay.cardId, owner: overlay.owner })) });
+  } else if (request.kind.startsWith('protracted_siege')) {
+    log(game, request.playerId, 'neutral_protracted_siege_overlay_placed', `${game.players[request.playerId].name} placed Protracted Siege on ${space.id}.`, { battleId: request.battleId, spaceId: space.id, source: request.source.zone, captureOccupierId: request.captureOccupierId });
   } else if (request.kind.startsWith('military_encampment')) {
     log(game, request.playerId, 'military_encampment_placed', `${game.players[request.playerId].name} placed Encampment on ${space.territoryId ?? space.id}.`, { spaceId: space.id });
   }
