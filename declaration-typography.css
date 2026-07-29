@@ -1,0 +1,44 @@
+:root {
+  --declaration: "p22-declaration-pro", "P22 Declaration Pro", Georgia, "Times New Roman", serif;
+}
+
+/*
+ * Declaration is a flavor face, not an interface or reading face.
+ * Georgia remains the structural heading font.
+ */
+.hero-title-accent {
+  display: block;
+  margin-top: .05em;
+  color: var(--crimson);
+  font-family: var(--declaration);
+  font-size: .92em;
+  font-style: normal;
+  font-weight: 400;
+  line-height: .94;
+  letter-spacing: 0;
+}
+
+.declaration-overline {
+  margin-bottom: 12px;
+  font-family: var(--declaration);
+  font-size: clamp(1.6rem, 2.8vw, 2.55rem);
+  font-weight: 400;
+  line-height: .95;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.assistant-section .declaration-overline {
+  color: #d7b783;
+}
+
+@media (max-width: 620px) {
+  .hero-title-accent {
+    margin-top: .08em;
+    font-size: .88em;
+  }
+
+  .declaration-overline {
+    font-size: clamp(1.5rem, 7.5vw, 2.1rem);
+  }
+}
