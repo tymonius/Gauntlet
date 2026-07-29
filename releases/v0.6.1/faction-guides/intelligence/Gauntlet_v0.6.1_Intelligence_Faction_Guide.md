@@ -105,9 +105,9 @@ Minimum payment is 1 Intel. If paid, immediately win through Special Operation.
 
 ## How it works
 
-Intelligence gets two separate chances to use Surveillance in each battle: one against an opposing Gambit and one against an opposing Tactic. Spend 1 Intel to reveal the chosen face-down card.
+Intelligence gets two separate chances to use Surveillance in each battle: one against an opposing Gambit and one against opposing Tactics. Spend 1 Intel for each face-down card revealed.
 
-Immediately after revealing it, spend 2 more Intel to interfere. The card returns to its source, and the opponent may replace it from that same source or pass.
+Immediately after revealing a card, spend 2 more Intel to interfere. The card returns to its source, and the opponent may replace it from that same source or pass.
 
 ## Complete rules
 
@@ -115,13 +115,13 @@ Immediately after revealing it, spend 2 more Intel to interfere. The card return
 
 Once per battle, after the opponent sets a face-down Gambit, spend 1 Intel to reveal it.
 
-After the opponent resolves any Interference against that revealed Gambit and makes any replacement, you may revise your own Gambit choice if you have already made one. Revision does not create another Surveillance or Interference opportunity.
+After you resolve any Interference against that revealed Gambit and the opponent makes any replacement, you may revise your own Gambit choice if you have already made one. Revision does not create another Surveillance or Interference opportunity.
 
 ### Tactic Surveillance
 
 Once per battle, after the opponent chooses one or more face-down Tactics, spend 1 Intel for each opposing Tactic you reveal.
 
-After the opponent resolves any Interference against those revealed Tactics and makes replacements, you may revise your own Tactic choices if you have already made them. Revision does not create another Surveillance or Interference opportunity.
+After you resolve any Interference against those revealed Tactics and the opponent makes replacements, you may revise your own Tactic choices if you have already made them. Revision does not create another Surveillance or Interference opportunity.
 
 The Gambit and Tactic opportunities are independent. Using one does not consume the other.
 
@@ -135,7 +135,7 @@ Immediately after revealing a card through Surveillance, spend 2 additional Inte
 - A replacement is placed face down unless the effect says otherwise.
 - The replacement creates no new Surveillance, Interference, reveal, or response opportunity.
 
-Intel spent on an attempt remains spent even when an effect prevents the reveal or Interference.
+If an effect prevents Surveillance or Interference, the Intel remains spent and the relevant once-per-battle opportunity is still used.
 
 ### Direct Interference
 
@@ -314,6 +314,7 @@ Treason cannot select an effect that has already resolved and follows the shared
 - Tactic Surveillance: once per battle, 1 Intel per revealed Tactic.
 - Interference: 2 additional Intel per removed card.
 - Gambit returns to Hand; Tactic returns to Reserve.
+- Prevented attempts still spend Intel and use the relevant opportunity.
 - Replacement or revision creates no new information window.
 - Complete normal Missions for 1 Operation Progress and Intel equal to value.
 - Special Operation readiness requires Progress greater than opposing controlled Territories.
