@@ -457,6 +457,22 @@ export interface PendingStandGroundMovementChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+
+export interface PendingFortificationsBattleChoice {
+  kind: 'fortifications_battle';
+  playerId: PlayerID;
+  battleId: string;
+  sourceKey: string;
+  sourceKeysRemaining: string[];
+  retreatDirection: -1 | 1;
+  options: ['pass', 'use'];
+  resume: {
+    playerId: PlayerID;
+    battleCardTargets?: BattleCardTarget[];
+  };
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface PendingValorBattleChoice {
   kind: 'valor_battle';
   playerId: PlayerID;
@@ -552,6 +568,7 @@ export type PendingNeutralChoice =
   | PendingCounterworksBattleChoice
   | PendingCourtMartialAssetChoice
   | PendingCourtMartialRetreatChoice
+  | PendingFortificationsBattleChoice
   | PendingValorBattleChoice
   | PendingScorchedEarthAssetChoice
   | PendingSuppliesAssetChoice

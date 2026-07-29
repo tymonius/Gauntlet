@@ -68,6 +68,11 @@ import {
 } from './neutral-entrenchment';
 import { applyFealtyBattleEffects } from './neutral-fealty';
 import {
+  applyFortificationsAssetBattleHandLimit,
+  applyFortificationsBattleEffects,
+  resolveFortificationsChoice,
+} from './neutral-fortifications';
+import {
   applyFootholdBattleCleanupDraw,
   applyFootholdBattleEffects,
   openNextFootholdChoice,
@@ -276,6 +281,8 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
                       ? resolveStandGroundChoice(next, action)
                       : pendingKind === 'strategic_withdrawal_battle'
                         ? resolveStrategicWithdrawalChoice(next, action)
+                        : pendingKind === 'fortifications_battle'
+                          ? resolveFortificationsChoice(next, action)
                         : pendingKind === 'tactical_planning_action'
                           ? (resolveTacticalPlanningChoice(next, action), {})
                           : pendingKind === 'conscription_action'
@@ -532,6 +539,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
       action.toSpaceId,
       initiatedBattle,
     );
+    applyFortificationsAssetBattleHandLimit(result.state);
   }
   if (action.type === 'end_turn') {
     clearReinforcementsActionOpportunity(result.state, action.playerId);
@@ -555,6 +563,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     applyAdvanceGuardBattleEffects(result.state);
     applyEntrenchmentBattleEffects(result.state);
     applyCourtMartialBattleEffects(result.state);
+    applyFortificationsBattleEffects(result.state);
     applyFealtyBattleEffects(result.state);
     applyFootholdBattleEffects(result.state);
     applyForcedMarchBattleEffects(result.state);

@@ -24,6 +24,7 @@ import { applyNoMartyrsOutcome } from './inquisition-no-martyrs';
 import { counterintelligenceBlocksFaceDownBattleCardInspection } from './neutral-counterintelligence';
 import { openStandGroundForNoMartyrsMovement } from './neutral-stand-ground';
 import { openStrategicWithdrawalAfterRetreat } from './neutral-strategic-withdrawal';
+import { openFortificationsAfterRetreat } from './neutral-fortifications';
 
 export class GameActionError extends Error {
   constructor(message: string) {
@@ -783,6 +784,9 @@ function resolveBattle(game: GameState, action: Extract<GameAction, { type: 'res
   }
 
   if (openStrategicWithdrawalAfterRetreat(game, battle, loser, action)) {
+    return { state: game };
+  }
+  if (openFortificationsAfterRetreat(game, battle, loser, action)) {
     return { state: game };
   }
 
