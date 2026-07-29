@@ -1,28 +1,52 @@
-name: Export Neutral Attrition Base
+name: Apply Neutral Attrition implementation
 
 on:
   pull_request:
     branches:
       - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
-  export:
-    if: github.head_ref == 'agent/neutral-attrition'
+  apply:
+    if: github.head_ref == 'agent/neutral-attrition' || github.ref_name == 'agent/neutral-attrition'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout implementation branch
         uses: actions/checkout@v4
+        with:
+          ref: agent/neutral-attrition
+          fetch-depth: 0
 
-      - name: Create engine archive
+      - name: Apply implementation patch
+        shell: bash
         run: |
           set -euo pipefail
-          tar -czf gauntlet-engine.tar.gz src package.json tsconfig.json
-          sha256sum gauntlet-engine.tar.gz > gauntlet-engine.sha256
+          cat .github/neutral-attrition-implementation-piece-*.b64 \
+            | base64 --decode > /tmp/neutral-attrition.patch
+          patch -p1 < /tmp/neutral-attrition.patch
 
-      - name: Upload engine archive
-        uses: actions/upload-artifact@v4
-        with:
-          name: neutral-attrition-base
-          path: |
-            gauntlet-engine.tar.gz
-            gauntlet-engine.sha256
+      - name: Remove temporary staging files
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/neutral-attrition-piece-*.b64
+          rm -f .github/neutral-attrition-implementation-piece-*.b64
+          rm -f .github/neutral-attrition-implementation.patch.b64
+          rm -f .github/workflows/export-neutral-attrition-base.yml
+
+      - name: Commit implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No implementation changes to commit."
+          else
+            git commit -m "Implement Neutral Attrition"
+            git push origin HEAD:agent/neutral-attrition
+          fi
