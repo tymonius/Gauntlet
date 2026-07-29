@@ -9,9 +9,14 @@ on:
       - "docs/Gauntlet_v0.6.1_Territory_Pool.md"
       - "releases/v0.6.1/**"
       - "rules-assistant/**"
+      - "workers/playtest-sessions/**"
+      - "playtest/session/**"
+      - "playtest/batch/**"
       - "deckbuilder/**"
       - "scripts/generate_v061_release.py"
       - "scripts/sync_v061_deckbuilder.py"
+      - "scripts/sync_v061_rules_assistant.py"
+      - "scripts/validate_v061_release.py"
       - ".github/workflows/generate-v061-release.yml"
   pull_request:
     branches:
@@ -21,9 +26,14 @@ on:
       - "docs/Gauntlet_v0.6.1_Territory_Pool.md"
       - "releases/v0.6.1/**"
       - "rules-assistant/**"
+      - "workers/playtest-sessions/**"
+      - "playtest/session/**"
+      - "playtest/batch/**"
       - "deckbuilder/**"
       - "scripts/generate_v061_release.py"
       - "scripts/sync_v061_deckbuilder.py"
+      - "scripts/sync_v061_rules_assistant.py"
+      - "scripts/validate_v061_release.py"
       - ".github/workflows/generate-v061-release.yml"
   workflow_dispatch:
 
@@ -53,8 +63,10 @@ jobs:
         with:
           node-version: 22
 
-      - name: Synchronize Deckbuilder sources
-        run: python scripts/sync_v061_deckbuilder.py
+      - name: Synchronize browser and Rules Arbiter sources
+        run: |
+          python scripts/sync_v061_deckbuilder.py
+          python scripts/sync_v061_rules_assistant.py
 
       - name: Generate and validate canonical data
         run: python scripts/generate_v061_release.py
@@ -63,6 +75,7 @@ jobs:
         run: |
           git add \
             deckbuilder/ \
+            rules-assistant/ \
             releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json \
             releases/v0.6.1/Gauntlet_v0.6.1_Complete_Card_Reference.md
           if git diff --cached --quiet; then
@@ -76,17 +89,21 @@ jobs:
       - name: Verify generated outputs are current
         run: |
           python scripts/sync_v061_deckbuilder.py
+          python scripts/sync_v061_rules_assistant.py
           python scripts/generate_v061_release.py --check
-          git diff --exit-code -- deckbuilder/
+          git diff --exit-code -- deckbuilder/ rules-assistant/
 
-      - name: Install browser-test dependencies
+      - name: Install test dependencies
         run: npm install
 
-      - name: Test Rules Arbiter retrieval
+      - name: Test Rules Arbiter retrieval and worker helpers
         run: npm run test:rules-assistant
 
       - name: Test Deckbuilder data
         run: npm run test:deckbuilder
+
+      - name: Validate v0.6.1 source package
+        run: python scripts/validate_v061_release.py
 
       - name: Upload generated release data
         uses: actions/upload-artifact@v4
