@@ -52,8 +52,18 @@ REQUIRED_BROWSER_FILES = [
     "deckbuilder/completed-factions.js",
     "rules-assistant/widget.js",
     "rules-assistant/local-search.js",
+    "rules-assistant/worker-v061.js",
+    "rules-assistant/wrangler.toml",
     "playtest/index.html",
     "playtest/styles.css",
+    "playtest/session/index.html",
+    "playtest/session/styles.css",
+    "playtest/session/privacy.js",
+    "playtest/session/app.js",
+    "playtest/batch/index.html",
+    "playtest/batch/styles.css",
+    "playtest/batch/qrcode-loader.js",
+    "playtest/batch/app.js",
     "playtest/player-mat/index.html",
     "playtest/player-mat/styles.css",
 ]
@@ -67,7 +77,7 @@ REQUIRED_GENERATED = [
     "playtest/player-mat/Gauntlet_v0.6.1_Player_Mat.pdf",
 ]
 
-TEXT_EXTENSIONS = {".md", ".html", ".js", ".json", ".css", ".yml", ".yaml", ".txt"}
+TEXT_EXTENSIONS = {".md", ".html", ".js", ".json", ".css", ".yml", ".yaml", ".txt", ".toml"}
 
 OBSOLETE_RULE_TERMS = {
     "Battle Hand": re.compile(r"\bBattle Hand(?:s)?\b", re.IGNORECASE),
@@ -136,7 +146,9 @@ def validate_canonical(errors: list[str]) -> None:
                 f"Canonical {allegiance} pool contains {pool_counts[allegiance]} cards, expected {expected}"
             )
 
-    duplicate_cards = [name for name, count in Counter(card.get("name") for card in cards).items() if count > 1]
+    duplicate_cards = [
+        name for name, count in Counter(card.get("name") for card in cards).items() if count > 1
+    ]
     if duplicate_cards:
         errors.append(f"Duplicate playable-card titles: {duplicate_cards}")
     duplicate_territories = [
@@ -178,8 +190,7 @@ def validate_manifest(errors: list[str], strict_generated: bool) -> None:
         if validation.get(key) is not True:
             errors.append(f"Manifest validation.{key} is not true")
     if strict_generated and validation.get("ready_for_publication") is True:
-        required_true = ("visual_checks_passed", "browser_checks_passed")
-        for key in required_true:
+        for key in ("visual_checks_passed", "browser_checks_passed"):
             if validation.get(key) is not True:
                 errors.append(f"Manifest says publication-ready while validation.{key} is not true")
 
@@ -193,8 +204,7 @@ def validate_source_terminology(errors: list[str]) -> None:
         text = path.read_text(encoding="utf-8")
         for label, pattern in OBSOLETE_RULE_TERMS.items():
             for match in pattern.finditer(text):
-                # Historical migration notes and explicit validation strings may name obsolete terms.
-                nearby = text[max(0, match.start() - 90) : match.end() + 90].lower()
+                nearby = text[max(0, match.start() - 90): match.end() + 90].lower()
                 if "obsolete" in nearby or "forbidden" in nearby or "must not" in nearby:
                     continue
                 errors.append(
@@ -226,9 +236,43 @@ def validate_browser_sources(errors: list[str]) -> None:
             "playtestSessionId",
             "sheetSerial",
         ],
+        "rules-assistant/worker-v061.js": [
+            'const RULES_VERSION = "v0.6.1"',
+            "sanitizePlaytestContext(payload)",
+            "INSERT OR IGNORE INTO playtest_arbiter_links",
+        ],
+        "rules-assistant/wrangler.toml": [
+            'main = "worker-v061.js"',
+            'SITE_ORIGIN = "https://gauntlet.run"',
+        ],
         "deckbuilder/index.html": [
             "v0.6.1 Deckbuilder",
             "v061-runtime.js",
+        ],
+        "playtest/index.html": [
+            "Generate coded batch",
+            'id="session-qr"',
+            'id="sheet-serial"',
+        ],
+        "playtest/session/index.html": [
+            "Formal v0.6.1 playtest",
+            "Ask the Rules Arbiter",
+            'name="robots" content="noindex, nofollow"',
+        ],
+        "playtest/session/app.js": [
+            "gauntlet_playtest_session_id",
+            "installRulesInteractionLinker",
+            "/arbiter",
+        ],
+        "playtest/batch/index.html": [
+            "Coded Sheet Generator",
+            "Download host manifest",
+            'src="qrcode-loader.js',
+        ],
+        "playtest/batch/app.js": [
+            "createQrCode(created.joinUrl)",
+            "sensitive: true",
+            "sheetTemplate.cloneNode(true)",
         ],
     }
     for relative, required in checks.items():
@@ -318,7 +362,8 @@ def main() -> int:
     mode = "strict" if args.strict_generated else "source"
     print(
         f"Gauntlet v0.6.1 {mode} validation passed: governing sources, 122 cards, "
-        "25 Territories/Arenas, six factions, browser-source markers, and package metadata."
+        "25 Territories/Arenas, six factions, browser and formal-playtest source markers, "
+        "and package metadata."
     )
     return 0
 
