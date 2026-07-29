@@ -1,0 +1,36 @@
+name: Synchronize v0.6.1 with current main
+
+on:
+  push:
+    branches:
+      - rules/v0.6.1-playtest-revision
+    paths:
+      - ".github/workflows/sync-v061-with-current-main.yml"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: sync-v061-with-current-main
+  cancel-in-progress: false
+
+jobs:
+  merge-main:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out revision branch
+        uses: actions/checkout@v4
+        with:
+          ref: rules/v0.6.1-playtest-revision
+          fetch-depth: 0
+
+      - name: Merge current main
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git merge --no-edit -X ours origin/main
+          git push origin HEAD:rules/v0.6.1-playtest-revision
+
+      - name: Confirm ancestry
+        run: git merge-base --is-ancestor origin/main HEAD
