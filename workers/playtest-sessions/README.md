@@ -34,12 +34,20 @@ npm run dev
 
 The production worker name is `gauntlet-playtest-sessions`.
 
+Before creating sessions, set the facilitator-only creation secret:
+
+```bash
+npx wrangler secret put SESSION_ADMIN_TOKEN
+```
+
+The batch generator sends that secret as a bearer token. It is entered for the current browser session only and is never included in a printed QR code or returned by the API.
+
 ## Endpoints
 
 | Method | Endpoint | Purpose |
 |---|---|---|
-| `GET` | `/health` | Service and rules-version check |
-| `POST` | `/api/sessions` | Create a session and return join/host URLs |
+| `GET` | `/health` | Service, rules-version, database, and creation-configuration check |
+| `POST` | `/api/sessions` | Create a session and return join/host URLs; requires `SESSION_ADMIN_TOKEN` |
 | `GET` | `/api/sessions/:token` | Read public session status and counts |
 | `POST` | `/api/sessions/:token/join` | Join an open session |
 | `POST` | `/api/sessions/:token/event` | Record a supported playtest event |
@@ -49,16 +57,19 @@ The production worker name is `gauntlet-playtest-sessions`.
 ## Security model
 
 - Raw join tokens and host keys are never stored; only SHA-256 hashes are written to D1.
+- Session creation requires a separately configured facilitator secret.
 - Session creation returns the raw token and host key once.
 - Public reads expose status, serial, version, timestamps, and aggregate counts only.
-- Closing requires the host key.
-- CORS is limited by `ALLOWED_ORIGIN`.
+- Closing requires the per-session host key.
+- CORS is limited by `ALLOWED_ORIGINS`.
 - Tokens cannot join or record new playtest events after closure.
+- Rules Arbiter links must reference an interaction already stored in the shared D1 database.
 
 ## Production setup
 
-1. Apply the remote migration.
+1. Review and apply the remote migration.
 2. Deploy this directory as a separate Cloudflare Worker project using `wrangler.toml`.
-3. Confirm `https://gauntlet-playtest-sessions.tymon-scott.workers.dev/health` reports v0.6.1.
-4. Test session creation, joining, event recording, Rules Arbiter linkage, closure, and rejected post-closure joins.
-5. Generate uniquely coded sheets only after the production endpoint passes the above checks.
+3. Set `SESSION_ADMIN_TOKEN` with `wrangler secret put` or the Cloudflare dashboard.
+4. Confirm `https://gauntlet-playtest-sessions.tymon-scott.workers.dev/health` reports v0.6.1, `database: true`, and `sessionCreationConfigured: true`.
+5. Test authorized and unauthorized session creation, joining, event recording, Rules Arbiter linkage, closure, and rejected post-closure joins.
+6. Generate uniquely coded sheets only after the production endpoint passes the above checks.
