@@ -3,6 +3,7 @@ import { gainFactionResource, setFactionResource } from './resources';
 import { lossOrRetreatBenefitsSuppressed } from './inquisition-no-martyrs';
 import { bankedAssetCardUseAllowed, bankedAssetUseAllowed } from './banked-assets';
 import { openStandGroundForMilitaryMovement } from './neutral-stand-ground';
+import { processCounterworksOverlayQueue, queueCounterworksOverlayPlacement } from './neutral-counterworks';
 
 function log(game: GameState, actor: PlayerID, type: string, message: string, payload?: unknown): void {
   game.log.push({ id: `${game.id}-event-${game.log.length + 1}`, turn: game.turn, actor, type, message, payload, visibility: 'public' } satisfies GameEvent);
@@ -28,6 +29,12 @@ export function enrichRecentBattleResult(result: RecentBattleResult, battle: Bat
     bankedAssetUseProhibitedFor: ids.filter((id) => !bankedAssetUseAllowed(game, id)),
     seditionInactiveAssets: battle.seditionInactiveAssets
       ? structuredClone(battle.seditionInactiveAssets)
+      : undefined,
+    counterworksInactiveOverlays: battle.counterworksInactiveOverlays
+      ? structuredClone(battle.counterworksInactiveOverlays)
+      : undefined,
+    counterworksOverlayPreventions: battle.counterworksOverlayPreventions
+      ? structuredClone(battle.counterworksOverlayPreventions)
       : undefined,
   };
 }
@@ -73,10 +80,18 @@ export function buildMilitaryAftermathChoices(game: GameState, _battle: BattleSt
 
     const location = game.board.spaces.find((space) => space.id === result.location);
     if (cardWasPlayed(result, result.winner, 'military-encampment') && result.winner === result.defender && location?.kind === 'territory' && location.controller === result.winner) {
-      winner.zones.discard = winner.zones.discard.filter((card) => card !== 'military-encampment');
-      winner.zones.graveyard = winner.zones.graveyard.filter((card) => card !== 'military-encampment');
-      location.overlays = [...(location.overlays ?? []), { cardId: 'military-encampment', owner: result.winner, faceUp: true }];
-      log(game, result.winner, 'military_encampment_placed', `${winner.name} placed Encampment after defending successfully.`, { spaceId: location.id });
+      const sourceZone = winner.zones.discard.includes('military-encampment') ? 'discard' : winner.zones.graveyard.includes('military-encampment') ? 'graveyard' : undefined;
+      if (sourceZone) {
+        queueCounterworksOverlayPlacement(game, {
+          kind: 'military_encampment_battle',
+          playerId: result.winner,
+          cardId: 'military-encampment',
+          spaceId: location.id,
+          source: { zone: sourceZone },
+          battleId: result.battleId,
+        });
+        processCounterworksOverlayQueue(game);
+      }
     }
 
     if (result.winner === result.defender && hasCardSource(game, result.winner, 'military-countercharge')) {

@@ -32,6 +32,10 @@ import {
   resolveContrabandChoice,
 } from './neutral-contraband';
 import {
+  processCounterworksOverlayQueue,
+  resolveCounterworksChoice,
+} from './neutral-counterworks';
+import {
   applyConscriptionAction,
   beginConscriptionAssetPlay,
   CONSCRIPTION,
@@ -207,6 +211,8 @@ import {
 export type NeutralAppStateAction = AppStateAction | FinishMovementAction | ResolveNeutralChoiceAction | UseNeutralReinforcementsAssetAction;
 
 function continueNeutralChoices(game: GameState): void {
+  processCounterworksOverlayQueue(game);
+  if (game.pendingNeutralChoice) return;
   openPalisadeWallAssetChoice(game);
   openNextDecoysChoice(game);
   openNextRequisitionChoice(game);
@@ -268,6 +274,8 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
                             ? (resolveConscriptionChoice(next, action), {})
                           : pendingKind === 'contraband_battle'
                             ? resolveContrabandChoice(next, action)
+                            : pendingKind.startsWith('counterworks_')
+                              ? resolveCounterworksChoice(next, action)
                           : pendingKind === 'valor_battle'
                             ? (resolveValorChoice(next, action), {})
                     : pendingKind === 'scorched_earth_asset'

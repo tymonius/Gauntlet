@@ -121,6 +121,36 @@ export function buildPendingNeutralOptions(
         },
       }));
 
+
+    case 'counterworks_asset':
+      return [
+        {
+          label: `Allow ${pending.overlayCardId} to become an Overlay`,
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'pass' },
+        },
+        {
+          label: `Discard Counterworks and prevent ${pending.overlayCardId}`,
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'use' },
+        },
+      ];
+
+    case 'counterworks_battle':
+      return [
+        {
+          label: 'Prevent the next opposing Overlay during this battle or cleanup',
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'prevent_overlay' },
+        },
+        ...pending.overlayOptions.map((overlay) => ({
+          label: `Make ${overlay.cardId} inactive during this battle`,
+          action: {
+            type: 'resolve_neutral_choice' as const,
+            playerId,
+            choice: 'deactivate_overlay' as const,
+            targetKey: overlay.targetKey,
+          },
+        })),
+      ];
+
     case 'conscription_action':
       return [
         {

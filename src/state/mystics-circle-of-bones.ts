@@ -13,7 +13,8 @@ import type { ActionCardTarget, ResolveMysticsChoiceAction } from './actions';
 import { battleDiceCount, deterministicBattleDiceValues, selectBattleDieResult } from './battle-dice';
 import { sacrificeMysticHandCard } from './mystics-conversion';
 import { GameActionError } from './reducer';
-import { placeTerritoryOverlay, topTerritoryOverlay } from './territory-overlays';
+import { topTerritoryOverlay } from './territory-overlays';
+import { counterworksOverlayInactive, processCounterworksOverlayQueue, queueCounterworksOverlayPlacement } from './neutral-counterworks';
 
 export const CIRCLE_OF_BONES = 'mystics-circle-of-bones';
 const RESOLVED_MARKER_PREFIX = 'mystics_circle_of_bones_resolved';
@@ -79,17 +80,18 @@ export function applyCircleOfBonesAction(
   if (cardId !== CIRCLE_OF_BONES) return false;
   requireCircleOfBonesActionTarget(game, playerId, cardId, targets);
   const target = spaceTarget(targets)!;
-  const space = game.board.spaces.find((candidate) => candidate.id === target)!;
   const player = game.players[playerId];
-  if (!removeOne(player.zones.removed, CIRCLE_OF_BONES)) {
+  if (!player.zones.removed.includes(CIRCLE_OF_BONES)) {
     throw new GameActionError('Circle of Bones did not reach its temporary Action destination.');
   }
-  placeTerritoryOverlay(space, CIRCLE_OF_BONES, playerId);
-  publicLog(game, playerId, 'mystics_circle_of_bones_placed', `${player.name} placed Circle of Bones on ${target}.`, {
+  queueCounterworksOverlayPlacement(game, {
+    kind: 'circle_of_bones_action',
+    playerId,
     cardId: CIRCLE_OF_BONES,
     spaceId: target,
-    source: 'action',
+    source: { zone: 'removed' },
   });
+  processCounterworksOverlayQueue(game);
   return true;
 }
 
@@ -121,29 +123,26 @@ export function placeCircleOfBonesBattleOverlays(game: GameState): number {
   let placed = 0;
   for (const card of orderedBattleCards(battle)) {
     if (!activeUnplacedCircle(card)) continue;
-    placeTerritoryOverlay(space, CIRCLE_OF_BONES, card.owner);
     card.postRevealEffectResolved = true;
+    queueCounterworksOverlayPlacement(game, {
+      kind: 'circle_of_bones_battle',
+      playerId: card.owner,
+      cardId: CIRCLE_OF_BONES,
+      spaceId: space.id,
+      source: { zone: 'battle_card', battleId: battle.id, owner: card.owner, origin: card.origin },
+      battleId: battle.id,
+    });
     placed += 1;
-    publicLog(
-      game,
-      card.owner,
-      'mystics_circle_of_bones_placed',
-      `${game.players[card.owner].name} placed Circle of Bones on the contested Territory.`,
-      {
-        cardId: CIRCLE_OF_BONES,
-        spaceId: space.id,
-        battleId: battle.id,
-        source: card.origin,
-      },
-    );
   }
+  processCounterworksOverlayQueue(game);
   return placed;
 }
 
 export function removeCircleOfBonesCleanupCopies(game: GameState, battle: BattleState): number {
   let removed = 0;
   for (const card of orderedBattleCards(battle)) {
-    if (card.cardId !== CIRCLE_OF_BONES || !card.postRevealEffectResolved) continue;
+    const placementCompleted = card.overlayPlacementCompleted ?? card.postRevealEffectResolved;
+    if (card.cardId !== CIRCLE_OF_BONES || !placementCompleted || card.overlayPlacementPrevented) continue;
     const player = game.players[card.owner];
     const zone = card.origin === 'hand' ? player.zones.graveyard : player.zones.discard;
     if (removeOne(zone, CIRCLE_OF_BONES)) removed += 1;
@@ -161,7 +160,8 @@ function participantFor(game: GameState, playerId: PlayerID): BattleParticipantS
 
 function hasBlockingWindow(game: GameState): boolean {
   return Boolean(
-    game.pendingMysticsChoice
+    game.pendingNeutralChoice
+    || game.pendingMysticsChoice
     || game.pendingIntelligenceChoice
     || game.pendingMilitaryChoice
     || game.pendingMilitaryTimingChoice
@@ -184,7 +184,9 @@ export function openCircleOfBonesRerollIfReady(game: GameState): boolean {
 
   const space = game.board.spaces.find((candidate) => candidate.id === battle.location);
   const overlay = topTerritoryOverlay(space);
+  const overlayIndex = space?.overlays ? space.overlays.length - 1 : -1;
   if (!space || overlay?.cardId !== CIRCLE_OF_BONES) return false;
+  if (counterworksOverlayInactive(game, space.id, overlay, overlayIndex, battle.id)) return false;
   if (overlay.owner !== battle.attacker.playerId && overlay.owner !== battle.defender.playerId) return false;
 
   const marker = resolvedMarker(battle.id, space.id, overlay.owner);
