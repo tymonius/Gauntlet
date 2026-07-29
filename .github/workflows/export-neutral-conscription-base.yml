@@ -20,13 +20,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          tar --exclude=.git -czf gauntlet-repository.tar.gz .
-          sha256sum gauntlet-repository.tar.gz > gauntlet-repository.sha256
+          tar --exclude=.git -czf "$RUNNER_TEMP/gauntlet-repository.tar.gz" .
+          sha256sum "$RUNNER_TEMP/gauntlet-repository.tar.gz" > "$RUNNER_TEMP/gauntlet-repository.sha256"
 
       - name: Upload repository archive
         uses: actions/upload-artifact@v4
         with:
           name: neutral-conscription-base
           path: |
-            gauntlet-repository.tar.gz
-            gauntlet-repository.sha256
+            ${{ runner.temp }}/gauntlet-repository.tar.gz
+            ${{ runner.temp }}/gauntlet-repository.sha256
