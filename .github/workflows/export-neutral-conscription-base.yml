@@ -20,11 +20,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          tar -czf "$RUNNER_TEMP/gauntlet-engine.tar.gz" \
-            src \
-            package.json \
-            tsconfig.json \
-            releases/v0.6.0/Gauntlet_v0.6_Release.json
+          tar -czf "$RUNNER_TEMP/gauntlet-engine.tar.gz" src package.json tsconfig.json
           sha256sum "$RUNNER_TEMP/gauntlet-engine.tar.gz" > "$RUNNER_TEMP/gauntlet-engine.sha256"
 
       - name: Upload engine archive
