@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import shutil
 import subprocess
+import sys
 import tempfile
 from pathlib import Path
 
@@ -199,6 +200,16 @@ def convert_markdown(
     if include_toc:
         command.extend(["--toc", "--toc-depth=2"])
     run(command, cwd=ROOT)
+
+    if include_toc:
+        run(
+            [
+                sys.executable,
+                str(ROOT / "scripts" / "finalize_v061_docx.py"),
+                str(output_docx),
+            ],
+            cwd=ROOT,
+        )
 
     with tempfile.TemporaryDirectory(prefix="gauntlet-lo-") as profile:
         run(
