@@ -38,7 +38,8 @@ These implementation records do not override the published v0.6.0 package. After
 
 - [Development Status](Gauntlet_Development_Status.md) — current post-release priorities and playtest watchlist.
 - [Design Principles and Guardrails](Gauntlet_Design_Principles_and_Guardrails.md) — durable game-design constraints.
-- [Visual Design Language](Gauntlet_Visual_Design_Language.md) — approved graphic and component principles for faction identity, cards, print materials, and interfaces.
+- [Visual Identity and Design System](Gauntlet_Visual_Identity_and_Design_System.md) — cross-channel framework for brand, typography, color, shapes, icons, cards, rulebook, website, tools, digital play, physical components, and production assets.
+- [Visual Design Language](Gauntlet_Visual_Design_Language.md) — approved detailed graphic and component principles for faction identity, cards, print materials, and interfaces.
 - [Illustration Art Direction](Gauntlet_Illustration_Art_Direction.md) — shared visual-world standards for architecture, clothing, technology, environments, faction depiction, and card illustration.
 - [Illustration Color Addendum](Gauntlet_Illustration_Color_Addendum.md) — approved color-richness standard balancing historical realism with attractive, collectible card art.
 - [Illustration Environmental Detail Guardrails](Gauntlet_Illustration_Environmental_Detail_Guardrails.md) — approved rules for flags, signage, visible writing, environmental labeling, scene density, and card-size focal clarity.
