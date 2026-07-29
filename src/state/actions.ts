@@ -71,7 +71,9 @@ export interface ResolveNeutralChoiceAction {
     | 'inspect_opponent_draw'
     | 'inspect_opponent_hand'
     | 'inspect'
-    | 'replace';
+    | 'replace'
+    | 'deactivate_overlay'
+    | 'prevent_overlay';
   cardId?: CardID;
   cardIds?: CardID[];
   targetKey?: string;

@@ -1,5 +1,5 @@
 import type { BoardState, PublicBoardView } from './board';
-import type { BattleState, PublicBattleView } from './battle';
+import type { BattleState, CounterworksInactiveOverlay, CounterworksOverlayPrevention, PublicBattleView } from './battle';
 import type { PendingDiplomatChoice } from './diplomats';
 import type { PendingFinancierChoice } from './financiers';
 import type { InquisitionAccusationQueueEntry, InquisitionActOfFaithBattleQueueEntry, InquisitionBurningAtTheStakeBattleQueueEntry, InquisitionConfessionConstraint, InquisitionDivineMercyBattleQueueEntry, InquisitionExcommunicationBattleQueueEntry, InquisitionGuiltByAssociationBattleQueueEntry, InquisitionPenanceBattleQueueEntry, PendingInquisitionChoice } from './inquisition';
@@ -8,20 +8,21 @@ import type { CardID, GameID, PlayerID, SpaceID } from './ids';
 import type { LegalLeaderAbilityOption } from './leader';
 import type { PendingMilitaryChoice, PendingMilitaryTimingChoice } from './military';
 import type { PendingAccursedWagerAftermath, PendingMysticsChoice } from './mystics';
-import type { DecoysAssetQueueEntry, FootholdAssetQueueEntry, PendingNeutralChoice, RedemptionBattleReturns, RedemptionDiscardQueueEntry, RequisitionBattleQueueEntry, RousingSpeechAssetQueueEntry, NeutralSabotageAssetSuppression, ReservesBattleTopdecks, SalvageBattleQueueEntry, ScorchedEarthAssetQueueEntry, SeditionBattleQueueEntry, SuppliesAssetQueueEntry, SuppliesBattleQueueEntry } from './neutral';
+import type { CounterworksOverlayPlacementRequest, CourtMartialCleanupRequest, DecoysAssetQueueEntry, FootholdAssetQueueEntry, PendingNeutralChoice, RedemptionBattleReturns, RedemptionDiscardQueueEntry, RequisitionBattleQueueEntry, RousingSpeechAssetQueueEntry, NeutralSabotageAssetSuppression, ReservesBattleTopdecks, SalvageBattleQueueEntry, ScorchedEarthAssetQueueEntry, SeditionBattleQueueEntry, SuppliesAssetQueueEntry, SuppliesBattleQueueEntry } from './neutral';
 import type { PlayerState, PrivatePlayerView, PublicPlayerView } from './player';
 
 export type GamePhase = 'setup' | 'turn_start' | 'action_before_movement' | 'movement' | 'battle' | 'action_after_movement' | 'cleanup' | 'game_over';
 
 export interface GameEvent { id: string; turn: number; actor?: PlayerID; type: string; message: string; payload?: unknown; visibility: 'public' | 'private' | 'system'; visibleTo?: PlayerID[]; }
 export interface PendingAssetBankDiscard { playerId: PlayerID; limit: number; discardCount: number; options: CardID[]; }
-export interface RecentBattleResult { battleId: string; turn: number; winner: PlayerID; loser: PlayerID; attacker: PlayerID; defender: PlayerID; location: SpaceID; attackerOrigin: SpaceID; retreatDirection: -1 | 1; battleHandCards?: Partial<Record<PlayerID, CardID[]>>; handCommittedCards?: Partial<Record<PlayerID, CardID[]>>; ordersUsed?: Partial<Record<PlayerID, string[]>>; bankedAssetUseProhibitedFor?: PlayerID[]; seditionInactiveAssets?: Partial<Record<PlayerID, CardID[]>>; lossRetreatEffectsSuppressedFor?: PlayerID[]; additionalRetreatPositions?: Partial<Record<PlayerID, number>>; }
+export interface RecentBattleResult { counterworksInactiveOverlays?: CounterworksInactiveOverlay[]; counterworksOverlayPreventions?: CounterworksOverlayPrevention[]; battleId: string; turn: number; winner: PlayerID; loser: PlayerID; attacker: PlayerID; defender: PlayerID; location: SpaceID; attackerOrigin: SpaceID; retreatDirection: -1 | 1; battleHandCards?: Partial<Record<PlayerID, CardID[]>>; handCommittedCards?: Partial<Record<PlayerID, CardID[]>>; ordersUsed?: Partial<Record<PlayerID, string[]>>; bankedAssetUseProhibitedFor?: PlayerID[]; seditionInactiveAssets?: Partial<Record<PlayerID, CardID[]>>; lossRetreatEffectsSuppressedFor?: PlayerID[]; additionalRetreatPositions?: Partial<Record<PlayerID, number>>; }
 export interface PendingLeaderAbilityWindow { playerId: PlayerID; timing: 'after_battle'; battleId: string; }
 export interface InquisitionRelentlessPursuitRequest { playerId: PlayerID; loserId: PlayerID; direction: -1 | 1; }
 export interface InquisitionRelentlessPursuitResume { playerId: PlayerID; turn: number; }
 export interface NeutralPathfindersSuppression { playerId: PlayerID; spaceId: SpaceID; turn: number; }
 export interface NeutralEntrenchmentActionLock { playerId: PlayerID; sourcePlayerId: PlayerID; turn: number; }
 export interface NeutralReinforcementsActionOpportunity { playerId: PlayerID; turn: number; }
+export interface NeutralInsurrectionActionOpportunity { playerId: PlayerID; turn: number; }
 
 export interface GameState {
   id: GameID; version: string; phase: GamePhase; turn: number; activePlayer: PlayerID; priorityPlayer?: PlayerID;
@@ -46,6 +47,9 @@ export interface GameState {
   neutralPathfindersSuppressions?: NeutralPathfindersSuppression[];
   neutralEntrenchmentActionLocks?: NeutralEntrenchmentActionLock[];
   neutralReinforcementsActionOpportunity?: NeutralReinforcementsActionOpportunity;
+  neutralInsurrectionActionOpportunity?: NeutralInsurrectionActionOpportunity;
+  neutralCounterworksOverlayQueue?: CounterworksOverlayPlacementRequest[];
+  neutralCourtMartialQueue?: CourtMartialCleanupRequest[];
   neutralDecoysAssetQueue?: DecoysAssetQueueEntry[];
   neutralFootholdAssetQueue?: FootholdAssetQueueEntry[];
   neutralRedemptionDiscardQueue?: RedemptionDiscardQueueEntry[];
@@ -72,6 +76,7 @@ export interface PublicGameView {
   neutralPathfindersSuppressions?: NeutralPathfindersSuppression[];
   neutralEntrenchmentActionLocks?: NeutralEntrenchmentActionLock[];
   neutralReinforcementsActionOpportunity?: NeutralReinforcementsActionOpportunity;
+  neutralInsurrectionActionOpportunity?: NeutralInsurrectionActionOpportunity;
   pendingNeutralChoice?: PendingNeutralChoice;
   pendingMilitaryChoice?: PendingMilitaryChoice; pendingMilitaryTimingChoice?: PendingMilitaryTimingChoice; pendingDiplomatChoice?: PendingDiplomatChoice; pendingFinancierChoice?: PendingFinancierChoice;
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow; pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;

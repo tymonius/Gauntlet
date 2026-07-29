@@ -32,6 +32,16 @@ import {
   resolveContrabandChoice,
 } from './neutral-contraband';
 import {
+  processCounterworksOverlayQueue,
+  resolveCounterworksChoice,
+} from './neutral-counterworks';
+import {
+  applyCourtMartialBattleEffects,
+  processCourtMartialCleanupQueue,
+  queueCourtMartialCleanup,
+  resolveCourtMartialChoice,
+} from './neutral-court-martial';
+import {
   applyConscriptionAction,
   beginConscriptionAssetPlay,
   CONSCRIPTION,
@@ -57,6 +67,20 @@ import {
   requireEntrenchmentActionAllowed,
 } from './neutral-entrenchment';
 import { applyFealtyBattleEffects } from './neutral-fealty';
+import {
+  applyFortificationsAssetBattleHandLimit,
+  applyFortificationsBattleEffects,
+  resolveFortificationsChoice,
+} from './neutral-fortifications';
+import {
+  applyInsurrectionAction,
+  applyInsurrectionBattleEffects,
+  clearInsurrectionActionOpportunity,
+  consumeInsurrectionActionOpportunity,
+  INSURRECTION,
+  insurrectionActionOpportunityActive,
+  prepareInsurrectionAction,
+} from './neutral-insurrection';
 import {
   applyFootholdBattleCleanupDraw,
   applyFootholdBattleEffects,
@@ -110,6 +134,7 @@ import {
   clearReinforcementsActionOpportunity,
   consumeReinforcementsActionOpportunity,
   prepareReinforcementsBattleReveal,
+  reinforcementsActionOpportunityActive,
   resolveReinforcementsChoice,
   useReinforcementsAsset,
 } from './neutral-reinforcements';
@@ -207,6 +232,10 @@ import {
 export type NeutralAppStateAction = AppStateAction | FinishMovementAction | ResolveNeutralChoiceAction | UseNeutralReinforcementsAssetAction;
 
 function continueNeutralChoices(game: GameState): void {
+  processCounterworksOverlayQueue(game);
+  if (game.pendingNeutralChoice) return;
+  processCourtMartialCleanupQueue(game);
+  if (game.pendingNeutralChoice) return;
   openPalisadeWallAssetChoice(game);
   openNextDecoysChoice(game);
   openNextRequisitionChoice(game);
@@ -262,12 +291,18 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
                       ? resolveStandGroundChoice(next, action)
                       : pendingKind === 'strategic_withdrawal_battle'
                         ? resolveStrategicWithdrawalChoice(next, action)
+                        : pendingKind === 'fortifications_battle'
+                          ? resolveFortificationsChoice(next, action)
                         : pendingKind === 'tactical_planning_action'
                           ? (resolveTacticalPlanningChoice(next, action), {})
                           : pendingKind === 'conscription_action'
                             ? (resolveConscriptionChoice(next, action), {})
                           : pendingKind === 'contraband_battle'
                             ? resolveContrabandChoice(next, action)
+                            : pendingKind.startsWith('counterworks_')
+                              ? resolveCounterworksChoice(next, action)
+                              : pendingKind.startsWith('court_martial_')
+                                ? (resolveCourtMartialChoice(next, action), {})
                           : pendingKind === 'valor_battle'
                             ? (resolveValorChoice(next, action), {})
                     : pendingKind === 'scorched_earth_asset'
@@ -301,6 +336,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
 
   if (action.type === 'use_neutral_reinforcements_asset') {
     const next = structuredClone(game);
+    if (insurrectionActionOpportunityActive(next, action.playerId)) {
+      throw new GameActionError('Spend the current Insurrection Action Opportunity before using Reinforcements.');
+    }
     useReinforcementsAsset(next, action);
     reconcileSabotageAssetState(next);
     return { state: next };
@@ -402,6 +440,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   const preparedContraband = action.type === 'play_action_card' && action.cardId === CONTRABAND
     ? prepareContrabandAction(game, action)
     : undefined;
+  const preparedInsurrection = action.type === 'play_action_card' && action.cardId === INSURRECTION
+    ? prepareInsurrectionAction(game, action)
+    : undefined;
 
   const restrictedBefore = action.type === 'move_player'
     ? game.players[action.playerId]?.nonBattleMovementRemaining ?? 0
@@ -431,7 +472,11 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   const result = applyFactionGameAction(gameForApplication, action);
 
   if (action.type === 'play_action_card') {
-    consumeReinforcementsActionOpportunity(result.state, action.playerId);
+    if (reinforcementsActionOpportunityActive(result.state, action.playerId)) {
+      consumeReinforcementsActionOpportunity(result.state, action.playerId);
+    } else {
+      consumeInsurrectionActionOpportunity(result.state, action.playerId);
+    }
   }
 
   if (action.type === 'play_action_card' && preparedAdvanceGuard) {
@@ -489,6 +534,14 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'play_action_card' && preparedContraband) {
     applyContrabandAction(result.state, action.playerId, preparedContraband);
   }
+  if (action.type === 'play_action_card' && preparedInsurrection) {
+    const drawnCards = applyInsurrectionAction(
+      result.state,
+      action.playerId,
+      preparedInsurrection,
+    );
+    result.result = { ...(result.result ?? {}), drawnCards };
+  }
   if (action.type === 'play_action_card' && action.cardId === SEDITION) {
     queueSeditionActionChoice(result.state, action.playerId);
   }
@@ -514,9 +567,11 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
       action.toSpaceId,
       initiatedBattle,
     );
+    applyFortificationsAssetBattleHandLimit(result.state);
   }
   if (action.type === 'end_turn') {
     clearReinforcementsActionOpportunity(result.state, action.playerId);
+    clearInsurrectionActionOpportunity(result.state, action.playerId);
     clearRestrictedMovementForTurnTransition(result.state, action.playerId);
     clearAdvanceGuardMovement(result.state, action.playerId);
     clearExpiredPathfindersSuppressions(result.state);
@@ -536,6 +591,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     applyStandGroundBattleEffects(result.state);
     applyAdvanceGuardBattleEffects(result.state);
     applyEntrenchmentBattleEffects(result.state);
+    applyCourtMartialBattleEffects(result.state);
+    applyFortificationsBattleEffects(result.state);
+    applyInsurrectionBattleEffects(result.state);
     applyFealtyBattleEffects(result.state);
     applyFootholdBattleEffects(result.state);
     applyForcedMarchBattleEffects(result.state);
@@ -547,6 +605,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   if (action.type === 'resolve_battle' && priorBattle && priorBattleId && !result.state.battle) {
     const winnerId = latestResolvedBattleWinner(result.state);
+    queueCourtMartialCleanup(result.state, priorBattle, winnerId);
     applyValorAssetDraw(result.state, priorBattle, winnerId);
     applyScorchedEarthBattleRuins(
       result.state,

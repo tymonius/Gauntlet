@@ -190,6 +190,35 @@ export interface PendingContrabandBattleChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface CourtMartialCleanupRequest {
+  id: string;
+  sourcePlayerId: PlayerID;
+  targetPlayerId: PlayerID;
+  battleId: string;
+  source: 'battle' | 'asset';
+  assetConsumed?: boolean;
+}
+
+export interface PendingCourtMartialAssetChoice {
+  kind: 'court_martial_asset';
+  playerId: PlayerID;
+  battleId: string;
+  requestId: string;
+  targetPlayerId: PlayerID;
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingCourtMartialRetreatChoice {
+  kind: 'court_martial_retreat';
+  playerId: PlayerID;
+  battleId: string;
+  requestId: string;
+  sourcePlayerId: PlayerID;
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface PendingTacticalPlanningActionChoice {
   kind: 'tactical_planning_action';
   playerId: PlayerID;
@@ -428,6 +457,22 @@ export interface PendingStandGroundMovementChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+
+export interface PendingFortificationsBattleChoice {
+  kind: 'fortifications_battle';
+  playerId: PlayerID;
+  battleId: string;
+  sourceKey: string;
+  sourceKeysRemaining: string[];
+  retreatDirection: -1 | 1;
+  options: ['pass', 'use'];
+  resume: {
+    playerId: PlayerID;
+    battleCardTargets?: BattleCardTarget[];
+  };
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface PendingValorBattleChoice {
   kind: 'valor_battle';
   playerId: PlayerID;
@@ -435,6 +480,62 @@ export interface PendingValorBattleChoice {
   sourceKey: string;
   oldRoll: number;
   options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+
+export type CounterworksOverlaySource =
+  | { zone: 'hand' | 'removed' | 'discard' | 'graveyard' | 'asset_bank' }
+  | { zone: 'battle_card'; battleId: string; owner: PlayerID; origin: 'hand' | 'battle_draw' | 'replayed' };
+
+export type CounterworksOverlayPlacementKind =
+  | 'fog_of_war_action'
+  | 'spirit_hollow_action'
+  | 'circle_of_bones_action'
+  | 'demilitarized_zone'
+  | 'blockade'
+  | 'circle_of_bones_battle'
+  | 'spirit_hollow_battle'
+  | 'scorched_earth_battle'
+  | 'scorched_earth_asset'
+  | 'military_encampment_action'
+  | 'military_encampment_battle';
+
+export interface CounterworksOverlayPlacementRequest {
+  id?: string;
+  kind: CounterworksOverlayPlacementKind;
+  playerId: PlayerID;
+  cardId: CardID;
+  spaceId: SpaceID;
+  source: CounterworksOverlaySource;
+  opponentId?: PlayerID;
+  battleId?: string;
+}
+
+export interface CounterworksOverlayOption {
+  targetKey: string;
+  spaceId: SpaceID;
+  index: number;
+  cardId: CardID;
+  owner: PlayerID;
+}
+
+export interface PendingCounterworksAssetChoice {
+  kind: 'counterworks_asset';
+  playerId: PlayerID;
+  requestId: string;
+  overlayCardId: CardID;
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingCounterworksBattleChoice {
+  kind: 'counterworks_battle';
+  playerId: PlayerID;
+  battleId: string;
+  sourceKey: string;
+  overlayOptions: CounterworksOverlayOption[];
+  options: ['deactivate_overlay', 'prevent_overlay'];
   resumePriorityPlayer?: PlayerID;
 }
 
@@ -463,6 +564,11 @@ export type PendingNeutralChoice =
   | PendingTacticalPlanningActionChoice
   | PendingConscriptionActionChoice
   | PendingContrabandBattleChoice
+  | PendingCounterworksAssetChoice
+  | PendingCounterworksBattleChoice
+  | PendingCourtMartialAssetChoice
+  | PendingCourtMartialRetreatChoice
+  | PendingFortificationsBattleChoice
   | PendingValorBattleChoice
   | PendingScorchedEarthAssetChoice
   | PendingSuppliesAssetChoice

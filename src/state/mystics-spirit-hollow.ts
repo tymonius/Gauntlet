@@ -12,7 +12,8 @@ import type {
 import type { ActionCardTarget, ResolveMysticsChoiceAction } from './actions';
 import { triggerMateriaPrimaAfterHandSacrifice } from './mystics-conversion';
 import { GameActionError } from './reducer';
-import { placeTerritoryOverlay, topTerritoryOverlay } from './territory-overlays';
+import { topTerritoryOverlay } from './territory-overlays';
+import { counterworksOverlayInactive, processCounterworksOverlayQueue, queueCounterworksOverlayPlacement } from './neutral-counterworks';
 
 export const SPIRIT_HOLLOW = 'mystics-spirit-hollow';
 
@@ -94,17 +95,18 @@ export function applySpiritHollowAction(
   if (cardId !== SPIRIT_HOLLOW) return false;
   requireSpiritHollowActionTarget(game, playerId, cardId, targets);
   const spaceId = spaceTarget(targets)!;
-  const space = game.board.spaces.find((candidate) => candidate.id === spaceId)!;
   const player = game.players[playerId];
-  if (!removeOne(player.zones.removed, SPIRIT_HOLLOW)) {
+  if (!player.zones.removed.includes(SPIRIT_HOLLOW)) {
     throw new GameActionError('Spirit Hollow did not reach its temporary Action destination.');
   }
-  placeTerritoryOverlay(space, SPIRIT_HOLLOW, playerId);
-  publicLog(game, playerId, 'mystics_spirit_hollow_placed', `${player.name} placed Spirit Hollow on ${spaceId}.`, {
+  queueCounterworksOverlayPlacement(game, {
+    kind: 'spirit_hollow_action',
+    playerId,
     cardId: SPIRIT_HOLLOW,
     spaceId,
-    source: 'action',
+    source: { zone: 'removed' },
   });
+  processCounterworksOverlayQueue(game);
   return true;
 }
 
@@ -123,41 +125,34 @@ function battleSources(battle: BattleState): BattlePlayedCard[] {
   return sources;
 }
 
-function removeSourceFromNormalDestination(game: GameState, source: BattlePlayedCard): boolean {
-  const player = game.players[source.owner];
-  return source.origin === 'hand'
-    ? removeOne(player.zones.graveyard, source.cardId)
-    : removeOne(player.zones.discard, source.cardId);
-}
-
 export function placeSpiritHollowBattleOverlays(game: GameState, battle: BattleState): number {
   const space = game.board.spaces.find((candidate) => candidate.id === battle.location);
   if (!space || space.kind !== 'territory') return 0;
   let placed = 0;
   for (const source of battleSources(battle)) {
-    if (!removeSourceFromNormalDestination(game, source)) continue;
-    placeTerritoryOverlay(space, SPIRIT_HOLLOW, source.owner);
+    const sourceZone = source.origin === 'hand' ? 'graveyard' : 'discard';
+    const zone = game.players[source.owner].zones[sourceZone];
+    if (!zone.includes(source.cardId)) continue;
+    queueCounterworksOverlayPlacement(game, {
+      kind: 'spirit_hollow_battle',
+      playerId: source.owner,
+      cardId: SPIRIT_HOLLOW,
+      spaceId: space.id,
+      source: { zone: sourceZone },
+      battleId: battle.id,
+    });
     placed += 1;
-    publicLog(
-      game,
-      source.owner,
-      'mystics_spirit_hollow_placed',
-      `${game.players[source.owner].name} placed Spirit Hollow on the contested Territory.`,
-      {
-        cardId: SPIRIT_HOLLOW,
-        spaceId: space.id,
-        battleId: battle.id,
-        source: source.origin,
-      },
-    );
   }
+  processCounterworksOverlayQueue(game);
   return placed;
 }
 
 export function queueSpiritHollowAfterBattle(game: GameState, battle: BattleState): boolean {
   const space = game.board.spaces.find((candidate) => candidate.id === battle.location);
   const overlay = topTerritoryOverlay(space);
+  const overlayIndex = space?.overlays ? space.overlays.length - 1 : -1;
   if (!space || overlay?.cardId !== SPIRIT_HOLLOW) return false;
+  if (counterworksOverlayInactive(game, space.id, overlay, overlayIndex, battle.id)) return false;
   const owner = game.players[overlay.owner];
   if (!owner?.mystics) return false;
 
@@ -177,7 +172,8 @@ export function queueSpiritHollowAfterBattle(game: GameState, battle: BattleStat
 
 function hasBlockingWindow(game: GameState): boolean {
   return Boolean(
-    game.pendingMysticsChoice
+    game.pendingNeutralChoice
+    || game.pendingMysticsChoice
     || game.pendingIntelligenceChoice
     || game.pendingMilitaryChoice
     || game.pendingMilitaryTimingChoice
@@ -194,7 +190,9 @@ function nextQueuedChoice(game: GameState): { ownerId: PlayerID; entry: SpiritHo
     while (queue?.length) {
       const entry = queue[0];
       const space = game.board.spaces.find((candidate) => candidate.id === entry.spaceId);
-      if (topTerritoryOverlay(space)?.cardId !== SPIRIT_HOLLOW) {
+      const overlay = topTerritoryOverlay(space);
+      const overlayIndex = space?.overlays ? space.overlays.length - 1 : -1;
+      if (overlay?.cardId !== SPIRIT_HOLLOW || counterworksOverlayInactive(game, entry.spaceId, overlay, overlayIndex, entry.battleId)) {
         queue.shift();
         continue;
       }

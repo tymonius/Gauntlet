@@ -1,6 +1,7 @@
 import type { ActionCardTarget } from '../state/actions';
 import type { CardID, GameEvent, GameState, PlayerID, SpaceID } from '../types';
 import { gainFactionResource } from '../state/resources';
+import { processCounterworksOverlayQueue, queueCounterworksOverlayPlacement } from '../state/neutral-counterworks';
 
 export interface MilitaryCardDefinition {
   id: CardID;
@@ -56,9 +57,14 @@ export function applyMilitaryActionEffect(game: GameState, playerId: PlayerID, c
     const spaceId = targetSpace(targets);
     const space = game.board.spaces.find((candidate) => candidate.id === spaceId);
     if (!space || space.kind !== 'territory' || space.occupant !== playerId || space.controller !== playerId) throw new Error('Encampment requires a Territory you occupy and control.');
-    player.zones.removed = player.zones.removed.filter((id) => id !== cardId);
-    space.overlays = [...(space.overlays ?? []), { cardId, owner: playerId, faceUp: true }];
-    appendLog(game, playerId, 'military_encampment_placed', `${player.name} placed Encampment on ${space.territoryId ?? space.id}.`, { spaceId });
+    queueCounterworksOverlayPlacement(game, {
+      kind: 'military_encampment_action',
+      playerId,
+      cardId,
+      spaceId: space.id,
+      source: { zone: 'removed' },
+    });
+    processCounterworksOverlayQueue(game);
   }
 
   if (cardId === 'military-reserve-force') {

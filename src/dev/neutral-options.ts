@@ -121,6 +121,60 @@ export function buildPendingNeutralOptions(
         },
       }));
 
+
+    case 'court_martial_asset':
+      return [
+        {
+          label: 'Do not use any Court Martial Asset',
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'pass' },
+        },
+        {
+          label: 'Discard Court Martial and force one additional retreat',
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'use' },
+        },
+      ];
+
+    case 'court_martial_retreat':
+      return [
+        {
+          label: 'Allow the additional retreat',
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'pass' },
+        },
+        {
+          label: 'Discard Stand Ground and prevent this additional retreat',
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'use' },
+        },
+      ];
+
+    case 'counterworks_asset':
+      return [
+        {
+          label: `Allow ${pending.overlayCardId} to become an Overlay`,
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'pass' },
+        },
+        {
+          label: `Discard Counterworks and prevent ${pending.overlayCardId}`,
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'use' },
+        },
+      ];
+
+    case 'counterworks_battle':
+      return [
+        {
+          label: 'Prevent the next opposing Overlay during this battle or cleanup',
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'prevent_overlay' },
+        },
+        ...pending.overlayOptions.map((overlay) => ({
+          label: `Make ${overlay.cardId} inactive during this battle`,
+          action: {
+            type: 'resolve_neutral_choice' as const,
+            playerId,
+            choice: 'deactivate_overlay' as const,
+            targetKey: overlay.targetKey,
+          },
+        })),
+      ];
+
     case 'conscription_action':
       return [
         {
@@ -137,6 +191,19 @@ export function buildPendingNeutralOptions(
               cardId,
             },
           })),
+      ];
+
+
+    case 'fortifications_battle':
+      return [
+        {
+          label: 'Do not withdraw farther with Fortifications',
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'pass' },
+        },
+        {
+          label: 'Withdraw one additional position with Fortifications',
+          action: { type: 'resolve_neutral_choice', playerId, choice: 'use' },
+        },
       ];
 
     case 'valor_battle':

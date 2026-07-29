@@ -12,6 +12,10 @@ import {
   battleHasUnresolvedContrabandPreReveal,
   openNextContrabandPreRevealWindow,
 } from './neutral-contraband';
+import {
+  battleHasUnresolvedCounterworksPreReveal,
+  openNextCounterworksPreRevealWindow,
+} from './neutral-counterworks';
 import { resolveFogOfWarPreRevealCard } from './intelligence-fog-of-war-battle';
 import { resolveInterceptedOrdersPreRevealCard } from './intelligence-intercepted-orders-battle';
 import { resolveReconnaissancePreRevealCard } from './intelligence-reconnaissance-battle';
@@ -90,6 +94,7 @@ export function battleHasUnresolvedIntelligencePreReveal(
   incomingBattleHandCardId?: CardID,
 ): boolean {
   return battleHasUnresolvedContrabandPreReveal(game, incomingBattleHandCardId)
+    || battleHasUnresolvedCounterworksPreReveal(game, incomingBattleHandCardId)
     || battleHasUnresolvedScoutingReportPreReveal(game, incomingBattleHandCardId)
     || battleHasUnresolvedConfessionPreReveal(game, incomingBattleHandCardId)
     || incomingBattleHandCardRequiresEarlyReveal(incomingBattleHandCardId)
@@ -100,6 +105,7 @@ export function openNextIntelligencePreRevealWindow(game: GameState): boolean {
   if (!game.battle || game.battle.stage !== 'normal_reveal') return false;
   if (game.pendingNeutralChoice || game.pendingInquisitionChoice || game.pendingIntelligenceChoice) return true;
   if (openNextContrabandPreRevealWindow(game)) return true;
+  if (openNextCounterworksPreRevealWindow(game)) return true;
   if (openNextScoutingReportPreRevealWindow(game)) return true;
   if (openNextConfessionPreRevealWindow(game)) return true;
 

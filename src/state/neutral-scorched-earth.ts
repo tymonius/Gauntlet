@@ -8,11 +8,10 @@ import type {
   ScorchedEarthAssetQueueEntry,
 } from '../types';
 import type { ResolveNeutralChoiceAction } from './actions';
-import { reconcileFaceDownAssets } from './asset-facing';
 import { activeBankedAssetCopies, bankedAssetUseAllowed } from './banked-assets';
 import { lossOrRetreatBenefitsSuppressed } from './inquisition-no-martyrs';
 import { GameActionError } from './reducer';
-import { placeRuinsOverlay } from './territory-overlays';
+import { processCounterworksOverlayQueue, queueCounterworksOverlayPlacement } from './neutral-counterworks';
 
 export const SCORCHED_EARTH = 'neutral-scorched-earth';
 
@@ -75,13 +74,6 @@ function defenderLostControlledTerritoryAndRetreated(
   );
 }
 
-function removeBattleSourceFromNormalDestination(game: GameState, source: BattlePlayedCard): boolean {
-  const player = game.players[source.owner];
-  return source.origin === 'hand'
-    ? removeOne(player.zones.graveyard, source.cardId)
-    : removeOne(player.zones.discard, source.cardId);
-}
-
 export function applyScorchedEarthBattleRuins(
   game: GameState,
   battle: BattleState,
@@ -94,22 +86,19 @@ export function applyScorchedEarthBattleRuins(
 
   let placed = 0;
   for (const source of defenderBattleSources(battle)) {
-    if (!removeBattleSourceFromNormalDestination(game, source)) continue;
-    const { replaced } = placeRuinsOverlay(game, space, source.cardId, source.owner);
+    const sourceZone = source.origin === 'hand' ? 'graveyard' : 'discard';
+    if (!game.players[source.owner].zones[sourceZone].includes(source.cardId)) continue;
+    queueCounterworksOverlayPlacement(game, {
+      kind: 'scorched_earth_battle',
+      playerId: source.owner,
+      cardId: source.cardId,
+      spaceId: space.id,
+      source: { zone: sourceZone },
+      battleId: battle.id,
+    });
     placed += 1;
-    appendPublicLog(
-      game,
-      source.owner,
-      'neutral_scorched_earth_battle_ruins',
-      `${game.players[source.owner].name} left Scorched Earth as Ruins on ${space.id} after retreating.`,
-      {
-        battleId: battle.id,
-        spaceId: space.id,
-        source: source.origin,
-        replacedRuins: replaced.map((overlay) => ({ cardId: overlay.cardId, owner: overlay.owner })),
-      },
-    );
   }
+  processCounterworksOverlayQueue(game);
   return placed;
 }
 
@@ -210,23 +199,19 @@ export function resolveScorchedEarthChoice(game: GameState, action: ResolveNeutr
     const player = game.players[action.playerId];
     const space = game.board.spaces.find((candidate) => candidate.id === pending.spaceId);
     if (!space || space.kind !== 'territory') throw new GameActionError('The Scorched Earth Territory is no longer available.');
-    if (!removeOne(player.zones.assetBank, SCORCHED_EARTH)) {
+    if (!player.zones.assetBank.includes(SCORCHED_EARTH)) {
       throw new GameActionError('Scorched Earth is no longer banked.');
     }
-    reconcileFaceDownAssets(player);
-    const { replaced } = placeRuinsOverlay(game, space, SCORCHED_EARTH, action.playerId);
+    queueCounterworksOverlayPlacement(game, {
+      kind: 'scorched_earth_asset',
+      playerId: action.playerId,
+      cardId: SCORCHED_EARTH,
+      spaceId: space.id,
+      source: { zone: 'asset_bank' },
+      battleId: pending.battleId,
+    });
     entry.triggersRemaining -= 1;
-    appendPublicLog(
-      game,
-      action.playerId,
-      'neutral_scorched_earth_asset_used',
-      `${player.name} placed banked Scorched Earth as Ruins on ${space.id}.`,
-      {
-        battleId: pending.battleId,
-        spaceId: space.id,
-        replacedRuins: replaced.map((overlay) => ({ cardId: overlay.cardId, owner: overlay.owner })),
-      },
-    );
+    processCounterworksOverlayQueue(game);
   }
   trimQueue(game);
   openNextScorchedEarthChoice(game);

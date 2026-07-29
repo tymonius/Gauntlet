@@ -7,6 +7,11 @@ import type {
   SpaceID,
 } from '../types';
 import type { ActionCardTarget, AppStateAction } from './actions';
+import {
+  counterworksOverlayInactive,
+  processCounterworksOverlayQueue,
+  queueCounterworksOverlayPlacement,
+} from './neutral-counterworks';
 
 export const FOG_OF_WAR_OVERLAY = 'intelligence-fog-of-war';
 
@@ -74,18 +79,17 @@ export function playFogOfWarOverlay(
   }
 
   const player = game.players[playerId];
-  if (!removeOne(player.zones.removed, FOG_OF_WAR_OVERLAY)) {
+  if (!player.zones.removed.includes(FOG_OF_WAR_OVERLAY)) {
     throw new FogOfWarOverlayError('Fog of War did not reach its temporary Action destination.');
   }
-  space.overlays ??= [];
-  space.overlays.push({ cardId: FOG_OF_WAR_OVERLAY, owner: playerId, faceUp: true });
-  publicLog(
-    game,
+  queueCounterworksOverlayPlacement(game, {
+    kind: 'fog_of_war_action',
     playerId,
-    'intelligence_fog_of_war_overlay_placed',
-    `${player.name} placed Fog of War on a Territory.`,
-    { spaceId },
-  );
+    cardId: FOG_OF_WAR_OVERLAY,
+    spaceId,
+    source: { zone: 'removed' },
+  });
+  processCounterworksOverlayQueue(game);
 }
 
 function participantFor(game: GameState, playerId: PlayerID): BattleParticipantState {
@@ -127,7 +131,10 @@ export function activateFogOfWarOverlayForBattle(game: GameState): boolean {
   const battle = game.battle;
   if (!battle || battle.fogOfWarOverlayOwner) return false;
   const space = game.board.spaces.find((candidate) => candidate.id === battle.location);
-  const overlays = (space?.overlays ?? []).filter((overlay) => overlay.cardId === FOG_OF_WAR_OVERLAY);
+  const overlays = (space?.overlays ?? []).filter((overlay, index) => (
+    overlay.cardId === FOG_OF_WAR_OVERLAY
+    && !counterworksOverlayInactive(game, battle.location, overlay, index, battle.id)
+  ));
   if (!space || overlays.length === 0) return false;
 
   const owners = [...new Set(overlays.map((overlay) => overlay.owner))];
@@ -166,8 +173,10 @@ export function consumeFogOfWarOverlayAfterBattle(game: GameState, battle: Battl
   const owner = battle.fogOfWarOverlayOwner;
   if (!owner || !fogBattleWasFought(battle)) return false;
   const space = game.board.spaces.find((candidate) => candidate.id === battle.location);
-  const index = space?.overlays?.findIndex((overlay) => (
-    overlay.cardId === FOG_OF_WAR_OVERLAY && overlay.owner === owner
+  const index = space?.overlays?.findIndex((overlay, overlayIndex) => (
+    overlay.cardId === FOG_OF_WAR_OVERLAY
+    && overlay.owner === owner
+    && !counterworksOverlayInactive(game, battle.location, overlay, overlayIndex, battle.id)
   )) ?? -1;
   if (!space?.overlays || index < 0) return false;
   space.overlays.splice(index, 1);
