@@ -5,109 +5,45 @@ on:
     branches:
       - rules/v0.6.1-playtest-revision
     paths:
-      - .github/workflows/sync-v061-deckbuilder.yml
+      - ".github/workflows/sync-v061-deckbuilder.yml"
+      - "scripts/sync_v061_deckbuilder.py"
+      - "deckbuilder/**"
+      - "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
+      - "docs/Gauntlet_v0.6.1_Territory_Pool.md"
+      - "releases/v0.6.1/faction-guides/**"
   pull_request:
     branches:
       - main
     paths:
-      - .github/workflows/sync-v061-deckbuilder.yml
-      - deckbuilder/**
+      - ".github/workflows/sync-v061-deckbuilder.yml"
+      - "scripts/sync_v061_deckbuilder.py"
+      - "deckbuilder/**"
+      - "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
+      - "docs/Gauntlet_v0.6.1_Territory_Pool.md"
+      - "releases/v0.6.1/faction-guides/**"
   workflow_dispatch:
 
 permissions:
   contents: write
 
+concurrency:
+  group: sync-v061-deckbuilder-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout revision branch
+      - name: Check out revision branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref || github.ref_name }}
 
-      - name: Update Deckbuilder version and governing sources
-        run: |
-          python - <<'PY'
-          from pathlib import Path
+      - name: Synchronize and validate Deckbuilder
+        run: python scripts/sync_v061_deckbuilder.py
 
-          root = Path('deckbuilder')
-          for path in root.rglob('*'):
-              if not path.is_file() or path.suffix.lower() not in {'.js', '.json', '.html', '.css', '.md'}:
-                  continue
-              text = path.read_text(encoding='utf-8')
-              text = text.replace('v0.6.0', 'v0.6.1')
-              text = text.replace('Gauntlet_v0.6_', 'Gauntlet_v0.6.1_')
-              text = text.replace('v0.6-dev', 'v0.6.1')
-              text = text.replace('gauntlet-v0.6-dev-deck', 'gauntlet-v0.6.1-deck')
-              text = text.replace('Untitled v0.6 deck', 'Untitled v0.6.1 Deck')
-              path.write_text(text, encoding='utf-8')
-
-          app = Path('deckbuilder/app.js')
-          text = app.read_text(encoding='utf-8')
-          text = text.replace(
-              'start: "## 6. Canonical Inquisition card pool",\n    end: "## 7. Card-pool summary",\n    headingLevel: 3',
-              'start: "# 6. Canonical Inquisition card pool",\n    end: "# 7. Quick reference",\n    headingLevel: 2'
-          )
-          text = text.replace(
-              'start: "## 6. Canonical Financier card pool",\n    end: "## 7. Card-pool summary",\n    headingLevel: 3',
-              'start: "# 6. Canonical Financier card pool",\n    end: "# 7. Quick reference",\n    headingLevel: 2'
-          )
-          app.write_text(text, encoding='utf-8')
-
-          territories = Path('deckbuilder/territories.js')
-          text = territories.read_text(encoding='utf-8')
-          text = text.replace('consolidated v0.6 Territory source', 'v0.6.1 Territory source')
-          territories.write_text(text, encoding='utf-8')
-          PY
-
-      - name: Validate source files and starter Decks
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          app = Path('deckbuilder/app.js').read_text(encoding='utf-8')
-          territories = Path('deckbuilder/territories.js').read_text(encoding='utf-8')
-          completed = Path('deckbuilder/completed-factions.js').read_text(encoding='utf-8')
-          index = Path('deckbuilder/index.html').read_text(encoding='utf-8')
-          starters = json.loads(Path('deckbuilder/starter-decks.json').read_text(encoding='utf-8'))
-
-          forbidden = ['v0.6.0', 'Gauntlet_v0.6_Neutral', 'Gauntlet_v0.6_Territory', 'Battle Hand', 'hand commitment', 'move one space toward their Heartland']
-          combined = '\n'.join([app, territories, completed, index])
-          found = [term for term in forbidden if term in combined]
-          if found:
-              raise SystemExit(f'Obsolete Deckbuilder terms remain: {found}')
-
-          required_paths = [
-              '../docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md',
-              '../docs/Gauntlet_v0.6.1_Territory_Pool.md',
-              '../releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md',
-              '../releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md',
-              '../releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md',
-              '../releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md',
-              '../releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md',
-              '../releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md'
-          ]
-          missing = [path for path in required_paths if path not in combined]
-          if missing:
-              raise SystemExit(f'Deckbuilder source paths missing: {missing}')
-
-          if starters.get('version') != 'v0.6.1':
-              raise SystemExit(f'Unexpected starter Deck version: {starters.get("version")}')
-          decks = starters.get('decks') or []
-          if len(decks) != 12:
-              raise SystemExit(f'Expected 12 starter Decks, found {len(decks)}')
-          for deck in decks:
-              count = sum(int(item['quantity']) for item in deck.get('cards', []))
-              if count < 30:
-                  raise SystemExit(f'{deck.get("name")}: only {count} playable cards')
-              if len(deck.get('territories', [])) != 3:
-                  raise SystemExit(f'{deck.get("name")}: expected three Territories')
-          print('Validated v0.6.1 Deckbuilder source paths and 12 starter Decks.')
-          PY
-
-      - name: Commit Deckbuilder synchronization
+      - name: Commit synchronized Deckbuilder sources when changed
+        if: ${{ github.event_name != 'pull_request' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -115,5 +51,10 @@ jobs:
           if git diff --cached --quiet; then
             exit 0
           fi
-          git commit -m "Sync Deckbuilder sources and version to v0.6.1"
-          git push origin HEAD:${{ github.head_ref || github.ref_name }}
+          git commit -m "Synchronize Deckbuilder sources and version to v0.6.1"
+          git push origin HEAD:rules/v0.6.1-playtest-revision
+
+      - name: Verify clean synchronization
+        run: |
+          python scripts/sync_v061_deckbuilder.py
+          git diff --exit-code -- deckbuilder/
