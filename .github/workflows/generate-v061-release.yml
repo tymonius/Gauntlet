@@ -1,18 +1,26 @@
-name: Generate v0.6.1 release data
+name: Generate and validate v0.6.1 sources
 
 on:
   pull_request:
+    branches:
+      - main
     paths:
       - "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
       - "docs/Gauntlet_v0.6.1_Territory_Pool.md"
       - "releases/v0.6.1/**"
       - "rules-assistant/**"
+      - "deckbuilder/**"
       - "scripts/generate_v061_release.py"
+      - "scripts/sync_v061_deckbuilder.py"
       - ".github/workflows/generate-v061-release.yml"
   workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: generate-v061-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   generate:
@@ -28,213 +36,21 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Apply shared-rulebook clarifications if needed
-        run: |
-          python - <<'PY'
-          from pathlib import Path
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
 
-          path = Path("releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md")
-          text = path.read_text(encoding="utf-8")
+      - name: Synchronize Deckbuilder sources
+        run: python scripts/sync_v061_deckbuilder.py
 
-          headings_old = '''- **Mission:** use only as instructed by Intelligence rules.
-
-          Playing a card for one printed effect does not activate its other printed effects unless a rule says otherwise.'''.replace("          ", "")
-          headings_new = '''- **Mission:** use only as instructed by Intelligence rules.
-
-          Faction guides and individual cards may define additional printed headings, such as **Terms**, **Asset**, **Overlay**, **Loan**, or **Effect**. Those headings use the timing and procedure stated by their governing text. They do not make a card eligible as a Gambit or Tactic unless the card also has an eligible Gambit, Tactic, or Battle effect.
-
-          Playing a card for one printed effect does not activate its other printed effects unless a rule says otherwise.'''.replace("          ", "")
-          if headings_old in text:
-              text = text.replace(headings_old, headings_new, 1)
-
-          withdrawal_old = '''- if both withdraw, move the attacker first, then the defender.
-
-          If a battle following refused Terms ends through withdrawal, return the Stake and do not impose or ratify the Proposal unless a specific rule says otherwise.'''.replace("          ", "")
-          withdrawal_new = '''- if both withdraw, move the attacker first, then the defender.
-
-          ### Withdrawal during opening effects
-
-          If an effect causes one or both players to withdraw during opening effects and prevents the pending battle, use the same attacker and defender movement above. Because no battle is fought:
-
-          - no player wins, loses, or retreats;
-          - no battle or Aftermath triggers occur; and
-          - no battle-card destinations or cleanup occur.
-
-          The established attacker and defender roles are used only to determine the withdrawal movement. Resolve any remaining instructions from the effect or accepted Terms after that movement.
-
-          If a battle following refused Terms ends through withdrawal, return the Stake and do not impose or ratify the Proposal unless a specific rule says otherwise.'''.replace("          ", "")
-          if withdrawal_old in text:
-              text = text.replace(withdrawal_old, withdrawal_new, 1)
-
-          path.write_text(text, encoding="utf-8")
-          PY
-
-      - name: Sync Rules Arbiter to v0.6.1 if needed
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          def replace_optional(text, old, new):
-              if old in text:
-                  return text.replace(old, new, 1)
-              if new in text:
-                  return text
-              raise SystemExit(f"Could not find either old or new Rules Arbiter text: {old[:80]!r}")
-
-          widget_path = Path("rules-assistant/widget.js")
-          widget = widget_path.read_text(encoding="utf-8")
-          widget = replace_optional(widget, 'version: "v0.6.0",', 'version: "v0.6.1",')
-          widget = replace_optional(widget, '"What happens to cards used in battle?",', '"Where do Gambits and Tactics go?",')
-          widget = replace_optional(
-              widget,
-              'this.sessionId = getOrCreateSessionId();',
-              'this.sessionId = getOrCreateSessionId();\n    this.playtestContext = getPlaytestContext();'
-          )
-          widget = replace_optional(
-              widget,
-              'answer: "Ask me about the v0.6.0 rulebook, cards, Leaders, faction systems, Territories, battle timing, or victory conditions.",',
-              'answer: "Ask me about the v0.6.1 rulebook, cards, Leaders, faction systems, Territories, Gambits, Tactics, battle timing, or victory conditions.",'
-          )
-          widget = replace_optional(
-              widget,
-              'Answers use the canonical ${escapeHtml(CONFIG.version)} sources. Questions, answers, and optional feedback may be anonymously logged to improve the rules and this tool. Printed rules and component text remain authoritative.',
-              'Answers use the canonical ${escapeHtml(CONFIG.version)} sources. Questions, answers, citations, ruling status, and optional feedback may be logged to improve the rules and this tool. When opened from a formal playtest session, the sheet serial and session identifier are included automatically. Printed rules and component text remain authoritative.'
-          )
-          widget = replace_optional(
-              widget,
-              '''            history: this.history.slice(-6),
-              sessionId: this.sessionId
-            })'''.replace("              ", "  "),
-              '''            history: this.history.slice(-6),
-              sessionId: this.sessionId,
-              rulesVersion: CONFIG.version,
-              playtestSessionId: this.playtestContext.sessionId,
-              sheetSerial: this.playtestContext.sheetSerial
-            })'''.replace("              ", "  ")
-          )
-          widget = replace_optional(
-              widget,
-              'body: JSON.stringify({ interactionId, rating, comment: String(comment || "").trim() })',
-              '''body: JSON.stringify({
-                interactionId,
-                rating,
-                comment: String(comment || "").trim(),
-                sessionId: this.sessionId,
-                rulesVersion: CONFIG.version,
-                playtestSessionId: this.playtestContext.sessionId,
-                sheetSerial: this.playtestContext.sheetSerial
-              })'''.replace("              ", "      ")
-          )
-          widget = replace_optional(widget, 'inferred: "Interpretation",', 'inferred: "Inferred ruling",')
-
-          if "function getPlaytestContext()" not in widget:
-              anchor = "function getOrCreateSessionId() {"
-              helper = '''function getPlaytestContext() {
-                const params = new URLSearchParams(window.location.search);
-                const sessionId = firstValidContextValue([
-                  params.get("playtestSession"),
-                  params.get("session"),
-                  readSessionContext("gauntlet_playtest_session_id")
-                ]);
-                const sheetSerial = firstValidContextValue([
-                  params.get("sheet"),
-                  params.get("serial"),
-                  readSessionContext("gauntlet_playtest_sheet_serial")
-                ]);
-
-                if (sessionId) storeSessionContext("gauntlet_playtest_session_id", sessionId);
-                if (sheetSerial) storeSessionContext("gauntlet_playtest_sheet_serial", sheetSerial);
-                return { sessionId, sheetSerial };
-              }
-
-              function firstValidContextValue(values) {
-                for (const value of values) {
-                  const normalized = String(value || "").trim();
-                  if (/^[a-zA-Z0-9_.:-]{3,120}$/.test(normalized)) return normalized;
-                }
-                return null;
-              }
-
-              function readSessionContext(key) {
-                try {
-                  return sessionStorage.getItem(key);
-                } catch {
-                  return null;
-                }
-              }
-
-              function storeSessionContext(key, value) {
-                try {
-                  sessionStorage.setItem(key, value);
-                } catch {
-                  // Formal-session linkage is optional when browser storage is unavailable.
-                }
-              }
-
-              function getOrCreateSessionId() {'''.replace("              ", "")
-              if anchor not in widget:
-                  raise SystemExit("Missing Rules Arbiter session helper anchor")
-              widget = widget.replace(anchor, helper, 1)
-          widget_path.write_text(widget, encoding="utf-8")
-
-          search_path = Path("rules-assistant/local-search.js")
-          search = search_path.read_text(encoding="utf-8")
-          search = replace_optional(
-              search,
-              '  hand: ["normal hand", "battle hand"],',
-              '  hand: ["gambit", "reserve", "persistent private cards"],\n'
-              '  gambit: ["hand", "graveyard", "set gambit"],\n'
-              '  reserve: ["temporary cards", "tactic", "battle draw"],\n'
-              '  tactic: ["reserve", "discard pile", "choose tactic"],\n'
-              '  aftermath: ["battle result", "destinations", "retreat"],\n'
-              '  withdrawal: ["no winner", "no loser", "end battle"],'
-          )
-          search = replace_optional(
-              search,
-              'const CANONICAL_DATA_PATH = "releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json";',
-              'const CANONICAL_DATA_PATH = "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json";'
-          )
-          search = replace_optional(
-              search,
-              'const RULEBOOK_PATH = "releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md";',
-              'const RULEBOOK_PATH = "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md";'
-          )
-          search = replace_optional(
-              search,
-              'const RULEBOOK_PDF_PATH = "releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf";',
-              'const RULEBOOK_PDF_PATH = "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf";'
-          )
-          search = search.replace('canonicalData?.version || "v0.6.0"', 'canonicalData?.version || "v0.6.1"')
-          search = search.replace('canonicalData.version || "v0.6.0"', 'canonicalData.version || "v0.6.1"')
-          search = search.replace('version = "v0.6.0"', 'version = "v0.6.1"')
-          search = replace_optional(
-              search,
-              '"action", "battle", "mission", "reminder", "unique_rule"',
-              '"action", "terms", "gambit", "tactic", "battle", "mission", "asset", "overlay", "reminder", "unique_rule"'
-          )
-          search_path.write_text(search, encoding="utf-8")
-          PY
-
-      - name: Commit source clarifications when changed
-        run: |
-          git add \
-            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md \
-            rules-assistant/widget.js \
-            rules-assistant/local-search.js
-          if git diff --cached --quiet; then
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Sync v0.6.1 rulebook and Rules Arbiter sources"
-          git push origin HEAD:${{ github.head_ref || github.ref_name }}
-
-      - name: Generate and validate v0.6.1 data
+      - name: Generate and validate canonical data
         run: python scripts/generate_v061_release.py
 
-      - name: Commit generated outputs when changed
+      - name: Commit synchronized and generated outputs when changed
         run: |
           git add \
+            deckbuilder/ \
             releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json \
             releases/v0.6.1/Gauntlet_v0.6.1_Complete_Card_Reference.md
           if git diff --cached --quiet; then
@@ -242,11 +58,23 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Generate v0.6.1 canonical data and card reference"
+          git commit -m "Synchronize v0.6.1 generated and browser sources"
           git push origin HEAD:${{ github.head_ref || github.ref_name }}
 
       - name: Verify generated outputs are current
-        run: python scripts/generate_v061_release.py --check
+        run: |
+          python scripts/sync_v061_deckbuilder.py
+          python scripts/generate_v061_release.py --check
+          git diff --exit-code -- deckbuilder/
+
+      - name: Install browser-test dependencies
+        run: npm install
+
+      - name: Test Rules Arbiter retrieval
+        run: npm run test:rules-assistant
+
+      - name: Test Deckbuilder data
+        run: npm run test:deckbuilder
 
       - name: Upload generated release data
         uses: actions/upload-artifact@v4
