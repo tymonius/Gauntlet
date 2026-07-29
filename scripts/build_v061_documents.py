@@ -141,7 +141,7 @@ def build_reference_doc(path: Path, short_title: str) -> None:
     quote.paragraph_format.space_before = Pt(4)
     quote.paragraph_format.space_after = Pt(6)
 
-    table = document.styles["Table"]
+    table = ensure_style(document, "Table", WD_STYLE_TYPE.TABLE)
     table.font.name = "Liberation Sans"
     table._element.rPr.rFonts.set(qn("w:eastAsia"), "Liberation Sans")
     table.font.size = Pt(8.8)
