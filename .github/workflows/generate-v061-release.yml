@@ -1,0 +1,38 @@
+name: Generate v0.6.1 release data
+
+on:
+  pull_request:
+    paths:
+      - "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
+      - "docs/Gauntlet_v0.6.1_Territory_Pool.md"
+      - "releases/v0.6.1/**"
+      - "scripts/generate_v061_release.py"
+      - ".github/workflows/generate-v061-release.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Generate and validate v0.6.1 data
+        run: python scripts/generate_v061_release.py
+
+      - name: Upload generated release data
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-v061-generated-data
+          path: |
+            releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json
+            releases/v0.6.1/Gauntlet_v0.6.1_Complete_Card_Reference.md
+          if-no-files-found: error
