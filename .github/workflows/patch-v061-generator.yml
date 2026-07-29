@@ -1,0 +1,52 @@
+name: Patch v0.6.1 generator source paths
+
+on:
+  push:
+    branches:
+      - rules/v0.6.1-playtest-revision
+    paths:
+      - ".github/workflows/patch-v061-generator.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out revision branch
+        uses: actions/checkout@v4
+        with:
+          ref: rules/v0.6.1-playtest-revision
+
+      - name: Update generated source-file map
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/generate_v061_release.py")
+          text = path.read_text(encoding="utf-8")
+          old = '''            "territories": territories,
+            "governing_sources": {'''
+          new = '''            "territories": territories,
+            "source_files": {
+                "rulebook": RULEBOOK_SOURCE,
+                "neutral": NEUTRAL_SOURCE,
+                "territories": TERRITORY_SOURCE,
+                "factions": {
+                    config["id"]: config["path"] for config in FACTIONS.values()
+                },
+            },
+            "governing_sources": {'''
+          if old not in text:
+              raise SystemExit("Expected generator insertion point not found")
+          path.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
+
+      - name: Commit generator correction
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/generate_v061_release.py
+          git commit -m "Correct v0.6.1 generated source paths"
+          git push origin HEAD:rules/v0.6.1-playtest-revision
