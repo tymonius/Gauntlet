@@ -1,0 +1,129 @@
+name: Sync faction sheets to v0.6.1
+
+on:
+  push:
+    branches:
+      - rules/v0.6.1-playtest-revision
+    paths:
+      - ".github/workflows/sync-v061-faction-sheets.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout revision branch
+        uses: actions/checkout@v4
+        with:
+          ref: rules/v0.6.1-playtest-revision
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Update version labels, paths, and parser boundaries
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          root = Path('faction-sheets')
+          replacements = {
+              'v0.6.0': 'v0.6.1',
+              'Gauntlet_v0.6_': 'Gauntlet_v0.6.1_',
+              'Gauntlet v0.6 faction': 'Gauntlet v0.6.1 faction',
+              '## 5. Canonical Military card pool': '# 6. Canonical Military card pool',
+              '## 6. Canonical Diplomat card pool': '# 7. Canonical Diplomat card pool',
+              '## 6. Canonical Financier card pool': '# 6. Canonical Financier card pool',
+              '## 6. Canonical Intelligence card pool': '# 7. Canonical Intelligence card pool',
+              '## 7. Canonical Mystics card pool': '# 8. Canonical Mystics card pool',
+              '## 6. Canonical Inquisition card pool': '# 6. Canonical Inquisition card pool',
+              '## 6. Card-pool summary': '# 7. Quick reference',
+              '## 7. Card-pool summary': '# 8. Quick reference',
+              '## 8. Card-pool summary': '# 9. Quick reference',
+          }
+          for path in root.rglob('*'):
+              if not path.is_file() or path.suffix.lower() not in {'.html', '.js', '.css', '.md', '.json'}:
+                  continue
+              text = path.read_text(encoding='utf-8')
+              for old, new in replacements.items():
+                  text = text.replace(old, new)
+              # The v0.6.1 guides place individual cards at H2 beneath an H1 card-pool heading.
+              text = text.replace('headingLevel: 3', 'headingLevel: 2')
+              path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Validate synchronized faction-sheet sources
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          files = [path for path in Path('faction-sheets').rglob('*') if path.is_file() and path.suffix.lower() in {'.html', '.js', '.md', '.json'}]
+          combined = '\n'.join(path.read_text(encoding='utf-8') for path in files)
+          forbidden = ['v0.6.0', 'Gauntlet_v0.6_Military', 'Gauntlet_v0.6_Diplomat', 'Gauntlet_v0.6_Financier', 'Gauntlet_v0.6_Intelligence', 'Gauntlet_v0.6_Mystics', 'Gauntlet_v0.6_Inquisition', 'Battle Hand', 'hand commitment']
+          found = [term for term in forbidden if term in combined]
+          if found:
+              raise SystemExit(f'Obsolete faction-sheet text remains: {found}')
+          for faction in ['Military', 'Diplomats', 'Financiers', 'Intelligence', 'Mystics', 'Inquisition']:
+              if faction not in combined:
+                  raise SystemExit(f'Faction sheets no longer reference {faction}')
+          required_paths = [
+              '../releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md',
+              '../releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md',
+              '../releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md',
+              '../releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md',
+              '../releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md',
+              '../releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md'
+          ]
+          missing = [path for path in required_paths if path not in combined]
+          if missing:
+              raise SystemExit(f'Faction-sheet source paths missing: {missing}')
+          print('Validated v0.6.1 faction-sheet version labels and source paths.')
+          PY
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Serve repository
+        run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
+
+      - name: Smoke-test faction sheets
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from 'playwright';
+          const browser = await chromium.launch({ headless: true });
+          for (const viewport of [{ width: 1400, height: 1000 }, { width: 390, height: 844 }]) {
+            const page = await browser.newPage({ viewport });
+            const errors = [];
+            page.on('pageerror', error => errors.push(error.message));
+            page.on('console', message => {
+              if (message.type() === 'error') errors.push(message.text());
+            });
+            const response = await page.goto('http://127.0.0.1:8000/faction-sheets/', { waitUntil: 'networkidle' });
+            if (!response?.ok()) throw new Error(`Faction sheets returned ${response?.status()}`);
+            const text = await page.locator('body').innerText();
+            for (const term of ['v0.6.1', 'Military', 'Diplomats', 'Financiers', 'Intelligence', 'Mystics', 'Inquisition']) {
+              if (!text.includes(term)) throw new Error(`Faction sheets missing ${term}`);
+            }
+            if (text.includes('v0.6.0')) throw new Error('Faction sheets still identify v0.6.0');
+            if (errors.length) throw new Error(`Faction-sheet browser errors:\n${errors.join('\n')}`);
+            await page.close();
+          }
+          await browser.close();
+          NODE
+
+      - name: Commit synchronized faction sheets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add faction-sheets/
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git commit -m "Sync faction sheets to v0.6.1"
+          git push origin HEAD:rules/v0.6.1-playtest-revision
