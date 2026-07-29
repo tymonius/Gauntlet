@@ -32,6 +32,7 @@ import { canResolveDisruptionAction, DISRUPTION } from './neutral-disruption';
 import { conscriptionAssetCardCanBePlayed } from './neutral-conscription';
 import { entrenchmentActionPlayProhibited } from './neutral-entrenchment';
 import { canUseReinforcementsAsset, REINFORCEMENTS, reinforcementsActionOpportunityActive } from './neutral-reinforcements';
+import { insurrectionActionOpportunityActive } from './neutral-insurrection';
 import { canResolveNewRecruitsAction, NEW_RECRUITS } from './neutral-new-recruits';
 
 const visible = <T>(cards: T[]) => ({ kind: 'visible' as const, cards });
@@ -229,7 +230,8 @@ function legalActionPlaysForViewer(game: GameState, viewer?: PlayerID): LegalAct
         requiresTarget: getCardPlayRule(cardId)?.requiresTarget ?? false,
       }));
   }
-  const extraOpportunity = reinforcementsActionOpportunityActive(game, viewer);
+  const extraOpportunity = reinforcementsActionOpportunityActive(game, viewer)
+    || insurrectionActionOpportunityActive(game, viewer);
   if (player.actionsRemaining < 1 || ((player.hasPlayedActionThisTurn || player.hasPlayedBattleThisTurn) && !extraOpportunity)) return undefined;
   return player.zones.hand
     .filter((cardId) => cardCanBePlayedAt(cardId, 'action', 'hand'))
@@ -240,7 +242,9 @@ function legalActionPlaysForViewer(game: GameState, viewer?: PlayerID): LegalAct
 }
 
 function legalNeutralAssetUsesForViewer(game: GameState, viewer?: PlayerID): LegalNeutralAssetUseOption[] | undefined {
-  if (!viewer || !canUseReinforcementsAsset(game, viewer)) return undefined;
+  if (!viewer
+    || insurrectionActionOpportunityActive(game, viewer)
+    || !canUseReinforcementsAsset(game, viewer)) return undefined;
   return [{ action: 'use_neutral_reinforcements_asset', cardId: REINFORCEMENTS }];
 }
 
@@ -281,6 +285,7 @@ export function toPublicGameView(game: GameState): PublicGameView {
     neutralPathfindersSuppressions: structuredClone(game.neutralPathfindersSuppressions),
     neutralEntrenchmentActionLocks: structuredClone(game.neutralEntrenchmentActionLocks),
     neutralReinforcementsActionOpportunity: structuredClone(game.neutralReinforcementsActionOpportunity),
+    neutralInsurrectionActionOpportunity: structuredClone(game.neutralInsurrectionActionOpportunity),
     pendingNeutralChoice: neutralChoiceIsPrivate(game) ? undefined : structuredClone(game.pendingNeutralChoice),
     pendingMilitaryChoice: game.pendingMilitaryChoice,
     pendingMilitaryTimingChoice: game.pendingMilitaryTimingChoice,

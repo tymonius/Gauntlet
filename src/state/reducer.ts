@@ -490,7 +490,11 @@ function playActionCard(game: GameState, action: Extract<GameAction, { type: 'pl
   if (player.actionsRemaining < 1) throw new GameActionError(`${player.name} has no actions remaining.`);
   const reinforcementsOpportunity = game.neutralReinforcementsActionOpportunity?.playerId === action.playerId
     && game.neutralReinforcementsActionOpportunity.turn === game.turn;
-  if ((player.hasPlayedActionThisTurn || player.hasPlayedBattleThisTurn) && !reinforcementsOpportunity) {
+  const insurrectionOpportunity = game.neutralInsurrectionActionOpportunity?.playerId === action.playerId
+    && game.neutralInsurrectionActionOpportunity.turn === game.turn;
+  if ((player.hasPlayedActionThisTurn || player.hasPlayedBattleThisTurn)
+    && !reinforcementsOpportunity
+    && !insurrectionOpportunity) {
     throw new GameActionError(`${player.name} has already played a card this turn.`);
   }
 
