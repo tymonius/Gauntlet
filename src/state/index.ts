@@ -79,6 +79,7 @@ export * from './neutral-conscription';
 export * from './neutral-contraband';
 export * from './neutral-counterintelligence';
 export * from './neutral-counterworks';
+export * from './neutral-court-martial';
 export * from './neutral-decoys';
 export * from './neutral-decoys-battle';
 export * from './neutral-disruption';

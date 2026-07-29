@@ -70,7 +70,7 @@ function recentSeditionSuppressedCopies(game: GameState, playerId: PlayerID): nu
     ?.filter((cardId) => cardId === STAND_GROUND).length ?? 0;
 }
 
-function activeAssetCopies(game: GameState, playerId: PlayerID): number {
+export function activeStandGroundAssetCopies(game: GameState, playerId: PlayerID): number {
   if (!bankedAssetUseAllowed(game, playerId)) return 0;
   if (!game.battle && game.recentBattleResult?.bankedAssetUseProhibitedFor?.includes(playerId)) return 0;
   const player = game.players[playerId];
@@ -82,8 +82,8 @@ function activeAssetCopies(game: GameState, playerId: PlayerID): number {
   return Math.max(0, faceUpAssetCopies(player, STAND_GROUND) - suppressed);
 }
 
-function consumeAsset(game: GameState, playerId: PlayerID, battleId: string): void {
-  if (activeAssetCopies(game, playerId) < 1) {
+export function consumeStandGroundAsset(game: GameState, playerId: PlayerID, battleId: string): void {
+  if (activeStandGroundAssetCopies(game, playerId) < 1) {
     throw new Error(`${game.players[playerId].name} has no active Stand Ground Asset to use.`);
   }
   const player = game.players[playerId];
@@ -170,7 +170,7 @@ export function openStandGroundForNoMartyrsMovement(
   const processed = battle.standGroundNoMartyrsProcessedCounts[loser] ?? 0;
   if (processed >= initial) return false;
 
-  if (activeAssetCopies(game, loser) < 1) {
+  if (activeStandGroundAssetCopies(game, loser) < 1) {
     battle.standGroundNoMartyrsProcessedCounts[loser] = initial;
     return false;
   }
@@ -220,7 +220,7 @@ export function openStandGroundForMilitaryMovement(
     pending.standGroundPrevented = false;
     return false;
   }
-  if (activeAssetCopies(game, target) < 1) {
+  if (activeStandGroundAssetCopies(game, target) < 1) {
     pending.standGroundResolved = true;
     pending.standGroundPrevented = false;
     return false;
@@ -260,7 +260,7 @@ export function resolveStandGroundChoice(
   }
 
   const prevented = action.choice === 'use';
-  if (prevented) consumeAsset(game, action.playerId, pending.battleId);
+  if (prevented) consumeStandGroundAsset(game, action.playerId, pending.battleId);
 
   if (pending.movementKind === 'no_martyrs') {
     const battle = game.battle;
