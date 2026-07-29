@@ -4,13 +4,15 @@
 Pandoc writes its DOCX table of contents as a dirty Word field. Headless
 LibreOffice does not update that field before PDF conversion, producing an empty
 contents section. This postprocessor replaces the field with a static linked
-list built from the document's actual Heading 1 paragraphs and removes the
-redundant Markdown title block already represented by the DOCX cover metadata.
+list built from the Rulebook's introductory and numbered section headings and
+removes the redundant Markdown title block already represented by the DOCX
+cover metadata.
 """
 
 from __future__ import annotations
 
 import argparse
+import re
 import tempfile
 import zipfile
 from pathlib import Path
@@ -20,6 +22,9 @@ from lxml import etree
 W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 NS = {"w": W_NS}
 DOCUMENT_XML = "word/document.xml"
+
+INTRODUCTORY_HEADINGS = {"Welcome to Gauntlet", "Rules Conventions"}
+NUMBERED_SECTION = re.compile(r"^\d+\.\s+")
 
 
 def qn(local: str) -> str:
@@ -73,6 +78,12 @@ def page_break_paragraph() -> etree._Element:
     return paragraph
 
 
+def is_contents_heading(style: str, text: str) -> bool:
+    if style not in {"Heading1", "Heading2"}:
+        return False
+    return text in INTRODUCTORY_HEADINGS or bool(NUMBERED_SECTION.match(text))
+
+
 def replace_toc(body: etree._Element) -> None:
     children = list(body)
     toc = next(
@@ -92,15 +103,18 @@ def replace_toc(body: etree._Element) -> None:
 
     headings: list[tuple[str, str | None]] = []
     for index, child in enumerate(children):
-        if child.tag != qn("p") or paragraph_style(child) != "Heading1":
+        if child.tag != qn("p"):
             continue
         text = paragraph_text(child)
-        if not text or text == "GAUNTLET":
+        style = paragraph_style(child)
+        if not text or not is_contents_heading(style, text):
             continue
         headings.append((text, nearest_bookmark(children, index)))
 
-    if len(headings) < 10:
-        raise RuntimeError(f"Only {len(headings)} top-level Rulebook headings were found")
+    if len(headings) < 17:
+        raise RuntimeError(
+            f"Only {len(headings)} Rulebook section headings were found for the contents page"
+        )
 
     content = toc.find("w:sdtContent", namespaces=NS)
     if content is None:
@@ -127,20 +141,21 @@ def remove_duplicate_markdown_title(body: etree._Element) -> None:
     if start_index is None:
         return
 
-    bookmark_id = children[start_index].get(qn("id"))
     end_index = next(
         (
             index
             for index in range(start_index + 1, len(children))
-            if children[index].tag == qn("bookmarkEnd")
-            and children[index].get(qn("id")) == bookmark_id
+            if children[index].tag == qn("bookmarkStart")
+            and children[index].get(qn("name")) == "welcome-to-gauntlet"
         ),
         None,
     )
     if end_index is None:
-        raise RuntimeError("Could not locate the end of the duplicate Markdown title block")
+        raise RuntimeError(
+            "Could not locate the Welcome to Gauntlet bookmark after the duplicate title block"
+        )
 
-    for child in children[start_index : end_index + 1]:
+    for child in children[start_index:end_index]:
         body.remove(child)
 
 
