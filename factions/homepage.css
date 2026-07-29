@@ -32,7 +32,7 @@ a.faction-card:focus-visible {
   display: block;
   position: relative;
   background:
-    url("../images/artwork/site/homepage-hero-three-leaders.webp")
+    url("../images/artwork/site/homepage-hero-three-leaders.webp?v=2")
     center bottom / contain no-repeat;
   filter: drop-shadow(0 28px 34px rgba(35, 23, 10, .2));
 }
