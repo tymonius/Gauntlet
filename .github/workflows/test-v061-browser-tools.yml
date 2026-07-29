@@ -89,10 +89,13 @@ jobs:
               }
               await page.fill('#searchInput', 'Black Covenant');
               await page.waitForFunction(() => document.querySelector('#resultCount')?.textContent === '1');
-              await page.waitForFunction(() => {
-                const preview = document.querySelector('#preview')?.innerText || '';
-                return preview.includes('Tactic') && preview.includes('additional Tactic');
-              });
+              const result = page.locator('.reference-row').first();
+              await result.click();
+              await page.waitForFunction(() => document.querySelector('#preview h3')?.textContent === 'Black Covenant');
+              const preview = await page.locator('#preview').innerText();
+              if (!preview.includes('Tactic') || !preview.includes('additional Tactic')) {
+                throw new Error(`Black Covenant preview is not synchronized with v0.6.1:\n${preview}`);
+              }
               await page.screenshot({ path: `/tmp/card-reference-${suffix}.png`, fullPage: true });
               if (errors.length) throw new Error(`Card reference ${suffix} errors:\n${errors.join('\n')}`);
               await page.close();
