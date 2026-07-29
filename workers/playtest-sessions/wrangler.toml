@@ -4,7 +4,7 @@ compatibility_date = "2026-07-29"
 
 [vars]
 PUBLIC_SITE_ORIGIN = "https://gauntlet.run"
-ALLOWED_ORIGIN = "https://gauntlet.run"
+ALLOWED_ORIGINS = "https://gauntlet.run,http://localhost:8000,http://127.0.0.1:8000"
 
 [[d1_databases]]
 binding = "DB"
