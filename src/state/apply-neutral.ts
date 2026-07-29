@@ -82,6 +82,12 @@ import {
   prepareInsurrectionAction,
 } from './neutral-insurrection';
 import {
+  applyLiberationAssetAfterBattle,
+  clearLiberationActionOpportunity,
+  consumeLiberationActionOpportunity,
+  liberationActionOpportunityActive,
+} from './neutral-liberation';
+import {
   applyFootholdBattleCleanupDraw,
   applyFootholdBattleEffects,
   openNextFootholdChoice,
@@ -339,6 +345,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     if (insurrectionActionOpportunityActive(next, action.playerId)) {
       throw new GameActionError('Spend the current Insurrection Action Opportunity before using Reinforcements.');
     }
+    if (liberationActionOpportunityActive(next, action.playerId)) {
+      throw new GameActionError('Spend the current Liberation Action Opportunity before using Reinforcements.');
+    }
     useReinforcementsAsset(next, action);
     reconcileSabotageAssetState(next);
     return { state: next };
@@ -474,8 +483,10 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'play_action_card') {
     if (reinforcementsActionOpportunityActive(result.state, action.playerId)) {
       consumeReinforcementsActionOpportunity(result.state, action.playerId);
-    } else {
+    } else if (insurrectionActionOpportunityActive(result.state, action.playerId)) {
       consumeInsurrectionActionOpportunity(result.state, action.playerId);
+    } else {
+      consumeLiberationActionOpportunity(result.state, action.playerId);
     }
   }
 
@@ -572,6 +583,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'end_turn') {
     clearReinforcementsActionOpportunity(result.state, action.playerId);
     clearInsurrectionActionOpportunity(result.state, action.playerId);
+    clearLiberationActionOpportunity(result.state, action.playerId);
     clearRestrictedMovementForTurnTransition(result.state, action.playerId);
     clearAdvanceGuardMovement(result.state, action.playerId);
     clearExpiredPathfindersSuppressions(result.state);
@@ -606,6 +618,12 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'resolve_battle' && priorBattle && priorBattleId && !result.state.battle) {
     const winnerId = latestResolvedBattleWinner(result.state);
     queueCourtMartialCleanup(result.state, priorBattle, winnerId);
+    applyLiberationAssetAfterBattle(
+      result.state,
+      priorBattle,
+      priorBattleController,
+      winnerId,
+    );
     applyValorAssetDraw(result.state, priorBattle, winnerId);
     applyScorchedEarthBattleRuins(
       result.state,
