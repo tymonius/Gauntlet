@@ -69,9 +69,9 @@ A card bound to a Rite, Ritual, or another card is outside normal zones.
 
 ### Invocation
 
-> Once per turn, when you play an Arcane card for its Action, Gambit, Tactic, or Battle effect, you may move one card from your Graveyard to your Discard Pile.
+> Once per turn, when an Arcane card you play, set, or choose resolves its Action, Gambit, Tactic, or Battle effect, you may move one card from your Graveyard to your Discard Pile.
 
-A copied effect does not trigger Invocation unless the Arcane card itself is played again.
+A copied effect does not trigger Invocation unless the Arcane card itself resolves another printed effect through being played, set, or chosen again.
 
 ### Transmutation
 
@@ -85,7 +85,7 @@ The card is not played and none of its printed effects resolve. Supplemental com
 
 **Beginning cost:** Bind one chosen card from your Graveyard face up beneath this Rite. Then bind one card from your Hand face down beneath it whose title matches at least one other card in your Playable Deck.
 
-> **Completion:** On a later turn, complete this Rite when you play another card with the bound Hand card's title during a battle.
+> **Completion:** On a later turn, complete this Rite when another card with the bound Hand card's title resolves its Gambit, Tactic, or Battle effect during a battle.
 
 On completion:
 
@@ -262,11 +262,13 @@ Withdrawal produces no losing player.
 **Trait:** Arcane  
 **Card form:** Asset
 
-> **Action:** Bank Rend the Veil as an Asset. After Tactics are revealed in a battle involving you, you may discard Rend the Veil. If you do, choose one card in your Graveyard whose Battle effect can resolve now and does not play another card or resolve another copied effect. Play it face up as an additional Tactic and resolve its Battle effect.
+> **Action:** Bank Rend the Veil as an Asset. After Tactics are revealed in a battle involving you, you may discard Rend the Veil. If you do, choose one card in your Graveyard whose Battle effect can resolve now and does not resolve another card's effect or another copied effect. Reveal the chosen card face up in your Graveyard and resolve its Battle effect as though you played it.
 >
-> **Battle:** After Tactics are revealed, you may choose one card in your Graveyard whose Battle effect can resolve now and does not play another card or resolve another copied effect. Play it face up as an additional Tactic and resolve its Battle effect.
+> **Battle:** After Tactics are revealed, you may choose one card in your Graveyard whose Battle effect can resolve now and does not resolve another card's effect or another copied effect. Reveal the chosen card face up in your Graveyard and resolve its Battle effect as though you played it.
 >
-> During the Aftermath of the battle, move the chosen Graveyard card to your Discard Pile instead of any other destination.
+> During the Aftermath of the battle, move the chosen card from your Graveyard to your Discard Pile.
+
+The chosen card remains in the Graveyard while its effect resolves and follows the shared copied-effect rules.
 
 ## Paths of Shadow
 
@@ -283,9 +285,9 @@ Withdrawal produces no losing player.
 **Trait:** Arcane  
 **Card form:** Asset
 
-> **Action:** Bank Witchcraft as an Asset. Once per turn, after Tactics are revealed in a battle involving you, you may put one card from your Hand in your Graveyard. If you do, choose one other active card you played in the battle with an eligible Battle effect. Resolve that effect one additional time.
+> **Action:** Bank Witchcraft as an Asset. Once per turn, after Tactics are revealed in a battle involving you, you may put one card from your Hand in your Graveyard. If you do, choose one other active card you control in the battle with an eligible Battle effect. Resolve that effect one additional time.
 >
-> **Battle:** After Tactics are revealed, choose one other active card you played in the battle with an eligible Battle effect. Resolve that effect one additional time. If you cannot choose one, gain advantage. During the Aftermath of the battle, put Witchcraft in your Graveyard instead of its normal destination.
+> **Battle:** After Tactics are revealed, choose one other active card you control in the battle with an eligible Battle effect. Resolve that effect one additional time. If you cannot choose one, gain advantage. During the Aftermath of the battle, put Witchcraft in your Graveyard instead of its normal destination.
 
 Make all choices and pay all costs again when repeating the effect.
 
@@ -321,7 +323,7 @@ Make all choices and pay all costs again when repeating the effect.
 > - Place Necromancy face down beneath your Draw Pile, then draw one card.
 > - Choose up to three non-Necromancy cards in your Graveyard. Put every other card in your Hand in your Graveyard, then return the chosen cards to your Hand. Put Necromancy in your Graveyard.
 >
-> **Battle:** During the Aftermath of the battle, after your other played cards follow their destinations, choose up to three non-Necromancy cards in your Graveyard. Put every card remaining in your Hand in your Graveyard, then return the chosen cards to your Hand. Necromancy follows its normal destination.
+> **Battle:** During the Aftermath of the battle, after your other cards in battle follow their destinations, choose up to three non-Necromancy cards in your Graveyard. Put every card remaining in your Hand in your Graveyard, then return the chosen cards to your Hand. Necromancy follows its normal destination.
 
 # 9. Quick reference
 
