@@ -34,22 +34,43 @@ jobs:
           import hashlib
           from pathlib import Path
 
-          files = sorted(Path('.hero-fix').glob('*.b64'))
-          pieces = [path.read_text() for path in files]
-          for path, piece in zip(files, pieces):
-              print(f'{path}: {len(piece)} characters')
+          expected_chunks = {
+              '00.b64': (8000, 'dd7a34680937c6a98a32687a2a1f33e20c288507f9b280ad743c145018ef7f2f'),
+              '01.b64': (8000, '5403120c2771d55720b0875d84aa62e847d4b8ec08eda8eaf997eae0a8137725'),
+              '02.b64': (8000, '818f83e9fc2260a34379a3e2ac08ef05d0f8a86b4e66035411fd096e6e542e94'),
+              '03.b64': (8000, '6799989acbb7af29e5736a1598aa4ae8789c843147fff0ad7df93d3b9276be8c'),
+              '04.b64': (8000, '3a774812e6ad0e1530158421f8fcb1cdc908d04b0e3d715455f6fcfb2c9908ff'),
+              '05.b64': (8000, '19546c3420f45646d546989449f060b10ab4f985b2801b85b5d0bc8d0cd8e939'),
+              '06.b64': (8000, '58e2354d72f6b73e760d919c8d9038d755456d1f25c14302387de2e91ec0a3d9'),
+              '07.b64': (8000, '0a6b908e8215e267d1ca0ae7f614162c925e04f60be73aa245ba4e1f10e48a9e'),
+              '08.b64': (3320, '58d26bd1ba20c8f891ecf099ac616ee80e18a2ae0a1d79071c2e3f957d11ba2c'),
+          }
+
+          pieces = []
+          for name, (expected_length, expected_digest) in expected_chunks.items():
+              path = Path('.hero-fix') / name
+              piece = path.read_text()
+              digest = hashlib.sha256(piece.encode()).hexdigest()
+              if digest != expected_digest and len(piece) == expected_length + 1:
+                  for index in range(len(piece)):
+                      candidate = piece[:index] + piece[index + 1:]
+                      if hashlib.sha256(candidate.encode()).hexdigest() == expected_digest:
+                          print(f'Removed one duplicated character from {name} at offset {index}')
+                          piece = candidate
+                          path.write_text(piece)
+                          digest = expected_digest
+                          break
+              if len(piece) != expected_length or digest != expected_digest:
+                  raise SystemExit(
+                      f'Chunk {name} failed validation: length={len(piece)}, sha256={digest}'
+                  )
+              pieces.append(piece)
 
           text = ''.join(pieces)
-          alphabet = set('ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=')
-          filtered = ''.join(ch for ch in text if ch in alphabet)
-          core = filtered.replace('=', '')
-          padded = core + '=' * ((4 - len(core) % 4) % 4)
-          print(f'filtered base64 length: {len(filtered)}; normalized length: {len(padded)}')
-
-          raw = base64.b64decode(padded)
+          raw = base64.b64decode(text, validate=True)
           digest = hashlib.sha256(raw).hexdigest()
-          print(f'decoded bytes: {len(raw)}; sha256: {digest}')
           expected = '7dce4a9721c827267ce99bb29f6650b262a4dec3f6ecab7c43a2e4b95daf7e03'
+          print(f'decoded bytes: {len(raw)}; sha256: {digest}')
           if digest != expected:
               raise SystemExit(f'Unexpected hero digest: {digest}')
           if raw[:4] != b'RIFF' or raw[8:12] != b'WEBP':
