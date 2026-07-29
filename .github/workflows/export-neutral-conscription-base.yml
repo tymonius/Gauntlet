@@ -20,13 +20,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          tar -czf "$RUNNER_TEMP/gauntlet-engine.tar.gz" src package.json tsconfig.json releases/v0.6.0
+          tar -czf "$RUNNER_TEMP/gauntlet-engine.tar.gz" \
+            src \
+            package.json \
+            tsconfig.json \
+            releases/v0.6.0/Gauntlet_v0.6_Release.json
           sha256sum "$RUNNER_TEMP/gauntlet-engine.tar.gz" > "$RUNNER_TEMP/gauntlet-engine.sha256"
 
       - name: Upload engine archive
         uses: actions/upload-artifact@v4
         with:
-          name: neutral-conscription-engine
+          name: neutral-conscription-engine-minimal
           path: |
             ${{ runner.temp }}/gauntlet-engine.tar.gz
             ${{ runner.temp }}/gauntlet-engine.sha256
