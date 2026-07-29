@@ -27,26 +27,19 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Repair v0.6.1 source-file map if needed
+      - name: Remove inherited v0.6.0 source map if needed
         run: |
           python - <<'PY'
           from pathlib import Path
 
           path = Path("scripts/generate_v061_release.py")
           text = path.read_text(encoding="utf-8")
-          old = '''            "territories": territories,
-            "governing_sources": {'''
-          new = '''            "territories": territories,
-            "source_files": {
-                "rulebook": RULEBOOK_SOURCE,
-                "neutral": NEUTRAL_SOURCE,
-                "territories": TERRITORY_SOURCE,
-                "factions": {
-                    config["id"]: config["path"] for config in FACTIONS.values()
-                },
-            },
-            "governing_sources": {'''
-          if old in text:
+          old = '''    data = copy.deepcopy(baseline)
+              data.update('''.replace("              ", "    ")
+          new = '''    data = copy.deepcopy(baseline)
+              data.pop("source_files", None)
+              data.update('''.replace("              ", "    ")
+          if old in text and 'data.pop("source_files", None)' not in text:
               path.write_text(text.replace(old, new, 1), encoding="utf-8")
           PY
 
@@ -58,7 +51,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add scripts/generate_v061_release.py
-          git commit -m "Correct v0.6.1 generated source paths"
+          git commit -m "Remove inherited v0.6.0 source map"
           git push origin HEAD:${{ github.head_ref || github.ref_name }}
 
       - name: Generate and validate v0.6.1 data
