@@ -154,7 +154,7 @@ An additional Action Opportunity permits one additional qualifying action at its
 **Archetype:** Offensive acquisition, occupation, and immediate control  
 **Motto:** *Take the ground. Close the deal.*
 
-> **Hostile Takeover:** During an Action Opportunity after movement, if you won a battle as the attacker this turn and now occupy that enemy-controlled Territory, you may buy or buy out its Deed instead of playing a card for its Action effect. Treat the Territory as occupied but not controlled for the cost calculation. If the purchase succeeds, immediately take control of that Territory.
+> **Hostile Takeover:** During an Action Opportunity after movement, if you won a battle as the attacker this turn and now occupy that enemy Territory, you may buy or buy out its Deed instead of playing a card for its Action effect. Treat the Territory as occupied but not controlled for the cost calculation. If the purchase succeeds, immediately take control of that Territory.
 
 # 5. Financier-specific rules
 
@@ -233,7 +233,7 @@ Withdrawal counts as ending without you winning.
 
 > **Action:** Place Capital Gains beneath one card in your Treasury. At the start of your next turn, after the Capture step and income, return that Treasury card to your Hand and gain Capital equal to its deckbuilding value, then put Capital Gains in your Discard Pile. If you lose a battle before then, put both cards in your Discard Pile instead. If the chosen card leaves Treasury first, put Capital Gains in your Discard Pile.
 >
-> **Battle:** During the Aftermath of the battle, if you won, choose one other card played during this battle that would go to a Discard Pile or Graveyard. Place that card face up in your Treasury instead.
+> **Battle:** During the Aftermath of the battle, if you won, choose one other card you controlled in this battle that would go to a Discard Pile or Graveyard. Place that card face up in your Treasury instead.
 
 ## Tariffs
 
@@ -278,7 +278,7 @@ Withdrawal defaults on the Battle effect because you did not win.
 
 > **Action:** Buy or buy out one Deed. For this purchase, you may use any number of cards from your Hand or Treasury as collateral. Each contributes payment equal to its deckbuilding value and goes to your Graveyard after the purchase. Collateral may pay the entire cost.
 >
-> **Battle:** During the Aftermath of the battle, before cards leave battle, if you won as the attacker on a Territory whose Deed you do not own, you may buy or buy out that Deed, treating the Territory as occupied. For this purchase, you may use any number of other cards played during this battle as collateral. Each contributes payment equal to its deckbuilding value and goes to your Graveyard instead of its normal destination. Collateral may pay the entire cost.
+> **Battle:** During the Aftermath of the battle, before cards leave battle, if you won as the attacker on a Territory whose Deed you do not own, you may buy or buy out that Deed, treating the Territory as occupied. For this purchase, you may use any number of other cards you controlled in this battle as collateral. Each contributes payment equal to its deckbuilding value and goes to your Graveyard instead of its normal destination. Collateral may pay the entire cost.
 
 ## Foreclosure
 
