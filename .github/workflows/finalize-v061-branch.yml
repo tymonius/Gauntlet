@@ -39,9 +39,10 @@ jobs:
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
-      - name: Synchronize Deckbuilder and its v0.6.1 runtime
+      - name: Synchronize browser and Rules Arbiter sources
         run: |
           python scripts/sync_v061_deckbuilder.py
+          python scripts/sync_v061_rules_assistant.py
           python - <<'PY'
           from pathlib import Path
           path = Path('deckbuilder/index.html')
@@ -117,7 +118,9 @@ jobs:
             const pages = [
               ['/rulebook/', '[data-rulebook-content]', ['Gambit', 'Reserve', 'Tactic', 'Aftermath']],
               ['/card-reference/', '#app', ['122', '25']],
-              ['/deckbuilder/', '#app', ['v0.6.1', 'Military', 'Diplomats']]
+              ['/deckbuilder/', '#app', ['v0.6.1', 'Military', 'Diplomats']],
+              ['/playtest/session/', '#errorPanel:not([hidden])', ['Session unavailable', 'single-use code']],
+              ['/playtest/batch/', '#batchForm', ['Coded Sheet Generator', 'Download host manifest']]
             ];
             for (const [url, selector, required] of pages) {
               const page = await browser.newPage({ viewport });
@@ -144,8 +147,10 @@ jobs:
       - name: Run automated tests and release validation
         run: |
           npm run test:rules-assistant
+          npm run test:playtest-sessions
           npm run test:deckbuilder
           python scripts/generate_v061_release.py --check
+          python scripts/validate_v061_playtest_sessions.py
           python scripts/validate_v061_release.py --strict-generated
 
       - name: Commit synchronized and generated release files
@@ -154,6 +159,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add \
             deckbuilder/ \
+            rules-assistant/ \
             releases/v0.6.1/ \
             playtest/Gauntlet_v0.6.1_Playtest_Sheet.pdf \
             playtest/Gauntlet_v0.6.1_Playtest_Sheet_Preview.png \
