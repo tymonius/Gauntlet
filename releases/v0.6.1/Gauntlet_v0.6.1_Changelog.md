@@ -17,9 +17,9 @@ Gauntlet v0.6.1 is the first physical-playtest revision. It preserves the factio
 
 ## Battle vocabulary and sequence
 
-- Replaced **hand commitment** with **Gambit**.
-- Replaced **Battle Hand** with **Reserve**.
-- Replaced a card chosen from the Battle Hand with **Tactic**.
+- Replaced the obsolete term **hand commitment** with **Gambit**.
+- Replaced the obsolete term **Battle Hand** with **Reserve**.
+- Replaced “a card chosen from the obsolete Battle Hand” with **Tactic**.
 - Added dedicated **Gambit** and **Tactic** printed headings.
 - Retained **Battle** as a flexible heading eligible for either role.
 - Standardized **Pass** when declining to set or choose a card.
@@ -49,7 +49,7 @@ Battles now resolve in this order:
 
 ## Aftermath, withdrawal, and retreat
 
-- Replaced loose uses of “after battle” and “battle cleanup” with the formal **Aftermath of the battle**.
+- Replaced loose uses of “after battle” and the obsolete term “battle cleanup” with the formal **Aftermath of the battle**.
 - Added a complete Aftermath order covering result, withdrawal replacement, retreat, occupation, additional retreat, card destinations, destination triggers, and follow-up movement.
 - Normal card destinations are now stated centrally:
   - Gambits go to the Graveyard;
@@ -152,8 +152,8 @@ Battles now resolve in this order:
 - Rules Arbiter answers must identify the rules version and classify the ruling as **Explicit**, **Inferred**, or **Unresolved**.
 - Answers must cite the governing source and must not invent precedence.
 - Added a review-record requirement for questions, answers, citations, classifications, and corrections.
-- Approved unique single-use QR codes for printed formal-playtest sheets.
-- The first scan creates a session; later scans join it.
+- Implemented unique single-use QR codes for printed formal-playtest sheets.
+- Each printed sheet is assigned a live digital session before printing; scans join that pre-existing session.
 - Rules Arbiter questions are linked to the session automatically.
 - Closing the session retires the QR code.
 - A human-readable sheet serial provides fallback reconciliation.
