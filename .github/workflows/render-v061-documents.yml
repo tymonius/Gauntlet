@@ -37,47 +37,10 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y pandoc libreoffice-writer poppler-utils fonts-liberation
-          python -m pip install python-docx pypdf pymupdf
+          python -m pip install python-docx pypdf pymupdf lxml
 
-      - name: Normalize document generation
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          path = Path('scripts/build_v061_documents.py')
-          text = path.read_text(encoding='utf-8')
-
-          old_table = '    table = document.styles["Table"]'
-          new_table = '    table = ensure_style(document, "Table", WD_STYLE_TYPE.TABLE)'
-          if new_table not in text:
-              if old_table not in text:
-                  raise SystemExit('Document table-style anchor not found')
-              text = text.replace(old_table, new_table, 1)
-
-          if 'import sys\n' not in text:
-              import_anchor = 'import subprocess\n'
-              if import_anchor not in text:
-                  raise SystemExit('Document import anchor not found')
-              text = text.replace(import_anchor, import_anchor + 'import sys\n', 1)
-
-          finalize_call = '''    if include_toc:
-              run(
-                  [
-                      sys.executable,
-                      str(ROOT / "scripts" / "finalize_v061_docx.py"),
-                      str(output_docx),
-                  ],
-                  cwd=ROOT,
-              )
-          '''.replace('          ', '')
-          build_anchor = '    run(command, cwd=ROOT)\n\n'
-          if finalize_call not in text:
-              if build_anchor not in text:
-                  raise SystemExit('Document build anchor not found')
-              text = text.replace(build_anchor, build_anchor + finalize_call + '\n', 1)
-
-          path.write_text(text, encoding='utf-8')
-          PY
+      - name: Check document builders
+        run: python -m py_compile scripts/build_v061_documents.py scripts/finalize_v061_docx.py
 
       - name: Build DOCX and PDF files
         run: python scripts/build_v061_documents.py
