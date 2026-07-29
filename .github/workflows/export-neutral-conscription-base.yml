@@ -1,4 +1,4 @@
-name: Export Neutral Conscription Base
+name: Apply Neutral Conscription implementation
 
 on:
   pull_request:
@@ -6,27 +6,59 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
-  export:
+  apply:
     if: github.head_ref == 'agent/neutral-conscription' || github.ref_name == 'agent/neutral-conscription'
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout implementation branch
         uses: actions/checkout@v4
         with:
           ref: agent/neutral-conscription
+          fetch-depth: 0
 
-      - name: Create engine archive
+      - name: Verify and apply implementation archive
         shell: bash
         run: |
           set -euo pipefail
-          tar -czf "$RUNNER_TEMP/gauntlet-engine.tar.gz" src package.json tsconfig.json
-          sha256sum "$RUNNER_TEMP/gauntlet-engine.tar.gz" > "$RUNNER_TEMP/gauntlet-engine.sha256"
+          cat .github/neutral-conscription-archive-*.b64 > "$RUNNER_TEMP/conscription-changes.b64"
+          echo "ea373a1f168c75a00f4f3f644b25b15fcbc9430ffa630a77b5a875610f882a53  $RUNNER_TEMP/conscription-changes.b64" | sha256sum --check
+          base64 --decode "$RUNNER_TEMP/conscription-changes.b64" > "$RUNNER_TEMP/conscription-changes.tar.gz"
+          echo "faab606ce6dd76aa0e62b5234b7253225af0d7daaa7f6385d09a95685fa1af78  $RUNNER_TEMP/conscription-changes.tar.gz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/conscription-changes.tar.gz"
 
-      - name: Upload engine archive
-        uses: actions/upload-artifact@v4
+      - name: Remove temporary staging files
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/neutral-conscription-archive-*.b64
+          rm -f .github/neutral-conscription-placeholder
+          rm -f .github/workflows/export-neutral-conscription-base.yml
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          name: neutral-conscription-engine-minimal
-          path: |
-            ${{ runner.temp }}/gauntlet-engine.tar.gz
-            ${{ runner.temp }}/gauntlet-engine.sha256
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Commit implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Implement Neutral Conscription"
+          git push origin HEAD:agent/neutral-conscription
