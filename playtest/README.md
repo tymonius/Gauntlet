@@ -8,7 +8,7 @@ Public pages:
 
 This directory contains the official routine human-playtest questionnaire and its linked formal-session workflow for the v0.6.1 playtest release. The questionnaire is designed to be printed on one side of Letter paper and completed by hand after a completed or stopped session.
 
-Until v0.6.1 is published, the public site may continue to display the v0.6.0 sheet from `main`. The v0.6.1 source is being validated in PR #260.
+Until v0.6.1 is published, the public site may continue to display the previous published sheet from `main`. The v0.6.1 source is being validated in PR #260.
 
 ## Printable PDF
 
