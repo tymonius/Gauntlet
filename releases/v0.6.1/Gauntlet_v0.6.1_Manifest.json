@@ -63,7 +63,7 @@
   ],
   "deferred_post_release_work": [
     "resume the playable digital engine on feature/v061-digital-engine-migration",
-    "replace legacy hand-commitment and Battle Hand state with Gambit, Reserve, Tactic, and Aftermath state",
+    "replace the legacy pre-v0.6.1 battle procedure with Gambit, Reserve, Tactic, and Aftermath state",
     "complete Neutral digital-engine remediation tracked in issues #288 and #289",
     "revalidate all faction, card, information-state, and multiplayer handlers"
   ],
