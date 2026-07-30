@@ -45,6 +45,7 @@
       el.printBatch.replaceChildren();
       el.sessionList.replaceChildren();
       el.resultPanel.hidden = true;
+      el.printSheets.disabled = false;
 
       const batchId = typeof crypto.randomUUID === "function"
         ? crypto.randomUUID()
@@ -66,10 +67,13 @@
           batchSize: count,
           generatedFrom: "playtest-batch-browser"
         });
-        const qrDataUrl = await createQrCode(created.joinUrl);
-        sessions.push({ ...created, qrDataUrl });
-        renderSheet(created, qrDataUrl, index);
+        const sessionRecord = { ...created, qrDataUrl: null };
+        sessions.push(sessionRecord);
         renderSessionRow(created, index);
+
+        const qrDataUrl = await createQrCode(created.joinUrl);
+        sessionRecord.qrDataUrl = qrDataUrl;
+        renderSheet(created, qrDataUrl, index);
       }
 
       el.resultCount.textContent = String(sessions.length);
@@ -77,6 +81,7 @@
         ? `Batch “${label}” is live. Download the private host manifest before printing or leaving this page.`
         : "The batch is live. Download the private host manifest before printing or leaving this page.";
       el.resultPanel.hidden = false;
+      el.printSheets.disabled = false;
       setStatus(`${sessions.length} coded sheet${sessions.length === 1 ? "" : "s"} ready.`, "success");
       el.resultPanel.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (error) {
@@ -87,8 +92,9 @@
       setStatus(`${error.message || "The batch could not be generated."}${partial}`, "error");
       if (sessions.length) {
         el.resultCount.textContent = String(sessions.length);
-        el.resultSummary.textContent = "This is a partial batch. Its created sessions are already live.";
+        el.resultSummary.textContent = "This is a partial batch. Its created sessions are already live. Download the host manifest before leaving this page.";
         el.resultPanel.hidden = false;
+        el.printSheets.disabled = true;
       }
     } finally {
       setBusy(false);
@@ -216,6 +222,7 @@
     el.printBatch.replaceChildren();
     el.sessionList.replaceChildren();
     el.resultPanel.hidden = true;
+    el.printSheets.disabled = false;
     setStatus("Rendered batch cleared. Existing sessions remain live until closed.");
   }
 
