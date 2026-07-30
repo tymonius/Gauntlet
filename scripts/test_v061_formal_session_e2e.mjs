@@ -9,7 +9,8 @@ class LocalD1 {
   constructor() {
     this.database = new DatabaseSync(":memory:");
     this.database.exec(readFileSync(new URL("../rules-assistant/migrations/0001_rules_interactions.sql", import.meta.url), "utf8"));
-    this.database.exec(readFileSync(new URL("../rules-assistant/migrations/0002_playtest_sessions.sql", import.meta.url), "utf8"));
+    this.database.exec(readFileSync(new URL("../rules-assistant/migrations/0002_review_export_checkpoints.sql", import.meta.url), "utf8"));
+    this.database.exec(readFileSync(new URL("../rules-assistant/migrations/0003_playtest_sessions.sql", import.meta.url), "utf8"));
   }
 
   prepare(sql) {
