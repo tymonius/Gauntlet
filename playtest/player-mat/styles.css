@@ -1,0 +1,284 @@
+:root {
+  --paper: #fffdf8;
+  --ink: #241b17;
+  --muted: #70645c;
+  --line: #b9aa9d;
+  --line-soft: #e3d8cd;
+  --accent: #6f3518;
+  --accent-soft: #f3e5d2;
+  --battle: #eee5d8;
+  --shadow: 0 18px 48px rgba(62, 38, 23, 0.13);
+}
+
+* { box-sizing: border-box; }
+html { background: #e8dfd3; }
+body {
+  margin: 0;
+  color: var(--ink);
+  background: radial-gradient(circle at top, #fff8ec, #e8dfd3 58rem);
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  line-height: 1.2;
+}
+
+button {
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 0.62rem 0.88rem;
+  color: white;
+  background: var(--accent);
+  font: inherit;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.screen-header {
+  width: min(1200px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 1.4rem 0 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 1.5rem;
+}
+.screen-header h1 { margin: 0; font-size: clamp(2rem, 5vw, 3rem); line-height: 1; }
+.screen-header p:last-child { margin: 0.45rem 0 0; color: var(--muted); }
+.eyebrow { margin: 0 0 0.18rem; color: var(--accent); font-size: 0.7rem; font-weight: 900; letter-spacing: 0.12em; text-transform: uppercase; }
+
+.mat-shell { width: min(11in, calc(100% - 1.5rem)); margin: 0 auto 3rem; }
+.player-mat {
+  position: relative;
+  width: 11in;
+  height: 8.5in;
+  padding: 0.28in 0.32in 0.34in;
+  overflow: hidden;
+  background: var(--paper);
+  border: 1px solid #d7cbbd;
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+}
+
+.mat-header {
+  display: grid;
+  grid-template-columns: 1.05fr 1.55fr 1.55fr;
+  gap: 0.18in;
+  align-items: center;
+  min-height: 0.62in;
+  padding-bottom: 0.09in;
+  border-bottom: 3px solid var(--accent);
+}
+.mat-header h2 { margin: 0; font-family: Georgia, "Times New Roman", serif; font-size: 25pt; line-height: 0.95; }
+.player-fields {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.08in 0.15in;
+  font-size: 8.2pt;
+  font-weight: 800;
+}
+.player-fields span:first-child { grid-column: 1 / -1; }
+.memory-aid {
+  display: grid;
+  gap: 0.035in;
+  padding: 0.08in 0.12in;
+  border: 1.4px solid var(--accent);
+  border-radius: 7px;
+  background: var(--accent-soft);
+}
+.memory-aid strong { color: var(--accent); font-family: Georgia, "Times New Roman", serif; font-size: 12.5pt; }
+.memory-aid span { color: var(--muted); font-size: 7.4pt; font-weight: 700; }
+
+.main-layout {
+  display: grid;
+  grid-template-columns: 2.95in 4.35in 2.75in;
+  gap: 0.13in;
+  height: 6.95in;
+  padding-top: 0.12in;
+}
+.private-column,
+.battle-column,
+.public-column {
+  display: grid;
+  align-content: stretch;
+  gap: 0.1in;
+  min-width: 0;
+}
+.private-column { grid-template-rows: 3.52in 1fr; }
+.battle-column {
+  grid-template-rows: 0.52in 2.52in 2.35in 1fr;
+  padding: 0 0.03in;
+  border-left: 1px dashed var(--line);
+  border-right: 1px dashed var(--line);
+}
+.public-column { grid-template-rows: 2.46in 2.47in 1fr; }
+
+.zone {
+  position: relative;
+  min-width: 0;
+  padding: 0.1in 0.11in;
+  border: 1.35px solid var(--line);
+  border-radius: 8px;
+  background: #fffaf2;
+}
+.zone-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 0.08in;
+  padding-bottom: 0.045in;
+  border-bottom: 1px solid var(--line-soft);
+}
+.zone h3,
+.battle-banner h3 { margin: 0; color: var(--accent); font-size: 12pt; line-height: 1; }
+.zone-heading span { color: var(--muted); font-size: 6.9pt; font-weight: 800; text-align: right; }
+.zone p { margin: 0.055in 0 0; color: var(--muted); font-size: 7.2pt; }
+
+.card-slots {
+  display: grid;
+  gap: 0.08in;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0.12in;
+}
+.three-slots { grid-template-columns: repeat(3, 0.72in); }
+.card-slots i,
+.card-outline,
+.asset-slots i,
+.leader-layout i {
+  display: block;
+  border: 1.35px dashed var(--line);
+  border-radius: 5px;
+  background: repeating-linear-gradient(135deg, transparent 0 0.08in, rgba(185, 170, 157, 0.1) 0.08in 0.1in);
+}
+.card-slots i { width: 0.72in; height: 1.0in; }
+.card-outline { width: 0.83in; height: 1.16in; margin: 0.11in auto 0; }
+.card-outline.face-up { border-style: solid; background: white; }
+
+.piles-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.075in;
+}
+.pile-zone { padding: 0.075in; }
+.pile-zone .zone-heading { display: block; min-height: 0.47in; }
+.pile-zone .zone-heading h3 { font-size: 9.3pt; }
+.pile-zone .zone-heading span { display: block; margin-top: 0.02in; text-align: left; font-size: 6.1pt; }
+.graveyard-zone { border-color: #8a6651; background: #f9eee5; }
+
+.battle-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.1in;
+  padding: 0.08in 0.12in;
+  border-radius: 7px;
+  background: var(--battle);
+  border: 1.4px solid var(--accent);
+}
+.battle-banner h3 { font-family: Georgia, "Times New Roman", serif; font-size: 15pt; }
+.battle-banner p { margin: 0; color: var(--muted); font-size: 7.2pt; font-weight: 700; }
+.reserve-zone { background: #fffdf8; border-color: var(--accent); }
+.reserve-zone .three-slots { grid-template-columns: repeat(3, 0.8in); }
+.reserve-zone .card-slots i { width: 0.8in; height: 1.11in; }
+
+.battle-choice-row {
+  display: grid;
+  grid-template-columns: 1fr 0.23in 1fr;
+  gap: 0.06in;
+  align-items: stretch;
+}
+.choice-zone { text-align: center; }
+.choice-zone .zone-heading { display: block; }
+.choice-zone .zone-heading span { display: block; margin-top: 0.025in; text-align: center; }
+.choice-zone strong { display: block; margin-top: 0.07in; color: var(--accent); font-size: 7.2pt; }
+.gambit-zone { background: #f9eee5; }
+.tactic-zone { background: #eef3f5; }
+.sequence-arrow { display: grid; place-items: center; color: var(--accent); font-size: 18pt; font-weight: 900; }
+
+.sequence-strip {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.05in;
+  align-content: center;
+  padding: 0.07in;
+  border: 1.25px solid var(--line);
+  border-radius: 7px;
+  background: white;
+}
+.sequence-strip span { color: #4e423a; font-size: 6.35pt; font-weight: 700; white-space: nowrap; }
+.sequence-strip b {
+  display: inline-grid;
+  place-items: center;
+  width: 0.16in;
+  height: 0.16in;
+  margin-right: 0.025in;
+  border-radius: 50%;
+  color: white;
+  background: var(--accent);
+  font-size: 6pt;
+}
+
+.leader-layout {
+  display: grid;
+  grid-template-columns: 0.95in 1fr;
+  gap: 0.1in;
+  align-items: center;
+  margin-top: 0.12in;
+}
+.leader-layout i { width: 0.95in; height: 1.34in; }
+.leader-layout span { height: 1.18in; border: 1.2px dashed var(--line); border-radius: 5px; }
+.asset-slots {
+  display: grid;
+  grid-template-columns: repeat(3, 0.72in);
+  gap: 0.07in;
+  justify-content: center;
+  margin-top: 0.11in;
+}
+.asset-slots i { width: 0.72in; height: 1in; }
+.reminders-zone ol {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.035in 0.12in;
+  margin: 0.07in 0 0;
+  padding-left: 0.2in;
+  font-size: 7pt;
+  font-weight: 700;
+}
+.reminders-zone em { color: var(--accent); font-style: normal; }
+
+.mat-footer {
+  position: absolute;
+  left: 0.32in;
+  right: 0.32in;
+  bottom: 0.13in;
+  display: grid;
+  grid-template-columns: 1.35fr 0.8fr 0.8fr auto;
+  gap: 0.12in;
+  align-items: center;
+  padding-top: 0.055in;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 6.45pt;
+}
+.mat-footer strong { color: var(--accent); }
+
+@media (max-width: 1150px) {
+  .screen-header { display: grid; align-items: start; }
+  .mat-shell { width: calc(100% - 1rem); overflow-x: auto; }
+}
+
+@media print {
+  @page { size: Letter landscape; margin: 0; }
+  html, body { background: white; }
+  body { font-family: "Noto Sans", Arial, sans-serif; }
+  .screen-only { display: none !important; }
+  .mat-shell { width: auto; margin: 0; }
+  .player-mat {
+    width: 11in;
+    height: 8.5in;
+    margin: 0;
+    padding: 0.28in 0.32in 0.34in;
+    border: 0;
+    border-radius: 0;
+    box-shadow: none;
+  }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

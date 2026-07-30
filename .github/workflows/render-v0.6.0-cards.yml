@@ -22,6 +22,7 @@ permissions:
 
 jobs:
   render:
+    if: github.head_ref != 'rules/v0.6.1-playtest-revision'
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ github.token }}

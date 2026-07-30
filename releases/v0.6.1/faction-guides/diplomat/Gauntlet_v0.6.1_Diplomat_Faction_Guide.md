@@ -1,0 +1,401 @@
+# Gauntlet v0.6.1 Diplomat Faction Guide
+
+> **Definitive v0.6.1 Diplomat faction source.** This guide governs Diplomat-specific rules, Leaders, Influence, Terms, Proposals, Treaty Articles, supplemental components, and exact Diplomat card text. Shared rules remain in the v0.6.1 rulebook.
+
+# 1. Diplomat overview
+
+## How it works
+
+Before a battle begins, a Diplomat may offer **Terms**. The Diplomat stakes Influence and presents a Proposal. The opponent may accept, preventing the battle, or refuse and fight under the Proposal's refusal effect.
+
+Accepted or successfully imposed Proposals become Treaty Articles. Ratify five different Proposals and survive until the start of your next turn to win through the **Peace Treaty**.
+
+## Complete rules
+
+| Element | Diplomat rule |
+|---|---|
+| Victory | Run the Gauntlet or complete the Peace Treaty. |
+| Resource | Influence, minimum 0 and maximum 10. |
+| Starting value | 1 Influence. |
+| Faction procedure | Offer Terms during opening effects. |
+| Leaders | Ambassador and Senator. |
+| Proposal set | Nine double-sided Proposal / Treaty Article cards. |
+| Faction pool | 12 Diplomat card titles. |
+
+# 2. Components and setup
+
+A Diplomat Deck includes:
+
+- one Diplomat Leader Card: **Ambassador** or **Senator**;
+- one Influence Tracker;
+- one Diplomat Reference Card;
+- nine double-sided Proposal / Treaty Article cards; and
+- any Diplomat cards included in the Playable Deck.
+
+Begin with 1 Influence. Place all nine Proposals Proposal side up.
+
+# 3. Influence and Terms
+
+## How it works
+
+Influence pays for negotiation and can strengthen a battle after Terms are refused. To offer Terms, choose one Proposal whose Requirement is satisfied and stake its listed Influence.
+
+If the opponent accepts, no battle is fought. If the opponent refuses, resolve the Refused effect and continue to Gambits.
+
+## Complete rules
+
+### Influence
+
+Diplomats begin with 1 Influence and may have up to 10.
+
+When Influence is staked or spent, lower the tracker. Staked Influence is unavailable until the Terms resolve. Influence gained above 10 is lost.
+
+### Offering Terms
+
+Terms occur during opening effects after the attacker, defender, and contested position are established but before Gambits are set.
+
+To offer Terms:
+
+1. choose one eligible Proposal;
+2. confirm its Requirement;
+3. confirm enough available Influence for its Stake;
+4. lower available Influence by the Stake; and
+5. the opponent accepts or refuses.
+
+A Diplomat may normally offer one Proposal for a pending battle.
+
+### Diplomat mirrors
+
+Only one player may offer Terms for a pending battle.
+
+1. The attacker has the first opportunity.
+2. If the attacker passes, the defender may offer.
+3. Once either player offers Terms, the other cannot offer Terms for that battle, even if the Proposal is refused.
+
+### Accepted Terms
+
+When Terms are accepted:
+
+1. no battle is fought;
+2. resolve the Proposal's **Accepted** effect;
+3. return the Stake;
+4. if the Proposal is unratified, flip it to its Treaty Article side;
+5. if newly ratified, gain Influence equal to its Stake; and
+6. resolve effects that occur after acceptance.
+
+Accepted Terms do not create a battle, winner, loser, retreat, or Aftermath.
+
+A Stake-0 Proposal grants no Influence merely for being accepted.
+
+### Refused Terms
+
+When Terms are refused:
+
+1. resolve the Proposal's **Refused** effect and any refusal modifiers;
+2. continue to Set Gambits;
+3. before dice, the Diplomat may use Leverage; and
+4. resolve the battle and its Aftermath.
+
+Apply the result:
+
+| Result | Stake | Ratification | Normal reward |
+|---|---|---|---|
+| Diplomat wins | Return | If new, impose and flip | Gain 1 Influence unless stated otherwise |
+| Diplomat loses | Lose | None | None |
+| No winner | Return | None | None |
+
+To **impose** a Proposal is to ratify it after winning the battle caused by its refusal.
+
+Withdrawal produces no winner. Return the Stake and do not impose the Proposal.
+
+### Leverage
+
+Before dice are rolled in a battle following refused Terms, the Diplomat may spend any amount of available Influence. Add +1 to the Diplomat's battle total for each Influence spent.
+
+Staked Influence cannot be spent as Leverage.
+
+### Treaty Articles and Peace Treaty
+
+A ratified Proposal is a Treaty Article. It may be offered again for its tactical effects but cannot be ratified again and grants no normal newly-ratified Influence reward.
+
+At the start of the Diplomat's turn, after the Capture step and before the Draw step, if five different Proposals are ratified, the Diplomat wins through the Peace Treaty.
+
+# 4. Leaders
+
+## Ambassador
+
+**Archetype:** Agreement, card flow, and settlement  
+**Motto:** *Words first. War last.*
+
+> **Cordiality:** Once per turn, after the opponent accepts your Terms, draw one card.
+
+## Senator
+
+**Archetype:** Risk management, resilience, and imposition  
+**Motto:** *Procedure endures.*
+
+> **Political Capital:** Once per turn, when you would lose staked Influence after losing a battle following refused Terms, you may put up to that many cards from your Hand in your Graveyard. Recover 1 staked Influence for each card put there; lose the rest.
+
+# 5. Proposal set
+
+## De-escalation
+
+**Stake:** 0  
+**Requirement:** None
+
+> **Accepted:** Both players withdraw. The opponent draws one card.
+>
+> **Refused:** Draw one card.
+
+## Orderly Withdrawal
+
+**Stake:** 0  
+**Requirement:** You must be attacking.
+
+> **Accepted:** You withdraw. The opponent remains in or occupies the contested position, then draws one card.
+>
+> **Refused:** Add +1 to your battle total.
+
+## Capitulation
+
+**Stake:** 0  
+**Requirement:** You must be defending.
+
+> **Accepted:** You withdraw. The opponent remains in or occupies the contested position, then draws one card.
+>
+> **Refused:** If you lose, draw two cards.
+
+## Open Channels
+
+**Stake:** 1  
+**Requirement:** You must have a card in Hand.
+
+> **Accepted:** Both players reveal their Hands, then withdraw. The opponent draws one card.
+>
+> **Refused:** Reveal the opponent's Hand. When forming your Reserve, draw one additional card.
+
+## Mutual Disarmament
+
+**Stake:** 1  
+**Requirement:** Both players must have a card in Hand.
+
+> **Accepted:** Each player discards one card from Hand. The opponent draws one card, then both players withdraw.
+>
+> **Refused:** You may discard one card from Hand. If you do, draw one additional card when forming your Reserve.
+
+## Prisoner Exchange
+
+**Stake:** 1  
+**Requirement:** Each player must have a card in their Graveyard.
+
+> **Accepted:** Each player may move one card from their Graveyard to their Discard Pile. Then both players withdraw.
+>
+> **Refused:** If you lose, you may move one card from your Graveyard to your Discard Pile.
+
+## Rebuilding Pact
+
+**Stake:** 1  
+**Requirement:** You must have a card in Hand that can be banked as an Asset.
+
+> **Accepted:** Each player may bank one eligible card from Hand as an Asset without using an Action Opportunity. Then both players withdraw.
+>
+> **Refused:** During the Aftermath of the battle, you may bank one eligible card from Hand as an Asset without using an Action Opportunity.
+
+## Ultimatum
+
+**Stake:** 2  
+**Requirement:** None
+
+> **Accepted:** The opponent withdraws. You remain in or occupy the contested position.
+>
+> **Refused:** Add +1 to your battle total. If you win and newly ratify this Proposal, gain 2 Influence instead of 1.
+
+## Diplomatic Recognition
+
+**Stake:** 2  
+**Requirement:** You must be defending a counterattack on a Territory you occupy that the opponent controlled immediately before you occupied it.
+
+> **Accepted:** Capture that Territory. The opponent withdraws, then draws two cards.
+>
+> **Refused:** If you win, capture that Territory during the Aftermath, but gain no Influence for imposing this Proposal.
+
+# 6. Diplomat-specific rules
+
+## Multiple Proposals
+
+Diplomatic Latitude may offer two eligible Proposals with the same Stake. Stake that amount once. Only the selected Proposal resolves or may become ratified.
+
+## Sanctions
+
+**Sanctions** is a shared title series, not a separate card type.
+
+Each Sanction identifies:
+
+- the opponent whose refusal allowed it to enter play; and
+- its owner.
+
+Its ongoing effect and relief condition continue to refer to those identified players even if an Overlay changes control with its Territory.
+
+# 7. Canonical Diplomat card pool
+
+## Clemency
+
+**Cost:** 1
+
+> **Action:** Choose one card in the opponent's Graveyard. They choose one:
+>
+> - Move it to their Discard Pile; you gain 1 Influence.
+> - Leave it there; you draw one card.
+
+## Trade Concessions
+
+**Cost:** 2
+
+> **Terms:** When you offer Terms, before the opponent accepts or refuses, you may reveal Trade Concessions from your Hand and set it aside.
+>
+> **Accepted:** The opponent chooses one available option:
+>
+> - Draw two cards.
+> - Bank one eligible card from Hand as an Asset without using an Action Opportunity.
+>
+> Then put Trade Concessions in your Discard Pile and draw one card.
+>
+> **Refused:** Return Trade Concessions to your Hand before Gambits are set.
+>
+> **Battle:** The opponent draws one card. Add +2 to your battle total.
+
+## Safe Conduct
+
+**Cost:** 2  
+**Card form:** Asset
+
+> **Action:** Bank Safe Conduct as an Asset.
+>
+> When you would lose a battle following refused Terms, you may discard Safe Conduct to withdraw instead. The opponent remains in or occupies the contested position. The battle ends without a winner.
+
+## Neutral Observers
+
+**Cost:** 2  
+**Card form:** Asset
+
+> **Action:** Bank Neutral Observers as an Asset. After Terms are refused, before Gambits are set, you may discard it. The opponent sets a Gambit face up or passes. Then you set a Gambit face down or pass. This overrides other Gambit-order effects.
+
+Neutral Observers does not change Tactic order. Fog may still determine Tactic order.
+
+## Good Faith
+
+**Cost:** 3  
+**Card form:** Asset
+
+> **Action:** Bank Good Faith as an Asset.
+>
+> When you offer Terms, before the opponent accepts or refuses, you may discard Good Faith to draw one card, then reveal one card from your Hand and set it aside.
+>
+> **Accepted:** Put that card in your Graveyard.
+>
+> **Refused:** Return it to your Hand before Gambits are set.
+
+## Demilitarized Zone
+
+**Cost:** 3  
+**Card form:** Territory Overlay
+
+> **Terms:** After your Terms are accepted and the Proposal's Accepted effect resolves, you may place Demilitarized Zone from your Hand as an Overlay on the contested Territory without using an Action Opportunity. Each player still there withdraws.
+>
+> Neither player may enter this Territory during the turn Demilitarized Zone is placed.
+>
+> To enter it while unoccupied, discard one card.
+>
+> It cannot be captured or change control while Demilitarized Zone remains.
+>
+> At the start of the placing player's turn, before the Capture step, if they occupy it, they discard one card or withdraw.
+>
+> After the next battle fought here, put Demilitarized Zone in its owner's Discard Pile.
+
+The placing-player reference does not change when Overlay control changes.
+
+## Diplomatic Latitude
+
+**Cost:** 3
+
+> **Terms:** When you offer Terms, you may reveal Diplomatic Latitude from your Hand and offer two eligible Proposals with the same Stake instead of one. Stake that amount once.
+>
+> **Accepted:** The opponent chooses which Proposal is accepted.
+>
+> **Refused:** Choose one Proposal before resolving its Refused effect. Only it may be imposed.
+>
+> The other Proposal does not resolve or become ratified. After the Terms resolve, put Diplomatic Latitude in your Discard Pile.
+
+## Nonbinding Resolution
+
+**Cost:** 3
+
+> **Terms:** When you offer Terms, before the opponent accepts or refuses, you may reveal Nonbinding Resolution from your Hand and set it aside.
+>
+> **Accepted:** If the Proposal is unratified, the opponent chooses one before ratification:
+>
+> - Ratify it normally.
+> - Leave it unratified; you gain 2 Influence.
+>
+> After the accepted Terms resolve, put Nonbinding Resolution in your Discard Pile, then draw one card.
+>
+> **Refused:** Put Nonbinding Resolution in your Discard Pile, then draw one card before Gambits are set.
+
+## Sanctions: Censure
+
+**Cost:** 3  
+**Card form:** Asset
+
+> After an opponent refuses your Terms, you may bank Sanctions: Censure from your Hand without using an Action Opportunity. Identify that opponent.
+>
+> While banked, the first time each turn that opponent plays a card for its Action effect, they choose one: discard one card; or you draw one card.
+>
+> After that opponent accepts your Terms, put Sanctions: Censure in its owner's Discard Pile.
+
+## Gunboat Diplomacy
+
+**Cost:** 4
+
+> **Terms:** When you offer Terms, before the opponent accepts or refuses, you may reveal Gunboat Diplomacy from your Hand.
+>
+> **Accepted:** Put Gunboat Diplomacy in your Discard Pile.
+>
+> **Refused:** Set Gunboat Diplomacy face up as an additional Gambit in the resulting battle. It does not count against your Gambit limit.
+>
+> **Battle:** Add +2 to your battle total. During the Aftermath of the battle, put Gunboat Diplomacy in your Discard Pile instead of its normal destination.
+
+## Sanctions: Embargo
+
+**Cost:** 4  
+**Card form:** Asset
+
+> After an opponent refuses your Terms, you may bank Sanctions: Embargo from your Hand without using an Action Opportunity. Identify that opponent.
+>
+> While banked, that opponent's Asset limit is reduced by 1, to a minimum of 0.
+>
+> After that opponent accepts your Terms, put Sanctions: Embargo in its owner's Discard Pile.
+
+## Sanctions: Blockade
+
+**Cost:** 5  
+**Card form:** Territory Overlay
+
+> During the Aftermath of a battle following an opponent's refusal of your Terms, you may place Sanctions: Blockade from your Hand as an Overlay on a Territory that opponent controls without using an Action Opportunity. Identify that opponent and this card's owner.
+>
+> The first time each turn the identified opponent enters or leaves this Territory, they choose one: discard one card; or the identified owner gains 1 Influence.
+>
+> Put Sanctions: Blockade in its owner's Discard Pile after the identified opponent accepts that owner's Terms or loses control of this Territory.
+
+# 8. Quick reference
+
+- Begin with 1 Influence; maximum 10.
+- Terms occur during opening effects before Gambits.
+- The attacker has first opportunity to offer Terms in a Diplomat mirror.
+- Accepted Terms prevent the battle.
+- Refused Terms continue to Gambits.
+- Withdrawal creates no winner and cannot impose a Proposal.
+- Check Peace Treaty after the Capture step at the start of your turn.
+
+---
+
+Gauntlet v0.6.1 © 2026 Tymon Scott. All rights reserved. Diplomat Faction Guide.

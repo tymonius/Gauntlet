@@ -48,7 +48,6 @@
 
       const frontTable = frontPage.querySelector(".card-table");
       if (!frontTable) return;
-
       const rowCount = frontTable.classList.contains("two-row") ? 2 : 3;
       const isFirstPage = frontPage.classList.contains("first-page");
       const pairName = frontPage.dataset.duplexPair || `deck-sheet-${index + 1}`;
