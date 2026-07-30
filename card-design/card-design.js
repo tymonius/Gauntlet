@@ -1,16 +1,39 @@
 (() => {
   const CSS_PIXELS_PER_INCH = 96;
+  const CSS_PIXELS_PER_POINT = CSS_PIXELS_PER_INCH / 72;
   const HEIGHT_STEP = 1;
+  const TITLE_STEP = 0.05 * CSS_PIXELS_PER_POINT;
+  const DEFAULT_MINIMUM_TITLE_SIZE = 9.5 * CSS_PIXELS_PER_POINT;
   let resizeTimer;
 
   function setArtHeight(card, height) {
     card.querySelector('.card-interior')?.style.setProperty('--art-height', `${height}px`);
   }
 
+  function fitTitle(card) {
+    const title = card.querySelector('.card-title');
+    if (!title) return;
+
+    title.style.removeProperty('font-size');
+    void title.offsetWidth;
+
+    let size = Number.parseFloat(window.getComputedStyle(title).fontSize);
+    const minimum = Number(card.dataset.titleMin || DEFAULT_MINIMUM_TITLE_SIZE / CSS_PIXELS_PER_POINT)
+      * CSS_PIXELS_PER_POINT;
+
+    while (title.scrollWidth > title.clientWidth + 0.5 && size > minimum) {
+      size = Math.max(minimum, size - TITLE_STEP);
+      title.style.fontSize = `${size}px`;
+      void title.offsetWidth;
+    }
+  }
+
   function fitCard(card) {
     const interior = card.querySelector('.card-interior');
     const art = card.querySelector('.card-art');
     if (!interior || !art) return;
+
+    fitTitle(card);
 
     const maximum = Number(card.dataset.artMax || 1.72) * CSS_PIXELS_PER_INCH;
     const minimum = Number(card.dataset.artMin || 0.62) * CSS_PIXELS_PER_INCH;
