@@ -1,0 +1,278 @@
+name: Finalize v0.6.1 publication metadata
+
+on:
+  push:
+    branches:
+      - rules/v0.6.1-playtest-revision
+    paths:
+      - ".github/workflows/finalize-v061-publication.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: finalize-v061-publication
+  cancel-in-progress: false
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout revision branch
+        uses: actions/checkout@v4
+        with:
+          ref: rules/v0.6.1-playtest-revision
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Apply publication metadata
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          DATE_ISO = "2026-07-30"
+          DATE_DISPLAY = "July 30, 2026"
+
+          def replace_required(path, old, new, count=1):
+              p = Path(path)
+              text = p.read_text(encoding="utf-8")
+              if old not in text:
+                  raise SystemExit(f"Missing expected publication marker in {path}: {old!r}")
+              p.write_text(text.replace(old, new, count), encoding="utf-8")
+
+          # Generated canonical release metadata.
+          generator = Path("scripts/generate_v061_release.py")
+          text = generator.read_text(encoding="utf-8")
+          text = text.replace(
+              'RELEASE_NAME = "First Playtest Revision"\nSTATUS = "Draft pre-release playtest edition"',
+              'RELEASE_NAME = "First Playtest Revision"\nRELEASE_DATE = "2026-07-30"\nSTATUS = "Published playtest edition"',
+              1,
+          )
+          text = text.replace('            "date": None,', '            "date": RELEASE_DATE,', 1)
+          generator.write_text(text, encoding="utf-8")
+
+          # Manifest: final release state and stable public URLs.
+          manifest_path = Path("releases/v0.6.1/Gauntlet_v0.6.1_Manifest.json")
+          manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+          manifest["status"] = "published"
+          manifest["publication_date"] = DATE_ISO
+          manifest["public_links"] = {
+              "project_site": "https://gauntlet.run/",
+              "release_package": "https://gauntlet.run/releases/v0.6.1/",
+              "browser_rulebook": "https://gauntlet.run/rulebook/",
+              "rulebook_pdf": "https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf",
+              "card_reference": "https://gauntlet.run/card-reference/",
+              "deckbuilder": "https://gauntlet.run/deckbuilder/",
+              "faction_sheets": "https://gauntlet.run/faction-sheets/",
+              "playtest_sheet": "https://gauntlet.run/playtest/"
+          }
+          manifest["remaining_release_work"] = []
+          validation = manifest.setdefault("validation", {})
+          validation["production_workers_deployed"] = True
+          validation["physical_qr_session_test_passed"] = True
+          validation["ready_for_publication"] = True
+          manifest_path.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+
+          # Release-facing Markdown.
+          replace_required(
+              "releases/v0.6.1/Gauntlet_v0.6.1_Release_Notes.md",
+              "**Release date:** To be assigned at publication  \n**Status:** Draft pre-release playtest edition",
+              f"**Release date:** {DATE_DISPLAY}  \n**Status:** Published playtest edition",
+          )
+          replace_required(
+              "releases/v0.6.1/Gauntlet_v0.6.1_Changelog.md",
+              "**Status:** Draft implementation",
+              f"**Published:** {DATE_DISPLAY}",
+          )
+
+          release_readme = Path("releases/v0.6.1/README.md")
+          text = release_readme.read_text(encoding="utf-8")
+          text = text.replace(
+              "**Status:** Draft release candidate under final production validation  \n**Publication date:** To be assigned after deployment and physical verification",
+              f"**Status:** Published canonical playtest edition  \n**Publication date:** {DATE_DISPLAY}",
+              1,
+          )
+          text = text.replace(
+              "Until this package is completely validated and published, v0.6.0 remains the current canonical release.",
+              "This package is the current canonical release for Gauntlet playtesting. v0.6.0 remains archived for historical reference.",
+              1,
+          )
+          text = text.replace("The draft release candidate now contains or drives:", "The published release contains or drives:", 1)
+          start = text.index("## Remaining before publication")
+          end = text.index("## Deferred final priority: playable digital implementation")
+          publication = f'''## Public release links
+
+- [Project site](https://gauntlet.run/)
+- [Browser Rulebook](https://gauntlet.run/rulebook/)
+- [Rulebook PDF](https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf)
+- [Card Reference](https://gauntlet.run/card-reference/)
+- [Deckbuilder](https://gauntlet.run/deckbuilder/)
+- [Faction Sheets](https://gauntlet.run/faction-sheets/)
+- [Playtest Sheet](https://gauntlet.run/playtest/)
+
+## Publication verification
+
+Production D1 migrations and both Cloudflare Worker deployments passed, both health endpoints were verified, and the physical coded-sheet lifecycle passed in production on {DATE_DISPLAY}. The completed evidence is preserved in `Gauntlet_v0.6.1_Physical_Verification_Checklist.md` and `deployment-status.json`.
+
+'''
+          text = text[:start] + publication + text[end:]
+          release_readme.write_text(text, encoding="utf-8")
+
+          # Root repository and public homepage labels.
+          root_readme = Path("README.md")
+          text = root_readme.read_text(encoding="utf-8")
+          text = text.replace(
+              "**Current canonical version:** v0.6.1 — Faction Framework Release",
+              "**Current canonical version:** v0.6.1 — First Playtest Revision",
+              1,
+          )
+          text = text.replace("Gauntlet v0.6 Rules Assistant", "Gauntlet v0.6.1 Rules Arbiter")
+          text = text.replace("Gauntlet v0.6 Deckbuilder", "Gauntlet v0.6.1 Deckbuilder")
+          text = text.replace("Gauntlet v0.6 Faction Sheets", "Gauntlet v0.6.1 Faction Sheets")
+          text = text.replace("docs/Gauntlet_v0.6_Neutral_Card_Pool.md", "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md")
+          text = text.replace("docs/Gauntlet_v0.6_Territory_Pool.md", "docs/Gauntlet_v0.6.1_Territory_Pool.md")
+          root_readme.write_text(text, encoding="utf-8")
+
+          index = Path("index.html")
+          text = index.read_text(encoding="utf-8")
+          text = text.replace(
+              "Canonical pre-release playtest edition · v0.6.1",
+              "Current canonical playtest edition · v0.6.1",
+              1,
+          )
+          text = text.replace("Unpublished pre-release playtest project.", "Unpublished playtest project.")
+          index.write_text(text, encoding="utf-8")
+
+          # Documentation index and current status.
+          docs_index = Path("docs/README.md")
+          text = docs_index.read_text(encoding="utf-8")
+          old_intro = "For the current playable release, begin with the [v0.6.0 release package](../releases/v0.6.0/README.md). The [v0.6.1 release package](../releases/v0.6.1/README.md) is an implementation draft and is not yet canonical."
+          new_intro = "For the current playable release, begin with the [v0.6.1 release package](../releases/v0.6.1/README.md). v0.6.0 and earlier packages remain available only for historical reference."
+          if old_intro not in text:
+              raise SystemExit("docs/README.md current-release introduction not found")
+          text = text.replace(old_intro, new_intro, 1)
+          start = text.index("## Canonical v0.6.0 sources")
+          end = text.index("## Active v0.6.1 implementation records")
+          canonical = '''## Canonical v0.6.1 sources
+
+These files govern the current published playtest game:
+
+1. [Official Rulebook](../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md) — shared rules.
+2. [Definitive faction guides](../releases/v0.6.1/faction-guides/) — faction rules, Leaders, supplemental components, and exact faction-card text.
+3. [Neutral Card Pool](Gauntlet_v0.6.1_Neutral_Card_Pool.md) — exact Neutral-card text.
+4. [Territory Pool](Gauntlet_v0.6.1_Territory_Pool.md) — exact Territory and Arena text.
+5. [Canonical Data](../releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json) — generated structured data; do not edit independently.
+6. [Reference Guide](../releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.md) — compact play reference derived from the governing sources.
+7. [Release Notes](../releases/v0.6.1/Gauntlet_v0.6.1_Release_Notes.md) and [Changelog](../releases/v0.6.1/Gauntlet_v0.6.1_Changelog.md) — release explanation and detailed changes from v0.6.0.
+
+When a derived PDF, printable sheet, Deckbuilder entry, or digital implementation conflicts with these sources, correct the governing source and regenerate the derived artifact.
+
+'''
+          text = text[:start] + canonical + text[end:]
+          text = text.replace(
+              "These implementation records do not override the published v0.6.0 package. After publication, move them to the archive or reduce them to continuing implementation notes rather than maintaining duplicated rules.",
+              "These implementation records preserve the decisions and production history behind v0.6.1. They do not override the canonical release sources above and may be archived when they no longer serve an active development purpose.",
+              1,
+          )
+          docs_index.write_text(text, encoding="utf-8")
+
+          status = Path("docs/Gauntlet_Development_Status.md")
+          text = status.read_text(encoding="utf-8")
+          old_header = "**Current canonical version:** v0.6.0 — Faction Framework Release  \n**Release date:** July 20, 2026  \n**Status:** Canonical pre-release playtest edition"
+          new_header = f"**Current canonical version:** v0.6.1 — First Playtest Revision  \n**Release date:** {DATE_DISPLAY}  \n**Status:** Canonical playtest edition"
+          if old_header not in text:
+              raise SystemExit("Development status canonical header not found")
+          text = text.replace(old_header, new_header, 1)
+          old_opening = "Gauntlet v0.6.0 remains the sole published rules and card package for playtesting. Earlier working rules, preliminary rulebooks, review logs, and release trackers are preserved under `docs/Archive/` and are not active sources.\n\nThe first physical v0.6.0 playtest was held July 27, 2026. It exposed rules-language, timing, onboarding, table-organization, and playtest-instrumentation problems but no immediate balance failure. Approved corrections are being implemented for v0.6.1 and tracked in [Gauntlet v0.6.1 Implementation Ledger](Gauntlet_v0.6.1_Implementation_Ledger.md). Until the v0.6.1 package is complete and published, the v0.6.0 sources remain canonical."
+          new_opening = "Gauntlet v0.6.1 is the current published rules and card package for playtesting. Earlier releases, working rules, preliminary rulebooks, review logs, and release trackers are retained for historical reference and do not override the v0.6.1 governing sources.\n\nThe first physical v0.6.0 playtest was held July 27, 2026. It exposed rules-language, timing, onboarding, table-organization, and playtest-instrumentation problems but no immediate balance failure. v0.6.1 implements those approved corrections and adds the production-coded formal playtest workflow."
+          if old_opening not in text:
+              raise SystemExit("Development status opening block not found")
+          text = text.replace(old_opening, new_opening, 1)
+          old_priority = '''### 1. v0.6.1 finalization and publication
+
+- Run the source synchronization, canonical-data generation, automated tests, and strict release validators on the completed branch.
+- Regenerate the rulebook, reference guide, playtest sheet, player mat, printable cards, and supplemental components from the synchronized governing sources.
+- Visually inspect every regenerated player-facing artifact at intended print size and at desktop/mobile browser widths.
+- Synchronize the revision branch with current `main` website, artwork, print, and browser-tool work before merging.
+- Keep v0.6.0 canonical until the full v0.6.1 package passes those checks and is published.
+'''
+          new_priority = '''### 1. v0.6.1 post-release stabilization
+
+- Use v0.6.1 as the sole governing package for current tabletop playtesting.
+- Preserve the completed deployment and physical QR lifecycle evidence with the release package.
+- Route any discovered defect through the governing source, regenerate affected outputs, and record the correction before the next tagged revision.
+- Resume the deferred digital-engine migration without treating the legacy prototype as v0.6.1-compatible.
+'''
+          if old_priority not in text:
+              raise SystemExit("Development status priority block not found")
+          text = text.replace(old_priority, new_priority, 1)
+          status.write_text(text, encoding="utf-8")
+
+          # Publication-aware manifest validation.
+          validator = Path("scripts/validate_v061_release.py")
+          text = validator.read_text(encoding="utf-8")
+          old = '''    if strict_generated and validation.get("ready_for_publication") is True:
+        for key in ("visual_checks_passed", "browser_checks_passed"):
+            if validation.get(key) is not True:
+                errors.append(f"Manifest says publication-ready while validation.{key} is not true")
+'''
+          new = '''    if strict_generated and validation.get("ready_for_publication") is True:
+        required_ready_checks = (
+            "browser_checks_passed",
+            "document_visual_checks_passed",
+            "faction_sheet_visual_checks_passed",
+            "faction_pdf_page_validation_passed",
+            "formal_session_lifecycle_tested",
+            "complete_print_package_visual_checks_passed",
+            "production_workers_deployed",
+            "physical_qr_session_test_passed",
+        )
+        for key in required_ready_checks:
+            if validation.get(key) is not True:
+                errors.append(f"Manifest says publication-ready while validation.{key} is not true")
+        if manifest.get("status") != "published":
+            errors.append("Manifest says publication-ready while status is not published")
+        if not manifest.get("publication_date"):
+            errors.append("Manifest says publication-ready without a publication date")
+        if manifest.get("remaining_release_work"):
+            errors.append("Manifest says publication-ready while remaining release work is listed")
+        public_links = manifest.get("public_links") or {}
+        for key in ("project_site", "release_package", "browser_rulebook", "rulebook_pdf", "card_reference", "deckbuilder", "faction_sheets", "playtest_sheet"):
+            if not public_links.get(key):
+                errors.append(f"Manifest says publication-ready without public_links.{key}")
+'''
+          if old not in text:
+              raise SystemExit("Publication validator block not found")
+          validator.write_text(text.replace(old, new, 1), encoding="utf-8")
+          PY
+
+      - name: Generate canonical release data
+        run: python scripts/generate_v061_release.py
+
+      - name: Validate finalized publication state
+        run: |
+          python scripts/generate_v061_release.py --check
+          python scripts/validate_v061_playtest_sessions.py
+          python scripts/validate_v061_release.py
+
+      - name: Commit publication metadata
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            README.md \
+            index.html \
+            docs/README.md \
+            docs/Gauntlet_Development_Status.md \
+            releases/v0.6.1/ \
+            scripts/generate_v061_release.py \
+            scripts/validate_v061_release.py
+          git commit -m "Publish Gauntlet v0.6.1"
+          git pull --rebase origin rules/v0.6.1-playtest-revision
+          git push origin HEAD:rules/v0.6.1-playtest-revision
