@@ -13,6 +13,13 @@ import {
   queueAssimilationAfterBattle,
   registerAssimilationActionCondition,
 } from './neutral-assimilation';
+import {
+  ARMISTICE,
+  expireArmisticeConditions,
+  registerArmisticeActionCondition,
+  requireArmisticeBattleAllowed,
+  resolveArmisticeBattleAfterCancellation,
+} from './neutral-armistice';
 import { continueIntelligenceBattle } from './intelligence-battle';
 import {
   ADVANCE_GUARD,
@@ -432,6 +439,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
 
   if (action.type === 'resolve_battle_reveal') {
     const prepared = structuredClone(game);
+    if (resolveArmisticeBattleAfterCancellation(prepared, action)) return { state: prepared };
     if (prepareReinforcementsBattleReveal(prepared, action)) return { state: prepared };
     if (prepareInvasionBattleReveal(prepared, action)) return { state: prepared };
     if (prepareSeditionBattleReveal(prepared, action)) return { state: prepared };
@@ -554,6 +562,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     ? prepareInvasionMove(game, action.playerId, action.toSpaceId)
     : undefined;
   if (action.type === 'move_player') {
+    requireArmisticeBattleAllowed(game, action.playerId, action.toSpaceId);
     requireBattleCapableMovement(game, action.playerId, action.toSpaceId);
   }
 
@@ -583,6 +592,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
 
   if (action.type === 'play_action_card' && action.cardId === ASSIMILATION) {
     registerAssimilationActionCondition(result.state, action.playerId);
+  }
+  if (action.type === 'play_action_card' && action.cardId === ARMISTICE) {
+    registerArmisticeActionCondition(result.state, action.playerId);
   }
   if (action.type === 'play_action_card' && preparedAdvanceGuard) {
     applyAdvanceGuardAction(result.state, action.playerId, preparedAdvanceGuard);
@@ -695,6 +707,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   if (action.type === 'end_turn') {
     expireAssimilationConditions(result.state, action.playerId);
+    expireArmisticeConditions(result.state, game.turn);
     clearReinforcementsActionOpportunity(result.state, action.playerId);
     clearInsurrectionActionOpportunity(result.state, action.playerId);
     clearLiberationActionOpportunity(result.state, action.playerId);

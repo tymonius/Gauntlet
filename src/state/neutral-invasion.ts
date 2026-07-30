@@ -28,6 +28,7 @@ const TOO_LATE_AFTER_REVEAL = new Set([
   'intelligence-intercepted-orders',
   'intelligence-treason',
   'inquisition-confession',
+  'neutral-armistice',
 ]);
 
 export interface InvasionMovementSnapshot {
