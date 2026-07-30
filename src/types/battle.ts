@@ -30,6 +30,8 @@ export interface BattlePlayedCard {
   visibleTo?: PlayerID[];
   /** A card-specific replacement for this physical card's battle-cleanup destination. */
   cleanupDestination?: 'discard' | 'graveyard' | 'hand' | 'removed';
+  /** Capital Punishment controllers that negated this physical card. */
+  capitalPunishmentBy?: PlayerID[];
   /** A repeated effect with no additional physical card or cleanup destination. */
   virtual?: boolean;
   /** True when this physical card came from the Battle Hand first formed for this battle. */
