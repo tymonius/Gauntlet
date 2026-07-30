@@ -6,7 +6,9 @@ import type {
   GameState,
   PlayerID,
 } from '../types';
-import type { ResolveBattleRevealAction } from './actions';
+import type { ResolveBattleRevealAction, ResolveNeutralChoiceAction } from './actions';
+import { reconcileFaceDownAssets } from './asset-facing';
+import { activeBankedAssetCopies } from './banked-assets';
 import { resolveBattleRevealCancellations } from './battle-reveal';
 import { GameActionError } from './reducer';
 
@@ -37,6 +39,35 @@ function removeOne(cards: CardID[], cardId: CardID): boolean {
   return true;
 }
 
+function removeChosenCards(source: CardID[], chosen: CardID[]): CardID[] {
+  const remaining = [...source];
+  for (const cardId of chosen) {
+    if (!removeOne(remaining, cardId)) {
+      throw new GameActionError(`${cardId} is not available to discard for Armistice.`);
+    }
+  }
+  return remaining;
+}
+
+function unique(cards: readonly CardID[]): CardID[] {
+  return [...new Set(cards)];
+}
+
+function hasBlockingChoice(game: GameState): boolean {
+  return Boolean(
+    game.pendingNeutralChoice
+    || game.pendingMilitaryChoice
+    || game.pendingMilitaryTimingChoice
+    || game.pendingDiplomatChoice
+    || game.pendingFinancierChoice
+    || game.pendingIntelligenceChoice
+    || game.pendingMysticsChoice
+    || game.pendingInquisitionChoice
+    || game.pendingLeaderAbilityWindow
+    || Object.keys(game.pendingAssetBankDiscards ?? {}).length,
+  );
+}
+
 function activeArmistice(card?: BattlePlayedCard): boolean {
   return Boolean(card
     && card.cardId === ARMISTICE
@@ -45,26 +76,14 @@ function activeArmistice(card?: BattlePlayedCard): boolean {
     && !card.virtual);
 }
 
-function activeArmisticeConditions(game: GameState): NonNullable<GameState['neutralArmisticeConditions']> {
-  return (game.neutralArmisticeConditions ?? []).filter((condition) => game.turn <= condition.expiresAtTurn);
+export function armisticeCanBeVoluntarilyDiscarded(cardId: CardID): boolean {
+  return cardId !== ARMISTICE;
 }
 
-export function registerArmisticeActionCondition(game: GameState, playerId: PlayerID): void {
-  const player = game.players[playerId];
-  if (!player?.zones.removed.includes(ARMISTICE)) return;
-  game.neutralArmisticeConditions ??= [];
-  game.neutralArmisticeConditions.push({
-    playerId,
-    sourceCardId: ARMISTICE,
-    playedTurn: game.turn,
-    expiresAtTurn: game.turn + 1,
-  });
-  appendPublicLog(
-    game,
-    playerId,
-    'neutral_armistice_condition_played',
-    `${player.name} declared an Armistice through the end of the opponent's next turn.`,
-    { playedTurn: game.turn, expiresAtTurn: game.turn + 1 },
+export function activeArmisticeAssetCount(game: GameState): number {
+  return Object.values(game.players).reduce(
+    (total, player) => total + activeBankedAssetCopies(game, player.id, ARMISTICE),
+    0,
   );
 }
 
@@ -75,35 +94,102 @@ export function requireArmisticeBattleAllowed(
 ): void {
   const destination = game.board.spaces.find((space) => space.id === toSpaceId);
   if (!destination?.occupant || destination.occupant === playerId) return;
-  if (activeArmisticeConditions(game).length === 0) return;
-  throw new GameActionError('A battle cannot be initiated while Armistice is in effect.');
+  if (activeArmisticeAssetCount(game) === 0) return;
+  throw new GameActionError('A battle cannot be initiated while an active Armistice is banked.');
 }
 
-export function expireArmisticeConditions(game: GameState, endedTurn: number): void {
-  const conditions = game.neutralArmisticeConditions ?? [];
-  if (conditions.length === 0) return;
+export function queueArmisticeAfterNormalDraw(game: GameState, playerId: PlayerID): number {
+  const count = activeBankedAssetCopies(game, playerId, ARMISTICE);
+  if (count < 1 || game.phase === 'game_over') return 0;
+  const queue = game.neutralArmisticeAssetQueue ?? [];
+  queue.push({
+    id: `${game.id}-armistice-upkeep-${game.turn}-${queue.length + 1}`,
+    playerId,
+    triggersRemaining: count,
+  });
+  game.neutralArmisticeAssetQueue = queue;
+  return count;
+}
 
-  const remaining = [];
-  for (const condition of conditions) {
-    if (condition.expiresAtTurn > endedTurn) {
-      remaining.push(condition);
-      continue;
-    }
-    const player = game.players[condition.playerId];
-    if (player && removeOne(player.zones.removed, condition.sourceCardId)) {
-      player.zones.discard.push(condition.sourceCardId);
-    }
-    if (player) {
-      appendPublicLog(
-        game,
-        condition.playerId,
-        'neutral_armistice_condition_expired',
-        `${player.name}'s Armistice ended.`,
-        { playedTurn: condition.playedTurn, expiredAfterTurn: endedTurn },
-      );
-    }
+function trimArmisticeQueue(game: GameState): void {
+  const retained = (game.neutralArmisticeAssetQueue ?? []).filter((entry) => {
+    const active = activeBankedAssetCopies(game, entry.playerId, ARMISTICE);
+    entry.triggersRemaining = Math.min(entry.triggersRemaining, active);
+    return entry.triggersRemaining > 0;
+  });
+  game.neutralArmisticeAssetQueue = retained.length > 0 ? retained : undefined;
+}
+
+export function openNextArmisticeChoice(game: GameState): boolean {
+  if (hasBlockingChoice(game)) return false;
+  trimArmisticeQueue(game);
+  const entry = game.neutralArmisticeAssetQueue?.[0];
+  if (!entry) return false;
+
+  const player = game.players[entry.playerId];
+  const mayPayCards = player.zones.hand.length >= 2;
+  game.pendingNeutralChoice = {
+    kind: 'armistice_asset',
+    playerId: entry.playerId,
+    entryId: entry.id,
+    triggersRemaining: entry.triggersRemaining,
+    cardOptions: unique(player.zones.hand),
+    options: mayPayCards ? ['select_cards', 'use'] : ['use'],
+    resumePriorityPlayer: game.priorityPlayer,
+  };
+  game.priorityPlayer = entry.playerId;
+  return true;
+}
+
+export function resolveArmisticeChoice(game: GameState, action: ResolveNeutralChoiceAction): void {
+  const pending = game.pendingNeutralChoice;
+  if (!pending || pending.kind !== 'armistice_asset' || pending.playerId !== action.playerId) {
+    throw new GameActionError(`${action.playerId} has no pending Armistice upkeep choice.`);
   }
-  game.neutralArmisticeConditions = remaining.length > 0 ? remaining : undefined;
+  const entry = game.neutralArmisticeAssetQueue?.find((candidate) => candidate.id === pending.entryId);
+  if (!entry) throw new GameActionError('The Armistice upkeep is no longer pending.');
+
+  const player = game.players[action.playerId];
+  game.pendingNeutralChoice = undefined;
+  game.priorityPlayer = pending.resumePriorityPlayer ?? game.activePlayer;
+
+  if (action.choice === 'select_cards') {
+    const chosen = action.cardIds ?? [];
+    if (chosen.length !== 2) {
+      throw new GameActionError('Choose exactly two cards from hand to maintain Armistice.');
+    }
+    const remaining = removeChosenCards(player.zones.hand, chosen);
+    player.zones.hand = remaining;
+    player.zones.discard.push(...chosen);
+    entry.triggersRemaining -= 1;
+    appendPublicLog(
+      game,
+      action.playerId,
+      'neutral_armistice_upkeep_paid',
+      `${player.name} discarded two cards to maintain Armistice.`,
+      { cardIds: chosen, triggersRemaining: entry.triggersRemaining },
+    );
+  } else if (action.choice === 'use') {
+    if (activeBankedAssetCopies(game, action.playerId, ARMISTICE) < 1
+      || !removeOne(player.zones.assetBank, ARMISTICE)) {
+      throw new GameActionError('No active Armistice remains to discard.');
+    }
+    reconcileFaceDownAssets(player);
+    player.zones.discard.push(ARMISTICE);
+    entry.triggersRemaining -= 1;
+    appendPublicLog(
+      game,
+      action.playerId,
+      'neutral_armistice_upkeep_failed',
+      `${player.name} discarded Armistice instead of paying its upkeep.`,
+      { triggersRemaining: entry.triggersRemaining },
+    );
+  } else {
+    throw new GameActionError('Discard two cards from hand or discard Armistice.');
+  }
+
+  trimArmisticeQueue(game);
+  openNextArmisticeChoice(game);
 }
 
 function allPlayedCards(participant: BattleParticipantState): BattlePlayedCard[] {

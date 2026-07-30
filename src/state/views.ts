@@ -296,6 +296,7 @@ function neutralChoiceIsPrivate(game: GameState): boolean {
     || kind?.startsWith('contraband_')
     || kind?.startsWith('invasion_')
     || kind === 'revolution_battle'
+    || kind === 'armistice_asset'
     || kind === 'sequestration_action'
     || kind === 'rousing_speech_discard',
   );
@@ -318,7 +319,6 @@ export function toPublicGameView(game: GameState): PublicGameView {
     neutralInsurrectionActionOpportunity: structuredClone(game.neutralInsurrectionActionOpportunity),
     neutralLiberationActionOpportunity: structuredClone(game.neutralLiberationActionOpportunity),
     neutralAssimilationConditions: structuredClone(game.neutralAssimilationConditions),
-    neutralArmisticeConditions: structuredClone(game.neutralArmisticeConditions),
     pendingNeutralChoice: neutralChoiceIsPrivate(game) ? undefined : structuredClone(game.pendingNeutralChoice),
     pendingMilitaryChoice: game.pendingMilitaryChoice,
     pendingMilitaryTimingChoice: game.pendingMilitaryTimingChoice,

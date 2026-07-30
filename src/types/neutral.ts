@@ -34,6 +34,22 @@ export interface PendingDecoysAssetChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface ArmisticeAssetQueueEntry {
+  id: string;
+  playerId: PlayerID;
+  triggersRemaining: number;
+}
+
+export interface PendingArmisticeAssetChoice {
+  kind: 'armistice_asset';
+  playerId: PlayerID;
+  entryId: string;
+  triggersRemaining: number;
+  cardOptions: CardID[];
+  options: Array<'select_cards' | 'use'>;
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface RedemptionDiscardQueueEntry {
   id: string;
   playerId: PlayerID;
@@ -630,6 +646,7 @@ export interface PendingResistanceBattleChoice {
 
 export type PendingNeutralChoice =
   | PendingDecoysAssetChoice
+  | PendingArmisticeAssetChoice
   | PendingRedemptionAssetChoice
   | PendingRedemptionBattleChoice
   | PendingFootholdAssetChoice
