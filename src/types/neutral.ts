@@ -561,7 +561,9 @@ export type CounterworksOverlayPlacementKind =
   | 'protracted_siege_battle'
   | 'protracted_siege_asset'
   | 'military_encampment_action'
-  | 'military_encampment_battle';
+  | 'military_encampment_battle'
+  | 'siege_weaponry_action'
+  | 'siege_weaponry_battle';
 
 export interface CounterworksOverlayPlacementRequest {
   id?: string;
@@ -573,6 +575,7 @@ export interface CounterworksOverlayPlacementRequest {
   opponentId?: PlayerID;
   battleId?: string;
   captureOccupierId?: PlayerID;
+  resumeBattleReveal?: { playerId: PlayerID; battleCardTargets?: BattleCardTarget[] };
 }
 
 export interface CounterworksOverlayOption {

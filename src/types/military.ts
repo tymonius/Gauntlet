@@ -10,6 +10,9 @@ export interface TerritoryOverlayState {
   kind?: TerritoryOverlayKind;
   /** Occupier whose pending capture this Overlay tracks, when applicable. */
   captureDelayOccupier?: PlayerID;
+  siegeWeaponrySource?: 'action' | 'battle';
+  siegeWeaponryBattleId?: string;
+  siegeWeaponryOrigin?: 'hand' | 'battle_draw' | 'replayed';
 }
 
 export interface MilitaryCardState {

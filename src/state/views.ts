@@ -44,6 +44,7 @@ import { liberationActionOpportunityActive } from './neutral-liberation';
 import { canPlayInvasionAction, INVASION } from './neutral-invasion';
 import { canResolveNewRecruitsAction, NEW_RECRUITS } from './neutral-new-recruits';
 import { canBankResourcefulness, RESOURCEFULNESS } from './neutral-resourcefulness';
+import { canResolveSiegeWeaponryAction, SIEGE_WEAPONRY } from './neutral-siege-weaponry';
 
 const visible = <T>(cards: T[]) => ({ kind: 'visible' as const, cards });
 const hidden = <T>(cards: T[]) => ({ kind: 'hidden' as const, count: cards.length });
@@ -264,6 +265,7 @@ function legalActionPlaysForViewer(game: GameState, viewer?: PlayerID): LegalAct
     .filter((cardId) => cardId !== NEW_RECRUITS || canResolveNewRecruitsAction(game, viewer))
     .filter((cardId) => cardId !== RESOURCEFULNESS || canBankResourcefulness(game, viewer))
     .filter((cardId) => cardId !== INVASION || canPlayInvasionAction(game, viewer))
+    .filter((cardId) => cardId !== SIEGE_WEAPONRY || canResolveSiegeWeaponryAction(game, viewer))
     .map((cardId) => ({ action: 'play_action_card' as const, cardId, origin: 'hand' as const, destination: destinationForCardPlay(cardId, 'hand'), requiresTarget: getCardPlayRule(cardId)?.requiresTarget ?? false }));
 }
 

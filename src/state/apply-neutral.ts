@@ -286,6 +286,13 @@ import {
   SEQUESTRATION,
 } from './neutral-sequestration';
 import {
+  applySiegeWeaponryAction,
+  convertCapturedSiegeWeaponryToRuins,
+  prepareSiegeWeaponryBattleReveal,
+  resolveSiegeWeaponryAfterBattle,
+  SIEGE_WEAPONRY,
+} from './neutral-siege-weaponry';
+import {
   applyScoutingReportAction,
   prepareScoutingReportAction,
   resolveScoutingReportChoice,
@@ -303,6 +310,7 @@ import {
   clearExpiredPathfindersSuppressions,
   territoryPrintedEffectIsActive,
 } from './territory-printed-effects';
+import { captureTerritoryControllerSnapshot } from './territory-overlays';
 
 export type NeutralAppStateAction = AppStateAction | FinishMovementAction | ResolveNeutralChoiceAction | UseNeutralReinforcementsAssetAction;
 
@@ -490,6 +498,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     if (prepareInvasionBattleReveal(prepared, action)) return { state: prepared };
     if (prepareSeditionBattleReveal(prepared, action)) return { state: prepared };
     if (prepareArcaneKnowledgeBattleReveal(prepared, action)) return { state: prepared };
+    if (prepareSiegeWeaponryBattleReveal(prepared, action)) return { state: prepared };
     game = prepared;
   }
 
@@ -509,6 +518,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     game = restored;
   }
 
+  const territoryControllersBefore = captureTerritoryControllerSnapshot(game);
   const rousingSpeechAssetsBefore = captureRousingSpeechAssetSnapshot(game);
   const effectSourcePlayerId = redemptionEffectSourcePlayer(game, action);
   const discardBefore = effectSourcePlayerId ? captureDiscardSnapshot(game) : undefined;
@@ -697,6 +707,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'play_action_card' && action.cardId === SEQUESTRATION) {
     applySequestrationAction(result.state, action.playerId);
   }
+  if (action.type === 'play_action_card' && action.cardId === SIEGE_WEAPONRY) {
+    applySiegeWeaponryAction(result.state, action.playerId);
+  }
   if (action.type === 'play_action_card' && preparedScoutingReport) {
     applyScoutingReportAction(result.state, action.playerId, preparedScoutingReport);
   }
@@ -822,6 +835,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
       winnerId,
     );
     applyValorAssetDraw(result.state, priorBattle, winnerId);
+    resolveSiegeWeaponryAfterBattle(result.state, priorBattle, winnerId);
     applyScorchedEarthBattleRuins(
       result.state,
       priorBattle,
@@ -888,6 +902,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     registerRedemptionDiscardEntries(result.state, discardBefore, effectSourcePlayerId);
   }
   removeAbandonedProtractedSiegeOverlays(result.state);
+  convertCapturedSiegeWeaponryToRuins(result.state, territoryControllersBefore);
   continueNeutralChoices(result.state);
   return result;
 }

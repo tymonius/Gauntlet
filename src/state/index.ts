@@ -102,6 +102,7 @@ export * from './neutral-reinforcements';
 export * from './neutral-requisition';
 export * from './neutral-revolution';
 export * from './neutral-sequestration';
+export * from './neutral-siege-weaponry';
 export * from './neutral-rousing-speech';
 export * from './neutral-fealty';
 export * from './neutral-forced-march';

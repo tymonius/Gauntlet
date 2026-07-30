@@ -7,7 +7,6 @@ import type {
   GameState,
   PlayerID,
   SpaceID,
-  TerritoryControllerSnapshot,
   TerritoryOverlayState,
 } from '../types';
 import type { ResolveBattleRevealAction } from './actions';
@@ -19,7 +18,7 @@ import {
   queueCounterworksOverlayPlacement,
 } from './neutral-counterworks';
 import { territoryPrintedEffectIsActive } from './territory-printed-effects';
-import { placeRuinsOverlay } from './territory-overlays';
+import { placeRuinsOverlay, type TerritoryControllerSnapshot } from './territory-overlays';
 
 export const SIEGE_WEAPONRY = 'neutral-siege-weaponry';
 

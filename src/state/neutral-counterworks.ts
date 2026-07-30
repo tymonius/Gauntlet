@@ -9,7 +9,7 @@ import type {
   SpaceID,
   TerritoryOverlayState,
 } from '../types';
-import type { ResolveNeutralChoiceAction } from './actions';
+import type { ResolveBattleRevealAction, ResolveNeutralChoiceAction } from './actions';
 import { reconcileFaceDownAssets } from './asset-facing';
 import { faceUpAssetCopies } from './asset-facing';
 import { GameActionError } from './reducer';
@@ -222,6 +222,15 @@ function finalizePlacement(game: GameState, request: CounterworksOverlayPlacemen
     : undefined;
   const placedOverlay = ruinsPlacement?.overlay
     ?? placeTerritoryOverlay(space, request.cardId, request.playerId);
+  if (request.kind === 'siege_weaponry_action') {
+    placedOverlay.kind = 'standard';
+    placedOverlay.siegeWeaponrySource = 'action';
+  } else if (request.kind === 'siege_weaponry_battle') {
+    placedOverlay.kind = 'standard';
+    placedOverlay.siegeWeaponrySource = 'battle';
+    placedOverlay.siegeWeaponryBattleId = request.battleId;
+    if (request.source.zone === 'battle_card') placedOverlay.siegeWeaponryOrigin = request.source.origin;
+  }
   const replaced = ruinsPlacement?.replaced ?? [];
   if (request.captureOccupierId) placedOverlay.captureDelayOccupier = request.captureOccupierId;
 
@@ -246,6 +255,8 @@ function finalizePlacement(game: GameState, request: CounterworksOverlayPlacemen
     log(game, request.playerId, 'neutral_protracted_siege_overlay_placed', `${game.players[request.playerId].name} placed Protracted Siege on ${space.id}.`, { battleId: request.battleId, spaceId: space.id, source: request.source.zone, captureOccupierId: request.captureOccupierId });
   } else if (request.kind.startsWith('military_encampment')) {
     log(game, request.playerId, 'military_encampment_placed', `${game.players[request.playerId].name} placed Encampment on ${space.territoryId ?? space.id}.`, { spaceId: space.id });
+  } else if (request.kind.startsWith('siege_weaponry')) {
+    log(game, request.playerId, 'neutral_siege_weaponry_placed', `${game.players[request.playerId].name} placed Siege Weaponry on ${space.id}.`, { spaceId: space.id, battleId: request.battleId, source: request.source.zone });
   }
 }
 
@@ -367,7 +378,7 @@ export function counterworksOverlayInactive(
 export function resolveCounterworksChoice(
   game: GameState,
   action: ResolveNeutralChoiceAction,
-): { resumeBattleReveal?: boolean } {
+): { resumeBattleReveal?: boolean; deferredBattleAction?: ResolveBattleRevealAction } {
   const pending = game.pendingNeutralChoice;
   if (!pending || !pending.kind.startsWith('counterworks_') || pending.playerId !== action.playerId) {
     throw new GameActionError(`${action.playerId} has no pending Counterworks choice.`);
@@ -376,6 +387,9 @@ export function resolveCounterworksChoice(
   if (pending.kind === 'counterworks_asset') {
     const request = game.neutralCounterworksOverlayQueue?.find((candidate) => candidate.id === pending.requestId);
     if (!request) throw new GameActionError('The Overlay placement is no longer pending.');
+    const deferredBattleAction: ResolveBattleRevealAction | undefined = request.resumeBattleReveal
+      ? { type: 'resolve_battle_reveal', ...request.resumeBattleReveal }
+      : undefined;
     if (action.choice !== 'pass' && action.choice !== 'use') throw new GameActionError('Choose whether to use Counterworks.');
     game.pendingNeutralChoice = undefined;
     game.priorityPlayer = pending.resumePriorityPlayer ?? game.activePlayer;
@@ -393,6 +407,9 @@ export function resolveCounterworksChoice(
     if (index >= 0) game.neutralCounterworksOverlayQueue!.splice(index, 1);
     if (!game.neutralCounterworksOverlayQueue?.length) game.neutralCounterworksOverlayQueue = undefined;
     processCounterworksOverlayQueue(game);
+    if (deferredBattleAction && !game.pendingNeutralChoice && !game.neutralCounterworksOverlayQueue?.length) {
+      return { deferredBattleAction };
+    }
     return {};
   }
 
