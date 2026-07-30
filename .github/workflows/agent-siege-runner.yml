@@ -1,15 +1,16 @@
 name: Agent Siege Runner
 
 on:
-  push:
-    branches:
-      - agent/neutral-siege-weaponry
+  issue_comment:
+    types: [created]
 
 permissions:
   contents: write
+  pull-requests: read
 
 jobs:
   implement:
+    if: github.event.issue.pull_request && github.event.issue.number == 287 && github.event.comment.body == '/run-siege'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Siege branch
