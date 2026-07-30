@@ -481,7 +481,7 @@ Total deckbuilding value across the unique pool is **119**. Average cost is **2.
 >
 > **Battle:** All banked Assets are inactive during this battle.
 
-## Siege Weaponry
+## Bombardment
 
 **Cost:** 4  
 **Complexity:** Advanced
