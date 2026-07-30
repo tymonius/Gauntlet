@@ -97,6 +97,12 @@ def main() -> None:
     live = attestation.get("live_tail")
     if not isinstance(live, dict):
         fail("attestation lacks live_tail metadata")
+    if live.get("scope") != "gauntlet-project":
+        fail("live-tail scope must be the full Gauntlet project")
+    if live.get("concurrent_conversations_allowed") is not True:
+        fail("live-tail policy must allow concurrent project conversations")
+    if live.get("certification_requires_complete_project_conversation_inventory") is not True:
+        fail("certification must require a complete Gauntlet-project conversation inventory")
     if live.get("captured_user_turns") != len(rows):
         fail("attestation captured_user_turns disagrees with live tail")
     if live.get("unmatched_user_turns") != unmatched:
@@ -108,7 +114,8 @@ def main() -> None:
         fail("complete certification cannot retain unmatched live-tail rows")
 
     print(
-        f"Live conversation tail valid: {len(rows)} exact user turns, "
+        f"Project-wide live conversation tail valid: {len(rows)} exact user turns "
+        f"across {len(orders)} captured conversation(s), "
         f"{unmatched} unmatched pending export reconciliation."
     )
 
