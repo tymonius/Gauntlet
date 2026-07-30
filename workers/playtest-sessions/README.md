@@ -8,13 +8,15 @@ Each printed sheet receives one single-use join token and a short human-readable
 
 The service uses the existing `gauntlet-rules-assistant` D1 database so formal sessions and Rules Arbiter records can be linked without duplicating the interaction database.
 
-Migration:
+Migrations are applied in sequence:
 
 ```text
-rules-assistant/migrations/0002_playtest_sessions.sql
+rules-assistant/migrations/0001_rules_interactions.sql
+rules-assistant/migrations/0002_review_export_checkpoints.sql
+rules-assistant/migrations/0003_playtest_sessions.sql
 ```
 
-Apply it from this directory:
+Apply them from this directory:
 
 ```bash
 npm install
@@ -22,7 +24,7 @@ npm run db:migrate:local
 npm run db:migrate:remote
 ```
 
-The remote migration changes the production database and should be run only after reviewing the SQL.
+The remote migrations change the production database and should be run only after reviewing the SQL.
 
 ## Development
 
@@ -67,7 +69,7 @@ The batch generator sends that secret as a bearer token. It is entered for the c
 
 ## Production setup
 
-1. Review and apply the remote migration.
+1. Review and apply the remote migrations in numeric order.
 2. Deploy this directory as a separate Cloudflare Worker project using `wrangler.toml`.
 3. Set `SESSION_ADMIN_TOKEN` with `wrangler secret put` or the Cloudflare dashboard.
 4. Confirm `https://gauntlet-playtest-sessions.tymon-scott.workers.dev/health` reports v0.6.1, `database: true`, and `sessionCreationConfigured: true`.
