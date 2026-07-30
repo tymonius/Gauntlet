@@ -18,6 +18,7 @@ import {
   ARCANE_KNOWLEDGE,
   openNextArcaneKnowledgeChoice,
   prepareArcaneKnowledgeAction,
+  prepareArcaneKnowledgeBattleReveal,
   resolveArcaneKnowledgeChoice,
 } from './neutral-arcane-knowledge';
 import {
@@ -297,8 +298,6 @@ export type NeutralAppStateAction = AppStateAction | FinishMovementAction | Reso
 function continueNeutralChoices(game: GameState): void {
   processCounterworksOverlayQueue(game);
   if (game.pendingNeutralChoice) return;
-  openNextArcaneKnowledgeChoice(game);
-  if (game.pendingNeutralChoice) return;
   const assimilationResolved = continueAssimilationBattleResolution(game);
   if (assimilationResolved && game.pendingAssetBankDiscards && Object.keys(game.pendingAssetBankDiscards).length > 0) return;
   const captureResume = continueProtractedSiegeCaptureResolution(game);
@@ -356,7 +355,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
       : undefined;
     const next = structuredClone(game);
     const resolved = pendingKind === 'arcane_knowledge_battle'
-      ? (resolveArcaneKnowledgeChoice(next, action), {})
+      ? resolveArcaneKnowledgeChoice(next, action)
       : pendingKind === 'decoys_asset'
         ? (resolveDecoysChoice(next, action), {})
       : pendingKind.startsWith('supplies_')
@@ -459,6 +458,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     if (prepareReinforcementsBattleReveal(prepared, action)) return { state: prepared };
     if (prepareInvasionBattleReveal(prepared, action)) return { state: prepared };
     if (prepareSeditionBattleReveal(prepared, action)) return { state: prepared };
+    if (prepareArcaneKnowledgeBattleReveal(prepared, action)) return { state: prepared };
     game = prepared;
   }
 

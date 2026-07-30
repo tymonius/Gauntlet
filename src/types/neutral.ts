@@ -197,6 +197,8 @@ export interface PendingArcaneKnowledgeBattleChoice {
   playerId: PlayerID;
   battleId: string;
   source: ArcaneKnowledgeBattleSource;
+  resolverPlayerId: PlayerID;
+  battleCardTargets?: BattleCardTarget[];
   graveyardOptions: CardID[];
   options: ['select_card'];
   resumePriorityPlayer?: PlayerID;

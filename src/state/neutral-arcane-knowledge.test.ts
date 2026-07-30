@@ -10,7 +10,7 @@ import { applyGameAction } from './apply-neutral';
 import { initializeGame } from './initialize';
 import {
   ARCANE_KNOWLEDGE,
-  openNextArcaneKnowledgeChoice,
+  prepareArcaneKnowledgeBattleReveal,
 } from './neutral-arcane-knowledge';
 import { FORTIFICATIONS } from './neutral-fortifications';
 import { openNextValorReroll, VALOR } from './neutral-valor';
@@ -200,7 +200,7 @@ describe('Neutral Arcane Knowledge', () => {
     state.players.player_1.zones.graveyard = [ATTRITION, UNSUPPORTED, ARCANE_KNOWLEDGE];
     beginBattle(state, [played(ARCANE_KNOWLEDGE, 'player_1')], []);
 
-    expect(openNextArcaneKnowledgeChoice(state)).toBe(true);
+    expect(prepareArcaneKnowledgeBattleReveal(state, { type: 'resolve_battle_reveal', playerId: 'player_1' })).toBe(true);
     expect(state.pendingNeutralChoice).toMatchObject({
       kind: 'arcane_knowledge_battle',
       playerId: 'player_1',
@@ -226,12 +226,8 @@ describe('Neutral Arcane Knowledge', () => {
     state.players.player_2.zones.graveyard = [FORTIFICATIONS];
     beginBattle(state, [], [played(ARCANE_KNOWLEDGE, 'player_2')]);
 
-    expect(openNextArcaneKnowledgeChoice(state)).toBe(true);
+    expect(prepareArcaneKnowledgeBattleReveal(state, { type: 'resolve_battle_reveal', playerId: 'player_1' })).toBe(true);
     state = resolveChoice(state, 'player_2', FORTIFICATIONS);
-    state = applyGameAction(state, {
-      type: 'resolve_battle_reveal',
-      playerId: 'player_1',
-    }).state;
 
     expect(state.battle?.defender.modifiers).toBe(1);
     state.battle!.attacker.diceRoll = 1;
@@ -253,7 +249,7 @@ describe('Neutral Arcane Knowledge', () => {
     state.players.player_1.zones.graveyard = [VALOR];
     beginBattle(state, [played(ARCANE_KNOWLEDGE, 'player_1')], []);
 
-    expect(openNextArcaneKnowledgeChoice(state)).toBe(true);
+    expect(prepareArcaneKnowledgeBattleReveal(state, { type: 'resolve_battle_reveal', playerId: 'player_1' })).toBe(true);
     state = resolveChoice(state, 'player_1', VALOR);
     state.battle!.attacker.diceRoll = 1;
     state.battle!.defender.diceRoll = 6;
@@ -277,7 +273,7 @@ describe('Neutral Arcane Knowledge', () => {
         [],
       );
 
-      expect(openNextArcaneKnowledgeChoice(state)).toBe(false);
+      expect(prepareArcaneKnowledgeBattleReveal(state, { type: 'resolve_battle_reveal', playerId: 'player_1' })).toBe(false);
       expect(state.pendingNeutralChoice).toBeUndefined();
     }
   });

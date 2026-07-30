@@ -1,126 +1,23 @@
-name: Fix Arcane Knowledge Reveal Timing
+name: Test
 
 on:
   pull_request:
-
-permissions:
-  contents: write
+  push:
+    branches:
+      - main
 
 jobs:
-  fix:
-    if: github.event.pull_request.head.ref == 'agent/neutral-arcane-knowledge'
+  test:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout source branch
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Apply timing fix
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          import base64
-
-          def replace_once(path: str, old: str, new: str) -> None:
-              file = Path(path)
-              text = file.read_text()
-              count = text.count(old)
-              if count != 1:
-                  raise RuntimeError(f"{path}: expected one anchor, found {count}: {old[:120]!r}")
-              file.write_text(text.replace(old, new, 1))
-
-          replace_once(
-              'src/state/apply-neutral.ts',
-              "  openNextArcaneKnowledgeChoice,\n  prepareArcaneKnowledgeAction,",
-              "  openNextArcaneKnowledgeChoice,\n  prepareArcaneKnowledgeAction,\n  prepareArcaneKnowledgeBattleReveal,",
-          )
-          replace_once(
-              'src/state/apply-neutral.ts',
-              "  processCounterworksOverlayQueue(game);\n  if (game.pendingNeutralChoice) return;\n  openNextArcaneKnowledgeChoice(game);\n  if (game.pendingNeutralChoice) return;\n  const assimilationResolved",
-              "  processCounterworksOverlayQueue(game);\n  if (game.pendingNeutralChoice) return;\n  const assimilationResolved",
-          )
-          replace_once(
-              'src/state/apply-neutral.ts',
-              "    if (prepareSeditionBattleReveal(prepared, action)) return { state: prepared };\n    game = prepared;",
-              "    if (prepareSeditionBattleReveal(prepared, action)) return { state: prepared };\n    if (prepareArcaneKnowledgeBattleReveal(prepared, action)) return { state: prepared };\n    game = prepared;",
-          )
-          replace_once(
-              'src/state/apply-neutral.ts',
-              "    const resolved = pendingKind === 'arcane_knowledge_battle'\n      ? (resolveArcaneKnowledgeChoice(next, action), {})",
-              "    const resolved = pendingKind === 'arcane_knowledge_battle'\n      ? resolveArcaneKnowledgeChoice(next, action)",
-          )
-
-          replace_once(
-              'src/types/neutral.ts',
-              "  source: ArcaneKnowledgeBattleSource;\n  graveyardOptions: CardID[];",
-              "  source: ArcaneKnowledgeBattleSource;\n  resolverPlayerId: PlayerID;\n  battleCardTargets?: BattleCardTarget[];\n  graveyardOptions: CardID[];",
-          )
-
-          replace_once(
-              'src/state/neutral-arcane-knowledge.ts',
-              "import type { PlayActionCardAction, ResolveNeutralChoiceAction } from './actions';",
-              "import type {\n  PlayActionCardAction,\n  ResolveBattleRevealAction,\n  ResolveNeutralChoiceAction,\n} from './actions';",
-          )
-          replace_once(
-              'src/state/neutral-arcane-knowledge.ts',
-              "import { GameActionError } from './reducer';",
-              "import { resolveBattleRevealCancellations } from './battle-reveal';\nimport { GameActionError } from './reducer';",
-          )
-          replace_once(
-              'src/state/neutral-arcane-knowledge.ts',
-              "export function openNextArcaneKnowledgeChoice(game: GameState): boolean {",
-              "export function openNextArcaneKnowledgeChoice(\n  game: GameState,\n  action: ResolveBattleRevealAction,\n): boolean {",
-          )
-          replace_once(
-              'src/state/neutral-arcane-knowledge.ts',
-              "      source: source.source,\n      graveyardOptions,",
-              "      source: source.source,\n      resolverPlayerId: action.playerId,\n      battleCardTargets: action.battleCardTargets,\n      graveyardOptions,",
-          )
-          replace_once(
-              'src/state/neutral-arcane-knowledge.ts',
-              "export function resolveArcaneKnowledgeChoice(\n  game: GameState,\n  action: ResolveNeutralChoiceAction,\n): void {",
-              "export function prepareArcaneKnowledgeBattleReveal(\n  game: GameState,\n  action: ResolveBattleRevealAction,\n): boolean {\n  resolveBattleRevealCancellations(game, action);\n  return openNextArcaneKnowledgeChoice(game, action);\n}\n\nexport function resolveArcaneKnowledgeChoice(\n  game: GameState,\n  action: ResolveNeutralChoiceAction,\n): { deferredBattleAction?: ResolveBattleRevealAction } {",
-          )
-          replace_once(
-              'src/state/neutral-arcane-knowledge.ts',
-              "  const participant = participantFor(game, pending.playerId);",
-              "  const deferredBattleAction: ResolveBattleRevealAction = {\n    type: 'resolve_battle_reveal',\n    playerId: pending.resolverPlayerId,\n    battleCardTargets: pending.battleCardTargets,\n  };\n  const participant = participantFor(game, pending.playerId);",
-          )
-          replace_once(
-              'src/state/neutral-arcane-knowledge.ts',
-              "  appendPublicLog(\n    game,\n    pending.playerId,\n    'neutral_arcane_knowledge_battle',\n    `${player.name} resolved ${action.cardId} from their Graveyard with Arcane Knowledge.`,\n    {\n      battleId: battle.id,\n      cardId: action.cardId,\n      source: pending.source,\n    },\n  );\n}",
-              "  appendPublicLog(\n    game,\n    pending.playerId,\n    'neutral_arcane_knowledge_battle',\n    `${player.name} resolved ${action.cardId} from their Graveyard with Arcane Knowledge.`,\n    {\n      battleId: battle.id,\n      cardId: action.cardId,\n      source: pending.source,\n    },\n  );\n  if (openNextArcaneKnowledgeChoice(game, deferredBattleAction)) return {};\n  return { deferredBattleAction };\n}",
-          )
-
-          replace_once(
-              'src/state/neutral-arcane-knowledge.test.ts',
-              "  openNextArcaneKnowledgeChoice,",
-              "  prepareArcaneKnowledgeBattleReveal,",
-          )
-          test = Path('src/state/neutral-arcane-knowledge.test.ts')
-          text = test.read_text()
-          text = text.replace(
-              "openNextArcaneKnowledgeChoice(state)",
-              "prepareArcaneKnowledgeBattleReveal(state, { type: 'resolve_battle_reveal', playerId: 'player_1' })",
-          )
-          block = """    state = resolveChoice(state, 'player_2', FORTIFICATIONS);\n    state = applyGameAction(state, {\n      type: 'resolve_battle_reveal',\n      playerId: 'player_1',\n    }).state;\n\n    expect(state.battle?.defender.modifiers).toBe(1);"""
-          replacement = """    state = resolveChoice(state, 'player_2', FORTIFICATIONS);\n\n    expect(state.battle?.defender.modifiers).toBe(1);"""
-          if text.count(block) != 1:
-              raise RuntimeError('Fortifications reveal test anchor not found')
-          test.write_text(text.replace(block, replacement, 1))
-
-          Path('.github/workflows/test.yml').write_bytes(base64.b64decode(
-              'bmFtZTogVGVzdAoKb246CiAgcHVsbF9yZXF1ZXN0OgogIHB1c2g6CiAgICBicmFuY2hlczoKICAgICAgLSBtYWluCgpqb2JzOgogIHRlc3Q6CiAgICBydW5zLW9uOiB1YnVudHUtbGF0ZXN0CgogICAgc3RlcHM6CiAgICAgIC0gbmFtZTogQ2hlY2tvdXQKICAgICAgICB1c2VzOiBhY3Rpb25zL2NoZWNrb3V0QHY0CgogICAgICAtIG5hbWU6IFNldHVwIE5vZGUKICAgICAgICB1c2VzOiBhY3Rpb25zL3NldHVwLW5vZGVAdjQKICAgICAgICB3aXRoOgogICAgICAgICAgbm9kZS12ZXJzaW9uOiAyMgoKICAgICAgLSBuYW1lOiBJbnN0YWxsIGRlcGVuZGVuY2llcwogICAgICAgIHJ1bjogbnBtIGluc3RhbGwKCiAgICAgIC0gbmFtZTogVHlwZWNoZWNrCiAgICAgICAgcnVuOiBucG0gcnVuIHR5cGVjaGVjawoKICAgICAgLSBuYW1lOiBUZXN0CiAgICAgICAgcnVuOiBucG0gdGVzdAo='
-          ))
-          PY
 
       - name: Install dependencies
         run: npm install
@@ -130,13 +27,3 @@ jobs:
 
       - name: Test
         run: npm test
-
-      - name: Commit timing fix
-        shell: bash
-        run: |
-          rm -f package-lock.json
-          git config user.name "OpenAI Agent"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Fix Arcane Knowledge reveal timing"
-          git push origin HEAD:${{ github.head_ref }}

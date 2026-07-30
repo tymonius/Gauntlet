@@ -7,11 +7,16 @@ import type {
   GameState,
   PlayerID,
 } from '../types';
-import type { PlayActionCardAction, ResolveNeutralChoiceAction } from './actions';
+import type {
+  PlayActionCardAction,
+  ResolveBattleRevealAction,
+  ResolveNeutralChoiceAction,
+} from './actions';
 import {
   addVirtualReplayedBattleCard,
   replayableBattleEffectsIn,
 } from './battle-effect-replay';
+import { resolveBattleRevealCancellations } from './battle-reveal';
 import { GameActionError } from './reducer';
 
 export const ARCANE_KNOWLEDGE = 'neutral-arcane-knowledge';
@@ -165,7 +170,10 @@ function hasBlockingWindow(game: GameState): boolean {
   );
 }
 
-export function openNextArcaneKnowledgeChoice(game: GameState): boolean {
+export function openNextArcaneKnowledgeChoice(
+  game: GameState,
+  action: ResolveBattleRevealAction,
+): boolean {
   if (hasBlockingWindow(game)) return false;
   const battle = game.battle;
   if (!battle
@@ -190,6 +198,8 @@ export function openNextArcaneKnowledgeChoice(game: GameState): boolean {
       playerId: source.participant.playerId,
       battleId: battle.id,
       source: source.source,
+      resolverPlayerId: action.playerId,
+      battleCardTargets: action.battleCardTargets,
       graveyardOptions,
       options: ['select_card'],
       resumePriorityPlayer: game.priorityPlayer,
@@ -199,10 +209,18 @@ export function openNextArcaneKnowledgeChoice(game: GameState): boolean {
   }
 }
 
+export function prepareArcaneKnowledgeBattleReveal(
+  game: GameState,
+  action: ResolveBattleRevealAction,
+): boolean {
+  resolveBattleRevealCancellations(game, action);
+  return openNextArcaneKnowledgeChoice(game, action);
+}
+
 export function resolveArcaneKnowledgeChoice(
   game: GameState,
   action: ResolveNeutralChoiceAction,
-): void {
+): { deferredBattleAction?: ResolveBattleRevealAction } {
   const pending = game.pendingNeutralChoice;
   if (!pending || pending.kind !== 'arcane_knowledge_battle' || pending.playerId !== action.playerId) {
     throw new GameActionError(`${action.playerId} has no pending Arcane Knowledge choice.`);
@@ -215,6 +233,11 @@ export function resolveArcaneKnowledgeChoice(
     throw new GameActionError('Choose an eligible Battle effect from your Graveyard for Arcane Knowledge.');
   }
 
+  const deferredBattleAction: ResolveBattleRevealAction = {
+    type: 'resolve_battle_reveal',
+    playerId: pending.resolverPlayerId,
+    battleCardTargets: pending.battleCardTargets,
+  };
   const participant = participantFor(game, pending.playerId);
   const source = sourceCard(participant, pending.source);
   if (!activeArcaneKnowledge(source) || source.postRevealEffectResolved) {
@@ -242,4 +265,6 @@ export function resolveArcaneKnowledgeChoice(
       source: pending.source,
     },
   );
+  if (openNextArcaneKnowledgeChoice(game, deferredBattleAction)) return {};
+  return { deferredBattleAction };
 }
