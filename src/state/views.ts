@@ -295,6 +295,7 @@ function neutralChoiceIsPrivate(game: GameState): boolean {
     || kind?.startsWith('conscription_')
     || kind?.startsWith('contraband_')
     || kind?.startsWith('invasion_')
+    || kind === 'revolution_battle'
     || kind === 'rousing_speech_discard',
   );
 }

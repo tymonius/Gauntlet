@@ -8,7 +8,7 @@ import type { CardID, GameID, PlayerID, SpaceID } from './ids';
 import type { LegalLeaderAbilityOption } from './leader';
 import type { PendingMilitaryChoice, PendingMilitaryTimingChoice } from './military';
 import type { PendingAccursedWagerAftermath, PendingMysticsChoice } from './mystics';
-import type { CounterworksOverlayPlacementRequest, CourtMartialCleanupRequest, DecoysAssetQueueEntry, FootholdAssetQueueEntry, PendingNeutralChoice, RedemptionBattleReturns, RedemptionDiscardQueueEntry, RequisitionBattleQueueEntry, ResistanceBattleCleanupEntry, RousingSpeechAssetQueueEntry, NeutralSabotageAssetSuppression, ReservesBattleTopdecks, SalvageBattleQueueEntry, ScorchedEarthAssetQueueEntry, SeditionBattleQueueEntry, SuppliesAssetQueueEntry, SuppliesBattleQueueEntry } from './neutral';
+import type { CounterworksOverlayPlacementRequest, CourtMartialCleanupRequest, DecoysAssetQueueEntry, FootholdAssetQueueEntry, PendingNeutralChoice, RedemptionBattleReturns, RedemptionDiscardQueueEntry, RequisitionBattleQueueEntry, ResistanceBattleCleanupEntry, RousingSpeechAssetQueueEntry, NeutralSabotageAssetSuppression, ReservesBattleTopdecks, RevolutionBattleExchangeState, SalvageBattleQueueEntry, ScorchedEarthAssetQueueEntry, SeditionBattleQueueEntry, SuppliesAssetQueueEntry, SuppliesBattleQueueEntry } from './neutral';
 import type { PlayerState, PrivatePlayerView, PublicPlayerView } from './player';
 
 export type GamePhase = 'setup' | 'turn_start' | 'action_before_movement' | 'movement' | 'battle' | 'action_after_movement' | 'cleanup' | 'game_over';
@@ -66,6 +66,7 @@ export interface GameState {
   neutralRequisitionBattleQueue?: RequisitionBattleQueueEntry[];
   neutralResistanceCleanupQueue?: ResistanceBattleCleanupEntry[];
   neutralRousingSpeechAssetQueue?: RousingSpeechAssetQueueEntry[];
+  neutralRevolutionBattleExchange?: RevolutionBattleExchangeState;
   neutralSabotageAssetSuppressions?: NeutralSabotageAssetSuppression[];
   neutralSalvageBattleQueue?: SalvageBattleQueueEntry[];
   neutralScorchedEarthAssetQueue?: ScorchedEarthAssetQueueEntry[];

@@ -275,6 +275,12 @@ import {
   resolveReservesChoice,
 } from './neutral-reserves';
 import {
+  applyRevolutionAction,
+  openNextRevolutionChoice,
+  resolveRevolutionChoice,
+  REVOLUTION,
+} from './neutral-revolution';
+import {
   applyScoutingReportAction,
   prepareScoutingReportAction,
   resolveScoutingReportChoice,
@@ -323,6 +329,7 @@ function continueNeutralChoices(game: GameState): void {
   openNextFootholdChoice(game);
   openNextRedemptionChoice(game);
   openNextValorReroll(game);
+  openNextRevolutionChoice(game);
 }
 
 function latestResolvedBattleWinner(game: GameState): PlayerID | undefined {
@@ -394,6 +401,8 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
                                 ? { resumeCapture: resolveProtractedSiegeChoice(next, action) }
                               : pendingKind === 'resistance_battle'
                                 ? (resolveResistanceChoice(next, action), {})
+                          : pendingKind === 'revolution_battle'
+                            ? (resolveRevolutionChoice(next, action), {})
                           : pendingKind === 'valor_battle'
                             ? (resolveValorChoice(next, action), {})
                     : pendingKind === 'scorched_earth_asset'
@@ -657,6 +666,10 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   if (action.type === 'play_action_card' && preparedReserves) {
     const drawnCards = applyReservesAction(result.state, action.playerId, preparedReserves);
+    result.result = { ...(result.result ?? {}), drawnCards };
+  }
+  if (action.type === 'play_action_card' && action.cardId === REVOLUTION) {
+    const drawnCards = applyRevolutionAction(result.state, action.playerId);
     result.result = { ...(result.result ?? {}), drawnCards };
   }
   if (action.type === 'play_action_card' && preparedScoutingReport) {
