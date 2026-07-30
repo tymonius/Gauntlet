@@ -1,6 +1,6 @@
-# Gauntlet v0.6.0 Deckbuilder
+# Gauntlet v0.6.1 Deckbuilder
 
-The browser Deckbuilder for the canonical Gauntlet v0.6.0 playtest release.
+The browser Deckbuilder for the canonical Gauntlet v0.6.1 playtest release.
 
 Rendered tool:
 
@@ -42,7 +42,7 @@ The Deckbuilder supports:
 - 30-card / 60-value playable-card validation;
 - random valid 30-card test Decks for the selected faction and Leader;
 - random Decks containing 6–10 faction cards, no more than three copies of a non-Unique title, and no more than one copy of a Unique title;
-- all 25 canonical v0.6.0 Territories;
+- all 25 canonical v0.6.1 Territories;
 - Territory search, standard/Arena filtering, previews, and watchlist display;
 - exactly-three-Territory validation with a maximum of one Arena;
 - selected Territories and faction supplemental packages in the Current deck display;
@@ -55,16 +55,16 @@ The Deckbuilder supports:
 
 The browser tool reads the canonical Markdown sources at runtime so card and Territory text remains synchronized with the release:
 
-- `docs/Gauntlet_v0.6_Neutral_Card_Pool.md`
-- `releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md`
-- `releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md`
-- `releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md`
-- `releases/v0.6.0/faction-guides/mystics/Gauntlet_v0.6_Mystics_Faction_Guide.md`
-- `releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md`
-- `releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md`
-- `docs/Gauntlet_v0.6_Territory_Pool.md`
+- `docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md`
+- `releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md`
+- `releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md`
+- `releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md`
+- `releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md`
+- `releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md`
+- `releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md`
+- `docs/Gauntlet_v0.6.1_Territory_Pool.md`
 
-Recommended starter compositions live in `deckbuilder/starter-decks.json`. The repository test command validates them against `releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json`.
+Recommended starter compositions live in `deckbuilder/starter-decks.json`. The repository test command validates them against `releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json`.
 
 ## Random test Decks
 

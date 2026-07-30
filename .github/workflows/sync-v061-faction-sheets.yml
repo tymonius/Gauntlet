@@ -1,0 +1,187 @@
+name: Render and validate v0.6.1 faction sheets
+
+on:
+  push:
+    branches:
+      - rules/v0.6.1-playtest-revision
+    paths:
+      - ".github/workflows/sync-v061-faction-sheets.yml"
+      - "faction-sheets/**"
+      - "deckbuilder/completed-factions.js"
+      - "deckbuilder/supplemental-data.js"
+      - "deckbuilder/completed-supplementals.js"
+      - "deckbuilder/v061-supplementals.js"
+      - "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json"
+      - "releases/v0.6.1/faction-guides/**"
+      - "scripts/validate_v061_faction_sheet_pdfs.py"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/sync-v061-faction-sheets.yml"
+      - "faction-sheets/**"
+      - "deckbuilder/completed-factions.js"
+      - "deckbuilder/supplemental-data.js"
+      - "deckbuilder/completed-supplementals.js"
+      - "deckbuilder/v061-supplementals.js"
+      - "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json"
+      - "releases/v0.6.1/faction-guides/**"
+      - "scripts/validate_v061_faction_sheet_pdfs.py"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: render-v061-faction-sheets-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout revision branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate canonical faction-sheet sources
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          root = Path('faction-sheets')
+          expected = {
+              'military.html': 'data-faction="military"',
+              'diplomat.html': 'data-faction="diplomats"',
+              'financier.html': 'data-faction="financiers"',
+              'intelligence.html': 'data-faction="intelligence"',
+              'mystics.html': 'data-faction="mystics"',
+              'inquisition.html': 'data-faction="inquisition"',
+          }
+          for filename, marker in expected.items():
+              text = (root / filename).read_text(encoding='utf-8')
+              for required in [marker, 'v061.css', 'v061-runtime.js', 'v061-supplementals.js', 'completed-factions.js']:
+                  if required not in text:
+                      raise SystemExit(f'{filename} missing {required}')
+              for forbidden in ['v0.6.0', 'Battle Hand', 'hand commitment', 'https://tymonius.github.io/Gauntlet/faction-sheets/']:
+                  if forbidden in text:
+                      raise SystemExit(f'{filename} contains obsolete or production-bound source: {forbidden}')
+
+          canonical = json.loads(Path('releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json').read_text(encoding='utf-8'))
+          if canonical.get('version') != 'v0.6.1':
+              raise SystemExit(f"Unexpected canonical version: {canonical.get('version')}")
+          counts = {}
+          for card in canonical.get('cards', []):
+              counts[card.get('allegiance')] = counts.get(card.get('allegiance'), 0) + 1
+          for faction in ['Military', 'Diplomats', 'Financiers', 'Intelligence', 'Mystics', 'Inquisition']:
+              if counts.get(faction) != 12:
+                  raise SystemExit(f'{faction} has {counts.get(faction)} canonical cards instead of 12')
+
+          supplementals = Path('deckbuilder/v061-supplementals.js').read_text(encoding='utf-8')
+          required_terms = ['Rite of Echoes', 'Gambit Surveillance', 'Peace Treaty', 'Capital Ledger', 'Purge Reference', 'Military Command']
+          for term in required_terms:
+              if term not in supplementals:
+                  raise SystemExit(f'v0.6.1 supplemental source missing {term}')
+          for forbidden in ['Battle Hand', 'hand commitment', 'played Tactics', 'v0.6 dev']:
+              if forbidden in supplementals:
+                  raise SystemExit(f'Obsolete supplemental term remains: {forbidden}')
+          print('Validated canonical v0.6.1 faction-sheet sources and six 12-card pools.')
+          PY
+
+      - name: Install rendering and PDF validation tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Serve repository
+        run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
+
+      - name: Render and inspect all six faction packages
+        run: |
+          mkdir -p /tmp/v061-faction-sheets
+          node --input-type=module <<'NODE'
+          import { chromium } from 'playwright';
+
+          const factions = [
+            ['military', 'military.html'],
+            ['diplomats', 'diplomat.html'],
+            ['financiers', 'financier.html'],
+            ['intelligence', 'intelligence.html'],
+            ['mystics', 'mystics.html'],
+            ['inquisition', 'inquisition.html']
+          ];
+          const browser = await chromium.launch({ headless: true });
+
+          for (const [id, filename] of factions) {
+            const page = await browser.newPage({ viewport: { width: 1275, height: 1650 } });
+            const errors = [];
+            page.on('pageerror', error => errors.push(error.message));
+            page.on('console', message => {
+              if (message.type() === 'error') errors.push(message.text());
+            });
+            const url = `http://127.0.0.1:8000/faction-sheets/${filename}`;
+            const response = await page.goto(url, { waitUntil: 'networkidle' });
+            if (!response?.ok()) throw new Error(`${filename} returned ${response?.status()}`);
+            await page.waitForSelector('body[data-ready="true"]', { timeout: 30000 });
+
+            const mainCards = await page.locator('.main-card').count();
+            if (mainCards !== 12) throw new Error(`${filename} rendered ${mainCards} playable cards instead of 12`);
+            const sheets = await page.locator('.sheet').count();
+            if (sheets < 2) throw new Error(`${filename} rendered only ${sheets} sheets`);
+            const fitResults = await page.evaluate(() => window.__cardFitResults || []);
+            const overflows = fitResults.filter(result => !result.fits || result.overflow > 0);
+            if (overflows.length) throw new Error(`${filename} overflows: ${JSON.stringify(overflows)}`);
+
+            const text = await page.locator('body').innerText();
+            for (const forbidden of ['v0.6.0', 'Battle Hand', 'hand commitment', 'battle-drawn card']) {
+              if (text.includes(forbidden)) throw new Error(`${filename} contains obsolete term ${forbidden}`);
+            }
+            if (id === 'diplomats' && await page.locator('.proposal-card').count() !== 18) throw new Error('Diplomat package must render nine Proposal fronts and nine Treaty backs');
+            if (id === 'mystics' && await page.locator('.rite-card').count() !== 6) throw new Error('Mystics package must render three Rite fronts and three completed backs');
+            if (id === 'financiers' && await page.locator('.deed-card').count() !== 8) throw new Error('Financier package must render eight Deed cards');
+            if (id === 'intelligence' && await page.locator('.tracker-card').count() !== 2) throw new Error('Intelligence package must render both trackers');
+            if (errors.length) throw new Error(`${filename} browser errors:\n${errors.join('\n')}`);
+
+            await page.screenshot({ path: `/tmp/v061-faction-sheets/${id}-preview.png`, fullPage: true });
+            await page.emulateMedia({ media: 'print' });
+            await page.pdf({
+              path: `/tmp/v061-faction-sheets/${id}.pdf`,
+              format: 'Letter',
+              printBackground: true,
+              preferCSSPageSize: true,
+              margin: { top: '0', right: '0', bottom: '0', left: '0' }
+            });
+            console.log(`${id}: ${mainCards} cards, ${sheets} sheets, ${fitResults.length} fitted faces`);
+            await page.close();
+          }
+
+          const index = await browser.newPage({ viewport: { width: 1000, height: 900 } });
+          const response = await index.goto('http://127.0.0.1:8000/faction-sheets/', { waitUntil: 'networkidle' });
+          if (!response?.ok()) throw new Error(`Faction-sheet index returned ${response?.status()}`);
+          const indexText = await index.locator('body').innerText();
+          for (const term of ['v0.6.1', 'Military', 'Diplomat', 'Financier', 'Intelligence', 'Mystics', 'Inquisition']) {
+            if (!indexText.includes(term)) throw new Error(`Faction-sheet index missing ${term}`);
+          }
+          await index.screenshot({ path: '/tmp/v061-faction-sheets/index.png', fullPage: true });
+          await index.close();
+          await browser.close();
+          NODE
+
+      - name: Validate PDF pages
+        run: python scripts/validate_v061_faction_sheet_pdfs.py /tmp/v061-faction-sheets
+
+      - name: Upload faction-sheet PDFs and previews
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-v061-faction-sheets
+          path: /tmp/v061-faction-sheets/*
+          if-no-files-found: error

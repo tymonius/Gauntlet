@@ -1,0 +1,13 @@
+name = "gauntlet-playtest-sessions"
+main = "src/index.js"
+compatibility_date = "2026-07-29"
+
+[vars]
+PUBLIC_SITE_ORIGIN = "https://gauntlet.run"
+ALLOWED_ORIGINS = "https://gauntlet.run,http://localhost:8000,http://127.0.0.1:8000"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "gauntlet-rules-assistant"
+database_id = "92edbc7f-f934-4260-b376-321ae1f02761"
+migrations_dir = "../../rules-assistant/migrations"

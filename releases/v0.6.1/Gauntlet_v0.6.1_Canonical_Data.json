@@ -1,8 +1,8 @@
 {
   "version": "v0.6.1",
   "name": "First Playtest Revision",
-  "date": null,
-  "status": "Draft pre-release playtest edition",
+  "date": "2026-07-30",
+  "status": "Published playtest edition",
   "deck_construction": {
     "minimum_playable_cards": 30,
     "maximum_deckbuilding_value": 60,

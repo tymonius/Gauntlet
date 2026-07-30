@@ -108,11 +108,11 @@ jobs:
         env:
           DEPLOYMENT_STATUS: ${{ job.status }}
           DEPLOYMENT_RUN_ID: ${{ github.run_id }}
-          DEPLOYMENT_SOURCE_SHA: ${{ github.sha }}
         run: |
           python - <<'PY'
           import json
           import os
+          import subprocess
           from datetime import datetime, timezone
           from pathlib import Path
 
@@ -121,7 +121,9 @@ jobs:
               "environment": "production",
               "status": os.environ["DEPLOYMENT_STATUS"],
               "run_id": int(os.environ["DEPLOYMENT_RUN_ID"]),
-              "source_sha": os.environ["DEPLOYMENT_SOURCE_SHA"],
+              "source_sha": subprocess.check_output(
+                  ["git", "rev-parse", "HEAD"], text=True
+              ).strip(),
               "recorded_at": datetime.now(timezone.utc).isoformat(),
           }
           path = Path("releases/v0.6.1/deployment-status.json")
