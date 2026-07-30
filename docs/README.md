@@ -2,11 +2,11 @@
 
 This directory contains the active design, testing, setting, and source-card documents for Gauntlet.
 
-For the current playable release, begin with the [v0.6.0 release package](../releases/v0.6.0/README.md), not with a development document in this directory.
+For the current playable release, begin with the [v0.6.0 release package](../releases/v0.6.0/README.md). The [v0.6.1 release package](../releases/v0.6.1/README.md) is an implementation draft and is not yet canonical.
 
 ## Canonical v0.6.0 sources
 
-These files govern the current game:
+These files govern the current published game:
 
 1. [Official Rulebook](../releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md) — shared rules.
 2. [Definitive faction guides](../releases/v0.6.0/faction-guides/) — faction rules, Leaders, supplemental components, and exact faction-card text.
@@ -14,7 +14,25 @@ These files govern the current game:
 4. [Territory Pool](Gauntlet_v0.6_Territory_Pool.md) — exact Territory and Arena text.
 5. [Canonical Data](../releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json) — generated structured data; do not edit independently.
 
-When a derived PDF, printable sheet, deckbuilder entry, or digital implementation conflicts with these sources, correct the governing source and regenerate the derived artifact.
+When a derived PDF, printable sheet, Deckbuilder entry, or digital implementation conflicts with these sources, correct the governing source and regenerate the derived artifact.
+
+## Active v0.6.1 governing-source draft
+
+The following sources contain the implemented v0.6.1 rules and exact player-facing text. They remain draft until the package is synchronized, generated, validated, and published.
+
+1. [v0.6.1 Rulebook](../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md) — shared rules, including Gambits, Reserves, Tactics, Aftermath, withdrawal, retreat, Assets, Overlays, and copied effects.
+2. [v0.6.1 faction guides](../releases/v0.6.1/faction-guides/) — all six faction systems, Leaders, supplemental components, and exact faction-card text.
+3. [v0.6.1 Neutral Card Pool](Gauntlet_v0.6.1_Neutral_Card_Pool.md) — exact Neutral-card text.
+4. [v0.6.1 Territory Pool](Gauntlet_v0.6.1_Territory_Pool.md) — exact Territory and Arena text.
+5. [v0.6.1 Reference Guide](../releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.md) — compact play reference derived from the governing sources.
+6. [v0.6.1 Release Notes](../releases/v0.6.1/Gauntlet_v0.6.1_Release_Notes.md) and [Changelog](../releases/v0.6.1/Gauntlet_v0.6.1_Changelog.md) — release explanation and detailed changes from v0.6.0.
+
+## Active v0.6.1 implementation records
+
+- [v0.6.1 Implementation Ledger](Gauntlet_v0.6.1_Implementation_Ledger.md) — approved first-playtest corrections and synchronization checklist.
+- [v0.6.1 Rulebook Layering Standard](Gauntlet_v0.6.1_Rulebook_Layering_Standard.md) — approved **How it works / Complete rules** structure for combining first-game teaching with technical reference.
+
+These implementation records do not override the published v0.6.0 package. After publication, move them to the archive or reduce them to continuing implementation notes rather than maintaining duplicated rules.
 
 ## Active development documents and tools
 
