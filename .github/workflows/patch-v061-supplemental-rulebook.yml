@@ -1,0 +1,52 @@
+name: Add v0.6.1 supplemental-component guide
+
+on:
+  push:
+    branches:
+      - rules/v0.6.1-playtest-revision
+    paths:
+      - ".github/workflows/patch-v061-supplemental-rulebook.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out revision branch
+        uses: actions/checkout@v4
+        with:
+          ref: rules/v0.6.1-playtest-revision
+
+      - name: Add supplemental-component guide
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md")
+          text = path.read_text(encoding="utf-8")
+
+          anchor = """Supplemental cards, reference cards, trackers, Deeds, Proposals, Rites, Missions, and similar components are part of the Deck but are not part of the Playable Deck unless a rule explicitly says otherwise.\n\nTogether, both players' Territory Cards form the **Gauntlet**, a single six-Territory column.\n"""
+
+          replacement = """Supplemental cards, reference cards, trackers, Deeds, Proposals, Rites, Missions, and similar components are part of the Deck but are not part of the Playable Deck unless a rule explicitly says otherwise.\n\n### Faction supplemental cards and trackers\n\nFaction supplemental components keep each faction's public resources, progress, choices, and special procedures visible. Place them beside the Leader before play begins. They are game aids and state records, not cards that can normally be drawn or played.\n\nReference cards summarize the faction's procedures. Trackers record changing public values. Double-sided cards record whether a Proposal or Rite has changed state. Other components, such as Deeds and the Capital Ledger, remain on the table as instructed by their faction rules.\n\n#### General use\n\n- Keep every supplemental component face up and visible unless its own rules say otherwise.\n- Begin each tracker at the faction's stated starting value and update it immediately whenever that value changes.\n- For a sliding tracker, place the indicated Leader or Reference Card over the tracker. Fully cover the tracker at 0, then slide the covering card until its bottom edge aligns with the current value.\n- A counter, dial, written record, or other substitute may be used when it shows the same public information clearly and unambiguously.\n- A reference card is a reminder, not a separate rules authority. If its shortened text omits a detail, follow this rulebook and the definitive faction guide.\n- A double-sided supplemental card changes state only when its governing rule tells you to flip it. Keep any attached or bound cards with it so both players can identify the relationship.\n- Supplemental components have no deckbuilding value and are not eligible as Gambits, Tactics, costs, collateral, Transmutation cards, Treasury cards, or other playable cards unless a rule explicitly says otherwise.\n- Each player supplies and controls their own faction package unless a faction rule identifies a shared supply. In a mirror match, keep the two players' components separated and oriented toward their owners.\n\n#### Military package\n\nUse the selected Leader Card and the **Command Tracker**. Begin at 0 Command with the tracker fully covered by the Leader. Slide the Leader to 1 or 2 whenever Command changes. The Leader Card lists that Leader's three Orders; spend Command only at an Order's stated timing.\n\n#### Diplomat package\n\nUse the selected Leader Card, **Influence Tracker**, double-sided **Diplomat Reference Card**, and nine double-sided **Proposal / Treaty Article cards**. Begin at 1 Influence and place every Proposal Proposal-side up. Lower the tracker when Influence is staked or spent and raise it when Influence returns or is gained. Flip an unratified Proposal to its Treaty Article side only when it is ratified. Leave ratified Articles face up so progress toward the Peace Treaty is public.\n\n#### Financier package\n\nUse the selected Leader Card, **Financier Reference Card**, public **Capital Ledger**, and eight identical **Deed Cards** in a shared supply. Begin with 0 Capital and an empty Treasury. Record every Capital gain, spend, loss, and end-turn reduction as a new Ledger transaction with a running Balance. When a Deed is bought, place one Deed Card beside its Territory on the owner's side; move it during a buyout and return it to the supply if it becomes unowned. A Deed is not an Asset or Overlay.\n\n#### Intelligence package\n\nUse the selected Leader Card, **Mission Reference Card**, **Operations Reference Card**, **Intel Tracker**, and **Operation Progress Tracker**. Both tracked values begin at 0 and have no maximum. Place the Intel Tracker beneath the Operations Reference and the Operation Progress Tracker beneath the Mission Reference, then slide the covering card to the current value. Record values beyond the printed track separately. An Active Mission or Special Operation is an eligible card from the Playable Deck placed face down near the Leader; the reference cards themselves never become Missions.\n\n#### Mystics package\n\nUse the selected Leader Card, **Mystics Reference Card**, and the three double-sided **Rite cards**: Rite of Echoes, Rite of Blood, and Rite of Crossing. Begin with every Rite incomplete-side up. Keep a begun Rite and any cards bound to it together. Flip the Rite when it is completed; reset it to the incomplete side when its rules say it is interrupted. After all three are complete, keep the three cards bound to the Ritual of Ascendance together in a clearly marked area near the Leader. Mystics use no resource tracker.\n\n#### Inquisition package\n\nUse the selected Leader Card, **Inquisition Doctrine Reference Card**, **Purge Reference Card**, and **Conviction Tracker**. Begin at 0 Conviction with the tracker fully covered by the Leader. Slide the Leader to show the current value, to a maximum of 4. Use the Doctrine Reference to remember Condemnation, Blasphemy, and Purification; use the Purge Reference to choose and pay for a Purge.\n\nTogether, both players' Territory Cards form the **Gauntlet**, a single six-Territory column.\n"""
+
+          if replacement in text:
+              print("Supplemental-component guide already present.")
+          elif anchor not in text:
+              raise SystemExit("Expected Components-section anchor was not found.")
+          else:
+              text = text.replace(anchor, replacement, 1)
+              path.write_text(text, encoding="utf-8")
+              print("Added faction supplemental-card and tracker guide.")
+          PY
+
+      - name: Remove one-shot workflow and commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/patch-v061-supplemental-rulebook.yml
+          git add releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md
+          git commit -m "Explain faction supplemental cards and trackers"
+          git push origin HEAD:rules/v0.6.1-playtest-revision
