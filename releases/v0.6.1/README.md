@@ -84,12 +84,17 @@ The archived v0.6.0 PDFs remain byte-for-byte aligned with `main`; the legacy v0
 The following work remains intentionally open:
 
 1. assemble and visually inspect the final v0.6.1 Neutral, Territory, faction, and all-components release PDFs at 100% scale;
-2. confirm the digital rules engine and exact card-effect data are synchronized with every v0.6.1 timing and lifecycle change;
-3. configure the production Cloudflare account/token and facilitator secret;
-4. apply the shared D1 migrations and deploy both Workers;
-5. verify both production health endpoints;
-6. perform one physical coded-sheet test: print, scan, join, ask the Rules Arbiter, close the session, and confirm that the retired code cannot be reused; and
-7. set the publication date, release status, public links, and final manifest flags only after those checks pass.
+2. configure the production Cloudflare account/token and facilitator secret;
+3. apply the shared D1 migrations and deploy both Workers;
+4. verify both production health endpoints;
+5. perform one physical coded-sheet test: print, scan, join, ask the Rules Arbiter, close the session, and confirm that the retired code cannot be reused; and
+6. set the publication date, release status, public links, and final manifest flags only after those checks pass.
+
+## Deferred final priority: playable digital implementation
+
+The automated TypeScript game engine is not a dependency for publishing the v0.6.1 tabletop release. Exploratory work adapting the engine to Gambits, Reserves, Tactics, and the revised Aftermath has been preserved separately on `feature/v061-digital-engine-migration`.
+
+That work resumes only after the tabletop package is published. Before a v0.6.1-compatible playable digital build can be declared complete, the engine must replace the legacy hand-commitment and Battle Hand procedure, migrate every affected card and faction handler, enforce the revised information and timing rules, and pass complete regression and multiplayer validation.
 
 ## Validation requirements
 
