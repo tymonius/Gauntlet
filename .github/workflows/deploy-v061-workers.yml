@@ -1,6 +1,11 @@
 name: Deploy v0.6.1 Rules and Playtest Workers
 
 on:
+  push:
+    branches:
+      - rules/v0.6.1-playtest-revision
+    paths:
+      - ".github/workflows/deploy-v061-workers.yml"
   workflow_dispatch:
     inputs:
       apply_migrations:
@@ -11,6 +16,10 @@ on:
 
 permissions:
   contents: read
+
+concurrency:
+  group: deploy-v061-production
+  cancel-in-progress: false
 
 jobs:
   deploy:
@@ -56,7 +65,7 @@ jobs:
           python scripts/validate_v061_release.py
 
       - name: Apply shared D1 migrations
-        if: ${{ inputs.apply_migrations }}
+        if: ${{ github.event_name != 'workflow_dispatch' || inputs.apply_migrations }}
         run: >-
           npx wrangler d1 migrations apply gauntlet-rules-assistant
           --remote
