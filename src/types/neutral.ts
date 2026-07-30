@@ -501,6 +501,23 @@ export interface PendingFortificationsBattleChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface SequestrationActionState {
+  sourcePlayerId: PlayerID;
+  playerIds: PlayerID[];
+  completedPlayerIds: PlayerID[];
+  keptCardIds: Partial<Record<PlayerID, CardID>>;
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingSequestrationActionChoice {
+  kind: 'sequestration_action';
+  playerId: PlayerID;
+  sourcePlayerId: PlayerID;
+  cardOptions: CardID[];
+  options: ['select_card'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface RevolutionBattleExchangeState {
   battleId: string;
   eligiblePlayerIds: PlayerID[];
@@ -643,6 +660,7 @@ export type PendingNeutralChoice =
   | PendingCourtMartialAssetChoice
   | PendingCourtMartialRetreatChoice
   | PendingFortificationsBattleChoice
+  | PendingSequestrationActionChoice
   | PendingRevolutionBattleChoice
   | PendingValorBattleChoice
   | PendingScorchedEarthAssetChoice

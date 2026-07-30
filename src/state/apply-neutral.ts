@@ -281,6 +281,11 @@ import {
   REVOLUTION,
 } from './neutral-revolution';
 import {
+  applySequestrationAction,
+  resolveSequestrationChoice,
+  SEQUESTRATION,
+} from './neutral-sequestration';
+import {
   applyScoutingReportAction,
   prepareScoutingReportAction,
   resolveScoutingReportChoice,
@@ -360,6 +365,15 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     const resistanceDecoysBefore = pendingKind === 'resistance_battle'
       ? captureDecoysAssetSnapshot(game)
       : undefined;
+    const sequestrationSourcePlayerId = pendingKind === 'sequestration_action'
+      ? game.neutralSequestrationAction?.sourcePlayerId
+      : undefined;
+    const sequestrationAssetsBefore = sequestrationSourcePlayerId
+      ? captureDecoysAssetSnapshot(game)
+      : undefined;
+    const sequestrationDiscardBefore = sequestrationSourcePlayerId
+      ? captureDiscardSnapshot(game)
+      : undefined;
     const next = structuredClone(game);
     const resolved = pendingKind === 'arcane_knowledge_battle'
       ? resolveArcaneKnowledgeChoice(next, action)
@@ -401,6 +415,8 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
                                 ? { resumeCapture: resolveProtractedSiegeChoice(next, action) }
                               : pendingKind === 'resistance_battle'
                                 ? (resolveResistanceChoice(next, action), {})
+                          : pendingKind === 'sequestration_action'
+                            ? (resolveSequestrationChoice(next, action), {})
                           : pendingKind === 'revolution_battle'
                             ? (resolveRevolutionChoice(next, action), {})
                           : pendingKind === 'valor_battle'
@@ -438,6 +454,12 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     }
     if (resistanceDecoysBefore) {
       registerDecoysAssetExits(next, resistanceDecoysBefore, action.playerId);
+    }
+    if (sequestrationAssetsBefore && sequestrationSourcePlayerId) {
+      registerDecoysAssetExits(next, sequestrationAssetsBefore, sequestrationSourcePlayerId);
+    }
+    if (sequestrationDiscardBefore && sequestrationSourcePlayerId) {
+      registerRedemptionDiscardEntries(next, sequestrationDiscardBefore, sequestrationSourcePlayerId);
     }
     reconcileSabotageAssetState(next);
     removeAbandonedProtractedSiegeOverlays(next);
@@ -671,6 +693,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'play_action_card' && action.cardId === REVOLUTION) {
     const drawnCards = applyRevolutionAction(result.state, action.playerId);
     result.result = { ...(result.result ?? {}), drawnCards };
+  }
+  if (action.type === 'play_action_card' && action.cardId === SEQUESTRATION) {
+    applySequestrationAction(result.state, action.playerId);
   }
   if (action.type === 'play_action_card' && preparedScoutingReport) {
     applyScoutingReportAction(result.state, action.playerId, preparedScoutingReport);

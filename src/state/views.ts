@@ -296,6 +296,7 @@ function neutralChoiceIsPrivate(game: GameState): boolean {
     || kind?.startsWith('contraband_')
     || kind?.startsWith('invasion_')
     || kind === 'revolution_battle'
+    || kind === 'sequestration_action'
     || kind === 'rousing_speech_discard',
   );
 }
