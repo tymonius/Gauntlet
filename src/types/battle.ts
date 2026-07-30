@@ -1,5 +1,6 @@
 import type { CardID, PlayerID, SpaceID } from './ids';
 
+/** Legacy v0.6.0 battle stages. */
 export type BattleStage =
   | 'enter'
   | 'hand_commit'
@@ -89,7 +90,6 @@ export interface ResolvedBattleCancellation {
   source: string;
   reason: string;
 }
-
 
 export interface CounterworksInactiveOverlay {
   battleId: string;
@@ -182,4 +182,113 @@ export interface PublicBattleView {
   legalBattlePlays?: BattlePlayOption[];
   winner?: PlayerID;
   loser?: PlayerID;
+}
+
+/** Authoritative v0.6.1 battle stages. Kept parallel to the legacy contract during migration. */
+export type V061BattleStage =
+  | 'opening_effects'
+  | 'set_gambits'
+  | 'form_reserves'
+  | 'reveal_gambits'
+  | 'choose_tactics'
+  | 'reveal_tactics'
+  | 'resolve_battle'
+  | 'aftermath';
+
+export type V061BattleCardRole = 'gambit' | 'tactic';
+export type V061BattleCardSource = 'hand' | 'reserve' | 'effect';
+export type V061BattleCardDestination = 'discard' | 'graveyard' | 'hand' | 'reserve' | 'removed';
+
+export interface V061BattleCard {
+  cardId: CardID;
+  owner: PlayerID;
+  role: V061BattleCardRole;
+  source: V061BattleCardSource;
+  faceDown: boolean;
+  negated: boolean;
+  canceled?: boolean;
+  visibleTo?: PlayerID[];
+  replacementOf?: CardID;
+  added?: boolean;
+  virtual?: boolean;
+  effectResolved?: boolean;
+  cleanupDestination?: Exclude<V061BattleCardDestination, 'reserve'>;
+}
+
+export interface V061BattleParticipantState {
+  playerId: PlayerID;
+  gambitChoiceComplete: boolean;
+  tacticChoiceComplete: boolean;
+  reserveFormed: boolean;
+  gambit?: V061BattleCard;
+  reserve: CardID[];
+  initialReserve?: CardID[];
+  tactics: V061BattleCard[];
+  reserveSize: number;
+  gambitLimit: number;
+  tacticLimit: number;
+  advantage: number;
+  disadvantage: number;
+  diceRolls?: number[];
+  diceRoll?: number;
+  rerollsRemaining: number;
+  modifiers: number;
+  retreated: boolean;
+  withdrew: boolean;
+}
+
+export interface V061BattleState {
+  rulesVersion: 'v0.6.1';
+  id: string;
+  stage: V061BattleStage;
+  location: SpaceID;
+  attackerOrigin: SpaceID;
+  attacker: V061BattleParticipantState;
+  defender: V061BattleParticipantState;
+  tiePolicy: BattleTiePolicy;
+  lastStand?: boolean;
+  openingEffectsComplete: boolean;
+  gambitRevealComplete: boolean;
+  tacticRevealComplete: boolean;
+  effectsResolved: string[];
+  winner?: PlayerID;
+  loser?: PlayerID;
+  noWinner?: boolean;
+  resolvedModifiers?: ResolvedBattleModifier[];
+  resolvedCancellations?: ResolvedBattleCancellation[];
+}
+
+export interface V061PublicBattleParticipantView {
+  playerId: PlayerID;
+  gambitChoiceComplete: boolean;
+  tacticChoiceComplete: boolean;
+  reserveFormed: boolean;
+  gambit?: V061BattleCard | { faceDown: true };
+  reserveCount: number;
+  tactics: Array<V061BattleCard | { faceDown: true }>;
+  reserveSize: number;
+  gambitLimit: number;
+  tacticLimit: number;
+  advantage: number;
+  disadvantage: number;
+  diceRolls?: number[];
+  diceRoll?: number;
+  modifiers: number;
+  retreated: boolean;
+  withdrew: boolean;
+}
+
+export interface V061PublicBattleView {
+  rulesVersion: 'v0.6.1';
+  id: string;
+  stage: V061BattleStage;
+  location: SpaceID;
+  attackerOrigin: SpaceID;
+  attacker: V061PublicBattleParticipantView;
+  defender: V061PublicBattleParticipantView;
+  tiePolicy: BattleTiePolicy;
+  lastStand?: boolean;
+  winner?: PlayerID;
+  loser?: PlayerID;
+  noWinner?: boolean;
 }
