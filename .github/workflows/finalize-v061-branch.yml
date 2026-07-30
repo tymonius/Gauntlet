@@ -1,14 +1,19 @@
 name: Finalize v0.6.1 revision branch
 
 on:
-  pull_request:
-    branches: [main]
+  push:
+    branches:
+      - rules/v0.6.1-playtest-revision
     paths:
       - ".github/workflows/finalize-v061-branch.yml"
   workflow_dispatch:
 
 permissions:
   contents: write
+
+concurrency:
+  group: finalize-v061-revision-branch
+  cancel-in-progress: true
 
 jobs:
   finalize:
