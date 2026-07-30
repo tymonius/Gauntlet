@@ -27,6 +27,7 @@ export interface NeutralLiberationActionOpportunity { playerId: PlayerID; turn: 
 export interface NeutralProtractedSiegeCaptureResolution { capturingPlayerId: PlayerID; spaceId: SpaceID; sourceOwner: PlayerID; requestId: string; overlayCountBefore: number; }
 export interface NeutralAssimilationCondition { playerId: PlayerID; turn: number; sourceCardId: CardID; consumedBattleId?: string; }
 export interface NeutralAssimilationBattleResolution { battleId: string; attackerId: PlayerID; spaceId: SpaceID; actionEffect: boolean; battleEffect: boolean; }
+export interface NeutralArmisticeCondition { playerId: PlayerID; sourceCardId: CardID; playedTurn: number; expiresAtTurn: number; }
 
 export interface GameState {
   id: GameID; version: string; phase: GamePhase; turn: number; activePlayer: PlayerID; priorityPlayer?: PlayerID;
@@ -56,6 +57,7 @@ export interface GameState {
   neutralProtractedSiegeCaptureResolution?: NeutralProtractedSiegeCaptureResolution;
   neutralAssimilationConditions?: NeutralAssimilationCondition[];
   neutralAssimilationBattleResolution?: NeutralAssimilationBattleResolution;
+  neutralArmisticeConditions?: NeutralArmisticeCondition[];
   neutralCounterworksOverlayQueue?: CounterworksOverlayPlacementRequest[];
   neutralCourtMartialQueue?: CourtMartialCleanupRequest[];
   neutralDecoysAssetQueue?: DecoysAssetQueueEntry[];
@@ -89,6 +91,7 @@ export interface PublicGameView {
   neutralLiberationActionOpportunity?: NeutralLiberationActionOpportunity;
   neutralProtractedSiegeCaptureResolution?: NeutralProtractedSiegeCaptureResolution;
   neutralAssimilationConditions?: NeutralAssimilationCondition[];
+  neutralArmisticeConditions?: NeutralArmisticeCondition[];
   pendingNeutralChoice?: PendingNeutralChoice;
   pendingMilitaryChoice?: PendingMilitaryChoice; pendingMilitaryTimingChoice?: PendingMilitaryTimingChoice; pendingDiplomatChoice?: PendingDiplomatChoice; pendingFinancierChoice?: PendingFinancierChoice;
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow; pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
