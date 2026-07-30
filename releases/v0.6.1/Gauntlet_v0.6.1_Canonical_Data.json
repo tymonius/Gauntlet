@@ -1435,8 +1435,8 @@
       "battle": "All banked Assets are inactive during this battle."
     },
     {
-      "id": "neutral-siege-weaponry",
-      "name": "Siege Weaponry",
+      "id": "neutral-bombardment",
+      "name": "Bombardment",
       "allegiance": "Neutral",
       "cost": 4,
       "complexity": "Advanced",
@@ -1447,16 +1447,16 @@
       "effects": [
         {
           "label": "Action",
-          "text": "Place Siege Weaponry face up on the nearest enemy-controlled Territory ahead of you with an active printed effect. While it remains there, that printed Territory effect is inactive. The next time you attack there, put Siege Weaponry in its owner's Graveyard if you lose. If you win, or if you capture the Territory without a battle, turn Siege Weaponry face down; it becomes a Ruins Overlay."
+          "text": "Place Bombardment face up on the nearest enemy-controlled Territory ahead of you with an active printed effect. While it remains there, that printed Territory effect is inactive. The next time you attack there, put Bombardment in its owner's Graveyard if you lose. If you win, or if you capture the Territory without a battle, turn Bombardment face down; it becomes a Ruins Overlay."
         },
         {
           "label": "Battle",
-          "text": "If you are attacking on an enemy-controlled Territory, place Siege Weaponry face up on it. That Territory's printed effect is inactive during this battle. During the Aftermath of the battle, if you win, turn Siege Weaponry face down; it becomes a Ruins Overlay instead of putting it in its normal destination."
+          "text": "If you are attacking on an enemy-controlled Territory, place Bombardment face up on it. That Territory's printed effect is inactive during this battle. During the Aftermath of the battle, if you win, turn Bombardment face down; it becomes a Ruins Overlay instead of putting it in its normal destination."
         }
       ],
       "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
-      "action": "Place Siege Weaponry face up on the nearest enemy-controlled Territory ahead of you with an active printed effect. While it remains there, that printed Territory effect is inactive. The next time you attack there, put Siege Weaponry in its owner's Graveyard if you lose. If you win, or if you capture the Territory without a battle, turn Siege Weaponry face down; it becomes a Ruins Overlay.",
-      "battle": "If you are attacking on an enemy-controlled Territory, place Siege Weaponry face up on it. That Territory's printed effect is inactive during this battle. During the Aftermath of the battle, if you win, turn Siege Weaponry face down; it becomes a Ruins Overlay instead of putting it in its normal destination."
+      "action": "Place Bombardment face up on the nearest enemy-controlled Territory ahead of you with an active printed effect. While it remains there, that printed Territory effect is inactive. The next time you attack there, put Bombardment in its owner's Graveyard if you lose. If you win, or if you capture the Territory without a battle, turn Bombardment face down; it becomes a Ruins Overlay.",
+      "battle": "If you are attacking on an enemy-controlled Territory, place Bombardment face up on it. That Territory's printed effect is inactive during this battle. During the Aftermath of the battle, if you win, turn Bombardment face down; it becomes a Ruins Overlay instead of putting it in its normal destination."
     },
     {
       "id": "neutral-manifest-destiny",

@@ -70,7 +70,7 @@
 | [Invasion](../../docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md#invasion) | 4 | Advanced | — |
 | [Revolution](../../docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md#revolution) | 4 | Advanced | — |
 | [Sequestration](../../docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md#sequestration) | 4 | Advanced | — |
-| [Siege Weaponry](../../docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md#siege-weaponry) | 4 | Advanced | — |
+| [Bombardment](../../docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md#bombardment) | 4 | Advanced | — |
 | [Manifest Destiny](../../docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md#manifest-destiny) | 5 | Advanced | Unique |
 
 ## Military
