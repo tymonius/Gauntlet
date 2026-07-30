@@ -12,10 +12,10 @@ permissions:
 
 concurrency:
   group: fix-v061-post-merge
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
-  fix-and-validate:
+  fix-source:
     runs-on: ubuntu-latest
     steps:
       - name: Check out revision branch
@@ -23,16 +23,6 @@ jobs:
         with:
           ref: rules/v0.6.1-playtest-revision
           fetch-depth: 0
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
 
       - name: Apply governed Bombardment rename
         run: |
@@ -42,45 +32,22 @@ jobs:
           path = Path("docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md")
           text = path.read_text(encoding="utf-8")
           count = text.count("Siege Weaponry")
-          if count == 0:
-              if "## Bombardment" not in text:
-                  raise SystemExit("Neither the obsolete nor current card name was found")
-          else:
-              text = text.replace("Siege Weaponry", "Bombardment")
-              path.write_text(text, encoding="utf-8")
+          if count:
+              path.write_text(text.replace("Siege Weaponry", "Bombardment"), encoding="utf-8")
               print(f"Replaced {count} obsolete card-name occurrence(s).")
+          elif "## Bombardment" not in text:
+              raise SystemExit("Neither the obsolete nor current card name was found")
           PY
 
-      - name: Synchronize and regenerate release surfaces
+      - name: Commit source correction safely
         run: |
-          python scripts/sync_v061_deckbuilder.py
-          python scripts/sync_v061_print_supplementals.py
-          python scripts/sync_v061_rules_assistant.py
-          python scripts/generate_v061_release.py
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Validate reconciled release
-        run: |
-          npm run governance:check
-          npm run typecheck
-          npm test
-          npm run test:rules-assistant
-          npm run test:playtest-sessions
-          npm run test:formal-session-e2e
-          python scripts/validate_v061_playtest_sessions.py
-          python scripts/validate_v061_release.py
-
-      - name: Commit synchronized outputs
-        run: |
-          git add -A
-          git reset .github/workflows/fix-v061-post-merge.yml .github/v061-post-merge.trigger
+          git add docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md
           if git diff --cached --quiet; then
-            echo "No synchronized changes to commit."
+            echo "Canonical source already corrected."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Reconcile governed v0.6.1 release surfaces"
+          git commit -m "Rename v0.6.1 Siege Weaponry to Bombardment"
+          git pull --rebase origin rules/v0.6.1-playtest-revision
           git push origin HEAD:rules/v0.6.1-playtest-revision
