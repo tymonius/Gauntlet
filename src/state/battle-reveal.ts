@@ -5,6 +5,7 @@ import { applySubversionBattleRestrictions } from './intelligence-subversion-bat
 import { applyBattleCancellations } from './battle-cancellation';
 import { applyCapitalPunishmentBattleEffects } from './neutral-capital-punishment';
 import { applyPalisadeWallBattleEffects } from './neutral-palisade-wall';
+import { applySequestrationBattleRestriction } from './neutral-sequestration';
 import { GameActionError, type ApplyGameActionResult } from './reducer';
 
 export const BATTLE_REVEAL_CANCELLATIONS_RESOLVED = 'battle_reveal_cancellations_resolved';
@@ -67,6 +68,7 @@ export function resolveBattleRevealCancellations(
   applySubversionBattleRestrictions(game);
   applyPalisadeWallBattleEffects(game);
   applyCapitalPunishmentBattleEffects(game, action);
+  applySequestrationBattleRestriction(game);
   battle.resolvedCancellations = cancellations;
   battle.effectsResolved.push(BATTLE_REVEAL_CANCELLATIONS_RESOLVED);
 
