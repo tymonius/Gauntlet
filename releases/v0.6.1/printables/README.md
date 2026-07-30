@@ -18,4 +18,8 @@ The all-components package contains one copy of every playable title, every Terr
 
 Print at 100% scale on Letter paper with browser or PDF-viewer headers and footers disabled. Enable background graphics. Cards are laid out at 2.5 × 3.5 inches in a 3 × 3 grid.
 
+## Validation status
+
 The release-printables workflow validates canonical counts, obsolete terminology, card overflow, exact PDF page counts, and nonblank pages before committing updated PDFs.
+
+The July 30, 2026 release-candidate render passed those automated checks for all nine standalone and combined packages. The resulting 26-page all-components PDF and each standalone package were then visually inspected page by page at rendered print scale. No clipping, overlap, broken glyphs, blank pages, or unintended trailing pages were found.
