@@ -1,0 +1,790 @@
+name: Implement Arcane Knowledge
+
+on:
+  push:
+    branches:
+      - agent/neutral-arcane-knowledge
+    paths:
+      - .github/workflows/agent-arcane-knowledge.yml
+
+permissions:
+  contents: write
+
+jobs:
+  implement:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/neutral-arcane-knowledge
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Apply implementation
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path: str, old: str, new: str) -> None:
+              file = Path(path)
+              text = file.read_text()
+              count = text.count(old)
+              if count != 1:
+                  raise RuntimeError(f"{path}: expected exactly one anchor, found {count}: {old[:100]!r}")
+              file.write_text(text.replace(old, new, 1))
+
+          replace_once(
+              "src/cards/playability.ts",
+              "  'neutral-attrition': battleAndAction('neutral-attrition', 'asset_bank'),\n"
+              "  'neutral-capital-punishment': battleAndAction('neutral-capital-punishment', 'discard', true),",
+              "  'neutral-attrition': battleAndAction('neutral-attrition', 'asset_bank'),\n"
+              "  'neutral-arcane-knowledge': battleAndAction('neutral-arcane-knowledge', 'discard', true),\n"
+              "  'neutral-capital-punishment': battleAndAction('neutral-capital-punishment', 'discard', true),",
+          )
+
+          replace_once(
+              "src/types/battle.ts",
+              "  /** A repeated effect with no additional physical card or cleanup destination. */\n"
+              "  virtual?: boolean;\n"
+              "  /** True when this physical card came from the Battle Hand first formed for this battle. */",
+              "  /** A repeated effect with no additional physical card or cleanup destination. */\n"
+              "  virtual?: boolean;\n"
+              "  /** A virtual replay that should still resolve card-specific Battle logic. */\n"
+              "  effectOnlyReplay?: boolean;\n"
+              "  /** True when this physical card came from the Battle Hand first formed for this battle. */",
+          )
+
+          replace_once(
+              "src/state/battle-effect-replay.ts",
+              "  'card-attrition',\n"
+              "  'neutral-attrition',\n"
+              "]);",
+              "  'card-attrition',\n"
+              "  'neutral-attrition',\n"
+              "  'neutral-fortifications',\n"
+              "  'neutral-valor',\n"
+              "]);",
+          )
+          replace_once(
+              "src/state/battle-effect-replay.ts",
+              "  if (cardId === 'card-fortifications' && game.battle.defender.playerId !== playerId) return false;",
+              "  if ((cardId === 'card-fortifications' || cardId === 'neutral-fortifications')\n"
+              "    && game.battle.defender.playerId !== playerId) return false;",
+          )
+          replace_once(
+              "src/state/battle-effect-replay.ts",
+              "export function supportedReplayedBattleEffectIds(): CardID[] {\n"
+              "  return [...replayableBattleEffectIds];\n"
+              "}",
+              "export function addVirtualReplayedBattleCard(\n"
+              "  game: GameState,\n"
+              "  playerId: PlayerID,\n"
+              "  cardId: CardID,\n"
+              "): BattlePlayedCard {\n"
+              "  const played = addReplayedBattleCard(game, playerId, cardId);\n"
+              "  played.virtual = true;\n"
+              "  played.effectOnlyReplay = true;\n"
+              "  return played;\n"
+              "}\n\n"
+              "export function supportedReplayedBattleEffectIds(): CardID[] {\n"
+              "  return [...replayableBattleEffectIds];\n"
+              "}",
+          )
+
+          for path in ("src/state/neutral-valor.ts", "src/state/neutral-fortifications.ts"):
+              replace_once(
+                  path,
+                  "    && !card.virtual,\n",
+                  "    && (!card.virtual || card.effectOnlyReplay),\n",
+              )
+
+          replace_once(
+              "src/state/reducer.ts",
+              "    if (participant.handCommit) {\n"
+              "      pushCardToDestination(",
+              "    if (participant.handCommit && !participant.handCommit.virtual) {\n"
+              "      pushCardToDestination(",
+          )
+          replace_once(
+              "src/state/reducer.ts",
+              "    for (const [index, played] of participant.battleDrawPlayed.entries()) {\n"
+              "      const override = destinationOverrideFor(",
+              "    for (const [index, played] of participant.battleDrawPlayed.entries()) {\n"
+              "      if (played.virtual) continue;\n"
+              "      const override = destinationOverrideFor(",
+          )
+
+          replace_once(
+              "src/types/neutral.ts",
+              "export type ContrabandBattleSource =\n"
+              "  | { zone: 'hand_commit' }\n"
+              "  | { zone: 'battle_draw_played'; index: number };\n\n"
+              "export interface PendingContrabandBattleChoice {",
+              "export type ArcaneKnowledgeBattleSource =\n"
+              "  | { zone: 'hand_commit' }\n"
+              "  | { zone: 'battle_draw_played'; index: number };\n\n"
+              "export interface PendingArcaneKnowledgeBattleChoice {\n"
+              "  kind: 'arcane_knowledge_battle';\n"
+              "  playerId: PlayerID;\n"
+              "  battleId: string;\n"
+              "  source: ArcaneKnowledgeBattleSource;\n"
+              "  graveyardOptions: CardID[];\n"
+              "  options: ['select_card'];\n"
+              "  resumePriorityPlayer?: PlayerID;\n"
+              "}\n\n"
+              "export type ContrabandBattleSource =\n"
+              "  | { zone: 'hand_commit' }\n"
+              "  | { zone: 'battle_draw_played'; index: number };\n\n"
+              "export interface PendingContrabandBattleChoice {",
+          )
+          replace_once(
+              "src/types/neutral.ts",
+              "  | PendingConscriptionActionChoice\n"
+              "  | PendingContrabandBattleChoice",
+              "  | PendingConscriptionActionChoice\n"
+              "  | PendingArcaneKnowledgeBattleChoice\n"
+              "  | PendingContrabandBattleChoice",
+          )
+
+          replace_once(
+              "src/state/index.ts",
+              "export * from './neutral-assimilation';\n"
+              "export * from './neutral-armistice';",
+              "export * from './neutral-arcane-knowledge';\n"
+              "export * from './neutral-assimilation';\n"
+              "export * from './neutral-armistice';",
+          )
+
+          replace_once(
+              "src/state/views.ts",
+              "import { toPublicMysticsState } from './mystics-ritual';\n"
+              "import {",
+              "import { toPublicMysticsState } from './mystics-ritual';\n"
+              "import { ARCANE_KNOWLEDGE, canResolveArcaneKnowledgeAction } from './neutral-arcane-knowledge';\n"
+              "import {",
+          )
+          replace_once(
+              "src/state/views.ts",
+              "    .filter((cardId) => canResolveIntelligenceAction(game, viewer, cardId))\n"
+              "    .filter((cardId) => cardId !== CAPITAL_PUNISHMENT || canResolveCapitalPunishmentAction(game, viewer))",
+              "    .filter((cardId) => canResolveIntelligenceAction(game, viewer, cardId))\n"
+              "    .filter((cardId) => cardId !== ARCANE_KNOWLEDGE || canResolveArcaneKnowledgeAction(game, viewer))\n"
+              "    .filter((cardId) => cardId !== CAPITAL_PUNISHMENT || canResolveCapitalPunishmentAction(game, viewer))",
+          )
+
+          replace_once(
+              "src/state/apply-neutral.ts",
+              "} from './neutral-assimilation';\n"
+              "import {\n"
+              "  ARMISTICE,",
+              "} from './neutral-assimilation';\n"
+              "import {\n"
+              "  applyArcaneKnowledgeAction,\n"
+              "  ARCANE_KNOWLEDGE,\n"
+              "  openNextArcaneKnowledgeChoice,\n"
+              "  prepareArcaneKnowledgeAction,\n"
+              "  resolveArcaneKnowledgeChoice,\n"
+              "} from './neutral-arcane-knowledge';\n"
+              "import {\n"
+              "  ARMISTICE,",
+          )
+          replace_once(
+              "src/state/apply-neutral.ts",
+              "  processCounterworksOverlayQueue(game);\n"
+              "  if (game.pendingNeutralChoice) return;\n"
+              "  const assimilationResolved",
+              "  processCounterworksOverlayQueue(game);\n"
+              "  if (game.pendingNeutralChoice) return;\n"
+              "  openNextArcaneKnowledgeChoice(game);\n"
+              "  if (game.pendingNeutralChoice) return;\n"
+              "  const assimilationResolved",
+          )
+          replace_once(
+              "src/state/apply-neutral.ts",
+              "    const resolved = pendingKind === 'decoys_asset'\n"
+              "      ? (resolveDecoysChoice(next, action), {})",
+              "    const resolved = pendingKind === 'arcane_knowledge_battle'\n"
+              "      ? (resolveArcaneKnowledgeChoice(next, action), {})\n"
+              "      : pendingKind === 'decoys_asset'\n"
+              "        ? (resolveDecoysChoice(next, action), {})",
+          )
+          replace_once(
+              "src/state/apply-neutral.ts",
+              "  const preparedAdvanceGuard = action.type === 'play_action_card' && action.cardId === ADVANCE_GUARD",
+              "  const preparedArcaneKnowledge = action.type === 'play_action_card' && action.cardId === ARCANE_KNOWLEDGE\n"
+              "    ? prepareArcaneKnowledgeAction(game, action)\n"
+              "    : undefined;\n"
+              "  const preparedAdvanceGuard = action.type === 'play_action_card' && action.cardId === ADVANCE_GUARD",
+          )
+          replace_once(
+              "src/state/apply-neutral.ts",
+              "  if (action.type === 'play_action_card' && preparedCapitalPunishment) {\n"
+              "    applyCapitalPunishmentAction(result.state, action.playerId, preparedCapitalPunishment);\n"
+              "  }",
+              "  if (action.type === 'play_action_card' && preparedArcaneKnowledge) {\n"
+              "    applyArcaneKnowledgeAction(result.state, action.playerId, preparedArcaneKnowledge);\n"
+              "  }\n"
+              "  if (action.type === 'play_action_card' && preparedCapitalPunishment) {\n"
+              "    applyCapitalPunishmentAction(result.state, action.playerId, preparedCapitalPunishment);\n"
+              "  }",
+          )
+
+          Path("src/state/neutral-arcane-knowledge.ts").write_text(r"""import type {
+            ArcaneKnowledgeBattleSource,
+            BattleParticipantState,
+            BattlePlayedCard,
+            CardID,
+            GameEvent,
+            GameState,
+            PlayerID,
+          } from '../types';
+          import type { PlayActionCardAction, ResolveNeutralChoiceAction } from './actions';
+          import {
+            addVirtualReplayedBattleCard,
+            replayableBattleEffectsIn,
+          } from './battle-effect-replay';
+          import { GameActionError } from './reducer';
+
+          export const ARCANE_KNOWLEDGE = 'neutral-arcane-knowledge';
+
+          export interface PreparedArcaneKnowledgeAction {
+            targetCardId: CardID;
+          }
+
+          interface ArcaneKnowledgeSource {
+            participant: BattleParticipantState;
+            card: BattlePlayedCard;
+            source: ArcaneKnowledgeBattleSource;
+          }
+
+          function appendPublicLog(
+            game: GameState,
+            actor: PlayerID,
+            type: string,
+            message: string,
+            payload?: unknown,
+          ): void {
+            game.log.push({
+              id: `${game.id}-event-${game.log.length + 1}`,
+              turn: game.turn,
+              actor,
+              type,
+              message,
+              payload,
+              visibility: 'public',
+            } satisfies GameEvent);
+          }
+
+          function removeOne(cards: CardID[], cardId: CardID): boolean {
+            const index = cards.indexOf(cardId);
+            if (index < 0) return false;
+            cards.splice(index, 1);
+            return true;
+          }
+
+          function unique(cards: readonly CardID[]): CardID[] {
+            return [...new Set(cards)];
+          }
+
+          export function canResolveArcaneKnowledgeAction(game: GameState, playerId: PlayerID): boolean {
+            return (game.players[playerId]?.zones.graveyard.length ?? 0) > 0;
+          }
+
+          export function prepareArcaneKnowledgeAction(
+            game: GameState,
+            action: PlayActionCardAction,
+          ): PreparedArcaneKnowledgeAction | undefined {
+            if (action.cardId !== ARCANE_KNOWLEDGE) return undefined;
+            const player = game.players[action.playerId];
+            if (!player) throw new GameActionError(`Unknown player: ${action.playerId}.`);
+            if (!player.zones.hand.includes(ARCANE_KNOWLEDGE)) {
+              throw new GameActionError(`${player.name} does not have Arcane Knowledge in hand.`);
+            }
+            const targets = action.targets ?? [];
+            if (targets.length !== 1 || targets[0].kind !== 'card' || targets[0].owner !== action.playerId) {
+              throw new GameActionError('Arcane Knowledge requires exactly one card from your own Graveyard.');
+            }
+            if (!player.zones.graveyard.includes(targets[0].cardId)) {
+              throw new GameActionError('The chosen Arcane Knowledge card is not in your Graveyard.');
+            }
+            return { targetCardId: targets[0].cardId };
+          }
+
+          export function applyArcaneKnowledgeAction(
+            game: GameState,
+            playerId: PlayerID,
+            prepared: PreparedArcaneKnowledgeAction,
+          ): void {
+            const player = game.players[playerId];
+            if (!removeOne(player.zones.graveyard, prepared.targetCardId)) {
+              throw new GameActionError(`${prepared.targetCardId} is no longer in your Graveyard.`);
+            }
+            player.zones.discard.push(prepared.targetCardId);
+            appendPublicLog(
+              game,
+              playerId,
+              'neutral_arcane_knowledge_action',
+              `${player.name} moved ${prepared.targetCardId} from their Graveyard to their Discard Pile with Arcane Knowledge.`,
+              { cardId: prepared.targetCardId },
+            );
+          }
+
+          function activeArcaneKnowledge(card?: BattlePlayedCard): card is BattlePlayedCard {
+            return Boolean(
+              card
+              && card.cardId === ARCANE_KNOWLEDGE
+              && !card.canceled
+              && !card.negated
+              && !card.virtual,
+            );
+          }
+
+          function unresolvedSource(participant: BattleParticipantState): ArcaneKnowledgeSource | undefined {
+            if (activeArcaneKnowledge(participant.handCommit) && !participant.handCommit.postRevealEffectResolved) {
+              return {
+                participant,
+                card: participant.handCommit,
+                source: { zone: 'hand_commit' },
+              };
+            }
+            for (const [index, card] of participant.battleDrawPlayed.entries()) {
+              if (!activeArcaneKnowledge(card) || card.postRevealEffectResolved) continue;
+              return {
+                participant,
+                card,
+                source: { zone: 'battle_draw_played', index },
+              };
+            }
+            return undefined;
+          }
+
+          function nextSource(game: GameState): ArcaneKnowledgeSource | undefined {
+            const battle = game.battle;
+            if (!battle) return undefined;
+            return unresolvedSource(battle.attacker) ?? unresolvedSource(battle.defender);
+          }
+
+          function sourceCard(
+            participant: BattleParticipantState,
+            source: ArcaneKnowledgeBattleSource,
+          ): BattlePlayedCard | undefined {
+            return source.zone === 'hand_commit'
+              ? participant.handCommit
+              : participant.battleDrawPlayed[source.index];
+          }
+
+          function participantFor(game: GameState, playerId: PlayerID): BattleParticipantState {
+            const battle = game.battle;
+            if (!battle) throw new GameActionError('There is no active battle.');
+            if (battle.attacker.playerId === playerId) return battle.attacker;
+            if (battle.defender.playerId === playerId) return battle.defender;
+            throw new GameActionError(`${playerId} is not participating in this battle.`);
+          }
+
+          function hasBlockingWindow(game: GameState): boolean {
+            return Boolean(
+              game.pendingNeutralChoice
+              || game.pendingMilitaryChoice
+              || game.pendingMilitaryTimingChoice
+              || game.pendingDiplomatChoice
+              || game.pendingFinancierChoice
+              || game.pendingIntelligenceChoice
+              || game.pendingMysticsChoice
+              || game.pendingInquisitionChoice
+              || game.pendingLeaderAbilityWindow
+              || Object.keys(game.pendingAssetBankDiscards ?? {}).length,
+            );
+          }
+
+          export function openNextArcaneKnowledgeChoice(game: GameState): boolean {
+            if (hasBlockingWindow(game)) return false;
+            const battle = game.battle;
+            if (!battle
+              || battle.stage !== 'dice'
+              || battle.effectsResolved.includes('before_battle_resolution')) return false;
+
+            while (true) {
+              const source = nextSource(game);
+              if (!source) return false;
+              const graveyardOptions = unique(replayableBattleEffectsIn(
+                game,
+                source.participant.playerId,
+                game.players[source.participant.playerId].zones.graveyard,
+              ));
+              if (graveyardOptions.length === 0) {
+                source.card.postRevealEffectResolved = true;
+                continue;
+              }
+
+              game.pendingNeutralChoice = {
+                kind: 'arcane_knowledge_battle',
+                playerId: source.participant.playerId,
+                battleId: battle.id,
+                source: source.source,
+                graveyardOptions,
+                options: ['select_card'],
+                resumePriorityPlayer: game.priorityPlayer,
+              };
+              game.priorityPlayer = source.participant.playerId;
+              return true;
+            }
+          }
+
+          export function resolveArcaneKnowledgeChoice(
+            game: GameState,
+            action: ResolveNeutralChoiceAction,
+          ): void {
+            const pending = game.pendingNeutralChoice;
+            if (!pending || pending.kind !== 'arcane_knowledge_battle' || pending.playerId !== action.playerId) {
+              throw new GameActionError(`${action.playerId} has no pending Arcane Knowledge choice.`);
+            }
+            const battle = game.battle;
+            if (!battle || battle.id !== pending.battleId || battle.stage !== 'dice') {
+              throw new GameActionError('The Arcane Knowledge battle window is no longer open.');
+            }
+            if (action.choice !== 'select_card' || !action.cardId || !pending.graveyardOptions.includes(action.cardId)) {
+              throw new GameActionError('Choose an eligible Battle effect from your Graveyard for Arcane Knowledge.');
+            }
+
+            const participant = participantFor(game, pending.playerId);
+            const source = sourceCard(participant, pending.source);
+            if (!activeArcaneKnowledge(source) || source.postRevealEffectResolved) {
+              throw new GameActionError('The Arcane Knowledge source is no longer active.');
+            }
+            const player = game.players[pending.playerId];
+            if (!player.zones.graveyard.includes(action.cardId)
+              || replayableBattleEffectsIn(game, pending.playerId, [action.cardId]).length !== 1) {
+              throw new GameActionError(`${action.cardId} can no longer resolve from your Graveyard.`);
+            }
+
+            source.postRevealEffectResolved = true;
+            addVirtualReplayedBattleCard(game, pending.playerId, action.cardId);
+            const resumePriority = pending.resumePriorityPlayer;
+            game.pendingNeutralChoice = undefined;
+            game.priorityPlayer = resumePriority ?? game.activePlayer;
+            appendPublicLog(
+              game,
+              pending.playerId,
+              'neutral_arcane_knowledge_battle',
+              `${player.name} resolved ${action.cardId} from their Graveyard with Arcane Knowledge.`,
+              {
+                battleId: battle.id,
+                cardId: action.cardId,
+                source: pending.source,
+              },
+            );
+          }
+          """)
+
+          Path("src/state/neutral-arcane-knowledge.test.ts").write_text(r"""import { describe, expect, it } from 'vitest';
+          import { getCardPlayRule } from '../cards';
+          import type {
+            BattleParticipantState,
+            BattlePlayedCard,
+            GameState,
+            PlayerID,
+          } from '../types';
+          import { applyGameAction } from './apply-neutral';
+          import { initializeGame } from './initialize';
+          import {
+            ARCANE_KNOWLEDGE,
+            openNextArcaneKnowledgeChoice,
+          } from './neutral-arcane-knowledge';
+          import { FORTIFICATIONS } from './neutral-fortifications';
+          import { openNextValorReroll, VALOR } from './neutral-valor';
+          import { toPrivateGameView } from './views';
+
+          const ATTRITION = 'neutral-attrition';
+          const UNSUPPORTED = 'neutral-capital-punishment';
+
+          function game(): GameState {
+            const state = initializeGame({
+              id: 'neutral-arcane-knowledge-test',
+              version: 'v0.6.0',
+              openingHandSize: 0,
+              shuffleDecks: false,
+              players: [
+                {
+                  id: 'player_1',
+                  name: 'Scholar',
+                  factionId: 'intelligence',
+                  leaderName: 'Spy',
+                  deck: [ARCANE_KNOWLEDGE, ATTRITION, VALOR, 'p1-draw'],
+                  territories: ['p1-one', 'p1-two', 'p1-three'],
+                },
+                {
+                  id: 'player_2',
+                  name: 'Opponent',
+                  factionId: 'intelligence',
+                  leaderName: 'Spy',
+                  deck: [ARCANE_KNOWLEDGE, FORTIFICATIONS, 'p2-draw'],
+                  territories: ['p2-one', 'p2-two', 'p2-three'],
+                },
+              ],
+            });
+            state.phase = 'action_before_movement';
+            state.activePlayer = 'player_1';
+            state.priorityPlayer = 'player_1';
+            state.players.player_1.actionsRemaining = 1;
+            return state;
+          }
+
+          function played(
+            cardId: string,
+            owner: PlayerID,
+            origin: 'hand' | 'battle_draw' = 'battle_draw',
+            overrides: Partial<BattlePlayedCard> = {},
+          ): BattlePlayedCard {
+            return {
+              cardId,
+              owner,
+              origin,
+              faceDown: false,
+              canceled: false,
+              fromInitialBattleHand: origin === 'battle_draw',
+              ...overrides,
+            };
+          }
+
+          function participant(
+            playerId: PlayerID,
+            cards: BattlePlayedCard[],
+          ): BattleParticipantState {
+            return {
+              playerId,
+              handCommit: cards.find((card) => card.origin === 'hand'),
+              passedHandCommit: !cards.some((card) => card.origin === 'hand'),
+              passedBattleDrawPlay: true,
+              hasDrawnBattleCards: true,
+              battleDraw: [],
+              initialBattleHand: cards.filter((card) => card.origin === 'battle_draw').map((card) => card.cardId),
+              battleDrawPlayed: cards.filter((card) => card.origin === 'battle_draw'),
+              battleDrawCount: 3,
+              battleDrawPlayLimit: Math.max(1, cards.filter((card) => card.origin === 'battle_draw').length),
+              rerollsRemaining: 0,
+              modifiers: 0,
+              retreated: false,
+            };
+          }
+
+          function beginBattle(
+            state: GameState,
+            attackerCards: BattlePlayedCard[],
+            defenderCards: BattlePlayedCard[],
+          ): void {
+            for (const space of state.board.spaces) delete space.occupant;
+            const origin = state.board.spaces.find((space) => space.id === 'space-3')!;
+            const location = state.board.spaces.find((space) => space.id === 'space-4')!;
+            origin.occupant = 'player_1';
+            location.kind = 'territory';
+            location.territoryId = 'p2-three';
+            location.revealed = true;
+            location.controller = 'player_2';
+            location.occupant = 'player_2';
+            state.players.player_1.occupiedSpaceId = origin.id;
+            state.players.player_2.occupiedSpaceId = location.id;
+            state.phase = 'battle';
+            state.priorityPlayer = 'player_1';
+            state.battle = {
+              id: `arcane-knowledge-battle-${state.log.length + 1}`,
+              stage: 'dice',
+              location: location.id,
+              attackerOrigin: origin.id,
+              attacker: participant('player_1', attackerCards),
+              defender: participant('player_2', defenderCards),
+              tiePolicy: 'defender',
+              effectsResolved: [],
+            };
+          }
+
+          function resolveChoice(state: GameState, playerId: PlayerID, cardId: string): GameState {
+            return applyGameAction(state, {
+              type: 'resolve_neutral_choice',
+              playerId,
+              choice: 'select_card',
+              cardId,
+            }).state;
+          }
+
+          describe('Neutral Arcane Knowledge', () => {
+            it('registers both canonical forms and only offers the Action with a legal Graveyard target', () => {
+              const state = game();
+              state.players.player_1.zones.hand = [ARCANE_KNOWLEDGE];
+
+              expect(getCardPlayRule(ARCANE_KNOWLEDGE)).toMatchObject({
+                timings: ['action', 'battle_hand_commit', 'battle_draw_play'],
+                defaultDestinationByOrigin: { hand: 'discard', battle_draw: 'discard' },
+                requiresTarget: true,
+              });
+              expect(toPrivateGameView(state, 'player_1').legalActionPlays?.some(
+                (option) => option.cardId === ARCANE_KNOWLEDGE,
+              )).toBe(false);
+
+              state.players.player_1.zones.graveyard = [ATTRITION];
+              expect(toPrivateGameView(state, 'player_1').legalActionPlays).toContainEqual(
+                expect.objectContaining({ cardId: ARCANE_KNOWLEDGE, requiresTarget: true }),
+              );
+            });
+
+            it('moves exactly one chosen card from its controller’s Graveyard to their Discard Pile', () => {
+              let state = game();
+              state.players.player_1.zones.hand = [ARCANE_KNOWLEDGE];
+              state.players.player_1.zones.graveyard = [ATTRITION, VALOR];
+
+              state = applyGameAction(state, {
+                type: 'play_action_card',
+                playerId: 'player_1',
+                cardId: ARCANE_KNOWLEDGE,
+                targets: [{ kind: 'card', owner: 'player_1', cardId: ATTRITION }],
+              }).state;
+
+              expect(state.players.player_1.zones.graveyard).toEqual([VALOR]);
+              expect(state.players.player_1.zones.discard).toEqual(
+                expect.arrayContaining([ARCANE_KNOWLEDGE, ATTRITION]),
+              );
+            });
+
+            it('rejects missing, opposing, and ungraveyarded Action targets', () => {
+              const missing = game();
+              missing.players.player_1.zones.hand = [ARCANE_KNOWLEDGE];
+              expect(() => applyGameAction(missing, {
+                type: 'play_action_card',
+                playerId: 'player_1',
+                cardId: ARCANE_KNOWLEDGE,
+              })).toThrow('exactly one card from your own Graveyard');
+
+              const opposing = game();
+              opposing.players.player_1.zones.hand = [ARCANE_KNOWLEDGE];
+              opposing.players.player_2.zones.graveyard = [ATTRITION];
+              expect(() => applyGameAction(opposing, {
+                type: 'play_action_card',
+                playerId: 'player_1',
+                cardId: ARCANE_KNOWLEDGE,
+                targets: [{ kind: 'card', owner: 'player_2', cardId: ATTRITION }],
+              })).toThrow('your own Graveyard');
+
+              const absent = game();
+              absent.players.player_1.zones.hand = [ARCANE_KNOWLEDGE];
+              expect(() => applyGameAction(absent, {
+                type: 'play_action_card',
+                playerId: 'player_1',
+                cardId: ARCANE_KNOWLEDGE,
+                targets: [{ kind: 'card', owner: 'player_1', cardId: ATTRITION }],
+              })).toThrow('not in your Graveyard');
+            });
+
+            it('offers only currently replayable Graveyard effects and leaves the chosen card there', () => {
+              let state = game();
+              state.players.player_1.zones.graveyard = [ATTRITION, UNSUPPORTED, ARCANE_KNOWLEDGE];
+              beginBattle(state, [played(ARCANE_KNOWLEDGE, 'player_1')], []);
+
+              expect(openNextArcaneKnowledgeChoice(state)).toBe(true);
+              expect(state.pendingNeutralChoice).toMatchObject({
+                kind: 'arcane_knowledge_battle',
+                playerId: 'player_1',
+                graveyardOptions: [ATTRITION],
+              });
+
+              state = resolveChoice(state, 'player_1', ATTRITION);
+              expect(state.players.player_1.zones.graveyard).toEqual(
+                expect.arrayContaining([ATTRITION, UNSUPPORTED, ARCANE_KNOWLEDGE]),
+              );
+              expect(state.battle?.attacker.battleDrawPlayed).toContainEqual(
+                expect.objectContaining({
+                  cardId: ATTRITION,
+                  origin: 'replayed',
+                  virtual: true,
+                  effectOnlyReplay: true,
+                }),
+              );
+            });
+
+            it('resolves canonical Fortifications from the Graveyard and never creates a cleanup duplicate', () => {
+              let state = game();
+              state.players.player_2.zones.graveyard = [FORTIFICATIONS];
+              beginBattle(state, [], [played(ARCANE_KNOWLEDGE, 'player_2')]);
+
+              expect(openNextArcaneKnowledgeChoice(state)).toBe(true);
+              state = resolveChoice(state, 'player_2', FORTIFICATIONS);
+              state = applyGameAction(state, {
+                type: 'resolve_battle_reveal',
+                playerId: 'player_1',
+              }).state;
+
+              expect(state.battle?.defender.modifiers).toBe(1);
+              state.battle!.attacker.diceRoll = 1;
+              state.battle!.defender.diceRoll = 6;
+              state.battle!.stage = 'resolution';
+              state = applyGameAction(state, {
+                type: 'resolve_battle',
+                playerId: 'player_1',
+              }).state;
+
+              expect(state.players.player_2.zones.graveyard.filter(
+                (cardId) => cardId === FORTIFICATIONS,
+              )).toHaveLength(1);
+              expect(state.players.player_2.zones.discard).not.toContain(FORTIFICATIONS);
+            });
+
+            it('makes a virtually replayed Valor source eligible for its normal reroll window', () => {
+              let state = game();
+              state.players.player_1.zones.graveyard = [VALOR];
+              beginBattle(state, [played(ARCANE_KNOWLEDGE, 'player_1')], []);
+
+              expect(openNextArcaneKnowledgeChoice(state)).toBe(true);
+              state = resolveChoice(state, 'player_1', VALOR);
+              state.battle!.attacker.diceRoll = 1;
+              state.battle!.defender.diceRoll = 6;
+              state.battle!.stage = 'resolution';
+
+              expect(openNextValorReroll(state)).toBe(true);
+              expect(state.pendingNeutralChoice).toMatchObject({
+                kind: 'valor_battle',
+                playerId: 'player_1',
+              });
+              expect(state.players.player_1.zones.graveyard).toEqual([VALOR]);
+            });
+
+            it('ignores canceled, negated, and virtual Arcane Knowledge sources', () => {
+              for (const overrides of [{ canceled: true }, { negated: true }, { virtual: true }]) {
+                const state = game();
+                state.players.player_1.zones.graveyard = [ATTRITION];
+                beginBattle(
+                  state,
+                  [played(ARCANE_KNOWLEDGE, 'player_1', 'battle_draw', overrides)],
+                  [],
+                );
+
+                expect(openNextArcaneKnowledgeChoice(state)).toBe(false);
+                expect(state.pendingNeutralChoice).toBeUndefined();
+              }
+            });
+          });
+          """)
+
+          Path(".github/workflows/agent-arcane-knowledge.yml").unlink()
+          PY
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Commit implementation
+        shell: bash
+        run: |
+          git config user.name "OpenAI Agent"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Implement Neutral Arcane Knowledge"
+          git push origin HEAD:agent/neutral-arcane-knowledge
