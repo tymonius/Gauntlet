@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "domain": "release",
+  "entry_count": 3,
+  "outcome_counts": {"historical-current": 2, "current-working": 1},
+  "entries": [
+    {"id":"GNT-CAD-0005","title":"Use v0.5.6 and v0.5.7 as the relevant pre-faction baselines","domain":"release","outcome":"historical-current","summary":"The audit need not reconstruct every earlier release; v0.5.6 and v0.5.7 are the relevant pre-faction historical packages for comparison with v0.6.","evidence_ids":["GNT-CHAT-DB1AC65B6E10"],"repository_evidence":["releases/v0.5.6","releases/v0.5.7"]},
+    {"id":"GNT-CAD-0007","title":"Use semantic prerelease versioning","domain":"release","outcome":"historical-current","summary":"Patch releases increment the third component; 0.5.10 follows 0.5.9. v0.6 was reserved for the faction framework rather than arbitrary patch count rollover.","evidence_ids":["GNT-CHAT-E316D580977F","GNT-CHAT-8A3F4E0082EA","GNT-CHAT-D6535A6B17A4"],"repository_evidence":["releases/v0.6.0/CHANGELOG.md"]},
+    {"id":"GNT-CAD-0096","title":"Separate the v0.6.1 tabletop release from unfinished digital-engine migration","domain":"release","outcome":"current-working","summary":"The tabletop/browser release may proceed independently while incomplete post-release engine work remains isolated and audited.","evidence_ids":["GNT-CHAT-82923CAE3BA7","GNT-CHAT-AB07C6AD5484","GNT-CHAT-429492F4CFB0","GNT-CHAT-A1210CC186CE"],"repository_evidence":["https://github.com/tymonius/Gauntlet/pull/260","https://github.com/tymonius/Gauntlet/issues/288"]}
+  ]
+}
