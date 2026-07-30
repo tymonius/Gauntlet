@@ -25,6 +25,8 @@ export interface NeutralReinforcementsActionOpportunity { playerId: PlayerID; tu
 export interface NeutralInsurrectionActionOpportunity { playerId: PlayerID; turn: number; }
 export interface NeutralLiberationActionOpportunity { playerId: PlayerID; turn: number; remaining: number; }
 export interface NeutralProtractedSiegeCaptureResolution { capturingPlayerId: PlayerID; spaceId: SpaceID; sourceOwner: PlayerID; requestId: string; overlayCountBefore: number; }
+export interface NeutralAssimilationCondition { playerId: PlayerID; turn: number; sourceCardId: CardID; consumedBattleId?: string; }
+export interface NeutralAssimilationBattleResolution { battleId: string; attackerId: PlayerID; spaceId: SpaceID; actionEffect: boolean; battleEffect: boolean; }
 
 export interface GameState {
   id: GameID; version: string; phase: GamePhase; turn: number; activePlayer: PlayerID; priorityPlayer?: PlayerID;
@@ -52,6 +54,8 @@ export interface GameState {
   neutralInsurrectionActionOpportunity?: NeutralInsurrectionActionOpportunity;
   neutralLiberationActionOpportunity?: NeutralLiberationActionOpportunity;
   neutralProtractedSiegeCaptureResolution?: NeutralProtractedSiegeCaptureResolution;
+  neutralAssimilationConditions?: NeutralAssimilationCondition[];
+  neutralAssimilationBattleResolution?: NeutralAssimilationBattleResolution;
   neutralCounterworksOverlayQueue?: CounterworksOverlayPlacementRequest[];
   neutralCourtMartialQueue?: CourtMartialCleanupRequest[];
   neutralDecoysAssetQueue?: DecoysAssetQueueEntry[];
@@ -84,6 +88,7 @@ export interface PublicGameView {
   neutralInsurrectionActionOpportunity?: NeutralInsurrectionActionOpportunity;
   neutralLiberationActionOpportunity?: NeutralLiberationActionOpportunity;
   neutralProtractedSiegeCaptureResolution?: NeutralProtractedSiegeCaptureResolution;
+  neutralAssimilationConditions?: NeutralAssimilationCondition[];
   pendingNeutralChoice?: PendingNeutralChoice;
   pendingMilitaryChoice?: PendingMilitaryChoice; pendingMilitaryTimingChoice?: PendingMilitaryTimingChoice; pendingDiplomatChoice?: PendingDiplomatChoice; pendingFinancierChoice?: PendingFinancierChoice;
   pendingLeaderAbilityWindow?: PendingLeaderAbilityWindow; pendingAssetBankDiscards?: Record<PlayerID, PendingAssetBankDiscard>;
