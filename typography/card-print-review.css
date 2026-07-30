@@ -1,0 +1,35 @@
+:root {
+  --card-title-size-default: 17pt;
+  --card-body-size-default: 7.1pt;
+  --card-body-leading-default: 1.14;
+  --card-body-size-minimum: 6.1pt;
+  --card-body-leading-minimum: 1.11;
+}
+
+/*
+ * First 100% print review, July 2026.
+ * Counterintelligence fits the standard title size; dense rules may use the
+ * minimum body size only when the default size does not fit.
+ */
+.card-specimen {
+  --card-title-size: var(--card-title-size-default);
+  --card-body-size: var(--card-body-size-default);
+  --card-body-leading: var(--card-body-leading-default);
+}
+
+.card-specimen.dense {
+  --card-body-size: var(--card-body-size-minimum);
+  --card-body-leading: var(--card-body-leading-minimum);
+}
+
+.card-header h3,
+.card-specimen.dense .card-header h3 {
+  font-size: var(--card-title-size);
+}
+
+.rules-box p,
+.card-specimen.dense .rules-box p,
+.card-reminder {
+  font-size: var(--card-body-size);
+  line-height: var(--card-body-leading);
+}
