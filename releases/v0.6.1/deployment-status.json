@@ -2,14 +2,7 @@
   "version": "v0.6.1",
   "environment": "production",
   "status": "failure",
-  "reason": "missing_required_github_actions_secrets",
-  "required_secrets": [
-    "CLOUDFLARE_API_TOKEN",
-    "CLOUDFLARE_ACCOUNT_ID",
-    "PLAYTEST_SESSION_ADMIN_TOKEN"
-  ],
-  "run_id": 30544594311,
-  "source_sha": "82d593f380e757e64d97df4eada021c88debb049",
-  "recorded_at": "2026-07-30T12:55:39.247535+00:00",
-  "tracking_issue": 300
+  "run_id": 30583862186,
+  "source_sha": "f8824a898c2cb689cce486ee49fde22c606a3324",
+  "recorded_at": "2026-07-30T21:34:46.392198+00:00"
 }
