@@ -484,14 +484,14 @@ If both players exchange results, no exchange occurs.
 >
 > **Battle:** All banked Assets are inactive during this battle.
 
-## Siege Weaponry
+## Bombardment
 
 **Cost:** 4  
 **Complexity:** Advanced
 
-> **Action:** Place Siege Weaponry face up on the nearest enemy-controlled Territory ahead of you with an active printed effect. While it remains there, that printed Territory effect is inactive. The next time you attack there, put Siege Weaponry in its owner's Graveyard if you lose. If you win, or if you capture the Territory without a battle, turn Siege Weaponry face down; it becomes a Ruins Overlay.
+> **Action:** Place Bombardment face up on the nearest enemy-controlled Territory ahead of you with an active printed effect. While it remains there, that printed Territory effect is inactive. The next time you attack there, put Bombardment in its owner's Graveyard if you lose. If you win, or if you capture the Territory without a battle, turn Bombardment face down; it becomes a Ruins Overlay.
 >
-> **Battle:** If you are attacking on an enemy-controlled Territory, place Siege Weaponry face up on it. That Territory's printed effect is inactive during this battle. During the Aftermath of the battle, if you win, turn Siege Weaponry face down; it becomes a Ruins Overlay instead of putting it in its normal destination.
+> **Battle:** If you are attacking on an enemy-controlled Territory, place Bombardment face up on it. That Territory's printed effect is inactive during this battle. During the Aftermath of the battle, if you win, turn Bombardment face down; it becomes a Ruins Overlay instead of putting it in its normal destination.
 
 # Cost 5
 
