@@ -36,21 +36,42 @@ jobs:
           import re
 
           matches = []
+          changed = []
+          condition = "    if: github.ref == 'refs/heads/main'\n"
+
           for path in sorted(Path('.github/workflows').glob('*.y*ml')):
               text = path.read_text(encoding='utf-8')
-              if re.search(r'^name:\s*Render v0\.6\.0 card sheets\s*$', text, re.MULTILINE):
-                  matches.append(path)
-                  condition = "    if: github.ref == 'refs/heads/main'\n"
-                  if condition not in text:
-                      marker = re.search(r'(?m)^  render:\s*\n', text)
-                      if not marker:
-                          raise SystemExit(f'Legacy renderer job key not found in {path}')
-                      text = text[:marker.end()] + condition + text[marker.end():]
-                      path.write_text(text, encoding='utf-8')
+              identifies_legacy_renderer = (
+                  'releases/v0.6.0/Gauntlet_v0.6.0_All_Cards_and_Components.pdf' in text
+                  or (
+                      'releases/v0.6.0/' in text
+                      and 'card' in text.lower()
+                      and ('playwright' in text.lower() or 'pdf' in text.lower())
+                  )
+              )
+              if not identifies_legacy_renderer:
+                  continue
 
-          if len(matches) != 1:
-              raise SystemExit(f'Expected exactly one v0.6.0 renderer workflow, found {len(matches)}: {matches}')
-          print(f'Protected legacy renderer: {matches[0]}')
+              matches.append(path)
+              if condition in text:
+                  continue
+
+              marker = re.search(r'(?m)^  render:\s*\n', text)
+              if not marker:
+                  raise SystemExit(f'Legacy renderer job key not found in {path}')
+              text = text[:marker.end()] + condition + text[marker.end():]
+              path.write_text(text, encoding='utf-8')
+              changed.append(path)
+
+          if not matches:
+              raise SystemExit('No workflow referencing the v0.6.0 card-sheet outputs was found')
+
+          print('Matched legacy renderer workflows:')
+          for path in matches:
+              print(f'  {path}')
+          print('Newly protected workflows:')
+          for path in changed:
+              print(f'  {path}')
           PY
 
           git checkout origin/main -- releases/v0.6.0/*.pdf
