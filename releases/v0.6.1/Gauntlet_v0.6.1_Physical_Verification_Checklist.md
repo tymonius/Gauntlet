@@ -1,7 +1,7 @@
 # Gauntlet v0.6.1 Physical Verification Checklist
 
 **Release gate:** Required before publication  
-**Status:** Not yet completed
+**Status:** Completed — PASS (2026-07-30)
 
 This is the final human verification for the coded formal-playtest workflow. Automated tests already cover the same session lifecycle in memory; this check confirms that the real printed sheet, phone camera, public site, deployed Workers, D1 database, and private host controls work together.
 
@@ -79,27 +79,35 @@ Confirm:
 
 ## Verification record
 
-Complete this block after the test:
-
 ```text
-Date:
-Tester:
-Device / browser:
-Printer / print settings:
-Sheet serial:
-Batch label:
-Rules Arbiter interaction ID:
-QR scan passed: yes / no
-Second participant joined same session: yes / no
-Event persistence passed: yes / no
-Arbiter linkage passed: yes / no
-Session closure passed: yes / no
-Retired-code rejection passed: yes / no
-Physical legibility passed: yes / no
-Defects found:
-Corrective commit or issue:
-Final result: PASS / FAIL
+Date: 2026-07-30
+Tester: Tymon Scott
+Device / browser: Android phone camera and Chrome; Windows desktop Chrome/private window
+Printer / print settings: Letter paper, Actual Size / 100%, browser headers and footers disabled, background graphics enabled; printer model not recorded
+Sheet serial: G061-FNUE8C74
+Batch label: v0.6.1 final physical gate
+Rules Arbiter interaction ID: not retained; screenshot evidence preserved and session count verified at 1
+QR scan passed: yes
+Second participant joined same session: yes
+Event persistence passed: yes
+Arbiter linkage passed: yes
+Session closure passed: yes
+Retired-code rejection passed: yes
+Physical legibility passed: yes
+Defects found: invalid QR CDN path; partial-session orphan risk after renderer failure; session loading/error/active panels displayed simultaneously because author CSS overrode the hidden attribute
+Corrective commit or issue: PRs #328, #330, and #331; fixes synchronized into PR #260
+Final result: PASS
 ```
+
+### Evidence summary
+
+- The printed QR opened the production HTTPS session route and resolved to serial `G061-FNUE8C74`.
+- Two browsers joined the same session and the participant count reached `2`.
+- A Rules Arbiter interaction was submitted from the linked session and the Arbiter-question count reached `1`.
+- Game-start, note, refresh/persistence, and game-completed behavior were exercised.
+- After host closure, an already joined browser received `This session is closed` when attempting to save a new note.
+- A refreshed/rescanned public page displayed `Closed · QR retired`, preserved the session record, and disabled event controls.
+- The public join URL contained only the join code; the private host credential remained confined to the downloaded host manifest.
 
 After a clean pass, update `Gauntlet_v0.6.1_Manifest.json`:
 
