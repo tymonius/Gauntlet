@@ -52,6 +52,11 @@ jobs:
               "    if (prepareSeditionBattleReveal(prepared, action)) return { state: prepared };\n    game = prepared;",
               "    if (prepareSeditionBattleReveal(prepared, action)) return { state: prepared };\n    if (prepareArcaneKnowledgeBattleReveal(prepared, action)) return { state: prepared };\n    game = prepared;",
           )
+          replace_once(
+              'src/state/apply-neutral.ts',
+              "    const resolved = pendingKind === 'arcane_knowledge_battle'\n      ? (resolveArcaneKnowledgeChoice(next, action), {})",
+              "    const resolved = pendingKind === 'arcane_knowledge_battle'\n      ? resolveArcaneKnowledgeChoice(next, action)",
+          )
 
           replace_once(
               'src/types/neutral.ts',
