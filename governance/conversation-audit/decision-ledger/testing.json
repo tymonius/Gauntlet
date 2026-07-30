@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "domain": "testing",
+  "entry_count": 3,
+  "outcome_counts": {"current-canonical": 1, "current-watchlist": 2},
+  "entries": [
+    {"id":"GNT-CAD-0097","title":"Treat simulations as diagnostics, not final balance authority","domain":"testing","outcome":"current-canonical","summary":"Simulations should instrument pacing and failure modes, but physical human playtests determine whether the game is fun, clear, and balanced.","evidence_ids":["GNT-CHAT-8A3F4E0082EA","GNT-CHAT-D6535A6B17A4","GNT-CHAT-87828410CA92","GNT-CHAT-1738C2137C3B"],"repository_evidence":["docs/Gauntlet_Playtest_Targets_and_Metrics.md"]},
+    {"id":"GNT-CAD-0098","title":"Ordinary games should usually finish before 100 player-turns","domain":"testing","outcome":"current-watchlist","summary":"A practical pacing target emerged around 50–70 player-turns, with 100+ reserved for unusual games rather than the norm.","evidence_ids":["GNT-CHAT-6CB9B8FB9712","GNT-CHAT-8C61502898E1","GNT-CHAT-F7D659C6D064"],"repository_evidence":["docs/Gauntlet_Playtest_Targets_and_Metrics.md"]},
+    {"id":"GNT-CAD-0099","title":"Monitor deck cycling and Graveyard erosion explicitly","domain":"testing","outcome":"current-watchlist","summary":"Playtests and simulations should track reshuffles, recyclable cards, incomplete draws, Graveyard size, and when card flow begins to degrade.","evidence_ids":["GNT-CHAT-8C61502898E1"],"repository_evidence":["docs/Gauntlet_Playtest_Targets_and_Metrics.md"]}
+  ]
+}
