@@ -1,9 +1,9 @@
 {
-  "schema_version": 3,
+  "schema_version": 4,
   "generated_on": "2026-07-30",
   "certification_status": "incomplete",
   "certified_for_downstream_canonicalization": false,
-  "blocking_reason": "The raw export ends on 2026-07-09. July 10-30 rows were reconstructed from search/context rather than a complete raw-turn corpus, one unsupported assistant synthesis was already discovered, and the new live tail remains unreconciled with a fresh export.",
+  "blocking_reason": "The raw export ends on 2026-07-09. July 10-30 rows were reconstructed from search/context rather than a complete raw-turn corpus, one unsupported assistant synthesis was already discovered, and the project-wide live tail remains unreconciled with a fresh export.",
   "verbatim_export_complete_through": "2026-07-09",
   "required_raw_export_through": "2026-07-30",
   "verbatim_user_turns": 1021,
@@ -15,11 +15,14 @@
   "effective_status_overrides": 3,
   "live_tail": {
     "activated_on": "2026-07-30",
+    "scope": "gauntlet-project",
+    "concurrent_conversations_allowed": true,
     "path": "governance/conversation-audit/live-tail.jsonl",
     "policy_path": "governance/conversation-audit/live-tail-policy.md",
-    "captured_user_turns": 5,
-    "unmatched_user_turns": 5,
-    "certification_requires_continuous_coverage": true
+    "captured_user_turns": 6,
+    "unmatched_user_turns": 6,
+    "certification_requires_continuous_coverage": true,
+    "certification_requires_complete_project_conversation_inventory": true
   },
   "statuses": {
     "current": 271,
@@ -43,16 +46,18 @@
     "Every project-conversation-search evidence row is provisional until replaced by verbatim raw-turn evidence.",
     "The July 10-30 candidate ledger cannot supersede raw-export evidence or drive canonicalization by itself.",
     "The fixed-three Asset Bank synthesis demonstrated that search/context summaries can introduce unsupported claims.",
-    "The live tail preserves exact post-activation user text but is not complete until every later Gauntlet conversation is inventoried and every row is reconciled or independently reviewed.",
+    "The live tail preserves exact post-activation user text across concurrent Gauntlet-project conversations but is not complete until every project conversation is inventoried and every row is reconciled or independently reviewed.",
+    "Keeping work inside the Gauntlet project improves discovery but does not by itself prove live-tail completeness.",
     "GNT-CONV identifiers establish conversation provenance only; they do not claim canonicalization or implementation."
   ],
   "completion_requirements": [
-    "Process a fresh raw export covering all Gauntlet conversations through its verified maximum message timestamp.",
-    "Inventory every user turn exactly once.",
+    "Process a fresh raw export covering all conversations through its verified maximum message timestamp.",
+    "Enumerate every conversation assigned to the Gauntlet project and also search all exported conversations by title and content for Gauntlet material outside the project.",
+    "Inventory every Gauntlet user turn exactly once across all concurrent conversations.",
     "Replace every project-conversation-search reference with stable raw source-line evidence or remove the unsupported row.",
     "Recompute all statuses and supersession links from the raw corpus.",
     "Reconcile every GNT-LIVE row to an exported message or independently reviewed exact transcript evidence.",
-    "Prove continuous coverage from the prior raw cutoff through the certification cutoff with no unexplained time or conversation gap.",
+    "Prove continuous project-wide coverage from the prior raw cutoff through the certification cutoff with no unexplained time or conversation gap.",
     "Independently recheck every effectively current thread for unsupported assistant synthesis."
   ]
 }
