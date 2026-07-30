@@ -7,10 +7,10 @@
   "decision_index_files": 14,
   "verbatim_evidence_links": 489,
   "post_export_evidence_links": 141,
-  "effective_status_overrides": 4,
+  "effective_status_overrides": 3,
   "statuses": {
-    "current": 270,
-    "superseded": 49,
+    "current": 271,
+    "superseded": 48,
     "tentative": 7,
     "deferred": 3,
     "rejected": 5,
