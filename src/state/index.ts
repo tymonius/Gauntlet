@@ -91,6 +91,7 @@ export * from './neutral-insurrection';
 export * from './neutral-liberation';
 export * from './neutral-protracted-siege';
 export * from './neutral-resistance';
+export * from './neutral-resourcefulness';
 export * from './neutral-palisade-wall';
 export * from './neutral-reinforcements';
 export * from './neutral-requisition';

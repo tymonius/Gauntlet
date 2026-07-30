@@ -35,6 +35,7 @@ import { canUseReinforcementsAsset, REINFORCEMENTS, reinforcementsActionOpportun
 import { insurrectionActionOpportunityActive } from './neutral-insurrection';
 import { liberationActionOpportunityActive } from './neutral-liberation';
 import { canResolveNewRecruitsAction, NEW_RECRUITS } from './neutral-new-recruits';
+import { canBankResourcefulness, RESOURCEFULNESS } from './neutral-resourcefulness';
 
 const visible = <T>(cards: T[]) => ({ kind: 'visible' as const, cards });
 const hidden = <T>(cards: T[]) => ({ kind: 'hidden' as const, count: cards.length });
@@ -222,6 +223,7 @@ function legalActionPlaysForViewer(game: GameState, viewer?: PlayerID): LegalAct
     return player.zones.hand
       .filter((cardId) => conscription.cardOptions.includes(cardId))
       .filter(conscriptionAssetCardCanBePlayed)
+      .filter((cardId) => cardId !== RESOURCEFULNESS || canBankResourcefulness(game, viewer))
       .filter((cardId, index, cards) => cards.indexOf(cardId) === index)
       .map((cardId) => ({
         action: 'play_action_card' as const,
@@ -240,6 +242,7 @@ function legalActionPlaysForViewer(game: GameState, viewer?: PlayerID): LegalAct
     .filter((cardId) => canResolveIntelligenceAction(game, viewer, cardId))
     .filter((cardId) => cardId !== DISRUPTION || canResolveDisruptionAction(game, viewer))
     .filter((cardId) => cardId !== NEW_RECRUITS || canResolveNewRecruitsAction(game, viewer))
+    .filter((cardId) => cardId !== RESOURCEFULNESS || canBankResourcefulness(game, viewer))
     .map((cardId) => ({ action: 'play_action_card' as const, cardId, origin: 'hand' as const, destination: destinationForCardPlay(cardId, 'hand'), requiresTarget: getCardPlayRule(cardId)?.requiresTarget ?? false }));
 }
 

@@ -100,6 +100,14 @@ import {
   resolveResistanceChoice,
 } from './neutral-resistance';
 import {
+  applyResourcefulnessActionDraw,
+  applyResourcefulnessBattleAssetDraw,
+  applyResourcefulnessBattleEffects,
+  RESOURCEFULNESS,
+  requireResourcefulnessActionAllowed,
+  resourcefulnessActionTriggerEligible,
+} from './neutral-resourcefulness';
+import {
   applyFootholdBattleCleanupDraw,
   applyFootholdBattleEffects,
   openNextFootholdChoice,
@@ -442,6 +450,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'play_action_card') {
     requireEntrenchmentActionAllowed(game, action.playerId);
   }
+  if (action.type === 'play_action_card' && action.cardId === RESOURCEFULNESS) {
+    requireResourcefulnessActionAllowed(game, action.playerId);
+  }
   if (action.type === 'play_action_card' && action.cardId === FORCED_MARCH) {
     requireForcedMarchActionTiming(game, action.playerId);
   }
@@ -499,6 +510,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   const preparedInsurrection = action.type === 'play_action_card' && action.cardId === INSURRECTION
     ? prepareInsurrectionAction(game, action)
     : undefined;
+  const resourcefulnessActionEligible = action.type === 'play_action_card'
+    ? resourcefulnessActionTriggerEligible(game, action.playerId, action.cardId)
+    : false;
 
   const restrictedBefore = action.type === 'move_player'
     ? game.players[action.playerId]?.nonBattleMovementRemaining ?? 0
@@ -600,6 +614,18 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     );
     result.result = { ...(result.result ?? {}), drawnCards };
   }
+  if (action.type === 'play_action_card') {
+    const resourcefulnessDraw = applyResourcefulnessActionDraw(
+      result.state,
+      action.playerId,
+      action.cardId,
+      resourcefulnessActionEligible,
+    );
+    if (resourcefulnessDraw.length > 0) {
+      const priorDrawn = result.result?.drawnCards ?? [];
+      result.result = { ...(result.result ?? {}), drawnCards: [...priorDrawn, ...resourcefulnessDraw] };
+    }
+  }
   if (action.type === 'play_action_card' && action.cardId === SEDITION) {
     queueSeditionActionChoice(result.state, action.playerId);
   }
@@ -655,6 +681,8 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     applyFortificationsBattleEffects(result.state);
     applyInsurrectionBattleEffects(result.state);
     applyResistanceBattleEffects(result.state);
+    applyResourcefulnessBattleEffects(result.state);
+    applyResourcefulnessBattleAssetDraw(result.state);
     applyFealtyBattleEffects(result.state);
     applyFootholdBattleEffects(result.state);
     applyForcedMarchBattleEffects(result.state);
