@@ -144,6 +144,12 @@ function applyBattleSetupEffects(game: GameState, participant: BattleParticipant
     participant.battleDrawPlayLimit += 1;
   }
   if (!participant.hasDrawnBattleCards
+    && participant.handCommit?.cardId === 'neutral-invasion'
+    && game.battle?.attacker.playerId === participant.playerId) {
+    participant.battleDrawCount += 1;
+    participant.battleDrawPlayLimit += 1;
+  }
+  if (!participant.hasDrawnBattleCards
     && participant.handCommit?.cardId === 'neutral-liberation'
     && game.battle?.attacker.playerId === participant.playerId
     && battleIsCounterattack(game, game.battle)) {

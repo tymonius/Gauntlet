@@ -1,29 +1,23 @@
-name: Patch and Test Canonical Invasion
+name: Test
 
 on:
   pull_request:
-
-permissions:
-  contents: write
+  push:
+    branches:
+      - main
 
 jobs:
-  patch-and-test:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout implementation branch
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: fix/neutral-invasion-canonical
-          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Apply canonical timing patch
-        run: python .github/scripts/patch-invasion-canonical.py
 
       - name: Install dependencies
         run: npm install
@@ -33,12 +27,3 @@ jobs:
 
       - name: Test
         run: npm test
-
-      - name: Commit validated patch
-        run: |
-          rm -f package-lock.json
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/state/apply-neutral.ts src/state/reducer.ts .github/workflows/test.yml .github/scripts/patch-invasion-canonical.py
-          git commit -m "Wire canonical Invasion formation timing" || exit 0
-          git push origin HEAD:fix/neutral-invasion-canonical
