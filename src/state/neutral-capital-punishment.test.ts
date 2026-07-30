@@ -33,8 +33,8 @@ function game(): GameState {
       {
         id: 'player_2',
         name: 'Opponent',
-        factionId: 'military',
-        leaderName: 'General',
+        factionId: 'intelligence',
+        leaderName: 'Spy',
         deck: [ASSET, RALLYING_CRY, 'p2-draw'],
         territories: ['p2-one', 'p2-two', 'p2-three'],
       },
