@@ -34,6 +34,8 @@ export interface PlayerState {
   nonBattleMovementRemaining?: number;
   /** Additional positions granted by Advance Guard; ordinary movement is spent first. */
   advanceGuardMovementRemaining?: number;
+  /** Additional movement positions from Invasion that may be used only to advance. */
+  invasionAdvanceMovementRemaining?: number;
   hasPlayedActionThisTurn: boolean;
   hasPlayedBattleThisTurn: boolean;
 }
@@ -60,6 +62,7 @@ export interface PublicPlayerView {
   movementRemaining: number;
   nonBattleMovementRemaining?: number;
   advanceGuardMovementRemaining?: number;
+  invasionAdvanceMovementRemaining?: number;
 }
 
 export interface PrivatePlayerView extends Omit<PublicPlayerView, 'intelligence' | 'mystics' | 'inquisition'> {

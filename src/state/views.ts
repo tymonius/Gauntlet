@@ -34,6 +34,7 @@ import { entrenchmentActionPlayProhibited } from './neutral-entrenchment';
 import { canUseReinforcementsAsset, REINFORCEMENTS, reinforcementsActionOpportunityActive } from './neutral-reinforcements';
 import { insurrectionActionOpportunityActive } from './neutral-insurrection';
 import { liberationActionOpportunityActive } from './neutral-liberation';
+import { canPlayInvasionAction, INVASION } from './neutral-invasion';
 import { canResolveNewRecruitsAction, NEW_RECRUITS } from './neutral-new-recruits';
 import { canBankResourcefulness, RESOURCEFULNESS } from './neutral-resourcefulness';
 
@@ -80,6 +81,7 @@ export function toPublicPlayerView(player: PlayerState): PublicPlayerView {
     movementRemaining: player.movementRemaining,
     nonBattleMovementRemaining: player.nonBattleMovementRemaining,
     advanceGuardMovementRemaining: player.advanceGuardMovementRemaining,
+    invasionAdvanceMovementRemaining: player.invasionAdvanceMovementRemaining,
   };
 }
 
@@ -243,6 +245,7 @@ function legalActionPlaysForViewer(game: GameState, viewer?: PlayerID): LegalAct
     .filter((cardId) => cardId !== DISRUPTION || canResolveDisruptionAction(game, viewer))
     .filter((cardId) => cardId !== NEW_RECRUITS || canResolveNewRecruitsAction(game, viewer))
     .filter((cardId) => cardId !== RESOURCEFULNESS || canBankResourcefulness(game, viewer))
+    .filter((cardId) => cardId !== INVASION || canPlayInvasionAction(game, viewer))
     .map((cardId) => ({ action: 'play_action_card' as const, cardId, origin: 'hand' as const, destination: destinationForCardPlay(cardId, 'hand'), requiresTarget: getCardPlayRule(cardId)?.requiresTarget ?? false }));
 }
 
@@ -273,6 +276,7 @@ function neutralChoiceIsPrivate(game: GameState): boolean {
     || kind?.startsWith('tactical_planning_')
     || kind?.startsWith('conscription_')
     || kind?.startsWith('contraband_')
+    || kind?.startsWith('invasion_')
     || kind === 'rousing_speech_discard',
   );
 }

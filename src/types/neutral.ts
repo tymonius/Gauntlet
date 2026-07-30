@@ -112,6 +112,18 @@ export interface PendingReinforcementsBattleChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface PendingInvasionBattleChoice {
+  kind: 'invasion_battle';
+  playerId: PlayerID;
+  battleId: string;
+  drawnCardId: CardID;
+  canPlay: boolean;
+  resolverPlayerId: PlayerID;
+  battleCardTargets?: BattleCardTarget[];
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface RequisitionBattleQueueEntry {
   id: string;
   playerId: PlayerID;
@@ -575,6 +587,7 @@ export type PendingNeutralChoice =
   | PendingFootholdAssetChoice
   | PendingPalisadeWallAssetChoice
   | PendingReinforcementsBattleChoice
+  | PendingInvasionBattleChoice
   | PendingRequisitionBattleChoice
   | PendingRousingSpeechAssetChoice
   | PendingRousingSpeechDiscardChoice
