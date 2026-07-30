@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "domain": "terminology",
+  "entry_count": 3,
+  "outcome_counts": {"current-released": 2, "superseded": 1},
+  "entries": [
+    {"id":"GNT-CAD-0021","title":"Use Asset, Asset Bank, Condition, and Overlay terminology","domain":"terminology","outcome":"current-released","summary":"Retire Active Effects/Pending Effects as current terminology. Persistent banked cards are Assets in the Asset Bank; temporary ongoing cards are Conditions; Territory-attached cards may be Overlays.","evidence_ids":["GNT-CHAT-7490B19E509E","GNT-CHAT-4A1C0E3E551D","GNT-CHAT-8CF023B1F21F","GNT-CHAT-F759BB05D335"],"repository_evidence":["releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md"]},
+    {"id":"GNT-CAD-0025","title":"Player-facing framing emphasizes running the Gauntlet","domain":"terminology","outcome":"current-released","summary":"Heartland/end-space language is subordinate to the core fantasy of advancing through and running the Gauntlet.","evidence_ids":["GNT-CHAT-03820BBE6BAC"],"repository_evidence":["releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md"]},
+    {"id":"GNT-CAD-0032","title":"Earlier Arcane faction naming is superseded by Mystics","domain":"terminology","outcome":"superseded","summary":"The exported discussions settled on Arcane as the faction name at that time. The later repository decision renamed the faction Mystics while retaining Arcane as a cross-faction trait.","evidence_ids":["GNT-CHAT-1B9CA6F7CA1E","GNT-CHAT-13C41B998818"],"repository_evidence":["docs/Gauntlet_Visual_Design_Language.md","https://github.com/tymonius/Gauntlet/pull/58"]}
+  ]
+}
