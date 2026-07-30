@@ -89,6 +89,17 @@ import {
   prepareInsurrectionAction,
 } from './neutral-insurrection';
 import {
+  applyInvasionAction,
+  clearInvasionMovement,
+  clearInvasionMovementForTurnTransition,
+  INVASION,
+  prepareInvasionBattleReveal,
+  prepareInvasionMove,
+  reconcileInvasionMove,
+  requireInvasionActionTiming,
+  resolveInvasionChoice,
+} from './neutral-invasion';
+import {
   applyLiberationAssetAfterBattle,
   clearLiberationActionOpportunity,
   consumeLiberationActionOpportunity,
@@ -333,6 +344,8 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
             ? (resolvePalisadeWallChoice(next, action), {})
             : pendingKind === 'reinforcements_battle'
               ? resolveReinforcementsChoice(next, action)
+              : pendingKind === 'invasion_battle'
+                ? resolveInvasionChoice(next, action)
               : pendingKind === 'requisition_battle'
                 ? (resolveRequisitionChoice(next, action), {})
                 : pendingKind.startsWith('rousing_speech_')
@@ -420,6 +433,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'resolve_battle_reveal') {
     const prepared = structuredClone(game);
     if (prepareReinforcementsBattleReveal(prepared, action)) return { state: prepared };
+    if (prepareInvasionBattleReveal(prepared, action)) return { state: prepared };
     if (prepareSeditionBattleReveal(prepared, action)) return { state: prepared };
     game = prepared;
   }
@@ -428,6 +442,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     const next = structuredClone(game);
     finishRemainingMovement(next, action.playerId);
     clearAdvanceGuardMovement(next, action.playerId);
+    clearInvasionMovement(next, action.playerId);
     reconcileSabotageAssetState(next);
     return { state: next };
   }
@@ -467,6 +482,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   if (action.type === 'play_action_card' && action.cardId === ADVANCE_GUARD) {
     requireAdvanceGuardActionTiming(game, action.playerId);
+  }
+  if (action.type === 'play_action_card' && action.cardId === INVASION) {
+    requireInvasionActionTiming(game, action.playerId);
   }
   if (action.type === 'commit_battle_hand_card') {
     requireAdvanceGuardHandCommitAllowed(game, action.playerId);
@@ -532,6 +550,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   const initiatedBattle = action.type === 'move_player'
     ? forcedMarchMoveWouldInitiateBattle(game, action.playerId, action.toSpaceId)
     : false;
+  const invasionMovement = action.type === 'move_player'
+    ? prepareInvasionMove(game, action.playerId, action.toSpaceId)
+    : undefined;
   if (action.type === 'move_player') {
     requireBattleCapableMovement(game, action.playerId, action.toSpaceId);
   }
@@ -575,6 +596,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   if (action.type === 'play_action_card' && action.cardId === FORCED_MARCH) {
     applyForcedMarchAction(result.state, action.playerId);
+  }
+  if (action.type === 'play_action_card' && action.cardId === INVASION) {
+    applyInvasionAction(result.state, action.playerId);
   }
   if (action.type === 'play_action_card' && preparedNewRecruits) {
     const drawnCards = applyNewRecruitsAction(result.state, action.playerId, preparedNewRecruits);
@@ -656,6 +680,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
       usedAdvanceGuardPosition,
       initiatedBattle,
     );
+    if (invasionMovement) {
+      reconcileInvasionMove(result.state, action.playerId, invasionMovement, initiatedBattle);
+    }
     applyEntrenchmentMovementTrigger(
       result.state,
       action.playerId,
@@ -673,6 +700,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     clearLiberationActionOpportunity(result.state, action.playerId);
     clearRestrictedMovementForTurnTransition(result.state, action.playerId);
     clearAdvanceGuardMovement(result.state, action.playerId);
+    clearInvasionMovementForTurnTransition(result.state, action.playerId);
     clearExpiredPathfindersSuppressions(result.state);
     clearExpiredEntrenchmentLocks(result.state);
     restoreSabotagedAssetsAtTurnStart(result.state);

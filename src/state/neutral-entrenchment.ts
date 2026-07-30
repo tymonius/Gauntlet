@@ -93,6 +93,7 @@ export function applyEntrenchmentMovementTrigger(
   movingPlayer.movementRemaining = 0;
   movingPlayer.nonBattleMovementRemaining = 0;
   movingPlayer.advanceGuardMovementRemaining = 0;
+  movingPlayer.invasionAdvanceMovementRemaining = 0;
   game.neutralEntrenchmentActionLocks = [
     ...(game.neutralEntrenchmentActionLocks ?? []).filter((lock) => lock.playerId !== movingPlayerId),
     { playerId: movingPlayerId, sourcePlayerId: owner.id, turn: game.turn },
