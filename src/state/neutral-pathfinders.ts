@@ -43,7 +43,7 @@ export function preparePathfindersAction(
     throw new GameActionError('Pathfinders requires exactly one Territory target.');
   }
   const space = game.board.spaces.find((candidate) => candidate.id === target.spaceId);
-  if (!space || (space.kind !== 'territory' && space.kind !== 'arena')) {
+  if (!space || space.kind !== 'territory') {
     throw new GameActionError('Pathfinders can target only a Territory.');
   }
   return space.id;
