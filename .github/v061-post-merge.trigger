@@ -1,1 +1,1 @@
-Apply the governed Bombardment rename and validate all reconciled v0.6.1 release surfaces.
+Apply the governed Bombardment rename with a rebase-safe canonical-source commit.
