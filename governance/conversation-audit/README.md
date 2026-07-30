@@ -3,24 +3,45 @@
 This directory is the evidence layer between Gauntlet design conversations and the formal decision registry.
 
 - `corpus.json` records source-conversation metadata, dates, counts, and coverage boundaries.
-- `attestation.json` records verified audit counts and effective status totals.
-- `decision-index-*.md` contains normalized conversation decisions, their recorded status, summary, and evidence reference.
-- `july-10-30-sources.json` records the retrieval method and authority boundary for the newer-conversation supplement.
+- `attestation.json` records verified counts, certification state, and effective status totals.
+- `decision-index-*.md` contains normalized conversation threads, their recorded status, summary, and evidence reference.
+- `july-10-30-sources.json` records the retrieval method and evidence boundary for the newer-conversation supplement.
 - `status-overrides.json` records older threads whose effective status changed when a later explicit decision superseded them.
-- `report.md` summarizes coverage and the handoff to canonical-source auditing.
+- `report.md` summarizes coverage and the gate for canonical-source auditing.
 
-`GNT-CONV-*` identifiers are audit-thread IDs, not canonical decision IDs. They preserve conversational provenance before a current decision is promoted into `governance/decision-registry.json` as a `GNT-DEC-*` record.
+`GNT-CONV-*` identifiers are audit-thread IDs, not canonical decision IDs. They preserve conversational provenance before a verified current decision is promoted into `governance/decision-registry.json` as a `GNT-DEC-*` record.
 
-## Coverage boundary
+## Certification status
+
+**The conversation audit is incomplete and is not certified for downstream canonicalization.**
 
 The supplied raw export is user-turn complete from June 17 through July 9, 2026: nine conversations and 1,021 user turns.
 
-July 10–30 received a separate comprehensive date-window audit across project conversation search, retained project context, and exact available snippets. That pass added 109 threads and expanded the post-export evidence set to 141 rows. Because no newer raw export was supplied, it is a comprehensive available-history decision audit rather than a provably complete turn-by-turn transcript inventory.
+The July 10–30 material was reconstructed from project-conversation search, retained project context, and available snippets. It produced 109 candidate threads and 141 post-export evidence rows, but those rows do not have a complete raw-turn corpus or verbatim line references. The unsupported fixed-three Asset Bank synthesis demonstrated that this evidence class cannot be treated as a completed conversation audit.
+
+Until a fresh raw export covering July 10–30 is processed:
+
+- all `project-conversation-search:*` rows are **provisional audit leads**, not certified decisions;
+- they must not create or supersede a `GNT-DEC-*` record by themselves;
+- they must not drive canonical-source or implementation changes without separate exact user-turn evidence;
+- downstream decision-to-source and source-to-product completion claims are blocked.
+
+## Completion gate
+
+The conversation audit becomes complete only when:
+
+1. a raw export covers every Gauntlet conversation through the audit cutoff;
+2. every user turn is inventoried exactly once;
+3. every candidate decision has verbatim user-turn evidence and stable source-line references;
+4. short approvals are linked to the exact preceding proposal;
+5. rejected, superseded, tentative, and work-in-progress directions are retained and correctly classified;
+6. every cross-period conflict is resolved through explicit supersession supported by raw evidence;
+7. an independent recheck finds no unsupported assistant synthesis in the effective-current set.
 
 ## Authority rule
 
-Within a shared subject, the latest explicit approval, correction, or rejection controls. Older evidence remains visible, but `status-overrides.json` changes its effective status when a later thread supersedes it. Downstream audits must use the effective status rather than reading an older row's recorded status in isolation.
+Within a shared subject, the latest **verbatim-supported explicit user approval, correction, or rejection** controls. Older evidence remains visible, but an effective-status override is valid only when both the older thread and its replacement have exact raw evidence. Search-derived provisional leads cannot supersede raw-export records.
 
 ## Status meaning
 
-A conversation thread effectively marked `current` means it is the latest known conversational intent within the available evidence. It does **not** mean the decision has been canonicalized, implemented, tested, or released. Those conclusions belong to the downstream decision-to-canonical-source and source-to-product audits.
+A raw-evidence conversation thread marked `current` means it is the latest verified conversational intent within the audited corpus. It does **not** mean the decision has been canonicalized, implemented, tested, or released. Search-derived July rows remain provisional regardless of their printed status until raw evidence replaces their search references.

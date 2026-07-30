@@ -1,12 +1,17 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "generated_on": "2026-07-30",
+  "certification_status": "incomplete",
+  "certified_for_downstream_canonicalization": false,
+  "blocking_reason": "The raw export ends on 2026-07-09. July 10-30 rows were reconstructed from search/context rather than a complete raw-turn corpus, and one unsupported assistant synthesis was already discovered.",
   "verbatim_export_complete_through": "2026-07-09",
+  "required_raw_export_through": "2026-07-30",
   "verbatim_user_turns": 1021,
   "decision_threads": 335,
   "decision_index_files": 14,
   "verbatim_evidence_links": 489,
   "post_export_evidence_links": 141,
+  "provisional_post_export_rows": 141,
   "effective_status_overrides": 3,
   "statuses": {
     "current": 271,
@@ -27,8 +32,16 @@
   },
   "limitations": [
     "The supplied raw conversation export ends on 2026-07-09.",
-    "The July 10-30 supplement is a comprehensive available-history retrieval from project conversation search, retained project context, and exact available snippets, but it is not a raw-turn-complete export.",
-    "Effective statuses apply status-overrides.json so later explicit July decisions control conflicting older threads.",
+    "Every project-conversation-search evidence row is provisional until replaced by verbatim raw-turn evidence.",
+    "The July 10-30 candidate ledger cannot supersede raw-export evidence or drive canonicalization by itself.",
+    "The fixed-three Asset Bank synthesis demonstrated that search/context summaries can introduce unsupported claims.",
     "GNT-CONV identifiers establish conversation provenance only; they do not claim canonicalization or implementation."
+  ],
+  "completion_requirements": [
+    "Process a fresh raw export covering all Gauntlet conversations through 2026-07-30.",
+    "Inventory every user turn exactly once.",
+    "Replace every project-conversation-search reference with stable raw source-line evidence or remove the unsupported row.",
+    "Recompute all statuses and supersession links from the raw corpus.",
+    "Independently recheck every effectively current thread for unsupported assistant synthesis."
   ]
 }
