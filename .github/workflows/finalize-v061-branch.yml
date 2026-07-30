@@ -43,8 +43,12 @@ jobs:
           matches = []
           changed = []
           condition = "    if: github.ref == 'refs/heads/main'\n"
+          protection_workflow = Path('.github/workflows/finalize-v061-branch.yml')
 
           for path in sorted(Path('.github/workflows').glob('*.y*ml')):
+              if path == protection_workflow:
+                  continue
+
               text = path.read_text(encoding='utf-8')
               identifies_legacy_renderer = (
                   'releases/v0.6.0/Gauntlet_v0.6.0_All_Cards_and_Components.pdf' in text
