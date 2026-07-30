@@ -76,7 +76,9 @@ A **Deck** consists of:
 - three different **Territory Cards**; and
 - any required faction- or Leader-specific supplemental cards or components.
 
-Supplemental cards, reference cards, trackers, Deeds, Proposals, Rites, Missions, and similar components are part of the Deck but are not part of the Playable Deck unless a rule explicitly says otherwise.
+Supplemental cards, reference cards, trackers, Deeds, Proposals, Rites, and similar components are part of the Deck but are not part of the Playable Deck unless a rule explicitly says otherwise. Missions and Special Operations are eligible cards from the Intelligence player's Playable Deck, not supplemental cards.
+
+Together, both players' Territory Cards form the **Gauntlet**, a single six-Territory column.
 
 ### Faction supplemental cards and trackers
 
@@ -101,7 +103,7 @@ Use the selected Leader Card and the **Command Tracker**. Begin at 0 Command wit
 
 #### Diplomat package
 
-Use the selected Leader Card, **Influence Tracker**, double-sided **Diplomat Reference Card**, and nine double-sided **Proposal / Treaty Article cards**. Begin at 1 Influence and place every Proposal Proposal-side up. Lower the tracker when Influence is staked or spent and raise it when Influence returns or is gained. Flip an unratified Proposal to its Treaty Article side only when it is ratified. Leave ratified Articles face up so progress toward the Peace Treaty is public.
+Use the selected Leader Card, **Influence Tracker**, double-sided **Diplomat Reference Card**, and nine double-sided **Proposal / Treaty Article cards**. Begin at 1 Influence and place every Proposal with its Proposal side up. Lower the tracker when Influence is staked or spent and raise it when Influence returns or is gained. Flip an unratified Proposal to its Treaty Article side only when it is ratified. Leave ratified Articles face up so progress toward the Peace Treaty is public.
 
 #### Financier package
 
@@ -118,8 +120,6 @@ Use the selected Leader Card, **Mystics Reference Card**, and the three double-s
 #### Inquisition package
 
 Use the selected Leader Card, **Inquisition Doctrine Reference Card**, **Purge Reference Card**, and **Conviction Tracker**. Begin at 0 Conviction with the tracker fully covered by the Leader. Slide the Leader to show the current value, to a maximum of 4. Use the Doctrine Reference to remember Condemnation, Blasphemy, and Purification; use the Purge Reference to choose and pay for a Purge.
-
-Together, both players' Territory Cards form the **Gauntlet**, a single six-Territory column.
 
 ---
 
