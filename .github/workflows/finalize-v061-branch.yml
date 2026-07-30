@@ -6,6 +6,11 @@ on:
       - rules/v0.6.1-playtest-revision
     paths:
       - ".github/workflows/finalize-v061-branch.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/finalize-v061-branch.yml"
   workflow_dispatch:
 
 permissions:
