@@ -3,15 +3,17 @@
   "generated_on": "2026-07-30",
   "verbatim_export_complete_through": "2026-07-09",
   "verbatim_user_turns": 1021,
-  "decision_threads": 226,
+  "decision_threads": 335,
+  "decision_index_files": 14,
   "verbatim_evidence_links": 489,
-  "post_export_evidence_links": 32,
+  "post_export_evidence_links": 141,
+  "effective_status_overrides": 4,
   "statuses": {
-    "current": 173,
-    "superseded": 42,
-    "tentative": 6,
+    "current": 270,
+    "superseded": 49,
+    "tentative": 7,
     "deferred": 3,
-    "rejected": 1,
+    "rejected": 5,
     "deprecated": 1
   },
   "turn_classifications": {
@@ -23,14 +25,10 @@
     "tentative-or-open": 26,
     "rejection-or-constraint": 24
   },
-  "generation_artifact_sha256": {
-    "decision_threads_json": "c1b3b8efaf43389123fd1ec87a72c53d4637f72850011c10430f88956633f2ad",
-    "turn_index_json": "44e332e1f603db2aa6f46f44bde942a5ea24a41cc72cf1cf417841445948223f",
-    "compressed_full_bundle": "ab9eec8f63ac526d218080c75aa80e7e2204d7946d693156ad65de64c13e67fb"
-  },
   "limitations": [
     "The supplied raw conversation export ends on 2026-07-09.",
-    "July 10–30 decisions are supplemented from project-conversation snippets and retained project context, not a raw-turn-complete export.",
+    "The July 10-30 supplement is a comprehensive available-history retrieval from project conversation search, retained project context, and exact available snippets, but it is not a raw-turn-complete export.",
+    "Effective statuses apply status-overrides.json so later explicit July decisions control conflicting older threads.",
     "GNT-CONV identifiers establish conversation provenance only; they do not claim canonicalization or implementation."
   ]
 }
