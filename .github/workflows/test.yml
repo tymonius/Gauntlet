@@ -26,6 +26,7 @@ jobs:
         run: |
           python .github/scripts/patch-decoys-replacement.py
           python .github/scripts/fix-decoys-source-inference.py
+          python .github/scripts/fix-decoys-sequestration-test.py
 
       - name: Install dependencies
         run: npm install
@@ -41,6 +42,6 @@ jobs:
           rm -f package-lock.json
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/types/neutral.ts src/state/neutral-redemption.ts src/state/apply-neutral.ts src/state/neutral-decoys.ts src/state/neutral-decoys.test.ts .github/workflows/test.yml .github/scripts/patch-decoys-replacement.py .github/scripts/fix-decoys-source-inference.py
+          git add src/types/neutral.ts src/state/neutral-redemption.ts src/state/apply-neutral.ts src/state/neutral-decoys.ts src/state/neutral-decoys.test.ts src/state/neutral-sequestration.test.ts .github/workflows/test.yml .github/scripts/patch-decoys-replacement.py .github/scripts/fix-decoys-source-inference.py .github/scripts/fix-decoys-sequestration-test.py
           git commit -m "Wire Decoys replacement timing" || exit 0
           git push origin HEAD:fix/neutral-decoys-replacement
