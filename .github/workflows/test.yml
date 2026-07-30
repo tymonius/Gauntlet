@@ -67,8 +67,8 @@ jobs:
 
           replace_once(
               'src/state/index.ts',
-              "export * from './neutral-requisition';\nexport * from './neutral-reserves';",
-              "export * from './neutral-requisition';\nexport * from './neutral-revolution';\nexport * from './neutral-reserves';",
+              "export * from './neutral-requisition';\nexport * from './neutral-rousing-speech';",
+              "export * from './neutral-requisition';\nexport * from './neutral-revolution';\nexport * from './neutral-rousing-speech';",
           )
 
           replace_once(
