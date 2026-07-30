@@ -20,6 +20,11 @@ import {
   requireArmisticeBattleAllowed,
   resolveArmisticeBattleAfterCancellation,
 } from './neutral-armistice';
+import {
+  applyCapitalPunishmentAction,
+  CAPITAL_PUNISHMENT,
+  prepareCapitalPunishmentAction,
+} from './neutral-capital-punishment';
 import { continueIntelligenceBattle } from './intelligence-battle';
 import {
   ADVANCE_GUARD,
@@ -500,6 +505,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   const preparedAdvanceGuard = action.type === 'play_action_card' && action.cardId === ADVANCE_GUARD
     ? prepareAdvanceGuardAction(game, action)
     : undefined;
+  const preparedCapitalPunishment = action.type === 'play_action_card' && action.cardId === CAPITAL_PUNISHMENT
+    ? prepareCapitalPunishmentAction(game, action)
+    : undefined;
   const preparedConsolidation = action.type === 'play_action_card' && action.cardId === CONSOLIDATION
     ? prepareConsolidationAction(game, action)
     : undefined;
@@ -595,6 +603,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   if (action.type === 'play_action_card' && action.cardId === ARMISTICE) {
     registerArmisticeActionCondition(result.state, action.playerId);
+  }
+  if (action.type === 'play_action_card' && preparedCapitalPunishment) {
+    applyCapitalPunishmentAction(result.state, action.playerId, preparedCapitalPunishment);
   }
   if (action.type === 'play_action_card' && preparedAdvanceGuard) {
     applyAdvanceGuardAction(result.state, action.playerId, preparedAdvanceGuard);
