@@ -12,7 +12,10 @@
       "start": "2026-07-10",
       "end": "2026-07-30",
       "complete_turn_index": false,
-      "note": "Post-export decisions are included only where exact project-conversation snippets or conversation-search records were available. A fresh raw export is required for raw-turn completeness."
+      "comprehensive_available_history_pass": true,
+      "source_manifest": "governance/conversation-audit/july-10-30-sources.json",
+      "effective_status_overrides": "governance/conversation-audit/status-overrides.json",
+      "note": "The July supplement was rebuilt from comprehensive date-window project retrieval and has authority over conflicting older threads through explicit status overrides. A newer raw export is still required for raw-turn completeness."
     }
   },
   "conversations": [
@@ -109,8 +112,9 @@
   ],
   "counts": {
     "verbatim_user_turns": 1021,
-    "decision_threads": 226,
+    "decision_threads": 335,
     "verbatim_evidence_links": 489,
-    "post_export_evidence_links": 32
+    "post_export_evidence_links": 141,
+    "effective_status_overrides": 4
   }
 }
