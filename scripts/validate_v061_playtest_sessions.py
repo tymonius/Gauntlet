@@ -173,10 +173,12 @@ def main() -> int:
     require_markers(
         "playtest/batch/qrcode-loader.js",
         [
-            "qrcode@1.5.4",
+            "qrcodejs@1.0.0",
+            "cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js",
+            "cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js",
             'script.referrerPolicy = "no-referrer"',
             "async toDataURL",
-            "The QR renderer could not be downloaded",
+            "The QR renderer could not be downloaded from either provider",
         ],
         errors,
     )
