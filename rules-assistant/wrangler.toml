@@ -1,6 +1,6 @@
 name = "gauntlet-rules-assistant"
 main = "worker-entry.js"
-compatibility_date = "2026-07-29"
+compatibility_date = "2026-07-24"
 
 [vars]
 SITE_ORIGIN = "https://gauntlet.run"
