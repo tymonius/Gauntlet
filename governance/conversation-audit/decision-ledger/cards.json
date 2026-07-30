@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "domain": "cards",
+  "entry_count": 14,
+  "outcome_counts": {
+    "current-working": 1,
+    "current-released": 11,
+    "superseded": 2
+  },
+  "entries": [
+    {
+      "id": "GNT-CAD-0042",
+      "title": "Diplomat Sanctions are a family; Financier sanctions remain a future question",
+      "domain": "cards",
+      "outcome": "current-working",
+      "summary": "Blockade and related Diplomat cards may form a Sanctions family tied to refused or accepted Terms. Whether Financiers gain economically distinct Sanctions remains deferred.",
+      "evidence_ids": ["GNT-CHAT-A2CB18AD6201", "GNT-CHAT-FD42293AC02E", "GNT-CHAT-9269FAD1AD65", "GNT-CHAT-D01DD502CACF"],
+      "repository_evidence": ["docs/Gauntlet_v0.6.1_Diplomat_Overhaul_Notes.md"]
+    },
+    {
+      "id": "GNT-CAD-0050",
+      "title": "Assassins belongs to Intelligence and should remain harsh",
+      "domain": "cards",
+      "outcome": "current-released",
+      "summary": "Assassins is an expensive Intelligence card whose severity is intentional; it later received a Mission/faction context rather than being softened into generic Neutral interaction.",
+      "evidence_ids": ["GNT-CHAT-6F45D6F77C21", "GNT-CHAT-D25B90D93FC0"],
+      "repository_evidence": ["releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"]
+    },
+    {
+      "id": "GNT-CAD-0051",
+      "title": "Armistice remains Neutral rather than becoming a Diplomat card",
+      "domain": "cards",
+      "outcome": "current-released",
+      "summary": "Armistice was kept as high-complexity Neutral interaction; a Proposal may create temporary ceasefire effects without faction-locking the existing card.",
+      "evidence_ids": ["GNT-CHAT-20FFBC4E983F", "GNT-CHAT-2792C3E0C8C6", "GNT-CHAT-AE41482316CC"],
+      "repository_evidence": ["docs/Gauntlet_v0.6_Neutral_Card_Pool.md"]
+    },
+    {
+      "id": "GNT-CAD-0052",
+      "title": "Arcane Knowledge classification discussion is superseded by the current Neutral card",
+      "domain": "cards",
+      "outcome": "superseded",
+      "summary": "Early discussion moved Arcane Knowledge toward the Arcane/Mystics faction, but the released current card is Neutral with the Arcane trait. Its incomplete digital Battle replay is separately quarantined.",
+      "evidence_ids": ["GNT-CHAT-D2091AB4D5BE", "GNT-CHAT-A2CB18AD6201", "GNT-CHAT-A7EA38095A93", "GNT-CHAT-9269FAD1AD65"],
+      "repository_evidence": ["docs/Gauntlet_v0.6_Neutral_Card_Pool.md", "governance/decision-registry.json"]
+    },
+    {
+      "id": "GNT-CAD-0053",
+      "title": "Attrition remains shared Neutral pressure",
+      "domain": "cards",
+      "outcome": "current-released",
+      "summary": "Attrition was debated between Military, Inquisition, and Advanced Neutral. The released resolution keeps it Neutral rather than treating general anti-stalemate attrition as faction-exclusive.",
+      "evidence_ids": ["GNT-CHAT-7BFA6CDFF3E7", "GNT-CHAT-20FFBC4E983F", "GNT-CHAT-2792C3E0C8C6", "GNT-CHAT-AE41482316CC"],
+      "repository_evidence": ["docs/Gauntlet_v0.6_Neutral_Card_Pool.md"]
+    },
+    {
+      "id": "GNT-CAD-0054",
+      "title": "Blockade is a Diplomat Sanction",
+      "domain": "cards",
+      "outcome": "current-released",
+      "summary": "Blockade moved from generic/Financier/Inquisition consideration into the Diplomat package as coercive sanctions connected to Terms.",
+      "evidence_ids": ["GNT-CHAT-A2CB18AD6201", "GNT-CHAT-FD42293AC02E", "GNT-CHAT-D01DD502CACF", "GNT-CHAT-61EB529F3DDD"],
+      "repository_evidence": ["releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"]
+    },
+    {
+      "id": "GNT-CAD-0055",
+      "title": "Reserve Embargo for Diplomats and rename the Neutral card Disruption",
+      "domain": "cards",
+      "outcome": "current-released",
+      "summary": "The old Neutral Embargo identity was renamed Disruption so Embargo could be used for a Diplomat Sanction.",
+      "evidence_ids": ["GNT-CHAT-78A72FFBC751", "GNT-CHAT-70412E97A6B9", "GNT-CHAT-27A25D439BF3", "GNT-CHAT-2EAF2FFD245D"],
+      "repository_evidence": ["docs/Gauntlet_v0.6_Neutral_Card_Pool.md", "releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md"]
+    },
+    {
+      "id": "GNT-CAD-0056",
+      "title": "Capital Gains is a cost-three Financier card",
+      "domain": "cards",
+      "outcome": "current-released",
+      "summary": "Capital Gains remained in Financiers and was adjusted to cost 3 during the v0.6 package review.",
+      "evidence_ids": ["GNT-CHAT-A2CB18AD6201", "GNT-CHAT-A7EA38095A93", "GNT-CHAT-9269FAD1AD65", "GNT-CHAT-03A0A660899C"],
+      "repository_evidence": ["releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md"]
+    },
+    {
+      "id": "GNT-CAD-0057",
+      "title": "Capital Punishment remains expensive shared hard cancellation",
+      "domain": "cards",
+      "outcome": "current-released",
+      "summary": "Capital Punishment remains Advanced Neutral/shared access rather than becoming faction-exclusive.",
+      "evidence_ids": ["GNT-CHAT-D7DD9EA36439", "GNT-CHAT-A2CB18AD6201", "GNT-CHAT-92D45C331BE6", "GNT-CHAT-FD42293AC02E"],
+      "repository_evidence": ["docs/Gauntlet_v0.6_Neutral_Card_Pool.md"]
+    },
+    {
+      "id": "GNT-CAD-0058",
+      "title": "Conscription, Contraband, Counterintelligence, Court Martial, Decoys, Entrenchment, Fealty, Fortifications, and Illegal Occupation remain shared Neutral tools",
+      "domain": "cards",
+      "outcome": "current-released",
+      "summary": "The card migration pass kept these broadly useful functions in Neutral rather than overlocking basic draw, replay, protection, retreat, defense, and occupation tools.",
+      "evidence_ids": ["GNT-CHAT-30D0E1615AE2", "GNT-CHAT-496228451405", "GNT-CHAT-87828410CA92", "GNT-CHAT-D7DD9EA36439"],
+      "repository_evidence": ["docs/Gauntlet_v0.6_Neutral_Card_Pool.md"]
+    },
+    {
+      "id": "GNT-CAD-0059",
+      "title": "Fog of War is an Intelligence Overlay",
+      "domain": "cards",
+      "outcome": "current-released",
+      "summary": "Fog of War moved into Intelligence and is explicitly an Overlay; Engineers do not monopolize the Overlay card type.",
+      "evidence_ids": ["GNT-CHAT-8B173B44AEC7", "GNT-CHAT-D4F91F4F24DC"],
+      "repository_evidence": ["releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md"]
+    },
+    {
+      "id": "GNT-CAD-0060",
+      "title": "Fortifications extra withdrawal is voluntary",
+      "domain": "cards",
+      "outcome": "current-released",
+      "summary": "The additional withdrawal enabled by Fortifications is optional, not forced.",
+      "evidence_ids": ["GNT-CHAT-30D0E1615AE2", "GNT-CHAT-496228451405", "GNT-CHAT-87828410CA92", "GNT-CHAT-D7DD9EA36439"],
+      "repository_evidence": ["docs/Gauntlet_v0.6_Neutral_Card_Pool.md"]
+    },
+    {
+      "id": "GNT-CAD-0061",
+      "title": "Bombardment supersedes Neutral Siege Weaponry",
+      "domain": "cards",
+      "outcome": "current-released",
+      "summary": "The current Neutral Overlay card is Bombardment; Siege Weaponry is retired for this identity and reserved as a possible future Engineer concept.",
+      "evidence_ids": ["GNT-CHAT-FE3E31BA2D06", "GNT-CHAT-A2CB18AD6201", "GNT-CHAT-92D45C331BE6", "GNT-CHAT-D8B8F5A06DA9"],
+      "repository_evidence": ["governance/decision-registry.json", "docs/Gauntlet_v0.6_Neutral_Card_Pool.md"]
+    },
+    {
+      "id": "GNT-CAD-0062",
+      "title": "Current v0.6 exact card text supersedes the v0.5 conversation drafts",
+      "domain": "cards",
+      "outcome": "superseded",
+      "summary": "All v0.5-era exact card wordings and temporary classifications remain historical evidence only where they differ from the v0.6.0 canonical card pool and faction guides.",
+      "evidence_ids": ["GNT-CHAT-A9B545FDF01F", "GNT-CHAT-7582E3FFA1BE", "GNT-CHAT-374D0F03AF0F", "GNT-CHAT-29D2535373E9"],
+      "repository_evidence": ["releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json"]
+    }
+  ]
+}
