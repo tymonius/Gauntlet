@@ -1,0 +1,58 @@
+name: Agent Siege Runner
+
+on:
+  push:
+    branches:
+      - agent/neutral-siege-weaponry
+
+permissions:
+  contents: write
+
+jobs:
+  implement:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Siege branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/neutral-siege-weaponry
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Apply branch patch script
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import textwrap
+
+          workflow = Path('.github/workflows/test.yml').read_text()
+          marker = "          python - <<'PY'\n"
+          if marker not in workflow:
+              raise RuntimeError('Siege patch script marker not found')
+          block = workflow.split(marker, 1)[1].split('\n          PY', 1)[0]
+          exec(compile(textwrap.dedent(block), '<siege-patch>', 'exec'))
+          PY
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Test
+        run: npm test
+
+      - name: Commit validated implementation
+        shell: bash
+        run: |
+          rm -f package-lock.json .agent-trigger
+          git config user.name "OpenAI Agent"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Implement Neutral Siege Weaponry"
+          git push origin HEAD:agent/neutral-siege-weaponry
