@@ -15,7 +15,7 @@ on:
         default: true
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: deploy-v061-production
@@ -107,3 +107,36 @@ jobs:
               raise SystemExit(f'Playtest session creation secret unavailable: {sessions}')
           print('Verified production v0.6.1 Rules Arbiter and formal playtest session Workers.')
           PY
+
+      - name: Record deployment gate result
+        if: ${{ always() }}
+        env:
+          DEPLOYMENT_STATUS: ${{ job.status }}
+          DEPLOYMENT_RUN_ID: ${{ github.run_id }}
+          DEPLOYMENT_SOURCE_SHA: ${{ github.sha }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from datetime import datetime, timezone
+          from pathlib import Path
+
+          result = {
+              "version": "v0.6.1",
+              "environment": "production",
+              "status": os.environ["DEPLOYMENT_STATUS"],
+              "run_id": int(os.environ["DEPLOYMENT_RUN_ID"]),
+              "source_sha": os.environ["DEPLOYMENT_SOURCE_SHA"],
+              "recorded_at": datetime.now(timezone.utc).isoformat(),
+          }
+          path = Path("releases/v0.6.1/deployment-status.json")
+          path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
+          PY
+          git add releases/v0.6.1/deployment-status.json
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Record v0.6.1 production deployment gate"
+          git push origin HEAD:rules/v0.6.1-playtest-revision
