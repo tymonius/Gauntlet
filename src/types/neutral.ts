@@ -501,6 +501,21 @@ export interface PendingFortificationsBattleChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export interface RevolutionBattleExchangeState {
+  battleId: string;
+  eligiblePlayerIds: PlayerID[];
+  decisions: Partial<Record<PlayerID, 'keep' | 'exchange'>>;
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface PendingRevolutionBattleChoice {
+  kind: 'revolution_battle';
+  playerId: PlayerID;
+  battleId: string;
+  options: ['keep', 'exchange'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export interface PendingValorBattleChoice {
   kind: 'valor_battle';
   playerId: PlayerID;
@@ -628,6 +643,7 @@ export type PendingNeutralChoice =
   | PendingCourtMartialAssetChoice
   | PendingCourtMartialRetreatChoice
   | PendingFortificationsBattleChoice
+  | PendingRevolutionBattleChoice
   | PendingValorBattleChoice
   | PendingScorchedEarthAssetChoice
   | PendingProtractedSiegeCaptureChoice
