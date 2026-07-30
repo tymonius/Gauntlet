@@ -91,12 +91,12 @@ body { margin:0; background:#eee9df; color:var(--ink); font-family:Arial,Helveti
 .rite-section + .rite-section,.rite-progress { margin-top:.045in; padding-top:.038in; border-top:1px solid #b7a4bf; }
 .rite-footer { justify-content:center; border-color:#4b3158; background:#d7c4e0; text-align:center; }
 .load-error { max-width:720px; margin:40px auto; padding:20px; border:1px solid #9a3131; background:#fff; color:#7a2020; }
-@page { size:letter; margin:.24in .5in; }
+@page { size:letter; margin:0; }
 @media print {
-  body { background:#fff; }
+  html, body { width:8.5in; min-height:11in; background:#fff; }
   .screen-only { display:none !important; }
-  #sheets { padding:0; }
-  .sheet { margin:0 auto; box-shadow:none; break-before:auto !important; page-break-before:auto !important; break-after:auto !important; page-break-after:auto !important; }
+  #sheets { display:block; padding:0; }
+  .sheet { margin:.25in auto 0; box-shadow:none; break-before:auto !important; page-break-before:auto !important; break-after:auto !important; page-break-after:auto !important; }
   .sheet + .sheet { break-before:page !important; page-break-before:always !important; }
 }
 @media (max-width:820px) {
