@@ -293,6 +293,7 @@ export function toPublicGameView(game: GameState): PublicGameView {
     neutralReinforcementsActionOpportunity: structuredClone(game.neutralReinforcementsActionOpportunity),
     neutralInsurrectionActionOpportunity: structuredClone(game.neutralInsurrectionActionOpportunity),
     neutralLiberationActionOpportunity: structuredClone(game.neutralLiberationActionOpportunity),
+    neutralAssimilationConditions: structuredClone(game.neutralAssimilationConditions),
     pendingNeutralChoice: neutralChoiceIsPrivate(game) ? undefined : structuredClone(game.pendingNeutralChoice),
     pendingMilitaryChoice: game.pendingMilitaryChoice,
     pendingMilitaryTimingChoice: game.pendingMilitaryTimingChoice,

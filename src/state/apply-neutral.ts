@@ -6,6 +6,13 @@ import type {
   UseNeutralReinforcementsAssetAction,
 } from './actions';
 import { applyGameAction as applyFactionGameAction } from './apply-inquisition';
+import {
+  ASSIMILATION,
+  continueAssimilationBattleResolution,
+  expireAssimilationConditions,
+  queueAssimilationAfterBattle,
+  registerAssimilationActionCondition,
+} from './neutral-assimilation';
 import { continueIntelligenceBattle } from './intelligence-battle';
 import {
   ADVANCE_GUARD,
@@ -260,6 +267,8 @@ export type NeutralAppStateAction = AppStateAction | FinishMovementAction | Reso
 function continueNeutralChoices(game: GameState): void {
   processCounterworksOverlayQueue(game);
   if (game.pendingNeutralChoice) return;
+  const assimilationResolved = continueAssimilationBattleResolution(game);
+  if (assimilationResolved && game.pendingAssetBankDiscards && Object.keys(game.pendingAssetBankDiscards).length > 0) return;
   const captureResume = continueProtractedSiegeCaptureResolution(game);
   if (captureResume) {
     confirmPendingCapturesFor(
@@ -551,6 +560,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     }
   }
 
+  if (action.type === 'play_action_card' && action.cardId === ASSIMILATION) {
+    registerAssimilationActionCondition(result.state, action.playerId);
+  }
   if (action.type === 'play_action_card' && preparedAdvanceGuard) {
     applyAdvanceGuardAction(result.state, action.playerId, preparedAdvanceGuard);
   }
@@ -655,6 +667,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     applyResistanceAssetBattleHandDraw(result.state);
   }
   if (action.type === 'end_turn') {
+    expireAssimilationConditions(result.state, action.playerId);
     clearReinforcementsActionOpportunity(result.state, action.playerId);
     clearInsurrectionActionOpportunity(result.state, action.playerId);
     clearLiberationActionOpportunity(result.state, action.playerId);
@@ -720,6 +733,13 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
       priorBattleController,
       winnerId,
     );
+    queueAssimilationAfterBattle(
+      result.state,
+      priorBattle,
+      priorBattleController,
+      winnerId,
+    );
+    continueAssimilationBattleResolution(result.state);
     applyConsolidationAfterBattle(
       result.state,
       priorBattle,

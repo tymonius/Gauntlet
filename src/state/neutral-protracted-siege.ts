@@ -266,6 +266,32 @@ export function resolveProtractedSiegeChoice(
   return continueProtractedSiegeCaptureResolution(game);
 }
 
+/** Removes all matching Battle copies whose delay is overridden by Assimilation. */
+export function removeProtractedSiegeOverlaysOverriddenByAssimilation(
+  game: GameState,
+  space: BoardSpaceState,
+  capturingPlayerId: PlayerID,
+): number {
+  const removeIndices: number[] = [];
+  for (const [index, overlay] of (space.overlays ?? []).entries()) {
+    if (overlay.cardId !== PROTRACTED_SIEGE || overlay.owner === capturingPlayerId) continue;
+    if (overlay.captureDelayOccupier && overlay.captureDelayOccupier !== capturingPlayerId) continue;
+    removeIndices.push(index);
+  }
+  for (const index of removeIndices.reverse()) {
+    const overlay = space.overlays?.[index];
+    if (!overlay) continue;
+    removeOverlayAt(
+      game,
+      space,
+      index,
+      'neutral_protracted_siege_overridden',
+      `${game.players[capturingPlayerId].name}'s Assimilation overrode ${overlay.cardId} on ${space.territoryId ?? space.id}.`,
+    );
+  }
+  return removeIndices.length;
+}
+
 /** Printed removal conditions remain active even while the Overlay is dormant. */
 export function removeAbandonedProtractedSiegeOverlays(game: GameState): number {
   let removed = 0;
