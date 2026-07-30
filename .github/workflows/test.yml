@@ -46,6 +46,18 @@ jobs:
           )
 
           replace_once(
+              "src/types/battle.ts",
+              "  /** A repeated effect with no additional physical card or cleanup destination. */\n"
+              "  virtual?: boolean;\n"
+              "  /** True when this physical card came from the Battle Hand first formed for this battle. */",
+              "  /** A repeated effect with no additional physical card or cleanup destination. */\n"
+              "  virtual?: boolean;\n"
+              "  /** A virtual replay that should still resolve card-specific Battle logic. */\n"
+              "  effectOnlyReplay?: boolean;\n"
+              "  /** True when this physical card came from the Battle Hand first formed for this battle. */",
+          )
+
+          replace_once(
               "src/state/battle-effect-replay.ts",
               "  'card-attrition',\n"
               "  'neutral-attrition',\n"
@@ -74,6 +86,7 @@ jobs:
               "): BattlePlayedCard {\n"
               "  const played = addReplayedBattleCard(game, playerId, cardId);\n"
               "  played.virtual = true;\n"
+              "  played.effectOnlyReplay = true;\n"
               "  return played;\n"
               "}\n\n"
               "export function supportedReplayedBattleEffectIds(): CardID[] {\n"
@@ -85,7 +98,7 @@ jobs:
               replace_once(
                   path,
                   "    && !card.virtual,\n",
-                  "",
+                  "    && (!card.virtual || card.effectOnlyReplay),\n",
               )
 
           replace_once(
@@ -668,6 +681,7 @@ jobs:
                   cardId: ATTRITION,
                   origin: 'replayed',
                   virtual: true,
+                  effectOnlyReplay: true,
                 }),
               );
             });
@@ -736,6 +750,8 @@ jobs:
           """)
 
           Path(".github/workflows/agent-arcane-knowledge.yml").unlink(missing_ok=True)
+          Path(".agent-trigger").unlink(missing_ok=True)
+          Path(".agent-notes").unlink(missing_ok=True)
           import base64
           Path(".github/workflows/test.yml").write_bytes(base64.b64decode("bmFtZTogVGVzdAoKb246CiAgcHVsbF9yZXF1ZXN0OgogIHB1c2g6CiAgICBicmFuY2hlczoKICAgICAgLSBtYWluCgpqb2JzOgogIHRlc3Q6CiAgICBydW5zLW9uOiB1YnVudHUtbGF0ZXN0CgogICAgc3RlcHM6CiAgICAgIC0gbmFtZTogQ2hlY2tvdXQKICAgICAgICB1c2VzOiBhY3Rpb25zL2NoZWNrb3V0QHY0CgogICAgICAtIG5hbWU6IFNldHVwIE5vZGUKICAgICAgICB1c2VzOiBhY3Rpb25zL3NldHVwLW5vZGVAdjQKICAgICAgICB3aXRoOgogICAgICAgICAgbm9kZS12ZXJzaW9uOiAyMgoKICAgICAgLSBuYW1lOiBJbnN0YWxsIGRlcGVuZGVuY2llcwogICAgICAgIHJ1bjogbnBtIGluc3RhbGwKCiAgICAgIC0gbmFtZTogVHlwZWNoZWNrCiAgICAgICAgcnVuOiBucG0gcnVuIHR5cGVjaGVjawoKICAgICAgLSBuYW1lOiBUZXN0CiAgICAgICAgcnVuOiBucG0gdGVzdAo="))
           PY
