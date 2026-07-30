@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "generated_on": "2026-07-30",
+  "project": "Gauntlet",
+  "scope": {
+    "verbatim_export": {
+      "start": "2026-06-17",
+      "end": "2026-07-09",
+      "complete_turn_index": true
+    },
+    "project_conversation_search": {
+      "start": "2026-07-10",
+      "end": "2026-07-30",
+      "complete_turn_index": false,
+      "note": "Post-export decisions are included only where exact project-conversation snippets or conversation-search records were available. A fresh raw export is required for raw-turn completeness."
+    }
+  },
+  "conversations": [
+    {
+      "id": "6a3f8591-cf10-83ea-80ca-d1977596ac78",
+      "title": "Gauntlet Card Review",
+      "source_file": "01_Gauntlet_Card_Review(1).md",
+      "created": "2026-06-27T08:12:15.434716+00:00",
+      "updated": "2026-07-09T20:38:21.756695+00:00",
+      "sha256": "2da82abc96da9091d8a03af2a6843e614d38f7bf744b038c2ca246b2ed9e81ab",
+      "turns": 91,
+      "user_turns": 29
+    },
+    {
+      "id": "6a351bd5-b174-83ea-b8bb-3401b194735a",
+      "title": "Gauntlet Game Development pt2",
+      "source_file": "02_Gauntlet_Game_Development_pt2(1).md",
+      "created": "2026-06-19T10:37:32.339221+00:00",
+      "updated": "2026-07-09T18:43:00.830227+00:00",
+      "sha256": "bb0e52111713f1bdf79979c5171bbf7b586d38ff63d274d6055bac9234408e02",
+      "turns": 1107,
+      "user_turns": 353
+    },
+    {
+      "id": "6a3d1827-39f8-83ea-a0e3-c34fe1307dac",
+      "title": "Digital Gauntlet Playtesting",
+      "source_file": "03_Digital_Gauntlet_Playtesting(1).md",
+      "created": "2026-06-25T12:03:19.601155+00:00",
+      "updated": "2026-07-01T12:01:05.794674+00:00",
+      "sha256": "736e5918beaac706eeefea8d98535c17f3b11b40c6021cae9130f611328289e4",
+      "turns": 315,
+      "user_turns": 106
+    },
+    {
+      "id": "6a4f9ae3-b9bc-83ea-8fcb-08008020a034",
+      "title": "Faction Leader Archetypes",
+      "source_file": "04_Faction_Leader_Archetypes(1).md",
+      "created": "2026-07-09T12:58:44.678965+00:00",
+      "updated": "2026-07-09T20:43:02.150102+00:00",
+      "sha256": "7866b6c84b9dd36f777d5a523c209561f2760d65e72e27ffe3dae725e0551c67",
+      "turns": 136,
+      "user_turns": 46
+    },
+    {
+      "id": "6a39a31b-0430-83ea-b170-9dbc2aa96c6d",
+      "title": "Asset Bank Rule Impact",
+      "source_file": "05_Asset_Bank_Rule_Impact(1).md",
+      "created": "2026-06-22T21:05:54.947301+00:00",
+      "updated": "2026-06-23T19:37:41.957120+00:00",
+      "sha256": "22da3f7097c48323818e5f142103a4d7240b077d037fe431656dabc6d508715b",
+      "turns": 22,
+      "user_turns": 7
+    },
+    {
+      "id": "6a328af9-78b0-83ea-99bf-05feac9cd59b",
+      "title": "Gauntlet Game Development",
+      "source_file": "06_Gauntlet_Game_Development(1).md",
+      "created": "2026-06-17T11:57:04.182347+00:00",
+      "updated": "2026-06-18T23:10:39.298890+00:00",
+      "sha256": "cc3f2204d4ff5a538dcc4b364a0864d2d0ca9a6d457e2dbcbe8ae657e0abfad3",
+      "turns": 1490,
+      "user_turns": 427
+    },
+    {
+      "id": "6a3ff44d-0570-83ea-b21a-06cd0fad646e",
+      "title": "Deckbuilder Tool Design",
+      "source_file": "07_Deckbuilder_Tool_Design(1).md",
+      "created": "2026-06-27T16:03:30.429598+00:00",
+      "updated": "2026-06-29T13:37:11.466749+00:00",
+      "sha256": "5b3eee5f38da89bba47fea4a9a93ebc015a056199a90e01af665332493b0a015",
+      "turns": 126,
+      "user_turns": 42
+    },
+    {
+      "id": "6a40f82d-2cfc-83ea-88d8-1bf1ea638340",
+      "title": "Gauntlet Lore Development",
+      "source_file": "08_Gauntlet_Lore_Development(1).md",
+      "created": "2026-06-28T10:34:40.074368+00:00",
+      "updated": "2026-06-28T11:12:43.563203+00:00",
+      "sha256": "229e679147d7d6bc34aae5e0dbf65eff968089810c1703229b095f141719a182",
+      "turns": 32,
+      "user_turns": 10
+    },
+    {
+      "id": "6a41e182-8a3c-83ea-9416-c162b91166e3",
+      "title": "Gauntlet vs Old King's Crown",
+      "source_file": "09_Gauntlet_vs_Old_King's_Crown(1).md",
+      "created": "2026-06-29T03:07:52.851089+00:00",
+      "updated": "2026-06-29T03:09:05.118263+00:00",
+      "sha256": "f257f7552f5b0359539dd879b8717d7e667c5080954fbe182d4c039436f609f5",
+      "turns": 5,
+      "user_turns": 1
+    }
+  ],
+  "counts": {
+    "verbatim_user_turns": 1021,
+    "decision_threads": 226,
+    "verbatim_evidence_links": 489,
+    "post_export_evidence_links": 32
+  }
+}
