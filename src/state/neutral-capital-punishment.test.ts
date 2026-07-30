@@ -25,8 +25,8 @@ function game(): GameState {
       {
         id: 'player_1',
         name: 'Judge',
-        factionId: 'inquisition',
-        leaderName: 'Grand Inquisitor',
+        factionId: 'intelligence',
+        leaderName: 'Spy',
         deck: [CAPITAL_PUNISHMENT, CAPITAL_PUNISHMENT, 'p1-draw'],
         territories: ['p1-one', 'p1-two', 'p1-three'],
       },
