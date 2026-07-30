@@ -1,0 +1,188 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gauntlet.run/schemas/traceability.schema.json",
+  "title": "Gauntlet Traceability Manifest",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project",
+    "current_rules_version",
+    "subjects"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "project": {
+      "const": "Gauntlet"
+    },
+    "current_rules_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "subjects": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/subject"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "paths": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "surface": {
+      "type": "object",
+      "required": [
+        "status",
+        "paths"
+      ],
+      "properties": {
+        "status": {
+          "enum": [
+            "complete",
+            "partial",
+            "unknown",
+            "not_applicable",
+            "not_implemented",
+            "in_progress",
+            "quarantined"
+          ]
+        },
+        "paths": {
+          "$ref": "#/$defs/paths"
+        }
+      },
+      "additionalProperties": false
+    },
+    "expectedCard": {
+      "type": "object",
+      "required": [
+        "name",
+        "cost",
+        "trait",
+        "unique",
+        "action",
+        "battle"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "cost": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "trait": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "unique": {
+          "type": "boolean"
+        },
+        "action": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "battle": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "subject": {
+      "type": "object",
+      "required": [
+        "subject_id",
+        "kind",
+        "decision_ids",
+        "expected",
+        "canonical",
+        "rules_reference",
+        "engine",
+        "deckbuilder",
+        "print_art",
+        "tests",
+        "overall_status"
+      ],
+      "properties": {
+        "subject_id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "kind": {
+          "enum": [
+            "card",
+            "rule",
+            "terminology",
+            "release",
+            "tooling"
+          ]
+        },
+        "decision_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "pattern": "^GNT-DEC-[0-9]{4}-[0-9]{4}-[0-9]{3}$"
+          },
+          "minItems": 1,
+          "uniqueItems": true
+        },
+        "expected": {
+          "$ref": "#/$defs/expectedCard"
+        },
+        "canonical": {
+          "$ref": "#/$defs/surface"
+        },
+        "rules_reference": {
+          "$ref": "#/$defs/surface"
+        },
+        "engine": {
+          "$ref": "#/$defs/surface"
+        },
+        "deckbuilder": {
+          "$ref": "#/$defs/surface"
+        },
+        "print_art": {
+          "$ref": "#/$defs/surface"
+        },
+        "tests": {
+          "$ref": "#/$defs/surface"
+        },
+        "overall_status": {
+          "enum": [
+            "implemented",
+            "quarantined",
+            "not_implemented",
+            "in_progress",
+            "canonicalized",
+            "released"
+          ]
+        },
+        "quarantine_reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "implementation_note": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
