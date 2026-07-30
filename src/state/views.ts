@@ -27,6 +27,7 @@ import { availableBattleHandCards } from './battle-hand-restrictions';
 import { confessionLegalHandCommitCards } from './inquisition-confession';
 import { legalLeaderAbilitiesFor } from './leader-abilities';
 import { toPublicMysticsState } from './mystics-ritual';
+import { ARCANE_KNOWLEDGE, canResolveArcaneKnowledgeAction } from './neutral-arcane-knowledge';
 import {
   activeCapitalPunishmentCards,
   canResolveCapitalPunishmentAction,
@@ -257,6 +258,7 @@ function legalActionPlaysForViewer(game: GameState, viewer?: PlayerID): LegalAct
   return player.zones.hand
     .filter((cardId) => cardCanBePlayedAt(cardId, 'action', 'hand'))
     .filter((cardId) => canResolveIntelligenceAction(game, viewer, cardId))
+    .filter((cardId) => cardId !== ARCANE_KNOWLEDGE || canResolveArcaneKnowledgeAction(game, viewer))
     .filter((cardId) => cardId !== CAPITAL_PUNISHMENT || canResolveCapitalPunishmentAction(game, viewer))
     .filter((cardId) => cardId !== DISRUPTION || canResolveDisruptionAction(game, viewer))
     .filter((cardId) => cardId !== NEW_RECRUITS || canResolveNewRecruitsAction(game, viewer))

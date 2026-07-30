@@ -188,6 +188,20 @@ export interface PendingConscriptionActionChoice {
   resumePriorityPlayer?: PlayerID;
 }
 
+export type ArcaneKnowledgeBattleSource =
+  | { zone: 'hand_commit' }
+  | { zone: 'battle_draw_played'; index: number };
+
+export interface PendingArcaneKnowledgeBattleChoice {
+  kind: 'arcane_knowledge_battle';
+  playerId: PlayerID;
+  battleId: string;
+  source: ArcaneKnowledgeBattleSource;
+  graveyardOptions: CardID[];
+  options: ['select_card'];
+  resumePriorityPlayer?: PlayerID;
+}
+
 export type ContrabandBattleSource =
   | { zone: 'hand_commit' }
   | { zone: 'battle_draw_played'; index: number };
@@ -605,6 +619,7 @@ export type PendingNeutralChoice =
   | PendingStrategicWithdrawalBattleChoice
   | PendingTacticalPlanningActionChoice
   | PendingConscriptionActionChoice
+  | PendingArcaneKnowledgeBattleChoice
   | PendingContrabandBattleChoice
   | PendingCounterworksAssetChoice
   | PendingCounterworksBattleChoice
