@@ -11,7 +11,12 @@ const QUERY_ALIASES = {
   retreat: ["forced displacement", "losing player"],
   battle: ["combat", "fight"],
   fight: ["battle"],
-  hand: ["normal hand", "battle hand"],
+  hand: ["gambit", "reserve", "persistent private cards"],
+  gambit: ["hand", "graveyard", "set gambit"],
+  reserve: ["temporary cards", "tactic", "battle draw"],
+  tactic: ["reserve", "discard pile", "choose tactic"],
+  aftermath: ["battle result", "destinations", "retreat"],
+  withdrawal: ["no winner", "no loser", "end battle"],
   deck: ["draw pile", "playable deck"],
   discard: ["discard pile"],
   graveyard: ["graveyard"],
@@ -23,9 +28,9 @@ const QUERY_ALIASES = {
   win: ["victory", "last stand", "run the gauntlet"]
 };
 
-const CANONICAL_DATA_PATH = "releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json";
-const RULEBOOK_PATH = "releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md";
-const RULEBOOK_PDF_PATH = "releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf";
+const CANONICAL_DATA_PATH = "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json";
+const RULEBOOK_PATH = "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md";
+const RULEBOOK_PDF_PATH = "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf";
 
 export function defaultSourceUrls(siteOrigin = "https://gauntlet.run") {
   const origin = siteOrigin.replace(/\/$/, "");
@@ -95,7 +100,7 @@ export function buildRulesCorpus({
   ];
 
   return {
-    version: canonicalData?.version || "v0.6.0",
+    version: canonicalData?.version || "v0.6.1",
     generatedAt: new Date().toISOString(),
     documents: deduplicateDocuments(documents)
   };
@@ -215,7 +220,7 @@ export function buildCanonicalDocuments(canonicalData, siteOrigin = "https://gau
     documents.unshift(finalizeDocument({
       id: "canonical:release-summary",
       kind: "canonical",
-      title: `Canonical ${canonicalData.version || "v0.6.0"} release summary`,
+      title: `Canonical ${canonicalData.version || "v0.6.1"} release summary`,
       heading: "Release summary",
       body: summaryText,
       sourcePath: CANONICAL_DATA_PATH,
@@ -255,7 +260,7 @@ export function retrieveRules(corpus, query, options = {}) {
     }));
 }
 
-export function buildLocalFallbackAnswer(query, results, version = "v0.6.0") {
+export function buildLocalFallbackAnswer(query, results, version = "v0.6.1") {
   if (!results.length) {
     return {
       answer: `I could not find a close match in the ${version} canonical sources. The current rules may not specify this clearly.`,
@@ -339,7 +344,7 @@ function objectToRuleText(value) {
   const preferredOrder = [
     "allegiance", "cost", "complexity", "trait", "card_form", "resource", "victory",
     "ability", "description", "text", "requirement", "accepted", "refused", "timing",
-    "action", "battle", "mission", "reminder", "unique_rule"
+    "action", "terms", "gambit", "tactic", "battle", "mission", "asset", "overlay", "reminder", "unique_rule"
   ];
   const consumed = new Set(["id", "name", "title", "source", "image", "number"]);
 
