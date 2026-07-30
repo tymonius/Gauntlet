@@ -58,6 +58,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -68,6 +69,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      - name: Apply governed source migrations
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md")
+          text = path.read_text(encoding="utf-8")
+          if "Siege Weaponry" in text:
+              path.write_text(text.replace("Siege Weaponry", "Bombardment"), encoding="utf-8")
+          PY
 
       - name: Synchronize browser and Rules Arbiter sources
         run: |
@@ -80,6 +92,7 @@ jobs:
       - name: Commit synchronized and generated outputs when changed
         run: |
           git add \
+            docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md \
             deckbuilder/ \
             rules-assistant/ \
             releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json \
@@ -90,6 +103,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Synchronize v0.6.1 generated and browser sources"
+          git pull --rebase origin ${{ github.head_ref || github.ref_name }}
           git push origin HEAD:${{ github.head_ref || github.ref_name }}
 
       - name: Verify generated outputs are current
@@ -97,7 +111,7 @@ jobs:
           python scripts/sync_v061_deckbuilder.py
           python scripts/sync_v061_rules_assistant.py
           python scripts/generate_v061_release.py --check
-          git diff --exit-code -- deckbuilder/ rules-assistant/
+          git diff --exit-code -- docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md deckbuilder/ rules-assistant/
 
       - name: Install test dependencies
         run: npm install
