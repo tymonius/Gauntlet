@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-8YYYZJGGPE');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="description" content="Internal Gauntlet neutral playable-card front prototype and actual-size print specimen." />
+  <title>Gauntlet Neutral Card-Front Prototype</title>
+  <link rel="preconnect" href="https://use.typekit.net" />
+  <link rel="preconnect" href="https://p.typekit.net" crossorigin />
+  <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
+  <link rel="stylesheet" href="../design-tokens.css" />
+  <link rel="stylesheet" href="card-design.css" />
+</head>
+<body>
+  <header class="site-header screen-only">
+    <a class="brand-link" href="../" aria-label="Return to Gauntlet home">
+      <span class="brand-mark" aria-hidden="true">G</span>
+      <span>Gauntlet</span>
+    </a>
+    <nav aria-label="Design specimen navigation">
+      <a href="../typography/">Typography</a>
+      <button type="button" onclick="window.print()">Print at 100%</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="intro section-shell screen-only">
+      <p class="eyebrow">Playable card system · first frame study</p>
+      <h1>Neutral card-front prototype</h1>
+      <p class="intro-copy">This specimen translates the approved shared-card structure into an actual-size Neutral frame. It tests the same geometry against sparse text, dense text, and a rules reminder before the system expands to faction cards and specialized component families.</p>
+      <div class="status-row" aria-label="Prototype status">
+        <span>2.5 × 3.5 in trim</span>
+        <span>Actual-size print test</span>
+        <span>Frame and hierarchy study</span>
+      </div>
+    </section>
+
+    <section class="review-shell screen-only" aria-labelledby="review-title">
+      <div>
+        <p class="section-label">Design basis</p>
+        <h2 id="review-title">What this pass establishes</h2>
+      </div>
+      <div class="review-grid">
+        <article>
+          <h3>Shared shell</h3>
+          <p>Ivory outer border, dark inner keyline, warm parchment interior, open title area, upper-right value medallion, framed illustration, continuous rules field, and restrained metadata.</p>
+        </article>
+        <article>
+          <h3>Typography</h3>
+          <p>P22 1722 Pro titles, Adobe Caslon Pro rules, Caslon italic reminders, and Inter mechanical labels and production metadata.</p>
+        </article>
+        <article>
+          <h3>Still provisional</h3>
+          <p>Exact border width, medallion shape, art-window height, footer contents, final rules sizes, spacing values, and production color specifications.</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="card-section" aria-labelledby="cards-title">
+      <div class="section-shell card-section-heading screen-only">
+        <p class="section-label">Print and compare</p>
+        <h2 id="cards-title">Three density conditions</h2>
+        <p>All three cards use one fixed frame. The rules scale changes only where the canonical text requires it, making the pressure points visible rather than hiding them through different layouts.</p>
+      </div>
+
+      <div class="card-sheet">
+        <div class="specimen-column">
+          <p class="specimen-label screen-only"><strong>Sparse</strong><span>Comfortable baseline</span></p>
+          <article class="gauntlet-card neutral-card sparse-card" aria-label="Rallying Cry neutral card-front prototype">
+            <div class="card-interior">
+              <header class="card-heading">
+                <h3 class="card-title">Rallying Cry</h3>
+                <div class="value-medallion" aria-label="Deckbuilding value 1">1</div>
+              </header>
+              <figure class="card-art art-rally" aria-label="Placeholder for Rallying Cry illustration crop">
+                <span>Illustration crop study</span>
+              </figure>
+              <div class="card-rules">
+                <section class="rule-section">
+                  <h4>Action</h4>
+                  <p>Draw one card.</p>
+                </section>
+                <section class="rule-section">
+                  <h4>Battle</h4>
+                  <p>Add <strong>+1</strong> to your battle total.</p>
+                </section>
+              </div>
+              <footer class="card-footer">
+                <span>N-001</span>
+                <span>Basic</span>
+                <span>v0.6</span>
+              </footer>
+            </div>
+          </article>
+        </div>
+
+        <div class="specimen-column">
+          <p class="specimen-label screen-only"><strong>Dense</strong><span>Maximum ordinary-card pressure</span></p>
+          <article class="gauntlet-card neutral-card dense-card" aria-label="Counterintelligence neutral card-front prototype">
+            <div class="card-interior">
+              <header class="card-heading">
+                <h3 class="card-title">Counterintelligence</h3>
+                <div class="value-medallion" aria-label="Deckbuilding value 1">1</div>
+              </header>
+              <figure class="card-art art-counterintelligence" aria-label="Placeholder for Counterintelligence illustration crop">
+                <span>Illustration crop study</span>
+              </figure>
+              <div class="card-rules">
+                <section class="rule-section">
+                  <h4>Action</h4>
+                  <p>Bank this as an <strong>Asset</strong>. Opposing effects cannot look at, reveal, or require you to reveal your hand, Battle Hand, or face-down cards used in battle. This does not prevent the normal battle reveal.</p>
+                </section>
+                <section class="rule-section">
+                  <h4>Battle</h4>
+                  <p>Add <strong>+1</strong> to your battle total. Until the normal reveal, opposing effects cannot look at or reveal your face-down cards used in this battle.</p>
+                </section>
+              </div>
+              <footer class="card-footer">
+                <span>N-014</span>
+                <span>Basic</span>
+                <span>v0.6</span>
+              </footer>
+            </div>
+          </article>
+        </div>
+
+        <div class="specimen-column">
+          <p class="specimen-label screen-only"><strong>Reminder</strong><span>Secondary italic voice</span></p>
+          <article class="gauntlet-card neutral-card reminder-card" aria-label="New Recruits neutral card-front prototype">
+            <div class="card-interior">
+              <header class="card-heading">
+                <h3 class="card-title">New Recruits</h3>
+                <div class="value-medallion" aria-label="Deckbuilding value 1">1</div>
+              </header>
+              <figure class="card-art art-recruits" aria-label="Placeholder for New Recruits illustration crop">
+                <span>Illustration crop study</span>
+              </figure>
+              <div class="card-rules">
+                <section class="rule-section">
+                  <h4>Action</h4>
+                  <p>Discard one other card from your hand, then draw two cards.</p>
+                </section>
+                <section class="rule-section">
+                  <h4>Battle</h4>
+                  <p>Add <strong>+1</strong> to your battle total.</p>
+                </section>
+                <aside class="card-reminder"><strong>Reminder:</strong> You cannot play this for its Action effect if you have no other card to discard.</aside>
+              </div>
+              <footer class="card-footer">
+                <span>N-027</span>
+                <span>Basic</span>
+                <span>v0.6</span>
+              </footer>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="evaluation section-shell screen-only" aria-labelledby="evaluation-title">
+      <div>
+        <p class="section-label">Physical review</p>
+        <h2 id="evaluation-title">What to inspect after printing</h2>
+      </div>
+      <ol>
+        <li>Whether the ivory border reads clearly in a fanned hand without consuming too much interior space.</li>
+        <li>Whether P22 1722 remains legible and authoritative on both short and long titles.</li>
+        <li>Whether the fixed illustration window leaves enough rules capacity on Counterintelligence.</li>
+        <li>Whether the Caslon italic reminder is visibly secondary without becoming too faint or small.</li>
+        <li>Whether the value medallion and footer feel like part of one document-like system rather than added interface widgets.</li>
+      </ol>
+    </section>
+  </main>
+
+  <footer class="page-footer screen-only">
+    <p>Working implementation of the <a href="../docs/Gauntlet_Visual_Design_Language.md">Gauntlet Visual Design Language</a> and <a href="../docs/Gauntlet_Typography_System.md">Typography System</a>.</p>
+  </footer>
+</body>
+</html>
