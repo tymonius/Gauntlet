@@ -269,14 +269,14 @@ describe('Neutral Scorched Earth', () => {
     space.territoryId = 'territory-watchtower';
     space.revealed = true;
     placeTerritoryOverlay(space, 'mystics-spirit-hollow', 'player_1');
-    placeRuinsOverlay(state, space, 'neutral-siege-weaponry', 'player_1');
+    placeRuinsOverlay(state, space, 'neutral-bombardment', 'player_1');
 
     placeRuinsOverlay(state, space, SCORCHED_EARTH, 'player_2');
 
     expect(space.overlays).toHaveLength(2);
     expect(space.overlays?.[0]).toMatchObject({ cardId: 'mystics-spirit-hollow' });
     expect(topTerritoryOverlay(space)).toMatchObject({ cardId: SCORCHED_EARTH, kind: 'ruins' });
-    expect(state.players.player_1.zones.graveyard).toContain('neutral-siege-weaponry');
+    expect(state.players.player_1.zones.graveyard).toContain('neutral-bombardment');
     expect(isRuinsOverlay(topTerritoryOverlay(space))).toBe(true);
   });
 

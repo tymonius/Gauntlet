@@ -76,6 +76,7 @@ export * from './neutral-advance-guard';
 export * from './neutral-arcane-knowledge';
 export * from './neutral-assimilation';
 export * from './neutral-armistice';
+export * from './neutral-bombardment';
 export * from './neutral-capital-punishment';
 export * from './neutral-consolidation';
 export * from './neutral-contingency-plan';

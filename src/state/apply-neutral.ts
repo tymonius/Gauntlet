@@ -20,6 +20,13 @@ import {
   resolveArcaneKnowledgeChoice,
 } from './neutral-arcane-knowledge';
 import {
+  applyBombardmentAction,
+  BOMBARDMENT,
+  convertCapturedBombardmentToRuins,
+  prepareBombardmentBattleReveal,
+  resolveBombardmentAfterBattle,
+} from './neutral-bombardment';
+import {
   openNextArmisticeChoice,
   queueArmisticeAfterNormalDraw,
   requireArmisticeBattleAllowed,
@@ -300,6 +307,7 @@ import {
   clearExpiredPathfindersSuppressions,
   territoryPrintedEffectIsActive,
 } from './territory-printed-effects';
+import { captureTerritoryControllerSnapshot } from './territory-overlays';
 
 export type NeutralAppStateAction = AppStateAction | FinishMovementAction | ResolveNeutralChoiceAction | UseNeutralReinforcementsAssetAction;
 
@@ -373,6 +381,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     const sequestrationDiscardBefore = sequestrationSourcePlayerId
       ? captureDiscardSnapshot(game)
       : undefined;
+    const territoryControllersBefore = captureTerritoryControllerSnapshot(game);
     const next = structuredClone(game);
     const resolved = pendingKind === 'assimilation_asset'
       ? (resolveAssimilationChoice(next, action), {})
@@ -476,6 +485,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     }
     reconcileSabotageAssetState(next);
     removeAbandonedProtractedSiegeOverlays(next);
+    convertCapturedBombardmentToRuins(next, territoryControllersBefore);
     continueNeutralChoices(next);
     return { state: next };
   }
@@ -501,6 +511,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     if (resolveArmisticeBattleAfterCancellation(prepared, action)) return { state: prepared };
     if (prepareReinforcementsBattleReveal(prepared, action)) return { state: prepared };
     if (prepareSeditionBattleReveal(prepared, action)) return { state: prepared };
+    if (prepareBombardmentBattleReveal(prepared, action)) return { state: prepared };
     if (prepareArcaneKnowledgeBattleReveal(prepared, action)) return { state: prepared };
     game = prepared;
   }
@@ -521,6 +532,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     game = restored;
   }
 
+  const territoryControllersBefore = captureTerritoryControllerSnapshot(game);
   const rousingSpeechAssetsBefore = captureRousingSpeechAssetSnapshot(game);
   const effectSourcePlayerId = redemptionEffectSourcePlayer(game, action);
   const discardBefore = effectSourcePlayerId ? captureDiscardSnapshot(game) : undefined;
@@ -703,6 +715,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'play_action_card' && action.cardId === SEQUESTRATION) {
     applySequestrationAction(result.state, action.playerId);
   }
+  if (action.type === 'play_action_card' && action.cardId === BOMBARDMENT) {
+    applyBombardmentAction(result.state, action.playerId);
+  }
   if (action.type === 'play_action_card' && preparedScoutingReport) {
     applyScoutingReportAction(result.state, action.playerId, preparedScoutingReport);
   }
@@ -826,6 +841,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
       winnerId,
     );
     applyValorAssetDraw(result.state, priorBattle, winnerId);
+    resolveBombardmentAfterBattle(result.state, priorBattle, winnerId);
     applyScorchedEarthBattleRuins(
       result.state,
       priorBattle,
@@ -893,6 +909,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     registerRedemptionDiscardEntries(result.state, discardBefore, effectSourcePlayerId);
   }
   removeAbandonedProtractedSiegeOverlays(result.state);
+  convertCapturedBombardmentToRuins(result.state, territoryControllersBefore);
   continueNeutralChoices(result.state);
   return result;
 }
