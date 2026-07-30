@@ -24,13 +24,42 @@ export interface CanonicalBattlefieldRules {
   last_stand: CanonicalLastStandRules;
 }
 
-export interface CanonicalBattleRules {
+export interface CanonicalBattleRulesV060 {
   normal_battle_hand_size: number;
   normal_hand_commitments: number;
   normal_battle_hand_choices: number;
   hand_commitment_destination: string;
   battle_hand_destination: string;
   defender_advantage: string;
+}
+
+export type CanonicalBattleSequenceV061 =
+  | 'opening_effects'
+  | 'set_gambits'
+  | 'form_reserves'
+  | 'reveal_gambits'
+  | 'choose_tactics'
+  | 'reveal_tactics'
+  | 'resolve_battle'
+  | 'aftermath';
+
+export interface CanonicalBattleRulesV061 {
+  normal_reserve_size: number;
+  normal_gambits: number;
+  normal_tactics: number;
+  gambit_destination: string;
+  tactic_destination: string;
+  remaining_reserve_destination: string;
+  sequence: CanonicalBattleSequenceV061[];
+  defender_advantage: string;
+}
+
+export type CanonicalBattleRules = CanonicalBattleRulesV060 | CanonicalBattleRulesV061;
+
+export function isCanonicalBattleRulesV061(
+  battle: CanonicalBattleRules,
+): battle is CanonicalBattleRulesV061 {
+  return 'normal_reserve_size' in battle;
 }
 
 export interface CanonicalLeader {
@@ -69,6 +98,7 @@ export interface CanonicalCard {
   battle: string | null;
   mission: string | null;
   source: string;
+  rules_notes?: string[];
 }
 
 export interface CanonicalTerritory {
@@ -91,7 +121,7 @@ export interface CanonicalSourceFiles {
 export interface CanonicalGauntletContent {
   version: string;
   name: string;
-  date: string;
+  date: string | null;
   status: string;
   deck_construction: CanonicalDeckConstruction;
   battlefield: CanonicalBattlefieldRules;
