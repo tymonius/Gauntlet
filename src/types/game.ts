@@ -1,5 +1,5 @@
 import type { BoardState, PublicBoardView } from './board';
-import type { BattleState, CounterworksInactiveOverlay, CounterworksOverlayPrevention, PublicBattleView } from './battle';
+import type { BattleState, CounterworksInactiveOverlay, CounterworksOverlayPrevention, PublicBattleView, V061BattleState, V061PublicBattleView } from './battle';
 import type { PendingDiplomatChoice } from './diplomats';
 import type { PendingFinancierChoice } from './financiers';
 import type { InquisitionAccusationQueueEntry, InquisitionActOfFaithBattleQueueEntry, InquisitionBurningAtTheStakeBattleQueueEntry, InquisitionConfessionConstraint, InquisitionDivineMercyBattleQueueEntry, InquisitionExcommunicationBattleQueueEntry, InquisitionGuiltByAssociationBattleQueueEntry, InquisitionPenanceBattleQueueEntry, PendingInquisitionChoice } from './inquisition';
@@ -29,9 +29,16 @@ export interface NeutralAssimilationCondition { playerId: PlayerID; turn: number
 export interface NeutralAssimilationBattleResolution { battleId: string; attackerId: PlayerID; spaceId: SpaceID; actionEffect: boolean; battleEffect: boolean; }
 export interface NeutralArmisticeCondition { playerId: PlayerID; sourceCardId: CardID; playedTurn: number; expiresAtTurn: number; }
 
+/** Temporary parallel battle path used while the v0.6.1 reducer replaces the legacy v0.6.0 engine. */
+export interface V061GameBattleState extends V061BattleState {
+  gambitOrder: [PlayerID, PlayerID];
+  tacticOrder: [PlayerID, PlayerID];
+  priorityPlayer?: PlayerID;
+}
+
 export interface GameState {
   id: GameID; version: string; phase: GamePhase; turn: number; activePlayer: PlayerID; priorityPlayer?: PlayerID;
-  players: Record<PlayerID, PlayerState>; board: BoardState; battle?: BattleState; recentBattleResult?: RecentBattleResult;
+  players: Record<PlayerID, PlayerState>; board: BoardState; battle?: BattleState; battleV061?: V061GameBattleState; recentBattleResult?: RecentBattleResult;
   pendingMilitaryChoice?: PendingMilitaryChoice; militaryChoiceQueue?: PendingMilitaryChoice[];
   pendingMilitaryTimingChoice?: PendingMilitaryTimingChoice; militaryTimingChoiceQueue?: PendingMilitaryTimingChoice[];
   pendingDiplomatChoice?: PendingDiplomatChoice; pendingFinancierChoice?: PendingFinancierChoice; financierChoiceQueue?: PendingFinancierChoice[];
@@ -82,7 +89,7 @@ export interface LegalNeutralAssetUseOption { action: 'use_neutral_reinforcement
 export interface LegalActionPlayOption { action: 'play_action_card'; cardId: CardID; origin: 'hand'; destination: 'discard' | 'graveyard' | 'hand' | 'removed' | 'asset_bank'; requiresTarget: boolean; }
 export interface PublicGameView {
   id: GameID; version: string; phase: GamePhase; turn: number; activePlayer: PlayerID; priorityPlayer?: PlayerID;
-  players: Record<PlayerID, PublicPlayerView>; board: PublicBoardView; battle?: PublicBattleView;
+  players: Record<PlayerID, PublicPlayerView>; board: PublicBoardView; battle?: PublicBattleView; battleV061?: V061PublicBattleView;
   legalActionPlays?: LegalActionPlayOption[]; legalNeutralAssetUses?: LegalNeutralAssetUseOption[]; legalLeaderAbilities?: LegalLeaderAbilityOption[];
   neutralPathfindersSuppressions?: NeutralPathfindersSuppression[];
   neutralEntrenchmentActionLocks?: NeutralEntrenchmentActionLock[];
