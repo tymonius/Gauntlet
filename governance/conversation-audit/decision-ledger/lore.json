@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "domain": "lore",
+  "entry_count": 4,
+  "outcome_counts": {"current-canonical": 3, "current-working": 1},
+  "entries": [
+    {"id":"GNT-CAD-0031","title":"Factions are institutions or methods of power, not nations","domain":"lore","outcome":"current-canonical","summary":"Military, Diplomats, Financiers, Intelligence, Mystics, and Inquisition represent institutions and power structures that can exist within a shared civilization.","evidence_ids":["GNT-CHAT-6DF98F614456","GNT-CHAT-6A8157368618"],"repository_evidence":["docs/Gauntlet_Lore_Development_Notes.md"]},
+    {"id":"GNT-CAD-0070","title":"Use a powder-and-parchment era without literal history","domain":"lore","outcome":"current-canonical","summary":"The setting draws from late gunpowder/colonial-era material culture and institutions without becoming fantasy Europe, fantasy America, or a one-to-one historical analogue.","evidence_ids":["GNT-CHAT-66F573BE98AA","GNT-CHAT-79B31EA0B624","GNT-CHAT-72A523DA4E5D","GNT-CHAT-F58EA8C9A7D1"],"repository_evidence":["docs/Gauntlet_Illustration_Art_Direction.md","docs/Gauntlet_Lore_Development_Notes.md"]},
+    {"id":"GNT-CAD-0071","title":"Develop lore incrementally rather than writing a grand history at once","domain":"lore","outcome":"current-working","summary":"Lore work should proceed in small decisions and preference tests; comprehensive histories should not be invented before the underlying setting choices are approved.","evidence_ids":["GNT-CHAT-F82356A9DCDD","GNT-CHAT-6D7979344828"],"repository_evidence":["docs/Gauntlet_Lore_Development_Notes.md"]},
+    {"id":"GNT-CAD-0072","title":"Heartland is a rules term, not the setting’s metaphysical center","domain":"lore","outcome":"current-canonical","summary":"Avoid making Heartlands the dominant lore concept. Player-facing setting and identity should center the Gauntlet and the institutional struggle.","evidence_ids":["GNT-CHAT-F926F543E8A7","GNT-CHAT-F82356A9DCDD"],"repository_evidence":["docs/Gauntlet_Lore_Development_Notes.md","releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md"]}
+  ]
+}
