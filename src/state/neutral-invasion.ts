@@ -1,35 +1,12 @@
-import { cardCanBePlayedAt } from '../cards';
 import type {
-  BattleParticipantState,
-  BattlePlayedCard,
-  CardID,
   GameEvent,
   GameState,
   PlayerID,
   SpaceID,
 } from '../types';
-import type {
-  ResolveBattleRevealAction,
-  ResolveNeutralChoiceAction,
-} from './actions';
-import { resolveBattleRevealCancellations } from './battle-reveal';
-import { drawFromDeck } from './draw';
 import { GameActionError } from './reducer';
 
 export const INVASION = 'neutral-invasion';
-
-const TOO_LATE_AFTER_REVEAL = new Set([
-  'card-embargo',
-  'neutral-disruption',
-  'neutral-sabotage',
-  'neutral-palisade-wall',
-  'neutral-scouting-report',
-  'intelligence-spies',
-  'intelligence-intercepted-orders',
-  'intelligence-treason',
-  'inquisition-confession',
-  'neutral-armistice',
-]);
 
 export interface InvasionMovementSnapshot {
   invasionBefore: number;
@@ -171,139 +148,4 @@ export function clearInvasionMovementForTurnTransition(
 ): void {
   clearInvasionMovement(game, endingPlayerId);
   clearInvasionMovement(game, game.activePlayer);
-}
-
-function participant(game: GameState, playerId: PlayerID): BattleParticipantState {
-  const battle = game.battle;
-  if (!battle) throw new GameActionError('There is no active battle.');
-  if (battle.attacker.playerId === playerId) return battle.attacker;
-  if (battle.defender.playerId === playerId) return battle.defender;
-  throw new GameActionError(`${playerId} is not participating in the battle.`);
-}
-
-function activeSource(card?: BattlePlayedCard): card is BattlePlayedCard {
-  return Boolean(
-    card
-    && card.cardId === INVASION
-    && !card.canceled
-    && !card.negated
-    && !card.virtual
-    && !card.earlyEffectResolved,
-  );
-}
-
-function nextSource(game: GameState): BattlePlayedCard | undefined {
-  const attacker = game.battle?.attacker;
-  if (!attacker) return undefined;
-  return [attacker.handCommit, ...attacker.battleDrawPlayed].find(activeSource);
-}
-
-function cardCanStillResolve(cardId: CardID): boolean {
-  return cardCanBePlayedAt(cardId, 'battle_draw_play', 'battle_draw')
-    && !TOO_LATE_AFTER_REVEAL.has(cardId);
-}
-
-function openNextBattleChoice(game: GameState, action: ResolveBattleRevealAction): boolean {
-  const battle = game.battle;
-  if (!battle || battle.stage !== 'dice') return false;
-
-  while (true) {
-    const source = nextSource(game);
-    if (!source) return false;
-    source.earlyEffectResolved = true;
-    const playerId = battle.attacker.playerId;
-    const player = game.players[playerId];
-    const drawn = drawFromDeck(player, { count: 1 }).drawnCards;
-    if (drawn.length === 0) {
-      appendPublicLog(game, playerId, 'neutral_invasion_battle_empty', `${player.name} could not draw with Invasion.`);
-      continue;
-    }
-    const drawnCardId = drawn[0];
-    battle.attacker.battleDraw.push(drawnCardId);
-    const canPlay = cardCanStillResolve(drawnCardId);
-    appendPublicLog(
-      game,
-      playerId,
-      'neutral_invasion_battle_draw',
-      `${player.name} drew one additional card into their Battle Hand with Invasion.`,
-      { canPlay },
-    );
-    if (!canPlay) continue;
-
-    game.pendingNeutralChoice = {
-      kind: 'invasion_battle',
-      playerId,
-      battleId: battle.id,
-      drawnCardId,
-      canPlay,
-      resolverPlayerId: action.playerId,
-      battleCardTargets: action.battleCardTargets,
-      options: ['pass', 'use'],
-      resumePriorityPlayer: game.priorityPlayer,
-    };
-    game.priorityPlayer = playerId;
-    return true;
-  }
-}
-
-/** Returns true when reveal resolution is paused for an Invasion choice. */
-export function prepareInvasionBattleReveal(
-  game: GameState,
-  action: ResolveBattleRevealAction,
-): boolean {
-  resolveBattleRevealCancellations(game, action);
-  return openNextBattleChoice(game, action);
-}
-
-export function resolveInvasionChoice(
-  game: GameState,
-  action: ResolveNeutralChoiceAction,
-): { deferredBattleAction?: ResolveBattleRevealAction } {
-  const pending = game.pendingNeutralChoice;
-  if (!pending || pending.kind !== 'invasion_battle' || pending.playerId !== action.playerId) {
-    throw new GameActionError(`${action.playerId} has no pending Invasion choice.`);
-  }
-  const battle = game.battle;
-  if (!battle || battle.id !== pending.battleId || battle.stage !== 'dice') {
-    throw new GameActionError('The Invasion battle trigger is no longer available.');
-  }
-  if (action.choice !== 'pass' && action.choice !== 'use') {
-    throw new GameActionError('Choose whether to reveal the card drawn with Invasion.');
-  }
-
-  const deferredBattleAction: ResolveBattleRevealAction = {
-    type: 'resolve_battle_reveal',
-    playerId: pending.resolverPlayerId,
-    battleCardTargets: pending.battleCardTargets,
-  };
-  const resumePriorityPlayer = pending.resumePriorityPlayer;
-  game.pendingNeutralChoice = undefined;
-  game.priorityPlayer = resumePriorityPlayer ?? pending.resolverPlayerId;
-
-  if (action.choice === 'use') {
-    if (!pending.canPlay) throw new GameActionError('That card’s Battle effect can no longer resolve.');
-    const side = participant(game, action.playerId);
-    const index = side.battleDraw.indexOf(pending.drawnCardId);
-    if (index < 0) throw new GameActionError('The Invasion card is no longer in the Battle Hand.');
-    side.battleDraw.splice(index, 1);
-    side.battleDrawPlayed.push({
-      cardId: pending.drawnCardId,
-      owner: action.playerId,
-      origin: 'battle_draw',
-      faceDown: false,
-      canceled: false,
-      fromInitialBattleHand: false,
-    });
-    game.players[action.playerId].hasPlayedBattleThisTurn = true;
-    appendPublicLog(
-      game,
-      action.playerId,
-      'neutral_invasion_battle_played',
-      `${game.players[action.playerId].name} revealed ${pending.drawnCardId} with Invasion.`,
-      { cardId: pending.drawnCardId },
-    );
-  }
-
-  if (openNextBattleChoice(game, deferredBattleAction)) return {};
-  return { deferredBattleAction };
 }

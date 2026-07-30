@@ -111,11 +111,9 @@ import {
   clearInvasionMovement,
   clearInvasionMovementForTurnTransition,
   INVASION,
-  prepareInvasionBattleReveal,
   prepareInvasionMove,
   reconcileInvasionMove,
   requireInvasionActionTiming,
-  resolveInvasionChoice,
 } from './neutral-invasion';
 import {
   applyLiberationAssetAfterBattle,
@@ -388,8 +386,6 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
             ? (resolvePalisadeWallChoice(next, action), {})
             : pendingKind === 'reinforcements_battle'
               ? resolveReinforcementsChoice(next, action)
-              : pendingKind === 'invasion_battle'
-                ? resolveInvasionChoice(next, action)
               : pendingKind === 'requisition_battle'
                 ? (resolveRequisitionChoice(next, action), {})
                 : pendingKind.startsWith('rousing_speech_')
@@ -488,7 +484,6 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     const prepared = structuredClone(game);
     if (resolveArmisticeBattleAfterCancellation(prepared, action)) return { state: prepared };
     if (prepareReinforcementsBattleReveal(prepared, action)) return { state: prepared };
-    if (prepareInvasionBattleReveal(prepared, action)) return { state: prepared };
     if (prepareSeditionBattleReveal(prepared, action)) return { state: prepared };
     if (prepareArcaneKnowledgeBattleReveal(prepared, action)) return { state: prepared };
     game = prepared;
