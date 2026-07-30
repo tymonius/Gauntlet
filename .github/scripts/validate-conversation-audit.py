@@ -20,6 +20,7 @@ SEARCH_EVIDENCE_RE = re.compile(
     r"^project-conversation-search:.+:(?P<date>2026-07-(?:1\d|2\d|30))$"
 )
 ALLOWED = {"current", "superseded", "tentative", "deferred", "rejected", "deprecated"}
+CERTIFICATION_STATUSES = {"incomplete", "complete"}
 
 
 def fail(message: str) -> None:
@@ -51,6 +52,20 @@ def main() -> None:
     attestation = load_json(AUDIT / "attestation.json")
     supplement = load_json(AUDIT / "july-10-30-sources.json")
     override_doc = load_json(AUDIT / "status-overrides.json")
+
+    certification_status = attestation.get("certification_status")
+    if certification_status not in CERTIFICATION_STATUSES:
+        fail(f"invalid certification status: {certification_status}")
+    certified = attestation.get("certified_for_downstream_canonicalization")
+    if certified is not (certification_status == "complete"):
+        fail("certification boolean disagrees with certification status")
+    if certification_status == "incomplete":
+        blocking_reason = attestation.get("blocking_reason")
+        if not isinstance(blocking_reason, str) or not blocking_reason.strip():
+            fail("incomplete audit lacks a blocking reason")
+        requirements = attestation.get("completion_requirements")
+        if not isinstance(requirements, list) or not requirements:
+            fail("incomplete audit lacks completion requirements")
 
     files = sorted(
         AUDIT.glob("decision-index-*.md"),
@@ -150,8 +165,23 @@ def main() -> None:
     if search_rows != attestation.get("post_export_evidence_links"):
         fail(f"expected {attestation.get('post_export_evidence_links')} post-export rows, found {search_rows}")
 
+    supplement_certification = supplement.get("certification", {})
+    if certification_status == "incomplete":
+        if supplement_certification.get("status") != "provisional":
+            fail("incomplete audit must mark the July supplement provisional")
+        if supplement_certification.get("may_drive_canonicalization") is not False:
+            fail("provisional July supplement may not drive canonicalization")
+        if supplement_certification.get("may_supersede_raw_evidence") is not False:
+            fail("provisional July supplement may not supersede raw evidence")
+        if search_rows != attestation.get("provisional_post_export_rows"):
+            fail("provisional post-export row count disagrees with search evidence count")
+        if search_rows != supplement.get("counts", {}).get("provisional_evidence_rows"):
+            fail("July provisional evidence count disagrees with search evidence count")
+    elif search_rows:
+        fail("a complete conversation audit may not retain project-conversation-search evidence rows")
+
     if supplement.get("counts", {}).get("new_decision_threads") != 109:
-        fail("July supplement count must remain 109 for this attestation")
+        fail("July supplement count must remain 109 until the raw re-audit replaces it")
     new_files_rows = sum(
         1
         for path in files[9:]
@@ -163,12 +193,20 @@ def main() -> None:
     if len(overrides) != supplement.get("counts", {}).get("effective_status_overrides"):
         fail("July supplement and status override counts disagree")
 
-    print(
-        "Conversation audit valid: "
-        f"{len(conversations)} raw conversations, {user_turns} raw user turns, "
-        f"{len(rows)} decision threads, {search_rows} July supplement rows, "
-        f"{len(overrides)} effective status overrides."
-    )
+    if certification_status == "complete":
+        print(
+            "Conversation audit certified complete: "
+            f"{len(conversations)} raw conversations, {user_turns} raw user turns, "
+            f"{len(rows)} decision threads, no provisional evidence."
+        )
+    else:
+        print(
+            "Conversation audit structurally valid but certification INCOMPLETE: "
+            f"{len(conversations)} raw conversations through "
+            f"{attestation.get('verbatim_export_complete_through')}, {user_turns} raw user turns, "
+            f"{len(rows)} ledger threads, {search_rows} provisional July search/context rows. "
+            "Downstream canonicalization remains blocked."
+        )
 
 
 if __name__ == "__main__":
