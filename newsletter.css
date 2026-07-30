@@ -1,4 +1,5 @@
 .newsletter-section {
+  min-width: 0;
   padding: 76px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(360px, .72fr);
@@ -11,6 +12,13 @@
     #26211b;
   border: 1px solid rgba(163, 115, 56, .42);
   box-shadow: var(--shadow);
+}
+
+.newsletter-section > *,
+.newsletter-copy,
+.newsletter-form {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .newsletter-section .eyebrow {
@@ -57,6 +65,7 @@
 }
 
 .newsletter-form {
+  width: 100%;
   padding: 30px;
   border: 1px solid rgba(242, 229, 206, .22);
   background: rgba(255, 252, 244, .07);
@@ -74,6 +83,7 @@
 }
 
 .newsletter-fields {
+  min-width: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 10px;
@@ -123,7 +133,7 @@
 @media (max-width: 900px) {
   .newsletter-section {
     padding: 52px;
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
     gap: 42px;
   }
 }
@@ -139,7 +149,7 @@
   }
 
   .newsletter-fields {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
   }
 
   .newsletter-form .button {

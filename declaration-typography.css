@@ -37,9 +37,15 @@ body {
   letter-spacing: 0;
 }
 
+/*
+ * Overlines stay on one line at desktop widths without contributing a
+ * max-content width to their grid or flex parent. Narrow layouts restore
+ * normal wrapping so adjacent body copy and forms remain viewport-safe.
+ */
 .declaration-overline {
-  width: max-content;
-  max-width: 100%;
+  display: block;
+  width: auto;
+  max-width: none;
   margin-bottom: 20px;
   font-family: var(--declaration);
   font-size: clamp(3.2rem, 5.2vw, 5rem);
@@ -47,6 +53,7 @@ body {
   line-height: .9;
   letter-spacing: 0;
   text-transform: none;
+  white-space: nowrap;
 }
 
 /* Keep each faction phrase normally spaced while separating the two phrases. */
@@ -57,6 +64,7 @@ body {
   column-gap: clamp(1.5rem, 3.5vw, 3rem);
   row-gap: 0;
   font-size: 0;
+  white-space: normal;
 }
 
 .factions-section .declaration-overline::before,
@@ -118,7 +126,12 @@ body {
   }
 
   .declaration-overline {
+    width: auto;
+    max-width: 100%;
     font-size: clamp(3rem, 13.5vw, 4.1rem);
+    white-space: normal;
+    overflow-wrap: normal;
+    word-break: normal;
   }
 
   .factions-section .declaration-overline {
