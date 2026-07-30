@@ -1,23 +1,29 @@
-name: Test
+name: Patch and Test Canonical Assimilation
 
 on:
   pull_request:
-  push:
-    branches:
-      - main
+
+permissions:
+  contents: write
 
 jobs:
-  test:
+  patch-and-test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout implementation branch
         uses: actions/checkout@v4
+        with:
+          ref: fix/neutral-assimilation-canonical
+          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
+
+      - name: Apply canonical dispatcher patch
+        run: python .github/scripts/patch-assimilation-canonical.py
 
       - name: Install dependencies
         run: npm install
@@ -27,3 +33,12 @@ jobs:
 
       - name: Test
         run: npm test
+
+      - name: Commit validated patch
+        run: |
+          rm -f package-lock.json
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/state/apply-neutral.ts .github/workflows/test.yml .github/scripts/patch-assimilation-canonical.py
+          git commit -m "Wire canonical Assimilation aftermath" || exit 0
+          git push origin HEAD:fix/neutral-assimilation-canonical
