@@ -15,10 +15,12 @@ import {
 const disabledTimings: Partial<Record<CardID, CardPlayTiming[]>> = {
   'neutral-decoys': ['action'],
   'neutral-arcane-knowledge': ['battle_hand_commit', 'battle_draw_play'],
-  'neutral-assimilation': ['action', 'battle_hand_commit', 'battle_draw_play'],
   'neutral-invasion': ['battle_hand_commit', 'battle_draw_play'],
   'neutral-armistice': ['action'],
 };
+
+// Assimilation's canonical Action banks the card as an Asset.
+coreCardPlayRules['neutral-assimilation'].defaultDestinationByOrigin.hand = 'asset_bank';
 
 for (const cardId of Object.keys(disabledTimings) as CardID[]) {
   const rule = coreCardPlayRules[cardId];

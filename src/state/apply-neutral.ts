@@ -7,11 +7,9 @@ import type {
 } from './actions';
 import { applyGameAction as applyFactionGameAction } from './apply-inquisition';
 import {
-  ASSIMILATION,
   continueAssimilationBattleResolution,
-  expireAssimilationConditions,
   queueAssimilationAfterBattle,
-  registerAssimilationActionCondition,
+  resolveAssimilationChoice,
 } from './neutral-assimilation';
 import {
   applyArcaneKnowledgeAction,
@@ -309,8 +307,9 @@ export type NeutralAppStateAction = AppStateAction | FinishMovementAction | Reso
 function continueNeutralChoices(game: GameState): void {
   processCounterworksOverlayQueue(game);
   if (game.pendingNeutralChoice) return;
-  const assimilationResolved = continueAssimilationBattleResolution(game);
-  if (assimilationResolved && game.pendingAssetBankDiscards && Object.keys(game.pendingAssetBankDiscards).length > 0) return;
+  continueAssimilationBattleResolution(game);
+  if (game.pendingNeutralChoice) return;
+  if (game.pendingAssetBankDiscards && Object.keys(game.pendingAssetBankDiscards).length > 0) return;
   const captureResume = continueProtractedSiegeCaptureResolution(game);
   if (captureResume) {
     confirmPendingCapturesFor(
@@ -358,7 +357,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     if (action.type !== 'resolve_neutral_choice') {
       throw new GameActionError('Resolve the pending Neutral choice first.');
     }
-    const pendingKind = game.pendingNeutralChoice.kind;
+    const pendingKind = game.pendingNeutralChoice.kind as string;
     const resistanceRousingBefore = pendingKind === 'resistance_battle'
       ? captureRousingSpeechAssetSnapshot(game)
       : undefined;
@@ -375,8 +374,10 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
       ? captureDiscardSnapshot(game)
       : undefined;
     const next = structuredClone(game);
-    const resolved = pendingKind === 'arcane_knowledge_battle'
-      ? resolveArcaneKnowledgeChoice(next, action)
+    const resolved = pendingKind === 'assimilation_asset'
+      ? (resolveAssimilationChoice(next, action), {})
+      : pendingKind === 'arcane_knowledge_battle'
+        ? resolveArcaneKnowledgeChoice(next, action)
       : pendingKind === 'decoys_asset'
         ? (resolveDecoysChoice(next, action), {})
       : pendingKind.startsWith('supplies_')
@@ -643,9 +644,6 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     }
   }
 
-  if (action.type === 'play_action_card' && action.cardId === ASSIMILATION) {
-    registerAssimilationActionCondition(result.state, action.playerId);
-  }
   if (action.type === 'play_action_card' && action.cardId === ARMISTICE) {
     registerArmisticeActionCondition(result.state, action.playerId);
   }
@@ -772,7 +770,6 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     applyResistanceAssetBattleHandDraw(result.state);
   }
   if (action.type === 'end_turn') {
-    expireAssimilationConditions(result.state, action.playerId);
     expireArmisticeConditions(result.state, game.turn);
     clearReinforcementsActionOpportunity(result.state, action.playerId);
     clearInsurrectionActionOpportunity(result.state, action.playerId);

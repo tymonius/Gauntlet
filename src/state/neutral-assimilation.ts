@@ -7,18 +7,45 @@ import type {
   GameEvent,
   GameState,
   PlayerID,
+  SpaceID,
 } from '../types';
+import type { ResolveNeutralChoiceAction } from './actions';
 import { effectiveAssetBankLimit, removeBlockadesAfterControlChange } from './diplomat-persistent';
-import {
-  consumeProtractedSiegeOverlayForCapture,
-  removeProtractedSiegeOverlaysOverriddenByAssimilation,
-} from './neutral-protracted-siege';
+import { activeBankedAssetCopies, bankedAssetUseAllowed } from './intelligence-subversion-battle';
+import { GameActionError } from './reducer';
 import {
   captureTerritoryControllerSnapshot,
   removeCaptureSensitiveOverlaysAfterControlChange,
 } from './territory-overlays';
 
 export const ASSIMILATION = 'neutral-assimilation';
+
+interface AssimilationResolutionState {
+  battleId: string;
+  attackerId: PlayerID;
+  spaceId: SpaceID;
+  actionEffect: boolean;
+  battleEffect: boolean;
+  battleDrawCopies: number;
+}
+
+interface PendingAssimilationAssetChoice {
+  kind: 'assimilation_asset';
+  playerId: PlayerID;
+  battleId: string;
+  spaceId: SpaceID;
+  options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+function resolutionState(game: GameState): AssimilationResolutionState | undefined {
+  return game.neutralAssimilationBattleResolution as AssimilationResolutionState | undefined;
+}
+
+function pendingChoice(game: GameState): PendingAssimilationAssetChoice | undefined {
+  const pending = game.pendingNeutralChoice as unknown as PendingAssimilationAssetChoice | undefined;
+  return pending?.kind === 'assimilation_asset' ? pending : undefined;
+}
 
 function appendPublicLog(
   game: GameState,
@@ -46,82 +73,42 @@ function removeOne(cards: CardID[], cardId: CardID): boolean {
 }
 
 function activeAssimilation(card?: BattlePlayedCard): card is BattlePlayedCard {
-  return Boolean(card
+  return Boolean(
+    card
     && card.cardId === ASSIMILATION
     && !card.canceled
     && !card.negated
-    && !card.virtual);
-}
-
-function attackerHasBattleAssimilation(battle: BattleState): boolean {
-  return activeAssimilation(battle.attacker.handCommit)
-    || battle.attacker.battleDrawPlayed.some(activeAssimilation);
-}
-
-function qualifyingEnemyTerritoryBattle(
-  game: GameState,
-  battle: BattleState,
-  controllerBeforeBattle: PlayerID | undefined,
-): BoardSpaceState | undefined {
-  const space = game.board.spaces.find((candidate) => candidate.id === battle.location);
-  if (!space || space.kind !== 'territory' || !space.territoryId) return undefined;
-  if (!controllerBeforeBattle || controllerBeforeBattle === battle.attacker.playerId) return undefined;
-  return space;
-}
-
-function activeActionConditions(game: GameState, playerId: PlayerID): NonNullable<GameState['neutralAssimilationConditions']> {
-  return (game.neutralAssimilationConditions ?? []).filter((condition) => (
-    condition.playerId === playerId
-    && condition.turn === game.turn
-    && !condition.consumedBattleId
-  ));
-}
-
-export function registerAssimilationActionCondition(game: GameState, playerId: PlayerID): void {
-  const player = game.players[playerId];
-  if (!player?.zones.removed.includes(ASSIMILATION)) return;
-  game.neutralAssimilationConditions ??= [];
-  game.neutralAssimilationConditions.push({
-    playerId,
-    turn: game.turn,
-    sourceCardId: ASSIMILATION,
-  });
-  appendPublicLog(
-    game,
-    playerId,
-    'neutral_assimilation_condition_played',
-    `${player.name} prepared Assimilation for their next attack this turn.`,
+    && !card.virtual,
   );
 }
 
-/**
- * Records a completed qualifying battle and defers the capture replacement
- * until Counterworks has finished resolving any Protracted Siege placements.
- */
-export function queueAssimilationAfterBattle(
+function attackerBattleCopies(battle: BattleState): BattlePlayedCard[] {
+  return [battle.attacker.handCommit, ...battle.attacker.battleDrawPlayed]
+    .filter(activeAssimilation);
+}
+
+function qualifyingEnemyTerritoryWin(
   game: GameState,
   battle: BattleState,
   controllerBeforeBattle: PlayerID | undefined,
   winnerId: PlayerID | undefined,
-): boolean {
-  const space = qualifyingEnemyTerritoryBattle(game, battle, controllerBeforeBattle);
-  if (!space) return false;
+): BoardSpaceState | undefined {
+  const space = game.board.spaces.find((candidate) => candidate.id === battle.location);
+  if (winnerId !== battle.attacker.playerId
+    || !space
+    || space.kind !== 'territory'
+    || !space.territoryId
+    || !controllerBeforeBattle
+    || controllerBeforeBattle === battle.attacker.playerId) return undefined;
+  return space;
+}
 
-  const conditions = activeActionConditions(game, battle.attacker.playerId);
-  for (const condition of conditions) condition.consumedBattleId = battle.id;
-
-  const actionEffect = conditions.length > 0;
-  const battleEffect = attackerHasBattleAssimilation(battle);
-  if (winnerId !== battle.attacker.playerId || (!actionEffect && !battleEffect)) return false;
-
-  game.neutralAssimilationBattleResolution = {
-    battleId: battle.id,
-    attackerId: battle.attacker.playerId,
-    spaceId: space.id,
-    actionEffect,
-    battleEffect,
-  };
-  return true;
+function activeActionCopies(game: GameState, battle: BattleState): number {
+  const playerId = battle.attacker.playerId;
+  if (battle.bankedAssetUseProhibited?.includes(playerId) || !bankedAssetUseAllowed(game, playerId)) return 0;
+  const seditionSuppressed = battle.seditionInactiveAssets?.[playerId]
+    ?.filter((cardId) => cardId === ASSIMILATION).length ?? 0;
+  return Math.max(0, activeBankedAssetCopies(game, playerId, ASSIMILATION) - seditionSuppressed);
 }
 
 function reconcileAssetBankDiscards(game: GameState): void {
@@ -179,59 +166,135 @@ function captureImmediately(game: GameState, space: BoardSpaceState, playerId: P
   return true;
 }
 
-/** Completes the deferred Battle aftermath once all Overlay placement choices are settled. */
+function moveBattleDrawCopiesToGraveyard(
+  game: GameState,
+  playerId: PlayerID,
+  count: number,
+): void {
+  const player = game.players[playerId];
+  for (let index = 0; index < count; index += 1) {
+    if (!removeOne(player.zones.discard, ASSIMILATION)) {
+      throw new GameActionError('Assimilation could not find its Battle Hand cleanup copy.');
+    }
+    player.zones.graveyard.push(ASSIMILATION);
+  }
+}
+
+/**
+ * Records a qualifying attacker win. Counterworks and other queued Overlay
+ * placement windows finish before Assimilation replaces occupation with capture.
+ */
+export function queueAssimilationAfterBattle(
+  game: GameState,
+  battle: BattleState,
+  controllerBeforeBattle: PlayerID | undefined,
+  winnerId: PlayerID | undefined,
+): boolean {
+  const space = qualifyingEnemyTerritoryWin(game, battle, controllerBeforeBattle, winnerId);
+  if (!space) return false;
+
+  const battleCopies = attackerBattleCopies(battle);
+  const actionCopies = activeActionCopies(game, battle);
+  if (battleCopies.length === 0 && actionCopies === 0) return false;
+
+  game.neutralAssimilationBattleResolution = {
+    battleId: battle.id,
+    attackerId: battle.attacker.playerId,
+    spaceId: space.id,
+    actionEffect: battleCopies.length === 0 && actionCopies > 0,
+    battleEffect: battleCopies.length > 0,
+    battleDrawCopies: battleCopies.filter((card) => card.origin === 'battle_draw').length,
+  } as AssimilationResolutionState;
+  return true;
+}
+
+/** Completes the queued aftermath once Overlay placement choices are settled. */
 export function continueAssimilationBattleResolution(game: GameState): boolean {
-  const pending = game.neutralAssimilationBattleResolution;
+  const pending = resolutionState(game);
   if (!pending) return false;
   if (game.neutralCounterworksOverlayQueue?.some((request) => request.battleId === pending.battleId)) return false;
   if (game.pendingNeutralChoice?.kind === 'counterworks_asset') return false;
 
   const space = game.board.spaces.find((candidate) => candidate.id === pending.spaceId);
-  game.neutralAssimilationBattleResolution = undefined;
-  if (!space || space.kind !== 'territory' || space.occupant !== pending.attackerId) return false;
+  if (!space || space.kind !== 'territory' || space.occupant !== pending.attackerId) {
+    game.neutralAssimilationBattleResolution = undefined;
+    return false;
+  }
 
   if (pending.battleEffect) {
-    removeProtractedSiegeOverlaysOverriddenByAssimilation(game, space, pending.attackerId);
-    return captureImmediately(game, space, pending.attackerId);
+    const captured = captureImmediately(game, space, pending.attackerId);
+    if (captured) {
+      moveBattleDrawCopiesToGraveyard(game, pending.attackerId, pending.battleDrawCopies);
+      appendPublicLog(
+        game,
+        pending.attackerId,
+        'neutral_assimilation_battle',
+        `${game.players[pending.attackerId].name}'s Battle Assimilation entered the Graveyard after the capture resolved.`,
+        { battleId: pending.battleId, battleDrawCopies: pending.battleDrawCopies },
+      );
+    }
+    game.neutralAssimilationBattleResolution = undefined;
+    return captured;
   }
 
-  if (pending.actionEffect && consumeProtractedSiegeOverlayForCapture(game, space, pending.attackerId)) {
-    appendPublicLog(
-      game,
-      pending.attackerId,
-      'neutral_assimilation_delay_reduced',
-      `${game.players[pending.attackerId].name}'s Assimilation reduced the capture delay by one round.`,
-      { battleId: pending.battleId, spaceId: pending.spaceId },
-    );
-    return true;
+  if (!pending.actionEffect || activeBankedAssetCopies(game, pending.attackerId, ASSIMILATION) < 1) {
+    game.neutralAssimilationBattleResolution = undefined;
+    return false;
   }
 
-  return pending.actionEffect ? captureImmediately(game, space, pending.attackerId) : false;
+  game.pendingNeutralChoice = {
+    kind: 'assimilation_asset',
+    playerId: pending.attackerId,
+    battleId: pending.battleId,
+    spaceId: pending.spaceId,
+    options: ['pass', 'use'],
+    resumePriorityPlayer: game.priorityPlayer,
+  } as unknown as GameState['pendingNeutralChoice'];
+  game.priorityPlayer = pending.attackerId;
+  return false;
 }
 
-/** Discards every Action-condition copy belonging to the player whose turn ended. */
-export function expireAssimilationConditions(game: GameState, endingPlayerId: PlayerID): number {
-  const conditions = game.neutralAssimilationConditions ?? [];
-  const expired = conditions.filter((condition) => condition.playerId === endingPlayerId);
-  if (expired.length < 1) return 0;
-
-  const player = game.players[endingPlayerId];
-  let moved = 0;
-  for (const condition of expired) {
-    if (removeOne(player.zones.removed, condition.sourceCardId)) {
-      player.zones.discard.push(condition.sourceCardId);
-      moved += 1;
-    }
+export function resolveAssimilationChoice(game: GameState, action: ResolveNeutralChoiceAction): void {
+  const pending = pendingChoice(game);
+  const resolution = resolutionState(game);
+  if (!pending || pending.playerId !== action.playerId || !resolution || resolution.battleId !== pending.battleId) {
+    throw new GameActionError(`${action.playerId} has no pending Assimilation choice.`);
   }
-  game.neutralAssimilationConditions = conditions.filter((condition) => condition.playerId !== endingPlayerId);
-  if (game.neutralAssimilationConditions.length === 0) game.neutralAssimilationConditions = undefined;
+  if (action.choice !== 'pass' && action.choice !== 'use') {
+    throw new GameActionError('Choose whether to put Assimilation in the Graveyard and capture immediately.');
+  }
 
+  game.pendingNeutralChoice = undefined;
+  game.priorityPlayer = pending.resumePriorityPlayer ?? game.activePlayer;
+
+  if (action.choice === 'pass') {
+    game.neutralAssimilationBattleResolution = undefined;
+    appendPublicLog(
+      game,
+      action.playerId,
+      'neutral_assimilation_asset_passed',
+      `${game.players[action.playerId].name} kept their banked Assimilation after the battle.`,
+      { battleId: pending.battleId, spaceId: pending.spaceId },
+    );
+    return;
+  }
+
+  const player = game.players[action.playerId];
+  const space = game.board.spaces.find((candidate) => candidate.id === pending.spaceId);
+  if (!space || activeBankedAssetCopies(game, action.playerId, ASSIMILATION) < 1
+    || !removeOne(player.zones.assetBank, ASSIMILATION)) {
+    throw new GameActionError('Assimilation is no longer an active banked Asset.');
+  }
+  if (!captureImmediately(game, space, action.playerId)) {
+    throw new GameActionError('The Territory can no longer be captured with Assimilation.');
+  }
+  player.zones.graveyard.push(ASSIMILATION);
+  game.neutralAssimilationBattleResolution = undefined;
   appendPublicLog(
     game,
-    endingPlayerId,
-    'neutral_assimilation_condition_expired',
-    `${player.name}'s Assimilation condition expired at the end of the turn.`,
-    { count: moved },
+    action.playerId,
+    'neutral_assimilation_asset_used',
+    `${player.name} put Assimilation in the Graveyard after winning and captured the Territory immediately.`,
+    { battleId: pending.battleId, spaceId: pending.spaceId },
   );
-  return moved;
 }
