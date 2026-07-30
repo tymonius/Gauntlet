@@ -68,54 +68,25 @@
     </section>
 
     <section class="dashboard" aria-label="Deck summary">
-      <article class="metric-card">
-        <span>Main Deck</span>
-        <strong><span id="cardCount">0</span> / 30+</strong>
-      </article>
-      <article class="metric-card">
-        <span>Value</span>
-        <strong><span id="pointTotal">0</span> / 60</strong>
-      </article>
-      <article class="metric-card">
-        <span>Faction cards</span>
-        <strong id="factionCardCount">0</strong>
-      </article>
-      <article class="metric-card">
-        <span>Territories</span>
-        <strong><span id="territoryMetricCount">0</span> / 3</strong>
-      </article>
-      <article id="validityCard" class="metric-card validation-card">
-        <span>Deck status</span>
-        <strong id="validityText">Incomplete</strong>
-      </article>
+      <article class="metric-card"><span>Main Deck</span><strong><span id="cardCount">0</span> / 30+</strong></article>
+      <article class="metric-card"><span>Value</span><strong><span id="pointTotal">0</span> / 60</strong></article>
+      <article class="metric-card"><span>Faction cards</span><strong id="factionCardCount">0</strong></article>
+      <article class="metric-card"><span>Territories</span><strong><span id="territoryMetricCount">0</span> / 3</strong></article>
+      <article id="validityCard" class="metric-card validation-card"><span>Deck status</span><strong id="validityText">Incomplete</strong></article>
     </section>
 
     <section class="panel management-panel">
       <div class="management-grid">
-        <section>
-          <h3>Validation</h3>
-          <ul id="validationList" class="validation-list"></ul>
-        </section>
+        <section><h3>Validation</h3><ul id="validationList" class="validation-list"></ul></section>
         <section>
           <h3>Saved Decks</h3>
           <select id="savedDeckSelect"></select>
-          <div class="button-row">
-            <button id="saveDeckButton" type="button">Save</button>
-            <button id="loadDeckButton" type="button" class="secondary">Load</button>
-            <button id="deleteDeckButton" type="button" class="secondary danger">Delete</button>
-          </div>
+          <div class="button-row"><button id="saveDeckButton" type="button">Save</button><button id="loadDeckButton" type="button" class="secondary">Load</button><button id="deleteDeckButton" type="button" class="secondary danger">Delete</button></div>
         </section>
         <section>
           <h3>Share / transfer</h3>
-          <div class="button-row">
-            <button id="copyDeckButton" type="button" class="secondary">Copy list</button>
-            <button id="exportJsonButton" type="button" class="secondary">Export JSON</button>
-            <button id="printDeckButton" type="button" class="secondary" disabled>Print / PDF</button>
-          </div>
-          <label class="print-option">
-            <input id="printCardBacks" type="checkbox" />
-            <span>Print card backs</span>
-          </label>
+          <div class="button-row"><button id="copyDeckButton" type="button" class="secondary">Copy list</button><button id="exportJsonButton" type="button" class="secondary">Export JSON</button><button id="printDeckButton" type="button" class="secondary" disabled>Print / PDF</button></div>
+          <label class="print-option"><input id="printCardBacks" type="checkbox" /><span>Print card backs</span></label>
           <textarea id="importJson" rows="4" placeholder="Paste an exported v0.6.1 Deck JSON here"></textarea>
           <button id="importJsonButton" type="button" class="secondary full-width">Import JSON</button>
         </section>
@@ -125,89 +96,27 @@
     <section class="builder-grid">
       <div class="builder-column">
         <section class="panel">
-          <div class="panel-heading">
-            <div>
-              <h2>Available cards</h2>
-              <p class="muted">Neutral cards plus cards from the selected faction.</p>
-            </div>
-            <span id="availableCount" class="pill">0</span>
-          </div>
+          <div class="panel-heading"><div><h2>Available cards</h2><p class="muted">Neutral cards plus cards from the selected faction.</p></div><span id="availableCount" class="pill">0</span></div>
           <div class="filters">
-            <label>
-              Search
-              <input id="cardSearch" type="search" placeholder="Name, Gambit, Tactic, or card text" />
-            </label>
-            <label>
-              Allegiance
-              <select id="allegianceFilter">
-                <option value="all">Neutral + faction</option>
-                <option value="neutral">Neutral only</option>
-                <option value="faction">Faction only</option>
-              </select>
-            </label>
-            <label>
-              Cost
-              <select id="costFilter">
-                <option value="all">All costs</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-              </select>
-            </label>
+            <label>Search<input id="cardSearch" type="search" placeholder="Name, Gambit, Tactic, or card text" /></label>
+            <label>Allegiance<select id="allegianceFilter"><option value="all">Neutral + faction</option><option value="neutral">Neutral only</option><option value="faction">Faction only</option></select></label>
+            <label>Cost<select id="costFilter"><option value="all">All costs</option><option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option><option value="5">5</option></select></label>
           </div>
-          <div class="card-browser">
-            <div id="availableCards" class="compact-card-list"></div>
-            <aside id="cardPreview" class="card-preview empty-state">Select a card to view its canonical v0.6.1 text.</aside>
-          </div>
+          <div class="card-browser"><div id="availableCards" class="compact-card-list"></div><aside id="cardPreview" class="card-preview empty-state">Select a card to view its canonical v0.6.1 text.</aside></div>
         </section>
 
         <section class="panel territories-panel">
-          <div class="panel-heading">
-            <div>
-              <h2>Territories</h2>
-              <p class="muted">Choose exactly three different Territories, with no more than one Arena.</p>
-            </div>
-            <div class="button-row">
-              <span id="territoryAvailableCount" class="pill">0</span>
-              <button id="clearTerritoriesButton" type="button" class="secondary danger">Clear Territories</button>
-            </div>
-          </div>
-          <div class="territory-filters">
-            <label>
-              Search Territories
-              <input id="territorySearch" type="search" placeholder="Name or effect text" />
-            </label>
-            <label>
-              Category
-              <select id="territoryCategory">
-                <option value="all">All Territories</option>
-                <option value="standard">Standard only</option>
-                <option value="arena">Arenas only</option>
-              </select>
-            </label>
-          </div>
-          <div class="territory-browser">
-            <div id="territoryList" class="compact-territory-list empty-state">Loading Territories…</div>
-            <aside id="territoryPreview" class="territory-preview empty-state">Select a Territory to view its canonical v0.6.1 text.</aside>
-          </div>
+          <div class="panel-heading"><div><h2>Territories</h2><p class="muted">Choose exactly three different Territories, with no more than one Arena.</p></div><div class="button-row"><span id="territoryAvailableCount" class="pill">0</span><button id="clearTerritoriesButton" type="button" class="secondary danger">Clear Territories</button></div></div>
+          <div class="territory-filters"><label>Search Territories<input id="territorySearch" type="search" placeholder="Name or effect text" /></label><label>Category<select id="territoryCategory"><option value="all">All Territories</option><option value="standard">Standard only</option><option value="arena">Arenas only</option></select></label></div>
+          <div class="territory-browser"><div id="territoryList" class="compact-territory-list empty-state">Loading Territories…</div><aside id="territoryPreview" class="territory-preview empty-state">Select a Territory to view its canonical v0.6.1 text.</aside></div>
         </section>
       </div>
 
       <div class="builder-column">
         <section class="panel">
-          <div class="panel-heading">
-            <div>
-              <h2>Current Deck</h2>
-              <p class="muted">Playable cards count toward Deck size and value. Leader and supplemental cards do not.</p>
-            </div>
-            <button id="clearDeckButton" type="button" class="secondary danger">Clear cards</button>
-          </div>
-          <div class="deck-section-divider">Playable cards</div>
-          <div id="deckCards" class="deck-list empty-state">No cards added yet.</div>
-          <div class="deck-section-divider">Territories</div>
-          <div id="deckTerritories" class="deck-list empty-state">No Territories selected yet.</div>
+          <div class="panel-heading"><div><h2>Current Deck</h2><p class="muted">Playable cards count toward Deck size and value. Leader and supplemental cards do not.</p></div><button id="clearDeckButton" type="button" class="secondary danger">Clear cards</button></div>
+          <div class="deck-section-divider">Playable cards</div><div id="deckCards" class="deck-list empty-state">No cards added yet.</div>
+          <div class="deck-section-divider">Territories</div><div id="deckTerritories" class="deck-list empty-state">No Territories selected yet.</div>
         </section>
       </div>
     </section>
@@ -221,6 +130,7 @@
   <script src="random-deck.js" defer></script>
   <script src="supplemental-data.js?v=20260722-1" defer></script>
   <script src="completed-supplementals.js?v=20260723-1" defer></script>
+  <script src="v061-supplementals.js?v=20260730-1" defer></script>
   <script src="leader-portrait-sources.js?v=20260723-1" defer></script>
   <script src="faction-components.js?v=20260722-1" defer></script>
   <script src="print.js?v=20260718-3" defer></script>
