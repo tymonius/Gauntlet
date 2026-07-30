@@ -1,8 +1,8 @@
 {
   "version": "v0.6.1",
   "name": "First Playtest Revision",
-  "status": "draft_release_candidate",
-  "publication_date": null,
+  "status": "published",
+  "publication_date": "2026-07-30",
   "playable_card_designs": 122,
   "neutral_cards": 50,
   "faction_cards": 72,
@@ -54,9 +54,7 @@
     "../../rules-assistant/worker-v061.js",
     "../../workers/playtest-sessions/"
   ],
-  "remaining_release_work": [
-    "assign publication date and public release links"
-  ],
+  "remaining_release_work": [],
   "deferred_post_release_work": [
     "resume the playable digital engine on feature/v061-digital-engine-migration",
     "replace the legacy pre-v0.6.1 battle procedure with Gambit, Reserve, Tactic, and Aftermath state",
@@ -75,6 +73,16 @@
     "complete_print_package_visual_checks_passed": true,
     "production_workers_deployed": true,
     "physical_qr_session_test_passed": true,
-    "ready_for_publication": false
+    "ready_for_publication": true
+  },
+  "public_links": {
+    "project_site": "https://gauntlet.run/",
+    "release_package": "https://gauntlet.run/releases/v0.6.1/",
+    "browser_rulebook": "https://gauntlet.run/rulebook/",
+    "rulebook_pdf": "https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf",
+    "card_reference": "https://gauntlet.run/card-reference/",
+    "deckbuilder": "https://gauntlet.run/deckbuilder/",
+    "faction_sheets": "https://gauntlet.run/faction-sheets/",
+    "playtest_sheet": "https://gauntlet.run/playtest/"
   }
 }

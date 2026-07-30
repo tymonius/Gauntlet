@@ -1,11 +1,11 @@
 # Gauntlet v0.6.1 First Playtest Revision
 
-**Status:** Draft release candidate under final production validation  
-**Publication date:** To be assigned after deployment and physical verification
+**Status:** Published canonical playtest edition  
+**Publication date:** July 30, 2026
 
 Gauntlet v0.6.1 is the first physical-playtest revision of the faction-era game. It preserves the v0.6.0 card counts, faction structure, Territory pool, Deck construction rules, and principal victory conditions while revising battle vocabulary, timing, onboarding, card text, and playtest infrastructure.
 
-Until this package is completely validated and published, v0.6.0 remains the current canonical release.
+This package is the current canonical release for Gauntlet playtesting. v0.6.0 remains archived for historical reference.
 
 ## Governing sources
 
@@ -18,7 +18,7 @@ The governing Markdown sources must be updated before any generated data, printa
 
 ## Completed release sources and outputs
 
-The draft release candidate now contains or drives:
+The published release contains or drives:
 
 - the layered Markdown Rulebook and compact Reference Guide;
 - editable DOCX and print-ready PDF versions of both documents;
@@ -84,15 +84,19 @@ No clipping, overlap, broken glyphs, blank pages, or unintended trailing pages w
 
 The archived v0.6.0 PDFs remain byte-for-byte aligned with `main`; the legacy v0.6.0 renderer is prevented from overwriting them from this revision branch.
 
-## Remaining before publication
+## Public release links
 
-The following work remains intentionally open:
+- [Project site](https://gauntlet.run/)
+- [Browser Rulebook](https://gauntlet.run/rulebook/)
+- [Rulebook PDF](https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf)
+- [Card Reference](https://gauntlet.run/card-reference/)
+- [Deckbuilder](https://gauntlet.run/deckbuilder/)
+- [Faction Sheets](https://gauntlet.run/faction-sheets/)
+- [Playtest Sheet](https://gauntlet.run/playtest/)
 
-1. configure the production Cloudflare account/token and facilitator secret;
-2. apply the shared D1 migrations and deploy both Workers;
-3. verify both production health endpoints;
-4. perform one physical coded-sheet test: print, scan, join, ask the Rules Arbiter, close the session, and confirm that the retired code cannot be reused; and
-5. set the publication date, release status, public links, and final manifest flags only after those checks pass.
+## Publication verification
+
+Production D1 migrations and both Cloudflare Worker deployments passed, both health endpoints were verified, and the physical coded-sheet lifecycle passed in production on July 30, 2026. The completed evidence is preserved in `Gauntlet_v0.6.1_Physical_Verification_Checklist.md` and `deployment-status.json`.
 
 ## Deferred final priority: playable digital implementation
 

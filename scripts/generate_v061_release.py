@@ -25,7 +25,8 @@ from typing import Any, Iterable
 
 VERSION = "v0.6.1"
 RELEASE_NAME = "First Playtest Revision"
-STATUS = "Draft pre-release playtest edition"
+RELEASE_DATE = "2026-07-30"
+STATUS = "Published playtest edition"
 
 BASELINE = "releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json"
 CANONICAL_OUTPUT = "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json"
@@ -570,7 +571,7 @@ def build(root: Path) -> tuple[dict[str, Any], str, list[str]]:
         {
             "version": VERSION,
             "name": RELEASE_NAME,
-            "date": None,
+            "date": RELEASE_DATE,
             "status": STATUS,
             "battle": {
                 "normal_reserve_size": 3,

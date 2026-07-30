@@ -1,7 +1,7 @@
 # Gauntlet v0.6.1 — First Playtest Revision
 
-**Release date:** To be assigned at publication  
-**Status:** Draft pre-release playtest edition
+**Release date:** July 30, 2026  
+**Status:** Published playtest edition
 
 Gauntlet v0.6.1 is the first revision built from physical v0.6.0 playtest evidence. It preserves the six-faction framework and the existing card and Territory pools while replacing the battle vocabulary and timing structure, improving onboarding, and synchronizing the full card pool with a more exact shared rules system.
 

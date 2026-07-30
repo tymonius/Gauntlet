@@ -1,7 +1,7 @@
 # Gauntlet v0.6.1 Changelog
 
 **Compared with:** v0.6.0 — Faction Framework Release  
-**Status:** Draft implementation
+**Published:** July 30, 2026
 
 Gauntlet v0.6.1 is the first physical-playtest revision. It preserves the faction framework, card counts, Territory pool, Deck construction rules, and principal victory conditions of v0.6.0 while revising the battle procedure, rules language, timing framework, onboarding structure, faction-card text, and playtest workflow.
 

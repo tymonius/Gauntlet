@@ -190,9 +190,29 @@ def validate_manifest(errors: list[str], strict_generated: bool) -> None:
         if validation.get(key) is not True:
             errors.append(f"Manifest validation.{key} is not true")
     if strict_generated and validation.get("ready_for_publication") is True:
-        for key in ("visual_checks_passed", "browser_checks_passed"):
+        required_ready_checks = (
+            "browser_checks_passed",
+            "document_visual_checks_passed",
+            "faction_sheet_visual_checks_passed",
+            "faction_pdf_page_validation_passed",
+            "formal_session_lifecycle_tested",
+            "complete_print_package_visual_checks_passed",
+            "production_workers_deployed",
+            "physical_qr_session_test_passed",
+        )
+        for key in required_ready_checks:
             if validation.get(key) is not True:
                 errors.append(f"Manifest says publication-ready while validation.{key} is not true")
+        if manifest.get("status") != "published":
+            errors.append("Manifest says publication-ready while status is not published")
+        if not manifest.get("publication_date"):
+            errors.append("Manifest says publication-ready without a publication date")
+        if manifest.get("remaining_release_work"):
+            errors.append("Manifest says publication-ready while remaining release work is listed")
+        public_links = manifest.get("public_links") or {}
+        for key in ("project_site", "release_package", "browser_rulebook", "rulebook_pdf", "card_reference", "deckbuilder", "faction_sheets", "playtest_sheet"):
+            if not public_links.get(key):
+                errors.append(f"Manifest says publication-ready without public_links.{key}")
 
 
 def validate_source_terminology(errors: list[str]) -> None:

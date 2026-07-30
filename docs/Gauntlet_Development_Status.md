@@ -1,12 +1,12 @@
 # Gauntlet Development Status
 
-**Current canonical version:** v0.6.0 — Faction Framework Release  
-**Release date:** July 20, 2026  
-**Status:** Canonical pre-release playtest edition
+**Current canonical version:** v0.6.1 — First Playtest Revision  
+**Release date:** July 30, 2026  
+**Status:** Canonical playtest edition
 
-Gauntlet v0.6.0 remains the sole published rules and card package for playtesting. Earlier working rules, preliminary rulebooks, review logs, and release trackers are preserved under `docs/Archive/` and are not active sources.
+Gauntlet v0.6.1 is the current published rules and card package for playtesting. Earlier releases, working rules, preliminary rulebooks, review logs, and release trackers are retained for historical reference and do not override the v0.6.1 governing sources.
 
-The first physical v0.6.0 playtest was held July 27, 2026. It exposed rules-language, timing, onboarding, table-organization, and playtest-instrumentation problems but no immediate balance failure. Approved corrections are being implemented for v0.6.1 and tracked in [Gauntlet v0.6.1 Implementation Ledger](Gauntlet_v0.6.1_Implementation_Ledger.md). Until the v0.6.1 package is complete and published, the v0.6.0 sources remain canonical.
+The first physical v0.6.0 playtest was held July 27, 2026. It exposed rules-language, timing, onboarding, table-organization, and playtest-instrumentation problems but no immediate balance failure. v0.6.1 implements those approved corrections and adds the production-coded formal playtest workflow.
 
 ## Release baseline
 
@@ -50,13 +50,12 @@ The July 27 session used the recommended Spymaster and Ambassador Decks. It last
 
 ## Current priorities
 
-### 1. v0.6.1 finalization and publication
+### 1. v0.6.1 post-release stabilization
 
-- Run the source synchronization, canonical-data generation, automated tests, and strict release validators on the completed branch.
-- Regenerate the rulebook, reference guide, playtest sheet, player mat, printable cards, and supplemental components from the synchronized governing sources.
-- Visually inspect every regenerated player-facing artifact at intended print size and at desktop/mobile browser widths.
-- Synchronize the revision branch with current `main` website, artwork, print, and browser-tool work before merging.
-- Keep v0.6.0 canonical until the full v0.6.1 package passes those checks and is published.
+- Use v0.6.1 as the sole governing package for current tabletop playtesting.
+- Preserve the completed deployment and physical QR lifecycle evidence with the release package.
+- Route any discovered defect through the governing source, regenerate affected outputs, and record the correction before the next tagged revision.
+- Resume the deferred digital-engine migration without treating the legacy prototype as v0.6.1-compatible.
 
 ### 2. Physical and human playtesting
 
