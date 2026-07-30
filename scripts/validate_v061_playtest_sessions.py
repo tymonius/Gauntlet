@@ -12,7 +12,9 @@ ROOT = Path(__file__).resolve().parents[1]
 
 REQUIRED = [
     "rules-assistant/migrations/0001_rules_interactions.sql",
-    "rules-assistant/migrations/0002_playtest_sessions.sql",
+    "rules-assistant/migrations/0002_review_export_checkpoints.sql",
+    "rules-assistant/migrations/0003_playtest_sessions.sql",
+    "rules-assistant/worker-entry.js",
     "rules-assistant/worker-v061.js",
     "rules-assistant/worker.test.mjs",
     "rules-assistant/wrangler.toml",
@@ -58,7 +60,7 @@ def main() -> int:
         return fail(errors)
 
     require_markers(
-        "rules-assistant/migrations/0002_playtest_sessions.sql",
+        "rules-assistant/migrations/0003_playtest_sessions.sql",
         [
             "ALTER TABLE rules_interactions ADD COLUMN playtest_session_id TEXT",
             "ALTER TABLE rules_interactions ADD COLUMN sheet_serial TEXT",
@@ -70,6 +72,17 @@ def main() -> int:
             "CREATE TABLE IF NOT EXISTS playtest_session_events",
             "CREATE TABLE IF NOT EXISTS playtest_arbiter_links",
             "FOREIGN KEY (interaction_id) REFERENCES rules_interactions(id)",
+        ],
+        errors,
+    )
+
+    require_markers(
+        "rules-assistant/worker-entry.js",
+        [
+            'import worker from "./worker-v061.js"',
+            'import { ADMIN_PAGE_WITH_INCREMENTAL_EXPORT } from "./admin-incremental-export-page.js"',
+            'import { handleReviewExportCheckpoint } from "./review-export-checkpoint.js"',
+            "/api/admin/review-export-checkpoint",
         ],
         errors,
     )
@@ -198,8 +211,8 @@ def main() -> int:
     rules_database_ids = re.findall(r'database_id\s*=\s*"([^"]+)"', rules_toml)
     if not database_ids or database_ids != rules_database_ids:
         errors.append("Playtest session Worker must use the same D1 database as the Rules Arbiter")
-    if 'main = "worker-v061.js"' not in rules_toml:
-        errors.append("Rules Arbiter wrangler.toml does not deploy worker-v061.js")
+    if 'main = "worker-entry.js"' not in rules_toml:
+        errors.append("Rules Arbiter wrangler.toml must deploy the integrated worker-entry.js wrapper")
     if "SESSION_ADMIN_TOKEN" in session_toml:
         errors.append("SESSION_ADMIN_TOKEN must be a Worker secret, not committed in wrangler.toml")
     if "ALLOWED_ORIGINS" not in session_toml:
@@ -219,7 +232,13 @@ def main() -> int:
 
     root_package = json.loads(read("package.json"))
     scripts = root_package.get("scripts") or {}
-    for script in ("test:rules-assistant", "test:playtest-sessions", "test:deckbuilder"):
+    for script in (
+        "governance:check",
+        "test:rules-assistant",
+        "test:playtest-sessions",
+        "test:formal-session-e2e",
+        "test:deckbuilder",
+    ):
         if script not in scripts:
             errors.append(f"package.json is missing {script}")
 
@@ -240,9 +259,9 @@ def main() -> int:
         return fail(errors)
 
     print(
-        "Validated v0.6.1 formal playtest sessions: shared D1 migration, hashed credentials, "
-        "authorized batch creation, unique sheet serials, privacy-safe QR rendering, join/close "
-        "workflow, governing Rules Arbiter linkage, and automated tests."
+        "Validated v0.6.1 formal playtest sessions: sequenced shared D1 migrations, hashed credentials, "
+        "authorized batch creation, unique sheet serials, privacy-safe QR rendering, join/close workflow, "
+        "integrated governing Rules Arbiter linkage, review-export administration, and automated tests."
     )
     return 0
 
