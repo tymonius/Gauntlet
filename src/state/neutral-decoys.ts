@@ -142,7 +142,7 @@ function decoySources(
   const exitedActiveCopies = exits
     .filter((exit) => exit.cardId === DECOYS && !exit.faceDown && exit.destination)
     .slice(0, activeDecoys);
-  const sources = exitedActiveCopies.map((exit, index) => ({
+  const sources: DecoysSourceLocation[] = exitedActiveCopies.map((exit, index) => ({
     sourceId: `${entrySeed}-decoy-exit-${index + 1}`,
     zone: 'asset_bank' as const,
     exitId: exit.exitId,

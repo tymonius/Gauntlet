@@ -187,6 +187,7 @@ import {
   openNextRedemptionChoice,
   prepareRedemptionBattleResolution,
   redemptionEffectSourcePlayer,
+  registerRedemptionDiscardCardIds,
   registerRedemptionDiscardEntries,
   resolveRedemptionChoice,
 } from './neutral-redemption';
@@ -380,7 +381,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
       : pendingKind === 'arcane_knowledge_battle'
         ? resolveArcaneKnowledgeChoice(next, action)
       : pendingKind === 'decoys_asset'
-        ? (resolveDecoysChoice(next, action), {})
+        ? resolveDecoysChoice(next, action)
       : pendingKind.startsWith('supplies_')
         ? (resolveSuppliesChoice(next, action), {})
         : pendingKind === 'foothold_asset'
@@ -460,6 +461,18 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     }
     if (sequestrationDiscardBefore && sequestrationSourcePlayerId) {
       registerRedemptionDiscardEntries(next, sequestrationDiscardBefore, sequestrationSourcePlayerId);
+    }
+    if ('decoysFinalized' in resolved
+      && resolved.decoysFinalized
+      && resolved.sourcePlayerId
+      && resolved.affectedPlayerId
+      && resolved.discardedCardIds.length > 0) {
+      registerRedemptionDiscardCardIds(
+        next,
+        resolved.affectedPlayerId,
+        resolved.discardedCardIds,
+        resolved.sourcePlayerId,
+      );
     }
     reconcileSabotageAssetState(next);
     removeAbandonedProtractedSiegeOverlays(next);

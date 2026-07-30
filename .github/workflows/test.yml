@@ -1,32 +1,23 @@
-name: Patch and Test Decoys Replacement
+name: Test
 
 on:
   pull_request:
-
-permissions:
-  contents: write
+  push:
+    branches:
+      - main
 
 jobs:
-  patch-and-test:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout implementation branch
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: fix/neutral-decoys-replacement
-          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Apply replacement integration patch
-        run: |
-          python .github/scripts/patch-decoys-replacement.py
-          python .github/scripts/fix-decoys-source-inference.py
-          python .github/scripts/fix-decoys-sequestration-test.py
 
       - name: Install dependencies
         run: npm install
@@ -36,12 +27,3 @@ jobs:
 
       - name: Test
         run: npm test
-
-      - name: Commit validated patch
-        run: |
-          rm -f package-lock.json
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/types/neutral.ts src/state/neutral-redemption.ts src/state/apply-neutral.ts src/state/neutral-decoys.ts src/state/neutral-decoys.test.ts src/state/neutral-sequestration.test.ts .github/workflows/test.yml .github/scripts/patch-decoys-replacement.py .github/scripts/fix-decoys-source-inference.py .github/scripts/fix-decoys-sequestration-test.py
-          git commit -m "Wire Decoys replacement timing" || exit 0
-          git push origin HEAD:fix/neutral-decoys-replacement

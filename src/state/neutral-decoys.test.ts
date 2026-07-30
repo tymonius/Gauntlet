@@ -10,9 +10,11 @@ import {
 } from './neutral-decoys';
 import { DECOYS } from './neutral-decoys-battle';
 import { initializeGame } from './initialize';
+import { registerRedemptionDiscardCardIds } from './neutral-redemption';
 
 const ASSET_A = 'neutral-entrenchment';
 const ASSET_B = 'neutral-fortifications';
+const REDEMPTION = 'neutral-redemption';
 
 function game(): GameState {
   const state = initializeGame({
@@ -223,6 +225,35 @@ describe('Neutral Decoys Action replacement', () => {
     });
     expect(state.players.player_2.zones.assetBank).toContain(ASSET_A);
     expect(state.players.player_2.faceDownAssets).toEqual([ASSET_A]);
+  });
+
+  it('exposes only unprotected opposing discards to Redemption', () => {
+    const state = game();
+    state.players.player_2.zones.assetBank = [DECOYS, REDEMPTION, ASSET_A, ASSET_B];
+    const before = moveAssets(state, [ASSET_A, ASSET_B], 'discard');
+    registerDecoysAssetExits(state, before, 'player_1');
+    openNextDecoysChoice(state);
+
+    const result = resolveDecoysChoice(state, {
+      type: 'resolve_neutral_choice',
+      playerId: 'player_2',
+      choice: 'use',
+      targetKey: pendingTargetKey(state, ASSET_A),
+    });
+    expect(result.discardedCardIds).toEqual([ASSET_B]);
+    expect(registerRedemptionDiscardCardIds(
+      state,
+      'player_2',
+      result.discardedCardIds,
+      'player_1',
+    )).toBe(1);
+    expect(state.neutralRedemptionDiscardQueue).toContainEqual(expect.objectContaining({
+      playerId: 'player_2',
+      sourcePlayerId: 'player_1',
+      cardIds: [ASSET_B],
+    }));
+    expect(state.neutralRedemptionDiscardQueue?.[0].cardIds).not.toContain(DECOYS);
+    expect(state.neutralRedemptionDiscardQueue?.[0].cardIds).not.toContain(ASSET_A);
   });
 
   it('does not respond to the controller own effect or from an inactive copy', () => {
