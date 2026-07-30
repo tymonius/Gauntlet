@@ -19,8 +19,8 @@
     "concurrent_conversations_allowed": true,
     "path": "governance/conversation-audit/live-tail.jsonl",
     "policy_path": "governance/conversation-audit/live-tail-policy.md",
-    "captured_user_turns": 6,
-    "unmatched_user_turns": 6,
+    "captured_user_turns": 7,
+    "unmatched_user_turns": 7,
     "certification_requires_continuous_coverage": true,
     "certification_requires_complete_project_conversation_inventory": true
   },
