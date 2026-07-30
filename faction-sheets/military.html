@@ -11,28 +11,24 @@
   </script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Gauntlet v0.6 Military Faction Sheets</title>
-  <link rel="stylesheet" href="https://tymonius.github.io/Gauntlet/faction-sheets/military.css">
-  <style>
-    .leader-art img { object-position: center top !important; }
-    .faction-card[data-card-name="Shock and Awe"] { padding: 0.045in 0.052in 0.044in; }
-    .faction-card[data-card-name="Shock and Awe"] .card-header { margin-bottom: 0.016in; padding-bottom: 0.018in; }
-    .faction-card[data-card-name="Shock and Awe"] .card-meta { margin-bottom: 0.012in; }
-    .faction-card[data-card-name="Shock and Awe"] .effect { margin-bottom: 0.010in; line-height: 1.0; }
-    .faction-card[data-card-name="Shock and Awe"] .effect-text { line-height: 1.0; letter-spacing: -0.01em; }
-    .faction-card[data-card-name="Shock and Awe"] .unique { padding-top: 0.012in; font-size: 4.7pt; }
-  </style>
+  <title>Gauntlet v0.6.1 Military Faction Sheets</title>
+  <link rel="stylesheet" href="v061.css?v=20260730-1">
 </head>
-<body>
+<body data-faction="military">
   <header class="screen-only">
-    <h1>Gauntlet v0.6 — Military Faction Sheets</h1>
-    <p>Two Letter-size 9-up sheets containing the twelve Military playable cards, the General, the Commandant, and the shared sliding Command tracker.</p>
+    <h1 data-faction-title>Military Faction Sheets</h1>
+    <p data-sheet-description>Loading canonical v0.6.1 cards and supplemental components…</p>
     <p>Print at 100% scale with browser headers and footers disabled and background graphics enabled. Cut to 2.5 × 3.5 inches.</p>
+    <p id="sheet-status">Loading v0.6.1 sources…</p>
     <button type="button" onclick="window.print()">Print faction sheets</button>
   </header>
-
   <main id="sheets"></main>
-
-  <script src="https://tymonius.github.io/Gauntlet/faction-sheets/military.js"></script>
+  <script>const SOURCES = {}; const FACTIONS = [];</script>
+  <script src="../deckbuilder/supplemental-data.js?v=20260722-1"></script>
+  <script src="../deckbuilder/completed-supplementals.js?v=20260723-1"></script>
+  <script src="../deckbuilder/v061-supplementals.js?v=20260730-1"></script>
+  <script src="../deckbuilder/completed-factions.js?v=20260729-1"></script>
+  <script>window.FACTIONS = FACTIONS;</script>
+  <script src="v061-runtime.js?v=20260730-1"></script>
 </body>
 </html>

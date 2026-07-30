@@ -1,37 +1,37 @@
 const SOURCES = {
   neutral: {
     label: "Neutral",
-    path: "../docs/Gauntlet_v0.6_Neutral_Card_Pool.md"
+    path: "../docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
   },
   military: {
     label: "Military",
-    path: "../releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md",
+    path: "../releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
     start: "# 6. Canonical Military card pool",
     end: "# 7. Card-pool summary"
   },
   diplomats: {
     label: "Diplomats",
-    path: "../releases/v0.6.0/faction-guides/diplomat/Gauntlet_v0.6_Diplomat_Faction_Guide.md",
+    path: "../releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
     start: "# 6. Canonical card pool",
     end: "# 7. Card-pool summary"
   },
   inquisition: {
     label: "Inquisition",
-    path: "../releases/v0.6.0/faction-guides/inquisition/Gauntlet_v0.6_Inquisition_Faction_Guide.md",
-    start: "## 6. Canonical Inquisition card pool",
-    end: "## 7. Card-pool summary",
-    headingLevel: 3
+    path: "../releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
+    start: "# 6. Canonical Inquisition card pool",
+    end: "# 7. Quick reference",
+    headingLevel: 2
   },
   financiers: {
     label: "Financiers",
-    path: "../releases/v0.6.0/faction-guides/financier/Gauntlet_v0.6_Financier_Faction_Guide.md",
-    start: "## 6. Canonical Financier card pool",
-    end: "## 7. Card-pool summary",
-    headingLevel: 3
+    path: "../releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
+    start: "# 6. Canonical Financier card pool",
+    end: "# 7. Quick reference",
+    headingLevel: 2
   },
   intelligence: {
     label: "Intelligence",
-    path: "../releases/v0.6.0/faction-guides/intelligence/Gauntlet_v0.6_Intelligence_Faction_Guide.md",
+    path: "../releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
     start: "# 6. Canonical Intelligence card pool",
     end: "# 7. Card-pool summary"
   }
@@ -55,7 +55,7 @@ const FACTIONS = [
           ["Command", "The first time each turn you win a battle, gain 1 Command, up to 2."],
           ["Onward — 1 Command", "Move one additional space this turn. This movement may initiate a battle."],
           ["Rally — 1 Command", "Before dice in a battle you initiated, add +1 to your battle total."],
-          ["Rout — 2 Command", "After winning a battle you initiated, move one space toward the enemy Heartland. This may initiate another battle."]
+          ["Rout — 2 Command", "After winning a battle you initiated, move one position toward the opponent's end. This may initiate another battle."]
         ]
       },
       {
@@ -121,7 +121,7 @@ const FACTIONS = [
         role: "Judgment · Purge · Resource destruction",
         rules: [
           ["Conviction", "The first time each turn opposing cards enter the Graveyard after a battle involving you, gain 1 Conviction, up to 4."],
-          ["Condemnation", "Opposing played battle-drawn cards go to the Graveyard after battles involving you instead of discard."],
+          ["Condemnation", "Opposing played Tactics go to the Graveyard after battles involving you instead of discard."],
           ["Final Judgment", "Once per turn after you win a battle, Purge immediately without using the Action opportunity and reduce its Conviction cost by 1, minimum 1."],
           ["Purification", "At the start of the opponent's turn, after their normal draw attempt, if no card can be drawn from deck or discard, you win."]
         ]
@@ -133,8 +133,8 @@ const FACTIONS = [
         role: "Defense · Pursuit · Exposure",
         rules: [
           ["Conviction", "The first time each turn opposing cards enter the Graveyard after a battle involving you, gain 1 Conviction, up to 4."],
-          ["Condemnation", "Opposing played battle-drawn cards go to the Graveyard after battles involving you instead of discard."],
-          ["Relentless Pursuit", "Once per turn after an opponent loses a battle they initiated against you, spend 2 Conviction to end their turn, then move one space toward their Heartland; resolve any resulting battle immediately."],
+          ["Condemnation", "Opposing played Tactics go to the Graveyard after battles involving you instead of discard."],
+          ["Relentless Pursuit", "Once per turn after an opponent loses a battle they initiated against you, spend 2 Conviction to end their turn, then move one position toward their end; resolve any resulting battle immediately."],
           ["Purification", "At the start of the opponent's turn, after their normal draw attempt, if no card can be drawn from deck or discard, you win."]
         ]
       }
@@ -219,7 +219,7 @@ const FACTIONS = [
   }
 ];
 
-const STORAGE_KEY = "gauntlet-v0.6-dev-decks";
+const STORAGE_KEY = "gauntlet-v0.6.1-decks";
 
 const state = {
   cards: [],
@@ -614,10 +614,10 @@ function validateAndRender() {
 
 function currentDeckData() {
   return {
-    schema: "gauntlet-v0.6-dev-deck",
+    schema: "gauntlet-v0.6.1-deck",
     schemaVersion: 1,
-    gameVersion: "v0.6-dev",
-    name: state.deckName.trim() || "Untitled v0.6 deck",
+    gameVersion: "v0.6.1",
+    name: state.deckName.trim() || "Untitled v0.6.1 Deck",
     factionId: state.factionId,
     leaderId: state.leaderId,
     cards: deckEntries().map(({ card, qty }) => ({ id: card.id, name: card.name, faction: card.faction, qty }))
@@ -665,7 +665,7 @@ function readSavedDecks() {
 }
 
 function applyDeckData(data) {
-  if (data.schema !== "gauntlet-v0.6-dev-deck") throw new Error("This is not a v0.6 development deck export.");
+  if (data.schema !== "gauntlet-v0.6.1-deck") throw new Error("This is not a v0.6 development deck export.");
   const faction = FACTIONS.find(item => item.id === data.factionId && item.status === "ready");
   if (!faction) throw new Error("The exported faction is not currently available.");
 

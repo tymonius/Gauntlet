@@ -1,8 +1,11 @@
 import { expect, test } from "vitest";
 import worker, {
-  interactionsToCsv,
-  isAdminAuthorized,
+  sanitizePlaytestContext,
   sanitizeSessionId
+} from "./worker-v061.js";
+import {
+  interactionsToCsv,
+  isAdminAuthorized
 } from "./worker.js";
 
 test("preserves valid anonymous session identifiers", () => {
@@ -12,6 +15,20 @@ test("preserves valid anonymous session identifiers", () => {
 test("replaces invalid session identifiers", () => {
   const value = sanitizeSessionId("bad id");
   expect(value).toMatch(/^[0-9a-f-]{36}$/i);
+});
+
+test("normalizes valid formal-playtest context without accepting arbitrary identifiers", () => {
+  expect(sanitizePlaytestContext({
+    playtestSessionId: "123e4567-e89b-42d3-a456-426614174000",
+    sheetSerial: "g061-abcd23"
+  })).toEqual({
+    playtestSessionId: "123e4567-e89b-42d3-a456-426614174000",
+    sheetSerial: "G061-ABCD23"
+  });
+  expect(sanitizePlaytestContext({
+    playtestSessionId: "not-a-session",
+    sheetSerial: "old-sheet"
+  })).toEqual({ playtestSessionId: null, sheetSerial: null });
 });
 
 test("uses constant-shape bearer-token authorization", async () => {
@@ -43,8 +60,29 @@ test("serves the private review shell without exposing data", async () => {
   expect(html).toContain("anonymous session identifiers");
 });
 
-test("reports whether interaction logging is configured", async () => {
+test("reports the governing v0.6.1 worker and optional logging bindings", async () => {
   const response = await worker.fetch(new Request("https://rules.example/health"), {});
   const payload = await response.json();
+  expect(payload.version).toBe("v0.6.1");
   expect(payload.interactionLogging).toBe(false);
+  expect(payload.playtestLinking).toBe(false);
+});
+
+test("rejects requests for a different rules version before retrieval", async () => {
+  const response = await worker.fetch(new Request("https://rules.example/api/rules", {
+    method: "POST",
+    headers: {
+      Origin: "https://gauntlet.run",
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      question: "Where does a Gambit go?",
+      rulesVersion: "v0.6.2"
+    })
+  }), {
+    OPENAI_API_KEY: "test-key",
+    ALLOWED_ORIGINS: "https://gauntlet.run"
+  });
+  expect(response.status).toBe(409);
+  expect((await response.json()).error).toContain("v0.6.1");
 });

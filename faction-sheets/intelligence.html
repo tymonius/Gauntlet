@@ -11,20 +11,24 @@
   </script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Gauntlet v0.6 Intelligence Faction Sheets</title>
-  <link rel="stylesheet" href="intelligence.css?v=3">
+  <title>Gauntlet v0.6.1 Intelligence Faction Sheets</title>
+  <link rel="stylesheet" href="v061.css?v=20260730-1">
 </head>
-<body>
+<body data-faction="intelligence">
   <header class="screen-only">
-    <h1>Gauntlet v0.6 — Intelligence Faction Sheets</h1>
-    <p>Two Letter-size 9-up sheets containing the twelve Intelligence playable cards, Ranger, Spymaster, two faction references, one sliding Intel Tracker, and one sliding Operation Progress Tracker.</p>
-    <p>Place each tracker beneath its paired Reference Card, fully covered at 0, then slide the Reference upward until its bottom edge aligns with the current value. No markers are required.</p>
+    <h1 data-faction-title>Intelligence Faction Sheets</h1>
+    <p data-sheet-description>Loading canonical v0.6.1 cards and supplemental components…</p>
     <p>Print at 100% scale with browser headers and footers disabled and background graphics enabled. Cut to 2.5 × 3.5 inches.</p>
+    <p id="sheet-status">Loading v0.6.1 sources…</p>
     <button type="button" onclick="window.print()">Print faction sheets</button>
   </header>
   <main id="sheets"></main>
-  <script src="intelligence.js?v=4"></script>
-  <script src="intelligence-fit.js"></script>
-  <script src="leader-portrait-sources.js?v=2"></script>
+  <script>const SOURCES = {}; const FACTIONS = [];</script>
+  <script src="../deckbuilder/supplemental-data.js?v=20260722-1"></script>
+  <script src="../deckbuilder/completed-supplementals.js?v=20260723-1"></script>
+  <script src="../deckbuilder/v061-supplementals.js?v=20260730-1"></script>
+  <script src="../deckbuilder/completed-factions.js?v=20260729-1"></script>
+  <script>window.FACTIONS = FACTIONS;</script>
+  <script src="v061-runtime.js?v=20260730-1"></script>
 </body>
 </html>

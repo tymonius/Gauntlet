@@ -22,7 +22,7 @@
           { label: "Timing", text: "A Rite cannot complete on the turn it begins. Complete at most one Rite per turn. If interrupted, reset it; paid costs are not returned." },
           { label: "Progress", text: "First Rite: unlock Invocation. Second Rite: unlock Transmutation. Third Rite: immediately win by Ritual." },
           { label: "Invocation", text: "Once per turn, when you play an Arcane card, you may move one card from your Graveyard to your discard pile." },
-          { label: "Transmutation", text: "Once per turn before dice in a battle involving you, send one hand card to your Graveyard and add its value to your battle total. This is neither a hand commitment nor a battle-drawn play." },
+          { label: "Transmutation", text: "Once per turn before dice in a battle involving you, send one hand card to your Graveyard and add its value to your battle total. This is neither a Gambit nor a battle-drawn play." },
           { label: "Bound cards", text: "Bound cards are outside all normal zones and move only as instructed. If their effect ends without a destination, place them in their owner's Graveyard." }
         ]
       }
@@ -40,7 +40,7 @@
         name: "Rite of Blood",
         icon: "◆",
         beginning: "Send one card from your hand to your Graveyard.",
-        completion: "On a later turn, complete this Rite when you win a battle without committing a card from hand and without playing a battle-drawn card.",
+        completion: "On a later turn, complete this Rite when you win a battle without committing a card from hand and without playing a Tactic.",
         result: "Transmutation, Assets, Overlays, Territory effects, leader abilities, and cards played from the Graveyard do not by themselves prevent completion.",
         interruption: "If you lose a battle first, reset this Rite."
       },
