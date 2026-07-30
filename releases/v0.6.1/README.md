@@ -26,7 +26,8 @@ The draft release candidate now contains or drives:
 - canonical structured JSON and a complete one-file card reference;
 - all six definitive faction guides;
 - synchronized Browser Rulebook, Card Reference, and Deckbuilder sources;
-- canonical-data-driven faction sheets, Leaders, trackers, Proposals, Deeds, Rites, and references;
+- canonical-data-driven Neutral, Territory, faction, and all-components print packages;
+- Leaders, trackers, Proposals, Deeds, Rites, and references;
 - a printable formal playtest sheet and player mat;
 - a formal-session batch generator, private host manifest, join page, and single-use-code lifecycle;
 - Rules Arbiter and playtest-session Worker sources sharing one D1 schema; and
@@ -74,8 +75,12 @@ The current source candidate has passed:
 - desktop and mobile browser smoke tests;
 - Rulebook and Reference Guide generation and visual review;
 - playtest-sheet and player-mat generation;
-- six-faction card-overflow validation; and
-- exact faction-PDF page counts with nonblank final pages, followed by visual review.
+- six-faction card-overflow validation;
+- exact faction-PDF page counts with nonblank final pages;
+- canonical generation of the Neutral, Territory, six faction, and all-components PDFs; and
+- page-by-page visual inspection of the standalone packages and the 26-page all-components PDF at rendered print scale.
+
+No clipping, overlap, broken glyphs, blank pages, or unintended trailing pages were found in the final print-package review.
 
 The archived v0.6.0 PDFs remain byte-for-byte aligned with `main`; the legacy v0.6.0 renderer is prevented from overwriting them from this revision branch.
 
@@ -83,18 +88,19 @@ The archived v0.6.0 PDFs remain byte-for-byte aligned with `main`; the legacy v0
 
 The following work remains intentionally open:
 
-1. assemble and visually inspect the final v0.6.1 Neutral, Territory, faction, and all-components release PDFs at 100% scale;
-2. configure the production Cloudflare account/token and facilitator secret;
-3. apply the shared D1 migrations and deploy both Workers;
-4. verify both production health endpoints;
-5. perform one physical coded-sheet test: print, scan, join, ask the Rules Arbiter, close the session, and confirm that the retired code cannot be reused; and
-6. set the publication date, release status, public links, and final manifest flags only after those checks pass.
+1. configure the production Cloudflare account/token and facilitator secret;
+2. apply the shared D1 migrations and deploy both Workers;
+3. verify both production health endpoints;
+4. perform one physical coded-sheet test: print, scan, join, ask the Rules Arbiter, close the session, and confirm that the retired code cannot be reused; and
+5. set the publication date, release status, public links, and final manifest flags only after those checks pass.
 
 ## Deferred final priority: playable digital implementation
 
 The automated TypeScript game engine is not a dependency for publishing the v0.6.1 tabletop release. Exploratory work adapting the engine to Gambits, Reserves, Tactics, and the revised Aftermath has been preserved separately on `feature/v061-digital-engine-migration`.
 
 That work resumes only after the tabletop package is published. Before a v0.6.1-compatible playable digital build can be declared complete, the engine must replace the legacy hand-commitment and Battle Hand procedure, migrate every affected card and faction handler, enforce the revised information and timing rules, and pass complete regression and multiplayer validation.
+
+Issues #288 and #289 remain part of that future digital-engine remediation, not this tabletop publication gate.
 
 ## Validation requirements
 
