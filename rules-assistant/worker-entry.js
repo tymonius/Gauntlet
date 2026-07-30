@@ -1,4 +1,4 @@
-import worker from "./worker.js";
+import worker from "./worker-v061.js";
 import { ADMIN_PAGE_WITH_INCREMENTAL_EXPORT } from "./admin-incremental-export-page.js";
 import { handleReviewExportCheckpoint } from "./review-export-checkpoint.js";
 
