@@ -6,10 +6,25 @@ It exists because a passing test suite can still validate the wrong design when 
 
 ## Files
 
+- `conversation-audit/` — normalized conversation decisions, source hashes, coverage limits, and exact transcript-line evidence.
 - `decision-registry.json` — immutable decision records with stable IDs, evidence, status, subjects, and explicit supersession.
 - `traceability.json` — the implementation matrix for each governed subject.
 - `schemas/` — JSON Schemas for editors and external tooling.
-- `.github/scripts/validate-governance.py` — the repository integrity gate.
+- `.github/scripts/validate-governance.py` — the canonical and implementation integrity gate.
+- `.github/scripts/validate-conversation-audit.py` — the conversation-evidence integrity gate.
+
+## Provenance layers
+
+Governance proceeds in this order:
+
+1. **Conversation → decision thread:** `GNT-CONV-*` records preserve the latest known intent, superseded directions, rejections, tentative ideas, and exact evidence.
+2. **Decision thread → formal decision:** a binding current thread is mapped or promoted to an immutable `GNT-DEC-*` record.
+3. **Formal decision → canonical source:** the governing rule, card record, guide, or specification is updated.
+4. **Canonical source → product surfaces:** engine, tests, Deckbuilder, references, print/art, and release files are reconciled in `traceability.json`.
+
+A `GNT-CONV-*` thread is evidence, not a canonical decision. Its `current` status means only “latest known conversational intent within the available corpus.” It does not establish that the subject is canonicalized, implemented, tested, or released.
+
+The initial conversation audit is raw-turn complete for the supplied nine-conversation export from June 17 through July 9, 2026. July 10–30 decisions are supplemented from exact project snippets and retained project context, but that period is not raw-turn complete until a newer export is added.
 
 ## Decision IDs
 
@@ -85,7 +100,7 @@ Every governed subject records these surfaces:
 
 `unknown` is an honest temporary status. It is not equivalent to complete.
 
-The integrity gate is currently strict for every subject declared in `traceability.json`. It is not yet a claim that every historical Gauntlet discussion has been reconciled. Project-wide backfill must expand the manifest until coverage can be changed from `declared-subjects` to `project-wide`.
+The integrity gate is currently strict for every subject declared in `traceability.json`. It is not yet a claim that every historical Gauntlet discussion has been reconciled through every downstream layer. The conversation audit establishes the input set; project-wide backfill must still map current threads into formal decisions and reconcile canonical and product surfaces before coverage changes from `declared-subjects` to `project-wide`.
 
 ## Current-source guards
 
