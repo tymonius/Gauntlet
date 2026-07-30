@@ -53,8 +53,8 @@
 }
 
 .art-counterintelligence img {
-  object-fit: contain;
-  object-position: center;
+  object-fit: cover;
+  object-position: center 46%;
   filter: brightness(1.24) contrast(1.03) saturate(1.04);
 }
 
@@ -89,7 +89,7 @@
 .rule-section {
   display: grid;
   grid-template-columns: 0.43in minmax(0, 1fr);
-  align-items: start;
+  align-items: baseline;
   column-gap: 0.05in;
 }
 
@@ -102,7 +102,7 @@
 
 .rule-section h4,
 .dense-card .rule-section h4 {
-  margin: 0.009in 0 0;
+  margin: 0;
   font-size: 5.45pt;
   line-height: 1;
 }
