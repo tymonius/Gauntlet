@@ -19,6 +19,8 @@
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
   <link rel="stylesheet" href="../design-tokens.css" />
   <link rel="stylesheet" href="card-design.css" />
+  <link rel="stylesheet" href="card-design-refinement.css" />
+  <script src="card-design.js" defer></script>
 </head>
 <body>
   <header class="site-header screen-only">
@@ -34,33 +36,34 @@
 
   <main>
     <section class="intro section-shell screen-only">
-      <p class="eyebrow">Playable card system · first frame study</p>
+      <p class="eyebrow">Playable card system · adaptive frame study</p>
       <h1>Neutral card-front prototype</h1>
-      <p class="intro-copy">This specimen translates the approved shared-card structure into an actual-size Neutral frame. It tests the same geometry against sparse text, dense text, and a rules reminder before the system expands to faction cards and specialized component families.</p>
+      <p class="intro-copy">This pass tests a responsive Neutral card composition rather than one fixed art-to-rules split. The illustration expands toward an aesthetic maximum, then yields only the space required by the card’s canonical text.</p>
       <div class="status-row" aria-label="Prototype status">
         <span>2.5 × 3.5 in trim</span>
         <span>Actual-size print test</span>
-        <span>Frame and hierarchy study</span>
+        <span>Adaptive art window</span>
+        <span>Two-column rules</span>
       </div>
     </section>
 
     <section class="review-shell screen-only" aria-labelledby="review-title">
       <div>
         <p class="section-label">Design basis</p>
-        <h2 id="review-title">What this pass establishes</h2>
+        <h2 id="review-title">What this pass changes</h2>
       </div>
       <div class="review-grid">
         <article>
-          <h3>Shared shell</h3>
-          <p>Ivory outer border, dark inner keyline, warm parchment interior, open title area, upper-right value medallion, framed illustration, continuous rules field, and restrained metadata.</p>
+          <h3>Adaptive composition</h3>
+          <p>The framed illustration uses the largest approved height that the rules permit. Dense cards reduce art before reducing otherwise readable text.</p>
         </article>
         <article>
-          <h3>Typography</h3>
-          <p>P22 1722 Pro titles, Adobe Caslon Pro rules, Caslon italic reminders, and Inter mechanical labels and production metadata.</p>
+          <h3>Rules hierarchy</h3>
+          <p>Action and Battle labels occupy a fixed left column while Adobe Caslon rules align in a wider right column. Reminders remain Caslon italic.</p>
         </article>
         <article>
-          <h3>Still provisional</h3>
-          <p>Exact border width, medallion shape, art-window height, footer contents, final rules sizes, spacing values, and production color specifications.</p>
+          <h3>Header geometry</h3>
+          <p>Titles remain all caps at one primary scale. The value medallion now shares the art frame’s right alignment and equal top inset.</p>
         </article>
       </div>
     </section>
@@ -69,20 +72,20 @@
       <div class="section-shell card-section-heading screen-only">
         <p class="section-label">Print and compare</p>
         <h2 id="cards-title">Three density conditions</h2>
-        <p>All three cards use one fixed frame. The rules scale changes only where the canonical text requires it, making the pressure points visible rather than hiding them through different layouts.</p>
+        <p>The same system adapts its illustration height to each card. All three specimens now use their existing Gauntlet artwork so the frame, typography, crop, and complete card composition can be judged together.</p>
       </div>
 
       <div class="card-sheet">
         <div class="specimen-column">
           <p class="specimen-label screen-only"><strong>Sparse</strong><span>Comfortable baseline</span></p>
-          <article class="gauntlet-card neutral-card sparse-card" aria-label="Rallying Cry neutral card-front prototype">
+          <article class="gauntlet-card neutral-card sparse-card" data-art-max="1.72" data-art-min="0.82" aria-label="Rallying Cry neutral card-front prototype">
             <div class="card-interior">
               <header class="card-heading">
                 <h3 class="card-title">Rallying Cry</h3>
                 <div class="value-medallion" aria-label="Deckbuilding value 1">1</div>
               </header>
-              <figure class="card-art art-rally" aria-label="Placeholder for Rallying Cry illustration crop">
-                <span>Illustration crop study</span>
+              <figure class="card-art art-rally has-image">
+                <img src="../images/artwork/cards/neutral/rallying-cry.png" alt="Rallying Cry card artwork" />
               </figure>
               <div class="card-rules">
                 <section class="rule-section">
@@ -105,14 +108,14 @@
 
         <div class="specimen-column">
           <p class="specimen-label screen-only"><strong>Dense</strong><span>Maximum ordinary-card pressure</span></p>
-          <article class="gauntlet-card neutral-card dense-card" aria-label="Counterintelligence neutral card-front prototype">
+          <article class="gauntlet-card neutral-card dense-card long-title" data-art-max="1.72" data-art-min="0.62" aria-label="Counterintelligence neutral card-front prototype">
             <div class="card-interior">
               <header class="card-heading">
                 <h3 class="card-title">Counterintelligence</h3>
                 <div class="value-medallion" aria-label="Deckbuilding value 1">1</div>
               </header>
-              <figure class="card-art art-counterintelligence" aria-label="Placeholder for Counterintelligence illustration crop">
-                <span>Illustration crop study</span>
+              <figure class="card-art art-counterintelligence has-image">
+                <img src="../images/artwork/cards/neutral/counterintelligence.png" alt="Counterintelligence card artwork" />
               </figure>
               <div class="card-rules">
                 <section class="rule-section">
@@ -135,14 +138,14 @@
 
         <div class="specimen-column">
           <p class="specimen-label screen-only"><strong>Reminder</strong><span>Secondary italic voice</span></p>
-          <article class="gauntlet-card neutral-card reminder-card" aria-label="New Recruits neutral card-front prototype">
+          <article class="gauntlet-card neutral-card reminder-card" data-art-max="1.72" data-art-min="0.72" aria-label="New Recruits neutral card-front prototype">
             <div class="card-interior">
               <header class="card-heading">
                 <h3 class="card-title">New Recruits</h3>
                 <div class="value-medallion" aria-label="Deckbuilding value 1">1</div>
               </header>
-              <figure class="card-art art-recruits" aria-label="Placeholder for New Recruits illustration crop">
-                <span>Illustration crop study</span>
+              <figure class="card-art art-recruits has-image">
+                <img src="../images/artwork/reference/reserve/militia-armory-enlistment.png" alt="New Recruits card artwork" />
               </figure>
               <div class="card-rules">
                 <section class="rule-section">
@@ -172,11 +175,12 @@
         <h2 id="evaluation-title">What to inspect after printing</h2>
       </div>
       <ol>
-        <li>Whether the ivory border reads clearly in a fanned hand without consuming too much interior space.</li>
-        <li>Whether P22 1722 remains legible and authoritative on both short and long titles.</li>
-        <li>Whether the fixed illustration window leaves enough rules capacity on Counterintelligence.</li>
-        <li>Whether the Caslon italic reminder is visibly secondary without becoming too faint or small.</li>
-        <li>Whether the value medallion and footer feel like part of one document-like system rather than added interface widgets.</li>
+        <li>Whether each illustration reaches a satisfying size without forcing the rules below a comfortable reading threshold.</li>
+        <li>Whether the three finished paintings integrate naturally with the ivory border, parchment field, and restrained frame.</li>
+        <li>Whether all-caps P22 1722 gives the cards a stronger common silhouette without making long titles feel compressed.</li>
+        <li>Whether Counterintelligence now reads at the same title scale as the other cards.</li>
+        <li>Whether the Action and Battle columns align cleanly and remain easier to scan than a single full-width rules column.</li>
+        <li>Whether the value medallion feels anchored by its shared alignment with the illustration frame.</li>
       </ol>
     </section>
   </main>
