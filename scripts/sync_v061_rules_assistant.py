@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Synchronize and validate the governing v0.6.1 Rules Arbiter sources.
 
-The deployed v0.6.1 worker is intentionally separate from the retained legacy
-worker. This script updates browser-facing version labels and validates the
-v0.6.1 worker/configuration without rewriting the legacy administrative worker.
+The deployed v0.6.1 worker runs through the shared administrative entry wrapper.
+This script updates browser-facing version labels and validates both the
+v0.6.1 governing worker and the integrated deployment entry point.
 """
 
 from __future__ import annotations
@@ -13,6 +13,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 GOVERNING_WORKER = ROOT / "rules-assistant" / "worker-v061.js"
+WORKER_ENTRY = ROOT / "rules-assistant" / "worker-entry.js"
 WRANGLER = ROOT / "rules-assistant" / "wrangler.toml"
 WIDGET = ROOT / "rules-assistant" / "widget.js"
 LOCAL_SEARCH = ROOT / "rules-assistant" / "local-search.js"
@@ -25,7 +26,13 @@ def synchronize_browser_source(path: Path) -> str:
     return text
 
 
-def validate(worker: str, wrangler: str, widget: str, local_search: str) -> list[str]:
+def validate(
+    worker: str,
+    worker_entry: str,
+    wrangler: str,
+    widget: str,
+    local_search: str,
+) -> list[str]:
     errors: list[str] = []
 
     worker_markers = [
@@ -43,8 +50,18 @@ def validate(worker: str, wrangler: str, widget: str, local_search: str) -> list
     if "v0.6.0" in worker:
         errors.append("Governing Rules Arbiter worker still identifies v0.6.0")
 
-    if 'main = "worker-v061.js"' not in wrangler:
-        errors.append("rules-assistant/wrangler.toml does not deploy worker-v061.js")
+    entry_markers = [
+        'import worker from "./worker-v061.js"',
+        'import { ADMIN_PAGE_WITH_INCREMENTAL_EXPORT } from "./admin-incremental-export-page.js"',
+        'import { handleReviewExportCheckpoint } from "./review-export-checkpoint.js"',
+        "/api/admin/review-export-checkpoint",
+    ]
+    for marker in entry_markers:
+        if marker not in worker_entry:
+            errors.append(f"Integrated Rules Arbiter entry missing marker: {marker}")
+
+    if 'main = "worker-entry.js"' not in wrangler:
+        errors.append("rules-assistant/wrangler.toml does not deploy worker-entry.js")
     if 'SITE_ORIGIN = "https://gauntlet.run"' not in wrangler:
         errors.append("Rules Arbiter SITE_ORIGIN is not configured for gauntlet.run")
 
@@ -74,10 +91,11 @@ def validate(worker: str, wrangler: str, widget: str, local_search: str) -> list
 def main() -> int:
     try:
         worker = GOVERNING_WORKER.read_text(encoding="utf-8")
+        worker_entry = WORKER_ENTRY.read_text(encoding="utf-8")
         wrangler = WRANGLER.read_text(encoding="utf-8")
         widget = synchronize_browser_source(WIDGET)
         local_search = synchronize_browser_source(LOCAL_SEARCH)
-        errors = validate(worker, wrangler, widget, local_search)
+        errors = validate(worker, worker_entry, wrangler, widget, local_search)
     except OSError as exc:
         print(f"Rules Arbiter synchronization failed: {exc}", file=sys.stderr)
         return 1
@@ -90,7 +108,8 @@ def main() -> int:
 
     print(
         "Synchronized Rules Arbiter browser sources and validated the governing "
-        "v0.6.1 worker, deployment configuration, and formal-playtest linkage."
+        "v0.6.1 worker, integrated administrative entry, deployment configuration, "
+        "and formal-playtest linkage."
     )
     return 0
 
