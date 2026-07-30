@@ -1,0 +1,126 @@
+{
+  "schema_version": 1,
+  "generated_on": "2026-07-30",
+  "scope": "Reconciled subject-level outcomes derived from the nine exported Gauntlet conversations. Raw decision-bearing turns remain in the evidence corpus. Current repository sources and later merged decisions supersede older conversation drafts where they conflict.",
+  "entry_count": 73,
+  "outcome_counts": {
+    "current-canonical": 17,
+    "current-working": 5,
+    "historical-current": 2,
+    "current-released": 33,
+    "rejected": 2,
+    "superseded": 4,
+    "deferred-then-approved": 1,
+    "deferred": 2,
+    "superseded-in-part": 1,
+    "current-implemented": 4,
+    "current-watchlist": 2
+  },
+  "entry_files": [
+    {
+      "domain": "cards",
+      "path": "governance/conversation-audit/decision-ledger/cards.json",
+      "entry_count": 14,
+      "outcome_counts": {
+        "current-working": 1,
+        "current-released": 11,
+        "superseded": 2
+      }
+    },
+    {
+      "domain": "core-rules",
+      "path": "governance/conversation-audit/decision-ledger/core-rules.json",
+      "entry_count": 15,
+      "outcome_counts": {
+        "current-released": 12,
+        "rejected": 2,
+        "superseded": 1
+      }
+    },
+    {
+      "domain": "factions",
+      "path": "governance/conversation-audit/decision-ledger/factions.json",
+      "entry_count": 10,
+      "outcome_counts": {
+        "current-released": 7,
+        "deferred-then-approved": 1,
+        "current-canonical": 1,
+        "deferred": 1
+      }
+    },
+    {
+      "domain": "governance",
+      "path": "governance/conversation-audit/decision-ledger/governance.json",
+      "entry_count": 6,
+      "outcome_counts": {
+        "current-canonical": 5,
+        "current-working": 1
+      }
+    },
+    {
+      "domain": "lore",
+      "path": "governance/conversation-audit/decision-ledger/lore.json",
+      "entry_count": 4,
+      "outcome_counts": {
+        "current-canonical": 3,
+        "current-working": 1
+      }
+    },
+    {
+      "domain": "product",
+      "path": "governance/conversation-audit/decision-ledger/product.json",
+      "entry_count": 3,
+      "outcome_counts": {
+        "current-released": 1,
+        "deferred": 1,
+        "current-implemented": 1
+      }
+    },
+    {
+      "domain": "release",
+      "path": "governance/conversation-audit/decision-ledger/release.json",
+      "entry_count": 3,
+      "outcome_counts": {
+        "historical-current": 2,
+        "current-working": 1
+      }
+    },
+    {
+      "domain": "terminology",
+      "path": "governance/conversation-audit/decision-ledger/terminology.json",
+      "entry_count": 3,
+      "outcome_counts": {
+        "current-released": 2,
+        "superseded": 1
+      }
+    },
+    {
+      "domain": "testing",
+      "path": "governance/conversation-audit/decision-ledger/testing.json",
+      "entry_count": 3,
+      "outcome_counts": {
+        "current-canonical": 1,
+        "current-watchlist": 2
+      }
+    },
+    {
+      "domain": "tooling",
+      "path": "governance/conversation-audit/decision-ledger/tooling.json",
+      "entry_count": 5,
+      "outcome_counts": {
+        "current-canonical": 1,
+        "current-implemented": 3,
+        "current-working": 1
+      }
+    },
+    {
+      "domain": "visual",
+      "path": "governance/conversation-audit/decision-ledger/visual.json",
+      "entry_count": 7,
+      "outcome_counts": {
+        "current-canonical": 6,
+        "superseded-in-part": 1
+      }
+    }
+  ]
+}
