@@ -1,0 +1,157 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://gauntlet.run/schemas/decision-registry.schema.json",
+  "title": "Gauntlet Decision Registry",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "project",
+    "current_rules_version",
+    "coverage",
+    "decisions"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "project": {
+      "const": "Gauntlet"
+    },
+    "current_rules_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "coverage": {
+      "type": "object",
+      "required": [
+        "mode",
+        "description"
+      ],
+      "properties": {
+        "mode": {
+          "enum": [
+            "declared-subjects",
+            "project-wide"
+          ]
+        },
+        "description": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "decisions": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/decision"
+      }
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "stringList": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1
+      },
+      "uniqueItems": true
+    },
+    "guard": {
+      "type": "object",
+      "required": [
+        "term",
+        "roots",
+        "allowed_paths"
+      ],
+      "properties": {
+        "term": {
+          "type": "string",
+          "minLength": 1
+        },
+        "roots": {
+          "$ref": "#/$defs/stringList"
+        },
+        "allowed_paths": {
+          "$ref": "#/$defs/stringList"
+        }
+      },
+      "additionalProperties": false
+    },
+    "decision": {
+      "type": "object",
+      "required": [
+        "id",
+        "title",
+        "recorded_on",
+        "status",
+        "kind",
+        "subjects",
+        "summary",
+        "evidence",
+        "supersedes_decision_ids",
+        "supersedes_subjects"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^GNT-DEC-[0-9]{4}-[0-9]{4}-[0-9]{3}$"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recorded_on": {
+          "type": "string",
+          "format": "date"
+        },
+        "status": {
+          "enum": [
+            "proposed",
+            "approved",
+            "canonicalized",
+            "implemented",
+            "released",
+            "quarantined",
+            "superseded",
+            "deprecated"
+          ]
+        },
+        "kind": {
+          "enum": [
+            "card",
+            "rule",
+            "terminology",
+            "governance",
+            "release",
+            "tooling"
+          ]
+        },
+        "subjects": {
+          "$ref": "#/$defs/stringList"
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "evidence": {
+          "$ref": "#/$defs/stringList"
+        },
+        "supersedes_decision_ids": {
+          "$ref": "#/$defs/stringList"
+        },
+        "supersedes_subjects": {
+          "$ref": "#/$defs/stringList"
+        },
+        "current_source_guards": {
+          "type": "array",
+          "items": {
+            "$ref": "#/$defs/guard"
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

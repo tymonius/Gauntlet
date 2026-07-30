@@ -1477,8 +1477,8 @@
       "source": "docs/Gauntlet_v0.6_Neutral_Card_Pool.md"
     },
     {
-      "id": "neutral-siege-weaponry",
-      "name": "Siege Weaponry",
+      "id": "neutral-bombardment",
+      "name": "Bombardment",
       "allegiance": "Neutral",
       "cost": 4,
       "complexity": "Advanced",

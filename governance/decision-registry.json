@@ -1,0 +1,191 @@
+{
+  "schema_version": 1,
+  "project": "Gauntlet",
+  "current_rules_version": "v0.6.0",
+  "coverage": {
+    "mode": "declared-subjects",
+    "description": "The integrity gate is authoritative for every subject listed in governance/traceability.json. Project-wide backfill is tracked separately and expands this set."
+  },
+  "decisions": [
+    {
+      "id": "GNT-DEC-2026-0730-001",
+      "title": "Adopt decision provenance and traceability governance",
+      "recorded_on": "2026-07-30",
+      "status": "canonicalized",
+      "kind": "governance",
+      "subjects": [
+        "project-governance"
+      ],
+      "summary": "Approved game decisions must be recorded with immutable IDs, explicit supersession, canonical source paths, implementation status, and release-surface traceability. Conflicts require quarantine rather than interpretation.",
+      "evidence": [
+        "https://github.com/tymonius/Gauntlet/issues/288",
+        "https://github.com/tymonius/Gauntlet/issues/289"
+      ],
+      "supersedes_decision_ids": [],
+      "supersedes_subjects": []
+    },
+    {
+      "id": "GNT-DEC-2026-0730-002",
+      "title": "Pathfinders Action targets a Territory, not an Arena",
+      "recorded_on": "2026-07-30",
+      "status": "implemented",
+      "kind": "card",
+      "subjects": [
+        "neutral-pathfinders"
+      ],
+      "summary": "Pathfinders Action may choose one Territory. Arena targets are not legal.",
+      "evidence": [
+        "https://github.com/tymonius/Gauntlet/pull/296"
+      ],
+      "supersedes_decision_ids": [],
+      "supersedes_subjects": []
+    },
+    {
+      "id": "GNT-DEC-2026-0730-003",
+      "title": "Assimilation uses a banked Asset and qualifying aftermath trigger",
+      "recorded_on": "2026-07-30",
+      "status": "implemented",
+      "kind": "card",
+      "subjects": [
+        "neutral-assimilation"
+      ],
+      "summary": "Assimilation Action is a banked Asset used optionally after a qualifying attacking win. It is not a temporary Condition and is not consumed on a loss.",
+      "evidence": [
+        "https://github.com/tymonius/Gauntlet/issues/288",
+        "https://github.com/tymonius/Gauntlet/pull/297"
+      ],
+      "supersedes_decision_ids": [],
+      "supersedes_subjects": []
+    },
+    {
+      "id": "GNT-DEC-2026-0730-004",
+      "title": "Invasion modifies initial Battle Hand formation",
+      "recorded_on": "2026-07-30",
+      "status": "implemented",
+      "kind": "card",
+      "subjects": [
+        "neutral-invasion"
+      ],
+      "summary": "An attacking Invasion Battle effect draws one additional card when forming the initial Battle Hand and permits one additional choice. It does not open a post-reveal draw window.",
+      "evidence": [
+        "https://github.com/tymonius/Gauntlet/issues/288",
+        "https://github.com/tymonius/Gauntlet/pull/299"
+      ],
+      "supersedes_decision_ids": [],
+      "supersedes_subjects": []
+    },
+    {
+      "id": "GNT-DEC-2026-0730-005",
+      "title": "Armistice is a persistent Asset with post-draw upkeep",
+      "recorded_on": "2026-07-30",
+      "status": "implemented",
+      "kind": "card",
+      "subjects": [
+        "neutral-armistice"
+      ],
+      "summary": "Armistice Action remains banked while its controller pays the required two-card upkeep after the normal Draw step. It has no turn-based expiry and cannot be voluntarily discarded at another time.",
+      "evidence": [
+        "https://github.com/tymonius/Gauntlet/issues/288",
+        "https://github.com/tymonius/Gauntlet/pull/302"
+      ],
+      "supersedes_decision_ids": [],
+      "supersedes_subjects": []
+    },
+    {
+      "id": "GNT-DEC-2026-0730-006",
+      "title": "Decoys prevents an Asset from leaving play",
+      "recorded_on": "2026-07-30",
+      "status": "implemented",
+      "kind": "card",
+      "subjects": [
+        "neutral-decoys"
+      ],
+      "summary": "Decoys is a replacement effect. The protected Asset remains in play and must not leave play and then be recreated.",
+      "evidence": [
+        "https://github.com/tymonius/Gauntlet/pull/304"
+      ],
+      "supersedes_decision_ids": [],
+      "supersedes_subjects": []
+    },
+    {
+      "id": "GNT-DEC-2026-0730-007",
+      "title": "Quarantine incomplete Arcane Knowledge Battle replay",
+      "recorded_on": "2026-07-30",
+      "status": "quarantined",
+      "kind": "card",
+      "subjects": [
+        "neutral-arcane-knowledge"
+      ],
+      "summary": "Arcane Knowledge Battle play remains unavailable until the engine can resolve every eligible Battle effect at its correct timing instead of relying on an incomplete allowlist.",
+      "evidence": [
+        "https://github.com/tymonius/Gauntlet/issues/288",
+        "https://github.com/tymonius/Gauntlet/issues/289"
+      ],
+      "supersedes_decision_ids": [],
+      "supersedes_subjects": []
+    },
+    {
+      "id": "GNT-DEC-2026-0730-008",
+      "title": "Rename Neutral Siege Weaponry to Bombardment",
+      "recorded_on": "2026-07-30",
+      "status": "implemented",
+      "kind": "card",
+      "subjects": [
+        "neutral-bombardment"
+      ],
+      "summary": "The current Neutral card is Bombardment, cost 4. Siege Weaponry is reserved as a possible future Engineer card and may appear only in historical records or explicitly declared legacy migration code.",
+      "evidence": [
+        "https://github.com/tymonius/Gauntlet/issues/288",
+        "https://github.com/tymonius/Gauntlet/pull/306"
+      ],
+      "supersedes_decision_ids": [],
+      "supersedes_subjects": [
+        "neutral-siege-weaponry"
+      ],
+      "current_source_guards": [
+        {
+          "term": "neutral-siege-weaponry",
+          "roots": [
+            "docs/Gauntlet_v0.6_Neutral_Card_Pool.md",
+            "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
+            "releases/v0.6.0",
+            "src",
+            "deckbuilder"
+          ],
+          "allowed_paths": [
+            "src/state/territory-overlays.ts"
+          ]
+        },
+        {
+          "term": "Siege Weaponry",
+          "roots": [
+            "docs/Gauntlet_v0.6_Neutral_Card_Pool.md",
+            "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
+            "releases/v0.6.0",
+            "src",
+            "deckbuilder"
+          ],
+          "allowed_paths": [
+            "src/state/territory-overlays.ts"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "GNT-DEC-2026-0730-009",
+      "title": "Manifest Destiny remains approved but not implemented",
+      "recorded_on": "2026-07-30",
+      "status": "canonicalized",
+      "kind": "card",
+      "subjects": [
+        "neutral-manifest-destiny"
+      ],
+      "summary": "Manifest Destiny is canonical and Unique, but must remain unavailable digitally until its dynamic Territory insertion and cleanup behavior pass the governance merge gate.",
+      "evidence": [
+        "https://github.com/tymonius/Gauntlet/issues/289"
+      ],
+      "supersedes_decision_ids": [],
+      "supersedes_subjects": []
+    }
+  ]
+}

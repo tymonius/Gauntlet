@@ -9,7 +9,8 @@ import type {
   PlayerID,
 } from '../types';
 import type { ResolveNeutralChoiceAction } from './actions';
-import { bankedAssetUseAllowed } from './intelligence-subversion-battle';
+import { reconcileFaceDownAssets } from './asset-facing';
+import { activeBankedAssetCopies } from './banked-assets';
 import { DECOYS } from './neutral-decoys-battle';
 import { GameActionError } from './reducer';
 
@@ -19,6 +20,15 @@ interface PlayerAssetSnapshot {
   discard: CardID[];
   graveyard: CardID[];
   removed: CardID[];
+  faceDownAssets: CardID[];
+  activeDecoys: number;
+}
+
+export interface DecoysChoiceResolution {
+  decoysFinalized: boolean;
+  sourcePlayerId?: PlayerID;
+  affectedPlayerId?: PlayerID;
+  discardedCardIds: CardID[];
 }
 
 export type DecoysAssetSnapshot = Record<PlayerID, PlayerAssetSnapshot>;
@@ -55,6 +65,10 @@ function removeOne(cards: CardID[], cardId: CardID): boolean {
   return true;
 }
 
+function countCopies(cards: readonly CardID[], cardId: CardID): number {
+  return cards.filter((candidate) => candidate === cardId).length;
+}
+
 function multisetDifference(after: CardID[], before: CardID[]): CardID[] {
   const remaining = [...before];
   const additions: CardID[] = [];
@@ -71,13 +85,16 @@ function missingFrom(after: CardID[], before: CardID[]): CardID[] {
 }
 
 function snapshotFor(game: GameState, playerId: PlayerID): PlayerAssetSnapshot {
-  const zones = game.players[playerId].zones;
+  const player = game.players[playerId];
+  const zones = player.zones;
   return {
     assetBank: [...zones.assetBank],
     hand: [...zones.hand],
     discard: [...zones.discard],
     graveyard: [...zones.graveyard],
     removed: [...zones.removed],
+    faceDownAssets: [...(player.faceDownAssets ?? [])],
+    activeDecoys: activeBankedAssetCopies(game, playerId, DECOYS),
   };
 }
 
@@ -96,39 +113,104 @@ function locateAssetExits(
   const additions = Object.fromEntries(
     EXIT_DESTINATIONS.map((zone) => [zone, multisetDifference(after[zone], before[zone])]),
   ) as Record<Exclude<DecoysAssetZone, 'asset_bank'>, CardID[]>;
+  const faceDownExits = new Map<CardID, number>();
+  for (const cardId of new Set(missing)) {
+    faceDownExits.set(cardId, Math.max(
+      0,
+      countCopies(before.faceDownAssets, cardId) - countCopies(after.faceDownAssets, cardId),
+    ));
+  }
 
   return missing.map((cardId, index) => {
     const destination = EXIT_DESTINATIONS.find((zone) => removeOne(additions[zone], cardId));
+    const faceDownRemaining = faceDownExits.get(cardId) ?? 0;
+    if (faceDownRemaining > 0) faceDownExits.set(cardId, faceDownRemaining - 1);
     return {
       exitId: `${entrySeed}-exit-${index + 1}`,
       cardId,
       destination,
+      faceDown: faceDownRemaining > 0,
     };
   });
 }
 
 function decoySources(
   exits: DecoysAssetExit[],
-  before: PlayerAssetSnapshot,
-  after: PlayerAssetSnapshot,
+  activeDecoys: number,
   entrySeed: string,
 ): DecoysSourceLocation[] {
-  const beforeCount = before.assetBank.filter((cardId) => cardId === DECOYS).length;
-  const remainingCount = Math.min(
-    beforeCount,
-    after.assetBank.filter((cardId) => cardId === DECOYS).length,
-  );
-  const sources: DecoysSourceLocation[] = Array.from({ length: remainingCount }, (_, index) => ({
-    sourceId: `${entrySeed}-decoy-bank-${index + 1}`,
+  const exitedActiveCopies = exits
+    .filter((exit) => exit.cardId === DECOYS && !exit.faceDown && exit.destination)
+    .slice(0, activeDecoys);
+  const sources: DecoysSourceLocation[] = exitedActiveCopies.map((exit, index) => ({
+    sourceId: `${entrySeed}-decoy-exit-${index + 1}`,
     zone: 'asset_bank' as const,
+    exitId: exit.exitId,
   }));
-  for (const exit of exits.filter((candidate) => candidate.cardId === DECOYS && candidate.destination)) {
+  for (let index = sources.length; index < activeDecoys; index += 1) {
     sources.push({
-      sourceId: `${entrySeed}-decoy-exit-${sources.length + 1}`,
-      zone: exit.destination!,
+      sourceId: `${entrySeed}-decoy-bank-${index + 1}`,
+      zone: 'asset_bank' as const,
     });
   }
   return sources;
+}
+
+function validTargets(
+  sources: readonly DecoysSourceLocation[],
+  targets: readonly DecoysAssetExit[],
+): DecoysAssetExit[] {
+  return targets.filter((target) => sources.some((source) => source.exitId !== target.exitId));
+}
+
+function maximumProtections(
+  sources: readonly DecoysSourceLocation[],
+  targets: readonly DecoysAssetExit[],
+): number {
+  let best = 0;
+  const usedTargets = new Set<number>();
+  function visit(sourceIndex: number, protectedCount: number): void {
+    if (sourceIndex >= sources.length) {
+      best = Math.max(best, protectedCount);
+      return;
+    }
+    visit(sourceIndex + 1, protectedCount);
+    for (let targetIndex = 0; targetIndex < targets.length; targetIndex += 1) {
+      if (usedTargets.has(targetIndex)) continue;
+      if (sources[sourceIndex].exitId === targets[targetIndex].exitId) continue;
+      usedTargets.add(targetIndex);
+      visit(sourceIndex + 1, protectedCount + 1);
+      usedTargets.delete(targetIndex);
+    }
+  }
+  visit(0, 0);
+  return best;
+}
+
+function zoneCards(game: GameState, playerId: PlayerID, zone: DecoysAssetZone): CardID[] {
+  const zones = game.players[playerId].zones;
+  return zone === 'asset_bank' ? zones.assetBank : zones[zone];
+}
+
+function restoreDeferredExits(
+  game: GameState,
+  playerId: PlayerID,
+  exits: DecoysAssetExit[],
+): void {
+  const player = game.players[playerId];
+  reconcileFaceDownAssets(player);
+  for (const exit of exits) {
+    if (!exit.destination) continue;
+    const destination = zoneCards(game, playerId, exit.destination);
+    if (!removeOne(destination, exit.cardId)) {
+      throw new GameActionError(`${exit.cardId} could not be deferred for Decoys.`);
+    }
+    player.zones.assetBank.push(exit.cardId);
+    if (exit.faceDown) {
+      player.faceDownAssets = [...(player.faceDownAssets ?? []), exit.cardId];
+    }
+  }
+  reconcileFaceDownAssets(player);
 }
 
 function hasBlockingChoice(game: GameState): boolean {
@@ -156,22 +238,25 @@ export function registerDecoysAssetExits(
   let registered = 0;
 
   for (const player of Object.values(game.players)) {
-    if (player.id === sourcePlayerId || !bankedAssetUseAllowed(game, player.id)) continue;
+    if (player.id === sourcePlayerId) continue;
     const prior = before[player.id];
-    if (!prior || !prior.assetBank.includes(DECOYS)) continue;
+    if (!prior || prior.activeDecoys < 1) continue;
     const entrySeed = `${game.id}-decoys-${game.turn}-${queue.length + 1}`;
     const after = snapshotFor(game, player.id);
-    const exits = locateAssetExits(prior, after, entrySeed);
-    const affectedAssets = exits.filter((exit) => exit.cardId !== DECOYS);
-    const sources = decoySources(exits, prior, after, entrySeed);
-    const triggersRemaining = Math.min(affectedAssets.length, sources.length);
+    const exits = locateAssetExits(prior, after, entrySeed)
+      .filter((exit) => Boolean(exit.destination));
+    if (exits.length < 1) continue;
+    const sources = decoySources(exits, prior.activeDecoys, entrySeed);
+    const triggersRemaining = maximumProtections(sources, exits);
     if (triggersRemaining < 1) continue;
 
+    restoreDeferredExits(game, player.id, exits);
     queue.push({
       id: entrySeed,
       playerId: player.id,
       sourcePlayerId,
-      affectedAssets,
+      affectedAssets: exits.map((exit) => ({ ...exit })),
+      deferredExits: exits.map((exit) => ({ ...exit })),
       decoySources: sources,
       triggersRemaining,
     });
@@ -182,57 +267,52 @@ export function registerDecoysAssetExits(
   return registered;
 }
 
-function zoneCards(game: GameState, playerId: PlayerID, zone: DecoysAssetZone): CardID[] {
-  const zones = game.players[playerId].zones;
-  return zone === 'asset_bank' ? zones.assetBank : zones[zone];
+function entryProtectionCapacity(game: GameState, entry: DecoysAssetQueueEntry): number {
+  const activeSources = activeBankedAssetCopies(game, entry.playerId, DECOYS);
+  if (entry.decoySources.length > activeSources) {
+    entry.decoySources = entry.decoySources.slice(0, activeSources);
+  }
+  const deferredIds = new Set(entry.deferredExits.map((exit) => exit.exitId));
+  entry.affectedAssets = entry.affectedAssets.filter((exit) => deferredIds.has(exit.exitId));
+  return maximumProtections(entry.decoySources, entry.affectedAssets);
 }
 
-function availableSources(game: GameState, entry: DecoysAssetQueueEntry): DecoysSourceLocation[] {
-  const remainingByZone = new Map<DecoysAssetZone, CardID[]>();
-  return entry.decoySources.filter((source) => {
-    const cards = remainingByZone.get(source.zone) ?? [...zoneCards(game, entry.playerId, source.zone)];
-    remainingByZone.set(source.zone, cards);
-    return removeOne(cards, DECOYS);
-  });
-}
-
-function availableAffectedAssets(game: GameState, entry: DecoysAssetQueueEntry): DecoysAssetExit[] {
-  const remainingByZone = new Map<Exclude<DecoysAssetZone, 'asset_bank'>, CardID[]>();
-  return entry.affectedAssets.filter((exit) => {
-    if (!exit.destination) return true;
-    const cards = remainingByZone.get(exit.destination)
-      ?? [...zoneCards(game, entry.playerId, exit.destination)];
-    remainingByZone.set(exit.destination, cards);
-    return removeOne(cards, exit.cardId);
-  });
-}
-
-function trimQueue(game: GameState): void {
-  const retained = (game.neutralDecoysAssetQueue ?? []).filter((entry) => {
-    if (!bankedAssetUseAllowed(game, entry.playerId)) return false;
-    entry.decoySources = availableSources(game, entry);
-    entry.affectedAssets = availableAffectedAssets(game, entry);
-    entry.triggersRemaining = Math.min(
-      entry.triggersRemaining,
-      entry.decoySources.length,
-      entry.affectedAssets.length,
-    );
-    return entry.triggersRemaining > 0;
-  });
-  game.neutralDecoysAssetQueue = retained.length > 0 ? retained : undefined;
+function finalizeEntry(game: GameState, entry: DecoysAssetQueueEntry): CardID[] {
+  const player = game.players[entry.playerId];
+  const discardedCardIds: CardID[] = [];
+  for (const exit of entry.deferredExits) {
+    if (!exit.destination) continue;
+    if (!removeOne(player.zones.assetBank, exit.cardId)) {
+      throw new GameActionError(`${exit.cardId} could not complete its deferred Decoys exit.`);
+    }
+    if (exit.faceDown && player.faceDownAssets) removeOne(player.faceDownAssets, exit.cardId);
+    zoneCards(game, entry.playerId, exit.destination).push(exit.cardId);
+    if (exit.destination === 'discard') discardedCardIds.push(exit.cardId);
+  }
+  reconcileFaceDownAssets(player);
+  game.neutralDecoysAssetQueue = game.neutralDecoysAssetQueue?.filter(
+    (candidate) => candidate.id !== entry.id,
+  );
+  if (game.neutralDecoysAssetQueue?.length === 0) game.neutralDecoysAssetQueue = undefined;
+  return discardedCardIds;
 }
 
 export function openNextDecoysChoice(game: GameState): boolean {
   if (hasBlockingChoice(game)) return false;
-  trimQueue(game);
   const entry = game.neutralDecoysAssetQueue?.[0];
   if (!entry) return false;
+  const capacity = entryProtectionCapacity(game, entry);
+  entry.triggersRemaining = Math.min(entry.triggersRemaining, capacity);
+  if (entry.triggersRemaining < 1) return false;
+  const assetOptions = validTargets(entry.decoySources, entry.affectedAssets);
+  if (assetOptions.length < 1) return false;
+
   game.pendingNeutralChoice = {
     kind: 'decoys_asset',
     playerId: entry.playerId,
     sourcePlayerId: entry.sourcePlayerId,
     entryId: entry.id,
-    assetOptions: entry.affectedAssets.map((asset) => ({ ...asset })),
+    assetOptions: assetOptions.map((asset) => ({ ...asset })),
     triggersRemaining: entry.triggersRemaining,
     options: ['pass', 'use'],
     resumePriorityPlayer: game.priorityPlayer,
@@ -241,7 +321,15 @@ export function openNextDecoysChoice(game: GameState): boolean {
   return true;
 }
 
-export function resolveDecoysChoice(game: GameState, action: ResolveNeutralChoiceAction): void {
+function removeDeferredExit(entry: DecoysAssetQueueEntry, exitId: string): void {
+  entry.deferredExits = entry.deferredExits.filter((exit) => exit.exitId !== exitId);
+  entry.affectedAssets = entry.affectedAssets.filter((exit) => exit.exitId !== exitId);
+}
+
+export function resolveDecoysChoice(
+  game: GameState,
+  action: ResolveNeutralChoiceAction,
+): DecoysChoiceResolution {
   const pending = game.pendingNeutralChoice;
   if (!pending || pending.kind !== 'decoys_asset' || pending.playerId !== action.playerId) {
     throw new GameActionError(`${action.playerId} has no pending Decoys choice.`);
@@ -257,11 +345,12 @@ export function resolveDecoysChoice(game: GameState, action: ResolveNeutralChoic
   entry.triggersRemaining -= 1;
 
   if (action.choice === 'pass') {
+    entry.decoySources.shift();
     appendPublicLog(
       game,
       action.playerId,
       'neutral_decoys_asset_passed',
-      `${game.players[action.playerId].name} declined to replace an affected Asset with Decoys.`,
+      `${game.players[action.playerId].name} declined one Decoys replacement.`,
       { sourcePlayerId: pending.sourcePlayerId },
     );
   } else {
@@ -269,28 +358,23 @@ export function resolveDecoysChoice(game: GameState, action: ResolveNeutralChoic
     if (!target || !pending.assetOptions.some((asset) => asset.exitId === target.exitId)) {
       throw new GameActionError('Choose one affected Asset for Decoys to preserve.');
     }
-    const source = availableSources(game, entry)[0];
-    if (!source) throw new GameActionError('No physical Decoys copy remains available.');
-    const sourceZone = zoneCards(game, entry.playerId, source.zone);
-    if (!removeOne(sourceZone, DECOYS)) {
-      throw new GameActionError('The selected Decoys copy is no longer available.');
-    }
+    const source = entry.decoySources.find((candidate) => candidate.exitId !== target.exitId);
+    if (!source) throw new GameActionError('No distinct active Decoys copy can protect that Asset.');
     const player = game.players[entry.playerId];
-    if (target.destination) {
-      const destination = zoneCards(game, entry.playerId, target.destination);
-      if (!removeOne(destination, target.cardId)) {
-        throw new GameActionError(`${target.cardId} is no longer in its destination zone.`);
-      }
+    if (activeBankedAssetCopies(game, entry.playerId, DECOYS) < 1
+      || !removeOne(player.zones.assetBank, DECOYS)) {
+      throw new GameActionError('No physical active Decoys copy remains available.');
     }
+    reconcileFaceDownAssets(player);
     player.zones.discard.push(DECOYS);
-    player.zones.assetBank.push(target.cardId);
     entry.decoySources = entry.decoySources.filter((candidate) => candidate.sourceId !== source.sourceId);
-    entry.affectedAssets = entry.affectedAssets.filter((asset) => asset.exitId !== target.exitId);
+    if (source.exitId) removeDeferredExit(entry, source.exitId);
+    removeDeferredExit(entry, target.exitId);
     appendPublicLog(
       game,
       action.playerId,
       'neutral_decoys_asset_used',
-      `${player.name} discarded Decoys instead of ${target.cardId}.`,
+      `${player.name} discarded Decoys so ${target.cardId} remained in play.`,
       {
         sourcePlayerId: pending.sourcePlayerId,
         protectedCardId: target.cardId,
@@ -299,6 +383,18 @@ export function resolveDecoysChoice(game: GameState, action: ResolveNeutralChoic
     );
   }
 
-  trimQueue(game);
+  const remainingCapacity = entryProtectionCapacity(game, entry);
+  entry.triggersRemaining = Math.min(entry.triggersRemaining, remainingCapacity);
+  if (entry.triggersRemaining > 0 && openNextDecoysChoice(game)) {
+    return { decoysFinalized: false, discardedCardIds: [] };
+  }
+
+  const discardedCardIds = finalizeEntry(game, entry);
   openNextDecoysChoice(game);
+  return {
+    decoysFinalized: true,
+    sourcePlayerId: entry.sourcePlayerId,
+    affectedPlayerId: entry.playerId,
+    discardedCardIds,
+  };
 }

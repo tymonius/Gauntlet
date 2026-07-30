@@ -1,5 +1,6 @@
 import { v06CanonicalContent } from '../content/v06';
 import type { BoardSpaceState, GameState, PlayerID, SpaceID } from '../types';
+import { counterworksOverlayInactive } from './neutral-counterworks';
 import { topTerritoryOverlay } from './territory-overlays';
 
 function pathfindersSuppressionApplies(
@@ -17,8 +18,11 @@ function pathfindersSuppressionApplies(
   )) ?? false;
 }
 
-function overlaySuppressesPrintedEffect(space: BoardSpaceState): boolean {
-  return Boolean(topTerritoryOverlay(space));
+function overlaySuppressesPrintedEffect(game: GameState, space: BoardSpaceState): boolean {
+  const overlay = topTerritoryOverlay(space);
+  if (!overlay) return false;
+  const index = (space.overlays?.length ?? 1) - 1;
+  return !counterworksOverlayInactive(game, space.id, overlay, index, game.battle?.id);
 }
 
 export function territoryHasPrintedEffect(space?: BoardSpaceState): boolean {
@@ -41,7 +45,7 @@ export function territoryPrintedEffectIsActive(
 ): boolean {
   if (!territoryHasPrintedEffect(space)) return false;
   if (pathfindersSuppressionApplies(game, movementPlayerId, space!.id)) return false;
-  if (overlaySuppressesPrintedEffect(space!)) return false;
+  if (overlaySuppressesPrintedEffect(game, space!)) return false;
   return true;
 }
 

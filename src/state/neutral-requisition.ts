@@ -8,6 +8,7 @@ import type {
 } from '../types';
 import type { PlayActionCardAction, ResolveNeutralChoiceAction } from './actions';
 import { drawFromDeck } from './draw';
+import { armisticeCanBeVoluntarilyDiscarded } from './neutral-armistice';
 import { GameActionError } from './reducer';
 
 export const REQUISITION = 'neutral-requisition';
@@ -97,6 +98,9 @@ export function prepareRequisitionAction(
   if (!player.zones.assetBank.includes(targets[0].cardId)) {
     throw new GameActionError('The chosen Requisition sacrifice must be in your Asset Bank.');
   }
+  if (!armisticeCanBeVoluntarilyDiscarded(targets[0].cardId)) {
+    throw new GameActionError('You cannot voluntarily discard Armistice to pay Requisition.');
+  }
 
   const remainingHand = [...player.zones.hand];
   if (!removeOne(remainingHand, REQUISITION)) {
@@ -151,7 +155,9 @@ export function queueRequisitionBattleChoices(game: GameState): number {
   let queued = 0;
   for (const participant of [battle.attacker, battle.defender]) {
     const count = activeCopyCount(participant);
-    if (count < 1 || game.players[participant.playerId].zones.assetBank.length < 1) continue;
+    const eligibleAssets = game.players[participant.playerId].zones.assetBank
+      .filter(armisticeCanBeVoluntarilyDiscarded).length;
+    if (count < 1 || eligibleAssets < 1) continue;
     queue.push({
       id: `${game.id}-requisition-${battle.id}-${queue.length + 1}`,
       playerId: participant.playerId,
@@ -168,7 +174,8 @@ export function queueRequisitionBattleChoices(game: GameState): number {
 function trimQueue(game: GameState): void {
   const retained = (game.neutralRequisitionBattleQueue ?? []).filter((entry) => {
     if (!game.battle || game.battle.id !== entry.battleId || game.battle.stage !== 'dice') return false;
-    const available = game.players[entry.playerId]?.zones.assetBank.length ?? 0;
+    const available = game.players[entry.playerId]?.zones.assetBank
+      .filter(armisticeCanBeVoluntarilyDiscarded).length ?? 0;
     entry.triggersRemaining = Math.min(entry.triggersRemaining, available);
     return entry.triggersRemaining > 0;
   });
@@ -180,7 +187,9 @@ export function openNextRequisitionChoice(game: GameState): boolean {
   trimQueue(game);
   const entry = game.neutralRequisitionBattleQueue?.[0];
   if (!entry) return false;
-  const cardOptions = unique(game.players[entry.playerId].zones.assetBank);
+  const cardOptions = unique(
+    game.players[entry.playerId].zones.assetBank.filter(armisticeCanBeVoluntarilyDiscarded),
+  );
   if (cardOptions.length < 1) {
     entry.triggersRemaining = 0;
     trimQueue(game);

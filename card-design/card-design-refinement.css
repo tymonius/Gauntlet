@@ -1,0 +1,129 @@
+/* Refinement pass layered over the first Neutral card-front prototype. */
+
+.card-interior {
+  --art-height: 1.72in;
+  display: grid;
+  grid-template-rows: 0.46in var(--art-height) auto 0.16in;
+}
+
+.card-heading {
+  padding: 0.07in 0.52in 0.035in 0.09in;
+}
+
+.card-title,
+.dense-card .card-title {
+  font-size: 12.1pt;
+  letter-spacing: 0.035em;
+  line-height: 0.9;
+}
+
+.long-title .card-title {
+  letter-spacing: 0.006em;
+}
+
+.value-medallion {
+  top: 0.07in;
+  right: 0.07in;
+  width: 0.34in;
+  height: 0.34in;
+}
+
+.card-art {
+  width: auto;
+  height: auto;
+  min-height: 0;
+  margin: 0 0.07in 0.045in 0.04in;
+}
+
+.card-art img {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 52%;
+}
+
+.card-art::before {
+  z-index: 1;
+}
+
+.card-art::after {
+  z-index: 2;
+  background:
+    linear-gradient(180deg, rgba(20, 16, 12, 0.02), transparent 58%, rgba(24, 18, 13, 0.28)),
+    linear-gradient(90deg, rgba(255, 244, 213, 0.08), transparent 18%, transparent 82%, rgba(34, 25, 18, 0.09));
+}
+
+.card-art span {
+  z-index: 3;
+}
+
+.card-rules,
+.dense-card .card-rules {
+  min-height: 0;
+  overflow: visible;
+  padding: 0.045in 0.085in 0.04in;
+}
+
+.rule-section {
+  display: grid;
+  grid-template-columns: 0.43in minmax(0, 1fr);
+  align-items: start;
+  column-gap: 0.05in;
+}
+
+.rule-section + .rule-section,
+.dense-card .rule-section + .rule-section {
+  margin-top: 0.04in;
+  padding-top: 0.035in;
+  border-top: 0.65px solid rgba(61, 48, 36, 0.42);
+}
+
+.rule-section h4,
+.dense-card .rule-section h4 {
+  margin: 0.009in 0 0;
+  font-size: 5.45pt;
+  line-height: 1;
+}
+
+.rule-section p {
+  font-size: 7.05pt;
+  line-height: 1.1;
+}
+
+.dense-card .rule-section p {
+  font-size: 5.9pt;
+  line-height: 1.065;
+}
+
+.reminder-card .rule-section p {
+  font-size: 6.55pt;
+  line-height: 1.08;
+}
+
+.card-reminder {
+  margin: 0.045in 0 0 0.48in;
+  padding-top: 0.04in;
+  font-size: 5.65pt;
+  line-height: 1.07;
+}
+
+.gauntlet-card.fit-warning::after {
+  position: absolute;
+  z-index: 8;
+  right: 0.025in;
+  bottom: 0.025in;
+  width: 0.06in;
+  height: 0.06in;
+  border-radius: 50%;
+  background: #8a2f2f;
+  content: "";
+}
+
+@media print {
+  .gauntlet-card.fit-warning::after {
+    display: none;
+  }
+}

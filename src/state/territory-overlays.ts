@@ -44,7 +44,7 @@ export function topTerritoryOverlay(space?: BoardSpaceState): TerritoryOverlaySt
 export function isRuinsOverlay(overlay?: TerritoryOverlayState): boolean {
   return Boolean(overlay && (
     overlay.kind === 'ruins'
-    || LEGACY_RUINS_OVERLAY_CARDS.has(overlay.cardId)
+    || (!overlay.kind && LEGACY_RUINS_OVERLAY_CARDS.has(overlay.cardId))
   ));
 }
 

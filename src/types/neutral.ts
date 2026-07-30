@@ -7,11 +7,13 @@ export interface DecoysAssetExit {
   exitId: string;
   cardId: CardID;
   destination?: Exclude<DecoysAssetZone, 'asset_bank'>;
+  faceDown?: boolean;
 }
 
 export interface DecoysSourceLocation {
   sourceId: string;
   zone: DecoysAssetZone;
+  exitId?: string;
 }
 
 export interface DecoysAssetQueueEntry {
@@ -19,6 +21,7 @@ export interface DecoysAssetQueueEntry {
   playerId: PlayerID;
   sourcePlayerId: PlayerID;
   affectedAssets: DecoysAssetExit[];
+  deferredExits: DecoysAssetExit[];
   decoySources: DecoysSourceLocation[];
   triggersRemaining: number;
 }
@@ -31,6 +34,22 @@ export interface PendingDecoysAssetChoice {
   assetOptions: DecoysAssetExit[];
   triggersRemaining: number;
   options: ['pass', 'use'];
+  resumePriorityPlayer?: PlayerID;
+}
+
+export interface ArmisticeAssetQueueEntry {
+  id: string;
+  playerId: PlayerID;
+  triggersRemaining: number;
+}
+
+export interface PendingArmisticeAssetChoice {
+  kind: 'armistice_asset';
+  playerId: PlayerID;
+  entryId: string;
+  triggersRemaining: number;
+  cardOptions: CardID[];
+  options: Array<'select_cards' | 'use'>;
   resumePriorityPlayer?: PlayerID;
 }
 
@@ -561,7 +580,9 @@ export type CounterworksOverlayPlacementKind =
   | 'protracted_siege_battle'
   | 'protracted_siege_asset'
   | 'military_encampment_action'
-  | 'military_encampment_battle';
+  | 'military_encampment_battle'
+  | 'bombardment_action'
+  | 'bombardment_battle';
 
 export interface CounterworksOverlayPlacementRequest {
   id?: string;
@@ -573,6 +594,10 @@ export interface CounterworksOverlayPlacementRequest {
   opponentId?: PlayerID;
   battleId?: string;
   captureOccupierId?: PlayerID;
+  resumeBattleReveal?: {
+    playerId: PlayerID;
+    battleCardTargets?: BattleCardTarget[];
+  };
 }
 
 export interface CounterworksOverlayOption {
@@ -630,6 +655,7 @@ export interface PendingResistanceBattleChoice {
 
 export type PendingNeutralChoice =
   | PendingDecoysAssetChoice
+  | PendingArmisticeAssetChoice
   | PendingRedemptionAssetChoice
   | PendingRedemptionBattleChoice
   | PendingFootholdAssetChoice

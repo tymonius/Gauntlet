@@ -1,0 +1,24 @@
+{
+  "schema_version": 1,
+  "generated_on": "2026-07-30",
+  "overrides": [
+    {
+      "thread_id": "GNT-CONV-20260617-013",
+      "effective_status": "superseded",
+      "superseded_by": "GNT-CONV-20260720-004",
+      "reason": "All Territories are revealed during setup in v0.6, so the earlier rule about unrevealed Territory triggers no longer governs current play."
+    },
+    {
+      "thread_id": "GNT-CONV-20260625-002",
+      "effective_status": "superseded",
+      "superseded_by": "GNT-CONV-20260722-002",
+      "reason": "The current card visual system requires a small faction emblem on faction cards."
+    },
+    {
+      "thread_id": "GNT-CONV-20260626-006",
+      "effective_status": "superseded",
+      "superseded_by": "GNT-CONV-20260729-002",
+      "reason": "Completing the third Rite no longer wins immediately; a later Ritual of Ascendance and a battle win are required."
+    }
+  ]
+}

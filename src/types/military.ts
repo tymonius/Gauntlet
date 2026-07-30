@@ -10,6 +10,9 @@ export interface TerritoryOverlayState {
   kind?: TerritoryOverlayKind;
   /** Occupier whose pending capture this Overlay tracks, when applicable. */
   captureDelayOccupier?: PlayerID;
+  bombardmentSource?: 'action' | 'battle';
+  bombardmentBattleId?: string;
+  bombardmentOrigin?: 'hand' | 'battle_draw' | 'replayed';
 }
 
 export interface MilitaryCardState {

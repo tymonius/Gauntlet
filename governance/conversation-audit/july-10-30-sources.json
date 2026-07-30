@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "generated_on": "2026-07-30",
+  "project": "Gauntlet",
+  "window": {
+    "start": "2026-07-10",
+    "end": "2026-07-30"
+  },
+  "retrieval": {
+    "method": "Comprehensive date-window retrieval from project conversation search, retained project context, and exact available project snippets.",
+    "passes": [
+      {
+        "start": "2026-07-10",
+        "end": "2026-07-17"
+      },
+      {
+        "start": "2026-07-18",
+        "end": "2026-07-24"
+      },
+      {
+        "start": "2026-07-25",
+        "end": "2026-07-30"
+      }
+    ],
+    "raw_turn_complete": false,
+    "reason": "The supplied raw ChatGPT export ends on 2026-07-09. This supplement is a comprehensive available-history decision audit, but it cannot prove that every July 10-30 turn was retrieved without a newer raw export."
+  },
+  "authority_policy": {
+    "rule": "Within a shared subject, the latest explicit approval, correction, or rejection controls. Older conflicts remain in the ledger but receive an effective-status override to superseded.",
+    "do_not_infer": "Silence, implementation existence, or an assistant summary without user approval does not create a current decision."
+  },
+  "counts": {
+    "new_decision_threads": 109,
+    "new_current": 101,
+    "new_superseded": 3,
+    "new_tentative": 1,
+    "new_rejected": 4,
+    "effective_status_overrides": 3
+  },
+  "evidence_reference_format": "project-conversation-search:<conversation or topic label>:YYYY-MM-DD"
+}

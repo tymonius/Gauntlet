@@ -28,6 +28,7 @@ import { confessionLegalHandCommitCards } from './inquisition-confession';
 import { legalLeaderAbilitiesFor } from './leader-abilities';
 import { toPublicMysticsState } from './mystics-ritual';
 import { ARCANE_KNOWLEDGE, canResolveArcaneKnowledgeAction } from './neutral-arcane-knowledge';
+import { BOMBARDMENT, canResolveBombardmentAction } from './neutral-bombardment';
 import {
   activeCapitalPunishmentCards,
   canResolveCapitalPunishmentAction,
@@ -259,6 +260,7 @@ function legalActionPlaysForViewer(game: GameState, viewer?: PlayerID): LegalAct
     .filter((cardId) => cardCanBePlayedAt(cardId, 'action', 'hand'))
     .filter((cardId) => canResolveIntelligenceAction(game, viewer, cardId))
     .filter((cardId) => cardId !== ARCANE_KNOWLEDGE || canResolveArcaneKnowledgeAction(game, viewer))
+    .filter((cardId) => cardId !== BOMBARDMENT || canResolveBombardmentAction(game, viewer))
     .filter((cardId) => cardId !== CAPITAL_PUNISHMENT || canResolveCapitalPunishmentAction(game, viewer))
     .filter((cardId) => cardId !== DISRUPTION || canResolveDisruptionAction(game, viewer))
     .filter((cardId) => cardId !== NEW_RECRUITS || canResolveNewRecruitsAction(game, viewer))
@@ -296,6 +298,7 @@ function neutralChoiceIsPrivate(game: GameState): boolean {
     || kind?.startsWith('contraband_')
     || kind?.startsWith('invasion_')
     || kind === 'revolution_battle'
+    || kind === 'armistice_asset'
     || kind === 'sequestration_action'
     || kind === 'rousing_speech_discard',
   );
@@ -318,7 +321,6 @@ export function toPublicGameView(game: GameState): PublicGameView {
     neutralInsurrectionActionOpportunity: structuredClone(game.neutralInsurrectionActionOpportunity),
     neutralLiberationActionOpportunity: structuredClone(game.neutralLiberationActionOpportunity),
     neutralAssimilationConditions: structuredClone(game.neutralAssimilationConditions),
-    neutralArmisticeConditions: structuredClone(game.neutralArmisticeConditions),
     pendingNeutralChoice: neutralChoiceIsPrivate(game) ? undefined : structuredClone(game.pendingNeutralChoice),
     pendingMilitaryChoice: game.pendingMilitaryChoice,
     pendingMilitaryTimingChoice: game.pendingMilitaryTimingChoice,

@@ -154,6 +154,36 @@ export function registerRedemptionDiscardEntries(
   return registered;
 }
 
+/** Registers a known set of cards that entered one player's Discard Pile. */
+export function registerRedemptionDiscardCardIds(
+  game: GameState,
+  playerId: PlayerID,
+  cardIds: CardID[],
+  sourcePlayerId: PlayerID | undefined,
+): number {
+  if (!sourcePlayerId || playerId === sourcePlayerId || cardIds.length < 1) return 0;
+  if (!bankedAssetUseAllowed(game, playerId)) return 0;
+  const assetCount = activeBankedAssetCopies(game, playerId, REDEMPTION);
+  if (assetCount < 1) return 0;
+
+  const player = game.players[playerId];
+  if (!player) return 0;
+  const available = [...player.zones.discard];
+  const entered = cardIds.filter((cardId) => removeOne(available, cardId));
+  if (entered.length < 1) return 0;
+
+  const queue = game.neutralRedemptionDiscardQueue ?? [];
+  queue.push({
+    id: `${game.id}-redemption-discard-${game.turn}-${queue.length + 1}`,
+    playerId,
+    sourcePlayerId,
+    cardIds: entered,
+    triggersRemaining: Math.min(assetCount, entered.length),
+  });
+  game.neutralRedemptionDiscardQueue = queue;
+  return 1;
+}
+
 function trimDiscardQueue(game: GameState): void {
   const queue = game.neutralRedemptionDiscardQueue ?? [];
   const retained = queue.filter((entry) => {

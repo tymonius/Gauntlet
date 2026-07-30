@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "generated_on": "2026-07-30",
+  "verbatim_export_complete_through": "2026-07-09",
+  "verbatim_user_turns": 1021,
+  "decision_threads": 335,
+  "decision_index_files": 14,
+  "verbatim_evidence_links": 489,
+  "post_export_evidence_links": 141,
+  "effective_status_overrides": 3,
+  "statuses": {
+    "current": 271,
+    "superseded": 48,
+    "tentative": 7,
+    "deferred": 3,
+    "rejected": 5,
+    "deprecated": 1
+  },
+  "turn_classifications": {
+    "decision-evidence": 450,
+    "feedback-or-context": 224,
+    "question-or-analysis": 138,
+    "workflow-instruction": 90,
+    "contextual-acknowledgement": 69,
+    "tentative-or-open": 26,
+    "rejection-or-constraint": 24
+  },
+  "limitations": [
+    "The supplied raw conversation export ends on 2026-07-09.",
+    "The July 10-30 supplement is a comprehensive available-history retrieval from project conversation search, retained project context, and exact available snippets, but it is not a raw-turn-complete export.",
+    "Effective statuses apply status-overrides.json so later explicit July decisions control conflicting older threads.",
+    "GNT-CONV identifiers establish conversation provenance only; they do not claim canonicalization or implementation."
+  ]
+}
