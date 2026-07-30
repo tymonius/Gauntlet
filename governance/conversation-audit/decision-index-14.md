@@ -1,4 +1,4 @@
-# Conversation Decisions 327–335
+# Conversation Decisions 327–336
 
 | ID | Date | Status | Domain | Decision | Evidence |
 |---|---|---|---|---|---|
@@ -11,3 +11,4 @@
 | `GNT-CONV-20260730-012` | 2026-07-30 | `current` | `terminology` | **Rename Neutral Siege Weaponry to Bombardment** — The current Neutral cost-4 card is Bombardment. Siege Weaponry is reserved as a possible future Engineer identity and remains only in explicit historical or compatibility contexts. | project-conversation-search:Neutral implementation audit:2026-07-30 |
 | `GNT-CONV-20260730-013` | 2026-07-30 | `current` | `neutral-card` | **Keep Manifest Destiny canonical but digitally unavailable** — Manifest Destiny is an approved Unique card, but digital play remains unavailable until dynamic Territory insertion, topology, control, and cleanup are correctly implemented. | project-conversation-search:Neutral implementation audit:2026-07-30 |
 | `GNT-CONV-20260730-014` | 2026-07-30 | `current` | `governance` | **Require Governance Integrity and Test checks before merge** — The main-branch ruleset should require both Governance Integrity and Test so traced design changes cannot bypass automated validation. | project-conversation-search:Governance traceability:2026-07-30 |
+| `GNT-CONV-20260730-015` | 2026-07-30 | `current` | `zones` | **Keep Asset Bank capacity tied to Territory control** — A player's Asset Bank limit equals the number of Territories they control. The fixed-three claim in the July supplement was an unsupported audit synthesis, not an approved rule change. | project-conversation-search:Asset Bank correction:2026-07-30 |

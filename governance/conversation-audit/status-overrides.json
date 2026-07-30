@@ -19,12 +19,6 @@
       "effective_status": "superseded",
       "superseded_by": "GNT-CONV-20260729-002",
       "reason": "Completing the third Rite no longer wins immediately; a later Ritual of Ascendance and a battle win are required."
-    },
-    {
-      "thread_id": "GNT-CONV-20260626-017",
-      "effective_status": "superseded",
-      "superseded_by": "GNT-CONV-20260720-011",
-      "reason": "The v0.6 Asset Bank uses a fixed normal limit of three and no longer changes with Territory control."
     }
   ]
 }

@@ -10,17 +10,18 @@ The raw export remains completely indexed at the user-turn level. Every raw user
 
 The newer-conversation audit was rebuilt as a dedicated date-window pass rather than a small appendix. It adds **109 decision threads** to the 226-thread raw-export audit, producing **335 total threads**. The supplement covers rules, cards, factions, lore, visual direction, website, Deckbuilder, digital implementation, playtesting, terminology, release work, and governance.
 
-Later explicit decisions control conflicts. Four older rows retain their original evidence but receive effective `superseded` status in `status-overrides.json`:
+Later explicit decisions control conflicts. Three older rows retain their original evidence but receive effective `superseded` status in `status-overrides.json`:
 
 - unrevealed Territory behavior, superseded by face-up setup;
 - optional faction emblems, superseded by required small card emblems;
-- immediate Mystic victory on the third Rite, superseded by Ritual of Ascendance;
-- Territory-scaled Asset capacity, superseded by the fixed v0.6 limit of three.
+- immediate Mystic victory on the third Rite, superseded by Ritual of Ascendance.
+
+The Asset Bank record was corrected during review: its limit remains tied to controlled Territories. The former fixed-three statement was an unsupported audit synthesis and has been removed.
 
 ## Effective decision-thread status
 
-- `current`: 270
-- `superseded`: 49
+- `current`: 271
+- `superseded`: 48
 - `tentative`: 7
 - `deferred`: 3
 - `rejected`: 5
@@ -34,7 +35,7 @@ These are effective counts after applying `status-overrides.json`, not merely th
 - raw-export decision-evidence links: 489
 - July 10–30 project-conversation rows: 141
 - total normalized decision threads: 335
-- explicit effective-status overrides: 4
+- explicit effective-status overrides: 3
 
 ## Audit rules
 
@@ -48,7 +49,7 @@ These are effective counts after applying `status-overrides.json`, not merely th
 
 ## Integrity result
 
-The validator now checks all fourteen decision-index files, 335 unique IDs, the July source boundary, post-export evidence formatting, supplement counts, and effective status overrides. It rejects missing override targets, invalid status changes, duplicate IDs, malformed evidence, count drift, and gaps in decision-index numbering.
+The validator checks all fourteen decision-index files, 335 unique IDs, the July source boundary, post-export evidence formatting, supplement counts, and effective status overrides. It rejects missing override targets, invalid status changes, duplicate IDs, malformed evidence, count drift, and gaps in decision-index numbering.
 
 ## Next audit layer
 
