@@ -7,11 +7,13 @@ export interface DecoysAssetExit {
   exitId: string;
   cardId: CardID;
   destination?: Exclude<DecoysAssetZone, 'asset_bank'>;
+  faceDown?: boolean;
 }
 
 export interface DecoysSourceLocation {
   sourceId: string;
   zone: DecoysAssetZone;
+  exitId?: string;
 }
 
 export interface DecoysAssetQueueEntry {
@@ -19,6 +21,7 @@ export interface DecoysAssetQueueEntry {
   playerId: PlayerID;
   sourcePlayerId: PlayerID;
   affectedAssets: DecoysAssetExit[];
+  deferredExits: DecoysAssetExit[];
   decoySources: DecoysSourceLocation[];
   triggersRemaining: number;
 }

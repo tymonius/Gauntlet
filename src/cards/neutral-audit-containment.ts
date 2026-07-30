@@ -13,7 +13,6 @@ import {
  * effect from the governing text.
  */
 const disabledTimings: Partial<Record<CardID, CardPlayTiming[]>> = {
-  'neutral-decoys': ['action'],
   'neutral-arcane-knowledge': ['battle_hand_commit', 'battle_draw_play'],
 };
 
