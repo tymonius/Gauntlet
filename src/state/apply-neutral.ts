@@ -20,11 +20,11 @@ import {
   resolveArcaneKnowledgeChoice,
 } from './neutral-arcane-knowledge';
 import {
-  ARMISTICE,
-  expireArmisticeConditions,
-  registerArmisticeActionCondition,
+  openNextArmisticeChoice,
+  queueArmisticeAfterNormalDraw,
   requireArmisticeBattleAllowed,
   resolveArmisticeBattleAfterCancellation,
+  resolveArmisticeChoice,
 } from './neutral-armistice';
 import {
   applyCapitalPunishmentAction,
@@ -328,6 +328,7 @@ function continueNeutralChoices(game: GameState): void {
   openNextScorchedEarthChoice(game);
   openNextSalvageChoice(game);
   openNextSuppliesChoice(game);
+  openNextArmisticeChoice(game);
   openNextFootholdChoice(game);
   openNextRedemptionChoice(game);
   openNextValorReroll(game);
@@ -374,6 +375,8 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     const next = structuredClone(game);
     const resolved = pendingKind === 'assimilation_asset'
       ? (resolveAssimilationChoice(next, action), {})
+      : pendingKind === 'armistice_asset'
+        ? (resolveArmisticeChoice(next, action), {})
       : pendingKind === 'arcane_knowledge_battle'
         ? resolveArcaneKnowledgeChoice(next, action)
       : pendingKind === 'decoys_asset'
@@ -639,9 +642,6 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     }
   }
 
-  if (action.type === 'play_action_card' && action.cardId === ARMISTICE) {
-    registerArmisticeActionCondition(result.state, action.playerId);
-  }
   if (action.type === 'play_action_card' && preparedArcaneKnowledge) {
     applyArcaneKnowledgeAction(result.state, action.playerId, preparedArcaneKnowledge);
   }
@@ -765,7 +765,6 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     applyResistanceAssetBattleHandDraw(result.state);
   }
   if (action.type === 'end_turn') {
-    expireArmisticeConditions(result.state, game.turn);
     clearReinforcementsActionOpportunity(result.state, action.playerId);
     clearInsurrectionActionOpportunity(result.state, action.playerId);
     clearLiberationActionOpportunity(result.state, action.playerId);
@@ -864,6 +863,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   if (normalDraw) {
     queueSuppliesAfterNormalDraw(result.state, action.playerId);
+    queueArmisticeAfterNormalDraw(result.state, action.playerId);
   }
 
   processResistanceCleanupQueue(result.state);

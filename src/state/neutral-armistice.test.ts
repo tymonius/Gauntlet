@@ -140,7 +140,6 @@ describe('Neutral Armistice', () => {
     }).state;
 
     expect(state.players.player_1.zones.assetBank).toEqual([ARMISTICE]);
-    expect(state.neutralArmisticeConditions).toBeUndefined();
   });
 
   it('prevents either player from initiating a battle while active', () => {

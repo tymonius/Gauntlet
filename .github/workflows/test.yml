@@ -1,31 +1,23 @@
-name: Patch and Test Canonical Armistice
+name: Test
 
 on:
   pull_request:
-
-permissions:
-  contents: write
+  push:
+    branches:
+      - main
 
 jobs:
-  patch-and-test:
+  test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout implementation branch
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: fix/neutral-armistice-canonical
-          fetch-depth: 0
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
-
-      - name: Apply canonical Asset integration patch
-        run: |
-          python .github/scripts/patch-armistice-canonical.py
-          python .github/scripts/fix-armistice-test.py
 
       - name: Install dependencies
         run: npm install
@@ -35,12 +27,3 @@ jobs:
 
       - name: Test
         run: npm test
-
-      - name: Commit validated patch
-        run: |
-          rm -f package-lock.json
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add src/state/apply-neutral.ts src/state/views.ts src/state/neutral-requisition.ts src/state/neutral-armistice.test.ts src/types/neutral.ts src/types/game.ts .github/workflows/test.yml .github/scripts/patch-armistice-canonical.py .github/scripts/fix-armistice-test.py
-          git commit -m "Wire canonical Armistice Asset upkeep" || exit 0
-          git push origin HEAD:fix/neutral-armistice-canonical
