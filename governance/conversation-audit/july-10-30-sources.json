@@ -1,13 +1,19 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "generated_on": "2026-07-30",
   "project": "Gauntlet",
   "window": {
     "start": "2026-07-10",
     "end": "2026-07-30"
   },
+  "certification": {
+    "status": "provisional",
+    "may_drive_canonicalization": false,
+    "may_supersede_raw_evidence": false,
+    "reason": "The source set is not a complete raw-turn corpus. The fixed-three Asset Bank row proved that assistant-generated synthesis can enter search/context summaries without user approval."
+  },
   "retrieval": {
-    "method": "Comprehensive date-window retrieval from project conversation search, retained project context, and exact available project snippets.",
+    "method": "Date-window retrieval from project conversation search, retained project context, and available project snippets.",
     "passes": [
       {
         "start": "2026-07-10",
@@ -23,11 +29,13 @@
       }
     ],
     "raw_turn_complete": false,
-    "reason": "The supplied raw ChatGPT export ends on 2026-07-09. This supplement is a comprehensive available-history decision audit, but it cannot prove that every July 10-30 turn was retrieved without a newer raw export."
+    "verbatim_line_references": false,
+    "reason": "The supplied raw ChatGPT export ends on 2026-07-09. This supplement is an audit-lead inventory only and cannot prove that every July 10-30 turn was retrieved or interpreted correctly."
   },
   "authority_policy": {
-    "rule": "Within a shared subject, the latest explicit approval, correction, or rejection controls. Older conflicts remain in the ledger but receive an effective-status override to superseded.",
-    "do_not_infer": "Silence, implementation existence, or an assistant summary without user approval does not create a current decision."
+    "rule": "Only verbatim-supported explicit user approval, correction, or rejection may establish or supersede a current decision.",
+    "provisional_rule": "A project-conversation-search row is a lead requiring raw verification, regardless of the status printed in its index row.",
+    "do_not_infer": "Silence, implementation existence, retained memory, or an assistant summary without exact user evidence does not create a decision."
   },
   "counts": {
     "new_decision_threads": 109,
@@ -35,7 +43,15 @@
     "new_superseded": 3,
     "new_tentative": 1,
     "new_rejected": 4,
-    "effective_status_overrides": 3
+    "effective_status_overrides": 3,
+    "provisional_evidence_rows": 141
+  },
+  "required_reaudit": {
+    "raw_export_through": "2026-07-30",
+    "replace_search_references": true,
+    "recompute_statuses": true,
+    "revalidate_supersessions": true,
+    "independent_synthesis_check": true
   },
   "evidence_reference_format": "project-conversation-search:<conversation or topic label>:YYYY-MM-DD"
 }
