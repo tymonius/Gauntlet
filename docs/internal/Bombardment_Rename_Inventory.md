@@ -1,0 +1,68 @@
+# Bombardment Rename Inventory
+
+Approved current identity: **Bombardment**, cost 4. `Siege Weaponry` is obsolete for the current card and reserved for a possible future Engineer card.
+
+- Active/current-source matches: **9**
+- Historical/archive matches: **47**
+
+## Active/current-source matches
+
+- `.github/scripts/generate-bombardment-rename-inventory.py:7` — `NEEDLES = ('Siege Weaponry', 'neutral-siege-weaponry')`
+- `.github/scripts/generate-bombardment-rename-inventory.py:39` — `'Approved current identity: **Bombardment**, cost 4. `Siege Weaponry` is obsolete for the current card and reserved for a possible future Engineer card.',`
+- `docs/Gauntlet_v0.6_Neutral_Card_Pool.md:484` — `## Siege Weaponry`
+- `releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json:1480` — `"id": "neutral-siege-weaponry",`
+- `releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json:1481` — `"name": "Siege Weaponry",`
+- `releases/v0.6.0/Gauntlet_v0.6.0_Complete_Card_Reference.md:73` — `| [Siege Weaponry](../../docs/Gauntlet_v0.6_Neutral_Card_Pool.md#siege-weaponry) | 4 | Advanced | — |`
+- `src/state/neutral-scorched-earth.test.ts:272` — `placeRuinsOverlay(state, space, 'neutral-siege-weaponry', 'player_1');`
+- `src/state/neutral-scorched-earth.test.ts:279` — `expect(state.players.player_1.zones.graveyard).toContain('neutral-siege-weaponry');`
+- `src/state/territory-overlays.ts:12` — `'neutral-siege-weaponry',`
+
+## Historical/archive matches (do not rewrite)
+
+- `docs/Archive/v0.6-development/Gauntlet_v0.6_Card_Metadata.md:67` — `| 43 | Siege Weaponry | Neutral | No | Advanced | Persistent Territory suppression, Ruins replacement, matchup dependence, and possible title change |`
+- `docs/Archive/v0.6-development/Gauntlet_v0.6_Card_Review_Log.md:457` — `### 43. Siege Weaponry`
+- `docs/Archive/v0.6-development/Gauntlet_v0.6_Card_Review_Log.md:462` — `Keep as shared offensive Territory denial that can become a Ruins Overlay after successful conquest. **Bombardment** is the leading replacement title so **Siege Weaponry** may be reserved for a future Engineer card.`
+- `docs/Archive/v0.6-development/Gauntlet_v0.6_Card_Review_Log.md:611` — `- Resolve whether Siege Weaponry is renamed Bombardment.`
+- `docs/Archive/v0.6-development/Gauntlet_v0.6_Open_Questions.md:26` — `- Decide whether **Siege Weaponry** becomes **Bombardment**.`
+- `docs/Archive/v0.6-development/Gauntlet_v0.6_Project_Index.md:167` — `- Decide whether **Siege Weaponry** becomes **Bombardment**.`
+- `docs/Archive/v0.6-development/card-reviews/COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md:107` — `- Siege Weaponry`
+- `docs/Archive/v0.6-development/card-reviews/COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md:194` — `Arcane Knowledge; Armistice; Assimilation; Capital Punishment; Invasion; Revolution; Sequestration; Siege Weaponry.`
+- `docs/Archive/v0.6-development/card-reviews/COST_CURVE_AND_NEUTRAL_POOL_AUDIT.md:213` — `- decide whether Siege Weaponry is renamed Bombardment;`
+- `docs/Archive/v0.6-development/card-reviews/STATUS.md:133` — `- Decide whether **Siege Weaponry** becomes **Bombardment**.`
+- `releases/v0.5.3/Gauntlet_v0.5.3_Canonical_Data.json:345` — `"name": "Siege Weaponry",`
+- `releases/v0.5.3/Gauntlet_v0.5.3_Canonical_Data.json:347` — `"action": "Place Siege Weaponry face up over the nearest revealed enemy-controlled Territory ahead of you that has a printed effect. While it remains face up, that Territory's printed effect is inactive. The next time you attack there, discard Siege Weaponry if you lose. If you win, or if you capture that Territory without a battle, turn Siege Weaponry face down and leave it there.",`
+- `releases/v0.5.3/Gauntlet_v0.5.3_Canonical_Data.json:348` — `"battle": "If you are attacking on an enemy-controlled Territory, place Siege Weaponry face up over it. That Territory's printed effect is inactive during this battle. If you win, turn Siege Weaponry face down and leave it there instead of placing it in its normal destination.",`
+- `releases/v0.5.3/Gauntlet_v0.5.3_Canonical_Data.json:349` — `"reminder": "Face-down Siege Weaponry is an active Ruins Overlay and remains until specifically repaired."`
+- `releases/v0.5.3/build_gauntlet_v053.py:270` — `'name': 'Siege Weaponry', 'cost': 5,`
+- `releases/v0.5.3/build_gauntlet_v053.py:271` — `'action': "Place Siege Weaponry face up over the nearest revealed enemy-controlled Territory ahead of you that has a printed effect. While it remains face up, that Territory's printed effect is inactive. The next time you attack there, discard Siege Weaponry if you lose. If you win, or if you capture that Territory without a battle, turn Siege Weaponry face down and leave it there.",`
+- `releases/v0.5.3/build_gauntlet_v053.py:272` — `'battle': "If you are attacking on an enemy-controlled Territory, place Siege Weaponry face up over it. That Territory's printed effect is inactive during this battle. If you win, turn Siege Weaponry face down and leave it there instead of placing it in its normal destination.",`
+- `releases/v0.5.3/build_gauntlet_v053.py:273` — `'reminder': 'Face-down Siege Weaponry is an active Ruins Overlay and remains until specifically repaired.'`
+- `releases/v0.5.3/build_gauntlet_v053.py:898` — `'A face-down Siege Weaponry card is an active Ruins Overlay when exposed. It continues to suppress the underlying Territory until specifically repaired.',`
+- `releases/v0.5.3/build_gauntlet_v053.py:1030` — `for x in ['Shock and Awe','Manifest Destiny','Siege Weaponry','Treason','Arcane Knowledge','Blockade','Protracted Siege','Attrition mirrors','High Ground','Supply Depot','Command Tent','Field Hospital']:`
+- `releases/v0.5.4/Gauntlet_v0.5.4_Canonical_Data.json:359` — `"name": "Siege Weaponry",`
+- `releases/v0.5.4/Gauntlet_v0.5.4_Canonical_Data.json:361` — `"action": "Place Siege Weaponry face up over the nearest revealed enemy-controlled Territory ahead of you that has a printed effect. While it remains face up, that Territory's printed effect is inactive. The next time you attack there, discard Siege Weaponry if you lose. If you win, or if you capture that Territory without a battle, turn Siege Weaponry face down and leave it there.",`
+- `releases/v0.5.4/Gauntlet_v0.5.4_Canonical_Data.json:362` — `"battle": "If you are attacking on an enemy-controlled Territory, place Siege Weaponry face up over it. That Territory's printed effect is inactive during this battle. If you win, turn Siege Weaponry face down and leave it there instead of placing it in its normal destination.",`
+- `releases/v0.5.4/Gauntlet_v0.5.4_Canonical_Data.json:363` — `"reminder": "Face-down Siege Weaponry is an active Ruins Overlay and remains until specifically repaired."`
+- `releases/v0.5.4/build_gauntlet_v054.py:270` — `'name': 'Siege Weaponry', 'cost': 5,`
+- `releases/v0.5.4/build_gauntlet_v054.py:271` — `'action': "Place Siege Weaponry face up over the nearest revealed enemy-controlled Territory ahead of you that has a printed effect. While it remains face up, that Territory's printed effect is inactive. The next time you attack there, discard Siege Weaponry if you lose. If you win, or if you capture that Territory without a battle, turn Siege Weaponry face down and leave it there.",`
+- `releases/v0.5.4/build_gauntlet_v054.py:272` — `'battle': "If you are attacking on an enemy-controlled Territory, place Siege Weaponry face up over it. That Territory's printed effect is inactive during this battle. If you win, turn Siege Weaponry face down and leave it there instead of placing it in its normal destination.",`
+- `releases/v0.5.4/build_gauntlet_v054.py:273` — `'reminder': 'Face-down Siege Weaponry is an active Ruins Overlay and remains until specifically repaired.'`
+- `releases/v0.5.4/build_gauntlet_v054.py:905` — `'A face-down Siege Weaponry card is an active Ruins Overlay when exposed. It continues to suppress the underlying Territory until specifically repaired.',`
+- `releases/v0.5.4/build_gauntlet_v054.py:1042` — `for x in ['Shock and Awe','Manifest Destiny','Siege Weaponry','Treason','Arcane Knowledge','Blockade','Protracted Siege','Attrition mirrors','High Ground','Supply Depot','Command Tent','Field Hospital']:`
+- `releases/v0.5.5/Gauntlet_v0.5.5_Canonical_Data.json:370` — `"name": "Siege Weaponry",`
+- `releases/v0.5.5/Gauntlet_v0.5.5_Canonical_Data.json:372` — `"action": "Place Siege Weaponry face up over the nearest revealed enemy-controlled Territory ahead of you that has a printed effect. While it remains face up, that Territory's printed effect is inactive. The next time you attack there, discard Siege Weaponry if you lose. If you win, or if you capture that Territory without a battle, turn Siege Weaponry face down and leave it there.",`
+- `releases/v0.5.5/Gauntlet_v0.5.5_Canonical_Data.json:373` — `"battle": "If you are attacking on an enemy-controlled Territory, place Siege Weaponry face up over it. That Territory's printed effect is inactive during this battle. If you win, turn Siege Weaponry face down and leave it there instead of placing it in its normal destination.",`
+- `releases/v0.5.5/Gauntlet_v0.5.5_Canonical_Data.json:374` — `"reminder": "Face-down Siege Weaponry is an active Ruins Overlay and remains until specifically repaired."`
+- `releases/v0.5.6/Gauntlet_v0.5.6_Canonical_Data.json:381` — `"name": "Siege Weaponry",`
+- `releases/v0.5.6/Gauntlet_v0.5.6_Canonical_Data.json:383` — `"action": "Place Siege Weaponry face up over the nearest revealed enemy-controlled Territory ahead of you that has a printed effect. While it remains face up, that Territory's printed effect is inactive. The next time you attack there, discard Siege Weaponry if you lose. If you win, or if you capture that Territory without a battle, turn Siege Weaponry face down and leave it there.",`
+- `releases/v0.5.6/Gauntlet_v0.5.6_Canonical_Data.json:384` — `"battle": "If you are attacking on an enemy-controlled Territory, place Siege Weaponry face up over it. That Territory's printed effect is inactive during this battle. If you win, turn Siege Weaponry face down and leave it there instead of placing it in its normal destination.",`
+- `releases/v0.5.6/Gauntlet_v0.5.6_Canonical_Data.json:385` — `"reminder": "Face-down Siege Weaponry is an active Ruins Overlay and remains until specifically repaired."`
+- `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json:449` — `"name": "Siege Weaponry",`
+- `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json:453` — `"action": "Place Siege Weaponry face up over the nearest revealed enemy-controlled Territory ahead of you that has a printed effect. While it remains face up, that Territory's printed effect is inactive. The next time you attack there, discard Siege Weaponry if you lose. If you win, or if you capture that Territory without a battle, turn Siege Weaponry face down and leave it there.",`
+- `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json:454` — `"battle": "If you are attacking on an enemy-controlled Territory, place Siege Weaponry face up over it. That Territory's printed effect is inactive during this battle. If you win, turn Siege Weaponry face down and leave it there instead of placing it in its normal destination.",`
+- `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json:455` — `"reminder": "Face-down Siege Weaponry is an active Ruins Overlay and remains until specifically repaired."`
+- `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json:688` — `"Siege Weaponry"`
+- `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json:718` — `"Siege Weaponry",`
+- `releases/v0.5.7/Gauntlet_v0.5.7_Canonical_Data.json:844` — `"Siege Weaponry",`
+- `releases/v0.5.7/Gauntlet_v0.5.7_Playtest_Deck_Lists.md:28` — `| 1 | Siege Weaponry | 5 | Advanced Neutral / Watchlist |`
+- `releases/v0.5.7/Gauntlet_v0.5.7_Playtest_Deck_Lists.md:116` — `| 1 | Siege Weaponry | 5 | Advanced Neutral / Watchlist |`
