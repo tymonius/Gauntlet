@@ -27,6 +27,12 @@ import { availableBattleHandCards } from './battle-hand-restrictions';
 import { confessionLegalHandCommitCards } from './inquisition-confession';
 import { legalLeaderAbilitiesFor } from './leader-abilities';
 import { toPublicMysticsState } from './mystics-ritual';
+import {
+  activeCapitalPunishmentCards,
+  canResolveCapitalPunishmentAction,
+  CAPITAL_PUNISHMENT,
+  capitalPunishmentTargetCards,
+} from './neutral-capital-punishment';
 import { cancellationCandidatesWithDecoysPriority } from './neutral-decoys-battle';
 import { canResolveDisruptionAction, DISRUPTION } from './neutral-disruption';
 import { conscriptionAssetCardCanBePlayed } from './neutral-conscription';
@@ -128,18 +134,27 @@ function validBattleCardTargetsForViewer(battle: BattleState, viewer?: PlayerID)
   if (!viewerParticipant) return undefined;
   if (battle.stage !== 'dice' && battle.stage !== 'resolution') return undefined;
   const opponent = viewerParticipant.playerId === battle.attacker.playerId ? battle.defender : battle.attacker;
-  const cancellationCards = activeBattleCancellationCards(viewerParticipant);
-  if (cancellationCards.length === 0) return undefined;
-  const opposingCards = cancellationCandidatesWithDecoysPriority(opponent);
-  if (opposingCards.length === 0) return undefined;
-  return cancellationCards.flatMap((source) => opposingCards.map((target) => ({
-    sourceCardId: source.cardId,
-    sourceOwner: source.owner,
-    sourceOrigin: source.origin,
-    targetCardId: target.cardId,
-    targetOwner: target.owner,
-    targetOrigin: target.origin,
-  })));
+
+  const cancellationOptions = activeBattleCancellationCards(viewerParticipant)
+    .flatMap((source) => cancellationCandidatesWithDecoysPriority(opponent).map((target) => ({
+      sourceCardId: source.cardId,
+      sourceOwner: source.owner,
+      sourceOrigin: source.origin,
+      targetCardId: target.cardId,
+      targetOwner: target.owner,
+      targetOrigin: target.origin,
+    })));
+  const capitalPunishmentOptions = activeCapitalPunishmentCards(viewerParticipant)
+    .flatMap((source) => capitalPunishmentTargetCards(opponent).map((target) => ({
+      sourceCardId: source.cardId,
+      sourceOwner: source.owner,
+      sourceOrigin: source.origin,
+      targetCardId: target.cardId,
+      targetOwner: target.owner,
+      targetOrigin: target.origin,
+    })));
+  const options = [...cancellationOptions, ...capitalPunishmentOptions];
+  return options.length > 0 ? options : undefined;
 }
 
 function legalBattlePlaysForViewer(battle: BattleState, game: GameState, viewer?: PlayerID): BattlePlayOption[] | undefined {
@@ -242,6 +257,7 @@ function legalActionPlaysForViewer(game: GameState, viewer?: PlayerID): LegalAct
   return player.zones.hand
     .filter((cardId) => cardCanBePlayedAt(cardId, 'action', 'hand'))
     .filter((cardId) => canResolveIntelligenceAction(game, viewer, cardId))
+    .filter((cardId) => cardId !== CAPITAL_PUNISHMENT || canResolveCapitalPunishmentAction(game, viewer))
     .filter((cardId) => cardId !== DISRUPTION || canResolveDisruptionAction(game, viewer))
     .filter((cardId) => cardId !== NEW_RECRUITS || canResolveNewRecruitsAction(game, viewer))
     .filter((cardId) => cardId !== RESOURCEFULNESS || canBankResourcefulness(game, viewer))

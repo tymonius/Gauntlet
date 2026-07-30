@@ -2,8 +2,9 @@ import { EffectRegistry, baseBattleEffectHandlers, totalModifiersFor } from '../
 import type { GameEvent, GameState, PlayerID } from '../types';
 import type { ResolveBattleRevealAction } from './actions';
 import { applySubversionBattleRestrictions } from './intelligence-subversion-battle';
-import { applyPalisadeWallBattleEffects } from './neutral-palisade-wall';
 import { applyBattleCancellations } from './battle-cancellation';
+import { applyCapitalPunishmentBattleEffects } from './neutral-capital-punishment';
+import { applyPalisadeWallBattleEffects } from './neutral-palisade-wall';
 import { GameActionError, type ApplyGameActionResult } from './reducer';
 
 export const BATTLE_REVEAL_CANCELLATIONS_RESOLVED = 'battle_reveal_cancellations_resolved';
@@ -65,6 +66,7 @@ export function resolveBattleRevealCancellations(
   applyBattleCancellations(game, cancellations);
   applySubversionBattleRestrictions(game);
   applyPalisadeWallBattleEffects(game);
+  applyCapitalPunishmentBattleEffects(game, action);
   battle.resolvedCancellations = cancellations;
   battle.effectsResolved.push(BATTLE_REVEAL_CANCELLATIONS_RESOLVED);
 
