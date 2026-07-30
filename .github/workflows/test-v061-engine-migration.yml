@@ -1,0 +1,74 @@
+name: Test v0.6.1 engine migration
+
+on:
+  push:
+    branches:
+      - rules/v0.6.1-playtest-revision
+    paths:
+      - ".github/workflows/test-v061-engine-migration.yml"
+      - "docs/Gauntlet_v0.6.1_Digital_Engine_Migration.md"
+      - "src/content/types.ts"
+      - "src/content/v061.ts"
+      - "src/content/v061.test.ts"
+      - "src/content/index.ts"
+      - "src/types/battle.ts"
+      - "src/types/game.ts"
+      - "src/state/battle-v061*.ts"
+      - "src/state/game-battle-v061*.ts"
+      - "src/state/index.ts"
+      - "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/test-v061-engine-migration.yml"
+      - "docs/Gauntlet_v0.6.1_Digital_Engine_Migration.md"
+      - "src/content/types.ts"
+      - "src/content/v061.ts"
+      - "src/content/v061.test.ts"
+      - "src/content/index.ts"
+      - "src/types/battle.ts"
+      - "src/types/game.ts"
+      - "src/state/battle-v061*.ts"
+      - "src/state/game-battle-v061*.ts"
+      - "src/state/index.ts"
+      - "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-v061-engine-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout revision branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Typecheck complete engine
+        run: npm run typecheck
+
+      - name: Test complete engine
+        run: npm test
+
+      - name: Run focused v0.6.1 migration tests
+        run: >-
+          npx vitest run
+          src/content/v061.test.ts
+          src/state/battle-v061.test.ts
+          src/state/battle-v061-procedure.test.ts
+          src/state/game-battle-v061.test.ts
