@@ -43,20 +43,21 @@ jobs:
           matches = []
           changed = []
           condition = "    if: github.ref == 'refs/heads/main'\n"
-          protection_workflow = Path('.github/workflows/finalize-v061-branch.yml')
+          excluded = {
+              Path('.github/workflows/finalize-v061-branch.yml'),
+              Path('.github/workflows/publish-v0.6.0-release.yml'),
+          }
 
           for path in sorted(Path('.github/workflows').glob('*.y*ml')):
-              if path == protection_workflow:
+              if path in excluded:
                   continue
 
               text = path.read_text(encoding='utf-8')
+              lower = text.lower()
               identifies_legacy_renderer = (
-                  'releases/v0.6.0/Gauntlet_v0.6.0_All_Cards_and_Components.pdf' in text
-                  or (
-                      'releases/v0.6.0/' in text
-                      and 'card' in text.lower()
-                      and ('playwright' in text.lower() or 'pdf' in text.lower())
-                  )
+                  'releases/v0.6.0/' in text
+                  and ('playwright' in lower or 'chromium' in lower)
+                  and ('card' in lower or 'faction-sheets' in lower)
               )
               if not identifies_legacy_renderer:
                   continue
@@ -73,7 +74,7 @@ jobs:
               changed.append(path)
 
           if not matches:
-              raise SystemExit('No workflow referencing the v0.6.0 card-sheet outputs was found')
+              raise SystemExit('No Playwright/Chromium workflow rendering the v0.6.0 card-sheet outputs was found')
 
           print('Matched legacy renderer workflows:')
           for path in matches:
