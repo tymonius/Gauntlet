@@ -15,7 +15,6 @@ import {
 const disabledTimings: Partial<Record<CardID, CardPlayTiming[]>> = {
   'neutral-decoys': ['action'],
   'neutral-arcane-knowledge': ['battle_hand_commit', 'battle_draw_play'],
-  'neutral-invasion': ['battle_hand_commit', 'battle_draw_play'],
   'neutral-armistice': ['action'],
 };
 
