@@ -1,4 +1,5 @@
 export * from './views';
+export * from './views-v061';
 export * from './banked-assets';
 export * from './asset-facing';
 export * from './initialize';
