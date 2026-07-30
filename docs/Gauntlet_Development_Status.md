@@ -55,7 +55,7 @@ The July 27 session used the recommended Spymaster and Ambassador Decks. It last
 - Run the source synchronization, canonical-data generation, automated tests, and strict release validators on the completed branch.
 - Regenerate the rulebook, reference guide, playtest sheet, player mat, printable cards, and supplemental components from the synchronized governing sources.
 - Visually inspect every regenerated player-facing artifact at intended print size and at desktop/mobile browser widths.
-- Synchronize the revision branch with current `main` website, artwork, print, and digital-implementation work before merging.
+- Synchronize the revision branch with current `main` website, artwork, print, and browser-tool work before merging.
 - Keep v0.6.0 canonical until the full v0.6.1 package passes those checks and is published.
 
 ### 2. Physical and human playtesting
@@ -91,7 +91,7 @@ The July 27 session used the recommended Spymaster and Ambassador Decks. It last
 
 ### 6. Unified visual identity and production design
 
-- Use the [Visual Identity and Design System](Gauntlet_Visual_Identity_and_Design_System.md) as the roadmap for one coherent language across cards, printed components, the rulebook, the website, browser tools, the digital implementation, the playmat, packaging, and promotional material.
+- Use the [Visual Identity and Design System](Gauntlet_Visual_Identity_and_Design_System.md) as the roadmap for one coherent language across cards, printed components, the rulebook, the website, browser tools, the future digital implementation, the playmat, packaging, and promotional material.
 - Use the [Typography System](Gauntlet_Typography_System.md) and [live typography specimen](../typography/) to test P22 1722 Pro, Adobe Caslon Pro, Georgia, P22 Declaration Pro, Inter, Caslon italic callouts, and actual-size card typography before locking exact scales.
 - Complete the Gauntlet wordmark, compact mark, typography system, core palette, faction palettes, shape language, material language, spacing scale, and accessibility standards.
 - Build and test the card-front system using both short and text-heavy examples, then adapt it to faction cards, Assets, Overlays, Territories, Leaders, and supplemental components.
@@ -125,6 +125,18 @@ Remaining production work:
 - configure Cloudflare and facilitator secrets;
 - deploy and health-check both Workers; and
 - test an end-to-end generated sheet, scan, join, Arbiter question, session closure, and post-closure rejection before formal use.
+
+### 9. Playable digital implementation — final priority
+
+The automated playable game is deliberately deferred until the v0.6.1 tabletop release is complete. It is not a publication dependency.
+
+Exploratory migration work has been preserved on `feature/v061-digital-engine-migration`. After publication, resume from that branch and:
+
+- replace the legacy hand-commitment and Battle Hand procedure with Gambits, Reserves, Tactics, and the ordered Aftermath;
+- migrate every affected Neutral, faction, Leader, Territory, replacement, reveal, withdrawal, and destination handler;
+- preserve versioned v0.6.0 behavior where required rather than silently changing existing saved or test states;
+- add complete private/public information views and multiplayer synchronization; and
+- pass full engine, regression, rules-interaction, and remote-play validation before presenting the digital build as v0.6.1-compatible.
 
 ## Change discipline
 
