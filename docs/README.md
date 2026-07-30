@@ -21,6 +21,8 @@ When a derived PDF, printable sheet, deckbuilder entry, or digital implementatio
 - [Development Status](Gauntlet_Development_Status.md) — current post-release priorities and playtest watchlist.
 - [Design Principles and Guardrails](Gauntlet_Design_Principles_and_Guardrails.md) — durable game-design constraints.
 - [Visual Identity and Design System](Gauntlet_Visual_Identity_and_Design_System.md) — cross-channel framework for brand, typography, color, shapes, icons, cards, rulebook, website, tools, digital play, physical components, and production assets.
+- [Typography System](Gauntlet_Typography_System.md) — approved working type families, role boundaries, Caslon italic usage, shared web tokens, and the print and screen tests required before exact sizes are locked.
+- [Live Typography Specimen](../typography/) — internal browser specimen for P22 1722 Pro, Adobe Caslon Pro, Georgia, P22 Declaration Pro, Inter, and actual-size card typography tests.
 - [Visual Design Language](Gauntlet_Visual_Design_Language.md) — approved detailed graphic and component principles for faction identity, cards, print materials, and interfaces.
 - [Illustration Art Direction](Gauntlet_Illustration_Art_Direction.md) — shared visual-world standards for architecture, clothing, technology, environments, faction depiction, and card illustration.
 - [Illustration Color Addendum](Gauntlet_Illustration_Color_Addendum.md) — approved color-richness standard balancing historical realism with attractive, collectible card art.
