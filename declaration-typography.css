@@ -1,5 +1,6 @@
 :root {
   --declaration: "p22-declaration-pro", "P22 Declaration Pro", Georgia, "Times New Roman", serif;
+  --historical-title: "p22-1722-pro", Georgia, "Times New Roman", serif;
 }
 
 /*
@@ -16,6 +17,12 @@ body {
   body {
     overflow-x: clip;
   }
+}
+
+.brand > span:last-child {
+  font-family: var(--historical-title);
+  font-weight: 400;
+  letter-spacing: 0;
 }
 
 .hero-copy {
