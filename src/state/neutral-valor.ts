@@ -45,7 +45,7 @@ function activeValor(card?: BattlePlayedCard): card is BattlePlayedCard {
     && card.cardId === VALOR
     && !card.canceled
     && !card.negated
-    && !card.virtual,
+    && (!card.virtual || card.effectOnlyReplay),
   );
 }
 

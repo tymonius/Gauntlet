@@ -19,6 +19,8 @@ const replayableBattleEffectIds = new Set<CardID>([
   'card-fortifications',
   'card-attrition',
   'neutral-attrition',
+  'neutral-fortifications',
+  'neutral-valor',
 ]);
 
 export function participantForBattle(game: GameState, playerId: PlayerID): BattleParticipantState {
@@ -32,7 +34,8 @@ export function participantForBattle(game: GameState, playerId: PlayerID): Battl
 export function canReplayBattleEffect(game: GameState, playerId: PlayerID, cardId: CardID): boolean {
   if (!game.battle || game.battle.stage !== 'dice') return false;
   if (!replayableBattleEffectIds.has(cardId)) return false;
-  if (cardId === 'card-fortifications' && game.battle.defender.playerId !== playerId) return false;
+  if ((cardId === 'card-fortifications' || cardId === 'neutral-fortifications')
+    && game.battle.defender.playerId !== playerId) return false;
   return true;
 }
 
@@ -61,6 +64,17 @@ export function addReplayedBattleCard(
     canceled: false,
   };
   participant.battleDrawPlayed.push(played);
+  return played;
+}
+
+export function addVirtualReplayedBattleCard(
+  game: GameState,
+  playerId: PlayerID,
+  cardId: CardID,
+): BattlePlayedCard {
+  const played = addReplayedBattleCard(game, playerId, cardId);
+  played.virtual = true;
+  played.effectOnlyReplay = true;
   return played;
 }
 

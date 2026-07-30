@@ -14,6 +14,14 @@ import {
   registerAssimilationActionCondition,
 } from './neutral-assimilation';
 import {
+  applyArcaneKnowledgeAction,
+  ARCANE_KNOWLEDGE,
+  openNextArcaneKnowledgeChoice,
+  prepareArcaneKnowledgeAction,
+  prepareArcaneKnowledgeBattleReveal,
+  resolveArcaneKnowledgeChoice,
+} from './neutral-arcane-knowledge';
+import {
   ARMISTICE,
   expireArmisticeConditions,
   registerArmisticeActionCondition,
@@ -346,8 +354,10 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
       ? captureDecoysAssetSnapshot(game)
       : undefined;
     const next = structuredClone(game);
-    const resolved = pendingKind === 'decoys_asset'
-      ? (resolveDecoysChoice(next, action), {})
+    const resolved = pendingKind === 'arcane_knowledge_battle'
+      ? resolveArcaneKnowledgeChoice(next, action)
+      : pendingKind === 'decoys_asset'
+        ? (resolveDecoysChoice(next, action), {})
       : pendingKind.startsWith('supplies_')
         ? (resolveSuppliesChoice(next, action), {})
         : pendingKind === 'foothold_asset'
@@ -448,6 +458,7 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
     if (prepareReinforcementsBattleReveal(prepared, action)) return { state: prepared };
     if (prepareInvasionBattleReveal(prepared, action)) return { state: prepared };
     if (prepareSeditionBattleReveal(prepared, action)) return { state: prepared };
+    if (prepareArcaneKnowledgeBattleReveal(prepared, action)) return { state: prepared };
     game = prepared;
   }
 
@@ -502,6 +513,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   if (action.type === 'commit_battle_hand_card') {
     requireAdvanceGuardHandCommitAllowed(game, action.playerId);
   }
+  const preparedArcaneKnowledge = action.type === 'play_action_card' && action.cardId === ARCANE_KNOWLEDGE
+    ? prepareArcaneKnowledgeAction(game, action)
+    : undefined;
   const preparedAdvanceGuard = action.type === 'play_action_card' && action.cardId === ADVANCE_GUARD
     ? prepareAdvanceGuardAction(game, action)
     : undefined;
@@ -603,6 +617,9 @@ export function applyGameAction(game: GameState, action: NeutralAppStateAction):
   }
   if (action.type === 'play_action_card' && action.cardId === ARMISTICE) {
     registerArmisticeActionCondition(result.state, action.playerId);
+  }
+  if (action.type === 'play_action_card' && preparedArcaneKnowledge) {
+    applyArcaneKnowledgeAction(result.state, action.playerId, preparedArcaneKnowledge);
   }
   if (action.type === 'play_action_card' && preparedCapitalPunishment) {
     applyCapitalPunishmentAction(result.state, action.playerId, preparedCapitalPunishment);

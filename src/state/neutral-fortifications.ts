@@ -42,7 +42,7 @@ function active(card?: BattlePlayedCard): card is BattlePlayedCard {
     && card.cardId === FORTIFICATIONS
     && !card.canceled
     && !card.negated
-    && !card.virtual,
+    && (!card.virtual || card.effectOnlyReplay),
   );
 }
 

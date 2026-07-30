@@ -34,6 +34,8 @@ export interface BattlePlayedCard {
   capitalPunishmentBy?: PlayerID[];
   /** A repeated effect with no additional physical card or cleanup destination. */
   virtual?: boolean;
+  /** A virtual replay that should still resolve card-specific Battle logic. */
+  effectOnlyReplay?: boolean;
   /** True when this physical card came from the Battle Hand first formed for this battle. */
   fromInitialBattleHand?: boolean;
 }

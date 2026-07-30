@@ -73,6 +73,7 @@ export * from './inquisition-tyranny';
 export * from './inquisition-heresy';
 export * from './inquisition-hellfire';
 export * from './neutral-advance-guard';
+export * from './neutral-arcane-knowledge';
 export * from './neutral-assimilation';
 export * from './neutral-armistice';
 export * from './neutral-capital-punishment';
