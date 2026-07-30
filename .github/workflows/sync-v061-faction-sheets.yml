@@ -13,6 +13,7 @@ on:
       - "deckbuilder/v061-supplementals.js"
       - "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json"
       - "releases/v0.6.1/faction-guides/**"
+      - "scripts/validate_v061_faction_sheet_pdfs.py"
   pull_request:
     branches:
       - main
@@ -25,6 +26,7 @@ on:
       - "deckbuilder/v061-supplementals.js"
       - "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json"
       - "releases/v0.6.1/faction-guides/**"
+      - "scripts/validate_v061_faction_sheet_pdfs.py"
   workflow_dispatch:
 
 permissions:
@@ -93,8 +95,10 @@ jobs:
           print('Validated canonical v0.6.1 faction-sheet sources and six 12-card pools.')
           PY
 
-      - name: Install Playwright
+      - name: Install rendering and PDF validation tools
         run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
           npm install --no-save playwright
           npx playwright install --with-deps chromium
 
@@ -171,6 +175,9 @@ jobs:
           await index.close();
           await browser.close();
           NODE
+
+      - name: Validate PDF pages
+        run: python scripts/validate_v061_faction_sheet_pdfs.py /tmp/v061-faction-sheets
 
       - name: Upload faction-sheet PDFs and previews
         uses: actions/upload-artifact@v4
