@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "governance:check": "python .github/scripts/validate-governance.py",
     "typecheck": "tsc --noEmit",
     "test": "vitest run && node scripts/validate-starter-decks.mjs && node scripts/sync-google-analytics.mjs --check",
     "test:rules-assistant": "vitest run rules-assistant/*.test.mjs",
