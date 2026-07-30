@@ -48,16 +48,6 @@
   object-position: center 52%;
 }
 
-.art-counterintelligence {
-  background-color: #1d1d1b;
-}
-
-.art-counterintelligence img {
-  object-fit: cover;
-  object-position: center 46%;
-  filter: brightness(1.24) contrast(1.03) saturate(1.04);
-}
-
 .card-art::before {
   z-index: 1;
 }
@@ -67,12 +57,6 @@
   background:
     linear-gradient(180deg, rgba(20, 16, 12, 0.02), transparent 58%, rgba(24, 18, 13, 0.28)),
     linear-gradient(90deg, rgba(255, 244, 213, 0.08), transparent 18%, transparent 82%, rgba(34, 25, 18, 0.09));
-}
-
-.art-counterintelligence::after {
-  background:
-    linear-gradient(180deg, rgba(20, 16, 12, 0.01), transparent 64%, rgba(24, 18, 13, 0.12)),
-    linear-gradient(90deg, rgba(255, 244, 213, 0.05), transparent 18%, transparent 82%, rgba(34, 25, 18, 0.04));
 }
 
 .card-art span {
