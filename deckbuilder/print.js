@@ -61,7 +61,7 @@
     };
 
     return {
-      name: state.deckName.trim() || "Untitled v0.6 deck",
+      name: state.deckName.trim() || "Untitled v0.6.1 Deck",
       faction,
       leader,
       entries,
@@ -92,7 +92,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>${escapeHtml(data.name)} — Gauntlet v0.6</title>
+<title>${escapeHtml(data.name)} — Gauntlet v0.6.1</title>
 ${PRINT_FONT_LINKS}
 <style>
 *{box-sizing:border-box;font-synthesis:none;-webkit-print-color-adjust:exact;print-color-adjust:exact;color-adjust:exact}
@@ -180,6 +180,7 @@ p{margin:0}
 .proposal-effect+.proposal-effect{margin-top:.07in;padding-top:.055in;border-top:1px solid #aaa}
 .proposal-effect{font-size:var(--card-text-size);line-height:1.1}
 .proposal-footer{display:flex;align-items:center;justify-content:center;padding:.02in .05in;background:#ddd!important;border-top:1px solid #111;font-size:4.6pt;text-align:center}
+.rite-card{--card-text-size:6pt;--card-label-size:5.8pt;display:grid;grid-template-rows:.22in .55in auto 1fr .16in;background:#f3edf7!important}.rite-card.completed{background:#e5d8ed!important}.rite-banner{display:flex;align-items:center;justify-content:center;border-bottom:1px solid #4b3158;background:#d7c4e0!important;color:#321c3e;font-size:5.5pt;font-weight:900;text-transform:uppercase;letter-spacing:.08em}.rite-icon{display:flex;align-items:center;justify-content:center;font-size:24pt;color:#533564}.rite-title{padding:0 .08in .045in;border-bottom:1px solid #7c6188;font-family:Georgia,serif;font-size:11.4pt;font-weight:700;text-align:center}.rite-body{min-height:0;overflow:hidden;padding:.055in .085in .035in}.rite-section,.rite-complete,.rite-progress{font-size:var(--card-text-size);line-height:1.08}.rite-section+.rite-section,.rite-progress{margin-top:.045in;padding-top:.038in;border-top:1px solid #b7a4bf}.rite-footer{display:flex;align-items:center;justify-content:center;min-height:.16in;padding:.025in .055in;border-top:1px solid #4b3158;background:#d7c4e0!important;font-size:4.7pt;line-height:1;text-align:center}
 .territory{--card-text-size:8pt;--card-label-size:7pt}
 .territory-inner{position:absolute;top:0;left:2.5in;width:3.5in;height:2.5in;transform:rotate(90deg);transform-origin:top left;display:grid;grid-template-rows:.36in 1fr .16in;overflow:hidden}
 .territory-header{display:flex;align-items:end;gap:.08in;padding:.05in .1in;background:#d7d7d7!important;border-bottom:1px solid #111;box-shadow:inset 0 0 0 999px #d7d7d7}
@@ -220,6 +221,16 @@ window.addEventListener('load',preparePrint);
         .map(proposal => proposalToPrintHtml(proposal, true));
       dedicatedPages.push(cardTableToHtml(proposalFronts, 3));
       dedicatedPages.push(cardTableToHtml(treatyBacks, 3));
+    }
+
+
+    if (packageData.rites?.length) {
+      const riteFronts = packageData.rites.map(rite => riteToPrintHtml(rite, false));
+      const riteBacks = [...packageData.rites]
+        .reverse()
+        .map(rite => riteToPrintHtml(rite, true));
+      dedicatedPages.push(cardTableToHtml(riteFronts, 3));
+      dedicatedPages.push(cardTableToHtml(riteBacks, 3));
     }
 
     return {
@@ -292,7 +303,7 @@ window.addEventListener('load',preparePrint);
       <header class="card-header"><span class="card-name">${escapeHtml(card.name)}</span><span class="cost-circle">${escapeHtml(card.cost)}</span></header>
       ${card.unique ? '<div class="unique-flag">Unique</div>' : ""}
       <div class="card-body">${sectionHtml}</div>
-      <footer class="card-footer"><span>${escapeHtml(card.factionLabel)}</span><span>© 2026 T. Scott</span><span>v0.6 dev</span></footer>
+      <footer class="card-footer"><span>${escapeHtml(card.factionLabel)}</span><span>© 2026 T. Scott</span><span>v0.6.1</span></footer>
     </article>`;
   }
 
@@ -307,7 +318,7 @@ window.addEventListener('load',preparePrint);
         <div class="leader-intro"><div class="leader-tagline">${escapeHtml(leader.tagline || "")}</div><div class="leader-role">${escapeHtml(leader.role || faction.identity)}</div></div>
         ${(leader.rules || []).map(([label, text]) => rulesSection(label, text)).join("")}
       </div>
-      <footer class="card-footer"><span>${escapeHtml(faction.name)}</span><span>Supplemental Leader</span><span>v0.6 dev</span></footer>
+      <footer class="card-footer"><span>${escapeHtml(faction.name)}</span><span>Supplemental Leader</span><span>v0.6.1</span></footer>
     </article>`;
   }
 
@@ -383,11 +394,40 @@ window.addEventListener('load',preparePrint);
     </article>`;
   }
 
+
+  function riteToPrintHtml(rite, completed) {
+    if (completed) {
+      return `<article class="print-card rite-card completed fit-target">
+        <div class="rite-banner">Completed Rite</div>
+        <div class="rite-icon">${escapeHtml(rite.icon || "✦")}</div>
+        <div class="rite-title">${escapeHtml(rite.name)}</div>
+        <div class="rite-body">
+          <div class="rite-complete">This Rite is complete. Keep this side face up; it cannot be begun again.</div>
+          <div class="rite-progress"><strong>Progression:</strong> First completed Rite unlocks Invocation. Second unlocks Transmutation. Third unlocks Convergence and permission to begin the Ritual of Ascendance.</div>
+        </div>
+        <div class="rite-footer">Pair with the incomplete side · no deckbuilding value</div>
+      </article>`;
+    }
+    return `<article class="print-card rite-card fit-target">
+      <div class="rite-banner">Incomplete Rite</div>
+      <div class="rite-icon">${escapeHtml(rite.icon || "✦")}</div>
+      <div class="rite-title">${escapeHtml(rite.name)}</div>
+      <div class="rite-body">
+        ${rite.requirement ? `<div class="rite-section"><strong>Requirement:</strong> ${escapeHtml(rite.requirement)}</div>` : ""}
+        <div class="rite-section"><strong>Beginning cost:</strong> ${escapeHtml(rite.beginning)}</div>
+        <div class="rite-section"><strong>Completion:</strong> ${escapeHtml(rite.completion)}</div>
+        ${rite.result ? `<div class="rite-section"><strong>Result:</strong> ${escapeHtml(rite.result)}</div>` : ""}
+        <div class="rite-section"><strong>Interruption:</strong> ${escapeHtml(rite.interruption)}</div>
+      </div>
+      <div class="rite-footer">Flip when complete · no deckbuilding value</div>
+    </article>`;
+  }
+
   function territoryToPrintHtml(territory) {
     return `<article class="print-card territory"><div class="territory-inner fit-target">
       <header class="territory-header"><span class="territory-type">${territory.arena ? "Arena Territory" : "Territory"}</span><span class="territory-name">${escapeHtml(territory.name)}</span></header>
       <div class="territory-body"><div class="card-text">${escapeHtml(territory.text || "")}</div></div>
-      <footer class="territory-footer"><span>${escapeHtml(territory.complexity || "")}</span><span>Gauntlet v0.6 dev</span></footer>
+      <footer class="territory-footer"><span>${escapeHtml(territory.complexity || "")}</span><span>Gauntlet v0.6.1</span></footer>
     </div></article>`;
   }
 

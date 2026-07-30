@@ -1,5 +1,5 @@
 (() => {
-  const TERRITORY_SOURCE = "../docs/Gauntlet_v0.6_Territory_Pool.md";
+  const TERRITORY_SOURCE = "../docs/Gauntlet_v0.6.1_Territory_Pool.md";
   const REQUIRED_TERRITORIES = 3;
   const MAX_ARENAS = 1;
 
@@ -64,7 +64,7 @@
       console.error(error);
       if (territoryElements.territoryList) {
         territoryElements.territoryList.className = "compact-territory-list empty-state";
-        territoryElements.territoryList.textContent = "Unable to load the consolidated v0.6 Territory source.";
+        territoryElements.territoryList.textContent = "Unable to load the v0.6.1 Territory source.";
       }
     }
   }

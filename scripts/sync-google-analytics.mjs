@@ -5,6 +5,11 @@ const MEASUREMENT_ID = "G-8YYYZJGGPE";
 const CHECK_ONLY = process.argv.includes("--check");
 const ROOT = process.cwd();
 const SKIP_DIRECTORIES = new Set([".git", "node_modules"]);
+const ANALYTICS_EXCLUDED_FILES = new Set([
+  "playtest/session/index.html",
+  "playtest/batch/index.html",
+  "playtest/player-mat/index.html"
+]);
 
 const GOOGLE_TAG = `  <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=${MEASUREMENT_ID}"></script>
@@ -33,22 +38,29 @@ async function findHtmlFiles(directory) {
   return files;
 }
 
+function normalizedRelativePath(filePath) {
+  return path.relative(ROOT, filePath).split(path.sep).join("/");
+}
+
 const htmlFiles = await findHtmlFiles(ROOT);
+const eligibleFiles = htmlFiles.filter(
+  (filePath) => !ANALYTICS_EXCLUDED_FILES.has(normalizedRelativePath(filePath))
+);
 const missing = [];
 let updated = 0;
 
-for (const filePath of htmlFiles) {
+for (const filePath of eligibleFiles) {
   const source = await readFile(filePath, "utf8");
 
   if (source.includes(MEASUREMENT_ID)) continue;
 
   if (source.includes("googletagmanager.com/gtag/js?id=")) {
-    throw new Error(`${path.relative(ROOT, filePath)} already contains a different Google tag.`);
+    throw new Error(`${normalizedRelativePath(filePath)} already contains a different Google tag.`);
   }
 
   if (!/<head(?:\s[^>]*)?>/i.test(source)) continue;
 
-  const relativePath = path.relative(ROOT, filePath);
+  const relativePath = normalizedRelativePath(filePath);
   missing.push(relativePath);
 
   if (!CHECK_ONLY) {
@@ -63,7 +75,10 @@ if (CHECK_ONLY && missing.length) {
   for (const file of missing) console.error(`- ${file}`);
   process.exitCode = 1;
 } else if (CHECK_ONLY) {
-  console.log(`Google Analytics tag ${MEASUREMENT_ID} is present in all ${htmlFiles.length} HTML files.`);
+  console.log(
+    `Google Analytics tag ${MEASUREMENT_ID} is present in all ${eligibleFiles.length} eligible HTML files; ` +
+    `${ANALYTICS_EXCLUDED_FILES.size} private or print-only pages are intentionally excluded.`
+  );
 } else {
   console.log(`Added Google Analytics tag ${MEASUREMENT_ID} to ${updated} HTML files.`);
 }

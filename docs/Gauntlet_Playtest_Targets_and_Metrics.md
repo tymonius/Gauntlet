@@ -1,9 +1,9 @@
 # Gauntlet Playtest Targets and Metrics
 
-**Status:** Active v0.6.0 testing standard.  
+**Status:** Active v0.6 testing standard; v0.6.1 workflow revisions in progress.  
 **Purpose:** Define what to record, what healthy play should look like, and what evidence is required before changing canonical rules or card text.
 
-Use this document with the [official v0.6.0 rulebook](../releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md) and [Development Status](Gauntlet_Development_Status.md).
+Use this document with the current official rulebook, [Development Status](Gauntlet_Development_Status.md), and the active [v0.6.1 Implementation Ledger](Gauntlet_v0.6.1_Implementation_Ledger.md).
 
 ---
 
@@ -17,50 +17,87 @@ Prefer:
 - human play after automated simulation;
 - unchanged comparison Decks when testing one card or rule;
 - exact event counts rather than impressions alone;
-- notes about meaningful decisions, not only the winner; and
-- separating rules confusion, production problems, and balance problems.
+- notes about meaningful decisions, not only the winner;
+- separating instruction/setup time from game time;
+- separating rules confusion, production problems, and balance problems; and
+- retaining stopped-game feedback without treating every stopped game as completed-game pacing evidence.
 
 Do not change a canonical rule because one game was unusual. Reopen a frozen element when several tests reveal the same failure or when one test exposes a deterministic exploit or impossible resolution.
 
 ---
 
-## 2. Required game record
+## 2. Required session record
 
-Record for every completed game:
+Record the following for every completed or stopped session.
 
-### Game identity
+### Session identity
 
 - date;
 - rules version;
+- unique sheet serial and digital session identifier;
 - players or test agents;
 - faction and Leader for each player;
 - complete Deck list or saved Deck identifier;
+- whether each player used a recommended Deck, modified it, or built a custom Deck;
 - three Territories selected by each player and their order;
-- first player; and
-- any noncanonical test rule.
+- first player;
+- test type;
+- any noncanonical test rule; and
+- whether the players received the faction introductions before selection.
+
+Each printed formal-playtest sheet should have a unique single-use QR code. The first scan creates the linked digital session; later scans join it. All Rules Arbiter questions asked through that session should be linked automatically. Closing the session retires the code. A short human-readable serial should remain available for damaged-code fallback and manual reconciliation.
+
+### Time record
+
+Record separately:
+
+- instruction and setup time;
+- game time;
+- total session time; and
+- time spent on rules lookups where practical.
+
+Do not report total session time as game duration.
+
+### Completion status
+
+Classify the session as:
+
+- completed normally;
+- concession;
+- external interruption;
+- rules blocker;
+- component or technical failure; or
+- other stopped reason, with explanation.
+
+External-interruption sessions should be excluded from completed-game pacing, victory-route, and win-balance statistics. Retain their decisions, rules questions, production observations, and player feedback.
 
 ### Outcome
+
+For a completed game, record:
 
 - winner;
 - victory route;
 - total turns and rounds;
 - final Player Token positions;
 - final Territory control;
-- final hand, Draw Pile, Discard Pile, Graveyard, and Asset counts where practical; and
+- final Hand, Draw Pile, Discard Pile, Graveyard, Reserve, and Asset counts where practical; and
 - faction-resource or progression state at game end.
+
+For a stopped game, record the same state at the stopping point where practical, but do not assign a projected winner unless the test specifically requires that judgment.
 
 ### Activity counts
 
 - battles initiated by each player;
 - battles won while attacking and defending;
 - tied battles resolved by Defender's Advantage;
-- retreats and additional-position retreats;
+- withdrawals, retreats, and additional-position retreats;
 - Territories occupied, captured, and recaptured;
 - Action Opportunities used before and after movement;
-- cards committed from hand;
-- cards chosen from Battle Hands;
-- Assets banked and removed;
-- Overlays placed, covered, exposed, and removed;
+- Gambits set;
+- Tactics chosen;
+- additional Tactics played;
+- Assets banked, activated, replaced, and removed;
+- Overlays placed, covered, exposed, transferred with Territory control, and removed;
 - reshuffles; and
 - turns in which a player had no meaningful legal Action or movement choice.
 
@@ -70,9 +107,26 @@ Record for every completed game:
 - most satisfying sequence;
 - any rule lookup;
 - any wording interpreted differently by the players;
-- any state that was difficult to represent physically;
-- any card that felt automatic, dead, oppressive, or irrelevant; and
-- whether the losing player retained plausible recovery decisions late in the game.
+- any state or zone that was difficult to represent physically;
+- any card that felt automatic, dead, oppressive, or irrelevant;
+- whether the losing player retained plausible recovery decisions late in the game;
+- whether the faction introduction prepared each player for the selected faction; and
+- whether the recommended Deck behaved as the introduction suggested.
+
+### Rules Arbiter record
+
+For every Arbiter question, retain:
+
+- exact question;
+- answer shown to the player;
+- rules version;
+- cited source and section;
+- classification as **Explicit**, **Inferred**, or **Unresolved**;
+- session and sheet serial;
+- whether the ruling changed play; and
+- reviewer correction or follow-up, if any.
+
+The Arbiter must not invent precedence. An unresolved interaction should remain unresolved until the governing source is amended.
 
 ---
 
@@ -82,11 +136,14 @@ These are investigation thresholds, not automatic balance rules.
 
 ### Game length
 
-Target most experienced-player games to finish in roughly **35–60 minutes** once players know their Decks.
+Target most completed experienced-player games to finish in roughly **35–60 minutes** once players know their Decks.
+
+Track first-game instruction and setup separately. A long first session may expose onboarding or lookup problems without proving that experienced game time is unhealthy.
 
 Investigate when:
 
-- routine games exceed 75 minutes;
+- routine completed games exceed 75 minutes;
+- instruction or setup remains lengthy after the teaching materials are stable;
 - many games end before faction systems meaningfully appear;
 - games regularly reach repeated reshuffle loops without territorial progress; or
 - a player is functionally defeated many turns before the game ends.
@@ -104,12 +161,13 @@ Investigate when:
 
 ### Battle decisions
 
-Hand commitments should feel costly; Battle Hand choices should feel tactical rather than automatic.
+Gambits should feel costly; Tactic choices should feel tactical rather than automatic.
 
 Investigate when:
 
-- players almost always commit from hand or almost never do;
-- one Battle effect category dominates all choices;
+- players almost always set a Gambit or almost never do;
+- players routinely choose the same Tactic without regard to the opposing position;
+- one effect category dominates all choices;
 - information effects make hidden choices effectively irrelevant;
 - chain battles create excessive downtime or unavoidable collapse; or
 - Defender's Advantage makes attacking controlled Territories consistently futile.
@@ -121,7 +179,7 @@ Investigate when:
 - players frequently have no cards available for either normal play or battle choices;
 - low-value Decks consistently outperform higher-value alternatives only through reshuffle frequency;
 - Graveyard pressure removes meaningful participation too early; or
-- draw and recovery loops make card commitment effectively free.
+- draw and recovery loops make Gambits effectively free.
 
 ---
 
@@ -177,7 +235,8 @@ Investigate when an additional victory is:
 - Terms offered, accepted, refused, and imposed;
 - Influence staked, returned, gained, and spent through Leverage;
 - Treaty Articles ratified by route;
-- turns at which Peace Treaty became a credible threat; and
+- turns at which Peace Treaty became a credible threat;
+- mirror games in which attacker-first Terms priority mattered; and
 - Ambassador/Senator win rate with matched Decks.
 
 ### Financiers
@@ -193,7 +252,9 @@ Investigate when an additional victory is:
 - Missions activated, completed, abandoned, or left dead;
 - Intel gained and spent;
 - Operation Progress gained and lost;
-- Surveillance and Interference uses that changed a choice;
+- Gambit Surveillance and Tactic Surveillance uses;
+- Interference uses, targets, replacements, and revised choices;
+- prevented Surveillance attempts and their paid Intel;
 - Special Operations begun, disrupted, recovered, and completed; and
 - Ranger/Spymaster win rate with matched Decks.
 
@@ -202,8 +263,9 @@ Investigate when an additional victory is:
 - Rites begun, completed, and interrupted;
 - turns required for each Rite;
 - cards bound, sacrificed, exchanged, or recovered;
-- Invocation and Transmutation uses;
-- turns at which Ritual became a credible threat; and
+- Invocation, Transmutation, and Convergence uses;
+- Rituals of Ascendance begun, interrupted, and completed;
+- final Ritual battles initiated and their results; and
 - Alchemist/Spirit Walker win rate with matched Decks.
 
 ### Inquisition
@@ -224,7 +286,7 @@ For each faction pairing, test both seating orders and both Leaders where practi
 Record:
 
 - first-player win rate;
-- average game length;
+- average completed-game length;
 - victory routes used;
 - whether either faction's core system was shut off;
 - whether a trailing player had meaningful comeback lines; and
@@ -235,13 +297,14 @@ Prioritize:
 - Inquisition versus Mystics;
 - high-pressure Military versus slower progression plans;
 - Diplomats against factions that prefer battle;
+- Diplomat mirrors under attacker-first Terms priority;
 - Financier mirrors and Deed buyouts;
-- Intelligence information effects against special reveal or commitment replacement; and
-- any matchup with heavy Asset or Graveyard interaction.
+- Intelligence information effects against special reveal or replacement effects; and
+- any matchup with heavy Asset, Overlay, or Graveyard interaction.
 
 ---
 
-## 7. Production testing
+## 7. Production and onboarding testing
 
 Physical review is part of rules testing.
 
@@ -253,10 +316,14 @@ Check:
 - double-sided component registration;
 - whether orientation clearly communicates Territory and Overlay control;
 - whether supplemental components can be identified without consulting a separate document;
-- whether the table footprint is practical; and
-- whether players can restore the game state after moving or stacking components.
+- whether the table footprint is practical;
+- whether Hand, Reserve, Gambit, Tactic, Asset Bank, Graveyard, and Discard Pile remain visibly distinct;
+- whether players can restore the game state after moving or stacking components;
+- whether the faction introductions support informed faction selection;
+- whether the recommended Decks reinforce the introductions; and
+- whether the sheet QR code and fallback serial are easy to scan and reconcile.
 
-A component that works only in the digital tool is not complete.
+A component or workflow that works only in the digital tool is not complete.
 
 ---
 
@@ -277,4 +344,4 @@ For a normal balance change, seek at least one of:
 - simulation evidence confirmed by human play; or
 - a clear failure against an explicit design guardrail.
 
-Record the evidence and the intended correction before editing canonical text.
+Record the evidence and intended correction before editing canonical text.

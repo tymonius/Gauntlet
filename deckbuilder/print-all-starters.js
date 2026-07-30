@@ -218,7 +218,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>All 12 Gauntlet v0.6.0 Starter Decks</title>
+<title>All 12 Gauntlet v0.6.1 Starter Decks</title>
 ${links}
 ${styles.map(style => `<style>${style}</style>`).join("\n")}
 <style>

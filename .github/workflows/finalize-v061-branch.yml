@@ -1,0 +1,110 @@
+name: Protect v0.6.0 archive and synchronize v0.6.1
+
+on:
+  push:
+    branches:
+      - rules/v0.6.1-playtest-revision
+    paths:
+      - ".github/workflows/finalize-v061-branch.yml"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/finalize-v061-branch.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  synchronize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout revision branch
+        uses: actions/checkout@v4
+        with:
+          ref: rules/v0.6.1-playtest-revision
+          fetch-depth: 0
+
+      - name: Merge main, protect legacy renderer, and restore archived PDFs
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main rules/v0.6.1-playtest-revision
+          git merge --no-edit origin/main
+
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          matches = []
+          changed = []
+          condition = "    if: github.ref == 'refs/heads/main'\n"
+          excluded = {
+              Path('.github/workflows/finalize-v061-branch.yml'),
+              Path('.github/workflows/publish-v0.6.0-release.yml'),
+          }
+
+          for path in sorted(Path('.github/workflows').glob('*.y*ml')):
+              if path in excluded:
+                  continue
+
+              text = path.read_text(encoding='utf-8')
+              lower = text.lower()
+              identifies_legacy_renderer = (
+                  'releases/v0.6.0/' in text
+                  and ('playwright' in lower or 'chromium' in lower)
+                  and ('card' in lower or 'faction-sheets' in lower)
+              )
+              if not identifies_legacy_renderer:
+                  continue
+
+              matches.append(path)
+              if condition in text:
+                  continue
+
+              marker = re.search(r'(?m)^  render:\s*\n', text)
+              if not marker:
+                  raise SystemExit(f'Legacy renderer job key not found in {path}')
+              text = text[:marker.end()] + condition + text[marker.end():]
+              path.write_text(text, encoding='utf-8')
+              changed.append(path)
+
+          if not matches:
+              raise SystemExit('No Playwright/Chromium workflow rendering the v0.6.0 card-sheet outputs was found')
+
+          print('Matched legacy renderer workflows:')
+          for path in matches:
+              print(f'  {path}')
+          print('Newly protected workflows:')
+          for path in changed:
+              print(f'  {path}')
+          PY
+
+          git checkout origin/main -- releases/v0.6.0/*.pdf
+          git diff --exit-code origin/main -- releases/v0.6.0/*.pdf
+
+          git add .github/workflows/ releases/v0.6.0/
+          if ! git diff --cached --quiet; then
+            git commit -m "Protect v0.6.0 archive and restore release PDFs"
+          fi
+
+          git fetch origin rules/v0.6.1-playtest-revision
+          remote_ref=origin/rules/v0.6.1-playtest-revision
+          if ! git merge-base --is-ancestor "$remote_ref" HEAD; then
+            git merge -X ours --no-edit "$remote_ref"
+          fi
+
+          git push origin HEAD:rules/v0.6.1-playtest-revision
+
+      - name: Verify synchronization and archive integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch origin main rules/v0.6.1-playtest-revision
+          git merge-base --is-ancestor origin/main HEAD
+          git diff --exit-code origin/main -- releases/v0.6.0/*.pdf
+          git grep -n "if: github.ref == 'refs/heads/main'" -- .github/workflows/
