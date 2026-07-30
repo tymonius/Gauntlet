@@ -8,7 +8,7 @@ body { margin:0; background:#eee9df; color:var(--ink); font-family:Arial,Helveti
 #sheet-status { color:#625c54; font-size:14px; }
 #sheets { padding-bottom:24px; }
 .sheet { display:grid; grid-template-columns:repeat(3,2.5in); grid-template-rows:repeat(3,3.5in); width:7.5in; height:10.5in; margin:.25in auto; background:#fff; box-shadow:0 4px 22px rgba(0,0,0,.14); }
-.sheet:not(:last-child) { break-after:page; page-break-after:always; }
+.sheet + .sheet { break-before:page; page-break-before:always; }
 .print-card { --card-text-size:7pt; --card-label-size:6.7pt; position:relative; width:2.5in; height:3.5in; overflow:hidden; border:1px solid var(--line); background:var(--paper); }
 .placeholder-card { border-color:#ddd; background:#fff; }
 .main-card { display:grid; grid-template-rows:.38in .18in 1fr .16in; }
@@ -96,8 +96,8 @@ body { margin:0; background:#eee9df; color:var(--ink); font-family:Arial,Helveti
   body { background:#fff; }
   .screen-only { display:none !important; }
   #sheets { padding:0; }
-  .sheet { margin:0 auto; box-shadow:none; break-after:auto !important; page-break-after:auto !important; }
-  .sheet:not(:last-child) { break-after:page !important; page-break-after:always !important; }
+  .sheet { margin:0 auto; box-shadow:none; break-before:auto !important; page-break-before:auto !important; break-after:auto !important; page-break-after:auto !important; }
+  .sheet + .sheet { break-before:page !important; page-break-before:always !important; }
 }
 @media (max-width:820px) {
   .screen-only { padding:20px 16px 12px; }
