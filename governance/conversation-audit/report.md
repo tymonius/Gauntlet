@@ -4,7 +4,7 @@
 **Certification status:** **INCOMPLETE — NOT AUTHORIZED FOR DOWNSTREAM CANONICALIZATION**  
 **Raw corpus:** 9 exported Gauntlet conversations, 1,021 user turns, 2026-06-17 through 2026-07-09  
 **July 10–30 material:** provisional search/context lead inventory pending a fresh raw export  
-**Current-tail strategy:** append-only exact user-turn capture pending export reconciliation
+**Current-tail strategy:** append-only exact user-turn capture across concurrent Gauntlet-project conversations pending export reconciliation
 
 ## Corrected result
 
@@ -24,16 +24,20 @@ Therefore:
 
 The Asset Bank limit remains tied to controlled Territories. The former fixed-three statement was an unsupported assistant-generated synthesis and was removed. This error is the reason the July evidence class has been quarantined rather than merely caveated.
 
-## Continuous-coverage solution
+## Project-wide continuous-coverage solution
 
 Export delivery may lag behind current work by several days. The audit no longer treats the delivered ZIP as the endpoint. It uses:
 
 1. the export as an immutable raw baseline through its verified maximum message timestamp; and
 2. `live-tail.jsonl` as an append-only exact-user-turn tail after activation.
 
-The initial live tail captures five exact user turns from the conversation that exposed and corrected the audit failure. Future Gauntlet turns must be appended while work continues. When the export arrives, overlapping raw turns and tail rows are matched and deduplicated. Certification remains blocked if any tail row is unmatched, any post-activation Gauntlet conversation is absent, or any time gap between the raw baseline and tail coverage is unexplained.
+The audit boundary is the entire **Gauntlet ChatGPT project**, not one conversation. Multiple concurrent project conversations are expected. Each captured conversation receives its own temporary reference and independent ordering until raw export IDs are available.
 
-This makes the audit current despite delayed export delivery; it does not make the audit complete before reconciliation.
+The initial live tail captures six exact user turns from the conversation that exposed and corrected the audit failure and established the project-wide scope. When the export arrives, every conversation assigned to the Gauntlet project must be enumerated, overlapping raw turns and tail rows must be matched and deduplicated, and all exported conversations must also be searched by title and content for Gauntlet work outside the project.
+
+Certification remains blocked if any tail row is unmatched, any Gauntlet-project conversation is absent from the inventory, any relevant outside-project conversation is omitted, or any time or conversation gap between the raw baseline and tail coverage is unexplained.
+
+This makes the audit capable of remaining current despite delayed export delivery and concurrent work; it does not make the audit complete before reconciliation.
 
 ## Structural ledger totals
 
@@ -46,8 +50,8 @@ These counts describe the committed ledger structure; they do **not** certify th
 - raw-export decision-evidence links: 489
 - provisional July search/context rows: 141
 - recorded effective-status overrides requiring raw revalidation: 3
-- exact live-tail user turns captured: 5
-- unmatched live-tail rows: 5
+- exact live-tail user turns captured: 6
+- unmatched live-tail rows: 6
 
 The currently printed effective-status totals are retained for traceability but are not an authoritative current-decision set until the July candidate rows are reaudited from raw transcripts.
 
@@ -62,27 +66,28 @@ The currently printed effective-status totals are retained for traceability but 
 7. A search/context row cannot supersede a raw-export row.
 8. Raw-turn completeness is claimed only through July 9 until a newer export is processed.
 9. Live-tail evidence is append-only and must reconcile to raw export evidence or receive independent exact-transcript review.
-10. Certification requires continuous conversation coverage, not merely a recently downloaded export.
+10. Certification requires continuous project-wide conversation coverage, not merely a recently downloaded export or a single active chat.
 
 ## Required completion work
 
 The conversation audit is complete only after all of the following are done:
 
-1. obtain and process a fresh raw ChatGPT export covering every Gauntlet conversation through its verified maximum timestamp;
-2. identify every Gauntlet-related conversation by title and content, not only the previously prioritized titles;
-3. inventory every user turn exactly once;
-4. regenerate the July 10–30 decision threads from verbatim turns;
-5. replace every `project-conversation-search:*` reference with stable raw source-line evidence or remove the unsupported row;
-6. re-evaluate every approval, rejection, tentative direction, and supersession in chronological context;
-7. reconcile every live-tail row and prove that every post-activation Gauntlet conversation was captured;
-8. prove there is no unexplained gap between the raw export cutoff and the live tail;
-9. independently inspect every effective-current thread for assistant-added synthesis;
-10. compare the regenerated result against the current 109-row lead inventory and explain every addition, deletion, merge, split, or status change;
-11. rerun the validator and certify the corpus only when no provisional or unmatched evidence remains.
+1. obtain and process a fresh raw ChatGPT export through its verified maximum timestamp;
+2. enumerate every conversation assigned to the Gauntlet project;
+3. search every exported conversation by title and content for Gauntlet work outside the project;
+4. inventory every Gauntlet user turn exactly once across all concurrent conversations;
+5. regenerate the July 10–30 decision threads from verbatim turns;
+6. replace every `project-conversation-search:*` reference with stable raw source-line evidence or remove the unsupported row;
+7. re-evaluate every approval, rejection, tentative direction, and supersession in chronological context;
+8. reconcile every live-tail row and prove that every post-activation Gauntlet-project conversation was accounted for;
+9. prove there is no unexplained time or conversation gap between the raw export cutoff and the live tail;
+10. independently inspect every effective-current thread for assistant-added synthesis;
+11. compare the regenerated result against the current 109-row lead inventory and explain every addition, deletion, merge, split, or status change;
+12. rerun the validator and certify the corpus only when no provisional or unmatched evidence remains.
 
 ## Integrity result
 
-The validator checks structural integrity, counts, IDs, source formats, live-tail hashes and reconciliation counts, and the certification state. A passing structural check does **not** mean the conversation audit is complete. While `certification_status` is `incomplete`, it must report that downstream canonicalization remains blocked.
+The validator checks structural integrity, counts, IDs, source formats, project-wide live-tail scope, concurrent-conversation support, hashes, reconciliation counts, and the certification state. A passing structural check does **not** mean the conversation audit is complete. While `certification_status` is `incomplete`, it must report that downstream canonicalization remains blocked.
 
 ## Downstream gate
 
@@ -91,4 +96,4 @@ Do **not** begin or claim completion of the decision-to-canonical-source audit f
 - raw-export-supported threads through July 9; and
 - later decisions independently backed by exact user-turn evidence outside the provisional search ledger.
 
-Full downstream work resumes only after the fresh raw export and live tail are reconciled and the attestation is changed to `complete` through a reviewed pull request.
+Full downstream work resumes only after the fresh raw export and project-wide live tail are reconciled and the attestation is changed to `complete` through a reviewed pull request.
