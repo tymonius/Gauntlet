@@ -75,10 +75,19 @@ jobs:
           python - <<'PY'
           from pathlib import Path
 
-          path = Path("docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md")
-          text = path.read_text(encoding="utf-8")
-          if "Siege Weaponry" in text:
-              path.write_text(text.replace("Siege Weaponry", "Bombardment"), encoding="utf-8")
+          card_source = Path("docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md")
+          card_text = card_source.read_text(encoding="utf-8")
+          if "Siege Weaponry" in card_text:
+              card_source.write_text(card_text.replace("Siege Weaponry", "Bombardment"), encoding="utf-8")
+
+          validator = Path("scripts/validate_v061_release.py")
+          validator_text = validator.read_text(encoding="utf-8")
+          obsolete = '            \'main = "worker-v061.js"\','
+          current = '            \'main = "worker-entry.js"\','
+          if obsolete in validator_text:
+              validator.write_text(validator_text.replace(obsolete, current, 1), encoding="utf-8")
+          elif current not in validator_text:
+              raise SystemExit("Could not reconcile Rules Arbiter deployment marker in release validator")
           PY
 
       - name: Synchronize browser and Rules Arbiter sources
@@ -93,6 +102,7 @@ jobs:
         run: |
           git add \
             docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md \
+            scripts/validate_v061_release.py \
             deckbuilder/ \
             rules-assistant/ \
             releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json \
@@ -111,7 +121,7 @@ jobs:
           python scripts/sync_v061_deckbuilder.py
           python scripts/sync_v061_rules_assistant.py
           python scripts/generate_v061_release.py --check
-          git diff --exit-code -- docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md deckbuilder/ rules-assistant/
+          git diff --exit-code -- docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md scripts/validate_v061_release.py deckbuilder/ rules-assistant/
 
       - name: Install test dependencies
         run: npm install
