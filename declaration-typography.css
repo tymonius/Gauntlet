@@ -1,6 +1,8 @@
+@import url("design-tokens.css");
+
 :root {
-  --declaration: "p22-declaration-pro", "P22 Declaration Pro", Georgia, "Times New Roman", serif;
-  --historical-title: "p22-1722-pro", Georgia, "Times New Roman", serif;
+  --declaration: var(--font-flavor);
+  --historical-title: var(--font-display-historical);
 }
 
 /*
