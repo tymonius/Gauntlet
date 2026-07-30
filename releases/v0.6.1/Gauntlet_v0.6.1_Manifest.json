@@ -36,6 +36,15 @@
     "Gauntlet_v0.6.1_Complete_Card_Reference.md",
     "Gauntlet_v0.6.1_Faction_Introductions.md",
     "Gauntlet_v0.6.1_First_Game_Guide.md",
+    "printables/Gauntlet_v0.6.1_Neutral_Cards.pdf",
+    "printables/Gauntlet_v0.6.1_Territories.pdf",
+    "printables/Gauntlet_v0.6.1_Military_Faction_Package.pdf",
+    "printables/Gauntlet_v0.6.1_Diplomats_Faction_Package.pdf",
+    "printables/Gauntlet_v0.6.1_Financiers_Faction_Package.pdf",
+    "printables/Gauntlet_v0.6.1_Intelligence_Faction_Package.pdf",
+    "printables/Gauntlet_v0.6.1_Mystics_Faction_Package.pdf",
+    "printables/Gauntlet_v0.6.1_Inquisition_Faction_Package.pdf",
+    "printables/Gauntlet_v0.6.1_All_Components.pdf",
     "../../rulebook/",
     "../../card-reference/",
     "../../deckbuilder/",
@@ -46,13 +55,17 @@
     "../../workers/playtest-sessions/"
   ],
   "remaining_release_work": [
-    "assemble and visually inspect final Neutral, Territory, faction, and all-components release PDFs",
-    "confirm complete v0.6.1 digital-engine rules and card-effect synchronization",
     "configure production Cloudflare credentials and facilitator secret",
     "apply shared D1 migrations and deploy both Workers",
     "verify production health endpoints",
     "complete one physical print-scan-join-Arbiter-close-retirement test",
     "assign publication date and public release links"
+  ],
+  "deferred_post_release_work": [
+    "resume the playable digital engine on feature/v061-digital-engine-migration",
+    "replace legacy hand-commitment and Battle Hand state with Gambit, Reserve, Tactic, and Aftermath state",
+    "complete Neutral digital-engine remediation tracked in issues #288 and #289",
+    "revalidate all faction, card, information-state, and multiplayer handlers"
   ],
   "validation": {
     "source_audit_complete": true,
@@ -63,8 +76,7 @@
     "faction_sheet_visual_checks_passed": true,
     "faction_pdf_page_validation_passed": true,
     "formal_session_lifecycle_tested": true,
-    "complete_print_package_visual_checks_passed": false,
-    "digital_engine_sync_confirmed": false,
+    "complete_print_package_visual_checks_passed": true,
     "production_workers_deployed": false,
     "physical_qr_session_test_passed": false,
     "ready_for_publication": false
