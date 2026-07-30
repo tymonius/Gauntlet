@@ -55,10 +55,6 @@
     "../../workers/playtest-sessions/"
   ],
   "remaining_release_work": [
-    "configure production Cloudflare credentials and facilitator secret",
-    "apply shared D1 migrations and deploy both Workers",
-    "verify production health endpoints",
-    "complete one physical print-scan-join-Arbiter-close-retirement test",
     "assign publication date and public release links"
   ],
   "deferred_post_release_work": [
@@ -77,8 +73,8 @@
     "faction_pdf_page_validation_passed": true,
     "formal_session_lifecycle_tested": true,
     "complete_print_package_visual_checks_passed": true,
-    "production_workers_deployed": false,
-    "physical_qr_session_test_passed": false,
+    "production_workers_deployed": true,
+    "physical_qr_session_test_passed": true,
     "ready_for_publication": false
   }
 }
