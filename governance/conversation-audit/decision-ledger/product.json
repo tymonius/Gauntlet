@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "domain": "product",
+  "entry_count": 3,
+  "outcome_counts": {"current-released": 1, "deferred": 1, "current-implemented": 1},
+  "entries": [
+    {"id":"GNT-CAD-0027","title":"Territory cards use landscape-facing text","domain":"product","outcome":"current-released","summary":"Territory faces are landscape so their text and orientation face the controlling player on the table.","evidence_ids":["GNT-CHAT-A0B732D045F4","GNT-CHAT-89B4424923C4"],"repository_evidence":["docs/Gauntlet_Visual_Design_Language.md","deckbuilder/print.js"]},
+    {"id":"GNT-CAD-0044","title":"Four-player team and Arena variants remain experiments","domain":"product","outcome":"deferred","summary":"A 2×6 two-lane team board and crossed-Gauntlet Arena free-for-all are retained as v0.7 experiments, not current rules.","evidence_ids":["GNT-CHAT-B12D430007CC","GNT-CHAT-74C01DDCCEF0","GNT-CHAT-17D03CCACD19"],"repository_evidence":["docs/Gauntlet_v0.7_Parking_Lot.md"]},
+    {"id":"GNT-CAD-0093","title":"Deckbuilder printing targets efficient physical sheets","domain":"product","outcome":"current-implemented","summary":"Printable packages should use poker-card dimensions, dense Letter-sheet layouts, landscape Territory text, no overflow, and a compact summary-plus-cards first page.","evidence_ids":["GNT-CHAT-89B4424923C4","GNT-CHAT-AA1C3FD68C9F","GNT-CHAT-217E25C1AEE2","GNT-CHAT-8D093AF58E70"],"repository_evidence":["deckbuilder/print.js"]}
+  ]
+}
