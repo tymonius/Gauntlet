@@ -1,0 +1,96 @@
+{
+  "schema_version": 1,
+  "generated_on": "2026-07-30",
+  "method": "All user turns were parsed from the nine selected Gauntlet conversation exports. A deterministic rule set retained explicit approvals, rejections, constraints, deferrals, supersessions, and imperative change instructions. Each record preserves the user statement, the preceding assistant context, timestamp, and message hash. Semantic reconciliation is recorded separately.",
+  "record_count": 715,
+  "classification_counts": {
+    "deferral": 44,
+    "approval": 388,
+    "rejection": 47,
+    "constraint": 207,
+    "instruction": 15,
+    "supersession": 14
+  },
+  "conversations": [
+    {
+      "conversation_id": "6a3f8591-cf10-83ea-80ca-d1977596ac78",
+      "conversation_title": "Gauntlet Card Review",
+      "source_file": "01_Gauntlet_Card_Review.md",
+      "record_count": 16,
+      "classification_counts": {"deferral": 3, "approval": 10, "rejection": 1, "constraint": 2},
+      "evidence_files": ["governance/conversation-audit/evidence/card-review.json.gz.b64.part-01"]
+    },
+    {
+      "conversation_id": "6a351bd5-b174-83ea-b8bb-3401b194735a",
+      "conversation_title": "Gauntlet Game Development pt2",
+      "source_file": "02_Gauntlet_Game_Development_pt2.md",
+      "record_count": 254,
+      "classification_counts": {"approval": 111, "constraint": 83, "deferral": 23, "rejection": 25, "instruction": 8, "supersession": 4},
+      "evidence_files": [
+        "governance/conversation-audit/evidence/game-development-pt2.json.gz.b64.part-01",
+        "governance/conversation-audit/evidence/game-development-pt2.json.gz.b64.part-02",
+        "governance/conversation-audit/evidence/game-development-pt2.json.gz.b64.part-03"
+      ]
+    },
+    {
+      "conversation_id": "6a3d1827-39f8-83ea-a0e3-c34fe1307dac",
+      "conversation_title": "Digital Gauntlet Playtesting",
+      "source_file": "03_Digital_Gauntlet_Playtesting.md",
+      "record_count": 81,
+      "classification_counts": {"instruction": 1, "approval": 73, "constraint": 6, "rejection": 1},
+      "evidence_files": ["governance/conversation-audit/evidence/digital-playtesting.json.gz.b64.part-01"]
+    },
+    {
+      "conversation_id": "6a4f9ae3-b9bc-83ea-8fcb-08008020a034",
+      "conversation_title": "Faction Leader Archetypes",
+      "source_file": "04_Faction_Leader_Archetypes.md",
+      "record_count": 26,
+      "classification_counts": {"approval": 16, "constraint": 5, "rejection": 2, "instruction": 1, "deferral": 1, "supersession": 1},
+      "evidence_files": ["governance/conversation-audit/evidence/leader-archetypes.json.gz.b64.part-01"]
+    },
+    {
+      "conversation_id": "6a39a31b-0430-83ea-b170-9dbc2aa96c6d",
+      "conversation_title": "Asset Bank Rule Impact",
+      "source_file": "05_Asset_Bank_Rule_Impact.md",
+      "record_count": 6,
+      "classification_counts": {"approval": 1, "instruction": 1, "rejection": 1, "constraint": 3},
+      "evidence_files": ["governance/conversation-audit/evidence/asset-bank-impact.json.gz.b64.part-01"]
+    },
+    {
+      "conversation_id": "6a328af9-78b0-83ea-99bf-05feac9cd59b",
+      "conversation_title": "Gauntlet Game Development",
+      "source_file": "06_Gauntlet_Game_Development.md",
+      "record_count": 301,
+      "classification_counts": {"deferral": 17, "constraint": 98, "approval": 165, "supersession": 5, "instruction": 4, "rejection": 12},
+      "evidence_files": [
+        "governance/conversation-audit/evidence/game-development.json.gz.b64.part-01",
+        "governance/conversation-audit/evidence/game-development.json.gz.b64.part-02",
+        "governance/conversation-audit/evidence/game-development.json.gz.b64.part-03"
+      ]
+    },
+    {
+      "conversation_id": "6a3ff44d-0570-83ea-b21a-06cd0fad646e",
+      "conversation_title": "Deckbuilder Tool Design",
+      "source_file": "07_Deckbuilder_Tool_Design.md",
+      "record_count": 24,
+      "classification_counts": {"constraint": 10, "approval": 10, "supersession": 4},
+      "evidence_files": ["governance/conversation-audit/evidence/deckbuilder.json.gz.b64.part-01"]
+    },
+    {
+      "conversation_id": "6a40f82d-2cfc-83ea-88d8-1bf1ea638340",
+      "conversation_title": "Gauntlet Lore Development",
+      "source_file": "08_Gauntlet_Lore_Development.md",
+      "record_count": 7,
+      "classification_counts": {"approval": 2, "rejection": 5},
+      "evidence_files": ["governance/conversation-audit/evidence/lore-development.json.gz.b64.part-01"]
+    },
+    {
+      "conversation_id": "6a41e182-8a3c-83ea-9416-c162b91166e3",
+      "conversation_title": "Gauntlet vs Old King's Crown",
+      "source_file": "09_Gauntlet_vs_Old_King's_Crown.md",
+      "record_count": 0,
+      "classification_counts": {},
+      "evidence_files": ["governance/conversation-audit/evidence/old-kings-crown-comparison.json.gz.b64.part-01"]
+    }
+  ]
+}
