@@ -19,6 +19,7 @@ on:
       - "scripts/sync_v061_rules_assistant.py"
       - "scripts/validate_v061_release.py"
       - "scripts/validate_v061_playtest_sessions.py"
+      - "scripts/test_v061_formal_session_e2e.mjs"
       - ".github/workflows/generate-v061-release.yml"
   pull_request:
     branches:
@@ -38,6 +39,7 @@ on:
       - "scripts/sync_v061_rules_assistant.py"
       - "scripts/validate_v061_release.py"
       - "scripts/validate_v061_playtest_sessions.py"
+      - "scripts/test_v061_formal_session_e2e.mjs"
       - ".github/workflows/generate-v061-release.yml"
   workflow_dispatch:
 
@@ -105,6 +107,9 @@ jobs:
 
       - name: Test playtest session service
         run: npm run test:playtest-sessions
+
+      - name: Test formal coded-sheet lifecycle
+        run: npm run test:formal-session-e2e
 
       - name: Test Deckbuilder data
         run: npm run test:deckbuilder
