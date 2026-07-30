@@ -55,6 +55,7 @@ The source hierarchy is listed in [docs/README.md](README.md).
 ### 5. Unified visual identity and production design
 
 - Use the [Visual Identity and Design System](Gauntlet_Visual_Identity_and_Design_System.md) as the roadmap for one coherent language across cards, printed components, the rulebook, the website, browser tools, the digital implementation, the playmat, packaging, and promotional material.
+- Use the [Typography System](Gauntlet_Typography_System.md) and [live typography specimen](../typography/) to test P22 1722 Pro, Adobe Caslon Pro, Georgia, P22 Declaration Pro, Inter, Caslon italic callouts, and actual-size card typography before locking exact scales.
 - Complete the Gauntlet wordmark, compact mark, typography system, core palette, faction palettes, shape language, material language, spacing scale, and accessibility standards.
 - Build and test the card-front system using both short and text-heavy examples, then adapt it to faction cards, Assets, Overlays, Territories, Leaders, and supplemental components.
 - Design the universal card back, Proposal and other required reverses, final faction emblems, functional icons, resource icons, and state markers.
