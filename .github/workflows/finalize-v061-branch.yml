@@ -120,7 +120,7 @@ jobs:
               ['/rulebook/', '[data-rulebook-content]', ['Gambit', 'Reserve', 'Tactic', 'Aftermath', 'Faction supplemental cards and trackers', 'Military package', 'Diplomat package', 'Financier package', 'Intelligence package', 'Mystics package', 'Inquisition package']],
               ['/card-reference/', '#app', ['122', '25']],
               ['/deckbuilder/', '#app', ['v0.6.1', 'Military', 'Diplomats']],
-              ['/playtest/session/', '#errorPanel:not([hidden])', ['Session unavailable', 'single-use code']],
+              ['/playtest/session/', '#errorPanel:not([hidden])', ['The sheet code is missing or invalid.', 'single-use code']],
               ['/playtest/batch/', '#batchForm', ['Coded Sheet Generator', 'Download host manifest']]
             ];
             for (const [url, selector, required] of pages) {
