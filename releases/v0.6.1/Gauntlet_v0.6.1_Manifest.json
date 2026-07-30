@@ -1,7 +1,7 @@
 {
   "version": "v0.6.1",
   "name": "First Playtest Revision",
-  "status": "draft",
+  "status": "draft_release_candidate",
   "publication_date": null,
   "playable_card_designs": 122,
   "neutral_cards": 50,
@@ -24,31 +24,49 @@
   "current_outputs": [
     "README.md",
     "Gauntlet_v0.6.1_Rulebook.md",
+    "Gauntlet_v0.6.1_Rulebook.docx",
+    "Gauntlet_v0.6.1_Rulebook.pdf",
     "Gauntlet_v0.6.1_Reference_Guide.md",
+    "Gauntlet_v0.6.1_Reference_Guide.docx",
+    "Gauntlet_v0.6.1_Reference_Guide.pdf",
     "Gauntlet_v0.6.1_Release_Notes.md",
     "Gauntlet_v0.6.1_Changelog.md",
     "Gauntlet_v0.6.1_Manifest.json",
     "Gauntlet_v0.6.1_Canonical_Data.json",
-    "Gauntlet_v0.6.1_Complete_Card_Reference.md"
+    "Gauntlet_v0.6.1_Complete_Card_Reference.md",
+    "Gauntlet_v0.6.1_Faction_Introductions.md",
+    "Gauntlet_v0.6.1_First_Game_Guide.md",
+    "../../rulebook/",
+    "../../card-reference/",
+    "../../deckbuilder/",
+    "../../faction-sheets/",
+    "../../playtest/Gauntlet_v0.6.1_Playtest_Sheet.pdf",
+    "../../playtest/player-mat/Gauntlet_v0.6.1_Player_Mat.pdf",
+    "../../rules-assistant/worker-v061.js",
+    "../../workers/playtest-sessions/"
   ],
-  "pending_generated_outputs": [
-    "Gauntlet_v0.6.1_Rulebook.docx",
-    "Gauntlet_v0.6.1_Rulebook.pdf",
-    "Gauntlet_v0.6.1_Reference_Guide.pdf",
-    "printable card and component sheets",
-    "Deckbuilder data",
-    "browser rulebook and card reference",
-    "Rules Arbiter source package",
-    "digital-engine data",
-    "formal playtest sheet and session workflow",
-    "player mat or compact zone reference"
+  "remaining_release_work": [
+    "assemble and visually inspect final Neutral, Territory, faction, and all-components release PDFs",
+    "confirm complete v0.6.1 digital-engine rules and card-effect synchronization",
+    "configure production Cloudflare credentials and facilitator secret",
+    "apply shared D1 migrations and deploy both Workers",
+    "verify production health endpoints",
+    "complete one physical print-scan-join-Arbiter-close-retirement test",
+    "assign publication date and public release links"
   ],
   "validation": {
     "source_audit_complete": true,
     "canonical_data_generated": true,
     "automated_checks_passed": true,
-    "visual_checks_passed": false,
-    "browser_checks_passed": false,
+    "browser_checks_passed": true,
+    "document_visual_checks_passed": true,
+    "faction_sheet_visual_checks_passed": true,
+    "faction_pdf_page_validation_passed": true,
+    "formal_session_lifecycle_tested": true,
+    "complete_print_package_visual_checks_passed": false,
+    "digital_engine_sync_confirmed": false,
+    "production_workers_deployed": false,
+    "physical_qr_session_test_passed": false,
     "ready_for_publication": false
   }
 }
