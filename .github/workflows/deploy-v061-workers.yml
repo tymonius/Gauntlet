@@ -47,10 +47,11 @@ jobs:
           npm install
           npm install --no-save wrangler@4
 
-      - name: Validate deployment sources
+      - name: Validate deployment sources and session lifecycle
         run: |
           npm run test:rules-assistant
           npm run test:playtest-sessions
+          npm run test:formal-session-e2e
           python scripts/validate_v061_playtest_sessions.py
           python scripts/validate_v061_release.py
 
