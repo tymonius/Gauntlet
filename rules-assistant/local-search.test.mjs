@@ -1,6 +1,7 @@
 import { expect, test } from "vitest";
 import {
   buildRulesCorpus,
+  defaultSourceUrls,
   parseRulebookSections,
   retrieveRules
 } from "./local-search.js";
@@ -19,43 +20,55 @@ At the start of the turn, if the active player occupies a Territory they do not 
 
 # 6. Battles
 
-A battle begins when a player enters a position occupied by the opponent.
+## How it works
+
+A Gambit is set from Hand and normally goes to the Graveyard. A Tactic is chosen from Reserve and normally goes to the Discard Pile.
+
+## Complete rules
+
+A battle begins when a player enters a position occupied by the opponent. Resolve opening effects, set Gambits, form Reserves, reveal Gambits, choose Tactics, reveal Tactics, resolve the battle, then resolve the Aftermath.
 `;
 
 const canonicalData = {
-  version: "v0.6.0",
-  name: "Faction Framework Release",
+  version: "v0.6.1",
+  name: "First Playtest Revision",
   cards: [
     {
       id: "military-onward",
       name: "Onward",
       allegiance: "Military",
       cost: 1,
-      action: "Move one additional position this turn. It may initiate a battle.",
-      source: "releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
+      action: "During Movement, before a battle begins, move one additional position. This movement may start a battle.",
+      source: "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md"
     },
     {
-      id: "military-rout",
-      name: "Rout",
-      allegiance: "Military",
-      cost: 1,
-      battle: "After you win a battle you initiated, move one position toward the opponent's end.",
-      source: "releases/v0.6.0/faction-guides/military/Gauntlet_v0.6_Military_Faction_Guide.md"
+      id: "intelligence-disinformation",
+      name: "Disinformation",
+      allegiance: "Intelligence",
+      cost: 2,
+      gambit: "When Gambits are revealed, if the opponent also set a Gambit, gain advantage. During the Aftermath, return this to Hand instead of the Graveyard.",
+      source: "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md"
     }
   ],
   territories: [
     {
       id: "territory-command-tent",
       name: "Command Tent",
-      text: "A player may use both normal Action Opportunities.",
-      source: "docs/Gauntlet_v0.6_Territory_Pool.md"
+      text: "Its occupying controller may play an Action card both before and after movement that turn.",
+      source: "docs/Gauntlet_v0.6.1_Territory_Pool.md"
     }
   ]
 };
 
-test("parses markdown into titled rulebook sections", () => {
+test("uses v0.6.1 canonical source URLs", () => {
+  const urls = defaultSourceUrls("https://example.test");
+  expect(urls.canonicalDataUrl).toContain("releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json");
+  expect(urls.rulebookUrl).toContain("releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md");
+});
+
+test("parses layered markdown into titled rulebook sections", () => {
   const sections = parseRulebookSections(rulebook, "https://example.test/rulebook.pdf");
-  expect(sections.some((section) => section.title.includes("Movement"))).toBe(true);
+  expect(sections.some((section) => section.title.includes("How it works"))).toBe(true);
   expect(sections.some((section) => section.body.includes("occupied position"))).toBe(true);
 });
 
@@ -63,6 +76,20 @@ test("ranks an exact card title above generic movement text", () => {
   const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown: rulebook });
   const results = retrieveRules(corpus, "Can Onward be used after a battle?", { limit: 4 });
   expect(results[0].title).toMatch(/Onward/i);
+});
+
+test("finds Gambit and Tactic destinations", () => {
+  const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown: rulebook });
+  const results = retrieveRules(corpus, "Where do Gambits and Tactics go?", { limit: 4 });
+  expect(results.some((result) => /Gambit|Battle/i.test(result.title + result.excerpt))).toBe(true);
+  expect(results.some((result) => result.excerpt.includes("Graveyard"))).toBe(true);
+  expect(results.some((result) => result.excerpt.includes("Discard Pile"))).toBe(true);
+});
+
+test("indexes canonical Gambit text", () => {
+  const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown: rulebook });
+  const results = retrieveRules(corpus, "What does Disinformation do as a Gambit?", { limit: 3 });
+  expect(results[0].title).toMatch(/Disinformation/i);
 });
 
 test("finds capture timing in the rulebook", () => {

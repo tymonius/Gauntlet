@@ -4,7 +4,9 @@
 **Release date:** July 20, 2026  
 **Status:** Canonical pre-release playtest edition
 
-Gauntlet v0.6.0 is published and is the sole current rules and card package for playtesting. Earlier working rules, preliminary rulebooks, review logs, and release trackers are preserved under `docs/Archive/` and are not active sources.
+Gauntlet v0.6.0 remains the sole published rules and card package for playtesting. Earlier working rules, preliminary rulebooks, review logs, and release trackers are preserved under `docs/Archive/` and are not active sources.
+
+The first physical v0.6.0 playtest was held July 27, 2026. It exposed rules-language, timing, onboarding, table-organization, and playtest-instrumentation problems but no immediate balance failure. Approved corrections are being implemented for v0.6.1 and tracked in [Gauntlet v0.6.1 Implementation Ledger](Gauntlet_v0.6.1_Implementation_Ledger.md). Until the v0.6.1 package is complete and published, the v0.6.0 sources remain canonical.
 
 ## Release baseline
 
@@ -21,30 +23,65 @@ The current package contains:
 
 The source hierarchy is listed in [docs/README.md](README.md).
 
+## First physical playtest findings
+
+The July 27 session used the recommended Spymaster and Ambassador Decks. It lasted roughly 90 minutes, reached ten rounds and three battles, and stopped because a player had to leave. Retain its qualitative and onboarding evidence, but exclude it from completed-game pacing and win-balance statistics.
+
+### Positive evidence
+
+- both players rated the experience highly;
+- battle tension built over the course of each battle;
+- reclaiming Territory produced a strong positional payoff;
+- accepted Terms produced a memorable negotiation decision; and
+- no card or faction produced an immediate balance alarm.
+
+### Corrective work approved for v0.6.1
+
+- replace hand commitment and Battle Hand vocabulary with Gambit, Reserve, and Tactic;
+- separate Gambit and Tactic reveal stages and define resolution priority;
+- formalize the Aftermath of the battle;
+- distinguish withdrawal, retreat, and post-battle movement;
+- clarify Asset replacement and Overlay control;
+- audit all six faction pools against the revised battle sequence;
+- correct Rules Arbiter inference, citation, and version-label behavior;
+- define physical play areas for Hand, Reserve, Gambit, Tactic, Assets, and faction components;
+- add faction introductions and recommended Decks to first-game onboarding; and
+- link each printed playtest sheet, digital session, and Rules Arbiter history through a unique single-use QR code and fallback serial.
+
 ## Current priorities
 
-### 1. Physical and human playtesting
+### 1. v0.6.1 finalization and publication
+
+- Run the source synchronization, canonical-data generation, automated tests, and strict release validators on the completed branch.
+- Regenerate the rulebook, reference guide, playtest sheet, player mat, printable cards, and supplemental components from the synchronized governing sources.
+- Visually inspect every regenerated player-facing artifact at intended print size and at desktop/mobile browser widths.
+- Synchronize the revision branch with current `main` website, artwork, print, and digital-implementation work before merging.
+- Keep v0.6.0 canonical until the full v0.6.1 package passes those checks and is published.
+
+### 2. Physical and human playtesting
 
 - Verify that every card, Leader, reference, tracker, Proposal, Deed, Rite, and Mission component is legible and practical at final printed size.
-- Record game length, turn count, capture count, battle count, victory route, and stalled-turn frequency using [Playtest Targets and Metrics](Gauntlet_Playtest_Targets_and_Metrics.md).
+- Record instruction/setup time, game time, total time, turn count, capture count, battle count, victory route, and stalled-turn frequency using [Playtest Targets and Metrics](Gauntlet_Playtest_Targets_and_Metrics.md).
+- Classify stopped sessions by reason and keep external interruptions separate from completed-game pacing and balance evidence.
 - Reopen a frozen rule or card only when testing reveals a specific gameplay, wording, balance, or production failure.
 
-### 2. Shared-rules validation
+### 3. Shared-rules validation
 
 - Confirm impossible-target and partial-resolution handling across the full pool.
-- Validate source-dependent and copied Battle effects, especially Treason, Heresy, Witchcraft, Arcane Knowledge, and other bounded-repeat interactions.
-- Confirm that Overlay stacking, dormant removal conditions, capture timing, and additional Action Opportunities remain consistent across faction packages.
+- Validate source-dependent and copied effects, especially Treason, Heresy, Witchcraft, Arcane Knowledge, and other bounded-repeat interactions.
+- Confirm that Overlay stacking, dormant removal conditions, capture timing, additional Tactics, and additional Action Opportunities remain consistent across faction packages.
+- Verify mirror procedures, especially Diplomat Terms priority and Intelligence choice/revision order.
 
-### 3. Faction and Leader balance
+### 4. Faction and Leader balance
 
 - **Military:** Command pacing, General/Commandant parity, chain battles, retreat pressure, and capture shortcuts.
 - **Diplomats:** Influence pacing, Proposal incentives, Peace Treaty progress, Leverage, and Ambassador/Senator parity.
 - **Financiers:** Capital growth, Treasury usefulness, Deed clarity, Controlling Interest pacing, and Banker/Executive parity.
 - **Intelligence:** Mission completion rates, Intel pacing, Special Operation recovery, information density, and Ranger/Spymaster parity.
-- **Mystics:** Rite pacing, Graveyard recursion, Invocation and Transmutation strength, Ritual pressure, and Alchemist/Spirit Walker parity.
+- **Mystics:** Rite pacing, Graveyard recursion, Invocation, Transmutation, Convergence, Ritual of Ascendance pressure, and Alchemist/Spirit Walker parity.
 - **Inquisition:** Conviction pacing, Purge pricing, Purification viability, Arcane matchup pressure, and Grand Inquisitor/Witch Hunter parity.
 
-### 4. Cross-faction health
+### 5. Cross-faction health
 
 - Ensure every faction remains engaged with movement, battle, occupation, capture, and running the Gauntlet.
 - Confirm that additional victory conditions are visible, interactive, and disruptable.
@@ -52,7 +89,7 @@ The source hierarchy is listed in [docs/README.md](README.md).
 - Watch the Inquisition–Mystics relationship for healthy counterplay rather than a hard lock.
 - Confirm that Territory-scaled Asset capacity accelerates games without making recovery implausible.
 
-### 5. Unified visual identity and production design
+### 6. Unified visual identity and production design
 
 - Use the [Visual Identity and Design System](Gauntlet_Visual_Identity_and_Design_System.md) as the roadmap for one coherent language across cards, printed components, the rulebook, the website, browser tools, the digital implementation, the playmat, packaging, and promotional material.
 - Use the [Typography System](Gauntlet_Typography_System.md) and [live typography specimen](../typography/) to test P22 1722 Pro, Adobe Caslon Pro, Georgia, P22 Declaration Pro, Inter, Caslon italic callouts, and actual-size card typography before locking exact scales.
@@ -63,11 +100,31 @@ The source hierarchy is listed in [docs/README.md](README.md).
 - Apply the system to the rulebook, reference sheets, instructional diagrams, tokens, trackers, standees, miniature bases, playmat, packaging, and marketing derivatives in the documented implementation sequence.
 - Test all print assets at final physical size and all digital applications at desktop and mobile widths, including color-blind, low-ink, contrast, keyboard, and reduced-motion validation where applicable.
 
-### 6. Product and onboarding work
+### 7. Product, onboarding, and table organization
 
-- Prepare tested suggested Decks for Leaders or factions.
-- Determine the best faction pairing and component scope for a future starter product.
-- Improve first-game teaching materials only after the canonical rules survive physical playtesting.
+- Maintain tested recommended Decks for Leaders or factions.
+- Present concise faction introductions before first-game faction selection.
+- Ask whether the introduction prepared each player for the selected faction.
+- Produce a player mat or compact reference showing Deck, Discard Pile, Graveyard, Hand, Asset Bank, Leader/Mission, faction-specific areas, Reserve, Gambit, and Tactic zones.
+- Determine the best faction pairing and component scope for a future starter product only after revised first-game testing.
+
+### 8. Playtest and Rules Arbiter infrastructure
+
+Implemented on the v0.6.1 revision branch:
+
+- a batch generator creates one live digital session, unique QR code, and human-readable serial for each formal printed sheet;
+- the public QR contains only the join URL while the facilitator receives a private host manifest;
+- participants may join the session, record game timing/status events, and ask the v0.6.1 Rules Arbiter;
+- Rules Arbiter questions, answers, citations, version, and Explicit/Inferred/Unresolved status are linked automatically to the session and sheet serial;
+- closing a session preserves its records while rejecting future joins and playtest events, retiring the printed QR code; and
+- raw join and host credentials are not stored in the database.
+
+Remaining production work:
+
+- apply the shared D1 migration;
+- configure Cloudflare and facilitator secrets;
+- deploy and health-check both Workers; and
+- test an end-to-end generated sheet, scan, join, Arbiter question, session closure, and post-closure rejection before formal use.
 
 ## Change discipline
 

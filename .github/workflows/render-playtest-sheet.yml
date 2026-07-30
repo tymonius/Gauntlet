@@ -4,9 +4,11 @@ on:
   push:
     branches:
       - main
+      - rules/v0.6.1-playtest-revision
     paths:
       - playtest/index.html
       - playtest/styles.css
+      - playtest/README.md
       - .github/workflows/render-playtest-sheet.yml
   pull_request:
     branches:
@@ -14,9 +16,9 @@ on:
     paths:
       - playtest/index.html
       - playtest/styles.css
+      - playtest/README.md
       - .github/workflows/render-playtest-sheet.yml
       - README.md
-      - playtest/README.md
   workflow_dispatch:
 
 permissions:
@@ -32,6 +34,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -48,23 +52,28 @@ jobs:
         run: |
           python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
 
-      - name: Render Letter-size PDF
+      - name: Render Letter-size PDF and preview
         run: |
           node --input-type=module <<'NODE'
           import { chromium } from 'playwright';
 
           const browser = await chromium.launch({ headless: true });
-          const page = await browser.newPage({ viewport: { width: 1275, height: 1650 } });
+          const page = await browser.newPage({ viewport: { width: 1275, height: 1650 }, deviceScaleFactor: 1 });
           const errors = [];
           page.on('pageerror', error => errors.push(error.message));
           page.on('console', message => {
             if (message.type() === 'error') errors.push(message.text());
           });
 
-          await page.goto('http://127.0.0.1:8000/playtest/', { waitUntil: 'networkidle' });
+          await page.goto('http://127.0.0.1:8000/playtest/?serial=G061-PREVIEW', { waitUntil: 'networkidle' });
+          await page.screenshot({
+            path: 'playtest/Gauntlet_v0.6.1_Playtest_Sheet_Preview.png',
+            fullPage: true
+          });
+
           await page.emulateMedia({ media: 'print' });
           await page.pdf({
-            path: 'playtest/Gauntlet_v0.6.0_Playtest_Sheet.pdf',
+            path: 'playtest/Gauntlet_v0.6.1_Playtest_Sheet.pdf',
             format: 'Letter',
             printBackground: true,
             preferCSSPageSize: true,
@@ -83,7 +92,7 @@ jobs:
           from pathlib import Path
           from pypdf import PdfReader
 
-          path = Path('playtest/Gauntlet_v0.6.0_Playtest_Sheet.pdf')
+          path = Path('playtest/Gauntlet_v0.6.1_Playtest_Sheet.pdf')
           if not path.exists() or path.stat().st_size < 20_000:
               raise SystemExit('Generated PDF is missing or unexpectedly small')
           reader = PdfReader(str(path))
@@ -95,16 +104,34 @@ jobs:
           if abs(width - 612) > 2 or abs(height - 792) > 2:
               raise SystemExit(f'Expected Letter size, found {width} x {height} points')
           text = (page.extract_text() or '').strip()
-          if len(text) < 300:
+          required = [
+              'Gauntlet Playtest Sheet',
+              'Instruction + setup',
+              'External interruption',
+              'Faction introduction shown?',
+              'Ritual of Ascendance',
+              'Arbiter questions'
+          ]
+          missing = [item for item in required if item not in text]
+          if missing:
+              raise SystemExit(f'Generated PDF is missing required text: {missing}')
+          if len(text) < 700:
               raise SystemExit(f'Generated PDF contains too little extractable content: {len(text)} characters')
           print(f'Validated {path}: one Letter-size page, {path.stat().st_size} bytes, {len(text)} text characters.')
           PY
 
+      - name: Upload rendered sheet
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-v061-playtest-sheet
+          path: |
+            playtest/Gauntlet_v0.6.1_Playtest_Sheet.pdf
+            playtest/Gauntlet_v0.6.1_Playtest_Sheet_Preview.png
+          if-no-files-found: error
+
       - name: Commit generated PDF on main
-        if: github.event_name != 'pull_request'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        if: github.event_name == 'push' && github.ref_name == 'main'
         run: |
           node scripts/commit-generated-files.mjs \
-            "Render printable playtest sheet PDF" \
-            -- playtest/Gauntlet_v0.6.0_Playtest_Sheet.pdf
+            "Render v0.6.1 printable playtest sheet PDF" \
+            -- playtest/Gauntlet_v0.6.1_Playtest_Sheet.pdf
