@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "domain": "tooling",
+  "entry_count": 5,
+  "outcome_counts": {"current-canonical": 1, "current-implemented": 3, "current-working": 1},
+  "entries": [
+    {"id":"GNT-CAD-0090","title":"Build browser tools from machine-readable canonical data","domain":"tooling","outcome":"current-canonical","summary":"Card data, rules, deck legality, and derived tools should share a machine-readable source of truth rather than duplicate text by hand.","evidence_ids":["GNT-CHAT-0F9BD599D66D","GNT-CHAT-033F8477B6C6","GNT-CHAT-6834D540FFC6","GNT-CHAT-84BCE5547F65"],"repository_evidence":["docs/Gauntlet_Digital_Roadmap.md","releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json"]},
+    {"id":"GNT-CAD-0091","title":"Use one shared deckbuilder codebase with versioned modes","domain":"tooling","outcome":"current-implemented","summary":"v0.5 and v0.6 deckbuilders should feel like separate version modes but share maintainable code and permanently version saved decks; do not automatically migrate across the faction boundary.","evidence_ids":["GNT-CHAT-4F1F350A2174"],"repository_evidence":["deckbuilder"]},
+    {"id":"GNT-CAD-0092","title":"Saved decks use local storage with explicit import/export backup","domain":"tooling","outcome":"current-implemented","summary":"Browser saves persist locally but can be cleared and do not sync across devices; JSON export/import is the portability and backup mechanism.","evidence_ids":["GNT-CHAT-1A29F69916C9"],"repository_evidence":["deckbuilder"]},
+    {"id":"GNT-CAD-0094","title":"Provide random decks for testing","domain":"tooling","outcome":"current-implemented","summary":"The deckbuilder includes a random legal deck generator to accelerate printing and system testing.","evidence_ids":["GNT-CHAT-217E25C1AEE2","GNT-CHAT-DCBBE3DAB74F","GNT-CHAT-6AE41863F0F8"],"repository_evidence":["deckbuilder/random-deck.js"]},
+    {"id":"GNT-CAD-0095","title":"Automate the battle and state engine before polishing multiplayer","domain":"tooling","outcome":"current-working","summary":"Digital implementation should first enforce zones, card destinations, battle sequence, capture, Assets, Conditions, and win checks; remote multiplayer is layered onto a correct canonical engine.","evidence_ids":["GNT-CHAT-0F9BD599D66D"],"repository_evidence":["docs/Gauntlet_Digital_Roadmap.md"]}
+  ]
+}
