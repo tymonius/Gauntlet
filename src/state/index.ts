@@ -20,6 +20,7 @@ export * from './intelligence-missions';
 export * from './intelligence-mission-triggers';
 export * from './intelligence-action-cards';
 export * from './intelligence-reactive-assets';
+export * from './battle-v061';
 export * from './battle-hand-restrictions';
 export * from './battle-dice';
 export * from './battle-observation';
@@ -118,14 +119,3 @@ export { GameActionError } from './reducer';
 export type { ApplyGameActionResult } from './reducer';
 export * from './pipeline';
 export * from './win';
-
-export * from './neutral-sabotage';
-export * from './neutral-salvage';
-export * from './neutral-scorched-earth';
-export * from './neutral-sedition';
-export * from './neutral-stand-ground';
-export * from './neutral-strategic-withdrawal';
-export * from './neutral-tactical-planning';
-export * from './neutral-valor';
-
-export * from './battle-cancellation';
