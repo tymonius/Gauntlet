@@ -35,7 +35,7 @@
     "new_superseded": 3,
     "new_tentative": 1,
     "new_rejected": 4,
-    "effective_status_overrides": 4
+    "effective_status_overrides": 3
   },
   "evidence_reference_format": "project-conversation-search:<conversation or topic label>:YYYY-MM-DD"
 }
