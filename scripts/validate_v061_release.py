@@ -242,7 +242,7 @@ def validate_browser_sources(errors: list[str]) -> None:
             "INSERT OR IGNORE INTO playtest_arbiter_links",
         ],
         "rules-assistant/wrangler.toml": [
-            'main = "worker-v061.js"',
+            'main = "worker-entry.js"',
             'SITE_ORIGIN = "https://gauntlet.run"',
         ],
         "deckbuilder/index.html": [
