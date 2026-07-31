@@ -102,7 +102,7 @@ Card-specific text overrides the normal destination.
 2. The opponent retreats beyond the Gauntlet; occupy the final Territory.
 3. Capture it at the start of the next turn if still occupying it.
 4. Later advance beyond the Gauntlet, beginning a Last Stand battle.
-5. During the Last Stand, the defender has Defender's Advantage and adds +1 to their battle total.
+5. During the Last Stand, Defender's Advantage means the defender wins ties; separately, the defender adds +1 to their battle total.
 6. If the attacker wins, they have run the Gauntlet and win the game.
 7. If the defender wins, the attacker retreats normally and the game continues.
 
