@@ -1,0 +1,80 @@
+/* Approved faction and Neutral parchment backgrounds for playable-card mockups.
+   Sprite order: Neutral, Military, Diplomats, Financiers, Intelligence, Mystics, Inquisition. */
+
+.gauntlet-card {
+  --parchment-opacity: 1;
+  --parchment-position: 0%;
+}
+
+.gauntlet-card.neutral-card,
+.gauntlet-card.faction-neutral,
+.gauntlet-card[data-faction="neutral"] {
+  --parchment-position: 0%;
+}
+
+.gauntlet-card.military-card,
+.gauntlet-card.faction-military,
+.gauntlet-card[data-faction="military"] {
+  --parchment-position: 16.6667%;
+}
+
+.gauntlet-card.diplomat-card,
+.gauntlet-card.diplomats-card,
+.gauntlet-card.faction-diplomats,
+.gauntlet-card[data-faction="diplomats"] {
+  --parchment-position: 33.3333%;
+}
+
+.gauntlet-card.financier-card,
+.gauntlet-card.financiers-card,
+.gauntlet-card.faction-financiers,
+.gauntlet-card[data-faction="financiers"] {
+  --parchment-position: 50%;
+}
+
+.gauntlet-card.intelligence-card,
+.gauntlet-card.faction-intelligence,
+.gauntlet-card[data-faction="intelligence"] {
+  --parchment-position: 66.6667%;
+}
+
+.gauntlet-card.mystic-card,
+.gauntlet-card.mystics-card,
+.gauntlet-card.faction-mystics,
+.gauntlet-card[data-faction="mystics"] {
+  --parchment-position: 83.3333%;
+}
+
+.gauntlet-card.inquisition-card,
+.gauntlet-card.faction-inquisition,
+.gauntlet-card[data-faction="inquisition"] {
+  --parchment-position: 100%;
+}
+
+.card-interior {
+  isolation: isolate;
+}
+
+.card-interior::before {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  background-image: url("../images/artwork/card-backgrounds/parchments.webp");
+  background-position: center var(--parchment-position);
+  background-repeat: no-repeat;
+  background-size: 100% 700%;
+  content: "";
+  opacity: var(--parchment-opacity);
+  pointer-events: none;
+}
+
+.card-interior::after {
+  z-index: 1;
+}
+
+.card-heading,
+.card-art,
+.card-rules,
+.card-footer {
+  z-index: 2;
+}
