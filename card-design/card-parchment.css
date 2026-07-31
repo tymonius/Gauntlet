@@ -19,6 +19,23 @@
   background-size: cover;
 }
 
+/* Financiers and Mystics bypass the failed multipart/base64 transport and use
+   the uploaded full-resolution PNG originals directly. !important is required
+   because card-design.js otherwise writes its decoded fallback URL inline. */
+.gauntlet-card.financier-card,
+.gauntlet-card.financiers-card,
+.gauntlet-card.faction-financiers,
+.gauntlet-card[data-faction="financiers"] {
+  --parchment-image: url("../images/artwork/card-backgrounds/financiers-parchment-v2.png") !important;
+}
+
+.gauntlet-card.mystic-card,
+.gauntlet-card.mystics-card,
+.gauntlet-card.faction-mystics,
+.gauntlet-card[data-faction="mystics"] {
+  --parchment-image: url("../images/artwork/card-backgrounds/mystics-parchment-v2.png") !important;
+}
+
 /* The parchment is the card background itself, not a translucent overlay. */
 .card-interior::before {
   content: none;
