@@ -48,12 +48,14 @@ jobs:
 
           root = Path('rulebook-design')
           required_files = [
-              'proof.css', 'print-proof.html', 'reader-spreads.html',
-              'imposition-proof.html', 'toner-cover-proof.html', 'browser-proof.html'
+              'proof.css', 'proof-runtime.css', 'print-proof.html',
+              'reader-spreads.html', 'imposition-proof.html',
+              'toner-cover-proof.html', 'browser-proof.html',
+              'render_proofs.mjs',
           ]
           for name in required_files:
               if not (root / name).is_file():
-                  raise SystemExit(f'Missing generated proof file: {name}')
+                  raise SystemExit(f'Missing proof file: {name}')
 
           print_html = (root / 'print-proof.html').read_text(encoding='utf-8')
           reader_html = (root / 'reader-spreads.html').read_text(encoding='utf-8')
@@ -61,6 +63,7 @@ jobs:
           toner_html = (root / 'toner-cover-proof.html').read_text(encoding='utf-8')
           browser_html = (root / 'browser-proof.html').read_text(encoding='utf-8')
           css = (root / 'proof.css').read_text(encoding='utf-8')
+          runtime_css = (root / 'proof-runtime.css').read_text(encoding='utf-8')
 
           if len(re.findall(r'data-page="\d+"', print_html)) != 12:
               raise SystemExit('Print proof must contain exactly twelve half-letter pages.')
@@ -69,14 +72,14 @@ jobs:
           if len(re.findall(r'class="spread-sheet" data-imposition=', imposed_html)) != 6:
               raise SystemExit('Imposition proof must contain six Letter sheet sides.')
 
-          required_text = [
+          required_print = [
               'PART I', 'PART III', 'Learn to Play', 'Factions', 'General',
               'Forward. Again.', 'Quick Reference', 'Timing and Destinations',
               'Copyright © 2026 Tymon Scott',
               'Repository and release materials are provided for private review and playtesting only',
               '../images/sketches/hero%20sketch.png', '../images/sketches/general.png',
           ]
-          for value in required_text:
+          for value in required_print:
               if value not in print_html:
                   raise SystemExit(f'Print proof missing required content: {value}')
 
@@ -102,12 +105,14 @@ jobs:
           ]
           for value in required_css:
               if value not in css:
-                  raise SystemExit(f'Proof stylesheet missing typography/layout marker: {value}')
+                  raise SystemExit(f'Proof stylesheet missing marker: {value}')
+          if '@import url("https://use.typekit.net/vgm6nwi.css")' in runtime_css:
+              raise SystemExit('Runtime layout stylesheet must not depend on the external Typekit import.')
           for forbidden in ['Liberation Serif', 'Liberation Sans']:
               if forbidden in css + print_html + browser_html:
                   raise SystemExit(f'Obsolete typography remains: {forbidden}')
 
-          print('Validated twelve-page booklet, spreads, imposition, typography roles, grayscale print system, and alternate back cover.')
+          print('Validated twelve-page booklet, reader spreads, imposition, typography roles, grayscale print system, and alternate back cover.')
           PY
 
       - name: Serve repository
@@ -116,145 +121,14 @@ jobs:
       - name: Render and inspect proof set
         run: |
           mkdir -p /tmp/rulebook-design-proofs/pages /tmp/rulebook-design-proofs/spreads /tmp/rulebook-design-proofs/imposition
-          node --input-type=module <<'NODE'
-          import { chromium } from 'playwright';
-
-          const browser = await chromium.launch({ headless: true });
-
-          async function openProof(path, viewport) {
-            const page = await browser.newPage({ viewport, deviceScaleFactor: 1 });
-            const errors = [];
-            page.on('pageerror', error => errors.push(error.message));
-            const response = await page.goto(`http://127.0.0.1:8000/rulebook-design/${path}`, {
-              waitUntil: 'domcontentloaded', timeout: 60000
-            });
-            if (!response?.ok()) throw new Error(`${path} returned ${response?.status()}`);
-            await page.evaluate(() => document.fonts?.ready || Promise.resolve());
-            if (errors.length) throw new Error(`${path} page errors:\n${errors.join('\n')}`);
-            return page;
-          }
-
-          const printPage = await openProof('print-proof.html', { width: 1400, height: 1100 });
-          const printResult = await printPage.evaluate(() => {
-            const pages = [...document.querySelectorAll('.page')];
-            return {
-              interLoaded: document.fonts.check('12px Inter'),
-              runningFamily: getComputedStyle(document.querySelector('.running-head')).fontFamily,
-              pages: pages.map((page, index) => {
-                const rect = page.getBoundingClientRect();
-                return {
-                  index: index + 1,
-                  width: rect.width,
-                  height: rect.height,
-                  scrollWidth: page.scrollWidth,
-                  clientWidth: page.clientWidth,
-                  scrollHeight: page.scrollHeight,
-                  clientHeight: page.clientHeight,
-                  classes: page.className,
-                };
-              }),
-              images: [...document.images].map(image => ({
-                src: image.getAttribute('src'), complete: image.complete,
-                width: image.naturalWidth, height: image.naturalHeight,
-              })),
-            };
-          });
-          if (!printResult.interLoaded || !printResult.runningFamily.includes('Inter')) {
-            throw new Error(`Inter did not load for utility typography: ${JSON.stringify(printResult)}`);
-          }
-          if (printResult.pages.length !== 12) throw new Error(`Expected 12 print pages; found ${printResult.pages.length}`);
-          for (const page of printResult.pages) {
-            if (Math.abs(page.width - 528) > 2 || Math.abs(page.height - 816) > 2) {
-              throw new Error(`Print page ${page.index} is ${page.width}×${page.height}px instead of half-letter.`);
-            }
-            if (page.scrollWidth > page.clientWidth + 1 || page.scrollHeight > page.clientHeight + 1) {
-              throw new Error(`Print page ${page.index} overflows: ${JSON.stringify(page)}`);
-            }
-          }
-          for (const image of printResult.images) {
-            if (!image.complete || image.width < 1 || image.height < 1) {
-              throw new Error(`Print image failed to load: ${JSON.stringify(image)}`);
-            }
-          }
-          await printPage.screenshot({ path: '/tmp/rulebook-design-proofs/print-proof-browser.png', fullPage: true });
-          await printPage.emulateMedia({ media: 'print' });
-          await printPage.pdf({
-            path: '/tmp/rulebook-design-proofs/Gauntlet_v0.6.1_Rulebook_Design_Proofs_v2.pdf',
-            printBackground: true, preferCSSPageSize: true,
-            margin: { top: '0', right: '0', bottom: '0', left: '0' },
-          });
-          await printPage.close();
-
-          async function renderSheets(html, selector, expectedCount, stem) {
-            const page = await openProof(html, { width: 1200, height: 900 });
-            const result = await page.evaluate(({ selector }) => ({
-              sheets: [...document.querySelectorAll(selector)].map((sheet, index) => {
-                const rect = sheet.getBoundingClientRect();
-                return {
-                  index: index + 1, width: rect.width, height: rect.height,
-                  scrollWidth: sheet.scrollWidth, clientWidth: sheet.clientWidth,
-                  scrollHeight: sheet.scrollHeight, clientHeight: sheet.clientHeight,
-                };
-              }),
-              images: [...document.images].map(image => ({ complete: image.complete, width: image.naturalWidth, height: image.naturalHeight, src: image.getAttribute('src') })),
-            }), { selector });
-            if (result.sheets.length !== expectedCount) throw new Error(`${html}: expected ${expectedCount} sheets; found ${result.sheets.length}`);
-            for (const sheet of result.sheets) {
-              if (Math.abs(sheet.width - 1056) > 2 || Math.abs(sheet.height - 816) > 2) {
-                throw new Error(`${html} sheet ${sheet.index} is ${sheet.width}×${sheet.height}px instead of Letter landscape.`);
-              }
-              if (sheet.scrollWidth > sheet.clientWidth + 1 || sheet.scrollHeight > sheet.clientHeight + 1) {
-                throw new Error(`${html} sheet ${sheet.index} overflows: ${JSON.stringify(sheet)}`);
-              }
-            }
-            for (const image of result.images) {
-              if (!image.complete || image.width < 1 || image.height < 1) throw new Error(`${html} image failed: ${JSON.stringify(image)}`);
-            }
-            await page.screenshot({ path: `/tmp/rulebook-design-proofs/${stem}.png`, fullPage: true });
-            await page.emulateMedia({ media: 'print' });
-            await page.pdf({
-              path: `/tmp/rulebook-design-proofs/${stem}.pdf`, printBackground: true,
-              preferCSSPageSize: true, margin: { top: '0', right: '0', bottom: '0', left: '0' },
-            });
-            await page.close();
-          }
-          await renderSheets('reader-spreads.html', '.reader-cover, .spread-sheet', 7, 'Gauntlet_v0.6.1_Half_Letter_Reader_Mockup');
-          await renderSheets('imposition-proof.html', '.spread-sheet', 6, 'Gauntlet_v0.6.1_Half_Letter_Booklet_Imposition');
-
-          const toner = await openProof('toner-cover-proof.html', { width: 700, height: 900 });
-          await toner.screenshot({ path: '/tmp/rulebook-design-proofs/Gauntlet_v0.6.1_Toner_Saver_Back_Cover.png', fullPage: true });
-          await toner.emulateMedia({ media: 'print' });
-          await toner.pdf({
-            path: '/tmp/rulebook-design-proofs/Gauntlet_v0.6.1_Toner_Saver_Back_Cover.pdf',
-            printBackground: true, preferCSSPageSize: true,
-            margin: { top: '0', right: '0', bottom: '0', left: '0' },
-          });
-          await toner.close();
-
-          for (const [name, viewport] of [['desktop', { width: 1440, height: 1200 }], ['mobile', { width: 390, height: 844 }]]) {
-            const page = await openProof('browser-proof.html', viewport);
-            const result = await page.evaluate(() => ({
-              horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
-              interLoaded: document.fonts.check('12px Inter'),
-              bodyFamily: getComputedStyle(document.querySelector('.browser-proof')).fontFamily,
-              images: [...document.images].map(image => ({ complete: image.complete, width: image.naturalWidth, height: image.naturalHeight })),
-            }));
-            if (result.horizontalOverflow > 1) throw new Error(`${name} browser proof has ${result.horizontalOverflow}px horizontal overflow`);
-            if (!result.interLoaded || !result.bodyFamily.includes('Inter')) throw new Error(`${name} browser proof did not load Inter: ${JSON.stringify(result)}`);
-            for (const image of result.images) if (!image.complete || image.width < 1 || image.height < 1) throw new Error(`${name} browser image failed`);
-            await page.screenshot({ path: `/tmp/rulebook-design-proofs/browser-proof-${name}.png`, fullPage: true });
-            await page.close();
-          }
-
-          await browser.close();
-          console.log(JSON.stringify(printResult, null, 2));
-          NODE
+          node rulebook-design/render_proofs.mjs
 
       - name: Validate PDF dimensions and pages
         run: |
           python - <<'PY'
           from pathlib import Path
-          import re, subprocess
+          import re
+          import subprocess
 
           checks = [
               ('Gauntlet_v0.6.1_Rulebook_Design_Proofs_v2.pdf', 12, 396, 612),
@@ -270,7 +144,10 @@ jobs:
               size = re.search(r'^Page size:\s+([\d.]+) x ([\d.]+) pts', info, re.MULTILINE)
               width, height = map(float, size.groups())
               if pages != expected_pages or abs(width - expected_width) > 1 or abs(height - expected_height) > 1:
-                  raise SystemExit(f'{name}: got {pages} pages at {width}×{height}; expected {expected_pages} at {expected_width}×{expected_height}')
+                  raise SystemExit(
+                      f'{name}: got {pages} pages at {width}×{height}; '
+                      f'expected {expected_pages} at {expected_width}×{expected_height}'
+                  )
               print(f'Validated {name}: {pages} pages at {width}×{height} pt')
           PY
           pdftoppm -png -r 144 /tmp/rulebook-design-proofs/Gauntlet_v0.6.1_Rulebook_Design_Proofs_v2.pdf /tmp/rulebook-design-proofs/pages/page
