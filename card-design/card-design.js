@@ -10,17 +10,23 @@
     neutral: '../images/artwork/card-backgrounds/neutral.webp.b64',
     military: '../images/artwork/card-backgrounds/military.webp.b64',
     diplomats: '../images/artwork/card-backgrounds/diplomats.webp.b64',
-    financiers: [
-      '../images/artwork/card-backgrounds/financiers-uploaded.webp.b64.00',
-      '../images/artwork/card-backgrounds/financiers-uploaded.webp.b64.01',
-      '../images/artwork/card-backgrounds/financiers-uploaded.webp.b64.02',
-      '../images/artwork/card-backgrounds/financiers-uploaded.webp.b64.03',
-    ],
+    financiers: {
+      primary: [
+        '../images/artwork/card-backgrounds/financiers-uploaded.webp.b64.00',
+        '../images/artwork/card-backgrounds/financiers-uploaded.webp.b64.01',
+        '../images/artwork/card-backgrounds/financiers-uploaded.webp.b64.02',
+        '../images/artwork/card-backgrounds/financiers-uploaded.webp.b64.03',
+      ],
+      fallback: '../images/artwork/card-backgrounds/financiers.webp.b64',
+    },
     intelligence: '../images/artwork/card-backgrounds/intelligence.webp.b64',
-    mystics: [
-      '../images/artwork/card-backgrounds/mystics-uploaded.webp.b64.00',
-      '../images/artwork/card-backgrounds/mystics-uploaded.webp.b64.01',
-    ],
+    mystics: {
+      primary: [
+        '../images/artwork/card-backgrounds/mystics-uploaded.webp.b64.00',
+        '../images/artwork/card-backgrounds/mystics-uploaded.webp.b64.01',
+      ],
+      fallback: '../images/artwork/card-backgrounds/mystics.webp.b64',
+    },
     inquisition: '../images/artwork/card-backgrounds/inquisition.webp.b64',
   });
   const parchmentPromises = new Map();
@@ -49,6 +55,11 @@
       || 'neutral';
   }
 
+  function hasAsciiSignature(bytes, offset, signature) {
+    if (bytes.length < offset + signature.length) return false;
+    return signature.split('').every((character, index) => bytes[offset + index] === character.charCodeAt(0));
+  }
+
   function decodeParchment(base64Text) {
     const binary = window.atob(base64Text.replace(/\s+/g, ''));
     const bytes = new Uint8Array(binary.length);
@@ -56,25 +67,54 @@
       bytes[index] = binary.charCodeAt(index);
     }
 
+    if (!hasAsciiSignature(bytes, 0, 'RIFF') || !hasAsciiSignature(bytes, 8, 'WEBP')) {
+      throw new Error('Invalid WebP parchment source: missing RIFF/WEBP signature.');
+    }
+
+    const declaredLength = bytes[4]
+      + (bytes[5] << 8)
+      + (bytes[6] << 16)
+      + (bytes[7] * 0x1000000)
+      + 8;
+    if (declaredLength !== bytes.length) {
+      throw new Error(`Invalid WebP parchment source: RIFF length ${declaredLength} does not match ${bytes.length} bytes.`);
+    }
+
     const objectUrl = URL.createObjectURL(new Blob([bytes], { type: 'image/webp' }));
     parchmentObjectUrls.add(objectUrl);
     return objectUrl;
   }
 
+  async function fetchParchmentParts(sourcePaths) {
+    const sources = sourcePaths.map(path => new URL(path, document.baseURI));
+    const parts = await Promise.all(sources.map(source => fetch(source, { cache: 'force-cache' })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`Parchment request failed with ${response.status}: ${source}`);
+        }
+        return response.text();
+      })));
+    return decodeParchment(parts.join(''));
+  }
+
   function parchmentUrlFor(faction) {
     if (!parchmentPromises.has(faction)) {
-      const configuredSources = PARCHMENT_SOURCES[faction];
-      const sourcePaths = Array.isArray(configuredSources) ? configuredSources : [configuredSources];
-      const sources = sourcePaths.map(path => new URL(path, document.baseURI));
+      const configured = PARCHMENT_SOURCES[faction];
+      const primary = typeof configured === 'object'
+        ? configured.primary
+        : configured;
+      const primaryPaths = Array.isArray(primary) ? primary : [primary];
+      const fallback = typeof configured === 'object' ? configured.fallback : null;
 
-      parchmentPromises.set(faction, Promise.all(sources.map(source => fetch(source, { cache: 'force-cache' })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`Parchment request failed with ${response.status}: ${source}`);
-          }
-          return response.text();
-        })))
-        .then(parts => decodeParchment(parts.join(''))));
+      const promise = fetchParchmentParts(primaryPaths)
+        .then(objectUrl => ({ objectUrl, fallback: false }))
+        .catch(async primaryError => {
+          if (!fallback) throw primaryError;
+          console.warn(`Primary parchment source failed for ${faction}; using the verified direct fallback.`, primaryError);
+          const objectUrl = await fetchParchmentParts([fallback]);
+          return { objectUrl, fallback: true };
+        });
+      parchmentPromises.set(faction, promise);
     }
 
     return parchmentPromises.get(faction);
@@ -85,10 +125,11 @@
     await Promise.all(cards.map(async card => {
       const faction = factionForCard(card);
       try {
-        const objectUrl = await parchmentUrlFor(faction);
-        card.style.setProperty('--parchment-image', `url("${objectUrl}")`);
+        const result = await parchmentUrlFor(faction);
+        card.style.setProperty('--parchment-image', `url("${result.objectUrl}")`);
         card.dataset.parchmentLoaded = 'true';
         card.dataset.parchmentSource = faction;
+        card.dataset.parchmentFallback = String(result.fallback);
       } catch (error) {
         card.dataset.parchmentLoaded = 'false';
         console.warn(`Using fallback parchment color for ${faction}.`, error);
