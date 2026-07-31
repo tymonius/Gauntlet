@@ -28,6 +28,10 @@ REPLACEMENTS = (
         "Resolve remaining Gambit effects using the shared-timing rule in Chapter 11.",
     ),
     (
+        "After that, resolve remaining Gambit effects using the shared-timing rule below.",
+        "After that, resolve remaining Gambit effects using the shared-timing rule in Chapter 11.",
+    ),
+    (
         "Reveal all Tactics simultaneously. Resolve their effects using the shared-timing rule.",
         "Reveal all Tactics simultaneously. Resolve their effects using the shared-timing rule in Chapter 11.",
     ),
