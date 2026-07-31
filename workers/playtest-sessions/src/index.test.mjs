@@ -13,7 +13,8 @@ test("reports service, rules version, and configuration state", async () => {
     service: "gauntlet-playtest-sessions",
     version: "v0.6.1",
     database: false,
-    sessionCreationConfigured: false
+    sessionCreationConfigured: false,
+    onboardingSupported: true
   });
 });
 
