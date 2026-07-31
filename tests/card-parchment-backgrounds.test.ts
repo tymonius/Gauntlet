@@ -5,11 +5,17 @@ const parchmentCss = readFileSync("card-design/card-parchment.css", "utf8");
 const refinementCss = readFileSync("card-design/card-design-refinement.css", "utf8");
 
 describe("card parchment backgrounds", () => {
-  it("loads the approved parchment layer in the card mockup system", () => {
+  it("loads the approved parchment as the card background itself", () => {
     expect(refinementCss).toContain('@import url("card-parchment.css");');
     expect(parchmentCss).toContain(
       'background-image: url("../images/artwork/card-backgrounds/parchments.webp");'
     );
+    expect(parchmentCss).toContain("background-color: var(--card-parchment);");
+    expect(parchmentCss).toContain("background-blend-mode: normal;");
+    expect(parchmentCss).toContain(".card-interior::before");
+    expect(parchmentCss).toContain("content: none;");
+    expect(parchmentCss).not.toContain("--parchment-opacity");
+    expect(parchmentCss).not.toContain("mix-blend-mode");
   });
 
   it.each([

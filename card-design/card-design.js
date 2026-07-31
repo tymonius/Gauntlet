@@ -3,11 +3,43 @@
   const CSS_PIXELS_PER_POINT = CSS_PIXELS_PER_INCH / 72;
   const HEIGHT_STEP = 1;
   const TITLE_STEP = 0.05 * CSS_PIXELS_PER_POINT;
+  const RULE_SCALE_STEP = 0.01;
   const DEFAULT_MINIMUM_TITLE_SIZE = 9.5 * CSS_PIXELS_PER_POINT;
+  const DEFAULT_MINIMUM_RULE_SCALE = 0.82;
   let resizeTimer;
+
+  function forceLayout(element) {
+    void element.offsetHeight;
+  }
 
   function setArtHeight(card, height) {
     card.querySelector('.card-interior')?.style.setProperty('--art-height', `${height}px`);
+  }
+
+  function setRuleScale(card, scale) {
+    card.style.setProperty('--rules-scale', String(scale));
+  }
+
+  function minimumRuleScale(card) {
+    const declared = Number.parseFloat(
+      window.getComputedStyle(card).getPropertyValue('--minimum-rules-scale')
+    );
+    return Number.isFinite(declared) ? declared : DEFAULT_MINIMUM_RULE_SCALE;
+  }
+
+  function cardOverflows(card) {
+    const interior = card.querySelector('.card-interior');
+    const rules = card.querySelector('.card-rules');
+    const footer = card.querySelector('.card-footer');
+    if (!interior || !rules || !footer) return false;
+
+    const interiorRect = interior.getBoundingClientRect();
+    const footerRect = footer.getBoundingClientRect();
+    const footerPastFrame = footerRect.bottom > interiorRect.bottom + 0.5;
+    const rulesClip = rules.scrollHeight > rules.clientHeight + 0.5;
+    const frameClip = interior.scrollHeight > interior.clientHeight + 0.5;
+
+    return footerPastFrame || rulesClip || frameClip;
   }
 
   function fitTitle(card) {
@@ -15,7 +47,7 @@
     if (!title) return;
 
     title.style.removeProperty('font-size');
-    void title.offsetWidth;
+    forceLayout(title);
 
     let size = Number.parseFloat(window.getComputedStyle(title).fontSize);
     const minimum = Number(card.dataset.titleMin || DEFAULT_MINIMUM_TITLE_SIZE / CSS_PIXELS_PER_POINT)
@@ -24,7 +56,7 @@
     while (title.scrollWidth > title.clientWidth + 0.5 && size > minimum) {
       size = Math.max(minimum, size - TITLE_STEP);
       title.style.fontSize = `${size}px`;
-      void title.offsetWidth;
+      forceLayout(title);
     }
   }
 
@@ -38,18 +70,31 @@
     const maximum = Number(card.dataset.artMax || 1.72) * CSS_PIXELS_PER_INCH;
     const minimum = Number(card.dataset.artMin || 0.62) * CSS_PIXELS_PER_INCH;
     let height = maximum;
+    let ruleScale = 1;
 
     card.classList.remove('fit-warning');
+    setRuleScale(card, ruleScale);
     setArtHeight(card, height);
-    void interior.offsetHeight;
+    forceLayout(interior);
 
-    while (interior.scrollHeight > interior.clientHeight + 0.5 && height > minimum) {
+    /* Preserve the largest possible illustration before touching typography. */
+    while (cardOverflows(card) && height > minimum) {
       height = Math.max(minimum, height - HEIGHT_STEP);
       setArtHeight(card, height);
-      void interior.offsetHeight;
+      forceLayout(interior);
     }
 
-    if (interior.scrollHeight > interior.clientHeight + 0.5) {
+    /* If the minimum art window is not enough, compact the rules as a second
+       stage. This includes reminders and catches footer displacement that the
+       previous scroll-height-only check missed. */
+    const minimumScale = minimumRuleScale(card);
+    while (cardOverflows(card) && ruleScale > minimumScale) {
+      ruleScale = Math.max(minimumScale, ruleScale - RULE_SCALE_STEP);
+      setRuleScale(card, Number(ruleScale.toFixed(2)));
+      forceLayout(interior);
+    }
+
+    if (cardOverflows(card)) {
       card.classList.add('fit-warning');
       console.warn(`Card content still exceeds the available area: ${card.getAttribute('aria-label') || 'unnamed card'}`);
     }
