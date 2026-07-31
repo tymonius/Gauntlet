@@ -1,0 +1,81 @@
+name: Patch standalone onboarding entry points
+
+on:
+  push:
+    branches:
+      - agent/standalone-new-player-onboarding
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/standalone-new-player-onboarding
+          fetch-depth: 0
+      - name: Wire public start flow and guided Deckbuilder
+        shell: python
+        run: |
+          from pathlib import Path
+
+          replacements = {
+              Path("deckbuilder/starter-decks.js"): [
+                  (
+                      '  window.GAUNTLET_STARTER_DECKS = {\n    getSelectedDeck: selectedStarterDeck,\n    getMatchingCurrentDeck: matchingCurrentStarterDeck\n  };',
+                      '  window.GAUNTLET_STARTER_DECKS = {\n    getSelectedDeck: selectedStarterDeck,\n    getMatchingCurrentDeck: matchingCurrentStarterDeck,\n    loadSelectedDeck: loadRecommendedDeck,\n    isReady: starterDeckReady\n  };'
+                  ),
+              ],
+              Path("deckbuilder/index.html"): [
+                  (
+                      '  <link rel="stylesheet" href="starter-decks.css" />',
+                      '  <link rel="stylesheet" href="starter-decks.css" />\n  <link rel="stylesheet" href="starter-handoff.css?v=20260731-1" />'
+                  ),
+                  (
+                      '      <a href="../">Game</a>',
+                      '      <a href="../start/">Start</a>\n      <a href="../">Game</a>'
+                  ),
+                  (
+                      '  <script src="starter-decks.js?v=20260729-1" defer></script>',
+                      '  <script src="starter-decks.js?v=20260731-2" defer></script>\n  <script src="starter-handoff.js?v=20260731-1" defer></script>'
+                  ),
+              ],
+              Path("index.html"): [
+                  (
+                      '      <a href="#game">Game</a>',
+                      '      <a href="start/">Start</a>\n      <a href="#game">Game</a>'
+                  ),
+                  (
+                      '          <a class="button primary" href="deckbuilder/">Build a Deck</a>\n          <a class="button secondary" href="rulebook/">Read the rules</a>',
+                      '          <a class="button primary" href="start/">Start playing</a>\n          <a class="button secondary" href="deckbuilder/">Build a Deck</a>\n          <a class="button secondary" href="rulebook/">Read the rules</a>'
+                  ),
+                  (
+                      '      <div class="tool-grid">',
+                      '      <div class="tool-grid">\n        <a class="tool-card" href="start/">\n          <span>New-player setup</span>\n          <h3>Start Playing</h3>\n          <p>Learn the shared game flow, choose a faction and leader, and load the matching recommended starter deck ready to print.</p>\n          <strong>Choose your first deck →</strong>\n        </a>'
+                  ),
+              ],
+          }
+
+          changed = []
+          for path, pairs in replacements.items():
+              text = path.read_text(encoding="utf-8")
+              original = text
+              for old, new in pairs:
+                  if old not in text and new not in text:
+                      raise SystemExit(f"Expected marker missing from {path}: {old}")
+                  text = text.replace(old, new)
+              if text != original:
+                  path.write_text(text, encoding="utf-8")
+                  changed.append(str(path))
+
+          print("Changed:", ", ".join(changed) if changed else "none")
+      - name: Commit patch and remove temporary workflow
+        run: |
+          rm .github/workflows/patch-standalone-onboarding-entrypoints.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add deckbuilder/starter-decks.js deckbuilder/index.html index.html .github/workflows/patch-standalone-onboarding-entrypoints.yml
+          git commit -m "Wire standalone onboarding entry points"
+          git push origin HEAD:agent/standalone-new-player-onboarding
