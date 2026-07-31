@@ -7,30 +7,15 @@
   const DEFAULT_MINIMUM_TITLE_SIZE = 9.5 * CSS_PIXELS_PER_POINT;
   const DEFAULT_MINIMUM_RULE_SCALE = 0.93;
   const PARCHMENT_SOURCES = Object.freeze({
-    neutral: '../images/artwork/card-backgrounds/neutral.webp.b64',
-    military: '../images/artwork/card-backgrounds/military.webp.b64',
-    diplomats: '../images/artwork/card-backgrounds/diplomats.webp.b64',
-    financiers: {
-      primary: [
-        '../images/artwork/card-backgrounds/financiers-uploaded.webp.b64.00',
-        '../images/artwork/card-backgrounds/financiers-uploaded.webp.b64.01',
-        '../images/artwork/card-backgrounds/financiers-uploaded.webp.b64.02',
-        '../images/artwork/card-backgrounds/financiers-uploaded.webp.b64.03',
-      ],
-      fallback: '../images/artwork/card-backgrounds/financiers.webp.b64',
-    },
-    intelligence: '../images/artwork/card-backgrounds/intelligence.webp.b64',
-    mystics: {
-      primary: [
-        '../images/artwork/card-backgrounds/mystics-uploaded.webp.b64.00',
-        '../images/artwork/card-backgrounds/mystics-uploaded.webp.b64.01',
-      ],
-      fallback: '../images/artwork/card-backgrounds/mystics.webp.b64',
-    },
-    inquisition: '../images/artwork/card-backgrounds/inquisition.webp.b64',
+    neutral: '../images/artwork/card-backgrounds/neutral-parchment-v2.png',
+    military: '../images/artwork/card-backgrounds/military-parchment-v2.png',
+    diplomats: '../images/artwork/card-backgrounds/diplomats-parchment-v2.png',
+    financiers: '../images/artwork/card-backgrounds/financiers-parchment-v2.png',
+    intelligence: '../images/artwork/card-backgrounds/intelligence-parchment-v2.png',
+    mystics: '../images/artwork/card-backgrounds/mystics-parchment-v2.png',
+    inquisition: '../images/artwork/card-backgrounds/inquisition-parchment-v2.png',
   });
   const parchmentPromises = new Map();
-  const parchmentObjectUrls = new Set();
   let resizeTimer;
 
   function forceLayout(element) {
@@ -55,59 +40,35 @@
       || 'neutral';
   }
 
-  function hasAsciiSignature(bytes, offset, signature) {
-    if (bytes.length < offset + signature.length) return false;
-    return signature.split('').every((character, index) => bytes[offset + index] === character.charCodeAt(0));
-  }
+  function preloadParchment(sourcePath) {
+    const source = new URL(sourcePath, document.baseURI).href;
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      let settled = false;
 
-  function decodeParchment(base64Text) {
-    const binary = window.atob(base64Text.replace(/\s+/g, ''));
-    const bytes = new Uint8Array(binary.length);
-    for (let index = 0; index < binary.length; index += 1) {
-      bytes[index] = binary.charCodeAt(index);
-    }
+      const finish = (callback, value) => {
+        if (settled) return;
+        settled = true;
+        callback(value);
+      };
 
-    if (!hasAsciiSignature(bytes, 0, 'RIFF') || !hasAsciiSignature(bytes, 8, 'WEBP')) {
-      throw new Error('Invalid WebP parchment source: missing RIFF/WEBP signature.');
-    }
+      image.addEventListener('load', () => finish(resolve, source), { once: true });
+      image.addEventListener('error', () => {
+        finish(reject, new Error(`Parchment image failed to load: ${source}`));
+      }, { once: true });
+      image.src = source;
 
-    const objectUrl = URL.createObjectURL(new Blob([bytes], { type: 'image/webp' }));
-    parchmentObjectUrls.add(objectUrl);
-    return objectUrl;
-  }
-
-  async function fetchParchmentParts(sourcePaths) {
-    const sources = sourcePaths.map(path => new URL(path, document.baseURI));
-    const parts = await Promise.all(sources.map(source => fetch(source, { cache: 'force-cache' })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error(`Parchment request failed with ${response.status}: ${source}`);
-        }
-        return response.text();
-      })));
-    return decodeParchment(parts.join(''));
+      if (image.complete) {
+        if (image.naturalWidth > 0) finish(resolve, source);
+        else finish(reject, new Error(`Parchment image failed to load: ${source}`));
+      }
+    });
   }
 
   function parchmentUrlFor(faction) {
     if (!parchmentPromises.has(faction)) {
-      const configured = PARCHMENT_SOURCES[faction];
-      const primary = typeof configured === 'object'
-        ? configured.primary
-        : configured;
-      const primaryPaths = Array.isArray(primary) ? primary : [primary];
-      const fallback = typeof configured === 'object' ? configured.fallback : null;
-
-      const promise = fetchParchmentParts(primaryPaths)
-        .then(objectUrl => ({ objectUrl, fallback: false }))
-        .catch(async primaryError => {
-          if (!fallback) throw primaryError;
-          console.warn(`Primary parchment source failed for ${faction}; using the verified direct fallback.`, primaryError);
-          const objectUrl = await fetchParchmentParts([fallback]);
-          return { objectUrl, fallback: true };
-        });
-      parchmentPromises.set(faction, promise);
+      parchmentPromises.set(faction, preloadParchment(PARCHMENT_SOURCES[faction]));
     }
-
     return parchmentPromises.get(faction);
   }
 
@@ -116,13 +77,14 @@
     await Promise.all(cards.map(async card => {
       const faction = factionForCard(card);
       try {
-        const result = await parchmentUrlFor(faction);
-        card.style.setProperty('--parchment-image', `url("${result.objectUrl}")`);
+        const parchmentUrl = await parchmentUrlFor(faction);
+        card.style.setProperty('--parchment-image', `url("${parchmentUrl}")`);
         card.dataset.parchmentLoaded = 'true';
         card.dataset.parchmentSource = faction;
-        card.dataset.parchmentFallback = String(result.fallback);
+        card.dataset.parchmentFallback = 'false';
       } catch (error) {
         card.dataset.parchmentLoaded = 'false';
+        card.dataset.parchmentFallback = 'true';
         console.warn(`Using fallback parchment color for ${faction}.`, error);
       }
     }));
@@ -245,8 +207,5 @@
   window.addEventListener('resize', () => {
     window.clearTimeout(resizeTimer);
     resizeTimer = window.setTimeout(fitAllCards, 120);
-  });
-  window.addEventListener('beforeunload', () => {
-    parchmentObjectUrls.forEach(objectUrl => URL.revokeObjectURL(objectUrl));
   });
 })();

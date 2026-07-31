@@ -5,115 +5,60 @@ const parchmentCss = readFileSync("card-design/card-parchment.css", "utf8");
 const refinementCss = readFileSync("card-design/card-design-refinement.css", "utf8");
 const cardScript = readFileSync("card-design/card-design.js", "utf8");
 
-const unchangedSources = [
+const factions = [
   "neutral",
   "military",
   "diplomats",
+  "financiers",
   "intelligence",
+  "mystics",
   "inquisition",
-];
+] as const;
 
-const uploadedMultipartSources = {
-  financiers: ["00", "01", "02", "03"],
-  mystics: ["00", "01"],
-};
-
-const directFallbackDimensions = {
-  financiers: { width: 480, height: 672 },
-  mystics: { width: 640, height: 896 },
-};
-
-function decodeBase64File(path: string) {
-  return Buffer.from(readFileSync(path, "utf8").replace(/\s+/g, ""), "base64");
-}
-
-function webpDimensions(source: Buffer) {
-  expect(source.subarray(0, 4).toString("ascii")).toBe("RIFF");
-  expect(source.subarray(8, 12).toString("ascii")).toBe("WEBP");
-
-  const format = source.subarray(12, 16).toString("ascii");
-  if (format === "VP8 ") {
-    const payload = 20;
-    expect(source.subarray(payload + 3, payload + 6)).toEqual(Buffer.from([0x9d, 0x01, 0x2a]));
-    return {
-      width: source.readUInt16LE(payload + 6) & 0x3fff,
-      height: source.readUInt16LE(payload + 8) & 0x3fff,
-    };
-  }
-
-  if (format === "VP8X") {
-    return {
-      width: 1 + source.readUIntLE(24, 3),
-      height: 1 + source.readUIntLE(27, 3),
-    };
-  }
-
-  if (format === "VP8L") {
-    const packed = source.readUInt32LE(21);
-    return {
-      width: 1 + (packed & 0x3fff),
-      height: 1 + ((packed >> 14) & 0x3fff),
-    };
-  }
-
-  throw new Error(`Unsupported WebP payload: ${format}`);
-}
-
-function expectWebpSignature(source: Buffer) {
-  expect(source.byteLength).toBeGreaterThanOrEqual(20);
-  expect(source.subarray(0, 4).toString("ascii")).toBe("RIFF");
-  expect(source.subarray(8, 12).toString("ascii")).toBe("WEBP");
+function pngDimensions(path: string) {
+  const source = readFileSync(path);
+  expect(source.subarray(0, 8)).toEqual(
+    Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])
+  );
+  expect(source.subarray(12, 16).toString("ascii")).toBe("IHDR");
+  return {
+    width: source.readUInt32BE(16),
+    height: source.readUInt32BE(20),
+  };
 }
 
 describe("card parchment backgrounds", () => {
-  it("loads unchanged sources and retains the uploaded multipart candidates", () => {
+  it("loads all seven full-resolution PNG originals directly", () => {
     expect(refinementCss).toContain('@import url("card-parchment.css");');
 
-    for (const faction of unchangedSources) {
-      const path = `images/artwork/card-backgrounds/${faction}.webp.b64`;
+    for (const faction of factions) {
+      const path = `images/artwork/card-backgrounds/${faction}-parchment-v2.png`;
       expect(existsSync(path)).toBe(true);
-      expect(cardScript).toContain(`../${path}`);
+      expect(readFileSync(path).byteLength).toBeGreaterThan(50_000);
+      const dimensions = pngDimensions(path);
+      expect(dimensions.width).toBeGreaterThanOrEqual(1_000);
+      expect(dimensions.height).toBeGreaterThanOrEqual(1_400);
+      expect(cardScript).toContain(`${faction}: '../${path}'`);
     }
+  });
 
-    for (const [faction, parts] of Object.entries(uploadedMultipartSources)) {
-      for (const part of parts) {
-        const path = `images/artwork/card-backgrounds/${faction}-uploaded.webp.b64.${part}`;
-        expect(existsSync(path)).toBe(true);
-        expect(cardScript).toContain(`../${path}`);
-      }
-      expect(cardScript).toContain(`fallback: '../images/artwork/card-backgrounds/${faction}.webp.b64'`);
-    }
-
+  it("preloads direct image URLs and preserves renderer readiness metadata", () => {
     expect(cardScript).toContain("const PARCHMENT_SOURCES");
-    expect(cardScript).toContain("fetchParchmentParts");
-    expect(cardScript).toContain("parts.join('')");
-    expect(cardScript).toContain("cache: 'force-cache'");
+    expect(cardScript).toContain("function preloadParchment(sourcePath)");
+    expect(cardScript).toContain("const image = new Image()");
+    expect(cardScript).toContain("image.naturalWidth > 0");
+    expect(cardScript).toContain("card.dataset.parchmentLoaded = 'true'");
     expect(cardScript).toContain("card.dataset.parchmentSource = faction");
-    expect(cardScript).toContain("card.dataset.parchmentFallback = String(result.fallback)");
+    expect(cardScript).toContain("card.dataset.parchmentFallback = 'false'");
   });
 
-  it("rejects headerless multipart payloads before creating image object URLs", () => {
-    expect(cardScript).toContain("hasAsciiSignature(bytes, 0, 'RIFF')");
-    expect(cardScript).toContain("hasAsciiSignature(bytes, 8, 'WEBP')");
-    expect(cardScript).toContain("Invalid WebP parchment source: missing RIFF/WEBP signature.");
-    expect(cardScript).toContain("catch(async primaryError");
-    expect(cardScript).toContain("using the verified direct fallback");
-  });
-
-  it("keeps signed browser-decodable direct WebPs as deterministic fallbacks", () => {
-    for (const [faction, dimensions] of Object.entries(directFallbackDimensions)) {
-      const source = decodeBase64File(`images/artwork/card-backgrounds/${faction}.webp.b64`);
-      expectWebpSignature(source);
-      expect(webpDimensions(source)).toEqual(dimensions);
-    }
-  });
-
-  it("decodes each selected source directly without card-sized raster processing", () => {
-    expect(cardScript).toContain("window.atob");
-    expect(cardScript).toContain("new Blob([bytes], { type: 'image/webp' })");
-    expect(cardScript).toContain("URL.createObjectURL");
-
+  it("does not use legacy base64, multipart, Blob, object URL, or canvas processing", () => {
     for (const forbidden of [
+      ".webp.b64",
+      "uploaded.webp.b64",
+      "window.atob",
+      "new Blob",
+      "URL.createObjectURL",
       "PARCHMENT_PARTS",
       "PARCHMENT_FRAMES",
       "canvas",
