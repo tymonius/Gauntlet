@@ -47,3 +47,47 @@ body {
   text-align: center;
   text-transform: uppercase;
 }
+
+.gauntlet-card.tts-text-only .card-interior {
+  grid-template-rows: 0.38in 0 auto 0.13in;
+}
+
+.gauntlet-card.tts-text-only .card-heading {
+  padding: 0.045in 0.47in 0.02in 0.07in;
+}
+
+.gauntlet-card.tts-text-only .card-title {
+  font-size: 9.5pt;
+  line-height: 0.9;
+}
+
+.gauntlet-card.tts-text-only .card-art {
+  min-height: 0;
+  margin: 0;
+  border: 0;
+  visibility: hidden;
+}
+
+.gauntlet-card.tts-text-only .card-rules {
+  padding: 0.02in 0.055in 0.015in;
+}
+
+.gauntlet-card.tts-text-only .rule-section {
+  grid-template-columns: 0.38in minmax(0, 1fr);
+  column-gap: 0.035in;
+}
+
+.gauntlet-card.tts-text-only .rule-section + .rule-section {
+  margin-top: 0.018in;
+  padding-top: 0.012in;
+}
+
+.gauntlet-card.tts-text-only .card-reminder {
+  margin-top: 0.02in;
+  padding-top: 0.015in;
+}
+
+.gauntlet-card.tts-text-only .card-footer {
+  font-size: 4pt;
+  letter-spacing: 0.035em;
+}
