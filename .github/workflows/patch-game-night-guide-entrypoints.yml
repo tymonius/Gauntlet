@@ -1,0 +1,62 @@
+name: Patch game-night guide entry points
+
+on:
+  push:
+    branches:
+      - agent/game-night-guides
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/game-night-guides
+          fetch-depth: 0
+      - name: Update cached entry points and guide navigation
+        shell: python
+        run: |
+          from pathlib import Path
+
+          replacements = {
+              Path("playtest/onboarding/index.html"): [
+                  ('app.js?v=20260731-3', 'app.js?v=20260731-4'),
+              ],
+              Path("playtest/session/index.html"): [
+                  ('app.js?v=20260731-3', 'app.js?v=20260731-4'),
+              ],
+              Path("playtest/batch/index.html"): [
+                  ('<a href="../">Single sheet</a>', '<a href="../host/">Host Home</a>\n      <a href="../guide/?role=host">Game-night guide</a>\n      <a href="../">Single sheet</a>'),
+              ],
+              Path("playtest/index.html"): [
+                  ('<a class="button-link secondary" href="batch/">Generate coded batch</a>', '<a class="button-link secondary" href="guide/">Game-night guide</a>\n      <a class="button-link secondary" href="batch/">Generate coded batch</a>'),
+              ],
+          }
+
+          changed = []
+          for path, pairs in replacements.items():
+              text = path.read_text(encoding="utf-8")
+              original = text
+              for old, new in pairs:
+                  if old not in text and new not in text:
+                      raise SystemExit(f"Expected marker missing from {path}: {old}")
+                  text = text.replace(old, new)
+              if text != original:
+                  path.write_text(text, encoding="utf-8")
+                  changed.append(str(path))
+
+          print("Changed:", ", ".join(changed) if changed else "none")
+      - name: Commit patch
+        run: |
+          if git diff --quiet; then
+            echo "No patch required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add playtest/onboarding/index.html playtest/session/index.html playtest/batch/index.html playtest/index.html
+          git commit -m "Wire game-night guide entry points"
+          git push origin HEAD:agent/game-night-guides
