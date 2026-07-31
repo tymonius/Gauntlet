@@ -97,6 +97,7 @@
 
   function preparePlayerPreviewLinks() {
     document.querySelectorAll(".event-game-actions a").forEach((link) => {
+      if (link.dataset.organizerPreviewLink === "true") return;
       link.textContent = "Preview player page";
       link.setAttribute("title", "Open this table session as a player-facing organizer preview");
       link.dataset.organizerPreviewLink = "true";
