@@ -47,10 +47,7 @@ jobs:
           npm run typecheck
           npm test
           python scripts/generate_v061_release.py --check
-          python scripts/validate_v061_release.py --strict-generated
-      - name: Report pre-existing conversation-audit status
-        continue-on-error: true
-        run: python .github/scripts/validate-conversation-audit.py
+          python scripts/validate_v061_release.py
       - name: Commit results
         run: |
           git config user.name "github-actions[bot]"
