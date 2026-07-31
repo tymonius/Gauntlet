@@ -9,6 +9,15 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 RULEBOOK = ROOT / "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md"
 
+FACTION_CHAPTERS = (
+    (13, "Military"),
+    (14, "Diplomats"),
+    (15, "Financiers"),
+    (16, "Intelligence"),
+    (17, "Mystics"),
+    (18, "Inquisition"),
+)
+
 REQUIRED_ORDER = (
     "# Welcome to Gauntlet",
     "# How to Use This Rulebook",
@@ -32,13 +41,12 @@ REQUIRED_ORDER = (
     "# 11. Detailed Card and Timing Rules",
     "# 12. Overlays and Other Shared Card Rules",
     "# Part III — Factions",
-    "# 13. Factions",
-    "## Military",
-    "## Diplomats",
-    "## Financiers",
-    "## Intelligence",
-    "## Mystics",
-    "## Inquisition",
+    "# 13. Military",
+    "# 14. Diplomats",
+    "# 15. Financiers",
+    "# 16. Intelligence",
+    "# 17. Mystics",
+    "# 18. Inquisition",
     "# Part IV — Reference",
     "# Quick Turn Reference",
     "# Quick Battle Reference",
@@ -83,6 +91,7 @@ FACTION_INTRO_FORBIDDEN = (
 )
 
 FORBIDDEN_STRUCTURE = (
+    "# 13. Factions",
     "# 14. Military",
     "# 15. Diplomats",
     "# 16. Financiers",
@@ -124,7 +133,7 @@ def main() -> int:
     for phrase in FACTION_INTRO_FORBIDDEN:
         if phrase in faction_intro:
             raise SystemExit(
-                f"Rulebook content audit: faction-specific example appears before its subsection: {phrase}"
+                f"Rulebook content audit: faction-specific example appears before its chapter: {phrase}"
             )
 
     chapter_two = text.index("# 2. Cards, Zones, and the Play Area")
@@ -159,9 +168,15 @@ def main() -> int:
     if text.count("<!-- GENERATED FACTION CONTENT END -->") != 1:
         raise SystemExit("Rulebook content audit: generated faction end marker is invalid")
 
-    for faction in ("Military", "Diplomats", "Financiers", "Intelligence", "Mystics", "Inquisition"):
-        if len(re.findall(rf"(?m)^## {re.escape(faction)}$", text)) != 1:
-            raise SystemExit(f"Rulebook content audit: {faction} is not one faction subsection")
+    for chapter, faction in FACTION_CHAPTERS:
+        if len(re.findall(rf"(?m)^# {chapter}\. {re.escape(faction)}$", text)) != 1:
+            raise SystemExit(
+                f"Rulebook content audit: {faction} is not exactly one numbered faction chapter"
+            )
+        if re.search(rf"(?m)^## {re.escape(faction)}$", text):
+            raise SystemExit(
+                f"Rulebook content audit: {faction} remains a subsection instead of a chapter"
+            )
 
     required_notice = (
         "Gauntlet is an unpublished playtest project.",
@@ -184,7 +199,7 @@ def main() -> int:
     if "Defender's Advantage does not grant an additional die" not in text:
         raise SystemExit("Rulebook content audit: PR #336 additional-die clarification is missing")
 
-    print("v0.6.1 Rulebook teaching order, first-use discipline, faction hierarchy, and copyright content validated.")
+    print("v0.6.1 Rulebook teaching order, first-use discipline, faction chapters, and copyright content validated.")
     return 0
 
 
