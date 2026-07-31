@@ -44,6 +44,7 @@ def finalize_manifest() -> None:
         "release_package": "https://gauntlet.run/releases/v0.6.1/",
         "browser_rulebook": "https://gauntlet.run/rulebook/",
         "rulebook_pdf": "https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf",
+        "rulebook_booklet_pdf": "https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf",
         "card_reference": "https://gauntlet.run/card-reference/",
         "deckbuilder": "https://gauntlet.run/deckbuilder/",
         "faction_sheets": "https://gauntlet.run/faction-sheets/",
@@ -93,6 +94,7 @@ def finalize_release_documents() -> None:
 - [Project site](https://gauntlet.run/)
 - [Browser Rulebook](https://gauntlet.run/rulebook/)
 - [Rulebook PDF](https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf)
+- [Preferred Rulebook booklet PDF](https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf)
 - [Card Reference](https://gauntlet.run/card-reference/)
 - [Deckbuilder](https://gauntlet.run/deckbuilder/)
 - [Faction Sheets](https://gauntlet.run/faction-sheets/)
@@ -229,7 +231,7 @@ def finalize_validator() -> None:
         if manifest.get("remaining_release_work"):
             errors.append("Manifest says publication-ready while remaining release work is listed")
         public_links = manifest.get("public_links") or {}
-        for key in ("project_site", "release_package", "browser_rulebook", "rulebook_pdf", "card_reference", "deckbuilder", "faction_sheets", "playtest_sheet"):
+        for key in ("project_site", "release_package", "browser_rulebook", "rulebook_pdf", "rulebook_booklet_pdf", "card_reference", "deckbuilder", "faction_sheets", "playtest_sheet"):
             if not public_links.get(key):
                 errors.append(f"Manifest says publication-ready without public_links.{key}")
 '''
