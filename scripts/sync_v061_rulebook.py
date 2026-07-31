@@ -65,7 +65,8 @@ FACTIONS = (
     ),
 )
 
-FACTION_START = "# 14. Factions"
+LEGACY_FACTION_START = "# 14. Factions"
+GENERATED_FACTION_START = "# 14. Military"
 QUICK_REFERENCE = "# Quick Battle Reference"
 
 
@@ -128,11 +129,20 @@ def player_facing_guide_text(spec: FactionSpec) -> str:
     return "\n".join(output).strip()
 
 
-def generate(current: str) -> str:
-    if FACTION_START not in current or QUICK_REFERENCE not in current:
-        raise RuntimeError("Rulebook faction or quick-reference marker is missing")
+def faction_start_marker(current: str) -> str:
+    if LEGACY_FACTION_START in current:
+        return LEGACY_FACTION_START
+    if GENERATED_FACTION_START in current:
+        return GENERATED_FACTION_START
+    raise RuntimeError("Rulebook faction marker is missing")
 
-    prefix = current.split(FACTION_START, 1)[0].rstrip()
+
+def generate(current: str) -> str:
+    if QUICK_REFERENCE not in current:
+        raise RuntimeError("Rulebook quick-reference marker is missing")
+
+    start_marker = faction_start_marker(current)
+    prefix = current.split(start_marker, 1)[0].rstrip()
     quick_reference = QUICK_REFERENCE + current.split(QUICK_REFERENCE, 1)[1]
     faction_chapters = "\n\n---\n\n".join(player_facing_guide_text(spec) for spec in FACTIONS)
 
