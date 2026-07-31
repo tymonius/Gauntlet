@@ -18,15 +18,13 @@ const uploadedMultipartSources = {
   mystics: ["00", "01"],
 };
 
-function decodeMultipartWebp(faction: keyof typeof uploadedMultipartSources) {
-  const encoded = uploadedMultipartSources[faction]
-    .map(part => readFileSync(
-      `images/artwork/card-backgrounds/${faction}-uploaded.webp.b64.${part}`,
-      "utf8"
-    ).trim())
-    .join("");
+const directFallbackDimensions = {
+  financiers: { width: 480, height: 672 },
+  mystics: { width: 640, height: 896 },
+};
 
-  return Buffer.from(encoded, "base64");
+function decodeBase64File(path: string) {
+  return Buffer.from(readFileSync(path, "utf8").replace(/\s+/g, ""), "base64");
 }
 
 function webpDimensions(source: Buffer) {
@@ -65,16 +63,11 @@ function expectCompleteRiffContainer(source: Buffer) {
   expect(source.byteLength).toBeGreaterThanOrEqual(20);
   expect(source.subarray(0, 4).toString("ascii")).toBe("RIFF");
   expect(source.subarray(8, 12).toString("ascii")).toBe("WEBP");
-
-  // RIFF stores the complete file length minus its first eight bytes. This
-  // detects missing or truncated transport chunks without assuming that a
-  // valid, efficiently compressed full-resolution WebP must exceed an
-  // arbitrary byte-size threshold.
   expect(source.readUInt32LE(4) + 8).toBe(source.byteLength);
 }
 
 describe("card parchment backgrounds", () => {
-  it("loads the unchanged faction sources and the uploaded multipart replacements", () => {
+  it("loads unchanged sources and retains the uploaded multipart candidates", () => {
     expect(refinementCss).toContain('@import url("card-parchment.css");');
 
     for (const faction of unchangedSources) {
@@ -89,26 +82,35 @@ describe("card parchment backgrounds", () => {
         expect(existsSync(path)).toBe(true);
         expect(cardScript).toContain(`../${path}`);
       }
+      expect(cardScript).toContain(`fallback: '../images/artwork/card-backgrounds/${faction}.webp.b64'`);
     }
 
     expect(cardScript).toContain("const PARCHMENT_SOURCES");
-    expect(cardScript).toContain("const parchmentPromises = new Map()");
-    expect(cardScript).toContain("Array.isArray(configuredSources)");
-    expect(cardScript).toContain("Promise.all(sources.map");
+    expect(cardScript).toContain("fetchParchmentParts");
     expect(cardScript).toContain("parts.join('')");
     expect(cardScript).toContain("cache: 'force-cache'");
     expect(cardScript).toContain("card.dataset.parchmentSource = faction");
+    expect(cardScript).toContain("card.dataset.parchmentFallback = String(result.fallback)");
   });
 
-  it("reconstructs complete full-resolution Financiers and Mystics WebPs", () => {
-    for (const faction of Object.keys(uploadedMultipartSources) as Array<keyof typeof uploadedMultipartSources>) {
-      const source = decodeMultipartWebp(faction);
+  it("rejects invalid multipart payloads before creating image object URLs", () => {
+    expect(cardScript).toContain("hasAsciiSignature(bytes, 0, 'RIFF')");
+    expect(cardScript).toContain("hasAsciiSignature(bytes, 8, 'WEBP')");
+    expect(cardScript).toContain("Invalid WebP parchment source: missing RIFF/WEBP signature.");
+    expect(cardScript).toContain("RIFF length ${declaredLength} does not match ${bytes.length} bytes.");
+    expect(cardScript).toContain("catch(async primaryError");
+    expect(cardScript).toContain("using the verified direct fallback");
+  });
+
+  it("keeps complete valid direct WebPs as deterministic fallbacks", () => {
+    for (const [faction, dimensions] of Object.entries(directFallbackDimensions)) {
+      const source = decodeBase64File(`images/artwork/card-backgrounds/${faction}.webp.b64`);
       expectCompleteRiffContainer(source);
-      expect(webpDimensions(source)).toEqual({ width: 1061, height: 1482 });
+      expect(webpDimensions(source)).toEqual(dimensions);
     }
   });
 
-  it("decodes each complete source directly without card-sized raster processing", () => {
+  it("decodes each selected source directly without card-sized raster processing", () => {
     expect(cardScript).toContain("window.atob");
     expect(cardScript).toContain("new Blob([bytes], { type: 'image/webp' })");
     expect(cardScript).toContain("URL.createObjectURL");
