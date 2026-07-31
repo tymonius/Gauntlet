@@ -1,18 +1,18 @@
 # Card parchment background mapping
 
-The playable-card mockup system uses the approved parchment sprite at:
+The playable-card mockup system uses seven approved faction-specific parchment sources stored as base64-encoded WebP data under:
 
-`images/artwork/card-backgrounds/parchments.webp`
+`images/artwork/card-backgrounds/`
 
-Sprite order, from top to bottom:
+- `neutral.webp.b64`
+- `military.webp.b64`
+- `diplomats.webp.b64`
+- `financiers.webp.b64`
+- `intelligence.webp.b64`
+- `mystics.webp.b64`
+- `inquisition.webp.b64`
 
-1. Neutral
-2. Military
-3. Diplomats
-4. Financiers
-5. Intelligence
-6. Mystics
-7. Inquisition
+The earlier combined sprite remains in the artwork directory for historical reference, but it is not used by the card mockup system. At only 240 × 336 pixels per faction frame, it did not retain enough watermark detail at print size.
 
 ## Supported selectors
 
@@ -28,6 +28,8 @@ Cards may select their parchment through either the established card class, a fa
 
 ## Rendering behavior
 
-The plain `--card-parchment` color is only a load-failure fallback. The approved WebP is an opaque background image at full opacity and completely replaces that fallback whenever it loads. It is not blended with the fallback, faded, or placed on a translucent overlay.
+`card-design.js` fetches each parchment source once, decodes it into an `image/webp` Blob, and assigns the resulting object URL to `--parchment-image` on every matching card. The object URL is cached for the life of the page, so window resizing only reruns card fitting and never reloads or replaces the parchment image.
 
-The original procedural paper wash previously supplied by `.card-interior::after` is disabled because the approved parchment sources already contain their own paper texture and coloration.
+The plain `--card-parchment` color is only a loading and failure fallback. A successfully loaded parchment is opaque, appears at full source opacity, and completely replaces that color. It is not blended, faded, washed, or placed on a translucent overlay.
+
+The procedural paper wash previously supplied by `.card-interior::after` remains disabled because the approved parchment sources already contain their own paper texture and coloration.
