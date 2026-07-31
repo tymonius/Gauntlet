@@ -105,10 +105,18 @@ def main() -> int:
 
     chapter_two = text.index("# 2. Cards, Zones, and the Play Area")
     setup = text.index("# 3. Setup")
-    for term in ("**Action Opportunity**", "**Gambit**", "**Reserve**", "**Tactic**"):
-        location = text.find(term)
+    first_use_markers = {
+        "Action Opportunity": "### Action Opportunity",
+        "Gambit": "- **Gambit:**",
+        "Reserve": "### Reserve",
+        "Tactic": "- **Tactic:**",
+    }
+    for term, marker in first_use_markers.items():
+        location = text.find(marker)
         if location < chapter_two or location > setup:
-            raise SystemExit(f"Rulebook content audit: {term} is not defined before Setup")
+            raise SystemExit(
+                f"Rulebook content audit: {term} is not defined before Setup"
+            )
 
     battle = text.index("# 7. Battles")
     aftermath = text.index("## The Aftermath")
