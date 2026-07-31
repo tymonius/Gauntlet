@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 760" preserveAspectRatio="none">
+  <defs>
+    <g id="corner" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M48 132C48 88 74 50 120 50C92 50 76 66 76 88C76 110 98 122 118 108C138 94 142 70 126 56C114 46 96 46 82 54" stroke="#3d3024" stroke-width="8" opacity=".86"/>
+      <path d="M58 132C58 98 82 72 112 72C94 72 86 84 86 98C86 112 100 120 114 112" stroke="#f1dfb6" stroke-width="4" opacity=".75"/>
+      <path d="M48 84C78 84 98 70 106 50M84 132C84 114 70 104 52 104" stroke="#7a5a38" stroke-width="5" opacity=".78"/>
+    </g>
+  </defs>
+  <rect x="14" y="14" width="972" height="732" rx="24" fill="none" stroke="#3d3024" stroke-width="10" opacity=".88"/>
+  <rect x="32" y="32" width="936" height="696" rx="14" fill="none" stroke="#f1dfb6" stroke-width="5" opacity=".72"/>
+  <path d="M176 34C258 34 306 46 352 68M824 34C742 34 694 46 648 68M176 726C258 726 306 714 352 692M824 726C742 726 694 714 648 692" fill="none" stroke="#6d5033" stroke-width="4" opacity=".56"/>
+  <use href="#corner"/>
+  <use href="#corner" transform="translate(1000 0) scale(-1 1)"/>
+  <use href="#corner" transform="translate(0 760) scale(1 -1)"/>
+  <use href="#corner" transform="translate(1000 760) scale(-1 -1)"/>
+</svg>
