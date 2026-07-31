@@ -11,16 +11,18 @@ const searchStatus = document.querySelector('[data-search-status]');
 const tocToggle = document.querySelector('[data-toc-toggle]');
 const sidebar = document.querySelector('[data-rulebook-sidebar]');
 
-function buildToc(headings) {
-  if (!toc) return;
-
-  const visibleHeadings = headings.filter(({ id, level }) => {
+function visibleContentsHeadings(headings) {
+  return headings.filter(({ id, level }) => {
     if (id === 'gauntlet' || id === 'official-rulebook') return false;
     return level <= 2;
   });
+}
+
+function buildToc(headings) {
+  if (!toc) return;
 
   const fragment = document.createDocumentFragment();
-  visibleHeadings.forEach(({ id, level, label }) => {
+  visibleContentsHeadings(headings).forEach(({ id, level, label }) => {
     const link = document.createElement('a');
     link.href = `#${id}`;
     link.textContent = label;
@@ -29,6 +31,32 @@ function buildToc(headings) {
     fragment.append(link);
   });
   toc.replaceChildren(fragment);
+}
+
+function buildPrintToc(headings) {
+  const entries = visibleContentsHeadings(headings).filter(({ level }) => level === 1);
+  const section = document.createElement('section');
+  section.className = 'print-toc';
+  section.setAttribute('aria-label', 'Printed contents');
+
+  const heading = document.createElement('h1');
+  heading.textContent = 'Contents';
+  section.append(heading);
+
+  const list = document.createElement('ol');
+  entries.forEach(({ id, label }) => {
+    const item = document.createElement('li');
+    const link = document.createElement('a');
+    link.href = `#${id}`;
+    link.textContent = label;
+    item.append(link);
+    list.append(item);
+  });
+  section.append(list);
+
+  const firstRule = content.querySelector('hr');
+  if (firstRule) firstRule.insertAdjacentElement('afterend', section);
+  else content.prepend(section);
 }
 
 function decorateHeadings() {
@@ -167,6 +195,7 @@ async function loadRulebook() {
     content.innerHTML = rendered.html;
     content.removeAttribute('aria-busy');
     buildToc(rendered.headings);
+    buildPrintToc(rendered.headings);
     decorateHeadings();
     observeSections();
 
