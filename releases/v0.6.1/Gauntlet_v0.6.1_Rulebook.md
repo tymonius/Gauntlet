@@ -380,7 +380,7 @@ Each player sets their Hand physically aside, then draws three cards to form a *
 
 Reveal all Gambits simultaneously.
 
-Effects that expressly resolve before other Gambit effects resolve first. After that, resolve remaining Gambit effects using the shared-timing rule below.
+Effects that expressly resolve before other Gambit effects resolve first. After that, resolve remaining Gambit effects using the shared-timing rule in Chapter 11.
 
 A face-up Gambit that was revealed early remains in battle and resolves at this stage unless its text says otherwise.
 
