@@ -12,6 +12,18 @@ function requireCondition(condition, message) {
   if (!condition) throw new Error(message);
 }
 
+function collectHtmlFiles(directory, collected = []) {
+  for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+    const absolute = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      collectHtmlFiles(absolute, collected);
+    } else if (entry.isFile() && entry.name.endsWith('.html')) {
+      collected.push(path.relative(root, absolute).replaceAll(path.sep, '/'));
+    }
+  }
+  return collected;
+}
+
 const homepage = read('index.html');
 const readme = read('README.md');
 
@@ -21,13 +33,24 @@ const activeLinkPatterns = [
   /https:\/\/gauntlet\.run\/faction-sheets\//i,
 ];
 
-for (const [name, source] of [
-  ['index.html', homepage],
-  ['README.md', readme],
-]) {
+const activeHtmlPaths = collectHtmlFiles(root).filter(relativePath =>
+  !relativePath.startsWith('faction-sheets/')
+  && !relativePath.startsWith('releases/')
+  && !relativePath.startsWith('deckbuilder-v0.5/'),
+);
+
+for (const relativePath of activeHtmlPaths) {
+  const source = read(relativePath);
   for (const pattern of activeLinkPatterns) {
-    requireCondition(!pattern.test(source), `${name} still actively links to the retired faction sheets.`);
+    requireCondition(
+      !pattern.test(source),
+      `${relativePath} still actively links to the retired faction sheets.`,
+    );
   }
+}
+
+for (const pattern of activeLinkPatterns) {
+  requireCondition(!pattern.test(readme), 'README.md still actively links to the retired faction sheets.');
 }
 
 requireCondition(
@@ -63,4 +86,6 @@ requireCondition(
   'The retired faction-sheet synchronization workflow must remain removed.',
 );
 
-console.log('Printable faction sheets are retained as legacy pages and retired from active promotion and synchronization.');
+console.log(
+  `Printable faction sheets remain as legacy pages and are absent from ${activeHtmlPaths.length} active HTML surfaces.`,
+);
