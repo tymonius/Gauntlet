@@ -123,3 +123,5 @@ jobs:
           fi
           git commit -m "Clarify v0.6.1 Defender's Advantage"
           git push origin HEAD:rules/clarify-v061-defenders-advantage
+
+# trigger
