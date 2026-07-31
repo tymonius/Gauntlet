@@ -1743,7 +1743,7 @@ Witchcraft and similar effects follow the shared copied-effect rules. A repeat e
 
 The Inquisition gains **Conviction** when opposing cards are permanently lost after battles. It also sends opposing Tactics to the Graveyard through **Condemnation** and gains additional Conviction when the opponent plays or reveals Arcane cards through **Blasphemy**.
 
-Spend Conviction on **Purges** that remove cards and Assets. If the opponent eventually cannot make their normal start-of-turn draw because both their Draw Pile and Discard Pile are empty, win through **Purification**.
+Spend Conviction on **Purges** that remove cards and Assets. On your turn, using an Action Opportunity to Purge allows you to use the other normal Action Opportunity as well. If the opponent eventually cannot make their normal start-of-turn draw because both their Draw Pile and Discard Pile are empty, win through **Purification**.
 
 ## Complete rules
 
@@ -1753,7 +1753,7 @@ Spend Conviction on **Purges** that remove cards and Assets. If the opponent eve
 | Resource | Conviction, maximum 4. |
 | Normal gain | First time each turn opposing cards enter the Graveyard during the Aftermath of a battle involving you. |
 | Doctrine | Condemnation and Blasphemy. |
-| Faction action | Purge. |
+| Faction action | Purge; using one during your turn permits both normal Action Opportunities. |
 | Leaders | Grand Inquisitor and Witch Hunter. |
 | Faction pool | 12 Inquisition card titles. |
 | Arcane card | Heresy. |
@@ -1778,7 +1778,7 @@ Begin with 0 Conviction. Slide the Leader over the tracker to show 0–4.
 
 The first time opposing cards enter the Graveyard during the Aftermath of a battle involving you each turn, gain 1 Conviction. Opposing Tactics go there instead of the Discard Pile, making battle choices more costly against the Inquisition.
 
-During an Action Opportunity, spend Conviction on one Purge instead of playing an Action card.
+During an Action Opportunity, spend Conviction on one Purge instead of playing an Action card. On your turn, you may use both the before- and after-movement Action Opportunities if one is used to Purge. You may perform no more than one Purge through Action Opportunities that turn.
 
 ### Complete rules
 
@@ -1814,7 +1814,9 @@ During an Action Opportunity, instead of playing a card for its Action effect, s
 | 3 | The opponent chooses one card from their Hand and puts it in their Graveyard. |
 | 4 | Reveal the opponent's Hand. Choose one card and put it in their Graveyard. |
 
-A Purge uses the Action Opportunity but is not playing a card. Final Judgment may permit a Purge outside an Action Opportunity.
+On your turn, you may use both the before- and after-movement Action Opportunities if one is used to Purge. The other opportunity may be used normally. You may perform no more than one Purge through Action Opportunities that turn.
+
+A Purge uses an Action Opportunity but is not playing a card. A Purge permitted outside an Action Opportunity, such as Final Judgment, is separate and does not count against this limit.
 
 #### Purification
 
