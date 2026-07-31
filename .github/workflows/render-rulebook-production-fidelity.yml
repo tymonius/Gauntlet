@@ -1,0 +1,86 @@
+name: Render Rulebook production fidelity gate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/render-rulebook-production-fidelity.yml"
+      - "rulebook-production/**"
+      - "rulebook-design/**"
+      - "images/sketches/**"
+      - "package.json"
+      - "package-lock.json"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rulebook-production-fidelity-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  fidelity:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout approved design and production checkpoint
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            .github/workflows/render-rulebook-production-fidelity.yml
+            rulebook-design
+            rulebook-production
+            images/sketches
+            package.json
+            package-lock.json
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install renderer
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+
+      - name: Build approved proof and production fidelity checkpoint
+        run: |
+          python rulebook-design/build_proofs.py
+          python rulebook-production/build_fidelity_gate.py
+
+      - name: Render and compare against approved design
+        run: |
+          python -m http.server 8000 >/tmp/rulebook-fidelity-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          node rulebook-production/render_fidelity_gate.mjs
+
+      - name: Validate PDF geometry
+        run: |
+          pdfinfo /tmp/rulebook-production-fidelity/Gauntlet_v0.6.1_Production_Fidelity_Gate.pdf
+          python - <<'PY'
+          import re
+          import subprocess
+          output = subprocess.check_output([
+              'pdfinfo',
+              '/tmp/rulebook-production-fidelity/Gauntlet_v0.6.1_Production_Fidelity_Gate.pdf',
+          ], text=True)
+          pages = int(re.search(r'^Pages:\s+(\d+)', output, re.MULTILINE).group(1))
+          size = re.search(r'^Page size:\s+([\d.]+) x ([\d.]+) pts', output, re.MULTILINE)
+          width, height = map(float, size.groups())
+          if pages != 8:
+              raise SystemExit(f'Expected 8 fidelity pages; found {pages}.')
+          if abs(width - 396) > 1 or abs(height - 612) > 1:
+              raise SystemExit(f'Expected half-letter pages; found {width} x {height} pt.')
+          PY
+
+      - name: Upload fidelity checkpoint
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-v061-rulebook-production-fidelity
+          path: /tmp/rulebook-production-fidelity/**
+          if-no-files-found: error
