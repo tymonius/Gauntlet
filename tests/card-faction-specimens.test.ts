@@ -38,6 +38,7 @@ describe("faction card-front specimens", () => {
       "../images/artwork/cards/neutral/rallying-cry.png",
       "../images/artwork/reference/reserve/battlefield-column-in-rain.png",
       "../images/artwork/cards/diplomats/sanctions-embargo.jpg",
+      "../images/artwork/cards/financiers/speculation.png",
       "../images/artwork/cards/intelligence/assassins.jpg",
       "../images/artwork/reference/environments/alchemist-study.jpg",
       "../images/artwork/reference/environments/inquisition-tribunal.jpg",
@@ -45,7 +46,7 @@ describe("faction card-front specimens", () => {
       expect(specimenHtml).toContain(path);
     }
 
-    expect(specimenHtml).toContain("Artwork pending");
+    expect(specimenHtml).not.toContain("Artwork pending");
   });
 
   it("reserves Shock and Awe for a separate readable layout study", () => {
