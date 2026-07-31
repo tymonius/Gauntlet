@@ -137,12 +137,17 @@ def faction_start_marker(current: str) -> str:
     raise RuntimeError("Rulebook faction marker is missing")
 
 
+def normalized_prefix(current: str, marker: str) -> str:
+    prefix = current.split(marker, 1)[0].rstrip()
+    return re.sub(r"(?:\n\s*---\s*)+$", "", prefix).rstrip()
+
+
 def generate(current: str) -> str:
     if QUICK_REFERENCE not in current:
         raise RuntimeError("Rulebook quick-reference marker is missing")
 
     start_marker = faction_start_marker(current)
-    prefix = current.split(start_marker, 1)[0].rstrip()
+    prefix = normalized_prefix(current, start_marker)
     quick_reference = QUICK_REFERENCE + current.split(QUICK_REFERENCE, 1)[1]
     faction_chapters = "\n\n---\n\n".join(player_facing_guide_text(spec) for spec in FACTIONS)
 
