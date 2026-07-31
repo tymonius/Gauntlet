@@ -53,9 +53,12 @@
 
   window.addEventListener('load', async () => {
     if (document.fonts?.ready) await document.fonts.ready.catch(() => {});
-    await waitFor(() => target.querySelector('.gauntlet-card')?.dataset.parchmentLoaded !== undefined, 5000);
-    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(resolve))));
-    fitForTts(target.querySelector('.gauntlet-card'));
+    const element = target.querySelector('.gauntlet-card');
+    const interior = element?.querySelector('.card-interior');
+    await waitFor(() => element?.dataset.parchmentLoaded !== undefined, 5000);
+    await waitFor(() => Boolean(interior?.style.getPropertyValue('--art-height')), 5000);
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+    fitForTts(element);
     document.body.dataset.renderReady = 'true';
   }, { once: true });
 
