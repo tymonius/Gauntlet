@@ -1,0 +1,29 @@
+name: Inspect social preview image
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    if: github.head_ref == 'agent/fix-social-image'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repair branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/fix-social-image
+
+      - name: Upload generated images for inspection
+        uses: actions/upload-artifact@v4
+        with:
+          name: corrected-social-images
+          path: |
+            images/social/gauntlet-og-1200x630.jpg
+            images/social/gauntlet-og-preview.jpg
+          if-no-files-found: error
+          compression-level: 0
