@@ -20,7 +20,7 @@ describe("faction card-front specimens", () => {
 
     for (const title of [
       "Rallying Cry",
-      "Shock and Awe",
+      "Unbroken Ranks",
       "Sanctions: Embargo",
       "Speculation",
       "Assassins",
@@ -36,8 +36,9 @@ describe("faction card-front specimens", () => {
   it("uses existing final or faction-reference artwork where available", () => {
     for (const path of [
       "../images/artwork/cards/neutral/rallying-cry.png",
-      "../images/artwork/cards/neutral/shock-and-awe.png",
+      "../images/artwork/reference/reserve/battlefield-column-in-rain.png",
       "../images/artwork/cards/diplomats/sanctions-embargo.jpg",
+      "../images/artwork/cards/financiers/speculation.png",
       "../images/artwork/cards/intelligence/assassins.jpg",
       "../images/artwork/reference/environments/alchemist-study.jpg",
       "../images/artwork/reference/environments/inquisition-tribunal.jpg",
@@ -45,7 +46,13 @@ describe("faction card-front specimens", () => {
       expect(specimenHtml).toContain(path);
     }
 
-    expect(specimenHtml).toContain("Artwork pending");
+    expect(specimenHtml).not.toContain("Artwork pending");
+  });
+
+  it("reserves Shock and Awe for a separate readable layout study", () => {
+    expect(specimenHtml).not.toContain('<h3 class="card-title">Shock and Awe</h3>');
+    expect(specimenHtml).toContain("Shock and Awe is intentionally reserved");
+    expect(specimenHtml).not.toContain("ultra-dense-card");
   });
 
   it("keeps Neutral ivory and uses the established faction colors for outer borders", () => {
