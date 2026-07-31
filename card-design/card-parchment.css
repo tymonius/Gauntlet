@@ -1,7 +1,6 @@
-/* Approved faction and Neutral parchment backgrounds for playable-card mockups.
-   card-design.js extracts each faction panel from the higher-resolution grid,
-   normalizes the watermark contrast, and assigns an opaque panel Blob URL to
-   --parchment-image. */
+/* Approved full-resolution faction and Neutral parchment backgrounds.
+   card-design.js decodes each original source directly and assigns its opaque
+   object URL to --parchment-image without any raster processing. */
 
 .gauntlet-card {
   --parchment-image: none;
@@ -9,13 +8,15 @@
 
 .card-interior {
   isolation: isolate;
-  /* This color is visible only while a panel is loading or if extraction fails.
-     A loaded panel is opaque and fully replaces it. */
+  /* This color is visible only while the full-resolution source is loading or
+     if that source fails. A loaded image is opaque and fully replaces it. */
   background-color: var(--card-parchment);
   background-image: var(--parchment-image);
-  background-position: center;
+  /* Preserve the source aspect ratio. Scale until either the height or width
+     fills the card, then center the slight excess on the opposite axis. */
+  background-position: center center;
   background-repeat: no-repeat;
-  background-size: 100% 100%;
+  background-size: cover;
 }
 
 /* The parchment is the card background itself, not a translucent overlay. */
