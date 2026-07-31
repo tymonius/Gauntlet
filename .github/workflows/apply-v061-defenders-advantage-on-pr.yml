@@ -37,16 +37,20 @@ jobs:
           python scripts/generate_v061_release.py
           python scripts/sync_v061_rules_assistant.py
           python scripts/build_v061_documents.py
-      - name: Validate
+      - name: Validate clarification and release artifacts
         run: |
           pdftotext releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf - | grep -F "tie rule, not an instance"
           pdftotext releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf - | grep -F "separately add +1"
           pdftotext releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.pdf - | grep -F "Defender's Advantage means the defender wins ties"
-          npm run governance:check
+          python .github/scripts/validate-governance.py
+          python .github/scripts/validate-live-tail.py
           npm run typecheck
           npm test
           python scripts/generate_v061_release.py --check
           python scripts/validate_v061_release.py --strict-generated
+      - name: Report pre-existing conversation-audit status
+        continue-on-error: true
+        run: python .github/scripts/validate-conversation-audit.py
       - name: Commit results
         run: |
           git config user.name "github-actions[bot]"
