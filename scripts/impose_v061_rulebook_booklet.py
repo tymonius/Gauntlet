@@ -20,21 +20,30 @@ LETTER_HEIGHT = 8.5 * 72
 HALF_WIDTH = LETTER_WIDTH / 2
 
 
-def fitted_page(source: PageObject, x_offset: float) -> PageObject:
-    page = copy.deepcopy(source)
-    source_width = float(page.mediabox.width)
-    source_height = float(page.mediabox.height)
+def page_transform(source: PageObject, x_offset: float) -> Transformation:
+    """Return the transform that fits one reader page into one booklet half.
+
+    Apply this transform while merging into the destination spread. Pre-transforming
+    a copied source page and then calling ``merge_page`` leaves its original crop box
+    in place, which clips content translated into the right-hand half.
+    """
+
+    source_width = float(source.mediabox.width)
+    source_height = float(source.mediabox.height)
     scale = min(HALF_WIDTH / source_width, LETTER_HEIGHT / source_height)
     x = x_offset + (HALF_WIDTH - source_width * scale) / 2
     y = (LETTER_HEIGHT - source_height * scale) / 2
-    page.add_transformation(Transformation().scale(scale).translate(x, y))
-    return page
+    return Transformation().scale(scale).translate(x, y)
 
 
 def add_spread(writer: PdfWriter, left: PageObject, right: PageObject) -> None:
     spread = PageObject.create_blank_page(width=LETTER_WIDTH, height=LETTER_HEIGHT)
-    spread.merge_page(fitted_page(left, 0))
-    spread.merge_page(fitted_page(right, HALF_WIDTH))
+    spread.merge_transformed_page(
+        copy.deepcopy(left), page_transform(left, 0), expand=False
+    )
+    spread.merge_transformed_page(
+        copy.deepcopy(right), page_transform(right, HALF_WIDTH), expand=False
+    )
     writer.add_page(spread)
 
 
