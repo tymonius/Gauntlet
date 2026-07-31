@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Synchronize the player-facing v0.6.1 Rulebook with definitive faction guides.
 
-The shared rules remain authored in the Rulebook Markdown. Part III contains one
-major Factions section, and the six faction subsections are generated from the
+The shared rules remain authored in the Rulebook Markdown. Part III is the major
+Factions part, and its six numbered faction chapters are generated from the
 player-facing portions of their definitive guides. This prevents a faction
-correction from leaving the published Rulebook behind while preserving the
-Rulebook's teaching hierarchy.
+correction from leaving the published Rulebook behind while preserving both the
+Rulebook's teaching hierarchy and each faction's chapter-level identity.
 """
 
 from __future__ import annotations
@@ -27,6 +27,7 @@ FACTION_END = "<!-- GENERATED FACTION CONTENT END -->"
 @dataclass(frozen=True)
 class FactionSpec:
     name: str
+    chapter: int
     guide: str
     leaders: tuple[tuple[str, str], ...]
 
@@ -34,31 +35,37 @@ class FactionSpec:
 FACTIONS = (
     FactionSpec(
         "Military",
+        13,
         "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
         (("General", "general.png"), ("Commandant", "commandant.png")),
     ),
     FactionSpec(
         "Diplomats",
+        14,
         "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
         (("Ambassador", "ambassador.png"), ("Senator", "senator.png")),
     ),
     FactionSpec(
         "Financiers",
+        15,
         "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
         (("Banker", "banker.png"), ("Executive", "executive.png")),
     ),
     FactionSpec(
         "Intelligence",
+        16,
         "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
         (("Ranger", "ranger.png"), ("Spymaster", "spymaster.png")),
     ),
     FactionSpec(
         "Mystics",
+        17,
         "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
         (("Alchemist", "alchemist.png"), ("Spirit Walker", "spirit walker.png")),
     ),
     FactionSpec(
         "Inquisition",
+        18,
         "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
         (("Grand Inquisitor", "grand inquisitor.png"), ("Witch Hunter", "witch hunter.png")),
     ),
@@ -76,7 +83,7 @@ def player_facing_guide_text(spec: FactionSpec) -> str:
 
     lines = text[overview.start():card_pool.start()].strip().splitlines()
     leaders = dict(spec.leaders)
-    output = [f"## {spec.name}", ""]
+    output = [f"# {spec.chapter}. {spec.name}", ""]
     context = "overview"
 
     for line in lines:
@@ -90,7 +97,7 @@ def player_facing_guide_text(spec: FactionSpec) -> str:
                 context = "leaders"
                 continue
             context = "section"
-            output.extend([f"### {title}", ""])
+            output.extend([f"## {title}", ""])
             continue
 
         second = re.match(r"^##\s+(.+)$", line)
@@ -101,22 +108,22 @@ def player_facing_guide_text(spec: FactionSpec) -> str:
                     [
                         '<div class="page-break"></div>',
                         "",
-                        f"### {title}",
+                        f"## {title}",
                         "",
                         f"![{title}](<images/sketches/{leaders[title]}>)",
                         "",
                     ]
                 )
             elif context == "overview":
-                output.append(f"### {title}")
+                output.append(f"## {title}")
             else:
-                output.append(f"#### {title}")
+                output.append(f"### {title}")
             continue
 
         third = re.match(r"^###\s+(.+)$", line)
         if third:
             title = third.group(1).strip()
-            output.append(f"#### {title}" if context == "leaders" else f"##### {title}")
+            output.append(f"### {title}" if context == "leaders" else f"#### {title}")
             continue
 
         output.append(line)
@@ -141,41 +148,42 @@ def generate(current: str) -> str:
 
     prefix, remainder = current.split(FACTION_START, 1)
     _, suffix = remainder.split(FACTION_END, 1)
-    faction_sections = "\n\n---\n\n".join(player_facing_guide_text(spec) for spec in FACTIONS)
+    faction_chapters = "\n\n---\n\n".join(player_facing_guide_text(spec) for spec in FACTIONS)
     generated = (
         prefix.rstrip()
         + f"\n\n{FACTION_START}\n\n"
-        + faction_sections
+        + faction_chapters
         + f"\n\n{FACTION_END}"
         + suffix
     ).rstrip() + "\n"
 
     forbidden = (
-        "# 15. Standard Language and Reference Rules",
-        "Use these verbs consistently:",
-        "Avoid generic phrases such as",
+        "# 13. Factions",
         "# 14. Military",
         "# 15. Diplomats",
         "# 16. Financiers",
         "# 17. Intelligence",
         "# 18. Mystics",
         "# 19. Inquisition",
+        "# 15. Standard Language and Reference Rules",
+        "Use these verbs consistently:",
+        "Avoid generic phrases such as",
     )
     for phrase in forbidden:
         if phrase in generated:
             raise RuntimeError(f"Obsolete player-facing Rulebook structure remains: {phrase}")
 
-    if "# Part III — Factions" not in generated or "# 13. Factions" not in generated:
-        raise RuntimeError("Generated Rulebook is missing the major Factions section")
+    if "# Part III — Factions" not in generated:
+        raise RuntimeError("Generated Rulebook is missing Part III — Factions")
     if HERO_COVER_MARKDOWN not in generated:
         raise RuntimeError("Generated Rulebook is missing the hero cover sketch")
 
     for spec in FACTIONS:
-        if f"## {spec.name}" not in generated:
-            raise RuntimeError(f"Missing generated faction subsection: {spec.name}")
+        if f"# {spec.chapter}. {spec.name}" not in generated:
+            raise RuntimeError(f"Missing generated faction chapter: {spec.name}")
         for leader, image in spec.leaders:
-            if f"### {leader}" not in generated:
-                raise RuntimeError(f"Missing generated Leader subsection: {leader}")
+            if f"## {leader}" not in generated:
+                raise RuntimeError(f"Missing generated Leader section: {leader}")
             if f"images/sketches/{image}" not in generated:
                 raise RuntimeError(f"Missing generated Leader sketch: {leader}")
 
@@ -191,8 +199,8 @@ def main() -> int:
     generated = generate(current)
     if args.check:
         if generated != current:
-            raise SystemExit("v0.6.1 Rulebook faction subsections or cover are not synchronized")
-        print("v0.6.1 Rulebook faction subsections and cover are synchronized.")
+            raise SystemExit("v0.6.1 Rulebook faction chapters or cover are not synchronized")
+        print("v0.6.1 Rulebook faction chapters and cover are synchronized.")
         return 0
 
     if generated != current:
