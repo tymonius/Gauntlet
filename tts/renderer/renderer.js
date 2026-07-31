@@ -17,6 +17,9 @@
   const reminder = sectionEntries.find(([label]) => label.toLowerCase() === 'reminder');
   const other = sectionEntries.filter(([label]) => !['action', 'battle', 'reminder'].includes(label.toLowerCase()));
   const sections = [action, battle, ...other].filter(Boolean);
+  const footerCenter = card.unique
+    ? 'Unique'
+    : (card.form || (card.complexity !== 'Unspecified' ? card.complexity : ''));
   const art = card.artwork
     ? `<img src="/${escapeAttribute(card.artwork)}" alt="">`
     : '<span class="pending-label">Artwork pending</span>';
@@ -38,8 +41,8 @@
           ${reminder ? `<aside class="card-reminder"><strong>Reminder:</strong> ${formatText(reminder[1])}</aside>` : ''}
         </div>
         <footer class="card-footer">
-          <span>${escapeHtml(card.id)}</span>
-          <span>${escapeHtml(card.complexity)}</span>
+          <span>${escapeHtml(card.factionLabel)}</span>
+          <span>${escapeHtml(footerCenter)}</span>
           <span>v0.6.1</span>
         </footer>
       </div>
