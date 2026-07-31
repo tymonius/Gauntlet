@@ -1,0 +1,18 @@
+.rulebook-content img[alt="Gauntlet hero sketch"] {
+  display: block;
+  width: min(100%, 620px);
+  max-height: 540px;
+  margin: 34px auto 18px;
+  object-fit: contain;
+  filter: sepia(0.1) contrast(1.03);
+}
+
+@media print {
+  .rulebook-content img[alt="Gauntlet hero sketch"] {
+    width: auto;
+    max-width: 4.45in;
+    max-height: 4.45in;
+    margin: 0.2in auto 0;
+    break-inside: avoid;
+  }
+}
