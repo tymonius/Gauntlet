@@ -7,8 +7,14 @@ on:
     paths:
       - "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md"
       - "releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.md"
+      - "releases/v0.6.1/faction-guides/**"
+      - "rulebook/**"
+      - "design-tokens.css"
+      - "scripts/sync_v061_rulebook.py"
       - "scripts/build_v061_documents.py"
       - "scripts/finalize_v061_docx.py"
+      - "scripts/render_v061_rulebook_pdf.mjs"
+      - "scripts/impose_v061_rulebook_booklet.py"
       - ".github/workflows/render-v061-documents.yml"
   workflow_dispatch:
 
@@ -33,80 +39,154 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install document tools
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install document and browser tools
         run: |
           sudo apt-get update
           sudo apt-get install -y pandoc libreoffice-writer poppler-utils fonts-liberation
           python -m pip install python-docx pypdf pymupdf lxml
+          npm install
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
 
-      - name: Check document builders
-        run: python -m py_compile scripts/build_v061_documents.py scripts/finalize_v061_docx.py
+      - name: Check rulebook toolchain
+        run: |
+          python -m py_compile \
+            scripts/sync_v061_rulebook.py \
+            scripts/build_v061_documents.py \
+            scripts/finalize_v061_docx.py \
+            scripts/impose_v061_rulebook_booklet.py
+          node --check scripts/render_v061_rulebook_pdf.mjs
 
-      - name: Build DOCX and PDF files
+      - name: Synchronize complete faction chapters
+        run: python scripts/sync_v061_rulebook.py
+
+      - name: Build DOCX, reader PDF, and booklet PDF
         run: python scripts/build_v061_documents.py
 
       - name: Validate generated documents
         run: |
           python - <<'PY'
+          from math import ceil
           from pathlib import Path
+          import zipfile
+
           from docx import Document
           from pypdf import PdfReader
 
           release = Path('releases/v0.6.1')
-          pairs = [
-              ('Gauntlet_v0.6.1_Rulebook', 12),
-              ('Gauntlet_v0.6.1_Reference_Guide', 3),
-          ]
-          for stem, minimum_pages in pairs:
-              docx_path = release / f'{stem}.docx'
-              pdf_path = release / f'{stem}.pdf'
-              if docx_path.stat().st_size < 20_000:
-                  raise SystemExit(f'{docx_path} is unexpectedly small')
-              if pdf_path.stat().st_size < 20_000:
-                  raise SystemExit(f'{pdf_path} is unexpectedly small')
+          rulebook_docx = release / 'Gauntlet_v0.6.1_Rulebook.docx'
+          rulebook_pdf = release / 'Gauntlet_v0.6.1_Rulebook.pdf'
+          booklet_pdf = release / 'Gauntlet_v0.6.1_Rulebook_Booklet.pdf'
+          reference_docx = release / 'Gauntlet_v0.6.1_Reference_Guide.docx'
+          reference_pdf = release / 'Gauntlet_v0.6.1_Reference_Guide.pdf'
 
-              document = Document(docx_path)
-              docx_text = '\n'.join(paragraph.text for paragraph in document.paragraphs)
-              if 'v0.6.0' in docx_text or 'Battle Hand' in docx_text or 'hand commitment' in docx_text:
-                  raise SystemExit(f'Obsolete text found in {docx_path}')
-              if 'Gambit' not in docx_text or 'Tactic' not in docx_text or 'Aftermath' not in docx_text:
-                  raise SystemExit(f'Core v0.6.1 terms missing from {docx_path}')
+          for path in (rulebook_docx, rulebook_pdf, booklet_pdf, reference_docx, reference_pdf):
+              if not path.is_file() or path.stat().st_size < 20_000:
+                  raise SystemExit(f'{path} is missing or unexpectedly small')
 
-              reader = PdfReader(pdf_path)
-              if len(reader.pages) < minimum_pages:
-                  raise SystemExit(f'{pdf_path} has only {len(reader.pages)} pages')
-              pdf_text = '\n'.join((page.extract_text() or '') for page in reader.pages)
-              if 'v0.6.0' in pdf_text or 'Battle Hand' in pdf_text or 'hand commitment' in pdf_text:
-                  raise SystemExit(f'Obsolete text found in {pdf_path}')
-              if 'Gambit' not in pdf_text or 'Tactic' not in pdf_text or 'Aftermath' not in pdf_text:
-                  raise SystemExit(f'Core v0.6.1 terms missing from {pdf_path}')
-              if stem.endswith('Rulebook'):
-                  final_section = '15. Standard Language and Reference Rules'
-                  if 'Table of Contents' not in pdf_text or final_section not in pdf_text:
-                      raise SystemExit('Rulebook PDF does not contain the generated static contents page')
-                  first_page_text = reader.pages[0].extract_text() or ''
-                  if first_page_text.count('Official Rulebook') > 1:
-                      raise SystemExit('Rulebook PDF still repeats its Markdown title block')
-              print(f'Validated {stem}: {len(reader.pages)} PDF pages, {len(pdf_text)} extracted characters.')
+          leaders = (
+              'General', 'Commandant', 'Ambassador', 'Senator', 'Banker', 'Executive',
+              'Ranger', 'Spymaster', 'Alchemist', 'Spirit Walker',
+              'Grand Inquisitor', 'Witch Hunter',
+          )
+          required_faction_terms = (
+              'Command and Orders', 'Offering Terms', 'Controlling Interest',
+              'Surveillance and Interference', 'Ritual of Ascendance', 'Purification',
+          )
+          forbidden = (
+              '15. Standard Language and Reference Rules',
+              'Use these verbs consistently:',
+              'Avoid generic phrases such as',
+              'Battle Hand',
+              'hand commitment',
+          )
+
+          document = Document(rulebook_docx)
+          docx_text = '\n'.join(paragraph.text for paragraph in document.paragraphs)
+          for term in (*leaders, *required_faction_terms, 'Gambit', 'Tactic', 'Aftermath'):
+              if term not in docx_text:
+                  raise SystemExit(f'Rulebook DOCX is missing {term!r}')
+          for term in forbidden:
+              if term in docx_text:
+                  raise SystemExit(f'Rulebook DOCX contains forbidden text {term!r}')
+          with zipfile.ZipFile(rulebook_docx) as archive:
+              media = [name for name in archive.namelist() if name.startswith('word/media/')]
+              if len(media) < 12:
+                  raise SystemExit(f'Rulebook DOCX contains only {len(media)} embedded images')
+
+          reader = PdfReader(rulebook_pdf)
+          reader_text = '\n'.join((page.extract_text() or '') for page in reader.pages)
+          if len(reader.pages) < 28:
+              raise SystemExit(f'Reader PDF has only {len(reader.pages)} pages')
+          width = float(reader.pages[0].mediabox.width)
+          height = float(reader.pages[0].mediabox.height)
+          if abs(width - 396) > 3 or abs(height - 612) > 3:
+              raise SystemExit(f'Reader PDF is not half-letter: {width} x {height} points')
+          for term in (*leaders, *required_faction_terms, 'Contents'):
+              if term not in reader_text:
+                  raise SystemExit(f'Reader PDF is missing {term!r}')
+          for term in forbidden:
+              if term in reader_text:
+                  raise SystemExit(f'Reader PDF contains forbidden text {term!r}')
+
+          booklet = PdfReader(booklet_pdf)
+          padded_pages = ceil(len(reader.pages) / 4) * 4
+          if len(booklet.pages) != padded_pages // 2:
+              raise SystemExit(
+                  f'Booklet has {len(booklet.pages)} sides; expected {padded_pages // 2}'
+              )
+          booklet_width = float(booklet.pages[0].mediabox.width)
+          booklet_height = float(booklet.pages[0].mediabox.height)
+          if abs(booklet_width - 792) > 3 or abs(booklet_height - 612) > 3:
+              raise SystemExit(
+                  f'Booklet is not landscape Letter: {booklet_width} x {booklet_height} points'
+              )
+          booklet_text = '\n'.join((page.extract_text() or '') for page in booklet.pages)
+          for term in leaders:
+              if term not in booklet_text:
+                  raise SystemExit(f'Booklet PDF is missing Leader {term!r}')
+
+          reference_text = '\n'.join(paragraph.text for paragraph in Document(reference_docx).paragraphs)
+          reference_pdf_text = '\n'.join(
+              (page.extract_text() or '') for page in PdfReader(reference_pdf).pages
+          )
+          for text, label in ((reference_text, 'DOCX'), (reference_pdf_text, 'PDF')):
+              if 'Gambit' not in text or 'Tactic' not in text or 'Aftermath' not in text:
+                  raise SystemExit(f'Reference Guide {label} is missing core v0.6.1 terms')
+              if 'v0.6.0' in text or 'Battle Hand' in text or 'hand commitment' in text:
+                  raise SystemExit(f'Obsolete text found in Reference Guide {label}')
+
+          print(
+              f'Validated {len(reader.pages)} half-letter reader pages and '
+              f'{len(booklet.pages)} imposed booklet sides.'
+          )
           PY
 
       - name: Render PDF pages for visual inspection
         run: |
-          mkdir -p /tmp/v061-render/rulebook /tmp/v061-render/reference
-          pdftoppm -png -r 110 \
+          mkdir -p /tmp/v061-render/rulebook /tmp/v061-render/booklet /tmp/v061-render/reference
+          pdftoppm -png -r 130 \
             releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf \
             /tmp/v061-render/rulebook/page
+          pdftoppm -png -r 90 \
+            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf \
+            /tmp/v061-render/booklet/sheet-side
           pdftoppm -png -r 130 \
             releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.pdf \
             /tmp/v061-render/reference/page
 
-      - name: Commit generated release documents when changed
+      - name: Commit synchronized and generated documents when changed
         run: |
           git add \
-            scripts/build_v061_documents.py \
-            scripts/finalize_v061_docx.py \
+            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md \
             releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.docx \
             releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf \
+            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf \
             releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.docx \
             releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.pdf
           if git diff --cached --quiet; then
@@ -114,8 +194,12 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Render v0.6.1 Rulebook and Reference Guide"
+          git commit -m "Render complete v0.6.1 reader and booklet rulebooks"
+          git pull --rebase origin ${{ github.head_ref || github.ref_name }}
           git push origin HEAD:${{ github.head_ref || github.ref_name }}
+
+      - name: Verify synchronized rulebook is current
+        run: python scripts/sync_v061_rulebook.py --check
 
       - name: Upload documents and rendered pages
         uses: actions/upload-artifact@v4
@@ -124,8 +208,10 @@ jobs:
           path: |
             releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.docx
             releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf
+            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf
             releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.docx
             releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.pdf
             /tmp/v061-render/rulebook/*.png
+            /tmp/v061-render/booklet/*.png
             /tmp/v061-render/reference/*.png
           if-no-files-found: error
