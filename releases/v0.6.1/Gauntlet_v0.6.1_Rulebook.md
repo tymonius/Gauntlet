@@ -1908,10 +1908,6 @@ Heresy follows the shared copied-effect rule but retains permission for one addi
 
 ---
 
-Gauntlet v0.6.1 © 2026 Tymon Scott. All rights reserved.
-
----
-
 # Glossary
 
 **Action Opportunity:** The normal opportunity to play one Action card or perform a rule or faction action that explicitly uses it.
