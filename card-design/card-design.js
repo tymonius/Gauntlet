@@ -10,9 +10,17 @@
     neutral: '../images/artwork/card-backgrounds/neutral.webp.b64',
     military: '../images/artwork/card-backgrounds/military.webp.b64',
     diplomats: '../images/artwork/card-backgrounds/diplomats.webp.b64',
-    financiers: '../images/artwork/card-backgrounds/financiers.webp.b64',
+    financiers: [
+      '../images/artwork/card-backgrounds/financiers-uploaded.webp.b64.00',
+      '../images/artwork/card-backgrounds/financiers-uploaded.webp.b64.01',
+      '../images/artwork/card-backgrounds/financiers-uploaded.webp.b64.02',
+      '../images/artwork/card-backgrounds/financiers-uploaded.webp.b64.03',
+    ],
     intelligence: '../images/artwork/card-backgrounds/intelligence.webp.b64',
-    mystics: '../images/artwork/card-backgrounds/mystics.webp.b64',
+    mystics: [
+      '../images/artwork/card-backgrounds/mystics-uploaded.webp.b64.00',
+      '../images/artwork/card-backgrounds/mystics-uploaded.webp.b64.01',
+    ],
     inquisition: '../images/artwork/card-backgrounds/inquisition.webp.b64',
   });
   const parchmentPromises = new Map();
@@ -55,15 +63,18 @@
 
   function parchmentUrlFor(faction) {
     if (!parchmentPromises.has(faction)) {
-      const source = new URL(PARCHMENT_SOURCES[faction], document.baseURI);
-      parchmentPromises.set(faction, fetch(source, { cache: 'force-cache' })
+      const configuredSources = PARCHMENT_SOURCES[faction];
+      const sourcePaths = Array.isArray(configuredSources) ? configuredSources : [configuredSources];
+      const sources = sourcePaths.map(path => new URL(path, document.baseURI));
+
+      parchmentPromises.set(faction, Promise.all(sources.map(source => fetch(source, { cache: 'force-cache' })
         .then(response => {
           if (!response.ok) {
             throw new Error(`Parchment request failed with ${response.status}: ${source}`);
           }
           return response.text();
-        })
-        .then(decodeParchment));
+        })))
+        .then(parts => decodeParchment(parts.join(''))));
     }
 
     return parchmentPromises.get(faction);
