@@ -1,4 +1,4 @@
-name: Render v0.6.1 Rulebook and Reference Guide
+name: Validate v0.6.1 Rulebook content
 
 on:
   pull_request:
@@ -6,18 +6,10 @@ on:
       - main
     paths:
       - "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md"
-      - "releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.md"
-      - "releases/v0.6.1/Gauntlet_v0.6.1_Manifest.json"
       - "releases/v0.6.1/faction-guides/**"
-      - "images/sketches/hero sketch.png"
-      - "rulebook/**"
-      - "design-tokens.css"
+      - "scripts/restructure_v061_rulebook.py"
       - "scripts/sync_v061_rulebook.py"
-      - "scripts/build_v061_documents.py"
-      - "scripts/finalize_v061_docx.py"
-      - "scripts/render_v061_rulebook_pdf.mjs"
-      - "scripts/impose_v061_rulebook_booklet.py"
-      - "scripts/validate_v061_rulebook_package.py"
+      - "scripts/validate_v061_rulebook_content.py"
       - ".github/workflows/render-v061-documents.yml"
   workflow_dispatch:
 
@@ -25,233 +17,62 @@ permissions:
   contents: write
 
 concurrency:
-  group: render-v061-documents-${{ github.ref }}
+  group: validate-v061-rulebook-content-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  render:
+  validate-content:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout source branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install document and browser tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y pandoc libreoffice-writer poppler-utils fonts-liberation
-          python -m pip install python-docx pypdf pymupdf lxml
-          npm install
-          npm install --no-save playwright
-          npx playwright install --with-deps chromium
-
-      - name: Check rulebook toolchain
+      - name: Check Rulebook content tools
         run: |
           python -m py_compile \
+            scripts/restructure_v061_rulebook.py \
             scripts/sync_v061_rulebook.py \
-            scripts/build_v061_documents.py \
-            scripts/finalize_v061_docx.py \
-            scripts/impose_v061_rulebook_booklet.py \
-            scripts/validate_v061_rulebook_package.py
-          node --check scripts/render_v061_rulebook_pdf.mjs
+            scripts/validate_v061_rulebook_content.py
 
-      - name: Synchronize complete faction chapters and cover
+      - name: Restructure shared rules into teaching order
+        run: python scripts/restructure_v061_rulebook.py
+
+      - name: Synchronize faction subsections from definitive guides
         run: python scripts/sync_v061_rulebook.py
 
-      - name: Build DOCX, reader PDF, and booklet PDF
-        run: python scripts/build_v061_documents.py
+      - name: Validate teaching order and first-use discipline
+        run: python scripts/validate_v061_rulebook_content.py
 
-      - name: Validate generated documents
+      - name: Commit synchronized Rulebook source when changed
         run: |
-          python - <<'PY'
-          from math import ceil
-          from pathlib import Path
-          import zipfile
-
-          import fitz
-          from docx import Document
-          from pypdf import PdfReader
-
-          release = Path('releases/v0.6.1')
-          rulebook_docx = release / 'Gauntlet_v0.6.1_Rulebook.docx'
-          rulebook_pdf = release / 'Gauntlet_v0.6.1_Rulebook.pdf'
-          booklet_pdf = release / 'Gauntlet_v0.6.1_Rulebook_Booklet.pdf'
-          reference_docx = release / 'Gauntlet_v0.6.1_Reference_Guide.docx'
-          reference_pdf = release / 'Gauntlet_v0.6.1_Reference_Guide.pdf'
-          hero = Path('images/sketches/hero sketch.png')
-
-          if not hero.is_file() or hero.stat().st_size == 0:
-              raise SystemExit('The Rulebook hero sketch is missing')
-
-          for path in (rulebook_docx, rulebook_pdf, booklet_pdf, reference_docx, reference_pdf):
-              if not path.is_file() or path.stat().st_size < 20_000:
-                  raise SystemExit(f'{path} is missing or unexpectedly small')
-
-          leaders = (
-              'General', 'Commandant', 'Ambassador', 'Senator', 'Banker', 'Executive',
-              'Ranger', 'Spymaster', 'Alchemist', 'Spirit Walker',
-              'Grand Inquisitor', 'Witch Hunter',
-          )
-          required_faction_terms = (
-              'Command and Orders', 'Offering Terms', 'Controlling Interest',
-              'Surveillance and Interference', 'Ritual of Ascendance', 'Purification',
-          )
-          forbidden = (
-              '15. Standard Language and Reference Rules',
-              'Use these verbs consistently:',
-              'Avoid generic phrases such as',
-              'Battle Hand',
-              'hand commitment',
-          )
-
-          document = Document(rulebook_docx)
-          docx_text = '\n'.join(paragraph.text for paragraph in document.paragraphs)
-          for term in (*leaders, *required_faction_terms, 'Gambit', 'Tactic', 'Aftermath'):
-              if term not in docx_text:
-                  raise SystemExit(f'Rulebook DOCX is missing {term!r}')
-          for term in forbidden:
-              if term in docx_text:
-                  raise SystemExit(f'Rulebook DOCX contains forbidden text {term!r}')
-          with zipfile.ZipFile(rulebook_docx) as archive:
-              media = [name for name in archive.namelist() if name.startswith('word/media/')]
-              if len(media) < 13:
-                  raise SystemExit(f'Rulebook DOCX contains only {len(media)} embedded images')
-              document_xml = archive.read('word/document.xml').decode('utf-8')
-              if 'Gauntlet hero sketch' not in document_xml:
-                  raise SystemExit('Rulebook DOCX does not identify the front-cover hero sketch')
-
-          reader = PdfReader(rulebook_pdf)
-          reader_text = '\n'.join((page.extract_text() or '') for page in reader.pages)
-          if len(reader.pages) < 28:
-              raise SystemExit(f'Reader PDF has only {len(reader.pages)} pages')
-          width = float(reader.pages[0].mediabox.width)
-          height = float(reader.pages[0].mediabox.height)
-          if abs(width - 396) > 3 or abs(height - 612) > 3:
-              raise SystemExit(f'Reader PDF is not half-letter: {width} x {height} points')
-          for term in (*leaders, *required_faction_terms, 'Contents'):
-              if term not in reader_text:
-                  raise SystemExit(f'Reader PDF is missing {term!r}')
-          for term in forbidden:
-              if term in reader_text:
-                  raise SystemExit(f'Reader PDF contains forbidden text {term!r}')
-          with fitz.open(rulebook_pdf) as rendered_reader:
-              if not rendered_reader[0].get_images(full=True):
-                  raise SystemExit('Reader PDF front cover does not contain the hero sketch')
-
-          booklet = PdfReader(booklet_pdf)
-          padded_pages = ceil(len(reader.pages) / 4) * 4
-          if len(booklet.pages) != padded_pages // 2:
-              raise SystemExit(
-                  f'Booklet has {len(booklet.pages)} sides; expected {padded_pages // 2}'
-              )
-          booklet_width = float(booklet.pages[0].mediabox.width)
-          booklet_height = float(booklet.pages[0].mediabox.height)
-          if abs(booklet_width - 792) > 3 or abs(booklet_height - 612) > 3:
-              raise SystemExit(
-                  f'Booklet is not landscape Letter: {booklet_width} x {booklet_height} points'
-              )
-          booklet_text = '\n'.join((page.extract_text() or '') for page in booklet.pages)
-          for term in leaders:
-              if term not in booklet_text:
-                  raise SystemExit(f'Booklet PDF is missing Leader {term!r}')
-
-          reference_text = '\n'.join(paragraph.text for paragraph in Document(reference_docx).paragraphs)
-          reference_pdf_text = '\n'.join(
-              (page.extract_text() or '') for page in PdfReader(reference_pdf).pages
-          )
-          for text, label in ((reference_text, 'DOCX'), (reference_pdf_text, 'PDF')):
-              if 'Gambit' not in text or 'Tactic' not in text or 'Aftermath' not in text:
-                  raise SystemExit(f'Reference Guide {label} is missing core v0.6.1 terms')
-              if 'v0.6.0' in text or 'Battle Hand' in text or 'hand commitment' in text:
-                  raise SystemExit(f'Obsolete text found in Reference Guide {label}')
-
-          print(
-              f'Validated illustrated cover, {len(reader.pages)} half-letter reader pages, '
-              f'and {len(booklet.pages)} imposed booklet sides.'
-          )
-          PY
-
-      - name: Validate complete Rulebook package
-        run: python scripts/validate_v061_rulebook_package.py --strict-generated
-
-      - name: Record automated booklet validation
-        run: |
-          python - <<'PY'
-          import json
-          from pathlib import Path
-
-          path = Path('releases/v0.6.1/Gauntlet_v0.6.1_Manifest.json')
-          manifest = json.loads(path.read_text(encoding='utf-8'))
-          manifest.setdefault('validation', {})['rulebook_booklet_validation_passed'] = True
-          path.write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
-          PY
-
-      - name: Render PDF pages for visual inspection
-        run: |
-          mkdir -p /tmp/v061-render/rulebook /tmp/v061-render/booklet /tmp/v061-render/reference
-          pdftoppm -png -r 130 \
-            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf \
-            /tmp/v061-render/rulebook/page
-          pdftoppm -png -r 90 \
-            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf \
-            /tmp/v061-render/booklet/sheet-side
-          pdftoppm -png -r 130 \
-            releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.pdf \
-            /tmp/v061-render/reference/page
-
-      - name: Commit synchronized and generated documents when changed
-        run: |
-          git add \
-            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md \
-            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.docx \
-            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf \
-            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf \
-            releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.docx \
-            releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.pdf \
-            releases/v0.6.1/Gauntlet_v0.6.1_Manifest.json
+          git add releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md
           if git diff --cached --quiet; then
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Render complete v0.6.1 reader and booklet rulebooks"
+          git commit -m "Restructure v0.6.1 Rulebook for sequential learning"
           git pull --rebase origin ${{ github.head_ref || github.ref_name }}
           git push origin HEAD:${{ github.head_ref || github.ref_name }}
 
-      - name: Verify synchronized Rulebook and manifest are current
+      - name: Verify source is idempotent and current
         run: |
+          python scripts/restructure_v061_rulebook.py --check
           python scripts/sync_v061_rulebook.py --check
-          python scripts/validate_v061_rulebook_package.py --strict-generated
-          python - <<'PY'
-          import json
-          from pathlib import Path
-          manifest = json.loads(Path('releases/v0.6.1/Gauntlet_v0.6.1_Manifest.json').read_text())
-          if manifest.get('validation', {}).get('rulebook_booklet_validation_passed') is not True:
-              raise SystemExit('Manifest does not record successful booklet validation')
-          PY
+          python scripts/validate_v061_rulebook_content.py
+          git diff --exit-code -- releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md
 
-      - name: Upload documents and rendered pages
+      - name: Upload content-review source
         uses: actions/upload-artifact@v4
         with:
-          name: gauntlet-v061-documents
-          path: |
-            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.docx
-            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf
-            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf
-            releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.docx
-            releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.pdf
-            /tmp/v061-render/rulebook/*.png
-            /tmp/v061-render/booklet/*.png
-            /tmp/v061-render/reference/*.png
+          name: gauntlet-v061-rulebook-content
+          path: releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md
           if-no-files-found: error
