@@ -28,7 +28,13 @@ def running(left: str, right: str) -> str:
 
 def page(number: int, content: str, *, cls: str = "", label: str = "") -> str:
     side = "left" if number % 2 == 0 else "right"
-    furniture = "" if "cover" in cls else f'<div class="footer-rule"></div><div class="folio">{escape(label)}&nbsp;&nbsp;{number}</div>'
+    if "cover" in cls:
+        furniture = ""
+    else:
+        folio_label = f'<span class="folio-label">{escape(label)}</span>'
+        folio_number = f'<span class="folio-number">{number}</span>'
+        folio_content = f'{folio_number}{folio_label}' if side == "left" else f'{folio_label}{folio_number}'
+        furniture = f'<div class="footer-rule"></div><div class="folio">{folio_content}</div>'
     return f'<section class="page {side} {cls}" data-page="{number}"><div class="page-inner">{content}</div>{furniture}</section>'
 
 
@@ -152,21 +158,24 @@ def build_pages() -> list[str]:
 
 
 def print_document(pages: list[str]) -> str:
-    return shell("Gauntlet Rulebook Design Proofs — Iteration 2", "\n".join(pages))
+    return shell("Gauntlet Rulebook Design Proofs — Iteration 2", "\
+".join(pages))
 
 
 def reader_spreads(pages: list[str]) -> str:
     chunks = ['<div class="mockup-note">Half-letter reader mockup · finished pages shown as facing pages</div>', f'<section class="reader-cover">{pages[0]}</section>']
     chunks += [f'<section class="spread-sheet" data-spread="{left}-{right}">{pages[left-1]}{pages[right-1]}</section>' for left, right in [(2,3),(4,5),(6,7),(8,9),(10,11)]]
     chunks.append(f'<section class="reader-cover">{pages[11]}</section>')
-    return shell("Gauntlet Half-Letter Reader Mockup", "\n".join(chunks), body_class="mockup-body", head_extra='<style>@page{size:11in 8.5in;margin:0}</style>')
+    return shell("Gauntlet Half-Letter Reader Mockup", "\
+".join(chunks), body_class="mockup-body", head_extra='<style>@page{size:11in 8.5in;margin:0}</style>')
 
 
 def imposed_spreads(pages: list[str]) -> str:
     order = [(12,1,"Sheet 1 outside"),(2,11,"Sheet 1 inside"),(10,3,"Sheet 2 outside"),(4,9,"Sheet 2 inside"),(8,5,"Sheet 3 outside"),(6,7,"Sheet 3 inside")]
     chunks = ['<div class="mockup-note">Letter landscape · 12-page saddle-stitch imposition · duplex short-edge flip</div>']
     chunks += [f'<section class="spread-sheet" data-imposition="{left}-{right}"><span class="imposition-label">{label} · pages {left} | {right}</span>{pages[left-1]}{pages[right-1]}</section>' for left, right, label in order]
-    return shell("Gauntlet Half-Letter Booklet Imposition", "\n".join(chunks), body_class="mockup-body", head_extra='<style>@page{size:11in 8.5in;margin:0}</style>')
+    return shell("Gauntlet Half-Letter Booklet Imposition", "\
+".join(chunks), body_class="mockup-body", head_extra='<style>@page{size:11in 8.5in;margin:0}</style>')
 
 
 def toner_cover() -> str:
