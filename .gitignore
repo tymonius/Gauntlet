@@ -4,3 +4,4 @@ coverage/
 .vitest/
 .env
 .env.local
+tts/generated/
