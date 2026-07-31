@@ -4,7 +4,8 @@
 The shared-rule chapters remain authored in the rulebook Markdown. Faction chapters
 are generated from the player-facing portions of the six definitive faction guides,
 ending before each guide's canonical card pool. This prevents a faction correction
-from leaving the published rulebook behind.
+from leaving the published rulebook behind. The approved hero sketch is also kept
+on the front cover so every generated edition uses the same cover source.
 """
 
 from __future__ import annotations
@@ -16,6 +17,9 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RULEBOOK = ROOT / "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md"
+HERO_IMAGE = ROOT / "images/sketches/hero sketch.png"
+HERO_COVER_MARKDOWN = "![Gauntlet hero sketch](<images/sketches/hero sketch.png>)"
+VERSION_LINE = "**Version 0.6.1 — First Playtest Revision**"
 
 
 @dataclass(frozen=True)
@@ -142,12 +146,22 @@ def normalized_prefix(current: str, marker: str) -> str:
     return re.sub(r"(?:\n\s*---\s*)+$", "", prefix).rstrip()
 
 
+def ensure_cover_image(prefix: str) -> str:
+    if not HERO_IMAGE.is_file() or HERO_IMAGE.stat().st_size == 0:
+        raise RuntimeError(f"Rulebook hero sketch is missing: {HERO_IMAGE.relative_to(ROOT)}")
+    if HERO_COVER_MARKDOWN in prefix:
+        return prefix
+    if VERSION_LINE not in prefix:
+        raise RuntimeError("Rulebook version line is missing; cannot place the hero cover sketch")
+    return prefix.replace(VERSION_LINE, f"{VERSION_LINE}\n\n{HERO_COVER_MARKDOWN}", 1)
+
+
 def generate(current: str) -> str:
     if QUICK_REFERENCE not in current:
         raise RuntimeError("Rulebook quick-reference marker is missing")
 
     start_marker = faction_start_marker(current)
-    prefix = normalized_prefix(current, start_marker)
+    prefix = ensure_cover_image(normalized_prefix(current, start_marker))
     quick_reference = QUICK_REFERENCE + current.split(QUICK_REFERENCE, 1)[1]
     faction_chapters = "\n\n---\n\n".join(player_facing_guide_text(spec) for spec in FACTIONS)
 
@@ -162,6 +176,9 @@ def generate(current: str) -> str:
     for phrase in forbidden:
         if phrase in generated:
             raise RuntimeError(f"Internal editorial guidance remains in player-facing rulebook: {phrase}")
+
+    if HERO_COVER_MARKDOWN not in generated:
+        raise RuntimeError("Generated Rulebook is missing the hero cover sketch")
 
     for spec in FACTIONS:
         if f"# {spec.chapter}. {spec.name}" not in generated:
@@ -184,8 +201,8 @@ def main() -> int:
     generated = generate(current)
     if args.check:
         if generated != current:
-            raise SystemExit("v0.6.1 rulebook faction chapters are not synchronized")
-        print("v0.6.1 rulebook faction chapters are synchronized.")
+            raise SystemExit("v0.6.1 rulebook faction chapters or cover are not synchronized")
+        print("v0.6.1 rulebook faction chapters and cover are synchronized.")
         return 0
 
     if generated != current:
