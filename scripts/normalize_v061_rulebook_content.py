@@ -56,6 +56,22 @@ REPLACEMENTS = (
         "Keep any cards attached to a supplemental component with it so both players can identify the relationship.",
     ),
     (
+        "# Part III — Factions\n\n# 13. Factions\n\n## How Factions Work",
+        "# Part III — Factions\n\n## How Factions Work",
+    ),
+    (
+        "Then read the subsection for the faction and Leader used in the game.",
+        "Then read the chapter for the faction and Leader used in the game.",
+    ),
+    (
+        "The relevant faction subsection identifies its exact package and starting state.",
+        "The relevant faction chapter identifies its exact package and starting state.",
+    ),
+    (
+        "the procedure stated in the relevant faction subsection",
+        "the procedure stated in the relevant faction chapter",
+    ),
+    (
         "## Battle timing and card interaction\n\n## Shared-timing rule",
         "## Battle timing and card interaction\n\n### Shared-timing rule",
     ),
