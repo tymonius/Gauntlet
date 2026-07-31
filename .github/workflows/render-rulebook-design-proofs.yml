@@ -130,8 +130,11 @@ jobs:
               pageCount: pages.length,
               pages: pages.map((page, index) => {
                 const rect = page.getBoundingClientRect();
+                const style = getComputedStyle(page);
                 return {
                   index: index + 1,
+                  className: page.className,
+                  overflow: style.overflow,
                   width: rect.width,
                   height: rect.height,
                   scrollWidth: page.scrollWidth,
@@ -149,8 +152,9 @@ jobs:
             if (Math.abs(page.width - 528) > 2 || Math.abs(page.height - 816) > 2) {
               throw new Error(`Page ${page.index} is ${page.width}×${page.height}px instead of half-letter at CSS print scale.`);
             }
-            if (page.scrollWidth > page.clientWidth + 1 || page.scrollHeight > page.clientHeight + 1) {
-              throw new Error(`Page ${page.index} overflows its half-letter canvas.`);
+            const intentionalCoverBleed = page.index === 1 && page.className.includes('cover') && page.overflow === 'hidden';
+            if (!intentionalCoverBleed && (page.scrollWidth > page.clientWidth + 1 || page.scrollHeight > page.clientHeight + 1)) {
+              throw new Error(`Page ${page.index} overflows its half-letter canvas: ${JSON.stringify(page)}`);
             }
           }
           for (const image of printResult.images) {
