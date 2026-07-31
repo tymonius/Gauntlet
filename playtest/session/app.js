@@ -12,6 +12,7 @@
   document.addEventListener("DOMContentLoaded", gate, true);
 
   void loadInOrder([
+    "../host-navigation.js?v=20260731-1",
     "event-game.js?v=20260731-1",
     "app-core.js?v=20260731-1"
   ]).finally(() => {
