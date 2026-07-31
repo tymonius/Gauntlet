@@ -21,8 +21,15 @@ jobs:
   render:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout proof branch
+      - name: Checkout proof sources and artwork
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            rulebook-design
+            images/sketches/hero sketch.png
+            images/sketches/general.png
 
       - name: Set up Node
         uses: actions/setup-node@v4
