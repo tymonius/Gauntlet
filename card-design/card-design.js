@@ -5,11 +5,83 @@
   const TITLE_STEP = 0.05 * CSS_PIXELS_PER_POINT;
   const RULE_SCALE_STEP = 0.01;
   const DEFAULT_MINIMUM_TITLE_SIZE = 9.5 * CSS_PIXELS_PER_POINT;
-  const DEFAULT_MINIMUM_RULE_SCALE = 0.82;
+  const DEFAULT_MINIMUM_RULE_SCALE = 0.93;
+  const PARCHMENT_SOURCES = {
+    neutral: '../images/artwork/card-backgrounds/neutral.webp.b64',
+    military: '../images/artwork/card-backgrounds/military.webp.b64',
+    diplomats: '../images/artwork/card-backgrounds/diplomats.webp.b64',
+    financiers: '../images/artwork/card-backgrounds/financiers.webp.b64',
+    intelligence: '../images/artwork/card-backgrounds/intelligence.webp.b64',
+    mystics: '../images/artwork/card-backgrounds/mystics.webp.b64',
+    inquisition: '../images/artwork/card-backgrounds/inquisition.webp.b64',
+  };
+  const parchmentPromises = new Map();
+  const parchmentObjectUrls = new Set();
   let resizeTimer;
 
   function forceLayout(element) {
     void element.offsetHeight;
+  }
+
+  function factionForCard(card) {
+    const explicitFaction = card.dataset.faction?.trim().toLowerCase();
+    if (explicitFaction && PARCHMENT_SOURCES[explicitFaction]) return explicitFaction;
+
+    const classMappings = [
+      ['neutral', ['neutral-card', 'faction-neutral']],
+      ['military', ['military-card', 'faction-military']],
+      ['diplomats', ['diplomat-card', 'diplomats-card', 'faction-diplomats']],
+      ['financiers', ['financier-card', 'financiers-card', 'faction-financiers']],
+      ['intelligence', ['intelligence-card', 'faction-intelligence']],
+      ['mystics', ['mystic-card', 'mystics-card', 'faction-mystics']],
+      ['inquisition', ['inquisition-card', 'faction-inquisition']],
+    ];
+
+    return classMappings.find(([, classes]) => classes.some(className => card.classList.contains(className)))?.[0]
+      || 'neutral';
+  }
+
+  function decodeParchment(base64Text) {
+    const binary = window.atob(base64Text.replace(/\s+/g, ''));
+    const bytes = new Uint8Array(binary.length);
+    for (let index = 0; index < binary.length; index += 1) {
+      bytes[index] = binary.charCodeAt(index);
+    }
+
+    const objectUrl = URL.createObjectURL(new Blob([bytes], { type: 'image/webp' }));
+    parchmentObjectUrls.add(objectUrl);
+    return objectUrl;
+  }
+
+  function parchmentUrlFor(faction) {
+    if (!parchmentPromises.has(faction)) {
+      const source = new URL(PARCHMENT_SOURCES[faction], document.baseURI);
+      parchmentPromises.set(faction, fetch(source, { cache: 'force-cache' })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error(`Parchment request failed with ${response.status}`);
+          }
+          return response.text();
+        })
+        .then(decodeParchment));
+    }
+
+    return parchmentPromises.get(faction);
+  }
+
+  async function loadParchments() {
+    const cards = Array.from(document.querySelectorAll('.gauntlet-card'));
+    await Promise.all(cards.map(async card => {
+      const faction = factionForCard(card);
+      try {
+        const objectUrl = await parchmentUrlFor(faction);
+        card.style.setProperty('--parchment-image', `url("${objectUrl}")`);
+        card.dataset.parchmentLoaded = 'true';
+      } catch (error) {
+        card.dataset.parchmentLoaded = 'false';
+        console.warn(`Using fallback parchment color for ${faction}.`, error);
+      }
+    }));
   }
 
   function setArtHeight(card, height) {
@@ -24,7 +96,7 @@
     const declared = Number.parseFloat(
       window.getComputedStyle(card).getPropertyValue('--minimum-rules-scale')
     );
-    return Number.isFinite(declared) ? declared : DEFAULT_MINIMUM_RULE_SCALE;
+    return Number.isFinite(declared) ? Math.max(declared, DEFAULT_MINIMUM_RULE_SCALE) : DEFAULT_MINIMUM_RULE_SCALE;
   }
 
   function cardOverflows(card) {
@@ -84,9 +156,8 @@
       forceLayout(interior);
     }
 
-    /* If the minimum art window is not enough, compact the rules as a second
-       stage. This includes reminders and catches footer displacement that the
-       previous scroll-height-only check missed. */
+    /* Typography may compact only to the print-legibility floor. Cards that
+       still do not fit require a different layout rather than microscopic type. */
     const minimumScale = minimumRuleScale(card);
     while (cardOverflows(card) && ruleScale > minimumScale) {
       ruleScale = Math.max(minimumScale, ruleScale - RULE_SCALE_STEP);
@@ -121,6 +192,7 @@
       });
     }));
 
+    await loadParchments();
     requestAnimationFrame(() => requestAnimationFrame(fitAllCards));
   }
 
@@ -129,5 +201,8 @@
   window.addEventListener('resize', () => {
     window.clearTimeout(resizeTimer);
     resizeTimer = window.setTimeout(fitAllCards, 120);
+  });
+  window.addEventListener('beforeunload', () => {
+    parchmentObjectUrls.forEach(objectUrl => URL.revokeObjectURL(objectUrl));
   });
 })();
