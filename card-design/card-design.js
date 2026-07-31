@@ -6,33 +6,80 @@
   const RULE_SCALE_STEP = 0.01;
   const DEFAULT_MINIMUM_TITLE_SIZE = 9.5 * CSS_PIXELS_PER_POINT;
   const DEFAULT_MINIMUM_RULE_SCALE = 0.93;
+  const PARCHMENT_GRID_COLUMNS = 3;
+  const PARCHMENT_GRID_ROWS = 3;
   const PARCHMENT_PARTS = [
     '../images/artwork/card-backgrounds/parchments-grid.webp.b64.0',
     '../images/artwork/card-backgrounds/parchments-grid.webp.b64.1',
     '../images/artwork/card-backgrounds/parchments-grid.webp.b64.2',
     '../images/artwork/card-backgrounds/parchments-grid.webp.b64.3',
   ];
-  let parchmentPromise;
-  let parchmentObjectUrl;
+  const PARCHMENT_FRAMES = Object.freeze({
+    neutral: { column: 0, row: 0, contrast: 1.10 },
+    military: { column: 1, row: 0, contrast: 1.40 },
+    diplomats: { column: 2, row: 0, contrast: 1.50 },
+    financiers: { column: 0, row: 1, contrast: 1.12 },
+    intelligence: { column: 1, row: 1, contrast: 1.48 },
+    mystics: { column: 2, row: 1, contrast: 1.42 },
+    inquisition: { column: 0, row: 2, contrast: 1.00 },
+  });
+  const parchmentPanelPromises = new Map();
+  const parchmentObjectUrls = new Set();
+  let parchmentGridPromise;
   let resizeTimer;
 
   function forceLayout(element) {
     void element.offsetHeight;
   }
 
-  function decodeParchment(base64Text) {
+  function factionForCard(card) {
+    const explicitFaction = card.dataset.faction?.trim().toLowerCase();
+    if (explicitFaction && PARCHMENT_FRAMES[explicitFaction]) return explicitFaction;
+
+    const classMappings = [
+      ['neutral', ['neutral-card', 'faction-neutral']],
+      ['military', ['military-card', 'faction-military']],
+      ['diplomats', ['diplomat-card', 'diplomats-card', 'faction-diplomats']],
+      ['financiers', ['financier-card', 'financiers-card', 'faction-financiers']],
+      ['intelligence', ['intelligence-card', 'faction-intelligence']],
+      ['mystics', ['mystic-card', 'mystics-card', 'faction-mystics']],
+      ['inquisition', ['inquisition-card', 'faction-inquisition']],
+    ];
+
+    return classMappings.find(([, classes]) => classes.some(className => card.classList.contains(className)))?.[0]
+      || 'neutral';
+  }
+
+  function decodeParchmentBlob(base64Text) {
     const binary = window.atob(base64Text.replace(/\s+/g, ''));
     const bytes = new Uint8Array(binary.length);
     for (let index = 0; index < binary.length; index += 1) {
       bytes[index] = binary.charCodeAt(index);
     }
 
-    return URL.createObjectURL(new Blob([bytes], { type: 'image/webp' }));
+    return new Blob([bytes], { type: 'image/webp' });
   }
 
-  function parchmentUrl() {
-    if (!parchmentPromise) {
-      parchmentPromise = Promise.all(PARCHMENT_PARTS.map(path => {
+  function imageFromBlob(blob) {
+    return new Promise((resolve, reject) => {
+      const objectUrl = URL.createObjectURL(blob);
+      const image = new Image();
+      image.decoding = 'async';
+      image.addEventListener('load', () => {
+        URL.revokeObjectURL(objectUrl);
+        resolve(image);
+      }, { once: true });
+      image.addEventListener('error', () => {
+        URL.revokeObjectURL(objectUrl);
+        reject(new Error('Decoded parchment grid could not be loaded as an image.'));
+      }, { once: true });
+      image.src = objectUrl;
+    });
+  }
+
+  function parchmentGridImage() {
+    if (!parchmentGridPromise) {
+      parchmentGridPromise = Promise.all(PARCHMENT_PARTS.map(path => {
         const source = new URL(path, document.baseURI);
         return fetch(source, { cache: 'force-cache' }).then(response => {
           if (!response.ok) {
@@ -40,29 +87,115 @@
           }
           return response.text();
         });
-      })).then(parts => {
-        parchmentObjectUrl = decodeParchment(parts.join(''));
-        return parchmentObjectUrl;
-      });
+      }))
+        .then(parts => decodeParchmentBlob(parts.join('')))
+        .then(imageFromBlob);
     }
 
-    return parchmentPromise;
+    return parchmentGridPromise;
+  }
+
+  function clampChannel(value) {
+    return Math.max(0, Math.min(255, Math.round(value)));
+  }
+
+  function normalizeParchmentContrast(context, width, height, factor) {
+    if (factor === 1) return;
+
+    const imageData = context.getImageData(0, 0, width, height);
+    const { data } = imageData;
+    let red = 0;
+    let green = 0;
+    let blue = 0;
+    let samples = 0;
+
+    /* Most pixels are the paper field. Sampling every fourth pixel establishes
+       a source-local paper pivot without hard-coding a replacement color. */
+    for (let index = 0; index < data.length; index += 16) {
+      if (data[index + 3] === 0) continue;
+      red += data[index];
+      green += data[index + 1];
+      blue += data[index + 2];
+      samples += 1;
+    }
+
+    if (!samples) return;
+    const pivotRed = red / samples;
+    const pivotGreen = green / samples;
+    const pivotBlue = blue / samples;
+
+    for (let index = 0; index < data.length; index += 4) {
+      data[index] = clampChannel(pivotRed + (data[index] - pivotRed) * factor);
+      data[index + 1] = clampChannel(pivotGreen + (data[index + 1] - pivotGreen) * factor);
+      data[index + 2] = clampChannel(pivotBlue + (data[index + 2] - pivotBlue) * factor);
+    }
+
+    context.putImageData(imageData, 0, 0);
+  }
+
+  function canvasToBlob(canvas) {
+    return new Promise((resolve, reject) => {
+      canvas.toBlob(blob => {
+        if (blob) resolve(blob);
+        else reject(new Error('Parchment panel could not be encoded.'));
+      }, 'image/webp', 0.96);
+    });
+  }
+
+  function parchmentPanelUrl(faction) {
+    if (!parchmentPanelPromises.has(faction)) {
+      parchmentPanelPromises.set(faction, parchmentGridImage().then(async image => {
+        const frame = PARCHMENT_FRAMES[faction];
+        const frameWidth = image.naturalWidth / PARCHMENT_GRID_COLUMNS;
+        const frameHeight = image.naturalHeight / PARCHMENT_GRID_ROWS;
+
+        if (!Number.isInteger(frameWidth) || !Number.isInteger(frameHeight)) {
+          throw new Error(`Unexpected parchment grid dimensions: ${image.naturalWidth} × ${image.naturalHeight}`);
+        }
+
+        const canvas = document.createElement('canvas');
+        canvas.width = frameWidth;
+        canvas.height = frameHeight;
+        const context = canvas.getContext('2d', { alpha: false, willReadFrequently: true });
+        if (!context) throw new Error('A 2D canvas context is required for parchment extraction.');
+
+        context.drawImage(
+          image,
+          frame.column * frameWidth,
+          frame.row * frameHeight,
+          frameWidth,
+          frameHeight,
+          0,
+          0,
+          frameWidth,
+          frameHeight
+        );
+        normalizeParchmentContrast(context, frameWidth, frameHeight, frame.contrast);
+
+        const panelBlob = await canvasToBlob(canvas);
+        const objectUrl = URL.createObjectURL(panelBlob);
+        parchmentObjectUrls.add(objectUrl);
+        return objectUrl;
+      }));
+    }
+
+    return parchmentPanelPromises.get(faction);
   }
 
   async function loadParchments() {
     const cards = Array.from(document.querySelectorAll('.gauntlet-card'));
-    try {
-      const objectUrl = await parchmentUrl();
-      cards.forEach(card => {
+    await Promise.all(cards.map(async card => {
+      const faction = factionForCard(card);
+      try {
+        const objectUrl = await parchmentPanelUrl(faction);
         card.style.setProperty('--parchment-image', `url("${objectUrl}")`);
         card.dataset.parchmentLoaded = 'true';
-      });
-    } catch (error) {
-      cards.forEach(card => {
+        card.dataset.parchmentSource = faction;
+      } catch (error) {
         card.dataset.parchmentLoaded = 'false';
-      });
-      console.warn('Using fallback parchment color.', error);
-    }
+        console.warn(`Using fallback parchment color for ${faction}.`, error);
+      }
+    }));
   }
 
   function setArtHeight(card, height) {
@@ -184,6 +317,6 @@
     resizeTimer = window.setTimeout(fitAllCards, 120);
   });
   window.addEventListener('beforeunload', () => {
-    if (parchmentObjectUrl) URL.revokeObjectURL(parchmentObjectUrl);
+    parchmentObjectUrls.forEach(objectUrl => URL.revokeObjectURL(objectUrl));
   });
 })();

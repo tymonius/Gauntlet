@@ -6,32 +6,19 @@ const refinementCss = readFileSync("card-design/card-design-refinement.css", "ut
 const cardScript = readFileSync("card-design/card-design.js", "utf8");
 
 describe("card parchment backgrounds", () => {
-  it("uses the opaque loaded grid as the card background with a color fallback", () => {
+  it("uses each opaque extracted panel as the card background with a color fallback", () => {
     expect(refinementCss).toContain('@import url("card-parchment.css");');
     expect(parchmentCss).toContain("background-color: var(--card-parchment);");
     expect(parchmentCss).toContain("background-image: var(--parchment-image);");
-    expect(parchmentCss).toContain("background-size: 300% 300%;");
+    expect(parchmentCss).toContain("background-size: 100% 100%;");
     expect(parchmentCss).toContain(".card-interior::before");
     expect(parchmentCss).toContain("content: none;");
-    expect(parchmentCss).not.toContain("parchments.webp");
+    expect(parchmentCss).not.toContain("background-size: 300% 300%");
     expect(parchmentCss).not.toContain("--parchment-opacity");
     expect(parchmentCss).not.toContain("mix-blend-mode");
   });
 
-  it.each([
-    ["neutral", "0% 0%"],
-    ["military", "50% 0%"],
-    ["diplomats", "100% 0%"],
-    ["financiers", "0% 50%"],
-    ["intelligence", "50% 50%"],
-    ["mystics", "100% 50%"],
-    ["inquisition", "0% 100%"],
-  ])("maps %s to its approved grid panel", (faction, position) => {
-    expect(parchmentCss).toContain(`[data-faction="${faction}"]`);
-    expect(parchmentCss).toContain(`--parchment-position: ${position};`);
-  });
-
-  it("assembles the four grid chunks once into a cached WebP object URL", () => {
+  it("assembles the four grid chunks once", () => {
     for (let part = 0; part < 4; part += 1) {
       const path = `images/artwork/card-backgrounds/parchments-grid.webp.b64.${part}`;
       expect(existsSync(path)).toBe(true);
@@ -43,9 +30,35 @@ describe("card parchment backgrounds", () => {
     expect(cardScript).toContain("parts.join('')");
     expect(cardScript).toContain("window.atob");
     expect(cardScript).toContain("new Blob([bytes], { type: 'image/webp' })");
-    expect(cardScript).toContain("URL.createObjectURL");
-    expect(cardScript).toContain("parchmentPromise");
     expect(cardScript).toContain("cache: 'force-cache'");
-    expect(cardScript).toContain("Using fallback parchment color");
+  });
+
+  it("extracts and caches one native-size panel per faction", () => {
+    expect(cardScript).toContain("const PARCHMENT_FRAMES");
+    expect(cardScript).toContain("const parchmentPanelPromises = new Map()");
+    expect(cardScript).toContain("context.drawImage(");
+    expect(cardScript).toContain("canvas.toBlob");
+    expect(cardScript).toContain("URL.createObjectURL(panelBlob)");
+    expect(cardScript).toContain("card.dataset.parchmentSource = faction");
+    expect(cardScript).toContain("Using fallback parchment color for ${faction}");
+  });
+
+  it("normalizes weak line art without reducing opacity", () => {
+    for (const entry of [
+      "neutral: { column: 0, row: 0, contrast: 1.10 }",
+      "military: { column: 1, row: 0, contrast: 1.40 }",
+      "diplomats: { column: 2, row: 0, contrast: 1.50 }",
+      "financiers: { column: 0, row: 1, contrast: 1.12 }",
+      "intelligence: { column: 1, row: 1, contrast: 1.48 }",
+      "mystics: { column: 2, row: 1, contrast: 1.42 }",
+      "inquisition: { column: 0, row: 2, contrast: 1.00 }",
+    ]) {
+      expect(cardScript).toContain(entry);
+    }
+
+    expect(cardScript).toContain("normalizeParchmentContrast");
+    expect(cardScript).toContain("context.getImageData");
+    expect(cardScript).toContain("context.putImageData");
+    expect(cardScript).not.toContain("opacity =");
   });
 });

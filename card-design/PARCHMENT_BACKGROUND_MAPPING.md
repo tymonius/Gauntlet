@@ -11,17 +11,23 @@ The playable-card mockup system uses one 3 × 3 base64-encoded WebP grid stored 
 
 The complete grid is 1200 × 1680 pixels. Each occupied faction panel is 400 × 560 pixels. The earlier vertically stacked sprite remains in the artwork directory for historical reference but is not used; its 240 × 336 pixel panels did not retain enough watermark detail at card size.
 
-## Grid mapping
+## Grid mapping and visibility calibration
 
-| Faction | Grid position | CSS position |
-| --- | --- | --- |
-| Neutral | column 1, row 1 | `0% 0%` |
-| Military | column 2, row 1 | `50% 0%` |
-| Diplomats | column 3, row 1 | `100% 0%` |
-| Financiers | column 1, row 2 | `0% 50%` |
-| Intelligence | column 2, row 2 | `50% 50%` |
-| Mystics | column 3, row 2 | `100% 50%` |
-| Inquisition | column 1, row 3 | `0% 100%` |
+`card-design.js` extracts each occupied grid panel into its own opaque WebP Blob before assigning it to a card. This prevents the browser from repeatedly sampling and positioning the entire 3 × 3 grid for every card.
+
+The approved sources vary substantially in line strength. The extracted panels therefore receive source-specific contrast normalization around each panel's own average paper color. This darkens weak watermark lines without changing opacity, applying a color wash, or substituting a new paper tone.
+
+| Faction | Grid position | Contrast factor |
+| --- | --- | ---: |
+| Neutral | column 1, row 1 | `1.10` |
+| Military | column 2, row 1 | `1.40` |
+| Diplomats | column 3, row 1 | `1.50` |
+| Financiers | column 1, row 2 | `1.12` |
+| Intelligence | column 2, row 2 | `1.48` |
+| Mystics | column 3, row 2 | `1.42` |
+| Inquisition | column 1, row 3 | `1.00` |
+
+Inquisition remains unadjusted because its marks already read clearly at card size. The Neutral treatment remains deliberately restrained.
 
 ## Supported selectors
 
@@ -37,8 +43,8 @@ Cards may select their parchment through either the established card class, a fa
 
 ## Rendering behavior
 
-`card-design.js` fetches the four chunks once, concatenates them in numeric order, decodes the complete WebP into a single `image/webp` Blob, and assigns the cached object URL to `--parchment-image`. Window resizing only reruns card fitting and never reloads or replaces the parchment.
+`card-design.js` fetches the four chunks once, concatenates them in numeric order, and decodes the complete grid. Each faction panel is then cropped at its exact native 400 × 560 dimensions, contrast-normalized, encoded as an opaque WebP, and cached as a faction-specific object URL. Window resizing only reruns card fitting and never reloads, repositions, or regenerates the parchment panels.
 
-The plain `--card-parchment` color is only a loading and failure fallback. The successfully loaded grid is opaque, appears at full source opacity, and completely replaces that color. It is not blended, faded, washed, or placed on a translucent overlay.
+The plain `--card-parchment` color is only a loading and failure fallback. A successfully extracted panel is opaque, appears at full opacity, and completely replaces that color. It is not blended, faded, washed, or placed on a translucent overlay.
 
 The procedural paper wash previously supplied by `.card-interior::after` remains disabled because the approved parchment sources already contain their own paper texture and coloration.
