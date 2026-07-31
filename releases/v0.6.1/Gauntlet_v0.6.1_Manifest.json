@@ -74,7 +74,7 @@
     "complete_print_package_visual_checks_passed": true,
     "production_workers_deployed": true,
     "physical_qr_session_test_passed": true,
-    "rulebook_booklet_validation_passed": false,
+    "rulebook_booklet_validation_passed": true,
     "ready_for_publication": true
   },
   "public_links": {
