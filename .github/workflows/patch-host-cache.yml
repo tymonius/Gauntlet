@@ -1,0 +1,58 @@
+name: Patch host cache entry points
+
+on:
+  push:
+    branches:
+      - agent/fix-host-home-cache
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/fix-host-home-cache
+          fetch-depth: 0
+      - name: Update organizer asset versions
+        shell: python
+        run: |
+          from pathlib import Path
+
+          replacements = {
+              Path("playtest/onboarding/index.html"): [
+                  ('<script src="app.js" defer></script>', '<script src="app.js?v=20260731-3" defer></script>'),
+              ],
+              Path("playtest/session/index.html"): [
+                  ('<script src="app.js?v=20260729-2"></script>', '<script src="app.js?v=20260731-3"></script>'),
+              ],
+              Path("playtest/onboarding/app.js"): [
+                  ('../host-navigation.js?v=20260731-1', '../host-navigation.js?v=20260731-2'),
+                  ('../host-registry.js?v=20260731-1', '../host-registry.js?v=20260731-2'),
+              ],
+              Path("playtest/session/app.js"): [
+                  ('../host-navigation.js?v=20260731-1', '../host-navigation.js?v=20260731-2'),
+                  ('../host-registry.js?v=20260731-1', '../host-registry.js?v=20260731-2'),
+              ],
+          }
+
+          for path, pairs in replacements.items():
+              text = path.read_text(encoding="utf-8")
+              for old, new in pairs:
+                  if old not in text and new not in text:
+                      raise SystemExit(f"Expected marker missing from {path}: {old}")
+                  text = text.replace(old, new)
+              path.write_text(text, encoding="utf-8")
+      - name: Commit patch
+        run: |
+          if git diff --quiet; then
+            echo "No patch required."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add playtest/onboarding/index.html playtest/session/index.html playtest/onboarding/app.js playtest/session/app.js
+          git commit -m "Bust organizer loader caches"
+          git push origin HEAD:agent/fix-host-home-cache
