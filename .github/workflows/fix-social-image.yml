@@ -1,22 +1,22 @@
 name: Fix social preview image
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/fix-social-image
-    paths:
-      - .github/fix-og-trigger
+      - main
 
 permissions:
   contents: write
 
 jobs:
   fix:
+    if: github.head_ref == 'agent/fix-social-image'
     runs-on: ubuntu-latest
     steps:
-      - name: Check out branch
+      - name: Check out repair branch
         uses: actions/checkout@v4
         with:
+          ref: agent/fix-social-image
           fetch-depth: 0
 
       - name: Regenerate social image from source artwork
@@ -29,8 +29,6 @@ jobs:
           identify "$source_image"
           mkdir -p "$(dirname "$output_image")"
 
-          # The approved crop uses the full source width, resized to 1200 px,
-          # then removes 53 px from the top of the resulting 1200x900 image.
           convert "$source_image" \
             -resize 1200x \
             -crop 1200x630+0+53 \
@@ -58,4 +56,4 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "Regenerate social preview image from source artwork"
-          git push
+          git push origin HEAD:agent/fix-social-image
