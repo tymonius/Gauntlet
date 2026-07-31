@@ -9,6 +9,21 @@ describe("playtest Host Home", () => {
     expect(read("playtest/session/app.js")).toContain("../host-registry.js");
   });
 
+  it("cache-busts organizer entry points and shared navigation layers", () => {
+    const onboardingHtml = read("playtest/onboarding/index.html");
+    const sessionHtml = read("playtest/session/index.html");
+    const onboardingApp = read("playtest/onboarding/app.js");
+    const sessionApp = read("playtest/session/app.js");
+
+    expect(onboardingHtml).toMatch(/app\.js\?v=\d{8}-\d+/);
+    expect(onboardingHtml).not.toContain('<script src="app.js" defer></script>');
+    expect(sessionHtml).toMatch(/app\.js\?v=\d{8}-\d+/);
+    expect(onboardingApp).toMatch(/host-navigation\.js\?v=\d{8}-\d+/);
+    expect(onboardingApp).toMatch(/host-registry\.js\?v=\d{8}-\d+/);
+    expect(sessionApp).toMatch(/host-navigation\.js\?v=\d{8}-\d+/);
+    expect(sessionApp).toMatch(/host-registry\.js\?v=\d{8}-\d+/);
+  });
+
   it("provides a dedicated organizer launcher", () => {
     const html = read("playtest/host/index.html");
     const app = read("playtest/host/app.js");
