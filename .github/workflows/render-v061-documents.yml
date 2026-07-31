@@ -7,7 +7,6 @@ on:
     paths:
       - "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md"
       - "releases/v0.6.1/faction-guides/**"
-      - "scripts/restructure_v061_rulebook.py"
       - "scripts/sync_v061_rulebook.py"
       - "scripts/normalize_v061_rulebook_content.py"
       - "scripts/validate_v061_rulebook_content.py"
@@ -39,13 +38,9 @@ jobs:
       - name: Check Rulebook content tools
         run: |
           python -m py_compile \
-            scripts/restructure_v061_rulebook.py \
             scripts/sync_v061_rulebook.py \
             scripts/normalize_v061_rulebook_content.py \
             scripts/validate_v061_rulebook_content.py
-
-      - name: Restructure shared rules into teaching order
-        run: python scripts/restructure_v061_rulebook.py
 
       - name: Synchronize faction chapters from definitive guides
         run: python scripts/sync_v061_rulebook.py
@@ -64,7 +59,7 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Restructure v0.6.1 Rulebook for sequential learning"
+          git commit -m "Synchronize v0.6.1 faction chapters"
           git pull --rebase origin ${{ github.head_ref || github.ref_name }}
           git push origin HEAD:${{ github.head_ref || github.ref_name }}
 
