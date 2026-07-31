@@ -20,6 +20,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 RELEASE = ROOT / "releases/v0.6.1"
 RULEBOOK = RELEASE / "Gauntlet_v0.6.1_Rulebook.md"
+REFERENCE = RELEASE / "Gauntlet_v0.6.1_Reference_Guide.md"
 DOCX = RELEASE / "Gauntlet_v0.6.1_Rulebook.docx"
 READER = RELEASE / "Gauntlet_v0.6.1_Rulebook.pdf"
 BOOKLET = RELEASE / "Gauntlet_v0.6.1_Rulebook_Booklet.pdf"
@@ -58,6 +59,19 @@ FACTION_RULES = (
     "Purification",
 )
 
+PR336_RULEBOOK_TEXT = (
+    "This is a tie rule, not an instance of the ordinary advantage mechanic.",
+    "Defender's Advantage does not grant an additional die.",
+    "Defender's Advantage means they win tied battle totals, and they separately add +1 to their battle total.",
+    "Defender's Advantage applies, so the defender wins tied battle totals;",
+    "the defender separately adds +1 to their battle total.",
+)
+
+PR336_REFERENCE_TEXT = (
+    "On a tie, the defender wins if they control the contested Territory or are defending a Last Stand.",
+    "Defender's Advantage means the defender wins ties; separately, the defender adds +1 to their battle total.",
+)
+
 FORBIDDEN_PLAYER_TEXT = (
     "# 15. Standard Language and Reference Rules",
     "Use these verbs consistently:",
@@ -76,6 +90,7 @@ def require_contains(text: str, required: tuple[str, ...], label: str, errors: l
 def validate_sources(errors: list[str]) -> None:
     required_files = (
         RULEBOOK,
+        REFERENCE,
         ROOT / "docs/Gauntlet_Rules_Language_and_Editorial_Standard.md",
         ROOT / "rulebook/index.html",
         ROOT / "rulebook/app.js",
@@ -85,6 +100,7 @@ def validate_sources(errors: list[str]) -> None:
         ROOT / "scripts/sync_v061_rulebook.py",
         ROOT / "scripts/render_v061_rulebook_pdf.mjs",
         ROOT / "scripts/impose_v061_rulebook_booklet.py",
+        ROOT / "rules-assistant/v061-defenders-advantage.test.mjs",
         MANIFEST,
     )
     for path in required_files:
@@ -104,8 +120,11 @@ def validate_sources(errors: list[str]) -> None:
         errors.append(sync.stderr.strip() or sync.stdout.strip() or "Rulebook synchronization failed")
 
     rulebook = RULEBOOK.read_text(encoding="utf-8")
+    reference = REFERENCE.read_text(encoding="utf-8")
     require_contains(rulebook, FACTION_CHAPTERS, "Rulebook Markdown", errors)
     require_contains(rulebook, FACTION_RULES, "Rulebook Markdown", errors)
+    require_contains(rulebook, PR336_RULEBOOK_TEXT, "PR #336 Rulebook clarification", errors)
+    require_contains(reference, PR336_REFERENCE_TEXT, "PR #336 Reference Guide clarification", errors)
     for leader, image in LEADERS:
         if f"## {leader}" not in rulebook:
             errors.append(f"Rulebook Markdown is missing Leader page {leader!r}")
@@ -190,6 +209,7 @@ def validate_generated(errors: list[str]) -> None:
     docx_text = "\n".join(paragraph.text for paragraph in document.paragraphs)
     require_contains(docx_text, tuple(name for name, _ in LEADERS), "Rulebook DOCX", errors)
     require_contains(docx_text, FACTION_RULES, "Rulebook DOCX", errors)
+    require_contains(docx_text, PR336_RULEBOOK_TEXT, "PR #336 Rulebook DOCX clarification", errors)
     for value in FORBIDDEN_PLAYER_TEXT:
         if value in docx_text:
             errors.append(f"Rulebook DOCX contains internal or obsolete text {value!r}")
@@ -214,6 +234,7 @@ def validate_generated(errors: list[str]) -> None:
     reader_text = "\n".join((page.extract_text() or "") for page in reader.pages)
     require_contains(reader_text, tuple(name for name, _ in LEADERS), "Rulebook reader PDF", errors)
     require_contains(reader_text, FACTION_RULES, "Rulebook reader PDF", errors)
+    require_contains(reader_text, PR336_RULEBOOK_TEXT, "PR #336 reader-PDF clarification", errors)
     for value in FORBIDDEN_PLAYER_TEXT:
         if value in reader_text:
             errors.append(f"Rulebook reader PDF contains internal or obsolete text {value!r}")
@@ -233,6 +254,7 @@ def validate_generated(errors: list[str]) -> None:
             errors.append(f"Booklet PDF is not landscape Letter: {width} x {height} points")
     booklet_text = "\n".join((page.extract_text() or "") for page in booklet.pages)
     require_contains(booklet_text, tuple(name for name, _ in LEADERS), "Booklet PDF", errors)
+    require_contains(booklet_text, PR336_RULEBOOK_TEXT, "PR #336 booklet-PDF clarification", errors)
 
 
 def main() -> int:
@@ -254,8 +276,9 @@ def main() -> int:
     mode = "strict generated" if args.strict_generated else "source"
     print(
         f"Gauntlet v0.6.1 Rulebook {mode} validation passed: complete faction chapters, "
-        "twelve illustrated Leader pages, internal editorial separation, shared typography, "
-        "half-letter reader edition, and imposed booklet package."
+        "twelve illustrated Leader pages, PR #336 Defender's Advantage preservation, "
+        "internal editorial separation, shared typography, half-letter reader edition, "
+        "and imposed booklet package."
     )
     return 0
 
