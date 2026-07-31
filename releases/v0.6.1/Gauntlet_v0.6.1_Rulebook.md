@@ -13,42 +13,51 @@
 Gauntlet is a two-player tactical card-and-territory game. Each player builds a Deck, chooses one of six factions and one of that faction's Leaders, and contributes three Territories to a shared six-Territory battlefield called the **Gauntlet**.
 
 Players advance toward one another, fight battles, occupy and capture opposing Territories, develop Assets, and pursue faction-specific plans. The normal way to win is to cross the entire battlefield, capture the opponent's final Territory, force a Last Stand beyond the Gauntlet, and win that battle.
+---
 
-This rulebook is written in two layers. Each major section begins with **How it works**, which teaches the ordinary rule in clear language. **Complete rules** follows with exact timing, exceptions, and edge cases. The two layers are parts of the same rulebook and do not contradict one another.
+# How to Use This Rulebook
+
+The rulebook is organized to teach the game in the order a new player needs it.
+
+- **Part I — Learn to Play** explains the shared game from components through victory.
+- **Part II — Complete Shared Rules** contains deck construction and technical interaction rules.
+- **Part III — Factions** explains the six factions, their Leaders, components, procedures, and alternate victories.
+- **Part IV — Reference** provides compact turn and battle sequences, a glossary, and the copyright and playtest-use notice.
+
+Major chapters use two layers. **How it works** teaches the ordinary rule in direct language. **Complete rules** gives exact timing, exceptions, and edge cases. Read the How it works layer first when learning; use Complete rules to resolve precise questions.
+
+# Game at a Glance
+
+Each player begins just outside their end of a six-Territory battlefield. On your turn, draw a card, take one Action Opportunity before or after moving, and advance, hold, or withdraw. Entering the opponent's position begins a battle.
+
+In battle, each player may risk one card from Hand as a Gambit, then draws a temporary three-card Reserve and may choose one card as a Tactic. Card effects and dice determine the winner. The loser retreats, and the winner occupies or keeps the contested position.
+
+Winning an attack does not capture a Territory immediately. The attacker must remain there through the opponent's turn and capture it at the start of their next turn. This creates a counterattack window and makes control change through sustained pressure rather than one die roll.
+
+# How to Win
+
+The normal victory is to **run the Gauntlet**:
+
+1. cross the Territory column;
+2. force the opponent beyond their final Territory;
+3. capture that final Territory;
+4. advance beyond the Gauntlet to begin a Last Stand battle; and
+5. win that battle.
+
+Every faction can win this way. Some factions also have an alternate victory condition described in Part III.
+
+# Golden Rules
+
+- When a specific card, Leader, faction, Territory, or component rule conflicts with a general rule, follow the specific rule.
+- **May** means an effect is optional. **Must** means it is required.
+- Resolve instructions in the order written.
+- Complete as much of an instruction as possible unless the missing part is a required cost, requirement, or target.
 
 ---
 
-# Rules Conventions
+---
 
-## How it works
-
-Follow the instructions on cards and components. When a specific rule conflicts with a general rule, the specific rule wins. Do as much of an instruction as possible unless the missing part is a required cost, requirement, or target.
-
-## Complete rules
-
-- **May** indicates an optional effect. **Must** indicates a required effect.
-- Resolve instructions in the order written unless another rule establishes a different order.
-- When a card, Leader, faction, Territory, or supplemental-component rule conflicts with a general rule, follow the specific rule.
-- Card text changes a card's normal destination only to the extent stated.
-- If an instruction cannot be completed in full, complete as much as possible unless the uncompleted instruction is a required cost, requirement, or target.
-- An effect resolves only at its stated timing. Revealing a card early does not cause a later portion of its effect to resolve early.
-- An effect cannot be canceled or negated after it has resolved.
-
-## Playing cards
-
-A card may have several printed effects. The way the card enters play determines which effect is used.
-
-- **Action:** play during an Action Opportunity.
-- **Gambit:** set only as a Gambit.
-- **Tactic:** choose only as a Tactic.
-- **Battle:** use as either a Gambit or Tactic.
-- **Mission:** use only as instructed by Intelligence rules.
-
-Faction guides and individual cards may define additional printed headings, such as **Terms**, **Asset**, **Overlay**, **Loan**, or **Effect**. Those headings use the timing and procedure stated by their governing text. They do not make a card eligible as a Gambit or Tactic unless the card also has an eligible Gambit, Tactic, or Battle effect.
-
-Playing a card for one printed effect does not activate its other printed effects unless a rule says otherwise.
-
-Setting a Gambit or choosing a Tactic places the card in battle. It does not resolve immediately unless stated. A face-up Gambit or Tactic still waits for its normal reveal timing unless an effect says otherwise.
+# Part I — Learn to Play
 
 ---
 
@@ -56,118 +65,98 @@ Setting a Gambit or choosing a Tactic places the card in battle. It does not res
 
 ## How it works
 
-Each player brings one complete Deck, one Player Token, and a six-sided die. A Deck contains a faction, one Leader, a Playable Deck of cards, three Territories, and any faction-specific components.
-
-The players place their three Territories together to form the six-position battlefield.
+For a first game, use two prepared or recommended Decks. Each player needs one complete Deck, one Player Token, and a six-sided die. The two players' three-Territory sets join to form the six-position Gauntlet.
 
 ## Complete rules
 
 Each player needs:
 
-- one **Deck**;
+- one complete **Deck**;
 - one **Player Token**; and
 - one six-sided die.
 
 The players may share a die.
 
-A **Deck** consists of:
+A complete Deck contains:
 
-- one **Faction**;
-- one **Leader Card**;
-- one **Playable Deck**;
-- three different **Territory Cards**; and
-- any required faction- or Leader-specific supplemental cards or components.
+- one faction;
+- one Leader Card from that faction;
+- one Playable Deck;
+- three different Territory Cards; and
+- any components required by that faction or Leader.
 
-Supplemental cards, reference cards, trackers, Deeds, Proposals, Rites, and similar components are part of the Deck but are not part of the Playable Deck unless a rule explicitly says otherwise. Missions and Special Operations are eligible cards from the Intelligence player's Playable Deck, not supplemental cards.
-
-Together, both players' Territory Cards form the **Gauntlet**, a single six-Territory column.
-
-### Faction supplemental cards and trackers
-
-Faction supplemental components keep each faction's public resources, progress, choices, and special procedures visible. Place them beside the Leader before play begins. They are game aids and state records, not cards that can normally be drawn or played.
-
-Reference cards summarize the faction's procedures. Trackers record changing public values. Double-sided cards record whether a Proposal or Rite has changed state. Other components, such as Deeds and the Capital Ledger, remain on the table as instructed by their faction rules.
-
-#### General use
-
-- Keep every supplemental component face up and visible unless its own rules say otherwise.
-- Begin each tracker at the faction's stated starting value and update it immediately whenever that value changes.
-- For a sliding tracker, place the indicated Leader or Reference Card over the tracker. Fully cover the tracker at 0, then slide the covering card until its bottom edge aligns with the current value.
-- A counter, dial, written record, or other substitute may be used when it shows the same public information clearly and unambiguously.
-- A reference card is a reminder, not a separate rules authority. If its shortened text omits a detail, follow this rulebook and the definitive faction guide.
-- A double-sided supplemental card changes state only when its governing rule tells you to flip it. Keep any attached or bound cards with it so both players can identify the relationship.
-- Supplemental components have no deckbuilding value and are not eligible as Gambits, Tactics, costs, collateral, Transmutation cards, Treasury cards, or other playable cards unless a rule explicitly says otherwise.
-- Each player supplies and controls their own faction package unless a faction rule identifies a shared supply. In a mirror match, keep the two players' components separated and oriented toward their owners.
-
-#### Military package
-
-Use the selected Leader Card and the **Command Tracker**. Begin at 0 Command with the tracker fully covered by the Leader. Slide the Leader to 1 or 2 whenever Command changes. The Leader Card lists that Leader's three Orders; spend Command only at an Order's stated timing.
-
-#### Diplomat package
-
-Use the selected Leader Card, **Influence Tracker**, double-sided **Diplomat Reference Card**, and nine double-sided **Proposal / Treaty Article cards**. Begin at 1 Influence and place every Proposal with its Proposal side up. Lower the tracker when Influence is staked or spent and raise it when Influence returns or is gained. Flip an unratified Proposal to its Treaty Article side only when it is ratified. Leave ratified Articles face up so progress toward the Peace Treaty is public.
-
-#### Financier package
-
-Use the selected Leader Card, **Financier Reference Card**, public **Capital Ledger**, and eight identical **Deed Cards** in a shared supply. Begin with 0 Capital and an empty Treasury. Record every Capital gain, spend, loss, and end-turn reduction as a new Ledger transaction with a running Balance. When a Deed is bought, place one Deed Card beside its Territory on the owner's side; move it during a buyout and return it to the supply if it becomes unowned. A Deed is not an Asset or Overlay.
-
-#### Intelligence package
-
-Use the selected Leader Card, **Mission Reference Card**, **Operations Reference Card**, **Intel Tracker**, and **Operation Progress Tracker**. Both tracked values begin at 0 and have no maximum. Place the Intel Tracker beneath the Operations Reference and the Operation Progress Tracker beneath the Mission Reference, then slide the covering card to the current value. Record values beyond the printed track separately. An Active Mission or Special Operation is an eligible card from the Playable Deck placed face down near the Leader; the reference cards themselves never become Missions.
-
-#### Mystics package
-
-Use the selected Leader Card, **Mystics Reference Card**, and the three double-sided **Rite cards**: Rite of Echoes, Rite of Blood, and Rite of Crossing. Begin with every Rite incomplete-side up. Keep a begun Rite and any cards bound to it together. Flip the Rite when it is completed; reset it to the incomplete side when its rules say it is interrupted. After all three are complete, keep the three cards bound to the Ritual of Ascendance together in a clearly marked area near the Leader. Mystics use no resource tracker.
-
-#### Inquisition package
-
-Use the selected Leader Card, **Inquisition Doctrine Reference Card**, **Purge Reference Card**, and **Conviction Tracker**. Begin at 0 Conviction with the tracker fully covered by the Leader. Slide the Leader to show the current value, to a maximum of 4. Use the Doctrine Reference to remember Condemnation, Blasphemy, and Purification; use the Purge Reference to choose and pay for a Purge.
+Together, both players' Territory Cards form the **Gauntlet**, a single six-Territory column. The exact construction requirements for a custom Deck appear in Chapter 10. Faction packages and their starting states appear in Part III.
 
 ---
 
-# 2. Building a Deck
+# 2. Cards, Zones, and the Play Area
 
 ## How it works
 
-Choose one faction and one of its two Leaders. Build a Playable Deck of at least 30 cards with no more than 60 total deckbuilding value. Use Neutral cards and cards from your chosen faction. Then choose three different Territories.
+Keep every group of cards visibly separate. Your Hand is the permanent private set of cards you hold between turns. Your Draw Pile supplies cards; the Discard Pile is recyclable; the Graveyard normally is not. Assets remain face up in your Asset Bank.
 
-## Complete rules
+A battle creates three temporary areas: a Gambit set from Hand, a three-card Reserve drawn from the Draw Pile, and a Tactic chosen from that Reserve.
 
-### Choose a faction and Leader
+## Printed card effects
 
-Choose one faction, then choose one Leader belonging to that faction. Both players may choose the same faction or Leader.
+A card may have several printed effects. The way it is used determines which effect resolves.
 
-The Leader Card begins face up and remains available throughout the game.
+- **Action:** play from Hand during an Action Opportunity.
+- **Gambit:** set from Hand during a battle.
+- **Tactic:** choose from Reserve during a battle.
+- **Battle:** may be used as either a Gambit or a Tactic.
 
-### Build the Playable Deck
+Playing or using one printed effect does not activate the card's other printed effects unless a rule says otherwise.
 
-A Playable Deck must contain:
+Setting a Gambit or choosing a Tactic places the card in battle. It does not resolve immediately. Gambits and Tactics resolve at their normal reveal stages even when an effect causes them to become face up early, unless that effect says otherwise.
 
-- at least **30 cards**;
-- no more than **60 total deckbuilding value**; and
-- only Neutral cards and cards belonging to the selected faction.
+Faction cards may contain other headings. Those headings use the procedure stated in the relevant faction subsection and do not make a card eligible as a Gambit or Tactic unless it also has a Gambit, Tactic, or Battle effect.
 
-Unless marked **Unique**, a card may appear in any quantity permitted by the available card pool. A Unique card is limited to one copy in the Playable Deck.
+## Play area and zones
 
-### Choose Territories
+### Draw Pile
 
-Choose exactly three different Territory Cards.
+The face-down pile formed from the Playable Deck. Draw cards from its top.
 
-- No more than one may be an **Arena**.
-- Territory Cards are not part of the Playable Deck.
-- Territories do not count toward the 30-card minimum or 60-value maximum.
-- Both players may choose the same Territory titles.
+### Hand
 
-### Supplemental components
+The private cards held by a player. The normal Hand limit is three at end-of-turn Cleanup. Setting the Hand physically aside during a battle does not move those cards to another zone.
 
-Prepare all components required by the chosen faction and Leader.
+### Discard Pile
 
-Unless a rule says otherwise, supplemental components:
+A face-up pile of recyclable cards. When a Draw Pile cannot complete a draw, shuffle the Discard Pile to form a new Draw Pile.
 
-- are not part of the Playable Deck;
-- are not shuffled into the Draw Pile;
-- cannot be drawn, played, discarded, banked, or placed in the Graveyard; and
-- do not count toward deck size or deckbuilding value.
+### Graveyard
+
+A face-up pile outside normal circulation. Cards there are not reshuffled unless an effect moves them.
+
+### Asset Bank
+
+The public area containing a player's banked Assets.
+
+### Gambit area
+
+The temporary area containing cards set from Hand as Gambits for the current battle. Gambits normally go to their owners' Graveyards during the Aftermath.
+
+### Reserve
+
+A temporary private zone formed during one battle. Each player normally draws three cards to form it. Reserve is separate from Hand, and its owner may inspect and arrange it freely. Cards remaining there normally go to the Discard Pile during the Aftermath.
+
+### Tactic area
+
+The temporary area containing cards chosen or added as Tactics for the current battle. Tactics normally go to their owners' Discard Piles during the Aftermath.
+
+### Leader and faction area
+
+Keep the Leader and all faction trackers, references, progress cards, and other public faction components together and visible. Part III explains each faction's exact arrangement.
+
+### Territories and Player Tokens
+
+Territory orientation shows control: the player a Territory faces controls it. A Player Token shows the position that player occupies. Occupation and control are related but are not the same; Chapter 8 explains how control changes.
+
+### Action Opportunity
+
+An Action Opportunity is the point during a turn when a player may play one card for its Action effect or perform a rule or faction action that explicitly uses that opportunity. Chapter 4 explains when it occurs.
 
 ---
 
@@ -210,7 +199,9 @@ Cards in different zones must remain visibly separate even when space is limited
 
 ---
 
-# 4. Turn Structure
+---
+
+# 4. Your Turn
 
 ## How it works
 
@@ -262,13 +253,60 @@ Resolve end-of-turn effects. If the active player has more than three cards in H
 
 ---
 
-# 5. Movement
+---
+
+# 5. Actions and Assets
+
+## How it works
+
+During your Action Opportunity, play one card for its Action effect or use a faction action. Most one-time Actions go to the Discard Pile. Some cards become **Assets**, which stay in play and provide later effects.
+
+Your Asset limit equals the number of Territories you control. When banking a new Asset at the limit, you may discard one existing Asset to make room.
+
+## Complete rules
+
+### Action effects
+
+To play a card for its Action effect:
+
+1. play it from Hand during an Action Opportunity;
+2. satisfy all requirements and costs;
+3. resolve the Action effect; and
+4. put it in the Discard Pile unless it becomes an Asset or Overlay or specifies another destination.
+
+### Assets
+
+A card is an Asset only when an effect banks it in the Asset Bank.
+
+A player's Asset limit equals the number of Territories they control.
+
+- A Territory occupied but not controlled does not increase the limit.
+- If the limit falls below the number of Assets controlled, immediately discard Assets until within the limit.
+- An inactive Asset still counts unless a rule says otherwise.
+
+### Replacing an Asset
+
+When banking an Asset at the Asset limit, the player may discard one Asset they control to make room and bank the new Asset during the same Action Opportunity.
+
+An effect that prevents an Asset from leaving play also prevents replacing it this way. Any consequence of the replaced Asset leaving play still occurs.
+
+### Activating and discarding Assets
+
+Use **activate** when using an Asset's printed ability. If the effect requires the Asset to be discarded, put it in its owner's Discard Pile unless stated otherwise.
+
+Whenever a player could play a card for its Action effect, they may instead discard one Asset they control. This uses the Action Opportunity.
+
+---
+
+---
+
+# 6. Movement and Position
 
 ## How it works
 
 During movement, you may move one position toward the opponent, remain where you are, or move one position toward your own end. Entering the opponent's position starts a battle.
 
-A battle stops the current movement. Winning does not automatically let you continue moving; follow-up movement must come from an Order, card, or other specific effect.
+A battle stops the current movement. Winning does not automatically let you continue moving; follow-up movement must come from a card, Leader ability, or other specific effect.
 
 ## Complete rules
 
@@ -298,7 +336,9 @@ A player moves after a battle only when a rule or effect explicitly permits it. 
 
 ---
 
-# 6. Battles
+---
+
+# 7. Battles
 
 ## How it works
 
@@ -327,7 +367,7 @@ Resolve each battle in this order:
 
 Establish the attacker, defender, and contested position. Resolve effects that occur when a battle would begin, when a battle opens, or before Gambits are set.
 
-A mechanic such as Terms may prevent the pending battle. If no battle is fought, battle, victory, loss, and Aftermath triggers do not occur.
+A faction, Leader, card, or Territory effect may prevent the pending battle. If no battle is fought, battle, victory, loss, and Aftermath triggers do not occur.
 
 ### 2. Set Gambits
 
@@ -391,77 +431,15 @@ The higher battle total wins.
 
 If a tie is not resolved by Defender's Advantage or another effect, both players reroll. Cards and effects already in use remain active.
 
-### Shared-timing rule
+## The Aftermath
 
-When multiple controlled effects resolve at the same time:
-
-1. the attacker resolves one effect they control;
-2. the defender resolves one effect they control;
-3. continue alternating until no effects remain at that timing.
-
-Each player chooses the order of effects they control. Simultaneous reveal does not mean simultaneous resolution.
-
-### Multiple and additional Gambits or Tactics
-
-An effect may allow a player to set or choose more than the normal limit. Unless stated otherwise, that permission is optional.
-
-When a player may choose more than one Tactic, they choose all of them simultaneously. Each remains a separate Tactic.
-
-When an effect permits an **additional Tactic** after the normal choice:
-
-- the card must have an eligible Tactic or Battle effect;
-- if Tactics are already revealed, play it face up;
-- resolve only effects whose timing remains available;
-- do not reopen Tactic choices, reveal timing, Surveillance, or Interference; and
-- follow the normal Tactic destination unless stated otherwise.
-
-### Replacements and revisions
-
-A replacement takes the same role as the card it replaces.
-
-- A replacement Gambit must be Gambit-eligible.
-- A replacement Tactic must be Tactic-eligible.
-- Place it in the face state instructed by the replacing effect.
-- Replacement does not reopen an earlier timing window.
-- Only unresolved effects whose timing remains available can resolve.
-
-When an effect lets a player revise a choice, the revised choice does not create another reveal, Surveillance, Interference, or replacement opportunity unless stated otherwise.
-
-### Reveal and information
-
-To reveal a face-down card, turn it face up and leave it face up.
-
-To reveal a Hand or Reserve, its owner shows the entire zone to the opponent. The cards remain in that zone.
-
-### Negation
-
-A negated card has no effect but remains in battle and keeps its role and normal destination unless stated otherwise.
-
-An effect cannot be negated after it resolves.
-
-### Copied effects
-
-When instructed to resolve another card's printed effect:
-
-- resolve only the specified effect;
-- treat **you** and **your** as the player resolving it;
-- treat **this card** as the card whose text is being resolved;
-- pay all costs and satisfy all requirements, targets, and timing restrictions;
-- do not move the source card unless instructed;
-- do not reopen an earlier timing window; and
-- do not choose another effect that itself resolves another effect unless expressly allowed.
-
----
-
-# 7. The Aftermath of the Battle
-
-## How it works
+### How it works
 
 After the dice determine a winner, resolve the consequences of the battle. The loser retreats, the winner takes or keeps the contested position, and any additional retreat or capture effects occur. Then battle cards go to their normal destinations.
 
 Gambits go to the Graveyard. Tactics and cards left in Reserve go to the Discard Pile. Remember: **Gambits go to the Graveyard.**
 
-## Complete rules
+### Complete rules
 
 Resolve the Aftermath in this order:
 
@@ -475,7 +453,7 @@ Resolve the Aftermath in this order:
 8. Resolve effects triggered by those destinations.
 9. Resolve effects at the end of the Aftermath, including follow-up movement.
 
-### Normal result
+#### Normal result
 
 Unless an effect says otherwise:
 
@@ -486,7 +464,7 @@ Unless an effect says otherwise:
 
 Additional retreats resolve one position at a time. A player cannot retreat through the opponent. A player on their final Territory may retreat beyond the Gauntlet normally.
 
-### Normal card destinations
+#### Normal card destinations
 
 During the destination step:
 
@@ -498,7 +476,7 @@ A card-specific instruction overrides the normal destination.
 
 A card returned to its **source** returns to the zone from which it entered battle unless another rule gives it a different destination.
 
-### Result and destination triggers
+#### Result and destination triggers
 
 Immediate victory triggers occur before retreat unless the effect states otherwise. Effects that require the final occupied position occur after retreat and occupation. Effects triggered by cards entering a destination occur after the cards move there.
 
@@ -506,21 +484,21 @@ Effects at the **end of the Aftermath** occur after normal destinations and dest
 
 ---
 
-# 8. Withdrawal and Retreat
+## Withdrawal and Retreat
 
-## How it works
+### How it works
 
 **Withdrawal** is leaving a battle without determining a winner. **Retreat** is forced movement after losing. They are not the same.
 
 When an effect causes withdrawal, the battle ends immediately. No one wins or loses, so win, loss, and retreat effects do not happen. The players still clean up their battle cards normally.
 
-## Complete rules
+### Complete rules
 
-### Voluntary movement withdrawal
+#### Voluntary movement withdrawal
 
 During the Movement step, a player may move one position toward their own end. This is ordinary movement and does not begin a battle.
 
-### Effect-caused withdrawal from battle
+#### Effect-caused withdrawal from battle
 
 Unless the effect says otherwise, withdrawal ends the battle immediately.
 
@@ -536,7 +514,7 @@ Movement:
 - a defending player moves one position toward their own end, and the attacker occupies the contested position;
 - if both withdraw, move the attacker first, then the defender.
 
-### Withdrawal during opening effects
+#### Withdrawal during opening effects
 
 If an effect causes one or both players to withdraw during opening effects and prevents the pending battle, use the same attacker and defender movement above. Because no battle is fought:
 
@@ -545,10 +523,7 @@ If an effect causes one or both players to withdraw during opening effects and p
 - no battle-card destinations or cleanup occur.
 
 The established attacker and defender roles are used only to determine the withdrawal movement. Resolve any remaining instructions from the effect or accepted Terms after that movement.
-
-If a battle following refused Terms ends through withdrawal, return the Stake and do not impose or ratify the Proposal unless a specific rule says otherwise.
-
-### Retreat
+#### Retreat
 
 Retreat is forced displacement after losing a battle. It is not movement or withdrawal.
 
@@ -556,7 +531,9 @@ Effects that trigger from movement or withdrawal do not trigger from retreat unl
 
 ---
 
-# 9. Territory Control
+---
+
+# 8. Territory Control and Capture
 
 ## How it works
 
@@ -590,7 +567,9 @@ Because ordinary capture occurs at the start of the occupying player's next turn
 
 ---
 
-# 10. Running the Gauntlet
+---
+
+# 9. Running the Gauntlet
 
 ## How it works
 
@@ -625,100 +604,143 @@ Territory-specific effects do not apply in a Last Stand battle unless they expre
 
 ---
 
-# 11. Game Zones
+---
 
-## How it works
-
-Keep cards in clearly defined places. Your **Hand** is your permanent private set of cards. A **Reserve** exists only during one battle. The **Discard Pile** cycles back into the Draw Pile, while the **Graveyard** normally does not.
-
-## Complete rules
-
-### Draw Pile
-
-The face-down pile formed from the Playable Deck.
-
-### Hand
-
-The private cards held by a player. The normal Hand limit is three at end-of-turn cleanup.
-
-Setting a Hand aside during battle does not move its cards to another zone.
-
-### Reserve
-
-A temporary private zone formed during one battle. It is separate from the Hand. Its owner may inspect it freely.
-
-At the end of the battle, cards remaining in Reserve normally go to the Discard Pile.
-
-### Gambit area
-
-The area containing cards set as Gambits for the current battle. Gambits normally go to the Graveyard during the Aftermath.
-
-### Tactic area
-
-The area containing cards chosen or played as Tactics for the current battle. Tactics normally go to the Discard Pile during the Aftermath.
-
-### Discard Pile
-
-A face-up pile of recyclable cards. When a Draw Pile cannot complete a draw, shuffle the Discard Pile to form a new Draw Pile.
-
-### Graveyard
-
-A face-up pile outside normal circulation. Cards there are not reshuffled unless an effect moves them.
-
-### Asset Bank
-
-The public area containing a player's banked Assets.
-
-### Faction zones
-
-A faction may create additional named zones such as Treasury, bound cards, Mission areas, or progress tracks. Follow the rules that create them.
+# Part II — Complete Shared Rules
 
 ---
 
-# 12. Actions and Assets
+# 10. Constructing a Deck
 
 ## How it works
 
-During your Action Opportunity, play one card for its Action effect or use a faction action. Most one-time Actions go to the Discard Pile. Some cards become **Assets**, which stay in play and provide later effects.
-
-Your Asset limit equals the number of Territories you control. When banking a new Asset at the limit, you may discard one existing Asset to make room.
+Choose one faction and one of its two Leaders. Build a Playable Deck of at least 30 cards with no more than 60 total deckbuilding value. Use Neutral cards and cards from your chosen faction. Then choose three different Territories.
 
 ## Complete rules
 
-### Action effects
+### Choose a faction and Leader
 
-To play a card for its Action effect:
+Choose one faction, then choose one Leader belonging to that faction. Both players may choose the same faction or Leader.
 
-1. play it from Hand during an Action Opportunity;
-2. satisfy all requirements and costs;
-3. resolve the Action effect; and
-4. put it in the Discard Pile unless it becomes an Asset or Overlay or specifies another destination.
+The Leader Card begins face up and remains available throughout the game.
 
-### Assets
+### Build the Playable Deck
 
-A card is an Asset only when an effect banks it in the Asset Bank.
+A Playable Deck must contain:
 
-A player's Asset limit equals the number of Territories they control.
+- at least **30 cards**;
+- no more than **60 total deckbuilding value**; and
+- only Neutral cards and cards belonging to the selected faction.
 
-- A Territory occupied but not controlled does not increase the limit.
-- If the limit falls below the number of Assets controlled, immediately discard Assets until within the limit.
-- An inactive Asset still counts unless a rule says otherwise.
+Unless marked **Unique**, a card may appear in any quantity permitted by the available card pool. A Unique card is limited to one copy in the Playable Deck.
 
-### Replacing an Asset
+### Choose Territories
 
-When banking an Asset at the Asset limit, the player may discard one Asset they control to make room and bank the new Asset during the same Action Opportunity.
+Choose exactly three different Territory Cards.
 
-An effect that prevents an Asset from leaving play also prevents replacing it this way. Any consequence of the replaced Asset leaving play still occurs.
+- No more than one may be an **Arena**.
+- Territory Cards are not part of the Playable Deck.
+- Territories do not count toward the 30-card minimum or 60-value maximum.
+- Both players may choose the same Territory titles.
 
-### Activating and discarding Assets
+### Supplemental components
 
-Use **activate** when using an Asset's printed ability. If the effect requires the Asset to be discarded, put it in its owner's Discard Pile unless stated otherwise.
+Prepare all components required by the chosen faction and Leader.
 
-Whenever a player could play a card for its Action effect, they may instead discard one Asset they control. This uses the Action Opportunity.
+Unless a rule says otherwise, supplemental components:
+
+- are not part of the Playable Deck;
+- are not shuffled into the Draw Pile;
+- cannot be drawn, played, discarded, banked, or placed in the Graveyard; and
+- do not count toward deck size or deckbuilding value.
 
 ---
 
-# 13. Overlays
+---
+
+# 11. Detailed Card and Timing Rules
+
+## How it works
+
+Most games can be played from the Learn to Play rules. Use this chapter when cards or faction abilities interact at the same timing, reveal information early, add or replace battle cards, copy effects, or change normal destinations.
+
+## Complete rules
+
+- **May** indicates an optional effect. **Must** indicates a required effect.
+- Resolve instructions in the order written unless another rule establishes a different order.
+- When a card, Leader, faction, Territory, or supplemental-component rule conflicts with a general rule, follow the specific rule.
+- Card text changes a card's normal destination only to the extent stated.
+- If an instruction cannot be completed in full, complete as much as possible unless the uncompleted instruction is a required cost, requirement, or target.
+- An effect resolves only at its stated timing. Revealing a card early does not cause a later portion of its effect to resolve early.
+- An effect cannot be canceled or negated after it has resolved.
+
+## Battle timing and card interaction
+
+## Shared-timing rule
+
+When multiple controlled effects resolve at the same time:
+
+1. the attacker resolves one effect they control;
+2. the defender resolves one effect they control;
+3. continue alternating until no effects remain at that timing.
+
+Each player chooses the order of effects they control. Simultaneous reveal does not mean simultaneous resolution.
+
+## Multiple and additional Gambits or Tactics
+
+An effect may allow a player to set or choose more than the normal limit. Unless stated otherwise, that permission is optional.
+
+When a player may choose more than one Tactic, they choose all of them simultaneously. Each remains a separate Tactic.
+
+When an effect permits an **additional Tactic** after the normal choice:
+
+- the card must have an eligible Tactic or Battle effect;
+- if Tactics are already revealed, play it face up;
+- resolve only effects whose timing remains available;
+- do not reopen Tactic choices, reveal timing, Surveillance, or Interference; and
+- follow the normal Tactic destination unless stated otherwise.
+
+## Replacements and revisions
+
+A replacement takes the same role as the card it replaces.
+
+- A replacement Gambit must be Gambit-eligible.
+- A replacement Tactic must be Tactic-eligible.
+- Place it in the face state instructed by the replacing effect.
+- Replacement does not reopen an earlier timing window.
+- Only unresolved effects whose timing remains available can resolve.
+
+When an effect lets a player revise a choice, the revised choice does not create another reveal, Surveillance, Interference, or replacement opportunity unless stated otherwise.
+
+## Reveal and information
+
+To reveal a face-down card, turn it face up and leave it face up.
+
+To reveal a Hand or Reserve, its owner shows the entire zone to the opponent. The cards remain in that zone.
+
+## Negation
+
+A negated card has no effect but remains in battle and keeps its role and normal destination unless stated otherwise.
+
+An effect cannot be negated after it resolves.
+
+## Copied effects
+
+When instructed to resolve another card's printed effect:
+
+- resolve only the specified effect;
+- treat **you** and **your** as the player resolving it;
+- treat **this card** as the card whose text is being resolved;
+- pay all costs and satisfy all requirements, targets, and timing restrictions;
+- do not move the source card unless instructed;
+- do not reopen an earlier timing window; and
+- do not choose another effect that itself resolves another effect unless expressly allowed.
+
+---
+
+---
+
+# 12. Overlays and Other Shared Card Rules
 
 ## How it works
 
@@ -748,16 +770,49 @@ On an Overlay, **you** means its current controller unless the text identifies i
 
 ---
 
-# 14. Military
+---
+
+# Part III — Factions
+
+# 13. Factions
+
+## How Factions Work
+
+Each Deck belongs to one faction and uses one of that faction's two Leaders. The faction determines which faction cards may be included, which supplemental components are prepared, which public resources or progress are tracked, and which faction-specific actions and procedures are available.
+
+Every faction may still win by running the Gauntlet. Some factions also have an alternate victory condition. An alternate victory applies only when its complete faction rules are satisfied.
+
+Read the shared Learn to Play rules first. Then read the subsection for the faction and Leader used in the game. Players do not need to learn every other faction before their first game, but both players should be able to inspect all public faction rules and components in use.
+
+## Faction Components
+
+Faction packages use Leader Cards, reference cards, trackers, double-sided progress cards, shared supplies, or other public components. The relevant faction subsection identifies its exact package and starting state.
+
+Reference cards summarize procedures but do not replace the rulebook. If shortened reference text omits a detail, follow the complete faction rules below.
+
+### General use
+
+- Keep every supplemental component face up and visible unless its own rules say otherwise.
+- Begin each tracker at the faction's stated starting value and update it immediately whenever that value changes.
+- For a sliding tracker, place the indicated Leader or Reference Card over the tracker. Fully cover the tracker at 0, then slide the covering card until its bottom edge aligns with the current value.
+- A counter, dial, written record, or other substitute may be used when it shows the same public information clearly and unambiguously.
+- A reference card is a reminder, not a separate rules authority. If its shortened text omits a detail, follow this rulebook and the definitive faction guide.
+- A double-sided supplemental card changes state only when its governing rule tells you to flip it. Keep any attached or bound cards with it so both players can identify the relationship.
+- Supplemental components have no deckbuilding value and are not eligible as Gambits, Tactics, costs, collateral, Transmutation cards, Treasury cards, or other playable cards unless a rule explicitly says otherwise.
+- Each player supplies and controls their own faction package unless a faction rule identifies a shared supply. In a mirror match, keep the two players' components separated and oriented toward their owners.
+
+<!-- GENERATED FACTION CONTENT START -->
+
+## Military
 
 
-## How it works
+### How it works
 
 The Military turns battle victories into **Command**, then spends Command on Leader-specific **Orders**. The General uses Orders to attack, reinforce, and pursue. The Commandant uses them to defend, repel, and capture.
 
 Military has no alternate victory condition. It wins by running the Gauntlet.
 
-## Complete rules
+### Complete rules
 
 | Element | Military rule |
 |---|---|
@@ -768,7 +823,7 @@ Military has no alternate victory condition. It wins by running the Gauntlet.
 | Faction pool | 12 Military card titles. |
 | Unique card | Shock and Awe, cost 5; maximum one copy per Playable Deck. |
 
-## Components and setup
+### Components and setup
 
 
 A Military Deck includes:
@@ -779,14 +834,14 @@ A Military Deck includes:
 
 Place the chosen Leader face up. Place the Command Tracker beneath it, fully covered, to show 0 Command. Slide the Leader upward to the 1 or 2 registration line as Command changes.
 
-## Command and Orders
+### Command and Orders
 
 
-### How it works
+#### How it works
 
 The first battle you win during each turn gives you 1 Command, even when you win while defending on the opponent's turn. Spend Command only when an Order reaches its printed timing.
 
-### Complete rules
+#### Complete rules
 
 Military may have up to 2 Command.
 
@@ -802,7 +857,7 @@ Determine the winner, then gain normal Command before resolving other effects ca
 
 <div class="page-break"></div>
 
-## General
+### General
 
 ![General](<images/sketches/general.png>)
 
@@ -810,7 +865,7 @@ Determine the winner, then gain normal Command before resolving other effects ca
 **Archetype:** Attack, forward pressure, and tempo  
 **Motto:** *Forward. Again.*
 
-### Orders
+#### Orders
 
 > **Onward — 1 Command:** During your Movement step, before a battle begins, move one additional position. This movement may start a battle.
 
@@ -822,7 +877,7 @@ Onward cannot be used after a battle. Rout creates a new movement sequence after
 
 <div class="page-break"></div>
 
-## Commandant
+### Commandant
 
 ![Commandant](<images/sketches/commandant.png>)
 
@@ -830,7 +885,7 @@ Onward cannot be used after a battle. Rout creates a new movement sequence after
 **Archetype:** Defense, counterattack, and control  
 **Motto:** *We hold. They break.*
 
-### Orders
+#### Orders
 
 > **Entrench — 1 Command:** Before dice are rolled in a battle you did not initiate, add +1 to your battle total.
 
@@ -838,33 +893,33 @@ Onward cannot be used after a battle. Rout creates a new movement sequence after
 
 > **Fortify — 2 Command:** During the Aftermath of a battle you won while occupying an enemy-controlled Territory, capture that Territory.
 
-## Military-specific rules
+### Military-specific rules
 
 
-### Initiating battles
+#### Initiating battles
 
 You initiated a battle when your movement or effect caused it to begin. A follow-up battle is a new battle with new Gambits, Reserves, Tactics, and once-per-battle opportunities.
 
-### Additional Tactics
+#### Additional Tactics
 
 Military effects may add Tactics after the normal Tactic reveal. Play such a card face up. Its effect must still be able to resolve at that timing. It does not reopen normal Tactic choice, Surveillance, Interference, or reveal windows.
 
-### Conflicting victory benefits
+#### Conflicting victory benefits
 
 War Crimes and Shock and Awe may prohibit movement, capture, or Orders resulting from the same victory. Apply only combinations of effects that can legally resolve together.
 
 ---
 
-# 15. Diplomats
+## Diplomats
 
 
-## How it works
+### How it works
 
 Before a battle begins, a Diplomat may offer **Terms**. The Diplomat stakes Influence and presents a Proposal. The opponent may accept, preventing the battle, or refuse and fight under the Proposal's refusal effect.
 
 Accepted or successfully imposed Proposals become Treaty Articles. Ratify five different Proposals and survive until the start of your next turn to win through the **Peace Treaty**.
 
-## Complete rules
+### Complete rules
 
 | Element | Diplomat rule |
 |---|---|
@@ -876,7 +931,7 @@ Accepted or successfully imposed Proposals become Treaty Articles. Ratify five d
 | Proposal set | Nine double-sided Proposal / Treaty Article cards. |
 | Faction pool | 12 Diplomat card titles. |
 
-## Components and setup
+### Components and setup
 
 
 A Diplomat Deck includes:
@@ -889,24 +944,24 @@ A Diplomat Deck includes:
 
 Begin with 1 Influence. Place all nine Proposals Proposal side up.
 
-## Influence and Terms
+### Influence and Terms
 
 
-### How it works
+#### How it works
 
 Influence pays for negotiation and can strengthen a battle after Terms are refused. To offer Terms, choose one Proposal whose Requirement is satisfied and stake its listed Influence.
 
 If the opponent accepts, no battle is fought. If the opponent refuses, resolve the Refused effect and continue to Gambits.
 
-### Complete rules
+#### Complete rules
 
-#### Influence
+##### Influence
 
 Diplomats begin with 1 Influence and may have up to 10.
 
 When Influence is staked or spent, lower the tracker. Staked Influence is unavailable until the Terms resolve. Influence gained above 10 is lost.
 
-#### Offering Terms
+##### Offering Terms
 
 Terms occur during opening effects after the attacker, defender, and contested position are established but before Gambits are set.
 
@@ -920,7 +975,7 @@ To offer Terms:
 
 A Diplomat may normally offer one Proposal for a pending battle.
 
-#### Diplomat mirrors
+##### Diplomat mirrors
 
 Only one player may offer Terms for a pending battle.
 
@@ -928,7 +983,7 @@ Only one player may offer Terms for a pending battle.
 2. If the attacker passes, the defender may offer.
 3. Once either player offers Terms, the other cannot offer Terms for that battle, even if the Proposal is refused.
 
-#### Accepted Terms
+##### Accepted Terms
 
 When Terms are accepted:
 
@@ -943,7 +998,7 @@ Accepted Terms do not create a battle, winner, loser, retreat, or Aftermath.
 
 A Stake-0 Proposal grants no Influence merely for being accepted.
 
-#### Refused Terms
+##### Refused Terms
 
 When Terms are refused:
 
@@ -964,13 +1019,13 @@ To **impose** a Proposal is to ratify it after winning the battle caused by its 
 
 Withdrawal produces no winner. Return the Stake and do not impose the Proposal.
 
-#### Leverage
+##### Leverage
 
 Before dice are rolled in a battle following refused Terms, the Diplomat may spend any amount of available Influence. Add +1 to the Diplomat's battle total for each Influence spent.
 
 Staked Influence cannot be spent as Leverage.
 
-#### Treaty Articles and Peace Treaty
+##### Treaty Articles and Peace Treaty
 
 A ratified Proposal is a Treaty Article. It may be offered again for its tactical effects but cannot be ratified again and grants no normal newly-ratified Influence reward.
 
@@ -979,7 +1034,7 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 
 <div class="page-break"></div>
 
-## Ambassador
+### Ambassador
 
 ![Ambassador](<images/sketches/ambassador.png>)
 
@@ -991,7 +1046,7 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 
 <div class="page-break"></div>
 
-## Senator
+### Senator
 
 ![Senator](<images/sketches/senator.png>)
 
@@ -1001,10 +1056,10 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 
 > **Political Capital:** Once per turn, when you would lose staked Influence after losing a battle following refused Terms, you may put up to that many cards from your Hand in your Graveyard. Recover 1 staked Influence for each card put there; lose the rest.
 
-## Proposal set
+### Proposal set
 
 
-### De-escalation
+#### De-escalation
 
 **Stake:** 0  
 **Requirement:** None
@@ -1013,7 +1068,7 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 >
 > **Refused:** Draw one card.
 
-### Orderly Withdrawal
+#### Orderly Withdrawal
 
 **Stake:** 0  
 **Requirement:** You must be attacking.
@@ -1022,7 +1077,7 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 >
 > **Refused:** Add +1 to your battle total.
 
-### Capitulation
+#### Capitulation
 
 **Stake:** 0  
 **Requirement:** You must be defending.
@@ -1031,7 +1086,7 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 >
 > **Refused:** If you lose, draw two cards.
 
-### Open Channels
+#### Open Channels
 
 **Stake:** 1  
 **Requirement:** You must have a card in Hand.
@@ -1040,7 +1095,7 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 >
 > **Refused:** Reveal the opponent's Hand. When forming your Reserve, draw one additional card.
 
-### Mutual Disarmament
+#### Mutual Disarmament
 
 **Stake:** 1  
 **Requirement:** Both players must have a card in Hand.
@@ -1049,7 +1104,7 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 >
 > **Refused:** You may discard one card from Hand. If you do, draw one additional card when forming your Reserve.
 
-### Prisoner Exchange
+#### Prisoner Exchange
 
 **Stake:** 1  
 **Requirement:** Each player must have a card in their Graveyard.
@@ -1058,7 +1113,7 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 >
 > **Refused:** If you lose, you may move one card from your Graveyard to your Discard Pile.
 
-### Rebuilding Pact
+#### Rebuilding Pact
 
 **Stake:** 1  
 **Requirement:** You must have a card in Hand that can be banked as an Asset.
@@ -1067,7 +1122,7 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 >
 > **Refused:** During the Aftermath of the battle, you may bank one eligible card from Hand as an Asset without using an Action Opportunity.
 
-### Ultimatum
+#### Ultimatum
 
 **Stake:** 2  
 **Requirement:** None
@@ -1076,7 +1131,7 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 >
 > **Refused:** Add +1 to your battle total. If you win and newly ratify this Proposal, gain 2 Influence instead of 1.
 
-### Diplomatic Recognition
+#### Diplomatic Recognition
 
 **Stake:** 2  
 **Requirement:** You must be defending a counterattack on a Territory you occupy that the opponent controlled immediately before you occupied it.
@@ -1085,14 +1140,14 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 >
 > **Refused:** If you win, capture that Territory during the Aftermath, but gain no Influence for imposing this Proposal.
 
-## Diplomat-specific rules
+### Diplomat-specific rules
 
 
-### Multiple Proposals
+#### Multiple Proposals
 
 Diplomatic Latitude may offer two eligible Proposals with the same Stake. Stake that amount once. Only the selected Proposal resolves or may become ratified.
 
-### Sanctions
+#### Sanctions
 
 **Sanctions** is a shared title series, not a separate card type.
 
@@ -1105,16 +1160,16 @@ Its ongoing effect and relief condition continue to refer to those identified pl
 
 ---
 
-# 16. Financiers
+## Financiers
 
 
-## How it works
+### How it works
 
 Financiers build economic power. They place cards in a **Treasury** to increase their Capital limit, gain and spend **Capital**, and buy **Deeds** connected to Territories.
 
 Deed ownership is independent of who occupies or controls the Territory. Own the Deeds to every Territory currently in the Gauntlet to win through **Controlling Interest**.
 
-## Complete rules
+### Complete rules
 
 | Element | Financier rule |
 |---|---|
@@ -1126,7 +1181,7 @@ Deed ownership is independent of who occupies or controls the Territory. Own the
 | Faction pool | 12 Financier card titles. |
 | Unique card | Corner the Market, cost 5; maximum one copy per Playable Deck. |
 
-## Components and setup
+### Components and setup
 
 
 A Financier Deck includes:
@@ -1139,18 +1194,18 @@ A Financier Deck includes:
 
 Begin with 0 Capital and an empty Treasury. Place Deed Cards in the shared unowned supply.
 
-## Capital, Treasury, and Deeds
+### Capital, Treasury, and Deeds
 
 
-### How it works
+#### How it works
 
 Capital is public and pays for Deeds, Subsidize, and card effects. Your Capital limit rises when you control Territories or place valuable cards in Treasury. You may temporarily exceed the limit, but excess Capital is lost at the end of each turn.
 
 During an Action Opportunity after movement, you may place a card in Treasury, buy a Deed, or Play the Market instead of playing an Action card.
 
-### Complete rules
+#### Complete rules
 
-#### Capital and Capital Ledger
+##### Capital and Capital Ledger
 
 Capital cannot fall below 0. Record every gain, spend, loss, and end-turn reduction on the public Capital Ledger, including the new running Balance.
 
@@ -1158,7 +1213,7 @@ Capital cannot fall below 0. Record every gain, spend, loss, and end-turn reduct
 
 Capital may exceed the limit temporarily. At the end of every turn, including an opponent's turn, reduce your Capital to the current limit if necessary.
 
-#### Treasury
+##### Treasury
 
 During an Action Opportunity after movement, instead of playing a card for its Action effect, place one card from your Hand face up in your Treasury.
 
@@ -1169,7 +1224,7 @@ During an Action Opportunity after movement, instead of playing a card for its A
 - A card leaving Treasury immediately stops contributing to the limit.
 - Treasury cards do not generate Capital by themselves.
 
-#### Deeds
+##### Deeds
 
 Each Territory currently in the Gauntlet has one Deed. A Deed is unowned or owned by a Financier.
 
@@ -1179,7 +1234,7 @@ When buying out an opposing Financier's Deed, move its Deed Card to the buyer's 
 
 Deed ownership is independent of Territory occupation and control. Changing Territory control does not transfer its Deed. A Deed is not an Asset or Overlay.
 
-#### Buying and buying out Deeds
+##### Buying and buying out Deeds
 
 During an Action Opportunity after movement, instead of playing a card for its Action effect, buy or buy out one Deed by paying its full cost.
 
@@ -1201,17 +1256,17 @@ For a Deed owned by an opposing Financier:
 
 > **Buyout premium = min(Deeds the opposing owner owns, 6)**
 
-#### Income
+##### Income
 
 After the Capture step at the start of your turn, gain 1 Capital for each Deed you own. Income may temporarily exceed the Capital limit.
 
-#### Controlling Interest
+##### Controlling Interest
 
 When you own the Deeds to every Territory currently in the Gauntlet, immediately win through **Controlling Interest**.
 
 A Territory added to the Gauntlet has a normal Deed and expands the required portfolio.
 
-#### Play the Market
+##### Play the Market
 
 During an Action Opportunity after movement, instead of playing a card for its Action effect, discard one card from Hand and roll one die:
 
@@ -1222,7 +1277,7 @@ During an Action Opportunity after movement, instead of playing a card for its A
 | 4–5 | Gain Capital equal to the card's deckbuilding value. |
 | 6 | Gain Capital equal to twice the card's deckbuilding value. |
 
-#### Subsidize
+##### Subsidize
 
 Before dice are rolled in a battle involving you, spend Capital to add to your battle total.
 
@@ -1235,14 +1290,14 @@ Before dice are rolled in a battle involving you, spend Capital to add to your b
 
 The progression continues without a fixed maximum. Each additional +1 costs one more Capital than the previous increment. Capital spent through Subsidize is lost regardless of the result.
 
-#### Additional Action Opportunities
+##### Additional Action Opportunities
 
 An additional Action Opportunity permits one additional qualifying action at its legal timing. During an after-movement opportunity this may include Treasury, a Deed purchase, Play the Market, or Hostile Takeover. It does not grant movement.
 
 
 <div class="page-break"></div>
 
-## Banker
+### Banker
 
 ![Banker](<images/sketches/banker.png>)
 
@@ -1261,7 +1316,7 @@ An additional Action Opportunity permits one additional qualifying action at its
 
 <div class="page-break"></div>
 
-## Executive
+### Executive
 
 ![Executive](<images/sketches/executive.png>)
 
@@ -1271,10 +1326,10 @@ An additional Action Opportunity permits one additional qualifying action at its
 
 > **Hostile Takeover:** During an Action Opportunity after movement, if you won a battle as the attacker this turn and now occupy that enemy Territory, you may buy or buy out its Deed instead of playing a card for its Action effect. Treat the Territory as occupied but not controlled for the cost calculation. If the purchase succeeds, immediately take control of that Territory.
 
-## Financier-specific rules
+### Financier-specific rules
 
 
-### Collateral
+#### Collateral
 
 Collateral is not a separate zone. Place the collateral beneath the card or effect using it so its source and value remain visible.
 
@@ -1284,7 +1339,7 @@ Collateral is not a separate zone. Place the collateral beneath the card or effe
 - Collateral contributes payment value but does not become Capital unless stated.
 - Unused collateral value is lost.
 
-### Added Territories
+#### Added Territories
 
 A Territory added to the Gauntlet:
 
@@ -1294,13 +1349,13 @@ A Territory added to the Gauntlet:
 - expands Controlling Interest; and
 - uses the normal capped cost formulas.
 
-### Self-tracking cards
+#### Self-tracking cards
 
 - Speculation remains face up beside its selected Territory and is neither an Asset nor Overlay.
 - Capital Gains is placed beneath its selected Treasury card.
 - Margin Loan holds its collateral beneath it.
 
-### Tariffs and Asset replacement
+#### Tariffs and Asset replacement
 
 You cannot bank Tariffs while another copy you control is banked. During the turn Tariffs is banked, you cannot voluntarily cause it to leave play, including replacing it to make room for another Asset.
 
@@ -1308,16 +1363,16 @@ Underwriting and Property Dues may be replaced normally. Replacing Margin Loan b
 
 ---
 
-# 17. Intelligence
+## Intelligence
 
 
-## How it works
+### How it works
 
 Intelligence pursues hidden **Missions**, earns **Intel**, and builds **Operation Progress**. Intel lets the faction reveal an opponent's hidden battle choice through **Surveillance** and remove it through **Interference**.
 
 Complete enough Missions to make a **Special Operation** ready, satisfy its hidden requirement, and pay its Intel cost to win.
 
-## Complete rules
+### Complete rules
 
 | Element | Intelligence rule |
 |---|---|
@@ -1328,7 +1383,7 @@ Complete enough Missions to make a **Special Operation** ready, satisfy its hidd
 | Leaders | Ranger and Spymaster. |
 | Unique card | Sleeper Network, cost 5; maximum one copy per Playable Deck. |
 
-## Components and setup
+### Components and setup
 
 
 An Intelligence Deck includes:
@@ -1342,26 +1397,26 @@ An Intelligence Deck includes:
 
 Both values begin at 0 and have no maximum. Only an Intelligence card with a printed **Mission** requirement may become an Active Mission or Special Operation.
 
-## Intel, Missions, and Special Operations
+### Intel, Missions, and Special Operations
 
 
-### How it works
+#### How it works
 
 During an Action Opportunity after movement, place an eligible card face down as your Active Mission instead of playing an Action. Once you have satisfied its requirement on a later turn, use another after-movement Action Opportunity to reveal and complete it.
 
 A completed Mission gives 1 Operation Progress and Intel equal to the card's deckbuilding value. When Operation Progress exceeds the number of Territories the opponent controls, you may begin a Special Operation.
 
-### Complete rules
+#### Complete rules
 
-#### Intel
+##### Intel
 
 Intel begins at 0, cannot fall below 0, and has no maximum. Spend it for Surveillance, Interference, Fieldcraft, Mission abortion, Special Operation completion, and card effects.
 
-#### Operation Progress
+##### Operation Progress
 
 Operation Progress begins at 0 and is not normally spent. Each completed normal Mission adds 1, regardless of card value.
 
-#### Starting a Mission
+##### Starting a Mission
 
 During an Action Opportunity after movement, instead of playing a card for its Action effect, place one eligible Intelligence card from your Hand face down near your Leader as your **Active Mission**.
 
@@ -1372,7 +1427,7 @@ During an Action Opportunity after movement, instead of playing a card for its A
 - Its printed requirement counts only while it is the Active Mission.
 - Starting it is not playing the card for a printed effect.
 
-#### Completing a Mission
+##### Completing a Mission
 
 During an Action Opportunity after movement, instead of playing a card for its Action effect, reveal and complete the Active Mission if its requirement has been satisfied.
 
@@ -1382,13 +1437,13 @@ During an Action Opportunity after movement, instead of playing a card for its A
 
 Satisfying the requirement does not complete it automatically.
 
-#### Aborting and failing
+##### Aborting and failing
 
 During an Action Opportunity after movement, reveal the Active Mission and spend Intel equal to its value to abort it. Put it in the Discard Pile. Aborting is not failure.
 
 A Mission fails only when a rule, effect, or continuing requirement causes failure. Reveal it and put it in the Graveyard.
 
-#### Starting a Special Operation
+##### Starting a Special Operation
 
 You may start a Special Operation only when:
 
@@ -1400,7 +1455,7 @@ During an Action Opportunity after movement, place that card face down as your S
 
 A Special Operation uses the printed Mission requirement but is not a normal Mission. It grants no Mission reward and does not trigger normal-Mission effects.
 
-#### Readiness and completion
+##### Readiness and completion
 
 The Special Operation remains ready only while Operation Progress exceeds the number of Territories the opponent controls. If readiness is lost, it immediately fails and goes to the Graveyard.
 
@@ -1410,24 +1465,24 @@ During an Action Opportunity after movement, if its requirement is satisfied and
 
 Minimum payment is 1 Intel. If paid, immediately win through Special Operation.
 
-## Surveillance and Interference
+### Surveillance and Interference
 
 
-### How it works
+#### How it works
 
 Intelligence gets two separate chances to use Surveillance in each battle: one against an opposing Gambit and one against opposing Tactics. Spend 1 Intel for each face-down card revealed.
 
 Immediately after revealing a card, spend 2 more Intel to interfere. The card returns to its source, and the opponent may replace it from that same source or pass.
 
-### Complete rules
+#### Complete rules
 
-#### Gambit Surveillance
+##### Gambit Surveillance
 
 Once per battle, after the opponent sets a face-down Gambit, spend 1 Intel to reveal it.
 
 After you resolve any Interference against that revealed Gambit and the opponent makes any replacement, you may revise your own Gambit choice if you have already made one. Revision does not create another Surveillance or Interference opportunity.
 
-#### Tactic Surveillance
+##### Tactic Surveillance
 
 Once per battle, after the opponent chooses one or more face-down Tactics, spend 1 Intel for each opposing Tactic you reveal.
 
@@ -1435,7 +1490,7 @@ After you resolve any Interference against those revealed Tactics and the oppone
 
 The Gambit and Tactic opportunities are independent. Using one does not consume the other.
 
-#### Interference after Surveillance
+##### Interference after Surveillance
 
 Immediately after revealing a card through Surveillance, spend 2 additional Intel per revealed card you remove.
 
@@ -1447,11 +1502,11 @@ Immediately after revealing a card through Surveillance, spend 2 additional Inte
 
 If an effect prevents Surveillance or Interference, the Intel remains spent and the relevant once-per-battle opportunity is still used.
 
-#### Direct Interference
+##### Direct Interference
 
 When an opposing effect sets or chooses a card face up and the normal Surveillance reveal is unnecessary, Intelligence may spend 2 Intel to Interfere with that card directly at the same response timing. This does not use Surveillance but does use the relevant stage's Interference opportunity.
 
-#### Intelligence mirrors
+##### Intelligence mirrors
 
 At each choice stage:
 
@@ -1463,7 +1518,7 @@ At each choice stage:
 
 <div class="page-break"></div>
 
-## Ranger
+### Ranger
 
 ![Ranger](<images/sketches/ranger.png>)
 
@@ -1477,7 +1532,7 @@ Fieldcraft does not alter Territory control, occupation, capture, Defender's Adv
 
 <div class="page-break"></div>
 
-## Spymaster
+### Spymaster
 
 ![Spymaster](<images/sketches/spymaster.png>)
 
@@ -1487,29 +1542,29 @@ Fieldcraft does not alter Territory control, occupation, capture, Defender's Adv
 
 > **Mission Control:** Once per turn, after completing a normal Mission, you may immediately start another eligible Mission from your Hand without using an Action Opportunity. It cannot complete that turn. Mission Control cannot start a Special Operation.
 
-## Intelligence-specific rules
+### Intelligence-specific rules
 
 
-### Counterintelligence
+#### Counterintelligence
 
 When Counterintelligence prevents an opposing effect from revealing a Hand, Reserve, face-down battle card, or Territory, it prevents the entire opposing revealing effect, not only the information portion. Rules-mandated reveals are unaffected.
 
-### Watchtower
+#### Watchtower
 
 When the controller of Watchtower defends there, the attacker sets their Gambit face up or passes; the defender sets normally. Because the attacker's Gambit was never face down, Counterintelligence does not prevent the reveal. Intelligence may use Direct Interference for 2 Intel.
 
 ---
 
-# 18. Mystics
+## Mystics
 
 
-## How it works
+### How it works
 
 Mystics sacrifice, bind, exchange, and recover cards while completing three public **Rites**. The first completed Rite unlocks **Invocation**, the second unlocks **Transmutation**, and the third unlocks **Convergence** and the ability to begin the **Ritual of Ascendance**.
 
 To win through Ritual, bind three cards from three different zones, initiate a battle while they remain bound, and win that battle.
 
-## Complete rules
+### Complete rules
 
 | Element | Mystics rule |
 |---|---|
@@ -1520,7 +1575,7 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 | Leaders | Alchemist and Spirit Walker. |
 | Unique card | Necromancy, cost 5; maximum one copy per Playable Deck. |
 
-## Components and setup
+### Components and setup
 
 
 A Mystics Deck includes:
@@ -1532,18 +1587,18 @@ A Mystics Deck includes:
 
 Place all three Rite cards incomplete side up. Mystics use no resource tracker.
 
-## Rites and progression
+### Rites and progression
 
 
-### How it works
+#### How it works
 
 During an Action Opportunity after movement, pay a Rite's beginning cost to begin it. You may have only one begun but incomplete Rite at a time, and a Rite cannot complete on the turn it begins.
 
 Once its condition is met on a later turn, complete it and unlock the next faction ability. Completed Rites remain complete.
 
-### Complete rules
+#### Complete rules
 
-#### Beginning a Rite
+##### Beginning a Rite
 
 During an Action Opportunity after movement, instead of playing a card for its Action effect, begin one incomplete Rite by paying its beginning cost.
 
@@ -1553,13 +1608,13 @@ During an Action Opportunity after movement, instead of playing a card for its A
 - Only one Rite may be completed per turn.
 - If interrupted, it resets and paid costs are not returned unless stated.
 
-#### Progression
+##### Progression
 
 - Complete the first Rite to unlock **Invocation**.
 - Complete the second Rite to unlock **Transmutation**.
 - Complete the third Rite to unlock **Convergence** and permission to begin the **Ritual of Ascendance**.
 
-#### Bound cards
+##### Bound cards
 
 A card bound to a Rite, Ritual, or another card is outside normal zones.
 
@@ -1568,22 +1623,22 @@ A card bound to a Rite, Ritual, or another card is outside normal zones.
 - A bound card cannot be played, moved, or affected except as instructed by the effect to which it is bound.
 - If the binding effect ends and gives no destination, put the bound card in its owner's Graveyard.
 
-#### Invocation
+##### Invocation
 
 > Once per turn, when an Arcane card you play, set, or choose resolves its Action, Gambit, Tactic, or Battle effect, you may move one card from your Graveyard to your Discard Pile.
 
 A copied effect does not trigger Invocation unless the Arcane card itself resolves another printed effect through being played, set, or chosen again.
 
-#### Transmutation
+##### Transmutation
 
 > Once per turn, before dice are rolled in a battle involving you, you may put one card from your Hand in your Graveyard. Add its deckbuilding value to your battle total.
 
 The card is not played and none of its printed effects resolve. Supplemental components cannot be used.
 
-## The three Rites
+### The three Rites
 
 
-### Rite of Echoes
+#### Rite of Echoes
 
 **Beginning cost:** Bind one chosen card from your Graveyard face up beneath this Rite. Then bind one card from your Hand face down beneath it whose title matches at least one other card in your Playable Deck.
 
@@ -1598,7 +1653,7 @@ On completion:
 
 If you lose a battle before completion, put both bound cards in your Graveyard and reset the Rite.
 
-### Rite of Blood
+#### Rite of Blood
 
 **Beginning cost:** Put one card from your Hand in your Graveyard.
 
@@ -1608,7 +1663,7 @@ Using Transmutation, an Asset, Overlay, Territory, Leader ability, or card from 
 
 If you lose a battle before completion, reset the Rite.
 
-### Rite of Crossing
+#### Rite of Crossing
 
 You may begin this Rite only during an Action Opportunity after movement after winning a battle that caused you to occupy a Territory the opponent controlled immediately before that battle.
 
@@ -1616,18 +1671,18 @@ You may begin this Rite only during an Action Opportunity after movement after w
 
 > **Completion:** At the start of your next turn, after the Capture step, complete this Rite if you still occupy or control that Territory. Otherwise, the Rite is interrupted and resets.
 
-## Ritual of Ascendance and Convergence
+### Ritual of Ascendance and Convergence
 
 
-### How it works
+#### How it works
 
 After completing all three Rites, use an Action Opportunity after movement to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. This begins the Ritual.
 
 Initiate a battle while all three remain bound. Convergence adds +1 for each Ritual card. Win that battle to win the game. Lose any battle before completion and the Ritual is interrupted.
 
-### Complete rules
+#### Complete rules
 
-#### Beginning the Ritual
+##### Beginning the Ritual
 
 After completing all three Rites, during an Action Opportunity after movement, instead of playing a card for its Action effect, bind:
 
@@ -1637,19 +1692,19 @@ After completing all three Rites, during an Action Opportunity after movement, i
 
 This begins the Ritual of Ascendance.
 
-#### Convergence
+##### Convergence
 
 > While the Ritual is underway, during a battle you initiated, add +1 to your battle total for each card bound to the Ritual.
 
 With all three cards bound, Convergence normally gives +3.
 
-#### Completion
+##### Completion
 
 > Initiate a battle while all three Ritual cards remain bound. If you win that battle, complete the Ritual and immediately win the game.
 
 The Mystic must initiate the final battle.
 
-#### Interruption
+##### Interruption
 
 If you lose any battle before Ritual completion, the Ritual is interrupted. Put all three Ritual-bound cards in your Graveyard.
 
@@ -1660,7 +1715,7 @@ Withdrawal neither completes nor interrupts the Ritual because it has no winner 
 
 <div class="page-break"></div>
 
-## Alchemist
+### Alchemist
 
 ![Alchemist](<images/sketches/alchemist.png>)
 
@@ -1674,7 +1729,7 @@ A Gambit entering the Graveyard during normal destinations does not trigger Mate
 
 <div class="page-break"></div>
 
-## Spirit Walker
+### Spirit Walker
 
 ![Spirit Walker](<images/sketches/spirit walker.png>)
 
@@ -1686,37 +1741,37 @@ A Gambit entering the Graveyard during normal destinations does not trigger Mate
 
 Guardians of the Circle cannot preserve a continuing position requirement and does not protect the Ritual of Ascendance.
 
-## Mystics-specific rules
+### Mystics-specific rules
 
 
-### Arcane trait
+#### Arcane trait
 
 Arcane is a trait, not faction allegiance. Mystics cards are Arcane, and cards from other pools may also have the trait.
 
-### Entering the Graveyard
+#### Entering the Graveyard
 
 A card enters the Graveyard before an effect such as Grave Ward moves it elsewhere. An entry trigger still resolves even if the card immediately leaves.
 
-### Exchange
+#### Exchange
 
 To exchange two cards, move each simultaneously to the other's previous zone. Both must remain eligible and present. If either cannot move, no exchange occurs.
 
-### Repeating Battle effects
+#### Repeating Battle effects
 
 Witchcraft and similar effects follow the shared copied-effect rules. A repeat effect cannot choose another repeat or card-adding effect unless it expressly permits one additional layer.
 
 ---
 
-# 19. Inquisition
+## Inquisition
 
 
-## How it works
+### How it works
 
 The Inquisition gains **Conviction** when opposing cards are permanently lost after battles. It also sends opposing Tactics to the Graveyard through **Condemnation** and gains additional Conviction when the opponent plays or reveals Arcane cards through **Blasphemy**.
 
 Spend Conviction on **Purges** that remove cards and Assets. If the opponent eventually cannot make their normal start-of-turn draw because both their Draw Pile and Discard Pile are empty, win through **Purification**.
 
-## Complete rules
+### Complete rules
 
 | Element | Inquisition rule |
 |---|---|
@@ -1729,7 +1784,7 @@ Spend Conviction on **Purges** that remove cards and Assets. If the opponent eve
 | Faction pool | 12 Inquisition card titles. |
 | Arcane card | Heresy. |
 
-## Components and setup
+### Components and setup
 
 
 An Inquisition Deck includes:
@@ -1742,18 +1797,18 @@ An Inquisition Deck includes:
 
 Begin with 0 Conviction. Slide the Leader over the tracker to show 0–4.
 
-## Conviction, doctrine, Purge, and Purification
+### Conviction, doctrine, Purge, and Purification
 
 
-### How it works
+#### How it works
 
 The first time opposing cards enter the Graveyard during the Aftermath of a battle involving you each turn, gain 1 Conviction. Opposing Tactics go there instead of the Discard Pile, making battle choices more costly against the Inquisition.
 
 During an Action Opportunity, spend Conviction on one Purge instead of playing an Action card.
 
-### Complete rules
+#### Complete rules
 
-#### Conviction
+##### Conviction
 
 > **Conviction:** Maximum 4. The first time each turn one or more opposing cards enter the Graveyard during the Aftermath of a battle involving you, gain 1 Conviction.
 
@@ -1762,19 +1817,19 @@ During an Action Opportunity, spend Conviction on one Purge instead of playing a
 - Winning is not required.
 - Conviction above 4 is lost.
 
-#### Condemnation
+##### Condemnation
 
 > **Condemnation:** During the Aftermath of battles involving you, opposing Tactics go to their owner's Graveyard instead of their Discard Pile.
 
 Opposing Gambits already go to the Graveyard normally. Cards remaining in the opponent's Reserve are discarded normally.
 
-#### Blasphemy
+##### Blasphemy
 
 > **Blasphemy:** Whenever an opponent plays a card with the Arcane trait for its Action effect, or an Arcane Gambit or Tactic they control is revealed, gain 1 Conviction.
 
 This gain is outside the normal once-per-turn Conviction gain but cannot exceed 4. An Arcane card resolved only through a copied effect is not played or revealed as a Gambit or Tactic and does not trigger Blasphemy unless the effect says otherwise. Arcane is a trait, not faction allegiance.
 
-#### Purge
+##### Purge
 
 During an Action Opportunity, instead of playing a card for its Action effect, spend Conviction to perform one Purge:
 
@@ -1787,7 +1842,7 @@ During an Action Opportunity, instead of playing a card for its Action effect, s
 
 A Purge uses the Action Opportunity but is not playing a card. Final Judgment may permit a Purge outside an Action Opportunity.
 
-#### Purification
+##### Purification
 
 At the beginning of the opponent's turn, after their normal start-of-turn draw attempt, if they draw no cards because both their Draw Pile and Discard Pile are empty, immediately win through **Purification**.
 
@@ -1796,7 +1851,7 @@ A failed Reserve draw or effect-generated draw does not trigger Purification.
 
 <div class="page-break"></div>
 
-## Grand Inquisitor
+### Grand Inquisitor
 
 ![Grand Inquisitor](<images/sketches/grand inquisitor.png>)
 
@@ -1810,7 +1865,7 @@ The normal Conviction gain from that battle may resolve before Final Judgment.
 
 <div class="page-break"></div>
 
-## Witch Hunter
+### Witch Hunter
 
 ![Witch Hunter](<images/sketches/witch hunter.png>)
 
@@ -1822,24 +1877,41 @@ The normal Conviction gain from that battle may resolve before Final Judgment.
 
 Withdrawal has no loser, so neither Leader ability triggers from it.
 
-## Inquisition-specific rules
+### Inquisition-specific rules
 
 
-### Discard Pile order
+#### Discard Pile order
 
 The top card is the most recently placed card unless a rule changes the order. Choosing cards from a Discard Pile does not reorder the rest.
 
-### Combined deckbuilding value
+#### Combined deckbuilding value
 
 When an effect allows several cards within a combined value limit, add their printed values. The total cannot exceed the limit.
 
-### No Martyrs
+#### No Martyrs
 
 No Martyrs prevents the losing opponent from benefiting from effects they control that trigger from that loss or resulting retreat. It does not prevent harmful consequences, the retreat itself, or effects controlled by another player.
 
-### Heresy and copied effects
+#### Heresy and copied effects
 
 Heresy follows the shared copied-effect rule but retains permission for one additional copied-effect layer. That additional effect cannot create another layer. The selected Graveyard card remains there.
+
+<!-- GENERATED FACTION CONTENT END -->
+
+---
+
+# Part IV — Reference
+
+---
+
+# Quick Turn Reference
+
+1. **Capture:** capture an opposing Territory you still occupy.
+2. **Draw:** draw one card.
+3. **Action Opportunity before movement:** use it now or save it.
+4. **Movement:** advance, hold, or withdraw; resolve any battle immediately.
+5. **Action Opportunity after movement:** use it now if it was not used before movement.
+6. **Cleanup:** resolve end-of-turn effects and discard down to three cards.
 
 ---
 
@@ -1860,3 +1932,39 @@ Heresy follows the shared copied-effect rule but retains permission for one addi
 ---
 
 Gauntlet v0.6.1 © 2026 Tymon Scott. All rights reserved.
+
+---
+
+# Glossary
+
+**Action Opportunity:** The normal opportunity to play one Action card or perform a rule or faction action that explicitly uses it.
+
+**Aftermath:** The part of a battle after the winner is determined, including result effects, retreat, occupation, card destinations, and follow-up effects.
+
+**Asset:** A persistent card banked face up in the Asset Bank.
+
+**Control:** Ownership of a Territory for rules purposes, shown by the direction the Territory faces.
+
+**Gambit:** An optional battle card set from Hand. It normally goes to the Graveyard during the Aftermath.
+
+**Occupation:** The position currently held by a Player Token. A player may occupy a Territory they do not control.
+
+**Reserve:** The temporary private cards drawn for one battle. Reserve is separate from Hand.
+
+**Retreat:** Forced displacement after losing a battle. Retreat is not movement or withdrawal.
+
+**Tactic:** An optional battle card chosen from Reserve. It normally goes to the Discard Pile during the Aftermath.
+
+**Withdrawal:** Leaving or ending a battle without determining a winner, or voluntarily moving toward your own end during movement, as the relevant rule specifies.
+
+**Last Stand:** The battle beyond the final Territory that an attacker must win to run the Gauntlet.
+
+---
+
+# Copyright and Playtest Use
+
+Gauntlet is an unpublished playtest project.
+
+Copyright © 2026 Tymon Scott. All rights reserved.
+
+Repository and release materials are provided for private review and playtesting only. They may not be copied, redistributed, sold, republished, or used to create commercial derivative works without written permission.
