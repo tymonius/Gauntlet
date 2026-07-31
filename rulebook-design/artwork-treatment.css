@@ -1,0 +1,28 @@
+/*
+ * Accepted v0.6.1 sketch treatment.
+ *
+ * The source hero and Leader sketches remain opaque, high-key images. On the
+ * Rulebook's light paper surfaces, a lifted monochrome filter followed by
+ * multiply blending makes the white and cream source field visually disappear
+ * while retaining the graphite/ink line work. This is a rendering treatment,
+ * not true alpha transparency; it is intentionally limited to the approved
+ * light-paper layouts in this design package.
+ */
+:root {
+  --sketch-background-suppression: grayscale(1) contrast(1.28) brightness(1.12);
+}
+
+.cover-art img,
+.leader-portrait img,
+.browser-leader img {
+  filter: var(--sketch-background-suppression) !important;
+  mix-blend-mode: multiply !important;
+}
+
+/* The player-facing color edition keeps monochrome sketches so their opaque
+   source fields remain concealed against its warm paper background. */
+.color-edition .cover-art img,
+.color-edition .leader-portrait img {
+  filter: var(--sketch-background-suppression) !important;
+  mix-blend-mode: multiply !important;
+}
