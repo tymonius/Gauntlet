@@ -19,24 +19,33 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Pillow
+        run: python -m pip install --disable-pip-version-check pillow
+
       - name: Build image and add social metadata
-        shell: python
         run: |
-          import base64
+          python - <<'PY'
           import pathlib
           import re
-          import shutil
+          from PIL import Image
 
           root = pathlib.Path('.')
-          chunk_dir = root / '.github' / 'og-image'
-          encoded = ''.join(
-              path.read_text(encoding='utf-8').strip()
-              for path in sorted(chunk_dir.glob('chunk-*.txt'))
-          )
-
+          source_path = root / 'images' / 'artwork' / 'site' / 'homepage-hero-three-leaders.webp'
           image_path = root / 'images' / 'social' / 'gauntlet-og-1200x630.jpg'
           image_path.parent.mkdir(parents=True, exist_ok=True)
-          image_path.write_bytes(base64.b64decode(encoded))
+
+          with Image.open(source_path) as source:
+              source = source.convert('RGB')
+              crop_height = round(source.width * 630 / 1200)
+              crop_height = min(crop_height, source.height)
+              crop = source.crop((0, 0, source.width, crop_height))
+              crop = crop.resize((1200, 630), Image.Resampling.LANCZOS)
+              crop.save(image_path, 'JPEG', quality=92, optimize=True, progressive=True)
 
           index_path = root / 'index.html'
           html = index_path.read_text(encoding='utf-8')
@@ -72,13 +81,17 @@ jobs:
           '''
 
           if 'property="og:title"' not in html:
-              html = html.replace('  <title>Gauntlet — Run the Gauntlet</title>', social_meta + '  <title>Gauntlet — Run the Gauntlet</title>', 1)
+              html = html.replace(
+                  '  <title>Gauntlet — Run the Gauntlet</title>',
+                  social_meta + '  <title>Gauntlet — Run the Gauntlet</title>',
+                  1,
+              )
 
           index_path.write_text(html, encoding='utf-8')
 
-          shutil.rmtree(chunk_dir)
           (root / '.github' / 'og-build-trigger').unlink(missing_ok=True)
           pathlib.Path('.github/workflows/build-social-embed.yml').unlink(missing_ok=True)
+          PY
 
       - name: Commit generated files
         run: |
