@@ -2,6 +2,10 @@
 
 /* Refinement pass layered over the first Neutral card-front prototype. */
 
+.gauntlet-card {
+  --rules-scale: 1;
+}
+
 .card-interior {
   --art-height: 1.72in;
   display: grid;
@@ -89,22 +93,22 @@
 .rule-section h4,
 .dense-card .rule-section h4 {
   margin: 0;
-  font-size: 5.45pt;
+  font-size: calc(5.45pt * var(--rules-scale));
   line-height: 1;
 }
 
 .rule-section p {
-  font-size: 7.05pt;
+  font-size: calc(7.05pt * var(--rules-scale));
   line-height: 1.1;
 }
 
 .dense-card .rule-section p {
-  font-size: 5.9pt;
+  font-size: calc(5.9pt * var(--rules-scale));
   line-height: 1.065;
 }
 
 .reminder-card .rule-section p {
-  font-size: 6.55pt;
+  font-size: calc(6.55pt * var(--rules-scale));
   line-height: 1.08;
 }
 
@@ -112,7 +116,7 @@
   margin: 0.045in 0 0 0.48in;
   padding-top: 0.04in;
   border-top: 0;
-  font-size: 5.65pt;
+  font-size: calc(5.65pt * var(--rules-scale));
   line-height: 1.07;
 }
 
