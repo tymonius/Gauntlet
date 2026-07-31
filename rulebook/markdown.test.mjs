@@ -28,17 +28,19 @@ describe('browser rulebook Markdown renderer', () => {
     expect(rendered.html).toContain('<td>+1</td>');
   });
 
-  test('rewrites canonical leader image paths for the browser page', () => {
-    const rendered = renderMarkdown('![General](../../images/sketches/general.png)');
+  test('rewrites shared canonical Leader image paths for the browser page', () => {
+    const rendered = renderMarkdown('![Spirit Walker](<images/sketches/spirit walker.png>)');
 
-    expect(rendered.html).toContain('src="../images/sketches/general.png"');
-    expect(rendered.html).toContain('alt="General"');
+    expect(rendered.html).toContain('src="../images/sketches/spirit walker.png"');
+    expect(rendered.html).toContain('alt="Spirit Walker"');
   });
 
-  test('omits print-only page-break markers', () => {
+  test('preserves print page-break markers without displaying them on screen', () => {
     const rendered = renderMarkdown('Before\n\n<div class="page-break"></div>\n\nAfter');
 
-    expect(rendered.html).toBe('<p>Before</p>\n<p>After</p>');
+    expect(rendered.html).toBe(
+      '<p>Before</p>\n<div class="page-break"></div>\n<p>After</p>'
+    );
   });
 
   test('escapes raw HTML from prose while preserving supported Markdown', () => {
