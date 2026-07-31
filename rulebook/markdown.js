@@ -121,7 +121,13 @@ export function renderMarkdown(source) {
     const line = lines[index];
     const trimmed = line.trim();
 
-    if (!trimmed || trimmed === PAGE_BREAK) {
+    if (!trimmed) {
+      index += 1;
+      continue;
+    }
+
+    if (trimmed === PAGE_BREAK) {
+      html.push(PAGE_BREAK);
       index += 1;
       continue;
     }
