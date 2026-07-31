@@ -1,0 +1,87 @@
+/* Shared mounted art plate with restrained faction-specific engraved overlays. */
+
+.gauntlet-card {
+  --art-frame-image: url("../images/artwork/card-frames/neutral-art-frame.svg");
+  --art-frame-matte: rgba(232, 214, 176, 0.9);
+}
+
+.gauntlet-card .card-art {
+  isolation: isolate;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0.045in;
+  background: var(--art-frame-matte);
+  box-shadow:
+    0 0 0 0.009in rgba(55, 42, 30, 0.82),
+    inset 0 0 0 0.024in rgba(238, 221, 184, 0.72),
+    inset 0 0.012in 0.028in rgba(255, 255, 255, 0.2),
+    inset 0 -0.018in 0.045in rgba(28, 20, 14, 0.34),
+    0 0.012in 0.03in rgba(45, 32, 22, 0.18);
+}
+
+.gauntlet-card .card-art img {
+  inset: 0.028in;
+  width: auto;
+  height: auto;
+  border-radius: 0.018in;
+}
+
+.gauntlet-card .card-art::before {
+  z-index: 1;
+  inset: 0.028in;
+  border-radius: 0.018in;
+}
+
+.gauntlet-card .card-art::after {
+  z-index: 2;
+  inset: 0;
+  background:
+    var(--art-frame-image) center / 100% 100% no-repeat,
+    linear-gradient(180deg, rgba(20, 16, 12, 0.02), transparent 58%, rgba(24, 18, 13, 0.24)) center / 100% 100% no-repeat,
+    linear-gradient(90deg, rgba(255, 244, 213, 0.07), transparent 18%, transparent 82%, rgba(34, 25, 18, 0.08)) center / 100% 100% no-repeat;
+}
+
+.gauntlet-card.neutral-card,
+.gauntlet-card.faction-neutral,
+.gauntlet-card[data-faction="neutral"] {
+  --art-frame-image: url("../images/artwork/card-frames/neutral-art-frame.svg");
+}
+
+.gauntlet-card.military-card,
+.gauntlet-card.faction-military,
+.gauntlet-card[data-faction="military"] {
+  --art-frame-image: url("../images/artwork/card-frames/military-art-frame.svg");
+}
+
+.gauntlet-card.diplomat-card,
+.gauntlet-card.diplomats-card,
+.gauntlet-card.faction-diplomats,
+.gauntlet-card[data-faction="diplomats"] {
+  --art-frame-image: url("../images/artwork/card-frames/diplomats-art-frame.svg");
+}
+
+.gauntlet-card.financier-card,
+.gauntlet-card.financiers-card,
+.gauntlet-card.faction-financiers,
+.gauntlet-card[data-faction="financiers"] {
+  --art-frame-image: url("../images/artwork/card-frames/financiers-art-frame.svg");
+}
+
+.gauntlet-card.intelligence-card,
+.gauntlet-card.faction-intelligence,
+.gauntlet-card[data-faction="intelligence"] {
+  --art-frame-image: url("../images/artwork/card-frames/intelligence-art-frame.svg");
+}
+
+.gauntlet-card.mystic-card,
+.gauntlet-card.mystics-card,
+.gauntlet-card.faction-mystics,
+.gauntlet-card[data-faction="mystics"] {
+  --art-frame-image: url("../images/artwork/card-frames/mystics-art-frame.svg");
+}
+
+.gauntlet-card.inquisition-card,
+.gauntlet-card.faction-inquisition,
+.gauntlet-card[data-faction="inquisition"] {
+  --art-frame-image: url("../images/artwork/card-frames/inquisition-art-frame.svg");
+}
