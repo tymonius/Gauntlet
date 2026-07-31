@@ -5,11 +5,64 @@
   const TITLE_STEP = 0.05 * CSS_PIXELS_PER_POINT;
   const RULE_SCALE_STEP = 0.01;
   const DEFAULT_MINIMUM_TITLE_SIZE = 9.5 * CSS_PIXELS_PER_POINT;
-  const DEFAULT_MINIMUM_RULE_SCALE = 0.82;
+  const DEFAULT_MINIMUM_RULE_SCALE = 0.93;
+  const PARCHMENT_PARTS = [
+    '../images/artwork/card-backgrounds/parchments-grid.webp.b64.0',
+    '../images/artwork/card-backgrounds/parchments-grid.webp.b64.1',
+    '../images/artwork/card-backgrounds/parchments-grid.webp.b64.2',
+    '../images/artwork/card-backgrounds/parchments-grid.webp.b64.3',
+  ];
+  let parchmentPromise;
+  let parchmentObjectUrl;
   let resizeTimer;
 
   function forceLayout(element) {
     void element.offsetHeight;
+  }
+
+  function decodeParchment(base64Text) {
+    const binary = window.atob(base64Text.replace(/\s+/g, ''));
+    const bytes = new Uint8Array(binary.length);
+    for (let index = 0; index < binary.length; index += 1) {
+      bytes[index] = binary.charCodeAt(index);
+    }
+
+    return URL.createObjectURL(new Blob([bytes], { type: 'image/webp' }));
+  }
+
+  function parchmentUrl() {
+    if (!parchmentPromise) {
+      parchmentPromise = Promise.all(PARCHMENT_PARTS.map(path => {
+        const source = new URL(path, document.baseURI);
+        return fetch(source, { cache: 'force-cache' }).then(response => {
+          if (!response.ok) {
+            throw new Error(`Parchment request failed with ${response.status}: ${source}`);
+          }
+          return response.text();
+        });
+      })).then(parts => {
+        parchmentObjectUrl = decodeParchment(parts.join(''));
+        return parchmentObjectUrl;
+      });
+    }
+
+    return parchmentPromise;
+  }
+
+  async function loadParchments() {
+    const cards = Array.from(document.querySelectorAll('.gauntlet-card'));
+    try {
+      const objectUrl = await parchmentUrl();
+      cards.forEach(card => {
+        card.style.setProperty('--parchment-image', `url("${objectUrl}")`);
+        card.dataset.parchmentLoaded = 'true';
+      });
+    } catch (error) {
+      cards.forEach(card => {
+        card.dataset.parchmentLoaded = 'false';
+      });
+      console.warn('Using fallback parchment color.', error);
+    }
   }
 
   function setArtHeight(card, height) {
@@ -24,7 +77,7 @@
     const declared = Number.parseFloat(
       window.getComputedStyle(card).getPropertyValue('--minimum-rules-scale')
     );
-    return Number.isFinite(declared) ? declared : DEFAULT_MINIMUM_RULE_SCALE;
+    return Number.isFinite(declared) ? Math.max(declared, DEFAULT_MINIMUM_RULE_SCALE) : DEFAULT_MINIMUM_RULE_SCALE;
   }
 
   function cardOverflows(card) {
@@ -84,9 +137,8 @@
       forceLayout(interior);
     }
 
-    /* If the minimum art window is not enough, compact the rules as a second
-       stage. This includes reminders and catches footer displacement that the
-       previous scroll-height-only check missed. */
+    /* Typography may compact only to the print-legibility floor. Cards that
+       still do not fit require a different layout rather than microscopic type. */
     const minimumScale = minimumRuleScale(card);
     while (cardOverflows(card) && ruleScale > minimumScale) {
       ruleScale = Math.max(minimumScale, ruleScale - RULE_SCALE_STEP);
@@ -121,6 +173,7 @@
       });
     }));
 
+    await loadParchments();
     requestAnimationFrame(() => requestAnimationFrame(fitAllCards));
   }
 
@@ -129,5 +182,8 @@
   window.addEventListener('resize', () => {
     window.clearTimeout(resizeTimer);
     resizeTimer = window.setTimeout(fitAllCards, 120);
+  });
+  window.addEventListener('beforeunload', () => {
+    if (parchmentObjectUrl) URL.revokeObjectURL(parchmentObjectUrl);
   });
 })();
