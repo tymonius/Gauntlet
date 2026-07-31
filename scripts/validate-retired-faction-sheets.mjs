@@ -33,11 +33,21 @@ const activeLinkPatterns = [
   /https:\/\/gauntlet\.run\/faction-sheets\//i,
 ];
 
-const activeHtmlPaths = collectHtmlFiles(root).filter(relativePath =>
-  !relativePath.startsWith('faction-sheets/')
-  && !relativePath.startsWith('releases/')
-  && !relativePath.startsWith('deckbuilder-v0.5/'),
-);
+const activeHtmlPaths = ['index.html'];
+for (const directory of [
+  'factions',
+  'rulebook',
+  'card-reference',
+  'deckbuilder',
+  'deckbuilder-v0.6',
+  'playtest',
+  'typography',
+  'card-design',
+  'rules-assistant',
+]) {
+  const absolute = path.join(root, directory);
+  if (fs.existsSync(absolute)) collectHtmlFiles(absolute, activeHtmlPaths);
+}
 
 for (const relativePath of activeHtmlPaths) {
   const source = read(relativePath);
