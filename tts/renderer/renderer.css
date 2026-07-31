@@ -16,6 +16,13 @@ body {
   box-shadow: none;
 }
 
+.gauntlet-card .card-footer {
+  padding-top: 0.018in;
+  padding-bottom: 0.027in;
+  line-height: 1.1;
+  transform: translateY(-0.006in);
+}
+
 .gauntlet-card.tts-parchment-fallback .card-interior {
   background-color: var(--card-parchment);
   background-image:
