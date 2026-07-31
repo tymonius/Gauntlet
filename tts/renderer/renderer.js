@@ -83,7 +83,6 @@
     if (!element?.classList.contains('fit-warning')) return;
 
     const interior = element.querySelector('.card-interior');
-    const artFrame = element.querySelector('.card-art');
     let artHeight = Number.parseFloat(interior.style.getPropertyValue('--art-height')) || 59.52;
     let rulesScale = Number.parseFloat(element.style.getPropertyValue('--rules-scale')) || 0.93;
     const minimumRulesScale = 0.48;
@@ -94,8 +93,10 @@
       forceLayout(interior);
     }
 
-    if (cardOverflows(element) && artFrame) {
-      artFrame.style.display = 'none';
+    if (cardOverflows(element)) {
+      element.classList.add('tts-text-only');
+      artHeight = 0;
+      interior.style.setProperty('--art-height', '0px');
       forceLayout(interior);
     }
 
@@ -105,8 +106,8 @@
       forceLayout(interior);
     }
 
-    element.dataset.ttsFit = 'extended';
-    element.dataset.ttsArtHeight = artFrame?.style.display === 'none' ? 'hidden' : artHeight.toFixed(2);
+    element.dataset.ttsFit = element.classList.contains('tts-text-only') ? 'text-only' : 'extended';
+    element.dataset.ttsArtHeight = artHeight.toFixed(2);
     element.dataset.ttsRulesScale = rulesScale.toFixed(2);
     if (!cardOverflows(element)) element.classList.remove('fit-warning');
   }
