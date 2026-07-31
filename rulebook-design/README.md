@@ -1,10 +1,12 @@
 # Rulebook design proofs
 
-Internal, non-production visual proofs for the v0.6.1 Rulebook design pass tracked in issues #333 and #353.
+Internal visual proofs for the approved v0.6.1 Rulebook design pass tracked in issues #333 and #353.
 
-## Approval gate
+## Approval status
 
-The full Rulebook, Reference Guide, reader PDF, editable document, production booklet, and live Browser Rulebook must not be rebuilt from this design until the representative proofs are visually approved.
+The representative proof set has been visually approved and may now serve as the design basis for the full Rulebook, Reference Guide, reader PDF, editable document, production booklet, and live Browser Rulebook rebuild.
+
+These proof sources still do not replace production release files or player-facing pages by themselves. They define the approved publication system that the production rebuild must carry forward.
 
 ## Current proof set
 
@@ -31,9 +33,9 @@ The workflow also renders:
 - a separate restrained-color player-facing Rulebook proof; and
 - desktop and mobile Browser Rulebook specimens using the same hierarchy while retaining the site's screen-native behavior.
 
-Generated PDFs and screenshots exist only in the Actions artifact. The proof sources do not replace production release files or player-facing pages.
+Generated PDFs and screenshots exist only in the Actions artifact.
 
-## Revised design basis
+## Approved design basis
 
 ### Page and printing
 
@@ -42,7 +44,7 @@ Generated PDFs and screenshots exist only in the Actions artifact. The proof sou
 - Mirrored margins with a larger inner allowance at the fold.
 - Grayscale is the default print condition because current playtest copies are expected to be produced primarily on home laser printers.
 - The normal print back cover uses the toner-saving treatment rather than a full dark page.
-- A separate player-facing PDF proof restores restrained site and faction color accents.
+- A separate player-facing PDF restores restrained site and faction color accents.
 - Front-cover artwork is contained within its plate rather than cropped to fill it.
 - Footer page numbers sit at the outside edge, separated from the section label.
 
@@ -56,13 +58,15 @@ Generated PDFs and screenshots exist only in the Actions artifact. The proof sou
 
 Font files are not stored in the repository. The proofs load the existing Adobe Fonts project and use the approved fallback stacks when that service is unavailable.
 
-## Artwork status
+## Approved artwork treatment
 
-The current repository sketches have opaque white backgrounds. For layout review only, the proof applies grayscale and multiply blending so the white rectangles recede against the paper.
+The current repository hero and Leader sketches have opaque white or cream source backgrounds. The approved v0.6.1 publication treatment uses grayscale or neutral rendering, increased contrast where needed, and `mix-blend-mode: multiply` so those high-key source fields visually disappear into the Rulebook's light paper surfaces while the drawn lines remain visible.
 
-This is **not** the final asset treatment. The hero sketch and every Leader sketch used in the finished Rulebook require true transparent backgrounds. Those source images must be edited and replaced as image assets before production publication. The proof must not be considered artwork-complete while it still depends on multiply blending.
+This is a deliberate rendering treatment rather than true alpha transparency. It is acceptable because every approved placement uses a controlled light paper background in the print, color-PDF, and Browser Rulebook systems. The sketches must not be moved onto dark, saturated, photographic, or otherwise uncontrolled backgrounds without first producing genuine transparent assets.
 
-## Review standard
+True transparent-background PNGs remain a desirable future asset cleanup, but they are no longer a blocker for the v0.6.1 production rebuild.
+
+## Verification standard
 
 Automated checks establish that:
 
@@ -74,4 +78,4 @@ Automated checks establish that:
 - no page or spread mechanically overflows; and
 - desktop and mobile browser specimens have no horizontal overflow.
 
-These checks do not constitute design approval. The individual pages, reader-facing spreads, imposed sheets, grayscale behavior, color edition, typography, and actual-size reference pages must still be reviewed visually before full-document production begins.
+Visual approval has been granted for the publication system demonstrated by this package. The production rebuild should preserve this hierarchy, spacing, typography, artwork treatment, grayscale behavior, restrained color edition, and booklet geometry unless a later review explicitly supersedes them.
