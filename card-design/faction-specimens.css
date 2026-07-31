@@ -1,0 +1,211 @@
+/* Representative faction card-front comparison. */
+
+.faction-specimen-page .gauntlet-card {
+  --faction-border: var(--card-ivory);
+  --faction-border-outline: rgba(62, 52, 41, 0.52);
+  --faction-border-rule: rgba(62, 52, 41, 0.24);
+  border-color: var(--faction-border-outline);
+  background: var(--faction-border);
+}
+
+.faction-specimen-page .gauntlet-card::before {
+  border-color: var(--faction-border-rule);
+}
+
+.faction-specimen-page .neutral-card,
+.faction-specimen-page [data-faction="neutral"] {
+  --faction-border: #eee7d5;
+  --faction-border-outline: rgba(62, 52, 41, 0.52);
+  --faction-border-rule: rgba(62, 52, 41, 0.24);
+}
+
+.faction-specimen-page .military-card,
+.faction-specimen-page [data-faction="military"] {
+  --faction-border: #9e262c;
+  --faction-border-outline: #5f1418;
+  --faction-border-rule: rgba(255, 244, 226, 0.38);
+}
+
+.faction-specimen-page .diplomat-card,
+.faction-specimen-page [data-faction="diplomats"] {
+  --faction-border: #264f91;
+  --faction-border-outline: #17345f;
+  --faction-border-rule: rgba(244, 248, 255, 0.38);
+}
+
+.faction-specimen-page .financier-card,
+.faction-specimen-page [data-faction="financiers"] {
+  --faction-border: #227044;
+  --faction-border-outline: #124429;
+  --faction-border-rule: rgba(242, 255, 246, 0.38);
+}
+
+.faction-specimen-page .intelligence-card,
+.faction-specimen-page [data-faction="intelligence"] {
+  --faction-border: #282827;
+  --faction-border-outline: #111111;
+  --faction-border-rule: rgba(255, 255, 250, 0.34);
+}
+
+.faction-specimen-page .mystic-card,
+.faction-specimen-page [data-faction="mystics"] {
+  --faction-border: #5d347e;
+  --faction-border-outline: #38204e;
+  --faction-border-rule: rgba(251, 244, 255, 0.38);
+}
+
+.faction-specimen-page .inquisition-card,
+.faction-specimen-page [data-faction="inquisition"] {
+  --faction-border: #a67a27;
+  --faction-border-outline: #66470e;
+  --faction-border-rule: rgba(255, 249, 225, 0.42);
+}
+
+.faction-card-sheet {
+  row-gap: 0.62in;
+}
+
+.faction-card-sheet .specimen-column:last-child {
+  grid-column: 2;
+}
+
+.faction-card-sheet .specimen-label {
+  min-height: 1.9rem;
+  align-items: flex-start;
+}
+
+.faction-card-sheet .specimen-label span {
+  max-width: 9.2rem;
+  text-align: right;
+  line-height: 1.25;
+}
+
+.faction-specimen-page .card-footer {
+  gap: 0.035in;
+}
+
+.faction-specimen-page .card-footer span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.faction-specimen-page .card-art img {
+  object-position: center 48%;
+}
+
+.art-shock-and-awe img {
+  object-position: center 44%;
+}
+
+.art-sanctions-embargo img {
+  object-position: center 50%;
+}
+
+.art-assassins img {
+  object-position: center 45%;
+}
+
+.art-witchcraft-reference img {
+  object-position: center 52%;
+}
+
+.art-confession-reference img {
+  object-position: center 47%;
+}
+
+.art-pending {
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(235, 214, 151, 0.32), transparent 22%),
+    repeating-radial-gradient(circle at 85% 76%, rgba(242, 224, 167, 0.2) 0 1px, transparent 1px 9px),
+    repeating-linear-gradient(32deg, rgba(234, 219, 175, 0.08) 0 1px, transparent 1px 7px),
+    linear-gradient(145deg, #314e3c, #6f7853 52%, #a78958);
+}
+
+.art-pending::after {
+  background:
+    linear-gradient(180deg, rgba(20, 16, 12, 0.06), transparent 58%, rgba(24, 18, 13, 0.38)),
+    linear-gradient(90deg, rgba(255, 244, 213, 0.06), transparent 18%, transparent 82%, rgba(34, 25, 18, 0.12));
+}
+
+.art-placeholder-copy {
+  position: relative;
+  z-index: 3;
+  display: grid;
+  gap: 0.045in;
+  padding: 0.12in;
+  color: rgba(255, 253, 239, 0.9);
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(20, 17, 11, 0.65);
+}
+
+.art-placeholder-copy span {
+  position: static;
+  color: inherit;
+  font-family: var(--font-interface);
+  font-size: 4.8pt;
+  font-weight: 800;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+}
+
+.art-placeholder-copy strong {
+  font-family: var(--font-display-historical);
+  font-size: 8.4pt;
+  font-weight: 400;
+  letter-spacing: 0.035em;
+  text-transform: uppercase;
+}
+
+.single-text-section p {
+  font-size: 6.55pt;
+  line-height: 1.08;
+}
+
+.ultra-dense-card .card-rules {
+  padding: 0.028in 0.06in 0.025in;
+}
+
+.ultra-dense-card .rule-section {
+  grid-template-columns: 0.34in minmax(0, 1fr);
+  column-gap: 0.035in;
+}
+
+.ultra-dense-card .rule-section + .rule-section {
+  margin-top: 0.022in;
+  padding-top: 0.018in;
+}
+
+.ultra-dense-card .rule-section h4 {
+  font-size: 4.55pt;
+  line-height: 1;
+}
+
+.ultra-dense-card .rule-section p {
+  font-size: 4.35pt;
+  line-height: 1.015;
+}
+
+.ultra-dense-card .card-footer span {
+  font-size: 4.2pt;
+}
+
+@media (max-width: 52rem) {
+  .faction-card-sheet .specimen-column:last-child {
+    grid-column: auto;
+  }
+}
+
+@media print {
+  .faction-card-sheet {
+    grid-template-columns: repeat(3, 2.5in);
+    row-gap: 0.34in;
+  }
+
+  .faction-card-sheet .specimen-column:last-child {
+    grid-column: 2;
+  }
+}
