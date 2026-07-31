@@ -55,8 +55,53 @@
     if (document.fonts?.ready) await document.fonts.ready.catch(() => {});
     await waitFor(() => target.querySelector('.gauntlet-card')?.dataset.parchmentLoaded !== undefined, 5000);
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+    fitForTts(target.querySelector('.gauntlet-card'));
     document.body.dataset.renderReady = 'true';
   }, { once: true });
+
+  function cardOverflows(element) {
+    const interior = element?.querySelector('.card-interior');
+    const rules = element?.querySelector('.card-rules');
+    const footer = element?.querySelector('.card-footer');
+    if (!interior || !rules || !footer) return false;
+
+    const interiorRect = interior.getBoundingClientRect();
+    const footerRect = footer.getBoundingClientRect();
+    return footerRect.bottom > interiorRect.bottom + 0.5
+      || rules.scrollHeight > rules.clientHeight + 0.5
+      || interior.scrollHeight > interior.clientHeight + 0.5;
+  }
+
+  function forceLayout(element) {
+    void element.offsetHeight;
+  }
+
+  function fitForTts(element) {
+    if (!element?.classList.contains('fit-warning')) return;
+
+    const interior = element.querySelector('.card-interior');
+    let artHeight = Number.parseFloat(interior.style.getPropertyValue('--art-height')) || 59.52;
+    let rulesScale = Number.parseFloat(element.style.getPropertyValue('--rules-scale')) || 0.93;
+    const minimumArtHeight = 0.42 * 96;
+    const minimumRulesScale = 0.72;
+
+    while (cardOverflows(element) && artHeight > minimumArtHeight) {
+      artHeight = Math.max(minimumArtHeight, artHeight - 1);
+      interior.style.setProperty('--art-height', `${artHeight}px`);
+      forceLayout(interior);
+    }
+
+    while (cardOverflows(element) && rulesScale > minimumRulesScale) {
+      rulesScale = Math.max(minimumRulesScale, rulesScale - 0.01);
+      element.style.setProperty('--rules-scale', String(Number(rulesScale.toFixed(2))));
+      forceLayout(interior);
+    }
+
+    element.dataset.ttsFit = 'extended';
+    element.dataset.ttsArtHeight = artHeight.toFixed(2);
+    element.dataset.ttsRulesScale = rulesScale.toFixed(2);
+    if (!cardOverflows(element)) element.classList.remove('fit-warning');
+  }
 
   async function waitFor(predicate, timeoutMs) {
     const started = performance.now();
