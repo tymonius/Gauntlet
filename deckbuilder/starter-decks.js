@@ -22,6 +22,7 @@
     const leaderSelect = document.getElementById("leaderSelect");
 
     button?.addEventListener("click", loadRecommendedDeck);
+    installResetDeckButton(button);
     leaderSelect?.addEventListener("change", () => {
       renderStarterDeckPreview();
       syncStarterDeckButton();
@@ -40,6 +41,46 @@
 
     renderStarterDeckPreview();
     syncStarterDeckButton();
+  }
+
+  function installResetDeckButton(starterButton) {
+    if (!starterButton || document.getElementById("resetDeckButton")) return;
+
+    const actions = document.createElement("div");
+    actions.className = "button-row setup-actions";
+    starterButton.before(actions);
+    actions.append(starterButton);
+
+    const resetButton = document.createElement("button");
+    resetButton.id = "resetDeckButton";
+    resetButton.type = "button";
+    resetButton.className = "secondary danger";
+    resetButton.textContent = "Reset deck";
+    resetButton.title = "Clear all playable cards, Territories, and the deck name";
+    resetButton.addEventListener("click", resetCurrentDeck);
+    actions.append(resetButton);
+  }
+
+  function resetCurrentDeck() {
+    const hasCards = Object.keys(state.deck).length > 0;
+    const hasTerritories = Boolean(state.territories?.length);
+    const hasName = Boolean(state.deckName.trim());
+
+    if (
+      (hasCards || hasTerritories || hasName) &&
+      !confirm(
+        "Reset this deck? This removes all playable cards, Territories, and the deck name. " +
+        "Your selected faction and Leader will remain."
+      )
+    ) return;
+
+    state.deck = {};
+    state.territories = [];
+    state.deckName = "";
+    state.selectedCardId = null;
+    state.selectedTerritoryId = null;
+    if ("pendingTerritories" in state) state.pendingTerritories = null;
+    renderAll();
   }
 
   function selectedStarterDeck() {
