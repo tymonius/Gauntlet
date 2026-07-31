@@ -128,6 +128,10 @@ footer {
     font-family: var(--rulebook-font-reading);
   }
 
+  .rulebook-content hr {
+    display: none;
+  }
+
   .rulebook-content > h1:first-child {
     margin-top: 1.15in;
     padding: 0;
@@ -150,10 +154,6 @@ footer {
     margin-top: 0.32in;
     font-family: var(--rulebook-font-interface);
     font-size: 8pt;
-  }
-
-  .rulebook-content > hr:first-of-type {
-    margin-top: 1.35in;
   }
 
   .rulebook-content h1 {
