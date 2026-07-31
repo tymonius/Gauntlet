@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "validated_on": "2026-07-31",
+  "status": "selection-review-incomplete",
+  "certified_for_downstream_canonicalization": false,
+  "source_extract": {
+    "extractor_schema": "gauntlet.chat-export-extract.v3",
+    "generated_at": "2026-07-31T21:28:46.749420+00:00",
+    "export_shards": [
+      "conversations-000.json",
+      "conversations-001.json",
+      "conversations-002.json"
+    ],
+    "detected_project_ids": [],
+    "total_exported_conversations": 287,
+    "candidate_selected_conversations": 67,
+    "candidate_excluded_conversations": 220,
+    "selected_messages": 21833,
+    "selected_user_turns": 3425,
+    "selected_assistant_turns": 18408,
+    "latest_exported_user_turn": "2026-07-30T20:20:18.318000+00:00",
+    "latest_exported_assistant_turn": "2026-07-30T20:21:20.218795+00:00"
+  },
+  "structural_validation": {
+    "all_declared_message_chunks_present": true,
+    "message_chunk_count": 7,
+    "parsed_message_records": 21833,
+    "unique_selected_conversations": 67,
+    "duplicate_message_ids": 0,
+    "text_hash_mismatches": 0,
+    "manifest_counts_match": true
+  },
+  "selection_review": {
+    "known_unrelated_selected_conversations": [
+      {
+        "conversation_id": "68579b58-e3f0-800f-947a-21cc7cdacec4",
+        "title": "Current Events Iran Update",
+        "user_turns": 107
+      },
+      {
+        "conversation_id": "68dc9fb1-3524-8330-9256-0c14480ce2c2",
+        "title": "Fantasy football loser punishments",
+        "user_turns": 3
+      },
+      {
+        "conversation_id": "6959b308-40b0-8326-ace6-5ddfd80e43fa",
+        "title": "Geopolitical Ramifications of Maduro's Arrest",
+        "user_turns": 27
+      },
+      {
+        "conversation_id": "69664f65-17e0-8329-b4f7-cef2e240f93a",
+        "title": "Peptides",
+        "user_turns": 43
+      },
+      {
+        "conversation_id": "6a3eaee4-7ae8-83ea-b117-5119f7620c25",
+        "title": "Development Insights Analysis",
+        "user_turns": 8
+      },
+      {
+        "conversation_id": "6a42d7bc-b030-83ea-9451-48e363939aa7",
+        "title": "AI Use Graph Summary",
+        "user_turns": 1
+      }
+    ],
+    "known_false_negative": {
+      "conversation_id": "6a5be628-90fc-83ea-87a1-57fb136d789b",
+      "title": "Image upload issue",
+      "created": "2026-07-18T20:47:34.450618+00:00",
+      "updated": "2026-07-18T22:13:01.674374+00:00",
+      "user_turns": 8,
+      "reason": "The first user turn replaces the Gauntlet banker Leader sketch in images/sketches, but the title/content classifier did not select the conversation."
+    },
+    "review_required": "Review all 220 excluded conversations using exact user turns plus immediate assistant context before claiming project-wide corpus completeness."
+  },
+  "live_tail_reconciliation": {
+    "committed_tail_rows": 7,
+    "matched_to_export": 7,
+    "unmatched": 0,
+    "raw_conversation_id": "6a6ae289-0cac-83ea-a3a8-bdc95e2aa1fc",
+    "evidence_file": "selected_messages_part_006.jsonl"
+  },
+  "uploaded_file_integrity": {
+    "manifest.json": {
+      "bytes": 1211,
+      "sha256": "ee1af8d4a1116ccd9de3ede1b2d06963051344d7667f362c06102eb8d2548a5f"
+    },
+    "all_conversations_inventory.csv": {
+      "bytes": 87184,
+      "sha256": "b6e20b85c9a7a4f590dffabcb12828943aeab93c975e1fa151d24ff5cb678209"
+    },
+    "selected_messages_part_001.jsonl": {
+      "bytes": 3672502,
+      "sha256": "cc97c3f2b3066b00703b41c5e9885538a25eed3acd54c9a383961af2e994a908"
+    },
+    "selected_messages_part_002.jsonl": {
+      "bytes": 3672442,
+      "sha256": "764edad88d94b2ed51c3e4e21ada56743e832ea6a9821d5ea20d87fc2b2e6875"
+    },
+    "selected_messages_part_003.jsonl": {
+      "bytes": 3673496,
+      "sha256": "9ab6292a5a58427a2691b1a5e093ae75992105f4cb2437c3bd99c8ca1500e781"
+    },
+    "selected_messages_part_004.jsonl": {
+      "bytes": 3673444,
+      "sha256": "f93555cb252591abe7f6a4659e4c3fb9a7353a44baeace198934ee7b76977980"
+    },
+    "selected_messages_part_005.jsonl": {
+      "bytes": 3673641,
+      "sha256": "43da4fea8f5a3c453e831d96b2c6d491edd4aaabe6606d0986e2dfb8d34390bd"
+    },
+    "selected_messages_part_006.jsonl": {
+      "bytes": 3674040,
+      "sha256": "3dbe893ae9acd993b3775e71c59d92124479398c60968eab896aa15ef179fcb7"
+    },
+    "selected_messages_part_007.jsonl": {
+      "bytes": 78724,
+      "sha256": "165d47b5c2799381048064731bce12992620400732abb4e5bf5860edb7181cab"
+    },
+    "selected_transcripts_part_001.md": {
+      "bytes": 3765606,
+      "sha256": "0ac3f9225ce464dca7a33b732c64349261dd8a7e9632463b77d48ca731442702"
+    },
+    "selected_transcripts_part_002.md": {
+      "bytes": 3762440,
+      "sha256": "33ce74db0fb9ef1c52f92eea2ddbc5b81f12db6754545006fa64429baf4d8ee5"
+    },
+    "selected_transcripts_part_003.md": {
+      "bytes": 91852,
+      "sha256": "86587c0f81ea0e71f0fbb590853b80dfa14ceb5043c425c7c2a70deb85b31e1d"
+    }
+  },
+  "blocking_reasons": [
+    "The export did not expose a detected Gauntlet project identifier.",
+    "The recall-oriented classifier produced six known false positives and at least one known false negative.",
+    "The 220 excluded conversations have not yet been reviewed from compact exact-turn evidence.",
+    "The July 10-30 provisional decision rows have not yet all been replaced or removed after raw-turn review.",
+    "All effective-current threads still require an independent assistant-synthesis check."
+  ]
+}
