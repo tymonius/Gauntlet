@@ -7,14 +7,19 @@ from html import escape
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
+TYPEKIT_IMPORT = '@import url("https://use.typekit.net/vgm6nwi.css");'
 
 
 def shell(title: str, body: str, *, body_class: str = "", head_extra: str = "") -> str:
     return f'''<!doctype html>
 <html lang="en"><head><meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>{escape(title)}</title><link rel="stylesheet" href="proof.css" />{head_extra}</head>
-<body class="{escape(body_class)}">{body}</body></html>'''
+<title>{escape(title)}</title>
+<link rel="stylesheet" href="proof-runtime.css" />
+<link rel="preconnect" href="https://use.typekit.net" />
+<link rel="preconnect" href="https://p.typekit.net" crossorigin />
+<link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
+{head_extra}</head><body class="{escape(body_class)}">{body}</body></html>'''
 
 
 def running(left: str, right: str) -> str:
@@ -180,6 +185,11 @@ def browser_document() -> str:
 
 
 def main() -> None:
+    source_css = (ROOT / "proof.css").read_text(encoding="utf-8")
+    runtime_css = source_css.replace(TYPEKIT_IMPORT, "", 1).lstrip()
+    (ROOT / "proof-runtime.css").write_text(runtime_css, encoding="utf-8")
+    print(f"generated {ROOT / 'proof-runtime.css'}")
+
     pages = build_pages()
     outputs = {
         "print-proof.html": print_document(pages),
