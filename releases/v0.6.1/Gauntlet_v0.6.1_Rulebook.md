@@ -395,7 +395,7 @@ A card with a **Tactic** or **Battle** effect is eligible.
 
 ### 6. Reveal Tactics
 
-Reveal all Tactics simultaneously. Resolve their effects using the shared-timing rule.
+Reveal all Tactics simultaneously. Resolve their effects using the shared-timing rule in Chapter 11.
 
 A face-up Tactic revealed early remains in battle and waits for this stage unless its text says otherwise.
 
@@ -471,7 +471,6 @@ Immediate victory triggers occur before retreat unless the effect states otherwi
 
 Effects at the **end of the Aftermath** occur after normal destinations and destination-triggered effects.
 
----
 
 ## Withdrawal and Retreat
 
@@ -512,6 +511,7 @@ If an effect causes one or both players to withdraw during opening effects and p
 - no battle-card destinations or cleanup occur.
 
 The established attacker and defender roles are used only to determine the withdrawal movement. Resolve any remaining instructions from the effect after that movement.
+
 #### Retreat
 
 Retreat is forced displacement after losing a battle. It is not movement or withdrawal.
@@ -774,7 +774,7 @@ Reference cards summarize procedures but do not replace the rulebook. If shorten
 - For a sliding tracker, place the indicated Leader or Reference Card over the tracker. Fully cover the tracker at 0, then slide the covering card until its bottom edge aligns with the current value.
 - A counter, dial, written record, or other substitute may be used when it shows the same public information clearly and unambiguously.
 - A reference card is a reminder, not a separate rules authority. If its shortened text omits a detail, follow this rulebook and the definitive faction guide.
-- A double-sided supplemental card changes state only when its governing rule tells you to flip it. Keep any attached or bound cards with it so both players can identify the relationship.
+- A double-sided supplemental card changes state only when its governing rule tells you to flip it. Keep any cards attached to a supplemental component with it so both players can identify the relationship.
 - Supplemental components have no deckbuilding value and are not eligible as Gambits, Tactics, costs, or other playable cards unless a rule explicitly says otherwise.
 - Each player supplies and controls their own faction package unless a faction rule identifies a shared supply. In a mirror match, keep the two players' components separated and oriented toward their owners.
 
