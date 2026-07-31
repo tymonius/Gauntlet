@@ -1,0 +1,483 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-8YYYZJGGPE');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Step-by-step instructions for hosting or joining a Gauntlet game-night playtest." />
+  <title>Gauntlet Game-Night Playtest Guide</title>
+  <link rel="preconnect" href="https://use.typekit.net" />
+  <link rel="preconnect" href="https://p.typekit.net" crossorigin />
+  <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
+  <link rel="stylesheet" href="../../site.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="site-header screen-only">
+    <a class="brand" href="../../" aria-label="Gauntlet home">
+      <span class="brand-mark" aria-hidden="true">G</span>
+      <span>Gauntlet</span>
+    </a>
+    <nav aria-label="Guide navigation">
+      <a href="../host/">Host Home</a>
+      <a href="../../rulebook/">Rules</a>
+      <a href="../../">Main site</a>
+    </nav>
+  </header>
+
+  <main class="guide-main">
+    <section class="guide-hero">
+      <div>
+        <p class="eyebrow">Game-night playtesting · v0.6.1</p>
+        <h1>Know exactly <span>what happens next.</span></h1>
+        <p class="hero-lede">Choose your role for a detailed, ordered walkthrough. The host guide covers preparation through teardown; the participant guide covers only the actions players need.</p>
+      </div>
+      <aside class="guide-principle">
+        <strong>One event. One roster. One QR code per game.</strong>
+        <p>The event organizes the night. Each table QR creates a separate two-player game record, so Rules Arbiter questions stay with the correct game and player.</p>
+      </aside>
+    </section>
+
+    <section class="role-picker screen-only" aria-labelledby="role-title">
+      <div>
+        <p class="eyebrow">Start here</p>
+        <h2 id="role-title">Which instructions do you need?</h2>
+      </div>
+      <div class="role-actions" role="tablist" aria-label="Choose a guide">
+        <button id="hostGuideTab" type="button" role="tab" aria-controls="hostGuide" aria-selected="true" data-role-choice="host">
+          <span>Organizer</span>
+          <strong>Host a game night</strong>
+          <small>Create the event, prepare materials, manage tables, and close sessions.</small>
+        </button>
+        <button id="participantGuideTab" type="button" role="tab" aria-controls="participantGuide" aria-selected="false" data-role-choice="participant">
+          <span>Player</span>
+          <strong>Join a playtest</strong>
+          <small>Choose a faction, join your table, ask questions, and finish the game.</small>
+        </button>
+      </div>
+      <div class="guide-utilities">
+        <button id="printGuide" class="button secondary" type="button">Print this guide</button>
+        <button id="copyGuideLink" class="button secondary" type="button">Copy link to this guide</button>
+        <p id="guideStatus" class="form-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section class="page-map" aria-labelledby="map-title">
+      <div class="section-heading split-heading">
+        <div>
+          <p class="eyebrow">The system at a glance</p>
+          <h2 id="map-title">Four pages, four distinct jobs.</h2>
+        </div>
+        <p>Use this map whenever two screens look related but you are not sure which one controls what.</p>
+      </div>
+      <ol class="page-map-grid">
+        <li class="host-page">
+          <span>1</span>
+          <div><strong>Host Home</strong><p>The organizer’s private launcher. Create events and reopen saved dashboards and table links.</p></div>
+        </li>
+        <li class="host-page">
+          <span>2</span>
+          <div><strong>Event Dashboard</strong><p>The workspace for one game night: roster, participant invitation, table codes, seats, and game closure.</p></div>
+        </li>
+        <li class="player-page">
+          <span>3</span>
+          <div><strong>Participant Onboarding</strong><p>The pre-event page players use to choose a faction and Leader and read the First Game Introduction.</p></div>
+        </li>
+        <li class="player-page">
+          <span>4</span>
+          <div><strong>Table Session</strong><p>The page both players join for one particular game. Rules Arbiter questions are attributed here.</p></div>
+        </li>
+      </ol>
+      <p class="map-note"><strong>The Rules Arbiter opens from a joined Table Session.</strong> It is not a separate game record.</p>
+    </section>
+
+    <article id="hostGuide" class="role-guide host-guide" role="tabpanel" aria-labelledby="hostGuideTab" data-guide-role="host">
+      <header class="role-guide-header">
+        <div>
+          <p class="eyebrow">Organizer instructions</p>
+          <h2>Host a complete game-night playtest.</h2>
+          <p>Follow these phases in order. Each phase ends with a visible checkpoint so you know it is safe to continue.</p>
+        </div>
+        <a class="button primary screen-only" href="../host/">Open Host Home</a>
+      </header>
+
+      <nav class="phase-index screen-only" aria-label="Host guide phases">
+        <a href="#host-create">1. Create</a>
+        <a href="#host-invite">2. Invite</a>
+        <a href="#host-monitor">3. Monitor</a>
+        <a href="#host-prepare">4. Prepare</a>
+        <a href="#host-codes">5. Make QR codes</a>
+        <a href="#host-start">6. Start games</a>
+        <a href="#host-play">7. During play</a>
+        <a href="#host-end">8. End games</a>
+        <a href="#host-next">9. Next round</a>
+        <a href="#host-close">10. Close event</a>
+      </nav>
+
+      <section id="host-create" class="phase-card">
+        <div class="phase-number">01</div>
+        <div class="phase-content">
+          <p class="eyebrow">Before invitations</p>
+          <h3>Create the game-night event.</h3>
+          <ol>
+            <li>Open <a href="../host/">Host Home</a> in the normal browser profile you will use to organize the event.</li>
+            <li>In <strong>Create a game-night event</strong>, enter an optional event label and the facilitator creation key.</li>
+            <li>Select <strong>Create and open event</strong>.</li>
+            <li>Wait for the private <strong>Event Dashboard</strong> to open.</li>
+            <li>Use the <strong>Host Home</strong> link in the dashboard navigation to confirm the event was saved in this browser.</li>
+          </ol>
+          <div class="checkpoint"><strong>Checkpoint:</strong> Host Home lists the event and its Event Dashboard button works.</div>
+          <aside class="warning"><strong>Keep organizer links private.</strong> Never send a URL containing <code>host=</code>. Do not use Host Home on a public or shared computer.</aside>
+        </div>
+      </section>
+
+      <section id="host-invite" class="phase-card">
+        <div class="phase-number">02</div>
+        <div class="phase-content">
+          <p class="eyebrow">Before the selection deadline</p>
+          <h3>Invite participants.</h3>
+          <ol>
+            <li>Open the event from Host Home.</li>
+            <li>Select <strong>Copy participant link</strong>.</li>
+            <li>Send that public link to everyone expected to attend.</li>
+            <li>Tell participants when their selection is due and that their prepared Deck will be based on their latest submission.</li>
+          </ol>
+          <div class="message-template">
+            <strong>Suggested invitation</strong>
+            <p>Choose your Gauntlet faction and Leader before game night. Read the First Game Introduction and submit your selection so your Deck and components can be prepared for you.</p>
+          </div>
+          <p class="do-not"><strong>Do not send:</strong> the Event Dashboard URL, Registration Controls, a table URL before it is needed, or any URL containing <code>host=</code>.</p>
+        </div>
+      </section>
+
+      <section id="host-monitor" class="phase-card">
+        <div class="phase-number">03</div>
+        <div class="phase-content">
+          <p class="eyebrow">While participants choose</p>
+          <h3>Monitor the roster.</h3>
+          <ol>
+            <li>Open the Event Dashboard and select <strong>View roster</strong>.</li>
+            <li>Select <strong>Refresh roster</strong> whenever you need current results.</li>
+            <li>Review <strong>Choices submitted</strong> for each participant’s latest faction and Leader.</li>
+            <li>Follow up with anyone under <strong>Joined, not submitted</strong> near the deadline.</li>
+            <li>Use <strong>Participant preview</strong> only to inspect the public experience; do not join the event as a player from the organizer URL.</li>
+          </ol>
+          <div class="checkpoint"><strong>Checkpoint:</strong> Every expected participant either has a submitted choice or has been intentionally marked as a late addition.</div>
+        </div>
+      </section>
+
+      <section id="host-prepare" class="phase-card">
+        <div class="phase-number">04</div>
+        <div class="phase-content">
+          <p class="eyebrow">At the selection deadline</p>
+          <h3>Freeze choices and prepare materials.</h3>
+          <ol>
+            <li>From Host Home, open <strong>Registration controls</strong> for the event.</li>
+            <li>Select <strong>Close session</strong> to stop new onboarding submissions and revisions.</li>
+            <li>Return to the Event Dashboard and select <strong>Download CSV</strong>.</li>
+            <li>Prepare one complete player set for every submitted choice.</li>
+          </ol>
+          <ul class="material-list">
+            <li>Selected faction and Leader</li>
+            <li>Prepared or recommended Deck</li>
+            <li>Three Territories</li>
+            <li>Player Token</li>
+            <li>Faction and Leader components</li>
+            <li>Reference material and one six-sided die</li>
+          </ul>
+          <p>Closing event registration does not prevent the organizer from creating child table sessions afterward.</p>
+          <div class="checkpoint"><strong>Checkpoint:</strong> The physical player sets match the final roster CSV.</div>
+        </div>
+      </section>
+
+      <section id="host-codes" class="phase-card">
+        <div class="phase-number">05</div>
+        <div class="phase-content">
+          <p class="eyebrow">Before players sit down</p>
+          <h3>Create one QR code for each game.</h3>
+          <p>A QR code represents one individual game—not one physical table for the entire evening.</p>
+          <ol>
+            <li>Open <strong>Table sessions</strong> on the Event Dashboard.</li>
+            <li>Enter the number of games you expect, including later rounds and one or two reasonable spares.</li>
+            <li>Select <strong>Create table codes</strong> and confirm.</li>
+            <li>Select <strong>Print QR cards</strong>.</li>
+            <li>Select <strong>Download table manifest</strong> as a recovery and browser-transfer backup.</li>
+            <li>Check that every card has a unique table number, serial, readable QR code, and instruction for both players to scan it.</li>
+          </ol>
+          <div class="example-grid">
+            <div><strong>4 tables · 1 round</strong><span>Create at least 4 codes.</span></div>
+            <div><strong>4 tables · 2 rounds</strong><span>Create at least 8 codes.</span></div>
+            <div><strong>Uncertain attendance</strong><span>Add 1–2 spare codes.</span></div>
+          </div>
+          <div class="checkpoint"><strong>Checkpoint:</strong> Every intended game has a distinct printed QR card, and Host Home lists the saved table links.</div>
+        </div>
+      </section>
+
+      <section id="host-start" class="phase-card">
+        <div class="phase-number">06</div>
+        <div class="phase-content">
+          <p class="eyebrow">At each table</p>
+          <h3>Seat players and start the game.</h3>
+          <ol>
+            <li>Place one unused QR card at the table.</li>
+            <li>Have both players scan the same code.</li>
+            <li>Each player selects their recognized name or chooses themselves from the event roster, then selects <strong>Join game</strong>.</li>
+            <li>On the Event Dashboard, select <strong>Refresh games</strong>.</li>
+            <li>Confirm the correct two names, factions, and Leaders appear and the table status is <strong>Ready</strong>.</li>
+            <li>Choose one player as the session recorder. That player selects <strong>Game started</strong> once.</li>
+          </ol>
+          <dl class="status-key">
+            <div><dt>Unused</dt><dd>No player has joined.</dd></div>
+            <div><dt>Joining</dt><dd>One seat is occupied.</dd></div>
+            <div><dt>Ready</dt><dd>Both seats are occupied.</dd></div>
+            <div><dt>Closed</dt><dd>The QR code is retired.</dd></div>
+          </dl>
+          <div class="checkpoint"><strong>Checkpoint:</strong> The dashboard shows two correct players and <strong>Ready</strong> before play begins.</div>
+        </div>
+      </section>
+
+      <section id="host-play" class="phase-card">
+        <div class="phase-number">07</div>
+        <div class="phase-content">
+          <p class="eyebrow">During play</p>
+          <h3>Keep the digital record attached to the correct game.</h3>
+          <ol>
+            <li>Players remain on their own joined Table Session pages.</li>
+            <li>When a rule or card interaction is unclear, the player asking selects <strong>Ask the Rules Arbiter</strong> from their own device.</li>
+            <li>Use the physical playtest sheet to record timing, outcome, warnings, ratings, and qualitative observations.</li>
+            <li>Use <strong>Quick session note</strong> for a notable event that should be attached to the digital game record.</li>
+          </ol>
+          <p>Questions submitted through a joined device are automatically linked to the table session and the player who asked them. No one needs to re-enter a session code.</p>
+          <aside class="tip"><strong>Record before diagnosing.</strong> Capture what happened during the game before debating a balance change or redesign.</aside>
+        </div>
+      </section>
+
+      <section id="host-end" class="phase-card">
+        <div class="phase-number">08</div>
+        <div class="phase-content">
+          <p class="eyebrow">When a game ends</p>
+          <h3>Finish, collect feedback, and retire the QR code.</h3>
+          <ol>
+            <li>For a completed game, the designated recorder selects <strong>Game completed</strong>.</li>
+            <li>For a stopped game, select the correct stop reason and then <strong>Record stopped game</strong>.</li>
+            <li>Have both players finish their portions of the physical playtest sheet.</li>
+            <li>Collect the sheet.</li>
+            <li>Return to the Event Dashboard and select <strong>Refresh games</strong>.</li>
+            <li>Confirm the correct players are attached to the correct table.</li>
+            <li>Select <strong>Close game</strong> and confirm the serial.</li>
+          </ol>
+          <p>Closing preserves the game record but prevents new joins, additional game events, and reuse of that QR code.</p>
+          <div class="checkpoint"><strong>Checkpoint:</strong> The physical sheet is collected and the dashboard marks the game <strong>Closed</strong>.</div>
+        </div>
+      </section>
+
+      <section id="host-next" class="phase-card">
+        <div class="phase-number">09</div>
+        <div class="phase-content">
+          <p class="eyebrow">For every later round</p>
+          <h3>Use a fresh QR code.</h3>
+          <p>A second game always uses a new code, even when the same players, matchup, or physical table are reused.</p>
+          <ol>
+            <li>Place a new unused QR card at the table.</li>
+            <li>Both players scan and join again.</li>
+            <li>Verify both seats on the Event Dashboard.</li>
+            <li>Repeat the start, play, feedback, and closure steps.</li>
+          </ol>
+          <p>This keeps every game’s players, questions, timing, events, outcome, and feedback analytically separate.</p>
+        </div>
+      </section>
+
+      <section id="host-close" class="phase-card">
+        <div class="phase-number">10</div>
+        <div class="phase-content">
+          <p class="eyebrow">After the final game</p>
+          <h3>Close the event cleanly.</h3>
+          <ol>
+            <li>Collect every physical playtest sheet.</li>
+            <li>Select <strong>Refresh games</strong> on the Event Dashboard.</li>
+            <li>Close every completed, abandoned, or unused table session that will not be used later.</li>
+            <li>Confirm no live game remains open accidentally.</li>
+            <li>Retain the roster CSV, table manifest, physical sheets, and saved event entry in Host Home.</li>
+            <li>Use <strong>Forget event</strong> only when you no longer need that browser shortcut. Forgetting does not delete server records.</li>
+            <li>Create a fresh event for the next independently organized game night.</li>
+          </ol>
+          <div class="checkpoint"><strong>Final checkpoint:</strong> All physical feedback is collected and every table code is either intentionally open or closed.</div>
+        </div>
+      </section>
+
+      <section class="print-checklist">
+        <p class="eyebrow">One-page host checklist</p>
+        <h3>Game-night control sheet</h3>
+        <div class="checklist-grid">
+          <label><input type="checkbox" /> Event created and saved in Host Home</label>
+          <label><input type="checkbox" /> Public participant link sent</label>
+          <label><input type="checkbox" /> Final roster refreshed</label>
+          <label><input type="checkbox" /> Registration closed at deadline</label>
+          <label><input type="checkbox" /> Roster CSV downloaded</label>
+          <label><input type="checkbox" /> Player materials prepared</label>
+          <label><input type="checkbox" /> Enough unique table codes created</label>
+          <label><input type="checkbox" /> QR cards printed and tested</label>
+          <label><input type="checkbox" /> Table manifest saved</label>
+          <label><input type="checkbox" /> Both seats verified before each game</label>
+          <label><input type="checkbox" /> Physical sheet collected after each game</label>
+          <label><input type="checkbox" /> Completed and unused sessions closed</label>
+        </div>
+      </section>
+    </article>
+
+    <article id="participantGuide" class="role-guide participant-guide" role="tabpanel" aria-labelledby="participantGuideTab" data-guide-role="participant" hidden>
+      <header class="role-guide-header player-header">
+        <div>
+          <p class="eyebrow">Participant instructions</p>
+          <h2>Choose, join, play, and finish.</h2>
+          <p>You do not need an account or password. Before game night you submit one choice; at the table you scan one QR code and confirm who you are.</p>
+        </div>
+      </header>
+
+      <section class="participant-stage">
+        <div class="stage-marker">Before</div>
+        <div>
+          <p class="eyebrow">Before game night</p>
+          <h3>Submit the choice the organizer should prepare.</h3>
+          <ol class="large-steps">
+            <li><span>1</span><div><strong>Open the invitation.</strong><p>Use the participant link sent by the organizer. No account, password, or manually entered session code is required.</p></div></li>
+            <li><span>2</span><div><strong>Enter your name.</strong><p>Use the name the organizer will recognize at game night.</p></div></li>
+            <li><span>3</span><div><strong>Explore the six factions.</strong><p>Read the short summaries and open full guides for the factions that interest you. You do not need to read every guide.</p></div></li>
+            <li><span>4</span><div><strong>Choose a faction and Leader.</strong><p>Select one faction, then one of its two Leaders.</p></div></li>
+            <li><span>5</span><div><strong>Read the First Game Introduction.</strong><p>Read it in order. The complete Rulebook and Rules Arbiter remain available during play.</p></div></li>
+            <li><span>6</span><div><strong>Submit your choice.</strong><p>Check the confirmation box, select <strong>Submit my choice</strong>, and wait for confirmation that your selection is on the roster.</p></div></li>
+          </ol>
+          <aside class="tip"><strong>Changed your mind?</strong> Reopen the same invitation before the deadline and select <strong>Revise my choice</strong>. The organizer sees only your latest submitted choice.</aside>
+        </div>
+      </section>
+
+      <section class="participant-stage">
+        <div class="stage-marker">At table</div>
+        <div>
+          <p class="eyebrow">At game night</p>
+          <h3>Join the correct game before play begins.</h3>
+          <ol class="large-steps">
+            <li><span>1</span><div><strong>Collect your prepared materials.</strong><p>The organizer should provide the Deck and components for your submitted faction and Leader.</p></div></li>
+            <li><span>2</span><div><strong>Both players scan the same table QR code.</strong><p>Do not scan a neighboring table’s code or reuse a code from an earlier game.</p></div></li>
+            <li><span>3</span><div><strong>Confirm who you are.</strong><p>When the page says <em>Playing as [name]?</em>, select <strong>Join game</strong>. When it asks <em>Who are you?</em>, select your name from the roster and then join.</p></div></li>
+            <li><span>4</span><div><strong>Check your seat.</strong><p>The connected panel must show your name, faction, Leader, and seat. Tell the organizer immediately when anything is wrong.</p></div></li>
+            <li><span>5</span><div><strong>Wait for both players.</strong><p>Do not begin until both seats are joined and the organizer confirms the table is ready.</p></div></li>
+            <li><span>6</span><div><strong>Record the start once.</strong><p>One designated player selects <strong>Game started</strong>. The other player does not select it again.</p></div></li>
+          </ol>
+          <p><strong>I am not on the roster</strong> is for genuine late additions who did not complete onboarding.</p>
+        </div>
+      </section>
+
+      <section class="participant-stage">
+        <div class="stage-marker">During</div>
+        <div>
+          <p class="eyebrow">During play</p>
+          <h3>Ask from your own joined device.</h3>
+          <ol>
+            <li>When a rule, card, timing question, or interaction is unclear, select <strong>Ask the Rules Arbiter</strong>.</li>
+            <li>Ask the question from your own device so it is attributed to you rather than your opponent.</li>
+            <li>Record useful observations on the physical playtest sheet.</li>
+            <li>Describe what happened before debating a balance fix.</li>
+          </ol>
+          <div class="participant-callout"><strong>Your question is linked automatically.</strong><span>The system records this game and the player who submitted it; you do not need to type a session code.</span></div>
+        </div>
+      </section>
+
+      <section class="participant-stage">
+        <div class="stage-marker">After</div>
+        <div>
+          <p class="eyebrow">After the game</p>
+          <h3>Finish the record before leaving the table.</h3>
+          <ol>
+            <li>One designated player selects <strong>Game completed</strong>. For a stopped game, record the correct stop reason instead.</li>
+            <li>Complete your ratings and written feedback on the physical playtest sheet.</li>
+            <li>Return the sheet to the organizer.</li>
+            <li>For another game, scan the new QR code supplied by the organizer. Never reuse the previous game’s code.</li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="participant-quick-card">
+        <p class="eyebrow">One-page player quick-start</p>
+        <h3>At the table</h3>
+        <ol>
+          <li>Both players scan the same unused QR code.</li>
+          <li>Confirm your own name and select <strong>Join game</strong>.</li>
+          <li>Check your displayed seat, faction, and Leader.</li>
+          <li>Wait until both seats are joined.</li>
+          <li>One player records <strong>Game started</strong>.</li>
+          <li>Ask the Rules Arbiter from your own joined device.</li>
+          <li>One player records completion or the stop reason.</li>
+          <li>Finish and return the physical feedback sheet.</li>
+        </ol>
+      </section>
+    </article>
+
+    <section class="troubleshooting" aria-labelledby="trouble-title">
+      <div class="section-heading split-heading">
+        <div>
+          <p class="eyebrow">Troubleshooting</p>
+          <h2 id="trouble-title">When the expected screen does not appear.</h2>
+        </div>
+        <p>Most problems are resolved by identifying the page, browser, or session state involved.</p>
+      </div>
+      <div class="trouble-grid">
+        <details>
+          <summary>Host Home is empty.</summary>
+          <p>Open the private Event Dashboard once in the same normal browser, then return to Host Home. On another browser or device, restore table links from the manifest.</p>
+        </details>
+        <details>
+          <summary>The table link is missing on this computer.</summary>
+          <p>The public table token is retained by the browser where it was created. Use that browser or import the table manifest into Host Home.</p>
+        </details>
+        <details>
+          <summary>My name is not in the table dropdown.</summary>
+          <p>Return to the onboarding invitation and complete the faction and Leader submission. Ask the organizer to refresh the roster. Genuine late additions may use <strong>I am not on the roster</strong>.</p>
+        </details>
+        <details>
+          <summary>The page recognizes the wrong player.</summary>
+          <p>Select <strong>Not you?</strong>, choose the correct roster entry, and join again.</p>
+        </details>
+        <details>
+          <summary>The table already has two players.</summary>
+          <p>That game session is full. Ask the organizer for a fresh table QR code.</p>
+        </details>
+        <details>
+          <summary>The game is closed.</summary>
+          <p>Closed QR codes are retired and cannot be reused. Ask the organizer for a new code.</p>
+        </details>
+        <details>
+          <summary>A Rules Arbiter question was not attributed correctly.</summary>
+          <p>Make sure the player joined the Table Session before opening the Rules Arbiter and asked from their own device.</p>
+        </details>
+        <details>
+          <summary>The organizer page looks like a player page.</summary>
+          <p>Return to Host Home and open <strong>Event Dashboard</strong>. Organizer URLs contain a private <code>host=</code> parameter and should never be distributed.</p>
+        </details>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <strong>Gauntlet</strong>
+      <p>Unpublished pre-release playtest project.</p>
+    </div>
+    <div class="footer-links screen-only">
+      <a href="../host/">Host Home</a>
+      <a href="../../rulebook/">Browser Rulebook</a>
+      <a href="../">Playtest resources</a>
+    </div>
+    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  </footer>
+
+  <script src="app.js?v=20260731-1"></script>
+</body>
+</html>
