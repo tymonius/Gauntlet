@@ -95,8 +95,8 @@
   object-position: center 48%;
 }
 
-.art-shock-and-awe img {
-  object-position: center 44%;
+.art-unbroken-ranks img {
+  object-position: center 46%;
 }
 
 .art-sanctions-embargo img {
@@ -163,38 +163,6 @@
 .single-text-section p {
   font-size: calc(6.55pt * var(--rules-scale));
   line-height: 1.08;
-}
-
-.ultra-dense-card {
-  --minimum-rules-scale: 0.7;
-}
-
-.ultra-dense-card .card-rules {
-  padding: 0.028in 0.06in 0.025in;
-}
-
-.ultra-dense-card .rule-section {
-  grid-template-columns: 0.34in minmax(0, 1fr);
-  column-gap: 0.035in;
-}
-
-.ultra-dense-card .rule-section + .rule-section {
-  margin-top: 0.022in;
-  padding-top: 0.018in;
-}
-
-.ultra-dense-card .rule-section h4 {
-  font-size: calc(4.55pt * var(--rules-scale));
-  line-height: 1;
-}
-
-.ultra-dense-card .rule-section p {
-  font-size: calc(4.35pt * var(--rules-scale));
-  line-height: 1.015;
-}
-
-.ultra-dense-card .card-footer span {
-  font-size: 4.2pt;
 }
 
 @media (max-width: 52rem) {
