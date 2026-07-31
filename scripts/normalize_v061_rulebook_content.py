@@ -62,6 +62,10 @@ REPLACEMENTS = (
     ("\n## Copied effects\n", "\n### Copied effects\n"),
     ("\n---\n\n## Withdrawal and Retreat", "\n\n## Withdrawal and Retreat"),
     ("after that movement.\n#### Retreat", "after that movement.\n\n#### Retreat"),
+    (
+        "\n---\n\nGauntlet v0.6.1 © 2026 Tymon Scott. All rights reserved.\n\n---\n\n# Glossary",
+        "\n---\n\n# Glossary",
+    ),
 )
 
 
