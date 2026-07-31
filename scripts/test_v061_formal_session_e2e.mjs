@@ -24,6 +24,9 @@ class LocalD1 {
       async first() {
         return statement.get(...values) ?? null;
       },
+      async all() {
+        return { success: true, results: statement.all(...values) };
+      },
       async run() {
         const result = statement.run(...values);
         return {
@@ -53,8 +56,8 @@ const env = {
   ALLOWED_ORIGINS: `${origin},http://localhost:8000,http://127.0.0.1:8000`
 };
 
-async function call(path, { method = "GET", body, authorization } = {}) {
-  const headers = new Headers({ Origin: origin });
+async function call(path, { method = "GET", body, authorization, headers: extraHeaders } = {}) {
+  const headers = new Headers({ Origin: origin, ...(extraHeaders || {}) });
   if (body !== undefined) headers.set("Content-Type", "application/json");
   if (authorization) headers.set("Authorization", `Bearer ${authorization}`);
   return worker.fetch(new Request(`https://sessions.example${path}`, {
@@ -77,7 +80,8 @@ try {
     service: "gauntlet-playtest-sessions",
     version: "v0.6.1",
     database: true,
-    sessionCreationConfigured: true
+    sessionCreationConfigured: true,
+    onboardingSupported: true
   });
 
   const created = await json(await call("/api/sessions", {
@@ -96,6 +100,8 @@ try {
   assert.match(created.hostKey, /^[A-Za-z0-9_-]{24,96}$/);
   assert.equal(created.joinUrl, `${origin}/playtest/session/?code=${encodeURIComponent(created.joinToken)}`);
   assert.equal(created.hostUrl, `${created.joinUrl}&host=${encodeURIComponent(created.hostKey)}`);
+  assert.equal(created.onboardingUrl, `${origin}/playtest/onboarding/?code=${encodeURIComponent(created.joinToken)}`);
+  assert.equal(created.onboardingHostUrl, `${created.onboardingUrl}&host=${encodeURIComponent(created.hostKey)}`);
 
   const duplicate = await json(await call("/api/sessions", {
     method: "POST",
@@ -114,6 +120,80 @@ try {
     body: { displayName: "Automated Player", role: "player" }
   }), 201);
   assert.match(joined.participantId, /^[0-9a-f-]{36}$/i);
+
+  const invalidChoice = await json(await call(`/api/sessions/${created.joinToken}/event`, {
+    method: "POST",
+    body: {
+      eventType: "onboarding_choice",
+      data: {
+        participantId: joined.participantId,
+        displayName: "Automated Player",
+        faction: "military",
+        leader: "Spirit Walker",
+        introConfirmed: true
+      }
+    }
+  }), 400);
+  assert.match(invalidChoice.error, /valid Leader/i);
+
+  await json(await call(`/api/sessions/${created.joinToken}/event`, {
+    method: "POST",
+    body: {
+      eventType: "onboarding_choice",
+      data: {
+        participantId: joined.participantId,
+        displayName: "Automated Player",
+        faction: "military",
+        leader: "General",
+        reason: "Direct battlefield pressure",
+        introConfirmed: true
+      }
+    }
+  }), 201);
+
+  await json(await call(`/api/sessions/${created.joinToken}/event`, {
+    method: "POST",
+    body: {
+      eventType: "onboarding_choice",
+      data: {
+        participantId: joined.participantId,
+        displayName: "Automated Player",
+        faction: "mystics",
+        leader: "Spirit Walker",
+        reason: "Ritual progression",
+        introConfirmed: true
+      }
+    }
+  }), 201);
+
+  const rejectedRoster = await json(await call(`/api/sessions/${created.joinToken}/onboarding`, {
+    headers: { "X-Host-Key": "wrong-host-key" }
+  }), 403);
+  assert.match(rejectedRoster.error, /invalid host key/i);
+
+  const roster = await json(await call(`/api/sessions/${created.joinToken}/onboarding`, {
+    headers: { "X-Host-Key": created.hostKey }
+  }), 200);
+  assert.equal(roster.choices.length, 1);
+  assert.equal(roster.pendingParticipants.length, 0);
+  assert.deepEqual(
+    {
+      displayName: roster.choices[0].displayName,
+      faction: roster.choices[0].faction,
+      leader: roster.choices[0].leader,
+      reason: roster.choices[0].reason,
+      introConfirmed: roster.choices[0].introConfirmed,
+      selectionMode: roster.choices[0].selectionMode
+    },
+    {
+      displayName: "Automated Player",
+      faction: "mystics",
+      leader: "Spirit Walker",
+      reason: "Ritual progression",
+      introConfirmed: true,
+      selectionMode: "self_selected"
+    }
+  );
 
   await json(await call(`/api/sessions/${created.joinToken}/event`, {
     method: "POST",
@@ -172,6 +252,11 @@ try {
   const retired = await json(await call(`/api/sessions/${created.joinToken}`), 200);
   assert.equal(retired.status, "closed");
 
+  const closedRoster = await json(await call(`/api/sessions/${created.joinToken}/onboarding`, {
+    headers: { "X-Host-Key": created.hostKey }
+  }), 200);
+  assert.equal(closedRoster.choices[0].leader, "Spirit Walker");
+
   const rejectedJoin = await json(await call(`/api/sessions/${created.joinToken}/join`, {
     method: "POST",
     body: { displayName: "Late Player", role: "player" }
@@ -184,12 +269,27 @@ try {
   }), 409);
   assert.match(rejectedEvent.error, /closed/i);
 
+  const rejectedChoiceAfterClose = await json(await call(`/api/sessions/${created.joinToken}/event`, {
+    method: "POST",
+    body: {
+      eventType: "onboarding_choice",
+      data: {
+        participantId: joined.participantId,
+        faction: "military",
+        leader: "General",
+        introConfirmed: true
+      }
+    }
+  }), 409);
+  assert.match(rejectedChoiceAfterClose.error, /closed/i);
+
   const events = db.database.prepare(
     "SELECT event_type FROM playtest_session_events WHERE session_id = ? ORDER BY created_at, rowid"
   ).all(created.sessionId).map(row => row.event_type);
   for (const expected of [
     "session_created",
     "participant_joined",
+    "onboarding_choice",
     "game_started",
     "arbiter_linked",
     "session_closed"
@@ -197,7 +297,8 @@ try {
     assert.ok(events.includes(expected), `Missing lifecycle event: ${expected}`);
   }
 
-  console.log("Validated formal coded-sheet lifecycle: create -> join -> event -> Arbiter link -> close -> retired code rejection.");
+  assert.equal(events.filter((event) => event === "onboarding_choice").length, 2);
+  console.log("Validated coded-session lifecycle with choice-first onboarding, revision-safe roster, play events, Arbiter linkage, closure, and retired-code rejection.");
 } finally {
   db.close();
 }
