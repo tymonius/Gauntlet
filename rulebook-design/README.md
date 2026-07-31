@@ -4,13 +4,17 @@ Internal, non-production visual proofs for the v0.6.1 Rulebook design pass track
 
 ## Approval gate
 
-The full Rulebook, Reference Guide, reader PDF, editable document, and imposed booklet must not be generated from this design until the representative proofs are approved.
+The full Rulebook, Reference Guide, reader PDF, editable document, imposed booklet, and live Browser Rulebook must not be generated from or replaced by this design until the representative proofs are visually approved.
 
-## Proofs
+## Proof set
 
-- `print-proof.html` — eight half-letter pages: front cover, contents/reading guide, introductory page, shared-rules page, faction opener, Leader page, quick-reference page, and back cover.
-- `browser-proof.html` — responsive translation of the same hierarchy and components for screen reading.
+The proof workflow expands the compressed proof payloads with `build_proofs.py`, then renders:
+
+- `print-proof.html` — eight half-letter pages: front cover, contents/reading guide, introductory page, shared-rules page, faction opener, Leader page, quick-reference page, and back cover;
+- `browser-proof.html` — responsive translation of the same hierarchy and components for screen reading; and
 - `proof.css` — shared proof-only typography, color, spacing, rules-panel, faction, Leader, reference, cover, and page-furniture grammar.
+
+The expanded files and generated PDF/screenshots exist only in the workflow workspace and uploaded review artifact. Generated proof artifacts are not committed and do not alter production release files.
 
 ## Locked design basis
 
@@ -26,3 +30,7 @@ The full Rulebook, Reference Guide, reader PDF, editable document, and imposed b
 - Complete copyright and playtest-use statement: back cover.
 
 Font files are not stored in the repository. Browser proofs load the existing Adobe Fonts project and retain approved fallback stacks through `design-tokens.css`.
+
+## Review standard
+
+Automated checks establish only that the pages render at the intended dimensions, contain the required content and artwork, and do not mechanically overflow. They do not constitute design approval. The proof artifact must be reviewed visually at actual size before the design proceeds to full-document production.
