@@ -3,6 +3,13 @@
     overflow: hidden;
   }
 
+  /* The redesigned app shell normally establishes its own stacking context.
+     Release it while the card dialog is open so the fixed preview can sit
+     above the body-level backdrop instead of being dimmed with the page. */
+  body.mobile-card-preview-open .app-shell {
+    z-index: auto;
+  }
+
   .compact-card-row {
     min-height: 3.5rem;
     padding: 0.7rem;
