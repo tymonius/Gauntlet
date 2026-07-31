@@ -1,0 +1,324 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Choose a Gauntlet faction and Leader, learn the first-game essentials, and submit your game-night selection." />
+  <title>Choose Your Gauntlet Faction</title>
+  <link rel="preconnect" href="https://use.typekit.net" />
+  <link rel="preconnect" href="https://p.typekit.net" crossorigin />
+  <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
+  <link rel="stylesheet" href="../../site.css" />
+  <link rel="stylesheet" href="onboarding.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../../" aria-label="Gauntlet home">
+      <span class="brand-mark" aria-hidden="true">G</span>
+      <span>Gauntlet</span>
+    </a>
+    <nav aria-label="Onboarding navigation">
+      <a href="#choose">Choose</a>
+      <a href="#introduction">First-game introduction</a>
+      <a href="#submit">Submit</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="onboarding-hero" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Game-night preparation · v0.6.1</p>
+        <h1 id="page-title">Choose your side <span>before the battle.</span></h1>
+        <p class="hero-lede">
+          Explore Gauntlet's six factions, choose the Leader that interests you, and read the essentials for your first game. Your Deck and components will be printed, cut, and ready for you at game night.
+        </p>
+        <div class="session-line" aria-live="polite">
+          <span class="status-dot" aria-hidden="true"></span>
+          <strong id="sessionLabel">Checking invitation…</strong>
+          <span id="sessionDetail"></span>
+        </div>
+      </div>
+      <ol class="journey" aria-label="Onboarding steps">
+        <li><span>1</span><strong>Explore</strong><small>Find a faction that excites you.</small></li>
+        <li><span>2</span><strong>Learn</strong><small>Read the shared first-game essentials.</small></li>
+        <li><span>3</span><strong>Submit</strong><small>Tell the organizer what to prepare.</small></li>
+      </ol>
+    </section>
+
+    <section id="errorPanel" class="section notice-panel error-panel" hidden>
+      <p class="eyebrow">Invitation unavailable</p>
+      <h2 id="errorTitle">This onboarding link cannot be opened.</h2>
+      <p id="errorMessage"></p>
+    </section>
+
+    <section id="organizerPanel" class="section organizer-panel" hidden aria-labelledby="organizer-title">
+      <div class="section-heading split-heading">
+        <div>
+          <p class="eyebrow">Organizer view</p>
+          <h2 id="organizer-title">Game-night roster.</h2>
+        </div>
+        <p>Only the host link can open this section. It shows each participant's latest submitted choice.</p>
+      </div>
+      <div class="organizer-actions">
+        <button id="copyInvite" class="button secondary" type="button">Copy participant link</button>
+        <button id="refreshRoster" class="button secondary" type="button">Refresh roster</button>
+        <button id="downloadRoster" class="button primary" type="button">Download CSV</button>
+      </div>
+      <p id="organizerStatus" class="form-status" aria-live="polite"></p>
+      <div class="roster-summary" aria-label="Roster summary">
+        <div><strong id="choiceCount">0</strong><span>Choices submitted</span></div>
+        <div><strong id="pendingCount">0</strong><span>Joined, not submitted</span></div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Player</th>
+              <th>Faction</th>
+              <th>Leader</th>
+              <th>Why it interested them</th>
+              <th>Latest submission</th>
+            </tr>
+          </thead>
+          <tbody id="rosterBody">
+            <tr><td colspan="5">No choices have been submitted yet.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="pendingPlayers" class="pending-players" hidden>
+        <h3>Joined without a submitted choice</h3>
+        <ul id="pendingList"></ul>
+      </div>
+    </section>
+
+    <form id="onboardingForm" class="onboarding-form" hidden novalidate>
+      <section id="choose" class="section choice-section" aria-labelledby="choose-title">
+        <div class="section-heading split-heading">
+          <div>
+            <p class="eyebrow">Step 1 · Discover</p>
+            <h2 id="choose-title">Which institution will you lead?</h2>
+          </div>
+          <p>Scan all six, then open the full guides for the factions that catch your attention. You do not need to read every page.</p>
+        </div>
+
+        <label class="field identity-field" for="displayName">
+          <span>Your name</span>
+          <input id="displayName" name="displayName" type="text" maxlength="80" autocomplete="name" required placeholder="Name used for game night" />
+        </label>
+
+        <fieldset class="faction-fieldset">
+          <legend>Choose a faction</legend>
+          <div class="faction-choice-grid">
+            <article class="faction-choice military">
+              <label>
+                <input type="radio" name="faction" value="military" required />
+                <span class="choice-mark" aria-hidden="true">⚔</span>
+                <strong>Military</strong>
+                <small>Command, movement, pressure, and decisive battle.</small>
+              </label>
+              <a href="../../factions/military/" target="_blank" rel="noopener">Explore the full guide ↗</a>
+            </article>
+            <article class="faction-choice diplomats">
+              <label>
+                <input type="radio" name="faction" value="diplomats" />
+                <span class="choice-mark" aria-hidden="true">§</span>
+                <strong>Diplomats</strong>
+                <small>Influence, proposals, concessions, and legitimacy.</small>
+              </label>
+              <a href="../../factions/diplomats/" target="_blank" rel="noopener">Explore the full guide ↗</a>
+            </article>
+            <article class="faction-choice financiers">
+              <label>
+                <input type="radio" name="faction" value="financiers" />
+                <span class="choice-mark" aria-hidden="true">◆</span>
+                <strong>Financiers</strong>
+                <small>Capital, assets, leverage, and ownership.</small>
+              </label>
+              <a href="../../factions/financiers/" target="_blank" rel="noopener">Explore the full guide ↗</a>
+            </article>
+            <article class="faction-choice intelligence">
+              <label>
+                <input type="radio" name="faction" value="intelligence" />
+                <span class="choice-mark" aria-hidden="true">◉</span>
+                <strong>Intelligence</strong>
+                <small>Information, surveillance, disruption, and secrecy.</small>
+              </label>
+              <a href="../../factions/intelligence/" target="_blank" rel="noopener">Explore the full guide ↗</a>
+            </article>
+            <article class="faction-choice mystics">
+              <label>
+                <input type="radio" name="faction" value="mystics" />
+                <span class="choice-mark" aria-hidden="true">✦</span>
+                <strong>Mystics</strong>
+                <small>Rites, invocation, transformation, and the Arcane.</small>
+              </label>
+              <a href="../../factions/mystics/" target="_blank" rel="noopener">Explore the full guide ↗</a>
+            </article>
+            <article class="faction-choice inquisition">
+              <label>
+                <input type="radio" name="faction" value="inquisition" />
+                <span class="choice-mark" aria-hidden="true">✠</span>
+                <strong>Inquisition</strong>
+                <small>Conviction, condemnation, denial, and suppression.</small>
+              </label>
+              <a href="../../factions/inquisition/" target="_blank" rel="noopener">Explore the full guide ↗</a>
+            </article>
+          </div>
+        </fieldset>
+
+        <fieldset id="leaderFieldset" class="leader-fieldset" disabled>
+          <legend>Choose one of that faction's Leaders</legend>
+          <p id="leaderPrompt">Choose a faction first.</p>
+          <div id="leaderChoices" class="leader-choices"></div>
+        </fieldset>
+
+        <label class="field" for="choiceReason">
+          <span>What interested you about this faction or Leader? <small>Optional</small></span>
+          <textarea id="choiceReason" name="choiceReason" maxlength="500" rows="3" placeholder="A sentence is enough—theme, play style, artwork, Leader concept, or anything else."></textarea>
+        </label>
+      </section>
+
+      <section id="introduction" class="section intro-section" aria-labelledby="intro-title">
+        <div class="section-heading split-heading">
+          <div>
+            <p class="eyebrow">Step 2 · First-game introduction</p>
+            <h2 id="intro-title">How Gauntlet works.</h2>
+          </div>
+          <p>This is the shared foundation for your first game. Exact card interactions and your selected faction's procedures will remain available at the table.</p>
+        </div>
+
+        <div class="intro-grid">
+          <article class="intro-card objective-card">
+            <span>01</span>
+            <h3>Run the Gauntlet</h3>
+            <p>Both players begin outside opposite ends of a shared six-Territory battlefield. Advance through the line, defeat the opponent, occupy and capture their Territories, and push them beyond their end.</p>
+            <p>After capturing their final Territory, advance beyond the column and win the resulting <strong>Last Stand</strong> battle to win the game. Some factions also have an additional victory route.</p>
+          </article>
+
+          <article class="intro-card">
+            <span>02</span>
+            <h3>Your turn</h3>
+            <ol>
+              <li><strong>Capture:</strong> capture an opposing Territory you still occupy from the previous turn.</li>
+              <li><strong>Draw:</strong> draw one card.</li>
+              <li><strong>Act and move:</strong> take one normal Action either before or after movement; advance, hold, or withdraw.</li>
+              <li><strong>Cleanup:</strong> resolve end-of-turn effects and discard down to three cards in Hand.</li>
+            </ol>
+            <p>A battle ends the movement that started it. You move again only when a rule, card, or Leader ability specifically allows it.</p>
+          </article>
+
+          <article class="intro-card">
+            <span>03</span>
+            <h3>Actions and Assets</h3>
+            <p>During your one normal Action Opportunity, play a card from Hand for its <strong>Action</strong> effect or use a qualifying faction action.</p>
+            <p>Most one-time Actions go to the Discard Pile. An <strong>Asset</strong> remains face up in your Asset Bank and provides a later effect. Your Asset limit equals the number of Territories you control.</p>
+          </article>
+
+          <article class="intro-card battle-card">
+            <span>04</span>
+            <h3>Beginning a battle</h3>
+            <p>Entering the opponent's position starts a battle. The moving player is the attacker; the other is the defender.</p>
+            <p>Each player may commit one eligible card from Hand as a face-down <strong>Gambit</strong>. Gambits are powerful but costly: they normally go to the Graveyard after the battle.</p>
+          </article>
+
+          <article class="intro-card">
+            <span>05</span>
+            <h3>Reserve and Tactic</h3>
+            <p>Set your Hand aside without mixing it into another zone, then draw three temporary cards to form your private <strong>Reserve</strong>.</p>
+            <p>After Gambits are revealed, each player may choose one eligible Reserve card as a <strong>Tactic</strong>. Reveal Tactics, resolve their effects, and then determine the battle result.</p>
+          </article>
+
+          <article class="intro-card sequence-card">
+            <span>06</span>
+            <h3>Battle sequence</h3>
+            <ol>
+              <li>Resolve opening effects.</li>
+              <li>Set optional Gambits.</li>
+              <li>Set Hands aside and draw Reserves.</li>
+              <li>Reveal Gambits.</li>
+              <li>Choose and reveal Tactics.</li>
+              <li>Resolve effects and roll dice.</li>
+              <li>Resolve retreat, occupation, and card destinations.</li>
+            </ol>
+            <p>Higher battle total wins. When the defender controls the contested Territory, <strong>Defender's Advantage</strong> means the defender wins tied totals.</p>
+          </article>
+
+          <article class="intro-card destination-card">
+            <span>07</span>
+            <h3>After the battle</h3>
+            <ul>
+              <li>A losing attacker normally returns to the position they entered from.</li>
+              <li>A losing defender normally retreats one position toward their own end.</li>
+              <li>A winning attacker occupies the contested position.</li>
+              <li>Gambits normally go to the <strong>Graveyard</strong>.</li>
+              <li>Tactics and unused Reserve cards normally go to the <strong>Discard Pile</strong>.</li>
+            </ul>
+          </article>
+
+          <article class="intro-card capture-card">
+            <span>08</span>
+            <h3>Occupation is not capture</h3>
+            <p>Winning an attack lets you occupy an opposing Territory, but normally does not capture it immediately.</p>
+            <p>You capture it only if you still occupy it at the start of your next turn. The opponent therefore receives a counterattack window before control changes.</p>
+          </article>
+
+          <article class="intro-card zones-card">
+            <span>09</span>
+            <h3>Keep zones separate</h3>
+            <p>Your permanent Hand, Draw Pile, Discard Pile, Graveyard, Asset Bank, temporary Reserve, Gambit, and Tactic areas represent different game information and destinations.</p>
+            <p>Your Player Mat and table reference will label these areas. Do not combine piles even when space is limited.</p>
+          </article>
+        </div>
+
+        <aside class="selected-faction-note">
+          <div>
+            <p class="eyebrow">Your selected institution</p>
+            <h3 id="selectedFactionHeading">Choose a faction above.</h3>
+          </div>
+          <p id="selectedFactionCopy">Once selected, use its full faction guide to learn its resource, Leader abilities, special procedures, and any additional victory condition.</p>
+          <a id="selectedFactionLink" class="button secondary" href="../../#factions">Browse faction guides</a>
+        </aside>
+      </section>
+
+      <section id="submit" class="section submit-section" aria-labelledby="submit-title">
+        <div class="submit-panel">
+          <div>
+            <p class="eyebrow">Step 3 · Send your choice</p>
+            <h2 id="submit-title">Your game will be prepared.</h2>
+            <p id="selectionSummary">Choose a faction and Leader above.</p>
+            <label class="confirmation">
+              <input id="introConfirmed" name="introConfirmed" type="checkbox" required />
+              <span>I have read the First Game Introduction. I understand that the complete rules and Rules Arbiter will remain available during play.</span>
+            </label>
+          </div>
+          <div class="submit-actions">
+            <button id="submitChoice" class="button primary" type="submit">Submit my choice</button>
+            <p id="submitStatus" class="form-status" aria-live="polite"></p>
+          </div>
+        </div>
+        <div id="successPanel" class="success-panel" hidden tabindex="-1">
+          <p class="eyebrow">Choice received</p>
+          <h3 id="successHeading">Your selection is on the roster.</h3>
+          <p id="successCopy"></p>
+          <button id="reviseChoice" class="button secondary" type="button">Revise my choice</button>
+        </div>
+      </section>
+    </form>
+  </main>
+
+  <footer>
+    <div>
+      <strong>Gauntlet</strong>
+      <p>Unpublished pre-release playtest project.</p>
+    </div>
+    <div class="footer-links">
+      <a href="../../#factions">Faction guides</a>
+      <a href="../../rulebook/">Browser Rulebook</a>
+      <a href="../">Playtest resources</a>
+    </div>
+    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  </footer>
+
+  <script src="app.js" defer></script>
+</body>
+</html>
