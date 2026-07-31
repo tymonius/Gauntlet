@@ -1,0 +1,4 @@
+/* Proof-only correction: the oversized decorative G changed the page's scroll geometry. */
+.back-cover::before {
+  content: none;
+}
