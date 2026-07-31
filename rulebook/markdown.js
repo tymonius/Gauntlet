@@ -10,7 +10,13 @@ function escapeHtml(value) {
 }
 
 function normalizeUrl(url) {
-  const trimmed = url.trim();
+  let trimmed = url.trim();
+  if (trimmed.startsWith('<') && trimmed.endsWith('>')) {
+    trimmed = trimmed.slice(1, -1).trim();
+  }
+  if (trimmed.startsWith('images/')) {
+    return `../${trimmed}`;
+  }
   if (trimmed.startsWith('../../images/')) {
     return `../images/${trimmed.slice('../../images/'.length)}`;
   }
