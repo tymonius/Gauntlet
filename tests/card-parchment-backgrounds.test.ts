@@ -61,6 +61,18 @@ function webpDimensions(source: Buffer) {
   throw new Error(`Unsupported WebP payload: ${format}`);
 }
 
+function expectCompleteRiffContainer(source: Buffer) {
+  expect(source.byteLength).toBeGreaterThanOrEqual(20);
+  expect(source.subarray(0, 4).toString("ascii")).toBe("RIFF");
+  expect(source.subarray(8, 12).toString("ascii")).toBe("WEBP");
+
+  // RIFF stores the complete file length minus its first eight bytes. This
+  // detects missing or truncated transport chunks without assuming that a
+  // valid, efficiently compressed full-resolution WebP must exceed an
+  // arbitrary byte-size threshold.
+  expect(source.readUInt32LE(4) + 8).toBe(source.byteLength);
+}
+
 describe("card parchment backgrounds", () => {
   it("loads the unchanged faction sources and the uploaded multipart replacements", () => {
     expect(refinementCss).toContain('@import url("card-parchment.css");');
@@ -88,10 +100,10 @@ describe("card parchment backgrounds", () => {
     expect(cardScript).toContain("card.dataset.parchmentSource = faction");
   });
 
-  it("reconstructs full-resolution Financiers and Mystics WebPs", () => {
+  it("reconstructs complete full-resolution Financiers and Mystics WebPs", () => {
     for (const faction of Object.keys(uploadedMultipartSources) as Array<keyof typeof uploadedMultipartSources>) {
       const source = decodeMultipartWebp(faction);
-      expect(source.byteLength).toBeGreaterThan(150_000);
+      expectCompleteRiffContainer(source);
       expect(webpDimensions(source)).toEqual({ width: 1061, height: 1482 });
     }
   });
