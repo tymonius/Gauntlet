@@ -14,9 +14,8 @@ The complete package is under [`releases/v0.6.1/`](releases/v0.6.1/):
 - quick-reference guide;
 - canonical structured data and manifest;
 - release notes and changelog;
-- print-and-play Neutral cards and Territories;
-- six faction/component packages; and
-- one combined all-cards print-and-play PDF.
+- archived release printables; and
+- complete canonical source and reference materials.
 
 Earlier releases remain available for historical reference but are obsolete for current playtesting.
 
@@ -50,8 +49,7 @@ To run the Gauntlet, a player must defeat the opponent on their final Territory,
 - [Gauntlet v0.6.1 Browser Rulebook](https://gauntlet.run/rulebook/) — searchable, responsive rendering of the complete canonical rulebook with direct section links and integrated Rules Arbiter access.
 - [Gauntlet v0.6.1 Rulebook (PDF)](releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf) — the complete official rules for the current release.
 - [Gauntlet v0.6.1 Rules Arbiter](https://gauntlet.run/#rules-assistant) — ask about rules, cards, Leaders, faction systems, Territories, timing, and victory conditions using canonical v0.6.1 sources.
-- [Gauntlet v0.6.1 Deckbuilder](https://gauntlet.run/deckbuilder/) — load a recommended Leader Deck or build, validate, save, export, randomize, and print a custom Deck.
-- [Gauntlet v0.6.1 Faction Sheets](https://gauntlet.run/faction-sheets/) — browser-printable faction cards and supplemental components.
+- [Gauntlet v0.6.1 Deckbuilder](https://gauntlet.run/deckbuilder/) — load a recommended Leader Deck or build, validate, save, export, randomize, and print a complete package containing its Leader, Territories, playable cards, and required faction components.
 - [Gauntlet v0.6.1 Printable Playtest Sheet (PDF)](playtest/Gauntlet_v0.6.1_Playtest_Sheet.pdf) — one-page paper questionnaire designed to be printed and completed by hand.
 - [Playtest Sheet browser page](https://gauntlet.run/playtest/) — preview the sheet and print or save it directly from a browser.
 
@@ -64,10 +62,10 @@ Scan to open the v0.6 Deckbuilder:
 1. [`releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md`](releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md) governs shared rules.
 2. The six definitive faction guides under [`releases/v0.6.1/faction-guides/`](releases/v0.6.1/faction-guides/) govern faction-specific rules and exact faction-card text.
 3. [`docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md`](docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md) governs exact Neutral-card text.
-4. [`docs/Gauntlet_v0.6.1_Territory_Pool.md`](docs/Gauntlet_v0.6.1_Territory_Pool.md) governs exact Territory and Arena text.
+4. [`docs/Gauntlet_v0.6.1_Territory_Pool.md`](docs/Gauntlet_v0.6.1/Gauntlet_v0.6.1_Territory_Pool.md) governs exact Territory and Arena text.
 5. `Gauntlet_v0.6.1_Canonical_Data.json` is generated from those sources and must not be edited independently.
 
-Generated PDFs, DOCX files, printable sheets, and deckbuilder output are derived production artifacts. If a derived file conflicts with its governing source, correct the source and regenerate the artifact.
+Generated PDFs, DOCX files, printable sheets, and Deckbuilder output are derived production artifacts. If a derived file conflicts with its governing source, correct the source and regenerate the supported artifact.
 
 ## Repository map
 
@@ -81,7 +79,7 @@ The [documentation index](docs/README.md) separates canonical sources, active de
 
 ### `faction-sheets/`
 
-Browser-printable faction cards, Leader Cards, trackers, references, Deeds, Proposals, Treaty Articles, and Rites.
+Legacy browser-printable faction sheets retained for compatibility with existing bookmarks and release-era references. They are no longer actively maintained, linked from the public site, or treated as a supported production surface. Use the Deckbuilder for current complete-package printing.
 
 ### `images/`
 
@@ -89,11 +87,11 @@ Leader portraits and production artwork. Canonical rulebook Leader sketches are 
 
 ### `deckbuilder/`
 
-Faction-era browser deckbuilder. It reads the active canonical card and Territory sources and produces complete Deck packages.
+Faction-era browser Deckbuilder and the supported printing surface for complete Deck packages, including Leaders, Territories, playable cards, and required faction supplemental components.
 
 ### `deckbuilder-v0.5/`
 
-Historical v0.5 deckbuilder.
+Historical v0.5 Deckbuilder.
 
 ### `rulebook/`
 
@@ -105,7 +103,7 @@ Static Rules Arbiter widget, canonical-source retrieval, regression tests, and a
 
 ### `scripts/`
 
-Canonical-data generation, document rendering, card-sheet rendering, package validation, and release-production scripts.
+Canonical-data generation, document rendering, package validation, and release-production scripts.
 
 ### `.github/workflows/`
 
@@ -119,8 +117,8 @@ Legacy pre-v0.6 digital-prototype code and starter data. They are retained for a
 
 1. Change the appropriate canonical Markdown source.
 2. Regenerate and validate canonical data.
-3. Regenerate the affected documents, cards, or tools.
-4. Visually inspect rendered documents and print sheets.
+3. Regenerate the affected documents, cards, or supported tools.
+4. Visually inspect rendered documents and Deckbuilder print output.
 5. Record release-facing changes in the changelog.
 6. Record unresolved testing concerns in `docs/Gauntlet_Development_Status.md`; do not silently resolve them in generated data or production artifacts.
 
@@ -138,7 +136,6 @@ Then open:
 http://localhost:8000/
 http://localhost:8000/rulebook/
 http://localhost:8000/deckbuilder/
-http://localhost:8000/faction-sheets/
 http://localhost:8000/playtest/
 ```
 
@@ -169,4 +166,3 @@ Submitted comments, corrections, suggestions, and playtest feedback may be used 
 - [Faction Introductions](releases/v0.6.1/Gauntlet_v0.6.1_Faction_Introductions.md)
 - [Printable Playtest Sheet](playtest/)
 - [Player Mat and Zone Reference](playtest/player-mat/)
-
