@@ -20,11 +20,14 @@ describe("adaptive card fitting", () => {
     expect(fittingScript).toContain("--rules-scale");
   });
 
-  it("scales body, label, and reminder typography together", () => {
+  it("preserves a practical print-size floor", () => {
+    expect(fittingScript).toContain("const DEFAULT_MINIMUM_RULE_SCALE = 0.93;");
+    expect(fittingScript).toContain("Math.max(declared, DEFAULT_MINIMUM_RULE_SCALE)");
     expect(refinementCss).toContain("calc(7.05pt * var(--rules-scale))");
     expect(refinementCss).toContain("calc(5.45pt * var(--rules-scale))");
     expect(refinementCss).toContain("calc(5.65pt * var(--rules-scale))");
-    expect(factionCss).toContain("--minimum-rules-scale: 0.7;");
-    expect(factionCss).toContain("calc(4.35pt * var(--rules-scale))");
+    expect(factionCss).not.toContain("--minimum-rules-scale: 0.7");
+    expect(factionCss).not.toContain("4.35pt");
+    expect(factionCss).not.toContain("ultra-dense-card");
   });
 });
