@@ -16,6 +16,7 @@ describe("playtest Host Home", () => {
     const sessionApp = read("playtest/session/app.js");
 
     expect(onboardingHtml).toMatch(/app\.js\?v=\d{8}-\d+/);
+    expect(onboardingHtml).not.toContain('<script src="app.js" defer></script>');
     expect(sessionHtml).toMatch(/app\.js\?v=\d{8}-\d+/);
     expect(onboardingApp).toMatch(/host-navigation\.js\?v=\d{8}-\d+/);
     expect(onboardingApp).toMatch(/host-registry\.js\?v=\d{8}-\d+/);
