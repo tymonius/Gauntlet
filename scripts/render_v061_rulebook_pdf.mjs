@@ -22,6 +22,29 @@ try {
   if (!response?.ok()) throw new Error(`Rulebook returned HTTP ${response?.status()}`);
   await page.waitForSelector("[data-rulebook-content]:not([aria-busy])", { timeout: 30_000 });
   await page.evaluate(async () => {
+    const images = [...document.images];
+    images.forEach((image) => {
+      image.loading = "eager";
+    });
+    await Promise.all(images.map((image) => {
+      if (image.complete) return Promise.resolve();
+      return new Promise((resolveImage, rejectImage) => {
+        image.addEventListener("load", resolveImage, { once: true });
+        image.addEventListener(
+          "error",
+          () => rejectImage(new Error(`Could not load image: ${image.currentSrc || image.src}`)),
+          { once: true }
+        );
+      });
+    }));
+    const failedImages = images.filter((image) => !image.complete || image.naturalWidth === 0);
+    if (failedImages.length) {
+      throw new Error(
+        `Rulebook contains ${failedImages.length} unloaded image(s): ${failedImages
+          .map((image) => image.currentSrc || image.src)
+          .join(", ")}`
+      );
+    }
     if (document.fonts?.ready) await document.fonts.ready;
     document.documentElement.dataset.pdfRender = "true";
   });
