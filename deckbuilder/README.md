@@ -2,6 +2,8 @@
 
 The browser Deckbuilder for the canonical Gauntlet v0.6.1 playtest release.
 
+It is the supported browser printing surface for current complete Deck packages. The standalone faction-sheet pages remain available only for compatibility with existing bookmarks and release-era references and are no longer actively maintained.
+
 Rendered tool:
 
 - `https://tymonius.github.io/Gauntlet/deckbuilder/`
