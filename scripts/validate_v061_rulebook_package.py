@@ -4,7 +4,8 @@
 Source validation checks the synchronized faction chapters, all twelve Leader
 pages and sketches, the absence of internal editorial guidance, shared browser
 font tokens, and public booklet links. Strict mode additionally validates the
-half-letter reader PDF, editable DOCX, and imposed Letter booklet PDF.
+half-letter reader PDF, editable DOCX, imposed Letter booklet PDF, and rendered
+ink on every reader page and every non-padding booklet half.
 """
 
 from __future__ import annotations
@@ -213,6 +214,97 @@ def validate_sources(errors: list[str]) -> None:
         errors.append("Release manifest does not publish rulebook_booklet_pdf")
 
 
+def ink_fraction(page, clip=None) -> float:
+    """Return the fraction of rendered pixels that are visibly darker than paper."""
+
+    import fitz
+
+    pixmap = page.get_pixmap(
+        matrix=fitz.Matrix(0.25, 0.25),
+        clip=clip,
+        alpha=False,
+        colorspace=fitz.csRGB,
+    )
+    samples = pixmap.samples
+    channels = pixmap.n
+    if not samples or channels < 3:
+        return 0.0
+    dark = 0
+    pixels = len(samples) // channels
+    for offset in range(0, len(samples), channels):
+        if min(samples[offset], samples[offset + 1], samples[offset + 2]) < 245:
+            dark += 1
+    return dark / pixels if pixels else 0.0
+
+
+def booklet_page_order(total: int) -> list[tuple[int, int]]:
+    """Return zero-based reader-page indices for every printed booklet side."""
+
+    order: list[tuple[int, int]] = []
+    for sheet in range(total // 4):
+        order.append((total - (2 * sheet) - 1, 2 * sheet))
+        order.append(((2 * sheet) + 1, total - (2 * sheet) - 2))
+    return order
+
+
+def validate_rendered_ink(reader_count: int, padded_pages: int, errors: list[str]) -> None:
+    """Reject blank reader pages and clipped non-padding booklet halves.
+
+    Text extraction can still see content that is outside a source page's crop box.
+    Rendering each half catches the right-page clipping regression that ordinary
+    PDF text and page-count checks cannot detect.
+    """
+
+    try:
+        import fitz
+    except ImportError as exc:
+        errors.append(f"Strict rendered-page validation requires PyMuPDF: {exc}")
+        return
+
+    reader_doc = fitz.open(READER)
+    booklet_doc = fitz.open(BOOKLET)
+    try:
+        reader_ink = [ink_fraction(page) for page in reader_doc]
+        for page_number, fraction in enumerate(reader_ink, start=1):
+            if fraction < 0.0001:
+                errors.append(
+                    f"Rulebook reader page {page_number} renders blank "
+                    f"(ink fraction {fraction:.6f})"
+                )
+
+        expected_order = booklet_page_order(padded_pages)
+        if len(expected_order) != len(booklet_doc):
+            errors.append(
+                f"Rendered booklet order expects {len(expected_order)} sides, "
+                f"but PDF contains {len(booklet_doc)}"
+            )
+            return
+
+        for side_index, ((left_index, right_index), page) in enumerate(
+            zip(expected_order, booklet_doc), start=1
+        ):
+            midpoint = page.rect.x0 + page.rect.width / 2
+            halves = (
+                ("left", left_index, fitz.Rect(page.rect.x0, page.rect.y0, midpoint, page.rect.y1)),
+                ("right", right_index, fitz.Rect(midpoint, page.rect.y0, page.rect.x1, page.rect.y1)),
+            )
+            for side_name, reader_index, clip in halves:
+                if reader_index >= reader_count:
+                    continue  # intentional booklet-padding page
+                fraction = ink_fraction(page, clip)
+                source_fraction = reader_ink[reader_index]
+                minimum = max(0.0001, source_fraction * 0.25)
+                if fraction < minimum:
+                    errors.append(
+                        f"Booklet printed side {side_index} {side_name} half visually omits "
+                        f"reader page {reader_index + 1}: ink fraction {fraction:.6f}, "
+                        f"expected at least {minimum:.6f}"
+                    )
+    finally:
+        reader_doc.close()
+        booklet_doc.close()
+
+
 def validate_generated(errors: list[str]) -> None:
     for path in (DOCX, READER, BOOKLET):
         if not path.is_file() or path.stat().st_size < 20_000:
@@ -282,6 +374,8 @@ def validate_generated(errors: list[str]) -> None:
         booklet_text, PR336_PDF_FRAGMENTS, "PR #336 booklet-PDF clarification", errors
     )
 
+    validate_rendered_ink(len(reader.pages), padded_pages, errors)
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
@@ -304,7 +398,7 @@ def main() -> int:
         f"Gauntlet v0.6.1 Rulebook {mode} validation passed: complete faction chapters, "
         "twelve illustrated Leader pages, PR #336 Defender's Advantage preservation, "
         "internal editorial separation, shared typography, half-letter reader edition, "
-        "and imposed booklet package."
+        "and two visible pages on every non-padding booklet side."
     )
     return 0
 
