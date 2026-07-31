@@ -29,7 +29,7 @@ body {
 
 .hero-copy {
   position: relative;
-  z-index: 3;
+  z-index: 1;
 }
 
 .hero-title-accent {
@@ -68,7 +68,9 @@ body {
 /* Keep each faction phrase normally spaced while separating the two phrases. */
 .factions-section .declaration-overline {
   display: flex;
-  flex-wrap: wrap;
+  width: max-content;
+  max-width: none;
+  flex-wrap: nowrap;
   align-items: baseline;
   column-gap: clamp(1.5rem, 3.5vw, 3rem);
   row-gap: 0;
@@ -144,6 +146,9 @@ body {
   }
 
   .factions-section .declaration-overline {
+    width: auto;
+    max-width: 100%;
+    flex-wrap: wrap;
     column-gap: clamp(1.25rem, 6vw, 2rem);
   }
 

@@ -67,8 +67,11 @@ requireCondition(
   !homepage.includes('<h3>Faction Sheets</h3>'),
   'The homepage still advertises Faction Sheets as an active tool.',
 );
+const homepagePromotesCompletePackage =
+  homepage.includes('required faction components') ||
+  homepage.includes('complete playtest package');
 requireCondition(
-  homepage.includes('href="deckbuilder/"') && homepage.includes('required faction components'),
+  homepage.includes('href="deckbuilder/"') && homepagePromotesCompletePackage,
   'The homepage must direct complete-package printing to the Deckbuilder.',
 );
 requireCondition(

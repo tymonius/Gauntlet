@@ -14,6 +14,7 @@ REQUIRED = [
     "rules-assistant/migrations/0001_rules_interactions.sql",
     "rules-assistant/migrations/0002_review_export_checkpoints.sql",
     "rules-assistant/migrations/0003_playtest_sessions.sql",
+    "rules-assistant/migrations/0004_event_game_sessions.sql",
     "rules-assistant/worker-entry.js",
     "rules-assistant/worker-v061.js",
     "rules-assistant/worker.test.mjs",
@@ -25,10 +26,17 @@ REQUIRED = [
     "workers/playtest-sessions/src/index.test.mjs",
     "playtest/README.md",
     "playtest/index.html",
+    "playtest/onboarding/index.html",
+    "playtest/onboarding/app.js",
+    "playtest/onboarding/app-core.js",
+    "playtest/onboarding/identity-bridge.js",
+    "playtest/onboarding/games.js",
     "playtest/session/index.html",
     "playtest/session/styles.css",
     "playtest/session/privacy.js",
     "playtest/session/app.js",
+    "playtest/session/app-core.js",
+    "playtest/session/event-game.js",
     "playtest/batch/index.html",
     "playtest/batch/styles.css",
     "playtest/batch/qrcode-loader.js",
@@ -75,6 +83,22 @@ def main() -> int:
         ],
         errors,
     )
+    require_markers(
+        "rules-assistant/migrations/0004_event_game_sessions.sql",
+        [
+            "ADD COLUMN session_kind TEXT NOT NULL DEFAULT 'game'",
+            "ADD COLUMN event_session_id TEXT",
+            "ADD COLUMN identity_token_hash TEXT",
+            "ADD COLUMN event_participant_id TEXT",
+            "ADD COLUMN seat_index INTEGER",
+            "ADD COLUMN faction TEXT",
+            "ADD COLUMN leader TEXT",
+            "ADD COLUMN participant_id TEXT",
+            "ADD COLUMN playtest_participant_id TEXT",
+            "idx_playtest_participants_seat",
+        ],
+        errors,
+    )
 
     require_markers(
         "rules-assistant/worker-entry.js",
@@ -108,12 +132,61 @@ def main() -> int:
             'const CURRENT_RULES_VERSION = "v0.6.1"',
             "SESSION_ADMIN_TOKEN",
             "sessionCreationConfigured",
-            "tokenHash = await sha256(token)",
-            "hostKeyHash = await sha256(hostKey)",
+            "eventGamesSupported",
+            "playerAttributionSupported",
+            "identity_token_hash",
+            "event_session_id",
+            "seat_index",
+            "/games",
+            "event-participants",
+            "participantId",
+            "playtest_participant_id",
             "This session is closed",
             "Rules Arbiter interaction not found",
-            "UPDATE rules_interactions SET playtest_session_id = ?, sheet_serial = ?",
             "ALLOWED_ORIGINS",
+        ],
+        errors,
+    )
+
+    require_markers(
+        "playtest/onboarding/app.js",
+        [
+            "identity-bridge.js",
+            "app-core.js",
+            "games.js",
+            "DOMContentLoaded",
+        ],
+        errors,
+    )
+    require_markers(
+        "playtest/onboarding/app-core.js",
+        [
+            'params.get("code")',
+            'params.get("host")',
+            "onboarding_choice",
+            "/onboarding",
+            "submitChoice",
+        ],
+        errors,
+    )
+    require_markers(
+        "playtest/onboarding/identity-bridge.js",
+        [
+            'purpose: "onboarding"',
+            "participantToken",
+            "gauntlet_event_identity_",
+            "gauntlet_last_event_identity",
+        ],
+        errors,
+    )
+    require_markers(
+        "playtest/onboarding/games.js",
+        [
+            "/games",
+            "Create table codes",
+            "Both players scan this code",
+            "Download table manifest",
+            "qrcode-loader.js",
         ],
         errors,
     )
@@ -145,6 +218,15 @@ def main() -> int:
     require_markers(
         "playtest/session/app.js",
         [
+            "event-game.js",
+            "app-core.js",
+            "DOMContentLoaded",
+        ],
+        errors,
+    )
+    require_markers(
+        "playtest/session/app-core.js",
+        [
             'params.get("code")',
             'params.get("host")',
             "gauntlet_playtest_session_id",
@@ -153,6 +235,20 @@ def main() -> int:
             "game_started",
             "game_stopped",
             "game_completed",
+        ],
+        errors,
+    )
+    require_markers(
+        "playtest/session/event-game.js",
+        [
+            "eventSessionId",
+            "event-participants",
+            "eventParticipantId",
+            "participantToken",
+            "confirmedRosterSelection",
+            "seatIndex",
+            "participantId",
+            "Rules Arbiter questions from this device will be attributed to you",
         ],
         errors,
     )
@@ -261,9 +357,9 @@ def main() -> int:
         return fail(errors)
 
     print(
-        "Validated v0.6.1 formal playtest sessions: sequenced shared D1 migrations, hashed credentials, "
-        "authorized batch creation, unique sheet serials, privacy-safe QR rendering, join/close workflow, "
-        "integrated governing Rules Arbiter linkage, review-export administration, and automated tests."
+        "Validated v0.6.1 formal playtest sessions: sequenced shared D1 migrations, event-scoped onboarding, "
+        "hashed participant identity, unique two-seat table games, player-attributed Rules Arbiter linkage, "
+        "privacy-safe QR rendering, standalone coded-sheet compatibility, and automated lifecycle tests."
     )
     return 0
 
