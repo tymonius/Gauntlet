@@ -1,0 +1,64 @@
+name: Install exact social image
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  install:
+    if: github.head_ref == 'agent/fix-social-image-exact'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repair branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/fix-social-image-exact
+          fetch-depth: 0
+
+      - name: Install Pillow
+        run: python -m pip install --disable-pip-version-check Pillow
+
+      - name: Reassemble and verify image
+        shell: python
+        run: |
+          from pathlib import Path
+          from PIL import Image
+          import base64
+          import hashlib
+          import shutil
+
+          chunks = Path('.github/social-image-upload')
+          encoded = ''.join(
+              path.read_text(encoding='ascii').strip()
+              for path in sorted(chunks.glob('chunk-*.txt'))
+          )
+          image = base64.b64decode(encoded, validate=True)
+          digest = hashlib.sha256(image).hexdigest()
+          expected = '06c6b000a993caa48685566d2c7197e8e6b8e4c0e026a7ba277b6545767f397f'
+          if digest != expected:
+              raise SystemExit(f'Checksum mismatch: {digest}')
+
+          output = Path('images/social/gauntlet-og-1200x630.jpg')
+          output.parent.mkdir(parents=True, exist_ok=True)
+          output.write_bytes(image)
+
+          with Image.open(output) as verified:
+              if verified.size != (1200, 630):
+                  raise SystemExit(f'Unexpected dimensions: {verified.size}')
+              verified.verify()
+
+          shutil.rmtree(chunks)
+          Path('.github/workflows/install-exact-social-image.yml').unlink()
+          print(f'Installed verified image: 1200x630, sha256={digest}')
+
+      - name: Commit verified image
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Replace corrupted social preview image"
+          git push origin HEAD:agent/fix-social-image-exact
