@@ -14,7 +14,9 @@ test("reports service, rules version, and configuration state", async () => {
     version: "v0.6.1",
     database: false,
     sessionCreationConfigured: false,
-    onboardingSupported: true
+    onboardingSupported: true,
+    eventGamesSupported: true,
+    playerAttributionSupported: true
   });
 });
 
