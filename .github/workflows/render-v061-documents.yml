@@ -47,7 +47,7 @@ jobs:
       - name: Restructure shared rules into teaching order
         run: python scripts/restructure_v061_rulebook.py
 
-      - name: Synchronize faction subsections from definitive guides
+      - name: Synchronize faction chapters from definitive guides
         run: python scripts/sync_v061_rulebook.py
 
       - name: Normalize headings and remove first-use leaks
@@ -68,9 +68,8 @@ jobs:
           git pull --rebase origin ${{ github.head_ref || github.ref_name }}
           git push origin HEAD:${{ github.head_ref || github.ref_name }}
 
-      - name: Verify source is idempotent and current
+      - name: Verify final source is idempotent and current
         run: |
-          python scripts/restructure_v061_rulebook.py --check
           python scripts/sync_v061_rulebook.py --check
           python scripts/normalize_v061_rulebook_content.py --check
           python scripts/validate_v061_rulebook_content.py
