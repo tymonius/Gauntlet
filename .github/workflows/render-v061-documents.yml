@@ -9,6 +9,7 @@ on:
       - "releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.md"
       - "releases/v0.6.1/Gauntlet_v0.6.1_Manifest.json"
       - "releases/v0.6.1/faction-guides/**"
+      - "images/sketches/hero sketch.png"
       - "rulebook/**"
       - "design-tokens.css"
       - "scripts/sync_v061_rulebook.py"
@@ -65,7 +66,7 @@ jobs:
             scripts/validate_v061_rulebook_package.py
           node --check scripts/render_v061_rulebook_pdf.mjs
 
-      - name: Synchronize complete faction chapters
+      - name: Synchronize complete faction chapters and cover
         run: python scripts/sync_v061_rulebook.py
 
       - name: Build DOCX, reader PDF, and booklet PDF
@@ -78,6 +79,7 @@ jobs:
           from pathlib import Path
           import zipfile
 
+          import fitz
           from docx import Document
           from pypdf import PdfReader
 
@@ -87,6 +89,10 @@ jobs:
           booklet_pdf = release / 'Gauntlet_v0.6.1_Rulebook_Booklet.pdf'
           reference_docx = release / 'Gauntlet_v0.6.1_Reference_Guide.docx'
           reference_pdf = release / 'Gauntlet_v0.6.1_Reference_Guide.pdf'
+          hero = Path('images/sketches/hero sketch.png')
+
+          if not hero.is_file() or hero.stat().st_size == 0:
+              raise SystemExit('The Rulebook hero sketch is missing')
 
           for path in (rulebook_docx, rulebook_pdf, booklet_pdf, reference_docx, reference_pdf):
               if not path.is_file() or path.stat().st_size < 20_000:
@@ -119,8 +125,11 @@ jobs:
                   raise SystemExit(f'Rulebook DOCX contains forbidden text {term!r}')
           with zipfile.ZipFile(rulebook_docx) as archive:
               media = [name for name in archive.namelist() if name.startswith('word/media/')]
-              if len(media) < 12:
+              if len(media) < 13:
                   raise SystemExit(f'Rulebook DOCX contains only {len(media)} embedded images')
+              document_xml = archive.read('word/document.xml').decode('utf-8')
+              if 'Gauntlet hero sketch' not in document_xml:
+                  raise SystemExit('Rulebook DOCX does not identify the front-cover hero sketch')
 
           reader = PdfReader(rulebook_pdf)
           reader_text = '\n'.join((page.extract_text() or '') for page in reader.pages)
@@ -136,6 +145,9 @@ jobs:
           for term in forbidden:
               if term in reader_text:
                   raise SystemExit(f'Reader PDF contains forbidden text {term!r}')
+          with fitz.open(rulebook_pdf) as rendered_reader:
+              if not rendered_reader[0].get_images(full=True):
+                  raise SystemExit('Reader PDF front cover does not contain the hero sketch')
 
           booklet = PdfReader(booklet_pdf)
           padded_pages = ceil(len(reader.pages) / 4) * 4
@@ -165,8 +177,8 @@ jobs:
                   raise SystemExit(f'Obsolete text found in Reference Guide {label}')
 
           print(
-              f'Validated {len(reader.pages)} half-letter reader pages and '
-              f'{len(booklet.pages)} imposed booklet sides.'
+              f'Validated illustrated cover, {len(reader.pages)} half-letter reader pages, '
+              f'and {len(booklet.pages)} imposed booklet sides.'
           )
           PY
 
