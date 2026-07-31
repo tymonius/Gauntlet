@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""Synchronize the player-facing v0.6.1 rulebook with definitive faction guides.
+"""Synchronize the player-facing v0.6.1 Rulebook with definitive faction guides.
 
-The shared-rule chapters remain authored in the rulebook Markdown. Faction chapters
-are generated from the player-facing portions of the six definitive faction guides,
-ending before each guide's canonical card pool. This prevents a faction correction
-from leaving the published rulebook behind. The approved hero sketch is also kept
-on the front cover so every generated edition uses the same cover source.
+The shared rules remain authored in the Rulebook Markdown. Part III contains one
+major Factions section, and the six faction subsections are generated from the
+player-facing portions of their definitive guides. This prevents a faction
+correction from leaving the published Rulebook behind while preserving the
+Rulebook's teaching hierarchy.
 """
 
 from __future__ import annotations
@@ -20,12 +20,13 @@ RULEBOOK = ROOT / "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md"
 HERO_IMAGE = ROOT / "images/sketches/hero sketch.png"
 HERO_COVER_MARKDOWN = "![Gauntlet hero sketch](<images/sketches/hero sketch.png>)"
 VERSION_LINE = "**Version 0.6.1 — First Playtest Revision**"
+FACTION_START = "<!-- GENERATED FACTION CONTENT START -->"
+FACTION_END = "<!-- GENERATED FACTION CONTENT END -->"
 
 
 @dataclass(frozen=True)
 class FactionSpec:
     name: str
-    chapter: int
     guide: str
     leaders: tuple[tuple[str, str], ...]
 
@@ -33,45 +34,35 @@ class FactionSpec:
 FACTIONS = (
     FactionSpec(
         "Military",
-        14,
         "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
         (("General", "general.png"), ("Commandant", "commandant.png")),
     ),
     FactionSpec(
         "Diplomats",
-        15,
         "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
         (("Ambassador", "ambassador.png"), ("Senator", "senator.png")),
     ),
     FactionSpec(
         "Financiers",
-        16,
         "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
         (("Banker", "banker.png"), ("Executive", "executive.png")),
     ),
     FactionSpec(
         "Intelligence",
-        17,
         "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
         (("Ranger", "ranger.png"), ("Spymaster", "spymaster.png")),
     ),
     FactionSpec(
         "Mystics",
-        18,
         "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
         (("Alchemist", "alchemist.png"), ("Spirit Walker", "spirit walker.png")),
     ),
     FactionSpec(
         "Inquisition",
-        19,
         "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
         (("Grand Inquisitor", "grand inquisitor.png"), ("Witch Hunter", "witch hunter.png")),
     ),
 )
-
-LEGACY_FACTION_START = "# 14. Factions"
-GENERATED_FACTION_START = "# 14. Military"
-QUICK_REFERENCE = "# Quick Battle Reference"
 
 
 def player_facing_guide_text(spec: FactionSpec) -> str:
@@ -85,7 +76,7 @@ def player_facing_guide_text(spec: FactionSpec) -> str:
 
     lines = text[overview.start():card_pool.start()].strip().splitlines()
     leaders = dict(spec.leaders)
-    output = [f"# {spec.chapter}. {spec.name}", ""]
+    output = [f"## {spec.name}", ""]
     context = "overview"
 
     for line in lines:
@@ -99,7 +90,7 @@ def player_facing_guide_text(spec: FactionSpec) -> str:
                 context = "leaders"
                 continue
             context = "section"
-            output.extend([f"## {title}", ""])
+            output.extend([f"### {title}", ""])
             continue
 
         second = re.match(r"^##\s+(.+)$", line)
@@ -110,22 +101,22 @@ def player_facing_guide_text(spec: FactionSpec) -> str:
                     [
                         '<div class="page-break"></div>',
                         "",
-                        f"## {title}",
+                        f"### {title}",
                         "",
                         f"![{title}](<images/sketches/{leaders[title]}>)",
                         "",
                     ]
                 )
             elif context == "overview":
-                output.append(f"## {title}")
-            else:
                 output.append(f"### {title}")
+            else:
+                output.append(f"#### {title}")
             continue
 
         third = re.match(r"^###\s+(.+)$", line)
         if third:
             title = third.group(1).strip()
-            output.append(f"### {title}" if context == "leaders" else f"#### {title}")
+            output.append(f"#### {title}" if context == "leaders" else f"##### {title}")
             continue
 
         output.append(line)
@@ -133,59 +124,58 @@ def player_facing_guide_text(spec: FactionSpec) -> str:
     return "\n".join(output).strip()
 
 
-def faction_start_marker(current: str) -> str:
-    if LEGACY_FACTION_START in current:
-        return LEGACY_FACTION_START
-    if GENERATED_FACTION_START in current:
-        return GENERATED_FACTION_START
-    raise RuntimeError("Rulebook faction marker is missing")
-
-
-def normalized_prefix(current: str, marker: str) -> str:
-    prefix = current.split(marker, 1)[0].rstrip()
-    return re.sub(r"(?:\n\s*---\s*)+$", "", prefix).rstrip()
-
-
-def ensure_cover_image(prefix: str) -> str:
+def ensure_cover_image(text: str) -> str:
     if not HERO_IMAGE.is_file() or HERO_IMAGE.stat().st_size == 0:
         raise RuntimeError(f"Rulebook hero sketch is missing: {HERO_IMAGE.relative_to(ROOT)}")
-    if HERO_COVER_MARKDOWN in prefix:
-        return prefix
-    if VERSION_LINE not in prefix:
+    if HERO_COVER_MARKDOWN in text:
+        return text
+    if VERSION_LINE not in text:
         raise RuntimeError("Rulebook version line is missing; cannot place the hero cover sketch")
-    return prefix.replace(VERSION_LINE, f"{VERSION_LINE}\n\n{HERO_COVER_MARKDOWN}", 1)
+    return text.replace(VERSION_LINE, f"{VERSION_LINE}\n\n{HERO_COVER_MARKDOWN}", 1)
 
 
 def generate(current: str) -> str:
-    if QUICK_REFERENCE not in current:
-        raise RuntimeError("Rulebook quick-reference marker is missing")
+    current = ensure_cover_image(current)
+    if current.count(FACTION_START) != 1 or current.count(FACTION_END) != 1:
+        raise RuntimeError("Rulebook generated-faction boundaries are missing or duplicated")
 
-    start_marker = faction_start_marker(current)
-    prefix = ensure_cover_image(normalized_prefix(current, start_marker))
-    quick_reference = QUICK_REFERENCE + current.split(QUICK_REFERENCE, 1)[1]
-    faction_chapters = "\n\n---\n\n".join(player_facing_guide_text(spec) for spec in FACTIONS)
-
-    generated = f"{prefix}\n\n---\n\n{faction_chapters}\n\n---\n\n{quick_reference.lstrip()}"
-    generated = generated.rstrip() + "\n"
+    prefix, remainder = current.split(FACTION_START, 1)
+    _, suffix = remainder.split(FACTION_END, 1)
+    faction_sections = "\n\n---\n\n".join(player_facing_guide_text(spec) for spec in FACTIONS)
+    generated = (
+        prefix.rstrip()
+        + f"\n\n{FACTION_START}\n\n"
+        + faction_sections
+        + f"\n\n{FACTION_END}"
+        + suffix
+    ).rstrip() + "\n"
 
     forbidden = (
         "# 15. Standard Language and Reference Rules",
         "Use these verbs consistently:",
         "Avoid generic phrases such as",
+        "# 14. Military",
+        "# 15. Diplomats",
+        "# 16. Financiers",
+        "# 17. Intelligence",
+        "# 18. Mystics",
+        "# 19. Inquisition",
     )
     for phrase in forbidden:
         if phrase in generated:
-            raise RuntimeError(f"Internal editorial guidance remains in player-facing rulebook: {phrase}")
+            raise RuntimeError(f"Obsolete player-facing Rulebook structure remains: {phrase}")
 
+    if "# Part III — Factions" not in generated or "# 13. Factions" not in generated:
+        raise RuntimeError("Generated Rulebook is missing the major Factions section")
     if HERO_COVER_MARKDOWN not in generated:
         raise RuntimeError("Generated Rulebook is missing the hero cover sketch")
 
     for spec in FACTIONS:
-        if f"# {spec.chapter}. {spec.name}" not in generated:
-            raise RuntimeError(f"Missing generated faction chapter: {spec.name}")
+        if f"## {spec.name}" not in generated:
+            raise RuntimeError(f"Missing generated faction subsection: {spec.name}")
         for leader, image in spec.leaders:
-            if f"## {leader}" not in generated:
-                raise RuntimeError(f"Missing generated Leader section: {leader}")
+            if f"### {leader}" not in generated:
+                raise RuntimeError(f"Missing generated Leader subsection: {leader}")
             if f"images/sketches/{image}" not in generated:
                 raise RuntimeError(f"Missing generated Leader sketch: {leader}")
 
@@ -194,22 +184,22 @@ def generate(current: str) -> str:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--check", action="store_true", help="Fail if the rulebook is not synchronized.")
+    parser.add_argument("--check", action="store_true", help="Fail if the Rulebook is not synchronized.")
     args = parser.parse_args()
 
     current = RULEBOOK.read_text(encoding="utf-8")
     generated = generate(current)
     if args.check:
         if generated != current:
-            raise SystemExit("v0.6.1 rulebook faction chapters or cover are not synchronized")
-        print("v0.6.1 rulebook faction chapters and cover are synchronized.")
+            raise SystemExit("v0.6.1 Rulebook faction subsections or cover are not synchronized")
+        print("v0.6.1 Rulebook faction subsections and cover are synchronized.")
         return 0
 
     if generated != current:
         RULEBOOK.write_text(generated, encoding="utf-8")
         print(f"Updated {RULEBOOK.relative_to(ROOT)}")
     else:
-        print("v0.6.1 rulebook already synchronized.")
+        print("v0.6.1 Rulebook already synchronized.")
     return 0
 
 
