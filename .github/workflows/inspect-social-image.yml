@@ -1,4 +1,4 @@
-name: Inspect historical hero image
+name: Scan historical hero images
 
 on:
   pull_request:
@@ -9,19 +9,112 @@ permissions:
   contents: read
 
 jobs:
-  inspect:
+  scan:
     if: github.head_ref == 'agent/fix-social-image'
     runs-on: ubuntu-latest
     steps:
-      - name: Check out historical hero commit
+      - name: Check out complete repository history
         uses: actions/checkout@v4
         with:
-          ref: f7862149557196960f7cddbdcabd0968fc754fb9
+          ref: agent/fix-social-image
+          fetch-depth: 0
 
-      - name: Upload historical hero for inspection
+      - name: Install image tooling
+        run: python -m pip install --disable-pip-version-check Pillow
+
+      - name: Extract every historical hero candidate
+        shell: python
+        run: |
+          from pathlib import Path
+          from PIL import Image, ImageDraw, ImageFont
+          import io
+          import re
+          import subprocess
+
+          output = Path('historical-hero-scan')
+          candidates_dir = output / 'candidates'
+          candidates_dir.mkdir(parents=True, exist_ok=True)
+
+          rows = subprocess.check_output(
+              ['git', 'rev-list', '--objects', '--all'], text=True, errors='replace'
+          ).splitlines()
+
+          patterns = (
+              'homepage-hero',
+              'three-leaders',
+              'hero-background',
+              'hero_background',
+              'gauntlet hero',
+          )
+
+          objects = {}
+          for row in rows:
+              parts = row.split(' ', 1)
+              if len(parts) != 2:
+                  continue
+              sha, path = parts
+              lower = path.lower()
+              if not any(term in lower for term in patterns):
+                  continue
+              try:
+                  if subprocess.check_output(['git', 'cat-file', '-t', sha], text=True).strip() != 'blob':
+                      continue
+              except subprocess.CalledProcessError:
+                  continue
+              objects.setdefault(sha, []).append(path)
+
+          records = []
+          for index, (sha, paths) in enumerate(sorted(objects.items())):
+              data = subprocess.check_output(['git', 'cat-file', 'blob', sha])
+              try:
+                  image = Image.open(io.BytesIO(data))
+                  image.load()
+              except Exception as exc:
+                  records.append((sha, paths, None, None, str(exc)))
+                  continue
+
+              suffix = (Path(paths[0]).suffix or '.img').lower()
+              candidate_path = candidates_dir / f'{index:02d}-{sha[:12]}{suffix}'
+              candidate_path.write_bytes(data)
+              records.append((sha, paths, image.size, candidate_path, None))
+
+          report_lines = []
+          thumbs = []
+          for sha, paths, size, candidate_path, error in records:
+              report_lines.append(f'blob {sha}')
+              report_lines.extend(f'  path: {path}' for path in paths)
+              if error:
+                  report_lines.append(f'  error: {error}')
+                  continue
+              report_lines.append(f'  size: {size[0]}x{size[1]}')
+              report_lines.append(f'  artifact: {candidate_path}')
+
+              image = Image.open(candidate_path).convert('RGB')
+              image.thumbnail((360, 270), Image.Resampling.LANCZOS)
+              canvas = Image.new('RGB', (380, 330), 'white')
+              canvas.paste(image, ((380 - image.width) // 2, 10))
+              draw = ImageDraw.Draw(canvas)
+              label = f'{sha[:12]}  {size[0]}x{size[1]}'
+              draw.text((10, 288), label, fill='black')
+              draw.text((10, 306), Path(paths[0]).name[:48], fill='black')
+              thumbs.append(canvas)
+
+          (output / 'report.txt').write_text('\n'.join(report_lines) + '\n', encoding='utf-8')
+          if not thumbs:
+              raise SystemExit('No historical hero image candidates found')
+
+          columns = 3
+          rows_count = (len(thumbs) + columns - 1) // columns
+          sheet = Image.new('RGB', (columns * 380, rows_count * 330), '#dddddd')
+          for i, thumb in enumerate(thumbs):
+              sheet.paste(thumb, ((i % columns) * 380, (i // columns) * 330))
+          sheet.save(output / 'contact-sheet.jpg', 'JPEG', quality=88, optimize=True)
+          print((output / 'report.txt').read_text(encoding='utf-8'))
+
+      - name: Upload scan results
         uses: actions/upload-artifact@v4
         with:
-          name: historical-hero-f786
-          path: images/artwork/homepage-hero-three-leaders.webp
+          name: historical-hero-scan
+          path: historical-hero-scan
           if-no-files-found: error
           compression-level: 0
