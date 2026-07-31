@@ -1,15 +1,16 @@
 name: Patch game-night guide entry points
 
 on:
-  push:
+  pull_request:
     branches:
-      - agent/game-night-guides
+      - main
 
 permissions:
   contents: write
 
 jobs:
   patch:
+    if: github.event.pull_request.head.ref == 'agent/game-night-guides'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -49,14 +50,11 @@ jobs:
                   changed.append(str(path))
 
           print("Changed:", ", ".join(changed) if changed else "none")
-      - name: Commit patch
+      - name: Commit patch and remove temporary workflow
         run: |
-          if git diff --quiet; then
-            echo "No patch required."
-            exit 0
-          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/patch-game-night-guide-entrypoints.yml
           git add playtest/onboarding/index.html playtest/session/index.html playtest/batch/index.html playtest/index.html
           git commit -m "Wire game-night guide entry points"
           git push origin HEAD:agent/game-night-guides
