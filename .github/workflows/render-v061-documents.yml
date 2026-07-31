@@ -9,6 +9,7 @@ on:
       - "releases/v0.6.1/faction-guides/**"
       - "scripts/restructure_v061_rulebook.py"
       - "scripts/sync_v061_rulebook.py"
+      - "scripts/normalize_v061_rulebook_content.py"
       - "scripts/validate_v061_rulebook_content.py"
       - ".github/workflows/render-v061-documents.yml"
   workflow_dispatch:
@@ -40,6 +41,7 @@ jobs:
           python -m py_compile \
             scripts/restructure_v061_rulebook.py \
             scripts/sync_v061_rulebook.py \
+            scripts/normalize_v061_rulebook_content.py \
             scripts/validate_v061_rulebook_content.py
 
       - name: Restructure shared rules into teaching order
@@ -47,6 +49,9 @@ jobs:
 
       - name: Synchronize faction subsections from definitive guides
         run: python scripts/sync_v061_rulebook.py
+
+      - name: Normalize headings and remove first-use leaks
+        run: python scripts/normalize_v061_rulebook_content.py
 
       - name: Validate teaching order and first-use discipline
         run: python scripts/validate_v061_rulebook_content.py
@@ -67,6 +72,7 @@ jobs:
         run: |
           python scripts/restructure_v061_rulebook.py --check
           python scripts/sync_v061_rulebook.py --check
+          python scripts/normalize_v061_rulebook_content.py --check
           python scripts/validate_v061_rulebook_content.py
           git diff --exit-code -- releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md
 
