@@ -8,7 +8,7 @@ For the current playable release, begin with the [v0.6.1 release package](../rel
 
 These files govern the current published playtest game:
 
-1. [Official Rulebook](../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md) — shared rules.
+1. [Official Rulebook](../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md) — shared rules plus synchronized player-facing faction and Leader chapters.
 2. [Definitive faction guides](../releases/v0.6.1/faction-guides/) — faction rules, Leaders, supplemental components, and exact faction-card text.
 3. [Neutral Card Pool](Gauntlet_v0.6.1_Neutral_Card_Pool.md) — exact Neutral-card text.
 4. [Territory Pool](Gauntlet_v0.6.1_Territory_Pool.md) — exact Territory and Arena text.
@@ -16,12 +16,13 @@ These files govern the current published playtest game:
 6. [Reference Guide](../releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.md) — compact play reference derived from the governing sources.
 7. [Release Notes](../releases/v0.6.1/Gauntlet_v0.6.1_Release_Notes.md) and [Changelog](../releases/v0.6.1/Gauntlet_v0.6.1_Changelog.md) — release explanation and detailed changes from v0.6.0.
 
-When a derived PDF, printable sheet, Deckbuilder entry, or digital implementation conflicts with these sources, correct the governing source and regenerate the derived artifact.
+The sequential half-letter Rulebook PDF and the preferred imposed booklet PDF are generated from the same Browser Rulebook design and governing Markdown. When a derived PDF, printable sheet, Deckbuilder entry, or digital implementation conflicts with these sources, correct the governing source and regenerate the derived artifact.
 
 ## Active v0.6.1 implementation records
 
 - [v0.6.1 Implementation Ledger](Gauntlet_v0.6.1_Implementation_Ledger.md) — approved first-playtest corrections and synchronization checklist.
 - [v0.6.1 Rulebook Layering Standard](Gauntlet_v0.6.1_Rulebook_Layering_Standard.md) — approved **How it works / Complete rules** structure for combining first-game teaching with technical reference.
+- [Rules Language and Editorial Standard](Gauntlet_Rules_Language_and_Editorial_Standard.md) — internal terminology and drafting guidance removed from the player-facing rulebook.
 
 These implementation records preserve the decisions and production history behind v0.6.1. They do not override the canonical release sources above and may be archived when they no longer serve an active development purpose.
 
