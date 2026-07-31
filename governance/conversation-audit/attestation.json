@@ -1,11 +1,20 @@
 {
-  "schema_version": 4,
-  "generated_on": "2026-07-30",
+  "schema_version": 5,
+  "generated_on": "2026-07-31",
   "certification_status": "incomplete",
   "certified_for_downstream_canonicalization": false,
-  "blocking_reason": "The raw export ends on 2026-07-09. July 10-30 rows were reconstructed from search/context rather than a complete raw-turn corpus, one unsupported assistant synthesis was already discovered, and the project-wide live tail remains unreconciled with a fresh export.",
+  "blocking_reason": "A fresh export through 2026-07-30T20:20:18.318000+00:00 has been structurally validated and all seven committed live-tail rows are matched, but the export exposed no project identifier, the recall classifier has known false positives and at least one known false negative, excluded-conversation review is incomplete, and the provisional July decision rows have not yet been rebuilt from raw turns.",
   "verbatim_export_complete_through": "2026-07-09",
   "required_raw_export_through": "2026-07-30",
+  "fresh_export": {
+    "received": true,
+    "validation_path": "governance/conversation-audit/fresh-export-validation.json",
+    "latest_user_turn": "2026-07-30T20:20:18.318000+00:00",
+    "latest_assistant_turn": "2026-07-30T20:21:20.218795+00:00",
+    "structurally_valid": true,
+    "selection_review_complete": false,
+    "raw_decision_reaudit_complete": false
+  },
   "verbatim_user_turns": 1021,
   "decision_threads": 335,
   "decision_index_files": 14,
@@ -20,7 +29,7 @@
     "path": "governance/conversation-audit/live-tail.jsonl",
     "policy_path": "governance/conversation-audit/live-tail-policy.md",
     "captured_user_turns": 7,
-    "unmatched_user_turns": 7,
+    "unmatched_user_turns": 0,
     "certification_requires_continuous_coverage": true,
     "certification_requires_complete_project_conversation_inventory": true
   },
@@ -42,21 +51,23 @@
     "rejection-or-constraint": 24
   },
   "limitations": [
-    "The supplied raw conversation export ends on 2026-07-09.",
-    "Every project-conversation-search evidence row is provisional until replaced by verbatim raw-turn evidence.",
+    "The committed raw-turn corpus and decision indexes still certify only June 17 through July 9; the fresh export has not yet been promoted into those corpus counts.",
+    "The fresh export did not expose a detected Gauntlet project identifier.",
+    "The recall-oriented selection produced six known unrelated false positives and at least one known Gauntlet false negative.",
+    "Every project-conversation-search evidence row remains provisional until replaced by raw message evidence or removed.",
     "The July 10-30 candidate ledger cannot supersede raw-export evidence or drive canonicalization by itself.",
     "The fixed-three Asset Bank synthesis demonstrated that search/context summaries can introduce unsupported claims.",
-    "The live tail preserves exact post-activation user text across concurrent Gauntlet-project conversations but is not complete until every project conversation is inventoried and every row is reconciled or independently reviewed.",
-    "Keeping work inside the Gauntlet project improves discovery but does not by itself prove live-tail completeness.",
+    "The seven committed live-tail turns are now matched to exported conversation and message IDs, but later post-export project turns remain outside this export baseline.",
     "GNT-CONV identifiers establish conversation provenance only; they do not claim canonicalization or implementation."
   ],
   "completion_requirements": [
-    "Process a fresh raw export covering all conversations through its verified maximum message timestamp.",
-    "Enumerate every conversation assigned to the Gauntlet project and also search all exported conversations by title and content for Gauntlet material outside the project.",
+    "Review compact exact-turn evidence for all 220 excluded conversations and add every Gauntlet false negative to the corpus.",
+    "Remove every unrelated false-positive conversation from the candidate corpus.",
     "Inventory every Gauntlet user turn exactly once across all concurrent conversations.",
-    "Replace every project-conversation-search reference with stable raw source-line evidence or remove the unsupported row.",
+    "Replace every project-conversation-search reference with stable raw message evidence or remove the unsupported row.",
     "Recompute all statuses and supersession links from the raw corpus.",
     "Reconcile every GNT-LIVE row to an exported message or independently reviewed exact transcript evidence.",
+    "Capture and reconcile Gauntlet project turns after the export cutoff.",
     "Prove continuous project-wide coverage from the prior raw cutoff through the certification cutoff with no unexplained time or conversation gap.",
     "Independently recheck every effectively current thread for unsupported assistant synthesis."
   ]
