@@ -1,0 +1,237 @@
+name: Render Rulebook design proofs
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/render-rulebook-design-proofs.yml"
+      - "rulebook-design/**"
+      - "design-tokens.css"
+      - "images/sketches/hero sketch.png"
+      - "images/sketches/general.png"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rulebook-design-proofs-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout proof branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install rendering tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Expand proof sources
+        run: python rulebook-design/build_proofs.py
+
+      - name: Validate proof-only source contract
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+
+          root = Path('rulebook-design')
+          print_html = (root / 'print-proof.html').read_text(encoding='utf-8')
+          browser_html = (root / 'browser-proof.html').read_text(encoding='utf-8')
+          css = (root / 'proof.css').read_text(encoding='utf-8')
+
+          if len(re.findall(r'<section class="print-page(?:\s|\")', print_html)) != 8:
+              raise SystemExit('Print proof must contain exactly eight half-letter pages.')
+
+          required_print = [
+              '../images/sketches/hero%20sketch.png',
+              '../images/sketches/general.png',
+              'Copyright © 2026 Tymon Scott',
+              'Repository and release materials are provided for private review and playtesting only',
+              'Quick Reference',
+              'How it works',
+              'Complete rules',
+          ]
+          for value in required_print:
+              if value not in print_html:
+                  raise SystemExit(f'Print proof missing required content: {value}')
+
+          required_browser = [
+              '../images/sketches/general.png',
+              'Official Browser Rulebook',
+              'How it works',
+              'Complete rules',
+          ]
+          for value in required_browser:
+              if value not in browser_html:
+                  raise SystemExit(f'Browser proof missing required content: {value}')
+
+          required_css = [
+              '@import url("../design-tokens.css")',
+              'size: 5.5in 8.5in',
+              '--font-display-historical',
+              '--font-reading',
+              '--font-flavor',
+              '--font-interface',
+          ]
+          for value in required_css:
+              if value not in css:
+                  raise SystemExit(f'Proof stylesheet missing required marker: {value}')
+
+          for forbidden in ['Liberation Serif', 'Liberation Sans']:
+              if forbidden in css + print_html + browser_html:
+                  raise SystemExit(f'Obsolete typography remains: {forbidden}')
+
+          print('Validated proof count, artwork references, copyright, hierarchy, and typography roles.')
+          PY
+
+      - name: Serve repository
+        run: python3 -m http.server 8000 >/tmp/gauntlet-proof-http.log 2>&1 &
+
+      - name: Render and inspect proof set
+        run: |
+          mkdir -p /tmp/rulebook-design-proofs/pages
+          node --input-type=module <<'NODE'
+          import { chromium } from 'playwright';
+
+          const browser = await chromium.launch({ headless: true });
+
+          const printPage = await browser.newPage({ viewport: { width: 1400, height: 1100 }, deviceScaleFactor: 1 });
+          const printErrors = [];
+          printPage.on('pageerror', error => printErrors.push(error.message));
+          const printResponse = await printPage.goto('http://127.0.0.1:8000/rulebook-design/print-proof.html', {
+            waitUntil: 'domcontentloaded',
+            timeout: 60000
+          });
+          if (!printResponse?.ok()) throw new Error(`Print proof returned ${printResponse?.status()}`);
+          await printPage.evaluate(() => document.fonts?.ready || Promise.resolve());
+
+          const printResult = await printPage.evaluate(() => {
+            const pages = [...document.querySelectorAll('.print-page')];
+            const images = [...document.images].map(image => ({
+              src: image.getAttribute('src'),
+              complete: image.complete,
+              width: image.naturalWidth,
+              height: image.naturalHeight
+            }));
+            return {
+              pageCount: pages.length,
+              pages: pages.map((page, index) => {
+                const rect = page.getBoundingClientRect();
+                return {
+                  index: index + 1,
+                  width: rect.width,
+                  height: rect.height,
+                  scrollWidth: page.scrollWidth,
+                  clientWidth: page.clientWidth,
+                  scrollHeight: page.scrollHeight,
+                  clientHeight: page.clientHeight
+                };
+              }),
+              images
+            };
+          });
+
+          if (printResult.pageCount !== 8) throw new Error(`Expected 8 pages; found ${printResult.pageCount}`);
+          for (const page of printResult.pages) {
+            if (Math.abs(page.width - 528) > 2 || Math.abs(page.height - 816) > 2) {
+              throw new Error(`Page ${page.index} is ${page.width}×${page.height}px instead of half-letter at CSS print scale.`);
+            }
+            if (page.scrollWidth > page.clientWidth + 1 || page.scrollHeight > page.clientHeight + 1) {
+              throw new Error(`Page ${page.index} overflows its half-letter canvas.`);
+            }
+          }
+          for (const image of printResult.images) {
+            if (!image.complete || image.width < 1 || image.height < 1) {
+              throw new Error(`Print proof image failed to load: ${JSON.stringify(image)}`);
+            }
+          }
+          if (printErrors.length) throw new Error(`Print proof page errors:\n${printErrors.join('\n')}`);
+
+          await printPage.screenshot({ path: '/tmp/rulebook-design-proofs/print-proof-browser.png', fullPage: true });
+          await printPage.emulateMedia({ media: 'print' });
+          await printPage.pdf({
+            path: '/tmp/rulebook-design-proofs/Gauntlet_v0.6.1_Rulebook_Design_Proofs.pdf',
+            printBackground: true,
+            preferCSSPageSize: true,
+            margin: { top: '0', right: '0', bottom: '0', left: '0' }
+          });
+          await printPage.close();
+
+          for (const [name, viewport] of [
+            ['desktop', { width: 1440, height: 1200 }],
+            ['mobile', { width: 390, height: 844 }]
+          ]) {
+            const page = await browser.newPage({ viewport, deviceScaleFactor: 1 });
+            const errors = [];
+            page.on('pageerror', error => errors.push(error.message));
+            const response = await page.goto('http://127.0.0.1:8000/rulebook-design/browser-proof.html', {
+              waitUntil: 'domcontentloaded',
+              timeout: 60000
+            });
+            if (!response?.ok()) throw new Error(`${name} browser proof returned ${response?.status()}`);
+            await page.evaluate(() => document.fonts?.ready || Promise.resolve());
+            const result = await page.evaluate(() => ({
+              horizontalOverflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
+              images: [...document.images].map(image => ({
+                src: image.getAttribute('src'),
+                complete: image.complete,
+                width: image.naturalWidth,
+                height: image.naturalHeight
+              }))
+            }));
+            if (result.horizontalOverflow > 1) throw new Error(`${name} browser proof has horizontal overflow of ${result.horizontalOverflow}px`);
+            for (const image of result.images) {
+              if (!image.complete || image.width < 1 || image.height < 1) {
+                throw new Error(`${name} browser image failed to load: ${JSON.stringify(image)}`);
+              }
+            }
+            if (errors.length) throw new Error(`${name} browser proof page errors:\n${errors.join('\n')}`);
+            await page.screenshot({ path: `/tmp/rulebook-design-proofs/browser-proof-${name}.png`, fullPage: true });
+            await page.close();
+          }
+
+          await browser.close();
+          console.log(JSON.stringify(printResult, null, 2));
+          NODE
+
+      - name: Validate PDF dimensions and pages
+        run: |
+          PDF=/tmp/rulebook-design-proofs/Gauntlet_v0.6.1_Rulebook_Design_Proofs.pdf
+          pdfinfo "$PDF"
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          import subprocess
+
+          pdf = Path('/tmp/rulebook-design-proofs/Gauntlet_v0.6.1_Rulebook_Design_Proofs.pdf')
+          info = subprocess.check_output(['pdfinfo', str(pdf)], text=True)
+          pages = int(re.search(r'^Pages:\s+(\d+)', info, re.MULTILINE).group(1))
+          if pages != 8:
+              raise SystemExit(f'Expected 8 PDF pages; found {pages}')
+          size = re.search(r'^Page size:\s+([\d.]+) x ([\d.]+) pts', info, re.MULTILINE)
+          width, height = map(float, size.groups())
+          if abs(width - 396) > 1 or abs(height - 612) > 1:
+              raise SystemExit(f'Expected half-letter 396×612 pt; found {width}×{height}')
+          print(f'Validated {pages} half-letter PDF pages at {width}×{height} pt.')
+          PY
+          pdftoppm -png -r 144 "$PDF" /tmp/rulebook-design-proofs/pages/page
+
+      - name: Upload proof artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-rulebook-design-proofs
+          path: /tmp/rulebook-design-proofs/**
+          if-no-files-found: error
