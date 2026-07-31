@@ -13,7 +13,6 @@
 Gauntlet is a two-player tactical card-and-territory game. Each player builds a Deck, chooses one of six factions and one of that faction's Leaders, and contributes three Territories to a shared six-Territory battlefield called the **Gauntlet**.
 
 Players advance toward one another, fight battles, occupy and capture opposing Territories, develop Assets, and pursue faction-specific plans. The normal way to win is to cross the entire battlefield, capture the opponent's final Territory, force a Last Stand beyond the Gauntlet, and win that battle.
----
 
 # How to Use This Rulebook
 
@@ -28,7 +27,7 @@ Major chapters use two layers. **How it works** teaches the ordinary rule in dir
 
 # Game at a Glance
 
-Each player begins just outside their end of a six-Territory battlefield. On your turn, draw a card, take one Action Opportunity before or after moving, and advance, hold, or withdraw. Entering the opponent's position begins a battle.
+Each player begins just outside their end of a six-Territory battlefield. On your turn, draw a card, take one Action before or after moving, and advance, hold, or withdraw. Entering the opponent's position begins a battle.
 
 In battle, each player may risk one card from Hand as a Gambit, then draws a temporary three-card Reserve and may choose one card as a Tactic. Card effects and dice determine the winner. The loser retreats, and the winner occupies or keeps the contested position.
 
@@ -52,8 +51,6 @@ Every faction can win this way. Some factions also have an alternate victory con
 - **May** means an effect is optional. **Must** means it is required.
 - Resolve instructions in the order written.
 - Complete as much of an instruction as possible unless the missing part is a required cost, requirement, or target.
-
----
 
 ---
 
@@ -199,8 +196,6 @@ Cards in different zones must remain visibly separate even when space is limited
 
 ---
 
----
-
 # 4. Your Turn
 
 ## How it works
@@ -253,8 +248,6 @@ Resolve end-of-turn effects. If the active player has more than three cards in H
 
 ---
 
----
-
 # 5. Actions and Assets
 
 ## How it works
@@ -272,7 +265,7 @@ To play a card for its Action effect:
 1. play it from Hand during an Action Opportunity;
 2. satisfy all requirements and costs;
 3. resolve the Action effect; and
-4. put it in the Discard Pile unless it becomes an Asset or Overlay or specifies another destination.
+4. put it in the Discard Pile unless it becomes an Asset, becomes an Overlay attached to a Territory, or specifies another destination. Overlays are explained in Chapter 12.
 
 ### Assets
 
@@ -295,8 +288,6 @@ An effect that prevents an Asset from leaving play also prevents replacing it th
 Use **activate** when using an Asset's printed ability. If the effect requires the Asset to be discarded, put it in its owner's Discard Pile unless stated otherwise.
 
 Whenever a player could play a card for its Action effect, they may instead discard one Asset they control. This uses the Action Opportunity.
-
----
 
 ---
 
@@ -333,8 +324,6 @@ Move the attacking token into the contested Territory before the battle. During 
 ### Movement after battle
 
 A player moves after a battle only when a rule or effect explicitly permits it. That movement is a new movement sequence and may start a new battle if the effect allows it.
-
----
 
 ---
 
@@ -522,14 +511,12 @@ If an effect causes one or both players to withdraw during opening effects and p
 - no battle or Aftermath triggers occur; and
 - no battle-card destinations or cleanup occur.
 
-The established attacker and defender roles are used only to determine the withdrawal movement. Resolve any remaining instructions from the effect or accepted Terms after that movement.
+The established attacker and defender roles are used only to determine the withdrawal movement. Resolve any remaining instructions from the effect after that movement.
 #### Retreat
 
 Retreat is forced displacement after losing a battle. It is not movement or withdrawal.
 
 Effects that trigger from movement or withdrawal do not trigger from retreat unless they say so.
-
----
 
 ---
 
@@ -567,8 +554,6 @@ Because ordinary capture occurs at the start of the occupying player's next turn
 
 ---
 
----
-
 # 9. Running the Gauntlet
 
 ## How it works
@@ -601,8 +586,6 @@ If the attacker wins, they have run the Gauntlet and immediately win the game.
 If the defender wins, the attacker retreats to the final Territory. Play continues.
 
 Territory-specific effects do not apply in a Last Stand battle unless they expressly apply beyond the Gauntlet.
-
----
 
 ---
 
@@ -656,8 +639,6 @@ Unless a rule says otherwise, supplemental components:
 
 ---
 
----
-
 # 11. Detailed Card and Timing Rules
 
 ## How it works
@@ -676,7 +657,7 @@ Most games can be played from the Learn to Play rules. Use this chapter when car
 
 ## Battle timing and card interaction
 
-## Shared-timing rule
+### Shared-timing rule
 
 When multiple controlled effects resolve at the same time:
 
@@ -686,7 +667,7 @@ When multiple controlled effects resolve at the same time:
 
 Each player chooses the order of effects they control. Simultaneous reveal does not mean simultaneous resolution.
 
-## Multiple and additional Gambits or Tactics
+### Multiple and additional Gambits or Tactics
 
 An effect may allow a player to set or choose more than the normal limit. Unless stated otherwise, that permission is optional.
 
@@ -697,10 +678,10 @@ When an effect permits an **additional Tactic** after the normal choice:
 - the card must have an eligible Tactic or Battle effect;
 - if Tactics are already revealed, play it face up;
 - resolve only effects whose timing remains available;
-- do not reopen Tactic choices, reveal timing, Surveillance, or Interference; and
+- do not reopen Tactic choices, reveal timing, or response opportunities; and
 - follow the normal Tactic destination unless stated otherwise.
 
-## Replacements and revisions
+### Replacements and revisions
 
 A replacement takes the same role as the card it replaces.
 
@@ -710,21 +691,21 @@ A replacement takes the same role as the card it replaces.
 - Replacement does not reopen an earlier timing window.
 - Only unresolved effects whose timing remains available can resolve.
 
-When an effect lets a player revise a choice, the revised choice does not create another reveal, Surveillance, Interference, or replacement opportunity unless stated otherwise.
+When an effect lets a player revise a choice, the revised choice does not create another reveal, response, or replacement opportunity unless stated otherwise.
 
-## Reveal and information
+### Reveal and information
 
 To reveal a face-down card, turn it face up and leave it face up.
 
 To reveal a Hand or Reserve, its owner shows the entire zone to the opponent. The cards remain in that zone.
 
-## Negation
+### Negation
 
 A negated card has no effect but remains in battle and keeps its role and normal destination unless stated otherwise.
 
 An effect cannot be negated after it resolves.
 
-## Copied effects
+### Copied effects
 
 When instructed to resolve another card's printed effect:
 
@@ -735,8 +716,6 @@ When instructed to resolve another card's printed effect:
 - do not move the source card unless instructed;
 - do not reopen an earlier timing window; and
 - do not choose another effect that itself resolves another effect unless expressly allowed.
-
----
 
 ---
 
@@ -770,8 +749,6 @@ On an Overlay, **you** means its current controller unless the text identifies i
 
 ---
 
----
-
 # Part III — Factions
 
 # 13. Factions
@@ -798,7 +775,7 @@ Reference cards summarize procedures but do not replace the rulebook. If shorten
 - A counter, dial, written record, or other substitute may be used when it shows the same public information clearly and unambiguously.
 - A reference card is a reminder, not a separate rules authority. If its shortened text omits a detail, follow this rulebook and the definitive faction guide.
 - A double-sided supplemental card changes state only when its governing rule tells you to flip it. Keep any attached or bound cards with it so both players can identify the relationship.
-- Supplemental components have no deckbuilding value and are not eligible as Gambits, Tactics, costs, collateral, Transmutation cards, Treasury cards, or other playable cards unless a rule explicitly says otherwise.
+- Supplemental components have no deckbuilding value and are not eligible as Gambits, Tactics, costs, or other playable cards unless a rule explicitly says otherwise.
 - Each player supplies and controls their own faction package unless a faction rule identifies a shared supply. In a mirror match, keep the two players' components separated and oriented toward their owners.
 
 <!-- GENERATED FACTION CONTENT START -->
