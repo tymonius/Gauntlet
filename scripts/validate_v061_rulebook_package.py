@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import re
 import subprocess
 import sys
 import zipfile
@@ -72,6 +73,14 @@ PR336_REFERENCE_TEXT = (
     "Defender's Advantage means the defender wins ties; separately, the defender adds +1 to their battle total.",
 )
 
+PR336_PDF_FRAGMENTS = (
+    "tie rule, not an instance of the ordinary advantage mechanic",
+    "does not grant an additional die",
+    "separately add +1 to their battle total",
+    "defender wins tied battle totals",
+    "defender separately adds +1 to their battle total",
+)
+
 FORBIDDEN_PLAYER_TEXT = (
     "# 15. Standard Language and Reference Rules",
     "Use these verbs consistently:",
@@ -81,10 +90,23 @@ FORBIDDEN_PLAYER_TEXT = (
 )
 
 
+def normalized_text(text: str) -> str:
+    return re.sub(r"\s+", " ", text).strip().lower()
+
+
 def require_contains(text: str, required: tuple[str, ...], label: str, errors: list[str]) -> None:
     for value in required:
         if value not in text:
             errors.append(f"{label} is missing {value!r}")
+
+
+def require_normalized_contains(
+    text: str, required: tuple[str, ...], label: str, errors: list[str]
+) -> None:
+    normalized = normalized_text(text)
+    for value in required:
+        if normalized_text(value) not in normalized:
+            errors.append(f"{label} is missing normalized fragment {value!r}")
 
 
 def validate_sources(errors: list[str]) -> None:
@@ -234,7 +256,9 @@ def validate_generated(errors: list[str]) -> None:
     reader_text = "\n".join((page.extract_text() or "") for page in reader.pages)
     require_contains(reader_text, tuple(name for name, _ in LEADERS), "Rulebook reader PDF", errors)
     require_contains(reader_text, FACTION_RULES, "Rulebook reader PDF", errors)
-    require_contains(reader_text, PR336_RULEBOOK_TEXT, "PR #336 reader-PDF clarification", errors)
+    require_normalized_contains(
+        reader_text, PR336_PDF_FRAGMENTS, "PR #336 reader-PDF clarification", errors
+    )
     for value in FORBIDDEN_PLAYER_TEXT:
         if value in reader_text:
             errors.append(f"Rulebook reader PDF contains internal or obsolete text {value!r}")
@@ -254,7 +278,9 @@ def validate_generated(errors: list[str]) -> None:
             errors.append(f"Booklet PDF is not landscape Letter: {width} x {height} points")
     booklet_text = "\n".join((page.extract_text() or "") for page in booklet.pages)
     require_contains(booklet_text, tuple(name for name, _ in LEADERS), "Booklet PDF", errors)
-    require_contains(booklet_text, PR336_RULEBOOK_TEXT, "PR #336 booklet-PDF clarification", errors)
+    require_normalized_contains(
+        booklet_text, PR336_PDF_FRAGMENTS, "PR #336 booklet-PDF clarification", errors
+    )
 
 
 def main() -> int:
