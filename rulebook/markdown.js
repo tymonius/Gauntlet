@@ -11,10 +11,17 @@ function escapeHtml(value) {
 
 function normalizeUrl(url) {
   const trimmed = url.trim();
-  if (trimmed.startsWith('../../images/')) {
-    return `../images/${trimmed.slice('../../images/'.length)}`;
+  const unwrapped = trimmed.startsWith('<') && trimmed.endsWith('>')
+    ? trimmed.slice(1, -1).trim()
+    : trimmed;
+
+  if (unwrapped.startsWith('../../images/')) {
+    return `../images/${unwrapped.slice('../../images/'.length)}`;
   }
-  return trimmed;
+  if (unwrapped.startsWith('images/')) {
+    return `../${unwrapped}`;
+  }
+  return unwrapped;
 }
 
 function plainText(value) {
@@ -111,7 +118,8 @@ function isBlockStart(lines, index) {
 }
 
 export function renderMarkdown(source) {
-  const lines = String(source).replace(/\r\n?/g, '\n').split('\n');
+  const cleanedSource = String(source).replace(/<!--[\s\S]*?-->/g, '');
+  const lines = cleanedSource.replace(/\r\n?/g, '\n').split('\n');
   const slug = createSlugger();
   const headings = [];
   const html = [];

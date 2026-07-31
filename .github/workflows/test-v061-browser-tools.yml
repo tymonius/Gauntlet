@@ -76,6 +76,32 @@ jobs:
               if (text.includes('Battle Hand') || text.includes('hand commitment')) {
                 throw new Error('Browser rulebook contains obsolete battle terminology');
               }
+              if (text.includes('GENERATED FACTION CONTENT')) {
+                throw new Error('Browser rulebook exposes an internal synchronization marker');
+              }
+
+              const leaderImages = page.locator('[data-rulebook-content] img');
+              const leaderImageCount = await leaderImages.count();
+              if (leaderImageCount !== 12) {
+                throw new Error(`Browser rulebook rendered ${leaderImageCount} Leader images instead of 12`);
+              }
+              for (let index = 0; index < leaderImageCount; index += 1) {
+                const image = leaderImages.nth(index);
+                await image.evaluate(element => { element.loading = 'eager'; });
+                await image.scrollIntoViewIfNeeded();
+              }
+              await page.waitForFunction(() => {
+                const images = [...document.querySelectorAll('[data-rulebook-content] img')];
+                return images.length === 12 && images.every(image => image.complete && image.naturalWidth > 0);
+              });
+
+              const failedImages = await leaderImages.evaluateAll(images => images
+                .filter(image => image.naturalWidth === 0 || image.naturalHeight === 0)
+                .map(image => `${image.alt}: ${image.currentSrc || image.src}`));
+              if (failedImages.length) {
+                throw new Error(`Leader sketches failed to load:\n${failedImages.join('\n')}`);
+              }
+
               await page.screenshot({ path: `/tmp/rulebook-${suffix}.png`, fullPage: true });
               if (errors.length) throw new Error(`Rulebook ${suffix} errors:\n${errors.join('\n')}`);
               await page.close();

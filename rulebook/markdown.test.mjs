@@ -29,10 +29,30 @@ describe('browser rulebook Markdown renderer', () => {
   });
 
   test('rewrites canonical leader image paths for the browser page', () => {
-    const rendered = renderMarkdown('![General](../../images/sketches/general.png)');
+    const rendered = renderMarkdown('![General](<images/sketches/general.png>)');
 
     expect(rendered.html).toContain('src="../images/sketches/general.png"');
     expect(rendered.html).toContain('alt="General"');
+    expect(rendered.html).not.toContain('&lt;images/');
+  });
+
+  test('continues to support repository-relative image paths', () => {
+    const rendered = renderMarkdown('![General](../../images/sketches/general.png)');
+
+    expect(rendered.html).toContain('src="../images/sketches/general.png"');
+  });
+
+  test('omits internal synchronization comments', () => {
+    const rendered = renderMarkdown([
+      'Before',
+      '',
+      '<!-- GENERATED FACTION CONTENT START -->',
+      '',
+      'After'
+    ].join('\n'));
+
+    expect(rendered.html).toBe('<p>Before</p>\n<p>After</p>');
+    expect(rendered.html).not.toContain('GENERATED FACTION CONTENT');
   });
 
   test('omits print-only page-break markers', () => {
