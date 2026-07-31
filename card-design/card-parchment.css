@@ -2,7 +2,6 @@
    Sprite order: Neutral, Military, Diplomats, Financiers, Intelligence, Mystics, Inquisition. */
 
 .gauntlet-card {
-  --parchment-opacity: 1;
   --parchment-position: 0%;
 }
 
@@ -53,23 +52,25 @@
 
 .card-interior {
   isolation: isolate;
-}
-
-.card-interior::before {
-  position: absolute;
-  z-index: 0;
-  inset: 0;
+  /* The color is a load-failure fallback only. The opaque WebP completely
+     replaces it whenever the approved parchment asset loads. */
+  background-color: var(--card-parchment);
   background-image: url("../images/artwork/card-backgrounds/parchments.webp");
   background-position: center var(--parchment-position);
   background-repeat: no-repeat;
   background-size: 100% 700%;
-  content: "";
-  opacity: var(--parchment-opacity);
-  pointer-events: none;
+  background-blend-mode: normal;
 }
 
+/* The parchment is the card background itself, not a translucent overlay. */
+.card-interior::before {
+  content: none;
+}
+
+/* The approved parchment sources already contain their own paper texture. */
 .card-interior::after {
   z-index: 1;
+  background: none;
 }
 
 .card-heading,
