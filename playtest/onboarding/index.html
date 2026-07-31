@@ -18,6 +18,107 @@
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
   <link rel="stylesheet" href="../../site.css" />
   <link rel="stylesheet" href="onboarding.css" />
+  <style>
+    .intro-reading {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    .intro-overview {
+      margin: 0 0 18px;
+      padding: 42px;
+      border: 1px solid var(--line);
+      border-left: 7px solid var(--crimson);
+      background: var(--crimson-dark);
+      box-shadow: var(--shadow);
+      color: #fff8ed;
+    }
+
+    .intro-overview .eyebrow { color: #d7b783; }
+    .intro-overview h3 {
+      max-width: 760px;
+      margin: 12px 0 20px;
+      font-size: clamp(2.2rem, 5vw, 4.2rem);
+      line-height: 1.02;
+      font-weight: 500;
+    }
+    .intro-overview p {
+      max-width: 820px;
+      color: rgba(255, 248, 237, .82);
+      line-height: 1.68;
+    }
+
+    .intro-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 14px;
+    }
+
+    .intro-card,
+    .objective-card,
+    .sequence-card {
+      min-height: 0;
+      padding: 32px 34px;
+      display: grid;
+      grid-template-columns: 56px minmax(0, 1fr);
+      column-gap: 22px;
+      border-left: 4px solid rgba(143, 31, 37, .42);
+    }
+
+    .intro-card > span {
+      grid-column: 1;
+      grid-row: 1 / span 20;
+      padding-top: 3px;
+      font-size: 1.2rem;
+    }
+
+    .intro-card > :not(span) { grid-column: 2; }
+    .intro-card h3 {
+      margin: 0 0 12px;
+      font-size: 1.75rem;
+    }
+    .intro-card p,
+    .intro-card li { color: var(--muted); line-height: 1.65; }
+    .intro-card p:last-child,
+    .intro-card ol:last-child,
+    .intro-card ul:last-child { margin-bottom: 0; }
+    .intro-card ol,
+    .intro-card ul { margin: 4px 0 14px; padding-left: 22px; }
+
+    .term-list {
+      margin-top: 8px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px 18px;
+      list-style: none;
+      padding-left: 0 !important;
+    }
+    .term-list li {
+      margin: 0;
+      padding: 12px 14px;
+      border: 1px solid var(--line);
+      background: rgba(255, 252, 244, .6);
+    }
+    .term-list strong { color: var(--ink); }
+
+    .selected-faction-note {
+      max-width: 980px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    @media (max-width: 640px) {
+      .intro-overview { padding: 30px 24px; }
+      .intro-card,
+      .objective-card,
+      .sequence-card {
+        padding: 26px 23px;
+        grid-template-columns: 38px minmax(0, 1fr);
+        column-gap: 13px;
+      }
+      .term-list { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
   <header class="site-header">
@@ -190,99 +291,119 @@
         <div class="section-heading split-heading">
           <div>
             <p class="eyebrow">Step 2 · First-game introduction</p>
-            <h2 id="intro-title">How Gauntlet works.</h2>
+            <h2 id="intro-title">Learn the game in play order.</h2>
           </div>
-          <p>This is the shared foundation for your first game. Exact card interactions and your selected faction's procedures will remain available at the table.</p>
+          <p>This follows Part I of the Rulebook in the same order. It teaches the ordinary first-game flow; the complete rules remain available for exact timing and exceptions.</p>
         </div>
 
-        <div class="intro-grid">
-          <article class="intro-card objective-card">
-            <span>01</span>
-            <h3>Run the Gauntlet</h3>
-            <p>Both players begin outside opposite ends of a shared six-Territory battlefield. Advance through the line, defeat the opponent, occupy and capture their Territories, and push them beyond their end.</p>
-            <p>After capturing their final Territory, advance beyond the column and win the resulting <strong>Last Stand</strong> battle to win the game. In that battle, the defender wins tied totals and separately adds +1. Some factions also have an additional victory route.</p>
+        <div class="intro-reading">
+          <article class="intro-overview">
+            <p class="eyebrow">The shape of the game</p>
+            <h3>Advance. Fight. Hold the ground you take.</h3>
+            <p>Gauntlet is a two-player tactical card-and-territory game. Each player uses a prepared Deck, chooses one of six factions and one of that faction's Leaders, and contributes three Territories to a shared six-Territory battlefield called the <strong>Gauntlet</strong>.</p>
+            <p>Players advance toward one another, fight battles, occupy and capture opposing Territories, develop Assets, and pursue faction-specific plans. The normal way to win is to cross the battlefield, capture the opponent's final Territory, force a Last Stand beyond the Gauntlet, and win that battle.</p>
           </article>
 
-          <article class="intro-card">
-            <span>02</span>
-            <h3>Your turn</h3>
-            <ol>
-              <li><strong>Capture:</strong> capture an opposing Territory you still occupy from the previous turn.</li>
-              <li><strong>Draw:</strong> draw one card.</li>
-              <li><strong>Act and move:</strong> take one normal Action either before or after movement; advance, hold, or withdraw.</li>
-              <li><strong>Cleanup:</strong> resolve end-of-turn effects and discard down to three cards in Hand.</li>
-            </ol>
-            <p>A battle ends the movement that started it. You move again only when a rule, card, or Leader ability specifically allows it.</p>
-          </article>
+          <div class="intro-grid">
+            <article class="intro-card">
+              <span>01</span>
+              <h3>Components</h3>
+              <p>For a first game, use two prepared or recommended Decks. Each player needs one complete Deck, one Player Token, and a six-sided die. The two players' three-Territory sets join to form the six-position Gauntlet.</p>
+              <p>A complete Deck includes a faction, one Leader from that faction, a Playable Deck, three different Territories, and any components required by that faction or Leader.</p>
+            </article>
 
-          <article class="intro-card">
-            <span>03</span>
-            <h3>Actions and Assets</h3>
-            <p>During your one normal Action Opportunity, play a card from Hand for its <strong>Action</strong> effect or use a qualifying faction action.</p>
-            <p>Most one-time Actions go to the Discard Pile. An <strong>Asset</strong> remains face up in your Asset Bank and provides a later effect. Your Asset limit equals the number of Territories you control.</p>
-          </article>
+            <article class="intro-card zones-card">
+              <span>02</span>
+              <h3>Cards, zones, and printed effects</h3>
+              <p>Keep every group of cards visibly separate. Your <strong>Hand</strong> is the permanent private set of cards you hold between turns. Your <strong>Draw Pile</strong> supplies cards; the <strong>Discard Pile</strong> is recyclable; the <strong>Graveyard</strong> normally is not. Assets remain face up in your <strong>Asset Bank</strong>.</p>
+              <p>A battle creates three temporary areas: a Gambit set from Hand, a three-card Reserve drawn from the Draw Pile, and a Tactic chosen from that Reserve.</p>
+              <ul class="term-list">
+                <li><strong>Action:</strong> play from Hand during an Action Opportunity.</li>
+                <li><strong>Gambit:</strong> set from Hand during a battle.</li>
+                <li><strong>Tactic:</strong> choose from Reserve during a battle.</li>
+                <li><strong>Battle:</strong> may be used as either a Gambit or a Tactic.</li>
+              </ul>
+              <p>An <strong>Action Opportunity</strong> is the point during your turn when you may play one card for its Action effect or perform a rule or faction action that explicitly uses that opportunity.</p>
+            </article>
 
-          <article class="intro-card battle-card">
-            <span>04</span>
-            <h3>Beginning a battle</h3>
-            <p>Entering the opponent's position starts a battle. The moving player is the attacker; the other is the defender.</p>
-            <p>Each player may commit one eligible card from Hand as a face-down <strong>Gambit</strong>. Gambits are powerful but costly: they normally go to the Graveyard after the battle.</p>
-          </article>
+            <article class="intro-card setup-card">
+              <span>03</span>
+              <h3>Setup</h3>
+              <p>Prepare the game in this order:</p>
+              <ol>
+                <li>Shuffle the Playable Deck and place it face down.</li>
+                <li>Secretly arrange your three Territories in a line facing you.</li>
+                <li>Join both players' Territory lines to form the six-position Gauntlet.</li>
+                <li>Reveal all six Territories simultaneously.</li>
+                <li>Prepare Leaders, trackers, references, and other faction components.</li>
+                <li>Place each Player Token immediately before the Territory at that player's end.</li>
+                <li>Each player draws three cards.</li>
+                <li>Roll to determine the first player; reroll ties.</li>
+              </ol>
+              <p>Keep your Hand, temporary battle cards, Discard Pile, Graveyard, Assets, and faction components in clearly separate areas.</p>
+            </article>
 
-          <article class="intro-card">
-            <span>05</span>
-            <h3>Reserve and Tactic</h3>
-            <p>Set your Hand aside without mixing it into another zone, then draw three temporary cards to form your private <strong>Reserve</strong>.</p>
-            <p>After Gambits are revealed, each player may choose one eligible Reserve card as a <strong>Tactic</strong>. A card with a <strong>Battle</strong> effect may serve as either a Gambit or a Tactic. Reveal Tactics, resolve their effects, and then determine the battle result.</p>
-          </article>
+            <article class="intro-card">
+              <span>04</span>
+              <h3>Your turn</h3>
+              <p>Complete each turn in this order:</p>
+              <ol>
+                <li><strong>Capture:</strong> capture an opposing Territory you still occupy from the previous turn.</li>
+                <li><strong>Draw:</strong> draw one card.</li>
+                <li><strong>Action before movement:</strong> use your one normal Action Opportunity now, or save it.</li>
+                <li><strong>Movement:</strong> advance, hold, or withdraw; resolve any battle immediately.</li>
+                <li><strong>Action after movement:</strong> use the Action Opportunity here if you did not use it before movement.</li>
+                <li><strong>Cleanup:</strong> resolve end-of-turn effects and discard down to three cards in Hand.</li>
+              </ol>
+              <p>A battle ends the movement that started it. You move again afterward only when a rule or card specifically permits it.</p>
+            </article>
 
-          <article class="intro-card sequence-card">
-            <span>06</span>
-            <h3>Battle sequence</h3>
-            <ol>
-              <li>Resolve opening effects.</li>
-              <li>Set optional Gambits.</li>
-              <li>Set Hands aside and draw Reserves.</li>
-              <li>Reveal Gambits.</li>
-              <li>Choose and reveal Tactics.</li>
-              <li>Resolve effects and roll dice.</li>
-              <li>Resolve retreat, occupation, and card destinations.</li>
-            </ol>
-            <p>Higher battle total wins. When the defender controls the contested Territory, <strong>Defender's Advantage</strong> means the defender wins tied totals.</p>
-          </article>
+            <article class="intro-card">
+              <span>05</span>
+              <h3>Actions and Assets</h3>
+              <p>During your Action Opportunity, play one card for its Action effect or use a faction action. Most one-time Actions go to the Discard Pile. Some cards become <strong>Assets</strong>, which stay in play and provide later effects.</p>
+              <p>Your Asset limit equals the number of Territories you control. When banking a new Asset at the limit, you may discard one existing Asset to make room.</p>
+            </article>
 
-          <article class="intro-card destination-card">
-            <span>07</span>
-            <h3>After the battle</h3>
-            <ul>
-              <li>A losing attacker normally returns to the position they entered from.</li>
-              <li>A losing defender normally retreats one position toward their own end.</li>
-              <li>A winning attacker occupies the contested position.</li>
-              <li>Gambits normally go to the <strong>Graveyard</strong>.</li>
-              <li>Tactics and unused Reserve cards normally go to the <strong>Discard Pile</strong>.</li>
-            </ul>
-          </article>
+            <article class="intro-card">
+              <span>06</span>
+              <h3>Movement and position</h3>
+              <p>During movement, you may move one position toward the opponent, remain where you are, or move one position toward your own end. Entering the opponent's position starts a battle.</p>
+              <p>A battle stops the current movement. Winning does not automatically let you continue moving; follow-up movement must come from a card, Leader ability, or other specific effect.</p>
+            </article>
 
-          <article class="intro-card capture-card">
-            <span>08</span>
-            <h3>Occupation is not capture</h3>
-            <p>Winning an attack lets you occupy an opposing Territory, but normally does not capture it immediately.</p>
-            <p>You capture it only if you still occupy it at the start of your next turn. The opponent therefore receives a counterattack window before control changes.</p>
-          </article>
+            <article class="intro-card sequence-card">
+              <span>07</span>
+              <h3>Battles and the Aftermath</h3>
+              <p>A battle begins when one player enters the other's position. The moving player is the <strong>attacker</strong> and the other player is the <strong>defender</strong>.</p>
+              <ol>
+                <li>Resolve effects that happen as the battle opens.</li>
+                <li>Each player may set one eligible card from Hand as a face-down Gambit.</li>
+                <li>Set Hands physically aside and draw three cards to form each player's private Reserve.</li>
+                <li>Reveal and resolve Gambits.</li>
+                <li>Each player may choose one eligible Reserve card as a face-down Tactic.</li>
+                <li>Reveal and resolve Tactics.</li>
+                <li>Roll dice and determine the higher battle total.</li>
+                <li>Resolve the Aftermath.</li>
+              </ol>
+              <p>If totals are tied while the defender controls the contested Territory, <strong>Defender's Advantage</strong> means the defender wins the tie.</p>
+              <p>During the Aftermath, the loser retreats, the winner takes or keeps the contested position, and battle cards go to their normal destinations. Gambits normally go to the Graveyard. Tactics and unused Reserve cards normally go to the Discard Pile.</p>
+            </article>
 
-          <article class="intro-card zones-card">
-            <span>09</span>
-            <h3>Keep zones separate</h3>
-            <p>Your permanent Hand, Draw Pile, Discard Pile, Graveyard, Asset Bank, temporary Reserve, Gambit, and Tactic areas represent different game information and destinations.</p>
-            <p>The Discard Pile can be recycled when your Draw Pile runs out; the Graveyard normally cannot. Your Player Mat and table reference will label these areas. Do not combine piles even when space is limited.</p>
-          </article>
+            <article class="intro-card capture-card">
+              <span>08</span>
+              <h3>Territory control and capture</h3>
+              <p>Your token shows where you are. A Territory's orientation shows who controls it. Winning a battle lets you occupy an opposing Territory, but you normally do not capture it immediately.</p>
+              <p>You must still occupy that Territory at the start of your next turn. The current controller therefore normally receives one turn to drive you away before control changes.</p>
+            </article>
 
-          <article class="intro-card setup-card">
-            <span>10</span>
-            <h3>Set up the Gauntlet</h3>
-            <p>Each player brings one prepared Deck, one Leader, three Territories, one Player Token, a die, and any required faction components.</p>
-            <p>Shuffle the Playable Deck. Secretly arrange your three Territories, join them to the opponent's three, and reveal the six-position Gauntlet. Place each token just before its end, draw three cards, and roll to determine the first player.</p>
-          </article>
+            <article class="intro-card objective-card">
+              <span>09</span>
+              <h3>Running the Gauntlet</h3>
+              <p>To win normally, push the opponent beyond their final Territory, capture that Territory, then advance beyond the column. This begins a <strong>Last Stand battle</strong>.</p>
+              <p>The defender is harder to defeat there: Defender's Advantage means they win tied battle totals, and they separately add +1 to their battle total. Win the Last Stand to run the Gauntlet and win the game.</p>
+            </article>
+          </div>
         </div>
 
         <aside class="selected-faction-note">
