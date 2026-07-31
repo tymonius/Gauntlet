@@ -35,9 +35,9 @@ LEADERS = (
     ("Ranger", "ranger.png"),
     ("Spymaster", "spymaster.png"),
     ("Alchemist", "alchemist.png"),
-    ("Spirit Walker", "spirit%20walker.png"),
-    ("Grand Inquisitor", "grand%20inquisitor.png"),
-    ("Witch Hunter", "witch%20hunter.png"),
+    ("Spirit Walker", "spirit walker.png"),
+    ("Grand Inquisitor", "grand inquisitor.png"),
+    ("Witch Hunter", "witch hunter.png"),
 )
 
 FACTION_CHAPTERS = (
@@ -109,7 +109,7 @@ def validate_sources(errors: list[str]) -> None:
     for leader, image in LEADERS:
         if f"## {leader}" not in rulebook:
             errors.append(f"Rulebook Markdown is missing Leader page {leader!r}")
-        if f"../../images/sketches/{image}" not in rulebook:
+        if f"images/sketches/{image}" not in rulebook:
             errors.append(f"Rulebook Markdown is missing the {leader} sketch reference")
     for value in FORBIDDEN_PLAYER_TEXT:
         if value in rulebook:
