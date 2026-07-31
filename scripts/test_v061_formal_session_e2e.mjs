@@ -8,9 +8,14 @@ import worker from "../workers/playtest-sessions/src/index.js";
 class LocalD1 {
   constructor() {
     this.database = new DatabaseSync(":memory:");
-    this.database.exec(readFileSync(new URL("../rules-assistant/migrations/0001_rules_interactions.sql", import.meta.url), "utf8"));
-    this.database.exec(readFileSync(new URL("../rules-assistant/migrations/0002_review_export_checkpoints.sql", import.meta.url), "utf8"));
-    this.database.exec(readFileSync(new URL("../rules-assistant/migrations/0003_playtest_sessions.sql", import.meta.url), "utf8"));
+    for (const migration of [
+      "0001_rules_interactions.sql",
+      "0002_review_export_checkpoints.sql",
+      "0003_playtest_sessions.sql",
+      "0004_event_game_sessions.sql"
+    ]) {
+      this.database.exec(readFileSync(new URL(`../rules-assistant/migrations/${migration}`, import.meta.url), "utf8"));
+    }
   }
 
   prepare(sql) {
@@ -69,8 +74,29 @@ async function call(path, { method = "GET", body, authorization, headers: extraH
 
 async function json(response, expectedStatus) {
   const payload = await response.json();
-  assert.equal(response.status, expectedStatus, `Expected ${expectedStatus}; received ${response.status}: ${JSON.stringify(payload)}`);
+  assert.equal(
+    response.status,
+    expectedStatus,
+    `Expected ${expectedStatus}; received ${response.status}: ${JSON.stringify(payload)}`
+  );
   return payload;
+}
+
+async function submitChoice(token, participant, choice) {
+  return json(await call(`/api/sessions/${token}/event`, {
+    method: "POST",
+    body: {
+      eventType: "onboarding_choice",
+      data: {
+        participantId: participant.participantId,
+        displayName: choice.displayName,
+        faction: choice.faction,
+        leader: choice.leader,
+        reason: choice.reason,
+        introConfirmed: true
+      }
+    }
+  }), 201);
 }
 
 try {
@@ -81,123 +107,147 @@ try {
     version: "v0.6.1",
     database: true,
     sessionCreationConfigured: true,
-    onboardingSupported: true
+    onboardingSupported: true,
+    eventGamesSupported: true,
+    playerAttributionSupported: true
   });
 
-  const created = await json(await call("/api/sessions", {
+  const event = await json(await call("/api/sessions", {
     method: "POST",
     authorization: adminToken,
     body: {
       rulesVersion: "v0.6.1",
-      sheetSerial: "G061-E2E001",
-      metadata: { batch: "automated-e2e", sheetIndex: 1, formal: true }
+      sheetSerial: "G061-EVENT01",
+      sessionKind: "event",
+      metadata: { label: "Automated game night" }
     }
   }), 201);
+  assert.equal(event.sessionKind, "event");
+  assert.equal(event.onboardingUrl, `${origin}/playtest/onboarding/?code=${encodeURIComponent(event.joinToken)}`);
+  assert.equal(event.onboardingHostUrl, `${event.onboardingUrl}&host=${encodeURIComponent(event.hostKey)}`);
 
-  assert.equal(created.sheetSerial, "G061-E2E001");
-  assert.equal(created.status, "open");
-  assert.match(created.joinToken, /^[A-Za-z0-9_-]{24,96}$/);
-  assert.match(created.hostKey, /^[A-Za-z0-9_-]{24,96}$/);
-  assert.equal(created.joinUrl, `${origin}/playtest/session/?code=${encodeURIComponent(created.joinToken)}`);
-  assert.equal(created.hostUrl, `${created.joinUrl}&host=${encodeURIComponent(created.hostKey)}`);
-  assert.equal(created.onboardingUrl, `${origin}/playtest/onboarding/?code=${encodeURIComponent(created.joinToken)}`);
-  assert.equal(created.onboardingHostUrl, `${created.onboardingUrl}&host=${encodeURIComponent(created.hostKey)}`);
-
-  const duplicate = await json(await call("/api/sessions", {
+  const playerOne = await json(await call(`/api/sessions/${event.joinToken}/join`, {
     method: "POST",
-    authorization: adminToken,
-    body: { rulesVersion: "v0.6.1", sheetSerial: "G061-E2E001" }
+    body: { displayName: "Alice", role: "player", purpose: "onboarding" }
+  }), 201);
+  assert.match(playerOne.participantId, /^[0-9a-f-]{36}$/i);
+  assert.match(playerOne.participantToken, /^[A-Za-z0-9_-]{24,96}$/);
+
+  const playerTwo = await json(await call(`/api/sessions/${event.joinToken}/join`, {
+    method: "POST",
+    body: { displayName: "Ben", role: "player", purpose: "onboarding" }
+  }), 201);
+  assert.match(playerTwo.participantToken, /^[A-Za-z0-9_-]{24,96}$/);
+
+  await submitChoice(event.joinToken, playerOne, {
+    displayName: "Alice",
+    faction: "diplomats",
+    leader: "Ambassador",
+    reason: "Negotiation"
+  });
+  await submitChoice(event.joinToken, playerTwo, {
+    displayName: "Ben",
+    faction: "military",
+    leader: "General",
+    reason: "Battlefield pressure"
+  });
+
+  const eventRead = await json(await call(`/api/sessions/${event.joinToken}`), 200);
+  assert.equal(eventRead.sessionKind, "event");
+  assert.equal(eventRead.participantCount, 2);
+
+  const eventGameActivity = await json(await call(`/api/sessions/${event.joinToken}/event`, {
+    method: "POST",
+    body: { eventType: "game_started", data: {} }
   }), 409);
-  assert.match(duplicate.error, /already assigned/i);
+  assert.match(eventGameActivity.error, /table game session/i);
 
-  const opened = await json(await call(`/api/sessions/${created.joinToken}`), 200);
-  assert.equal(opened.status, "open");
-  assert.equal(opened.participantCount, 0);
-  assert.equal(opened.arbiterQuestionCount, 0);
-
-  const joined = await json(await call(`/api/sessions/${created.joinToken}/join`, {
-    method: "POST",
-    body: { displayName: "Automated Player", role: "player" }
-  }), 201);
-  assert.match(joined.participantId, /^[0-9a-f-]{36}$/i);
-
-  const invalidChoice = await json(await call(`/api/sessions/${created.joinToken}/event`, {
-    method: "POST",
-    body: {
-      eventType: "onboarding_choice",
-      data: {
-        participantId: joined.participantId,
-        displayName: "Automated Player",
-        faction: "military",
-        leader: "Spirit Walker",
-        introConfirmed: true
-      }
-    }
-  }), 400);
-  assert.match(invalidChoice.error, /valid Leader/i);
-
-  await json(await call(`/api/sessions/${created.joinToken}/event`, {
-    method: "POST",
-    body: {
-      eventType: "onboarding_choice",
-      data: {
-        participantId: joined.participantId,
-        displayName: "Automated Player",
-        faction: "military",
-        leader: "General",
-        reason: "Direct battlefield pressure",
-        introConfirmed: true
-      }
-    }
-  }), 201);
-
-  await json(await call(`/api/sessions/${created.joinToken}/event`, {
-    method: "POST",
-    body: {
-      eventType: "onboarding_choice",
-      data: {
-        participantId: joined.participantId,
-        displayName: "Automated Player",
-        faction: "mystics",
-        leader: "Spirit Walker",
-        reason: "Ritual progression",
-        introConfirmed: true
-      }
-    }
-  }), 201);
-
-  const rejectedRoster = await json(await call(`/api/sessions/${created.joinToken}/onboarding`, {
+  const wrongGameList = await json(await call(`/api/sessions/${event.joinToken}/games`, {
     headers: { "X-Host-Key": "wrong-host-key" }
   }), 403);
-  assert.match(rejectedRoster.error, /invalid host key/i);
+  assert.match(wrongGameList.error, /invalid host key/i);
 
-  const roster = await json(await call(`/api/sessions/${created.joinToken}/onboarding`, {
-    headers: { "X-Host-Key": created.hostKey }
-  }), 200);
-  assert.equal(roster.choices.length, 1);
-  assert.equal(roster.pendingParticipants.length, 0);
+  const createdGames = await json(await call(`/api/sessions/${event.joinToken}/games`, {
+    method: "POST",
+    headers: { "X-Host-Key": event.hostKey },
+    body: { count: 2, metadata: { source: "automated-event-e2e" } }
+  }), 201);
+  assert.equal(createdGames.games.length, 2);
+  const [gameOne, gameTwo] = createdGames.games;
+  assert.equal(gameOne.sessionKind, "game");
+  assert.equal(gameOne.eventSessionId, event.sessionId);
+  assert.match(gameOne.joinUrl, /\/playtest\/session\/\?code=/);
+
+  const roster = await json(await call(`/api/sessions/${gameOne.joinToken}/event-participants`), 200);
+  assert.equal(roster.event.sessionId, event.sessionId);
   assert.deepEqual(
-    {
-      displayName: roster.choices[0].displayName,
-      faction: roster.choices[0].faction,
-      leader: roster.choices[0].leader,
-      reason: roster.choices[0].reason,
-      introConfirmed: roster.choices[0].introConfirmed,
-      selectionMode: roster.choices[0].selectionMode
-    },
-    {
-      displayName: "Automated Player",
-      faction: "mystics",
-      leader: "Spirit Walker",
-      reason: "Ritual progression",
-      introConfirmed: true,
-      selectionMode: "self_selected"
-    }
+    roster.participants.map((participant) => [participant.displayName, participant.faction, participant.leader]),
+    [
+      ["Alice", "diplomats", "Ambassador"],
+      ["Ben", "military", "General"]
+    ]
   );
 
-  await json(await call(`/api/sessions/${created.joinToken}/event`, {
+  const wrongIdentity = await json(await call(`/api/sessions/${gameOne.joinToken}/join`, {
     method: "POST",
-    body: { eventType: "game_started", data: { source: "coded-sheet-e2e" } }
+    body: {
+      role: "player",
+      eventParticipantId: playerOne.participantId,
+      participantToken: "wrong-identity-token"
+    }
+  }), 403);
+  assert.match(wrongIdentity.error, /identity/i);
+
+  const seatOne = await json(await call(`/api/sessions/${gameOne.joinToken}/join`, {
+    method: "POST",
+    body: {
+      role: "player",
+      eventParticipantId: playerOne.participantId,
+      participantToken: playerOne.participantToken
+    }
+  }), 201);
+  assert.equal(seatOne.seatIndex, 1);
+  assert.equal(seatOne.displayName, "Alice");
+  assert.equal(seatOne.leader, "Ambassador");
+  assert.equal(seatOne.identityMethod, "saved_identity");
+
+  const repeatedJoin = await json(await call(`/api/sessions/${gameOne.joinToken}/join`, {
+    method: "POST",
+    body: {
+      role: "player",
+      eventParticipantId: playerOne.participantId,
+      participantToken: playerOne.participantToken
+    }
+  }), 200);
+  assert.equal(repeatedJoin.participantId, seatOne.participantId);
+  assert.equal(repeatedJoin.seatIndex, 1);
+
+  const seatTwo = await json(await call(`/api/sessions/${gameOne.joinToken}/join`, {
+    method: "POST",
+    body: {
+      role: "player",
+      eventParticipantId: playerTwo.participantId,
+      confirmedRosterSelection: true
+    }
+  }), 201);
+  assert.equal(seatTwo.seatIndex, 2);
+  assert.equal(seatTwo.displayName, "Ben");
+  assert.equal(seatTwo.identityMethod, "roster_selection");
+
+  const thirdSeat = await json(await call(`/api/sessions/${gameOne.joinToken}/join`, {
+    method: "POST",
+    body: {
+      role: "player",
+      displayName: "Late Guest",
+      faction: "mystics",
+      leader: "Alchemist"
+    }
+  }), 409);
+  assert.match(thirdSeat.error, /both player seats/i);
+
+  await json(await call(`/api/sessions/${gameOne.joinToken}/event`, {
+    method: "POST",
+    body: { eventType: "game_started", data: { participantId: seatOne.participantId } }
   }), 201);
 
   const interactionId = "11111111-1111-4111-8111-111111111111";
@@ -207,98 +257,127 @@ try {
     VALUES (?, ?, 1, ?, ?, ?, ?, 'v0.6.1', 'explicit', 'high', 'retrieval_only', 1)`)
     .bind(
       interactionId,
-      "arbiter-e2e-session",
-      "2026-07-30T00:00:00.000Z",
-      "2026-07-30T00:00:00.000Z",
+      "arbiter-event-game-e2e",
+      "2026-07-31T00:00:00.000Z",
+      "2026-07-31T00:00:00.000Z",
       "Where does a Gambit go?",
       "A Gambit normally goes to its owner's Graveyard during the Aftermath."
     ).run();
 
-  const linked = await json(await call(`/api/sessions/${created.joinToken}/arbiter`, {
+  const missingAsker = await json(await call(`/api/sessions/${gameOne.joinToken}/arbiter`, {
+    method: "POST",
+    body: { interactionId }
+  }), 400);
+  assert.match(missingAsker.error, /join the game/i);
+
+  const linked = await json(await call(`/api/sessions/${gameOne.joinToken}/arbiter`, {
     method: "POST",
     body: {
       interactionId,
+      participantId: seatOne.participantId,
       classification: "explicit",
       question: "Where does a Gambit go?",
       answer: "A Gambit normally goes to its owner's Graveyard during the Aftermath.",
       sources: [{ title: "v0.6.1 Rulebook", section: "Aftermath" }]
     }
   }), 201);
-  assert.equal(linked.ok, true);
+  assert.equal(linked.participantId, seatOne.participantId);
 
-  const afterActivity = await json(await call(`/api/sessions/${created.joinToken}`), 200);
-  assert.equal(afterActivity.participantCount, 1);
-  assert.equal(afterActivity.arbiterQuestionCount, 1);
+  const gameAfterActivity = await json(await call(`/api/sessions/${gameOne.joinToken}`), 200);
+  assert.equal(gameAfterActivity.participantCount, 2);
+  assert.equal(gameAfterActivity.arbiterQuestionCount, 1);
+  assert.deepEqual(
+    gameAfterActivity.players.map((player) => [player.seatIndex, player.displayName, player.leader]),
+    [[1, "Alice", "Ambassador"], [2, "Ben", "General"]]
+  );
 
-  const interaction = await db.prepare(
-    "SELECT playtest_session_id, sheet_serial FROM rules_interactions WHERE id = ?"
+  const linkedInteraction = await db.prepare(
+    `SELECT playtest_session_id, sheet_serial, playtest_participant_id
+       FROM rules_interactions WHERE id = ?`
   ).bind(interactionId).first();
-  assert.equal(interaction.playtest_session_id, created.sessionId);
-  assert.equal(interaction.sheet_serial, created.sheetSerial);
+  assert.equal(linkedInteraction.playtest_session_id, gameOne.sessionId);
+  assert.equal(linkedInteraction.sheet_serial, gameOne.sheetSerial);
+  assert.equal(linkedInteraction.playtest_participant_id, seatOne.participantId);
 
-  const wrongClose = await json(await call(`/api/sessions/${created.joinToken}/close`, {
+  const eventArbiter = await json(await call(`/api/sessions/${event.joinToken}/arbiter`, {
     method: "POST",
-    body: { hostKey: "wrong-host-key" }
-  }), 403);
-  assert.match(wrongClose.error, /invalid host key/i);
-
-  const closed = await json(await call(`/api/sessions/${created.joinToken}/close`, {
-    method: "POST",
-    body: { hostKey: created.hostKey }
-  }), 200);
-  assert.equal(closed.status, "closed");
-  assert.ok(closed.closedAt);
-
-  const retired = await json(await call(`/api/sessions/${created.joinToken}`), 200);
-  assert.equal(retired.status, "closed");
-
-  const closedRoster = await json(await call(`/api/sessions/${created.joinToken}/onboarding`, {
-    headers: { "X-Host-Key": created.hostKey }
-  }), 200);
-  assert.equal(closedRoster.choices[0].leader, "Spirit Walker");
-
-  const rejectedJoin = await json(await call(`/api/sessions/${created.joinToken}/join`, {
-    method: "POST",
-    body: { displayName: "Late Player", role: "player" }
+    body: { interactionId, participantId: playerOne.participantId }
   }), 409);
-  assert.match(rejectedJoin.error, /closed/i);
+  assert.match(eventArbiter.error, /table game session/i);
 
-  const rejectedEvent = await json(await call(`/api/sessions/${created.joinToken}/event`, {
-    method: "POST",
-    body: { eventType: "note", data: { note: "should not persist" } }
-  }), 409);
-  assert.match(rejectedEvent.error, /closed/i);
+  const listedGames = await json(await call(`/api/sessions/${event.joinToken}/games`, {
+    headers: { "X-Host-Key": event.hostKey }
+  }), 200);
+  assert.equal(listedGames.games.length, 2);
+  assert.equal(listedGames.games[0].players.length, 2);
+  assert.equal(listedGames.games[1].players.length, 0);
 
-  const rejectedChoiceAfterClose = await json(await call(`/api/sessions/${created.joinToken}/event`, {
+  const repeatGameSeat = await json(await call(`/api/sessions/${gameTwo.joinToken}/join`, {
     method: "POST",
     body: {
-      eventType: "onboarding_choice",
-      data: {
-        participantId: joined.participantId,
-        faction: "military",
-        leader: "General",
-        introConfirmed: true
-      }
+      role: "player",
+      eventParticipantId: playerOne.participantId,
+      participantToken: playerOne.participantToken
+    }
+  }), 201);
+  assert.equal(repeatGameSeat.seatIndex, 1);
+  assert.notEqual(repeatGameSeat.participantId, seatOne.participantId);
+
+  const closedGame = await json(await call(`/api/sessions/${event.joinToken}/games/${gameOne.sessionId}/close`, {
+    method: "POST",
+    headers: { "X-Host-Key": event.hostKey },
+    body: {}
+  }), 200);
+  assert.equal(closedGame.status, "closed");
+
+  const retiredJoin = await json(await call(`/api/sessions/${gameOne.joinToken}/join`, {
+    method: "POST",
+    body: {
+      role: "player",
+      eventParticipantId: playerOne.participantId,
+      participantToken: playerOne.participantToken
     }
   }), 409);
-  assert.match(rejectedChoiceAfterClose.error, /closed/i);
+  assert.match(retiredJoin.error, /closed/i);
 
-  const events = db.database.prepare(
-    "SELECT event_type FROM playtest_session_events WHERE session_id = ? ORDER BY created_at, rowid"
-  ).all(created.sessionId).map(row => row.event_type);
-  for (const expected of [
-    "session_created",
-    "participant_joined",
-    "onboarding_choice",
-    "game_started",
-    "arbiter_linked",
-    "session_closed"
-  ]) {
-    assert.ok(events.includes(expected), `Missing lifecycle event: ${expected}`);
-  }
+  const closedEvent = await json(await call(`/api/sessions/${event.joinToken}/close`, {
+    method: "POST",
+    body: { hostKey: event.hostKey }
+  }), 200);
+  assert.equal(closedEvent.status, "closed");
 
-  assert.equal(events.filter((event) => event === "onboarding_choice").length, 2);
-  console.log("Validated coded-session lifecycle with choice-first onboarding, revision-safe roster, play events, Arbiter linkage, closure, and retired-code rejection.");
+  const gameAfterRegistrationClosed = await json(await call(`/api/sessions/${event.joinToken}/games`, {
+    method: "POST",
+    headers: { "X-Host-Key": event.hostKey },
+    body: { count: 1 }
+  }), 201);
+  assert.equal(gameAfterRegistrationClosed.games.length, 1);
+  assert.equal(gameAfterRegistrationClosed.games[0].eventSessionId, event.sessionId);
+
+  const closedRoster = await json(await call(`/api/sessions/${event.joinToken}/onboarding`, {
+    headers: { "X-Host-Key": event.hostKey }
+  }), 200);
+  assert.equal(closedRoster.choices.length, 2);
+
+  const standalone = await json(await call("/api/sessions", {
+    method: "POST",
+    authorization: adminToken,
+    body: {
+      rulesVersion: "v0.6.1",
+      sheetSerial: "G061-STD001",
+      metadata: { formal: true }
+    }
+  }), 201);
+  assert.equal(standalone.sessionKind, "game");
+  assert.equal(standalone.eventSessionId, null);
+  const standaloneJoin = await json(await call(`/api/sessions/${standalone.joinToken}/join`, {
+    method: "POST",
+    body: { displayName: "Standalone Player", role: "player" }
+  }), 201);
+  assert.match(standaloneJoin.participantId, /^[0-9a-f-]{36}$/i);
+  assert.equal(standaloneJoin.participantToken, undefined);
+
+  console.log("Validated event onboarding -> unique table games -> two player seats -> player-attributed Arbiter records -> independent game and event closure, while preserving standalone coded sheets.");
 } finally {
   db.close();
 }
