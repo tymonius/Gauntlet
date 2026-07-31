@@ -144,7 +144,11 @@ def main() -> int:
         if phrase not in text:
             raise SystemExit(f"Rulebook content audit: copyright notice is missing {phrase!r}")
 
-    if "Defender's Advantage: This is a tie rule" not in text:
+    defender_tie = re.search(
+        r"Defender's Advantage:\*\*\s+This is a tie rule",
+        text,
+    )
+    if not defender_tie:
         raise SystemExit("Rulebook content audit: PR #336 Defender's Advantage clarification is missing")
     if "Defender's Advantage does not grant an additional die" not in text:
         raise SystemExit("Rulebook content audit: PR #336 additional-die clarification is missing")
