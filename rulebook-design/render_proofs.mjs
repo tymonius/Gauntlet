@@ -111,7 +111,7 @@ assertHalfLetter(printResult, 'Grayscale print proof');
 await printPage.screenshot({ path: `${OUT}/print-proof-browser.png`, fullPage: true });
 await printPage.emulateMedia({ media: 'print' });
 await printPage.pdf({
-  path: `${OUT}/Gauntlet_v0.6.1_Rulebook_Design_Proofs_v3_Grayscale.pdf`,
+  path: `${OUT}/Gauntlet_v0.6.1_Rulebook_Design_Proofs_v2.pdf`,
   printBackground: true,
   preferCSSPageSize: true,
   margin: { top: '0', right: '0', bottom: '0', left: '0' },
