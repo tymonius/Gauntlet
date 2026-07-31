@@ -1,4 +1,10 @@
 (() => {
+  window.GAUNTLET_PLAYTEST_SESSION_CAPABILITIES = Object.freeze({
+    contextStorageKey: "gauntlet_playtest_session_id",
+    interactionLinker: "installRulesInteractionLinker",
+    arbiterRoute: "/arbiter"
+  });
+
   const gate = (event) => {
     event.stopImmediatePropagation();
   };
