@@ -1,0 +1,89 @@
+name: Build social embed asset
+
+on:
+  push:
+    branches:
+      - agent/add-social-embed
+    paths:
+      - .github/og-build-trigger
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Build image and add social metadata
+        shell: python
+        run: |
+          import base64
+          import pathlib
+          import re
+          import shutil
+
+          root = pathlib.Path('.')
+          chunk_dir = root / '.github' / 'og-image'
+          encoded = ''.join(
+              path.read_text(encoding='utf-8').strip()
+              for path in sorted(chunk_dir.glob('chunk-*.txt'))
+          )
+
+          image_path = root / 'images' / 'social' / 'gauntlet-og-1200x630.jpg'
+          image_path.parent.mkdir(parents=True, exist_ok=True)
+          image_path.write_bytes(base64.b64decode(encoded))
+
+          index_path = root / 'index.html'
+          html = index_path.read_text(encoding='utf-8')
+
+          html = re.sub(
+              r'  <meta name="description" content="[^"]*" />',
+              '  <meta name="description" content="Choose a faction and Leader, build your Deck, fight across six Territories, and force your opponent\'s Last Stand." />',
+              html,
+              count=1,
+          )
+
+          social_meta = '''  <link rel="canonical" href="https://gauntlet.run/" />
+          <meta name="theme-color" content="#8f1f25" />
+
+          <meta property="og:type" content="website" />
+          <meta property="og:site_name" content="Gauntlet" />
+          <meta property="og:locale" content="en_US" />
+          <meta property="og:url" content="https://gauntlet.run/" />
+          <meta property="og:title" content="Gauntlet — Run the Gauntlet" />
+          <meta property="og:description" content="Choose a faction and Leader, build your Deck, fight across six Territories, and force your opponent's Last Stand." />
+          <meta property="og:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630.jpg" />
+          <meta property="og:image:secure_url" content="https://gauntlet.run/images/social/gauntlet-og-1200x630.jpg" />
+          <meta property="og:image:type" content="image/jpeg" />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="630" />
+          <meta property="og:image:alt" content="The Spirit Walker, mounted General, and Grand Inquisitor before a fortified Gauntlet at sunset." />
+
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content="Gauntlet — Run the Gauntlet" />
+          <meta name="twitter:description" content="Choose a faction and Leader, build your Deck, fight across six Territories, and force your opponent's Last Stand." />
+          <meta name="twitter:image" content="https://gauntlet.run/images/social/gauntlet-og-1200x630.jpg" />
+          <meta name="twitter:image:alt" content="The Spirit Walker, mounted General, and Grand Inquisitor before a fortified Gauntlet at sunset." />
+          '''
+
+          if 'property="og:title"' not in html:
+              html = html.replace('  <title>Gauntlet — Run the Gauntlet</title>', social_meta + '  <title>Gauntlet — Run the Gauntlet</title>', 1)
+
+          index_path.write_text(html, encoding='utf-8')
+
+          shutil.rmtree(chunk_dir)
+          (root / '.github' / 'og-build-trigger').unlink(missing_ok=True)
+          pathlib.Path('.github/workflows/build-social-embed.yml').unlink(missing_ok=True)
+
+      - name: Commit generated files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Add social embed metadata and artwork"
+          git push
