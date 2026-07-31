@@ -158,7 +158,6 @@ def generate(current: str) -> str:
     ).rstrip() + "\n"
 
     forbidden = (
-        "# 13. Factions",
         "# 14. Military",
         "# 15. Diplomats",
         "# 16. Financiers",
