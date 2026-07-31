@@ -24,6 +24,14 @@ REPLACEMENTS = (
         "put it in the Discard Pile unless it becomes an Asset, becomes an Overlay attached to a Territory, or specifies another destination. Overlays are explained in Chapter 12.",
     ),
     (
+        "Resolve remaining Gambit effects using the shared-timing rule below.",
+        "Resolve remaining Gambit effects using the shared-timing rule in Chapter 11.",
+    ),
+    (
+        "Reveal all Tactics simultaneously. Resolve their effects using the shared-timing rule.",
+        "Reveal all Tactics simultaneously. Resolve their effects using the shared-timing rule in Chapter 11.",
+    ),
+    (
         "Resolve any remaining instructions from the effect or accepted Terms after that movement.",
         "Resolve any remaining instructions from the effect after that movement.",
     ),
@@ -40,6 +48,10 @@ REPLACEMENTS = (
         "Supplemental components have no deckbuilding value and are not eligible as Gambits, Tactics, costs, or other playable cards unless a rule explicitly says otherwise.",
     ),
     (
+        "Keep any attached or bound cards with it so both players can identify the relationship.",
+        "Keep any cards attached to a supplemental component with it so both players can identify the relationship.",
+    ),
+    (
         "## Battle timing and card interaction\n\n## Shared-timing rule",
         "## Battle timing and card interaction\n\n### Shared-timing rule",
     ),
@@ -48,6 +60,8 @@ REPLACEMENTS = (
     ("\n## Reveal and information\n", "\n### Reveal and information\n"),
     ("\n## Negation\n", "\n### Negation\n"),
     ("\n## Copied effects\n", "\n### Copied effects\n"),
+    ("\n---\n\n## Withdrawal and Retreat", "\n\n## Withdrawal and Retreat"),
+    ("after that movement.\n#### Retreat", "after that movement.\n\n#### Retreat"),
 )
 
 
