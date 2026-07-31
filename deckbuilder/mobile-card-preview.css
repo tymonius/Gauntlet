@@ -67,9 +67,9 @@
     height: 2.75rem;
     min-width: 2.75rem;
     margin: 0 0 -2.75rem auto;
-    border-color: var(--border);
+    border-color: var(--line);
     border-radius: 999px;
-    background: var(--panel);
+    background: var(--surface-solid);
     color: var(--ink);
     padding: 0;
     box-shadow: 0 4px 14px rgba(36, 27, 22, 0.14);
