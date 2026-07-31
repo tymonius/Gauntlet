@@ -46,24 +46,40 @@ REQUIRED_ORDER = (
     "# Copyright and Playtest Use",
 )
 
-UNIVERSAL_FACTION_TERMS = (
+FACTION_TERMS = (
     "Command Tracker",
     "Influence Tracker",
-    "Proposal / Treaty Article",
+    "Proposal",
+    "Treaty Article",
+    "Stake",
     "Capital Ledger",
     "Deed Cards",
+    "Treasury",
     "Mission Reference Card",
     "Operations Reference Card",
-    "Operation Progress Tracker",
+    "Operation Progress",
+    "Special Operation",
+    "Surveillance",
+    "Interference",
     "Rite of Echoes",
     "Rite of Blood",
     "Rite of Crossing",
+    "Transmutation",
+    "Ritual of Ascendance",
     "Conviction Tracker",
     "Purge Reference Card",
     "Controlling Interest",
-    "Special Operation",
-    "Ritual of Ascendance",
     "Purification",
+)
+
+FACTION_INTRO_FORBIDDEN = (
+    "collateral",
+    "Transmutation",
+    "Treasury",
+    "Proposal",
+    "Rite",
+    "Mission",
+    "Purge",
 )
 
 FORBIDDEN_STRUCTURE = (
@@ -96,11 +112,18 @@ def main() -> int:
             raise SystemExit(f"Rulebook content audit: obsolete structure remains: {phrase}")
 
     factions_index = text.index("# Part III — Factions")
+    generated_index = text.index("<!-- GENERATED FACTION CONTENT START -->")
     universal = text[:factions_index]
-    for phrase in UNIVERSAL_FACTION_TERMS:
+    faction_intro = text[factions_index:generated_index]
+    for phrase in FACTION_TERMS:
         if phrase in universal:
             raise SystemExit(
                 f"Rulebook content audit: faction-specific term appears before Part III: {phrase}"
+            )
+    for phrase in FACTION_INTRO_FORBIDDEN:
+        if phrase in faction_intro:
+            raise SystemExit(
+                f"Rulebook content audit: faction-specific example appears before its subsection: {phrase}"
             )
 
     chapter_two = text.index("# 2. Cards, Zones, and the Play Area")
@@ -124,6 +147,9 @@ def main() -> int:
     territory = text.index("# 8. Territory Control and Capture")
     if not (battle < aftermath < withdrawal < territory):
         raise SystemExit("Rulebook content audit: battle result sequence is fragmented")
+
+    if "\n\n---\n\n---\n\n" in text:
+        raise SystemExit("Rulebook content audit: duplicate section dividers remain")
 
     if text.count("<!-- GENERATED FACTION CONTENT START -->") != 1:
         raise SystemExit("Rulebook content audit: generated faction start marker is invalid")
