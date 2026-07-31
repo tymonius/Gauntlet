@@ -92,6 +92,7 @@ FORBIDDEN_STRUCTURE = (
     "# 15. Standard Language and Reference Rules",
     "Use these verbs consistently:",
     "Avoid generic phrases such as",
+    "shared-timing rule below",
 )
 
 
@@ -147,6 +148,8 @@ def main() -> int:
     territory = text.index("# 8. Territory Control and Capture")
     if not (battle < aftermath < withdrawal < territory):
         raise SystemExit("Rulebook content audit: battle result sequence is fragmented")
+    if "\n---\n" in text[aftermath:withdrawal]:
+        raise SystemExit("Rulebook content audit: Aftermath and Withdrawal are visually separated")
 
     if "\n\n---\n\n---\n\n" in text:
         raise SystemExit("Rulebook content audit: duplicate section dividers remain")
@@ -169,6 +172,8 @@ def main() -> int:
     for phrase in required_notice:
         if phrase not in text:
             raise SystemExit(f"Rulebook content audit: copyright notice is missing {phrase!r}")
+    if text.count("Copyright © 2026 Tymon Scott. All rights reserved.") != 1:
+        raise SystemExit("Rulebook content audit: copyright notice is duplicated")
 
     defender_tie = re.search(
         r"Defender's Advantage:\*\*\s+This is a tie rule",
