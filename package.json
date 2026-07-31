@@ -6,19 +6,23 @@
   "scripts": {
     "governance:check": "python .github/scripts/validate-governance.py && python .github/scripts/validate-conversation-audit.py && python .github/scripts/validate-live-tail.py",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run && node scripts/validate-starter-decks.mjs && node scripts/sync-google-analytics.mjs --check && node scripts/validate-retired-faction-sheets.mjs",
+    "test": "vitest run && node scripts/validate-starter-decks.mjs && node scripts/sync-google-analytics.mjs --check && node scripts/validate-retired-faction-sheets.mjs && npm run tts:check",
     "test:rules-assistant": "vitest run rules-assistant/*.test.mjs",
     "test:playtest-sessions": "vitest run workers/playtest-sessions/src/*.test.mjs",
     "test:formal-session-e2e": "node --experimental-sqlite scripts/test_v061_formal_session_e2e.mjs",
     "test:deckbuilder": "node scripts/validate-starter-decks.mjs",
     "analytics:sync": "node scripts/sync-google-analytics.mjs",
     "analytics:check": "node scripts/sync-google-analytics.mjs --check",
+    "tts:check": "node scripts/generate-tts-card-assets.mjs --check",
+    "tts:catalog": "node scripts/generate-tts-card-assets.mjs --catalog-only",
+    "tts:build": "node scripts/generate-tts-card-assets.mjs",
     "test:watch": "vitest",
     "dev:cli": "tsx src/cli/dev-runner-v06.ts",
     "dev:gui": "tsx src/gui/dev-server-v06.ts"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
+    "playwright": "^1.62.0",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2",
     "vitest": "^2.1.8"

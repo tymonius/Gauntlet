@@ -1,0 +1,58 @@
+name: Generate TTS card assets
+
+on:
+  pull_request:
+    paths:
+      - "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
+      - "docs/Gauntlet_v0.6.1_Territory_Pool.md"
+      - "releases/v0.6.1/faction-guides/**"
+      - "images/artwork/cards/**"
+      - "images/artwork/card-backgrounds/**"
+      - "card-design/**"
+      - "scripts/generate-tts-card-assets.mjs"
+      - "tts/**"
+      - "package.json"
+      - ".github/workflows/generate-tts-card-assets.yml"
+  workflow_dispatch:
+    inputs:
+      strict_artwork:
+        description: Fail when any playable card lacks artwork
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            package.json
+            design-tokens.css
+            scripts/generate-tts-card-assets.mjs
+            tts
+            card-design
+            docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md
+            docs/Gauntlet_v0.6.1_Territory_Pool.md
+            releases/v0.6.1/faction-guides
+            images/artwork/cards
+            images/artwork/card-backgrounds
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+      - name: Generate card sheets
+        run: npm run tts:build -- ${{ github.event_name == 'workflow_dispatch' && inputs.strict_artwork && '--strict-art' || '' }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-v061-tts-card-assets
+          path: tts/generated/v0.6.1/
+          if-no-files-found: error
