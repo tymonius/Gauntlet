@@ -4,9 +4,9 @@
 Pandoc writes its DOCX table of contents as a dirty Word field. Headless
 LibreOffice does not update that field before PDF conversion, producing an empty
 contents section. This postprocessor replaces the field with a static linked
-list built from the Rulebook's introductory and numbered section headings and
+list built from the Rulebook's introductory and numbered section headings,
 removes the redundant Markdown title block already represented by the DOCX
-cover metadata.
+cover metadata, and places the approved hero sketch on a dedicated front cover.
 """
 
 from __future__ import annotations
@@ -17,11 +17,18 @@ import tempfile
 import zipfile
 from pathlib import Path
 
+from docx import Document
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK
+from docx.image.image import Image
+from docx.shared import Inches, Pt
 from lxml import etree
 
 W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 NS = {"w": W_NS}
 DOCUMENT_XML = "word/document.xml"
+ROOT = Path(__file__).resolve().parents[1]
+HERO_IMAGE = ROOT / "images/sketches/hero sketch.png"
+HERO_ALT = "Gauntlet hero sketch"
 
 INTRODUCTORY_HEADINGS = {"Welcome to Gauntlet", "Rules Conventions"}
 NUMBERED_SECTION = re.compile(r"^\d+\.\s+")
@@ -159,6 +166,56 @@ def remove_duplicate_markdown_title(body: etree._Element) -> None:
         body.remove(child)
 
 
+def insert_cover_image(path: Path) -> None:
+    if not HERO_IMAGE.is_file() or HERO_IMAGE.stat().st_size == 0:
+        raise RuntimeError(f"Rulebook hero sketch is missing: {HERO_IMAGE.relative_to(ROOT)}")
+
+    document = Document(path)
+    if HERO_ALT in document._element.xml:
+        return
+
+    subtitle = next(
+        (
+            paragraph
+            for paragraph in document.paragraphs
+            if paragraph.style.name == "Subtitle"
+            or paragraph.text.startswith("Version 0.6.1")
+        ),
+        None,
+    )
+    if subtitle is None:
+        raise RuntimeError("Could not locate the DOCX cover subtitle")
+
+    source = Image.from_file(str(HERO_IMAGE))
+    max_width = Inches(4.25)
+    max_height = Inches(4.75)
+    scale = min(float(max_width) / float(source.width), float(max_height) / float(source.height))
+    width = int(float(source.width) * scale)
+    height = int(float(source.height) * scale)
+
+    cover = document.add_paragraph()
+    cover.alignment = WD_ALIGN_PARAGRAPH.CENTER
+    cover.paragraph_format.space_before = Pt(14)
+    cover.paragraph_format.space_after = Pt(0)
+    cover.paragraph_format.keep_together = True
+    picture_run = cover.add_run()
+    picture_run.add_picture(str(HERO_IMAGE), width=width, height=height)
+    for properties in picture_run._r.xpath(".//pic:cNvPr"):
+        properties.set("descr", HERO_ALT)
+        properties.set("name", HERO_ALT)
+    cover.add_run().add_break(WD_BREAK.PAGE)
+    subtitle._p.addnext(cover._p)
+
+    section = document.sections[0]
+    section.different_first_page_header_footer = True
+    for paragraph in section.first_page_header.paragraphs:
+        paragraph.clear()
+    for paragraph in section.first_page_footer.paragraphs:
+        paragraph.clear()
+
+    document.save(path)
+
+
 def finalize(path: Path) -> None:
     if not path.is_file():
         raise FileNotFoundError(path)
@@ -196,13 +253,15 @@ def finalize(path: Path) -> None:
         finally:
             temporary_path.unlink(missing_ok=True)
 
+    insert_cover_image(path)
+
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("docx", type=Path, help="Generated Rulebook DOCX to finalize in place")
     args = parser.parse_args()
     finalize(args.docx.resolve())
-    print(f"Finalized visible Rulebook contents in {args.docx}")
+    print(f"Finalized illustrated Rulebook cover and visible contents in {args.docx}")
     return 0
 
 
