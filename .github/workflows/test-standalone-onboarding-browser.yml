@@ -84,8 +84,11 @@ jobs:
             if ((await page.locator('#territoryMetricCount').textContent()) !== '3') {
               throw new Error('Guided starter handoff did not load three Territories');
             }
-            if ((await page.locator('#validityText').textContent()) !== 'Ready to print') {
-              throw new Error(`Guided starter Deck is not print-ready: ${await page.locator('#validityText').textContent()}`);
+            if ((await page.locator('#validityText').textContent()) !== 'Valid') {
+              throw new Error(`Guided starter Deck is not valid: ${await page.locator('#validityText').textContent()}`);
+            }
+            if (await page.locator('#printDeckButton').isDisabled()) {
+              throw new Error('Deckbuilder print button remained disabled');
             }
 
             const handoffText = await page.locator('#starterHandoffPanel').innerText();
