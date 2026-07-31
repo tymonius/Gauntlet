@@ -1,4 +1,5 @@
 (() => {
+  const RENDER_TIMEOUT_MS = 30000;
   const catalog = window.GAUNTLET_TTS_CATALOG;
   const target = document.getElementById('renderTarget');
   const cardId = new URLSearchParams(window.location.search).get('card');
@@ -55,8 +56,8 @@
     if (document.fonts?.ready) await document.fonts.ready.catch(() => {});
     const element = target.querySelector('.gauntlet-card');
     const interior = element?.querySelector('.card-interior');
-    await waitFor(() => element?.dataset.parchmentLoaded !== undefined, 5000);
-    await waitFor(() => Boolean(interior?.style.getPropertyValue('--art-height')), 5000);
+    await waitFor(() => element?.dataset.parchmentLoaded !== undefined, RENDER_TIMEOUT_MS);
+    await waitFor(() => Boolean(interior?.style.getPropertyValue('--art-height')), RENDER_TIMEOUT_MS);
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     fitForTts(element);
     document.body.dataset.renderReady = 'true';
