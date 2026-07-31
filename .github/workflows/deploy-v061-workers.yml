@@ -1,19 +1,31 @@
-name: Deploy v0.6.1 Rules and Playtest Workers
+name: Deploy Playtest Session Worker
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - "workers/playtest-sessions/**"
+      - "rules-assistant/migrations/**"
+      - ".github/workflows/deploy-v061-workers.yml"
   workflow_dispatch:
     inputs:
       apply_migrations:
-        description: Apply pending D1 migrations before deployment
+        description: Apply pending shared D1 migrations before deployment
         required: true
         type: boolean
         default: true
+      refresh_session_secret:
+        description: Reapply SESSION_ADMIN_TOKEN from the GitHub production secret
+        required: true
+        type: boolean
+        default: false
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: deploy-v061-production
+  group: deploy-playtest-sessions-production
   cancel-in-progress: false
 
 jobs:
@@ -23,12 +35,9 @@ jobs:
     env:
       CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-      PLAYTEST_SESSION_ADMIN_TOKEN: ${{ secrets.PLAYTEST_SESSION_ADMIN_TOKEN }}
     steps:
-      - name: Check out v0.6.1 revision
+      - name: Check out deployment revision
         uses: actions/checkout@v4
-        with:
-          ref: rules/v0.6.1-playtest-revision
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -40,49 +49,44 @@ jobs:
         with:
           node-version: 22
 
-      - name: Verify deployment secrets
+      - name: Verify Cloudflare deployment secrets
         run: |
           test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not configured"; exit 1; }
           test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "CLOUDFLARE_ACCOUNT_ID is not configured"; exit 1; }
-          test -n "$PLAYTEST_SESSION_ADMIN_TOKEN" || { echo "PLAYTEST_SESSION_ADMIN_TOKEN is not configured"; exit 1; }
 
       - name: Install validation and Worker tooling
         run: |
           npm install
           npm install --no-save wrangler@4
 
-      - name: Validate deployment sources and session lifecycle
+      - name: Validate playtest session service
         run: |
-          npm run test:rules-assistant
           npm run test:playtest-sessions
           npm run test:formal-session-e2e
           python scripts/validate_v061_playtest_sessions.py
-          python scripts/validate_v061_release.py
 
       - name: Apply shared D1 migrations
-        if: ${{ inputs.apply_migrations }}
+        if: ${{ github.event_name == 'push' || inputs.apply_migrations }}
         run: >-
           npx wrangler d1 migrations apply gauntlet-rules-assistant
           --remote
           --config rules-assistant/wrangler.toml
 
-      - name: Deploy v0.6.1 Rules Arbiter
-        run: npx wrangler deploy --config rules-assistant/wrangler.toml
-
       - name: Deploy formal playtest session service
         run: npx wrangler deploy --config workers/playtest-sessions/wrangler.toml
 
-      - name: Configure facilitator session-creation secret
-        run: >-
-          printf '%s' "$PLAYTEST_SESSION_ADMIN_TOKEN" |
-          npx wrangler secret put SESSION_ADMIN_TOKEN
-          --config workers/playtest-sessions/wrangler.toml
-
-      - name: Verify production health endpoints
+      - name: Refresh facilitator session-creation secret
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.refresh_session_secret }}
+        env:
+          PLAYTEST_SESSION_ADMIN_TOKEN: ${{ secrets.PLAYTEST_SESSION_ADMIN_TOKEN }}
         run: |
-          curl --fail --retry 8 --retry-delay 4 --retry-all-errors \
-            https://gauntlet-rules-assistant.tymon-scott.workers.dev/health \
-            -o /tmp/rules-health.json
+          test -n "$PLAYTEST_SESSION_ADMIN_TOKEN" || { echo "PLAYTEST_SESSION_ADMIN_TOKEN is not configured"; exit 1; }
+          printf '%s' "$PLAYTEST_SESSION_ADMIN_TOKEN" |
+            npx wrangler secret put SESSION_ADMIN_TOKEN \
+            --config workers/playtest-sessions/wrangler.toml
+
+      - name: Verify production health endpoint
+        run: |
           curl --fail --retry 8 --retry-delay 4 --retry-all-errors \
             https://gauntlet-playtest-sessions.tymon-scott.workers.dev/health \
             -o /tmp/session-health.json
@@ -90,50 +94,12 @@ jobs:
           import json
           from pathlib import Path
 
-          rules = json.loads(Path('/tmp/rules-health.json').read_text())
           sessions = json.loads(Path('/tmp/session-health.json').read_text())
-          if not rules.get('ok') or rules.get('version') != 'v0.6.1':
-              raise SystemExit(f'Rules Arbiter health failed: {rules}')
           if not sessions.get('ok') or sessions.get('version') != 'v0.6.1':
               raise SystemExit(f'Playtest session health failed: {sessions}')
           if not sessions.get('database'):
               raise SystemExit(f'Playtest session D1 binding unavailable: {sessions}')
           if not sessions.get('sessionCreationConfigured'):
               raise SystemExit(f'Playtest session creation secret unavailable: {sessions}')
-          print('Verified production v0.6.1 Rules Arbiter and formal playtest session Workers.')
+          print('Verified production v0.6.1 formal playtest session Worker.')
           PY
-
-      - name: Record deployment gate result
-        if: ${{ always() }}
-        env:
-          DEPLOYMENT_STATUS: ${{ job.status }}
-          DEPLOYMENT_RUN_ID: ${{ github.run_id }}
-        run: |
-          python - <<'PY'
-          import json
-          import os
-          import subprocess
-          from datetime import datetime, timezone
-          from pathlib import Path
-
-          result = {
-              "version": "v0.6.1",
-              "environment": "production",
-              "status": os.environ["DEPLOYMENT_STATUS"],
-              "run_id": int(os.environ["DEPLOYMENT_RUN_ID"]),
-              "source_sha": subprocess.check_output(
-                  ["git", "rev-parse", "HEAD"], text=True
-              ).strip(),
-              "recorded_at": datetime.now(timezone.utc).isoformat(),
-          }
-          path = Path("releases/v0.6.1/deployment-status.json")
-          path.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
-          PY
-          git add releases/v0.6.1/deployment-status.json
-          if git diff --cached --quiet; then
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Record v0.6.1 production deployment gate"
-          git push origin HEAD:rules/v0.6.1-playtest-revision
