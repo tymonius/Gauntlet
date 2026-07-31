@@ -1,6 +1,6 @@
 .starter-panel {
-  border-color: #b99855;
-  background: linear-gradient(135deg, #fff8e9, #f6ead2);
+  border-color: rgba(163, 115, 56, 0.55);
+  background: linear-gradient(135deg, #fff8e9, #f2e5ce);
 }
 
 .setup-actions {
@@ -9,11 +9,11 @@
 }
 
 .starter-deck-preview {
-  margin-top: 0.9rem;
-  border: 1px solid #b99855;
-  border-radius: 12px;
-  padding: 0.9rem;
-  background: #fffaf0;
+  margin: 0;
+  padding: 18px;
+  border: 1px solid rgba(163, 115, 56, 0.55);
+  border-radius: 2px;
+  background: rgba(255, 250, 240, 0.88);
 }
 
 .starter-deck-heading {
@@ -47,7 +47,7 @@
 .starter-tip {
   margin-bottom: 0;
   padding-top: 0.7rem;
-  border-top: 1px solid var(--border);
+  border-top: 1px solid var(--line);
   color: var(--muted);
 }
 
