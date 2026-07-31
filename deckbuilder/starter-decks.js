@@ -5,7 +5,9 @@
 
   window.GAUNTLET_STARTER_DECKS = {
     getSelectedDeck: selectedStarterDeck,
-    getMatchingCurrentDeck: matchingCurrentStarterDeck
+    getMatchingCurrentDeck: matchingCurrentStarterDeck,
+    loadSelectedDeck: loadRecommendedDeck,
+    isReady: starterDeckReady
   };
 
   const baseRenderAll = renderAll;
