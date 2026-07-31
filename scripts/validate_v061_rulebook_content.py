@@ -1,0 +1,149 @@
+#!/usr/bin/env python3
+"""Validate v0.6.1 Rulebook teaching order and first-use discipline."""
+
+from __future__ import annotations
+
+import re
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+RULEBOOK = ROOT / "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md"
+
+REQUIRED_ORDER = (
+    "# Welcome to Gauntlet",
+    "# How to Use This Rulebook",
+    "# Game at a Glance",
+    "# How to Win",
+    "# Golden Rules",
+    "# Part I — Learn to Play",
+    "# 1. Components",
+    "# 2. Cards, Zones, and the Play Area",
+    "# 3. Setup",
+    "# 4. Your Turn",
+    "# 5. Actions and Assets",
+    "# 6. Movement and Position",
+    "# 7. Battles",
+    "## The Aftermath",
+    "## Withdrawal and Retreat",
+    "# 8. Territory Control and Capture",
+    "# 9. Running the Gauntlet",
+    "# Part II — Complete Shared Rules",
+    "# 10. Constructing a Deck",
+    "# 11. Detailed Card and Timing Rules",
+    "# 12. Overlays and Other Shared Card Rules",
+    "# Part III — Factions",
+    "# 13. Factions",
+    "## Military",
+    "## Diplomats",
+    "## Financiers",
+    "## Intelligence",
+    "## Mystics",
+    "## Inquisition",
+    "# Part IV — Reference",
+    "# Quick Turn Reference",
+    "# Quick Battle Reference",
+    "# Glossary",
+    "# Copyright and Playtest Use",
+)
+
+UNIVERSAL_FACTION_TERMS = (
+    "Command Tracker",
+    "Influence Tracker",
+    "Proposal / Treaty Article",
+    "Capital Ledger",
+    "Deed Cards",
+    "Mission Reference Card",
+    "Operations Reference Card",
+    "Operation Progress Tracker",
+    "Rite of Echoes",
+    "Rite of Blood",
+    "Rite of Crossing",
+    "Conviction Tracker",
+    "Purge Reference Card",
+    "Controlling Interest",
+    "Special Operation",
+    "Ritual of Ascendance",
+    "Purification",
+)
+
+FORBIDDEN_STRUCTURE = (
+    "# 14. Military",
+    "# 15. Diplomats",
+    "# 16. Financiers",
+    "# 17. Intelligence",
+    "# 18. Mystics",
+    "# 19. Inquisition",
+    "# 15. Standard Language and Reference Rules",
+    "Use these verbs consistently:",
+    "Avoid generic phrases such as",
+)
+
+
+def main() -> int:
+    text = RULEBOOK.read_text(encoding="utf-8")
+
+    positions = []
+    for marker in REQUIRED_ORDER:
+        position = text.find(marker)
+        if position < 0:
+            raise SystemExit(f"Rulebook content audit: missing {marker!r}")
+        positions.append(position)
+    if positions != sorted(positions):
+        raise SystemExit("Rulebook content audit: required sections are not in teaching order")
+
+    for phrase in FORBIDDEN_STRUCTURE:
+        if phrase in text:
+            raise SystemExit(f"Rulebook content audit: obsolete structure remains: {phrase}")
+
+    factions_index = text.index("# Part III — Factions")
+    universal = text[:factions_index]
+    for phrase in UNIVERSAL_FACTION_TERMS:
+        if phrase in universal:
+            raise SystemExit(
+                f"Rulebook content audit: faction-specific term appears before Part III: {phrase}"
+            )
+
+    chapter_two = text.index("# 2. Cards, Zones, and the Play Area")
+    setup = text.index("# 3. Setup")
+    for term in ("**Action Opportunity**", "**Gambit**", "**Reserve**", "**Tactic**"):
+        location = text.find(term)
+        if location < chapter_two or location > setup:
+            raise SystemExit(f"Rulebook content audit: {term} is not defined before Setup")
+
+    battle = text.index("# 7. Battles")
+    aftermath = text.index("## The Aftermath")
+    withdrawal = text.index("## Withdrawal and Retreat")
+    territory = text.index("# 8. Territory Control and Capture")
+    if not (battle < aftermath < withdrawal < territory):
+        raise SystemExit("Rulebook content audit: battle result sequence is fragmented")
+
+    if text.count("<!-- GENERATED FACTION CONTENT START -->") != 1:
+        raise SystemExit("Rulebook content audit: generated faction start marker is invalid")
+    if text.count("<!-- GENERATED FACTION CONTENT END -->") != 1:
+        raise SystemExit("Rulebook content audit: generated faction end marker is invalid")
+
+    for faction in ("Military", "Diplomats", "Financiers", "Intelligence", "Mystics", "Inquisition"):
+        if len(re.findall(rf"(?m)^## {re.escape(faction)}$", text)) != 1:
+            raise SystemExit(f"Rulebook content audit: {faction} is not one faction subsection")
+
+    required_notice = (
+        "Gauntlet is an unpublished playtest project.",
+        "Copyright © 2026 Tymon Scott. All rights reserved.",
+        "provided for private review and playtesting only",
+        "may not be copied, redistributed, sold, republished",
+    )
+    for phrase in required_notice:
+        if phrase not in text:
+            raise SystemExit(f"Rulebook content audit: copyright notice is missing {phrase!r}")
+
+    if "Defender's Advantage: This is a tie rule" not in text:
+        raise SystemExit("Rulebook content audit: PR #336 Defender's Advantage clarification is missing")
+    if "Defender's Advantage does not grant an additional die" not in text:
+        raise SystemExit("Rulebook content audit: PR #336 additional-die clarification is missing")
+
+    print("v0.6.1 Rulebook teaching order, first-use discipline, faction hierarchy, and copyright content validated.")
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
