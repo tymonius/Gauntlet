@@ -26,10 +26,8 @@ Cards may select their parchment through either the established card class, a fa
 - Mystics: `.mystic-card`, `.mystics-card`, `.faction-mystics`, `[data-faction="mystics"]`
 - Inquisition: `.inquisition-card`, `.faction-inquisition`, `[data-faction="inquisition"]`
 
-Individual cards may reduce the watermark strength without modifying the approved source artwork by overriding:
+## Rendering behavior
 
-```css
---parchment-opacity: 0.72;
-```
+The plain `--card-parchment` color is only a load-failure fallback. The approved WebP is an opaque background image at full opacity and completely replaces that fallback whenever it loads. It is not blended with the fallback, faded, or placed on a translucent overlay.
 
-The default is `1`, preserving the approved source coloration and marking strength.
+The original procedural paper wash previously supplied by `.card-interior::after` is disabled because the approved parchment sources already contain their own paper texture and coloration.
