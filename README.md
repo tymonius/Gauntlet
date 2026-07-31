@@ -62,7 +62,7 @@ Scan to open the v0.6 Deckbuilder:
 1. [`releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md`](releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md) governs shared rules.
 2. The six definitive faction guides under [`releases/v0.6.1/faction-guides/`](releases/v0.6.1/faction-guides/) govern faction-specific rules and exact faction-card text.
 3. [`docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md`](docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md) governs exact Neutral-card text.
-4. [`docs/Gauntlet_v0.6.1_Territory_Pool.md`](docs/Gauntlet_v0.6.1/Gauntlet_v0.6.1_Territory_Pool.md) governs exact Territory and Arena text.
+4. [`docs/Gauntlet_v0.6.1_Territory_Pool.md`](docs/Gauntlet_v0.6.1_Territory_Pool.md) governs exact Territory and Arena text.
 5. `Gauntlet_v0.6.1_Canonical_Data.json` is generated from those sources and must not be edited independently.
 
 Generated PDFs, DOCX files, printable sheets, and Deckbuilder output are derived production artifacts. If a derived file conflicts with its governing source, correct the source and regenerate the supported artifact.
