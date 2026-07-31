@@ -1,4 +1,4 @@
-name: Inspect social preview image
+name: Inspect historical hero image
 
 on:
   pull_request:
@@ -13,17 +13,15 @@ jobs:
     if: github.head_ref == 'agent/fix-social-image'
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repair branch
+      - name: Check out historical hero commit
         uses: actions/checkout@v4
         with:
-          ref: agent/fix-social-image
+          ref: f7862149557196960f7cddbdcabd0968fc754fb9
 
-      - name: Upload generated images for inspection
+      - name: Upload historical hero for inspection
         uses: actions/upload-artifact@v4
         with:
-          name: corrected-social-images
-          path: |
-            images/social/gauntlet-og-1200x630.jpg
-            images/social/gauntlet-og-preview.jpg
+          name: historical-hero-f786
+          path: images/artwork/homepage-hero-three-leaders.webp
           if-no-files-found: error
           compression-level: 0
