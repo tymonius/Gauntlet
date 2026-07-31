@@ -3,6 +3,7 @@
     window.GAUNTLET_PLAYTEST_SESSION_ENDPOINT ||
     "https://gauntlet-playtest-sessions.tymon-scott.workers.dev"
   ).replace(/\/$/, "");
+  const LABEL_STORAGE_KEY = "gauntlet_playtest_host_event_labels_v1";
   const registry = window.GauntletHostRegistry;
   if (!registry) return;
 
@@ -44,6 +45,7 @@
       el[id] = section.querySelector(`#${id}`);
     }
     el.createEventForm.addEventListener("submit", createEvent);
+    installEventLabelRendering();
   }
 
   async function createEvent(event) {
@@ -172,12 +174,53 @@
   function rememberEventLabel(code, label) {
     if (!label) return;
     try {
-      const storageKey = "gauntlet_playtest_host_event_labels_v1";
-      const labels = JSON.parse(localStorage.getItem(storageKey) || "{}");
+      const labels = readEventLabels();
       labels[code] = label.slice(0, 120);
-      localStorage.setItem(storageKey, JSON.stringify(labels));
+      localStorage.setItem(LABEL_STORAGE_KEY, JSON.stringify(labels));
     } catch {
       // The event remains usable without a local label.
+    }
+  }
+
+  function installEventLabelRendering() {
+    const eventList = document.getElementById("eventList");
+    if (!eventList) return;
+    const observer = new MutationObserver(() => applyEventLabels(eventList, observer));
+    observer.observe(eventList, { childList: true, subtree: true });
+    applyEventLabels(eventList, observer);
+  }
+
+  function applyEventLabels(eventList, observer) {
+    const labels = readEventLabels();
+    const events = (registry.read().events || [])
+      .slice()
+      .sort((a, b) => String(b.updatedAt || b.createdAt || "").localeCompare(String(a.updatedAt || a.createdAt || "")));
+    const cards = Array.from(eventList.querySelectorAll(".host-event-card"));
+    observer.disconnect();
+    cards.forEach((card, index) => {
+      const event = events[index];
+      const label = event && labels[event.code];
+      const heading = card.querySelector("h3");
+      if (!event || !label || !heading) return;
+      if (heading.textContent !== label) heading.textContent = label;
+      let serial = card.querySelector("[data-event-serial]");
+      if (!serial) {
+        serial = document.createElement("p");
+        serial.className = "host-meta";
+        serial.dataset.eventSerial = "true";
+        heading.insertAdjacentElement("afterend", serial);
+      }
+      serial.textContent = event.sheetSerial ? `Event ${event.sheetSerial}` : "Game-night event";
+    });
+    observer.observe(eventList, { childList: true, subtree: true });
+  }
+
+  function readEventLabels() {
+    try {
+      const labels = JSON.parse(localStorage.getItem(LABEL_STORAGE_KEY) || "{}");
+      return labels && typeof labels === "object" && !Array.isArray(labels) ? labels : {};
+    } catch {
+      return {};
     }
   }
 
