@@ -7,6 +7,7 @@ on:
     paths:
       - "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md"
       - "releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.md"
+      - "releases/v0.6.1/Gauntlet_v0.6.1_Manifest.json"
       - "releases/v0.6.1/faction-guides/**"
       - "rulebook/**"
       - "design-tokens.css"
@@ -15,6 +16,7 @@ on:
       - "scripts/finalize_v061_docx.py"
       - "scripts/render_v061_rulebook_pdf.mjs"
       - "scripts/impose_v061_rulebook_booklet.py"
+      - "scripts/validate_v061_rulebook_package.py"
       - ".github/workflows/render-v061-documents.yml"
   workflow_dispatch:
 
@@ -59,7 +61,8 @@ jobs:
             scripts/sync_v061_rulebook.py \
             scripts/build_v061_documents.py \
             scripts/finalize_v061_docx.py \
-            scripts/impose_v061_rulebook_booklet.py
+            scripts/impose_v061_rulebook_booklet.py \
+            scripts/validate_v061_rulebook_package.py
           node --check scripts/render_v061_rulebook_pdf.mjs
 
       - name: Synchronize complete faction chapters
@@ -167,6 +170,21 @@ jobs:
           )
           PY
 
+      - name: Validate complete Rulebook package
+        run: python scripts/validate_v061_rulebook_package.py --strict-generated
+
+      - name: Record automated booklet validation
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          path = Path('releases/v0.6.1/Gauntlet_v0.6.1_Manifest.json')
+          manifest = json.loads(path.read_text(encoding='utf-8'))
+          manifest.setdefault('validation', {})['rulebook_booklet_validation_passed'] = True
+          path.write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
+          PY
+
       - name: Render PDF pages for visual inspection
         run: |
           mkdir -p /tmp/v061-render/rulebook /tmp/v061-render/booklet /tmp/v061-render/reference
@@ -188,7 +206,8 @@ jobs:
             releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf \
             releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf \
             releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.docx \
-            releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.pdf
+            releases/v0.6.1/Gauntlet_v0.6.1_Reference_Guide.pdf \
+            releases/v0.6.1/Gauntlet_v0.6.1_Manifest.json
           if git diff --cached --quiet; then
             exit 0
           fi
@@ -198,8 +217,17 @@ jobs:
           git pull --rebase origin ${{ github.head_ref || github.ref_name }}
           git push origin HEAD:${{ github.head_ref || github.ref_name }}
 
-      - name: Verify synchronized rulebook is current
-        run: python scripts/sync_v061_rulebook.py --check
+      - name: Verify synchronized Rulebook and manifest are current
+        run: |
+          python scripts/sync_v061_rulebook.py --check
+          python scripts/validate_v061_rulebook_package.py --strict-generated
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          manifest = json.loads(Path('releases/v0.6.1/Gauntlet_v0.6.1_Manifest.json').read_text())
+          if manifest.get('validation', {}).get('rulebook_booklet_validation_passed') is not True:
+              raise SystemExit('Manifest does not record successful booklet validation')
+          PY
 
       - name: Upload documents and rendered pages
         uses: actions/upload-artifact@v4
