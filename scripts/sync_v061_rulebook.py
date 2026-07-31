@@ -55,13 +55,13 @@ FACTIONS = (
         "Mystics",
         18,
         "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
-        (("Alchemist", "alchemist.png"), ("Spirit Walker", "spirit%20walker.png")),
+        (("Alchemist", "alchemist.png"), ("Spirit Walker", "spirit walker.png")),
     ),
     FactionSpec(
         "Inquisition",
         19,
         "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
-        (("Grand Inquisitor", "grand%20inquisitor.png"), ("Witch Hunter", "witch%20hunter.png")),
+        (("Grand Inquisitor", "grand inquisitor.png"), ("Witch Hunter", "witch hunter.png")),
     ),
 )
 
@@ -108,7 +108,7 @@ def player_facing_guide_text(spec: FactionSpec) -> str:
                         "",
                         f"## {title}",
                         "",
-                        f"![{title}](../../images/sketches/{leaders[title]})",
+                        f"![{title}](<images/sketches/{leaders[title]}>)",
                         "",
                     ]
                 )
@@ -164,7 +164,7 @@ def generate(current: str) -> str:
         for leader, image in spec.leaders:
             if f"## {leader}" not in generated:
                 raise RuntimeError(f"Missing generated Leader section: {leader}")
-            if f"../../images/sketches/{image}" not in generated:
+            if f"images/sketches/{image}" not in generated:
                 raise RuntimeError(f"Missing generated Leader sketch: {leader}")
 
     return generated
