@@ -8,6 +8,7 @@
   void loadInOrder([
     "../host-navigation.js?v=20260731-2",
     "../host-registry.js?v=20260731-2",
+    "../guide-link.js?v=20260731-1",
     "identity-bridge.js?v=20260731-1",
     "app-core.js?v=20260731-1",
     "games.js?v=20260731-1"
