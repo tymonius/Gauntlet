@@ -304,7 +304,7 @@ A battle begins when one player enters the other's position. The moving player i
 
 First resolve effects that happen as the battle opens. Each player may then set one card from their Hand as a **Gambit**. Gambits are costly because they normally go to the Graveyard afterward.
 
-Next, each player sets their Hand aside and draws three temporary cards to form a **Reserve**. Reveal Gambits, then each player may choose one Reserve card as a **Tactic**. Reveal Tactics, resolve the card effects, and roll dice. The higher battle total wins.
+Next, each player sets their Hand aside and draws three temporary cards to form a **Reserve**. Reveal Gambits, then each player may choose one Reserve card as a **Tactic**. Reveal Tactics, resolve the card effects, and roll dice. The higher battle total wins. If the totals are tied while the defender controls the contested Territory, Defender's Advantage means the defender wins the tie. Defender's Advantage is a tie rule, not the ordinary advantage mechanic that changes how dice are rolled.
 
 ## Complete rules
 
@@ -385,7 +385,7 @@ After selecting the die result, resolve rerolls and changes to the die result in
 
 The higher battle total wins.
 
-**Defender's Advantage:** If battle totals are tied and the defender controls the contested Territory, the defender wins. The defender also has Defender's Advantage during a Last Stand battle.
+**Defender's Advantage:** This is a tie rule, not an instance of the ordinary advantage mechanic. If battle totals are tied and the defender controls the contested Territory, the defender wins. Defender's Advantage does not grant an additional die. It also applies during a Last Stand battle, so the defender wins tied Last Stand battle totals even though no Territory is contested there.
 
 If a tie is not resolved by Defender's Advantage or another effect, both players reroll. Cards and effects already in use remain active.
 
@@ -594,7 +594,7 @@ Because ordinary capture occurs at the start of the occupying player's next turn
 
 To win normally, push the opponent beyond their final Territory, capture that Territory, then advance beyond the column. This begins a **Last Stand battle**. Win that battle to run the Gauntlet and win the game.
 
-The defender is harder to defeat in a Last Stand: they receive Defender's Advantage and +1 to their battle total.
+The defender is harder to defeat in a Last Stand: Defender's Advantage means they win tied battle totals, and they separately add +1 to their battle total.
 
 ## Complete rules
 
@@ -612,8 +612,8 @@ After capturing the opponent's final Territory, a player may advance beyond the 
 
 During a Last Stand battle:
 
-- the defender has Defender's Advantage; and
-- the defender adds +1 to their battle total.
+- Defender's Advantage applies, so the defender wins tied battle totals; and
+- the defender separately adds +1 to their battle total.
 
 If the attacker wins, they have run the Gauntlet and immediately win the game.
 
