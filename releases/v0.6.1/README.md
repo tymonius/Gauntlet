@@ -9,8 +9,8 @@ This package is the current canonical release for Gauntlet playtesting. v0.6.0 r
 
 ## Governing sources
 
-- `Gauntlet_v0.6.1_Rulebook.md` — shared rules, supplemental-component guide, and complete battle procedure.
-- `faction-guides/` — six definitive faction sources, including Leaders and exact faction-card text.
+- `Gauntlet_v0.6.1_Rulebook.md` — shared rules, complete player-facing faction systems, Leader abilities, supplemental-component guidance, and battle procedure.
+- `faction-guides/` — six definitive faction sources, including Leaders and exact faction-card text. The rulebook's faction chapters are synchronized from these guides.
 - `../../docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md` — exact Neutral-card text.
 - `../../docs/Gauntlet_v0.6.1_Territory_Pool.md` — exact Territory and Arena text.
 
@@ -21,7 +21,9 @@ The governing Markdown sources must be updated before any generated data, printa
 The published release contains or drives:
 
 - the layered Markdown Rulebook and compact Reference Guide;
-- editable DOCX and print-ready PDF versions of both documents;
+- an editable half-letter Rulebook DOCX;
+- a sequential half-letter reader PDF and a booklet-imposed PDF, which is the preferred printed Rulebook format;
+- editable DOCX and print-ready PDF editions of the Reference Guide;
 - release notes, detailed changelog, package manifest, and first-game material;
 - canonical structured JSON and a complete one-file card reference;
 - all six definitive faction guides;
@@ -31,7 +33,26 @@ The published release contains or drives:
 - a printable formal playtest sheet and player mat;
 - a formal-session batch generator, private host manifest, join page, and single-use-code lifecycle;
 - Rules Arbiter and playtest-session Worker sources sharing one D1 schema; and
-- automated source, browser, document, card-overflow, PDF-page, session, and release validation.
+- automated source, browser, document, card-overflow, PDF-page, booklet-imposition, session, and release validation.
+
+## Rulebook print formats
+
+### Preferred: imposed booklet PDF
+
+Use `Gauntlet_v0.6.1_Rulebook_Booklet.pdf` when printing a bound physical Rulebook.
+
+- Paper: US Letter, 8.5 × 11 inches.
+- Orientation: landscape.
+- Printing: double-sided at 100% / Actual Size.
+- Duplex setting: flip on the short edge.
+- Do not enable the printer or PDF viewer's additional booklet mode; the file is already imposed.
+- Keep the PDF page order unchanged.
+- Fold the complete stack once to produce 5.5 × 8.5 inch pages, then saddle-stitch or staple along the fold.
+- Blank pages added for imposition are intentional.
+
+### Reader PDF
+
+`Gauntlet_v0.6.1_Rulebook.pdf` contains sequential 5.5 × 8.5 inch pages. Use it for screen reading, page-by-page review, or a print service that performs its own imposition. Do not print the reader PDF as an ordinary one-page-per-sheet Letter document unless that enlarged loose-leaf format is desired.
 
 ## Principal changes
 
@@ -48,6 +69,7 @@ The published release contains or drives:
 - Expands Intelligence Surveillance to separate Gambit and Tactic opportunities.
 - Adds Diplomat mirror Terms priority.
 - Rebuilds the rulebook using **How it works** followed by **Complete rules**.
+- Restores substantive faction chapters and one illustrated page for each of the twelve Leaders.
 - Explains how to prepare and use every faction's supplemental cards and trackers.
 - Expands onboarding, player-zone guidance, Rules Arbiter standards, and playtest-session records.
 
@@ -64,7 +86,7 @@ The release retains:
 
 ## Validation completed
 
-The current source candidate has passed:
+The current source package has passed:
 
 - obsolete-terminology and exact-source validation;
 - card, Territory, faction, value, uniqueness, and legality checks;
@@ -74,13 +96,15 @@ The current source candidate has passed:
 - Deckbuilder source and recommended-Deck validation;
 - desktop and mobile browser smoke tests;
 - Rulebook and Reference Guide generation and visual review;
+- half-letter reader-PDF dimension, content, and Leader-sketch validation;
+- Letter-landscape booklet imposition, page-padding, and sheet-order validation;
 - playtest-sheet and player-mat generation;
 - six-faction card-overflow validation;
 - exact faction-PDF page counts with nonblank final pages;
 - canonical generation of the Neutral, Territory, six faction, and all-components PDFs; and
 - page-by-page visual inspection of the standalone packages and the 26-page all-components PDF at rendered print scale.
 
-No clipping, overlap, broken glyphs, blank pages, or unintended trailing pages were found in the final print-package review.
+No clipping, overlap, broken glyphs, blank content pages, or unintended trailing pages were found in the final print-package review. Blank pages used to complete booklet signatures are intentional.
 
 The archived v0.6.0 PDFs remain byte-for-byte aligned with `main`; the legacy v0.6.0 renderer is prevented from overwriting them from this revision branch.
 
@@ -88,7 +112,8 @@ The archived v0.6.0 PDFs remain byte-for-byte aligned with `main`; the legacy v0
 
 - [Project site](https://gauntlet.run/)
 - [Browser Rulebook](https://gauntlet.run/rulebook/)
-- [Rulebook PDF](https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf)
+- [Rulebook reader PDF](https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf)
+- [Preferred Rulebook booklet PDF](https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf)
 - [Card Reference](https://gauntlet.run/card-reference/)
 - [Deckbuilder](https://gauntlet.run/deckbuilder/)
 - [Faction Sheets](https://gauntlet.run/faction-sheets/)
@@ -108,19 +133,20 @@ Issues #288 and #289 remain part of that future digital-engine remediation, not 
 
 ## Validation requirements
 
-Before publication:
+Before any corrected v0.6.1 document is published:
 
 1. search all v0.6.1 sources for obsolete battle terminology;
-2. compare exact card text across faction guides, Neutral source, canonical data, printable sheets, and browser references;
+2. compare exact card and faction text across definitive guides, canonical data, printable sheets, and browser references;
 3. validate card counts, values, uniqueness, faction legality, Territory counts, and Arena limits;
 4. test setup, normal turns, Terms, Gambits, Reserves, Tactics, withdrawal, retreat, capture, Last Stand, and each faction victory route;
 5. inspect every generated PDF and printable sheet at 100% scale;
-6. test Deckbuilder and reference tools on desktop and mobile; and
-7. verify that the Rules Arbiter identifies v0.6.1 sources and labels answers Explicit, Inferred, or Unresolved.
+6. physically test the imposed booklet using the documented duplex setting;
+7. test Deckbuilder, Browser Rulebook, and reference tools on desktop and mobile; and
+8. verify that the Rules Arbiter identifies v0.6.1 sources and labels answers Explicit, Inferred, or Unresolved.
 
 ## Source hierarchy
 
-1. `Gauntlet_v0.6.1_Rulebook.md` governs shared rules.
+1. `Gauntlet_v0.6.1_Rulebook.md` governs shared rules and its synchronized player-facing faction chapters.
 2. Definitive faction guides govern faction-specific rules and exact faction-card text.
 3. The v0.6.1 Neutral and Territory pool documents govern their exact player-facing text.
 4. Generated canonical data mirrors those sources and must not be edited independently.
