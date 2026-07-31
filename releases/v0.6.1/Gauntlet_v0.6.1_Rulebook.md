@@ -4,6 +4,8 @@
 
 **Version 0.6.1 — First Playtest Revision**
 
+![Gauntlet hero sketch](<images/sketches/hero sketch.png>)
+
 ---
 
 # Welcome to Gauntlet
