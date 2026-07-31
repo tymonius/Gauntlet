@@ -1,0 +1,56 @@
+name: Fix social preview image
+
+on:
+  push:
+    branches:
+      - agent/fix-social-image
+    paths:
+      - .github/fix-og-trigger
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild verified image
+        shell: python
+        run: |
+          import base64
+          import hashlib
+          import pathlib
+          import shutil
+
+          root = pathlib.Path('.')
+          chunk_dir = root / '.github' / 'fix-og-image'
+          encoded = ''.join(
+              path.read_text(encoding='utf-8').strip()
+              for path in sorted(chunk_dir.glob('chunk-*.txt'))
+          )
+          image = base64.b64decode(encoded)
+          digest = hashlib.sha256(image).hexdigest()
+          expected = '7f966ba6db132674f4c56a185dbc23e7aad15165872e45d4a95d382688b0fe41'
+          if digest != expected:
+              raise SystemExit(f'Unexpected image checksum: {digest}')
+
+          output = root / 'images' / 'social' / 'gauntlet-og-1200x630.jpg'
+          output.parent.mkdir(parents=True, exist_ok=True)
+          output.write_bytes(image)
+
+          shutil.rmtree(chunk_dir)
+          (root / '.github' / 'fix-og-trigger').unlink(missing_ok=True)
+          pathlib.Path('.github/workflows/fix-social-image.yml').unlink(missing_ok=True)
+
+      - name: Commit corrected image
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Replace corrupted social preview image"
+          git push
