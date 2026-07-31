@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 760" preserveAspectRatio="none">
+  <defs>
+    <g id="corner" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <ellipse cx="94" cy="94" rx="56" ry="24" transform="rotate(45 94 94)" stroke="#3d3024" stroke-width="7" opacity=".84"/>
+      <ellipse cx="94" cy="94" rx="56" ry="24" transform="rotate(-45 94 94)" stroke="#3d3024" stroke-width="7" opacity=".84"/>
+      <ellipse cx="94" cy="94" rx="42" ry="17" transform="rotate(45 94 94)" stroke="#f1dfb6" stroke-width="4" opacity=".72"/>
+      <ellipse cx="94" cy="94" rx="42" ry="17" transform="rotate(-45 94 94)" stroke="#f1dfb6" stroke-width="4" opacity=".72"/>
+      <circle cx="94" cy="94" r="10" stroke="#7a5937" stroke-width="5" opacity=".8"/>
+      <path d="M40 94H148M94 40V148" stroke="#6b4e31" stroke-width="3" opacity=".62"/>
+    </g>
+  </defs>
+  <rect x="14" y="14" width="972" height="732" rx="20" fill="none" stroke="#3d3024" stroke-width="10" opacity=".88"/>
+  <rect x="30" y="30" width="940" height="700" rx="10" fill="none" stroke="#f1dfb6" stroke-width="5" opacity=".72"/>
+  <path d="M166 28H418M582 28H834M166 732H418M582 732H834" fill="none" stroke="#705238" stroke-width="5" opacity=".7"/>
+  <path d="M196 40H392M608 40H804M196 720H392M608 720H804" fill="none" stroke="#f1dfb6" stroke-width="3" opacity=".56"/>
+  <use href="#corner"/>
+  <use href="#corner" transform="translate(1000 0) scale(-1 1)"/>
+  <use href="#corner" transform="translate(0 760) scale(1 -1)"/>
+  <use href="#corner" transform="translate(1000 760) scale(-1 -1)"/>
+</svg>
