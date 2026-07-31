@@ -80,14 +80,19 @@
     if (!element?.classList.contains('fit-warning')) return;
 
     const interior = element.querySelector('.card-interior');
+    const artFrame = element.querySelector('.card-art');
     let artHeight = Number.parseFloat(interior.style.getPropertyValue('--art-height')) || 59.52;
     let rulesScale = Number.parseFloat(element.style.getPropertyValue('--rules-scale')) || 0.93;
-    const minimumArtHeight = 0.42 * 96;
-    const minimumRulesScale = 0.72;
+    const minimumRulesScale = 0.48;
 
-    while (cardOverflows(element) && artHeight > minimumArtHeight) {
-      artHeight = Math.max(minimumArtHeight, artHeight - 1);
+    while (cardOverflows(element) && artHeight > 0) {
+      artHeight = Math.max(0, artHeight - 1);
       interior.style.setProperty('--art-height', `${artHeight}px`);
+      forceLayout(interior);
+    }
+
+    if (cardOverflows(element) && artFrame) {
+      artFrame.style.display = 'none';
       forceLayout(interior);
     }
 
@@ -98,7 +103,7 @@
     }
 
     element.dataset.ttsFit = 'extended';
-    element.dataset.ttsArtHeight = artHeight.toFixed(2);
+    element.dataset.ttsArtHeight = artFrame?.style.display === 'none' ? 'hidden' : artHeight.toFixed(2);
     element.dataset.ttsRulesScale = rulesScale.toFixed(2);
     if (!cardOverflows(element)) element.classList.remove('fit-warning');
   }
