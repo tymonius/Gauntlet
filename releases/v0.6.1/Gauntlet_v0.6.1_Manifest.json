@@ -26,6 +26,7 @@
     "Gauntlet_v0.6.1_Rulebook.md",
     "Gauntlet_v0.6.1_Rulebook.docx",
     "Gauntlet_v0.6.1_Rulebook.pdf",
+    "Gauntlet_v0.6.1_Rulebook_Booklet.pdf",
     "Gauntlet_v0.6.1_Reference_Guide.md",
     "Gauntlet_v0.6.1_Reference_Guide.docx",
     "Gauntlet_v0.6.1_Reference_Guide.pdf",
@@ -73,6 +74,7 @@
     "complete_print_package_visual_checks_passed": true,
     "production_workers_deployed": true,
     "physical_qr_session_test_passed": true,
+    "rulebook_booklet_validation_passed": false,
     "ready_for_publication": true
   },
   "public_links": {
@@ -80,6 +82,7 @@
     "release_package": "https://gauntlet.run/releases/v0.6.1/",
     "browser_rulebook": "https://gauntlet.run/rulebook/",
     "rulebook_pdf": "https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf",
+    "rulebook_booklet_pdf": "https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf",
     "card_reference": "https://gauntlet.run/card-reference/",
     "deckbuilder": "https://gauntlet.run/deckbuilder/",
     "faction_sheets": "https://gauntlet.run/faction-sheets/",
