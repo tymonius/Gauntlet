@@ -1,25 +1,18 @@
 # Card parchment background mapping
 
-The playable-card mockup system uses separate faction parchment sources stored as base64-encoded WebP data under:
+The playable-card mockup system uses seven separate full-resolution PNG originals under:
 
 `images/artwork/card-backgrounds/`
 
-The five sources already rendering correctly remain unchanged:
+- `neutral-parchment-v2.png`
+- `military-parchment-v2.png`
+- `diplomats-parchment-v2.png`
+- `financiers-parchment-v2.png`
+- `intelligence-parchment-v2.png`
+- `mystics-parchment-v2.png`
+- `inquisition-parchment-v2.png`
 
-- `neutral.webp.b64`
-- `military.webp.b64`
-- `diplomats.webp.b64`
-- `intelligence.webp.b64`
-- `inquisition.webp.b64`
-
-Financiers and Mystics use replacements made directly from the newly supplied full-resolution originals:
-
-- `financiers-uploaded.webp.b64.00` through `.03`
-- `mystics-uploaded.webp.b64.00` through `.01`
-
-The numbered text files are transport chunks only. `card-design.js` concatenates them before decoding one complete WebP for the faction. The replacements retain the originals' full 1061 × 1482 pixel dimensions. They were not resized, cropped, contrast-adjusted, filtered, sharpened, or drawn through a browser canvas.
-
-The older sprite, grid, extracted panels, and contrast-normalized variants remain historical artifacts only and are not used by the card mockup system.
+These PNGs are the active parchment sources for the browser card reference, Deckbuilder previews and print views, and shared card renderers. The older base64 WebPs, multipart transport files, sprites, grids, extracted panels, and contrast-normalized variants remain historical artifacts only and are not used by the card mockup system.
 
 ## Supported selectors
 
@@ -35,7 +28,7 @@ Cards select their parchment through either the established card class, a factio
 
 ## Rendering behavior
 
-`card-design.js` fetches only the source parts required by each faction, concatenates multipart sources in numeric order, decodes the base64 text into `image/webp` bytes, and caches one object URL per faction. It does not draw the image onto a canvas, crop it into an intermediate panel, alter contrast, or generate a card-sized raster.
+`card-design.js` resolves and preloads the PNG for each faction, then assigns that direct image URL to `--parchment-image`. It does not decode base64, create an intermediate Blob or object URL, draw the image onto a canvas, alter contrast, re-encode the file, or generate a card-sized raster.
 
 `card-parchment.css` displays the source with `background-size: cover` and `background-position: center center`. The browser scales the image proportionally until either its height or width fills the card interior. Any small excess on the opposite axis is cropped symmetrically around the card midpoint, while the source aspect ratio is preserved.
 
