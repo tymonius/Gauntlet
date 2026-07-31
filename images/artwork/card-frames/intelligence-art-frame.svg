@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 760" preserveAspectRatio="none">
+  <defs>
+    <g id="corner" fill="none" stroke-linecap="square" stroke-linejoin="miter">
+      <path d="M48 122V48H122" stroke="#3d3024" stroke-width="8" opacity=".88"/>
+      <path d="M62 108V62H108" stroke="#f1dfb6" stroke-width="4" opacity=".68"/>
+      <path d="M48 82H72M82 48V72M62 94H82V114M94 62V82H114" stroke="#76583b" stroke-width="5" opacity=".76"/>
+      <circle cx="82" cy="82" r="7" stroke="#3d3024" stroke-width="5" opacity=".82"/>
+      <path d="M116 48L134 66M48 116L66 134" stroke="#6b5037" stroke-width="4" opacity=".66"/>
+    </g>
+  </defs>
+  <path d="M72 14H928L986 72V688L928 746H72L14 688V72Z" fill="none" stroke="#3d3024" stroke-width="10" opacity=".9"/>
+  <path d="M82 32H918L968 82V678L918 728H82L32 678V82Z" fill="none" stroke="#f1dfb6" stroke-width="5" opacity=".68"/>
+  <path d="M210 28V44M250 28V52M290 28V44M710 28V44M750 28V52M790 28V44M210 732V716M250 732V708M290 732V716M710 732V716M750 732V708M790 732V716" fill="none" stroke="#6d523a" stroke-width="4" opacity=".66"/>
+  <use href="#corner"/>
+  <use href="#corner" transform="translate(1000 0) scale(-1 1)"/>
+  <use href="#corner" transform="translate(0 760) scale(1 -1)"/>
+  <use href="#corner" transform="translate(1000 760) scale(-1 -1)"/>
+</svg>
