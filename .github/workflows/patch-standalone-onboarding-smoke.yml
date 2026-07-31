@@ -1,0 +1,81 @@
+name: Patch standalone onboarding smoke test
+
+on:
+  push:
+    branches:
+      - agent/standalone-new-player-onboarding
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/standalone-new-player-onboarding
+          fetch-depth: 0
+      - name: Extend browser smoke coverage
+        shell: python
+        run: |
+          from pathlib import Path
+
+          path = Path('.github/workflows/test-v061-browser-tools.yml')
+          text = path.read_text(encoding='utf-8')
+
+          path_marker = '      - "deckbuilder/**"\n'
+          path_replacement = '      - "deckbuilder/**"\n      - "start/**"\n'
+          if path_marker in text:
+              text = text.replace(path_marker, path_replacement, 1)
+          elif path_replacement not in text:
+              raise SystemExit('Browser workflow path marker missing')
+
+          block_marker = '''            {
+              const { page, errors } = await openPage('/deckbuilder/', viewport);
+'''
+          block = '''            {
+              const { page, errors } = await openPage('/start/', viewport);
+              await page.waitForSelector('input[name="faction"][value="military"]');
+              await page.check('input[name="faction"][value="military"]');
+              await page.waitForSelector('input[name="leader"][value="general"]');
+              await page.check('input[name="leader"][value="general"]');
+              await page.check('#introConfirmed');
+              if (await page.locator('#openStarterDeck').isDisabled()) {
+                throw new Error('Standalone onboarding did not enable the starter Deck handoff');
+              }
+              await Promise.all([
+                page.waitForURL(/\\/deckbuilder\\/\\?[^#]*starter=1/),
+                page.click('#openStarterDeck')
+              ]);
+              await page.waitForSelector('#starterHandoffPanel.is-ready', { timeout: 20000 });
+              await page.waitForFunction(() => document.querySelector('#cardCount')?.textContent === '30');
+              if ((await page.locator('#territoryMetricCount').textContent()) !== '3') {
+                throw new Error('Guided starter handoff did not load three Territories');
+              }
+              const handoffText = await page.locator('#starterHandoffPanel').innerText();
+              if (!handoffText.includes('General') || !handoffText.includes('Forward Doctrine')) {
+                throw new Error(`Guided starter handoff loaded the wrong preset:\\n${handoffText}`);
+              }
+              await page.screenshot({ path: `/tmp/start-${suffix}.png`, fullPage: true });
+              if (errors.length) throw new Error(`Standalone onboarding ${suffix} errors:\\n${errors.join('\\n')}`);
+              await page.close();
+            }
+
+            {
+              const { page, errors } = await openPage('/deckbuilder/', viewport);
+'''
+          if block_marker in text:
+              text = text.replace(block_marker, block, 1)
+          elif "openPage('/start/'" not in text:
+              raise SystemExit('Deckbuilder smoke block marker missing')
+
+          path.write_text(text, encoding='utf-8')
+      - name: Commit patch and remove temporary workflow
+        run: |
+          rm .github/workflows/patch-standalone-onboarding-smoke.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "4189824+github-actions[bot]@users.noreply.github.com"
+          git add .github/workflows/test-v061-browser-tools.yml .github/workflows/patch-standalone-onboarding-smoke.yml
+          git commit -m "Exercise standalone onboarding in browser smoke tests"
+          git push origin HEAD:agent/standalone-new-player-onboarding
