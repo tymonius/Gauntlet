@@ -81,8 +81,14 @@ body {
 }
 
 .gauntlet-card.tts-text-only .rule-section {
-  grid-template-columns: 0.38in minmax(0, 1fr);
-  column-gap: 0.035in;
+  grid-template-columns: 0.58in minmax(0, 1fr);
+  column-gap: 0.025in;
+}
+
+.gauntlet-card.tts-text-only .rule-section h4 {
+  font-size: calc(4.2pt * var(--rules-scale));
+  line-height: 0.95;
+  letter-spacing: 0.025em;
 }
 
 .gauntlet-card.tts-text-only .rule-section + .rule-section {
