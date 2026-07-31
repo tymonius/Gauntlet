@@ -94,7 +94,7 @@
             <small>Created ${escapeHtml(formatDate(game.createdAt))}</small>
           </div>
           <div class="host-record-actions">
-            ${linkButton(withPreview(game.joinUrl), "Preview player page")}
+            ${linkButton(withPreview(game.joinUrl), "Preview player page", false, false)}
             ${linkButton(game.joinUrl, "Open clean player page")}
             ${button("Copy player link", "copy-table")}
           </div>
@@ -108,7 +108,7 @@
     el.standaloneList.replaceChildren();
     if (!sessions.length) {
       el.standaloneList.append(emptyMessage(
-        "No standalone coded sheets are saved. Newly generated batches will appear here automatically."
+        "No standalone coded sheets are saved. Open a sheet’s host controls once, or restore its batch manifest."
       ));
       return;
     }
@@ -188,9 +188,10 @@
     }
   }
 
-  function linkButton(href, label, primary = false) {
+  function linkButton(href, label, primary = false, newTab = true) {
     if (!href) return "";
-    return `<a${primary ? ' class="primary"' : ""} href="${escapeAttribute(href)}" target="_blank" rel="noopener">${escapeHtml(label)}</a>`;
+    const target = newTab ? ' target="_blank" rel="noopener"' : "";
+    return `<a${primary ? ' class="primary"' : ""} href="${escapeAttribute(href)}"${target}>${escapeHtml(label)}</a>`;
   }
 
   function button(label, action, danger = false) {
