@@ -14,13 +14,20 @@ OUTPUTS = (
     "print-proof.html",
     "browser-proof.html",
 )
+CSS_OVERRIDE = ROOT / "back-cover-fix.css"
 
 
 def expand(name: str) -> None:
     payload_path = SOURCE / f"{name}.z64"
     payload = "".join(payload_path.read_text(encoding="ascii").split())
     data = zlib.decompress(base64.b64decode(payload))
-    (ROOT / name).write_bytes(data)
+    output_path = ROOT / name
+    output_path.write_bytes(data)
+
+    if name == "proof.css" and CSS_OVERRIDE.exists():
+        with output_path.open("a", encoding="utf-8") as output:
+            output.write("\n\n")
+            output.write(CSS_OVERRIDE.read_text(encoding="utf-8"))
 
 
 def main() -> None:
