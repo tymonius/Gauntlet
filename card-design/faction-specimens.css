@@ -161,8 +161,12 @@
 }
 
 .single-text-section p {
-  font-size: 6.55pt;
+  font-size: calc(6.55pt * var(--rules-scale));
   line-height: 1.08;
+}
+
+.ultra-dense-card {
+  --minimum-rules-scale: 0.7;
 }
 
 .ultra-dense-card .card-rules {
@@ -180,12 +184,12 @@
 }
 
 .ultra-dense-card .rule-section h4 {
-  font-size: 4.55pt;
+  font-size: calc(4.55pt * var(--rules-scale));
   line-height: 1;
 }
 
 .ultra-dense-card .rule-section p {
-  font-size: 4.35pt;
+  font-size: calc(4.35pt * var(--rules-scale));
   line-height: 1.015;
 }
 
