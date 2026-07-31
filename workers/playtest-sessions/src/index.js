@@ -235,7 +235,7 @@ async function readOnboardingChoices(token, request, env, headers) {
     `SELECT event_json, created_at
        FROM playtest_session_events
       WHERE session_id = ? AND event_type = 'onboarding_choice'
-      ORDER BY created_at ASC`
+      ORDER BY created_at ASC, rowid ASC`
   ).bind(session.id).all();
 
   const participants = rowsFromResult(participantResult);
