@@ -12,13 +12,14 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex, nofollow" />
-  <meta name="description" content="Reopen Gauntlet event dashboards, participant invitations, table sessions, and standalone playtest sheets from one organizer page." />
+  <meta name="description" content="Create and reopen Gauntlet event dashboards, participant invitations, table sessions, and standalone playtest sheets from one organizer page." />
   <title>Gauntlet Host Home</title>
   <link rel="preconnect" href="https://use.typekit.net" />
   <link rel="preconnect" href="https://p.typekit.net" crossorigin />
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
   <link rel="stylesheet" href="../../site.css" />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="create-event.css?v=20260731-1" />
 </head>
 <body>
   <header class="site-header">
@@ -27,6 +28,7 @@
       <span>Gauntlet</span>
     </a>
     <nav aria-label="Host navigation">
+      <a href="../guide/?role=host">Game-night guide</a>
       <a href="../batch/">Create coded sheets</a>
       <a href="../../rulebook/">Rules</a>
       <a href="../../">Main site</a>
@@ -38,7 +40,7 @@
       <div>
         <p class="eyebrow">Organizer workspace</p>
         <h1>Host <span>Home.</span></h1>
-        <p>Reopen event dashboards, participant invitations, table pages, and standalone coded sessions from one place. Links are remembered only in this browser.</p>
+        <p>Create game-night events and reopen dashboards, participant invitations, table pages, and standalone coded sessions from one place. Links are remembered only in this browser.</p>
       </div>
       <div class="host-home-privacy">
         <strong>Private organizer page</strong>
@@ -61,7 +63,7 @@
           <p class="eyebrow">Game nights</p>
           <h2 id="events-title">Event dashboards</h2>
         </div>
-        <p>Open an event dashboard once and it will appear here automatically with its participant link and any table links created on this device.</p>
+        <p>Create an event above or open an existing private dashboard once. Its participant link and table links created on this device will appear here automatically.</p>
       </div>
       <div id="eventList" class="host-record-list"></div>
     </section>
@@ -88,5 +90,6 @@
 
   <script src="../host-registry.js?v=20260731-2"></script>
   <script src="app.js?v=20260731-1"></script>
+  <script src="create-event.js?v=20260731-1"></script>
 </body>
 </html>
