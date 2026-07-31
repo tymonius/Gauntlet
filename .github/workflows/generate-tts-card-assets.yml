@@ -30,6 +30,20 @@ jobs:
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            package.json
+            design-tokens.css
+            scripts/generate-tts-card-assets.mjs
+            tts
+            card-design
+            docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md
+            docs/Gauntlet_v0.6.1_Territory_Pool.md
+            releases/v0.6.1/faction-guides
+            images/artwork/cards
+            images/artwork/card-backgrounds
       - uses: actions/setup-node@v4
         with:
           node-version: 22
