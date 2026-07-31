@@ -10,17 +10,9 @@
     neutral: '../images/artwork/card-backgrounds/neutral.webp.b64',
     military: '../images/artwork/card-backgrounds/military.webp.b64',
     diplomats: '../images/artwork/card-backgrounds/diplomats.webp.b64',
-    financiers: [
-      '../images/artwork/card-backgrounds/financiers-uploaded.webp.b64.00',
-      '../images/artwork/card-backgrounds/financiers-uploaded.webp.b64.01',
-      '../images/artwork/card-backgrounds/financiers-uploaded.webp.b64.02',
-      '../images/artwork/card-backgrounds/financiers-uploaded.webp.b64.03',
-    ],
+    financiers: '../images/artwork/card-backgrounds/financiers-parchment-v2.webp',
     intelligence: '../images/artwork/card-backgrounds/intelligence.webp.b64',
-    mystics: [
-      '../images/artwork/card-backgrounds/mystics-uploaded.webp.b64.00',
-      '../images/artwork/card-backgrounds/mystics-uploaded.webp.b64.01',
-    ],
+    mystics: '../images/artwork/card-backgrounds/mystics-parchment-v2.webp',
     inquisition: '../images/artwork/card-backgrounds/inquisition.webp.b64',
   });
   const parchmentPromises = new Map();
@@ -61,20 +53,32 @@
     return objectUrl;
   }
 
+  function preloadDirectParchment(source) {
+    return new Promise((resolve, reject) => {
+      const image = new Image();
+      image.addEventListener('load', () => resolve(source.href), { once: true });
+      image.addEventListener('error', () => reject(new Error(`Parchment image failed to load: ${source}`)), { once: true });
+      image.src = source.href;
+    });
+  }
+
   function parchmentUrlFor(faction) {
     if (!parchmentPromises.has(faction)) {
-      const configuredSources = PARCHMENT_SOURCES[faction];
-      const sourcePaths = Array.isArray(configuredSources) ? configuredSources : [configuredSources];
-      const sources = sourcePaths.map(path => new URL(path, document.baseURI));
+      const configuredSource = PARCHMENT_SOURCES[faction];
+      const source = new URL(configuredSource, document.baseURI);
 
-      parchmentPromises.set(faction, Promise.all(sources.map(source => fetch(source, { cache: 'force-cache' })
-        .then(response => {
-          if (!response.ok) {
-            throw new Error(`Parchment request failed with ${response.status}: ${source}`);
-          }
-          return response.text();
-        })))
-        .then(parts => decodeParchment(parts.join(''))));
+      if (!configuredSource.endsWith('.b64')) {
+        parchmentPromises.set(faction, preloadDirectParchment(source));
+      } else {
+        parchmentPromises.set(faction, fetch(source, { cache: 'force-cache' })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`Parchment request failed with ${response.status}: ${source}`);
+            }
+            return response.text();
+          })
+          .then(decodeParchment));
+      }
     }
 
     return parchmentPromises.get(faction);
@@ -85,8 +89,8 @@
     await Promise.all(cards.map(async card => {
       const faction = factionForCard(card);
       try {
-        const objectUrl = await parchmentUrlFor(faction);
-        card.style.setProperty('--parchment-image', `url("${objectUrl}")`);
+        const parchmentUrl = await parchmentUrlFor(faction);
+        card.style.setProperty('--parchment-image', `url("${parchmentUrl}")`);
         card.dataset.parchmentLoaded = 'true';
         card.dataset.parchmentSource = faction;
       } catch (error) {
