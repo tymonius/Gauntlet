@@ -98,6 +98,54 @@ jobs:
               validator.write_text(validator_text.replace(obsolete, current, 1), encoding="utf-8")
           elif current not in validator_text:
               raise SystemExit("Could not reconcile Rules Arbiter deployment marker in release validator")
+
+          publication = Path("scripts/finalize_v061_publication.py")
+          publication_text = publication.read_text(encoding="utf-8")
+          booklet_url = "https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf"
+          if '"rulebook_booklet_pdf"' not in publication_text:
+              manifest_marker = (
+                  '        "rulebook_pdf": "https://gauntlet.run/releases/v0.6.1/'
+                  'Gauntlet_v0.6.1_Rulebook.pdf",\n'
+                  '        "card_reference":'
+              )
+              manifest_replacement = (
+                  '        "rulebook_pdf": "https://gauntlet.run/releases/v0.6.1/'
+                  'Gauntlet_v0.6.1_Rulebook.pdf",\n'
+                  f'        "rulebook_booklet_pdf": "{booklet_url}",\n'
+                  '        "card_reference":'
+              )
+              if manifest_marker not in publication_text:
+                  raise SystemExit("Could not add booklet URL to publication manifest generator")
+              publication_text = publication_text.replace(
+                  manifest_marker, manifest_replacement, 1
+              )
+
+          if '"rulebook_booklet_pdf", "card_reference"' not in publication_text:
+              validator_marker = '"rulebook_pdf", "card_reference"'
+              if validator_marker not in publication_text:
+                  raise SystemExit("Could not add booklet URL to publication-ready validation")
+              publication_text = publication_text.replace(
+                  validator_marker,
+                  '"rulebook_pdf", "rulebook_booklet_pdf", "card_reference"',
+                  1,
+              )
+
+          booklet_readme_link = (
+              "- [Preferred Rulebook booklet PDF]"
+              "(https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf)"
+          )
+          if booklet_readme_link not in publication_text:
+              pdf_link = (
+                  "- [Rulebook PDF]"
+                  "(https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf)"
+              )
+              if pdf_link not in publication_text:
+                  raise SystemExit("Could not add booklet link to generated release README")
+              publication_text = publication_text.replace(
+                  pdf_link, f"{pdf_link}\n{booklet_readme_link}", 1
+              )
+
+          publication.write_text(publication_text, encoding="utf-8")
           PY
 
       - name: Finalize publication metadata
