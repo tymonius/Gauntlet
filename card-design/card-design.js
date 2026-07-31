@@ -71,15 +71,6 @@
       throw new Error('Invalid WebP parchment source: missing RIFF/WEBP signature.');
     }
 
-    const declaredLength = bytes[4]
-      + (bytes[5] << 8)
-      + (bytes[6] << 16)
-      + (bytes[7] * 0x1000000)
-      + 8;
-    if (declaredLength !== bytes.length) {
-      throw new Error(`Invalid WebP parchment source: RIFF length ${declaredLength} does not match ${bytes.length} bytes.`);
-    }
-
     const objectUrl = URL.createObjectURL(new Blob([bytes], { type: 'image/webp' }));
     parchmentObjectUrls.add(objectUrl);
     return objectUrl;
