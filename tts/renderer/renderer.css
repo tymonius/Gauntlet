@@ -1,0 +1,49 @@
+html,
+body {
+  width: max-content;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+#renderTarget {
+  width: 2.5in;
+  height: 3.5in;
+}
+
+.gauntlet-card {
+  box-shadow: none;
+}
+
+.card-art img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+}
+
+.card-art.pending-art {
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(0, 0, 0, 0.16)),
+    #7d7062;
+}
+
+.card-art.pending-art::before {
+  content: none;
+}
+
+.card-art.pending-art .pending-label {
+  position: static;
+  padding: 0.08in;
+  color: rgba(255, 255, 255, 0.86);
+  font-family: var(--font-interface);
+  font-size: 6pt;
+  letter-spacing: 0.11em;
+  text-align: center;
+  text-transform: uppercase;
+}
