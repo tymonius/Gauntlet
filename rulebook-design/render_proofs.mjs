@@ -44,62 +44,96 @@ function assertImages(images, context) {
   }
 }
 
-const printPage = await openProof('print-proof.html', { width: 1400, height: 1100 });
-const printResult = await printPage.evaluate(() => {
-  const pages = [...document.querySelectorAll('.page')];
-  return {
-    interLoaded: document.fonts.check('12px Inter'),
-    runningFamily: getComputedStyle(document.querySelector('.running-head')).fontFamily,
-    titleFamily: getComputedStyle(document.querySelector('.page-title')).fontFamily,
-    pages: pages.map((page, index) => {
-      const rect = page.getBoundingClientRect();
-      return {
-        index: index + 1,
-        width: rect.width,
-        height: rect.height,
-        scrollWidth: page.scrollWidth,
-        clientWidth: page.clientWidth,
-        scrollHeight: page.scrollHeight,
-        clientHeight: page.clientHeight,
-        classes: page.className,
-      };
-    }),
-    images: [...document.images].map(image => ({
-      src: image.getAttribute('src'),
-      complete: image.complete,
-      width: image.naturalWidth,
-      height: image.naturalHeight,
-    })),
-  };
-});
+async function inspectHalfLetter(page) {
+  return page.evaluate(() => {
+    const pages = [...document.querySelectorAll('.page')];
+    return {
+      interLoaded: document.fonts.check('12px Inter'),
+      runningFamily: getComputedStyle(document.querySelector('.running-head')).fontFamily,
+      titleFamily: getComputedStyle(document.querySelector('.page-title')).fontFamily,
+      flavorSize: getComputedStyle(document.querySelector('.flavor-overline')).fontSize,
+      coverImageFit: getComputedStyle(document.querySelector('.cover-art img')).objectFit,
+      accent: getComputedStyle(document.querySelector('.faction-rule')).backgroundColor,
+      backCoverBackground: getComputedStyle(document.querySelector('.back-cover')).backgroundColor,
+      pages: pages.map((item, index) => {
+        const rect = item.getBoundingClientRect();
+        return {
+          index: index + 1,
+          width: rect.width,
+          height: rect.height,
+          scrollWidth: item.scrollWidth,
+          clientWidth: item.clientWidth,
+          scrollHeight: item.scrollHeight,
+          clientHeight: item.clientHeight,
+          classes: item.className,
+        };
+      }),
+      images: [...document.images].map(image => ({
+        src: image.getAttribute('src'),
+        complete: image.complete,
+        width: image.naturalWidth,
+        height: image.naturalHeight,
+      })),
+    };
+  });
+}
 
-if (!printResult.interLoaded || !printResult.runningFamily.includes('Inter')) {
-  throw new Error(`Inter did not load for utility typography: ${JSON.stringify(printResult)}`);
-}
-if (!printResult.titleFamily.includes('Georgia')) {
-  throw new Error(`Georgia is not the principal title face: ${JSON.stringify(printResult)}`);
-}
-if (printResult.pages.length !== 12) {
-  throw new Error(`Expected 12 print pages; found ${printResult.pages.length}`);
-}
-for (const page of printResult.pages) {
-  if (Math.abs(page.width - 528) > 2 || Math.abs(page.height - 816) > 2) {
-    throw new Error(`Print page ${page.index} is ${page.width}×${page.height}px instead of half-letter.`);
+function assertHalfLetter(result, context) {
+  if (!result.interLoaded || !result.runningFamily.includes('Inter')) {
+    throw new Error(`${context}: Inter did not load for utility typography: ${JSON.stringify(result)}`);
   }
-  if (page.scrollWidth > page.clientWidth + 1 || page.scrollHeight > page.clientHeight + 1) {
-    throw new Error(`Print page ${page.index} overflows: ${JSON.stringify(page)}`);
+  if (!result.titleFamily.includes('Georgia')) {
+    throw new Error(`${context}: Georgia is not the principal title face: ${JSON.stringify(result)}`);
   }
+  if (result.pages.length !== 12) {
+    throw new Error(`${context}: expected 12 print pages; found ${result.pages.length}`);
+  }
+  if (result.coverImageFit !== 'contain') {
+    throw new Error(`${context}: front-cover artwork must use object-fit contain: ${JSON.stringify(result)}`);
+  }
+  if (Number.parseFloat(result.flavorSize) < 18) {
+    throw new Error(`${context}: Declaration Pro display text is still too small: ${JSON.stringify(result)}`);
+  }
+  for (const item of result.pages) {
+    if (Math.abs(item.width - 528) > 2 || Math.abs(item.height - 816) > 2) {
+      throw new Error(`${context}: page ${item.index} is ${item.width}×${item.height}px instead of half-letter.`);
+    }
+    if (item.scrollWidth > item.clientWidth + 1 || item.scrollHeight > item.clientHeight + 1) {
+      throw new Error(`${context}: page ${item.index} overflows: ${JSON.stringify(item)}`);
+    }
+  }
+  assertImages(result.images, context);
 }
-assertImages(printResult.images, 'Print proof');
+
+const printPage = await openProof('print-proof.html', { width: 1400, height: 1100 });
+const printResult = await inspectHalfLetter(printPage);
+assertHalfLetter(printResult, 'Grayscale print proof');
 await printPage.screenshot({ path: `${OUT}/print-proof-browser.png`, fullPage: true });
 await printPage.emulateMedia({ media: 'print' });
 await printPage.pdf({
-  path: `${OUT}/Gauntlet_v0.6.1_Rulebook_Design_Proofs_v2.pdf`,
+  path: `${OUT}/Gauntlet_v0.6.1_Rulebook_Design_Proofs_v3_Grayscale.pdf`,
   printBackground: true,
   preferCSSPageSize: true,
   margin: { top: '0', right: '0', bottom: '0', left: '0' },
 });
 await printPage.close();
+
+const colorPage = await openProof('print-proof.html', { width: 1400, height: 1100 });
+await colorPage.evaluate(() => document.body.classList.add('color-edition'));
+const colorResult = await inspectHalfLetter(colorPage);
+assertHalfLetter(colorResult, 'Player-facing color proof');
+if (colorResult.accent !== 'rgb(143, 31, 37)') {
+  throw new Error(`Player-facing proof did not restore the crimson accent: ${JSON.stringify(colorResult)}`);
+}
+await colorPage.screenshot({ path: `${OUT}/player-color-proof-browser.png`, fullPage: true });
+await colorPage.emulateMedia({ media: 'print' });
+await colorPage.pdf({
+  path: `${OUT}/Gauntlet_v0.6.1_Player_Rulebook_Color_Design_Proof.pdf`,
+  printBackground: true,
+  preferCSSPageSize: true,
+  margin: { top: '0', right: '0', bottom: '0', left: '0' },
+});
+await colorPage.close();
 
 async function renderSheets(html, selector, expectedCount, stem) {
   const page = await openProof(html, { width: 1200, height: 900 });
@@ -161,15 +195,15 @@ await renderSheets(
 );
 
 const toner = await openProof('toner-cover-proof.html', { width: 700, height: 900 });
-const tonerBox = await toner.locator('.page').evaluate(page => {
-  const rect = page.getBoundingClientRect();
+const tonerBox = await toner.locator('.page').evaluate(item => {
+  const rect = item.getBoundingClientRect();
   return {
     width: rect.width,
     height: rect.height,
-    scrollWidth: page.scrollWidth,
-    clientWidth: page.clientWidth,
-    scrollHeight: page.scrollHeight,
-    clientHeight: page.clientHeight,
+    scrollWidth: item.scrollWidth,
+    clientWidth: item.clientWidth,
+    scrollHeight: item.scrollHeight,
+    clientHeight: item.clientHeight,
   };
 });
 if (Math.abs(tonerBox.width - 528) > 2 || Math.abs(tonerBox.height - 816) > 2 ||
@@ -196,6 +230,7 @@ for (const [name, viewport] of [
     interLoaded: document.fonts.check('12px Inter'),
     bodyFamily: getComputedStyle(document.querySelector('.browser-proof')).fontFamily,
     titleFamily: getComputedStyle(document.querySelector('.browser-hero h1')).fontFamily,
+    flavorSize: getComputedStyle(document.querySelector('.browser-hero .flavor-overline')).fontSize,
     images: [...document.images].map(image => ({
       complete: image.complete,
       width: image.naturalWidth,
@@ -211,10 +246,13 @@ for (const [name, viewport] of [
   if (!result.titleFamily.includes('Georgia')) {
     throw new Error(`${name} browser proof did not use Georgia for its principal title: ${JSON.stringify(result)}`);
   }
+  if (Number.parseFloat(result.flavorSize) < 20) {
+    throw new Error(`${name} browser proof still renders Declaration Pro too small: ${JSON.stringify(result)}`);
+  }
   assertImages(result.images, `${name} browser proof`);
   await page.screenshot({ path: `${OUT}/browser-proof-${name}.png`, fullPage: true });
   await page.close();
 }
 
 await browser.close();
-console.log(JSON.stringify(printResult, null, 2));
+console.log(JSON.stringify({ grayscale: printResult, color: colorResult }, null, 2));
