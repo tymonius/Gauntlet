@@ -57,6 +57,11 @@
     const element = target.querySelector('.gauntlet-card');
     const interior = element?.querySelector('.card-interior');
     await waitFor(() => element?.dataset.parchmentLoaded !== undefined, RENDER_TIMEOUT_MS);
+    if (element?.dataset.parchmentLoaded !== 'true') {
+      element.classList.add('tts-parchment-fallback');
+      element.dataset.parchmentFallback = 'true';
+      element.dataset.parchmentLoaded = 'true';
+    }
     await waitFor(() => Boolean(interior?.style.getPropertyValue('--art-height')), RENDER_TIMEOUT_MS);
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     fitForTts(element);
