@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 760" preserveAspectRatio="none">
+  <defs>
+    <g id="corner" fill="none" stroke-linecap="square" stroke-linejoin="miter">
+      <path d="M48 126V48H126" stroke="#3d3024" stroke-width="10" opacity=".9"/>
+      <path d="M62 110V62H110" stroke="#f1dfb6" stroke-width="4" opacity=".7"/>
+      <path d="M48 82L82 48M48 104H70V126M104 48V70H126" stroke="#7b5430" stroke-width="7" opacity=".82"/>
+    </g>
+  </defs>
+  <path d="M38 14H962L986 38V722L962 746H38L14 722V38Z" fill="none" stroke="#3d3024" stroke-width="11" opacity=".9"/>
+  <path d="M50 32H950L968 50V710L950 728H50L32 710V50Z" fill="none" stroke="#f1dfb6" stroke-width="5" opacity=".7"/>
+  <path d="M170 28H390M610 28H830M170 732H390M610 732H830" fill="none" stroke="#6d4b2c" stroke-width="5" opacity=".72"/>
+  <use href="#corner"/>
+  <use href="#corner" transform="translate(1000 0) scale(-1 1)"/>
+  <use href="#corner" transform="translate(0 760) scale(1 -1)"/>
+  <use href="#corner" transform="translate(1000 760) scale(-1 -1)"/>
+</svg>
