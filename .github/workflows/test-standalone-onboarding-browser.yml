@@ -60,6 +60,7 @@ jobs:
             if (!response?.ok()) throw new Error(`/start/ returned ${response?.status()}`);
 
             await page.waitForSelector('input[name="faction"][value="military"]');
+            await page.screenshot({ path: `/tmp/standalone-start-${suffix}.png`, fullPage: true });
             if ((await page.locator('input[name="faction"]').count()) !== 6) {
               throw new Error('Standalone onboarding did not render six factions');
             }
@@ -111,5 +112,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: standalone-onboarding-browser-smoke
-          path: /tmp/standalone-onboarding-*.png
+          path: /tmp/standalone-*.png
           if-no-files-found: error

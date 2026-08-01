@@ -80,3 +80,21 @@ fieldset legend{font-weight:900;font-size:1.05rem;margin-bottom:1rem}
 @media(max-width:900px){main{width:min(100% - 24px,760px)}.start-hero,.overview-grid,.selected-choice,.print-grid{grid-template-columns:1fr}.start-hero{padding:3.4rem 1.8rem}.faction-choice-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.print-action-card{position:static}}
 @media(max-width:620px){.site-header nav{display:none}.start-hero h1{font-size:3.7rem}.start-hero{padding:2.7rem 1.2rem}.section{padding:3.5rem 0}.faction-choice-grid,.leader-choices,.intro-grid{grid-template-columns:1fr}.partner-note{display:block}.partner-note strong{display:block;margin-bottom:.25rem}.section-heading h2{font-size:2.75rem}.overview-feature,.needs-card,.intro-overview,.intro-card,.print-checklist,.print-action-card{padding:1.35rem}.selected-choice{padding:1.25rem}}
 @media print{.site-header,.start-hero,.overview-section,.choice-section,footer{display:none!important}main{width:100%;margin:0}.section{border:0;padding:0}.section-heading>p{display:none}.intro-grid{grid-template-columns:1fr 1fr}.intro-card{box-shadow:none;break-inside:avoid}.print-section{break-before:page}.print-action-card{display:none}.print-grid{grid-template-columns:1fr}.print-checklist{box-shadow:none}}
+
+/* Public Start page theme: align with the main Gauntlet site rather than host tools. */
+:root{--start-ink:var(--ink);--start-paper:var(--paper);--start-panel:var(--surface);--start-line:var(--line);--start-red:var(--crimson);--start-gold:var(--bronze);--start-muted:var(--muted);--start-shadow:var(--shadow)}
+body{background:radial-gradient(circle at 10% 5%,rgba(143,31,37,.1),transparent 30rem),radial-gradient(circle at 90% 15%,rgba(163,115,56,.13),transparent 28rem),linear-gradient(180deg,#f7f1e5 0%,var(--paper) 45%,#ede4d4 100%);color:var(--ink)}
+.start-hero{align-items:center;padding:5.5rem 0 5rem;background:transparent;color:var(--ink);border-left:0;border-bottom:1px solid var(--line);box-shadow:none}
+.start-hero h1 span{color:var(--crimson)}
+.start-hero .hero-lede{color:#3f3a34;font-family:var(--serif);font-size:clamp(1.18rem,2vw,1.48rem);line-height:1.55}
+.start-hero .button.secondary{border-color:var(--crimson-dark);color:var(--crimson-dark);background:transparent}
+.journey{gap:.8rem}
+.journey li{padding:1rem 1.1rem;border:1px solid var(--line);background:var(--surface);box-shadow:0 12px 32px rgba(55,38,18,.08)}
+.journey span{background:var(--crimson-dark);color:#fff7e8}
+.journey strong{color:var(--ink)}
+.journey small{color:var(--muted)}
+.partner-note,.print-note{background:rgba(143,31,37,.055);border-left-color:var(--crimson)}
+.selected-choice{border-top-color:var(--crimson)}
+.overview-feature,.needs-card,.selected-choice,.intro-overview,.print-checklist,.print-action-card,.faction-choice,.leader-choice,.intro-card{background:var(--surface)}
+@media(max-width:900px){.start-hero{padding:4.2rem 0}}
+@media(max-width:620px){.start-hero{padding:3.2rem 0}}
