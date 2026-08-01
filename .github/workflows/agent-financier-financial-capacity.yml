@@ -1,0 +1,107 @@
+name: Apply Financier Financial Capacity
+
+on:
+  push:
+    branches:
+      - agent/financier-financial-capacity
+
+permissions:
+  contents: write
+
+jobs:
+  apply-rule:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out implementation branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/financier-financial-capacity
+          fetch-depth: 0
+
+      - name: Patch canonical sources
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          root = Path('.')
+          guide = root / 'releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md'
+          rulebook = root / 'releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md'
+
+          table_anchor = '| Capital limit | Territories you control plus total deckbuilding value in Treasury. |'
+          table_replacement = table_anchor + '\n| Financial Capacity | If Treasury value exceeds Territories controlled at the start of your turn, you may use both normal Action Opportunities; at least one must be a Financier faction action. |'
+
+          how_anchor = 'During an Action Opportunity after movement, you may place a card in Treasury, buy a Deed, or Play the Market instead of playing an Action card.'
+          how_replacement = ('At the start of your turn, if the total deckbuilding value in your Treasury is greater than the number of Territories you control, you may use both normal Action Opportunities that turn. At least one must be used for a Financier faction action.\n\n' + how_anchor)
+
+          capital_anchor = 'Capital may exceed the limit temporarily. At the end of every turn, including an opponent\'s turn, reduce your Capital to the current limit if necessary.'
+
+          def patch_source(path: Path, heading: str) -> None:
+              text = path.read_text(encoding='utf-8')
+              if 'Financial Capacity' in text:
+                  raise SystemExit(f'{path} already contains Financial Capacity')
+              for anchor, replacement in ((table_anchor, table_replacement), (how_anchor, how_replacement)):
+                  count = text.count(anchor)
+                  if count != 1:
+                      raise SystemExit(f'{path}: expected one anchor, found {count}: {anchor}')
+                  text = text.replace(anchor, replacement, 1)
+
+              capacity = f'''\n\n{heading} Financial Capacity\n\nAfter resolving the Capture step and all effects that occur after it, but before the Draw step, compare the total deckbuilding value of cards in your Treasury with the number of Territories you control.\n\nIf the Treasury value is greater, you may use both normal Action Opportunities that turn. If you use both, at least one must be used for a Financier faction action. If the before-movement opportunity was not used for a Financier faction action, the after-movement opportunity may be used only for one.\n\nQualifying Financier faction actions include placing a card in your Treasury, buying or buying out a Deed, Play the Market, Hostile Takeover, or another Financier faction action that explicitly uses an Action Opportunity.\n\nDetermine eligibility once at this timing. Later changes to Treasury value or Territories controlled do not grant or remove this permission during that turn. The two opportunities remain at their normal timings: one before movement and one after movement.\n'''
+              count = text.count(capital_anchor)
+              if count != 1:
+                  raise SystemExit(f'{path}: expected one capital anchor, found {count}')
+              text = text.replace(capital_anchor, capital_anchor + capacity, 1)
+
+              quick_anchor = '- Capital limit = controlled Territories + total Treasury value.'
+              if quick_anchor in text:
+                  text = text.replace(quick_anchor, quick_anchor + '\n- Financial Capacity: if Treasury value exceeds controlled Territories at the start-of-turn check, you may use both normal Action Opportunities; at least one must be a Financier faction action.', 1)
+
+              path.write_text(text, encoding='utf-8')
+
+          patch_source(guide, '###')
+          patch_source(rulebook, '####')
+
+          status = root / 'docs/Gauntlet_Development_Status.md'
+          if status.exists():
+              text = status.read_text(encoding='utf-8')
+              marker = '## Financier Financial Capacity playtest\n'
+              if marker not in text:
+                  section = '''\n## Financier Financial Capacity playtest\n\nFinanciers now determine Financial Capacity after the Capture step and its effects, before drawing. When Treasury value exceeds Territories controlled, they may use both normal Action Opportunities that turn, provided at least one is used for a Financier faction action.\n\nTest specifically whether:\n\n- the condition activates too automatically on the second Financier turn;\n- the condition remains active too continuously once established; and\n- the added economic action accelerates Deed acquisition or compounds Tariffs, Divestment, and Margin Loan too strongly.\n\n'''
+                  first_break = text.find('\n', text.find('\n') + 1)
+                  text = text[:first_break + 1] + section + text[first_break + 1:]
+                  status.write_text(text, encoding='utf-8')
+
+          changelogs = sorted((root / 'releases/v0.6.1').glob('*Changelog*.md'))
+          if changelogs:
+              changelog = changelogs[0]
+              text = changelog.read_text(encoding='utf-8')
+              entry = '- **Financiers — Financial Capacity:** After the Capture step and its effects, a Financier whose Treasury value exceeds their controlled Territories may use both normal Action Opportunities that turn, provided at least one is used for a Financier faction action. Eligibility is locked for the turn.\n'
+              if entry not in text:
+                  heading = '## Post-release playtest changes\n\n'
+                  if heading in text:
+                      text = text.replace(heading, heading + entry, 1)
+                  else:
+                      first_break = text.find('\n', text.find('\n') + 1)
+                      text = text[:first_break + 1] + '\n' + heading + entry + '\n' + text[first_break + 1:]
+                  changelog.write_text(text, encoding='utf-8')
+
+          print('Patched:', guide, rulebook)
+          PY
+
+      - name: Regenerate canonical data and card reference
+        run: python scripts/generate_v061_release.py
+
+      - name: Validate generated release data
+        run: python scripts/generate_v061_release.py --check
+
+      - name: Remove temporary workflow and commit implementation
+        shell: bash
+        run: |
+          rm .github/workflows/agent-financier-financial-capacity.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add releases/v0.6.1 docs .github/workflows/agent-financier-financial-capacity.yml
+          git diff --cached --check
+          git commit -m "Add Financier Financial Capacity rule"
+          git push origin HEAD:agent/financier-financial-capacity
