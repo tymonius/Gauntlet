@@ -1,0 +1,172 @@
+name: Test Deck Prep requests
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "start/**"
+      - "deck-requests/**"
+      - "playtest/host/index.html"
+      - "tests/deck-prep-requests.test.ts"
+      - ".github/workflows/test-deck-prep-requests-browser.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-deck-prep-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  journey:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Serve repository
+        run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
+
+      - name: Exercise player request and host queue
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from 'playwright';
+
+          const TOKEN = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+          const HOST = 'BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB';
+          const PARTICIPANT = '123e4567-e89b-42d3-a456-426614174000';
+          const browser = await chromium.launch({ headless: true });
+
+          for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }]) {
+            const suffix = viewport.width < 600 ? 'mobile' : 'desktop';
+            const page = await browser.newPage({ viewport });
+            const errors = [];
+            const requests = [];
+            page.on('pageerror', error => errors.push(error.message));
+            page.on('console', message => {
+              if (message.type() === 'error') errors.push(message.text());
+            });
+            await page.route('https://gauntlet-playtest-sessions.tymon-scott.workers.dev/**', async route => {
+              const request = route.request();
+              const url = new URL(request.url());
+              requests.push({ method: request.method(), path: url.pathname, body: request.postDataJSON?.() || null });
+              if (request.method() === 'GET' && url.pathname === `/api/sessions/${TOKEN}`) {
+                return route.fulfill({ json: {
+                  sessionId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+                  sheetSerial: 'G061-PREP01',
+                  rulesVersion: 'v0.6.1',
+                  status: 'open',
+                  sessionKind: 'event',
+                  participantCount: 0,
+                  arbiterQuestionCount: 0
+                }});
+              }
+              if (request.method() === 'POST' && url.pathname === `/api/sessions/${TOKEN}/join`) {
+                return route.fulfill({ status: 201, json: { participantId: PARTICIPANT, participantToken: 'participant-token-value' } });
+              }
+              if (request.method() === 'POST' && url.pathname === `/api/sessions/${TOKEN}/event`) {
+                return route.fulfill({ status: 201, json: { ok: true, eventType: 'onboarding_choice' } });
+              }
+              return route.fulfill({ status: 404, json: { error: 'Unexpected mocked request' } });
+            });
+
+            const response = await page.goto(`http://127.0.0.1:8000/start/?request=${TOKEN}&label=August%208%20Game%20Night&deadline=2026-08-05`, { waitUntil: 'networkidle' });
+            if (!response?.ok()) throw new Error(`/start/ returned ${response?.status()}`);
+            await page.waitForSelector('#deckRequestForm');
+            await page.check('input[name="faction"][value="military"]');
+            await page.waitForSelector('input[name="leader"][value="general"]');
+            await page.check('input[name="leader"][value="general"]');
+            await page.check('#introConfirmed');
+            await page.fill('#requestDisplayName', 'Tymon');
+            await page.fill('#requestNote', 'Please prepare this before Friday.');
+            await page.click('#submitDeckRequest');
+            await page.waitForSelector('#deckRequestSuccess:not([hidden])');
+
+            const join = requests.find(item => item.path.endsWith('/join'));
+            const choice = requests.find(item => item.path.endsWith('/event'));
+            if (join?.body?.purpose !== 'onboarding' || join?.body?.displayName !== 'Tymon') {
+              throw new Error(`Unexpected join payload: ${JSON.stringify(join)}`);
+            }
+            if (choice?.body?.eventType !== 'onboarding_choice' || choice?.body?.data?.faction !== 'military' || choice?.body?.data?.leader !== 'General') {
+              throw new Error(`Unexpected choice payload: ${JSON.stringify(choice)}`);
+            }
+            const success = await page.locator('#deckRequestSuccess').innerText();
+            if (!success.includes('General') || !success.includes('Forward Doctrine')) {
+              throw new Error(`Request success omitted the selected Deck: ${success}`);
+            }
+            await page.screenshot({ path: `/tmp/deck-prep-player-${suffix}.png`, fullPage: true });
+            if (errors.length) throw new Error(`Deck Prep player ${suffix} errors:\n${errors.join('\n')}`);
+            await page.close();
+          }
+
+          {
+            const page = await browser.newPage({ viewport: { width: 1280, height: 1000 } });
+            const errors = [];
+            page.on('pageerror', error => errors.push(error.message));
+            page.on('console', message => {
+              if (message.type() === 'error') errors.push(message.text());
+            });
+            await page.route('https://gauntlet-playtest-sessions.tymon-scott.workers.dev/**', async route => {
+              const request = route.request();
+              const url = new URL(request.url());
+              if (request.method() === 'GET' && url.pathname === `/api/sessions/${TOKEN}/onboarding`) {
+                return route.fulfill({ json: {
+                  session: { sheetSerial: 'G061-PREP01', status: 'open', sessionKind: 'event' },
+                  choices: [{
+                    participantId: PARTICIPANT,
+                    displayName: 'Tymon',
+                    faction: 'military',
+                    leader: 'General',
+                    reason: 'Please prepare this before Friday.',
+                    introConfirmed: true,
+                    submittedAt: '2026-07-31T23:00:00.000Z'
+                  }],
+                  pendingParticipants: []
+                }});
+              }
+              return route.fulfill({ status: 404, json: { error: 'Unexpected mocked request' } });
+            });
+
+            const response = await page.goto(`http://127.0.0.1:8000/deck-requests/host/?code=${TOKEN}&host=${HOST}&label=August%208%20Game%20Night`, { waitUntil: 'networkidle' });
+            if (!response?.ok()) throw new Error(`Deck Prep host returned ${response?.status()}`);
+            await page.waitForSelector('.request-card');
+            const card = await page.locator('.request-card').innerText();
+            if (!card.includes('Tymon') || !card.includes('Forward Doctrine') || !card.includes('Supply Depot')) {
+              throw new Error(`Host queue did not resolve the requested starter Deck:\n${card}`);
+            }
+            const printHref = await page.locator('.request-actions a').getAttribute('href');
+            if (!printHref?.includes('faction=military') || !printHref.includes('leader=general') || !printHref.includes('starter=1')) {
+              throw new Error(`Host print link was incomplete: ${printHref}`);
+            }
+            await page.selectOption('[data-request-status]', 'prepared');
+            if (!(await page.locator('.request-card').getAttribute('class'))?.includes('status-prepared')) {
+              throw new Error('Preparation status did not update locally');
+            }
+            await page.screenshot({ path: '/tmp/deck-prep-host.png', fullPage: true });
+            if (errors.length) throw new Error(`Deck Prep host errors:\n${errors.join('\n')}`);
+            await page.close();
+          }
+
+          await browser.close();
+          NODE
+
+      - name: Upload browser screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: deck-prep-browser-smoke
+          path: /tmp/deck-prep-*.png
+          if-no-files-found: error
