@@ -6,6 +6,7 @@
   const tokens = data.tokens;
   let syntheticIndex = 0;
   let movedFactionAddenda = 0;
+  let movedBreaksBeforeParentHeadings = 0;
   let forcedSectionBreaks = 0;
 
   for (let sectionStart = 0; sectionStart < tokens.length;) {
@@ -80,6 +81,22 @@
       }
     }
 
+    for (let index = sectionStart + 1; index < sectionEnd - 1; index += 1) {
+      const token = tokens[index];
+      const breakAfter = tokens[index + 1];
+      if (
+        token.kind === 'heading' &&
+        token.level === 2 &&
+        /-specific rules$/.test(token.title) &&
+        breakAfter?.kind === 'pagebreak'
+      ) {
+        tokens.splice(index + 1, 1);
+        tokens.splice(index, 0, breakAfter);
+        movedBreaksBeforeParentHeadings += 1;
+        index += 1;
+      }
+    }
+
     const forcedBreakTitles = new Set(['Withdrawal and Retreat']);
     for (let index = sectionStart + 1; index < sectionEnd; index += 1) {
       const token = tokens[index];
@@ -101,6 +118,7 @@
   data.metadata.layoutNormalization = {
     insertedCompleteRulesHeadings: syntheticIndex,
     movedFactionAddendaBeforeLeaderProfiles: movedFactionAddenda,
+    movedBreaksBeforeParentHeadings,
     forcedSectionBreaks,
   };
   node.textContent = JSON.stringify(data);
