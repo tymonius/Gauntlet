@@ -6,8 +6,7 @@
   const tokens = data.tokens;
   let syntheticIndex = 0;
   let movedFactionAddenda = 0;
-  let normalizedParentSectionBreaks = 0;
-  let forcedSectionBreaks = 0;
+  let retiredLegacyPageBreaks = 0;
 
   for (let sectionStart = 0; sectionStart < tokens.length;) {
     if (!(tokens[sectionStart].kind === 'heading' && tokens[sectionStart].level === 1)) {
@@ -81,59 +80,26 @@
       }
     }
 
-    const forcedBreakTitles = new Set(['Withdrawal and Retreat']);
-    for (let index = sectionStart + 1; index < sectionEnd; index += 1) {
-      const token = tokens[index];
-      if (token.kind === 'heading' && forcedBreakTitles.has(token.title) && tokens[index - 1]?.kind !== 'pagebreak') {
-        forcedSectionBreaks += 1;
-        tokens.splice(index, 0, {
-          id: `layout-pagebreak-${forcedSectionBreaks}`,
-          kind: 'pagebreak',
-          layoutOnly: true,
-        });
-        sectionEnd += 1;
-        index += 1;
-      }
-    }
-
     sectionStart = sectionEnd;
   }
 
   /*
-   * Faction addenda are moved earlier above, which changes all local indices.
-   * Normalize their page boundary only after every move is complete: remove
-   * breaks between a parent “-specific rules” heading and its first child,
-   * then put one deliberate break immediately before the parent heading.
+   * The canonical Markdown still carries fixed page-break elements from the
+   * retired document renderer. They are not player-facing content and must not
+   * dictate this publication's pagination. Part, faction, Leader, recto, and
+   * booklet boundaries are created explicitly by the approved page model.
    */
-  for (let index = 0; index < tokens.length; index += 1) {
-    const token = tokens[index];
-    if (!(token.kind === 'heading' && token.level === 2 && /-specific rules$/.test(token.title))) continue;
-
-    let cursor = index + 1;
-    while (cursor < tokens.length && ['divider', 'pagebreak'].includes(tokens[cursor].kind)) {
-      if (tokens[cursor].kind === 'pagebreak') {
-        tokens.splice(cursor, 1);
-        continue;
-      }
-      cursor += 1;
-    }
-
-    if (tokens[index - 1]?.kind !== 'pagebreak') {
-      normalizedParentSectionBreaks += 1;
-      tokens.splice(index, 0, {
-        id: `layout-parent-pagebreak-${normalizedParentSectionBreaks}`,
-        kind: 'pagebreak',
-        layoutOnly: true,
-      });
-      index += 1;
-    }
+  for (const token of tokens) {
+    if (token.kind !== 'pagebreak' || token.layoutOnly) continue;
+    token.kind = 'divider';
+    token.legacyPagebreak = true;
+    retiredLegacyPageBreaks += 1;
   }
 
   data.metadata.layoutNormalization = {
     insertedCompleteRulesHeadings: syntheticIndex,
     movedFactionAddendaBeforeLeaderProfiles: movedFactionAddenda,
-    normalizedParentSectionBreaks,
-    forcedSectionBreaks,
+    retiredLegacyPageBreaks,
   };
   node.textContent = JSON.stringify(data);
 })();
