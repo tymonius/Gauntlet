@@ -1,5 +1,10 @@
 # Gauntlet v0.6.1 Changelog
 
+
+## Post-release playtest changes
+
+- **Financiers — Financial Capacity:** After the Capture step and its effects, a Financier whose Treasury value exceeds their controlled Territories may use both normal Action Opportunities that turn, provided at least one is used for a Financier faction action. Eligibility is locked for the turn.
+
 **Compared with:** v0.6.0 — Faction Framework Release  
 **Published:** July 30, 2026
 
