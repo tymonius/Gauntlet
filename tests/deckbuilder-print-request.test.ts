@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 const index = readFileSync("deckbuilder/index.html", "utf8");
 const script = readFileSync("deckbuilder/print-request.js", "utf8");
+const runtime = readFileSync("deckbuilder/v061-runtime.js", "utf8");
 
 describe("Deckbuilder host printing requests", () => {
   it("is available directly in the main Deckbuilder", () => {
@@ -18,6 +19,11 @@ describe("Deckbuilder host printing requests", () => {
     expect(script).toContain("BEGIN GAUNTLET DECK JSON");
     expect(script).toContain("END GAUNTLET DECK JSON");
     expect(script).toContain("Import JSON");
+  });
+
+  it("routes v0.6.1 imports through the canonical Deck data importer", () => {
+    expect(runtime).toContain("applyDeckData(snapshot)");
+    expect(runtime).not.toContain("loadDeckSnapshot(snapshot)");
   });
 
   it("opens a user-reviewed email draft without sending data through Gauntlet", () => {
