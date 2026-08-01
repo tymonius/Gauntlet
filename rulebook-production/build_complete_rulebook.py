@@ -24,15 +24,15 @@ def main() -> None:
     script_marker = '<script type="module" src="paginate_rulebook.mjs"></script>'
     script_replacement = (
         '<script src="normalize_rulebook_layout.js"></script>\n'
-        '<script type="module" src="paginate_rulebook.mjs"></script>\n'
-        '<script type="module" src="postprocess_rulebook.mjs"></script>'
+        '<script src="postprocess_rulebook.mjs"></script>\n'
+        '<script type="module" src="paginate_rulebook.mjs"></script>'
     )
     if script_marker not in content:
         raise RuntimeError("Could not attach Rulebook layout controls around pagination.")
     content = content.replace(script_marker, script_replacement, 1)
 
     OUTPUT.write_text(content, encoding="utf-8")
-    print(f"attached normalization, pagination reserve, and structural postprocessing to {OUTPUT}")
+    print(f"attached normalization, pagination reserve, and synchronous structural postprocessing to {OUTPUT}")
 
 
 if __name__ == "__main__":
