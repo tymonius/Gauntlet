@@ -1,0 +1,74 @@
+name: Commit terminology refinement
+
+on:
+  push:
+    branches:
+      - agent/terminology-refinement
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  commit:
+    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[terminology-applied]') }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/terminology-refinement
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Apply fully audited terminology pass
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          import textwrap
+
+          workflow = Path('.github/workflows/finalize-terminology-refinement.yml').read_text(encoding='utf-8')
+          start = workflow.index('- name: Apply and finish terminology pass')
+          section = workflow[start:]
+          marker = "python - <<'PY'\n"
+          code_start = section.index(marker) + len(marker)
+          remainder = section[code_start:]
+          match = re.search(r'^\s{10}PY\s*$', remainder, flags=re.M)
+          if not match:
+              raise RuntimeError('Could not extract finalized terminology pass')
+          exec(textwrap.dedent(remainder[:match.start()]), {})
+          PY
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Validate deck data
+        run: npm run test:deckbuilder
+
+      - name: Run tests
+        run: npm test
+
+      - name: Remove one-use automation
+        run: |
+          rm scripts/apply_terminology_refinement.py
+          rm .github/workflows/apply-terminology-refinement.yml
+          rm .github/workflows/finalize-terminology-refinement.yml
+          rm .github/workflows/commit-terminology-refinement.yml
+
+      - name: Commit terminology update
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "[terminology-applied] Refine game terminology"
+          git push origin HEAD:agent/terminology-refinement
