@@ -1,0 +1,116 @@
+name: Test Deckbuilder printing request
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "deckbuilder/**"
+      - "tests/deckbuilder-print-request.test.ts"
+      - ".github/workflows/test-deckbuilder-print-request-browser.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-deckbuilder-print-request-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  journey:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Serve repository
+        run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
+
+      - name: Exercise JSON email request and import round trip
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from 'playwright';
+
+          const browser = await chromium.launch({ headless: true });
+          const origin = 'http://127.0.0.1:8000';
+
+          for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }]) {
+            const suffix = viewport.width < 600 ? 'mobile' : 'desktop';
+            const context = await browser.newContext({ viewport });
+            await context.grantPermissions(['clipboard-read', 'clipboard-write'], { origin });
+            const page = await context.newPage();
+            const errors = [];
+            page.on('pageerror', error => errors.push(error.message));
+            page.on('console', message => {
+              if (message.type() === 'error') errors.push(message.text());
+            });
+            page.on('dialog', dialog => dialog.accept());
+
+            const response = await page.goto(`${origin}/deckbuilder/?faction=military&leader=general&starter=1&source=start`, { waitUntil: 'networkidle' });
+            if (!response?.ok()) throw new Error(`Deckbuilder returned ${response?.status()}`);
+            await page.waitForSelector('#starterHandoffPanel.is-ready', { timeout: 20000 });
+            await page.waitForSelector('#printRequestForm');
+            await page.waitForFunction(() => document.querySelector('#validityText')?.textContent === 'Valid');
+
+            await page.fill('#printRequestPlayerName', 'Tymon');
+            await page.fill('#printRequestHostEmail', 'host@example.com');
+            await page.fill('#printRequestNote', 'Please prepare this before game night.');
+            if (await page.locator('#openPrintRequestEmail').isDisabled()) {
+              throw new Error('Email request remained disabled for a valid Deck');
+            }
+            if (await page.locator('#copyPrintRequest').isDisabled()) {
+              throw new Error('Copy request remained disabled for a valid Deck');
+            }
+
+            await page.click('#copyPrintRequest');
+            const requestText = await page.evaluate(() => navigator.clipboard.readText());
+            if (!requestText.includes('Gauntlet Deck Printing Request') || !requestText.includes('Tymon')) {
+              throw new Error(`Printing request summary was incomplete:\n${requestText.slice(0, 500)}`);
+            }
+            const match = requestText.match(/----- BEGIN GAUNTLET DECK JSON -----\n([\s\S]*?)\n----- END GAUNTLET DECK JSON -----/);
+            if (!match) throw new Error('Printing request did not contain marked Deck JSON');
+            const exported = JSON.parse(match[1]);
+            const cardCount = exported.cards.reduce((sum, item) => sum + Number(item.qty || 0), 0);
+            if (exported.schema !== 'gauntlet-v0.6.1-deck' || exported.factionId !== 'military' || exported.leaderId !== 'general') {
+              throw new Error(`Unexpected exported Deck identity: ${JSON.stringify(exported).slice(0, 300)}`);
+            }
+            if (cardCount !== 30 || exported.territories?.length !== 3) {
+              throw new Error(`Exported request was incomplete: ${cardCount} cards, ${exported.territories?.length} Territories`);
+            }
+
+            await page.click('#clearDeckButton');
+            await page.click('#clearTerritoriesButton');
+            await page.locator('.advanced-tools').evaluate(details => { details.open = true; });
+            await page.fill('#importJson', match[1]);
+            await page.click('#importJsonButton');
+            await page.waitForFunction(() => document.querySelector('#cardCount')?.textContent === '30');
+            await page.waitForFunction(() => document.querySelector('#territoryMetricCount')?.textContent === '3');
+            await page.waitForFunction(() => document.querySelector('#validityText')?.textContent === 'Valid');
+
+            await page.screenshot({ path: `/tmp/deckbuilder-print-request-${suffix}.png`, fullPage: true });
+            if (errors.length) throw new Error(`Deckbuilder printing request ${suffix} errors:\n${errors.join('\n')}`);
+            await context.close();
+          }
+
+          await browser.close();
+          NODE
+
+      - name: Upload browser screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: deckbuilder-print-request-browser-smoke
+          path: /tmp/deckbuilder-print-request-*.png
+          if-no-files-found: error

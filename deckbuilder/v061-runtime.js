@@ -107,7 +107,7 @@
         if (snapshot.gameVersion !== "v0.6.1") {
           throw new Error("This Deck was not exported from the v0.6.1 Deckbuilder. Open it in its original version instead of migrating it automatically.");
         }
-        loadDeckSnapshot(snapshot);
+        applyDeckData(snapshot);
         field.value = "";
       } catch (error) {
         window.alert(`Could not import Deck: ${error.message}`);
