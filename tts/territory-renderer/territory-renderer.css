@@ -1,0 +1,271 @@
+html,
+body {
+  width: max-content;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+#renderTarget {
+  width: 3.5in;
+  height: 2.5in;
+}
+
+.territory-card {
+  --accent: #29485f;
+  --accent-deep: #182d3d;
+  --metal: #ae8248;
+  --rules-scale: 1;
+  position: relative;
+  width: 3.5in;
+  height: 2.5in;
+  overflow: hidden;
+  border: 1px solid #241c15;
+  border-radius: 0.105in;
+  color: #211a14;
+  background: var(--accent-deep);
+  box-shadow: none;
+}
+
+.territory-card.arena {
+  --accent: #8a2a31;
+  --accent-deep: #55151a;
+  --metal: #c49a55;
+}
+
+.territory-card::before {
+  position: absolute;
+  inset: 0.045in;
+  z-index: 1;
+  border: 2px solid var(--metal);
+  border-radius: 0.075in;
+  content: "";
+  pointer-events: none;
+}
+
+.territory-card::after {
+  position: absolute;
+  inset: 0.078in;
+  z-index: 1;
+  border: 1px solid rgba(245, 231, 199, 0.65);
+  border-radius: 0.052in;
+  content: "";
+  pointer-events: none;
+}
+
+.territory-interior {
+  position: absolute;
+  inset: 0.095in;
+  display: grid;
+  grid-template-rows: 0.52in minmax(0, 1fr) 0.2in;
+  overflow: hidden;
+  border-radius: 0.04in;
+  background-color: #eadfc8;
+  background-image:
+    radial-gradient(circle at 16% 12%, rgba(255, 255, 255, 0.35), transparent 32%),
+    radial-gradient(circle at 82% 86%, rgba(78, 54, 29, 0.13), transparent 38%),
+    repeating-linear-gradient(7deg, rgba(82, 58, 34, 0.025) 0 1px, transparent 1px 5px);
+}
+
+.territory-heading {
+  display: grid;
+  grid-template-columns: 0.78in minmax(0, 1fr) 0.72in;
+  align-items: center;
+  min-width: 0;
+  color: #f6eddc;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.08), transparent 38%),
+    linear-gradient(90deg, var(--accent-deep), var(--accent));
+  border-bottom: 2px solid var(--metal);
+}
+
+.territory-kind {
+  align-self: stretch;
+  display: grid;
+  place-items: center;
+  padding: 0 0.04in;
+  border-right: 1px solid rgba(245, 231, 199, 0.42);
+  font-family: var(--font-interface, Arial, sans-serif);
+  font-size: 5.4pt;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.territory-title-wrap {
+  min-width: 0;
+  padding: 0.02in 0.07in 0;
+  text-align: center;
+}
+
+.territory-title {
+  margin: 0;
+  overflow: hidden;
+  color: inherit;
+  font-family: "p22-1722-pro", Georgia, serif;
+  font-size: 13pt;
+  font-weight: 700;
+  letter-spacing: 0.015em;
+  line-height: 0.88;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.territory-number {
+  display: block;
+  margin-top: 0.025in;
+  color: rgba(246, 237, 220, 0.72);
+  font-family: var(--font-interface, Arial, sans-serif);
+  font-size: 4.6pt;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.territory-complexity {
+  align-self: stretch;
+  display: grid;
+  place-items: center;
+  padding: 0 0.04in;
+  border-left: 1px solid rgba(245, 231, 199, 0.42);
+  font-family: var(--font-interface, Arial, sans-serif);
+  font-size: 5.2pt;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1.05;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.territory-effect {
+  min-height: 0;
+  margin: 0.065in 0.075in 0.045in;
+  padding: 0.055in 0.07in 0.05in;
+  overflow: hidden;
+  border: 1px solid rgba(64, 47, 29, 0.42);
+  background: rgba(255, 252, 243, 0.54);
+  box-shadow:
+    inset 0 0 0 1px rgba(255, 255, 255, 0.45),
+    0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.territory-effect-label {
+  margin: 0 0 0.025in;
+  color: var(--accent-deep);
+  font-family: var(--font-interface, Arial, sans-serif);
+  font-size: 4.8pt;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.territory-effect p {
+  margin: 0;
+  color: #221a13;
+  font-family: "adobe-caslon-pro", Georgia, serif;
+  font-size: calc(8.4pt * var(--rules-scale));
+  font-weight: 600;
+  line-height: 1.12;
+  text-align: left;
+}
+
+.territory-effect p + p {
+  margin-top: calc(0.045in * var(--rules-scale));
+}
+
+.territory-footer {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.05in;
+  padding: 0 0.07in 0.015in;
+  color: rgba(45, 34, 24, 0.72);
+  border-top: 1px solid rgba(70, 51, 31, 0.3);
+  font-family: var(--font-interface, Arial, sans-serif);
+  font-size: 4.3pt;
+  font-weight: 750;
+  letter-spacing: 0.07em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.territory-footer span:nth-child(2) {
+  color: var(--accent-deep);
+  letter-spacing: 0.13em;
+}
+
+.territory-footer span:last-child {
+  text-align: right;
+}
+
+.territory-card.fit-warning .territory-effect {
+  outline: 2px solid #a30000;
+  outline-offset: -2px;
+}
+
+.territory-card.back {
+  color: #f4ead8;
+  background:
+    radial-gradient(circle at center, rgba(255, 255, 255, 0.08), transparent 38%),
+    linear-gradient(135deg, #1a3041, #29485f 52%, #172a38);
+}
+
+.territory-card.back .territory-interior {
+  display: grid;
+  place-items: center;
+  grid-template-rows: 1fr;
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.025) 0 2px, transparent 2px 8px),
+    radial-gradient(circle at center, rgba(196, 154, 85, 0.13), transparent 44%),
+    var(--accent-deep);
+}
+
+.territory-back-cartouche {
+  position: relative;
+  width: 2.45in;
+  padding: 0.18in 0.15in 0.14in;
+  border: 2px solid var(--metal);
+  outline: 1px solid rgba(245, 231, 199, 0.62);
+  outline-offset: -0.055in;
+  text-align: center;
+}
+
+.territory-back-mark {
+  margin: 0;
+  font-family: "p22-1722-pro", Georgia, serif;
+  font-size: 24pt;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  line-height: 0.9;
+}
+
+.territory-back-label {
+  margin-top: 0.07in;
+  color: var(--metal);
+  font-family: var(--font-interface, Arial, sans-serif);
+  font-size: 7pt;
+  font-weight: 850;
+  letter-spacing: 0.24em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.territory-back-edition {
+  margin-top: 0.065in;
+  color: rgba(244, 234, 216, 0.68);
+  font-family: var(--font-interface, Arial, sans-serif);
+  font-size: 4.4pt;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  line-height: 1;
+  text-transform: uppercase;
+}
