@@ -10,7 +10,7 @@
       <article class="territory-card back" aria-label="Gauntlet Territory card back">
         <div class="territory-interior">
           <div class="territory-back-cartouche">
-            <div class="territory-back-mark">Gauntlet</div>
+            <div class="territory-back-mark">G</div>
             <div class="territory-back-label">Territory</div>
             <div class="territory-back-edition">v0.6.1 playtest component</div>
           </div>
@@ -34,25 +34,23 @@
     .split(/\n+/)
     .map((paragraph) => paragraph.trim())
     .filter(Boolean);
+  const category = territory.arena ? 'Arena' : 'Territory';
+  const number = String(territory.number).padStart(2, '0');
 
   target.innerHTML = `
     <article class="territory-card${territory.arena ? ' arena' : ''}" aria-label="${escapeAttribute(territory.name)} Territory card">
       <div class="territory-interior">
         <header class="territory-heading">
-          <div class="territory-kind">${territory.arena ? 'Arena' : 'Territory'}</div>
-          <div class="territory-title-wrap">
-            <h1 class="territory-title">${escapeHtml(displayName)}</h1>
-            <span class="territory-number">Territory ${String(territory.number).padStart(2, '0')} of 25</span>
-          </div>
-          <div class="territory-complexity">${escapeHtml(territory.complexity)}</div>
+          <div class="territory-kicker">${category}</div>
+          <h1 class="territory-title">${escapeHtml(displayName)}</h1>
         </header>
         <section class="territory-effect">
           <h2 class="territory-effect-label">Effect</h2>
           ${paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('')}
         </section>
         <footer class="territory-footer">
-          <span>${territory.arena ? 'Arena' : 'Standard Territory'}</span>
-          <span>Gauntlet</span>
+          <span>${category} ${number}/25</span>
+          <span>${escapeHtml(territory.complexity)}</span>
           <span>v0.6.1</span>
         </footer>
       </div>
@@ -73,8 +71,8 @@
   async function loadRequiredFonts() {
     if (!document.fonts) return;
     await Promise.all([
-      document.fonts.load('700 16px "p22-1722-pro"', 'Gauntlet Territory'),
-      document.fonts.load('600 12px "adobe-caslon-pro"', 'Territory effect text'),
+      document.fonts.load('400 16px "p22-1722-pro"', 'Gauntlet Territory'),
+      document.fonts.load('400 12px "adobe-caslon-pro"', 'Territory effect text'),
     ]).catch(() => {});
     await document.fonts.ready.catch(() => {});
   }
@@ -83,7 +81,7 @@
     fitTitle(card.querySelector('.territory-title'));
     const effect = card.querySelector('.territory-effect');
     let scale = 1;
-    const minimumScale = 0.62;
+    const minimumScale = 0.68;
 
     card.style.setProperty('--rules-scale', String(scale));
     forceLayout(effect);
