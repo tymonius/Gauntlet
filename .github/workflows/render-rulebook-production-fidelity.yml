@@ -45,6 +45,7 @@ jobs:
       - name: Install renderer
         run: |
           npm install
+          npm install --no-save pdf-lib
           npx playwright install --with-deps chromium
 
       - name: Build approved proof and production fidelity checkpoint
@@ -61,22 +62,22 @@ jobs:
 
       - name: Validate PDF geometry
         run: |
-          pdfinfo /tmp/rulebook-production-fidelity/Gauntlet_v0.6.1_Production_Fidelity_Gate.pdf
-          python - <<'PY'
-          import re
-          import subprocess
-          output = subprocess.check_output([
-              'pdfinfo',
-              '/tmp/rulebook-production-fidelity/Gauntlet_v0.6.1_Production_Fidelity_Gate.pdf',
-          ], text=True)
-          pages = int(re.search(r'^Pages:\s+(\d+)', output, re.MULTILINE).group(1))
-          size = re.search(r'^Page size:\s+([\d.]+) x ([\d.]+) pts', output, re.MULTILINE)
-          width, height = map(float, size.groups())
-          if pages != 8:
-              raise SystemExit(f'Expected 8 fidelity pages; found {pages}.')
-          if abs(width - 396) > 1 or abs(height - 612) > 1:
-              raise SystemExit(f'Expected half-letter pages; found {width} x {height} pt.')
-          PY
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { PDFDocument } from 'pdf-lib';
+
+          const path = '/tmp/rulebook-production-fidelity/Gauntlet_v0.6.1_Production_Fidelity_Gate.pdf';
+          const pdf = await PDFDocument.load(fs.readFileSync(path));
+          if (pdf.getPageCount() !== 8) {
+            throw new Error(`Expected 8 fidelity pages; found ${pdf.getPageCount()}.`);
+          }
+          for (const [index, page] of pdf.getPages().entries()) {
+            const { width, height } = page.getSize();
+            if (Math.abs(width - 396) > 1 || Math.abs(height - 612) > 1) {
+              throw new Error(`Page ${index + 1} is ${width} x ${height} pt instead of half-letter.`);
+            }
+          }
+          NODE
 
       - name: Upload fidelity checkpoint
         uses: actions/upload-artifact@v4
