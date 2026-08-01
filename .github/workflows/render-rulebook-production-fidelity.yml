@@ -1,4 +1,4 @@
-name: Render Rulebook production fidelity gate
+name: Render Rulebook production
 
 on:
   pull_request:
@@ -7,6 +7,7 @@ on:
       - ".github/workflows/render-rulebook-production-fidelity.yml"
       - "rulebook-production/**"
       - "rulebook-design/**"
+      - "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md"
       - "images/sketches/**"
       - "package.json"
       - "package-lock.json"
@@ -16,15 +17,15 @@ permissions:
   contents: read
 
 concurrency:
-  group: rulebook-production-fidelity-${{ github.ref }}
+  group: rulebook-production-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  fidelity:
+  render:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 35
     steps:
-      - name: Checkout approved design and production checkpoint
+      - name: Checkout approved design and canonical Rulebook
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
@@ -33,6 +34,7 @@ jobs:
             .github/workflows/render-rulebook-production-fidelity.yml
             rulebook-design
             rulebook-production
+            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md
             images/sketches
             package.json
             package-lock.json
@@ -48,17 +50,19 @@ jobs:
           npm install --no-save pdf-lib
           npx playwright install --with-deps chromium
 
-      - name: Build approved proof and production fidelity checkpoint
+      - name: Build approved proof, fidelity checkpoint, and complete Rulebook
         run: |
           python rulebook-design/build_proofs.py
           python rulebook-production/build_fidelity_gate.py
+          python rulebook-production/build_rulebook.py
 
       - name: Render and compare against approved design
         run: |
-          python -m http.server 8000 >/tmp/rulebook-fidelity-server.log 2>&1 &
+          python -m http.server 8000 >/tmp/rulebook-production-server.log 2>&1 &
           SERVER_PID=$!
           trap 'kill $SERVER_PID' EXIT
           node rulebook-production/render_fidelity_gate.mjs
+          node rulebook-production/render_rulebook.mjs
 
       - name: Validate PDF geometry
         run: |
@@ -66,17 +70,42 @@ jobs:
           import fs from 'node:fs';
           import { PDFDocument } from 'pdf-lib';
 
-          const path = '/tmp/rulebook-production-fidelity/Gauntlet_v0.6.1_Production_Fidelity_Gate.pdf';
-          const pdf = await PDFDocument.load(fs.readFileSync(path));
-          if (pdf.getPageCount() !== 8) {
-            throw new Error(`Expected 8 fidelity pages; found ${pdf.getPageCount()}.`);
-          }
-          for (const [index, page] of pdf.getPages().entries()) {
-            const { width, height } = page.getSize();
-            if (Math.abs(width - 396) > 1 || Math.abs(height - 612) > 1) {
-              throw new Error(`Page ${index + 1} is ${width} x ${height} pt instead of half-letter.`);
+          async function validate(path, expectedPages, expectedWidth, expectedHeight, label) {
+            const pdf = await PDFDocument.load(fs.readFileSync(path));
+            if (pdf.getPageCount() !== expectedPages) {
+              throw new Error(`${label}: expected ${expectedPages} pages; found ${pdf.getPageCount()}.`);
+            }
+            for (const [index, page] of pdf.getPages().entries()) {
+              const { width, height } = page.getSize();
+              if (Math.abs(width - expectedWidth) > 1 || Math.abs(height - expectedHeight) > 1) {
+                throw new Error(`${label} page ${index + 1} is ${width} x ${height} pt.`);
+              }
             }
           }
+
+          await validate(
+            '/tmp/rulebook-production-fidelity/Gauntlet_v0.6.1_Production_Fidelity_Gate.pdf',
+            8,
+            396,
+            612,
+            'Fidelity gate',
+          );
+
+          const report = JSON.parse(fs.readFileSync('/tmp/rulebook-production/production-report.json', 'utf8'));
+          await validate(
+            '/tmp/rulebook-production/Gauntlet_v0.6.1_Rulebook.pdf',
+            report.outputs.readerPages,
+            396,
+            612,
+            'Reader Rulebook',
+          );
+          await validate(
+            '/tmp/rulebook-production/Gauntlet_v0.6.1_Rulebook_Booklet.pdf',
+            report.outputs.bookletSides,
+            792,
+            612,
+            'Imposed booklet',
+          );
           NODE
 
       - name: Upload fidelity checkpoint
@@ -84,4 +113,11 @@ jobs:
         with:
           name: gauntlet-v061-rulebook-production-fidelity
           path: /tmp/rulebook-production-fidelity/**
+          if-no-files-found: error
+
+      - name: Upload complete production review package
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-v061-rulebook-production-review
+          path: /tmp/rulebook-production/**
           if-no-files-found: error
