@@ -3,7 +3,7 @@
 
 ## Post-release playtest changes
 
-- **Terminology refinement:** Distinguished Position from Occupation; defined Occupier and Counterattack; renamed deckbuilding value to card value; defined Faction Ability and Faction Action; renamed the battle step Determine the Outcome; and replaced the former generic timing verb with operation-specific language.
+- **Terminology refinement:** Distinguished Position from Occupation; defined Occupier and Counterattack; renamed deckbuilding value to card value; defined Faction Ability and Faction Action; renamed the battle step **Determine the Outcome**; and replaced the overloaded timing verb with operation-specific language.
 
 - **Financiers — Financial Capacity:** After the Capture step and its effects, a Financier whose Treasury value exceeds their controlled Territories may use both normal Action Opportunities that turn, provided at least one is used for a Financier Faction Action. Eligibility is locked for the turn.
 
@@ -40,7 +40,7 @@ Battles now proceed in this order:
 4. reveal Gambits;
 5. choose Tactics;
 6. reveal Tactics;
-7. determine the outcome; and
+7. **Determine the Outcome**; and
 8. proceed to the Aftermath.
 
 ## Reveal, priority, and replacement
@@ -48,7 +48,7 @@ Battles now proceed in this order:
 - Gambits and Tactics reveal simultaneously within their respective stages.
 - Effects that expressly apply before other effects at that stage are applied first.
 - Added attacker-first alternating application when both players control effects at the same timing.
-- Clarified that simultaneous reveal does not mean effects being applied simultaneously.
+- Clarified that simultaneous reveal does not cause effects to be applied simultaneously.
 - Clarified that a face-up Gambit or Tactic still waits for its normal reveal timing unless stated otherwise.
 - Clarified that effects cannot be negated after they take effect.
 - Added shared rules for replacement cards, revised choices, multiple Tactics, and additional Tactics.
@@ -57,7 +57,7 @@ Battles now proceed in this order:
 ## Aftermath, withdrawal, and retreat
 
 - Replaced loose uses of “after battle” and the obsolete term “battle cleanup” with the formal **Aftermath of the battle**.
-- Added a complete Aftermath order covering result, withdrawal replacement, retreat, occupation, additional retreat, card destinations, destination triggers, and follow-up movement.
+- Added a complete Aftermath order covering result, withdrawal replacement, retreat, Occupation, additional retreat, card destinations, destination triggers, and follow-up movement.
 - Normal card destinations are now stated centrally:
   - Gambits go to the Graveyard;
   - Tactics go to the Discard Pile; and
@@ -142,7 +142,7 @@ Battles now proceed in this order:
 ## Financiers
 
 - Replaced phase language with Action Opportunity timing.
-- Clarified that Deed ownership is independent of occupation, Territory control, Assets, and Overlays.
+- Clarified that Deed ownership is independent of token Position, Territory control, Assets, and Overlays.
 - Clarified Asset replacement interactions with Underwriting, Property Dues, Margin Loan, and Tariffs.
 - Revised Hostile Takeover, Speculation, Monetary Crisis, Capital Gains, Margin Loan, Leveraged Buyout, Foreclosure, Property Dues, and Corner the Market for the formal Aftermath sequence.
 
@@ -174,6 +174,6 @@ Unless specifically revised above, v0.6.1 retains:
 - 25 Territories, including four Arenas;
 - Deck construction of at least 30 cards and no more than 60 total value;
 - exactly three different Territories with no more than one Arena;
-- the distinction between occupation and control;
-- capture at the start of the occupying player's next turn; and
+- the distinction between Occupation and control;
+- capture at the start of the occupier's next turn; and
 - running the Gauntlet as the universal victory route.
