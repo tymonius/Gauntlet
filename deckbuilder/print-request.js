@@ -14,7 +14,7 @@
     panel.className = "print-request-panel";
     panel.innerHTML = `
       <h4>Prepping for a Gauntlet game night?</h4>
-      <p>Send your host this Deck and request printing. The email includes the exact exported JSON, ready to paste into this Deckbuilder's existing <strong>Import JSON</strong> box.</p>
+      <p>Send your host this Deck and request printing. The tool copies the complete request and exported JSON, then opens a short email draft addressed to your host.</p>
       <form id="printRequestForm" class="print-request-form" novalidate>
         <div class="print-request-fields">
           <label>
@@ -31,10 +31,10 @@
           </label>
         </div>
         <div class="print-request-actions">
-          <button id="openPrintRequestEmail" type="submit" disabled>Open email request</button>
+          <button id="openPrintRequestEmail" type="submit" disabled>Copy request and open email</button>
           <button id="copyPrintRequest" type="button" class="secondary" disabled>Copy request</button>
         </div>
-        <p class="print-request-help">Your Deck is not sent to Gauntlet. The tool prepares a draft in your email app; you review and send it yourself.</p>
+        <p class="print-request-help">Your Deck is not sent to Gauntlet. When your email app opens, paste the copied request into the message body, review it, and send.</p>
         <p id="printRequestStatus" class="print-request-status" aria-live="polite"></p>
       </form>`;
     printSection.append(panel);
@@ -114,17 +114,45 @@
     return { deck, playerName, subject, body: lines.join("\n"), json };
   }
 
-  function openEmailRequest(event) {
+  function buildEmailDraftBody(request) {
+    return [
+      `Please prepare this Gauntlet Deck for ${request.playerName}.`,
+      "",
+      "The complete printing request and Deck JSON have been copied to my clipboard.",
+      "Paste them below before sending this email:",
+      "",
+      "----- PASTE GAUNTLET DECK REQUEST BELOW -----",
+      ""
+    ].join("\n");
+  }
+
+  async function openEmailRequest(event) {
     event.preventDefault();
     syncControls();
     if (el.openPrintRequestEmail.disabled) return;
 
     const hostEmail = el.printRequestHostEmail.value.trim();
     const request = buildRequest();
+    const copied = await copyText(request.body);
+    if (!copied) {
+      window.prompt("Copy this printing request before continuing:", request.body);
+    }
+
     rememberHostEmail(hostEmail);
-    const mailto = `mailto:${encodeURIComponent(hostEmail)}?subject=${encodeURIComponent(request.subject)}&body=${encodeURIComponent(request.body)}`;
-    setStatus("Opening your email app. Review the draft before sending.", "success");
-    window.location.href = mailto;
+    const draftBody = buildEmailDraftBody(request);
+    const mailto = `mailto:${encodeURIComponent(hostEmail)}?subject=${encodeURIComponent(request.subject)}&body=${encodeURIComponent(draftBody)}`;
+    setStatus("Request copied. Paste it into the email draft before sending.", "success");
+    openMailto(mailto);
+  }
+
+  function openMailto(mailto) {
+    const link = document.createElement("a");
+    link.href = mailto;
+    link.hidden = true;
+    link.setAttribute("aria-hidden", "true");
+    document.body.append(link);
+    link.click();
+    link.remove();
   }
 
   async function copyRequest() {
@@ -138,12 +166,38 @@
       return;
     }
     const request = buildRequest();
-    try {
-      await navigator.clipboard.writeText(`${request.subject}\n\n${request.body}`);
+    const copied = await copyText(`${request.subject}\n\n${request.body}`);
+    if (copied) {
       setStatus("Printing request copied. Paste it into an email or message to your host.", "success");
-    } catch {
+    } else {
       window.prompt("Copy this printing request:", `${request.subject}\n\n${request.body}`);
     }
+  }
+
+  async function copyText(text) {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+    } catch {
+      // Fall through to the synchronous browser copy fallback.
+    }
+
+    const field = document.createElement("textarea");
+    field.value = text;
+    field.setAttribute("readonly", "");
+    field.style.position = "fixed";
+    field.style.inset = "0 auto auto -9999px";
+    document.body.append(field);
+    field.focus();
+    field.select();
+    field.setSelectionRange(0, field.value.length);
+    let copied = false;
+    try { copied = document.execCommand("copy"); }
+    catch { copied = false; }
+    field.remove();
+    return copied;
   }
 
   function restoreHostEmail() {
