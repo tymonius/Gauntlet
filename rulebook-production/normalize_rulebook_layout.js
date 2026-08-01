@@ -6,7 +6,7 @@
   const tokens = data.tokens;
   let syntheticIndex = 0;
   let movedFactionAddenda = 0;
-  let movedBreaksBeforeParentHeadings = 0;
+  let normalizedParentSectionBreaks = 0;
   let forcedSectionBreaks = 0;
 
   for (let sectionStart = 0; sectionStart < tokens.length;) {
@@ -81,22 +81,6 @@
       }
     }
 
-    for (let index = sectionStart + 1; index < sectionEnd - 1; index += 1) {
-      const token = tokens[index];
-      const breakAfter = tokens[index + 1];
-      if (
-        token.kind === 'heading' &&
-        token.level === 2 &&
-        /-specific rules$/.test(token.title) &&
-        breakAfter?.kind === 'pagebreak'
-      ) {
-        tokens.splice(index + 1, 1);
-        tokens.splice(index, 0, breakAfter);
-        movedBreaksBeforeParentHeadings += 1;
-        index += 1;
-      }
-    }
-
     const forcedBreakTitles = new Set(['Withdrawal and Retreat']);
     for (let index = sectionStart + 1; index < sectionEnd; index += 1) {
       const token = tokens[index];
@@ -115,10 +99,40 @@
     sectionStart = sectionEnd;
   }
 
+  /*
+   * Faction addenda are moved earlier above, which changes all local indices.
+   * Normalize their page boundary only after every move is complete: remove
+   * breaks between a parent “-specific rules” heading and its first child,
+   * then put one deliberate break immediately before the parent heading.
+   */
+  for (let index = 0; index < tokens.length; index += 1) {
+    const token = tokens[index];
+    if (!(token.kind === 'heading' && token.level === 2 && /-specific rules$/.test(token.title))) continue;
+
+    let cursor = index + 1;
+    while (cursor < tokens.length && ['divider', 'pagebreak'].includes(tokens[cursor].kind)) {
+      if (tokens[cursor].kind === 'pagebreak') {
+        tokens.splice(cursor, 1);
+        continue;
+      }
+      cursor += 1;
+    }
+
+    if (tokens[index - 1]?.kind !== 'pagebreak') {
+      normalizedParentSectionBreaks += 1;
+      tokens.splice(index, 0, {
+        id: `layout-parent-pagebreak-${normalizedParentSectionBreaks}`,
+        kind: 'pagebreak',
+        layoutOnly: true,
+      });
+      index += 1;
+    }
+  }
+
   data.metadata.layoutNormalization = {
     insertedCompleteRulesHeadings: syntheticIndex,
     movedFactionAddendaBeforeLeaderProfiles: movedFactionAddenda,
-    movedBreaksBeforeParentHeadings,
+    normalizedParentSectionBreaks,
     forcedSectionBreaks,
   };
   node.textContent = JSON.stringify(data);
