@@ -137,7 +137,7 @@ async function inspectReader(page) {
         const next = heading.nextElementSibling;
         const headingRect = heading.getBoundingClientRect();
         const nearBottom = headingRect.bottom > flowRect.bottom - 34;
-        const lacksFollowingContent = !next || /^H[2-5]$/.test(next.tagName) || next.classList.contains('source-divider');
+        const lacksFollowingContent = !next || next.classList.contains('source-divider');
         if (nearBottom || lacksFollowingContent) {
           isolatedHeadings.push({
             page: pageIndex + 1,
