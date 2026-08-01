@@ -37,21 +37,23 @@
   box-shadow: none;
 }
 
-/* Universal mounted-print art window. The frame is drawn over the perimeter so
-   it does not resize the illustration or alter any established crop position. */
+/* Universal mounted-print art window. The transparent plate surround is drawn
+   over the illustration perimeter; the illustration itself retains its full
+   box, cover scaling, and established crop position. */
 .card-art {
+  isolation: isolate;
   width: auto;
   height: auto;
   min-height: 0;
   margin: 0 0.07in 0.045in 0.04in;
-  border: 1px solid rgba(54, 41, 29, 0.92);
-  border-radius: 0.035in;
+  overflow: hidden;
+  border: 0;
+  border-radius: 0.025in;
   background-color: #8a7a67;
   box-shadow:
-    inset 0 0 0 0.01in rgba(245, 230, 197, 0.72),
-    inset 0 0 0 0.019in rgba(67, 50, 35, 0.44),
-    inset 0 0.012in 0.024in rgba(255, 249, 230, 0.15),
-    inset 0 -0.018in 0.035in rgba(27, 19, 14, 0.24),
+    0 0 0 1px rgba(54, 41, 29, 0.9),
+    inset 0 0.012in 0.024in rgba(255, 249, 230, 0.1),
+    inset 0 -0.018in 0.035in rgba(27, 19, 14, 0.18),
     0 0.012in 0.026in rgba(43, 31, 22, 0.16);
 }
 
@@ -67,13 +69,16 @@
 
 .card-art::before {
   z-index: 1;
+  border-radius: inherit;
 }
 
 .card-art::after {
   z-index: 2;
+  border-radius: inherit;
   background:
-    linear-gradient(180deg, rgba(20, 16, 12, 0.02), transparent 58%, rgba(24, 18, 13, 0.28)),
-    linear-gradient(90deg, rgba(255, 244, 213, 0.08), transparent 18%, transparent 82%, rgba(34, 25, 18, 0.09));
+    url("../images/artwork/card-frames/universal-mounted-art-frame.svg") center / 100% 100% no-repeat,
+    linear-gradient(180deg, rgba(20, 16, 12, 0.02), transparent 58%, rgba(24, 18, 13, 0.24)),
+    linear-gradient(90deg, rgba(255, 244, 213, 0.07), transparent 18%, transparent 82%, rgba(34, 25, 18, 0.08));
 }
 
 .card-art span {
