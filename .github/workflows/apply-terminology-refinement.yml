@@ -33,6 +33,57 @@ jobs:
         with:
           node-version: '22'
 
+      - name: Correct glossary anchors in one-use script
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('scripts/apply_terminology_refinement.py')
+          text = path.read_text(encoding='utf-8')
+          old = '''    occupation_glossary_anchor = "**Occupation:** The position currently held by a Player Token. Occupation and control are separate.\\n"
+              occupation_glossary_replacement = """**Occupation:** The state in which a player's token is on an opposing Territory that player does not control.
+
+          **Occupier:** A player in Occupation.
+          """
+              text = replace_once(text, occupation_glossary_anchor, occupation_glossary_replacement, "Occupation glossary")
+
+              counterattack_anchor = "**Control:** The player a Territory faces controls it.\\n"
+              text = replace_once(
+                  text,
+                  counterattack_anchor,
+                  counterattack_anchor + "\\n**Counterattack:** A battle initiated by the controller of a Territory against the occupier of that Territory.\\n",
+                  "Counterattack glossary",
+              )
+
+              position_glossary_old = "**Position:** A Territory or off-board location a Player Token may occupy.\\n"
+              position_glossary_new = "**Position:** A Territory or off-board space where a Player Token may be placed.\\n"
+              text = replace_once(text, position_glossary_old, position_glossary_new, "Position glossary")
+          '''
+          new = '''    glossary_core_old = """**Control:** Ownership of a Territory for rules purposes, shown by the direction the Territory faces.
+
+          **Gambit:** An optional battle card set from Hand. It normally goes to the Graveyard during the Aftermath.
+
+          **Occupation:** The position currently held by a Player Token. A player may occupy a Territory they do not control.
+          """
+              glossary_core_new = """**Control:** Ownership of a Territory for rules purposes, shown by the direction the Territory faces.
+
+          **Counterattack:** A battle initiated by the controller of a Territory against the occupier of that Territory.
+
+          **Gambit:** An optional battle card set from Hand. It normally goes to the Graveyard during the Aftermath.
+
+          **Occupation:** The state in which a player's token is on an opposing Territory that player does not control.
+
+          **Occupier:** A player in Occupation.
+
+          **Position:** A Territory or off-board space where a Player Token may be placed.
+          """
+              text = replace_once(text, glossary_core_old, glossary_core_new, "Territory glossary")
+          '''
+          if old not in text:
+              raise SystemExit('Expected glossary patch block was not found')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
       - name: Apply terminology changes
         run: python scripts/apply_terminology_refinement.py
 
