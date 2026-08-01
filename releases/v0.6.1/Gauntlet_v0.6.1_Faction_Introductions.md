@@ -178,7 +178,7 @@ Conviction has a maximum of four. Spend it deliberately, but avoid sitting at th
 
 ### Grand Inquisitor
 
-Choose the **Grand Inquisitor** for judgment and Purge efficiency. After winning a battle and resolving card destinations, the Grand Inquisitor may perform a discounted Purge.
+Choose the **Grand Inquisitor** for judgment and Purge efficiency. After winning a battle and moving cards to their destinations, the Grand Inquisitor may perform a discounted Purge.
 
 ### Witch Hunter
 

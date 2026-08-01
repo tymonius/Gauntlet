@@ -77,7 +77,7 @@ On your turn:
 3. **Action before movement.** You may use your normal Action Opportunity now.
 4. **Movement.** Advance, hold, or withdraw one position.
 5. **Action after movement.** Use the normal Action Opportunity here only if you did not use it before movement.
-6. **Cleanup.** Resolve end-of-turn effects and discard down to three cards in Hand.
+6. **Cleanup.** Apply end-of-turn effects and discard down to three cards in Hand.
 
 A player has one normal Action Opportunity, not one before movement and another after movement.
 
@@ -111,14 +111,14 @@ If the attacker still occupies the Territory at the start of their next turn, th
 
 Teach the first battle slowly and use the labeled battle areas.
 
-1. **Opening effects.** Establish the attacker, defender, and contested position. Resolve effects such as Terms.
+1. **Opening effects.** Establish the attacker, defender, and contested position. apply effects such as Terms.
 2. **Set Gambits.** Attacker sets up to one eligible Gambit or passes. Defender then does the same.
 3. **Form Reserves.** Set Hands aside and draw three cards each.
-4. **Reveal Gambits.** Turn all Gambits face up and resolve them.
+4. **Reveal Gambits.** Turn all Gambits face up and apply their effects.
 5. **Choose Tactics.** Attacker chooses up to one eligible Tactic or passes. Defender then does the same.
-6. **Reveal Tactics.** Turn all Tactics face up and resolve them.
-7. **Resolve the battle.** Resolve before-dice effects, roll, and compare battle totals.
-8. **Aftermath.** Resolve retreat, occupation, other result effects, card destinations, and follow-up movement.
+6. **Reveal Tactics.** Turn all Tactics face up and apply their effects.
+7. **Determine the Outcome.** Apply before-dice effects, roll, and compare battle totals.
+8. **Aftermath.** Carry out retreat and Occupation, apply other result effects, move cards to their destinations, and carry out follow-up movement.
 
 ## Advantage and disadvantage
 
@@ -126,7 +126,7 @@ Each net advantage adds one die; use the highest result. Each net disadvantage a
 
 ## Ties
 
-When the defender controls the contested Territory, the defender wins a tied battle total. The defender also has this advantage during a Last Stand. Otherwise, reroll unresolved ties.
+When the defender controls the contested Territory, the defender wins a tied battle total. The defender also has this advantage during a Last Stand. Otherwise, reroll until the tie is broken.
 
 # Aftermath and destinations
 

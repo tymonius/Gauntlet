@@ -94,7 +94,7 @@ Counterintelligence does not prevent a card from being set face up by a rule suc
 **Cost:** 1  
 **Complexity:** Basic
 
-> **Action:** Bank Redemption as an Asset. When an opposing effect puts one or more of your other cards in your Discard Pile, you may discard Redemption. If you do, return one of those cards to your Hand after the effect resolves.
+> **Action:** Bank Redemption as an Asset. When an opposing effect puts one or more of your other cards in your Discard Pile, you may discard Redemption. If you do, return one of those cards to your Hand after the effect applies.
 >
 > **Battle:** If an opposing effect negates one other Tactic you chose and that card would enter your Discard Pile, return it to your Hand during the Aftermath of the battle instead.
 
@@ -114,7 +114,7 @@ Counterintelligence does not prevent a card from being set face up by a rule suc
 
 > **Action:** Reveal the top card of either Draw Pile or one random card from the opponent's Hand.
 >
-> **Battle:** When Scouting Report is revealed, before other effects at that reveal stage resolve, reveal one opposing face-down Gambit or Tactic at the same stage. You may replace Scouting Report with one eligible card from your Reserve whose effect can still resolve. If you do, put Scouting Report in your Graveyard and place the replacement face up in the same role.
+> **Battle:** When Scouting Report is revealed, before other effects at that reveal stage are applied, reveal one opposing face-down Gambit or Tactic at the same stage. You may replace Scouting Report with one eligible card from your Reserve whose effect can still be applied. If you do, put Scouting Report in your Graveyard and place the replacement face up in the same role.
 
 ## Supplies
 
@@ -161,7 +161,7 @@ Counterintelligence does not prevent a card from being set face up by a rule suc
 
 > **Action:** The opponent discards one random card from their Hand.
 >
-> **Battle:** When Disruption is revealed, before other effects at that reveal stage resolve, choose one opposing Gambit or Tactic at that stage whose effect has not resolved. Negate it. Return a Gambit to its owner's Hand or a Tactic to its owner's Reserve. That specific card cannot be set or chosen again during this battle.
+> **Battle:** When Disruption is revealed, before other effects at that reveal stage are applied, choose one opposing Gambit or Tactic at that stage whose effect has not yet been applied. Negate it. Return a Gambit to its owner's Hand or a Tactic to its owner's Reserve. That specific card cannot be set or chosen again during this battle.
 
 ## Entrenchment
 
@@ -197,7 +197,7 @@ Counterintelligence does not prevent a card from being set face up by a rule suc
 
 > **Action:** Bank Palisade Wall as an Asset. During opening effects when you are the defender, you may discard it. If you do, the opponent's banked Assets are inactive during that battle.
 >
-> **Battle:** When Palisade Wall is revealed, before other effects at that reveal stage resolve, if you are the defender, negate one opposing Gambit whose effect has not resolved. If there is no eligible Gambit, gain advantage instead.
+> **Battle:** When Palisade Wall is revealed, before other effects at that reveal stage are applied, if you are the defender, negate one opposing Gambit whose effect has not yet been applied. If there is no eligible Gambit, gain advantage instead.
 
 ## Reinforcements
 
@@ -206,7 +206,7 @@ Counterintelligence does not prevent a card from being set face up by a rule suc
 
 > **Action:** Bank Reinforcements as an Asset. During your turn, you may discard it to take one additional Action Opportunity.
 >
-> **Battle:** After Tactics are revealed, draw one additional card into your Reserve. You may immediately play it face up as an additional Tactic if it has a Tactic or Battle effect that can still resolve.
+> **Battle:** After Tactics are revealed, draw one additional card into your Reserve. You may immediately play it face up as an additional Tactic if it has a Tactic or Battle effect that can still be applied.
 
 ## Requisition
 
@@ -235,7 +235,7 @@ Turning an existing Asset face up does not count as banking it.
 
 > **Action:** Choose one face-up opposing Asset. Turn it face down until the start of your next turn.
 >
-> **Battle:** When Sabotage is revealed, before other effects at that reveal stage resolve, choose one opposing Gambit or Tactic at that stage whose effect has not resolved. Negate it and put it in its owner's Discard Pile immediately.
+> **Battle:** When Sabotage is revealed, before other effects at that reveal stage are applied, choose one opposing Gambit or Tactic at that stage whose effect has not yet been applied. Negate it and put it in its owner's Discard Pile immediately.
 
 ## Salvage
 
@@ -329,7 +329,7 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 
 > **Action:** Return one card from your Discard Pile to your Hand.
 >
-> **Battle:** When Contraband is revealed, choose one eligible card in your Discard Pile whose Battle effect can still resolve at this stage. Put Contraband in your Graveyard and place the chosen card face up in Contraband's role. During the Aftermath of the battle, put the chosen card in your Graveyard unless its text gives another destination.
+> **Battle:** When Contraband is revealed, choose one eligible card in your Discard Pile whose Battle effect can still be applied at this stage. Put Contraband in your Graveyard and place the chosen card face up in Contraband's role. During the Aftermath of the battle, put the chosen card in your Graveyard unless its text gives another destination.
 
 ## Counterworks
 
@@ -404,7 +404,7 @@ If your Asset Bank is full, you may use the normal Asset-replacement rule to mak
 **Cost:** 3  
 **Complexity:** Advanced
 
-> **Action:** Bank Resourcefulness as an Asset. You may have only one banked Resourcefulness. The first time during each of your turns that a cost-1 card you play, set, or choose resolves its Action, Gambit, Tactic, or Battle effect, draw one card.
+> **Action:** Bank Resourcefulness as an Asset. You may have only one banked Resourcefulness. The first time during each of your turns that the Action, Gambit, Tactic, or Battle effect of a cost-1 card you play, set, or choose takes effect, draw one card.
 >
 > **Battle:** If another active card you control in this battle has cost 1, gain advantage.
 
@@ -420,7 +420,7 @@ A copied effect does not trigger Resourcefulness unless the cost-1 card itself i
 
 > **Action:** Move one card from your Graveyard to your Discard Pile.
 >
-> **Battle:** When Arcane Knowledge is revealed, choose one card in your Graveyard with a Battle effect that can resolve now. Resolve that effect as though you played it. Leave the chosen card in your Graveyard.
+> **Battle:** When Arcane Knowledge is revealed, choose one card in your Graveyard with a Battle effect that can be applied now. Apply that effect as though you played it. Leave the chosen card in your Graveyard.
 
 Arcane Knowledge follows the shared copied-effect rules.
 
@@ -431,9 +431,9 @@ Arcane Knowledge follows the shared copied-effect rules.
 
 > **Action:** Bank Armistice as an Asset. While it is active, neither player can start a battle. After your normal Draw step at the start of each of your turns, discard two cards from your Hand or discard Armistice. You cannot voluntarily discard it at another time.
 >
-> **Battle:** When Armistice is revealed, resolve effects that could negate it before other effects at that stage. If Armistice is not negated, the attacker withdraws and the battle ends without a winner. Stop resolving remaining Battle effects. Put every other Gambit and Tactic still in battle in its owner's Discard Pile, then put Armistice in its owner's Graveyard. Cards remaining in Reserve are discarded normally.
+> **Battle:** When Armistice is revealed, apply effects that could negate it before other effects at that stage. If Armistice is not negated, the attacker withdraws and the battle ends without a winner. Stop resolving remaining Battle effects. Put every other Gambit and Tactic still in battle in its owner's Discard Pile, then put Armistice in its owner's Graveyard. Cards remaining in Reserve are discarded normally.
 
-Effects already resolved are not undone.
+Effects already applied are not undone.
 
 ## Assimilation
 
@@ -442,7 +442,7 @@ Effects already resolved are not undone.
 
 > **Action:** Bank Assimilation as an Asset. During the Aftermath of a battle you initiated and won on a Territory the opponent controls, you may put Assimilation in your Graveyard. If you do, capture that Territory instead of occupying it.
 >
-> **Battle:** During the Aftermath of the battle, if you win as the attacker on a Territory the opponent controls, capture that Territory instead of occupying it. Put Assimilation in your Graveyard after the capture resolves.
+> **Battle:** During the Aftermath of the battle, if you win as the attacker on a Territory the opponent controls, capture that Territory instead of occupying it. Put Assimilation in your Graveyard after the capture is completed.
 
 ## Capital Punishment
 
@@ -451,14 +451,14 @@ Effects already resolved are not undone.
 
 > **Action:** If you won a battle this turn, choose one opposing Asset and put it in its owner's Graveyard.
 >
-> **Battle:** When Capital Punishment is revealed, before other effects at that stage resolve, negate one opposing Gambit or Tactic whose effect has not resolved. During the Aftermath of the battle, if you won, put the chosen card in its owner's Graveyard instead of its normal destination.
+> **Battle:** When Capital Punishment is revealed, before other effects at that stage are applied, negate one opposing Gambit or Tactic whose effect has not yet been applied. During the Aftermath of the battle, if you won, put the chosen card in its owner's Graveyard instead of its normal destination.
 
 ## Invasion
 
 **Cost:** 4  
 **Complexity:** Advanced
 
-> **Action:** Move up to two additional positions this turn. This movement may be used only to advance. Resolve it one position at a time.
+> **Action:** Move up to two additional positions this turn. This movement may be used only to advance. Move one position at a time.
 >
 > **Battle:** If you are the attacker, draw one additional card when forming your Reserve and you may choose one additional Tactic.
 

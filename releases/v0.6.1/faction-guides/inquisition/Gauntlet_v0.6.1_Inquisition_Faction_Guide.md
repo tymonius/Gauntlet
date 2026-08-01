@@ -64,7 +64,7 @@ Opposing Gambits already go to the Graveyard normally. Cards remaining in the op
 
 > **Blasphemy:** Whenever an opponent plays a card with the Arcane trait for its Action effect, or an Arcane Gambit or Tactic they control is revealed, gain 1 Conviction.
 
-This gain is outside the normal once-per-turn Conviction gain but cannot exceed 4. An Arcane card resolved only through a copied effect is not played or revealed as a Gambit or Tactic and does not trigger Blasphemy unless the effect says otherwise. Arcane is a trait, not faction allegiance.
+This gain is outside the normal once-per-turn Conviction gain but cannot exceed 4. An Arcane card whose effect is applied only through a copied effect is not played or revealed as a Gambit or Tactic and does not trigger Blasphemy unless the effect says otherwise. Arcane is a trait, not faction allegiance.
 
 ### Purge
 
@@ -96,7 +96,7 @@ A failed Reserve draw or effect-generated draw does not trigger Purification.
 
 > **Final Judgment:** Once per turn, during the Aftermath of a battle you won, after cards follow their destinations, you may immediately Purge without using an Action Opportunity. Reduce that Purge's Conviction cost by 1, to a minimum of 1.
 
-The normal Conviction gain from that battle may resolve before Final Judgment.
+The normal Conviction gain from that battle may occur before Final Judgment.
 
 ## Witch Hunter
 
@@ -113,7 +113,7 @@ Withdrawal has no loser, so neither Leader ability triggers from it.
 
 The top card is the most recently placed card unless a rule changes the order. Choosing cards from a Discard Pile does not reorder the rest.
 
-## Combined deckbuilding value
+## Combined card value
 
 When an effect allows several cards within a combined value limit, add their printed values. The total cannot exceed the limit.
 
@@ -153,7 +153,7 @@ This permits one replacement, not an additional Tactic.
 >
 > **Battle:** The opponent chooses one: put one card from their Hand in their Graveyard; or add +1 to your battle total.
 
-The Battle effect resolves when Penance's Gambit or Tactic is revealed.
+The Battle effect applies when Penance's Gambit or Tactic is revealed.
 
 ## Divine Mercy
 
@@ -178,9 +178,9 @@ Withdrawal does not activate No Martyrs.
 
 **Cost:** 3
 
-> **Action:** Choose one or more cards in the opponent's Discard Pile with combined deckbuilding value up to 5. Put them in their Graveyard.
+> **Action:** Choose one or more cards in the opponent's Discard Pile with combined card value up to 5. Put them in their Graveyard.
 >
-> **Battle:** During the Aftermath of the battle, choose one or more cards in the opponent's Discard Pile with combined deckbuilding value up to 3. Put them in their Graveyard.
+> **Battle:** During the Aftermath of the battle, choose one or more cards in the opponent's Discard Pile with combined card value up to 3. Put them in their Graveyard.
 
 ## Guilt by Association
 
@@ -205,19 +205,19 @@ If only one card is revealed, put it in the Graveyard.
 **Cost:** 4  
 **Card form:** Asset
 
-> **Action:** Bank Tyranny as an Asset. Once per turn, when one or more opposing Gambits or Tactics are revealed, before their effects resolve, you may spend 1 Conviction to negate one of them.
+> **Action:** Bank Tyranny as an Asset. Once per turn, when one or more opposing Gambits or Tactics are revealed, before their effects apply, you may spend 1 Conviction to negate one of them.
 >
-> **Battle:** When Tyranny is revealed, before other effects at that reveal stage resolve, negate one opposing Gambit or Tactic whose effect has not resolved.
+> **Battle:** When Tyranny is revealed, before other effects at that reveal stage are applied, negate one opposing Gambit or Tactic whose effect has not yet been applied.
 
-A Tactic Tyranny cannot undo an ordinary Gambit effect that already resolved, but may negate an unresolved delayed Gambit effect.
+A Tactic Tyranny cannot undo an ordinary Gambit effect that has already been applied, but may negate an delayed Gambit effect that has not yet been applied.
 
 ## Burning at the Stake
 
 **Cost:** 4
 
-> **Action:** The opponent reveals their Hand. Put the card there with the highest deckbuilding value in their Graveyard; choose among ties. If it has the Arcane trait, gain 1 Conviction.
+> **Action:** The opponent reveals their Hand. Put the card there with the highest card value in their Graveyard; choose among ties. If it has the Arcane trait, gain 1 Conviction.
 >
-> **Battle:** During the Aftermath of the battle, if the opponent lost, they reveal their Hand. Put the card there with the highest deckbuilding value in their Graveyard; choose among ties. If it has the Arcane trait, gain 1 Conviction.
+> **Battle:** During the Aftermath of the battle, if the opponent lost, they reveal their Hand. Put the card there with the highest card value in their Graveyard; choose among ties. If it has the Arcane trait, gain 1 Conviction.
 
 If the opponent has no cards in Hand, the effect does nothing.
 
@@ -226,7 +226,7 @@ If the opponent has no cards in Hand, the effect does nothing.
 **Cost:** 5  
 **Trait:** Arcane
 
-> **Battle:** You may spend 4 Conviction to resolve the Battle effect of a card in the opponent's Graveyard whose effect can resolve now, as though you played it. That card remains in the opponent's Graveyard.
+> **Battle:** You may spend 4 Conviction to conduct the battle effect of a card in the opponent's Graveyard whose effect can be applied now, as though you played it. That card remains in the opponent's Graveyard.
 
 Heresy retains one additional copied-effect layer; the additional layer cannot create another.
 

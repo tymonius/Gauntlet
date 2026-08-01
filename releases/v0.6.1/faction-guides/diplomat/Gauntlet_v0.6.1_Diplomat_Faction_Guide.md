@@ -40,7 +40,7 @@ Begin with 1 Influence. Place all nine Proposals Proposal side up.
 
 Influence pays for negotiation and can strengthen a battle after Terms are refused. To offer Terms, choose one Proposal whose Requirement is satisfied and stake its listed Influence.
 
-If the opponent accepts, no battle is fought. If the opponent refuses, resolve the Refused effect and continue to Gambits.
+If the opponent accepts, no battle is fought. If the opponent refuses, apply the Refused effect and continue to Gambits.
 
 ## Complete rules
 
@@ -48,7 +48,7 @@ If the opponent accepts, no battle is fought. If the opponent refuses, resolve t
 
 Diplomats begin with 1 Influence and may have up to 10.
 
-When Influence is staked or spent, lower the tracker. Staked Influence is unavailable until the Terms resolve. Influence gained above 10 is lost.
+When Influence is staked or spent, lower the tracker. Staked Influence is unavailable until the Terms conclude. Influence gained above 10 is lost.
 
 ### Offering Terms
 
@@ -77,11 +77,11 @@ Only one player may offer Terms for a pending battle.
 When Terms are accepted:
 
 1. no battle is fought;
-2. resolve the Proposal's **Accepted** effect;
+2. apply the Proposal's **Accepted** effect;
 3. return the Stake;
 4. if the Proposal is unratified, flip it to its Treaty Article side;
 5. if newly ratified, gain Influence equal to its Stake; and
-6. resolve effects that occur after acceptance.
+6. apply effects that occur after acceptance.
 
 Accepted Terms do not create a battle, winner, loser, retreat, or Aftermath.
 
@@ -91,10 +91,10 @@ A Stake-0 Proposal grants no Influence merely for being accepted.
 
 When Terms are refused:
 
-1. resolve the Proposal's **Refused** effect and any refusal modifiers;
+1. apply the Proposal's **Refused** effect and any refusal modifiers;
 2. continue to Set Gambits;
 3. before dice, the Diplomat may use Leverage; and
-4. resolve the battle and its Aftermath.
+4. conduct the battle and its Aftermath.
 
 Apply the result:
 
@@ -223,7 +223,7 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 
 ## Multiple Proposals
 
-Diplomatic Latitude may offer two eligible Proposals with the same Stake. Stake that amount once. Only the selected Proposal resolves or may become ratified.
+Diplomatic Latitude may offer two eligible Proposals with the same Stake. Stake that amount once. Only the selected Proposal takes effect or may become ratified.
 
 ## Sanctions
 
@@ -300,7 +300,7 @@ Neutral Observers does not change Tactic order. Fog may still determine Tactic o
 **Cost:** 3  
 **Card form:** Territory Overlay
 
-> **Terms:** After your Terms are accepted and the Proposal's Accepted effect resolves, you may place Demilitarized Zone from your Hand as an Overlay on the contested Territory without using an Action Opportunity. Each player still there withdraws.
+> **Terms:** After your Terms are accepted and the Proposal's Accepted effect applies, you may place Demilitarized Zone from your Hand as an Overlay on the contested Territory without using an Action Opportunity. Each player still there withdraws.
 >
 > Neither player may enter this Territory during the turn Demilitarized Zone is placed.
 >
@@ -324,7 +324,7 @@ The placing-player reference does not change when Overlay control changes.
 >
 > **Refused:** Choose one Proposal before resolving its Refused effect. Only it may be imposed.
 >
-> The other Proposal does not resolve or become ratified. After the Terms resolve, put Diplomatic Latitude in your Discard Pile.
+> The other Proposal does not take effect or become ratified. After the Terms conclude, put Diplomatic Latitude in your Discard Pile.
 
 ## Nonbinding Resolution
 
@@ -337,7 +337,7 @@ The placing-player reference does not change when Overlay control changes.
 > - Ratify it normally.
 > - Leave it unratified; you gain 2 Influence.
 >
-> After the accepted Terms resolve, put Nonbinding Resolution in your Discard Pile, then draw one card.
+> After the accepted Terms conclude, put Nonbinding Resolution in your Discard Pile, then draw one card.
 >
 > **Refused:** Put Nonbinding Resolution in your Discard Pile, then draw one card before Gambits are set.
 

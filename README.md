@@ -25,7 +25,7 @@ Each player builds a Deck consisting of:
 
 - one faction;
 - one Leader;
-- one Playable Deck of at least 30 cards and no more than 60 total deckbuilding value;
+- one Playable Deck of at least 30 cards and no more than 60 total card value;
 - three different Territories; and
 - any required faction- or Leader-specific supplemental components.
 
@@ -120,7 +120,7 @@ Legacy pre-v0.6 digital-prototype code and starter data. They are retained for a
 3. Regenerate the affected documents, cards, or supported tools.
 4. Visually inspect rendered documents and Deckbuilder print output.
 5. Record release-facing changes in the changelog.
-6. Record unresolved testing concerns in `docs/Gauntlet_Development_Status.md`; do not silently resolve them in generated data or production artifacts.
+6. Record open testing concerns in `docs/Gauntlet_Development_Status.md`; do not silently settle them in generated data or production artifacts.
 
 ## Running browser tools locally
 

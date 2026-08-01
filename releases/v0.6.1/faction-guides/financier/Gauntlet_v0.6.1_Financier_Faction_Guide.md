@@ -16,7 +16,7 @@ Deed ownership is independent of who occupies or controls the Territory. Own the
 |---|---|
 | Victory | Run the Gauntlet or achieve Controlling Interest. |
 | Resource | Capital, minimum 0; maximum determined by the Capital limit. |
-| Capital limit | Territories you control plus total deckbuilding value in Treasury. |
+| Capital limit | Territories you control plus total card value in Treasury. |
 | Financial Capacity | If Treasury value exceeds Territories controlled at the start of your turn, you may use both normal Action Opportunities; at least one must be a Financier faction action. |
 | Income | After the Capture step, gain 1 Capital per Deed you own. |
 | Leaders | Banker and Executive. |
@@ -41,7 +41,7 @@ Begin with 0 Capital and an empty Treasury. Place Deed Cards in the shared unown
 
 Capital is public and pays for Deeds, Subsidize, and card effects. Your Capital limit rises when you control Territories or place valuable cards in Treasury. You may temporarily exceed the limit, but excess Capital is lost at the end of each turn.
 
-At the start of your turn, if the total deckbuilding value in your Treasury is greater than the number of Territories you control, you may use both normal Action Opportunities that turn. At least one must be used for a Financier faction action.
+At the start of your turn, if the total card value in your Treasury is greater than the number of Territories you control, you may use both normal Action Opportunities that turn. At least one must be used for a Financier faction action.
 
 During an Action Opportunity after movement, you may place a card in Treasury, buy a Deed, or Play the Market instead of playing an Action card.
 
@@ -51,13 +51,13 @@ During an Action Opportunity after movement, you may place a card in Treasury, b
 
 Capital cannot fall below 0. Record every gain, spend, loss, and end-turn reduction on the public Capital Ledger, including the new running Balance.
 
-> **Capital limit = Territories you control + total deckbuilding value of cards in your Treasury**
+> **Capital limit = Territories you control + total card value of cards in your Treasury**
 
 Capital may exceed the limit temporarily. At the end of every turn, including an opponent's turn, reduce your Capital to the current limit if necessary.
 
 ### Financial Capacity
 
-After resolving the Capture step and all effects that occur after it, but before the Draw step, compare the total deckbuilding value of cards in your Treasury with the number of Territories you control.
+After resolving the Capture step and all effects that occur after it, but before the Draw step, compare the total card value of cards in your Treasury with the number of Territories you control.
 
 If the Treasury value is greater, you may use both normal Action Opportunities that turn. If you use both, at least one must be used for a Financier faction action. If the before-movement opportunity was not used for a Financier faction action, the after-movement opportunity may be used only for one.
 
@@ -72,7 +72,7 @@ During an Action Opportunity after movement, instead of playing a card for its A
 
 - Treasury cards are outside normal card zones.
 - They cannot be played or affected unless a rule specifically refers to Treasury.
-- Each increases the Capital limit by its deckbuilding value.
+- Each increases the Capital limit by its card value.
 - Treasury is not the Asset Bank and uses no Asset capacity.
 - A card leaving Treasury immediately stops contributing to the limit.
 - Treasury cards do not generate Capital by themselves.
@@ -91,7 +91,7 @@ Deed ownership is independent of Territory occupation and control. Changing Terr
 
 During an Action Opportunity after movement, instead of playing a card for its Action effect, buy or buy out one Deed by paying its full cost.
 
-Effects that permit several purchases resolve each purchase completely before recalculating the next cost.
+When an effect permits several purchases, complete each purchase before recalculating the next cost.
 
 > **Deed cost = min(Deeds you own + 1, 6) + position modifier + buyout premium**
 
@@ -127,8 +127,8 @@ During an Action Opportunity after movement, instead of playing a card for its A
 |---:|---|
 | 1 | Put the card in your Graveyard; gain 0 Capital. |
 | 2–3 | Gain 1 Capital. |
-| 4–5 | Gain Capital equal to the card's deckbuilding value. |
-| 6 | Gain Capital equal to twice the card's deckbuilding value. |
+| 4–5 | Gain Capital equal to the card's card value. |
+| 6 | Gain Capital equal to twice the card's card value. |
 
 ### Subsidize
 
@@ -156,7 +156,7 @@ An additional Action Opportunity permits one additional qualifying action at its
 
 > **Line of Credit:** The first time on your turn that you would buy or buy out a Deed, you may use one card from your Hand or Treasury as collateral.
 >
-> - It contributes payment equal to its deckbuilding value.
+> - It contributes payment equal to its card value.
 > - It cannot contribute more than half the purchase cost, rounded down.
 > - Pay the remaining cost with Capital.
 > - Put the collateral in your Discard Pile after the purchase.
@@ -202,7 +202,7 @@ A Territory added to the Gauntlet:
 
 You cannot bank Tariffs while another copy you control is banked. During the turn Tariffs is banked, you cannot voluntarily cause it to leave play, including replacing it to make room for another Asset.
 
-Underwriting and Property Dues may be replaced normally. Replacing Margin Loan before resolution causes default.
+Underwriting and Property Dues may be replaced normally. Replacing Margin Loan before the loan is settled causes default.
 
 # 6. Canonical Financier card pool
 
@@ -228,9 +228,9 @@ Withdrawal counts as ending without you winning.
 
 **Cost:** 2
 
-> **Action:** Choose one card in your Treasury and put it in your Discard Pile. Gain Capital equal to its deckbuilding value, then you may immediately buy or buy out one Deed.
+> **Action:** Choose one card in your Treasury and put it in your Discard Pile. Gain Capital equal to its card value, then you may immediately buy or buy out one Deed.
 >
-> **Battle:** Before dice are rolled, you may choose one card in your Treasury and put it in your Discard Pile. If you do, gain Capital equal to its deckbuilding value, then you may immediately Subsidize.
+> **Battle:** Before dice are rolled, you may choose one card in your Treasury and put it in your Discard Pile. If you do, gain Capital equal to its card value, then you may immediately Subsidize.
 
 ## Underwriting
 
@@ -245,7 +245,7 @@ Withdrawal counts as ending without you winning.
 
 **Cost:** 3
 
-> **Action:** Place Capital Gains beneath one card in your Treasury. At the start of your next turn, after the Capture step and income, return that Treasury card to your Hand and gain Capital equal to its deckbuilding value, then put Capital Gains in your Discard Pile. If you lose a battle before then, put both cards in your Discard Pile instead. If the chosen card leaves Treasury first, put Capital Gains in your Discard Pile.
+> **Action:** Place Capital Gains beneath one card in your Treasury. At the start of your next turn, after the Capture step and income, return that Treasury card to your Hand and gain Capital equal to its card value, then put Capital Gains in your Discard Pile. If you lose a battle before then, put both cards in your Discard Pile instead. If the chosen card leaves Treasury first, put Capital Gains in your Discard Pile.
 >
 > **Battle:** During the Aftermath of the battle, if you won, choose one other card you controlled in this battle that would go to a Discard Pile or Graveyard. Place that card face up in your Treasury instead.
 
@@ -273,16 +273,16 @@ Withdrawal counts as ending without you winning.
 **Cost:** 3  
 **Card form:** Asset with collateral
 
-> **Action:** Choose one other card in your Hand or Treasury and place it beneath Margin Loan as collateral. Bank Margin Loan as an Asset. Gain Capital equal to the collateral card's deckbuilding value plus 2, then take one additional Action Opportunity this turn.
+> **Action:** Choose one other card in your Hand or Treasury and place it beneath Margin Loan as collateral. Bank Margin Loan as an Asset. Gain Capital equal to the collateral card's card value plus 2, then take one additional Action Opportunity this turn.
 >
 > **Loan:** At the start of your next turn, after the Capture step and income, choose one:
 >
-> - **Repay:** Pay Capital equal to the collateral card's deckbuilding value plus 3. Return the collateral to your Hand, then put Margin Loan in your Discard Pile.
+> - **Repay:** Pay Capital equal to the collateral card's card value plus 3. Return the collateral to your Hand, then put Margin Loan in your Discard Pile.
 > - **Default:** Put Margin Loan and its collateral in your Graveyard.
 >
-> **Battle:** Before dice are rolled, you may place one other card from your Hand or Treasury beneath Margin Loan as collateral. If you do, gain Capital equal to its deckbuilding value, then you may immediately Subsidize. During the Aftermath of the battle, if you won, return the collateral to your Hand. Otherwise, put Margin Loan and its collateral in your Graveyard.
+> **Battle:** Before dice are rolled, you may place one other card from your Hand or Treasury beneath Margin Loan as collateral. If you do, gain Capital equal to its card value, then you may immediately Subsidize. During the Aftermath of the battle, if you won, return the collateral to your Hand. Otherwise, put Margin Loan and its collateral in your Graveyard.
 >
-> If Margin Loan leaves play before the loan resolves, you default.
+> If Margin Loan leaves play before the loan is settled, you default.
 
 Withdrawal defaults on the Battle effect because you did not win.
 
@@ -290,9 +290,9 @@ Withdrawal defaults on the Battle effect because you did not win.
 
 **Cost:** 4
 
-> **Action:** Buy or buy out one Deed. For this purchase, you may use any number of cards from your Hand or Treasury as collateral. Each contributes payment equal to its deckbuilding value and goes to your Graveyard after the purchase. Collateral may pay the entire cost.
+> **Action:** Buy or buy out one Deed. For this purchase, you may use any number of cards from your Hand or Treasury as collateral. Each contributes payment equal to its card value and goes to your Graveyard after the purchase. Collateral may pay the entire cost.
 >
-> **Battle:** During the Aftermath of the battle, before cards leave battle, if you won as the attacker on a Territory whose Deed you do not own, you may buy or buy out that Deed, treating the Territory as occupied. For this purchase, you may use any number of other cards you controlled in this battle as collateral. Each contributes payment equal to its deckbuilding value and goes to your Graveyard instead of its normal destination. Collateral may pay the entire cost.
+> **Battle:** During the Aftermath of the battle, before cards leave battle, if you won as the attacker on a Territory whose Deed you do not own, you may buy or buy out that Deed, treating the Territory as occupied. For this purchase, you may use any number of other cards you controlled in this battle as collateral. Each contributes payment equal to its card value and goes to your Graveyard instead of its normal destination. Collateral may pay the entire cost.
 
 ## Foreclosure
 
@@ -316,9 +316,9 @@ Withdrawal defaults on the Battle effect because you did not win.
 **Cost:** 5  
 **Unique:** Maximum one copy per Playable Deck
 
-> **Action:** Buy or buy out any number of Deeds. Resolve each purchase completely before calculating the next cost.
+> **Action:** Buy or buy out any number of Deeds. Complete each purchase before calculating the next cost.
 >
-> **Battle:** During the Aftermath of the battle, if you won, you may buy or buy out any number of Deeds. Resolve each purchase completely before calculating the next cost.
+> **Battle:** During the Aftermath of the battle, if you won, you may buy or buy out any number of Deeds. Complete each purchase before calculating the next cost.
 
 # 7. Quick reference
 
