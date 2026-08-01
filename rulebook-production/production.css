@@ -50,6 +50,31 @@
 .production-flow .keep-group{break-inside:avoid;page-break-inside:avoid}
 .production-flow .split-fragment{margin-top:0}
 
+/* Continuation pages already repeat the chapter identity in the running head
+   and continuation label. A slightly tighter vertical rhythm lets short final
+   sections remain with the preceding material without shrinking the approved
+   body type or changing the first-page chapter composition. */
+.continuation-page .production-flow p{margin-bottom:5px}
+.continuation-page .production-flow h2{margin:11px 0 5px;padding-top:6px}
+.continuation-page .production-flow h3{margin:8px 0 3px}
+.continuation-page .production-flow h4{margin:7px 0 3px}
+.continuation-page .production-flow h5{margin:6px 0 2px}
+.continuation-page .production-flow ul,
+.continuation-page .production-flow ol{margin-bottom:6px}
+.continuation-page .production-flow li{margin-bottom:2px}
+.continuation-page .production-flow .source-divider{margin:7px 0}
+
+/* The Setup play-area inventory is a compact reference list. Two columns keep
+   its introductory sentence and the inventory together on the chapter page. */
+.page[data-anchor="3. Setup"] .production-flow ul:last-of-type{
+  columns:2;
+  column-gap:18px;
+  column-rule:1px solid var(--line);
+}
+.page[data-anchor="3. Setup"] .production-flow ul:last-of-type li{
+  break-inside:avoid;
+}
+
 .frontmatter-page .page-title{font-size:27pt}
 .frontmatter-page .frontmatter-lead{font-size:10.1pt;line-height:1.38}
 .frontmatter-page .golden-rules{margin-top:8px;display:grid;gap:5px}
