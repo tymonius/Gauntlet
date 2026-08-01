@@ -1,0 +1,46 @@
+name: Run final source terminology polish
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  polish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/terminology-refinement
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python scripts/final_source_terminology_polish.py
+      - run: npm install --no-package-lock
+      - run: npm run test:deckbuilder
+      - run: npm test
+      - run: rm scripts/final_source_terminology_polish.py .github/workflows/run-final-source-polish.yml
+      - name: Commit source polish
+        shell: bash
+        run: |
+          set -euxo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Polish final terminology sources"
+          for attempt in 1 2 3 4 5; do
+            git fetch origin agent/terminology-refinement
+            if git rebase origin/agent/terminology-refinement && git push origin HEAD:agent/terminology-refinement; then
+              exit 0
+            fi
+            git rebase --abort || true
+            sleep $((attempt * 3))
+          done
+          exit 1
