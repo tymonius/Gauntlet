@@ -19,6 +19,7 @@ def main() -> None:
     production_links = (
         '<link rel="stylesheet" href="pagination-reserve.css" />\n'
         '<link rel="stylesheet" href="chapter-compaction.css" />\n'
+        '<link rel="stylesheet" href="supplemental-reference.css" />\n'
     )
     if head_marker not in content:
         raise RuntimeError("Could not attach the production pagination styles.")
