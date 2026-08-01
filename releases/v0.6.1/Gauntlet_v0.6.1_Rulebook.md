@@ -984,7 +984,7 @@ When Terms are refused:
 1. apply the Proposal's **Refused** effect and any refusal modifiers;
 2. continue to Set Gambits;
 3. before dice, the Diplomat may use Leverage; and
-4. conduct the battle and its Aftermath.
+4. continue the battle through the Aftermath.
 
 Apply the result:
 
@@ -1314,7 +1314,7 @@ An additional Action Opportunity permits one additional qualifying action at its
 ![Executive](<images/sketches/executive.png>)
 
 
-**Archetype:** Offensive acquisition, occupation, and immediate control  
+**Archetype:** Offensive acquisition, Occupation, and immediate control  
 **Motto:** *Take the ground. Close the deal.*
 
 > **Hostile Takeover:** During an Action Opportunity after movement, if you won a battle as the attacker this turn and are now the occupier of that enemy Territory, you may buy or buy out its Deed instead of playing a card for its Action effect. Treat yourself as the occupier, but not the controller, for the cost calculation. If the purchase succeeds, immediately take control of that Territory.
