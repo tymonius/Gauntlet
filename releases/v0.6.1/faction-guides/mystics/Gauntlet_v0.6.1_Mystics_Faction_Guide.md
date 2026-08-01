@@ -296,7 +296,7 @@ Make all choices and pay all costs again when repeating the effect.
 **Cost:** 4  
 **Trait:** Arcane
 
-> **Tactic:** When Black Covenant is revealed, you may bind one other card from your Hand with a Tactic or Battle effect. Play it face up as an additional Tactic and apply its effect immediately after applying Black Covenant. During the Aftermath of the battle, put Black Covenant and the bound card in your Graveyard.
+> **Tactic:** When Black Covenant is revealed, you may bind one other card from your Hand with a Tactic or Battle effect. Play it face up as an additional Tactic and apply its effect immediately after Black Covenant's effect. During the Aftermath of the battle, put Black Covenant and the bound card in your Graveyard.
 
 ## Circle of Bones
 

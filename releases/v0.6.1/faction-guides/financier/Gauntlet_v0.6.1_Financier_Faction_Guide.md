@@ -165,7 +165,7 @@ An additional Action Opportunity permits one additional qualifying action at its
 
 ## Executive
 
-**Archetype:** Offensive acquisition, occupation, and immediate control  
+**Archetype:** Offensive acquisition, Occupation, and immediate control  
 **Motto:** *Take the ground. Close the deal.*
 
 > **Hostile Takeover:** During an Action Opportunity after movement, if you won a battle as the attacker this turn and are now the occupier of that enemy Territory, you may buy or buy out its Deed instead of playing a card for its Action effect. Treat yourself as the occupier, but not the controller, for the cost calculation. If the purchase succeeds, immediately take control of that Territory.
@@ -292,7 +292,7 @@ Withdrawal defaults on the Battle effect because you did not win.
 
 > **Action:** Buy or buy out one Deed. For this purchase, you may use any number of cards from your Hand or Treasury as collateral. Each contributes payment equal to its value and goes to your Graveyard after the purchase. Collateral may pay the entire cost.
 >
-> **Battle:** During the Aftermath of the battle, before cards leave battle, if you won as the attacker on a Territory whose Deed you do not own, you may buy or buy out that Deed, treating the Territory as occupied. For this purchase, you may use any number of other cards you controlled in this battle as collateral. Each contributes payment equal to its value and goes to your Graveyard instead of its normal destination. Collateral may pay the entire cost.
+> **Battle:** During the Aftermath of the battle, before cards leave battle, if you won as the attacker on a Territory whose Deed you do not own, you may buy or buy out that Deed, treating yourself as its occupier. For this purchase, you may use any number of other cards you controlled in this battle as collateral. Each contributes payment equal to its value and goes to your Graveyard instead of its normal destination. Collateral may pay the entire cost.
 
 ## Foreclosure
 
@@ -325,7 +325,7 @@ Withdrawal defaults on the Battle effect because you did not win.
 - Capital limit = controlled Territories + total Treasury value.
 - Financial Capacity: if Treasury value exceeds controlled Territories at the start-of-turn check, you may use both normal Action Opportunities; at least one must be a Financier Faction Action.
 - Gain 1 Capital per owned Deed after your Capture step.
-- Deed ownership is independent of Territory control and occupation.
+- Deed ownership is independent of token position and Territory control.
 - Added Territories have normal Deeds.
 - Controlling Interest requires every Territory currently in the Gauntlet.
 - At the end of every turn, reduce Capital to the current limit.

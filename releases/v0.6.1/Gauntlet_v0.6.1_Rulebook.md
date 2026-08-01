@@ -526,7 +526,7 @@ Effects that trigger from movement or withdrawal do not trigger from retreat unl
 
 Your token shows where you are. A Territory's orientation shows who controls it. Winning a battle lets you occupy an opposing Territory, but you normally do not capture it immediately. You must still be there at the start of your next turn.
 
-This gives the opponent a chance to counterattack before control changes.
+This gives the controller a chance to initiate a Counterattack before control changes.
 
 ## Complete rules
 
@@ -540,7 +540,7 @@ Each player begins controlling the three Territories on their side. Control chan
 
 **Occupation** is the state in which a player's token is on an opposing Territory that player does not control. A player in Occupation is the **occupier**.
 
-During a battle initiated by entry into an occupied Territory, the defender remains in that position until the outcome is determined. If the attacker wins, the attacker becomes the occupier when the defender retreats.
+During a battle initiated by entering the opponent's position on a Territory, the defender remains there until the outcome is determined. If the attacker wins, the attacker becomes the occupier when the defender retreats.
 
 ### Capture
 
@@ -717,7 +717,7 @@ When instructed to apply another card's printed effect:
 - pay all costs and satisfy all requirements, targets, and timing restrictions;
 - do not move the source card unless instructed;
 - do not reopen an earlier timing window; and
-- do not choose another effect that itself applies another effect unless expressly allowed.
+- do not choose another copied-effect instruction unless expressly allowed.
 
 ---
 
@@ -1934,7 +1934,7 @@ Heresy follows the shared copied-effect rule but retains permission for one addi
 
 **Faction Action:** A Faction Ability that explicitly uses an Action Opportunity.
 
-**Aftermath:** The part of a battle after the winner is determined, including result effects, retreat, occupation, card destinations, and follow-up effects.
+**Aftermath:** The part of a battle after the winner is determined, including result effects, retreat, Occupation, card destinations, and follow-up effects.
 
 **Asset:** A persistent card banked face up in the Asset Bank.
 

@@ -94,7 +94,7 @@ When Terms are refused:
 1. apply the Proposal's **Refused** effect and any refusal modifiers;
 2. continue to Set Gambits;
 3. before dice, the Diplomat may use Leverage; and
-4. conduct the battle and its Aftermath.
+4. continue the battle through the Aftermath.
 
 Apply the result:
 
@@ -304,11 +304,11 @@ Neutral Observers does not change Tactic order. Fog may still determine Tactic o
 >
 > Neither player may enter this Territory during the turn Demilitarized Zone is placed.
 >
-> To enter it while unoccupied, discard one card.
+> To enter it while no Player Token is there, discard one card.
 >
 > It cannot be captured or change control while Demilitarized Zone remains.
 >
-> At the start of the placing player's turn, before the Capture step, if they occupy it, they discard one card or withdraw.
+> At the start of the placing player's turn, before the Capture step, if their Player Token is there, they discard one card or withdraw.
 >
 > After the next battle fought here, put Demilitarized Zone in its owner's Discard Pile.
 

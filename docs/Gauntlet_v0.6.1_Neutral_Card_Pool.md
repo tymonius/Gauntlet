@@ -382,9 +382,9 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 **Complexity:** Advanced  
 **Card form:** Territory Overlay
 
-> **Action:** Bank Protracted Siege as an Asset. When an opponent would capture a Territory you control during their Capture step, you may place Protracted Siege on that Territory as an Overlay. If you do, that capture does not occur. During their next Capture step, they capture it normally if they are still the occupier.
+> **Action:** Bank Protracted Siege as an Asset. When an opponent would capture a Territory you control during their Capture step, you may place Protracted Siege on that Territory as an Overlay. If you do, that capture does not occur. During their next Capture step, they capture it normally if they are still the occupier of that Territory.
 >
-> **Battle:** During the Aftermath of the battle, if you lose while defending a Territory you control, place Protracted Siege on that Territory as an Overlay instead of putting it in its normal destination. The opponent does not capture it during their next Capture step. During their following Capture step, they capture it normally if they are still the occupier.
+> **Battle:** During the Aftermath of the battle, if you lose while defending a Territory you control, place Protracted Siege on that Territory as an Overlay instead of putting it in its normal destination. The opponent does not capture it during their next Capture step. During their following Capture step, they capture it normally if they are still the occupier of that Territory.
 >
 > After it delays one Capture step, or if the occupier leaves first, put Protracted Siege in its owner's Graveyard.
 
@@ -393,7 +393,7 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 **Cost:** 3  
 **Complexity:** Advanced
 
-> **Action:** Bank Resistance as an Asset. When counterattacking an opponent occupying a Territory you control, draw two additional cards when forming your Reserve.
+> **Action:** Bank Resistance as an Asset. When initiating a Counterattack, draw two additional cards when forming your Reserve.
 >
 > **Battle:** If this battle is a Counterattack, gain advantage. During the Aftermath of the battle, if you win, bank Resistance as an Asset instead of putting it in its normal destination.
 

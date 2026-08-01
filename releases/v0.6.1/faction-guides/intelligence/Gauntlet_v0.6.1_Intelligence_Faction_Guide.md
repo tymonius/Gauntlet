@@ -290,7 +290,7 @@ Treason cannot select an effect that has already been applied and follows the sh
 >
 > **Battle:** Opposing banked Assets cannot be activated and their effects cannot be applied during this battle.
 >
-> **Mission:** Complete after you win a battle in which an opposing banked Asset was activated or had its effect applied and none of your banked Assets were activated or had its effect applied.
+> **Mission:** Complete after you win a battle in which an opposing banked Asset was activated or had its effect applied and none of your banked Assets were activated or had their effects applied.
 
 ## Sleeper Network
 
