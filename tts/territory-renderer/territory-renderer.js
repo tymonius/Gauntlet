@@ -62,12 +62,21 @@
 
   async function finishRender() {
     window.addEventListener('load', async () => {
-      if (document.fonts?.ready) await document.fonts.ready.catch(() => {});
+      await loadRequiredFonts();
       await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
       const card = target.querySelector('.territory-card');
       if (!card?.classList.contains('back')) fitCard(card);
       document.body.dataset.renderReady = 'true';
     }, { once: true });
+  }
+
+  async function loadRequiredFonts() {
+    if (!document.fonts) return;
+    await Promise.all([
+      document.fonts.load('700 16px "p22-1722-pro"', 'Gauntlet Territory'),
+      document.fonts.load('600 12px "adobe-caslon-pro"', 'Territory effect text'),
+    ]).catch(() => {});
+    await document.fonts.ready.catch(() => {});
   }
 
   function fitCard(card) {
