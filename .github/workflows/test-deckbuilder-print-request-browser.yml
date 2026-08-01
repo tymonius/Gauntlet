@@ -75,7 +75,30 @@ jobs:
               throw new Error('Copy request remained disabled for a valid Deck');
             }
 
-            await page.click('#copyPrintRequest');
+            await page.evaluate(() => {
+              window.__capturedDeckMailto = '';
+              document.addEventListener('click', event => {
+                const link = event.target?.closest?.('a[href^="mailto:"]');
+                if (!link) return;
+                event.preventDefault();
+                window.__capturedDeckMailto = link.href;
+              }, true);
+            });
+
+            await page.click('#openPrintRequestEmail');
+            await page.waitForFunction(() => Boolean(window.__capturedDeckMailto));
+            const mailto = await page.evaluate(() => window.__capturedDeckMailto);
+            const decodedMailto = decodeURIComponent(mailto);
+            if (mailto.length >= 1800) {
+              throw new Error(`Email draft URL is still too long: ${mailto.length} characters`);
+            }
+            if (decodedMailto.includes('BEGIN GAUNTLET DECK JSON') || decodedMailto.includes('"cards"')) {
+              throw new Error('Deck JSON leaked into the mailto URL');
+            }
+            if (!decodedMailto.includes('host@example.com') || !decodedMailto.includes('Paste them below before sending this email')) {
+              throw new Error(`Short email draft was incomplete:\n${decodedMailto}`);
+            }
+
             const requestText = await page.evaluate(() => navigator.clipboard.readText());
             if (!requestText.includes('Gauntlet Deck Printing Request') || !requestText.includes('Tymon')) {
               throw new Error(`Printing request summary was incomplete:\n${requestText.slice(0, 500)}`);
