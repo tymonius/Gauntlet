@@ -4,13 +4,16 @@ on:
   push:
     branches:
       - agent/terminology-refinement
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
 
 jobs:
   apply:
-    if: ${{ !contains(github.event.head_commit.message, '[terminology-applied]') }}
+    if: ${{ github.event_name != 'push' || !contains(github.event.head_commit.message, '[terminology-applied]') }}
     runs-on: ubuntu-latest
 
     steps:
