@@ -4,7 +4,7 @@
   const HEIGHT_STEP = 1;
   const TITLE_STEP = 0.05 * CSS_PIXELS_PER_POINT;
   const RULE_SCALE_STEP = 0.01;
-  const DEFAULT_MINIMUM_TITLE_SIZE = 9.5 * CSS_PIXELS_PER_POINT;
+  const DEFAULT_MINIMUM_TITLE_SIZE = 8 * CSS_PIXELS_PER_POINT;
   const DEFAULT_MINIMUM_RULE_SCALE = 0.93;
   const PARCHMENT_SOURCES = Object.freeze({
     neutral: '../images/artwork/card-backgrounds/neutral-parchment-v2.png',
@@ -122,7 +122,7 @@
 
   function fitTitle(card) {
     const title = card.querySelector('.card-title');
-    if (!title) return;
+    if (!title) return true;
 
     title.style.removeProperty('font-size');
     forceLayout(title);
@@ -136,6 +136,11 @@
       title.style.fontSize = `${size}px`;
       forceLayout(title);
     }
+
+    const fits = title.scrollWidth <= title.clientWidth + 0.5;
+    card.classList.toggle('title-fit-warning', !fits);
+    card.dataset.titleFit = fits ? 'true' : 'false';
+    return fits;
   }
 
   function fitCard(card) {
@@ -143,14 +148,14 @@
     const art = card.querySelector('.card-art');
     if (!interior || !art) return;
 
-    fitTitle(card);
+    card.classList.remove('fit-warning');
+    const titleFits = fitTitle(card);
 
     const maximum = Number(card.dataset.artMax || 1.72) * CSS_PIXELS_PER_INCH;
     const minimum = Number(card.dataset.artMin || 0.62) * CSS_PIXELS_PER_INCH;
     let height = maximum;
     let ruleScale = 1;
 
-    card.classList.remove('fit-warning');
     setRuleScale(card, ruleScale);
     setArtHeight(card, height);
     forceLayout(interior);
@@ -171,7 +176,7 @@
       forceLayout(interior);
     }
 
-    if (cardOverflows(card)) {
+    if (!titleFits || cardOverflows(card)) {
       card.classList.add('fit-warning');
       console.warn(`Card content still exceeds the available area: ${card.getAttribute('aria-label') || 'unnamed card'}`);
     }

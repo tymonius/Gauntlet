@@ -73,13 +73,15 @@
 
   function cardOverflows(element) {
     const interior = element?.querySelector('.card-interior');
+    const title = element?.querySelector('.card-title');
     const rules = element?.querySelector('.card-rules');
     const footer = element?.querySelector('.card-footer');
-    if (!interior || !rules || !footer) return false;
+    if (!interior || !title || !rules || !footer) return false;
 
     const interiorRect = interior.getBoundingClientRect();
     const footerRect = footer.getBoundingClientRect();
-    return footerRect.bottom > interiorRect.bottom + 0.5
+    return title.scrollWidth > title.clientWidth + 0.5
+      || footerRect.bottom > interiorRect.bottom + 0.5
       || rules.scrollHeight > rules.clientHeight + 0.5
       || interior.scrollHeight > interior.clientHeight + 0.5;
   }
