@@ -37,9 +37,8 @@
   box-shadow: none;
 }
 
-/* Universal mounted-print art window. The transparent plate surround is drawn
-   over the illustration perimeter; the illustration itself retains its full
-   box, cover scaling, and established crop position. */
+/* Universal mounted-print art window. Clean perimeter rules and restrained
+   inset shading create a mounted plate without ornamenting or resizing art. */
 .card-art {
   isolation: isolate;
   width: auto;
@@ -47,14 +46,15 @@
   min-height: 0;
   margin: 0 0.07in 0.045in 0.04in;
   overflow: hidden;
-  border: 0;
+  border: 1px solid rgba(54, 41, 29, 0.94);
   border-radius: 0.025in;
   background-color: #8a7a67;
   box-shadow:
-    0 0 0 1px rgba(54, 41, 29, 0.9),
+    0 0 0 0.007in rgba(231, 212, 176, 0.78),
+    0 0 0 0.012in rgba(65, 48, 32, 0.72),
+    0 0.012in 0.026in rgba(43, 31, 22, 0.16),
     inset 0 0.012in 0.024in rgba(255, 249, 230, 0.1),
-    inset 0 -0.018in 0.035in rgba(27, 19, 14, 0.18),
-    0 0.012in 0.026in rgba(43, 31, 22, 0.16);
+    inset 0 -0.018in 0.035in rgba(27, 19, 14, 0.18);
 }
 
 .card-art img {
@@ -70,15 +70,21 @@
 .card-art::before {
   z-index: 1;
   border-radius: inherit;
+  box-shadow:
+    inset 0 0 0 0.008in rgba(247, 232, 198, 0.76),
+    inset 0 0 0 0.015in rgba(59, 43, 29, 0.82),
+    inset 0 0 0 0.022in rgba(227, 207, 169, 0.52);
 }
 
 .card-art::after {
   z-index: 2;
   border-radius: inherit;
   background:
-    url("../images/artwork/card-frames/universal-mounted-art-frame.svg") center / 100% 100% no-repeat,
     linear-gradient(180deg, rgba(20, 16, 12, 0.02), transparent 58%, rgba(24, 18, 13, 0.24)),
     linear-gradient(90deg, rgba(255, 244, 213, 0.07), transparent 18%, transparent 82%, rgba(34, 25, 18, 0.08));
+  box-shadow:
+    inset 0 0.01in 0.018in rgba(255, 249, 231, 0.12),
+    inset 0 -0.014in 0.026in rgba(25, 18, 12, 0.18);
 }
 
 .card-art span {
