@@ -21,19 +21,23 @@
     const sectionTitle = tokens[sectionStart].title;
     const factionName = Object.keys(data.metadata.factions).find(name => sectionTitle.endsWith(name));
     if (factionName) {
-      const firstLeader = data.metadata.factions[factionName].leaders[0];
+      const [firstLeader, secondLeader] = data.metadata.factions[factionName].leaders;
       const firstLeaderIndex = tokens.findIndex((token, index) =>
         index > sectionStart && index < sectionEnd &&
         token.kind === 'heading' && token.level === 2 && token.title === firstLeader
       );
-      const addendumHeadingIndex = tokens.findIndex((token, index) =>
+      const secondLeaderIndex = tokens.findIndex((token, index) =>
         index > firstLeaderIndex && index < sectionEnd &&
-        token.kind === 'heading' && token.level === 2 && /-specific rules$/.test(token.title)
+        token.kind === 'heading' && token.level === 2 && token.title === secondLeader
+      );
+      const addendumHeadingIndex = tokens.findIndex((token, index) =>
+        index > secondLeaderIndex && index < sectionEnd &&
+        token.kind === 'heading' && token.level === 2
       );
 
-      if (firstLeaderIndex >= 0 && addendumHeadingIndex > firstLeaderIndex) {
+      if (firstLeaderIndex >= 0 && secondLeaderIndex > firstLeaderIndex && addendumHeadingIndex > secondLeaderIndex) {
         let addendumStart = addendumHeadingIndex;
-        while (addendumStart > firstLeaderIndex && tokens[addendumStart - 1]?.kind === 'pagebreak') {
+        while (addendumStart > secondLeaderIndex && tokens[addendumStart - 1]?.kind === 'pagebreak') {
           addendumStart -= 1;
         }
         const addendum = tokens.splice(addendumStart, sectionEnd - addendumStart);
