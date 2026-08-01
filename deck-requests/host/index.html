@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-8YYYZJGGPE');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="description" content="Create a Gauntlet Deck Prep link, review requested starter Decks, and track printing and preparation." />
+  <title>Gauntlet Deck Prep</title>
+  <link rel="preconnect" href="https://use.typekit.net" />
+  <link rel="preconnect" href="https://p.typekit.net" crossorigin />
+  <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
+  <link rel="stylesheet" href="../../site.css" />
+  <link rel="stylesheet" href="styles.css?v=20260731-1" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../../" aria-label="Gauntlet home"><span class="brand-mark" aria-hidden="true">G</span><span>Gauntlet</span></a>
+    <nav aria-label="Deck Prep navigation">
+      <a href="../../start/">New-player start</a>
+      <a href="../../playtest/host/">Host Home</a>
+      <a href="../../deckbuilder/">Deckbuilder</a>
+      <a href="../../rulebook/">Rules</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="prep-hero">
+      <div>
+        <p class="eyebrow">Optional advance preparation</p>
+        <h1>Deck <span>Prep.</span></h1>
+        <p>Create one request link, let players choose through the normal new-player onboarder, then print and prepare exactly what each person requested.</p>
+      </div>
+      <aside>
+        <strong>No game-session ceremony</strong>
+        <p>A Deck Prep list does not create tables, seats, QR cards, tracked games, or Rules Arbiter links. It exists only to prepare materials before play.</p>
+      </aside>
+    </section>
+
+    <section class="create-panel" aria-labelledby="create-title">
+      <div>
+        <p class="eyebrow">Create a request list</p>
+        <h2 id="create-title">Send one link to everyone.</h2>
+        <p>The public link opens the ordinary <strong>Start Playing</strong> page and adds an optional <strong>Have the host prepare this Deck</strong> action at the end.</p>
+      </div>
+      <form id="createPrepListForm" novalidate>
+        <label>List label <small>shown to players</small><input id="prepLabel" type="text" maxlength="120" required placeholder="August 8 game night" /></label>
+        <label>Request deadline <small>optional</small><input id="prepDeadline" type="date" /></label>
+        <label>Facilitator creation key<input id="prepAdminToken" type="password" autocomplete="off" required placeholder="Required to create the request list" /></label>
+        <button id="createPrepListButton" type="submit">Create Deck Prep list</button>
+        <p class="security-note">The facilitator key is sent only for this creation request and is never saved.</p>
+        <p id="createPrepListStatus" class="form-status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section aria-labelledby="saved-title">
+      <div class="section-heading split-heading">
+        <div><p class="eyebrow">This browser</p><h2 id="saved-title">Saved prep lists</h2></div>
+        <p>Private list links are remembered locally. Opening a saved list restores its request queue.</p>
+      </div>
+      <div id="savedPrepLists" class="saved-list-grid"></div>
+    </section>
+
+    <section id="dashboard" class="dashboard" hidden aria-labelledby="dashboard-title">
+      <div class="dashboard-heading">
+        <div>
+          <p class="eyebrow">Active preparation queue</p>
+          <h2 id="dashboard-title">Deck requests</h2>
+          <p id="dashboardMeta"></p>
+        </div>
+        <div class="dashboard-actions">
+          <button id="copyRequestLink" type="button" class="secondary">Copy player request link</button>
+          <button id="refreshRequests" type="button" class="secondary">Refresh requests</button>
+          <button id="downloadRequests" type="button" class="secondary">Download CSV</button>
+          <button id="closeRequests" type="button" class="danger">Close requests</button>
+        </div>
+      </div>
+      <p id="dashboardStatus" class="form-status" aria-live="polite"></p>
+      <div class="queue-summary" aria-label="Preparation summary">
+        <div><strong id="requestCount">0</strong><span>Requests</span></div>
+        <div><strong id="requestedCount">0</strong><span>Not started</span></div>
+        <div><strong id="preparedCount">0</strong><span>Prepared</span></div>
+        <div><strong id="collectedCount">0</strong><span>Collected</span></div>
+      </div>
+      <p class="local-note"><strong>Preparation statuses are local to this host browser.</strong> Player names and Deck choices are stored by the request service; your Printed, Prepared, and Collected markings remain on this device.</p>
+      <div id="requestList" class="request-list"></div>
+    </section>
+  </main>
+
+  <footer>
+    <a class="brand footer-brand" href="../../" aria-label="Gauntlet home"><span class="brand-mark" aria-hidden="true">G</span><span>Gauntlet</span></a>
+    <div class="footer-links"><a href="../../start/">Start playing</a><a href="../../deckbuilder/">Deckbuilder</a><a href="../../playtest/host/">Host Home</a></div>
+    <p>Unpublished playtest project · Copyright © 2026 Tymon Scott.</p>
+  </footer>
+
+  <script src="app.js?v=20260731-1" defer></script>
+</body>
+</html>
