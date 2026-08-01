@@ -9,7 +9,9 @@ on:
       - "images/artwork/cards/**"
       - "images/artwork/card-backgrounds/**"
       - "card-design/**"
+      - "scripts/generate-tts-assets.mjs"
       - "scripts/generate-tts-card-assets.mjs"
+      - "scripts/generate-tts-territory-assets.mjs"
       - "tts/**"
       - "package.json"
       - ".github/workflows/generate-tts-card-assets.yml"
@@ -36,7 +38,9 @@ jobs:
           sparse-checkout: |
             package.json
             design-tokens.css
+            scripts/generate-tts-assets.mjs
             scripts/generate-tts-card-assets.mjs
+            scripts/generate-tts-territory-assets.mjs
             tts
             card-design
             docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md
@@ -49,7 +53,7 @@ jobs:
           node-version: 22
       - run: npm install
       - run: npx playwright install --with-deps chromium
-      - name: Generate card sheets
+      - name: Generate card and Territory sheets
         run: npm run tts:build -- ${{ github.event_name == 'workflow_dispatch' && inputs.strict_artwork && '--strict-art' || '' }}
       - uses: actions/upload-artifact@v4
         with:
