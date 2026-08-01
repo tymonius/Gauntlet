@@ -43,7 +43,7 @@ Military may have up to 2 Command.
 
 The first time each turn the Military player wins a battle, gain 1 Command. This trigger may occur during either player's turn. Winning while already at 2 Command still counts as the first Military victory of that turn.
 
-Determine the winner, then gain normal Command before resolving other effects caused by that victory. Newly gained Command may pay for an Order whose timing occurs during the Aftermath.
+Determine the winner, then gain normal Command before applying other effects caused by that victory. Newly gained Command may pay for an Order whose timing occurs during the Aftermath.
 
 - Use an Order only at its printed timing.
 - Spend the listed Command when the Order is used unless an effect changes the cost.
@@ -153,7 +153,7 @@ A second physical copy of the same card title may still be played.
 
 > **Action:** Bank Field Command as an Asset. After you use a 1-Command Order, you may discard it. If you do, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command.
 >
-> **Battle:** After you use a 1-Command Order during this battle while Field Command is face up, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command. If you do, put Field Command in your Graveyard after that Order is used.
+> **Battle:** After you use a 1-Command Order during this battle while Field Command is face up, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command. If you do, put Field Command in your Graveyard after that Order takes effect.
 
 Field Command does not let an Order occur outside its legal timing.
 

@@ -72,7 +72,7 @@ After Gambits are revealed, choose a Tactic from the Reserve. A Tactic normally 
 
 On your turn:
 
-1. **Capture.** If you still occupy an opposing Territory from the previous turn, rotate it toward you and take control.
+1. **Capture.** If you are still the occupier of an opposing Territory from the previous turn, rotate it toward you and take control.
 2. **Draw.** Draw one card.
 3. **Action before movement.** You may use your normal Action Opportunity now.
 4. **Movement.** Advance, hold, or withdraw one position.
@@ -102,16 +102,16 @@ A battle ends the movement that started it. Winning does not automatically allow
 When an attacker wins on a Territory:
 
 - the defender retreats;
-- the attacker occupies that Territory; and
-- the defender gets their next turn to counterattack.
+- the attacker enters Occupation on that Territory; and
+- the controller gets their next turn to initiate a Counterattack.
 
-If the attacker still occupies the Territory at the start of their next turn, they capture it.
+If the attacker is still the occupier of the Territory at the start of their next turn, they capture it.
 
 # A normal battle
 
 Teach the first battle slowly and use the labeled battle areas.
 
-1. **Opening effects.** Establish the attacker, defender, and contested position. apply effects such as Terms.
+1. **Opening effects.** Establish the attacker, defender, and contested position. Apply effects such as Terms.
 2. **Set Gambits.** Attacker sets up to one eligible Gambit or passes. Defender then does the same.
 3. **Form Reserves.** Set Hands aside and draw three cards each.
 4. **Reveal Gambits.** Turn all Gambits face up and apply their effects.
@@ -134,7 +134,7 @@ After determining the winner:
 
 - a losing attacker returns to the position from which they entered;
 - a losing defender retreats one position toward their own end;
-- a winning attacker occupies the contested position;
+- a winning attacker takes the contested position and enters Occupation if it is an opposing Territory they do not control;
 - a winning defender remains there;
 - Gambits normally go to the Graveyard;
 - Tactics normally go to the Discard Pile; and
@@ -169,7 +169,7 @@ When control of the Territory changes, control of the Overlay changes with it.
 To win normally:
 
 1. win a battle on the opponent's final Territory;
-2. remain there through the opponent's counterattack opportunity;
+2. remain there through the opponent's Counterattack opportunity;
 3. capture that final Territory at the start of a later turn;
 4. later advance beyond the Gauntlet, starting a Last Stand battle; and
 5. win that Last Stand as the attacker.

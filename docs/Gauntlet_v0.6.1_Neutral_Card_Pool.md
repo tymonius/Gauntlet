@@ -177,18 +177,18 @@ Counterintelligence does not prevent a card from being set face up by a rule suc
 **Cost:** 2  
 **Complexity:** Basic
 
-> **Action:** Bank Foothold as an Asset. After you win as the defender while occupying a Territory you do not control, you may discard Foothold. If you do, draw two cards.
+> **Action:** Bank Foothold as an Asset. After you win as the defender while you are the occupier of a Territory, you may discard Foothold. If you do, draw two cards.
 >
-> **Battle:** If you are defending a Territory you occupy but do not control, gain advantage. During the Aftermath of the battle, if you won, draw one card.
+> **Battle:** If you are defending while you are the occupier of the contested Territory, gain advantage. During the Aftermath of the battle, if you won, draw one card.
 
 ## Illegal Occupation
 
 **Cost:** 2  
 **Complexity:** Basic
 
-> **Action:** Bank Illegal Occupation as an Asset. While the opponent occupies a Territory you control without controlling it, their banked Assets are inactive.
+> **Action:** Bank Illegal Occupation as an Asset. While the opponent is the occupier of a Territory you control, their banked Assets are inactive.
 >
-> **Battle:** If you are counterattacking an opponent occupying a Territory you control, their banked Assets are inactive during this battle and you gain advantage.
+> **Battle:** If this battle is a Counterattack, their banked Assets are inactive during this battle and you gain advantage.
 
 ## Palisade Wall
 
@@ -298,7 +298,7 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 **Cost:** 2  
 **Complexity:** Basic
 
-> **Action:** Bank Valor as an Asset. Whenever you lose a battle, after resolving required retreat, draw one card.
+> **Action:** Bank Valor as an Asset. Whenever you lose a battle, after you retreat, draw one card.
 >
 > **Battle:** After battle dice are rolled, if your battle total is lower than the opponent's, you may reroll your battle die. You must use the new result.
 
@@ -365,16 +365,16 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 
 > **Action:** Discard your Hand. Each player shuffles their Discard Pile into their Draw Pile. Draw three cards, then take one additional Action Opportunity.
 >
-> **Battle:** If you are counterattacking an opponent occupying a Territory you control, gain double advantage. Otherwise, if you are the attacker, gain advantage.
+> **Battle:** If this battle is a Counterattack, gain double advantage. Otherwise, if you are the attacker, gain advantage.
 
 ## Liberation
 
 **Cost:** 3  
 **Complexity:** Advanced
 
-> **Action:** Bank Liberation as an Asset. After you win a counterattack against an opponent occupying a Territory you control, draw one card, then take one additional Action Opportunity.
+> **Action:** Bank Liberation as an Asset. After you win a Counterattack, draw one card, then take one additional Action Opportunity.
 >
-> **Battle:** If you are counterattacking an opponent occupying a Territory you control, draw one additional card when forming your Reserve and you may choose one additional Tactic.
+> **Battle:** If this battle is a Counterattack, draw one additional card when forming your Reserve and you may choose one additional Tactic.
 
 ## Protracted Siege
 
@@ -382,9 +382,9 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 **Complexity:** Advanced  
 **Card form:** Territory Overlay
 
-> **Action:** Bank Protracted Siege as an Asset. When an opponent would capture a Territory you control during their Capture step, you may place Protracted Siege on that Territory as an Overlay. If you do, that capture does not occur. During their next Capture step, they capture it normally if they still occupy it.
+> **Action:** Bank Protracted Siege as an Asset. When an opponent would capture a Territory you control during their Capture step, you may place Protracted Siege on that Territory as an Overlay. If you do, that capture does not occur. During their next Capture step, they capture it normally if they are still the occupier.
 >
-> **Battle:** During the Aftermath of the battle, if you lose while defending a Territory you control, place Protracted Siege on that Territory as an Overlay instead of putting it in its normal destination. The opponent does not capture it during their next Capture step. During their following Capture step, they capture it normally if they still occupy it.
+> **Battle:** During the Aftermath of the battle, if you lose while defending a Territory you control, place Protracted Siege on that Territory as an Overlay instead of putting it in its normal destination. The opponent does not capture it during their next Capture step. During their following Capture step, they capture it normally if they are still the occupier.
 >
 > After it delays one Capture step, or if the occupier leaves first, put Protracted Siege in its owner's Graveyard.
 
@@ -395,7 +395,7 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 
 > **Action:** Bank Resistance as an Asset. When counterattacking an opponent occupying a Territory you control, draw two additional cards when forming your Reserve.
 >
-> **Battle:** If you are counterattacking an opponent occupying a Territory you control, gain advantage. During the Aftermath of the battle, if you win, bank Resistance as an Asset instead of putting it in its normal destination.
+> **Battle:** If this battle is a Counterattack, gain advantage. During the Aftermath of the battle, if you win, bank Resistance as an Asset instead of putting it in its normal destination.
 
 If your Asset Bank is full, you may use the normal Asset-replacement rule to make room.
 
@@ -431,7 +431,7 @@ Arcane Knowledge follows the shared copied-effect rules.
 
 > **Action:** Bank Armistice as an Asset. While it is active, neither player can start a battle. After your normal Draw step at the start of each of your turns, discard two cards from your Hand or discard Armistice. You cannot voluntarily discard it at another time.
 >
-> **Battle:** When Armistice is revealed, apply effects that could negate it before other effects at that stage. If Armistice is not negated, the attacker withdraws and the battle ends without a winner. Stop resolving remaining Battle effects. Put every other Gambit and Tactic still in battle in its owner's Discard Pile, then put Armistice in its owner's Graveyard. Cards remaining in Reserve are discarded normally.
+> **Battle:** When Armistice is revealed, apply effects that could negate it before other effects at that stage. If Armistice is not negated, the attacker withdraws and the battle ends without a winner. Do not apply any remaining Battle effects. Put every other Gambit and Tactic still in battle in its owner's Discard Pile, then put Armistice in its owner's Graveyard. Cards remaining in Reserve are discarded normally.
 
 Effects already applied are not undone.
 
@@ -440,9 +440,9 @@ Effects already applied are not undone.
 **Cost:** 4  
 **Complexity:** Advanced
 
-> **Action:** Bank Assimilation as an Asset. During the Aftermath of a battle you initiated and won on a Territory the opponent controls, you may put Assimilation in your Graveyard. If you do, capture that Territory instead of occupying it.
+> **Action:** Bank Assimilation as an Asset. During the Aftermath of a battle you initiated and won on a Territory the opponent controls, you may put Assimilation in your Graveyard. If you do, capture that Territory instead of entering Occupation.
 >
-> **Battle:** During the Aftermath of the battle, if you win as the attacker on a Territory the opponent controls, capture that Territory instead of occupying it. Put Assimilation in your Graveyard after the capture is completed.
+> **Battle:** During the Aftermath of the battle, if you win as the attacker on a Territory the opponent controls, capture that Territory instead of entering Occupation. Put Assimilation in your Graveyard after the capture is completed.
 
 ## Capital Punishment
 

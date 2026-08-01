@@ -40,7 +40,7 @@ Both values begin at 0 and have no maximum. Only an Intelligence card with a pri
 
 During an Action Opportunity after movement, place an eligible card face down as your Active Mission instead of playing an Action. Once you have satisfied its requirement on a later turn, use another after-movement Action Opportunity to reveal and complete it.
 
-A completed Mission gives 1 Operation Progress and Intel equal to the card's card value. When Operation Progress exceeds the number of Territories the opponent controls, you may begin a Special Operation.
+A completed Mission gives 1 Operation Progress and Intel equal to the card's value. When Operation Progress exceeds the number of Territories the opponent controls, you may begin a Special Operation.
 
 ## Complete rules
 
@@ -68,7 +68,7 @@ During an Action Opportunity after movement, instead of playing a card for its A
 During an Action Opportunity after movement, instead of playing a card for its Action effect, reveal and complete the Active Mission if its requirement has been satisfied.
 
 1. Gain 1 Operation Progress.
-2. Gain Intel equal to its card value.
+2. Gain Intel equal to its value.
 3. Put it in your Discard Pile.
 
 Satisfying the requirement does not complete it automatically.
@@ -97,7 +97,7 @@ The Special Operation remains ready only while Operation Progress exceeds the nu
 
 During an Action Opportunity after movement, if its requirement is satisfied and readiness remains valid, reveal it and pay:
 
-> **Territories currently in the Gauntlet − Special Operation card's card value**
+> **Territories currently in the Gauntlet − Special Operation card's value**
 
 Minimum payment is 1 Intel. If paid, immediately win through Special Operation.
 
@@ -159,7 +159,7 @@ At each choice stage:
 
 > **Fieldcraft:** Once per turn, when a printed Territory effect would affect you, your movement, or a battle involving you, you may spend 1 Intel to ignore that Territory effect until the end of the turn.
 
-Fieldcraft does not alter Territory control, occupation, capture, Defender's Advantage, Last Stand bonuses, or limits calculated from Territories.
+Fieldcraft does not alter Territory control, Occupation, capture, Defender's Advantage, Last Stand bonuses, or limits calculated from Territories.
 
 ## Spymaster
 

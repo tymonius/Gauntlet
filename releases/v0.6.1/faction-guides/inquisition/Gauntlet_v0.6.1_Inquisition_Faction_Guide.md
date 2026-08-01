@@ -18,7 +18,7 @@ Spend Conviction on **Purges** that remove cards and Assets. On your turn, using
 | Resource | Conviction, maximum 4. |
 | Normal gain | First time each turn opposing cards enter the Graveyard during the Aftermath of a battle involving you. |
 | Doctrine | Condemnation and Blasphemy. |
-| Faction action | Purge; using one during your turn permits both normal Action Opportunities. |
+| Faction Action | Purge; using one during your turn permits both normal Action Opportunities. |
 | Leaders | Grand Inquisitor and Witch Hunter. |
 | Faction pool | 12 Inquisition card titles. |
 | Arcane card | Heresy. |
@@ -64,7 +64,7 @@ Opposing Gambits already go to the Graveyard normally. Cards remaining in the op
 
 > **Blasphemy:** Whenever an opponent plays a card with the Arcane trait for its Action effect, or an Arcane Gambit or Tactic they control is revealed, gain 1 Conviction.
 
-This gain is outside the normal once-per-turn Conviction gain but cannot exceed 4. An Arcane card whose effect is applied only through a copied effect is not played or revealed as a Gambit or Tactic and does not trigger Blasphemy unless the effect says otherwise. Arcane is a trait, not faction allegiance.
+This gain is outside the normal once-per-turn Conviction gain but cannot exceed 4. Merely copying an Arcane card's effect does not count as playing or revealing that card and does not trigger Blasphemy unless the effect says otherwise. Arcane is a trait, not faction allegiance.
 
 ### Purge
 
@@ -209,7 +209,7 @@ If only one card is revealed, put it in the Graveyard.
 >
 > **Battle:** When Tyranny is revealed, before other effects at that reveal stage are applied, negate one opposing Gambit or Tactic whose effect has not yet been applied.
 
-A Tactic Tyranny cannot undo an ordinary Gambit effect that has already been applied, but may negate an delayed Gambit effect that has not yet been applied.
+A Tactic Tyranny cannot undo an ordinary Gambit effect that has already been applied, but may negate a delayed Gambit effect that has not yet been applied.
 
 ## Burning at the Stake
 
@@ -226,7 +226,7 @@ If the opponent has no cards in Hand, the effect does nothing.
 **Cost:** 5  
 **Trait:** Arcane
 
-> **Battle:** You may spend 4 Conviction to conduct the battle effect of a card in the opponent's Graveyard whose effect can be applied now, as though you played it. That card remains in the opponent's Graveyard.
+> **Battle:** You may spend 4 Conviction to apply the Battle effect of a card in the opponent's Graveyard whose effect can be applied now, as though you played it. That card remains in the opponent's Graveyard.
 
 Heresy retains one additional copied-effect layer; the additional layer cannot create another.
 

@@ -152,7 +152,7 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 **Stake:** 0  
 **Requirement:** You must be attacking.
 
-> **Accepted:** You withdraw. The opponent remains in or occupies the contested position, then draws one card.
+> **Accepted:** You withdraw. The opponent remains at or takes the contested position, then draws one card.
 >
 > **Refused:** Add +1 to your battle total.
 
@@ -161,7 +161,7 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 **Stake:** 0  
 **Requirement:** You must be defending.
 
-> **Accepted:** You withdraw. The opponent remains in or occupies the contested position, then draws one card.
+> **Accepted:** You withdraw. The opponent remains at or takes the contested position, then draws one card.
 >
 > **Refused:** If you lose, draw two cards.
 
@@ -206,14 +206,14 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 **Stake:** 2  
 **Requirement:** None
 
-> **Accepted:** The opponent withdraws. You remain in or occupy the contested position.
+> **Accepted:** The opponent withdraws. You remain at or take the contested position.
 >
 > **Refused:** Add +1 to your battle total. If you win and newly ratify this Proposal, gain 2 Influence instead of 1.
 
 ## Diplomatic Recognition
 
 **Stake:** 2  
-**Requirement:** You must be defending a counterattack on a Territory you occupy that the opponent controlled immediately before you occupied it.
+**Requirement:** You must be defending a Counterattack while you are the occupier of a Territory the opponent controlled immediately before you entered Occupation.
 
 > **Accepted:** Capture that Territory. The opponent withdraws, then draws two cards.
 >
@@ -271,7 +271,7 @@ Its ongoing effect and relief condition continue to refer to those identified pl
 
 > **Action:** Bank Safe Conduct as an Asset.
 >
-> When you would lose a battle following refused Terms, you may discard Safe Conduct to withdraw instead. The opponent remains in or occupies the contested position. The battle ends without a winner.
+> When you would lose a battle following refused Terms, you may discard Safe Conduct to withdraw instead. The opponent remains at or takes the contested position. The battle ends without a winner.
 
 ## Neutral Observers
 
@@ -322,7 +322,7 @@ The placing-player reference does not change when Overlay control changes.
 >
 > **Accepted:** The opponent chooses which Proposal is accepted.
 >
-> **Refused:** Choose one Proposal before resolving its Refused effect. Only it may be imposed.
+> **Refused:** Choose one Proposal before applying its Refused effect. Only it may be imposed.
 >
 > The other Proposal does not take effect or become ratified. After the Terms conclude, put Diplomatic Latitude in your Discard Pile.
 

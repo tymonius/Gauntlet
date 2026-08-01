@@ -28,7 +28,7 @@ Major chapters use two layers. **How it works** teaches the ordinary rule in dir
 
 Each player begins just outside their end of a six-Territory battlefield. On your turn, draw a card, take one Action before or after moving, and advance, hold, or withdraw. Entering the opponent's position begins a battle.
 
-In battle, each player may risk one card from Hand as a Gambit, then draws a temporary three-card Reserve and may choose one card as a Tactic. Card effects and dice determine the winner. The loser retreats, and the winner occupies or keeps the contested position.
+In battle, each player may risk one card from Hand as a Gambit, then draws a temporary three-card Reserve and may choose one card as a Tactic. Card effects and dice determine the winner. The loser retreats, and the winner takes or keeps the contested position.
 
 Winning an attack does not capture a Territory immediately. The attacker enters Occupation and must remain there through the opponent's turn to capture it at the start of their next turn. This gives the controller an opportunity to Counterattack and makes control change through sustained pressure rather than one die roll.
 
@@ -152,7 +152,7 @@ Territory orientation shows control: the player a Territory faces controls it. A
 
 ### Action Opportunity
 
-An Action Opportunity is the point during a turn when a player may play one card for its Action effect or perform a rule or faction action that explicitly uses that opportunity. Chapter 4 explains when it occurs.
+An Action Opportunity is the point during a turn when a player may play one card for its Action effect, perform one Faction Action, or discard one Asset they control. Chapter 4 explains when it occurs.
 
 ---
 
@@ -216,7 +216,7 @@ Complete each turn in this order:
 
 ### Capture
 
-At the start of the turn, if the active player occupies a Territory they do not control, they capture it by rotating the Territory to face them.
+At the start of the turn, if the active player is the occupier of a Territory, they capture it by rotating the Territory to face them.
 
 Apply effects and check victory conditions that occur after the Capture step before drawing.
 
@@ -273,7 +273,7 @@ A card is an Asset only when an effect banks it in the Asset Bank.
 
 A player's Asset limit equals the number of Territories they control.
 
-- A Territory occupied but not controlled does not increase the limit.
+- A Territory where you are the occupier does not increase the limit.
 - If the limit falls below the number of Assets controlled, immediately discard Assets until within the limit.
 - An inactive Asset still counts unless a rule says otherwise.
 
@@ -315,11 +315,11 @@ During the Movement step, choose one:
 
 A player cannot voluntarily withdraw beyond their own end. Player Tokens cannot move through or past one another.
 
-If an effect grants additional movement, move one position at a time unless stated otherwise. Entering an occupied position begins a battle. When that happens, the current movement sequence ends and any remaining movement is lost.
+If an effect grants additional movement, move one position at a time unless stated otherwise. Entering the opponent's position begins a battle. When that happens, the current movement sequence ends and any remaining movement is lost.
 
-### Entering an occupied Territory
+### Entering the opponent's position
 
-Move the attacking token into the contested Territory before the battle. Before the battle outcome is determined, the defender remains the occupant. If the attacker wins, the defender retreats and the attacker becomes the occupant.
+Move the attacking token into the contested position before the battle. Before the battle outcome is determined, the defender remains there. If the attacker wins, the defender retreats and the attacker takes the contested position. If that position is an opposing Territory the attacker does not control, the attacker enters Occupation.
 
 ### Movement after battle
 
@@ -380,7 +380,7 @@ Each player sets their Hand physically aside, then draws three cards to form a *
 
 Reveal all Gambits simultaneously.
 
-Effects that expressly apply before other Gambit effects are applied first. After that, apply remaining Gambit effects using the shared-timing rule in Chapter 11.
+First apply any effects that expressly apply before other Gambit effects. Then apply the remaining Gambit effects using the shared-timing rule in Chapter 11.
 
 A face-up Gambit that was revealed early remains in battle and takes effect at this stage unless its text says otherwise.
 
@@ -410,7 +410,7 @@ Combine all instances of advantage and disadvantage. They cancel one-for-one.
 - For each net advantage, roll one additional die and use the highest result.
 - For each net disadvantage, roll one additional die and use the lowest result.
 
-After selecting the die result, apply rerolls and changes to the die result in their specified order. Then apply numerical modifiers to determine the battle total.
+After selecting the die result, make any rerolls and apply any changes to the die result in their specified order. Then apply numerical modifiers to determine the battle total.
 
 #### Determine the winner
 
@@ -440,7 +440,7 @@ During the Aftermath, follow these steps in order:
 6. Apply other Aftermath effects that occur before cards leave battle.
 7. Move battle cards to their destinations.
 8. Apply effects triggered by those destinations.
-9. Apply effects at the end of the Aftermath, including follow-up movement.
+9. Apply end-of-Aftermath effects, including any that grant follow-up movement.
 
 #### Normal result
 
@@ -448,7 +448,7 @@ Unless an effect says otherwise:
 
 - a losing attacker returns to the position from which they entered;
 - a losing defender retreats one position toward their own end;
-- a winning attacker occupies the contested position; and
+- a winning attacker takes the contested position and enters Occupation if it is an opposing Territory they do not control; and
 - a winning defender remains there.
 
 Carry out additional retreats one position at a time. A player cannot retreat through the opponent. A player on their final Territory may retreat beyond the Gauntlet normally.
@@ -467,7 +467,7 @@ A card returned to its **source** returns to the zone from which it entered batt
 
 #### Result and destination triggers
 
-Immediate victory triggers occur before retreat unless the effect states otherwise. Effects that require the final occupied position occur after retreat and occupation. Effects triggered by cards entering a destination occur after the cards move there.
+Immediate victory triggers occur before retreat unless the effect states otherwise. Effects that require the final position occur after retreat and Occupation. Effects triggered by cards entering a destination occur after the cards move there.
 
 Effects at the **end of the Aftermath** occur after normal destinations and destination-triggered effects.
 
@@ -499,7 +499,7 @@ Unless the effect says otherwise, withdrawal ends the battle immediately.
 Movement:
 
 - an attacking player returns to the position from which they entered;
-- a defending player moves one position toward their own end, and the attacker occupies the contested position;
+- a defending player moves one position toward their own end, and the attacker takes the contested position, entering Occupation if it is an opposing Territory they do not control;
 - if both withdraw, move the attacker first, then the defender.
 
 #### Withdrawal during opening effects
@@ -532,7 +532,7 @@ This gives the opponent a chance to counterattack before control changes.
 
 ### Control
 
-The player a Territory faces controls it. Control does not require occupation.
+The player a Territory faces controls it. Control does not require a Player Token to be present.
 
 Each player begins controlling the three Territories on their side. Control changes only through capture or an effect that explicitly changes it.
 
@@ -568,11 +568,11 @@ The defender is harder to defeat in a Last Stand: Defender's Advantage means the
 
 ### Forcing the opponent beyond the Gauntlet
 
-When a player loses while occupying the final Territory at their end, they retreat beyond the Territory column. The winner occupies the final Territory.
+When a player loses while at the final Territory at their end, they retreat beyond the Territory column. The winner enters Occupation on the final Territory.
 
 The battle ends normally. The winner does not advance beyond the Gauntlet unless another rule explicitly permits it.
 
-If the winner still occupies the final Territory at the start of their next turn, they capture it during the Capture step.
+If the winner is still the occupier of the final Territory at the start of their next turn, they capture it during the Capture step.
 
 ### Last Stand battle
 
@@ -691,7 +691,7 @@ A replacement takes the same role as the card it replaces.
 - A replacement Tactic must be Tactic-eligible.
 - Place it in the face state instructed by the replacing effect.
 - Replacement does not reopen an earlier timing window.
-- Only effects not yet applied whose timing remains available can be applied.
+- Only effects whose timing remains available and that have not yet been applied may be applied.
 
 When an effect lets a player revise a choice, the revised choice does not create another reveal, response, or replacement opportunity unless stated otherwise.
 
@@ -826,7 +826,7 @@ Military may have up to 2 Command.
 
 The first time each turn the Military player wins a battle, gain 1 Command. This trigger may occur during either player's turn. Winning while already at 2 Command still counts as the first Military victory of that turn.
 
-Determine the winner, then gain normal Command before resolving other effects caused by that victory. Newly gained Command may pay for an Order whose timing occurs during the Aftermath.
+Determine the winner, then gain normal Command before applying other effects caused by that victory. Newly gained Command may pay for an Order whose timing occurs during the Aftermath.
 
 - Use an Order only at its printed timing.
 - Spend the listed Command when the Order is used unless an effect changes the cost.
@@ -984,7 +984,7 @@ When Terms are refused:
 1. apply the Proposal's **Refused** effect and any refusal modifiers;
 2. continue to Set Gambits;
 3. before dice, the Diplomat may use Leverage; and
-4. conduct the battle and its Aftermath.
+4. continue the battle through the Aftermath.
 
 Apply the result:
 
@@ -1155,7 +1155,7 @@ Deed ownership is independent of who occupies or controls the Territory. Own the
 | Victory | Run the Gauntlet or achieve Controlling Interest. |
 | Resource | Capital, minimum 0; maximum determined by the Capital limit. |
 | Capital limit | Territories you control plus total card value in Treasury. |
-| Financial Capacity | If Treasury value exceeds Territories controlled at the start of your turn, you may use both normal Action Opportunities; at least one must be a Financier faction action. |
+| Financial Capacity | If Treasury value exceeds Territories controlled at the start of your turn, you may use both normal Action Opportunities; at least one must be a Financier Faction Action. |
 | Income | After the Capture step, gain 1 Capital per Deed you own. |
 | Leaders | Banker and Executive. |
 | Faction pool | 12 Financier card titles. |
@@ -1181,7 +1181,7 @@ Begin with 0 Capital and an empty Treasury. Place Deed Cards in the shared unown
 
 Capital is public and pays for Deeds, Subsidize, and card effects. Your Capital limit rises when you control Territories or place valuable cards in Treasury. You may temporarily exceed the limit, but excess Capital is lost at the end of each turn.
 
-At the start of your turn, if the total card value in your Treasury is greater than the number of Territories you control, you may use both normal Action Opportunities that turn. At least one must be used for a Financier faction action.
+At the start of your turn, if the total card value in your Treasury is greater than the number of Territories you control, you may use both normal Action Opportunities that turn. At least one must be used for a Financier Faction Action.
 
 During an Action Opportunity after movement, you may place a card in Treasury, buy a Deed, or Play the Market instead of playing an Action card.
 
@@ -1197,11 +1197,11 @@ Capital may exceed the limit temporarily. At the end of every turn, including an
 
 #### Financial Capacity
 
-After resolving the Capture step and all effects that occur after it, but before the Draw step, compare the total card value of cards in your Treasury with the number of Territories you control.
+After completing the Capture step and applying all effects that occur after it, but before the Draw step, compare the total card value of cards in your Treasury with the number of Territories you control.
 
-If the Treasury value is greater, you may use both normal Action Opportunities that turn. If you use both, at least one must be used for a Financier faction action. If the before-movement opportunity was not used for a Financier faction action, the after-movement opportunity may be used only for one.
+If the Treasury value is greater, you may use both normal Action Opportunities that turn. If you use both, at least one must be used for a Financier Faction Action. If the before-movement opportunity was not used for a Financier Faction Action, the after-movement opportunity may be used only for one.
 
-Qualifying Financier faction actions include placing a card in your Treasury, buying or buying out a Deed, Play the Market, Hostile Takeover, or another Financier faction action that explicitly uses an Action Opportunity.
+Qualifying Financier Faction Actions include placing a card in your Treasury, buying or buying out a Deed, Play the Market, Hostile Takeover, or another Financier Faction Action that explicitly uses an Action Opportunity.
 
 Determine eligibility once at this timing. Later changes to Treasury value or Territories controlled do not grant or remove this permission during that turn. The two opportunities remain at their normal timings: one before movement and one after movement.
 
@@ -1212,7 +1212,7 @@ During an Action Opportunity after movement, instead of playing a card for its A
 
 - Treasury cards are outside normal card zones.
 - They cannot be played or affected unless a rule specifically refers to Treasury.
-- Each increases the Capital limit by its card value.
+- Each increases the Capital limit by its value.
 - Treasury is not the Asset Bank and uses no Asset capacity.
 - A card leaving Treasury immediately stops contributing to the limit.
 - Treasury cards do not generate Capital by themselves.
@@ -1267,8 +1267,8 @@ During an Action Opportunity after movement, instead of playing a card for its A
 |---:|---|
 | 1 | Put the card in your Graveyard; gain 0 Capital. |
 | 2–3 | Gain 1 Capital. |
-| 4–5 | Gain Capital equal to the card's card value. |
-| 6 | Gain Capital equal to twice the card's card value. |
+| 4–5 | Gain Capital equal to the card's value. |
+| 6 | Gain Capital equal to twice the card's value. |
 
 #### Subsidize
 
@@ -1300,7 +1300,7 @@ An additional Action Opportunity permits one additional qualifying action at its
 
 > **Line of Credit:** The first time on your turn that you would buy or buy out a Deed, you may use one card from your Hand or Treasury as collateral.
 >
-> - It contributes payment equal to its card value.
+> - It contributes payment equal to its value.
 > - It cannot contribute more than half the purchase cost, rounded down.
 > - Pay the remaining cost with Capital.
 > - Put the collateral in your Discard Pile after the purchase.
@@ -1397,7 +1397,7 @@ Both values begin at 0 and have no maximum. Only an Intelligence card with a pri
 
 During an Action Opportunity after movement, place an eligible card face down as your Active Mission instead of playing an Action. Once you have satisfied its requirement on a later turn, use another after-movement Action Opportunity to reveal and complete it.
 
-A completed Mission gives 1 Operation Progress and Intel equal to the card's card value. When Operation Progress exceeds the number of Territories the opponent controls, you may begin a Special Operation.
+A completed Mission gives 1 Operation Progress and Intel equal to the card's value. When Operation Progress exceeds the number of Territories the opponent controls, you may begin a Special Operation.
 
 ### Complete rules
 
@@ -1425,7 +1425,7 @@ During an Action Opportunity after movement, instead of playing a card for its A
 During an Action Opportunity after movement, instead of playing a card for its Action effect, reveal and complete the Active Mission if its requirement has been satisfied.
 
 1. Gain 1 Operation Progress.
-2. Gain Intel equal to its card value.
+2. Gain Intel equal to its value.
 3. Put it in your Discard Pile.
 
 Satisfying the requirement does not complete it automatically.
@@ -1454,7 +1454,7 @@ The Special Operation remains ready only while Operation Progress exceeds the nu
 
 During an Action Opportunity after movement, if its requirement is satisfied and readiness remains valid, reveal it and pay:
 
-> **Territories currently in the Gauntlet − Special Operation card's card value**
+> **Territories currently in the Gauntlet − Special Operation card's value**
 
 Minimum payment is 1 Intel. If paid, immediately win through Special Operation.
 
@@ -1620,11 +1620,11 @@ A card bound to a Rite, Ritual, or another card is outside normal zones.
 
 > Once per turn, when the Action, Gambit, Tactic, or Battle effect of an Arcane card you play, set, or choose takes effect, you may move one card from your Graveyard to your Discard Pile.
 
-A copied effect does not trigger Invocation unless the Arcane card itself applies another printed effect through being played, set, or chosen again.
+A copied effect does not trigger Invocation unless the Arcane card is itself played, set, or chosen again and its printed effect takes effect.
 
 #### Transmutation
 
-> Once per turn, before dice are rolled in a battle involving you, you may put one card from your Hand in your Graveyard. Add its card value to your battle total.
+> Once per turn, before dice are rolled in a battle involving you, you may put one card from your Hand in your Graveyard. Add its value to your battle total.
 
 The card is not played and none of its printed effects apply. Supplemental components cannot be used.
 
@@ -1772,7 +1772,7 @@ Spend Conviction on **Purges** that remove cards and Assets. On your turn, using
 | Resource | Conviction, maximum 4. |
 | Normal gain | First time each turn opposing cards enter the Graveyard during the Aftermath of a battle involving you. |
 | Doctrine | Condemnation and Blasphemy. |
-| Faction action | Purge; using one during your turn permits both normal Action Opportunities. |
+| Faction Action | Purge; using one during your turn permits both normal Action Opportunities. |
 | Leaders | Grand Inquisitor and Witch Hunter. |
 | Faction pool | 12 Inquisition card titles. |
 | Arcane card | Heresy. |
@@ -1820,7 +1820,7 @@ Opposing Gambits already go to the Graveyard normally. Cards remaining in the op
 
 > **Blasphemy:** Whenever an opponent plays a card with the Arcane trait for its Action effect, or an Arcane Gambit or Tactic they control is revealed, gain 1 Conviction.
 
-This gain is outside the normal once-per-turn Conviction gain but cannot exceed 4. An Arcane card whose effect is applied only through a copied effect is not played or revealed as a Gambit or Tactic and does not trigger Blasphemy unless the effect says otherwise. Arcane is a trait, not faction allegiance.
+This gain is outside the normal once-per-turn Conviction gain but cannot exceed 4. Merely copying an Arcane card's effect does not count as playing or revealing that card and does not trigger Blasphemy unless the effect says otherwise. Arcane is a trait, not faction allegiance.
 
 #### Purge
 
@@ -1901,7 +1901,7 @@ Heresy follows the shared copied-effect rule but retains permission for one addi
 
 # Quick Turn Reference
 
-1. **Capture:** capture an opposing Territory you still occupy.
+1. **Capture:** capture an opposing Territory where you are still the occupier.
 2. **Draw:** draw one card.
 3. **Action Opportunity before movement:** use it now or save it.
 4. **Movement:** advance, hold, or withdraw; conduct any battle immediately.
