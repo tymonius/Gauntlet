@@ -62,7 +62,7 @@ jobs:
           SERVER_PID=$!
           trap 'kill $SERVER_PID' EXIT
           node rulebook-production/render_fidelity_gate.mjs
-          node rulebook-production/render_rulebook.mjs
+          node rulebook-production/run_rulebook_renderer.mjs
 
       - name: Validate PDF geometry
         run: |
