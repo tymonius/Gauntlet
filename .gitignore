@@ -6,3 +6,15 @@ coverage/
 .env.local
 tts/generated/
 media/generated/
+
+# Private ChatGPT export and conversation-audit material.
+# These files may contain complete personal conversation history and must remain local.
+**/conversations-*.json
+**/selected_messages_part_*.jsonl
+**/selected_transcripts_part_*.md
+**/all_conversations_inventory.csv
+**/excluded_conversation_review_part_*.jsonl
+**/excluded_conversations_review_inventory.csv
+**/excluded_conversation_review_manifest.json
+**/chatgpt-export*.zip
+**/chatgpt_export*.zip
