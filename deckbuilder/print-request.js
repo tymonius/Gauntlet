@@ -66,7 +66,7 @@
     const playerReady = Boolean(el.printRequestPlayerName.value.trim());
     const emailReady = EMAIL_PATTERN.test(el.printRequestHostEmail.value.trim());
     el.openPrintRequestEmail.disabled = !(validDeck && playerReady && emailReady);
-    el.copyPrintRequest.disabled = !validDeck;
+    el.copyPrintRequest.disabled = !(validDeck && playerReady);
 
     if (!validDeck) setStatus("Complete and validate the Deck before requesting printing.");
     else if (el.printRequestHostEmail.value && !emailReady) setStatus("Enter a valid host email address.", "error");
@@ -98,7 +98,7 @@
       `Playable cards: ${validation.cardCount}`,
       `Deck value: ${validation.pointTotal}/60`,
       `Territories: ${territories.length ? territories.join(" → ") : "None selected"}`,
-      note ? `Note: ${note}` : "",
+      ...(note ? [`Note: ${note}`] : []),
       "",
       "HOST INSTRUCTIONS",
       "1. Copy the JSON between the BEGIN and END markers.",
@@ -110,7 +110,7 @@
       "----- BEGIN GAUNTLET DECK JSON -----",
       json,
       "----- END GAUNTLET DECK JSON -----"
-    ].filter(line => line !== "");
+    ];
     return { deck, playerName, subject, body: lines.join("\n"), json };
   }
 
@@ -130,6 +130,11 @@
   async function copyRequest() {
     if (!deckIsValid()) {
       setStatus("Complete and validate the Deck before copying a request.", "error");
+      return;
+    }
+    if (!el.printRequestPlayerName.value.trim()) {
+      setStatus("Enter your name before copying the request.", "error");
+      el.printRequestPlayerName.focus();
       return;
     }
     const request = buildRequest();
