@@ -32,7 +32,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-          cache: npm
 
       - name: Apply terminology changes
         run: python scripts/apply_terminology_refinement.py
@@ -54,7 +53,7 @@ jobs:
           done
 
       - name: Install dependencies
-        run: npm ci
+        run: npm install
 
       - name: Validate governance
         run: npm run governance:check
