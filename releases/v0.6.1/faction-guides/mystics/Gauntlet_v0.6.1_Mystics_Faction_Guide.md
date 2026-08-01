@@ -18,8 +18,18 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 | Resource | None. |
 | Trait | All twelve Mystics cards have the Arcane trait. |
 | Progression | First Rite: Invocation; second: Transmutation; third: Convergence and Ritual. |
+| Faction Actions | Begin a Rite or, after all three Rites are complete, begin the Ritual of Ascendance; both occur after movement. |
 | Leaders | Alchemist and Spirit Walker. |
 | Unique card | Necromancy, cost 5; maximum one copy per Playable Deck. |
+
+## Faction Actions
+
+Mystics have the following Faction Actions. Each uses one Action Opportunity and may be performed only after movement:
+
+- **Begin a Rite:** Choose one incomplete Rite you may legally begin and pay its beginning cost.
+- **Begin the Ritual of Ascendance:** After completing all three Rites, bind the required Arcane cards from Hand, Discard Pile, and Graveyard.
+
+Completing a Rite is not a Faction Action; it occurs when that Rite's completion condition and timing are satisfied. Invocation, Transmutation, Convergence, and the Leader abilities are Faction Abilities, not Faction Actions.
 
 # 2. Components and setup
 

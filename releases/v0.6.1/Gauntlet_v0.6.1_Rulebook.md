@@ -798,9 +798,14 @@ Military has no alternate victory condition. It wins by running the Gauntlet.
 | Victory | Run the Gauntlet. |
 | Resource | Command, maximum 2. |
 | Resource gain | The first time each turn you win a battle, gain 1 Command. |
+| Faction Actions | None. Orders use their printed timings and do not use Action Opportunities. |
 | Leaders | General and Commandant. |
 | Faction pool | 12 Military card titles. |
 | Unique card | Shock and Awe, cost 5; maximum one copy per Playable Deck. |
+
+## Faction Actions
+
+Military has **no Faction Actions**. Orders are Faction Abilities used at their printed timings; they do not use an Action Opportunity. Playing a Military card for its Action effect still uses an Action Opportunity under the shared rules.
 
 ## Components and setup
 
@@ -906,9 +911,14 @@ Accepted or successfully imposed Proposals become Treaty Articles. Ratify five d
 | Resource | Influence, minimum 0 and maximum 10. |
 | Starting value | 1 Influence. |
 | Faction procedure | Offer Terms during opening effects. |
+| Faction Actions | None. Terms and Leverage do not use Action Opportunities. |
 | Leaders | Ambassador and Senator. |
 | Proposal set | Nine double-sided Proposal / Treaty Article cards. |
 | Faction pool | 12 Diplomat card titles. |
+
+## Faction Actions
+
+Diplomats have **no Faction Actions**. Offering Terms is a faction procedure during opening effects, and Leverage is a Faction Ability used before dice are rolled after refused Terms. Neither uses an Action Opportunity. Playing a Diplomat card for its Action effect still uses an Action Opportunity under the shared rules.
 
 ## Components and setup
 
@@ -1156,10 +1166,22 @@ Deed ownership is independent of token position and Territory control. Own the D
 | Resource | Capital, minimum 0; maximum determined by the Capital limit. |
 | Capital limit | Territories you control plus total card value in Treasury. |
 | Financial Capacity | If Treasury value exceeds Territories controlled at the start of your turn, you may use both normal Action Opportunities; at least one must be a Financier Faction Action. |
+| Faction Actions | Place a card in Treasury, buy or buy out a Deed, Play the Market, or use Hostile Takeover; all occur after movement. |
 | Income | After the Capture step, gain 1 Capital per Deed you own. |
 | Leaders | Banker and Executive. |
 | Faction pool | 12 Financier card titles. |
 | Unique card | Corner the Market, cost 5; maximum one copy per Playable Deck. |
+
+## Faction Actions
+
+Financiers have the following Faction Actions. Each uses one Action Opportunity and may be performed only after movement:
+
+- **Place a card in Treasury:** Place one card from your Hand face up in your Treasury.
+- **Buy or buy out a Deed:** Pay the full current cost to acquire one unowned Deed or buy out one opposing Financier's Deed.
+- **Play the Market:** Discard one card from Hand, roll one die, and gain Capital according to the result.
+- **Hostile Takeover — Executive only:** After winning a battle as the attacker that turn and becoming the occupier of the enemy Territory, buy or buy out its Deed; a successful purchase also gives you control of that Territory.
+
+When Financial Capacity permits both normal Action Opportunities, at least one must be used for one of these Faction Actions. Line of Credit modifies a Deed purchase, and Subsidize modifies a battle; neither is a separate Faction Action.
 
 ## Components and setup
 
@@ -1373,8 +1395,21 @@ Complete enough Missions to make a **Special Operation** ready, satisfy its hidd
 | Tracked values | Intel and Operation Progress; both begin at 0. |
 | Mission reward | 1 Operation Progress and Intel equal to the Mission card's value. |
 | Battle tools | Surveillance and Interference. |
+| Faction Actions | Start, complete, or abort a Mission; start or complete a Special Operation; all occur after movement. |
 | Leaders | Ranger and Spymaster. |
 | Unique card | Sleeper Network, cost 5; maximum one copy per Playable Deck. |
+
+## Faction Actions
+
+Intelligence has the following Faction Actions. Each uses one Action Opportunity and may be performed only after movement:
+
+- **Start a Mission:** Place one eligible Intelligence card from Hand face down as your Active Mission.
+- **Complete a Mission:** Reveal a satisfied Active Mission, gain its Mission reward, and put it in your Discard Pile.
+- **Abort a Mission:** Reveal the Active Mission, spend Intel equal to its value, and put it in your Discard Pile.
+- **Start a Special Operation:** When ready, place one eligible Intelligence card from Hand face down as your Special Operation.
+- **Complete a Special Operation:** Reveal a satisfied, ready Special Operation, pay its Intel cost, and win the game.
+
+Surveillance, Interference, Fieldcraft, and Mission Control are Faction Abilities, not Faction Actions. Mission Control may start a Mission without using an Action Opportunity only because its text expressly permits it.
 
 ## Components and setup
 
@@ -1565,8 +1600,18 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 | Resource | None. |
 | Trait | All twelve Mystics cards have the Arcane trait. |
 | Progression | First Rite: Invocation; second: Transmutation; third: Convergence and Ritual. |
+| Faction Actions | Begin a Rite or, after all three Rites are complete, begin the Ritual of Ascendance; both occur after movement. |
 | Leaders | Alchemist and Spirit Walker. |
 | Unique card | Necromancy, cost 5; maximum one copy per Playable Deck. |
+
+## Faction Actions
+
+Mystics have the following Faction Actions. Each uses one Action Opportunity and may be performed only after movement:
+
+- **Begin a Rite:** Choose one incomplete Rite you may legally begin and pay its beginning cost.
+- **Begin the Ritual of Ascendance:** After completing all three Rites, bind the required Arcane cards from Hand, Discard Pile, and Graveyard.
+
+Completing a Rite is not a Faction Action; it occurs when that Rite's completion condition and timing are satisfied. Invocation, Transmutation, Convergence, and the Leader abilities are Faction Abilities, not Faction Actions.
 
 ## Components and setup
 
@@ -1772,10 +1817,18 @@ Spend Conviction on **Purges** that remove cards and Assets. On your turn, using
 | Resource | Conviction, maximum 4. |
 | Normal gain | First time each turn opposing cards enter the Graveyard during the Aftermath of a battle involving you. |
 | Doctrine | Condemnation and Blasphemy. |
-| Faction Action | Purge; using one during your turn permits both normal Action Opportunities. |
+| Faction Actions | Purge. Using one through an Action Opportunity during your turn permits both normal Action Opportunities. |
 | Leaders | Grand Inquisitor and Witch Hunter. |
 | Faction pool | 12 Inquisition card titles. |
 | Arcane card | Heresy. |
+
+## Faction Actions
+
+**Purge is the Inquisition's only Faction Action.** During either normal Action Opportunity on your turn, spend the listed Conviction to perform one Purge instead of playing a card for its Action effect.
+
+Using a Purge through an Action Opportunity permits you to use both normal Action Opportunities that turn. The other opportunity may be used normally, but you may perform no more than one Purge through Action Opportunities that turn.
+
+A Purge performed without using an Action Opportunity, such as one permitted by Final Judgment, is a Faction Ability at that timing rather than a Faction Action. It does not consume an Action Opportunity and does not count against the once-per-turn Action-Opportunity Purge limit.
 
 ## Components and setup
 

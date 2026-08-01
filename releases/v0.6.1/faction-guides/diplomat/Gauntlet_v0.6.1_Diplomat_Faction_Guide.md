@@ -18,9 +18,14 @@ Accepted or successfully imposed Proposals become Treaty Articles. Ratify five d
 | Resource | Influence, minimum 0 and maximum 10. |
 | Starting value | 1 Influence. |
 | Faction procedure | Offer Terms during opening effects. |
+| Faction Actions | None. Terms and Leverage do not use Action Opportunities. |
 | Leaders | Ambassador and Senator. |
 | Proposal set | Nine double-sided Proposal / Treaty Article cards. |
 | Faction pool | 12 Diplomat card titles. |
+
+## Faction Actions
+
+Diplomats have **no Faction Actions**. Offering Terms is a faction procedure during opening effects, and Leverage is a Faction Ability used before dice are rolled after refused Terms. Neither uses an Action Opportunity. Playing a Diplomat card for its Action effect still uses an Action Opportunity under the shared rules.
 
 # 2. Components and setup
 
