@@ -1150,6 +1150,7 @@ Deed ownership is independent of who occupies or controls the Territory. Own the
 | Victory | Run the Gauntlet or achieve Controlling Interest. |
 | Resource | Capital, minimum 0; maximum determined by the Capital limit. |
 | Capital limit | Territories you control plus total deckbuilding value in Treasury. |
+| Financial Capacity | If Treasury value exceeds Territories controlled at the start of your turn, you may use both normal Action Opportunities; at least one must be a Financier faction action. |
 | Income | After the Capture step, gain 1 Capital per Deed you own. |
 | Leaders | Banker and Executive. |
 | Faction pool | 12 Financier card titles. |
@@ -1175,6 +1176,8 @@ Begin with 0 Capital and an empty Treasury. Place Deed Cards in the shared unown
 
 Capital is public and pays for Deeds, Subsidize, and card effects. Your Capital limit rises when you control Territories or place valuable cards in Treasury. You may temporarily exceed the limit, but excess Capital is lost at the end of each turn.
 
+At the start of your turn, if the total deckbuilding value in your Treasury is greater than the number of Territories you control, you may use both normal Action Opportunities that turn. At least one must be used for a Financier faction action.
+
 During an Action Opportunity after movement, you may place a card in Treasury, buy a Deed, or Play the Market instead of playing an Action card.
 
 ### Complete rules
@@ -1186,6 +1189,17 @@ Capital cannot fall below 0. Record every gain, spend, loss, and end-turn reduct
 > **Capital limit = Territories you control + total deckbuilding value of cards in your Treasury**
 
 Capital may exceed the limit temporarily. At the end of every turn, including an opponent's turn, reduce your Capital to the current limit if necessary.
+
+#### Financial Capacity
+
+After resolving the Capture step and all effects that occur after it, but before the Draw step, compare the total deckbuilding value of cards in your Treasury with the number of Territories you control.
+
+If the Treasury value is greater, you may use both normal Action Opportunities that turn. If you use both, at least one must be used for a Financier faction action. If the before-movement opportunity was not used for a Financier faction action, the after-movement opportunity may be used only for one.
+
+Qualifying Financier faction actions include placing a card in your Treasury, buying or buying out a Deed, Play the Market, Hostile Takeover, or another Financier faction action that explicitly uses an Action Opportunity.
+
+Determine eligibility once at this timing. Later changes to Treasury value or Territories controlled do not grant or remove this permission during that turn. The two opportunities remain at their normal timings: one before movement and one after movement.
+
 
 #### Treasury
 

@@ -1,5 +1,16 @@
 # Gauntlet Development Status
 
+
+## Financier Financial Capacity playtest
+
+Financiers now determine Financial Capacity after the Capture step and its effects, before drawing. When Treasury value exceeds Territories controlled, they may use both normal Action Opportunities that turn, provided at least one is used for a Financier faction action.
+
+Test specifically whether:
+
+- the condition activates too automatically on the second Financier turn;
+- the condition remains active too continuously once established; and
+- the added economic action accelerates Deed acquisition or compounds Tariffs, Divestment, and Margin Loan too strongly.
+
 **Current canonical version:** v0.6.1 — First Playtest Revision  
 **Release date:** July 30, 2026  
 **Status:** Canonical playtest edition
