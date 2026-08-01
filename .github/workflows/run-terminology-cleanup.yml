@@ -4,13 +4,16 @@ on:
   push:
     branches:
       - agent/terminology-refinement
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
 
 jobs:
   cleanup:
-    if: ${{ !contains(github.event.head_commit.message, '[terminology-cleanup]') }}
+    if: ${{ github.event_name == 'pull_request' || !contains(github.event.head_commit.message, '[terminology-cleanup]') }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
