@@ -40,7 +40,7 @@ Both values begin at 0 and have no maximum. Only an Intelligence card with a pri
 
 During an Action Opportunity after movement, place an eligible card face down as your Active Mission instead of playing an Action. Once you have satisfied its requirement on a later turn, use another after-movement Action Opportunity to reveal and complete it.
 
-A completed Mission gives 1 Operation Progress and Intel equal to the card's deckbuilding value. When Operation Progress exceeds the number of Territories the opponent controls, you may begin a Special Operation.
+A completed Mission gives 1 Operation Progress and Intel equal to the card's value. When Operation Progress exceeds the number of Territories the opponent controls, you may begin a Special Operation.
 
 ## Complete rules
 
@@ -68,7 +68,7 @@ During an Action Opportunity after movement, instead of playing a card for its A
 During an Action Opportunity after movement, instead of playing a card for its Action effect, reveal and complete the Active Mission if its requirement has been satisfied.
 
 1. Gain 1 Operation Progress.
-2. Gain Intel equal to its deckbuilding value.
+2. Gain Intel equal to its value.
 3. Put it in your Discard Pile.
 
 Satisfying the requirement does not complete it automatically.
@@ -97,7 +97,7 @@ The Special Operation remains ready only while Operation Progress exceeds the nu
 
 During an Action Opportunity after movement, if its requirement is satisfied and readiness remains valid, reveal it and pay:
 
-> **Territories currently in the Gauntlet − Special Operation card's deckbuilding value**
+> **Territories currently in the Gauntlet − Special Operation card's value**
 
 Minimum payment is 1 Intel. If paid, immediately win through Special Operation.
 
@@ -115,13 +115,13 @@ Immediately after revealing a card, spend 2 more Intel to interfere. The card re
 
 Once per battle, after the opponent sets a face-down Gambit, spend 1 Intel to reveal it.
 
-After you resolve any Interference against that revealed Gambit and the opponent makes any replacement, you may revise your own Gambit choice if you have already made one. Revision does not create another Surveillance or Interference opportunity.
+After you use any Interference against that revealed Gambit and the opponent makes any replacement, you may revise your own Gambit choice if you have already made one. Revision does not create another Surveillance or Interference opportunity.
 
 ### Tactic Surveillance
 
 Once per battle, after the opponent chooses one or more face-down Tactics, spend 1 Intel for each opposing Tactic you reveal.
 
-After you resolve any Interference against those revealed Tactics and the opponent makes replacements, you may revise your own Tactic choices if you have already made them. Revision does not create another Surveillance or Interference opportunity.
+After you use any Interference against those revealed Tactics and the opponent makes replacements, you may revise your own Tactic choices if you have already made them. Revision does not create another Surveillance or Interference opportunity.
 
 The Gambit and Tactic opportunities are independent. Using one does not consume the other.
 
@@ -159,7 +159,7 @@ At each choice stage:
 
 > **Fieldcraft:** Once per turn, when a printed Territory effect would affect you, your movement, or a battle involving you, you may spend 1 Intel to ignore that Territory effect until the end of the turn.
 
-Fieldcraft does not alter Territory control, occupation, capture, Defender's Advantage, Last Stand bonuses, or limits calculated from Territories.
+Fieldcraft does not alter Territory control, Occupation, capture, Defender's Advantage, Last Stand bonuses, or limits calculated from Territories.
 
 ## Spymaster
 
@@ -228,7 +228,7 @@ Withdrawal uses normal battle destinations unless another effect says otherwise.
 
 > **Action:** Return your Active Mission to your Hand, then place another eligible Intelligence card from your Hand face down as your Active Mission. It cannot complete this turn.
 >
-> **Battle:** After Tactics are revealed, choose one: withdraw; or replace Operational Reassessment with an eligible Battle card from your Hand whose effect can still resolve. If you replace it, put Operational Reassessment in your Graveyard and place the replacement face up.
+> **Battle:** After Tactics are revealed, choose one: withdraw; or replace Operational Reassessment with an eligible Battle card from your Hand whose effect can still be applied. If you replace it, put Operational Reassessment in your Graveyard and place the replacement face up.
 
 The replacement takes Operational Reassessment's current Gambit or Tactic role.
 
@@ -266,7 +266,7 @@ Deep Cover prevents Mission failure; it does not preserve a Special Operation un
 
 > **Action:** Reveal the opponent's Hand. Choose one card there and discard it.
 >
-> **Battle:** When Assassins is revealed, negate one opposing Gambit. If Assassins is revealed with Gambits, resolve this before other Gambit effects. If the opponent set no Gambit, give them disadvantage during this battle.
+> **Battle:** When Assassins is revealed, negate one opposing Gambit. If Assassins is revealed with Gambits, apply this before other Gambit effects. If the opponent set no Gambit, give them disadvantage during this battle.
 >
 > **Mission:** Complete after you reveal one or more cards in the opponent's Hand outside a battle, then win a battle against that opponent in which they set a Gambit.
 
@@ -275,22 +275,22 @@ Deep Cover prevents Mission failure; it does not preserve a Special Operation un
 **Cost:** 4  
 **Card form:** Asset
 
-> **Action:** Bank Treason as an Asset. After Tactics are revealed in a battle involving you, before an opposing Battle effect resolves, you may discard Treason. If you do, choose one unresolved opposing Battle effect. Negate it, then resolve that printed effect as though you controlled it.
+> **Action:** Bank Treason as an Asset. After Tactics are revealed in a battle involving you, before an opposing Battle effect applies, you may discard Treason. If you do, choose one opposing Battle effect that has not yet been applied. Negate it, then apply that printed effect as though you controlled it.
 >
-> **Battle:** After Tactics are revealed, choose one unresolved opposing Battle effect. Negate it, then resolve that printed effect as though you controlled it.
+> **Battle:** After Tactics are revealed, choose one opposing Battle effect that has not yet been applied. Negate it, then apply that printed effect as though you controlled it.
 
-Treason cannot select an effect that has already resolved and follows the shared copied-effect rules.
+Treason cannot select an effect that has already been applied and follows the shared copied-effect rules.
 
 ## Subversion
 
 **Cost:** 4  
 **Card form:** Asset
 
-> **Action:** Bank Subversion as an Asset. When an opposing banked Asset's effect would resolve, you may put Subversion in your Graveyard. If you do, negate that effect and put the opposing Asset in its owner's Discard Pile if it remains in play.
+> **Action:** Bank Subversion as an Asset. When an opposing banked Asset's effect would apply, you may put Subversion in your Graveyard. If you do, negate that effect and put the opposing Asset in its owner's Discard Pile if it remains in play.
 >
-> **Battle:** Opposing banked Assets cannot be activated and their effects cannot resolve during this battle.
+> **Battle:** Opposing banked Assets cannot be activated and their effects cannot be applied during this battle.
 >
-> **Mission:** Complete after you win a battle in which an opposing banked Asset was activated or resolved and none of your banked Assets were activated or resolved.
+> **Mission:** Complete after you win a battle in which an opposing banked Asset was activated or had its effect applied and none of your banked Assets were activated or had their effects applied.
 
 ## Sleeper Network
 
@@ -302,9 +302,9 @@ Treason cannot select an effect that has already resolved and follows the shared
 >
 > **Capacity:** Sleeper Network can hold no more cards than the number of Territories you control. If it holds too many, immediately put cards beneath it of your choice in your Discard Pile until within capacity.
 >
-> **Activate:** At the start of your turn, you may put Sleeper Network in your Graveyard. If you do, reveal the cards beneath it. Play each card whose Action effect can legally resolve, one at a time and in any order, without using Action Opportunities. Put the rest in your Discard Pile.
+> **Activate:** At the start of your turn, you may put Sleeper Network in your Graveyard. If you do, reveal the cards beneath it. Play each card whose Action effect can legally be applied, one at a time and in any order, without using Action Opportunities. Put the rest in your Discard Pile.
 >
-> **Compromised:** When an opposing effect would cause Sleeper Network to leave play, before it does, reveal the cards beneath it. You may play one card whose Action effect can legally resolve without using an Action Opportunity. Put the rest in your Discard Pile.
+> **Compromised:** When an opposing effect would cause Sleeper Network to leave play, before it does, reveal the cards beneath it. You may play one card whose Action effect can legally be applied without using an Action Opportunity. Put the rest in your Discard Pile.
 >
 > **Other removal:** If Sleeper Network leaves play for any other reason, put all cards beneath it in your Discard Pile.
 

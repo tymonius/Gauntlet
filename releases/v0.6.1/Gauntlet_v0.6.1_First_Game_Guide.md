@@ -72,12 +72,12 @@ After Gambits are revealed, choose a Tactic from the Reserve. A Tactic normally 
 
 On your turn:
 
-1. **Capture.** If you still occupy an opposing Territory from the previous turn, rotate it toward you and take control.
+1. **Capture.** If you are still the occupier of an opposing Territory from the previous turn, rotate it toward you and take control.
 2. **Draw.** Draw one card.
 3. **Action before movement.** You may use your normal Action Opportunity now.
 4. **Movement.** Advance, hold, or withdraw one position.
 5. **Action after movement.** Use the normal Action Opportunity here only if you did not use it before movement.
-6. **Cleanup.** Resolve end-of-turn effects and discard down to three cards in Hand.
+6. **Cleanup.** Apply end-of-turn effects and discard down to three cards in Hand.
 
 A player has one normal Action Opportunity, not one before movement and another after movement.
 
@@ -102,23 +102,23 @@ A battle ends the movement that started it. Winning does not automatically allow
 When an attacker wins on a Territory:
 
 - the defender retreats;
-- the attacker occupies that Territory; and
-- the defender gets their next turn to counterattack.
+- the attacker enters Occupation on that Territory; and
+- the controller gets their next turn to initiate a Counterattack.
 
-If the attacker still occupies the Territory at the start of their next turn, they capture it.
+If the attacker is still the occupier of the Territory at the start of their next turn, they capture it.
 
 # A normal battle
 
 Teach the first battle slowly and use the labeled battle areas.
 
-1. **Opening effects.** Establish the attacker, defender, and contested position. Resolve effects such as Terms.
+1. **Opening effects.** Establish the attacker, defender, and contested position. Apply effects such as Terms.
 2. **Set Gambits.** Attacker sets up to one eligible Gambit or passes. Defender then does the same.
 3. **Form Reserves.** Set Hands aside and draw three cards each.
-4. **Reveal Gambits.** Turn all Gambits face up and resolve them.
+4. **Reveal Gambits.** Turn all Gambits face up and apply their effects.
 5. **Choose Tactics.** Attacker chooses up to one eligible Tactic or passes. Defender then does the same.
-6. **Reveal Tactics.** Turn all Tactics face up and resolve them.
-7. **Resolve the battle.** Resolve before-dice effects, roll, and compare battle totals.
-8. **Aftermath.** Resolve retreat, occupation, other result effects, card destinations, and follow-up movement.
+6. **Reveal Tactics.** Turn all Tactics face up and apply their effects.
+7. **Determine the Outcome.** Apply before-dice effects, roll, and compare battle totals.
+8. **Aftermath.** Carry out retreat and Occupation, apply other result effects, move cards to their destinations, and carry out follow-up movement.
 
 ## Advantage and disadvantage
 
@@ -126,7 +126,7 @@ Each net advantage adds one die; use the highest result. Each net disadvantage a
 
 ## Ties
 
-When the defender controls the contested Territory, the defender wins a tied battle total. The defender also has this advantage during a Last Stand. Otherwise, reroll unresolved ties.
+When the defender controls the contested Territory, the defender wins a tied battle total. The defender also has this advantage during a Last Stand. Otherwise, reroll until the tie is broken.
 
 # Aftermath and destinations
 
@@ -134,7 +134,7 @@ After determining the winner:
 
 - a losing attacker returns to the position from which they entered;
 - a losing defender retreats one position toward their own end;
-- a winning attacker occupies the contested position;
+- a winning attacker takes the contested position and enters Occupation if it is an opposing Territory they do not control;
 - a winning defender remains there;
 - Gambits normally go to the Graveyard;
 - Tactics normally go to the Discard Pile; and
@@ -169,7 +169,7 @@ When control of the Territory changes, control of the Overlay changes with it.
 To win normally:
 
 1. win a battle on the opponent's final Territory;
-2. remain there through the opponent's counterattack opportunity;
+2. remain there through the opponent's Counterattack opportunity;
 3. capture that final Territory at the start of a later turn;
 4. later advance beyond the Gauntlet, starting a Last Stand battle; and
 5. win that Last Stand as the attacker.

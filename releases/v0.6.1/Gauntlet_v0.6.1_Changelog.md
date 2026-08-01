@@ -3,7 +3,9 @@
 
 ## Post-release playtest changes
 
-- **Financiers — Financial Capacity:** After the Capture step and its effects, a Financier whose Treasury value exceeds their controlled Territories may use both normal Action Opportunities that turn, provided at least one is used for a Financier faction action. Eligibility is locked for the turn.
+- **Terminology refinement:** Distinguished Position from Occupation; defined Occupier and Counterattack; renamed deckbuilding value to card value; defined Faction Ability and Faction Action; renamed the battle step **Determine the Outcome**; and replaced the overloaded timing verb with operation-specific language.
+
+- **Financiers — Financial Capacity:** After the Capture step and its effects, a Financier whose Treasury value exceeds their controlled Territories may use both normal Action Opportunities that turn, provided at least one is used for a Financier Faction Action. Eligibility is locked for the turn.
 
 **Compared with:** v0.6.0 — Faction Framework Release  
 **Published:** July 30, 2026
@@ -30,7 +32,7 @@ Gauntlet v0.6.1 is the first physical-playtest revision. It preserves the factio
 - Standardized **Pass** when declining to set or choose a card.
 - Added the mnemonic: **Gambits go to the Graveyard.**
 
-Battles now resolve in this order:
+Battles now proceed in this order:
 
 1. opening effects;
 2. set Gambits;
@@ -38,24 +40,24 @@ Battles now resolve in this order:
 4. reveal Gambits;
 5. choose Tactics;
 6. reveal Tactics;
-7. resolve the battle; and
-8. resolve the Aftermath of the battle.
+7. **Determine the Outcome**; and
+8. proceed to the Aftermath.
 
 ## Reveal, priority, and replacement
 
 - Gambits and Tactics reveal simultaneously within their respective stages.
-- Effects that expressly resolve before other effects at that stage resolve first.
-- Added attacker-first alternating resolution when both players control effects at the same timing.
-- Clarified that simultaneous reveal does not mean simultaneous resolution.
+- Effects that expressly apply before other effects at that stage are applied first.
+- Added attacker-first alternating application when both players control effects at the same timing.
+- Clarified that simultaneous reveal does not cause effects to be applied simultaneously.
 - Clarified that a face-up Gambit or Tactic still waits for its normal reveal timing unless stated otherwise.
-- Clarified that effects cannot be negated after they resolve.
+- Clarified that effects cannot be negated after they take effect.
 - Added shared rules for replacement cards, revised choices, multiple Tactics, and additional Tactics.
 - A replacement takes the same role and does not reopen an earlier timing window.
 
 ## Aftermath, withdrawal, and retreat
 
 - Replaced loose uses of “after battle” and the obsolete term “battle cleanup” with the formal **Aftermath of the battle**.
-- Added a complete Aftermath order covering result, withdrawal replacement, retreat, occupation, additional retreat, card destinations, destination triggers, and follow-up movement.
+- Added a complete Aftermath order covering result, withdrawal replacement, retreat, Occupation, additional retreat, card destinations, destination triggers, and follow-up movement.
 - Normal card destinations are now stated centrally:
   - Gambits go to the Graveyard;
   - Tactics go to the Discard Pile; and
@@ -87,11 +89,11 @@ Battles now resolve in this order:
 - Copied effects retain costs, requirements, targets, and timing restrictions.
 - Copied effects cannot reopen earlier timing windows.
 - A copied effect cannot normally select another copied-effect instruction.
-- Added standard verbs for setting Gambits, choosing Tactics, playing cards, activating Assets, using faction abilities, and resolving effects.
+- Added standard verbs for setting Gambits, choosing Tactics, playing cards, activating Assets, using Faction Abilities, and applying effects.
 
 ## Diplomats
 
-- Terms now resolve during opening effects before Gambits are set.
+- Terms now conclude during opening effects before Gambits are set.
 - Accepted Terms prevent the pending battle; battle and Aftermath triggers do not occur.
 - Added Diplomat mirror procedure: attacker may offer Terms first; if they pass, defender may offer. Only one Proposal may be offered for the pending battle.
 - Revised Neutral Observers to set Gambit order explicitly.
@@ -140,7 +142,7 @@ Battles now resolve in this order:
 ## Financiers
 
 - Replaced phase language with Action Opportunity timing.
-- Clarified that Deed ownership is independent of occupation, Territory control, Assets, and Overlays.
+- Clarified that Deed ownership is independent of token Position, Territory control, Assets, and Overlays.
 - Clarified Asset replacement interactions with Underwriting, Property Dues, Margin Loan, and Tariffs.
 - Revised Hostile Takeover, Speculation, Monetary Crisis, Capital Gains, Margin Loan, Leveraged Buyout, Foreclosure, Property Dues, and Corner the Market for the formal Aftermath sequence.
 
@@ -172,6 +174,6 @@ Unless specifically revised above, v0.6.1 retains:
 - 25 Territories, including four Arenas;
 - Deck construction of at least 30 cards and no more than 60 total value;
 - exactly three different Territories with no more than one Arena;
-- the distinction between occupation and control;
-- capture at the start of the occupying player's next turn; and
+- the distinction between Occupation and control;
+- capture at the start of the occupier's next turn; and
 - running the Gauntlet as the universal victory route.

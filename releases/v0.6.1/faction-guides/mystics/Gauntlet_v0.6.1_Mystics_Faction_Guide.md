@@ -69,15 +69,15 @@ A card bound to a Rite, Ritual, or another card is outside normal zones.
 
 ### Invocation
 
-> Once per turn, when an Arcane card you play, set, or choose resolves its Action, Gambit, Tactic, or Battle effect, you may move one card from your Graveyard to your Discard Pile.
+> Once per turn, when the Action, Gambit, Tactic, or Battle effect of an Arcane card you play, set, or choose takes effect, you may move one card from your Graveyard to your Discard Pile.
 
-A copied effect does not trigger Invocation unless the Arcane card itself resolves another printed effect through being played, set, or chosen again.
+A copied effect does not trigger Invocation unless the Arcane card is itself played, set, or chosen again and its printed effect takes effect.
 
 ### Transmutation
 
-> Once per turn, before dice are rolled in a battle involving you, you may put one card from your Hand in your Graveyard. Add its deckbuilding value to your battle total.
+> Once per turn, before dice are rolled in a battle involving you, you may put one card from your Hand in your Graveyard. Add its value to your battle total.
 
-The card is not played and none of its printed effects resolve. Supplemental components cannot be used.
+The card is not played and none of its printed effects apply. Supplemental components cannot be used.
 
 # 4. The three Rites
 
@@ -85,13 +85,13 @@ The card is not played and none of its printed effects resolve. Supplemental com
 
 **Beginning cost:** Bind one chosen card from your Graveyard face up beneath this Rite. Then bind one card from your Hand face down beneath it whose title matches at least one other card in your Playable Deck.
 
-> **Completion:** On a later turn, complete this Rite when another card with the bound Hand card's title resolves its Gambit, Tactic, or Battle effect during a battle.
+> **Completion:** On a later turn, complete this Rite when the Gambit, Tactic, or Battle effect of another card with the bound Hand card's title takes effect during a battle.
 
 On completion:
 
 - move the selected Graveyard card to your Discard Pile;
 - put the bound Hand card in your Graveyard;
-- resolve the completing card normally; and
+- apply the completing card normally; and
 - flip Rite of Echoes to its completed side.
 
 If you lose a battle before completion, put both bound cards in your Graveyard and reset the Rite.
@@ -108,11 +108,11 @@ If you lose a battle before completion, reset the Rite.
 
 ## Rite of Crossing
 
-You may begin this Rite only during an Action Opportunity after movement after winning a battle that caused you to occupy a Territory the opponent controlled immediately before that battle.
+You may begin this Rite only during an Action Opportunity after movement after winning a battle that caused you to enter Occupation on a Territory the opponent controlled immediately before that battle.
 
 **Beginning cost:** Put one Arcane card from your Hand in your Graveyard. If you have none, reveal your Hand and move one Arcane card from your Discard Pile to your Graveyard instead.
 
-> **Completion:** At the start of your next turn, after the Capture step, complete this Rite if you still occupy or control that Territory. Otherwise, the Rite is interrupted and resets.
+> **Completion:** At the start of your next turn, after the Capture step, complete this Rite if you are still the occupier or now control that Territory. Otherwise, the Rite is interrupted and resets.
 
 # 5. Ritual of Ascendance and Convergence
 
@@ -182,7 +182,7 @@ Arcane is a trait, not faction allegiance. Mystics cards are Arcane, and cards f
 
 ## Entering the Graveyard
 
-A card enters the Graveyard before an effect such as Grave Ward moves it elsewhere. An entry trigger still resolves even if the card immediately leaves.
+A card enters the Graveyard before an effect such as Grave Ward moves it elsewhere. An entry trigger still applies even if the card immediately leaves.
 
 ## Exchange
 
@@ -219,7 +219,7 @@ Withdrawal produces no losing player.
 **Cost:** 2  
 **Trait:** Arcane
 
-> **Action:** Put one other card from your Hand in your Graveyard. Move one additional position this turn. Resolve movement one position at a time.
+> **Action:** Put one other card from your Hand in your Graveyard. Move one additional position this turn. Move one position at a time.
 >
 > **Battle:** After you roll, you may put one other card from your Hand in your Graveyard to reroll. You must use the new result.
 
@@ -262,13 +262,13 @@ Withdrawal produces no losing player.
 **Trait:** Arcane  
 **Card form:** Asset
 
-> **Action:** Bank Rend the Veil as an Asset. After Tactics are revealed in a battle involving you, you may discard Rend the Veil. If you do, choose one card in your Graveyard whose Battle effect can resolve now and does not resolve another card's effect or another copied effect. Reveal the chosen card face up in your Graveyard and resolve its Battle effect as though you played it.
+> **Action:** Bank Rend the Veil as an Asset. After Tactics are revealed in a battle involving you, you may discard Rend the Veil. If you do, choose one card in your Graveyard whose Battle effect can be applied now and does not copy another card's effect or another copied effect. Reveal the chosen card face up in your Graveyard and apply its Battle effect as though you played it.
 >
-> **Battle:** After Tactics are revealed, you may choose one card in your Graveyard whose Battle effect can resolve now and does not resolve another card's effect or another copied effect. Reveal the chosen card face up in your Graveyard and resolve its Battle effect as though you played it.
+> **Battle:** After Tactics are revealed, you may choose one card in your Graveyard whose Battle effect can be applied now and does not copy another card's effect or another copied effect. Reveal the chosen card face up in your Graveyard and apply its Battle effect as though you played it.
 >
 > During the Aftermath of the battle, move the chosen card from your Graveyard to your Discard Pile.
 
-The chosen card remains in the Graveyard while its effect resolves and follows the shared copied-effect rules.
+The chosen card remains in the Graveyard while its effect applies and follows the shared copied-effect rules.
 
 ## Paths of Shadow
 
@@ -285,9 +285,9 @@ The chosen card remains in the Graveyard while its effect resolves and follows t
 **Trait:** Arcane  
 **Card form:** Asset
 
-> **Action:** Bank Witchcraft as an Asset. Once per turn, after Tactics are revealed in a battle involving you, you may put one card from your Hand in your Graveyard. If you do, choose one other active card you control in the battle with an eligible Battle effect. Resolve that effect one additional time.
+> **Action:** Bank Witchcraft as an Asset. Once per turn, after Tactics are revealed in a battle involving you, you may put one card from your Hand in your Graveyard. If you do, choose one other active card you control in the battle with an eligible Battle effect. Apply that effect one additional time.
 >
-> **Battle:** After Tactics are revealed, choose one other active card you control in the battle with an eligible Battle effect. Resolve that effect one additional time. If you cannot choose one, gain advantage. During the Aftermath of the battle, put Witchcraft in your Graveyard instead of its normal destination.
+> **Battle:** After Tactics are revealed, choose one other active card you control in the battle with an eligible Battle effect. Apply that effect one additional time. If you cannot choose one, gain advantage. During the Aftermath of the battle, put Witchcraft in your Graveyard instead of its normal destination.
 
 Make all choices and pay all costs again when repeating the effect.
 
@@ -296,7 +296,7 @@ Make all choices and pay all costs again when repeating the effect.
 **Cost:** 4  
 **Trait:** Arcane
 
-> **Tactic:** When Black Covenant is revealed, you may bind one other card from your Hand with a Tactic or Battle effect. Play it face up as an additional Tactic and resolve its effect immediately after Black Covenant. During the Aftermath of the battle, put Black Covenant and the bound card in your Graveyard.
+> **Tactic:** When Black Covenant is revealed, you may bind one other card from your Hand with a Tactic or Battle effect. Play it face up as an additional Tactic and apply its effect immediately after Black Covenant's effect. During the Aftermath of the battle, put Black Covenant and the bound card in your Graveyard.
 
 ## Circle of Bones
 

@@ -95,7 +95,7 @@ Choose the **Banker** for planned purchases and flexible financing. The Banker m
 
 ### Executive
 
-Choose the **Executive** for offensive acquisition. After winning as the attacker and occupying an enemy Territory, the Executive can buy its Deed and convert the purchase into immediate control.
+Choose the **Executive** for offensive acquisition. After winning as the attacker and entering Occupation on an enemy Territory, the Executive can buy its Deed and convert the purchase into immediate control.
 
 ---
 
@@ -178,7 +178,7 @@ Conviction has a maximum of four. Spend it deliberately, but avoid sitting at th
 
 ### Grand Inquisitor
 
-Choose the **Grand Inquisitor** for judgment and Purge efficiency. After winning a battle and resolving card destinations, the Grand Inquisitor may perform a discounted Purge.
+Choose the **Grand Inquisitor** for judgment and Purge efficiency. After winning a battle and moving cards to their destinations, the Grand Inquisitor may perform a discounted Purge.
 
 ### Witch Hunter
 

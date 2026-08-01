@@ -25,13 +25,15 @@ Each player builds a Deck consisting of:
 
 - one faction;
 - one Leader;
-- one Playable Deck of at least 30 cards and no more than 60 total deckbuilding value;
+- one Playable Deck of at least 30 cards and no more than 60 total card value;
 - three different Territories; and
 - any required faction- or Leader-specific supplemental components.
 
-The players secretly arrange their Territories, reveal all six, and join them into the Gauntlet. They then advance, fight battles, occupy enemy-controlled Territories, survive counterattacks, capture ground, and attempt to run the Gauntlet.
+The players secretly arrange their Territories, reveal all six, and join them into the Gauntlet. They then advance, fight battles, enter Occupation on enemy-controlled Territories, survive Counterattacks, capture ground, and attempt to run the Gauntlet.
 
-To run the Gauntlet, a player must defeat the opponent on their final Territory, occupy and capture it, advance beyond the Territory column, force the opponent to make a Last Stand, and win the resulting battle.
+A Player Token always has a Position. Occupation begins only when that token is on an opposing Territory the player does not control.
+
+To run the Gauntlet, a player must defeat the opponent on their final Territory, enter Occupation there and capture it, advance beyond the Territory column, force the opponent to make a Last Stand, and win the resulting battle.
 
 ## Factions
 
@@ -120,7 +122,7 @@ Legacy pre-v0.6 digital-prototype code and starter data. They are retained for a
 3. Regenerate the affected documents, cards, or supported tools.
 4. Visually inspect rendered documents and Deckbuilder print output.
 5. Record release-facing changes in the changelog.
-6. Record unresolved testing concerns in `docs/Gauntlet_Development_Status.md`; do not silently resolve them in generated data or production artifacts.
+6. Record open testing concerns in `docs/Gauntlet_Development_Status.md`; do not silently settle them in generated data or production artifacts.
 
 ## Running browser tools locally
 

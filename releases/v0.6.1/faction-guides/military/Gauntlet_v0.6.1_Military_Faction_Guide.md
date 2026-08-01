@@ -43,7 +43,7 @@ Military may have up to 2 Command.
 
 The first time each turn the Military player wins a battle, gain 1 Command. This trigger may occur during either player's turn. Winning while already at 2 Command still counts as the first Military victory of that turn.
 
-Determine the winner, then gain normal Command before resolving other effects caused by that victory. Newly gained Command may pay for an Order whose timing occurs during the Aftermath.
+Determine the winner, then gain normal Command before applying other effects caused by that victory. Newly gained Command may pay for an Order whose timing occurs during the Aftermath.
 
 - Use an Order only at its printed timing.
 - Spend the listed Command when the Order is used unless an effect changes the cost.
@@ -88,11 +88,11 @@ You initiated a battle when your movement or effect caused it to begin. A follow
 
 ## Additional Tactics
 
-Military effects may add Tactics after the normal Tactic reveal. Play such a card face up. Its effect must still be able to resolve at that timing. It does not reopen normal Tactic choice, Surveillance, Interference, or reveal windows.
+Military effects may add Tactics after the normal Tactic reveal. Play such a card face up. Its effect must still be applicable at that timing. It does not reopen normal Tactic choice, Surveillance, Interference, or reveal windows.
 
 ## Conflicting victory benefits
 
-War Crimes and Shock and Awe may prohibit movement, capture, or Orders resulting from the same victory. Apply only combinations of effects that can legally resolve together.
+War Crimes and Shock and Awe may prohibit movement, capture, or Orders resulting from the same victory. Apply only combinations of effects that can legally be applied together.
 
 # 6. Canonical Military card pool
 
@@ -104,7 +104,7 @@ War Crimes and Shock and Awe may prohibit movement, capture, or Orders resulting
 >
 > **Battle:** If you win this battle and used no Orders during it, gain 1 Command.
 
-The Battle gain resolves during the Aftermath before an eligible post-victory Order.
+The Battle gain occurs during the Aftermath before an eligible post-victory Order.
 
 ## Battlefield Promotion
 
@@ -153,7 +153,7 @@ A second physical copy of the same card title may still be played.
 
 > **Action:** Bank Field Command as an Asset. After you use a 1-Command Order, you may discard it. If you do, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command.
 >
-> **Battle:** After you use a 1-Command Order during this battle while Field Command is face up, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command. If you do, put Field Command in your Graveyard after that Order resolves.
+> **Battle:** After you use a 1-Command Order during this battle while Field Command is face up, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command. If you do, put Field Command in your Graveyard after that Order takes effect.
 
 Field Command does not let an Order occur outside its legal timing.
 
@@ -161,9 +161,9 @@ Field Command does not let an Order occur outside its legal timing.
 
 **Cost:** 3
 
-> **Action:** Bank Reserve Force as an Asset with one card from your Hand that has a Tactic or Battle effect face down beneath it. After Tactics are revealed in a battle involving you, you may discard Reserve Force. If you do, play the stored card face up as an additional Tactic, provided its effect can resolve then. During the Aftermath of the battle, put the stored card in your Graveyard. If Reserve Force leaves play before deployment, put the stored card in your Graveyard.
+> **Action:** Bank Reserve Force as an Asset with one card from your Hand that has a Tactic or Battle effect face down beneath it. After Tactics are revealed in a battle involving you, you may discard Reserve Force. If you do, play the stored card face up as an additional Tactic, provided its effect can be applied then. During the Aftermath of the battle, put the stored card in your Graveyard. If Reserve Force leaves play before deployment, put the stored card in your Graveyard.
 >
-> **Battle:** After Tactics are revealed, you may replace Reserve Force with an eligible card from your Hand whose effect can still resolve. If you do, put Reserve Force in your Graveyard and place the replacement face up. If you do not, put Reserve Force in your Discard Pile during the Aftermath of the battle instead of its normal destination.
+> **Battle:** After Tactics are revealed, you may replace Reserve Force with an eligible card from your Hand whose effect can still be applied. If you do, put Reserve Force in your Graveyard and place the replacement face up. If you do not, put Reserve Force in your Discard Pile during the Aftermath of the battle instead of its normal destination.
 
 The replacement takes Reserve Force's role as a Gambit or Tactic.
 
@@ -179,7 +179,7 @@ The replacement takes Reserve Force's role as a Gambit or Tactic.
 
 **Cost:** 4
 
-> **Action:** Bank Hold the Line as an Asset. During opening effects in a battle where you are defending a Territory you control, you may put it in your Graveyard. If you do, after Tactics are revealed, draw two cards into your Reserve. You may immediately play one face up as an additional Tactic if it has a Tactic or Battle effect that can resolve then. If you lose, after you retreat, the attacker captures that Territory.
+> **Action:** Bank Hold the Line as an Asset. During opening effects in a battle where you are defending a Territory you control, you may put it in your Graveyard. If you do, after Tactics are revealed, draw two cards into your Reserve. You may immediately play one face up as an additional Tactic if it has a Tactic or Battle effect that can be applied then. If you lose, after you retreat, the attacker captures that Territory.
 >
 > **Battle:** If you are defending a Territory you control, after Tactics are revealed, draw two cards into your Reserve. You may immediately play one face up as an additional Tactic if eligible. If you lose, after you retreat, the attacker captures that Territory. During the Aftermath of the battle, put Hold the Line in your Graveyard instead of its normal destination.
 
@@ -214,7 +214,7 @@ Cards left in the opponent's Reserve are unaffected.
 >
 > **Battle:** If you initiated this battle on an enemy-controlled Territory, use the effect below. During the Aftermath of the battle, put Shock and Awe in your Graveyard instead of its normal destination.
 >
-> **Effect:** After Tactics are revealed, you may play one card from your Hand with a Tactic or Battle effect face up as an additional Tactic, provided its effect can resolve then. During the Aftermath of the battle, put that card in your Graveyard instead of your Discard Pile.
+> **Effect:** After Tactics are revealed, you may play one card from your Hand with a Tactic or Battle effect face up as an additional Tactic, provided its effect can be applied then. During the Aftermath of the battle, put that card in your Graveyard instead of your Discard Pile.
 >
 > If you lose, retreat one additional position.
 >
