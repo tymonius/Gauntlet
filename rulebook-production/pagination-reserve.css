@@ -1,10 +1,11 @@
 /*
  * Browser font loading and final PDF rasterization can move the last line of a
  * page by a few pixels after the paginator measures it. Reserve a small,
- * consistent baseline of white space at the bottom of every long-form flow so
+ * consistent baseline of white space while pagination is in progress so
  * borderline material moves to the following page instead of being clipped.
+ * The reserve disappears before final validation and rendering.
  */
-.production-flow::after {
+html:not([data-pagination-ready="true"]) .production-flow::after {
   content: "";
   display: block;
   height: 18px;
