@@ -54,7 +54,7 @@ jobs:
         run: |
           python rulebook-design/build_proofs.py
           python rulebook-production/build_fidelity_gate.py
-          python rulebook-production/build_rulebook.py
+          python rulebook-production/build_complete_rulebook.py
 
       - name: Render and compare against approved design
         run: |
