@@ -7,6 +7,7 @@
   let syntheticIndex = 0;
   let movedFactionAddenda = 0;
   let retiredLegacyPageBreaks = 0;
+  let deliberateSectionBreaks = 0;
 
   for (let sectionStart = 0; sectionStart < tokens.length;) {
     if (!(tokens[sectionStart].kind === 'heading' && tokens[sectionStart].level === 1)) {
@@ -96,10 +97,33 @@
     retiredLegacyPageBreaks += 1;
   }
 
+  /* These substantial parent sections otherwise land as the final line of a
+   * preceding page after natural pagination. Start only these boundaries on a
+   * fresh page so the parent heading remains with its opening subsection. */
+  const deliberateBreakTitles = new Set([
+    'Withdrawal and Retreat',
+    'Military-specific rules',
+    'Financier-specific rules',
+    'Inquisition-specific rules',
+  ]);
+  for (let index = 0; index < tokens.length; index += 1) {
+    const token = tokens[index];
+    if (!(token.kind === 'heading' && deliberateBreakTitles.has(token.title))) continue;
+    if (tokens[index - 1]?.kind === 'pagebreak') continue;
+    deliberateSectionBreaks += 1;
+    tokens.splice(index, 0, {
+      id: `layout-deliberate-pagebreak-${deliberateSectionBreaks}`,
+      kind: 'pagebreak',
+      layoutOnly: true,
+    });
+    index += 1;
+  }
+
   data.metadata.layoutNormalization = {
     insertedCompleteRulesHeadings: syntheticIndex,
     movedFactionAddendaBeforeLeaderProfiles: movedFactionAddenda,
     retiredLegacyPageBreaks,
+    deliberateSectionBreaks,
   };
   node.textContent = JSON.stringify(data);
 })();
