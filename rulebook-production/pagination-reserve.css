@@ -10,3 +10,13 @@ html:not([data-pagination-ready="true"]) .production-flow::after {
   display: block;
   height: 18px;
 }
+
+/* Booklet mode still needs the ordinary half-letter reader pages visible while
+ * their geometry is measured and the imposed sheet model is constructed. The
+ * production stylesheet switches to the booklet root only after pagination. */
+html:not([data-pagination-ready="true"]) .production-document[data-mode="booklet"] #reader-root {
+  display: block !important;
+}
+html:not([data-pagination-ready="true"]) .production-document[data-mode="booklet"] #booklet-root {
+  display: none !important;
+}
