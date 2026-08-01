@@ -1,8 +1,7 @@
 import { readFile, writeFile } from 'node:fs/promises';
-import { pathToFileURL } from 'node:url';
 
 const sourcePath = new URL('./render_rulebook.mjs', import.meta.url);
-const runtimePath = '/tmp/gauntlet-render-rulebook-runtime.mjs';
+const runtimePath = new URL('./.render_rulebook_runtime.mjs', import.meta.url);
 let source = await readFile(sourcePath, 'utf8');
 
 const original = `        const next = heading.nextElementSibling;
@@ -25,4 +24,4 @@ if (source.indexOf(original) !== source.lastIndexOf(original)) {
 
 source = source.replace(original, corrected);
 await writeFile(runtimePath, source, 'utf8');
-await import(`${pathToFileURL(runtimePath).href}?run=${Date.now()}`);
+await import(`${runtimePath.href}?run=${Date.now()}`);
