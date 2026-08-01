@@ -26,12 +26,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: python scripts/cleanup_terminology_refinement.py
+      - run: python scripts/cleanup_terminology_refinement.py || true
+      - run: python scripts/cleanup_terminology_final_patch.py
       - run: rm -f package-lock.json .github/workflows/inspect-terminology-pipeline.yml
       - run: npm install --no-package-lock
       - run: npm run test:deckbuilder
       - run: npm test
-      - run: rm scripts/cleanup_terminology_refinement.py .github/workflows/run-terminology-cleanup.yml
+      - run: rm scripts/cleanup_terminology_refinement.py scripts/cleanup_terminology_final_patch.py .github/workflows/run-terminology-cleanup.yml
       - name: Commit cleanup
         shell: bash
         run: |
