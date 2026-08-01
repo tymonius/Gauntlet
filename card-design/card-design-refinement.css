@@ -37,11 +37,22 @@
   box-shadow: none;
 }
 
+/* Universal mounted-print art window. The frame is drawn over the perimeter so
+   it does not resize the illustration or alter any established crop position. */
 .card-art {
   width: auto;
   height: auto;
   min-height: 0;
   margin: 0 0.07in 0.045in 0.04in;
+  border: 1px solid rgba(54, 41, 29, 0.92);
+  border-radius: 0.035in;
+  background-color: #8a7a67;
+  box-shadow:
+    inset 0 0 0 0.01in rgba(245, 230, 197, 0.72),
+    inset 0 0 0 0.019in rgba(67, 50, 35, 0.44),
+    inset 0 0.012in 0.024in rgba(255, 249, 230, 0.15),
+    inset 0 -0.018in 0.035in rgba(27, 19, 14, 0.24),
+    0 0.012in 0.026in rgba(43, 31, 22, 0.16);
 }
 
 .card-art img {
