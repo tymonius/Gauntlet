@@ -31,6 +31,8 @@ Each player builds a Deck consisting of:
 
 The players secretly arrange their Territories, reveal all six, and join them into the Gauntlet. They then advance, fight battles, enter Occupation on enemy-controlled Territories, survive Counterattacks, capture ground, and attempt to run the Gauntlet.
 
+A Player Token always has a Position. Occupation begins only when that token is on an opposing Territory the player does not control.
+
 To run the Gauntlet, a player must defeat the opponent on their final Territory, enter Occupation there and capture it, advance beyond the Territory column, force the opponent to make a Last Stand, and win the resulting battle.
 
 ## Factions
