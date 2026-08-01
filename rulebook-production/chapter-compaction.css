@@ -1,0 +1,13 @@
+/* Targeted publication compaction for chapters whose procedural lists would
+ * otherwise create an almost-empty continuation page. Type size and hierarchy
+ * remain unchanged; only list flow is reorganized into approved reference-style
+ * columns. */
+.page[data-anchor="5. Actions and Assets"] .production-flow ol,
+.page[data-anchor="5. Actions and Assets"] .production-flow ul {
+  columns: 2;
+  column-gap: 18px;
+  column-rule: 1px solid var(--line);
+}
+.page[data-anchor="5. Actions and Assets"] .production-flow li {
+  break-inside: avoid;
+}
