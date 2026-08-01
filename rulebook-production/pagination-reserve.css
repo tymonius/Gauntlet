@@ -20,3 +20,17 @@ html:not([data-pagination-ready="true"]) .production-document[data-mode="booklet
 html:not([data-pagination-ready="true"]) .production-document[data-mode="booklet"] #booklet-root {
   display: none !important;
 }
+
+/* The approved proof demonstrated one-digit chapter numerals. Production uses
+ * Chapters 10-18 as well, so the numeral column must size to its content rather
+ * than allowing two digits to intrude into the title. */
+.production-document .chapter-title-row {
+  display: grid !important;
+  grid-template-columns: max-content minmax(0, 1fr) !important;
+  align-items: end !important;
+  column-gap: 8px !important;
+}
+.production-document .chapter-title-row .chapter-number {
+  width: auto !important;
+  min-width: 0 !important;
+}
