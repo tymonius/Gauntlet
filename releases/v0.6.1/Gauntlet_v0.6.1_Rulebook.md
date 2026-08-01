@@ -984,7 +984,7 @@ When Terms are refused:
 1. apply the Proposal's **Refused** effect and any refusal modifiers;
 2. continue to Set Gambits;
 3. before dice, the Diplomat may use Leverage; and
-4. continue the battle through the Aftermath.
+4. conduct the battle and its Aftermath.
 
 Apply the result:
 
@@ -1052,7 +1052,7 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 **Stake:** 0  
 **Requirement:** You must be attacking.
 
-> **Accepted:** You withdraw. The opponent remains in or occupies the contested position, then draws one card.
+> **Accepted:** You withdraw. The opponent remains at or takes the contested position, then draws one card.
 >
 > **Refused:** Add +1 to your battle total.
 
@@ -1061,7 +1061,7 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 **Stake:** 0  
 **Requirement:** You must be defending.
 
-> **Accepted:** You withdraw. The opponent remains in or occupies the contested position, then draws one card.
+> **Accepted:** You withdraw. The opponent remains at or takes the contested position, then draws one card.
 >
 > **Refused:** If you lose, draw two cards.
 
@@ -1106,14 +1106,14 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 **Stake:** 2  
 **Requirement:** None
 
-> **Accepted:** The opponent withdraws. You remain in or occupy the contested position.
+> **Accepted:** The opponent withdraws. You remain at or take the contested position.
 >
 > **Refused:** Add +1 to your battle total. If you win and newly ratify this Proposal, gain 2 Influence instead of 1.
 
 ### Diplomatic Recognition
 
 **Stake:** 2  
-**Requirement:** You must be defending a counterattack on a Territory you occupy that the opponent controlled immediately before you occupied it.
+**Requirement:** You must be defending a Counterattack while you are the occupier of a Territory the opponent controlled immediately before you entered Occupation.
 
 > **Accepted:** Capture that Territory. The opponent withdraws, then draws two cards.
 >
@@ -1146,7 +1146,7 @@ Its ongoing effect and relief condition continue to refer to those identified pl
 
 Financiers build economic power. They place cards in a **Treasury** to increase their Capital limit, gain and spend **Capital**, and buy **Deeds** connected to Territories.
 
-Deed ownership is independent of who occupies or controls the Territory. Own the Deeds to every Territory currently in the Gauntlet to win through **Controlling Interest**.
+Deed ownership is independent of token position and Territory control. Own the Deeds to every Territory currently in the Gauntlet to win through **Controlling Interest**.
 
 ## Complete rules
 
@@ -1225,7 +1225,7 @@ When buying an unowned Deed, take a Deed Card from the supply and place it besid
 
 When buying out an opposing Financier's Deed, move its Deed Card to the buyer's side. When a Deed becomes unowned, return its card to the supply.
 
-Deed ownership is independent of Territory occupation and control. Changing Territory control does not transfer its Deed. A Deed is not an Asset or Overlay.
+Deed ownership is independent of token position and Territory control. Changing Territory control does not transfer its Deed. A Deed is not an Asset or Overlay.
 
 #### Buying and buying out Deeds
 
@@ -1240,8 +1240,8 @@ Minimum cost is 1 Capital.
 | Territory state from buyer's perspective | Modifier |
 |---|---:|
 | You control it | -1 |
-| You occupy it but do not control it | 0 |
-| You neither control nor occupy it | +1 |
+| You are the occupier | 0 |
+| You neither control it nor are its occupier | +1 |
 
 For an unowned Deed, buyout premium is 0.
 
@@ -1317,7 +1317,7 @@ An additional Action Opportunity permits one additional qualifying action at its
 **Archetype:** Offensive acquisition, occupation, and immediate control  
 **Motto:** *Take the ground. Close the deal.*
 
-> **Hostile Takeover:** During an Action Opportunity after movement, if you won a battle as the attacker this turn and now occupy that enemy Territory, you may buy or buy out its Deed instead of playing a card for its Action effect. Treat the Territory as occupied but not controlled for the cost calculation. If the purchase succeeds, immediately take control of that Territory.
+> **Hostile Takeover:** During an Action Opportunity after movement, if you won a battle as the attacker this turn and are now the occupier of that enemy Territory, you may buy or buy out its Deed instead of playing a card for its Action effect. Treat yourself as the occupier, but not the controller, for the cost calculation. If the purchase succeeds, immediately take control of that Territory.
 
 ## Financier-specific rules
 
@@ -1521,7 +1521,7 @@ At each choice stage:
 
 > **Fieldcraft:** Once per turn, when a printed Territory effect would affect you, your movement, or a battle involving you, you may spend 1 Intel to ignore that Territory effect until the end of the turn.
 
-Fieldcraft does not alter Territory control, occupation, capture, Defender's Advantage, Last Stand bonuses, or limits calculated from Territories.
+Fieldcraft does not alter Territory control, Occupation, capture, Defender's Advantage, Last Stand bonuses, or limits calculated from Territories.
 
 <div class="page-break"></div>
 
@@ -1658,11 +1658,11 @@ If you lose a battle before completion, reset the Rite.
 
 ### Rite of Crossing
 
-You may begin this Rite only during an Action Opportunity after movement after winning a battle that caused you to occupy a Territory the opponent controlled immediately before that battle.
+You may begin this Rite only during an Action Opportunity after movement after winning a battle that caused you to enter Occupation on a Territory the opponent controlled immediately before that battle.
 
 **Beginning cost:** Put one Arcane card from your Hand in your Graveyard. If you have none, reveal your Hand and move one Arcane card from your Discard Pile to your Graveyard instead.
 
-> **Completion:** At the start of your next turn, after the Capture step, complete this Rite if you still occupy or control that Territory. Otherwise, the Rite is interrupted and resets.
+> **Completion:** At the start of your next turn, after the Capture step, complete this Rite if you are still the occupier or now control that Territory. Otherwise, the Rite is interrupted and resets.
 
 ## Ritual of Ascendance and Convergence
 
