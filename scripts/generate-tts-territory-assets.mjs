@@ -222,10 +222,14 @@ async function renderTerritoryAssets() {
 
       if (!fontsValidated) {
         const fonts = await page.evaluate(async () => {
+          await Promise.all([
+            document.fonts.load('700 16px "p22-1722-pro"', 'Gauntlet Territory'),
+            document.fonts.load('600 12px "adobe-caslon-pro"', 'Territory effect text'),
+          ]).catch(() => {});
           await document.fonts.ready;
           return {
-            title: document.fonts.check('12px "p22-1722-pro"'),
-            rules: document.fonts.check('12px "adobe-caslon-pro"'),
+            title: document.fonts.check('700 12px "p22-1722-pro"'),
+            rules: document.fonts.check('600 12px "adobe-caslon-pro"'),
           };
         });
         if (!fonts.title || !fonts.rules) {
