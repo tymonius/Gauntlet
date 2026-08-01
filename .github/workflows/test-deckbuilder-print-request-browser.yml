@@ -77,7 +77,7 @@ jobs:
 
             await page.click('#copyPrintRequest');
             const requestText = await page.evaluate(() => navigator.clipboard.readText());
-            if (!requestText.includes('Gauntlet Deck Printing Request') || !requestText.includes('host@example.com') && !requestText.includes('Tymon')) {
+            if (!requestText.includes('Gauntlet Deck Printing Request') || !requestText.includes('Tymon')) {
               throw new Error(`Printing request summary was incomplete:\n${requestText.slice(0, 500)}`);
             }
             const match = requestText.match(/----- BEGIN GAUNTLET DECK JSON -----\n([\s\S]*?)\n----- END GAUNTLET DECK JSON -----/);
@@ -93,6 +93,7 @@ jobs:
 
             await page.click('#clearDeckButton');
             await page.click('#clearTerritoriesButton');
+            await page.locator('.advanced-tools').evaluate(details => { details.open = true; });
             await page.fill('#importJson', match[1]);
             await page.click('#importJsonButton');
             await page.waitForFunction(() => document.querySelector('#cardCount')?.textContent === '30');
