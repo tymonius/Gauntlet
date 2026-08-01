@@ -1,0 +1,25 @@
+/* Non-substantive back-matter references generated from existing Rulebook
+ * headings, faction labels, Leader profiles, and final page numbers. */
+.reference-supplement .production-flow{font-size:8pt;line-height:1.26}
+.reference-supplement .page-title{margin-bottom:8px;font-size:24pt}
+.reference-supplement .reference-intro{margin-bottom:9px;font-size:8.3pt}
+
+.faction-reference-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 12px}
+.faction-reference-card{padding:7px 8px;border:1px solid var(--line);break-inside:avoid}
+.faction-reference-card h3{margin:0 0 2px;color:var(--reference-accent,var(--crimson));font-family:var(--display-alt);font-size:13pt;line-height:1}
+.faction-reference-card .claim{margin:0 0 5px;font-size:7.5pt;font-style:italic}
+.faction-reference-card dl{margin:0;display:grid;grid-template-columns:48px 1fr;gap:2px 5px;font-size:6.5pt;line-height:1.22}
+.faction-reference-card dt{font-family:var(--ui);font-size:5.7pt;font-weight:800;letter-spacing:.05em;text-transform:uppercase}
+.faction-reference-card dd{margin:0}
+
+.leader-directory{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+.leader-directory-entry{display:grid;grid-template-columns:1fr auto;gap:2px 8px;padding:5px 0;border-top:1px solid var(--line);break-inside:avoid}
+.leader-directory-entry h3{grid-column:1;margin:0;font-family:var(--display-alt);font-size:11.3pt;line-height:1}
+.leader-directory-entry .page-ref{grid-column:2;grid-row:1;color:#555;font-family:var(--ui);font-size:6.2pt;font-weight:800}
+.leader-directory-entry .leader-meta{grid-column:1 / -1;margin:0;font-size:6.5pt;line-height:1.2}
+
+.rules-index{columns:2;column-gap:18px;column-rule:1px solid var(--line)}
+.rules-index-group{margin:0 0 9px;break-inside:avoid}
+.rules-index-group h3{margin:0 0 4px;font-family:var(--display-alt);font-size:11.5pt;line-height:1}
+.rules-index-row{display:grid;grid-template-columns:1fr auto;gap:8px;padding:2px 0;border-top:1px solid color-mix(in srgb,var(--line) 75%,transparent);font-size:6.6pt;line-height:1.2}
+.rules-index-row .page-ref{font-family:var(--ui);font-size:5.9pt;font-weight:800}
