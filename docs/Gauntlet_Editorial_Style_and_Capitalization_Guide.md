@@ -31,18 +31,24 @@ Examples include:
 - Leader;
 - Deck and Playable Deck;
 - Draw Pile;
-- Hand and Battle Hand;
+- Hand;
 - Discard Pile;
 - Graveyard;
-- Asset and Asset bank;
+- Asset and Asset Bank;
 - Overlay;
 - Territory;
-- Heartland;
-- Battle;
+- Position;
+- Occupation and Occupier;
+- Counterattack;
+- Action Opportunity;
+- Faction Ability and Faction Action;
+- Gambit;
+- Reserve;
+- Tactic;
 - Aftermath; and
 - Last Stand.
 
-The canonical glossary and governing rules determine the complete current set. Do not create a new Protected Word merely by capitalizing an ordinary noun.
+The canonical glossary and governing rules determine the complete current set. Do not create a new Protected Word merely by capitalizing an ordinary noun. Not every defined term is capitalized: current lowercase terms include **battle, attacker, defender, retreat, withdrawal,** and **card value**, except when grammar, a heading, or a printed effect label requires capitalization.
 
 Treat equivalent formal terms consistently. In particular, **Faction and Leader receive the same capitalization treatment in formal rules text**; one should not be capitalized while the other is left lowercase without a grammatical reason.
 
@@ -52,8 +58,8 @@ Use lowercase when the word is generic rather than the defined game object:
 - **Descriptive use:** “The Inquisition faction emphasizes suppression.”
 - **Formal zone:** “Put that card in its Discard Pile.”
 - **Ordinary verb:** “Discard the remaining cards.”
-- **Formal procedure:** “A Battle begins.”
-- **Ordinary description:** “The illustration depicts a battle.”
+- **Formal state:** “The attacker enters Occupation.”
+- **Descriptive use:** “The illustration depicts an army occupying a fort.”
 
 Capitalization should clarify meaning, not decorate terminology.
 
