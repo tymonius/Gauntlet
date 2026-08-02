@@ -1,172 +1,101 @@
 name: Generate and validate v0.6.1 sources
 
 on:
-  push:
-    branches:
-      - rules/v0.6.1-playtest-revision
-    paths:
-      - "README.md"
-      - "index.html"
-      - "docs/README.md"
-      - "docs/Gauntlet_Development_Status.md"
-      - "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
-      - "docs/Gauntlet_v0.6.1_Territory_Pool.md"
-      - "releases/v0.6.1/**"
-      - "rules-assistant/**"
-      - "workers/playtest-sessions/**"
-      - "playtest/session/**"
-      - "playtest/batch/**"
-      - "deckbuilder/**"
-      - "package.json"
-      - "scripts/finalize_v061_publication.py"
-      - "scripts/generate_v061_release.py"
-      - "scripts/sync_v061_deckbuilder.py"
-      - "scripts/sync_v061_rules_assistant.py"
-      - "scripts/validate_v061_release.py"
-      - "scripts/validate_v061_playtest_sessions.py"
-      - "scripts/test_v061_formal_session_e2e.mjs"
-      - ".github/workflows/generate-v061-release.yml"
   pull_request:
     branches:
       - main
-    paths:
-      - "README.md"
-      - "index.html"
-      - "docs/README.md"
-      - "docs/Gauntlet_Development_Status.md"
-      - "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
-      - "docs/Gauntlet_v0.6.1_Territory_Pool.md"
-      - "releases/v0.6.1/**"
-      - "rules-assistant/**"
-      - "workers/playtest-sessions/**"
-      - "playtest/session/**"
-      - "playtest/batch/**"
-      - "deckbuilder/**"
-      - "package.json"
-      - "scripts/finalize_v061_publication.py"
-      - "scripts/generate_v061_release.py"
-      - "scripts/sync_v061_deckbuilder.py"
-      - "scripts/sync_v061_rules_assistant.py"
-      - "scripts/validate_v061_release.py"
-      - "scripts/validate_v061_playtest_sessions.py"
-      - "scripts/test_v061_formal_session_e2e.mjs"
-      - ".github/workflows/generate-v061-release.yml"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: generate-v061-${{ github.ref }}
+  group: action-terminology-migration-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  generate:
+  migrate:
     runs-on: ubuntu-latest
     steps:
       - name: Check out source branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref || github.ref_name }}
-          fetch-depth: 1
+          fetch-depth: 0
+          persist-credentials: true
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Apply governed source migrations
+      - name: Apply asserted terminology migration
         run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          card_source = Path("docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md")
-          card_text = card_source.read_text(encoding="utf-8")
-          if "Siege Weaponry" in card_text:
-              card_source.write_text(card_text.replace("Siege Weaponry", "Bombardment"), encoding="utf-8")
-
-          validator = Path("scripts/validate_v061_release.py")
-          validator_text = validator.read_text(encoding="utf-8")
-          obsolete = '            \'main = "worker-v061.js"\','
-          current = '            \'main = "worker-entry.js"\','
-          if obsolete in validator_text:
-              validator.write_text(validator_text.replace(obsolete, current, 1), encoding="utf-8")
-          elif current not in validator_text:
-              raise SystemExit("Could not reconcile Rules Arbiter deployment marker in release validator")
-          PY
-
-      - name: Finalize publication metadata
-        run: python scripts/finalize_v061_publication.py
-
-      - name: Synchronize browser and Rules Arbiter sources
-        run: |
-          python scripts/sync_v061_deckbuilder.py
-          python scripts/sync_v061_rules_assistant.py
-
-      - name: Generate and validate canonical data
-        run: python scripts/generate_v061_release.py
-
-      - name: Commit synchronized and generated outputs when changed
-        run: |
-          git add \
-            README.md \
-            index.html \
-            docs/README.md \
-            docs/Gauntlet_Development_Status.md \
-            docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md \
-            scripts/finalize_v061_publication.py \
-            scripts/generate_v061_release.py \
-            scripts/validate_v061_release.py \
-            deckbuilder/ \
-            rules-assistant/ \
-            releases/v0.6.1/
-          if git diff --cached --quiet; then
-            exit 0
+          set +e
+          python scripts/apply_action_terminology_migration.py > /tmp/action-migration.log 2>&1
+          status=$?
+          set -e
+          cat /tmp/action-migration.log
+          if [ "$status" -ne 0 ]; then
+            git reset --hard HEAD
+            cp /tmp/action-migration.log tmp/action-migration-failure.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -f tmp/action-migration-failure.txt
+            git commit -m "Record Action terminology migration failure"
+            git push origin HEAD:${{ github.head_ref || github.ref_name }}
+            exit "$status"
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Publish and synchronize Gauntlet v0.6.1"
-          git pull --rebase origin ${{ github.head_ref || github.ref_name }}
-          git push origin HEAD:${{ github.head_ref || github.ref_name }}
 
-      - name: Verify generated outputs are current
+      - name: Synchronize governed and generated sources
         run: |
+          python scripts/sync_v061_rulebook.py
+          python scripts/normalize_v061_rulebook_content.py
+          python scripts/sync_v061_print_supplementals.py
           python scripts/finalize_v061_publication.py
           python scripts/sync_v061_deckbuilder.py
           python scripts/sync_v061_rules_assistant.py
-          python scripts/generate_v061_release.py --check
-          git diff --exit-code -- README.md index.html docs/README.md docs/Gauntlet_Development_Status.md docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md scripts/finalize_v061_publication.py scripts/generate_v061_release.py scripts/validate_v061_release.py deckbuilder/ rules-assistant/ releases/v0.6.1/
+          python scripts/generate_v061_release.py
 
-      - name: Install test dependencies
-        run: npm install
-
-      - name: Test Rules Arbiter retrieval and worker helpers
-        run: npm run test:rules-assistant
-
-      - name: Test playtest session service
-        run: npm run test:playtest-sessions
-
-      - name: Test formal coded-sheet lifecycle
-        run: npm run test:formal-session-e2e
-
-      - name: Test Deckbuilder data
-        run: npm run test:deckbuilder
-
-      - name: Validate v0.6.1 source package
+      - name: Validate synchronized sources
         run: |
+          python scripts/sync_v061_rulebook.py --check
+          python scripts/normalize_v061_rulebook_content.py --check
+          python scripts/sync_v061_print_supplementals.py --check
+          python scripts/sync_v061_deckbuilder.py --check
+          python scripts/sync_v061_rules_assistant.py --check
+          python scripts/generate_v061_release.py --check
+          python scripts/validate_v061_rulebook_content.py
           python scripts/validate_v061_release.py
-          python scripts/validate_v061_playtest_sessions.py
 
-      - name: Upload generated release data
-        uses: actions/upload-artifact@v4
-        with:
-          name: gauntlet-v061-generated-data
-          path: |
-            releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json
-            releases/v0.6.1/Gauntlet_v0.6.1_Complete_Card_Reference.md
-          if-no-files-found: error
+      - name: Install and test
+        run: |
+          npm install
+          npm test
+
+      - name: Restore workflows and remove migration material
+        run: |
+          git fetch origin main
+          git checkout origin/main -- .github/workflows/generate-v061-release.yml
+          rm -f \
+            package-lock.json \
+            .github/workflows/apply-action-terminology-migration.yml \
+            scripts/apply_action_terminology_migration.py \
+            tmp/action-terminology-audit.txt \
+            tmp/v061-generation-audit.txt \
+            tmp/sleeper-action-hook-audit.txt \
+            tmp/special-action-opportunities-audit.txt \
+            tmp/action-migration-failure.txt
+
+      - name: Commit migration
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Distinguish Actions from Action Opportunities"
+          git pull --rebase origin ${{ github.head_ref || github.ref_name }}
+          git push origin HEAD:${{ github.head_ref || github.ref_name }}
