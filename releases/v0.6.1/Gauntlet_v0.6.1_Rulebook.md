@@ -1775,9 +1775,9 @@ A Gambit entering the Graveyard during normal destinations does not trigger Mate
 **Archetype:** Rite endurance and protective sacrifice  
 **Motto:** *The spirits remember what the living abandon.*
 
-> **Guardians of the Circle:** The first time on your turn that you lose a battle and a begun Rite would be interrupted, you may put one Arcane card from your Hand in your Graveyard. If you do, that Rite is not interrupted.
+> **Guardians of the Circle:** The first time on your turn that a battle loss would interrupt a begun Rite or your Ritual of Ascendance, you may put one Arcane card from your Hand in your Graveyard whose value is at least 1 plus the number of Rites you have completed. If you do, prevent that interruption.
 
-Guardians of the Circle cannot preserve a continuing position requirement and does not protect the Ritual of Ascendance.
+Guardians of the Circle cannot preserve a continuing position requirement.
 
 ## Mystics-specific rules
 

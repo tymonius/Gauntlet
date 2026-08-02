@@ -1,6 +1,17 @@
 # Gauntlet Development Status
 
 
+## Spirit Walker Guardians of the Circle playtest
+
+Guardians of the Circle now scales its protective sacrifice with Mystics progress. On the first battle-loss interruption during the Spirit Walker's turn, protecting a begun Rite or the Ritual of Ascendance requires an Arcane card from Hand with value at least 1 plus the number of completed Rites. It still cannot preserve a continuing position requirement.
+
+Test specifically whether:
+
+- the 1/2/3 value thresholds make protection meaningfully more costly across successive Rites;
+- the value-4 threshold is sufficient to balance protection of the Ritual of Ascendance;
+- opponent-turn interruption remains a clear and practical counterplay window; and
+- the revised ability preserves Alchemist/Spirit Walker parity.
+
 ## Financier Financial Capacity playtest
 
 Financiers now determine Financial Capacity after the Capture step and its effects, before drawing. When Treasury value exceeds Territories controlled, they may use both normal Action Opportunities that turn, provided at least one is used for a Financier faction action.

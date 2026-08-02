@@ -3,6 +3,8 @@
 
 ## Post-release playtest changes
 
+- **Mystics — Guardians of the Circle:** Spirit Walker may now protect either a begun Rite or the Ritual of Ascendance from the first battle-loss interruption on their turn by putting an Arcane card from Hand in the Graveyard whose value is at least 1 plus the number of completed Rites. The ability still cannot preserve a continuing position requirement.
+
 - **Faction Action presentation:** Added a dedicated Faction Actions summary to every faction chapter, including explicit none entries where appropriate, and separated Action-Opportunity actions from other faction abilities and procedures.
 
 - **Terminology refinement:** Distinguished Position from Occupation; defined Occupier and Counterattack; renamed deckbuilding value to card value; defined Faction Ability and Faction Action; renamed the battle step **Determine the Outcome**; and replaced the overloaded timing verb with operation-specific language.
