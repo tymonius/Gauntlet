@@ -27,11 +27,10 @@ The exporter renders one 1500 × 2100 master from the live HTML/CSS card compone
 The current artwork-led compositions are:
 
 - `financiers-fanned-hand`: Scouting Report, Leveraged Buyout, Corner the Market, Monetary Crisis, and Sabotage;
-- `neutral-battlefront-spread`: Bombardment, Rallying Cry, Invasion, Valor, and Scorched Earth;
-- `intelligence-intrigue-stack`: Counterintelligence, Spies, Assassins, Sedition, and Sabotage; and
-- `faction-neutral-showcase-spread`: Shock and Awe, Gunboat Diplomacy, Corner the Market, Invasion, Rend the Veil, Burning at the Stake, and Assassins.
+- `neutral-battlefront-spread`: Bombardment, Rallying Cry, Invasion, Valor, and Scorched Earth; and
+- `intelligence-intrigue-stack`: Counterintelligence, Spies, Assassins, Sedition, and Sabotage.
 
-The battlefront composition uses a broad, shallow spread to feature vivid sunset, fire, banners, and battlefield artwork. The Intelligence composition is a tighter stack with a darker charcoal, blue, and lamplit palette. The seven-card showcase is explicitly promotional rather than a legal hand: it places Neutral Invasion at the center, surrounded by one card from each faction.
+The battlefront composition uses a broad, shallow spread to feature the vivid sunset, fire, banners, and battlefield artwork. The Intelligence composition is a tighter stack with a darker charcoal, blue, and lamplit palette. Both remain legal-looking faction-plus-Neutral groups rather than arbitrary cross-faction collages.
 
 Every composition exports with a transparent background in three profiles:
 
@@ -87,6 +86,6 @@ media/generated/v0.6.1/
 
 ## Current scope
 
-The card-media pass covers all 122 playable cards. The composition system currently contains three five-card treatments and one seven-card promotional showcase, and is designed to accept additional hands, stacks, battle reveals, and other website or publication arrangements without creating independent card artwork.
+The card-media pass covers all 122 playable cards. The composition system currently contains three approved five-card treatments and is designed to accept additional hands, stacks, battle reveals, and other website or publication arrangements without creating independent card artwork.
 
 Territories remain cataloged by the shared canonical parser but require their own component renderer and are not forced into the playable-card frame.
