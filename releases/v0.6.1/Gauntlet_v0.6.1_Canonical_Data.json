@@ -1970,23 +1970,18 @@
           "text": "Bank this card."
         },
         {
-          "label": "Use",
-          "text": "During opening effects, when you initiate a battle on an enemy-controlled Territory, you may put this card in your Graveyard to use the effect below."
+          "label": "Asset",
+          "text": "During opening effects when attacking on an enemy-controlled Territory, you may put this card in your Graveyard to apply its Battle effect."
         },
         {
           "label": "Battle",
-          "text": "If you initiated this battle on an enemy-controlled Territory, use the effect below. In the Aftermath, put this card in your Graveyard."
-        },
-        {
-          "label": "Effect",
-          "text": "After Tactics are revealed, you may play one eligible card from your Hand face up as an additional Tactic. In the Aftermath, put that card in your Graveyard instead of your Discard Pile.\n\nIf you lose, retreat one additional position.\n\nIf you win, choose Breakthrough or Consolidate.\n\nBreakthrough: Choose only if the opponent can retreat one additional position. After their normal retreat, they retreat one additional position. Then advance one position. This movement cannot start a battle.\n\nConsolidate: Capture the contested Territory, then set your Command to 2.\n\nLimit: After either option, you cannot move again, capture another Territory, or use an Order as a result of that victory."
+          "text": "When attacking on an enemy-controlled Territory, after Tactics are revealed, you may play an eligible card from your Hand face up as an additional Tactic. If you lose, retreat one additional position. If you win, choose one:\nBreakthrough — Choose only if the opponent can retreat one additional position. After their normal retreat, they do so, then you advance one. This cannot start a battle.\nConsolidate — Capture the contested Territory and set your Command to 2.\nAfter either option, you cannot move again, capture another Territory, or use an Order from that victory. In the Aftermath, put any card played this way and this card, if still in play, in your Graveyard."
         }
       ],
       "source": "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
       "action": "Bank this card.",
-      "use": "During opening effects, when you initiate a battle on an enemy-controlled Territory, you may put this card in your Graveyard to use the effect below.",
-      "battle": "If you initiated this battle on an enemy-controlled Territory, use the effect below. In the Aftermath, put this card in your Graveyard.",
-      "effect": "After Tactics are revealed, you may play one eligible card from your Hand face up as an additional Tactic. In the Aftermath, put that card in your Graveyard instead of your Discard Pile.\n\nIf you lose, retreat one additional position.\n\nIf you win, choose Breakthrough or Consolidate.\n\nBreakthrough: Choose only if the opponent can retreat one additional position. After their normal retreat, they retreat one additional position. Then advance one position. This movement cannot start a battle.\n\nConsolidate: Capture the contested Territory, then set your Command to 2.\n\nLimit: After either option, you cannot move again, capture another Territory, or use an Order as a result of that victory."
+      "asset": "During opening effects when attacking on an enemy-controlled Territory, you may put this card in your Graveyard to apply its Battle effect.",
+      "battle": "When attacking on an enemy-controlled Territory, after Tactics are revealed, you may play an eligible card from your Hand face up as an additional Tactic. If you lose, retreat one additional position. If you win, choose one:\nBreakthrough — Choose only if the opponent can retreat one additional position. After their normal retreat, they do so, then you advance one. This cannot start a battle.\nConsolidate — Capture the contested Territory and set your Command to 2.\nAfter either option, you cannot move again, capture another Territory, or use an Order from that victory. In the Aftermath, put any card played this way and this card, if still in play, in your Graveyard."
     },
     {
       "id": "diplomats-clemency",
@@ -2959,24 +2954,19 @@
         },
         {
           "label": "Asset",
-          "text": "At the end of each later turn, you may bind a card from your Hand to it face down, up to the number of Territories you control."
+          "text": "At the end of each later turn, you may bind a card from your Hand to it face down, up to the number of Territories you control. Before an opposing effect causes this card to leave play, reveal its bound cards. You may play one whose Action effect can apply now without spending an Action. Discard the rest."
         },
         {
           "label": "Use",
-          "text": "During an Action Opportunity, spend 1 Action to put this card in your Graveyard and reveal its bound cards. Play each whose Action effect can apply now, one at a time and in any order, without spending Actions. Discard the rest."
-        },
-        {
-          "label": "Compromised",
-          "text": "Before an opposing effect causes this card to leave play, reveal its bound cards. You may play one whose Action effect can apply now without spending an Action. Discard the rest."
+          "text": "During an Action Opportunity, spend 1 Action to put this card in your Graveyard and reveal its bound cards. Play each whose Action effect can apply now, one at a time and in any order, without spending additional Actions. Discard the rest."
         }
       ],
       "source": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
       "action": "Bank this card and bind another card from your Hand to it face down.",
-      "asset": "At the end of each later turn, you may bind a card from your Hand to it face down, up to the number of Territories you control.",
-      "use": "During an Action Opportunity, spend 1 Action to put this card in your Graveyard and reveal its bound cards. Play each whose Action effect can apply now, one at a time and in any order, without spending Actions. Discard the rest.",
-      "compromised": "Before an opposing effect causes this card to leave play, reveal its bound cards. You may play one whose Action effect can apply now without spending an Action. Discard the rest.",
+      "asset": "At the end of each later turn, you may bind a card from your Hand to it face down, up to the number of Territories you control. Before an opposing effect causes this card to leave play, reveal its bound cards. You may play one whose Action effect can apply now without spending an Action. Discard the rest.",
+      "use": "During an Action Opportunity, spend 1 Action to put this card in your Graveyard and reveal its bound cards. Play each whose Action effect can apply now, one at a time and in any order, without spending additional Actions. Discard the rest.",
       "rules_notes": [
-        "If Sleeper Network has more bound cards than Territories you control, immediately discard bound cards of your choice until within the limit. If it leaves play without applying its Use or Compromised effect, discard all cards bound to it."
+        "If Sleeper Network has more bound cards than Territories you control, immediately discard bound cards of your choice until within the limit. If it leaves play without revealing its bound cards through its own effect, discard all cards bound to it."
       ]
     },
     {
