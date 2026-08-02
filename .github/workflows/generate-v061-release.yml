@@ -100,7 +100,6 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          from textwrap import dedent
           import re
 
           card_source = Path("docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md")
@@ -136,53 +135,6 @@ jobs:
           )
           if print_updated != print_text:
               print_path.write_text(print_updated, encoding="utf-8")
-
-          approved_cards = {
-              Path("releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md"): (
-                  re.compile(r"^## Sleeper Network\n.*?(?=^# 8\. Quick reference)", re.MULTILINE | re.DOTALL),
-                  dedent("""\
-                  ## Sleeper Network
-
-                  **Cost:** 5  
-                  **Unique:** Maximum one copy per Playable Deck  
-                  **Card form:** Asset
-
-                  > **Action:** Bank this card and bind another card from your Hand to it face down.
-                  >
-                  > **Asset:** At the end of each later turn, you may bind a card from your Hand to it face down, up to the number of Territories you control. Before an opposing effect causes this card to leave play, reveal its bound cards. You may play one whose Action effect can apply now without spending an Action. Discard the rest.
-                  >
-                  > **Use:** During an Action Opportunity, spend 1 Action to put this card in your Graveyard and reveal its bound cards. Play each whose Action effect can apply now, one at a time and in any order, without spending additional Actions. Discard the rest.
-
-                  If Sleeper Network has more bound cards than Territories you control, immediately discard bound cards of your choice until within the limit. If it leaves play without revealing its bound cards through its own effect, discard all cards bound to it.
-
-                  """),
-              ),
-              Path("releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md"): (
-                  re.compile(r"^## Shock and Awe\n.*?(?=^# 7\. Quick reference)", re.MULTILINE | re.DOTALL),
-                  dedent("""\
-                  ## Shock and Awe
-
-                  **Cost:** 5  
-                  **Unique:** Maximum one copy per Playable Deck
-
-                  > **Action:** Bank this card.
-                  >
-                  > **Asset:** During opening effects when attacking on an enemy-controlled Territory, you may put this card in your Graveyard to apply its Battle effect.
-                  >
-                  > **Battle:** When attacking on an enemy-controlled Territory, after Tactics are revealed, you may play an eligible card from your Hand face up as an additional Tactic. If you lose, retreat one additional position. If you win, choose one:
-                  > Breakthrough — Choose only if the opponent can retreat one additional position. After their normal retreat, they do so, then you advance one. This cannot start a battle.
-                  > Consolidate — Capture the contested Territory and set your Command to 2.
-                  > After either option, you cannot move again, capture another Territory, or use an Order from that victory. In the Aftermath, put any card played this way and this card, if still in play, in your Graveyard.
-
-                  """),
-              ),
-          }
-          for path, (card_pattern, replacement) in approved_cards.items():
-              source = path.read_text(encoding="utf-8")
-              updated, count = card_pattern.subn(replacement, source, count=1)
-              if count != 1:
-                  raise SystemExit(f"Could not locate approved card section in {path}")
-              path.write_text(updated, encoding="utf-8")
           PY
 
       - name: Finalize publication metadata
