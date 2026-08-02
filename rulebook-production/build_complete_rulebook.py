@@ -55,6 +55,61 @@ function intentionalBlank(reason = '') {
         "faction recto",
     )
 
+    old_heading_keep = '''    const next = sourceTokens[index + 1];
+    if (token.kind === 'heading' && next && !['heading', 'pagebreak', 'divider'].includes(next.kind)) {
+      const group = document.createElement('div');
+      group.className = 'keep-group';
+      group.append(makeTokenElement(token), makeTokenElement(next));
+      const flow = flowOf(page);
+      flow.append(group);
+      if (overflows(flow)) {
+        group.remove();
+        if (hasRealContent(flow)) page = newContinuationPage(context);
+        const target = flowOf(page);
+        target.append(group);
+        if (overflows(target)) {
+          group.remove();
+          page = appendSingleToken(token, page, context);
+          page = appendSingleToken(next, page, context);
+        }
+      }
+      index += 1;
+      continue;
+    }'''
+    new_heading_keep = '''    if (token.kind === 'heading') {
+      let nextIndex = index + 1;
+      let crossedPageBreak = false;
+      while (nextIndex < sourceTokens.length && ['pagebreak', 'divider'].includes(sourceTokens[nextIndex].kind)) {
+        const structural = sourceTokens[nextIndex];
+        crossedPageBreak ||= structural.kind === 'pagebreak';
+        consumed.add(structural.id);
+        nextIndex += 1;
+      }
+      const next = sourceTokens[nextIndex];
+      if (next && next.kind !== 'heading') {
+        if (crossedPageBreak && hasRealContent(flowOf(page))) page = newContinuationPage(context);
+        const group = document.createElement('div');
+        group.className = 'keep-group';
+        group.append(makeTokenElement(token), makeTokenElement(next));
+        const flow = flowOf(page);
+        flow.append(group);
+        if (overflows(flow)) {
+          group.remove();
+          if (hasRealContent(flow)) page = newContinuationPage(context);
+          const target = flowOf(page);
+          target.append(group);
+          if (overflows(target)) {
+            group.remove();
+            page = appendSingleToken(token, page, context);
+            page = appendSingleToken(next, page, context);
+          }
+        }
+        index = nextIndex;
+        continue;
+      }
+    }'''
+    source = replace_once(source, old_heading_keep, new_heading_keep, "semantic heading keep")
+
     RUNTIME_PAGINATOR.write_text(source, encoding="utf-8")
 
 
