@@ -17,6 +17,13 @@ describe("compiled tracked playtest analysis", () => {
     expect(host).toContain('href="../analysis/"');
   });
 
+  it("renders only the access or compiled state, never both", () => {
+    expect(page).toContain('id="analysisApp" hidden');
+    expect(page).toContain("[hidden]{display:none!important}");
+    expect(app).toContain("el.accessPanel.hidden = true");
+    expect(app).toContain("el.analysisApp.hidden = false");
+  });
+
   it("protects aggregate questionnaire data with the existing facilitator key", () => {
     expect(worker).toContain("requireOwnerAuthorization");
     expect(worker).toContain("SESSION_ADMIN_TOKEN");
