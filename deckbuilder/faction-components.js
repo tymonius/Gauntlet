@@ -79,7 +79,7 @@
       <article class="deck-row">
         <div>
           <div class="deck-title"><strong>${escapeHtml(item.name)}</strong></div>
-          <div class="deck-stats"><span class="mini-pill">${escapeHtml(item.meta)}</span><span class="mini-pill">No deckbuilding value</span></div>
+          <div class="deck-stats"><span class="mini-pill">${escapeHtml(item.meta)}</span><span class="mini-pill">Not a Playable Deck card</span></div>
         </div>
       </article>
     `).join("");

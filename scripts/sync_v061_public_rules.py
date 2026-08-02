@@ -375,14 +375,6 @@ def apply_replacements() -> list[str]:
             ("Pair with the incomplete side · no deckbuilding value", "Pair with the incomplete side · not a Playable Deck card"),
             ("Flip when complete · no deckbuilding value", "Flip when complete · not a Playable Deck card"),
         ],
-        "faction-sheets/v061-release-runtime.js": [
-            ("Supplemental reference — no deckbuilding value", "Supplemental reference — not a Playable Deck card"),
-            ("Supplemental tracker — no deckbuilding value", "Supplemental tracker — not a Playable Deck card"),
-            ("Supplemental ledger — no deckbuilding value", "Supplemental ledger — not a Playable Deck card"),
-            ("Shared supplemental card — no deckbuilding value", "Shared supplemental card — not a Playable Deck card"),
-            ("Pair with the incomplete side · no deckbuilding value", "Pair with the incomplete side · not a Playable Deck card"),
-            ("Flip when complete · no deckbuilding value", "Flip when complete · not a Playable Deck card"),
-        ],
     }
 
     for path, items in footer_replacements.items():

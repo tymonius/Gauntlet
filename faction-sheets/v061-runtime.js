@@ -60,7 +60,7 @@
       <header class="supplemental-header">${escapeHtml(component.title)}</header>
       ${subtitle ? `<div class="supplemental-subtitle">${escapeHtml(subtitle)}</div>` : ''}
       <div class="reference-body">${(component.sections || []).map(section => `<section class="reference-section"><div class="card-label">${escapeHtml(section.label)}</div><div class="card-text">${escapeHtml(section.text)}</div></section>`).join('')}</div>
-      <footer class="reference-footer">${escapeHtml(component.footer || 'Supplemental reference — no deckbuilding value')}</footer>
+      <footer class="reference-footer">${escapeHtml(component.footer || 'Supplemental reference — not a Playable Deck card')}</footer>
     </article>`;
   }
 
@@ -70,7 +70,7 @@
       <div class="tracker-note">${escapeHtml(component.note)}</div>
       ${(component.steps || []).map(step => `<div class="tracker-step" style="bottom:${Number(step.position).toFixed(2)}in"><span class="tracker-step-value">${escapeHtml(step.value)}</span><span class="tracker-step-label">${escapeHtml(step.label)}</span></div>`).join('')}
       <div class="tracker-zero">${escapeHtml(component.zeroLabel || '0 — Fully covered')}</div>
-      <div class="tracker-footer">Supplemental tracker — no deckbuilding value</div>
+      <div class="tracker-footer">Supplemental tracker — not a Playable Deck card</div>
     </article>`;
   }
 
@@ -82,7 +82,7 @@
         <div class="purge-list">${(component.rows || []).map(row => `<div class="purge-row"><div class="purge-cost">${escapeHtml(row.cost)}</div><div class="purge-text">${escapeHtml(row.text)}</div></div>`).join('')}</div>
         <div class="purge-reminder">${escapeHtml(component.reminder || '')}</div>
       </div>
-      <footer class="reference-footer">Supplemental reference — no deckbuilding value</footer>
+      <footer class="reference-footer">Supplemental reference — not a Playable Deck card</footer>
     </article>`;
   }
 
@@ -95,7 +95,7 @@
         <p>${escapeHtml(component.note)}</p>
         <div class="ledger-lines">${Array.from({ length: 8 }, () => '<div></div>').join('')}</div>
       </div>
-      <footer class="reference-footer">Supplemental ledger — no deckbuilding value</footer>
+      <footer class="reference-footer">Supplemental ledger — not a Playable Deck card</footer>
     </article>`;
   }
 
@@ -105,7 +105,7 @@
       <div class="deed-rule">When you buy an unowned Deed, place this card beside that Territory on your side.</div>
       <div class="deed-rule">Move it across on a buyout; return it to the supply when unowned.</div>
       <div class="deed-note">One per Territory. Heartlands have no Deeds.</div>
-      <footer class="reference-footer">Shared supplemental card — no deckbuilding value</footer>
+      <footer class="reference-footer">Shared supplemental card — not a Playable Deck card</footer>
     </article>`;
   }
 
@@ -133,7 +133,7 @@
       return `<article class="print-card rite-card completed fit-target" data-card-name="${escapeHtml(`${rite.name} — Completed`)}">
         <div class="rite-banner">Completed Rite</div><div class="rite-icon">${escapeHtml(rite.icon || '✦')}</div><div class="rite-title">${escapeHtml(rite.name)}</div>
         <div class="rite-body"><div class="rite-complete">This Rite is complete. Keep this side face up; it cannot be begun again.</div><div class="rite-progress"><strong>Progression:</strong> First completed Rite unlocks Invocation. Second unlocks Transmutation. Third unlocks Convergence and permission to begin the Ritual of Ascendance.</div></div>
-        <div class="rite-footer">Pair with the incomplete side · no deckbuilding value</div>
+        <div class="rite-footer">Pair with the incomplete side · not a Playable Deck card</div>
       </article>`;
     }
     return `<article class="print-card rite-card fit-target" data-card-name="${escapeHtml(`${rite.name} — Incomplete`)}">
@@ -144,7 +144,7 @@
         <div class="rite-section"><strong>Completion:</strong> ${escapeHtml(rite.completion)}</div>
         ${rite.result ? `<div class="rite-section"><strong>Result:</strong> ${escapeHtml(rite.result)}</div>` : ''}
         <div class="rite-section"><strong>Interruption:</strong> ${escapeHtml(rite.interruption)}</div>
-      </div><div class="rite-footer">Flip when complete · no deckbuilding value</div>
+      </div><div class="rite-footer">Flip when complete · not a Playable Deck card</div>
     </article>`;
   }
 
