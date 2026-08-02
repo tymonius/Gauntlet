@@ -78,7 +78,7 @@
       { number: 4, name: "Open Channels", stake: 1, requirement: "You must have a card in Hand.", accepted: "Both players reveal their Hands, then withdraw. The opponent draws one card.", refused: "Reveal the opponent's Hand. When forming your Reserve, draw one additional card." },
       { number: 5, name: "Mutual Disarmament", stake: 1, requirement: "Both players must have a card in Hand.", accepted: "Each player discards one card from Hand. The opponent draws one card, then both players withdraw.", refused: "You may discard one card from Hand. If you do, draw one additional card when forming your Reserve." },
       { number: 6, name: "Prisoner Exchange", stake: 1, requirement: "Each player must have a card in their Graveyard.", accepted: "Each player may move one card from their Graveyard to their Discard Pile. Then both players withdraw.", refused: "If you lose, you may move one card from your Graveyard to your Discard Pile." },
-      { number: 7, name: "Rebuilding Pact", stake: 1, requirement: "You must have a card in Hand that can be banked as an Asset.", accepted: "Each player may bank one eligible card from Hand as an Asset without using an Action Opportunity. Then both players withdraw.", refused: "During the Aftermath, you may bank one eligible card from Hand as an Asset without using an Action Opportunity." },
+      { number: 7, name: "Rebuilding Pact", stake: 1, requirement: "You must have a card in Hand that can be banked as an Asset.", accepted: "Each player may bank one eligible card from Hand as an Asset without spending an Action. Then both players withdraw.", refused: "During the Aftermath, you may bank one eligible card from Hand as an Asset without spending an Action." },
       { number: 8, name: "Ultimatum", stake: 2, accepted: "The opponent withdraws. You remain in or occupy the contested position.", refused: "Add +1 to your battle total. If you win and newly ratify this Proposal, gain 2 Influence instead of 1." },
       { number: 9, name: "Diplomatic Recognition", stake: 2, requirement: "You must be defending a counterattack on a Territory you occupy that the opponent controlled immediately before you occupied it.", accepted: "Capture that Territory. The opponent withdraws, then draws two cards.", refused: "If you win, capture that Territory during the Aftermath, but gain no Influence for imposing this Proposal." }
     ]
@@ -96,14 +96,14 @@
         id: "financier-reference",
         title: "Financier Reference",
         sections: [
-          { label: "Capital", text: "Minimum 0. Limit = Territories you control + total deckbuilding value in Treasury. Excess is reduced at the end of every turn, including an opponent's turn." },
-          { label: "Treasury", text: "During an Action Opportunity after movement, instead of playing an Action, place one Hand card face up in Treasury. Treasury is outside normal zones and is not the Asset Bank." },
+          { label: "Capital & Capacity", text: "Minimum 0. Limit = Territories controlled + total card value in Treasury; reduce excess at the end of every turn. After Capture effects, if Treasury value exceeds Territories controlled, gain 1 additional Action that turn; if both Actions are spent, one must be a Financier Faction Action." },
+          { label: "Treasury", text: "During an Action Opportunity after movement, spend 1 Action to place one Hand card face up in Treasury. Treasury is outside normal zones and is not the Asset Bank." },
           { label: "Deed cost", text: "min(Deeds you own + 1, 6) + position modifier + buyout premium; minimum 1. Control −1, occupy 0, neither +1. Buyout premium = min(Deeds the opposing owner owns, 6)." },
           { label: "Play the Market", text: "Discard one Hand card and roll: 1 = Graveyard/0; 2–3 = 1 Capital; 4–5 = card value; 6 = twice card value." },
           { label: "Subsidize", text: "Before dice: +1 costs 1; +2 costs 3; +3 costs 6; +4 costs 10. The cumulative progression continues without a fixed maximum." },
           { label: "Income & victory", text: "After the Capture step, gain 1 Capital per owned Deed. Immediately win when you own the Deeds to every Territory currently in the Gauntlet." }
         ],
-        footer: "Supplemental reference — no deckbuilding value"
+        footer: "Supplemental reference — not a Playable Deck card"
       },
       {
         type: "capital",
@@ -128,12 +128,12 @@
         title: "Mission Reference",
         sections: [
           { label: "Eligible", text: "Only an Intelligence card with a printed Mission requirement." },
-          { label: "Start", text: "During an Action Opportunity after movement, instead of playing an Action, place one eligible Hand card face down as the Active Mission. Only one; it cannot complete that turn." },
-          { label: "Complete", text: "During a later after-movement Action Opportunity, reveal a satisfied Active Mission. Gain 1 Operation Progress and Intel equal to its value, then put it in the Discard Pile." },
-          { label: "Abort or fail", text: "Abort during an after-movement Action Opportunity by revealing it and spending Intel equal to its value; discard it. A failed Mission is revealed and put in the Graveyard." },
-          { label: "Special Operation", text: "Progress must exceed opposing controlled Territories. Start an eligible card face down. Maintain readiness, satisfy its requirement, then pay Territories in the Gauntlet minus card value, minimum 1 Intel, to win." }
+          { label: "Start", text: "During an Action Opportunity after movement, spend 1 Action to place one eligible Hand card face down as the Active Mission. Only one; it cannot complete that turn." },
+          { label: "Complete", text: "During a later after-movement Action Opportunity, spend 1 Action to reveal a satisfied Active Mission. Gain 1 Operation Progress and Intel equal to its value, then put it in the Discard Pile." },
+          { label: "Abort or fail", text: "During an after-movement Action Opportunity, spend 1 Action, reveal the Active Mission, and spend Intel equal to its value to abort it; discard it. A failed Mission is revealed and put in the Graveyard." },
+          { label: "Special Operation", text: "Progress must exceed opposing controlled Territories. Spend 1 Action after movement to start an eligible card face down. Later, while ready and satisfied, spend 1 Action after movement and pay Territories in the Gauntlet minus card value, minimum 1 Intel, to win." }
         ],
-        footer: "Supplemental reference — no deckbuilding value"
+        footer: "Supplemental reference — not a Playable Deck card"
       },
       {
         type: "reference",
@@ -146,7 +146,7 @@
           { label: "Direct Interference", text: "A face-up opposing choice may be Interfered with directly for 2 Intel at the same response timing without Surveillance." },
           { label: "Revision & limits", text: "After Interference and replacements, revise your corresponding choice if already made. A replacement creates no new reveal or response window. Prevented uses still spend Intel and use the opportunity." }
         ],
-        footer: "Supplemental reference — no deckbuilding value"
+        footer: "Supplemental reference — not a Playable Deck card"
       },
       {
         type: "tracker",
@@ -179,14 +179,14 @@
       id: "mystics-reference",
       title: "Mystics Reference",
       sections: [
-        { label: "Begin a Rite", text: "During an Action Opportunity after movement, instead of playing an Action, pay one incomplete Rite's beginning cost. Only one begun Rite; it cannot complete that turn; complete at most one per turn." },
+        { label: "Begin a Rite", text: "During an Action Opportunity after movement, spend 1 Action and pay one incomplete Rite's beginning cost. Only one begun Rite; it cannot complete that turn; complete at most one per turn." },
         { label: "Progression", text: "First completed Rite unlocks Invocation. Second unlocks Transmutation. Third unlocks Convergence and permission to begin the Ritual of Ascendance." },
         { label: "Invocation", text: "Once per turn, when an Arcane card you play, set, or choose resolves its Action, Gambit, Tactic, or Battle effect, move one card from your Graveyard to your Discard Pile." },
-        { label: "Transmutation", text: "Once per turn before dice, put one Hand card in your Graveyard and add its deckbuilding value to your battle total. It is not played and its effects do not resolve." },
+        { label: "Transmutation", text: "Once per turn before dice, put one Hand card in your Graveyard and add its value to your battle total. It is not played and its effects do not resolve." },
         { label: "Ritual & Convergence", text: "After three Rites, bind one Arcane card from Hand, Discard Pile, and Graveyard. In a battle you initiate, gain +1 per Ritual card. Initiate and win while all remain bound to win." },
-        { label: "Bound cards", text: "Bound cards are outside normal zones and move only as instructed. If their binding ends without a destination, put them in their owner's Graveyard." }
+        { label: "Bound cards", text: "Bound cards are outside normal zones and move only as instructed. If a Rite or Ritual binding ends without another instruction, put those bound cards in their owners' Graveyards." }
       ],
-      footer: "Supplemental reference — no deckbuilding value"
+      footer: "Supplemental reference — not a Playable Deck card"
     }],
     rites: [
       {
@@ -246,20 +246,20 @@
           { label: "Blasphemy", text: "When an opponent plays an Arcane card for its Action effect, or an Arcane Gambit or Tactic they control is revealed, gain 1 Conviction outside the normal once-per-turn gain." },
           { label: "Purification", text: "At the beginning of the opponent's turn, after their normal draw attempt, win if they draw no cards because both their Draw Pile and Discard Pile are empty. Other failed draws do not count." }
         ],
-        footer: "Supplemental reference — no deckbuilding value"
+        footer: "Supplemental reference — not a Playable Deck card"
       },
       {
         type: "purge",
         id: "purge-reference",
         title: "Purge Reference",
-        intro: "During an Action Opportunity, instead of playing a card for its Action effect, spend Conviction to choose one:",
+        intro: "During an Action Opportunity, spend 1 Action and Conviction to choose one:",
         rows: [
           { cost: 1, text: "Put the top card of the opponent's Discard Pile in their Graveyard; or choose up to two cards there with combined value 2 or less and put them in their Graveyard." },
           { cost: 2, text: "Choose one opposing Asset and put it in its owner's Graveyard." },
           { cost: 3, text: "The opponent chooses one card from their Hand and puts it in their Graveyard." },
           { cost: 4, text: "Reveal the opponent's Hand. Choose one card and put it in their Graveyard." }
         ],
-        reminder: "Final Judgment: Once per turn during the Aftermath of a battle the Grand Inquisitor won, after card destinations, Purge without an Action Opportunity and reduce the cost by 1, minimum 1."
+        reminder: "The first Action spent to Purge each turn grants 1 additional Action; spend at most 1 Action on Purge each turn. Final Judgment: once per turn during the Aftermath of a battle the Grand Inquisitor won, after battle cards are cleared, Purge without spending an Action and reduce the cost by 1, minimum 1."
       }
     ]
   };

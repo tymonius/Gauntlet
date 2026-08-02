@@ -92,8 +92,9 @@
           tagline: "Credit closes the distance.",
           role: "Collateral · Planned purchases · Flexible financing",
           rules: [
-            ["Capital limit", "Territories you control plus the total deckbuilding value of cards in your Treasury."],
-            ["Treasury", "During an Action Opportunity after movement, place one card from Hand in Treasury instead of playing a card for its Action effect."],
+            ["Capital limit", "Territories you control plus the total card value in your Treasury."],
+            ["Financial Capacity", "After the Capture step, if Treasury value exceeds Territories controlled, gain 1 additional Action that turn; if both Actions are spent, one must be spent on a Financier Faction Action."],
+            ["Treasury", "During an Action Opportunity after movement, spend 1 Action to place one card from Hand face up in Treasury."],
             ["Line of Credit", "The first Deed purchase or buyout each turn may use one Hand or Treasury card as collateral, contributing up to half the purchase cost, rounded down."],
             ["Controlling Interest", "Immediately win when you own every Deed currently in the Gauntlet."]
           ]
@@ -104,9 +105,10 @@
           tagline: "Take the ground. Close the deal.",
           role: "Offense · Occupation · Immediate control",
           rules: [
-            ["Capital limit", "Territories you control plus the total deckbuilding value of cards in your Treasury."],
-            ["Treasury", "During an Action Opportunity after movement, place one card from Hand in Treasury instead of playing a card for its Action effect."],
-            ["Hostile Takeover", "During an Action Opportunity after movement, after winning as attacker and occupying that enemy Territory, buy or buy out its Deed at occupied cost; success gives immediate control."],
+            ["Capital limit", "Territories you control plus the total card value in your Treasury."],
+            ["Financial Capacity", "After the Capture step, if Treasury value exceeds Territories controlled, gain 1 additional Action that turn; if both Actions are spent, one must be spent on a Financier Faction Action."],
+            ["Treasury", "During an Action Opportunity after movement, spend 1 Action to place one card from Hand face up in Treasury."],
+            ["Hostile Takeover", "During an Action Opportunity after movement, after winning as the attacker and becoming the occupier of that enemy Territory, spend 1 Action to buy or buy out its Deed; success gives immediate control."],
             ["Controlling Interest", "Immediately win when you own every Deed currently in the Gauntlet."]
           ]
         }
@@ -142,7 +144,7 @@
             ["Missions", "Complete normal Missions for 1 Operation Progress and Intel equal to the Mission card's value."],
             ["Surveillance", "Once during the Gambit stage and once during the Tactic stage each battle, spend 1 Intel per opposing face-down card revealed."],
             ["Interference", "Immediately after revealing a card, spend 2 more Intel to return it to its source. Its owner may replace it from that source or pass."],
-            ["Mission Control", "Once per turn after completing a normal Mission, start another normal Mission from Hand without using an Action Opportunity. It cannot complete that turn."],
+            ["Mission Control", "Once per turn after completing a normal Mission, start another eligible Mission from Hand without spending an Action. It cannot complete that turn and cannot be a Special Operation."],
             ["Special Operation", "When Progress exceeds opposing controlled Territories, begin an eligible Mission card as a Special Operation; satisfy it and pay its Intel cost to win."]
           ]
         }
@@ -162,7 +164,7 @@
           tagline: "Nothing is fixed. Everything can be transformed.",
           role: "Sacrifice sequencing · Card conversion · Transformation",
           rules: [
-            ["Rites", "Begin one incomplete Rite during an Action Opportunity after movement. A Rite cannot complete on the turn it begins."],
+            ["Rites", "During an Action Opportunity after movement, spend 1 Action to begin one incomplete Rite. It cannot complete that turn."],
             ["Materia Prima", "The first qualifying card put from Hand into your Graveyard during your turn draws one replacement; if this occurs in battle, draw after the Aftermath."],
             ["Invocation", "After your first Rite, once per turn when an Arcane card's Action, Gambit, Tactic, or Battle effect resolves, move one card from your Graveyard to your Discard Pile."],
             ["Transmutation", "After your second Rite, once per turn before dice, put one Hand card in your Graveyard and add its value to your battle total."],
@@ -175,8 +177,8 @@
           tagline: "The spirits remember what the living abandon.",
           role: "Rite endurance · Protective sacrifice · Graveyard communion",
           rules: [
-            ["Rites", "Begin one incomplete Rite during an Action Opportunity after movement. A Rite cannot complete on the turn it begins."],
-            ["Guardians of the Circle", "The first time on your turn a battle loss would interrupt a begun Rite, put one Arcane card from Hand in your Graveyard to prevent that interruption."],
+            ["Rites", "During an Action Opportunity after movement, spend 1 Action to begin one incomplete Rite. It cannot complete that turn."],
+            ["Guardians of the Circle", "The first time on your turn a battle loss would interrupt a begun Rite or Ritual, put one Arcane card from Hand in your Graveyard whose value is at least 1 plus your completed Rites to prevent that interruption."],
             ["Invocation", "After your first Rite, once per turn when an Arcane card's Action, Gambit, Tactic, or Battle effect resolves, move one card from your Graveyard to your Discard Pile."],
             ["Transmutation", "After your second Rite, once per turn before dice, put one Hand card in your Graveyard and add its value to your battle total."],
             ["Ritual of Ascendance", "After all three Rites, bind one Arcane card from Hand, Discard Pile, and Graveyard. Initiate and win a battle while all three remain bound to win."]
@@ -200,8 +202,8 @@
           rules: [
             ["Conviction", "The first time each turn opposing cards enter the Graveyard during the Aftermath of a battle involving you, gain 1 Conviction, up to 4."],
             ["Condemnation", "Opposing Tactics go to the Graveyard during the Aftermath instead of the Discard Pile."],
-            ["Blasphemy", "Gain 1 Conviction when an opposing Arcane Action is played or an opposing Arcane Gambit or Tactic is revealed."],
-            ["Final Judgment", "Once per turn after cards follow their destinations in a battle you won, Purge immediately without an Action Opportunity and reduce its cost by 1, minimum 1."],
+            ["Blasphemy", "Gain 1 Conviction when an opponent plays an Arcane card for its Action effect or an opposing Arcane Gambit or Tactic is revealed."],
+            ["Final Judgment", "Once per turn during the Aftermath of a battle you won, after battle cards are cleared, Purge without spending an Action and reduce its cost by 1, minimum 1."],
             ["Purification", "Win when the opponent's normal start-of-turn draw fails because their Draw Pile and Discard Pile are empty."]
           ]
         },
@@ -213,7 +215,7 @@
           rules: [
             ["Conviction", "The first time each turn opposing cards enter the Graveyard during the Aftermath of a battle involving you, gain 1 Conviction, up to 4."],
             ["Condemnation", "Opposing Tactics go to the Graveyard during the Aftermath instead of the Discard Pile."],
-            ["Blasphemy", "Gain 1 Conviction when an opposing Arcane Action is played or an opposing Arcane Gambit or Tactic is revealed."],
+            ["Blasphemy", "Gain 1 Conviction when an opponent plays an Arcane card for its Action effect or an opposing Arcane Gambit or Tactic is revealed."],
             ["Relentless Pursuit", "At the end of the Aftermath after defeating an attacking opponent, spend 2 Conviction to end their turn and move one position toward their end; any battle begins with you as attacker."],
             ["Purification", "Win when the opponent's normal start-of-turn draw fails because their Draw Pile and Discard Pile are empty."]
           ]

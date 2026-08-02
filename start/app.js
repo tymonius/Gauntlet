@@ -19,7 +19,7 @@
     },
     financiers: {
       name: "Financiers",
-      summary: "Convert Capital, Treasury cards, Deeds, leverage, and ownership into strategic power.",
+      summary: "Convert Capital, Treasury cards, Financial Capacity, Deeds, leverage, and ownership into strategic power.",
       leaders: [
         { id: "banker", name: "Banker", summary: "Finance purchases flexibly and turn cards into collateral." },
         { id: "executive", name: "Executive", summary: "Occupy enemy ground and convert battlefield gains into ownership." }
@@ -38,7 +38,7 @@
       summary: "Perform Rites, invoke the Arcane, transform cards, and build toward ritual power.",
       leaders: [
         { id: "alchemist", name: "Alchemist", summary: "Transmute cards deliberately and construct powerful combinations." },
-        { id: "spirit-walker", name: "Spirit Walker", summary: "Advance ritual progression through invocation and spiritual momentum." }
+        { id: "spirit-walker", name: "Spirit Walker", summary: "Protect begun Rites and the Ritual by sacrificing Arcane cards of sufficient value." }
       ]
     },
     inquisition: {

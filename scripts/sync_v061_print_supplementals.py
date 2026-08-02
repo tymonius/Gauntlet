@@ -43,7 +43,7 @@ RITE_RENDERER = """
           <div class="rite-complete">This Rite is complete. Keep this side face up; it cannot be begun again.</div>
           <div class="rite-progress"><strong>Progression:</strong> First completed Rite unlocks Invocation. Second unlocks Transmutation. Third unlocks Convergence and permission to begin the Ritual of Ascendance.</div>
         </div>
-        <div class="rite-footer">Pair with the incomplete side · no deckbuilding value</div>
+        <div class="rite-footer">Pair with the incomplete side · not a Playable Deck card</div>
       </article>`;
     }
     return `<article class="print-card rite-card fit-target">
@@ -57,7 +57,7 @@ RITE_RENDERER = """
         ${rite.result ? `<div class="rite-section"><strong>Result:</strong> ${escapeHtml(rite.result)}</div>` : ""}
         <div class="rite-section"><strong>Interruption:</strong> ${escapeHtml(rite.interruption)}</div>
       </div>
-      <div class="rite-footer">Flip when complete · no deckbuilding value</div>
+      <div class="rite-footer">Flip when complete · not a Playable Deck card</div>
     </article>`;
   }
 """.rstrip()

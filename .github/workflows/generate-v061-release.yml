@@ -16,11 +16,19 @@ on:
       - "workers/playtest-sessions/**"
       - "playtest/session/**"
       - "playtest/batch/**"
+      - "playtest/onboarding/**"
+      - "playtest/player-mat/**"
+      - "start/**"
+      - "factions/**"
+      - "faction-sheets/**"
       - "deckbuilder/**"
       - "package.json"
+      - "tests/player-facing-terminology.test.ts"
       - "scripts/finalize_v061_publication.py"
       - "scripts/generate_v061_release.py"
       - "scripts/sync_v061_deckbuilder.py"
+      - "scripts/sync_v061_print_supplementals.py"
+      - "scripts/sync_v061_public_rules.py"
       - "scripts/sync_v061_rules_assistant.py"
       - "scripts/validate_v061_release.py"
       - "scripts/validate_v061_playtest_sessions.py"
@@ -41,11 +49,19 @@ on:
       - "workers/playtest-sessions/**"
       - "playtest/session/**"
       - "playtest/batch/**"
+      - "playtest/onboarding/**"
+      - "playtest/player-mat/**"
+      - "start/**"
+      - "factions/**"
+      - "faction-sheets/**"
       - "deckbuilder/**"
       - "package.json"
+      - "tests/player-facing-terminology.test.ts"
       - "scripts/finalize_v061_publication.py"
       - "scripts/generate_v061_release.py"
       - "scripts/sync_v061_deckbuilder.py"
+      - "scripts/sync_v061_print_supplementals.py"
+      - "scripts/sync_v061_public_rules.py"
       - "scripts/sync_v061_rules_assistant.py"
       - "scripts/validate_v061_release.py"
       - "scripts/validate_v061_playtest_sessions.py"
@@ -84,6 +100,7 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
           card_source = Path("docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md")
           card_text = card_source.read_text(encoding="utf-8")
@@ -98,15 +115,38 @@ jobs:
               validator.write_text(validator_text.replace(obsolete, current, 1), encoding="utf-8")
           elif current not in validator_text:
               raise SystemExit("Could not reconcile Rules Arbiter deployment marker in release validator")
+
+          public_path = Path("scripts/sync_v061_public_rules.py")
+          public_text = public_path.read_text(encoding="utf-8")
+          pattern = re.compile(
+              r'\n        "faction-sheets/v061-release-runtime\.js": \[\n'
+              r'(?:            .*\n)+'
+              r'        \],\n'
+          )
+          public_updated, count = pattern.subn("\n", public_text, count=1)
+          if count:
+              public_path.write_text(public_updated, encoding="utf-8")
+
+          print_path = Path("scripts/sync_v061_print_supplementals.py")
+          print_text = print_path.read_text(encoding="utf-8")
+          print_updated = print_text.replace(
+              "no deckbuilding value",
+              "not a Playable Deck card",
+          )
+          if print_updated != print_text:
+              print_path.write_text(print_updated, encoding="utf-8")
           PY
 
       - name: Finalize publication metadata
         run: python scripts/finalize_v061_publication.py
 
-      - name: Synchronize browser and Rules Arbiter sources
+      - name: Synchronize browser, print, and Rules Arbiter sources
         run: |
           python scripts/sync_v061_deckbuilder.py
+          python scripts/sync_v061_public_rules.py
+          python scripts/sync_v061_print_supplementals.py
           python scripts/sync_v061_rules_assistant.py
+          rm -f deckbuilder/.rules-sync-trigger
 
       - name: Generate and validate canonical data
         run: python scripts/generate_v061_release.py
@@ -121,7 +161,14 @@ jobs:
             docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md \
             scripts/finalize_v061_publication.py \
             scripts/generate_v061_release.py \
+            scripts/sync_v061_print_supplementals.py \
+            scripts/sync_v061_public_rules.py \
             scripts/validate_v061_release.py \
+            start/ \
+            playtest/onboarding/ \
+            playtest/player-mat/ \
+            factions/ \
+            faction-sheets/ \
             deckbuilder/ \
             rules-assistant/ \
             releases/v0.6.1/
@@ -138,9 +185,11 @@ jobs:
         run: |
           python scripts/finalize_v061_publication.py
           python scripts/sync_v061_deckbuilder.py
+          python scripts/sync_v061_public_rules.py
+          python scripts/sync_v061_print_supplementals.py
           python scripts/sync_v061_rules_assistant.py
           python scripts/generate_v061_release.py --check
-          git diff --exit-code -- README.md index.html docs/README.md docs/Gauntlet_Development_Status.md docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md scripts/finalize_v061_publication.py scripts/generate_v061_release.py scripts/validate_v061_release.py deckbuilder/ rules-assistant/ releases/v0.6.1/
+          git diff --exit-code -- README.md index.html docs/README.md docs/Gauntlet_Development_Status.md docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md scripts/finalize_v061_publication.py scripts/generate_v061_release.py scripts/sync_v061_print_supplementals.py scripts/sync_v061_public_rules.py scripts/validate_v061_release.py start/ playtest/onboarding/ playtest/player-mat/ factions/ faction-sheets/ deckbuilder/ rules-assistant/ releases/v0.6.1/
 
       - name: Install test dependencies
         run: npm install

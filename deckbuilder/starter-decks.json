@@ -147,7 +147,7 @@
       "leaderId": "banker",
       "name": "Sound Investment",
       "summary": "Build a reliable Treasury, turn card value into purchasing power, and acquire Deeds on schedule.",
-      "firstGameTip": "Place cards you can afford to delay in Treasury, then use Line of Credit or Liquidation to buy Deeds before your opponent expects it. Do not spend all Capital on battle bonuses.",
+      "firstGameTip": "Place cards you can afford to delay in Treasury. When Treasury value exceeds Territories controlled, Financial Capacity grants an additional Action; use Line of Credit or Liquidation to convert that tempo into Deeds.",
       "territories": [
         "Supply Depot",
         "Ruined Storehouse",
@@ -182,7 +182,7 @@
       "leaderId": "executive",
       "name": "Hostile Expansion",
       "summary": "Win offensive battles, purchase the contested Deed, and convert occupation into immediate control.",
-      "firstGameTip": "Save enough Capital or collateral to use Hostile Takeover after a successful attack. The deck is strongest when movement, battle, and acquisition happen in one turn.",
+      "firstGameTip": "Build Treasury value above your controlled Territories when possible so Financial Capacity can fund setup before movement and Hostile Takeover after a successful attack.",
       "territories": [
         "Supply Depot",
         "King's Road",
@@ -324,7 +324,7 @@
       "leaderId": "spirit-walker",
       "name": "Unbroken Circle",
       "summary": "Protect an active Rite through battle, recover sacrificed cards, and complete the Ritual under pressure.",
-      "firstGameTip": "Begin a Rite only when you can defend its requirement. Keep an Arcane card in hand while a battle loss could interrupt it so Guardians of the Circle remains available.",
+      "firstGameTip": "Keep an Arcane card in Hand whose value is at least 1 plus your completed Rites while a battle loss could interrupt a begun Rite or the Ritual.",
       "territories": [
         "Garrison",
         "Field Hospital",
@@ -360,7 +360,7 @@
       "leaderId": "grand-inquisitor",
       "name": "Final Judgment",
       "summary": "Win battles, turn the victory into an immediate discounted Purge, and permanently thin the opponent's options.",
-      "firstGameTip": "Use early Conviction to remove recyclable cards from the opponent's Discard Pile. After a battle win, Final Judgment makes even a low-cost Purge efficient.",
+      "firstGameTip": "The first Action you spend on Purge grants an additional Action that turn. Final Judgment is free, discounted, and separate, but does not grant that additional Action.",
       "territories": [
         "Supply Depot",
         "Old Battlefield",

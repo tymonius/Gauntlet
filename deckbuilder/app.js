@@ -121,8 +121,8 @@ const FACTIONS = [
         role: "Judgment · Purge · Resource destruction",
         rules: [
           ["Conviction", "The first time each turn opposing cards enter the Graveyard after a battle involving you, gain 1 Conviction, up to 4."],
-          ["Condemnation", "Opposing played Tactics go to the Graveyard after battles involving you instead of discard."],
-          ["Final Judgment", "Once per turn after you win a battle, Purge immediately without using the Action opportunity and reduce its Conviction cost by 1, minimum 1."],
+          ["Condemnation", "Opposing Tactics go to the Graveyard during the Aftermath instead of the Discard Pile."],
+          ["Final Judgment", "Once per turn during the Aftermath of a battle you won, after battle cards are cleared, Purge without spending an Action and reduce its Conviction cost by 1, minimum 1."],
           ["Purification", "At the start of the opponent's turn, after their normal draw attempt, if no card can be drawn from deck or discard, you win."]
         ]
       },
@@ -133,7 +133,7 @@ const FACTIONS = [
         role: "Defense · Pursuit · Exposure",
         rules: [
           ["Conviction", "The first time each turn opposing cards enter the Graveyard after a battle involving you, gain 1 Conviction, up to 4."],
-          ["Condemnation", "Opposing played Tactics go to the Graveyard after battles involving you instead of discard."],
+          ["Condemnation", "Opposing Tactics go to the Graveyard during the Aftermath instead of the Discard Pile."],
           ["Relentless Pursuit", "Once per turn after an opponent loses a battle they initiated against you, spend 2 Conviction to end their turn, then move one position toward their end; resolve any resulting battle immediately."],
           ["Purification", "At the start of the opponent's turn, after their normal draw attempt, if no card can be drawn from deck or discard, you win."]
         ]
@@ -163,8 +163,9 @@ const FACTIONS = [
         tagline: "Credit closes the distance.",
         role: "Collateral · Purchase timing · Flexible financing",
         rules: [
-          ["Capital limit", "Territories you control plus the total value of cards in your Treasury."],
-          ["Treasury", "Instead of playing an Action card after movement, place one card from hand face up in Treasury."],
+          ["Capital limit", "Territories you control plus the total card value in your Treasury."],
+          ["Financial Capacity", "After the Capture step, if Treasury value exceeds Territories controlled, gain 1 additional Action that turn; if both Actions are spent, one must be spent on a Financier Faction Action."],
+          ["Treasury", "During an Action Opportunity after movement, spend 1 Action to place one card from Hand face up in Treasury."],
           ["Line of Credit", "The first Deed purchase or buyout each turn may use one hand or Treasury card as collateral, contributing its value up to half the cost before being discarded."],
           ["Controlling Interest", "Immediately win when you own the Deeds to every Territory currently in the Gauntlet."]
         ]
@@ -175,9 +176,10 @@ const FACTIONS = [
         tagline: "Take the ground. Close the deal.",
         role: "Offense · Occupation · Immediate control",
         rules: [
-          ["Capital limit", "Territories you control plus the total value of cards in your Treasury."],
-          ["Treasury", "Instead of playing an Action card after movement, place one card from hand face up in Treasury."],
-          ["Hostile Takeover", "After winning a battle that caused you to occupy enemy Territory, use the after-movement Action opportunity to buy that Deed at occupied cost; success immediately gives you control."],
+          ["Capital limit", "Territories you control plus the total card value in your Treasury."],
+          ["Financial Capacity", "After the Capture step, if Treasury value exceeds Territories controlled, gain 1 additional Action that turn; if both Actions are spent, one must be spent on a Financier Faction Action."],
+          ["Treasury", "During an Action Opportunity after movement, spend 1 Action to place one card from Hand face up in Treasury."],
+          ["Hostile Takeover", "During an Action Opportunity after movement, after winning as the attacker and becoming the occupier of that enemy Territory, spend 1 Action to buy or buy out its Deed; success immediately gives you control."],
           ["Controlling Interest", "Immediately win when you own the Deeds to every Territory currently in the Gauntlet."]
         ]
       }
@@ -198,7 +200,7 @@ const FACTIONS = [
         role: "Terrain · Reconnaissance · Hostile ground",
         rules: [
           ["Missions", "Complete normal Missions to gain 1 Operation Progress and Intel equal to the Mission card's value."],
-          ["Surveillance", "Once per battle, spend 1 Intel to look at one opposing face-down Battle card when it is committed or selected."],
+          ["Surveillance", "Once during the Gambit stage and once during the Tactic stage each battle, spend 1 Intel per opposing face-down card revealed."],
           ["Fieldcraft", "Once per turn, spend 1 Intel to ignore a revealed Territory effect affecting you, your movement, or a battle involving you until end of turn."],
           ["Special Operation", "When Progress exceeds opposing controlled Territories, start an eligible Mission card as the Special Operation; satisfy it later and pay the final Intel cost to win."]
         ]
@@ -210,8 +212,8 @@ const FACTIONS = [
         role: "Mission tempo · Network command · Coordination",
         rules: [
           ["Missions", "Complete normal Missions to gain 1 Operation Progress and Intel equal to the Mission card's value."],
-          ["Surveillance", "Once per battle, spend 1 Intel to look at one opposing face-down Battle card when it is committed or selected."],
-          ["Mission Control", "Once per turn after completing a normal Mission, immediately start another Mission from hand without using the Action opportunity. It cannot complete that turn or be the Special Operation."],
+          ["Surveillance", "Once during the Gambit stage and once during the Tactic stage each battle, spend 1 Intel per opposing face-down card revealed."],
+          ["Mission Control", "Once per turn after completing a normal Mission, immediately start another eligible Mission from Hand without spending an Action. It cannot complete that turn or be the Special Operation."],
           ["Special Operation", "When Progress exceeds opposing controlled Territories, start an eligible Mission card as the Special Operation; satisfy it later and pay the final Intel cost to win."]
         ]
       }
@@ -587,7 +589,7 @@ function validateDeck() {
   if (!state.factionId) errors.push("Choose a faction.");
   if (!state.leaderId) errors.push("Choose a leader.");
   if (cardCount < 30) errors.push(`Add at least ${30 - cardCount} more playable card${30 - cardCount === 1 ? "" : "s"}.`);
-  if (pointTotal > 60) errors.push(`Remove ${pointTotal - 60} deckbuilding value.`);
+  if (pointTotal > 60) errors.push(`Remove ${pointTotal - 60} value.`);
 
   entries.forEach(({ card, qty }) => {
     if (card.unique && qty > 1) errors.push(`${card.name} is Unique: maximum one copy.`);
