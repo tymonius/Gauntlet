@@ -79,18 +79,25 @@ function intentionalBlank(reason = '') {
     new_heading_keep = '''    if (token.kind === 'heading') {
       let nextIndex = index + 1;
       let crossedPageBreak = false;
-      while (nextIndex < sourceTokens.length && ['pagebreak', 'divider'].includes(sourceTokens[nextIndex].kind)) {
-        const structural = sourceTokens[nextIndex];
-        crossedPageBreak ||= structural.kind === 'pagebreak';
-        consumed.add(structural.id);
+      const groupTokens = [token];
+      while (nextIndex < sourceTokens.length) {
+        const candidate = sourceTokens[nextIndex];
+        if (['pagebreak', 'divider'].includes(candidate.kind)) {
+          crossedPageBreak ||= candidate.kind === 'pagebreak';
+          consumed.add(candidate.id);
+          nextIndex += 1;
+          continue;
+        }
+        groupTokens.push(candidate);
+        if (candidate.kind !== 'heading') break;
         nextIndex += 1;
       }
-      const next = sourceTokens[nextIndex];
-      if (next && next.kind !== 'heading') {
+      const openingContent = groupTokens.at(-1);
+      if (openingContent && openingContent.kind !== 'heading') {
         if (crossedPageBreak && hasRealContent(flowOf(page))) page = newContinuationPage(context);
         const group = document.createElement('div');
         group.className = 'keep-group';
-        group.append(makeTokenElement(token), makeTokenElement(next));
+        group.append(...groupTokens.map(makeTokenElement));
         const flow = flowOf(page);
         flow.append(group);
         if (overflows(flow)) {
@@ -100,8 +107,9 @@ function intentionalBlank(reason = '') {
           target.append(group);
           if (overflows(target)) {
             group.remove();
-            page = appendSingleToken(token, page, context);
-            page = appendSingleToken(next, page, context);
+            for (const groupedToken of groupTokens) {
+              page = appendSingleToken(groupedToken, page, context);
+            }
           }
         }
         index = nextIndex;
