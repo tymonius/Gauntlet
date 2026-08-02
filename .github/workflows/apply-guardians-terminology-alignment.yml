@@ -1,0 +1,96 @@
+name: Apply Guardians terminology alignment
+
+on:
+  push:
+    branches:
+      - docs/align-guardians-terminology
+    paths:
+      - .github/workflows/apply-guardians-terminology-alignment.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: docs/align-guardians-terminology
+          fetch-depth: 0
+
+      - name: Align wording and terminology guide
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import subprocess
+
+          old_trigger = (
+              "The first time on your turn that a battle loss would interrupt a begun Rite "
+              "or your Ritual of Ascendance"
+          )
+          new_trigger = (
+              "The first time on your turn that you lose a battle and that loss would interrupt "
+              "a begun Rite or your Ritual of Ascendance"
+          )
+
+          expected = {
+              "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md",
+              "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
+          }
+          found = set(
+              subprocess.check_output(
+                  ["git", "grep", "-l", "--fixed-strings", old_trigger], text=True
+              ).splitlines()
+          )
+          if found != expected:
+              raise SystemExit(f"Unexpected Guardians occurrences: {sorted(found)}")
+
+          for filename in sorted(expected):
+              path = Path(filename)
+              text = path.read_text(encoding="utf-8")
+              if text.count(old_trigger) != 1:
+                  raise SystemExit(f"Expected one Guardians trigger in {filename}")
+              path.write_text(text.replace(old_trigger, new_trigger), encoding="utf-8")
+
+          guide = Path("docs/Gauntlet_Editorial_Style_and_Capitalization_Guide.md")
+          text = guide.read_text(encoding="utf-8")
+
+          old_terms = """Examples include:\n\n- Faction;\n- Leader;\n- Deck and Playable Deck;\n- Draw Pile;\n- Hand and Battle Hand;\n- Discard Pile;\n- Graveyard;\n- Asset and Asset bank;\n- Overlay;\n- Territory;\n- Heartland;\n- Battle;\n- Aftermath; and\n- Last Stand.\n\nThe canonical glossary and governing rules determine the complete current set. Do not create a new Protected Word merely by capitalizing an ordinary noun.\n"""
+
+          new_terms = """Examples include:\n\n- Faction;\n- Leader;\n- Deck and Playable Deck;\n- Draw Pile;\n- Hand;\n- Discard Pile;\n- Graveyard;\n- Asset and Asset Bank;\n- Overlay;\n- Territory;\n- Position;\n- Occupation and Occupier;\n- Counterattack;\n- Action Opportunity;\n- Faction Ability and Faction Action;\n- Gambit;\n- Reserve;\n- Tactic;\n- Aftermath; and\n- Last Stand.\n\nThe canonical glossary and governing rules determine the complete current set. Do not create a new Protected Word merely by capitalizing an ordinary noun. Not every defined term is capitalized: current lowercase terms include **battle, attacker, defender, retreat, withdrawal,** and **card value**, except when grammar, a heading, or a printed effect label requires capitalization.\n"""
+
+          if text.count(old_terms) != 1:
+              raise SystemExit("Editorial guide term list did not match expected text")
+          text = text.replace(old_terms, new_terms)
+
+          old_examples = """- **Formal procedure:** “A Battle begins.”\n- **Ordinary description:** “The illustration depicts a battle.”\n"""
+          new_examples = """- **Formal state:** “The attacker enters Occupation.”\n- **Descriptive use:** “The illustration depicts an army occupying a fort.”\n"""
+          if text.count(old_examples) != 1:
+              raise SystemExit("Editorial guide capitalization examples did not match expected text")
+          text = text.replace(old_examples, new_examples)
+
+          guide.write_text(text, encoding="utf-8")
+          PY
+
+          python scripts/generate_v061_release.py --check
+          git diff --check
+
+      - name: Commit changes
+        shell: bash
+        run: |
+          git config user.name "gauntlet-automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add docs/Gauntlet_Editorial_Style_and_Capitalization_Guide.md \
+            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md \
+            releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md
+          git commit -m "Align Guardians wording with terminology standards"
+          git push origin HEAD:docs/align-guardians-terminology
+
+      - name: Remove temporary workflow
+        shell: bash
+        run: |
+          git rm .github/workflows/apply-guardians-terminology-alignment.yml
+          git commit -m "Remove temporary terminology workflow"
+          git push origin HEAD:docs/align-guardians-terminology
