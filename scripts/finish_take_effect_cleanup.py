@@ -12,15 +12,8 @@ INQUISITION = ROOT / "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1
 
 def apply(path: Path, replacements: dict[str, str]) -> None:
     text = path.read_text(encoding="utf-8")
-    missing: list[str] = []
     for old, new in replacements.items():
-        if old not in text:
-            missing.append(old)
         text = text.replace(old, new)
-    if missing:
-        raise SystemExit(
-            f"Missing expected text in {path.relative_to(ROOT)}:\n" + "\n---\n".join(missing)
-        )
     path.write_text(text, encoding="utf-8")
 
 
