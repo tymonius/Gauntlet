@@ -1,6 +1,14 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-8YYYZJGGPE');
+  </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="referrer" content="no-referrer" />
@@ -54,14 +62,14 @@
       <div class="tracked-panel create-copy">
         <p class="eyebrow">Start at the table</p>
         <h2>One player creates the game.</h2>
-        <p>The creator receives a public join link and QR code. Both players join from their own devices so Rules Arbiter questions and private questionnaire responses are attributed correctly.</p>
+        <p>The creator receives a public join link and QR code. Both players join from their own devices so Rules Arbiter questions and individual questionnaire responses are attributed correctly.</p>
         <ol>
           <li>Create the game using your faction and Leader.</li>
           <li>Let the opponent scan the QR code and confirm their own choice.</li>
           <li>Record the start once, then play normally.</li>
-          <li>One player submits the shared result; both players submit private responses.</li>
+          <li>One player submits the shared result; both players submit individual responses.</li>
         </ol>
-        <p class="privacy-note"><strong>No account is required.</strong> The public join code cannot read private questionnaire answers. A separate review key is saved only for the game creator.</p>
+        <p class="privacy-note"><strong>No account is required.</strong> The public join code cannot read questionnaire answers. A separate review key is saved only for the game creator.</p>
       </div>
 
       <form id="createForm" class="tracked-panel form-panel">
@@ -184,8 +192,8 @@
 
       <section id="responseSection" class="feedback-section" hidden aria-labelledby="response-title">
         <div class="section-heading split-heading">
-          <div><p class="eyebrow">Your private response</p><h2 id="response-title">How did the game feel to you?</h2></div>
-          <p>Your opponent can see only that you submitted—not these answers. The creator’s private review key can retrieve the completed record.</p>
+          <div><p class="eyebrow">Your individual response</p><h2 id="response-title">How did the game feel to you?</h2></div>
+          <p>The public game view shows only that you submitted—not these answers. The creator's separate review key can retrieve the completed record.</p>
         </div>
         <form id="responseForm" class="tracked-panel feedback-form">
           <label>Why did this faction or Leader interest you?<textarea id="factionInterest" rows="3" maxlength="1000" required></textarea></label>
@@ -200,14 +208,14 @@
       <section id="completionPanel" class="tracked-panel completion-panel" hidden>
         <p class="eyebrow">Playtest submitted</p>
         <h2>Thank you.</h2>
-        <p>The shared result and both private responses are complete. The join code is retired, and the game record is preserved for review.</p>
+        <p>The shared result and both individual responses are complete. The join code is retired, and the game record is preserved for review.</p>
         <a class="button secondary" href="./">Start another tracked game</a>
       </section>
 
       <section id="reviewPanel" class="review-section" hidden aria-labelledby="review-title">
         <div class="section-heading split-heading">
           <div><p class="eyebrow">Private review</p><h2 id="review-title">Complete game record.</h2></div>
-          <p>This section requires the creator’s review key. It includes private questionnaire answers and linked Arbiter questions.</p>
+          <p>This section requires the creator’s review key. It includes questionnaire answers and linked Arbiter questions.</p>
         </div>
         <div class="button-row review-actions"><button id="refreshReview" class="button secondary" type="button">Refresh review</button><button id="downloadReviewJson" class="button secondary" type="button">Download JSON</button><button id="downloadReviewCsv" class="button secondary" type="button">Download CSV</button></div>
         <div id="reviewContent" class="review-content"></div>
