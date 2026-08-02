@@ -18,10 +18,22 @@ Deed ownership is independent of token position and Territory control. Own the D
 | Resource | Capital, minimum 0; maximum determined by the Capital limit. |
 | Capital limit | Territories you control plus total card value in Treasury. |
 | Financial Capacity | If Treasury value exceeds Territories controlled at the start of your turn, you may use both normal Action Opportunities; at least one must be a Financier Faction Action. |
+| Faction Actions | Place a card in Treasury, buy or buy out a Deed, Play the Market, or use Hostile Takeover; all occur after movement. |
 | Income | After the Capture step, gain 1 Capital per Deed you own. |
 | Leaders | Banker and Executive. |
 | Faction pool | 12 Financier card titles. |
 | Unique card | Corner the Market, cost 5; maximum one copy per Playable Deck. |
+
+## Faction Actions
+
+Financiers have the following Faction Actions. Each uses one Action Opportunity and may be performed only after movement:
+
+- **Place a card in Treasury:** Place one card from your Hand face up in your Treasury.
+- **Buy or buy out a Deed:** Pay the full current cost to acquire one unowned Deed or buy out one opposing Financier's Deed.
+- **Play the Market:** Discard one card from Hand, roll one die, and gain Capital according to the result.
+- **Hostile Takeover — Executive only:** After winning a battle as the attacker that turn and becoming the occupier of the enemy Territory, buy or buy out its Deed; a successful purchase also gives you control of that Territory.
+
+When Financial Capacity permits both normal Action Opportunities, at least one must be used for one of these Faction Actions. Line of Credit modifies a Deed purchase, and Subsidize modifies a battle; neither is a separate Faction Action.
 
 # 2. Components and setup
 

@@ -3,6 +3,8 @@
 
 ## Post-release playtest changes
 
+- **Faction Action presentation:** Added a dedicated Faction Actions summary to every faction chapter, including explicit none entries where appropriate, and separated Action-Opportunity actions from other faction abilities and procedures.
+
 - **Terminology refinement:** Distinguished Position from Occupation; defined Occupier and Counterattack; renamed deckbuilding value to card value; defined Faction Ability and Faction Action; renamed the battle step **Determine the Outcome**; and replaced the overloaded timing verb with operation-specific language.
 
 - **Financiers — Financial Capacity:** After the Capture step and its effects, a Financier whose Treasury value exceeds their controlled Territories may use both normal Action Opportunities that turn, provided at least one is used for a Financier Faction Action. Eligibility is locked for the turn.

@@ -18,8 +18,21 @@ Complete enough Missions to make a **Special Operation** ready, satisfy its hidd
 | Tracked values | Intel and Operation Progress; both begin at 0. |
 | Mission reward | 1 Operation Progress and Intel equal to the Mission card's value. |
 | Battle tools | Surveillance and Interference. |
+| Faction Actions | Start, complete, or abort a Mission; start or complete a Special Operation; all occur after movement. |
 | Leaders | Ranger and Spymaster. |
 | Unique card | Sleeper Network, cost 5; maximum one copy per Playable Deck. |
+
+## Faction Actions
+
+Intelligence has the following Faction Actions. Each uses one Action Opportunity and may be performed only after movement:
+
+- **Start a Mission:** Place one eligible Intelligence card from Hand face down as your Active Mission.
+- **Complete a Mission:** Reveal a satisfied Active Mission, gain its Mission reward, and put it in your Discard Pile.
+- **Abort a Mission:** Reveal the Active Mission, spend Intel equal to its value, and put it in your Discard Pile.
+- **Start a Special Operation:** When ready, place one eligible Intelligence card from Hand face down as your Special Operation.
+- **Complete a Special Operation:** Reveal a satisfied, ready Special Operation, pay its Intel cost, and win the game.
+
+Surveillance, Interference, Fieldcraft, and Mission Control are Faction Abilities, not Faction Actions. Mission Control may start a Mission without using an Action Opportunity only because its text expressly permits it.
 
 # 2. Components and setup
 
