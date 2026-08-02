@@ -20,6 +20,31 @@
   line-height: .95;
 }
 
+/* Golden Rules belong beside the first structural overview rather than on a
+   mostly empty independent page. The compact two-column treatment preserves
+   all source wording and makes Game at a Glance a complete learning spread. */
+.glance-page .golden-rules-compact {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--line-dark);
+}
+.glance-page .golden-rules-compact > h3 {
+  margin: 0 0 5px;
+  font-size: 10.5pt;
+}
+.glance-page .golden-rules-compact .golden-rules {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 8px;
+  margin: 0;
+}
+.glance-page .golden-rules-compact .golden-rules > div {
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  font-size: 6.4pt;
+  line-height: 1.18;
+}
+
 /* The source cover sketch remains opaque. Multiply rendering removes most of
    its light field; a broad feathered mask prevents the residual paper rectangle
    and edge texture from reading as a separate image panel. */
