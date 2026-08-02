@@ -27,6 +27,7 @@ on:
       - "scripts/finalize_v061_publication.py"
       - "scripts/generate_v061_release.py"
       - "scripts/sync_v061_deckbuilder.py"
+      - "scripts/sync_v061_print_supplementals.py"
       - "scripts/sync_v061_public_rules.py"
       - "scripts/sync_v061_rules_assistant.py"
       - "scripts/validate_v061_release.py"
@@ -59,6 +60,7 @@ on:
       - "scripts/finalize_v061_publication.py"
       - "scripts/generate_v061_release.py"
       - "scripts/sync_v061_deckbuilder.py"
+      - "scripts/sync_v061_print_supplementals.py"
       - "scripts/sync_v061_public_rules.py"
       - "scripts/sync_v061_rules_assistant.py"
       - "scripts/validate_v061_release.py"
@@ -98,6 +100,7 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
           card_source = Path("docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md")
           card_text = card_source.read_text(encoding="utf-8")
@@ -113,29 +116,37 @@ jobs:
           elif current not in validator_text:
               raise SystemExit("Could not reconcile Rules Arbiter deployment marker in release validator")
 
-          public_sync = Path("scripts/sync_v061_public_rules.py")
-          public_sync_text = public_sync.read_text(encoding="utf-8")
-          obsolete_renderer_block = '''        "faction-sheets/v061-release-runtime.js": [
-            ("Supplemental reference — no deckbuilding value", "Supplemental reference — not a Playable Deck card"),
-            ("Supplemental tracker — no deckbuilding value", "Supplemental tracker — not a Playable Deck card"),
-            ("Supplemental ledger — no deckbuilding value", "Supplemental ledger — not a Playable Deck card"),
-            ("Shared supplemental card — no deckbuilding value", "Shared supplemental card — not a Playable Deck card"),
-            ("Pair with the incomplete side · no deckbuilding value", "Pair with the incomplete side · not a Playable Deck card"),
-            ("Flip when complete · no deckbuilding value", "Flip when complete · not a Playable Deck card"),
-        ],
-'''
-          if obsolete_renderer_block in public_sync_text:
-              public_sync.write_text(public_sync_text.replace(obsolete_renderer_block, "", 1), encoding="utf-8")
+          public_path = Path("scripts/sync_v061_public_rules.py")
+          public_text = public_path.read_text(encoding="utf-8")
+          pattern = re.compile(
+              r'\n        "faction-sheets/v061-release-runtime\.js": \[\n'
+              r'(?:            .*\n)+'
+              r'        \],\n'
+          )
+          public_updated, count = pattern.subn("\n", public_text, count=1)
+          if count:
+              public_path.write_text(public_updated, encoding="utf-8")
+
+          print_path = Path("scripts/sync_v061_print_supplementals.py")
+          print_text = print_path.read_text(encoding="utf-8")
+          print_updated = print_text.replace(
+              "no deckbuilding value",
+              "not a Playable Deck card",
+          )
+          if print_updated != print_text:
+              print_path.write_text(print_updated, encoding="utf-8")
           PY
 
       - name: Finalize publication metadata
         run: python scripts/finalize_v061_publication.py
 
-      - name: Synchronize browser and Rules Arbiter sources
+      - name: Synchronize browser, print, and Rules Arbiter sources
         run: |
           python scripts/sync_v061_deckbuilder.py
           python scripts/sync_v061_public_rules.py
+          python scripts/sync_v061_print_supplementals.py
           python scripts/sync_v061_rules_assistant.py
+          rm -f deckbuilder/.rules-sync-trigger
 
       - name: Generate and validate canonical data
         run: python scripts/generate_v061_release.py
@@ -150,6 +161,7 @@ jobs:
             docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md \
             scripts/finalize_v061_publication.py \
             scripts/generate_v061_release.py \
+            scripts/sync_v061_print_supplementals.py \
             scripts/sync_v061_public_rules.py \
             scripts/validate_v061_release.py \
             start/ \
@@ -174,9 +186,10 @@ jobs:
           python scripts/finalize_v061_publication.py
           python scripts/sync_v061_deckbuilder.py
           python scripts/sync_v061_public_rules.py
+          python scripts/sync_v061_print_supplementals.py
           python scripts/sync_v061_rules_assistant.py
           python scripts/generate_v061_release.py --check
-          git diff --exit-code -- README.md index.html docs/README.md docs/Gauntlet_Development_Status.md docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md scripts/finalize_v061_publication.py scripts/generate_v061_release.py scripts/sync_v061_public_rules.py scripts/validate_v061_release.py start/ playtest/onboarding/ playtest/player-mat/ factions/ faction-sheets/ deckbuilder/ rules-assistant/ releases/v0.6.1/
+          git diff --exit-code -- README.md index.html docs/README.md docs/Gauntlet_Development_Status.md docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md scripts/finalize_v061_publication.py scripts/generate_v061_release.py scripts/sync_v061_print_supplementals.py scripts/sync_v061_public_rules.py scripts/validate_v061_release.py start/ playtest/onboarding/ playtest/player-mat/ factions/ faction-sheets/ deckbuilder/ rules-assistant/ releases/v0.6.1/
 
       - name: Install test dependencies
         run: npm install
