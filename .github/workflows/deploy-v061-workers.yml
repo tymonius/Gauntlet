@@ -112,5 +112,9 @@ jobs:
               raise SystemExit(f'Compiled playtest analysis unavailable: {sessions}')
           if sessions.get('analysisExportSchema') != 'gauntlet-tracked-analysis-v1':
               raise SystemExit(f'Unexpected analysis export schema: {sessions}')
-          print('Verified production v0.6.1 playtest session Worker with tracked playtests and compiled analysis.')
+          if not sessions.get('analysisExclusionsSupported'):
+              raise SystemExit(f'Playtest data-integrity controls unavailable: {sessions}')
+          if sessions.get('analysisExclusionSchema') != 'gauntlet-playtest-integrity-v1':
+              raise SystemExit(f'Unexpected exclusion schema: {sessions}')
+          print('Verified production v0.6.1 playtest sessions, compiled analysis, and audited exclusions.')
           PY

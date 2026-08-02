@@ -1,0 +1,57 @@
+name: Test playtest data integrity
+
+on:
+  pull_request:
+    paths:
+      - "playtest/analysis/integrity/**"
+      - "workers/playtest-sessions/src/integrity.js"
+      - "workers/playtest-sessions/src/integrity.test.mjs"
+      - "rules-assistant/migrations/0006_playtest_analysis_exclusions.sql"
+      - "scripts/test_playtest_integrity_browser.mjs"
+      - ".github/workflows/test-playtest-integrity-browser.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  integrity-browser:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source branch
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Playwright
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+
+      - name: Serve repository
+        run: |
+          python3 -m http.server 8000 --bind 127.0.0.1 >/tmp/gauntlet-integrity-server.log 2>&1 &
+          echo $! > /tmp/gauntlet-integrity-server.pid
+          for attempt in {1..30}; do
+            curl --fail --silent http://127.0.0.1:8000/playtest/analysis/integrity/ >/dev/null && exit 0
+            sleep 1
+          done
+          cat /tmp/gauntlet-integrity-server.log
+          exit 1
+
+      - name: Verify exclusion, quarantine, and restoration
+        env:
+          GAUNTLET_TEST_BASE_URL: http://127.0.0.1:8000
+          GAUNTLET_TEST_OUTPUT_DIR: tmp/playtest-integrity
+        run: node scripts/test_playtest_integrity_browser.mjs
+
+      - name: Upload integrity screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playtest-integrity-screenshots
+          path: tmp/playtest-integrity
+          if-no-files-found: ignore

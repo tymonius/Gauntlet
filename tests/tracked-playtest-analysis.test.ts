@@ -6,6 +6,11 @@ const page = read("playtest/analysis/index.html");
 const app = read("playtest/analysis/app.js");
 const styles = read("playtest/analysis/styles.css");
 const worker = read("workers/playtest-sessions/src/analysis.js");
+const integrityWorker = read("workers/playtest-sessions/src/integrity.js");
+const integrityPage = read("playtest/analysis/integrity/index.html");
+const integrityApp = read("playtest/analysis/integrity/app.js");
+const integrityStyles = read("playtest/analysis/integrity/styles.css");
+const integrityMigration = read("rules-assistant/migrations/0006_playtest_analysis_exclusions.sql");
 const host = read("playtest/host/index.html");
 const wrangler = read("workers/playtest-sessions/wrangler.toml");
 
@@ -71,10 +76,36 @@ describe("compiled tracked playtest analysis", () => {
     expect(app).toContain("playerNamesAnonymized");
   });
 
-  it("uses the host visual language and deploys through the analysis wrapper", () => {
+  it("supports audited game and response exclusions without destructive deletion", () => {
+    expect(integrityMigration).toContain("CREATE TABLE IF NOT EXISTS playtest_analysis_exclusions");
+    expect(integrityMigration).toContain("target_type IN ('game', 'response')");
+    expect(integrityMigration).toContain("restored_at");
+    expect(integrityMigration).not.toContain("DELETE FROM playtest_participant_responses");
+    expect(integrityWorker).toContain("buildIntegrityView");
+    expect(integrityWorker).toContain("summarizeGames(integrity.activeGames)");
+    expect(integrityWorker).toContain("This record is already excluded");
+  });
+
+  it("provides protected exclusion and restoration controls with reviewer attribution", () => {
+    expect(page).toContain('href="integrity/"');
+    expect(page).toContain("Manage data integrity");
+    expect(integrityPage).toContain('name="robots" content="noindex, nofollow"');
+    expect(integrityPage).toContain("Reviewer name or initials");
+    expect(integrityApp).toContain("Exclude entire game");
+    expect(integrityPage).toContain("Excluded records");
+    expect(integrityPage).toContain("Exclusion audit history");
+    expect(integrityApp).toContain('action: "exclude"');
+    expect(integrityApp).toContain('action: "restore"');
+    expect(integrityApp).not.toContain("localStorage");
+    expect(integrityApp).not.toContain("sessionStorage");
+    expect(integrityStyles).toContain("[hidden]{display:none!important}");
+  });
+
+  it("uses the host visual language and deploys through the integrity wrapper", () => {
     expect(styles).toContain("--analysis-gold");
     expect(styles).toContain("--analysis-ink");
-    expect(wrangler).toContain('main = "src/analysis.js"');
+    expect(wrangler).toContain('main = "src/integrity.js"');
+    expect(integrityWorker).toContain('import analysisWorker, { readTrackedAnalysis, summarizeGames } from "./analysis.js"');
     expect(worker).toContain('import trackedWorker from "./tracked.js"');
   });
 });
