@@ -187,7 +187,7 @@
 
     card.classList.remove('fit-warning');
     const titleFits = fitTitle(card);
-    const overlayTitleFits = fitOverlayTitle(card);
+    fitOverlayTitle(card);
 
     const maximum = Number(card.dataset.artMax || 1.72) * CSS_PIXELS_PER_INCH;
     const minimum = Number(card.dataset.artMin || 0.62) * CSS_PIXELS_PER_INCH;
@@ -214,7 +214,7 @@
       forceLayout(interior);
     }
 
-    if (!titleFits || !overlayTitleFits || cardOverflows(card)) {
+    if (!titleFits || cardOverflows(card)) {
       card.classList.add('fit-warning');
       console.warn(`Card content still exceeds the available area: ${card.getAttribute('aria-label') || 'unnamed card'}`);
     }
