@@ -1637,12 +1637,12 @@
         },
         {
           "label": "Battle",
-          "text": "After you use a 1-Command Order during this battle while Field Command is face up, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command. If you do, put Field Command in your Graveyard after that Order is used."
+          "text": "After you use a 1-Command Order during this battle while Field Command is face up, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command. If you do, put Field Command in your Graveyard after that Order takes effect."
         }
       ],
       "source": "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
       "action": "Bank Field Command as an Asset. After you use a 1-Command Order, you may discard it. If you do, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command.",
-      "battle": "After you use a 1-Command Order during this battle while Field Command is face up, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command. If you do, put Field Command in your Graveyard after that Order is used.",
+      "battle": "After you use a 1-Command Order during this battle while Field Command is face up, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command. If you do, put Field Command in your Graveyard after that Order takes effect.",
       "rules_notes": [
         "Field Command does not let an Order occur outside its legal timing."
       ]
@@ -1974,13 +1974,13 @@
         },
         {
           "label": "Refused",
-          "text": "Choose one Proposal before applying its Refused effect. Only it may be imposed.\n\nThe other Proposal has no effect and cannot become ratified. After the Terms conclude, put Diplomatic Latitude in your Discard Pile."
+          "text": "Choose one Proposal before applying its Refused effect. Only it may be imposed.\n\nThe other Proposal does not take effect or become ratified. After the Terms conclude, put Diplomatic Latitude in your Discard Pile."
         }
       ],
       "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
       "terms": "When you offer Terms, you may reveal Diplomatic Latitude from your Hand and offer two eligible Proposals with the same Stake instead of one. Stake that amount once.",
       "accepted": "The opponent chooses which Proposal is accepted.",
-      "refused": "Choose one Proposal before applying its Refused effect. Only it may be imposed.\n\nThe other Proposal has no effect and cannot become ratified. After the Terms conclude, put Diplomatic Latitude in your Discard Pile."
+      "refused": "Choose one Proposal before applying its Refused effect. Only it may be imposed.\n\nThe other Proposal does not take effect or become ratified. After the Terms conclude, put Diplomatic Latitude in your Discard Pile."
     },
     {
       "id": "diplomats-nonbinding-resolution",
@@ -2695,17 +2695,17 @@
         },
         {
           "label": "Battle",
-          "text": "Opposing banked Assets have no effect during this battle."
+          "text": "Opposing banked Assets cannot be used during this battle."
         },
         {
           "label": "Mission",
-          "text": "Complete after you win a battle in which an opposing banked Asset had an effect and none of your banked Assets had an effect."
+          "text": "Complete after you win a battle in which the opponent used a banked Asset and you used none of your banked Assets."
         }
       ],
       "source": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
       "action": "Bank Subversion as an Asset. When an opposing banked Asset's effect would apply, you may put Subversion in your Graveyard. If you do, negate that effect and put the opposing Asset in its owner's Discard Pile if it remains in play.",
-      "battle": "Opposing banked Assets have no effect during this battle.",
-      "mission": "Complete after you win a battle in which an opposing banked Asset had an effect and none of your banked Assets had an effect."
+      "battle": "Opposing banked Assets cannot be used during this battle.",
+      "mission": "Complete after you win a battle in which the opponent used a banked Asset and you used none of your banked Assets."
     },
     {
       "id": "intelligence-sleeper-network",
@@ -2724,7 +2724,11 @@
         },
         {
           "label": "Capacity",
-          "text": "Sleeper Network can hold no more cards than the number of Territories you control. If it holds too many, immediately put cards beneath it of your choice in your Discard Pile until within capacity.\n\nUse: At the start of your turn, you may put Sleeper Network in your Graveyard. If you do, reveal the cards beneath it. Play each card whose Action effect can legally be applied, one at a time and in any order, without using Action Opportunities. Put the rest in your Discard Pile."
+          "text": "Sleeper Network can hold no more cards than the number of Territories you control. If it holds too many, immediately put cards beneath it of your choice in your Discard Pile until within capacity."
+        },
+        {
+          "label": "Use",
+          "text": "At the start of your turn, you may put Sleeper Network in your Graveyard. If you do, reveal the cards beneath it. Play each card whose Action effect can legally be applied, one at a time and in any order, without using Action Opportunities. Put the rest in your Discard Pile."
         },
         {
           "label": "Compromised",
@@ -2737,7 +2741,8 @@
       ],
       "source": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
       "action": "Bank Sleeper Network as an Asset with one other card from your Hand face down beneath it. At the end of each of your later turns, you may place one other card from your Hand face down beneath it.",
-      "capacity": "Sleeper Network can hold no more cards than the number of Territories you control. If it holds too many, immediately put cards beneath it of your choice in your Discard Pile until within capacity.\n\nUse: At the start of your turn, you may put Sleeper Network in your Graveyard. If you do, reveal the cards beneath it. Play each card whose Action effect can legally be applied, one at a time and in any order, without using Action Opportunities. Put the rest in your Discard Pile.",
+      "capacity": "Sleeper Network can hold no more cards than the number of Territories you control. If it holds too many, immediately put cards beneath it of your choice in your Discard Pile until within capacity.",
+      "use": "At the start of your turn, you may put Sleeper Network in your Graveyard. If you do, reveal the cards beneath it. Play each card whose Action effect can legally be applied, one at a time and in any order, without using Action Opportunities. Put the rest in your Discard Pile.",
       "compromised": "When an opposing effect would cause Sleeper Network to leave play, before it does, reveal the cards beneath it. You may play one card whose Action effect can legally be applied without using an Action Opportunity. Put the rest in your Discard Pile.",
       "other_removal": "If Sleeper Network leaves play for any other reason, put all cards beneath it in your Discard Pile."
     },

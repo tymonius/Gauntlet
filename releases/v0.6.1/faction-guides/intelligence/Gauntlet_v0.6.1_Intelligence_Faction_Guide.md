@@ -301,9 +301,9 @@ Treason cannot select an effect that has already been applied and follows the sh
 
 > **Action:** Bank Subversion as an Asset. When an opposing banked Asset's effect would apply, you may put Subversion in your Graveyard. If you do, negate that effect and put the opposing Asset in its owner's Discard Pile if it remains in play.
 >
-> **Battle:** Opposing banked Assets have no effect during this battle.
+> **Battle:** Opposing banked Assets cannot be used during this battle.
 >
-> **Mission:** Complete after you win a battle in which an opposing banked Asset had an effect and none of your banked Assets had an effect.
+> **Mission:** Complete after you win a battle in which the opponent used a banked Asset and you used none of your banked Assets.
 
 ## Sleeper Network
 

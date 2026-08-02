@@ -158,7 +158,7 @@ A second physical copy of the same card title may still be played.
 
 > **Action:** Bank Field Command as an Asset. After you use a 1-Command Order, you may discard it. If you do, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command.
 >
-> **Battle:** After you use a 1-Command Order during this battle while Field Command is face up, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command. If you do, put Field Command in your Graveyard after that Order is used.
+> **Battle:** After you use a 1-Command Order during this battle while Field Command is face up, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command. If you do, put Field Command in your Graveyard after that Order takes effect.
 
 Field Command does not let an Order occur outside its legal timing.
 
