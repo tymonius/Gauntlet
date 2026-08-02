@@ -71,6 +71,146 @@
           "z": 1
         }
       ]
+    },
+    {
+      "id": "neutral-battlefront-spread",
+      "name": "Neutral battlefront spread",
+      "description": "A broad five-card battlefield spread centered on the most vivid completed Neutral artwork.",
+      "canvas": {
+        "width": 3000,
+        "height": 1800
+      },
+      "profiles": {
+        "thumbnail": {
+          "width": 900,
+          "height": 540,
+          "formats": ["png", "webp"],
+          "webpQuality": 86
+        },
+        "website": {
+          "width": 1600,
+          "height": 960,
+          "formats": ["png", "webp"],
+          "webpQuality": 90
+        },
+        "publication": {
+          "width": 3000,
+          "height": 1800,
+          "formats": ["png"]
+        }
+      },
+      "cards": [
+        {
+          "id": "neutral-bombardment",
+          "x": 230,
+          "y": 340,
+          "width": 690,
+          "rotation": -11,
+          "z": 1
+        },
+        {
+          "id": "neutral-rallying-cry",
+          "x": 665,
+          "y": 205,
+          "width": 730,
+          "rotation": -5,
+          "z": 2
+        },
+        {
+          "id": "neutral-invasion",
+          "x": 1110,
+          "y": 70,
+          "width": 780,
+          "rotation": 0,
+          "z": 5
+        },
+        {
+          "id": "neutral-valor",
+          "x": 1605,
+          "y": 205,
+          "width": 730,
+          "rotation": 5,
+          "z": 2
+        },
+        {
+          "id": "neutral-scorched-earth",
+          "x": 2080,
+          "y": 340,
+          "width": 690,
+          "rotation": 11,
+          "z": 1
+        }
+      ]
+    },
+    {
+      "id": "intelligence-intrigue-stack",
+      "name": "Intelligence intrigue stack",
+      "description": "A compact Intelligence and Neutral card stack built around the strongest completed covert artwork.",
+      "canvas": {
+        "width": 3000,
+        "height": 1800
+      },
+      "profiles": {
+        "thumbnail": {
+          "width": 900,
+          "height": 540,
+          "formats": ["png", "webp"],
+          "webpQuality": 86
+        },
+        "website": {
+          "width": 1600,
+          "height": 960,
+          "formats": ["png", "webp"],
+          "webpQuality": 90
+        },
+        "publication": {
+          "width": 3000,
+          "height": 1800,
+          "formats": ["png"]
+        }
+      },
+      "cards": [
+        {
+          "id": "neutral-counterintelligence",
+          "x": 600,
+          "y": 445,
+          "width": 650,
+          "rotation": -13,
+          "z": 1
+        },
+        {
+          "id": "intelligence-spies",
+          "x": 830,
+          "y": 275,
+          "width": 705,
+          "rotation": -6,
+          "z": 2
+        },
+        {
+          "id": "intelligence-assassins",
+          "x": 1110,
+          "y": 80,
+          "width": 780,
+          "rotation": 0,
+          "z": 5
+        },
+        {
+          "id": "neutral-sedition",
+          "x": 1470,
+          "y": 275,
+          "width": 705,
+          "rotation": 6,
+          "z": 2
+        },
+        {
+          "id": "neutral-sabotage",
+          "x": 1750,
+          "y": 445,
+          "width": 650,
+          "rotation": 13,
+          "z": 1
+        }
+      ]
     }
   ]
 }
