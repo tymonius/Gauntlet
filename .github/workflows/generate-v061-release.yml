@@ -16,11 +16,18 @@ on:
       - "workers/playtest-sessions/**"
       - "playtest/session/**"
       - "playtest/batch/**"
+      - "playtest/onboarding/**"
+      - "playtest/player-mat/**"
+      - "start/**"
+      - "factions/**"
+      - "faction-sheets/**"
       - "deckbuilder/**"
       - "package.json"
+      - "tests/player-facing-terminology.test.ts"
       - "scripts/finalize_v061_publication.py"
       - "scripts/generate_v061_release.py"
       - "scripts/sync_v061_deckbuilder.py"
+      - "scripts/sync_v061_public_rules.py"
       - "scripts/sync_v061_rules_assistant.py"
       - "scripts/validate_v061_release.py"
       - "scripts/validate_v061_playtest_sessions.py"
@@ -41,11 +48,18 @@ on:
       - "workers/playtest-sessions/**"
       - "playtest/session/**"
       - "playtest/batch/**"
+      - "playtest/onboarding/**"
+      - "playtest/player-mat/**"
+      - "start/**"
+      - "factions/**"
+      - "faction-sheets/**"
       - "deckbuilder/**"
       - "package.json"
+      - "tests/player-facing-terminology.test.ts"
       - "scripts/finalize_v061_publication.py"
       - "scripts/generate_v061_release.py"
       - "scripts/sync_v061_deckbuilder.py"
+      - "scripts/sync_v061_public_rules.py"
       - "scripts/sync_v061_rules_assistant.py"
       - "scripts/validate_v061_release.py"
       - "scripts/validate_v061_playtest_sessions.py"
@@ -106,6 +120,7 @@ jobs:
       - name: Synchronize browser and Rules Arbiter sources
         run: |
           python scripts/sync_v061_deckbuilder.py
+          python scripts/sync_v061_public_rules.py
           python scripts/sync_v061_rules_assistant.py
 
       - name: Generate and validate canonical data
@@ -122,6 +137,11 @@ jobs:
             scripts/finalize_v061_publication.py \
             scripts/generate_v061_release.py \
             scripts/validate_v061_release.py \
+            start/ \
+            playtest/onboarding/ \
+            playtest/player-mat/ \
+            factions/ \
+            faction-sheets/ \
             deckbuilder/ \
             rules-assistant/ \
             releases/v0.6.1/
@@ -138,9 +158,10 @@ jobs:
         run: |
           python scripts/finalize_v061_publication.py
           python scripts/sync_v061_deckbuilder.py
+          python scripts/sync_v061_public_rules.py
           python scripts/sync_v061_rules_assistant.py
           python scripts/generate_v061_release.py --check
-          git diff --exit-code -- README.md index.html docs/README.md docs/Gauntlet_Development_Status.md docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md scripts/finalize_v061_publication.py scripts/generate_v061_release.py scripts/validate_v061_release.py deckbuilder/ rules-assistant/ releases/v0.6.1/
+          git diff --exit-code -- README.md index.html docs/README.md docs/Gauntlet_Development_Status.md docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md scripts/finalize_v061_publication.py scripts/generate_v061_release.py scripts/validate_v061_release.py start/ playtest/onboarding/ playtest/player-mat/ factions/ faction-sheets/ deckbuilder/ rules-assistant/ releases/v0.6.1/
 
       - name: Install test dependencies
         run: npm install
