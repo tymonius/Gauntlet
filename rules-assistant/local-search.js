@@ -30,6 +30,7 @@ const QUERY_ALIASES = {
 
 const CANONICAL_DATA_PATH = "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json";
 const RULEBOOK_PATH = "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md";
+const RULEBOOK_BROWSER_PATH = "rulebook/";
 const RULEBOOK_PDF_PATH = "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf";
 
 export function defaultSourceUrls(siteOrigin = "https://gauntlet.run") {
@@ -38,6 +39,7 @@ export function defaultSourceUrls(siteOrigin = "https://gauntlet.run") {
     siteOrigin: origin,
     canonicalDataUrl: `${origin}/${CANONICAL_DATA_PATH}`,
     rulebookUrl: `${origin}/${RULEBOOK_PATH}`,
+    rulebookBrowserUrl: `${origin}/${RULEBOOK_BROWSER_PATH}`,
     rulebookPdfUrl: `${origin}/${RULEBOOK_PDF_PATH}`
   };
 }
@@ -75,6 +77,7 @@ export async function loadRulesCorpus(options = {}) {
     siteOrigin: urls.siteOrigin,
     canonicalDataUrl: urls.canonicalDataUrl,
     rulebookUrl: urls.rulebookUrl,
+    rulebookBrowserUrl: urls.rulebookBrowserUrl,
     rulebookPdfUrl: urls.rulebookPdfUrl
   });
 }
@@ -85,17 +88,20 @@ export function buildRulesCorpus({
   siteOrigin = "https://gauntlet.run",
   canonicalDataUrl,
   rulebookUrl,
+  rulebookBrowserUrl,
   rulebookPdfUrl
 }) {
+  const defaults = defaultSourceUrls(siteOrigin);
   const urls = {
-    ...defaultSourceUrls(siteOrigin),
-    canonicalDataUrl,
-    rulebookUrl,
-    rulebookPdfUrl
+    ...defaults,
+    canonicalDataUrl: canonicalDataUrl || defaults.canonicalDataUrl,
+    rulebookUrl: rulebookUrl || defaults.rulebookUrl,
+    rulebookBrowserUrl: rulebookBrowserUrl || defaults.rulebookBrowserUrl,
+    rulebookPdfUrl: rulebookPdfUrl || defaults.rulebookPdfUrl
   };
 
   const documents = [
-    ...parseRulebookSections(rulebookMarkdown, urls.rulebookPdfUrl || urls.rulebookUrl),
+    ...parseRulebookSections(rulebookMarkdown, urls.rulebookBrowserUrl),
     ...buildCanonicalDocuments(canonicalData, urls.siteOrigin, urls.canonicalDataUrl)
   ];
 
@@ -112,6 +118,7 @@ export function parseRulebookSections(markdown, sourceUrl) {
   const sections = [];
   const lines = markdown.split(/\r?\n/);
   const headingStack = [];
+  const createAnchor = createRulebookSlugger();
   let current = null;
 
   const flush = () => {
@@ -122,13 +129,13 @@ export function parseRulebookSections(markdown, sourceUrl) {
       .filter(Boolean)
       .join(" › ");
     sections.push({
-      id: `rulebook:${slugify(hierarchy || current.heading)}`,
+      id: `rulebook:${current.anchorId}`,
       kind: "rulebook",
       title: hierarchy || current.heading,
       heading: current.heading,
       body: cleanMarkdown(body),
       sourcePath: RULEBOOK_PATH,
-      sourceUrl,
+      sourceUrl: appendFragment(sourceUrl, current.anchorId),
       searchText: ""
     });
   };
@@ -138,10 +145,10 @@ export function parseRulebookSections(markdown, sourceUrl) {
     if (match) {
       flush();
       const level = match[1].length;
-      const heading = stripMarkdown(match[2]);
+      const heading = rulebookHeadingText(match[2]);
       headingStack.length = level - 1;
       headingStack[level - 1] = heading;
-      current = { level, heading, lines: [] };
+      current = { level, heading, anchorId: createAnchor(match[2]), lines: [] };
       continue;
     }
     if (current) current.lines.push(line);
@@ -513,6 +520,36 @@ function cleanMarkdown(value) {
     .replace(/\[(.*?)\]\((.*?)\)/g, "$1")
     .replace(/\n{3,}/g, "\n\n")
     .trim();
+}
+
+function createRulebookSlugger() {
+  const counts = new Map();
+
+  return (value) => {
+    const base = rulebookHeadingText(value)
+      .toLowerCase()
+      .normalize("NFKD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "") || "section";
+    const count = counts.get(base) || 0;
+    counts.set(base, count + 1);
+    return count === 0 ? base : `${base}-${count + 1}`;
+  };
+}
+
+function rulebookHeadingText(value) {
+  return String(value || "")
+    .replace(/!\[([^\]]*)\]\([^)]*\)/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]*\)/g, "$1")
+    .replace(/[*_`~]/g, "")
+    .replace(/<[^>]+>/g, "")
+    .trim();
+}
+
+function appendFragment(sourceUrl, fragment) {
+  const base = String(sourceUrl || "").split("#", 1)[0];
+  return fragment ? `${base}#${fragment}` : base;
 }
 
 function stripMarkdown(value) {
