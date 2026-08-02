@@ -19,6 +19,9 @@
   const sections = [action, battle, ...other].filter(Boolean);
   const isOverlayCard = /\boverlay\b/i.test(card.form || '')
     || sectionEntries.some(([label]) => label.toLowerCase() === 'overlay');
+  const overlayClasses = isOverlayCard
+    ? ` overlay-card${card.faction === 'neutral' ? ' overlay-neutral' : ''}`
+    : '';
   const footerCenter = card.unique
     ? 'Unique'
     : (card.form || (card.complexity !== 'Unspecified' ? card.complexity : ''));
@@ -27,7 +30,7 @@
     : '<span class="pending-label">Artwork pending</span>';
 
   target.innerHTML = `
-    <article class="gauntlet-card${isOverlayCard ? ' overlay-card' : ''}" data-faction="${escapeAttribute(card.faction)}" data-art-max="1.72" data-art-min="0.62" data-overlay-card="${isOverlayCard}" aria-label="${escapeAttribute(card.name)} card">
+    <article class="gauntlet-card${overlayClasses}" data-faction="${escapeAttribute(card.faction)}" data-art-max="1.72" data-art-min="0.62" data-overlay-card="${isOverlayCard}" aria-label="${escapeAttribute(card.name)} card">
       <div class="card-interior">
         ${isOverlayCard ? `
           <aside class="overlay-title-bar" aria-hidden="true">
