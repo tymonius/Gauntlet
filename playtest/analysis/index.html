@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-8YYYZJGGPE');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="description" content="Owner-only aggregate review and export of Gauntlet tracked playtests, questionnaires, and Rules Arbiter questions." />
+  <meta name="theme-color" content="#171512" />
+  <title>Gauntlet Playtest Analysis</title>
+  <link rel="preconnect" href="https://use.typekit.net" />
+  <link rel="preconnect" href="https://p.typekit.net" crossorigin />
+  <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
+  <link rel="stylesheet" href="../../site.css" />
+  <link rel="stylesheet" href="styles.css?v=20260802-1" />
+</head>
+<body>
+  <header class="site-header analysis-header">
+    <a class="brand" href="../../" aria-label="Gauntlet home">
+      <span class="brand-mark" aria-hidden="true">G</span>
+      <span>Gauntlet</span>
+    </a>
+    <nav aria-label="Analysis navigation">
+      <a href="../host/">Host Home</a>
+      <a href="../guide/?role=host">Host guide</a>
+      <a href="../../rulebook/">Rules</a>
+      <a href="../../">Main site</a>
+    </nav>
+  </header>
+
+  <main class="analysis-main">
+    <section class="analysis-hero">
+      <div>
+        <p class="eyebrow">Owner research workspace</p>
+        <h1>Playtest <span>Analysis.</span></h1>
+        <p>Compile every tracked game, shared result, individual questionnaire, and attributed Rules Arbiter question in one private research surface.</p>
+      </div>
+      <aside>
+        <strong>Protected feedback</strong>
+        <p>This page requires the facilitator creation key. The key is held only in this tab’s memory and is never saved in the browser or placed in the URL.</p>
+      </aside>
+    </section>
+
+    <section id="accessPanel" class="analysis-panel access-panel" aria-labelledby="access-title">
+      <div>
+        <p class="eyebrow">Owner access</p>
+        <h2 id="access-title">Load compiled playtest data.</h2>
+        <p>Use the same facilitator key used to create formal sessions. Questionnaire answers are never available through ordinary tracked-game links.</p>
+      </div>
+      <form id="accessForm">
+        <label for="adminToken">Facilitator creation key</label>
+        <div class="access-row">
+          <input id="adminToken" type="password" autocomplete="off" required />
+          <button class="button primary" type="submit">Open analysis</button>
+        </div>
+        <p id="accessStatus" class="form-status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section id="analysisApp" hidden>
+      <section class="analysis-toolbar analysis-panel">
+        <div>
+          <p class="eyebrow">Compiled record</p>
+          <h2>Tracked playtests</h2>
+          <p id="dataFreshness">Loading…</p>
+        </div>
+        <div class="toolbar-actions">
+          <span id="connectionStatus" class="connection-status">Protected</span>
+          <button id="refreshData" class="button secondary" type="button">Refresh data</button>
+          <button id="lockAnalysis" class="button secondary" type="button">Lock page</button>
+        </div>
+      </section>
+
+      <section class="metric-grid" aria-label="Playtest totals">
+        <article><span>Games</span><strong id="metricGames">0</strong><small id="metricGamesDetail"></small></article>
+        <article><span>Responses</span><strong id="metricResponses">0</strong><small id="metricResponsesDetail"></small></article>
+        <article><span>Play again</span><strong id="metricReplay">—</strong><small>among submitted responses</small></article>
+        <article><span>Average duration</span><strong id="metricDuration">—</strong><small>completed or stopped games</small></article>
+        <article><span>Arbiter questions</span><strong id="metricArbiter">0</strong><small>attributed to tracked games</small></article>
+        <article><span>Rules versions</span><strong id="metricVersions">0</strong><small id="metricVersionsDetail"></small></article>
+      </section>
+
+      <section class="analysis-panel filters-panel" aria-labelledby="filters-title">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Research slice</p><h2 id="filters-title">Filter the compiled record.</h2></div>
+          <p>Every dashboard summary and export uses the active filters.</p>
+        </div>
+        <div class="filter-grid">
+          <label>Status<select id="filterStatus"><option value="all">All games</option><option value="closed">Submitted</option><option value="open">Open</option></select></label>
+          <label>Rules version<select id="filterVersion"><option value="all">All versions</option></select></label>
+          <label>Faction<select id="filterFaction"><option value="all">All factions</option></select></label>
+          <label>Leader<select id="filterLeader"><option value="all">All Leaders</option></select></label>
+          <label>Created after<input id="filterFrom" type="date" /></label>
+          <label>Created before<input id="filterTo" type="date" /></label>
+          <label class="search-filter">Search responses, players, serials, and questions<input id="filterSearch" type="search" placeholder="clarity, Ambassador, capture timing…" /></label>
+        </div>
+        <div class="filter-actions">
+          <button id="resetFilters" class="button secondary" type="button">Reset filters</button>
+          <p id="filterSummary" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <section class="analysis-panel export-panel" aria-labelledby="export-title">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Portable research record</p><h2 id="export-title">Export for review and analysis.</h2></div>
+          <p>The analysis bundle is the canonical upload format for a full ChatGPT review. CSV exports support spreadsheet work.</p>
+        </div>
+        <label class="privacy-toggle"><input id="anonymizeExports" type="checkbox" checked /> Anonymize player names in downloaded files</label>
+        <div class="export-actions">
+          <button id="downloadBundle" class="button primary" type="button">Download analysis bundle (JSON)</button>
+          <button id="downloadResponses" class="button secondary" type="button">Responses CSV</button>
+          <button id="downloadGames" class="button secondary" type="button">Games CSV</button>
+          <button id="downloadArbiter" class="button secondary" type="button">Arbiter questions CSV</button>
+        </div>
+        <p id="exportStatus" class="form-status" aria-live="polite"></p>
+      </section>
+
+      <section class="analysis-grid">
+        <section class="analysis-panel" aria-labelledby="ratings-title">
+          <div class="section-heading"><p class="eyebrow">Questionnaire ratings</p><h2 id="ratings-title">Average scores.</h2></div>
+          <div id="ratingAverages" class="rating-averages"></div>
+        </section>
+        <section class="analysis-panel" aria-labelledby="outcomes-title">
+          <div class="section-heading"><p class="eyebrow">Game outcomes</p><h2 id="outcomes-title">Completion and victory.</h2></div>
+          <div id="outcomeSummary" class="outcome-summary"></div>
+        </section>
+      </section>
+
+      <section class="analysis-panel breakdown-panel" aria-labelledby="breakdown-title">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Faction and Leader comparison</p><h2 id="breakdown-title">Response patterns by side.</h2></div>
+          <p>Small sample sizes are shown explicitly; averages are not presented as balance conclusions.</p>
+        </div>
+        <div class="table-scroll"><table><thead><tr><th>Faction / Leader</th><th>Responses</th><th>Wins</th><th>Play again</th><th>Fun</th><th>Pacing</th><th>Decisions</th><th>Rules clarity</th></tr></thead><tbody id="breakdownRows"></tbody></table></div>
+      </section>
+
+      <section class="analysis-panel" aria-labelledby="written-title">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Qualitative feedback</p><h2 id="written-title">Written responses and observations.</h2></div>
+          <p>Player questionnaire answers remain associated with their game, faction, Leader, and outcome.</p>
+        </div>
+        <div id="writtenFeedback" class="written-feedback"></div>
+      </section>
+
+      <section class="analysis-panel" aria-labelledby="games-title">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Complete records</p><h2 id="games-title">Games in this research slice.</h2></div>
+          <p>Expand a game to inspect its result, both questionnaires, Arbiter questions, and recorded timeline.</p>
+        </div>
+        <div id="gameRecords" class="game-records"></div>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    <div><strong>Gauntlet</strong><p>Unpublished pre-release playtest project.</p></div>
+    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  </footer>
+
+  <script src="app.js?v=20260802-1" defer></script>
+</body>
+</html>
