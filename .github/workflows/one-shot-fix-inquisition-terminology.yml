@@ -1,0 +1,97 @@
+name: Apply Inquisition terminology correction
+
+on:
+  push:
+    branches:
+      - fix/inquisition-terminology-regression
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/inquisition-terminology-regression
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Correct terminology and add regression coverage
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          guide = Path("releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md")
+          text = guide.read_text(encoding="utf-8")
+
+          replacements = {
+              "Blasphemy triggers from opposing Arcane Action cards and revealed Arcane Gambits or Tactics.":
+                  "Blasphemy triggers from opposing Arcane cards played for their Action effects and from revealed Arcane Gambits or Tactics.",
+              "On your turn, you may use both normal Action Opportunities if one is used to Purge; no more than one Purge may be performed through Action Opportunities that turn.":
+                  "On your turn, you may use both normal Action Opportunities if one is used to Purge; only one Action Opportunity may be used to Purge that turn.",
+          }
+
+          for old, new in replacements.items():
+              if text.count(old) != 1:
+                  raise SystemExit(f"Expected exactly one occurrence of: {old}")
+              text = text.replace(old, new)
+
+          guide.write_text(text, encoding="utf-8")
+
+          test = Path("tests/player-facing-terminology.test.ts")
+          test.write_text('''import { readFileSync, readdirSync } from "node:fs";
+          import { join } from "node:path";
+          import { describe, expect, it } from "vitest";
+
+          const factionGuideRoot = "releases/v0.6.1/faction-guides";
+          const factionGuides = readdirSync(factionGuideRoot, { withFileTypes: true })
+            .filter((entry) => entry.isDirectory())
+            .flatMap((entry) =>
+              readdirSync(join(factionGuideRoot, entry.name))
+                .filter((name) => name.endsWith(".md"))
+                .map((name) => join(factionGuideRoot, entry.name, name))
+            );
+
+          const playerFacingSources = [
+            "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
+            "docs/Gauntlet_v0.6.1_Territory_Pool.md",
+            "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md",
+            ...factionGuides,
+          ];
+
+          const combined = playerFacingSources
+            .map((path) => readFileSync(path, "utf8"))
+            .join("\\n");
+
+          describe("player-facing terminology", () => {
+            it("does not classify cards as Action cards", () => {
+              expect(combined).not.toMatch(/\\bAction cards?\\b/i);
+            });
+
+            it("describes Purge through use of Action Opportunities, not performance", () => {
+              expect(combined).not.toMatch(/\\bPurge may be performed\\b/i);
+            });
+          });
+          ''', encoding="utf-8")
+
+          Path(".github/workflows/one-shot-fix-inquisition-terminology.yml").unlink()
+          PY
+
+      - name: Run terminology regression test
+        run: |
+          npm install
+          npx vitest run tests/player-facing-terminology.test.ts
+
+      - name: Commit correction
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Correct Inquisition terminology regression"
+          git push origin HEAD:fix/inquisition-terminology-regression
