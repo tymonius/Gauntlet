@@ -1,0 +1,39 @@
+name: Audit special Action Opportunities
+
+on:
+  push:
+    branches:
+      - agent/distinguish-actions-opportunities
+    paths:
+      - .github/workflows/audit-special-action-opportunities.yml
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Record special opportunity consumption
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p tmp
+          {
+            printf '%s\n' '=== consume/clear special opportunity calls ==='
+            git grep -n -I -E 'consume(Reinforcements|Insurrection|Liberation)ActionOpportunity|clear(Reinforcements|Insurrection|Liberation)ActionOpportunity' -- src || true
+            printf '%s\n' '=== special opportunity state references ==='
+            git grep -n -I -E 'neutral(Reinforcements|Insurrection|Liberation)ActionOpportunity' -- src/state | head -n 500 || true
+            printf '%s\n' '=== actionsRemaining decrement context ==='
+            for f in $(git grep -l -I 'actionsRemaining -= 1' -- src/state); do
+              echo "--- $f"; grep -n -B 12 -A 18 'actionsRemaining -= 1' "$f"; done
+          } > tmp/special-action-opportunities-audit.txt
+          git add -f tmp/special-action-opportunities-audit.txt
+          git rm .github/workflows/audit-special-action-opportunities.yml
+          git commit -m "Record special Action Opportunity audit"
+          git push origin HEAD:agent/distinguish-actions-opportunities
