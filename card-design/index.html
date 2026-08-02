@@ -28,6 +28,12 @@
       }
     }
 
+    @media screen and (min-width: 64rem) {
+      .review-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
     .overlay-specimen .card-art {
       display: grid;
       place-items: center;
@@ -88,6 +94,10 @@
         <article>
           <h3>Rules hierarchy</h3>
           <p>Action and Battle labels occupy a fixed left column while Adobe Caslon rules align in a wider right column. Reminders remain Caslon italic.</p>
+        </article>
+        <article>
+          <h3>Header geometry</h3>
+          <p>Titles remain all caps at one primary scale. The value medallion shares the art frame's right alignment and equal top inset.</p>
         </article>
         <article>
           <h3>Overlay identification</h3>
