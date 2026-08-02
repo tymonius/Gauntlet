@@ -32,30 +32,34 @@ const initialGame = {
 
 function statePayload(mode = "active") {
   const game = structuredClone(initialGame);
-  const excluded = {
+  const isExcluded = mode === "excluded";
+  const isRestored = mode === "restored";
+  const exclusion = {
     id: "exclusion-1", targetType: "response", targetId: "player-2", sessionId: "game-1",
     reasonCode: "test", reasonNote: "Deployment smoke test", excludedBy: "TS",
-    excludedAt: "2026-08-02T12:00:00.000Z", restoredBy: null, restoredAt: null
+    excludedAt: "2026-08-02T12:00:00.000Z",
+    restoredBy: isRestored ? "TS" : null,
+    restoredAt: isRestored ? "2026-08-02T12:05:00.000Z" : null
   };
-  if (mode === "excluded") game.players[1].response = null;
+  if (isExcluded) game.players[1].response = null;
   return {
     schemaVersion: "gauntlet-playtest-integrity-v1",
-    generatedAt: "2026-08-02T12:01:00.000Z",
+    generatedAt: "2026-08-02T12:06:00.000Z",
     summary: {
       activeGameCount: 1,
       excludedGameCount: 0,
-      excludedResponseCount: mode === "excluded" ? 1 : 0,
-      activeExclusionCount: mode === "excluded" ? 1 : 0,
+      excludedResponseCount: isExcluded ? 1 : 0,
+      activeExclusionCount: isExcluded ? 1 : 0,
       historyCount: mode === "active" ? 0 : 1
     },
     activeGames: [game],
     excludedGames: [],
-    excludedResponses: mode === "excluded" ? [{
-      exclusion: excluded,
+    excludedResponses: isExcluded ? [{
+      exclusion,
       game: { sessionId: "game-1", sheetSerial: "G061-INTEGRITY1", rulesVersion: "v0.6.1", status: "closed", createdAt: initialGame.createdAt },
       player: structuredClone(initialGame.players[1])
     }] : [],
-    history: mode === "active" ? [] : [excluded]
+    history: mode === "active" ? [] : [exclusion]
   };
 }
 
@@ -72,7 +76,7 @@ async function run(viewport, name) {
     if (request.method() === "POST") {
       const body = request.postDataJSON();
       if (body.action === "exclude") mode = "excluded";
-      if (body.action === "restore") mode = "active";
+      if (body.action === "restore") mode = "restored";
     }
     await route.fulfill({
       status: 200,
@@ -108,6 +112,11 @@ async function run(viewport, name) {
   await page.locator('[data-restore-id="exclusion-1"]').click();
   await page.waitForFunction(() => document.querySelector("#metricExcludedResponses")?.textContent === "0");
   if ((await page.locator('[data-exclude-id="player-2"]').count()) !== 1) throw new Error("Restored response did not return to active controls");
+  if ((await page.locator("#metricHistory").textContent()) !== "1") throw new Error("Restored action disappeared from audit totals");
+  const restoredHistory = await page.locator("#historyRows").textContent();
+  if (!restoredHistory.includes("restored") || !restoredHistory.includes("Deployment smoke test")) {
+    throw new Error("Restored exclusion did not remain in audit history");
+  }
 
   await page.screenshot({ path: path.join(outputDir, `playtest-integrity-${name}.png`), fullPage: true });
   await browser.close();
@@ -115,4 +124,4 @@ async function run(viewport, name) {
 
 await run({ width: 1440, height: 1100 }, "desktop");
 await run({ width: 390, height: 844 }, "mobile");
-console.log("Verified playtest exclusion, quarantine, audit, and restoration controls on desktop and mobile.");
+console.log("Verified playtest exclusion, quarantine, persistent audit history, and restoration controls on desktop and mobile.");
