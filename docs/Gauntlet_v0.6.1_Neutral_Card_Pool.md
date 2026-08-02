@@ -122,7 +122,7 @@ Counterintelligence does not prevent a card from being set face up by a rule suc
 
 > **Action:** Reveal the top card of either Draw Pile or one random card from the opponent's Hand.
 >
-> **Battle:** When revealed, before other effects at this stage, reveal one opposing face-down Gambit or Tactic at the same stage. You may replace Scouting Report with one eligible card from your Reserve whose effect can apply. If you do, put this card in your Graveyard and place the replacement face up in the same role.
+> **Battle:** When revealed, before other effects at this stage, reveal one opposing face-down Gambit or Tactic at the same stage. You may replace Scouting Report with one eligible card from your Reserve whose effect can apply now. If you do, put this card in your Graveyard and place the replacement face up in the same role.
 
 ## Supplies
 

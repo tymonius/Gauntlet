@@ -243,7 +243,7 @@ After withdrawal, clear battle cards normally unless another effect says otherwi
 
 > **Action:** Return your Active Mission to your Hand, then place another eligible Intelligence card from your Hand face down as your Active Mission. It cannot complete this turn.
 >
-> **Battle:** After Tactics are revealed, choose one: withdraw; or replace Operational Reassessment with an eligible Battle card from your Hand whose effect can apply. If you replace it, put this card in your Graveyard and place the replacement face up.
+> **Battle:** After Tactics are revealed, choose one: withdraw; or replace Operational Reassessment with an eligible Battle card from your Hand whose effect can apply now. If you replace it, put this card in your Graveyard and place the replacement face up.
 
 The replacement takes Operational Reassessment's current Gambit or Tactic role.
 

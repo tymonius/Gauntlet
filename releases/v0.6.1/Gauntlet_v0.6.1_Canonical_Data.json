@@ -511,12 +511,12 @@
         },
         {
           "label": "Battle",
-          "text": "When revealed, before other effects at this stage, reveal one opposing face-down Gambit or Tactic at the same stage. You may replace Scouting Report with one eligible card from your Reserve whose effect can apply. If you do, put this card in your Graveyard and place the replacement face up in the same role."
+          "text": "When revealed, before other effects at this stage, reveal one opposing face-down Gambit or Tactic at the same stage. You may replace Scouting Report with one eligible card from your Reserve whose effect can apply now. If you do, put this card in your Graveyard and place the replacement face up in the same role."
         }
       ],
       "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Reveal the top card of either Draw Pile or one random card from the opponent's Hand.",
-      "battle": "When revealed, before other effects at this stage, reveal one opposing face-down Gambit or Tactic at the same stage. You may replace Scouting Report with one eligible card from your Reserve whose effect can apply. If you do, put this card in your Graveyard and place the replacement face up in the same role."
+      "battle": "When revealed, before other effects at this stage, reveal one opposing face-down Gambit or Tactic at the same stage. You may replace Scouting Report with one eligible card from your Reserve whose effect can apply now. If you do, put this card in your Graveyard and place the replacement face up in the same role."
     },
     {
       "id": "neutral-supplies",
@@ -1822,14 +1822,14 @@
         },
         {
           "label": "Battle",
-          "text": "After Tactics are revealed, you may replace Reserve Force with an eligible card from your Hand whose effect can apply. If you do, put this card in your Graveyard and place the replacement face up. If you do not, put this card in your Discard Pile during the Aftermath of the battle."
+          "text": "After Tactics are revealed, you may replace Reserve Force with an eligible card from your Hand whose effect can apply now. If you do, put this card in your Graveyard and place the replacement face up. If you do not, put this card in your Discard Pile during the Aftermath of the battle."
         }
       ],
       "source": "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
       "action": "Bank this card with one card from your Hand that has a Tactic or Battle effect face down beneath it.",
       "asset": "If this card leaves play without deploying the stored card, put that card in your Graveyard.",
       "use": "After Tactics are revealed in a battle involving you, you may discard this card. If you do, play the stored card face up as an additional Tactic. In the Aftermath, put the stored card in your Graveyard.",
-      "battle": "After Tactics are revealed, you may replace Reserve Force with an eligible card from your Hand whose effect can apply. If you do, put this card in your Graveyard and place the replacement face up. If you do not, put this card in your Discard Pile during the Aftermath of the battle.",
+      "battle": "After Tactics are revealed, you may replace Reserve Force with an eligible card from your Hand whose effect can apply now. If you do, put this card in your Graveyard and place the replacement face up. If you do not, put this card in your Discard Pile during the Aftermath of the battle.",
       "rules_notes": [
         "The replacement takes Reserve Force's role as a Gambit or Tactic."
       ]
@@ -2742,12 +2742,12 @@
         },
         {
           "label": "Battle",
-          "text": "After Tactics are revealed, choose one: withdraw; or replace Operational Reassessment with an eligible Battle card from your Hand whose effect can apply. If you replace it, put this card in your Graveyard and place the replacement face up."
+          "text": "After Tactics are revealed, choose one: withdraw; or replace Operational Reassessment with an eligible Battle card from your Hand whose effect can apply now. If you replace it, put this card in your Graveyard and place the replacement face up."
         }
       ],
       "source": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
       "action": "Return your Active Mission to your Hand, then place another eligible Intelligence card from your Hand face down as your Active Mission. It cannot complete this turn.",
-      "battle": "After Tactics are revealed, choose one: withdraw; or replace Operational Reassessment with an eligible Battle card from your Hand whose effect can apply. If you replace it, put this card in your Graveyard and place the replacement face up.",
+      "battle": "After Tactics are revealed, choose one: withdraw; or replace Operational Reassessment with an eligible Battle card from your Hand whose effect can apply now. If you replace it, put this card in your Graveyard and place the replacement face up.",
       "rules_notes": [
         "The replacement takes Operational Reassessment's current Gambit or Tactic role."
       ]

@@ -180,7 +180,7 @@ Field Command does not let an Order occur outside its legal timing.
 >
 > **Use:** After Tactics are revealed in a battle involving you, you may discard this card. If you do, play the stored card face up as an additional Tactic. In the Aftermath, put the stored card in your Graveyard.
 >
-> **Battle:** After Tactics are revealed, you may replace Reserve Force with an eligible card from your Hand whose effect can apply. If you do, put this card in your Graveyard and place the replacement face up. If you do not, put this card in your Discard Pile during the Aftermath of the battle.
+> **Battle:** After Tactics are revealed, you may replace Reserve Force with an eligible card from your Hand whose effect can apply now. If you do, put this card in your Graveyard and place the replacement face up. If you do not, put this card in your Discard Pile during the Aftermath of the battle.
 
 The replacement takes Reserve Force's role as a Gambit or Tactic.
 
