@@ -25,9 +25,26 @@
   break-inside: avoid;
 }
 
-/* Chapter 11's continuation pages consist primarily of technical lookup lists.
-   Two-column list flow keeps the copied-effect restrictions on the same page as
-   their heading instead of generating a nearly empty final side. */
+/* Chapter 11 is technical lookup material. Two-column lists and a compact
+   vertical rhythm keep the copied-effect restrictions with their heading while
+   retaining the approved body and heading sizes. */
+.continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow {
+  line-height: 1.15;
+}
+.continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow p {
+  margin-bottom: 1px;
+}
+.continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow h2 {
+  margin: 7px 0 3px;
+  padding-top: 4px;
+}
+.continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow h3 {
+  margin: 4px 0 1px;
+}
+.continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow h4,
+.continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow h5 {
+  margin: 3px 0 1px;
+}
 .continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow ul,
 .continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow ol,
 .continuation-page[data-context-title="Factions"]
@@ -35,11 +52,16 @@
   columns: 2;
   column-gap: 18px;
   column-rule: 1px solid var(--line);
+  margin-bottom: 2px;
 }
 .continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow li,
 .continuation-page[data-context-title="Factions"]
   .keep-group:has(> [data-heading-title="General use"]) li {
   break-inside: avoid;
+  margin-bottom: 0;
+}
+.continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow .source-divider {
+  margin: 4px 0;
 }
 
 /* The Mystics procedure contains many short labels and boxed clauses. A tighter
