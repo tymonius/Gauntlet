@@ -25,11 +25,11 @@ Spend Conviction on **Purges** that remove cards and Assets. On your turn, using
 
 ## Faction Actions
 
-**Purge is the Inquisition's only Faction Action.** During either normal Action Opportunity on your turn, spend the listed Conviction to perform one Purge instead of playing a card for its Action effect.
+**Purge is the Inquisition's only Faction Action.** During either normal Action Opportunity on your turn, spend the listed Conviction to Purge instead of playing a card for its Action effect.
 
-Using a Purge through an Action Opportunity permits you to use both normal Action Opportunities that turn. The other opportunity may be used normally, but you may perform no more than one Purge through Action Opportunities that turn.
+When you use an Action Opportunity to Purge, you may use both normal Action Opportunities that turn. The other opportunity may be used normally, but only one Action Opportunity may be used to Purge that turn.
 
-A Purge performed without using an Action Opportunity, such as one permitted by Final Judgment, is a Faction Ability at that timing rather than a Faction Action. It does not consume an Action Opportunity and does not count against the once-per-turn Action-Opportunity Purge limit.
+Final Judgment lets you Purge without using an Action Opportunity. That Purge does not consume an Action Opportunity and does not count against the once-per-turn limit on Purges used through Action Opportunities.
 
 # 2. Components and setup
 
@@ -49,7 +49,7 @@ Begin with 0 Conviction. Slide the Leader over the tracker to show 0–4.
 
 The first time opposing cards enter the Graveyard during the Aftermath of a battle involving you each turn, gain 1 Conviction. Opposing Tactics go there instead of the Discard Pile, making battle choices more costly against the Inquisition.
 
-During an Action Opportunity, spend Conviction on one Purge instead of playing an Action card. On your turn, you may use both the before- and after-movement Action Opportunities if one is used to Purge. You may perform no more than one Purge through Action Opportunities that turn.
+During an Action Opportunity, spend Conviction to Purge instead of playing a card for its Action effect. On your turn, you may use both the before- and after-movement Action Opportunities if one is used to Purge. Only one Action Opportunity may be used to Purge that turn.
 
 ## Complete rules
 
@@ -76,7 +76,7 @@ This gain is outside the normal once-per-turn Conviction gain but cannot exceed 
 
 ### Purge
 
-During an Action Opportunity, instead of playing a card for its Action effect, spend Conviction to perform one Purge:
+During an Action Opportunity, instead of playing a card for its Action effect, spend Conviction to Purge:
 
 | Cost | Purge |
 |---:|---|
@@ -85,7 +85,7 @@ During an Action Opportunity, instead of playing a card for its Action effect, s
 | 3 | The opponent chooses one card from their Hand and puts it in their Graveyard. |
 | 4 | Reveal the opponent's Hand. Choose one card and put it in their Graveyard. |
 
-On your turn, you may use both the before- and after-movement Action Opportunities if one is used to Purge. The other opportunity may be used normally. You may perform no more than one Purge through Action Opportunities that turn.
+On your turn, you may use both the before- and after-movement Action Opportunities if one is used to Purge. The other opportunity may be used normally. Only one Action Opportunity may be used to Purge each turn.
 
 A Purge uses an Action Opportunity but is not playing a card. A Purge permitted outside an Action Opportunity, such as Final Judgment, is separate and does not count against this limit.
 
@@ -102,7 +102,7 @@ A failed Reserve draw or effect-generated draw does not trigger Purification.
 **Archetype:** Judgment, Purge, and permanent removal  
 **Motto:** *We judge. We purge.*
 
-> **Final Judgment:** Once per turn, during the Aftermath of a battle you won, after cards follow their destinations, you may immediately Purge without using an Action Opportunity. Reduce that Purge's Conviction cost by 1, to a minimum of 1.
+> **Final Judgment:** Once per turn, during the Aftermath of a battle you won, after the battle cards have been cleared and effects triggered by those moves have been applied, you may immediately Purge without using an Action Opportunity. Reduce that Purge's Conviction cost by 1, to a minimum of 1.
 
 The normal Conviction gain from that battle may occur before Final Judgment.
 
@@ -180,7 +180,7 @@ The Battle effect applies when Penance's Gambit or Tactic is revealed.
 >
 > **Battle:** If the opponent loses, they cannot benefit from effects they control triggered by that loss or resulting retreat, and they retreat one additional position.
 
-Withdrawal does not activate No Martyrs.
+Withdrawal does not trigger No Martyrs.
 
 ## Excommunication
 
@@ -253,9 +253,9 @@ Each Conviction provides only one chosen benefit.
 - Conviction maximum 4.
 - First qualifying opposing Graveyard entry each turn gives 1 normal Conviction.
 - Condemnation sends opposing Tactics to the Graveyard.
-- Blasphemy triggers from opposing Arcane Action cards and revealed Arcane Gambits or Tactics.
-- On your turn, you may use both normal Action Opportunities if one is used to Purge; no more than one Purge may be performed through Action Opportunities that turn.
-- Final Judgment occurs after battle-card destinations and is separate from the Action-Opportunity Purge limit.
+- Blasphemy triggers from opposing Arcane cards played for their Action effects and from revealed Arcane Gambits or Tactics.
+- On your turn, you may use both normal Action Opportunities if one is used to Purge; only one Action Opportunity may be used to Purge that turn.
+- Final Judgment occurs after the battle cards are cleared and is separate from the Action-Opportunity Purge limit.
 - Withdrawal has no loser and does not trigger victory-, loss-, or retreat-based abilities.
 - Purification checks only the opponent's normal start-of-turn draw.
 

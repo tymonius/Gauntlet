@@ -102,7 +102,7 @@ A battle ends the movement that started it. Winning does not automatically allow
 When an attacker wins on a Territory:
 
 - the defender retreats;
-- the attacker enters Occupation on that Territory; and
+- the attacker becomes the occupier of that Territory; and
 - the controller gets their next turn to initiate a Counterattack.
 
 If the attacker is still the occupier of the Territory at the start of their next turn, they capture it.
@@ -118,7 +118,7 @@ Teach the first battle slowly and use the labeled battle areas.
 5. **Choose Tactics.** Attacker chooses up to one eligible Tactic or passes. Defender then does the same.
 6. **Reveal Tactics.** Turn all Tactics face up and apply their effects.
 7. **Determine the Outcome.** Apply before-dice effects, roll, and compare battle totals.
-8. **Aftermath.** Carry out retreat and Occupation, apply other result effects, move cards to their destinations, and carry out follow-up movement.
+8. **Aftermath.** Carry out retreat, determine whether the winner becomes the occupier, apply other result effects, clear the battle cards, and carry out follow-up movement.
 
 ## Advantage and disadvantage
 
@@ -128,19 +128,19 @@ Each net advantage adds one die; use the highest result. Each net disadvantage a
 
 When the defender controls the contested Territory, the defender wins a tied battle total. The defender also has this advantage during a Last Stand. Otherwise, reroll until the tie is broken.
 
-# Aftermath and destinations
+# Aftermath and clearing battle cards
 
 After determining the winner:
 
 - a losing attacker returns to the position from which they entered;
 - a losing defender retreats one position toward their own end;
-- a winning attacker takes the contested position and enters Occupation if it is an opposing Territory they do not control;
+- a winning attacker takes the contested position and becomes its occupier if it is an opposing Territory they do not control;
 - a winning defender remains there;
 - Gambits normally go to the Graveyard;
 - Tactics normally go to the Discard Pile; and
 - cards remaining in Reserve go to the Discard Pile.
 
-Card text may change these destinations.
+A card may tell you to put it somewhere else.
 
 # Withdrawal is not retreat
 
@@ -186,7 +186,7 @@ Do not explain every card before play. Instead:
 - use **Complete rules** for timing, replacements, simultaneous effects, and edge cases; and
 - use the Rules Arbiter only when the governing sources need to be searched during play.
 
-When a card has several printed effects, using one effect does not activate the others.
+When a card has several printed effects, only the effect being used applies.
 
 # What to record after the game
 

@@ -95,7 +95,7 @@ Choose the **Banker** for planned purchases and flexible financing. The Banker m
 
 ### Executive
 
-Choose the **Executive** for offensive acquisition. After winning as the attacker and entering Occupation on an enemy Territory, the Executive can buy its Deed and convert the purchase into immediate control.
+Choose the **Executive** for offensive acquisition. After winning as the attacker and becoming the occupier of an enemy Territory, the Executive can buy its Deed and convert the purchase into immediate control.
 
 ---
 
@@ -140,7 +140,7 @@ After completing all three Rites, bind one Arcane card from Hand, one from the D
 
 - you enjoy planning across several turns;
 - you like using the Graveyard as an active resource;
-- you want sacrifices and card destinations to create new opportunities; or
+- you want sacrifices and cards moving between zones to create new opportunities; or
 - you enjoy a visible, interruptible progression toward a dramatic final battle.
 
 ## First-game focus
@@ -178,7 +178,7 @@ Conviction has a maximum of four. Spend it deliberately, but avoid sitting at th
 
 ### Grand Inquisitor
 
-Choose the **Grand Inquisitor** for judgment and Purge efficiency. After winning a battle and moving cards to their destinations, the Grand Inquisitor may perform a discounted Purge.
+Choose the **Grand Inquisitor** for judgment and Purge efficiency. After winning a battle and clearing the battle cards, the Grand Inquisitor may immediately Purge at a reduced Conviction cost.
 
 ### Witch Hunter
 

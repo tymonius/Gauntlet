@@ -75,13 +75,13 @@ A card bound to a Rite, Ritual, or another card is outside normal zones.
 - A face-up bound card is public.
 - A face-down bound card may be inspected only by its owner.
 - A bound card cannot be played, moved, or affected except as instructed by the effect to which it is bound.
-- If the binding effect ends and gives no destination, put the bound card in its owner's Graveyard.
+- If the binding effect ends without telling you where to put the bound card, put it in its owner's Graveyard.
 
 ### Invocation
 
-> Once per turn, when the Action, Gambit, Tactic, or Battle effect of an Arcane card you play, set, or choose takes effect, you may move one card from your Graveyard to your Discard Pile.
+> Once per turn, after applying the Action, Gambit, Tactic, or Battle effect of an Arcane card you played, set, or chose, you may move one card from your Graveyard to your Discard Pile.
 
-A copied effect does not trigger Invocation unless the Arcane card is itself played, set, or chosen again and its printed effect takes effect.
+A copied effect does not trigger Invocation unless the Arcane card is itself played, set, or chosen again and its printed effect is applied.
 
 ### Transmutation
 
@@ -95,7 +95,7 @@ The card is not played and none of its printed effects apply. Supplemental compo
 
 **Beginning cost:** Bind one chosen card from your Graveyard face up beneath this Rite. Then bind one card from your Hand face down beneath it whose title matches at least one other card in your Playable Deck.
 
-> **Completion:** On a later turn, complete this Rite when the Gambit, Tactic, or Battle effect of another card with the bound Hand card's title takes effect during a battle.
+> **Completion:** On a later turn, complete this Rite after the Gambit, Tactic, or Battle effect of another card with the bound Hand card's title is applied during a battle.
 
 On completion:
 
@@ -118,7 +118,7 @@ If you lose a battle before completion, reset the Rite.
 
 ## Rite of Crossing
 
-You may begin this Rite only during an Action Opportunity after movement after winning a battle that caused you to enter Occupation on a Territory the opponent controlled immediately before that battle.
+You may begin this Rite only during an Action Opportunity after movement after winning a battle that made you the occupier of a Territory the opponent controlled immediately before that battle.
 
 **Beginning cost:** Put one Arcane card from your Hand in your Graveyard. If you have none, reveal your Hand and move one Arcane card from your Discard Pile to your Graveyard instead.
 
@@ -173,7 +173,7 @@ Withdrawal neither completes nor interrupts the Ritual because it has no winner 
 
 > **Materia Prima:** The first time on your turn that you put a card from your Hand in your Graveyard as part of a Rite, Transmutation, or an Arcane card effect, draw one card. If this occurs during a battle, draw after the Aftermath of the battle.
 
-A Gambit entering the Graveyard during normal destinations does not trigger Materia Prima merely because it came from Hand.
+A Gambit does not trigger Materia Prima merely because it moves from battle to your Graveyard during the Aftermath.
 
 ## Spirit Walker
 
@@ -251,9 +251,9 @@ Withdrawal produces no losing player.
 
 > **Action:** Place Spirit Hollow as an Overlay on your current Territory or an adjacent Territory.
 >
-> **Battle:** During the Aftermath of the battle, place Spirit Hollow as an Overlay on the contested Territory instead of putting it in its normal destination.
+> **Battle:** During the Aftermath of the battle, place Spirit Hollow as an Overlay on the contested Territory.
 >
-> **Overlay:** After the card-destination step of the Aftermath following a battle here, each player may put one card from their Hand in their Graveyard. A player who does may move one other card from their Graveyard to their Discard Pile.
+> **Overlay:** After the battle cards are cleared during the Aftermath following a battle here, each player may put one card from their Hand in their Graveyard. A player who does may move one other card from their Graveyard to their Discard Pile.
 >
 > When this Territory is captured, put Spirit Hollow in its owner's Graveyard.
 
@@ -297,7 +297,7 @@ The chosen card remains in the Graveyard while its effect applies and follows th
 
 > **Action:** Bank Witchcraft as an Asset. Once per turn, after Tactics are revealed in a battle involving you, you may put one card from your Hand in your Graveyard. If you do, choose one other active card you control in the battle with an eligible Battle effect. Apply that effect one additional time.
 >
-> **Battle:** After Tactics are revealed, choose one other active card you control in the battle with an eligible Battle effect. Apply that effect one additional time. If you cannot choose one, gain advantage. During the Aftermath of the battle, put Witchcraft in your Graveyard instead of its normal destination.
+> **Battle:** After Tactics are revealed, choose one other active card you control in the battle with an eligible Battle effect. Apply that effect one additional time. If you cannot choose one, gain advantage. During the Aftermath of the battle, put Witchcraft in your Graveyard.
 
 Make all choices and pay all costs again when repeating the effect.
 
@@ -316,7 +316,7 @@ Make all choices and pay all costs again when repeating the effect.
 
 > **Action:** Place Circle of Bones as an Overlay on your current Territory or an adjacent Territory.
 >
-> **Battle:** During the Aftermath of the battle, place Circle of Bones as an Overlay on the contested Territory instead of putting it in its normal destination.
+> **Battle:** During the Aftermath of the battle, place Circle of Bones as an Overlay on the contested Territory.
 >
 > **Overlay:** Once during each battle here involving you, after dice are rolled, you may put one card from your Hand in your Graveyard. If you do, choose either player. That player rerolls and must use the new result.
 >
@@ -333,7 +333,7 @@ Make all choices and pay all costs again when repeating the effect.
 > - Place Necromancy face down beneath your Draw Pile, then draw one card.
 > - Choose up to three non-Necromancy cards in your Graveyard. Put every other card in your Hand in your Graveyard, then return the chosen cards to your Hand. Put Necromancy in your Graveyard.
 >
-> **Battle:** During the Aftermath of the battle, after your other cards in battle follow their destinations, choose up to three non-Necromancy cards in your Graveyard. Put every card remaining in your Hand in your Graveyard, then return the chosen cards to your Hand. Necromancy follows its normal destination.
+> **Battle:** During the Aftermath of the battle, after your other cards in battle have been cleared, choose up to three non-Necromancy cards in your Graveyard. Put every card remaining in your Hand in your Graveyard, then return the chosen cards to your Hand. Put Necromancy in your Graveyard if it was your Gambit, or in your Discard Pile if it was your Tactic.
 
 # 9. Quick reference
 
