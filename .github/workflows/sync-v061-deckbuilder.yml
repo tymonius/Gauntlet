@@ -8,7 +8,13 @@ on:
       - ".github/workflows/sync-v061-deckbuilder.yml"
       - "scripts/sync_v061_deckbuilder.py"
       - "scripts/sync_v061_print_supplementals.py"
+      - "scripts/sync_v061_public_rules.py"
       - "deckbuilder/**"
+      - "start/**"
+      - "playtest/onboarding/**"
+      - "playtest/player-mat/**"
+      - "factions/**"
+      - "faction-sheets/**"
       - "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
       - "docs/Gauntlet_v0.6.1_Territory_Pool.md"
       - "releases/v0.6.1/faction-guides/**"
@@ -19,7 +25,13 @@ on:
       - ".github/workflows/sync-v061-deckbuilder.yml"
       - "scripts/sync_v061_deckbuilder.py"
       - "scripts/sync_v061_print_supplementals.py"
+      - "scripts/sync_v061_public_rules.py"
       - "deckbuilder/**"
+      - "start/**"
+      - "playtest/onboarding/**"
+      - "playtest/player-mat/**"
+      - "factions/**"
+      - "faction-sheets/**"
       - "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
       - "docs/Gauntlet_v0.6.1_Territory_Pool.md"
       - "releases/v0.6.1/faction-guides/**"
@@ -36,30 +48,59 @@ jobs:
   sync:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out revision branch
+      - name: Check out source branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref || github.ref_name }}
 
-      - name: Synchronize and validate Deckbuilder
+      - name: Reconcile public-rules migration variants
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path("scripts/sync_v061_public_rules.py")
+          text = path.read_text(encoding="utf-8")
+          obsolete = '''        "faction-sheets/v061-release-runtime.js": [
+            ("Supplemental reference — no deckbuilding value", "Supplemental reference — not a Playable Deck card"),
+            ("Supplemental tracker — no deckbuilding value", "Supplemental tracker — not a Playable Deck card"),
+            ("Supplemental ledger — no deckbuilding value", "Supplemental ledger — not a Playable Deck card"),
+            ("Shared supplemental card — no deckbuilding value", "Shared supplemental card — not a Playable Deck card"),
+            ("Pair with the incomplete side · no deckbuilding value", "Pair with the incomplete side · not a Playable Deck card"),
+            ("Flip when complete · no deckbuilding value", "Flip when complete · not a Playable Deck card"),
+        ],
+'''
+          if obsolete in text:
+              path.write_text(text.replace(obsolete, "", 1), encoding="utf-8")
+          PY
+
+      - name: Synchronize browser and printable sources
         run: |
           python scripts/sync_v061_print_supplementals.py
           python scripts/sync_v061_deckbuilder.py
+          python scripts/sync_v061_public_rules.py
 
-      - name: Commit synchronized Deckbuilder sources when changed
-        if: ${{ github.event_name != 'pull_request' }}
+      - name: Commit synchronized sources when changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add deckbuilder/
+          git add \
+            scripts/sync_v061_public_rules.py \
+            deckbuilder/ \
+            start/ \
+            playtest/onboarding/ \
+            playtest/player-mat/ \
+            factions/ \
+            faction-sheets/
           if git diff --cached --quiet; then
             exit 0
           fi
-          git commit -m "Synchronize Deckbuilder sources and supplemental printing to v0.6.1"
-          git push origin HEAD:rules/v0.6.1-playtest-revision
+          git commit -m "Synchronize public v0.6.1 browser and print rules"
+          git pull --rebase origin ${{ github.head_ref || github.ref_name }}
+          git push origin HEAD:${{ github.head_ref || github.ref_name }}
 
       - name: Verify clean synchronization
         run: |
           python scripts/sync_v061_print_supplementals.py
           python scripts/sync_v061_deckbuilder.py
-          git diff --exit-code -- deckbuilder/
+          python scripts/sync_v061_public_rules.py
+          git diff --exit-code -- scripts/sync_v061_public_rules.py deckbuilder/ start/ playtest/onboarding/ playtest/player-mat/ factions/ faction-sheets/
