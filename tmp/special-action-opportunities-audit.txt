@@ -1,0 +1,288 @@
+=== consume/clear special opportunity calls ===
+src/state/apply-neutral.ts:110:  clearInsurrectionActionOpportunity,
+src/state/apply-neutral.ts:111:  consumeInsurrectionActionOpportunity,
+src/state/apply-neutral.ts:127:  clearLiberationActionOpportunity,
+src/state/apply-neutral.ts:128:  consumeLiberationActionOpportunity,
+src/state/apply-neutral.ts:202:  clearReinforcementsActionOpportunity,
+src/state/apply-neutral.ts:203:  consumeReinforcementsActionOpportunity,
+src/state/apply-neutral.ts:662:      consumeReinforcementsActionOpportunity(result.state, action.playerId);
+src/state/apply-neutral.ts:664:      consumeInsurrectionActionOpportunity(result.state, action.playerId);
+src/state/apply-neutral.ts:666:      consumeLiberationActionOpportunity(result.state, action.playerId);
+src/state/apply-neutral.ts:796:    clearReinforcementsActionOpportunity(result.state, action.playerId);
+src/state/apply-neutral.ts:797:    clearInsurrectionActionOpportunity(result.state, action.playerId);
+src/state/apply-neutral.ts:798:    clearLiberationActionOpportunity(result.state, action.playerId);
+src/state/neutral-insurrection.ts:82:export function consumeInsurrectionActionOpportunity(
+src/state/neutral-insurrection.ts:91:export function clearInsurrectionActionOpportunity(
+src/state/neutral-liberation.ts:59:export function consumeLiberationActionOpportunity(
+src/state/neutral-liberation.ts:71:export function clearLiberationActionOpportunity(
+src/state/neutral-reinforcements.ts:116:export function consumeReinforcementsActionOpportunity(game: GameState, playerId: PlayerID): void {
+src/state/neutral-reinforcements.ts:122:export function clearReinforcementsActionOpportunity(game: GameState, playerId: PlayerID): void {
+=== special opportunity state references ===
+src/state/neutral-insurrection.test.ts:166:    expect(state.neutralInsurrectionActionOpportunity).toEqual({
+src/state/neutral-insurrection.test.ts:186:    expect(toPublicGameView(state).neutralInsurrectionActionOpportunity)
+src/state/neutral-insurrection.test.ts:195:    expect(state.neutralInsurrectionActionOpportunity).toBeUndefined();
+src/state/neutral-insurrection.test.ts:211:    state.neutralReinforcementsActionOpportunity = {
+src/state/neutral-insurrection.test.ts:222:    expect(state.neutralReinforcementsActionOpportunity).toBeUndefined();
+src/state/neutral-insurrection.test.ts:223:    expect(state.neutralInsurrectionActionOpportunity).toEqual({
+src/state/neutral-insurrection.test.ts:269:    expect(state.neutralInsurrectionActionOpportunity).toEqual({
+src/state/neutral-insurrection.ts:78:  const opportunity = game.neutralInsurrectionActionOpportunity;
+src/state/neutral-insurrection.ts:87:    game.neutralInsurrectionActionOpportunity = undefined;
+src/state/neutral-insurrection.ts:95:  if (game.neutralInsurrectionActionOpportunity?.playerId === playerId) {
+src/state/neutral-insurrection.ts:96:    game.neutralInsurrectionActionOpportunity = undefined;
+src/state/neutral-insurrection.ts:144:  game.neutralInsurrectionActionOpportunity = { playerId, turn: game.turn };
+src/state/neutral-liberation.test.ts:224:    expect(state.neutralLiberationActionOpportunity).toEqual({
+src/state/neutral-liberation.test.ts:238:    expect(state.neutralLiberationActionOpportunity).toBeUndefined();
+src/state/neutral-liberation.test.ts:254:    expect(state.neutralLiberationActionOpportunity?.remaining).toBe(2);
+src/state/neutral-liberation.test.ts:261:    expect(state.neutralLiberationActionOpportunity?.remaining).toBe(1);
+src/state/neutral-liberation.test.ts:267:    expect(state.neutralLiberationActionOpportunity).toBeUndefined();
+src/state/neutral-liberation.test.ts:277:    expect(ordinary.neutralLiberationActionOpportunity).toBeUndefined();
+src/state/neutral-liberation.test.ts:285:    expect(lost.neutralLiberationActionOpportunity).toBeUndefined();
+src/state/neutral-liberation.test.ts:308:    expect(sedition.neutralLiberationActionOpportunity?.remaining).toBe(1);
+src/state/neutral-liberation.test.ts:317:    state.neutralLiberationActionOpportunity = {
+src/state/neutral-liberation.test.ts:330:    expect(state.neutralLiberationActionOpportunity).toBeUndefined();
+src/state/neutral-liberation.ts:50:  const opportunity = game.neutralLiberationActionOpportunity;
+src/state/neutral-liberation.ts:63:  const opportunity = game.neutralLiberationActionOpportunity;
+src/state/neutral-liberation.ts:68:  if (opportunity.remaining < 1) game.neutralLiberationActionOpportunity = undefined;
+src/state/neutral-liberation.ts:75:  if (game.neutralLiberationActionOpportunity?.playerId === playerId) {
+src/state/neutral-liberation.ts:76:    game.neutralLiberationActionOpportunity = undefined;
+src/state/neutral-liberation.ts:107:  const existing = game.neutralLiberationActionOpportunity;
+src/state/neutral-liberation.ts:108:  game.neutralLiberationActionOpportunity = existing
+src/state/neutral-reinforcements.test.ts:95:    expect(state.neutralReinforcementsActionOpportunity).toMatchObject({ playerId: 'player_1' });
+src/state/neutral-reinforcements.test.ts:97:    expect(state.neutralReinforcementsActionOpportunity).toBeUndefined();
+src/state/neutral-reinforcements.ts:81:  const opportunity = game.neutralReinforcementsActionOpportunity;
+src/state/neutral-reinforcements.ts:107:  game.neutralReinforcementsActionOpportunity = { playerId: action.playerId, turn: game.turn };
+src/state/neutral-reinforcements.ts:118:    game.neutralReinforcementsActionOpportunity = undefined;
+src/state/neutral-reinforcements.ts:123:  if (game.neutralReinforcementsActionOpportunity?.playerId === playerId) {
+src/state/neutral-reinforcements.ts:124:    game.neutralReinforcementsActionOpportunity = undefined;
+src/state/reducer.ts:522:  const reinforcementsOpportunity = game.neutralReinforcementsActionOpportunity?.playerId === action.playerId
+src/state/reducer.ts:523:    && game.neutralReinforcementsActionOpportunity.turn === game.turn;
+src/state/reducer.ts:524:  const insurrectionOpportunity = game.neutralInsurrectionActionOpportunity?.playerId === action.playerId
+src/state/reducer.ts:525:    && game.neutralInsurrectionActionOpportunity.turn === game.turn;
+src/state/views.ts:320:    neutralReinforcementsActionOpportunity: structuredClone(game.neutralReinforcementsActionOpportunity),
+src/state/views.ts:321:    neutralInsurrectionActionOpportunity: structuredClone(game.neutralInsurrectionActionOpportunity),
+src/state/views.ts:322:    neutralLiberationActionOpportunity: structuredClone(game.neutralLiberationActionOpportunity),
+=== actionsRemaining decrement context ===
+--- src/state/financier-integration.ts
+27-  if (!player || player.factionId !== 'financiers' || !player.financiers) throw new FinancierIntegrationError(`${playerId} is not a Financier.`);
+28-  return player;
+29-}
+30-
+31-function requireAfterMovementAction(game: GameState, playerId: PlayerID): void {
+32-  const player = requireFinancier(game, playerId);
+33-  if (game.activePlayer !== playerId || game.priorityPlayer !== playerId) throw new FinancierIntegrationError('It is not this Financier’s Action Opportunity.');
+34-  if (game.phase !== 'action_after_movement' || player.actionsRemaining < 1) throw new FinancierIntegrationError('This requires an after-movement Action Opportunity.');
+35-}
+36-
+37-function spendAction(game: GameState, playerId: PlayerID): void {
+38-  const player = requireFinancier(game, playerId);
+39:  player.actionsRemaining -= 1;
+40-  player.hasPlayedActionThisTurn = true;
+41-}
+42-
+43-function collateralOptions(game: GameState, playerId: PlayerID): CardID[] {
+44-  const player = requireFinancier(game, playerId);
+45-  if (player.leaderName !== 'Banker' || player.financiers!.lineOfCreditUsedTurn === game.turn) return [];
+46-  return [...player.zones.hand, ...player.financiers!.treasury];
+47-}
+48-
+49-export function placeTreasuryCardAction(game: GameState, playerId: PlayerID, cardId: CardID): void {
+50-  requireAfterMovementAction(game, playerId);
+51-  placeInTreasury(game, playerId, cardId);
+52-}
+53-
+54-export function beginPlayTheMarket(game: GameState, playerId: PlayerID, cardId: CardID): void {
+55-  requireAfterMovementAction(game, playerId);
+56-  const player = requireFinancier(game, playerId);
+57-  if (!player.zones.hand.includes(cardId)) throw new FinancierIntegrationError('Play the Market requires a card from hand.');
+--- src/state/financiers.ts
+27-export function capitalLimit(game: GameState, playerId: PlayerID): number {
+28-  const player = financier(game, playerId);
+29-  return player.controlledTerritories.length + treasuryValue(game, playerId);
+30-}
+31-
+32-export function placeInTreasury(game: GameState, playerId: PlayerID, cardId: CardID): void {
+33-  const player = financier(game, playerId);
+34-  if (game.phase !== 'action_after_movement' || player.actionsRemaining < 1) throw new FinancierError('Treasury placement requires an after-movement Action Opportunity.');
+35-  const index = player.zones.hand.indexOf(cardId);
+36-  if (index < 0) throw new FinancierError('The selected card is not in hand.');
+37-  player.zones.hand.splice(index, 1);
+38-  player.financiers!.treasury.push(cardId);
+39:  player.actionsRemaining -= 1;
+40-  player.hasPlayedActionThisTurn = true;
+41-  log(game, playerId, 'treasury_card_added', `${player.name} placed a card in Treasury.`, { cardId, value: cardValue(cardId), capitalLimit: capitalLimit(game, playerId) });
+42-}
+43-
+44-export function deedOwner(game: GameState, spaceId: SpaceID): PlayerID | undefined {
+45-  return Object.values(game.players).find((player) => player.financiers?.deedsOwned.includes(spaceId))?.id;
+46-}
+47-
+48-export function deedCount(game: GameState, playerId: PlayerID): number {
+49-  return financier(game, playerId).financiers!.deedsOwned.length;
+50-}
+51-
+52-export function deedCost(game: GameState, buyerId: PlayerID, spaceId: SpaceID, positionModifierOverride?: number): number {
+53-  const buyer = financier(game, buyerId);
+54-  const space = game.board.spaces.find((candidate) => candidate.id === spaceId);
+55-  if (!space || space.kind !== 'territory') throw new FinancierError('Deeds exist only for Territories in the Gauntlet.');
+56-  const base = Math.min(deedCount(game, buyerId) + 1, 6);
+57-  const positionModifier = positionModifierOverride ?? (space.controller === buyerId ? -1 : space.occupant === buyerId ? 0 : 1);
+--
+110-
+111-export function playTheMarket(game: GameState, playerId: PlayerID, cardId: CardID, roll: number): number {
+112-  const player = financier(game, playerId);
+113-  if (game.phase !== 'action_after_movement' || player.actionsRemaining < 1) throw new FinancierError('Play the Market requires an after-movement Action Opportunity.');
+114-  if (!Number.isInteger(roll) || roll < 1 || roll > 6) throw new FinancierError('Play the Market requires a die result from 1 to 6.');
+115-  const index = player.zones.hand.indexOf(cardId);
+116-  if (index < 0) throw new FinancierError('The selected card is not in hand.');
+117-  player.zones.hand.splice(index, 1);
+118-  if (roll === 1) player.zones.graveyard.push(cardId); else player.zones.discard.push(cardId);
+119-  const value = cardValue(cardId);
+120-  const gain = roll === 1 ? 0 : roll <= 3 ? 1 : roll <= 5 ? value : value * 2;
+121-  if (gain) gainFactionResource(game, playerId, 'capital', gain, 'Play the Market');
+122:  player.actionsRemaining -= 1;
+123-  player.hasPlayedActionThisTurn = true;
+124-  log(game, playerId, 'market_played', `${player.name} played the market.`, { cardId, roll, gain });
+125-  return gain;
+126-}
+127-
+128-export function subsidizeCost(bonus: number): number {
+129-  if (!Number.isInteger(bonus) || bonus < 0) throw new FinancierError('Subsidize bonus must be a nonnegative integer.');
+130-  return bonus * (bonus + 1) / 2;
+131-}
+132-
+133-export function subsidize(game: GameState, playerId: PlayerID, bonus: number): void {
+134-  const player = financier(game, playerId);
+135-  if (!game.battle || game.battle.stage !== 'dice') throw new FinancierError('Subsidize is available only before battle dice are rolled.');
+136-  const side = game.battle.attacker.playerId === playerId ? game.battle.attacker : game.battle.defender.playerId === playerId ? game.battle.defender : undefined;
+137-  if (!side) throw new FinancierError('You are not involved in this battle.');
+138-  const cost = subsidizeCost(bonus);
+139-  spendFactionResource(game, playerId, 'capital', cost, `Subsidize +${bonus}`);
+140-  side.modifiers += bonus;
+--- src/state/inquisition-purge.ts
+180-
+181-function requireLegalOption(game: GameState, action: UseInquisitionPurgeAction): InquisitionPurgeOption {
+182-  if (!canUseInquisitionPurge(game, action.playerId)) {
+183-    throw new GameActionError(`${action.playerId} cannot use Purge now.`);
+184-  }
+185-  const option = legalInquisitionPurgeOptions(game, action.playerId).find((candidate) => matchesSelection(candidate, action));
+186-  if (!option) throw new GameActionError('Choose an available canonical Purge effect and target.');
+187-  return option;
+188-}
+189-
+190-function consumeActionOpportunity(game: GameState, playerId: PlayerID): void {
+191-  const player = game.players[playerId];
+192:  player.actionsRemaining -= 1;
+193-  player.hasPlayedActionThisTurn = true;
+194-}
+195-
+196-function removeSelections(cards: CardID[], selected: readonly CardID[]): void {
+197-  for (const cardId of selected) {
+198-    const index = cards.indexOf(cardId);
+199-    if (index < 0) throw new GameActionError(`${cardId} is no longer available for Purge.`);
+200-    cards.splice(index, 1);
+201-  }
+202-}
+203-
+204-function executePurge(
+205-  game: GameState,
+206-  playerId: PlayerID,
+207-  option: InquisitionPurgeOption,
+208-  paidCost: number,
+209-  consumeAction: boolean,
+210-  resumePriorityPlayer: PlayerID | undefined,
+--- src/state/intelligence-missions.ts
+27-  return player;
+28-}
+29-
+30-function requireActionOpportunity(game: GameState, playerId: PlayerID): PlayerState {
+31-  const player = requireIntelligence(game, playerId);
+32-  if (game.activePlayer !== playerId || game.priorityPlayer !== playerId) throw new IntelligenceMissionError('It is not this player’s Action Opportunity.');
+33-  if (game.phase !== 'action_after_movement' || player.actionsRemaining < 1) throw new IntelligenceMissionError('Missions require the Action Opportunity after movement.');
+34-  if (player.hasPlayedActionThisTurn || player.hasPlayedBattleThisTurn) throw new IntelligenceMissionError('This player has already played a card this turn.');
+35-  return player;
+36-}
+37-
+38-function consumeAction(player: PlayerState): void {
+39:  player.actionsRemaining -= 1;
+40-  player.hasPlayedActionThisTurn = true;
+41-}
+42-
+43-function removeOne(source: CardID[], cardId: CardID): boolean {
+44-  const index = source.indexOf(cardId);
+45-  if (index < 0) return false;
+46-  source.splice(index, 1);
+47-  return true;
+48-}
+49-
+50-function missionDefinition(cardId: CardID) {
+51-  const card = intelligenceCardsById.get(cardId);
+52-  if (!card || !card.mission || !intelligenceMissionCardIds.has(cardId)) throw new IntelligenceMissionError(`${cardId} is not eligible to become a Mission.`);
+53-  return card;
+54-}
+55-
+56-function opponentId(game: GameState, playerId: PlayerID): PlayerID {
+57-  const opponent = Object.keys(game.players).find((id) => id !== playerId);
+--- src/state/mystics-ritual.ts
+83-    throw new MysticsRitualError('Only one Rite may be begun at a time.');
+84-  }
+85-  return player;
+86-}
+87-
+88-function requireIncompleteRite(player: PlayerState & { mystics: MysticsState }, riteId: MysticRiteId): void {
+89-  if (player.mystics.completedRites.includes(riteId)) {
+90-    throw new MysticsRitualError(`${riteId} is already complete.`);
+91-  }
+92-}
+93-
+94-function consumeRiteAction(player: PlayerState): void {
+95:  player.actionsRemaining -= 1;
+96-  player.hasPlayedActionThisTurn = true;
+97-}
+98-
+99-function cardsInPlayableDeck(player: PlayerState): CardID[] {
+100-  const cards = [
+101-    ...player.zones.deck,
+102-    ...player.zones.hand,
+103-    ...player.zones.discard,
+104-    ...player.zones.graveyard,
+105-    ...player.zones.assetBank,
+106-    ...player.zones.removed,
+107-  ];
+108-  const rite = player.mystics?.begunRite;
+109-  if (rite?.kind === 'rite_of_echoes') {
+110-    cards.push(rite.faceUpBoundCardId, rite.faceDownBoundCardId);
+111-  }
+112-  return cards;
+113-}
+--- src/state/reducer.ts
+524-  const insurrectionOpportunity = game.neutralInsurrectionActionOpportunity?.playerId === action.playerId
+525-    && game.neutralInsurrectionActionOpportunity.turn === game.turn;
+526-  const liberationOpportunity = liberationActionOpportunityActive(game, action.playerId);
+527-  if ((player.hasPlayedActionThisTurn || player.hasPlayedBattleThisTurn)
+528-    && !reinforcementsOpportunity
+529-    && !insurrectionOpportunity
+530-    && !liberationOpportunity) {
+531-    throw new GameActionError(`${player.name} has already played a card this turn.`);
+532-  }
+533-
+534-  removeOneCard(player.zones.hand, action.cardId);
+535-  const destination = pushActionCardToDestination(player, action.cardId);
+536:  player.actionsRemaining -= 1;
+537-  player.hasPlayedActionThisTurn = true;
+538-
+539-  appendPublicLog(game, action.playerId, 'play_action_card', `${player.name} played ${action.cardId} as an Action.`, {
+540-    cardId: action.cardId,
+541-    targets: action.targets ?? [],
+542-    destination,
+543-  });
+544-
+545-  return { state: game };
+546-}
+547-
+548-function resolveAssetBankDiscard(game: GameState, action: Extract<GameAction, { type: 'resolve_asset_bank_discard' }>): ApplyGameActionResult {
+549-  const player = requirePlayer(game, action.playerId);
+550-  const pending = game.pendingAssetBankDiscards?.[action.playerId];
+551-  if (!pending) throw new GameActionError(`${player.name} does not have a pending Asset Bank discard choice.`);
+552-  if (action.cardIds.length !== pending.discardCount) {
+553-    throw new GameActionError(`${player.name} must discard exactly ${pending.discardCount} Asset${pending.discardCount === 1 ? '' : 's'}.`);
+554-  }
