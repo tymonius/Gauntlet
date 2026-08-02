@@ -84,3 +84,11 @@ jobs:
           name: gauntlet-v061-card-media-${{ github.event_name == 'workflow_dispatch' && inputs.profile || 'all' }}
           path: media/generated/v0.6.1/
           if-no-files-found: error
+      - name: Upload card composition preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-v061-card-compositions-${{ github.event_name == 'workflow_dispatch' && inputs.profile || 'all' }}
+          path: |
+            media/generated/v0.6.1/compositions/
+            media/generated/v0.6.1/compositions-manifest.json
+          if-no-files-found: error
