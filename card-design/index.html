@@ -12,17 +12,50 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="robots" content="noindex,nofollow" />
-  <meta name="description" content="Internal Gauntlet neutral playable-card front prototype and actual-size print specimen." />
-  <title>Gauntlet Neutral Card-Front Prototype</title>
+  <meta name="description" content="Internal Gauntlet playable-card front prototype covering adaptive Neutral layouts and the Territory Overlay variant." />
+  <title>Gauntlet Playable Card-Front Prototype</title>
   <link rel="preconnect" href="https://use.typekit.net" />
   <link rel="preconnect" href="https://p.typekit.net" crossorigin />
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
   <link rel="stylesheet" href="../design-tokens.css" />
   <link rel="stylesheet" href="card-design.css" />
   <link rel="stylesheet" href="card-design-refinement.css" />
+  <link rel="stylesheet" href="faction-specimens.css" />
+  <style>
+    @media screen {
+      .card-sheet {
+        grid-template-columns: repeat(4, 2.5in);
+      }
+    }
+
+    @media screen and (min-width: 64rem) {
+      .review-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+      }
+    }
+
+    .overlay-specimen .card-art {
+      display: grid;
+      place-items: center;
+      background:
+        radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.12), transparent 34%),
+        linear-gradient(155deg, #6f675d, #4c463f 62%, #302c28);
+    }
+
+    .overlay-specimen .card-art span {
+      position: relative;
+      right: auto;
+      bottom: auto;
+      z-index: 3;
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 5.2pt;
+      letter-spacing: 0.12em;
+      text-align: center;
+    }
+  </style>
   <script src="card-design.js" defer></script>
 </head>
-<body>
+<body class="faction-specimen-page">
   <header class="site-header screen-only">
     <a class="brand-link" href="../" aria-label="Return to Gauntlet home">
       <span class="brand-mark" aria-hidden="true">G</span>
@@ -37,13 +70,14 @@
   <main>
     <section class="intro section-shell screen-only">
       <p class="eyebrow">Playable card system · adaptive frame study</p>
-      <h1>Neutral card-front prototype</h1>
-      <p class="intro-copy">This pass tests a responsive Neutral card composition rather than one fixed art-to-rules split. The illustration expands toward an aesthetic maximum, then yields only the space required by the card’s canonical text.</p>
+      <h1>Playable card-front prototype</h1>
+      <p class="intro-copy">This pass compares the adaptive Neutral card composition with the Territory Overlay variant. Ordinary cards expand their illustration toward an aesthetic maximum, while Overlay cards retain the portrait face and add a faction-colored title rail that remains readable when the card is turned sideways across a Territory.</p>
       <div class="status-row" aria-label="Prototype status">
         <span>2.5 × 3.5 in trim</span>
         <span>Actual-size print test</span>
         <span>Adaptive art window</span>
         <span>Two-column rules</span>
+        <span>Overlay title rail</span>
       </div>
     </section>
 
@@ -63,7 +97,11 @@
         </article>
         <article>
           <h3>Header geometry</h3>
-          <p>Titles remain all caps at one primary scale. The value medallion now shares the art frame’s right alignment and equal top inset.</p>
+          <p>Titles remain all caps at one primary scale. The value medallion shares the art frame's right alignment and equal top inset.</p>
+        </article>
+        <article>
+          <h3>Overlay identification</h3>
+          <p>Territory Overlays preserve the normal title and repeat it vertically in a widened faction-colored rail for sideways table use.</p>
         </article>
       </div>
     </section>
@@ -71,8 +109,8 @@
     <section class="card-section" aria-labelledby="cards-title">
       <div class="section-shell card-section-heading screen-only">
         <p class="section-label">Print and compare</p>
-        <h2 id="cards-title">Three density conditions</h2>
-        <p>The same system adapts its illustration height to each card. All three specimens now use their existing Gauntlet artwork so the frame, typography, crop, and complete card composition can be judged together.</p>
+        <h2 id="cards-title">Four layout conditions</h2>
+        <p>The same system adapts its illustration height to each card. The first three specimens use finished artwork to test sparse, dense, and reminder layouts; Encampment adds the Territory Overlay rail and its three-section rules structure while its illustration remains pending.</p>
       </div>
 
       <div class="card-sheet">
@@ -166,6 +204,43 @@
             </div>
           </article>
         </div>
+
+        <div class="specimen-column">
+          <p class="specimen-label screen-only"><strong>Overlay</strong><span>Sideways Territory identification</span></p>
+          <article class="gauntlet-card military-card dense-card overlay-card overlay-specimen" data-faction="military" data-art-max="1.72" data-art-min="0.62" data-overlay-card="true" aria-label="Encampment Military Territory Overlay card-front prototype">
+            <div class="card-interior">
+              <aside class="overlay-title-bar" aria-hidden="true">
+                <span class="overlay-title">Encampment</span>
+              </aside>
+              <header class="card-heading">
+                <h3 class="card-title">Encampment</h3>
+                <div class="value-medallion" aria-label="Deckbuilding value 2">2</div>
+              </header>
+              <figure class="card-art">
+                <span>Artwork pending</span>
+              </figure>
+              <div class="card-rules">
+                <section class="rule-section">
+                  <h4>Action</h4>
+                  <p>Place Encampment as an Overlay on a revealed Territory you occupy and control.</p>
+                </section>
+                <section class="rule-section">
+                  <h4>Battle</h4>
+                  <p>During the Aftermath of the battle, if you won while defending a revealed Territory you control, place Encampment on that Territory as an Overlay.</p>
+                </section>
+                <section class="rule-section">
+                  <h4>Overlay</h4>
+                  <p>At the end of Encampment's owner's turn, if they occupy and control this Territory, they gain 1 Command. When another player gains control of this Territory, put Encampment in its owner's Graveyard.</p>
+                </section>
+              </div>
+              <footer class="card-footer">
+                <span>Military</span>
+                <span>Territory Overlay</span>
+                <span>v0.6.1</span>
+              </footer>
+            </div>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -181,6 +256,7 @@
         <li>Whether Counterintelligence now reads at the same title scale as the other cards.</li>
         <li>Whether the Action and Battle columns align cleanly and remain easier to scan than a single full-width rules column.</li>
         <li>Whether the value medallion feels anchored by its shared alignment with the illustration frame.</li>
+        <li>Whether Encampment remains legible both upright and sideways, and whether the widened Military rail is prominent without overwhelming the ordinary card face.</li>
       </ol>
     </section>
   </main>
