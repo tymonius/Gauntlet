@@ -108,5 +108,9 @@ jobs:
               raise SystemExit(f'Digital feedback unavailable: {sessions}')
           if not sessions.get('automaticTrackedClosureSupported'):
               raise SystemExit(f'Automatic tracked closure unavailable: {sessions}')
-          print('Verified production v0.6.1 playtest session Worker with tracked playtests.')
+          if not sessions.get('compiledAnalysisSupported'):
+              raise SystemExit(f'Compiled playtest analysis unavailable: {sessions}')
+          if sessions.get('analysisExportSchema') != 'gauntlet-tracked-analysis-v1':
+              raise SystemExit(f'Unexpected analysis export schema: {sessions}')
+          print('Verified production v0.6.1 playtest session Worker with tracked playtests and compiled analysis.')
           PY
