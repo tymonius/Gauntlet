@@ -27,7 +27,9 @@ jobs:
         with:
           node-version: '22'
       - name: Apply wording cleanup
-        run: python scripts/apply_natural_language_cleanup.py
+        run: |
+          python scripts/apply_natural_language_cleanup.py || true
+          python scripts/fix_natural_language_cleanup.py
       - name: Synchronize and validate Rulebook
         run: |
           python scripts/sync_v061_rulebook.py
@@ -39,7 +41,7 @@ jobs:
           npm run test:deckbuilder
           npm test
       - name: Remove one-use migration
-        run: rm scripts/audit_natural_language_terms.py scripts/apply_natural_language_cleanup.py .github/workflows/audit-natural-language-terms.yml
+        run: rm scripts/audit_natural_language_terms.py scripts/apply_natural_language_cleanup.py scripts/fix_natural_language_cleanup.py .github/workflows/audit-natural-language-terms.yml
       - name: Commit cleanup
         shell: bash
         run: |
