@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - agent/natural-language-cleanup
+  pull_request:
+    branches:
+      - main
 
 jobs:
   audit:
