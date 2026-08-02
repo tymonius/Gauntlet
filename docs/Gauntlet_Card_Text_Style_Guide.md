@@ -43,6 +43,8 @@ Use **Action: Bank this card.** rather than repeating the title and “as an Ass
 - **Reveal priority:** “When revealed, before other effects at this stage, …”
 - **Direct cost:** “You may discard this card to draw two cards.”
 
+Use **Action Opportunity** only for timing. State any Action spent, gained, or bypassed separately.
+
 ## Terms that must remain distinct
 
 - **May** and **must**
