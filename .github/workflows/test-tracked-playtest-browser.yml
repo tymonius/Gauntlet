@@ -1,0 +1,187 @@
+name: Test tracked playtest browser journey
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "playtest/tracked/**"
+      - "workers/playtest-sessions/**"
+      - "rules-assistant/migrations/0005_tracked_playtests.sql"
+      - "tests/tracked-playtest-system.test.ts"
+      - "scripts/test_tracked_playtest_e2e.mjs"
+      - ".github/workflows/test-tracked-playtest-browser.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-tracked-playtest-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  journey:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Serve repository
+        run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
+
+      - name: Exercise tracked creation, play, feedback, and closure
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from 'playwright';
+
+          const browser = await chromium.launch({ headless: true });
+          const origin = 'http://127.0.0.1:8000';
+          const apiPattern = 'https://gauntlet-playtest-sessions.tymon-scott.workers.dev/**';
+
+          for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }]) {
+            const suffix = viewport.width < 600 ? 'mobile' : 'desktop';
+            const context = await browser.newContext({ viewport });
+            await context.grantPermissions(['clipboard-read', 'clipboard-write'], { origin });
+            const page = await context.newPage();
+            const token = 'abcdefghijklmnopqrstuvwxYZ012345';
+            const hostKey = 'host-key-abcdefghijklmnopqrstuvwxyz012345';
+            const playerOne = {
+              participantId: '11111111-1111-4111-8111-111111111111',
+              participantToken: 'player-one-access-token-abcdefghijklmnopqrstuvwxyz',
+              displayName: 'Alice', seatIndex: 1, faction: 'diplomats', leader: 'Ambassador', responseSubmitted: false
+            };
+            const playerTwo = {
+              participantId: '22222222-2222-4222-8222-222222222222',
+              displayName: 'Ben', seatIndex: 2, faction: 'military', leader: 'General', responseSubmitted: false
+            };
+            const game = {
+              sessionId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+              sheetSerial: 'G061-TRACK001', rulesVersion: 'v0.6.1', status: 'open', lifecycleState: 'joining',
+              createdAt: '2026-08-02T12:00:00.000Z', closedAt: null, players: [playerOne], playerCount: 1,
+              resultSubmitted: false, responseCount: 0, arbiterQuestionCount: 0, complete: false
+            };
+            let result = null;
+            let responses = [];
+
+            await page.route(apiPattern, async route => {
+              const request = route.request();
+              const url = new URL(request.url());
+              const path = url.pathname;
+              const method = request.method();
+              const body = request.postDataJSON?.() || {};
+              const fulfill = payload => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(payload) });
+
+              if (path === '/api/tracked-games' && method === 'POST') {
+                return fulfill({
+                  sessionId: game.sessionId, sheetSerial: game.sheetSerial, rulesVersion: game.rulesVersion,
+                  status: 'open', lifecycleState: 'joining', joinToken: token, hostKey,
+                  joinUrl: `${origin}/playtest/tracked/?code=${token}`,
+                  reviewUrl: `${origin}/playtest/tracked/?code=${token}&host=${hostKey}`,
+                  participantId: playerOne.participantId, participantToken: playerOne.participantToken,
+                  seatIndex: 1, faction: playerOne.faction, leader: playerOne.leader, createdAt: game.createdAt
+                });
+              }
+              if (path === `/api/tracked-games/${token}` && method === 'GET') return fulfill(game);
+              if (path.endsWith('/event') && method === 'POST') {
+                if (body.eventType === 'game_started') game.lifecycleState = 'playing';
+                return fulfill({ ok: true, eventType: body.eventType, recordedAt: new Date().toISOString(), session: game });
+              }
+              if (path.endsWith('/result') && method === 'POST') {
+                result = { ...body.result, submittedAt: new Date().toISOString() };
+                game.resultSubmitted = true;
+                game.lifecycleState = 'feedback';
+                return fulfill({ ok: true, session: game });
+              }
+              if (path.endsWith('/response') && method === 'POST') {
+                responses = [{ ...body.response, participantId: playerOne.participantId, displayName: 'Alice', seatIndex: 1, faction: 'diplomats', leader: 'Ambassador' }];
+                playerOne.responseSubmitted = true;
+                game.responseCount = 1;
+                return fulfill({ ok: true, session: game });
+              }
+              if (path.endsWith('/review') && method === 'GET') {
+                return fulfill({ session: game, result, responses, arbiterLinks: [], events: [], generatedAt: new Date().toISOString() });
+              }
+              return route.fulfill({ status: 404, contentType: 'application/json', body: JSON.stringify({ error: `Unmocked ${method} ${path}` }) });
+            });
+
+            const errors = [];
+            page.on('pageerror', error => errors.push(error.message));
+            page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
+
+            let response = await page.goto(`${origin}/playtest/tracked/`, { waitUntil: 'networkidle' });
+            if (!response?.ok()) throw new Error(`Tracked page returned ${response?.status()}`);
+            await page.fill('#createName', 'Alice');
+            await page.selectOption('#createFaction', 'diplomats');
+            await page.selectOption('#createLeader', 'ambassador');
+            await Promise.all([
+              page.waitForURL(new RegExp(`/playtest/tracked/\\?code=${token}`)),
+              page.click('#createForm button[type="submit"]')
+            ]);
+            await page.waitForSelector('#sessionApp:not([hidden])');
+            if ((await page.locator('#playerCards .player-card').count()) !== 2) throw new Error('Tracked page did not render two seats');
+
+            game.players.push(playerTwo);
+            game.playerCount = 2;
+            game.lifecycleState = 'ready';
+            await page.reload({ waitUntil: 'networkidle' });
+            await page.waitForSelector('#playPanel:not([hidden])');
+            await page.click('#recordStart');
+            await page.waitForFunction(() => document.querySelector('#statusLabel')?.textContent === 'Playing');
+
+            await page.click('#showCompletedResult');
+            await page.selectOption('#firstPlayer', playerOne.participantId);
+            await page.selectOption('#winner', playerTwo.participantId);
+            await page.selectOption('#victoryRoute', 'run_the_gauntlet');
+            await page.fill('#durationMinutes', '72');
+            await page.fill('#rounds', '8');
+            await page.fill('#battles', '6');
+            await page.fill('#strongestMoment', 'A late counterattack changed the board.');
+            await page.fill('#confusingPoint', 'We checked capture timing.');
+            await page.fill('#importantObservation', 'The central Territories created pressure.');
+            await page.click('#resultForm button[type="submit"]');
+            await page.waitForSelector('#responseSection:not([hidden])');
+
+            await page.fill('#factionInterest', 'Negotiation and political leverage interested me.');
+            for (const select of await page.locator('#ratingGrid select').all()) await select.selectOption('4');
+            await page.selectOption('#playAgain', 'yes');
+            await page.fill('#responseComments', 'The Terms decisions were memorable.');
+            await page.click('#responseForm button[type="submit"]');
+            await page.waitForFunction(() => document.querySelector('#responseCount')?.textContent === '1 / 2');
+
+            playerTwo.responseSubmitted = true;
+            game.responseCount = 2;
+            game.status = 'closed';
+            game.lifecycleState = 'submitted';
+            game.complete = true;
+            responses.push({ participantId: playerTwo.participantId, displayName: 'Ben', seatIndex: 2, faction: 'military', leader: 'General', fun: 5, pacing: 4, meaningfulDecisions: 4, battleTension: 5, rulesClarity: 4, factionClarity: 5, tableOrganization: 4, expectationMatch: 5, leaderDistinction: 5, playAgain: true, factionInterest: 'Direct pressure', comments: '' });
+            await page.reload({ waitUntil: 'networkidle' });
+            await page.waitForSelector('#completionPanel:not([hidden])');
+            await page.waitForSelector('#reviewPanel:not([hidden])');
+            await page.screenshot({ path: `/tmp/tracked-playtest-${suffix}.png`, fullPage: true });
+
+            if (errors.length) throw new Error(`Tracked playtest ${suffix} errors:\n${errors.join('\n')}`);
+            await context.close();
+          }
+
+          await browser.close();
+          NODE
+
+      - name: Upload browser screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: tracked-playtest-browser-journey
+          path: /tmp/tracked-playtest-*.png
+          if-no-files-found: error
