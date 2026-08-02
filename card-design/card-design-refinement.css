@@ -4,6 +4,8 @@
 
 .gauntlet-card {
   --rules-scale: 1;
+  --overlay-title-size: 7.15pt;
+  --overlay-title-ink: var(--card-ink);
 }
 
 .card-interior {
@@ -36,6 +38,75 @@
   border-width: 1px;
   background: var(--card-ivory);
   box-shadow: none;
+}
+
+/* Overlay cards retain the standard portrait face and universal back. Their
+   faction border widens on the left into a repeated vertical title bar that
+   becomes a readable horizontal label when the physical card is rotated
+   clockwise over a landscape Territory. */
+.gauntlet-card.overlay-card {
+  padding-left: 0.285in;
+}
+
+.overlay-title-bar {
+  position: absolute;
+  z-index: 4;
+  top: 0.075in;
+  bottom: 0.075in;
+  left: 0.065in;
+  display: grid;
+  width: 0.175in;
+  place-items: center;
+  overflow: hidden;
+  border: 1px solid var(--faction-border-outline, var(--card-keyline));
+  border-radius: 0.035in;
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08), transparent 28%, transparent 72%, rgba(20, 14, 10, 0.1)),
+    var(--faction-border, var(--card-ivory));
+  box-shadow:
+    inset 0 0 0 0.012in var(--faction-border-rule, rgba(62, 52, 41, 0.22)),
+    0.01in 0 0.02in rgba(35, 25, 17, 0.16);
+  color: var(--faction-border-ink, var(--overlay-title-ink));
+  pointer-events: none;
+}
+
+.overlay-title-text {
+  display: block;
+  width: 3.12in;
+  max-width: none;
+  margin: 0;
+  overflow: hidden;
+  transform: rotate(-90deg);
+  color: inherit;
+  font-family: var(--font-display-historical);
+  font-size: var(--overlay-title-size);
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-align: center;
+  text-overflow: clip;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.overlay-card .card-heading {
+  padding-left: 0.075in;
+}
+
+.overlay-card .card-rules,
+.overlay-card.dense-card .card-rules {
+  padding-right: 0.07in;
+  padding-left: 0.07in;
+}
+
+.overlay-card .rule-section {
+  grid-template-columns: 0.39in minmax(0, 1fr);
+  column-gap: 0.04in;
+}
+
+.overlay-card .card-reminder {
+  margin-left: 0.43in;
 }
 
 /* Universal mounted-print art window. Clean perimeter rules and restrained
