@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "gameVersion": "v0.6.1",
+  "compositions": [
+    {
+      "id": "financiers-fanned-hand",
+      "name": "Financiers fanned hand",
+      "description": "A mixed Financiers and Neutral five-card hand for website, publication, and compact promotional use.",
+      "canvas": {
+        "width": 3000,
+        "height": 1800
+      },
+      "profiles": {
+        "thumbnail": {
+          "width": 900,
+          "height": 540,
+          "formats": ["png", "webp"],
+          "webpQuality": 86
+        },
+        "website": {
+          "width": 1600,
+          "height": 960,
+          "formats": ["png", "webp"],
+          "webpQuality": 90
+        },
+        "publication": {
+          "width": 3000,
+          "height": 1800,
+          "formats": ["png"]
+        }
+      },
+      "cards": [
+        {
+          "id": "neutral-scouting-report",
+          "x": 250,
+          "y": 430,
+          "width": 700,
+          "rotation": -16,
+          "z": 1
+        },
+        {
+          "id": "financiers-leveraged-buyout",
+          "x": 680,
+          "y": 300,
+          "width": 720,
+          "rotation": -8,
+          "z": 2
+        },
+        {
+          "id": "financiers-corner-the-market",
+          "x": 1110,
+          "y": 90,
+          "width": 780,
+          "rotation": 0,
+          "z": 5
+        },
+        {
+          "id": "financiers-monetary-crisis",
+          "x": 1600,
+          "y": 300,
+          "width": 720,
+          "rotation": 8,
+          "z": 2
+        },
+        {
+          "id": "neutral-sabotage",
+          "x": 2040,
+          "y": 430,
+          "width": 700,
+          "rotation": 16,
+          "z": 1
+        }
+      ]
+    }
+  ]
+}
