@@ -12,6 +12,72 @@
   break-inside: avoid;
 }
 
+/* Deck-construction requirements are lookup lists rather than narrative prose.
+   Two-column flow keeps the short supplemental-component tail with Chapter 10. */
+.page[data-anchor="10. Constructing a Deck"] .production-flow ul,
+.continuation-page[data-context-title="Constructing a Deck"] .production-flow ul {
+  columns: 2;
+  column-gap: 18px;
+  column-rule: 1px solid var(--line);
+}
+.page[data-anchor="10. Constructing a Deck"] .production-flow li,
+.continuation-page[data-context-title="Constructing a Deck"] .production-flow li {
+  break-inside: avoid;
+}
+
+/* These two long, indivisible bullet groups previously generated pages
+   containing only the list. They remain one semantic block but use the same
+   compact two-column reference treatment as the quick-reference pages. */
+.continuation-page[data-context-title="Detailed Card and Timing Rules"]
+  .keep-group:has(> [data-heading-title="Copied effects"]) ul,
+.continuation-page[data-context-title="Factions"]
+  .keep-group:has(> [data-heading-title="General use"]) ul {
+  columns: 2;
+  column-gap: 18px;
+  column-rule: 1px solid var(--line);
+}
+.continuation-page[data-context-title="Detailed Card and Timing Rules"]
+  .keep-group:has(> [data-heading-title="Copied effects"]) li,
+.continuation-page[data-context-title="Factions"]
+  .keep-group:has(> [data-heading-title="General use"]) li {
+  break-inside: avoid;
+}
+
+/* The Mystics procedure contains many short labels and boxed clauses. A tighter
+   vertical rhythm retains the approved 9pt body type while keeping its final
+   one-paragraph shared-rule note with the rest of the faction procedure. */
+.continuation-page[data-context-title="Mystics"] .production-flow {
+  line-height: 1.21;
+}
+.continuation-page[data-context-title="Mystics"] .production-flow p {
+  margin-bottom: 2px;
+}
+.continuation-page[data-context-title="Mystics"] .production-flow h2 {
+  margin: 8px 0 4px;
+  padding-top: 4px;
+}
+.continuation-page[data-context-title="Mystics"] .production-flow h3 {
+  margin: 5px 0 2px;
+}
+.continuation-page[data-context-title="Mystics"] .production-flow h4,
+.continuation-page[data-context-title="Mystics"] .production-flow h5 {
+  margin: 4px 0 2px;
+}
+.continuation-page[data-context-title="Mystics"] .production-flow ul,
+.continuation-page[data-context-title="Mystics"] .production-flow ol {
+  margin-bottom: 3px;
+}
+.continuation-page[data-context-title="Mystics"] .production-flow li {
+  margin-bottom: 0;
+}
+.continuation-page[data-context-title="Mystics"] .production-flow blockquote {
+  margin: 4px 0;
+  padding: 6px 9px;
+}
+.continuation-page[data-context-title="Mystics"] .production-flow .source-divider {
+  margin: 5px 0;
+}
+
 /* In this fixed v0.6.1 pagination, the Withdrawal and Retreat spread leaves
  * one two-line retreat-trigger sentence alone on page 22. Tighten only the
  * preceding continuation page's vertical rhythm so the sentence remains with
