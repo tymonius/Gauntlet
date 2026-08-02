@@ -87,6 +87,8 @@ describe("compiled tracked playtest analysis", () => {
   });
 
   it("provides protected exclusion and restoration controls with reviewer attribution", () => {
+    expect(page).toContain('href="integrity/"');
+    expect(page).toContain("Manage data integrity");
     expect(integrityPage).toContain('name="robots" content="noindex, nofollow"');
     expect(integrityPage).toContain("Reviewer name or initials");
     expect(integrityApp).toContain("Exclude entire game");
