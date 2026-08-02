@@ -1,0 +1,79 @@
+name: Apply Spirit Walker Guardians scaling
+
+on:
+  push:
+    branches:
+      - balance/spirit-walker-guardians-scaling
+
+permissions:
+  contents: write
+
+jobs:
+  apply-change:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: balance/spirit-walker-guardians-scaling
+          fetch-depth: 0
+
+      - name: Apply approved Spirit Walker rule
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          old = "> **Guardians of the Circle:** The first time on your turn that you lose a battle and a begun Rite would be interrupted, you may put one Arcane card from your Hand in your Graveyard. If you do, that Rite is not interrupted.\n\nGuardians of the Circle cannot preserve a continuing position requirement and does not protect the Ritual of Ascendance."
+          new = "> **Guardians of the Circle:** The first time on your turn that a battle loss would interrupt a begun Rite or your Ritual of Ascendance, you may put one Arcane card from your Hand in your Graveyard whose value is at least 1 plus the number of Rites you have completed. If you do, prevent that interruption.\n\nGuardians of the Circle cannot preserve a continuing position requirement."
+
+          governed_paths = [
+              Path("releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md"),
+              Path("releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md"),
+          ]
+          for path in governed_paths:
+              text = path.read_text(encoding="utf-8")
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f"Expected one Guardians block in {path}, found {count}")
+              path.write_text(text.replace(old, new), encoding="utf-8")
+
+          changelog = Path("releases/v0.6.1/Gauntlet_v0.6.1_Changelog.md")
+          text = changelog.read_text(encoding="utf-8")
+          anchor = "## Post-release playtest changes\n\n"
+          entry = "- **Mystics — Guardians of the Circle:** Spirit Walker may now protect either a begun Rite or the Ritual of Ascendance from the first battle-loss interruption on their turn by putting an Arcane card from Hand in the Graveyard whose value is at least 1 plus the number of completed Rites. The ability still cannot preserve a continuing position requirement.\n\n"
+          if entry not in text:
+              if text.count(anchor) != 1:
+                  raise SystemExit("Could not locate unique changelog insertion point")
+              changelog.write_text(text.replace(anchor, anchor + entry, 1), encoding="utf-8")
+
+          status = Path("docs/Gauntlet_Development_Status.md")
+          text = status.read_text(encoding="utf-8")
+          anchor = "# Gauntlet Development Status\n\n\n"
+          section = "## Spirit Walker Guardians of the Circle playtest\n\nGuardians of the Circle now scales its protective sacrifice with Mystics progress. On the first battle-loss interruption during the Spirit Walker's turn, protecting a begun Rite or the Ritual of Ascendance requires an Arcane card from Hand with value at least 1 plus the number of completed Rites. It still cannot preserve a continuing position requirement.\n\nTest specifically whether:\n\n- the 1/2/3 value thresholds make protection meaningfully more costly across successive Rites;\n- the value-4 threshold is sufficient to balance protection of the Ritual of Ascendance;\n- opponent-turn interruption remains a clear and practical counterplay window; and\n- the revised ability preserves Alchemist/Spirit Walker parity.\n\n"
+          if section not in text:
+              if text.count(anchor) != 1:
+                  raise SystemExit("Could not locate unique development-status insertion point")
+              status.write_text(text.replace(anchor, anchor + section, 1), encoding="utf-8")
+          PY
+
+      - name: Validate governed sources
+        shell: bash
+        run: |
+          python scripts/generate_v061_release.py --check
+          git diff --check
+
+      - name: Commit approved change and remove temporary workflow
+        shell: bash
+        run: |
+          rm .github/workflows/apply-spirit-walker-guardians-scaling.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            docs/Gauntlet_Development_Status.md \
+            releases/v0.6.1/Gauntlet_v0.6.1_Changelog.md \
+            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md \
+            releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md \
+            .github/workflows/apply-spirit-walker-guardians-scaling.yml
+          git commit -m "Scale Spirit Walker ritual protection"
+          git push origin HEAD:balance/spirit-walker-guardians-scaling
