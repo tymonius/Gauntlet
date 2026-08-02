@@ -1,1 +1,0 @@
-Temporary trigger for approved card text synchronization.
