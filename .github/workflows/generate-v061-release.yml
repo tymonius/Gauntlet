@@ -1,172 +1,86 @@
-name: Generate and validate v0.6.1 sources
+name: Audit website rules terminology
 
 on:
   push:
     branches:
-      - rules/v0.6.1-playtest-revision
+      - agent/audit-website-rules-terminology
     paths:
-      - "README.md"
-      - "index.html"
-      - "docs/README.md"
-      - "docs/Gauntlet_Development_Status.md"
-      - "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
-      - "docs/Gauntlet_v0.6.1_Territory_Pool.md"
-      - "releases/v0.6.1/**"
-      - "rules-assistant/**"
-      - "workers/playtest-sessions/**"
-      - "playtest/session/**"
-      - "playtest/batch/**"
-      - "deckbuilder/**"
-      - "package.json"
-      - "scripts/finalize_v061_publication.py"
-      - "scripts/generate_v061_release.py"
-      - "scripts/sync_v061_deckbuilder.py"
-      - "scripts/sync_v061_rules_assistant.py"
-      - "scripts/validate_v061_release.py"
-      - "scripts/validate_v061_playtest_sessions.py"
-      - "scripts/test_v061_formal_session_e2e.mjs"
-      - ".github/workflows/generate-v061-release.yml"
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "README.md"
-      - "index.html"
-      - "docs/README.md"
-      - "docs/Gauntlet_Development_Status.md"
-      - "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
-      - "docs/Gauntlet_v0.6.1_Territory_Pool.md"
-      - "releases/v0.6.1/**"
-      - "rules-assistant/**"
-      - "workers/playtest-sessions/**"
-      - "playtest/session/**"
-      - "playtest/batch/**"
-      - "deckbuilder/**"
-      - "package.json"
-      - "scripts/finalize_v061_publication.py"
-      - "scripts/generate_v061_release.py"
-      - "scripts/sync_v061_deckbuilder.py"
-      - "scripts/sync_v061_rules_assistant.py"
-      - "scripts/validate_v061_release.py"
-      - "scripts/validate_v061_playtest_sessions.py"
-      - "scripts/test_v061_formal_session_e2e.mjs"
       - ".github/workflows/generate-v061-release.yml"
   workflow_dispatch:
 
 permissions:
-  contents: write
-
-concurrency:
-  group: generate-v061-${{ github.ref }}
-  cancel-in-progress: true
+  contents: read
 
 jobs:
-  generate:
+  audit:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out source branch
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref || github.ref_name }}
+          ref: agent/audit-website-rules-terminology
           fetch-depth: 1
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Apply governed source migrations
+      - name: Inventory website pages and terminology
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
 
-          card_source = Path("docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md")
-          card_text = card_source.read_text(encoding="utf-8")
-          if "Siege Weaponry" in card_text:
-              card_source.write_text(card_text.replace("Siege Weaponry", "Bombardment"), encoding="utf-8")
+          root = Path('.')
+          tracked = []
+          import subprocess
+          for raw in subprocess.check_output(['git', 'ls-files'], text=True).splitlines():
+              p = Path(raw)
+              if p.suffix.lower() in {'.html', '.js', '.ts', '.json'}:
+                  tracked.append(p)
 
-          validator = Path("scripts/validate_v061_release.py")
-          validator_text = validator.read_text(encoding="utf-8")
-          obsolete = '            \'main = "worker-v061.js"\','
-          current = '            \'main = "worker-entry.js"\','
-          if obsolete in validator_text:
-              validator.write_text(validator_text.replace(obsolete, current, 1), encoding="utf-8")
-          elif current not in validator_text:
-              raise SystemExit("Could not reconcile Rules Arbiter deployment marker in release validator")
+          html = sorted(p for p in tracked if p.suffix.lower() == '.html')
+          print('=== TRACKED HTML PAGES ===')
+          for p in html:
+              print(p)
+
+          patterns = {
+              'without_using_opportunity': re.compile(r'without using (?:an |another )?Action Opportunit', re.I),
+              'opportunity_as_cost': re.compile(r'(?:uses?|using|consume[sd]?|spend[sd]?) (?:one |an |the )?Action Opportunit', re.I),
+              'additional_opportunity_only': re.compile(r'(?:take|gain) (?:one )?(?:another|additional) Action Opportunit', re.I),
+              'activate_heading_or_verb': re.compile(r'\bActivate\b|Activate:', re.I),
+              'deckbuilding_value': re.compile(r'deckbuilding value', re.I),
+              'as_an_asset': re.compile(r'as an Asset', re.I),
+              'destination_language': re.compile(r'\bdestinations?\b', re.I),
+              'occupier_noun': re.compile(r'\boccupier\b', re.I),
+              'occupation_term': re.compile(r'\bOccupation\b', re.I),
+              'sleeper_beneath': re.compile(r'(?:beneath Sleeper Network|cards? beneath it|cards? beneath this)', re.I),
+              'sleeper_old_timing': re.compile(r'At the start of your turn.{0,220}Sleeper Network|Sleeper Network.{0,220}At the start of your turn', re.I),
+          }
+
+          print('\n=== TARGETED TERMINOLOGY HITS ===')
+          for p in sorted(tracked):
+              try:
+                  text = p.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              for number, line in enumerate(text.splitlines(), 1):
+                  labels = [name for name, rx in patterns.items() if rx.search(line)]
+                  if labels:
+                      print(f"{p}:{number}: [{','.join(labels)}] {line[:1000]}")
+
+          print('\n=== FILES CONTAINING ACTION OPPORTUNITY ===')
+          for p in sorted(tracked):
+              try:
+                  text = p.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              count = len(re.findall(r'Action Opportunit(?:y|ies)', text, re.I))
+              if count:
+                  print(f'{count:4d}  {p}')
+
+          print('\n=== FILES CONTAINING BIND / BOUND / BENEATH ===')
+          for p in sorted(tracked):
+              try:
+                  text = p.read_text(encoding='utf-8')
+              except UnicodeDecodeError:
+                  continue
+              count = len(re.findall(r'\b(?:bind|binding|bound|beneath)\b', text, re.I))
+              if count:
+                  print(f'{count:4d}  {p}')
           PY
-
-      - name: Finalize publication metadata
-        run: python scripts/finalize_v061_publication.py
-
-      - name: Synchronize browser and Rules Arbiter sources
-        run: |
-          python scripts/sync_v061_deckbuilder.py
-          python scripts/sync_v061_rules_assistant.py
-
-      - name: Generate and validate canonical data
-        run: python scripts/generate_v061_release.py
-
-      - name: Commit synchronized and generated outputs when changed
-        run: |
-          git add \
-            README.md \
-            index.html \
-            docs/README.md \
-            docs/Gauntlet_Development_Status.md \
-            docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md \
-            scripts/finalize_v061_publication.py \
-            scripts/generate_v061_release.py \
-            scripts/validate_v061_release.py \
-            deckbuilder/ \
-            rules-assistant/ \
-            releases/v0.6.1/
-          if git diff --cached --quiet; then
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Publish and synchronize Gauntlet v0.6.1"
-          git pull --rebase origin ${{ github.head_ref || github.ref_name }}
-          git push origin HEAD:${{ github.head_ref || github.ref_name }}
-
-      - name: Verify generated outputs are current
-        run: |
-          python scripts/finalize_v061_publication.py
-          python scripts/sync_v061_deckbuilder.py
-          python scripts/sync_v061_rules_assistant.py
-          python scripts/generate_v061_release.py --check
-          git diff --exit-code -- README.md index.html docs/README.md docs/Gauntlet_Development_Status.md docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md scripts/finalize_v061_publication.py scripts/generate_v061_release.py scripts/validate_v061_release.py deckbuilder/ rules-assistant/ releases/v0.6.1/
-
-      - name: Install test dependencies
-        run: npm install
-
-      - name: Test Rules Arbiter retrieval and worker helpers
-        run: npm run test:rules-assistant
-
-      - name: Test playtest session service
-        run: npm run test:playtest-sessions
-
-      - name: Test formal coded-sheet lifecycle
-        run: npm run test:formal-session-e2e
-
-      - name: Test Deckbuilder data
-        run: npm run test:deckbuilder
-
-      - name: Validate v0.6.1 source package
-        run: |
-          python scripts/validate_v061_release.py
-          python scripts/validate_v061_playtest_sessions.py
-
-      - name: Upload generated release data
-        uses: actions/upload-artifact@v4
-        with:
-          name: gauntlet-v061-generated-data
-          path: |
-            releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json
-            releases/v0.6.1/Gauntlet_v0.6.1_Complete_Card_Reference.md
-          if-no-files-found: error
