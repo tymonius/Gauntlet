@@ -93,7 +93,7 @@
 
     const interiorRect = interior.getBoundingClientRect();
     const footerRect = footer.getBoundingClientRect();
-    return elementOverflows(title)
+    return title.scrollWidth > title.clientWidth + 0.5
       || elementOverflows(overlayTitle)
       || footerRect.bottom > interiorRect.bottom + 0.5
       || rules.scrollHeight > rules.clientHeight + 0.5
