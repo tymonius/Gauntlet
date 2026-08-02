@@ -78,11 +78,25 @@
       syncPrintAction();
     });
     el.printForm.addEventListener("submit", openGuidedDeckbuilder);
+    installTrackedPlaytestAction();
 
     restoreState();
     renderChoice();
     await loadStarterDecks();
     renderChoice();
+  }
+
+  function installTrackedPlaytestAction() {
+    if (!el.openStarterDeck || document.getElementById("startTrackedPlaytest")) return;
+    const panel = document.createElement("div");
+    panel.className = "tracked-playtest-start";
+    panel.style.cssText = "margin-top:1rem;padding-top:1rem;border-top:1px solid var(--start-line)";
+    panel.innerHTML = `
+      <p style="margin:.1rem 0 .75rem;line-height:1.5"><strong>Ready to play?</strong><br><span style="color:#59625f">Create one tracked game, let your opponent scan one code, and submit both players' feedback digitally.</span></p>
+      <button id="startTrackedPlaytest" class="button secondary" type="button" disabled>Start a tracked playtest</button>`;
+    el.openStarterDeck.after(panel);
+    el.startTrackedPlaytest = document.getElementById("startTrackedPlaytest");
+    el.startTrackedPlaytest.addEventListener("click", openTrackedPlaytest);
   }
 
   function selectFaction(factionId, preferredLeader = "") {
@@ -213,6 +227,7 @@
 
     el.introConfirmed.checked = state.introConfirmed;
     el.openStarterDeck.disabled = !complete;
+    if (el.startTrackedPlaytest) el.startTrackedPlaytest.disabled = !complete;
     el.printSelectionHeading.textContent = faction && leader
       ? `${leader.name} of the ${faction.name}`
       : "Choose a faction and leader first.";
@@ -245,6 +260,17 @@
     url.searchParams.set("starter", "1");
     url.searchParams.set("source", "start");
     window.location.assign(url.href);
+  }
+
+  function openTrackedPlaytest() {
+    const faction = FACTIONS[state.factionId];
+    const leader = selectedLeader();
+    if (!faction || !leader || !state.introConfirmed) {
+      setStatus("Choose a faction and Leader and confirm the First Game Introduction before tracking a game.", "error");
+      return;
+    }
+    saveState();
+    window.location.assign(new URL("../playtest/tracked/", window.location.href).href);
   }
 
   function restoreState() {
