@@ -27,6 +27,107 @@
   letter-spacing: 0.006em;
 }
 
+/* Overlay cards retain the standard portrait face, while the widened faction
+   rail repeats the title for identification when the card is turned sideways
+   across a landscape Territory. */
+.overlay-card {
+  --overlay-title-bar-width: 0.27in;
+  --overlay-title-ink: #f7efdf;
+}
+
+.overlay-card[data-faction="neutral"] {
+  --overlay-title-ink: var(--card-ink);
+}
+
+.overlay-card .card-interior {
+  padding-left: var(--overlay-title-bar-width);
+}
+
+.overlay-title-bar {
+  position: absolute;
+  z-index: 4;
+  inset: 0 auto 0 0;
+  display: grid;
+  width: var(--overlay-title-bar-width);
+  overflow: hidden;
+  place-items: center;
+  border-right: 1px solid var(--card-keyline);
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.15), transparent 34%, rgba(20, 14, 10, 0.12)),
+    var(--faction-border, var(--card-ivory));
+  box-shadow:
+    inset -0.018in 0 0 rgba(255, 255, 255, 0.1),
+    0.012in 0 0 rgba(61, 48, 36, 0.2);
+  color: var(--overlay-title-ink);
+}
+
+.overlay-title-bar::before {
+  position: absolute;
+  inset: 0.045in 0.04in;
+  border-right: 0.5px solid color-mix(in srgb, currentColor 42%, transparent);
+  border-left: 0.5px solid color-mix(in srgb, currentColor 42%, transparent);
+  content: "";
+  pointer-events: none;
+}
+
+.overlay-title {
+  position: relative;
+  z-index: 1;
+  display: block;
+  width: calc(var(--overlay-title-bar-width) - 0.09in);
+  height: calc(100% - 0.16in);
+  overflow: hidden;
+  font-family: var(--font-display-historical);
+  font-size: 7.8pt;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.075em;
+  line-height: 1;
+  text-align: center;
+  text-orientation: mixed;
+  text-shadow: 0 0.5px 1px rgba(0, 0, 0, 0.28);
+  text-transform: uppercase;
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+}
+
+.overlay-card[data-faction="neutral"] .overlay-title {
+  text-shadow: none;
+}
+
+.overlay-card .card-heading {
+  padding-right: 0.46in;
+  padding-left: 0.07in;
+}
+
+.overlay-card .card-art {
+  margin-right: 0.055in;
+  margin-left: 0.03in;
+}
+
+.overlay-card .card-rules,
+.overlay-card.dense-card .card-rules {
+  padding-right: 0.065in;
+  padding-left: 0.06in;
+}
+
+.overlay-card .rule-section {
+  grid-template-columns: 0.38in minmax(0, 1fr);
+  column-gap: 0.035in;
+}
+
+.overlay-card .card-reminder {
+  margin-left: 0.415in;
+}
+
+.overlay-card .card-footer {
+  gap: 0.025in;
+  padding-right: 0.04in;
+  padding-left: 0.04in;
+  font-size: 4.05pt;
+  letter-spacing: 0.045em;
+}
+
 .value-medallion {
   top: 0.07in;
   right: 0.07in;
