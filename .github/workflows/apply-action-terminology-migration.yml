@@ -73,3 +73,5 @@ jobs:
           git add -A
           git commit -m "Distinguish Actions from Action Opportunities"
           git push origin HEAD:agent/distinguish-actions-opportunities
+
+# Triggered after the asserted migration was reviewed.
