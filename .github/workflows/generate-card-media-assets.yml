@@ -11,6 +11,8 @@ on:
       - "card-design/**"
       - "scripts/generate-tts-card-assets.mjs"
       - "scripts/generate-card-media-assets.mjs"
+      - "scripts/generate-card-media-compositions.mjs"
+      - "scripts/generate-card-media-library.mjs"
       - "tts/renderer/**"
       - "media/**"
       - "package.json"
@@ -50,6 +52,8 @@ jobs:
             design-tokens.css
             scripts/generate-tts-card-assets.mjs
             scripts/generate-card-media-assets.mjs
+            scripts/generate-card-media-compositions.mjs
+            scripts/generate-card-media-library.mjs
             tts/renderer
             card-design
             media
