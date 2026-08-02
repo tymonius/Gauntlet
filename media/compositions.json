@@ -32,7 +32,7 @@
       "cards": [
         {
           "id": "neutral-scouting-report",
-          "x": 250,
+          "x": 300,
           "y": 430,
           "width": 700,
           "rotation": -16,
@@ -64,7 +64,7 @@
         },
         {
           "id": "neutral-sabotage",
-          "x": 2040,
+          "x": 2000,
           "y": 430,
           "width": 700,
           "rotation": 16,
