@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 const read = (path: string) => readFileSync(path, "utf8");
 const page = read("playtest/tracked/index.html");
 const app = read("playtest/tracked/app.js");
+const styles = read("playtest/tracked/styles.css");
 const start = read("start/app.js");
 const worker = read("workers/playtest-sessions/src/tracked.js");
 const migration = read("rules-assistant/migrations/0005_tracked_playtests.sql");
@@ -18,6 +19,13 @@ describe("streamlined tracked playtests", () => {
     expect(app).not.toContain("event-participants");
     expect(app).not.toContain("onboardingUrl");
     expect(app).not.toContain("table manifest");
+  });
+
+  it("renders only the current lifecycle panels", () => {
+    expect(page).toContain('id="loadingPanel"');
+    expect(page).toContain('id="errorPanel"');
+    expect(page).toContain('id="completionPanel"');
+    expect(styles).toContain("[hidden]{display:none!important}");
   });
 
   it("uses the saved standalone faction and Leader choice when available", () => {
