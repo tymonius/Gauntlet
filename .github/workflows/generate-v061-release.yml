@@ -112,6 +112,20 @@ jobs:
               validator.write_text(validator_text.replace(obsolete, current, 1), encoding="utf-8")
           elif current not in validator_text:
               raise SystemExit("Could not reconcile Rules Arbiter deployment marker in release validator")
+
+          public_sync = Path("scripts/sync_v061_public_rules.py")
+          public_sync_text = public_sync.read_text(encoding="utf-8")
+          obsolete_renderer_block = '''        "faction-sheets/v061-release-runtime.js": [
+            ("Supplemental reference — no deckbuilding value", "Supplemental reference — not a Playable Deck card"),
+            ("Supplemental tracker — no deckbuilding value", "Supplemental tracker — not a Playable Deck card"),
+            ("Supplemental ledger — no deckbuilding value", "Supplemental ledger — not a Playable Deck card"),
+            ("Shared supplemental card — no deckbuilding value", "Shared supplemental card — not a Playable Deck card"),
+            ("Pair with the incomplete side · no deckbuilding value", "Pair with the incomplete side · not a Playable Deck card"),
+            ("Flip when complete · no deckbuilding value", "Flip when complete · not a Playable Deck card"),
+        ],
+'''
+          if obsolete_renderer_block in public_sync_text:
+              public_sync.write_text(public_sync_text.replace(obsolete_renderer_block, "", 1), encoding="utf-8")
           PY
 
       - name: Finalize publication metadata
@@ -136,6 +150,7 @@ jobs:
             docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md \
             scripts/finalize_v061_publication.py \
             scripts/generate_v061_release.py \
+            scripts/sync_v061_public_rules.py \
             scripts/validate_v061_release.py \
             start/ \
             playtest/onboarding/ \
@@ -161,7 +176,7 @@ jobs:
           python scripts/sync_v061_public_rules.py
           python scripts/sync_v061_rules_assistant.py
           python scripts/generate_v061_release.py --check
-          git diff --exit-code -- README.md index.html docs/README.md docs/Gauntlet_Development_Status.md docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md scripts/finalize_v061_publication.py scripts/generate_v061_release.py scripts/validate_v061_release.py start/ playtest/onboarding/ playtest/player-mat/ factions/ faction-sheets/ deckbuilder/ rules-assistant/ releases/v0.6.1/
+          git diff --exit-code -- README.md index.html docs/README.md docs/Gauntlet_Development_Status.md docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md scripts/finalize_v061_publication.py scripts/generate_v061_release.py scripts/sync_v061_public_rules.py scripts/validate_v061_release.py start/ playtest/onboarding/ playtest/player-mat/ factions/ faction-sheets/ deckbuilder/ rules-assistant/ releases/v0.6.1/
 
       - name: Install test dependencies
         run: npm install
