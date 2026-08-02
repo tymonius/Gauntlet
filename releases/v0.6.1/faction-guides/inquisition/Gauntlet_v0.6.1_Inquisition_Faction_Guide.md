@@ -254,7 +254,7 @@ Each Conviction provides only one chosen benefit.
 - First qualifying opposing Graveyard entry each turn gives 1 normal Conviction.
 - Condemnation sends opposing Tactics to the Graveyard.
 - Blasphemy triggers from opposing Arcane cards played for their Action effects and from revealed Arcane Gambits or Tactics.
-- On your turn, you may use both normal Action Opportunities if one is used to Purge; no more than one Purge may be performed through Action Opportunities that turn.
+- On your turn, you may use both normal Action Opportunities if one is used to Purge; no more than one Purge may be used through Action Opportunities that turn.
 - Final Judgment occurs after the battle cards are cleared and is separate from the Action-Opportunity Purge limit.
 - Withdrawal has no loser and does not trigger victory-, loss-, or retreat-based abilities.
 - Purification checks only the opponent's normal start-of-turn draw.

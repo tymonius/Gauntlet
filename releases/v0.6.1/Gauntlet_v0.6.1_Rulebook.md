@@ -382,7 +382,7 @@ Reveal all Gambits simultaneously.
 
 First apply any effects that expressly apply before other Gambit effects. Then apply the remaining Gambit effects using the shared-timing rule in Chapter 11.
 
-A face-up Gambit that was revealed early remains in battle and takes effect at this stage unless its text says otherwise.
+A face-up Gambit that was revealed early remains in battle, and its effect is applied at this stage unless its text says otherwise.
 
 ### 5. Choose Tactics
 
@@ -655,7 +655,7 @@ Most games can be played from the Learn to Play rules. Use this chapter when car
 - When card text changes where a card goes, only the stated change applies.
 - If an instruction cannot be completed in full, complete as much as possible unless the uncompleted instruction is a required cost, requirement, or target.
 - An effect applies only at its stated timing. Revealing a card early does not apply a later portion of its effect early.
-- An effect cannot be canceled or negated after it has taken effect.
+- An effect cannot be canceled or negated after it has been applied.
 
 ## Battle timing and card interaction
 
@@ -1134,7 +1134,7 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 
 ### Multiple Proposals
 
-Diplomatic Latitude may offer two eligible Proposals with the same Stake. Stake that amount once. Only the selected Proposal takes effect or may become ratified.
+Diplomatic Latitude may offer two eligible Proposals with the same Stake. Stake that amount once. Only the selected Proposal's effect applies, and only it may become ratified.
 
 ### Sanctions
 

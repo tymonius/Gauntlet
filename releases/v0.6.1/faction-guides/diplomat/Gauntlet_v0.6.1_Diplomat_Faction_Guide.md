@@ -228,7 +228,7 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 
 ## Multiple Proposals
 
-Diplomatic Latitude may offer two eligible Proposals with the same Stake. Stake that amount once. Only the selected Proposal takes effect or may become ratified.
+Diplomatic Latitude may offer two eligible Proposals with the same Stake. Stake that amount once. Only the selected Proposal's effect applies, and only it may become ratified.
 
 ## Sanctions
 
@@ -329,7 +329,7 @@ The placing-player reference does not change when Overlay control changes.
 >
 > **Refused:** Choose one Proposal before applying its Refused effect. Only it may be imposed.
 >
-> The other Proposal does not take effect or become ratified. After the Terms conclude, put Diplomatic Latitude in your Discard Pile.
+> The other Proposal has no effect and cannot become ratified. After the Terms conclude, put Diplomatic Latitude in your Discard Pile.
 
 ## Nonbinding Resolution
 
