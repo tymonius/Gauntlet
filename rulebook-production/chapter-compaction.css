@@ -1,0 +1,127 @@
+/* Targeted publication compaction for chapters whose procedural material
+ * would otherwise create an almost-empty continuation page. Type size and
+ * hierarchy remain unchanged; related short lists use the approved
+ * reference-style columns already established elsewhere in the package. */
+.page[data-anchor="5. Actions and Assets"] .production-flow ol,
+.page[data-anchor="5. Actions and Assets"] .production-flow ul {
+  columns: 2;
+  column-gap: 18px;
+  column-rule: 1px solid var(--line);
+}
+.page[data-anchor="5. Actions and Assets"] .production-flow li {
+  break-inside: avoid;
+}
+
+/* Deck-construction requirements are lookup lists rather than narrative prose.
+   Two-column flow keeps the short supplemental-component tail with Chapter 10. */
+.page[data-anchor="10. Constructing a Deck"] .production-flow ul,
+.continuation-page[data-context-title="Constructing a Deck"] .production-flow ul {
+  columns: 2;
+  column-gap: 18px;
+  column-rule: 1px solid var(--line);
+}
+.page[data-anchor="10. Constructing a Deck"] .production-flow li,
+.continuation-page[data-context-title="Constructing a Deck"] .production-flow li {
+  break-inside: avoid;
+}
+
+/* Chapter 11 is technical lookup material. Two-column lists and a compact
+   vertical rhythm keep the copied-effect restrictions with their heading while
+   retaining the approved body and heading sizes. */
+.continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow {
+  line-height: 1.15;
+}
+.continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow p {
+  margin-bottom: 1px;
+}
+.continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow h2 {
+  margin: 7px 0 3px;
+  padding-top: 4px;
+}
+.continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow h3 {
+  margin: 4px 0 1px;
+}
+.continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow h4,
+.continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow h5 {
+  margin: 3px 0 1px;
+}
+.continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow ul,
+.continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow ol,
+.continuation-page[data-context-title="Factions"]
+  .keep-group:has(> [data-heading-title="General use"]) ul {
+  columns: 2;
+  column-gap: 18px;
+  column-rule: 1px solid var(--line);
+  margin-bottom: 2px;
+}
+.continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow li,
+.continuation-page[data-context-title="Factions"]
+  .keep-group:has(> [data-heading-title="General use"]) li {
+  break-inside: avoid;
+  margin-bottom: 0;
+}
+.continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow .source-divider {
+  margin: 4px 0;
+}
+
+/* The Mystics procedure contains many short labels and boxed clauses. A tighter
+   vertical rhythm retains the approved 9pt body type while keeping its final
+   one-paragraph shared-rule note with the rest of the faction procedure. */
+.continuation-page[data-context-title="Mystics"] .production-flow {
+  line-height: 1.21;
+}
+.continuation-page[data-context-title="Mystics"] .production-flow p {
+  margin-bottom: 2px;
+}
+.continuation-page[data-context-title="Mystics"] .production-flow h2 {
+  margin: 8px 0 4px;
+  padding-top: 4px;
+}
+.continuation-page[data-context-title="Mystics"] .production-flow h3 {
+  margin: 5px 0 2px;
+}
+.continuation-page[data-context-title="Mystics"] .production-flow h4,
+.continuation-page[data-context-title="Mystics"] .production-flow h5 {
+  margin: 4px 0 2px;
+}
+.continuation-page[data-context-title="Mystics"] .production-flow ul,
+.continuation-page[data-context-title="Mystics"] .production-flow ol {
+  margin-bottom: 3px;
+}
+.continuation-page[data-context-title="Mystics"] .production-flow li {
+  margin-bottom: 0;
+}
+.continuation-page[data-context-title="Mystics"] .production-flow blockquote {
+  margin: 4px 0;
+  padding: 6px 9px;
+}
+.continuation-page[data-context-title="Mystics"] .production-flow .source-divider {
+  margin: 5px 0;
+}
+
+/* Withdrawal and Retreat is a dense nested section within Battles. Target the
+   chapter semantically rather than by page number so front-matter or rules edits
+   cannot invalidate the keep. The approved 9pt body size is unchanged. */
+.continuation-page[data-context-title="Battles"] .production-flow {
+  line-height: 1.24;
+}
+.continuation-page[data-context-title="Battles"] .production-flow p {
+  margin-bottom: 4px;
+}
+.continuation-page[data-context-title="Battles"] .production-flow h2 {
+  margin: 9px 0 4px;
+  padding-top: 5px;
+}
+.continuation-page[data-context-title="Battles"] .production-flow h3 {
+  margin: 6px 0 2px;
+}
+.continuation-page[data-context-title="Battles"] .production-flow h4 {
+  margin: 5px 0 2px;
+}
+.continuation-page[data-context-title="Battles"] .production-flow ul,
+.continuation-page[data-context-title="Battles"] .production-flow ol {
+  margin-bottom: 4px;
+}
+.continuation-page[data-context-title="Battles"] .production-flow li {
+  margin-bottom: 1px;
+}

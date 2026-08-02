@@ -1,0 +1,107 @@
+/* Final publication corrections after full-rulebook visual review.
+ * These rules preserve the approved PR #357 design language while correcting
+ * issues visible only in the complete production document.
+ */
+
+/* Chapter numerals and titles share an actual typographic baseline. The wider
+   numeral column also prevents double-digit chapters from crowding the title. */
+.chapter-page .chapter-title-row {
+  grid-template-columns: 42px minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: 11px;
+}
+.chapter-page .chapter-number {
+  align-self: baseline;
+  line-height: .88;
+  font-variant-numeric: lining-nums tabular-nums;
+}
+.chapter-page .chapter-title-row h2 {
+  align-self: baseline;
+  line-height: .95;
+}
+
+/* Golden Rules belong beside the first structural overview rather than on a
+   mostly empty independent page. The compact two-column treatment preserves
+   all source wording and makes Game at a Glance a complete learning spread. */
+.glance-page .golden-rules-compact {
+  margin-top: 8px;
+  padding-top: 6px;
+  border-top: 1px solid var(--line-dark);
+}
+.glance-page .golden-rules-compact > h3 {
+  margin: 0 0 5px;
+  font-size: 10.5pt;
+}
+.glance-page .golden-rules-compact .golden-rules {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 4px 8px;
+  margin: 0;
+}
+.glance-page .golden-rules-compact .golden-rules > div {
+  padding: 4px 6px;
+  border: 1px solid var(--line);
+  font-size: 6.4pt;
+  line-height: 1.18;
+}
+
+/* The source cover sketch remains opaque. Multiply rendering removes most of
+   its light field; a broad feathered mask prevents the residual paper rectangle
+   and edge texture from reading as a separate image panel. */
+.front-cover .cover-art {
+  isolation: isolate;
+  background: var(--paper);
+}
+.color-edition .front-cover .cover-art {
+  background: #fbf7ee;
+}
+.front-cover .cover-art img {
+  filter: grayscale(1) contrast(1.32) brightness(1.12) !important;
+  mix-blend-mode: multiply !important;
+  opacity: .94;
+  -webkit-mask-image: radial-gradient(ellipse 88% 92% at 50% 51%, #000 0 67%, rgba(0,0,0,.96) 73%, rgba(0,0,0,.68) 83%, transparent 100%);
+  mask-image: radial-gradient(ellipse 88% 92% at 50% 51%, #000 0 67%, rgba(0,0,0,.96) 73%, rgba(0,0,0,.68) 83%, transparent 100%);
+}
+
+/* Pages required solely to bring the imposed booklet to a multiple of four are
+   artwork plates, never printer-facing notes or editorial explanations. */
+.intentional-blank.hero-plate-page .page-inner {
+  padding: .35in;
+  align-items: center;
+  justify-content: center;
+}
+.intentional-blank.hero-plate-page .hero-plate {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+.intentional-blank.hero-plate-page .hero-plate img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: grayscale(1) contrast(1.2) brightness(1.08);
+  mix-blend-mode: multiply;
+  opacity: .9;
+  -webkit-mask-image: radial-gradient(ellipse 90% 94% at 50% 50%, #000 0 70%, rgba(0,0,0,.92) 80%, transparent 100%);
+  mask-image: radial-gradient(ellipse 90% 94% at 50% 50%, #000 0 70%, rgba(0,0,0,.92) 80%, transparent 100%);
+}
+.intentional-blank.hero-plate-page .blank-mark,
+.intentional-blank.hero-plate-page .blank-note {
+  display: none;
+}
+
+/* Avoid spending a full continuation side on tiny residual blocks. This is a
+   modest rhythm adjustment only; the approved body type size is unchanged. */
+.continuation-page .production-flow {
+  line-height: 1.28;
+}
+.continuation-page .production-flow p {
+  margin-bottom: 4px;
+}
+.continuation-page .production-flow ul,
+.continuation-page .production-flow ol {
+  margin-bottom: 5px;
+}
