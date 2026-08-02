@@ -55,6 +55,38 @@ function intentionalBlank(reason = '') {
         "faction recto",
     )
 
+    old_continuation = '''function newContinuationPage(context) {
+  const page = createPage({
+    className: 'chapter-page continuation-page',
+    label: context.label,
+    runningLeft: context.runningLeft,
+    runningRight: context.runningRight,
+    faction: context.faction,
+  });
+  const flow = flowOf(page);'''
+    new_continuation = '''function newContinuationPage(context) {
+  const page = createPage({
+    className: 'chapter-page continuation-page',
+    label: context.label,
+    runningLeft: context.runningLeft,
+    runningRight: context.runningRight,
+    faction: context.faction,
+  });
+  page.dataset.contextTitle = context.title;
+  const flow = flowOf(page);'''
+    source = replace_once(source, old_continuation, new_continuation, "continuation context")
+
+    old_heading_element = '''  } else if (token.kind === 'heading') {
+    const level = Math.min(5, Math.max(2, token.level + headingOffset));
+    element = document.createElement(`h${level}`);
+    element.innerHTML = token.html;'''
+    new_heading_element = '''  } else if (token.kind === 'heading') {
+    const level = Math.min(5, Math.max(2, token.level + headingOffset));
+    element = document.createElement(`h${level}`);
+    element.innerHTML = token.html;
+    element.dataset.headingTitle = token.title;'''
+    source = replace_once(source, old_heading_element, new_heading_element, "heading metadata")
+
     old_heading_keep = '''    const next = sourceTokens[index + 1];
     if (token.kind === 'heading' && next && !['heading', 'pagebreak', 'divider'].includes(next.kind)) {
       const group = document.createElement('div');
