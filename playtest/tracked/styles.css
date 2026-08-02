@@ -1,5 +1,6 @@
 :root{--tracked-panel:rgba(255,252,244,.82);--tracked-line:rgba(49,42,32,.2);--tracked-crimson:#8f1f25;--tracked-crimson-dark:#5f1418;--tracked-muted:#655f56;--tracked-shadow:0 20px 55px rgba(55,38,18,.11)}
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 .tracked-main{width:min(1180px,calc(100% - 40px));margin:0 auto 6rem}
 .tracked-hero{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(300px,.75fr);gap:4rem;align-items:end;padding:5.2rem 0 4.2rem;border-bottom:1px solid var(--line)}
 .tracked-hero h1{margin:.2rem 0 1.25rem;font-family:var(--serif);font-size:clamp(4rem,8vw,7.4rem);font-weight:500;line-height:.86;letter-spacing:-.055em}
