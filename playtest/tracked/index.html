@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-8YYYZJGGPE');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="description" content="Start or join one tracked Gauntlet playtest, link Rules Arbiter questions, and submit digital feedback." />
+  <meta name="theme-color" content="#8f1f25" />
+  <title>Tracked Gauntlet Playtest</title>
+  <link rel="preconnect" href="https://use.typekit.net" />
+  <link rel="preconnect" href="https://p.typekit.net" crossorigin />
+  <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
+  <link rel="stylesheet" href="../../site.css" />
+  <link rel="stylesheet" href="../../rules-assistant/widget.css" />
+  <link rel="stylesheet" href="styles.css?v=20260802-1" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../../" aria-label="Gauntlet home">
+      <span class="brand-mark" aria-hidden="true">G</span>
+      <span>Gauntlet</span>
+    </a>
+    <nav aria-label="Tracked playtest navigation">
+      <a href="../../start/">Start</a>
+      <a href="../../rulebook/">Rules</a>
+      <a href="../../deckbuilder/">Deckbuilder</a>
+      <a href="../../card-reference/">Card reference</a>
+    </nav>
+  </header>
+
+  <main class="tracked-main">
+    <section class="tracked-hero" aria-labelledby="tracked-title">
+      <div>
+        <p class="eyebrow">One game · two players · digital feedback</p>
+        <h1 id="tracked-title">Track this <span>playtest.</span></h1>
+        <p class="hero-lede">Create one game, let your opponent scan one code, ask the Rules Arbiter normally, and complete the questionnaire together when play ends.</p>
+      </div>
+      <div class="tracked-principles" aria-label="Tracked playtest steps">
+        <span>1 · Join</span><span>2 · Play</span><span>3 · Record</span><span>4 · Respond</span>
+      </div>
+    </section>
+
+    <section id="loadingPanel" class="tracked-panel state-panel" hidden aria-live="polite">
+      <span class="loading-mark" aria-hidden="true">G</span>
+      <div><h2>Opening the tracked game</h2><p>Checking the game code and feedback status.</p></div>
+    </section>
+
+    <section id="errorPanel" class="tracked-panel state-panel error-panel" hidden>
+      <div><p class="eyebrow">Tracked game unavailable</p><h2 id="errorTitle">The game could not be opened.</h2><p id="errorMessage"></p></div>
+      <a class="button secondary" href="./">Start a new tracked playtest</a>
+    </section>
+
+    <section id="createPanel" class="create-layout" hidden>
+      <div class="tracked-panel create-copy">
+        <p class="eyebrow">Start at the table</p>
+        <h2>One player creates the game.</h2>
+        <p>The creator receives a public join link and QR code. Both players join from their own devices so Rules Arbiter questions and individual questionnaire responses are attributed correctly.</p>
+        <ol>
+          <li>Create the game using your faction and Leader.</li>
+          <li>Let the opponent scan the QR code and confirm their own choice.</li>
+          <li>Record the start once, then play normally.</li>
+          <li>One player submits the shared result; both players submit individual responses.</li>
+        </ol>
+        <p class="privacy-note"><strong>No account is required.</strong> The public join code cannot read questionnaire answers. A separate review key is saved only for the game creator.</p>
+      </div>
+
+      <form id="createForm" class="tracked-panel form-panel">
+        <p class="eyebrow">Create tracked game</p>
+        <h2>Who are you playing?</h2>
+        <label>Your name<input id="createName" type="text" maxlength="80" autocomplete="name" required placeholder="Name your opponent will recognize" /></label>
+        <div class="two-field-grid">
+          <label>Faction<select id="createFaction" required></select></label>
+          <label>Leader<select id="createLeader" required disabled></select></label>
+        </div>
+        <p id="savedChoiceNote" class="saved-choice-note"></p>
+        <button class="button primary full-width" type="submit">Start a tracked playtest</button>
+        <p id="createStatus" class="form-status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section id="sessionApp" hidden>
+      <section class="tracked-summary">
+        <div>
+          <p class="eyebrow">Tracked game</p>
+          <h2 id="sessionSerial">Loading…</h2>
+          <p id="lifecycleCopy">Waiting for players.</p>
+        </div>
+        <div class="summary-metrics">
+          <div><span>Status</span><strong id="statusLabel">Joining</strong></div>
+          <div><span>Players</span><strong id="playerCount">0 / 2</strong></div>
+          <div><span>Arbiter</span><strong id="arbiterCount">0</strong></div>
+          <div><span>Responses</span><strong id="responseCount">0 / 2</strong></div>
+        </div>
+      </section>
+
+      <section id="sharePanel" class="tracked-panel share-panel">
+        <div>
+          <p class="eyebrow">Invite the other player</p>
+          <h2>Both players use this game.</h2>
+          <p>Have the opponent scan the QR code or send the public link. Do not share a URL containing a review key.</p>
+          <div class="button-row">
+            <button id="copyJoinLink" type="button" class="button primary">Copy join link</button>
+            <button id="shareJoinLink" type="button" class="button secondary">Share</button>
+          </div>
+          <p id="shareStatus" class="form-status" aria-live="polite"></p>
+        </div>
+        <div id="qrCode" class="qr-code" aria-label="Tracked game QR code"><span>Preparing QR code…</span></div>
+      </section>
+
+      <section class="players-section" aria-labelledby="players-title">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Game seats</p><h2 id="players-title">The matchup.</h2></div>
+          <p>Each player joins from their own device. The saved faction and Leader from the Start page are suggested automatically.</p>
+        </div>
+        <div id="playerCards" class="player-cards"></div>
+      </section>
+
+      <section id="joinPanel" class="tracked-panel form-panel" hidden>
+        <p class="eyebrow">Join this game</p>
+        <h2>Confirm your side.</h2>
+        <form id="joinForm">
+          <label>Your name<input id="joinName" type="text" maxlength="80" autocomplete="name" required /></label>
+          <div class="two-field-grid">
+            <label>Faction<select id="joinFaction" required></select></label>
+            <label>Leader<select id="joinLeader" required disabled></select></label>
+          </div>
+          <button class="button primary" type="submit">Join game</button>
+          <p id="joinStatus" class="form-status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section id="joinedPanel" class="tracked-panel joined-panel" hidden>
+        <div><p class="eyebrow">Your seat</p><h2 id="joinedHeading">You are connected.</h2><p id="joinedCopy"></p></div>
+        <button id="openArbiter" type="button" class="button primary">Ask the Rules Arbiter</button>
+      </section>
+
+      <section id="playPanel" class="tracked-panel play-panel" hidden>
+        <div class="panel-heading"><div><p class="eyebrow">During play</p><h2>Record only the shared milestones.</h2></div></div>
+        <p>The Rules Arbiter links questions automatically. Only one player needs to record the game start and shared result.</p>
+        <div class="button-row">
+          <button id="recordStart" type="button" class="button primary">Game started</button>
+          <button id="showCompletedResult" type="button" class="button secondary">Game completed</button>
+          <button id="showStoppedResult" type="button" class="button secondary">Game stopped</button>
+        </div>
+        <details class="note-details">
+          <summary>Record a factual session note</summary>
+          <form id="noteForm"><textarea id="noteText" rows="3" maxlength="500" placeholder="What happened? Avoid proposing a fix here."></textarea><button type="submit" class="button secondary">Save note</button></form>
+        </details>
+        <p id="eventStatus" class="form-status" aria-live="polite"></p>
+      </section>
+
+      <section id="resultSection" class="feedback-section" hidden aria-labelledby="result-title">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Shared record</p><h2 id="result-title">What happened in the game?</h2></div>
+          <p>Either player submits this once for the game. Both players can see whether it has been submitted, but the detailed answers are reserved for review.</p>
+        </div>
+        <form id="resultForm" class="tracked-panel feedback-form">
+          <div class="three-field-grid">
+            <label>Outcome<select id="completionStatus" required><option value="completed">Completed</option><option value="stopped">Stopped early</option></select></label>
+            <label>First player<select id="firstPlayer" required></select></label>
+            <label id="winnerLabel">Winner<select id="winner" required></select></label>
+          </div>
+          <div class="three-field-grid">
+            <label id="victoryRouteLabel">Victory route<select id="victoryRoute"><option value="run_the_gauntlet">Ran the Gauntlet</option><option value="faction_victory">Faction victory</option><option value="concession">Concession</option><option value="other">Other</option></select></label>
+            <label>Duration in minutes<input id="durationMinutes" type="number" min="1" max="1440" required /></label>
+            <label>Rounds <span class="optional">optional</span><input id="rounds" type="number" min="0" max="100" /></label>
+          </div>
+          <div class="two-field-grid">
+            <label>Battles <span class="optional">optional</span><input id="battles" type="number" min="0" max="200" /></label>
+            <label id="stopReasonLabel" hidden>Why did the game stop?<input id="stopReason" type="text" maxlength="300" /></label>
+          </div>
+          <div class="check-grid">
+            <label><input id="packageUnmodified" type="checkbox" checked /> We used the generated Decks and components without modification.</label>
+            <label><input id="variantUsed" type="checkbox" /> We used a noncanonical ruling or variant.</label>
+          </div>
+          <label>Did printing, cutting, missing pieces, or component identification interfere with play? <span class="optional">optional</span><textarea id="productionIssue" rows="3" maxlength="1000"></textarea></label>
+          <label>Strongest moment<textarea id="strongestMoment" rows="3" maxlength="1500" required></textarea></label>
+          <label>Most confusing or frustrating point<textarea id="confusingPoint" rows="3" maxlength="1500" required></textarea></label>
+          <label>One important observation<textarea id="importantObservation" rows="3" maxlength="1500" required></textarea></label>
+          <button class="button primary" type="submit">Submit shared result</button>
+          <p id="resultStatus" class="form-status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section id="responseSection" class="feedback-section" hidden aria-labelledby="response-title">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Your individual response</p><h2 id="response-title">How did the game feel to you?</h2></div>
+          <p>The public game view shows only that you submitted—not these answers. The creator's separate review key can retrieve the completed record.</p>
+        </div>
+        <form id="responseForm" class="tracked-panel feedback-form">
+          <label>Why did this faction or Leader interest you?<textarea id="factionInterest" rows="3" maxlength="1000" required></textarea></label>
+          <div id="ratingGrid" class="rating-grid"></div>
+          <label>Would you play Gauntlet again?<select id="playAgain" required><option value="">Choose</option><option value="yes">Yes</option><option value="no">No</option></select></label>
+          <label>Additional comments <span class="optional">optional</span><textarea id="responseComments" rows="4" maxlength="2000"></textarea></label>
+          <button class="button primary" type="submit">Submit my response</button>
+          <p id="responseStatus" class="form-status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section id="completionPanel" class="tracked-panel completion-panel" hidden>
+        <p class="eyebrow">Playtest submitted</p>
+        <h2>Thank you.</h2>
+        <p>The shared result and both individual responses are complete. The join code is retired, and the game record is preserved for review.</p>
+        <a class="button secondary" href="./">Start another tracked game</a>
+      </section>
+
+      <section id="reviewPanel" class="review-section" hidden aria-labelledby="review-title">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Private review</p><h2 id="review-title">Complete game record.</h2></div>
+          <p>This section requires the creator’s review key. It includes questionnaire answers and linked Arbiter questions.</p>
+        </div>
+        <div class="button-row review-actions"><button id="refreshReview" class="button secondary" type="button">Refresh review</button><button id="downloadReviewJson" class="button secondary" type="button">Download JSON</button><button id="downloadReviewCsv" class="button secondary" type="button">Download CSV</button></div>
+        <div id="reviewContent" class="review-content"></div>
+        <p id="reviewStatus" class="form-status" aria-live="polite"></p>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    <div><strong>Gauntlet</strong><p>Unpublished pre-release playtest project.</p></div>
+    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  </footer>
+
+  <script src="app.js?v=20260802-1" defer></script>
+  <script type="module" src="../../rules-assistant/widget.js"></script>
+</body>
+</html>

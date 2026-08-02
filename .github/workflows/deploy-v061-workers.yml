@@ -63,6 +63,7 @@ jobs:
         run: |
           npm run test:playtest-sessions
           npm run test:formal-session-e2e
+          npm run test:tracked-session-e2e
           python scripts/validate_v061_playtest_sessions.py
 
       - name: Apply shared D1 migrations
@@ -72,7 +73,7 @@ jobs:
           --remote
           --config rules-assistant/wrangler.toml
 
-      - name: Deploy formal playtest session service
+      - name: Deploy playtest session service
         run: npx wrangler deploy --config workers/playtest-sessions/wrangler.toml
 
       - name: Refresh facilitator session-creation secret
@@ -101,5 +102,11 @@ jobs:
               raise SystemExit(f'Playtest session D1 binding unavailable: {sessions}')
           if not sessions.get('sessionCreationConfigured'):
               raise SystemExit(f'Playtest session creation secret unavailable: {sessions}')
-          print('Verified production v0.6.1 formal playtest session Worker.')
+          if not sessions.get('trackedPlaytestsSupported'):
+              raise SystemExit(f'Tracked playtests unavailable: {sessions}')
+          if not sessions.get('digitalFeedbackSupported'):
+              raise SystemExit(f'Digital feedback unavailable: {sessions}')
+          if not sessions.get('automaticTrackedClosureSupported'):
+              raise SystemExit(f'Automatic tracked closure unavailable: {sessions}')
+          print('Verified production v0.6.1 playtest session Worker with tracked playtests.')
           PY
