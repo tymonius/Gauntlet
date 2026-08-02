@@ -1,0 +1,195 @@
+name: Test playtest analysis dashboard
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "playtest/analysis/**"
+      - "playtest/host/index.html"
+      - "workers/playtest-sessions/src/analysis.js"
+      - "workers/playtest-sessions/src/analysis.test.mjs"
+      - "workers/playtest-sessions/wrangler.toml"
+      - "tests/tracked-playtest-analysis.test.ts"
+      - ".github/workflows/test-playtest-analysis-browser.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-playtest-analysis-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  analysis-dashboard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Serve repository
+        run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
+
+      - name: Verify protected dashboard, filters, and exports
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFile } from 'node:fs/promises';
+          import { chromium } from 'playwright';
+
+          const browser = await chromium.launch({ headless: true });
+          const origin = 'http://127.0.0.1:8000';
+          const adminToken = 'facilitator-analysis-test-key';
+          const apiPattern = 'https://gauntlet-playtest-sessions.tymon-scott.workers.dev/**';
+          const payload = {
+            schemaVersion: 'gauntlet-tracked-analysis-v1',
+            generatedAt: '2026-08-02T17:00:00.000Z',
+            summary: {},
+            games: [
+              {
+                sessionId: 'game-1', sheetSerial: 'G061-RESEARCH1', rulesVersion: 'v0.6.1', status: 'closed',
+                createdAt: '2026-08-01T18:00:00.000Z', closedAt: '2026-08-01T19:15:00.000Z', metadata: { mode: 'tracked' },
+                result: {
+                  submittedByParticipantId: 'p1', completionStatus: 'completed', firstPlayerParticipantId: 'p2',
+                  winnerParticipantId: 'p1', victoryRoute: 'faction_victory', durationMinutes: 74, rounds: 8, battles: 6,
+                  stopReason: '', packageUnmodified: true, variantUsed: false, productionIssue: '',
+                  strongestMoment: 'A negotiated concession changed the campaign.',
+                  confusingPoint: 'Capture timing required an Arbiter check.',
+                  importantObservation: 'The central Territories stayed contested.',
+                  submittedAt: '2026-08-01T19:10:00.000Z', updatedAt: '2026-08-01T19:10:00.000Z'
+                },
+                players: [
+                  {
+                    participantId: 'p1', displayName: 'Alice Realname', seatIndex: 1, faction: 'diplomats', leader: 'Ambassador', joinedAt: '2026-08-01T18:00:00.000Z',
+                    response: { factionInterest: 'Negotiation and leverage', expectationMatch: 5, leaderDistinction: 5, fun: 4, pacing: 4, meaningfulDecisions: 5, battleTension: 4, rulesClarity: 3, factionClarity: 5, tableOrganization: 4, playAgain: true, comments: 'Terms felt distinctive.', submittedAt: '2026-08-01T19:12:00.000Z', updatedAt: '2026-08-01T19:12:00.000Z' }
+                  },
+                  {
+                    participantId: 'p2', displayName: 'Ben Realname', seatIndex: 2, faction: 'military', leader: 'General', joinedAt: '2026-08-01T18:02:00.000Z',
+                    response: { factionInterest: 'Direct pressure', expectationMatch: 4, leaderDistinction: 4, fun: 5, pacing: 3, meaningfulDecisions: 4, battleTension: 5, rulesClarity: 4, factionClarity: 4, tableOrganization: 3, playAgain: true, comments: 'Would play again.', submittedAt: '2026-08-01T19:14:00.000Z', updatedAt: '2026-08-01T19:14:00.000Z' }
+                  }
+                ],
+                arbiterQuestions: [{ interactionId: 'i1', classification: 'explicit', question: 'When is a Territory captured?', answer: 'After resolution.', sources: [], linkedAt: '2026-08-01T18:40:00.000Z', participantId: 'p2', displayName: 'Ben Realname', seatIndex: 2 }],
+                events: [{ eventType: 'game_started', data: { participantId: 'p1' }, createdAt: '2026-08-01T18:05:00.000Z' }]
+              },
+              {
+                sessionId: 'game-2', sheetSerial: 'G061-RESEARCH2', rulesVersion: 'v0.6.1', status: 'open',
+                createdAt: '2026-08-02T14:00:00.000Z', closedAt: null, metadata: { mode: 'tracked' },
+                result: {
+                  submittedByParticipantId: 'p3', completionStatus: 'stopped', firstPlayerParticipantId: 'p4', winnerParticipantId: null, victoryRoute: null,
+                  durationMinutes: 32, rounds: 3, battles: 2, stopReason: 'Production test', packageUnmodified: true, variantUsed: false,
+                  productionIssue: 'One card back was miscut.', strongestMoment: 'The first Rite created pressure.', confusingPoint: 'Rite interruption timing.',
+                  importantObservation: 'Mystics needed more table reminders.', submittedAt: '2026-08-02T14:35:00.000Z', updatedAt: '2026-08-02T14:35:00.000Z'
+                },
+                players: [
+                  {
+                    participantId: 'p3', displayName: 'Cara Realname', seatIndex: 1, faction: 'mystics', leader: 'Alchemist', joinedAt: '2026-08-02T14:00:00.000Z',
+                    response: { factionInterest: 'Rites and transformation', expectationMatch: 4, leaderDistinction: 5, fun: 3, pacing: 3, meaningfulDecisions: 4, battleTension: 3, rulesClarity: 2, factionClarity: 3, tableOrganization: 2, playAgain: false, comments: 'Needs clearer Rite timing.', submittedAt: '2026-08-02T14:38:00.000Z', updatedAt: '2026-08-02T14:38:00.000Z' }
+                  },
+                  { participantId: 'p4', displayName: 'Dan Realname', seatIndex: 2, faction: 'inquisition', leader: 'Witch Hunter', joinedAt: '2026-08-02T14:01:00.000Z', response: null }
+                ],
+                arbiterQuestions: [{ interactionId: 'i2', classification: 'inferred', question: 'Can a Rite be interrupted here?', answer: 'The timing is inferred.', sources: [], linkedAt: '2026-08-02T14:20:00.000Z', participantId: 'p3', displayName: 'Cara Realname', seatIndex: 1 }],
+                events: [{ eventType: 'game_started', data: { participantId: 'p3' }, createdAt: '2026-08-02T14:05:00.000Z' }]
+              }
+            ]
+          };
+
+          const context = await browser.newContext({ acceptDownloads: true, viewport: { width: 1440, height: 1000 } });
+          await context.route('https://www.googletagmanager.com/**', route => route.abort());
+          await context.route('https://use.typekit.net/**', route => route.abort());
+          const page = await context.newPage();
+          let authorizedRequestSeen = false;
+          await page.route(apiPattern, async route => {
+            const request = route.request();
+            if (new URL(request.url()).pathname !== '/api/tracked-analysis') return route.continue();
+            const authorization = request.headers()['authorization'];
+            if (authorization !== `Bearer ${adminToken}`) {
+              return route.fulfill({ status: 401, contentType: 'application/json', body: JSON.stringify({ error: 'Playtest analysis authorization failed' }) });
+            }
+            authorizedRequestSeen = true;
+            return route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(payload) });
+          });
+
+          await page.goto(`${origin}/playtest/analysis/`, { waitUntil: 'domcontentloaded' });
+          await page.fill('#adminToken', adminToken);
+          await page.click('#accessForm button[type="submit"]');
+          await page.waitForSelector('#analysisApp:not([hidden])');
+          if (!authorizedRequestSeen) throw new Error('Dashboard did not use the facilitator key');
+          if (await page.locator('#metricGames').textContent() !== '2') throw new Error('Dashboard did not compile both games');
+          if (await page.locator('#metricResponses').textContent() !== '3') throw new Error('Dashboard did not compile all responses');
+          if (await page.locator('#metricArbiter').textContent() !== '2') throw new Error('Dashboard did not compile Arbiter questions');
+          if (await page.locator('#adminToken').inputValue()) throw new Error('Facilitator key remained in the input');
+          const credentialLeak = await page.evaluate(token => ({
+            url: location.href.includes(token),
+            local: Object.values(localStorage).some(value => value.includes(token)),
+            session: Object.values(sessionStorage).some(value => value.includes(token))
+          }), adminToken);
+          if (credentialLeak.url || credentialLeak.local || credentialLeak.session) throw new Error(`Facilitator key leaked: ${JSON.stringify(credentialLeak)}`);
+
+          await page.selectOption('#filterFaction', 'diplomats');
+          await page.waitForFunction(() => document.querySelector('#metricGames')?.textContent === '1');
+          const [bundleDownload] = await Promise.all([
+            page.waitForEvent('download'),
+            page.click('#downloadBundle')
+          ]);
+          const bundlePath = '/tmp/gauntlet-analysis-bundle.json';
+          await bundleDownload.saveAs(bundlePath);
+          const bundle = JSON.parse(await readFile(bundlePath, 'utf8'));
+          if (bundle.schemaVersion !== 'gauntlet-tracked-analysis-export-v1') throw new Error('Wrong bundle schema');
+          if (bundle.games.length !== 1 || bundle.games[0].sheetSerial !== 'G061-RESEARCH1') throw new Error('Active faction filter was not applied to export');
+          if (!bundle.analysisBrief?.recommendedTasks?.length) throw new Error('Analysis brief missing');
+          const bundleText = JSON.stringify(bundle);
+          for (const name of ['Alice Realname', 'Ben Realname', 'Cara Realname', 'Dan Realname']) {
+            if (bundleText.includes(name)) throw new Error(`Real player name survived anonymized export: ${name}`);
+          }
+          if (!bundleText.includes('Player 1-1') || !bundleText.includes('Player 1-2')) throw new Error('Anonymized player labels missing');
+
+          await page.click('#resetFilters');
+          await page.waitForFunction(() => document.querySelector('#metricGames')?.textContent === '2');
+          const [responsesDownload] = await Promise.all([
+            page.waitForEvent('download'),
+            page.click('#downloadResponses')
+          ]);
+          const responsesPath = '/tmp/gauntlet-analysis-responses.csv';
+          await responsesDownload.saveAs(responsesPath);
+          const responsesCsv = await readFile(responsesPath, 'utf8');
+          if (!responsesCsv.includes('faction_interest') || !responsesCsv.includes('strongest_moment')) throw new Error('Responses CSV omitted analysis fields');
+          if (responsesCsv.includes('Alice Realname') || responsesCsv.includes('Cara Realname')) throw new Error('Responses CSV was not anonymized');
+
+          await page.screenshot({ path: '/tmp/playtest-analysis-desktop.png', fullPage: true });
+          await context.close();
+
+          const mobile = await browser.newContext({ viewport: { width: 390, height: 844 } });
+          await mobile.route('https://www.googletagmanager.com/**', route => route.abort());
+          await mobile.route('https://use.typekit.net/**', route => route.abort());
+          const mobilePage = await mobile.newPage();
+          await mobilePage.route(apiPattern, route => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(payload) }));
+          await mobilePage.goto(`${origin}/playtest/analysis/`, { waitUntil: 'domcontentloaded' });
+          await mobilePage.fill('#adminToken', adminToken);
+          await mobilePage.click('#accessForm button[type="submit"]');
+          await mobilePage.waitForSelector('#analysisApp:not([hidden])');
+          await mobilePage.screenshot({ path: '/tmp/playtest-analysis-mobile.png', fullPage: true });
+          await mobile.close();
+          await browser.close();
+          NODE
+
+      - name: Upload dashboard screenshots and exports
+        uses: actions/upload-artifact@v4
+        with:
+          name: playtest-analysis-dashboard
+          path: |
+            /tmp/playtest-analysis-*.png
+            /tmp/gauntlet-analysis-bundle.json
+            /tmp/gauntlet-analysis-responses.csv
+          if-no-files-found: error
