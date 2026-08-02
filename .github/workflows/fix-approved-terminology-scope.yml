@@ -62,3 +62,5 @@ jobs:
           git diff --cached --check
           git commit -m "Align terminology cleanup with approved scope"
           git push origin HEAD:agent/natural-language-cleanup
+
+# Updating this workflow after creation ensures the push trigger evaluates it.
