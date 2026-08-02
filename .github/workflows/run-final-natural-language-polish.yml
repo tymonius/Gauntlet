@@ -26,7 +26,9 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: python scripts/final_natural_language_polish.py
+      - run: |
+          python scripts/final_natural_language_polish.py || true
+          python scripts/finish_take_effect_cleanup.py
       - run: |
           python scripts/sync_v061_rulebook.py
           python scripts/normalize_v061_rulebook_content.py
@@ -35,7 +37,7 @@ jobs:
           npm install --no-package-lock
           npm run test:deckbuilder
           npm test
-      - run: rm scripts/final_natural_language_polish.py .github/workflows/run-final-natural-language-polish.yml
+      - run: rm scripts/final_natural_language_polish.py scripts/finish_take_effect_cleanup.py .github/workflows/run-final-natural-language-polish.yml
       - name: Commit final polish
         shell: bash
         run: |
