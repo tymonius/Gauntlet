@@ -58,3 +58,5 @@ jobs:
           git add -A
           git commit -m "Align current-timing replacement wording"
           git push origin HEAD:agent/shared-card-wording-templates
+
+# Triggered after registration.
