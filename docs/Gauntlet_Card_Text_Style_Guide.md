@@ -47,6 +47,7 @@ Use **Action Opportunity** only for timing. State any Action spent, gained, or b
 
 ## Terms that must remain distinct
 
+- **Action** and **Action Opportunity**
 - **May** and **must**
 - **Retreat** and **withdraw**
 - **Attacker**, **defender**, and “a battle you initiated”
