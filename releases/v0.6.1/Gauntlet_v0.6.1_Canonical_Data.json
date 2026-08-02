@@ -1637,12 +1637,12 @@
         },
         {
           "label": "Battle",
-          "text": "After you use a 1-Command Order during this battle while Field Command is face up, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command. If you do, put Field Command in your Graveyard after that Order takes effect."
+          "text": "After you use a 1-Command Order during this battle while Field Command is face up, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command. If you do, put Field Command in your Graveyard after that Order is used."
         }
       ],
       "source": "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
       "action": "Bank Field Command as an Asset. After you use a 1-Command Order, you may discard it. If you do, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command.",
-      "battle": "After you use a 1-Command Order during this battle while Field Command is face up, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command. If you do, put Field Command in your Graveyard after that Order takes effect.",
+      "battle": "After you use a 1-Command Order during this battle while Field Command is face up, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command. If you do, put Field Command in your Graveyard after that Order is used.",
       "rules_notes": [
         "Field Command does not let an Order occur outside its legal timing."
       ]
@@ -1974,13 +1974,13 @@
         },
         {
           "label": "Refused",
-          "text": "Choose one Proposal before applying its Refused effect. Only it may be imposed.\n\nThe other Proposal does not take effect or become ratified. After the Terms conclude, put Diplomatic Latitude in your Discard Pile."
+          "text": "Choose one Proposal before applying its Refused effect. Only it may be imposed.\n\nThe other Proposal has no effect and cannot become ratified. After the Terms conclude, put Diplomatic Latitude in your Discard Pile."
         }
       ],
       "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
       "terms": "When you offer Terms, you may reveal Diplomatic Latitude from your Hand and offer two eligible Proposals with the same Stake instead of one. Stake that amount once.",
       "accepted": "The opponent chooses which Proposal is accepted.",
-      "refused": "Choose one Proposal before applying its Refused effect. Only it may be imposed.\n\nThe other Proposal does not take effect or become ratified. After the Terms conclude, put Diplomatic Latitude in your Discard Pile."
+      "refused": "Choose one Proposal before applying its Refused effect. Only it may be imposed.\n\nThe other Proposal has no effect and cannot become ratified. After the Terms conclude, put Diplomatic Latitude in your Discard Pile."
     },
     {
       "id": "diplomats-nonbinding-resolution",
