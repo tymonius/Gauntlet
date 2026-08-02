@@ -63,6 +63,19 @@ function statePayload(mode = "active") {
   };
 }
 
+async function assertAccessFieldLayout(page, fieldIndex) {
+  const field = page.locator(".access-field").nth(fieldIndex);
+  const labelBox = await field.locator("label").boundingBox();
+  const inputBox = await field.locator("input").boundingBox();
+  if (!labelBox || !inputBox) throw new Error(`Access field ${fieldIndex + 1} did not render`);
+  if (labelBox.y + labelBox.height > inputBox.y + 1) {
+    throw new Error(`Access field ${fieldIndex + 1} label overlaps or follows its input`);
+  }
+  if (inputBox.width < 160 || inputBox.height < 44) {
+    throw new Error(`Access field ${fieldIndex + 1} is too small to use reliably`);
+  }
+}
+
 async function run(viewport, name) {
   const browser = await chromium.launch({ headless: true });
   const context = await browser.newContext({ viewport });
@@ -86,8 +99,20 @@ async function run(viewport, name) {
   });
 
   await page.goto(`${baseUrl}/playtest/analysis/integrity/`, { waitUntil: "networkidle" });
-  await page.fill("#adminToken", "test-facilitator-key");
-  await page.fill("#reviewerName", "TS");
+  await assertAccessFieldLayout(page, 0);
+  await assertAccessFieldLayout(page, 1);
+
+  const adminInput = page.locator("#adminToken");
+  const reviewerInput = page.locator("#reviewerName");
+  if ((await adminInput.getAttribute("type")) !== "password") throw new Error("Facilitator key is not masked");
+  if ((await reviewerInput.getAttribute("type")) !== "text") throw new Error("Reviewer field is not plain editable text");
+
+  await adminInput.fill("test-facilitator-key");
+  await reviewerInput.fill("TS");
+  if ((await adminInput.inputValue()) !== "test-facilitator-key") throw new Error("Facilitator key field rejected typed input");
+  if ((await reviewerInput.inputValue()) !== "TS") throw new Error("Reviewer field rejected typed initials");
+
+  await page.screenshot({ path: path.join(outputDir, `playtest-integrity-login-${name}.png`), fullPage: true });
   await page.click('#accessForm button[type="submit"]');
   await page.locator("#integrityApp").waitFor({ state: "visible" });
 
@@ -124,4 +149,4 @@ async function run(viewport, name) {
 
 await run({ width: 1440, height: 1100 }, "desktop");
 await run({ width: 390, height: 844 }, "mobile");
-console.log("Verified playtest exclusion, quarantine, persistent audit history, and restoration controls on desktop and mobile.");
+console.log("Verified integrity login input/layout plus exclusion, quarantine, persistent audit history, and restoration on desktop and mobile.");
