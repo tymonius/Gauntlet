@@ -71,11 +71,10 @@
 }
 
 .overlay-title {
-  position: relative;
+  position: absolute;
   z-index: 1;
+  inset: 0.08in 0.045in;
   display: block;
-  width: calc(var(--overlay-title-bar-width) - 0.09in);
-  height: calc(100% - 0.16in);
   overflow: hidden;
   font-family: var(--font-display-historical);
   font-size: 7.8pt;
