@@ -30,6 +30,8 @@
    compact two-column reference treatment as the quick-reference pages. */
 .continuation-page[data-context-title="Detailed Card and Timing Rules"]
   .keep-group:has(> [data-heading-title="Copied effects"]) ul,
+.continuation-page[data-context-title="Detailed Card and Timing Rules"]
+  .keep-group:has(> [data-heading-title="Copied effects"]) + ul,
 .continuation-page[data-context-title="Factions"]
   .keep-group:has(> [data-heading-title="General use"]) ul {
   columns: 2;
@@ -38,6 +40,8 @@
 }
 .continuation-page[data-context-title="Detailed Card and Timing Rules"]
   .keep-group:has(> [data-heading-title="Copied effects"]) li,
+.continuation-page[data-context-title="Detailed Card and Timing Rules"]
+  .keep-group:has(> [data-heading-title="Copied effects"]) + ul li,
 .continuation-page[data-context-title="Factions"]
   .keep-group:has(> [data-heading-title="General use"]) li {
   break-inside: avoid;
