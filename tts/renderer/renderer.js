@@ -1,5 +1,6 @@
 (() => {
   const RENDER_TIMEOUT_MS = 30000;
+  const CSS_PIXELS_PER_INCH = 96;
   const catalog = window.GAUNTLET_TTS_CATALOG;
   const target = document.getElementById('renderTarget');
   const cardId = new URLSearchParams(window.location.search).get('card');
@@ -17,15 +18,22 @@
   const reminder = sectionEntries.find(([label]) => label.toLowerCase() === 'reminder');
   const other = sectionEntries.filter(([label]) => !['action', 'battle', 'reminder'].includes(label.toLowerCase()));
   const sections = [action, battle, ...other].filter(Boolean);
+  const isOverlay = /\boverlay\b/i.test(card.form || '')
+    || sectionEntries.some(([label]) => label.toLowerCase() === 'overlay');
   const footerCenter = card.unique
     ? 'Unique'
     : (card.form || (card.complexity !== 'Unspecified' ? card.complexity : ''));
   const art = card.artwork
     ? `<img src="/${escapeAttribute(card.artwork)}" alt="">`
     : '<span class="pending-label">Artwork pending</span>';
+  const cardClass = `gauntlet-card${isOverlay ? ' overlay-card' : ''}`;
+  const overlayTitle = isOverlay
+    ? `<div class="overlay-title-bar" aria-hidden="true"><span class="overlay-title-text">${escapeHtml(card.name)}</span></div>`
+    : '';
 
   target.innerHTML = `
-    <article class="gauntlet-card" data-faction="${escapeAttribute(card.faction)}" data-art-max="1.72" data-art-min="0.62" aria-label="${escapeAttribute(card.name)} card">
+    <article class="${cardClass}" data-faction="${escapeAttribute(card.faction)}" data-card-variant="${isOverlay ? 'overlay' : 'standard'}" data-art-max="1.72" data-art-min="0.62" data-overlay-title-min="6.2" aria-label="${escapeAttribute(card.name)} card">
+      ${overlayTitle}
       <div class="card-interior">
         <header class="card-heading">
           <h1 class="card-title">${escapeHtml(card.name)}</h1>
@@ -71,16 +79,22 @@
     document.body.dataset.renderReady = 'true';
   }, { once: true });
 
+  function textOverflows(element) {
+    return Boolean(element && element.scrollWidth > element.clientWidth + 0.5);
+  }
+
   function cardOverflows(element) {
     const interior = element?.querySelector('.card-interior');
     const title = element?.querySelector('.card-title');
+    const overlayTitleElement = element?.querySelector('.overlay-title-text');
     const rules = element?.querySelector('.card-rules');
     const footer = element?.querySelector('.card-footer');
     if (!interior || !title || !rules || !footer) return false;
 
     const interiorRect = interior.getBoundingClientRect();
     const footerRect = footer.getBoundingClientRect();
-    return title.scrollWidth > title.clientWidth + 0.5
+    return textOverflows(title)
+      || textOverflows(overlayTitleElement)
       || footerRect.bottom > interiorRect.bottom + 0.5
       || rules.scrollHeight > rules.clientHeight + 0.5
       || interior.scrollHeight > interior.clientHeight + 0.5;
@@ -94,17 +108,19 @@
     if (!element?.classList.contains('fit-warning')) return;
 
     const interior = element.querySelector('.card-interior');
+    const overlayVariant = element.classList.contains('overlay-card');
+    const minimumArtHeight = overlayVariant ? 0.5 * CSS_PIXELS_PER_INCH : 0;
     let artHeight = Number.parseFloat(interior.style.getPropertyValue('--art-height')) || 59.52;
     let rulesScale = Number.parseFloat(element.style.getPropertyValue('--rules-scale')) || 0.93;
-    const minimumRulesScale = 0.48;
+    const minimumRulesScale = overlayVariant ? 0.82 : 0.48;
 
-    while (cardOverflows(element) && artHeight > 0) {
-      artHeight = Math.max(0, artHeight - 1);
+    while (cardOverflows(element) && artHeight > minimumArtHeight) {
+      artHeight = Math.max(minimumArtHeight, artHeight - 1);
       interior.style.setProperty('--art-height', `${artHeight}px`);
       forceLayout(interior);
     }
 
-    if (cardOverflows(element)) {
+    if (cardOverflows(element) && !overlayVariant) {
       element.classList.add('tts-text-only');
       artHeight = 0;
       interior.style.setProperty('--art-height', '0px');
