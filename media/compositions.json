@@ -14,19 +14,27 @@
         "thumbnail": {
           "width": 900,
           "height": 540,
-          "formats": ["png", "webp"],
+          "formats": [
+            "png",
+            "webp"
+          ],
           "webpQuality": 86
         },
         "website": {
           "width": 1600,
           "height": 960,
-          "formats": ["png", "webp"],
+          "formats": [
+            "png",
+            "webp"
+          ],
           "webpQuality": 90
         },
         "publication": {
           "width": 3000,
           "height": 1800,
-          "formats": ["png"]
+          "formats": [
+            "png"
+          ]
         }
       },
       "cards": [
@@ -84,19 +92,27 @@
         "thumbnail": {
           "width": 900,
           "height": 540,
-          "formats": ["png", "webp"],
+          "formats": [
+            "png",
+            "webp"
+          ],
           "webpQuality": 86
         },
         "website": {
           "width": 1600,
           "height": 960,
-          "formats": ["png", "webp"],
+          "formats": [
+            "png",
+            "webp"
+          ],
           "webpQuality": 90
         },
         "publication": {
           "width": 3000,
           "height": 1800,
-          "formats": ["png"]
+          "formats": [
+            "png"
+          ]
         }
       },
       "cards": [
@@ -154,19 +170,27 @@
         "thumbnail": {
           "width": 900,
           "height": 540,
-          "formats": ["png", "webp"],
+          "formats": [
+            "png",
+            "webp"
+          ],
           "webpQuality": 86
         },
         "website": {
           "width": 1600,
           "height": 960,
-          "formats": ["png", "webp"],
+          "formats": [
+            "png",
+            "webp"
+          ],
           "webpQuality": 90
         },
         "publication": {
           "width": 3000,
           "height": 1800,
-          "formats": ["png"]
+          "formats": [
+            "png"
+          ]
         }
       },
       "cards": [
@@ -208,6 +232,100 @@
           "y": 445,
           "width": 650,
           "rotation": 13,
+          "z": 1
+        }
+      ]
+    },
+    {
+      "id": "faction-neutral-showcase-spread",
+      "name": "Faction and Neutral showcase spread",
+      "description": "A promotional seven-card spread featuring one visually strong card from each faction plus a Neutral centerpiece. This is a marketing composition, not a legal hand representation.",
+      "canvas": {
+        "width": 3000,
+        "height": 1800
+      },
+      "profiles": {
+        "thumbnail": {
+          "width": 900,
+          "height": 540,
+          "formats": [
+            "png",
+            "webp"
+          ],
+          "webpQuality": 86
+        },
+        "website": {
+          "width": 1600,
+          "height": 960,
+          "formats": [
+            "png",
+            "webp"
+          ],
+          "webpQuality": 90
+        },
+        "publication": {
+          "width": 3000,
+          "height": 1800,
+          "formats": [
+            "png"
+          ]
+        }
+      },
+      "cards": [
+        {
+          "id": "military-shock-and-awe",
+          "x": 280,
+          "y": 590,
+          "width": 590,
+          "rotation": -20,
+          "z": 1
+        },
+        {
+          "id": "diplomats-gunboat-diplomacy",
+          "x": 500,
+          "y": 420,
+          "width": 650,
+          "rotation": -13,
+          "z": 2
+        },
+        {
+          "id": "financiers-corner-the-market",
+          "x": 800,
+          "y": 250,
+          "width": 700,
+          "rotation": -7,
+          "z": 4
+        },
+        {
+          "id": "neutral-invasion",
+          "x": 1120,
+          "y": 100,
+          "width": 760,
+          "rotation": 0,
+          "z": 7
+        },
+        {
+          "id": "mystics-rend-the-veil",
+          "x": 1500,
+          "y": 250,
+          "width": 700,
+          "rotation": 7,
+          "z": 5
+        },
+        {
+          "id": "inquisition-burning-at-the-stake",
+          "x": 1850,
+          "y": 420,
+          "width": 650,
+          "rotation": 13,
+          "z": 3
+        },
+        {
+          "id": "intelligence-assassins",
+          "x": 2130,
+          "y": 590,
+          "width": 590,
+          "rotation": 20,
           "z": 1
         }
       ]
