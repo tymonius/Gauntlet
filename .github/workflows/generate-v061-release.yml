@@ -49,6 +49,9 @@ jobs:
           path: /tmp/action-migration.log
           if-no-files-found: error
 
+      - name: Apply migration follow-up corrections
+        run: python scripts/fix_action_migration_followups.py
+
       - name: Synchronize governed and generated sources
         run: |
           python scripts/sync_v061_rulebook.py
@@ -98,6 +101,7 @@ jobs:
             package-lock.json \
             .github/workflows/apply-action-terminology-migration.yml \
             scripts/apply_action_terminology_migration.py \
+            scripts/fix_action_migration_followups.py \
             tmp/action-terminology-audit.txt \
             tmp/v061-generation-audit.txt \
             tmp/sleeper-action-hook-audit.txt \
