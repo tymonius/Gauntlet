@@ -29,7 +29,9 @@
 **Cost:** 1  
 **Complexity:** Basic
 
-> **Action:** Bank Contingency Plan as an Asset. If you discard it because your Asset limit decreased, draw one card.
+> **Action:** Bank this card.
+>
+> **Asset:** If you discard this card because your Asset limit decreased, draw one card.
 >
 > **Battle:** If your opponent controls more Territories than you, add +1 to your battle total.
 
@@ -38,7 +40,9 @@
 **Cost:** 1  
 **Complexity:** Basic
 
-> **Action:** Bank Counterintelligence as an Asset. Opposing effects cannot reveal your Hand, Reserve, face-down Gambits or Tactics, or face-down Territories. This does not prevent reveals required by the rules.
+> **Action:** Bank this card.
+>
+> **Asset:** Opposing effects cannot reveal your Hand, Reserve, face-down Gambits or Tactics, or face-down Territories. This does not prevent reveals required by the rules.
 >
 > **Battle:** If an opposing effect would reveal Counterintelligence or another face-down Gambit or Tactic you control at Counterintelligence's reveal stage before the normal reveal, reveal Counterintelligence and prevent that entire effect. Add +1 to your battle total.
 
@@ -49,7 +53,9 @@ Counterintelligence does not prevent a card from being set face up by a rule suc
 **Cost:** 1  
 **Complexity:** Basic
 
-> **Action:** Bank Fealty as an Asset. Opposing card effects cannot give you disadvantage.
+> **Action:** Bank this card.
+>
+> **Asset:** Opposing card effects cannot give you disadvantage.
 >
 > **Battle:** Ignore one disadvantage affecting you during this battle. If you have no disadvantage, add +1 to your battle total instead.
 
@@ -94,7 +100,9 @@ Counterintelligence does not prevent a card from being set face up by a rule suc
 **Cost:** 1  
 **Complexity:** Basic
 
-> **Action:** Bank Redemption as an Asset. When an opposing effect puts one or more of your other cards in your Discard Pile, you may discard Redemption. If you do, return one of those cards to your Hand after the effect applies.
+> **Action:** Bank this card.
+>
+> **Use:** When an opposing effect puts one or more of your other cards in your Discard Pile, you may discard this card. If you do, return one of those cards to your Hand after the effect applies.
 >
 > **Battle:** If an opposing effect negates one other Tactic you chose and that card would enter your Discard Pile, return it to your Hand during the Aftermath of the battle instead.
 
@@ -105,7 +113,7 @@ Counterintelligence does not prevent a card from being set face up by a rule suc
 
 > **Action:** Draw one card, then place one card from your Hand on top of your Draw Pile.
 >
-> **Battle:** During the Aftermath of the battle, you may place one card remaining in your Reserve on top of your Draw Pile instead of putting it in your Discard Pile.
+> **Battle:** In the Aftermath, you may place one card remaining in your Reserve on top of your Draw Pile instead of putting it in your Discard Pile.
 
 ## Scouting Report
 
@@ -114,16 +122,18 @@ Counterintelligence does not prevent a card from being set face up by a rule suc
 
 > **Action:** Reveal the top card of either Draw Pile or one random card from the opponent's Hand.
 >
-> **Battle:** When Scouting Report is revealed, before other effects at that reveal stage are applied, reveal one opposing face-down Gambit or Tactic at the same stage. You may replace Scouting Report with one eligible card from your Reserve whose effect can still be applied. If you do, put Scouting Report in your Graveyard and place the replacement face up in the same role.
+> **Battle:** When revealed, before other effects at this stage, reveal one opposing face-down Gambit or Tactic at the same stage. You may replace Scouting Report with one eligible card from your Reserve whose effect can apply. If you do, put this card in your Graveyard and place the replacement face up in the same role.
 
 ## Supplies
 
 **Cost:** 1  
 **Complexity:** Basic
 
-> **Action:** Bank Supplies as an Asset. After your normal Draw step, you may discard Supplies. If you do, draw two cards.
+> **Action:** Bank this card.
 >
-> **Battle:** During the Aftermath of the battle, draw two cards, then discard one card.
+> **Use:** After your normal Draw step, you may discard this card. If you do, draw two cards.
+>
+> **Battle:** In the Aftermath, draw two cards, then discard one card.
 
 # Cost 2
 
@@ -143,14 +153,16 @@ Counterintelligence does not prevent a card from being set face up by a rule suc
 
 > **Action:** Play only if you captured a Territory this turn. Draw two cards.
 >
-> **Battle:** During the Aftermath of the battle, if you won as the attacker on a Territory your opponent controls, draw one card.
+> **Battle:** In the Aftermath, if you won as the attacker on a Territory your opponent controls, draw one card.
 
 ## Decoys
 
 **Cost:** 2  
 **Complexity:** Basic
 
-> **Action:** Bank Decoys as an Asset. If an opposing effect would cause one or more of your other Assets to leave play, you may discard Decoys. If you do, choose one affected Asset; it remains in play.
+> **Action:** Bank this card.
+>
+> **Use:** If an opposing effect would cause one or more of your other Assets to leave play, you may discard this card. If you do, choose one affected Asset; it remains in play.
 >
 > **Battle:** An opposing effect that would negate or remove a card you have in battle must choose Decoys before another eligible card you control, if able.
 
@@ -161,14 +173,16 @@ Counterintelligence does not prevent a card from being set face up by a rule suc
 
 > **Action:** The opponent discards one random card from their Hand.
 >
-> **Battle:** When Disruption is revealed, before other effects at that reveal stage are applied, choose one opposing Gambit or Tactic at that stage whose effect has not yet been applied. Negate it. Return a Gambit to its owner's Hand or a Tactic to its owner's Reserve. That specific card cannot be set or chosen again during this battle.
+> **Battle:** When revealed, before other effects at this stage, choose one opposing Gambit or Tactic at that stage whose effect has not been applied. Negate it. Return a Gambit to its owner's Hand or a Tactic to its owner's Reserve. That specific card cannot be set or chosen again during this battle.
 
 ## Entrenchment
 
 **Cost:** 2  
 **Complexity:** Basic
 
-> **Action:** Bank Entrenchment as an Asset. When the opponent advances onto a Territory adjacent to your Player Token, their movement ends and they cannot play a card for its Action effect during their Action Opportunity after movement that turn.
+> **Action:** Bank this card.
+>
+> **Asset:** When the opponent advances onto a Territory adjacent to your Player Token, their movement ends and they cannot play a card for its Action effect during their Action Opportunity after movement that turn.
 >
 > **Battle:** If you are the defender, the opponent gains disadvantage during this battle.
 
@@ -177,16 +191,20 @@ Counterintelligence does not prevent a card from being set face up by a rule suc
 **Cost:** 2  
 **Complexity:** Basic
 
-> **Action:** Bank Foothold as an Asset. After you win as the defender while you are the occupier of a Territory, you may discard Foothold. If you do, draw two cards.
+> **Action:** Bank this card.
 >
-> **Battle:** If you are defending while you are the occupier of the contested Territory, gain advantage. During the Aftermath of the battle, if you won, draw one card.
+> **Use:** After you win while defending against a Counterattack, you may discard this card. If you do, draw two cards.
+>
+> **Battle:** If you are defending against a Counterattack, gain advantage. In the Aftermath, if you won, draw one card.
 
 ## Illegal Occupation
 
 **Cost:** 2  
 **Complexity:** Basic
 
-> **Action:** Bank Illegal Occupation as an Asset. While the opponent is the occupier of a Territory you control, their banked Assets are inactive.
+> **Action:** Bank this card.
+>
+> **Asset:** While the opponent occupies a Territory you control, their banked Assets are inactive.
 >
 > **Battle:** If this battle is a Counterattack, their banked Assets are inactive during this battle and you gain advantage.
 
@@ -195,18 +213,22 @@ Counterintelligence does not prevent a card from being set face up by a rule suc
 **Cost:** 2  
 **Complexity:** Basic
 
-> **Action:** Bank Palisade Wall as an Asset. During opening effects when you are the defender, you may discard it. If you do, the opponent's banked Assets are inactive during that battle.
+> **Action:** Bank this card.
 >
-> **Battle:** When Palisade Wall is revealed, before other effects at that reveal stage are applied, if you are the defender, negate one opposing Gambit whose effect has not yet been applied. If there is no eligible Gambit, gain advantage instead.
+> **Use:** During opening effects when you are the defender, you may discard this card. If you do, the opponent's banked Assets are inactive during that battle.
+>
+> **Battle:** When revealed, before other effects at this stage, if you are the defender, negate one opposing Gambit whose effect has not been applied. If there is no eligible Gambit, gain advantage instead.
 
 ## Reinforcements
 
 **Cost:** 2  
 **Complexity:** Basic
 
-> **Action:** Bank Reinforcements as an Asset. During your turn, you may discard it to take one additional Action Opportunity.
+> **Action:** Bank this card.
 >
-> **Battle:** After Tactics are revealed, draw one additional card into your Reserve. You may immediately play it face up as an additional Tactic if it has a Tactic or Battle effect that can still be applied.
+> **Use:** During your turn, you may discard this card to take another Action Opportunity.
+>
+> **Battle:** After Tactics are revealed, draw one additional card into your Reserve. You may immediately play it face up as an additional Tactic.
 
 ## Requisition
 
@@ -222,7 +244,9 @@ Counterintelligence does not prevent a card from being set face up by a rule suc
 **Cost:** 2  
 **Complexity:** Basic
 
-> **Action:** Bank Rousing Speech as an Asset. Whenever the opponent banks an Asset, you may draw one card, then discard one card.
+> **Action:** Bank this card.
+>
+> **Asset:** Whenever the opponent banks an Asset, you may draw one card, then discard one card.
 >
 > **Battle:** If the opponent has more face-up Assets than you, gain advantage.
 
@@ -235,7 +259,7 @@ Turning an existing Asset face up does not count as banking it.
 
 > **Action:** Choose one face-up opposing Asset. Turn it face down until the start of your next turn.
 >
-> **Battle:** When Sabotage is revealed, before other effects at that reveal stage are applied, choose one opposing Gambit or Tactic at that stage whose effect has not yet been applied. Negate it and put it in its owner's Discard Pile immediately.
+> **Battle:** When revealed, before other effects at this stage, choose one opposing Gambit or Tactic at that stage whose effect has not been applied. Negate it and put it in its owner's Discard Pile immediately.
 
 ## Salvage
 
@@ -244,16 +268,18 @@ Turning an existing Asset face up does not count as banking it.
 
 > **Action:** Return one card from your Discard Pile to your Hand, then discard one card from your Hand.
 >
-> **Battle:** During the Aftermath of the battle, if you won, you may put one card remaining in your Reserve in your Hand instead of your Discard Pile. If you do, discard one card from your Hand.
+> **Battle:** In the Aftermath, if you won, you may put one card remaining in your Reserve in your Hand instead of your Discard Pile. If you do, discard one card from your Hand.
 
 ## Scorched Earth
 
 **Cost:** 2  
 **Complexity:** Advanced
 
-> **Action:** Bank Scorched Earth as an Asset. During the Aftermath of a battle you lost while defending a Territory you control, after you retreat, you may place Scorched Earth on that Territory as a Ruins Overlay.
+> **Action:** Bank this card.
 >
-> **Battle:** During the Aftermath of the battle, if you lose while defending a Territory you control and retreat, place Scorched Earth on that Territory as a Ruins Overlay; do not put it in a Graveyard or Discard Pile.
+> **Use:** In the Aftermath of a battle you lost while defending a Territory you control, after you retreat, you may place this card on that Territory as a Ruins Overlay.
+>
+> **Battle:** In the Aftermath, if you lose while defending a Territory you control and retreat, place this card on that Territory as a Ruins Overlay.
 
 ## Sedition
 
@@ -269,7 +295,9 @@ Turning an existing Asset face up does not count as banking it.
 **Cost:** 2  
 **Complexity:** Basic
 
-> **Action:** Bank Stand Ground as an Asset. When an opposing card effect would move you, you may discard Stand Ground. If you do, ignore that movement.
+> **Action:** Bank this card.
+>
+> **Use:** When an opposing card effect would move you, you may discard this card. If you do, ignore that movement.
 >
 > **Battle:** If you are the defender, gain advantage.
 
@@ -282,7 +310,7 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 
 > **Action:** Return one banked Asset you control to your Hand. If you do, move one additional position this turn.
 >
-> **Battle:** During the Aftermath of the battle, if you lose, after your normal retreat you may move one additional position toward your own end. If you do, return one other card you controlled in this battle to your Hand rather than putting it in a Graveyard or Discard Pile.
+> **Battle:** In the Aftermath, if you lose, after your normal retreat you may move one additional position toward your own end. If you do, return one other card you controlled in this battle to your Hand.
 
 ## Tactical Planning
 
@@ -298,7 +326,9 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 **Cost:** 2  
 **Complexity:** Basic
 
-> **Action:** Bank Valor as an Asset. Whenever you lose a battle, after you retreat, draw one card.
+> **Action:** Bank this card.
+>
+> **Asset:** Whenever you lose a battle, after you retreat, draw one card.
 >
 > **Battle:** After battle dice are rolled, if your battle total is lower than the opponent's, you may reroll your battle die. You must use the new result.
 
@@ -309,16 +339,18 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 **Cost:** 3  
 **Complexity:** Advanced
 
-> **Action:** Bank Attrition as an Asset. During the Aftermath of a battle the opponent lost against you, put each opposing Tactic from that battle in their Graveyard instead of their Discard Pile.
+> **Action:** Bank this card.
 >
-> **Battle:** During the Aftermath of the battle, if the opponent loses, put every card remaining from their initial Reserve in their Graveyard rather than their Discard Pile.
+> **Asset:** In the Aftermath of a battle the opponent lost against you, put each opposing Tactic from that battle in their Graveyard instead of their Discard Pile.
+>
+> **Battle:** In the Aftermath, if the opponent loses, put every card from their initial Reserve in their Graveyard.
 
 ## Conscription
 
 **Cost:** 3  
 **Complexity:** Basic
 
-> **Action:** Draw one card. You may immediately play one card from your Hand whose Action effect banks it as an Asset, without using another Action Opportunity.
+> **Action:** Draw one card. You may immediately play one card from your Hand whose Action effect banks it, without using another Action Opportunity.
 >
 > **Gambit:** When Gambits are revealed, draw one additional card into your Reserve. You may choose one additional Tactic during this battle.
 
@@ -329,14 +361,16 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 
 > **Action:** Return one card from your Discard Pile to your Hand.
 >
-> **Battle:** When Contraband is revealed, choose one eligible card in your Discard Pile whose Battle effect can still be applied at this stage. Put Contraband in your Graveyard and place the chosen card face up in Contraband's role. During the Aftermath of the battle, put the chosen card in your Graveyard unless its text tells you to put it elsewhere.
+> **Battle:** When revealed, choose one eligible card in your Discard Pile whose Battle effect can apply now. Put Contraband in your Graveyard and place the chosen card face up in Contraband's role. In the Aftermath, put the chosen card in your Graveyard unless its text says otherwise.
 
 ## Counterworks
 
 **Cost:** 3  
 **Complexity:** Advanced
 
-> **Action:** Bank Counterworks as an Asset. When an opposing effect would place an Overlay on a Territory, you may discard Counterworks. If you do, that Overlay is not placed. If a card would have become it, put that card in its owner's Discard Pile.
+> **Action:** Bank this card.
+>
+> **Use:** When an opposing effect would place an Overlay on a Territory, you may discard this card. If you do, that Overlay is not placed. If a card would have become it, put that card in its owner's Discard Pile.
 >
 > **Battle:** Choose one: one Overlay on the contested Territory is inactive during this battle; or the next opposing Overlay that would be placed there during this battle or its Aftermath is not placed. If a card would have become it, put that card in its owner's Discard Pile.
 
@@ -345,7 +379,9 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 **Cost:** 3  
 **Complexity:** Basic
 
-> **Action:** Bank Court Martial as an Asset. During the Aftermath of a battle an opponent lost against you, after their normal retreat, you may discard Court Martial. If you do, they retreat one additional position, if able.
+> **Action:** Bank this card.
+>
+> **Use:** In the Aftermath of a battle an opponent lost against you, after their normal retreat, you may discard this card. If you do, they retreat one additional position, if able.
 >
 > **Battle:** The opponent gains disadvantage during this battle. If they lose, after their normal retreat they retreat one additional position, if able.
 
@@ -354,7 +390,9 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 **Cost:** 3  
 **Complexity:** Basic
 
-> **Action:** Bank Fortifications as an Asset. When defending, you may choose up to two Tactics instead of one.
+> **Action:** Bank this card.
+>
+> **Asset:** When defending, you may choose up to two Tactics instead of one.
 >
 > **Battle:** If you are the defender, add +1 to your battle total. If you lose, after your normal retreat you may move one additional position toward your own end.
 
@@ -363,7 +401,7 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 **Cost:** 3  
 **Complexity:** Advanced
 
-> **Action:** Discard your Hand. Each player shuffles their Discard Pile into their Draw Pile. Draw three cards, then take one additional Action Opportunity.
+> **Action:** Discard your Hand. Each player shuffles their Discard Pile into their Draw Pile. Draw three cards, then take another Action Opportunity.
 >
 > **Battle:** If this battle is a Counterattack, gain double advantage. Otherwise, if you are the attacker, gain advantage.
 
@@ -372,9 +410,11 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 **Cost:** 3  
 **Complexity:** Advanced
 
-> **Action:** Bank Liberation as an Asset. After you win a Counterattack, draw one card, then take one additional Action Opportunity.
+> **Action:** Bank this card.
 >
-> **Battle:** If this battle is a Counterattack, draw one additional card when forming your Reserve and you may choose one additional Tactic.
+> **Asset:** After you win a Counterattack, draw one card, then take another Action Opportunity.
+>
+> **Battle:** If this battle is a Counterattack, form your Reserve with one additional card and you may choose one additional Tactic.
 
 ## Protracted Siege
 
@@ -382,20 +422,24 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 **Complexity:** Advanced  
 **Card form:** Territory Overlay
 
-> **Action:** Bank Protracted Siege as an Asset. When an opponent would capture a Territory you control during their Capture step, you may place Protracted Siege on that Territory as an Overlay. If you do, that capture does not occur. During their next Capture step, they capture it normally if they are still the occupier of that Territory.
+> **Action:** Bank this card.
 >
-> **Battle:** During the Aftermath of the battle, if you lose while defending a Territory you control, place Protracted Siege on that Territory as an Overlay; do not put it in a Graveyard or Discard Pile. The opponent does not capture it during their next Capture step. During their following Capture step, they capture it normally if they are still the occupier of that Territory.
+> **Use:** When an opponent would capture a Territory you control during their Capture step, you may place this card on that Territory as an Overlay. If you do, that capture does not occur. During their next Capture step, they capture it normally if they still occupy that Territory.
 >
-> After it delays one Capture step, or if the occupier leaves first, put Protracted Siege in its owner's Graveyard.
+> **Battle:** In the Aftermath, if you lose while defending a Territory you control, place this card on that Territory as an Overlay. The opponent does not capture it during their next Capture step. During their following Capture step, they capture it normally if they still occupy that Territory.
+>
+> **Overlay:** After this card delays one Capture step, or if the player occupying its Territory leaves first, put this card in its owner's Graveyard.
 
 ## Resistance
 
 **Cost:** 3  
 **Complexity:** Advanced
 
-> **Action:** Bank Resistance as an Asset. When initiating a Counterattack, draw two additional cards when forming your Reserve.
+> **Action:** Bank this card.
 >
-> **Battle:** If this battle is a Counterattack, gain advantage. During the Aftermath of the battle, if you win, bank Resistance as an Asset; do not put it in a Graveyard or Discard Pile.
+> **Asset:** When initiating a Counterattack, form your Reserve with two additional cards.
+>
+> **Battle:** If this battle is a Counterattack, gain advantage. In the Aftermath, if you win, bank this card.
 
 If your Asset Bank is full, you may use the normal Asset-replacement rule to make room.
 
@@ -404,7 +448,9 @@ If your Asset Bank is full, you may use the normal Asset-replacement rule to mak
 **Cost:** 3  
 **Complexity:** Advanced
 
-> **Action:** Bank Resourcefulness as an Asset. You may have only one banked Resourcefulness. The first time during each of your turns that you apply the Action, Gambit, Tactic, or Battle effect of a cost-1 card you played, set, or chose, draw one card.
+> **Action:** Bank this card.
+>
+> **Asset:** You may have only one banked Resourcefulness. The first time during each of your turns that you apply the Action, Gambit, Tactic, or Battle effect of a cost-1 card you played, set, or chose, draw one card.
 >
 > **Battle:** If another active card you control in this battle has cost 1, gain advantage.
 
@@ -420,7 +466,7 @@ A copied effect does not trigger Resourcefulness unless the cost-1 card itself i
 
 > **Action:** Move one card from your Graveyard to your Discard Pile.
 >
-> **Battle:** When Arcane Knowledge is revealed, choose one card in your Graveyard with a Battle effect that can be applied now. Apply that effect as though you played it. Leave the chosen card in your Graveyard.
+> **Battle:** When revealed, choose one card in your Graveyard with a Battle effect that can be applied now. Apply that effect as though you played it. Leave the chosen card in your Graveyard.
 
 Arcane Knowledge follows the shared copied-effect rules.
 
@@ -429,9 +475,11 @@ Arcane Knowledge follows the shared copied-effect rules.
 **Cost:** 4  
 **Complexity:** Advanced
 
-> **Action:** Bank Armistice as an Asset. While it is active, neither player can start a battle. After your normal Draw step at the start of each of your turns, discard two cards from your Hand or discard Armistice. You cannot voluntarily discard it at another time.
+> **Action:** Bank this card.
 >
-> **Battle:** When Armistice is revealed, apply effects that could negate it before other effects at that stage. If Armistice is not negated, the attacker withdraws and the battle ends without a winner. Do not apply any remaining Battle effects. Put every other Gambit and Tactic still in battle in its owner's Discard Pile, then put Armistice in its owner's Graveyard. Cards remaining in Reserve are discarded normally.
+> **Asset:** While this card is banked, neither player can start a battle. After your normal Draw step at the start of each of your turns, discard two cards from your Hand or discard this card. You cannot voluntarily discard this card at another time.
+>
+> **Battle:** When revealed, apply effects that could negate it before other effects at that stage. If this card is not negated, the attacker withdraws and the battle ends without a winner. Do not apply any remaining Battle effects. Put every other Gambit and Tactic still in battle in its owner's Discard Pile, then put this card in its owner's Graveyard. Cards remaining in Reserve are discarded normally.
 
 Effects already applied are not undone.
 
@@ -440,9 +488,11 @@ Effects already applied are not undone.
 **Cost:** 4  
 **Complexity:** Advanced
 
-> **Action:** Bank Assimilation as an Asset. During the Aftermath of a battle you initiated and won on a Territory the opponent controls, you may put Assimilation in your Graveyard. If you do, capture that Territory rather than becoming its occupier.
+> **Action:** Bank this card.
 >
-> **Battle:** During the Aftermath of the battle, if you win as the attacker on a Territory the opponent controls, capture that Territory rather than becoming its occupier. Put Assimilation in your Graveyard after the capture is completed.
+> **Use:** In the Aftermath of a battle you initiated and won on a Territory the opponent controls, you may put this card in your Graveyard. If you do, capture that Territory instead of occupying it.
+>
+> **Battle:** In the Aftermath, if you win as the attacker on a Territory the opponent controls, capture that Territory instead of occupying it. Put this card in your Graveyard after the capture is completed.
 
 ## Capital Punishment
 
@@ -451,7 +501,7 @@ Effects already applied are not undone.
 
 > **Action:** If you won a battle this turn, choose one opposing Asset and put it in its owner's Graveyard.
 >
-> **Battle:** When Capital Punishment is revealed, before other effects at that stage are applied, negate one opposing Gambit or Tactic whose effect has not yet been applied. During the Aftermath of the battle, if you won, put the chosen card in its owner's Graveyard.
+> **Battle:** When revealed, before other effects at that stage are applied, negate one opposing Gambit or Tactic whose effect has not been applied. In the Aftermath, if you won, put the chosen card in its owner's Graveyard.
 
 ## Invasion
 
@@ -460,7 +510,7 @@ Effects already applied are not undone.
 
 > **Action:** Move up to two additional positions this turn. This movement may be used only to advance. Move one position at a time.
 >
-> **Battle:** If you are the attacker, draw one additional card when forming your Reserve and you may choose one additional Tactic.
+> **Battle:** If you are the attacker, form your Reserve with one additional card and you may choose one additional Tactic.
 
 Unused movement is lost when a battle begins.
 
@@ -489,9 +539,9 @@ If both players exchange results, no exchange occurs.
 **Cost:** 4  
 **Complexity:** Advanced
 
-> **Action:** Place Bombardment face up on the nearest enemy-controlled Territory ahead of you with an active printed effect. While it remains there, that printed Territory effect is inactive. The next time you attack there, put Bombardment in its owner's Graveyard if you lose. If you win, or if you capture the Territory without a battle, turn Bombardment face down; it becomes a Ruins Overlay.
+> **Action:** Place Bombardment face up on the nearest enemy-controlled Territory ahead of you with an active printed effect. While it remains there, that printed Territory effect is inactive. The next time you attack there, put this card in its owner's Graveyard if you lose. If you win, or if you capture the Territory without a battle, turn Bombardment face down; it becomes a Ruins Overlay.
 >
-> **Battle:** If you are attacking on an enemy-controlled Territory, place Bombardment face up on it. That Territory's printed effect is inactive during this battle. During the Aftermath of the battle, if you win, turn Bombardment face down; it becomes a Ruins Overlay and does not go to a Graveyard or Discard Pile.
+> **Battle:** If you are attacking on an enemy-controlled Territory, place Bombardment face up on it. That Territory's printed effect is inactive during this battle. In the Aftermath, if you win, turn Bombardment face down; it becomes a Ruins Overlay.
 
 # Cost 5
 
@@ -503,7 +553,7 @@ If both players exchange results, no exchange occurs.
 
 > **Action:** As an additional cost, put every other card in your Hand in your Graveyard. Then put banked Assets you control in your Graveyard until you have put at least three cards there this way, including at least one Asset. Add Manifest Destiny to your end of the Gauntlet. It becomes a blank Territory under your control.
 >
-> **Battle:** During the Aftermath of the battle, if you win as the attacker on a Territory the opponent controls, insert Manifest Destiny between the contested Territory and the position from which you attacked. It becomes a blank Territory under your control and does not go to a Graveyard or Discard Pile.
+> **Battle:** In the Aftermath, if you win as the attacker on a Territory the opponent controls, insert Manifest Destiny between the contested Territory and the position from which you attacked. It becomes a blank Territory under your control.
 
 Manifest Destiny is a normal Territory after entering the Gauntlet and has a normal Deed.
 

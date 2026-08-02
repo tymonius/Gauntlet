@@ -271,6 +271,8 @@ To play a card for its Action effect:
 
 A card is an Asset only when an effect banks it in the Asset Bank.
 
+On card text, **Bank this card** means place it face up in your Asset Bank. An **Asset** heading contains continuous or automatic text that applies while the card is banked. A **Use** heading contains an optional ability of a banked Asset.
+
 A player's Asset limit equals the number of Territories they control.
 
 - A Territory where you are the occupier does not increase the limit.

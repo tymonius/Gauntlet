@@ -105,7 +105,9 @@ War Crimes and Shock and Awe may prohibit movement, capture, or Orders resulting
 
 **Cost:** 1
 
-> **Action:** Bank Unbroken Ranks as an Asset. After you win a battle in which you used no Orders, you may discard it. If you do, gain 1 Command.
+> **Action:** Bank this card.
+>
+> **Use:** After you win a battle in which you used no Orders, you may discard this card. If you do, gain 1 Command.
 >
 > **Battle:** If you win this battle and used no Orders during it, gain 1 Command.
 
@@ -117,7 +119,7 @@ The Battle gain occurs during the Aftermath before an eligible post-victory Orde
 
 > **Action:** Play only during an Action Opportunity after you win a battle this turn. Return one Tactic you chose during that battle from your Discard Pile to your Hand.
 >
-> **Battle:** During the Aftermath of the battle, if you won, return one other Tactic you chose to your Hand instead of putting it in your Discard Pile.
+> **Battle:** In the Aftermath, if you won, return one other Tactic you chose to your Hand instead of putting it in your Discard Pile.
 
 ## Encampment
 
@@ -126,9 +128,9 @@ The Battle gain occurs during the Aftermath before an eligible post-victory Orde
 
 > **Action:** Place Encampment as an Overlay on a revealed Territory you occupy and control.
 >
-> **Overlay:** At the end of Encampment's owner's turn, if they occupy and control this Territory, they gain 1 Command. When another player gains control of this Territory, put Encampment in its owner's Graveyard.
+> **Overlay:** At the end of Encampment's owner's turn, if they occupy and control this Territory, they gain 1 Command. When another player gains control of this Territory, put this card in its owner's Graveyard.
 >
-> **Battle:** During the Aftermath of the battle, if you won while defending a revealed Territory you control, place Encampment on that Territory as an Overlay.
+> **Battle:** In the Aftermath, if you won while defending a revealed Territory you control, place this card on that Territory as an Overlay.
 
 Encampment identifies its owner because general Overlay control changes with the underlying Territory.
 
@@ -136,9 +138,11 @@ Encampment identifies its owner because general Overlay control changes with the
 
 **Cost:** 2
 
-> **Action:** Bank Rearguard as an Asset. After you lose a battle and retreat, when your opponent would use an Order or card effect to enter your position during that turn, you may discard Rearguard. If you do, prevent that movement. No Command is spent, and any card used for that effect returns to its owner's Hand. That Order cannot be used again that turn, and that specific card cannot be played again that turn.
+> **Action:** Bank this card.
 >
-> **Battle:** During the Aftermath of the battle, if you lose and retreat, bank Rearguard as an Asset.
+> **Use:** After you lose a battle and retreat, when your opponent would use an Order or card effect to enter your position during that turn, you may discard this card. If you do, prevent that movement. No Command is spent, and any card used for that effect returns to its owner's Hand. That Order cannot be used again that turn, and that specific card cannot be played again that turn.
+>
+> **Battle:** In the Aftermath, if you lose and retreat, bank this card.
 
 A second physical copy of the same card title may still be played.
 
@@ -146,19 +150,23 @@ A second physical copy of the same card title may still be played.
 
 **Cost:** 2
 
-> **Action:** Bank Brothers in Arms as an Asset. When choosing Tactics, if you did not set a Gambit, you may discard it. If you do, choose one eligible Tactic from your Reserve and one card from your Hand with a Tactic or Battle effect. Set both face down as your Tactics, or pass.
+> **Action:** Bank this card.
+>
+> **Use:** When choosing Tactics, if you did not set a Gambit, you may discard this card. If you do, choose one eligible Tactic from your Reserve and one card from your Hand with a Tactic or Battle effect. Set both face down as your Tactics, or pass.
 >
 > **Tactic:** When you choose Brothers in Arms as your Tactic, if you did not set a Gambit, you may also choose one card from your Hand with a Tactic or Battle effect as an additional Tactic. Set it face down and reveal both together.
 >
-> During the Aftermath of the battle, put the card chosen from your Hand in your Graveyard instead of your Discard Pile.
+> In the Aftermath, put the card chosen from your Hand in your Graveyard instead of your Discard Pile.
 
 ## Field Command
 
 **Cost:** 3
 
-> **Action:** Bank Field Command as an Asset. After you use a 1-Command Order, you may discard it. If you do, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command.
+> **Action:** Bank this card.
 >
-> **Battle:** After you use a 1-Command Order during this battle while Field Command is face up, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command. If you do, put Field Command in your Graveyard after that Order takes effect.
+> **Use:** After you use a 1-Command Order, you may discard this card. If you do, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command.
+>
+> **Battle:** After you use a 1-Command Order during this battle while Field Command is face up, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command. If you do, put this card in your Graveyard after that Order takes effect.
 
 Field Command does not let an Order occur outside its legal timing.
 
@@ -166,9 +174,13 @@ Field Command does not let an Order occur outside its legal timing.
 
 **Cost:** 3
 
-> **Action:** Bank Reserve Force as an Asset with one card from your Hand that has a Tactic or Battle effect face down beneath it. After Tactics are revealed in a battle involving you, you may discard Reserve Force. If you do, play the stored card face up as an additional Tactic, provided its effect can be applied then. During the Aftermath of the battle, put the stored card in your Graveyard. If Reserve Force leaves play before deployment, put the stored card in your Graveyard.
+> **Action:** Bank this card with one card from your Hand that has a Tactic or Battle effect face down beneath it.
 >
-> **Battle:** After Tactics are revealed, you may replace Reserve Force with an eligible card from your Hand whose effect can still be applied. If you do, put Reserve Force in your Graveyard and place the replacement face up. If you do not, put Reserve Force in your Discard Pile during the Aftermath of the battle.
+> **Asset:** If this card leaves play without deploying the stored card, put that card in your Graveyard.
+>
+> **Use:** After Tactics are revealed in a battle involving you, you may discard this card. If you do, play the stored card face up as an additional Tactic. In the Aftermath, put the stored card in your Graveyard.
+>
+> **Battle:** After Tactics are revealed, you may replace Reserve Force with an eligible card from your Hand whose effect can apply. If you do, put this card in your Graveyard and place the replacement face up. If you do not, put this card in your Discard Pile during the Aftermath of the battle.
 
 The replacement takes Reserve Force's role as a Gambit or Tactic.
 
@@ -184,9 +196,11 @@ The replacement takes Reserve Force's role as a Gambit or Tactic.
 
 **Cost:** 4
 
-> **Action:** Bank Hold the Line as an Asset. During opening effects in a battle where you are defending a Territory you control, you may put it in your Graveyard. If you do, after Tactics are revealed, draw two cards into your Reserve. You may immediately play one face up as an additional Tactic if it has a Tactic or Battle effect that can be applied then. If you lose, after you retreat, the attacker captures that Territory.
+> **Action:** Bank this card.
 >
-> **Battle:** If you are defending a Territory you control, after Tactics are revealed, draw two cards into your Reserve. You may immediately play one face up as an additional Tactic if eligible. If you lose, after you retreat, the attacker captures that Territory. During the Aftermath of the battle, put Hold the Line in your Graveyard.
+> **Use:** During opening effects in a battle where you are defending a Territory you control, you may put this card in your Graveyard. If you do, after Tactics are revealed, draw two cards into your Reserve. You may immediately play one face up as an additional Tactic. If you lose, after you retreat, the attacker captures that Territory.
+>
+> **Battle:** If you are defending a Territory you control, after Tactics are revealed, draw two cards into your Reserve. You may immediately play one face up as an additional Tactic. If you lose, after you retreat, the attacker captures that Territory. In the Aftermath, put this card in your Graveyard.
 
 Cards drawn but not played remain in Reserve and are discarded normally.
 
@@ -194,9 +208,11 @@ Cards drawn but not played remain in Reserve and are discarded normally.
 
 **Cost:** 4
 
-> **Action:** Bank Countercharge as an Asset. At the end of the Aftermath of a battle you did not initiate and won, you may put it in your Graveyard. If you do, advance one position. This movement may start a battle.
+> **Action:** Bank this card.
 >
-> **Battle:** At the end of the Aftermath of a battle you did not initiate and won, put Countercharge in your Graveyard, then advance one position. This movement may start a battle.
+> **Use:** At the end of the Aftermath of a battle you did not initiate and won, you may put this card in your Graveyard. If you do, advance one position. This movement may start a battle.
+>
+> **Battle:** At the end of the Aftermath of a battle you did not initiate and won, put this card in your Graveyard, then advance one position. This movement may start a battle.
 
 The follow-up battle may begin during the opponent's turn.
 
@@ -204,9 +220,11 @@ The follow-up battle may begin during the opponent's turn.
 
 **Cost:** 4
 
-> **Action:** Bank War Crimes as an Asset. During the Aftermath of a battle you won, you may put it in your Graveyard. If you do, put all opposing Tactics from that battle in their owner's Graveyard instead of their Discard Pile, and the opponent retreats one additional position. You cannot move, capture a Territory, or use an Order as a result of that victory.
+> **Action:** Bank this card.
 >
-> **Battle:** During the Aftermath of the battle, if you won, you may apply the same effect. If you do, put War Crimes in your Graveyard.
+> **Use:** In the Aftermath of a battle you won, you may put this card in your Graveyard. If you do, put all opposing Tactics from that battle in their owner's Graveyard instead of their Discard Pile, and the opponent retreats one additional position. You cannot move, capture a Territory, or use an Order as a result of that victory.
+>
+> **Battle:** In the Aftermath, if you won, you may apply the same effect. If you do, put this card in your Graveyard.
 
 Cards left in the opponent's Reserve are unaffected.
 
@@ -215,11 +233,13 @@ Cards left in the opponent's Reserve are unaffected.
 **Cost:** 5  
 **Unique:** Maximum one copy per Playable Deck
 
-> **Action:** Bank Shock and Awe as an Asset. During opening effects, when you initiate a battle on an enemy-controlled Territory, you may put it in your Graveyard to use the effect below.
+> **Action:** Bank this card.
 >
-> **Battle:** If you initiated this battle on an enemy-controlled Territory, use the effect below. During the Aftermath of the battle, put Shock and Awe in your Graveyard.
+> **Use:** During opening effects, when you initiate a battle on an enemy-controlled Territory, you may put this card in your Graveyard to use the effect below.
 >
-> **Effect:** After Tactics are revealed, you may play one card from your Hand with a Tactic or Battle effect face up as an additional Tactic, provided its effect can be applied then. During the Aftermath of the battle, put that card in your Graveyard instead of your Discard Pile.
+> **Battle:** If you initiated this battle on an enemy-controlled Territory, use the effect below. In the Aftermath, put this card in your Graveyard.
+>
+> **Effect:** After Tactics are revealed, you may play one eligible card from your Hand face up as an additional Tactic. In the Aftermath, put that card in your Graveyard instead of your Discard Pile.
 >
 > If you lose, retreat one additional position.
 >

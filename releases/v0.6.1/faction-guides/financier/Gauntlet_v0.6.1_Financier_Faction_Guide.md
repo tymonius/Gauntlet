@@ -222,9 +222,9 @@ Underwriting and Property Dues may be replaced normally. Replacing Margin Loan b
 
 **Cost:** 1
 
-> **Action:** Choose one Territory you neither control nor occupy. Place Speculation face up beside it. At the start of your next turn, if you occupy or control that Territory, gain 2 Capital and put Speculation in your Discard Pile. Otherwise, put it in your Graveyard.
+> **Action:** Choose one Territory you neither control nor occupy. Place Speculation face up beside it. At the start of your next turn, if you occupy or control that Territory, gain 2 Capital and put this card in your Discard Pile. Otherwise, put this card in your Graveyard.
 >
-> **Battle:** If you initiated this battle, you may spend 1 Capital. If you do and win, gain 2 Capital during the Aftermath of the battle. If the battle ends without you winning, put Speculation in your Graveyard.
+> **Battle:** If you initiated this battle, you may spend 1 Capital. If you do and win, gain 2 Capital during the Aftermath of the battle. If the battle ends without you winning, put this card in your Graveyard.
 
 Withdrawal counts as ending without you winning.
 
@@ -234,7 +234,7 @@ Withdrawal counts as ending without you winning.
 
 > **Action:** Each player discards their Hand, then draws two cards.
 >
-> **Battle:** During the Aftermath of the battle, each player with more than one card in Hand chooses one and discards the rest.
+> **Battle:** In the Aftermath, each player with more than one card in Hand chooses one and discards the rest.
 
 ## Liquidation
 
@@ -249,24 +249,26 @@ Withdrawal counts as ending without you winning.
 **Cost:** 2  
 **Card form:** Asset
 
-> **Action:** Bank Underwriting as an Asset. During the Aftermath of a battle you lost after using Subsidize, you may discard Underwriting. If you do, gain Capital equal to the bonus you purchased.
+> **Action:** Bank this card.
 >
-> **Battle:** During the Aftermath of the battle, if you lost and used Subsidize, gain Capital equal to the bonus you purchased.
+> **Use:** In the Aftermath of a battle you lost after using Subsidize, you may discard this card. If you do, gain Capital equal to the bonus you purchased.
+>
+> **Battle:** In the Aftermath, if you lost and used Subsidize, gain Capital equal to the bonus you purchased.
 
 ## Capital Gains
 
 **Cost:** 3
 
-> **Action:** Place Capital Gains beneath one card in your Treasury. At the start of your next turn, after the Capture step and income, return that Treasury card to your Hand and gain Capital equal to its value, then put Capital Gains in your Discard Pile. If you lose a battle before then, put both cards in your Discard Pile instead. If the chosen card leaves Treasury first, put Capital Gains in your Discard Pile.
+> **Action:** Place Capital Gains beneath one card in your Treasury. At the start of your next turn, after the Capture step and income, return that Treasury card to your Hand and gain Capital equal to its value, then put this card in your Discard Pile. If you lose a battle before then, put both cards in your Discard Pile instead. If the chosen card leaves Treasury first, put this card in your Discard Pile.
 >
-> **Battle:** During the Aftermath of the battle, if you won, choose one other card you controlled in this battle that would go to a Discard Pile or Graveyard. Place that card face up in your Treasury instead.
+> **Battle:** In the Aftermath, if you won, choose one other card you controlled in this battle that would go to a Discard Pile or Graveyard. Place that card face up in your Treasury instead.
 
 ## Tariffs
 
 **Cost:** 3  
 **Card form:** Asset
 
-> **Action:** Bank Tariffs as an Asset. Draw two cards, then take one additional Action Opportunity this turn.
+> **Action:** Bank this card. Draw two cards, then take another Action Opportunity this turn.
 >
 > **Asset:** While Tariffs is banked, skip your normal draw. You cannot bank it while you control another banked Tariffs. You cannot voluntarily cause it to leave play during the turn it is banked.
 >
@@ -276,7 +278,7 @@ Withdrawal counts as ending without you winning.
 
 **Cost:** 3
 
-> **Action:** Make one Deed you own unowned. Gain Capital equal to the number of Deeds you owned before doing so, then take one additional Action Opportunity this turn.
+> **Action:** Make one Deed you own unowned. Gain Capital equal to the number of Deeds you owned before doing so, then take another Action Opportunity this turn.
 >
 > **Battle:** Before dice are rolled, you may make one Deed you own unowned. If you do, gain Capital equal to the number of Deeds you owned before doing so, then you may immediately Subsidize.
 
@@ -285,16 +287,16 @@ Withdrawal counts as ending without you winning.
 **Cost:** 3  
 **Card form:** Asset with collateral
 
-> **Action:** Choose one other card in your Hand or Treasury and place it beneath Margin Loan as collateral. Bank Margin Loan as an Asset. Gain Capital equal to the collateral card's value plus 2, then take one additional Action Opportunity this turn.
+> **Action:** Choose one other card in your Hand or Treasury and place it beneath this card as collateral. Bank this card. Gain Capital equal to the collateral card's value plus 2, then take another Action Opportunity this turn.
 >
 > **Loan:** At the start of your next turn, after the Capture step and income, choose one:
 >
-> - **Repay:** Pay Capital equal to the collateral card's value plus 3. Return the collateral to your Hand, then put Margin Loan in your Discard Pile.
-> - **Default:** Put Margin Loan and its collateral in your Graveyard.
+> - **Repay:** Pay Capital equal to the collateral card's value plus 3. Return the collateral to your Hand, then put this card in your Discard Pile.
+> - **Default:** Put this card and its collateral in your Graveyard.
 >
-> **Battle:** Before dice are rolled, you may place one other card from your Hand or Treasury beneath Margin Loan as collateral. If you do, gain Capital equal to its value, then you may immediately Subsidize. During the Aftermath of the battle, if you won, return the collateral to your Hand. Otherwise, put Margin Loan and its collateral in your Graveyard.
+> **Battle:** Before dice are rolled, you may place one other card from your Hand or Treasury beneath this card as collateral. If you do, gain Capital equal to its value, then you may immediately Subsidize. In the Aftermath, if you won, return the collateral to your Hand. Otherwise, put this card and its collateral in your Graveyard.
 >
-> If Margin Loan leaves play before the loan is settled, you default.
+> If this card leaves play before the loan is settled, you default.
 
 Withdrawal defaults on the Battle effect because you did not win.
 
@@ -304,7 +306,7 @@ Withdrawal defaults on the Battle effect because you did not win.
 
 > **Action:** Buy or buy out one Deed. For this purchase, you may use any number of cards from your Hand or Treasury as collateral. Each contributes payment equal to its value and goes to your Graveyard after the purchase. Collateral may pay the entire cost.
 >
-> **Battle:** During the Aftermath of the battle, before cards leave battle, if you won as the attacker on a Territory whose Deed you do not own, you may buy or buy out that Deed, treating yourself as its occupier. For this purchase, you may use any number of other cards you controlled in this battle as collateral. Each contributes payment equal to its value and goes to your Graveyard after the purchase. Collateral may pay the entire cost.
+> **Battle:** In the Aftermath, before battle cards are cleared, if you won as the attacker on a Territory whose Deed you do not own, you may buy or buy out that Deed, treating yourself as though you occupy it. For this purchase, you may use any number of other cards you controlled in this battle as collateral. Each contributes payment equal to its value. Put each collateral card in your Graveyard when battle cards are cleared. Collateral may pay the entire cost.
 
 ## Foreclosure
 
@@ -312,14 +314,16 @@ Withdrawal defaults on the Battle effect because you did not win.
 
 > **Action:** Choose one unoccupied Territory whose Deed you own that is adjacent to a Territory you control. Take control of the chosen Territory.
 >
-> **Battle:** During the Aftermath of the battle, if you initiated it on a Territory whose Deed you owned when the battle began and you won, capture that Territory instead of occupying it.
+> **Battle:** In the Aftermath, if you initiated it on a Territory whose Deed you owned when the battle began and you won, capture that Territory instead of occupying it.
 
 ## Property Dues
 
 **Cost:** 4  
 **Card form:** Asset
 
-> **Action:** Bank Property Dues as an Asset. The first time each turn your opponent advances onto a Territory whose Deed you own, they choose one: discard one card from Hand; or you gain 2 Capital.
+> **Action:** Bank this card.
+>
+> **Asset:** The first time each turn your opponent advances onto a Territory whose Deed you own, they choose one: discard one card from Hand; or you gain 2 Capital.
 >
 > **Battle:** If this battle takes place on a Territory whose Deed you own, your opponent chooses one: discard one card from Hand; or you gain 3 Capital during the Aftermath of the battle.
 
@@ -330,7 +334,7 @@ Withdrawal defaults on the Battle effect because you did not win.
 
 > **Action:** Buy or buy out any number of Deeds. Complete each purchase before calculating the next cost.
 >
-> **Battle:** During the Aftermath of the battle, if you won, you may buy or buy out any number of Deeds. Complete each purchase before calculating the next cost.
+> **Battle:** In the Aftermath, if you won, you may buy or buy out any number of Deeds. Complete each purchase before calculating the next cost.
 
 # 7. Quick reference
 
