@@ -22,39 +22,48 @@ jobs:
           ref: agent/sync-website-rules-terminology
           fetch-depth: 1
 
-      - name: Reconcile optional renderer variants
+      - name: Reconcile generator variants
         run: |
           python - <<'PY'
           from pathlib import Path
           import re
 
-          path = Path("scripts/sync_v061_public_rules.py")
-          text = path.read_text(encoding="utf-8")
+          public_path = Path("scripts/sync_v061_public_rules.py")
+          public_text = public_path.read_text(encoding="utf-8")
           pattern = re.compile(
               r'\n        "faction-sheets/v061-release-runtime\.js": \[\n'
               r'(?:            .*\n)+'
               r'        \],\n'
           )
-          updated, count = pattern.subn("\n", text, count=1)
+          public_updated, count = pattern.subn("\n", public_text, count=1)
           if count:
-              path.write_text(updated, encoding="utf-8")
+              public_path.write_text(public_updated, encoding="utf-8")
           else:
               print("Optional release-renderer migration block already absent.")
+
+          print_path = Path("scripts/sync_v061_print_supplementals.py")
+          print_text = print_path.read_text(encoding="utf-8")
+          print_updated = print_text.replace(
+              "no deckbuilding value",
+              "not a Playable Deck card",
+          )
+          if print_updated != print_text:
+              print_path.write_text(print_updated, encoding="utf-8")
           PY
 
       - name: Synchronize public website and printable references
         run: |
-          python scripts/sync_v061_print_supplementals.py
           python scripts/sync_v061_deckbuilder.py
           python scripts/sync_v061_public_rules.py
+          python scripts/sync_v061_print_supplementals.py
           rm -f deckbuilder/.rules-sync-trigger
 
       - name: Verify idempotent synchronization
         run: |
           git diff --binary > /tmp/public-rules-before.patch
-          python scripts/sync_v061_print_supplementals.py
           python scripts/sync_v061_deckbuilder.py
           python scripts/sync_v061_public_rules.py
+          python scripts/sync_v061_print_supplementals.py
           git diff --binary > /tmp/public-rules-after.patch
           cmp /tmp/public-rules-before.patch /tmp/public-rules-after.patch
 
