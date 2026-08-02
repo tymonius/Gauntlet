@@ -1,0 +1,30 @@
+name: Audit Action terminology
+
+on:
+  push:
+    branches:
+      - agent/distinguish-actions-opportunities
+    paths:
+      - .github/workflows/audit-action-terminology.yml
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+      - name: Find Action terminology
+        run: |
+          set -euo pipefail
+          printf '%s\n' '=== Action Opportunity / Opportunities ==='
+          git grep -n -I -E 'Action Opportunit(y|ies)' -- ':!node_modules' || true
+          printf '%s\n' '=== without using an Action Opportunity ==='
+          git grep -n -I -E 'without (using|taking) (an |any )?Action Opportunit(y|ies)' -- ':!node_modules' || true
+          printf '%s\n' '=== additional/another Action Opportunity ==='
+          git grep -n -I -E '(additional|another|extra) Action Opportunit(y|ies)' -- ':!node_modules' || true
+          printf '%s\n' '=== uses one Action Opportunity ==='
+          git grep -n -I -E '(uses|use|using) (one|an) Action Opportunity' -- ':!node_modules' || true
