@@ -1,0 +1,40 @@
+name: Audit Sleeper Network Action hook
+
+on:
+  push:
+    branches:
+      - agent/distinguish-actions-opportunities
+    paths:
+      - .github/workflows/audit-sleeper-action-hook.yml
+
+permissions:
+  contents: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          persist-credentials: true
+      - name: Record callers and Action spending patterns
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p tmp
+          {
+            printf '%s\n' '=== Sleeper start-window callers ==='
+            git grep -n -I 'maybeOpenSleeperNetworkStartTurnWindow' -- src tests || true
+            printf '%s\n' '=== Action spending patterns ==='
+            git grep -n -I -E 'actionsRemaining -= 1|actionsRemaining--|--.*actionsRemaining' -- src/state | head -n 250 || true
+            printf '%s\n' '=== action phase transition helpers ==='
+            git grep -n -I -E "action_before_movement|action_after_movement" -- src/state | head -n 400 || true
+            printf '%s\n' '=== sleeper tests ==='
+            git grep -n -I -E 'Sleeper Network|sleeper_network' -- src/state/intelligence-sleeper-network.test.ts | head -n 500 || true
+          } > tmp/sleeper-action-hook-audit.txt
+          git add -f tmp/sleeper-action-hook-audit.txt
+          git rm .github/workflows/audit-sleeper-action-hook.yml
+          git commit -m "Record Sleeper Network Action hook audit"
+          git push origin HEAD:agent/distinguish-actions-opportunities
