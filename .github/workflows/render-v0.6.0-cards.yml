@@ -6,8 +6,11 @@ on:
     paths:
       - releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json
       - faction-sheets/*.html
+      - '!faction-sheets/v061-*.html'
       - faction-sheets/*.css
+      - '!faction-sheets/v061-*.css'
       - faction-sheets/*.js
+      - '!faction-sheets/v061-*.js'
       - images/**
       - scripts/build-v0.6.0-card-sheets.mjs
       - scripts/print-v0.6.0-card-sheets.mjs
@@ -26,6 +29,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ github.token }}
+      PERSIST_GENERATED: ${{ github.event_name != 'pull_request' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -48,13 +52,16 @@ jobs:
           cat card-build.log
           if [ "$status" -ne 0 ]; then
             cp card-build.log releases/v0.6.0/Gauntlet_v0.6.0_Card_Build_Error.txt
-            node scripts/commit-generated-files.mjs \
-              "Record v0.6.0 card build error [skip ci]" -- \
-              releases/v0.6.0/Gauntlet_v0.6.0_Card_Build_Error.txt || true
+            if [ "$PERSIST_GENERATED" = "true" ]; then
+              node scripts/commit-generated-files.mjs \
+                "Record v0.6.0 card build error [skip ci]" -- \
+                releases/v0.6.0/Gauntlet_v0.6.0_Card_Build_Error.txt || true
+            fi
             exit "$status"
           fi
 
       - name: Commit rendered card PDFs
+        if: github.event_name != 'pull_request'
         run: |
           rm -f releases/v0.6.0/Gauntlet_v0.6.0_Card_Build_Error.txt
           set +e
