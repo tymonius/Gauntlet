@@ -1,0 +1,7 @@
+.live-sync-status{display:inline-flex;align-items:center;gap:.45rem;margin-top:.55rem;color:var(--tracked-muted);font-size:.78rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase}.live-sync-status::before{content:"";width:.55rem;height:.55rem;border-radius:50%;background:#a67a27;box-shadow:0 0 0 3px rgba(166,122,39,.14)}.live-sync-status.connected::before{background:#28704f;box-shadow:0 0 0 3px rgba(40,112,79,.14)}.live-sync-status.checking::before{animation:tracked-live-pulse 1s ease-in-out infinite}.live-sync-status.paused::before{background:#8f1f25;box-shadow:0 0 0 3px rgba(143,31,37,.14)}
+.lifecycle-control-guidance{margin:.9rem 0 0;color:var(--tracked-muted);font-size:.9rem;font-weight:700}
+.button:disabled,button:disabled,.button[aria-disabled="true"],button[aria-disabled="true"]{opacity:.42!important;cursor:not-allowed!important;filter:grayscale(.55);box-shadow:none!important;transform:none!important;pointer-events:none}
+.button:disabled:hover,button:disabled:hover,.button[aria-disabled="true"]:hover,button[aria-disabled="true"]:hover{transform:none!important;box-shadow:none!important}
+body[data-tracked-role="participant"] #playPanel,body[data-tracked-role="participant"] #resultSection,body[data-tracked-role="visitor"] #playPanel,body[data-tracked-role="visitor"] #resultSection{display:none!important}
+@keyframes tracked-live-pulse{0%,100%{opacity:.45;transform:scale(.85)}50%{opacity:1;transform:scale(1.08)}}
+@media(prefers-reduced-motion:reduce){.live-sync-status.checking::before{animation:none}}
