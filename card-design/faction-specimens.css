@@ -4,6 +4,7 @@
   --faction-border: var(--card-ivory);
   --faction-border-outline: rgba(62, 52, 41, 0.52);
   --faction-border-rule: rgba(62, 52, 41, 0.24);
+  --faction-border-ink: var(--card-ink);
   border-color: var(--faction-border-outline);
   background: var(--faction-border);
 }
@@ -17,6 +18,7 @@
   --faction-border: #eee7d5;
   --faction-border-outline: rgba(62, 52, 41, 0.52);
   --faction-border-rule: rgba(62, 52, 41, 0.24);
+  --faction-border-ink: #241c15;
 }
 
 .faction-specimen-page .military-card,
@@ -24,6 +26,7 @@
   --faction-border: #9e262c;
   --faction-border-outline: #5f1418;
   --faction-border-rule: rgba(255, 244, 226, 0.38);
+  --faction-border-ink: #f7eddb;
 }
 
 .faction-specimen-page .diplomat-card,
@@ -31,6 +34,7 @@
   --faction-border: #264f91;
   --faction-border-outline: #17345f;
   --faction-border-rule: rgba(244, 248, 255, 0.38);
+  --faction-border-ink: #f5f0e4;
 }
 
 .faction-specimen-page .financier-card,
@@ -38,6 +42,7 @@
   --faction-border: #227044;
   --faction-border-outline: #124429;
   --faction-border-rule: rgba(242, 255, 246, 0.38);
+  --faction-border-ink: #f5efe0;
 }
 
 .faction-specimen-page .intelligence-card,
@@ -45,6 +50,7 @@
   --faction-border: #282827;
   --faction-border-outline: #111111;
   --faction-border-rule: rgba(255, 255, 250, 0.34);
+  --faction-border-ink: #f1eadc;
 }
 
 .faction-specimen-page .mystic-card,
@@ -52,6 +58,7 @@
   --faction-border: #5d347e;
   --faction-border-outline: #38204e;
   --faction-border-rule: rgba(251, 244, 255, 0.38);
+  --faction-border-ink: #f6eee2;
 }
 
 .faction-specimen-page .inquisition-card,
@@ -59,6 +66,7 @@
   --faction-border: #a67a27;
   --faction-border-outline: #66470e;
   --faction-border-rule: rgba(255, 249, 225, 0.42);
+  --faction-border-ink: #fff5dc;
 }
 
 .faction-card-sheet {
