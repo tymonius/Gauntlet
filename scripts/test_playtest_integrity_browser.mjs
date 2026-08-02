@@ -92,6 +92,7 @@ async function run(viewport, name) {
   if ((await page.locator("#metricActiveGames").textContent()) !== "1") throw new Error("Active game metric did not load");
   if ((await page.locator('[data-exclude-type="response"]').count()) !== 2) throw new Error("Response exclusion actions were not rendered");
 
+  await page.locator(".integrity-game summary").first().click();
   await page.locator('[data-exclude-type="response"][data-exclude-id="player-2"]').click();
   await page.selectOption("#reasonCode", "test");
   await page.fill("#reasonNote", "Deployment smoke test");
