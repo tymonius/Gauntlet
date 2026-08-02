@@ -139,7 +139,7 @@ def main() -> int:
     chapter_two = text.index("# 2. Cards, Zones, and the Play Area")
     setup = text.index("# 3. Setup")
     first_use_markers = {
-        "Action Opportunity": "### Action Opportunity",
+        "Action Opportunity": "### Actions and Action Opportunities",
         "Gambit": "- **Gambit:**",
         "Reserve": "### Reserve",
         "Tactic": "- **Tactic:**",

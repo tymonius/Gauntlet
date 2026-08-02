@@ -169,7 +169,7 @@ export function buildGuidedOptions(game: GameState): GuidedOption[] {
   if (game.phase === 'turn_start') options.push({ label: 'Draw 1 card', action: { type: 'draw_card', playerId } });
   if (game.phase === 'action_before_movement' || game.phase === 'action_after_movement') {
     for (const use of view.legalNeutralAssetUses ?? []) {
-      options.push({ label: `Discard ${use.cardId} for an additional Action Opportunity`, action: { type: use.action, playerId } });
+      options.push({ label: `Discard ${use.cardId} to gain 1 Action and another Action Opportunity`, action: { type: use.action, playerId } });
     }
     for (const play of view.legalActionPlays ?? []) {
       if (play.cardId === 'mystics-black-covenant'

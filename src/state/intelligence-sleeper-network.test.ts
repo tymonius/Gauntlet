@@ -122,7 +122,7 @@ describe('Sleeper Network', () => {
     ]);
   });
 
-  it('offers activation before the normal turn-start draw on a later turn', () => {
+  it('offers activation during an Action Opportunity on a later turn', () => {
     const state = bankNetwork(game());
     state.turn = 3;
     state.phase = 'turn_start';
@@ -130,19 +130,22 @@ describe('Sleeper Network', () => {
     state.priorityPlayer = 'player_1';
 
     runPostActionAutomationPipeline(state);
+    expect(state.pendingIntelligenceChoice).toBeUndefined();
 
+    state.phase = 'action_before_movement';
+    state.players.player_1.actionsRemaining = 1;
+    runPostActionAutomationPipeline(state);
     expect(state.pendingIntelligenceChoice).toMatchObject({
       kind: 'sleeper_network_activate',
       playerId: 'player_1',
     });
-    expect(() => applyGameAction(state, { type: 'draw_card', playerId: 'player_1' })).toThrow(/pending Intelligence choice/i);
   });
 
-  it('activates into a legal Action queue and preserves the turn Action Opportunity', () => {
+  it('spends one Action to activate and resolves the bound Action queue without further Actions', () => {
     let state = bankNetwork(game());
     state.players.player_1.intelligence!.sleeperNetwork!.cards.push('card-valor');
     state.turn = 3;
-    state.phase = 'turn_start';
+    state.phase = 'action_before_movement';
     state.players.player_1.actionsRemaining = 1;
     runPostActionAutomationPipeline(state);
 
@@ -164,9 +167,9 @@ describe('Sleeper Network', () => {
       cardId: 'card-attrition',
     }).state;
 
-    expect(state.phase).toBe('turn_start');
-    expect(state.players.player_1.actionsRemaining).toBe(1);
-    expect(state.players.player_1.hasPlayedActionThisTurn).toBe(false);
+    expect(state.phase).toBe('action_before_movement');
+    expect(state.players.player_1.actionsRemaining).toBe(0);
+    expect(state.players.player_1.hasPlayedActionThisTurn).toBe(true);
     expect(state.players.player_1.zones.assetBank).toContain('card-attrition');
     expect(state.players.player_1.zones.discard).toContain('card-valor');
     expect(state.players.player_1.intelligence?.sleeperNetwork).toBeUndefined();
@@ -178,7 +181,8 @@ describe('Sleeper Network', () => {
     state.players.player_2.zones.hand = ['opponent-secret'];
     state.players.player_1.zones.deck = ['drawn-card'];
     state.turn = 3;
-    state.phase = 'turn_start';
+    state.phase = 'action_before_movement';
+    state.players.player_1.actionsRemaining = 1;
     runPostActionAutomationPipeline(state);
     state = applyGameAction(state, { type: 'resolve_intelligence_choice', playerId: 'player_1', choice: 'activate' }).state;
 
@@ -286,7 +290,8 @@ describe('Sleeper Network', () => {
     let state = bankNetwork(game());
     state.players.player_1.intelligence!.sleeperNetwork!.cards.push('intelligence-spies');
     state.turn = 3;
-    state.phase = 'turn_start';
+    state.phase = 'action_before_movement';
+    state.players.player_1.actionsRemaining = 1;
     runPostActionAutomationPipeline(state);
     state = applyGameAction(state, { type: 'resolve_intelligence_choice', playerId: 'player_1', choice: 'activate' }).state;
 

@@ -97,7 +97,7 @@ A battle creates three temporary areas: a Gambit set from Hand, a three-card Res
 
 A card may have several printed effects. The way it is used determines which effect applies.
 
-- **Action:** play from Hand during an Action Opportunity.
+- **Action:** normally play from Hand by spending 1 Action during an Action Opportunity.
 - **Gambit:** set from Hand during a battle.
 - **Tactic:** choose from Reserve during a battle.
 - **Battle:** may be used as either a Gambit or a Tactic.
@@ -150,9 +150,20 @@ Keep the Leader and all faction trackers, references, progress cards, and other 
 
 Territory orientation shows control: the player a Territory faces controls it. A Player Token shows the player's position. Occupation and control are related but are not the same; Chapter 8 explains how control changes.
 
-### Action Opportunity
+### Bound cards
 
-An Action Opportunity is the point during a turn when a player may play one card for its Action effect, use one Faction Action, or discard one Asset they control. Chapter 4 explains when it occurs.
+A bound card is outside normal zones.
+
+- A face-up bound card is public.
+- A face-down bound card may be inspected only by its owner.
+- A bound card cannot be played, moved, or affected except as instructed by the effect to which it is bound.
+- When the binding ends, follow that effect's instructions.
+
+### Actions and Action Opportunities
+
+An **Action** is a spendable allowance. The active player normally has 1 Action each turn.
+
+An **Action Opportunity** is a timing window when the active player may spend an Action. A normal turn has one before movement and one after movement. No more than 1 Action may be spent during the same Action Opportunity. Chapter 4 explains the available choices and effects that grant additional Actions or Action Opportunities.
 
 ---
 
@@ -199,7 +210,7 @@ Cards in different zones must remain visibly separate even when space is limited
 
 ## How it works
 
-On your turn, first capture an opposing Territory you held through the opponent's turn. Then draw a card. You may take one Action either before or after movement. During movement, advance, hold, or withdraw. Conduct any battle immediately. Finally, discard down to three cards.
+On your turn, first capture an opposing Territory you held through the opponent's turn. Then draw a card. You normally have 1 Action, which you may spend before or after movement. During movement, advance, hold, or withdraw. Conduct any battle immediately. Finally, discard down to three cards.
 
 A battle ends the movement that started it. You move again afterward only when a rule or card specifically permits it.
 
@@ -226,17 +237,19 @@ Draw one card.
 
 If the Draw Pile cannot complete a draw, shuffle the Discard Pile to form a new Draw Pile and continue. If the Draw Pile and Discard Pile cannot provide the full draw, draw as many cards as possible. Cards already drawn during that draw are not shuffled back.
 
-### Action Opportunities
+### Actions and Action Opportunities
 
-The active player has one normal Action Opportunity each turn. It may be used before movement or, if unused, after movement.
+The active player normally begins their turn with 1 Action. Their turn contains two normal Action Opportunities: one before movement and one after movement.
 
-During an Action Opportunity, the player may:
+During each Action Opportunity, the player may spend at most 1 available Action to:
 
 - play one card for its Action effect;
 - use one available **Faction Action**; or
 - discard one Asset they control.
 
-An additional Action Opportunity permits one additional qualifying action at the stated timing. It does not grant movement unless stated.
+An Action not spent before movement remains available after movement. Unspent Actions expire when the turn ends.
+
+Gaining an Action does not create an Action Opportunity. Gaining an Action Opportunity does not grant an Action. An effect that grants both states both. An Action granted together with an immediate Action Opportunity expires when that opportunity ends. An additional Action Opportunity does not grant movement unless stated.
 
 ### Movement
 
@@ -252,7 +265,7 @@ Apply end-of-turn effects. If the active player has more than three cards in Han
 
 ## How it works
 
-During your Action Opportunity, play one card for its Action effect, use a Faction Action, or discard one Asset you control. Most one-time Actions go to the Discard Pile. Some cards become **Assets**, which stay in play and provide later effects.
+During an Action Opportunity, spend 1 Action to play one card for its Action effect, use a Faction Action, or discard one Asset you control. Most one-time Action effects put their cards in the Discard Pile. Some cards become **Assets**, which stay in play and provide later effects.
 
 Your Asset limit equals the number of Territories you control. When banking a new Asset at the limit, you may discard one existing Asset to make room.
 
@@ -260,9 +273,9 @@ Your Asset limit equals the number of Territories you control. When banking a ne
 
 ### Action effects
 
-To play a card for its Action effect:
+Unless an effect says otherwise, to play a card for its Action effect:
 
-1. play it from Hand during an Action Opportunity;
+1. spend 1 Action during an Action Opportunity and play it from Hand;
 2. satisfy all requirements and costs;
 3. apply the Action effect; and
 4. put it in the Discard Pile unless it becomes an Asset, becomes an Overlay attached to a Territory, or its effect tells you to put it elsewhere. Overlays are explained in Chapter 12.
@@ -287,9 +300,9 @@ An effect that prevents an Asset from leaving play also prevents replacing it th
 
 ### Using and discarding Assets
 
-Using an Asset does not use an Action Opportunity unless expressly stated otherwise. If using it requires the Asset to be discarded, put it in its owner's Discard Pile unless stated otherwise.
+Using an Asset does not spend an Action unless expressly stated otherwise. If using it requires the Asset to be discarded, put it in its owner's Discard Pile unless stated otherwise.
 
-Whenever a player could play a card for its Action effect, they may instead discard one Asset they control. This uses the Action Opportunity.
+During an Action Opportunity, a player may spend 1 Action to discard one Asset they control instead of playing a card or using a Faction Action.
 
 ---
 
@@ -759,7 +772,7 @@ On an Overlay, **you** means its current controller unless the text identifies i
 
 Each Deck belongs to one faction and uses one of that faction's two Leaders. The faction determines which faction cards may be included, which supplemental components are prepared, which public resources or progress are tracked, and which faction-specific actions and procedures are available.
 
-A **Faction Ability** is any special rule granted by a faction. A **Faction Action** is a Faction Ability that explicitly uses an Action Opportunity.
+A **Faction Ability** is any special rule granted by a faction. A **Faction Action** is a Faction Ability used by spending 1 Action during an Action Opportunity unless stated otherwise.
 
 Every faction may still win by running the Gauntlet. Some factions also have an alternate victory condition. An alternate victory applies only when its complete faction rules are satisfied.
 
@@ -800,14 +813,14 @@ Military has no alternate victory condition. It wins by running the Gauntlet.
 | Victory | Run the Gauntlet. |
 | Resource | Command, maximum 2. |
 | Resource gain | The first time each turn you win a battle, gain 1 Command. |
-| Faction Actions | None. Orders use their printed timings and do not use Action Opportunities. |
+| Faction Actions | None. Orders use their printed timings and do not spend Actions. |
 | Leaders | General and Commandant. |
 | Faction pool | 12 Military card titles. |
 | Unique card | Shock and Awe, cost 5; maximum one copy per Playable Deck. |
 
 ## Faction Actions
 
-Military has **no Faction Actions**. Orders are Faction Abilities used at their printed timings; they do not use an Action Opportunity. Playing a Military card for its Action effect still uses an Action Opportunity under the shared rules.
+Military has **no Faction Actions**. Orders are Faction Abilities used at their printed timings; they do not use an Action Opportunity. Playing a Military card for its Action effect still costs 1 Action under the shared rules.
 
 ## Components and setup
 
@@ -913,14 +926,14 @@ Accepted or successfully imposed Proposals become Treaty Articles. Ratify five d
 | Resource | Influence, minimum 0 and maximum 10. |
 | Starting value | 1 Influence. |
 | Faction procedure | Offer Terms during opening effects. |
-| Faction Actions | None. Terms and Leverage do not use Action Opportunities. |
+| Faction Actions | None. Terms and Leverage do not spend Actions. |
 | Leaders | Ambassador and Senator. |
 | Proposal set | Nine double-sided Proposal / Treaty Article cards. |
 | Faction pool | 12 Diplomat card titles. |
 
 ## Faction Actions
 
-Diplomats have **no Faction Actions**. Offering Terms is a faction procedure during opening effects, and Leverage is a Faction Ability used before dice are rolled after refused Terms. Neither uses an Action Opportunity. Playing a Diplomat card for its Action effect still uses an Action Opportunity under the shared rules.
+Diplomats have **no Faction Actions**. Offering Terms is a faction procedure during opening effects, and Leverage is a Faction Ability used before dice are rolled after refused Terms. Neither spends an Action. Playing a Diplomat card for its Action effect still costs 1 Action under the shared rules.
 
 ## Components and setup
 
@@ -1109,9 +1122,9 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 **Stake:** 1  
 **Requirement:** You must have a card in Hand that can be banked as an Asset.
 
-> **Accepted:** Each player may bank one eligible card from Hand as an Asset without using an Action Opportunity. Then both players withdraw.
+> **Accepted:** Each player may bank one eligible card from Hand as an Asset without spending an Action. Then both players withdraw.
 >
-> **Refused:** During the Aftermath of the battle, you may bank one eligible card from Hand as an Asset without using an Action Opportunity.
+> **Refused:** During the Aftermath of the battle, you may bank one eligible card from Hand as an Asset without spending an Action.
 
 ### Ultimatum
 
@@ -1167,7 +1180,7 @@ Deed ownership is independent of token position and Territory control. Own the D
 | Victory | Run the Gauntlet or achieve Controlling Interest. |
 | Resource | Capital, minimum 0; maximum determined by the Capital limit. |
 | Capital limit | Territories you control plus total card value in Treasury. |
-| Financial Capacity | If Treasury value exceeds Territories controlled at the start of your turn, you may use both normal Action Opportunities; at least one must be a Financier Faction Action. |
+| Financial Capacity | If Treasury value exceeds Territories controlled at the start of your turn, gain 1 additional Action that turn; at least one Action must be spent on a Financier Faction Action. |
 | Faction Actions | Place a card in Treasury, buy or buy out a Deed, Play the Market, or use Hostile Takeover; all occur after movement. |
 | Income | After the Capture step, gain 1 Capital per Deed you own. |
 | Leaders | Banker and Executive. |
@@ -1176,14 +1189,14 @@ Deed ownership is independent of token position and Territory control. Own the D
 
 ## Faction Actions
 
-Financiers have the following Faction Actions. Each uses one Action Opportunity and may be performed only after movement:
+Financiers have the following Faction Actions. Each costs 1 Action and may be used only during an Action Opportunity after movement:
 
 - **Place a card in Treasury:** Place one card from your Hand face up in your Treasury.
 - **Buy or buy out a Deed:** Pay the full current cost to acquire one unowned Deed or buy out one opposing Financier's Deed.
 - **Play the Market:** Discard one card from Hand, roll one die, and gain Capital according to the result.
 - **Hostile Takeover — Executive only:** After winning a battle as the attacker that turn and becoming the occupier of the enemy Territory, buy or buy out its Deed; a successful purchase also gives you control of that Territory.
 
-When Financial Capacity permits both normal Action Opportunities, at least one must be used for one of these Faction Actions. Line of Credit modifies a Deed purchase, and Subsidize modifies a battle; neither is a separate Faction Action.
+When Financial Capacity grants an additional Action, at least one Action spent that turn must be spent on one of these Faction Actions. Line of Credit modifies a Deed purchase, and Subsidize modifies a battle; neither is a separate Faction Action.
 
 ## Components and setup
 
@@ -1205,9 +1218,9 @@ Begin with 0 Capital and an empty Treasury. Place Deed Cards in the shared unown
 
 Capital is public and pays for Deeds, Subsidize, and card effects. Your Capital limit rises when you control Territories or place valuable cards in Treasury. You may temporarily exceed the limit, but excess Capital is lost at the end of each turn.
 
-At the start of your turn, if the total card value in your Treasury is greater than the number of Territories you control, you may use both normal Action Opportunities that turn. At least one must be used for a Financier Faction Action.
+At the start of your turn, if the total card value in your Treasury is greater than the number of Territories you control, gain 1 additional Action that turn. At least one Action spent that turn must be spent on a Financier Faction Action.
 
-During an Action Opportunity after movement, you may place a card in Treasury, buy a Deed, or Play the Market instead of playing a card for its Action effect.
+During an Action Opportunity after movement, you may spend 1 Action to place a card in Treasury, buy a Deed, or Play the Market.
 
 ### Complete rules
 
@@ -1223,16 +1236,16 @@ Capital may exceed the limit temporarily. At the end of every turn, including an
 
 After completing the Capture step and applying all effects that occur after it, but before the Draw step, compare the total card value of cards in your Treasury with the number of Territories you control.
 
-If the Treasury value is greater, you may use both normal Action Opportunities that turn. If you use both, at least one must be used for a Financier Faction Action. If the before-movement opportunity was not used for a Financier Faction Action, the after-movement opportunity may be used only for one.
+If the Treasury value is greater, gain 1 additional Action that turn. You may spend at most 1 Action during each normal Action Opportunity. If you spend both Actions, at least one must be spent on a Financier Faction Action. If you spend an Action before movement, the Action spent after movement must be spent on a Financier Faction Action.
 
-Qualifying Financier Faction Actions include placing a card in your Treasury, buying or buying out a Deed, Play the Market, Hostile Takeover, or another Financier Faction Action that explicitly uses an Action Opportunity.
+Qualifying Financier Faction Actions include placing a card in your Treasury, buying or buying out a Deed, Play the Market, Hostile Takeover, or another Financier Faction Action that costs 1 Action.
 
-Determine eligibility once at this timing. Later changes to Treasury value or Territories controlled do not grant or remove this permission during that turn. The two opportunities remain at their normal timings: one before movement and one after movement.
+Determine eligibility once at this timing. Later changes to Treasury value or Territories controlled do not grant or remove this permission during that turn. The two normal Action Opportunities remain at their normal timings: one before movement and one after movement.
 
 
 #### Treasury
 
-During an Action Opportunity after movement, instead of playing a card for its Action effect, place one card from your Hand face up in your Treasury.
+During an Action Opportunity after movement, spend 1 Action to place one card from your Hand face up in your Treasury.
 
 - Treasury cards are outside normal card zones.
 - They cannot be played or affected unless a rule specifically refers to Treasury.
@@ -1253,7 +1266,7 @@ Deed ownership is independent of token position and Territory control. Changing 
 
 #### Buying and buying out Deeds
 
-During an Action Opportunity after movement, instead of playing a card for its Action effect, buy or buy out one Deed by paying its full cost.
+During an Action Opportunity after movement, spend 1 Action to buy or buy out one Deed by paying its full cost.
 
 When an effect permits several purchases, complete each purchase before recalculating the next cost.
 
@@ -1285,7 +1298,7 @@ A Territory added to the Gauntlet has a normal Deed and expands the required por
 
 #### Play the Market
 
-During an Action Opportunity after movement, instead of playing a card for its Action effect, discard one card from Hand and roll one die:
+During an Action Opportunity after movement, spend 1 Action, discard one card from Hand, and roll one die:
 
 | Roll | Result |
 |---:|---|
@@ -1309,7 +1322,7 @@ The progression continues without a fixed maximum. Each additional +1 costs one 
 
 #### Additional Action Opportunities
 
-An additional Action Opportunity permits one additional qualifying action at its legal timing. During an after-movement opportunity this may include Treasury, a Deed purchase, Play the Market, or Hostile Takeover. It does not grant movement.
+An additional Action Opportunity does not grant an Action. During an after-movement opportunity, you may spend 1 available Action on Treasury, a Deed purchase, Play the Market, Hostile Takeover, or another legal choice. It does not grant movement.
 
 
 <div class="page-break"></div>
@@ -1341,7 +1354,7 @@ An additional Action Opportunity permits one additional qualifying action at its
 **Archetype:** Offensive acquisition, Occupation, and immediate control  
 **Motto:** *Take the ground. Close the deal.*
 
-> **Hostile Takeover:** During an Action Opportunity after movement, if you won a battle as the attacker this turn and are now the occupier of that enemy Territory, you may buy or buy out its Deed instead of playing a card for its Action effect. Treat yourself as the occupier, but not the controller, for the cost calculation. If the purchase succeeds, immediately take control of that Territory.
+> **Hostile Takeover:** During an Action Opportunity after movement, if you won a battle as the attacker this turn and are now the occupier of that enemy Territory, you may spend 1 Action to buy or buy out its Deed. Treat yourself as the occupier, but not the controller, for the cost calculation. If the purchase succeeds, immediately take control of that Territory.
 
 ## Financier-specific rules
 
@@ -1403,7 +1416,7 @@ Complete enough Missions to make a **Special Operation** ready, satisfy its hidd
 
 ## Faction Actions
 
-Intelligence has the following Faction Actions. Each uses one Action Opportunity and may be performed only after movement:
+Intelligence has the following Faction Actions. Each costs 1 Action and may be used only during an Action Opportunity after movement:
 
 - **Start a Mission:** Place one eligible Intelligence card from Hand face down as your Active Mission.
 - **Complete a Mission:** Reveal a satisfied Active Mission, gain its Mission reward, and put it in your Discard Pile.
@@ -1411,7 +1424,7 @@ Intelligence has the following Faction Actions. Each uses one Action Opportunity
 - **Start a Special Operation:** When ready, place one eligible Intelligence card from Hand face down as your Special Operation.
 - **Complete a Special Operation:** Reveal a satisfied, ready Special Operation, pay its Intel cost, and win the game.
 
-Surveillance, Interference, Fieldcraft, and Mission Control are Faction Abilities, not Faction Actions. Mission Control may start a Mission without using an Action Opportunity only because its text expressly permits it.
+Surveillance, Interference, Fieldcraft, and Mission Control are Faction Abilities, not Faction Actions. Mission Control may start a Mission without spending an Action only because its text expressly permits it.
 
 ## Components and setup
 
@@ -1432,7 +1445,7 @@ Both values begin at 0 and have no maximum. Only an Intelligence card with a pri
 
 ### How it works
 
-During an Action Opportunity after movement, place an eligible card face down as your Active Mission instead of playing an Action. Once you have satisfied its requirement on a later turn, use another after-movement Action Opportunity to reveal and complete it.
+During an Action Opportunity after movement, spend 1 Action to place an eligible card face down as your Active Mission. Once you have satisfied its requirement on a later turn, spend 1 Action during another after-movement Action Opportunity to reveal and complete it.
 
 A completed Mission gives 1 Operation Progress and Intel equal to the card's value. When Operation Progress exceeds the number of Territories the opponent controls, you may begin a Special Operation.
 
@@ -1448,7 +1461,7 @@ Operation Progress begins at 0 and is not normally spent. Each completed normal 
 
 #### Starting a Mission
 
-During an Action Opportunity after movement, instead of playing a card for its Action effect, place one eligible Intelligence card from your Hand face down near your Leader as your **Active Mission**.
+During an Action Opportunity after movement, spend 1 Action to place one eligible Intelligence card from your Hand face down near your Leader as your **Active Mission**.
 
 - You may inspect it at any time.
 - You may have only one Active Mission.
@@ -1459,7 +1472,7 @@ During an Action Opportunity after movement, instead of playing a card for its A
 
 #### Completing a Mission
 
-During an Action Opportunity after movement, instead of playing a card for its Action effect, reveal and complete the Active Mission if its requirement has been satisfied.
+During an Action Opportunity after movement, spend 1 Action to reveal and complete the Active Mission if its requirement has been satisfied.
 
 1. Gain 1 Operation Progress.
 2. Gain Intel equal to its value.
@@ -1469,7 +1482,7 @@ Satisfying the requirement does not complete it automatically.
 
 #### Aborting and failing
 
-During an Action Opportunity after movement, reveal the Active Mission and spend Intel equal to its value to abort it. Put it in the Discard Pile. Aborting is not failure.
+During an Action Opportunity after movement, spend 1 Action, reveal the Active Mission, and spend Intel equal to its value to abort it. Put it in the Discard Pile. Aborting is not failure.
 
 A Mission fails only when a rule, effect, or continuing requirement causes failure. Reveal it and put it in the Graveyard.
 
@@ -1481,7 +1494,7 @@ You may start a Special Operation only when:
 - you have no Active Mission or Special Operation; and
 - you have an eligible Intelligence card in Hand.
 
-During an Action Opportunity after movement, place that card face down as your Special Operation.
+During an Action Opportunity after movement, spend 1 Action to place that card face down as your Special Operation.
 
 A Special Operation uses the printed Mission requirement but is not a normal Mission. It grants no Mission reward and does not trigger normal-Mission effects.
 
@@ -1489,7 +1502,7 @@ A Special Operation uses the printed Mission requirement but is not a normal Mis
 
 The Special Operation remains ready only while Operation Progress exceeds the number of Territories the opponent controls. If readiness is lost, it immediately fails and goes to the Graveyard.
 
-During an Action Opportunity after movement, if its requirement is satisfied and readiness remains valid, reveal it and pay:
+During an Action Opportunity after movement, if its requirement is satisfied and readiness remains valid, spend 1 Action, reveal it, and pay:
 
 > **Territories currently in the Gauntlet − Special Operation card's value**
 
@@ -1570,7 +1583,7 @@ Fieldcraft does not alter Territory control, Occupation, capture, Defender's Adv
 **Archetype:** Mission tempo and operational coordination  
 **Motto:** *Information never rests. Momentum is the weapon.*
 
-> **Mission Control:** Once per turn, after completing a normal Mission, you may immediately start another eligible Mission from your Hand without using an Action Opportunity. It cannot complete that turn. Mission Control cannot start a Special Operation.
+> **Mission Control:** Once per turn, after completing a normal Mission, you may immediately start another eligible Mission from your Hand without spending an Action. It cannot complete that turn. Mission Control cannot start a Special Operation.
 
 ## Intelligence-specific rules
 
@@ -1608,7 +1621,7 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 
 ## Faction Actions
 
-Mystics have the following Faction Actions. Each uses one Action Opportunity and may be performed only after movement:
+Mystics have the following Faction Actions. Each costs 1 Action and may be used only during an Action Opportunity after movement:
 
 - **Begin a Rite:** Choose one incomplete Rite you may legally begin and pay its beginning cost.
 - **Begin the Ritual of Ascendance:** After completing all three Rites, bind the required Arcane cards from Hand, Discard Pile, and Graveyard.
@@ -1632,7 +1645,7 @@ Place all three Rite cards incomplete side up. Mystics use no resource tracker.
 
 ### How it works
 
-During an Action Opportunity after movement, pay a Rite's beginning cost to begin it. You may have only one begun but incomplete Rite at a time, and a Rite cannot complete on the turn it begins.
+During an Action Opportunity after movement, spend 1 Action and pay a Rite's beginning cost to begin it. You may have only one begun but incomplete Rite at a time, and a Rite cannot complete on the turn it begins.
 
 Once its condition is met on a later turn, complete it and unlock the next faction ability. Completed Rites remain complete.
 
@@ -1640,7 +1653,7 @@ Once its condition is met on a later turn, complete it and unlock the next facti
 
 #### Beginning a Rite
 
-During an Action Opportunity after movement, instead of playing a card for its Action effect, begin one incomplete Rite by paying its beginning cost.
+During an Action Opportunity after movement, spend 1 Action to begin one incomplete Rite by paying its beginning cost.
 
 - You may have only one begun but incomplete Rite.
 - You may begin any uncompleted Rite; there is no required order.
@@ -1656,12 +1669,7 @@ During an Action Opportunity after movement, instead of playing a card for its A
 
 #### Bound cards
 
-A card bound to a Rite, Ritual, or another card is outside normal zones.
-
-- A face-up bound card is public.
-- A face-down bound card may be inspected only by its owner.
-- A bound card cannot be played, moved, or affected except as instructed by the effect to which it is bound.
-- If the binding effect ends without telling you where to put the bound card, put it in its owner's Graveyard.
+Bound cards follow the shared rules. If a Rite or Ritual binding ends without another instruction, put its bound cards in their owners' Graveyards.
 
 #### Invocation
 
@@ -1705,7 +1713,7 @@ If you lose a battle before completion, reset the Rite.
 
 ### Rite of Crossing
 
-You may begin this Rite only during an Action Opportunity after movement after winning a battle that made you the occupier of a Territory the opponent controlled immediately before that battle.
+You may begin this Rite only by spending 1 Action during an Action Opportunity after movement after winning a battle that made you the occupier of a Territory the opponent controlled immediately before that battle.
 
 **Beginning cost:** Put one Arcane card from your Hand in your Graveyard. If you have none, reveal your Hand and move one Arcane card from your Discard Pile to your Graveyard instead.
 
@@ -1716,7 +1724,7 @@ You may begin this Rite only during an Action Opportunity after movement after w
 
 ### How it works
 
-After completing all three Rites, use an Action Opportunity after movement to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. This begins the Ritual.
+After completing all three Rites, spend 1 Action during an Action Opportunity after movement to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. This begins the Ritual.
 
 Initiate a battle while all three remain bound. Convergence adds +1 for each Ritual card. Win that battle to win the game. Lose any battle before completion and the Ritual is interrupted.
 
@@ -1724,7 +1732,7 @@ Initiate a battle while all three remain bound. Convergence adds +1 for each Rit
 
 #### Beginning the Ritual
 
-After completing all three Rites, during an Action Opportunity after movement, instead of playing a card for its Action effect, bind:
+After completing all three Rites, during an Action Opportunity after movement, spend 1 Action to bind:
 
 - one Arcane card from your Hand;
 - one Arcane card from your Discard Pile; and
@@ -1809,7 +1817,7 @@ Witchcraft and similar effects follow the shared copied-effect rules. A repeat e
 
 The Inquisition gains **Conviction** when opposing cards are permanently lost after battles. It also sends opposing Tactics to the Graveyard through **Condemnation** and gains additional Conviction when the opponent plays or reveals Arcane cards through **Blasphemy**.
 
-Spend Conviction on **Purges** that remove cards and Assets. On your turn, using an Action Opportunity to Purge allows you to use the other normal Action Opportunity as well. If the opponent eventually cannot make their normal start-of-turn draw because both their Draw Pile and Discard Pile are empty, win through **Purification**.
+Spend Conviction on **Purges** that remove cards and Assets. The first time on your turn that you spend an Action to Purge, gain 1 additional Action that turn. If the opponent eventually cannot make their normal start-of-turn draw because both their Draw Pile and Discard Pile are empty, win through **Purification**.
 
 ## Complete rules
 
@@ -1819,18 +1827,18 @@ Spend Conviction on **Purges** that remove cards and Assets. On your turn, using
 | Resource | Conviction, maximum 4. |
 | Normal gain | First time each turn opposing cards enter the Graveyard during the Aftermath of a battle involving you. |
 | Doctrine | Condemnation and Blasphemy. |
-| Faction Actions | Purge. Using one through an Action Opportunity during your turn permits both normal Action Opportunities. |
+| Faction Actions | Purge. The first Action spent to Purge each turn grants 1 additional Action that turn. |
 | Leaders | Grand Inquisitor and Witch Hunter. |
 | Faction pool | 12 Inquisition card titles. |
 | Arcane card | Heresy. |
 
 ## Faction Actions
 
-**Purge is the Inquisition's only Faction Action.** During either normal Action Opportunity on your turn, spend the listed Conviction to Purge instead of playing a card for its Action effect.
+**Purge is the Inquisition's only Faction Action.** During an Action Opportunity on your turn, spend 1 Action and the listed Conviction to Purge.
 
-When you use an Action Opportunity to Purge, you may use both normal Action Opportunities that turn. The other opportunity may be used normally, but only one Action Opportunity may be used to Purge that turn.
+The first time each turn that you spend an Action to Purge, gain 1 additional Action that turn. You may spend at most 1 Action on Purge each turn.
 
-Final Judgment lets you Purge without using an Action Opportunity. That Purge does not consume an Action Opportunity and does not count against the once-per-turn limit on Purges used through Action Opportunities.
+Final Judgment lets you Purge without spending an Action. That Purge neither grants the additional Action nor counts against the limit of 1 Action spent on Purge each turn.
 
 ## Components and setup
 
@@ -1852,7 +1860,7 @@ Begin with 0 Conviction. Slide the Leader over the tracker to show 0–4.
 
 The first time opposing cards enter the Graveyard during the Aftermath of a battle involving you each turn, gain 1 Conviction. Opposing Tactics go there instead of the Discard Pile, making battle choices more costly against the Inquisition.
 
-During an Action Opportunity, spend Conviction to Purge instead of playing a card for its Action effect. On your turn, you may use both the before- and after-movement Action Opportunities if one is used to Purge. Only one Action Opportunity may be used to Purge that turn.
+During an Action Opportunity, spend 1 Action and Conviction to Purge. The first Action spent to Purge each turn grants 1 additional Action that turn. You may spend at most 1 Action on Purge each turn.
 
 ### Complete rules
 
@@ -1879,7 +1887,7 @@ This gain is outside the normal once-per-turn Conviction gain but cannot exceed 
 
 #### Purge
 
-During an Action Opportunity, instead of playing a card for its Action effect, spend Conviction to Purge:
+During an Action Opportunity, spend 1 Action and Conviction to Purge:
 
 | Cost | Purge |
 |---:|---|
@@ -1888,9 +1896,9 @@ During an Action Opportunity, instead of playing a card for its Action effect, s
 | 3 | The opponent chooses one card from their Hand and puts it in their Graveyard. |
 | 4 | Reveal the opponent's Hand. Choose one card and put it in their Graveyard. |
 
-On your turn, you may use both the before- and after-movement Action Opportunities if one is used to Purge. The other opportunity may be used normally. Only one Action Opportunity may be used to Purge each turn.
+The first time each turn that you spend an Action to Purge, gain 1 additional Action that turn. You may spend at most 1 Action on Purge each turn.
 
-A Purge uses an Action Opportunity but is not playing a card. A Purge permitted outside an Action Opportunity, such as Final Judgment, is separate and does not count against this limit.
+A Purge is not playing a card. A Purge permitted without spending an Action, such as Final Judgment, is separate and does not count against this limit.
 
 #### Purification
 
@@ -1909,7 +1917,7 @@ A failed Reserve draw or effect-generated draw does not trigger Purification.
 **Archetype:** Judgment, Purge, and permanent removal  
 **Motto:** *We judge. We purge.*
 
-> **Final Judgment:** Once per turn, during the Aftermath of a battle you won, after the battle cards have been cleared and effects triggered by those moves have been applied, you may immediately Purge without using an Action Opportunity. Reduce that Purge's Conviction cost by 1, to a minimum of 1.
+> **Final Judgment:** Once per turn, during the Aftermath of a battle you won, after the battle cards have been cleared and effects triggered by those moves have been applied, you may immediately Purge without spending an Action. Reduce that Purge's Conviction cost by 1, to a minimum of 1.
 
 The normal Conviction gain from that battle may occur before Final Judgment.
 
@@ -1958,9 +1966,9 @@ Heresy follows the shared copied-effect rule but retains permission for one addi
 
 1. **Capture:** capture an opposing Territory where you are still the occupier.
 2. **Draw:** draw one card.
-3. **Action Opportunity before movement:** use it now or save it.
+3. **Action Opportunity before movement:** spend up to 1 Action or save it.
 4. **Movement:** advance, hold, or withdraw; conduct any battle immediately.
-5. **Action Opportunity after movement:** use it now if it was not used before movement.
+5. **Action Opportunity after movement:** spend up to 1 available Action.
 6. **Cleanup:** apply end-of-turn effects and discard down to three cards.
 
 ---
@@ -1983,11 +1991,13 @@ Heresy follows the shared copied-effect rule but retains permission for one addi
 
 # Glossary
 
-**Action Opportunity:** The normal opportunity to play one card for its Action effect, use one Faction Action, or discard one Asset.
+**Action:** A spendable allowance. A player normally has 1 Action each turn.
+
+**Action Opportunity:** A timing window when a player may spend at most 1 Action. A normal turn has one before movement and one after movement.
 
 **Faction Ability:** Any special rule granted by a faction.
 
-**Faction Action:** A Faction Ability that explicitly uses an Action Opportunity.
+**Faction Action:** A Faction Ability used by spending 1 Action during an Action Opportunity unless stated otherwise.
 
 **Aftermath:** The part of a battle after the winner is determined, including result effects, retreat, any change in who is the occupier, clearing battle cards, and follow-up effects.
 

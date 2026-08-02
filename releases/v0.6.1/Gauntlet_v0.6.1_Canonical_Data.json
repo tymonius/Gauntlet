@@ -781,7 +781,7 @@
         },
         {
           "label": "Use",
-          "text": "During your turn, you may discard this card to take another Action Opportunity."
+          "text": "During your turn, you may discard this card to gain 1 Action, then immediately take another Action Opportunity."
         },
         {
           "label": "Battle",
@@ -790,7 +790,7 @@
       ],
       "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
-      "use": "During your turn, you may discard this card to take another Action Opportunity.",
+      "use": "During your turn, you may discard this card to gain 1 Action, then immediately take another Action Opportunity.",
       "battle": "After Tactics are revealed, draw one additional card into your Reserve. You may immediately play it face up as an additional Tactic."
     },
     {
@@ -1101,7 +1101,7 @@
       "effects": [
         {
           "label": "Action",
-          "text": "Draw one card. You may immediately play one card from your Hand whose Action effect banks it, without using another Action Opportunity."
+          "text": "Draw one card. You may immediately play one card from your Hand whose Action effect banks it without spending another Action."
         },
         {
           "label": "Gambit",
@@ -1109,7 +1109,7 @@
         }
       ],
       "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
-      "action": "Draw one card. You may immediately play one card from your Hand whose Action effect banks it, without using another Action Opportunity.",
+      "action": "Draw one card. You may immediately play one card from your Hand whose Action effect banks it without spending another Action.",
       "gambit": "When Gambits are revealed, draw one additional card into your Reserve. You may choose one additional Tactic during this battle."
     },
     {
@@ -1236,7 +1236,7 @@
       "effects": [
         {
           "label": "Action",
-          "text": "Discard your Hand. Each player shuffles their Discard Pile into their Draw Pile. Draw three cards, then take another Action Opportunity."
+          "text": "Discard your Hand. Each player shuffles their Discard Pile into their Draw Pile. Draw three cards, then gain 1 Action and immediately take another Action Opportunity."
         },
         {
           "label": "Battle",
@@ -1244,7 +1244,7 @@
         }
       ],
       "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
-      "action": "Discard your Hand. Each player shuffles their Discard Pile into their Draw Pile. Draw three cards, then take another Action Opportunity.",
+      "action": "Discard your Hand. Each player shuffles their Discard Pile into their Draw Pile. Draw three cards, then gain 1 Action and immediately take another Action Opportunity.",
       "battle": "If this battle is a Counterattack, gain double advantage. Otherwise, if you are the attacker, gain advantage."
     },
     {
@@ -1264,7 +1264,7 @@
         },
         {
           "label": "Asset",
-          "text": "After you win a Counterattack, draw one card, then take another Action Opportunity."
+          "text": "After you win a Counterattack, draw one card, then gain 1 Action and immediately take another Action Opportunity."
         },
         {
           "label": "Battle",
@@ -1273,7 +1273,7 @@
       ],
       "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
-      "asset": "After you win a Counterattack, draw one card, then take another Action Opportunity.",
+      "asset": "After you win a Counterattack, draw one card, then gain 1 Action and immediately take another Action Opportunity.",
       "battle": "If this battle is a Counterattack, form your Reserve with one additional card and you may choose one additional Tactic."
     },
     {
@@ -2024,7 +2024,7 @@
         },
         {
           "label": "Accepted",
-          "text": "The opponent chooses one available option:\n\n- Draw two cards.\n- Bank one eligible card from Hand without using an Action Opportunity.\n\nThen put this card in your Discard Pile and draw one card."
+          "text": "The opponent chooses one available option:\n\n- Draw two cards.\n- Bank one eligible card from Hand without spending an Action.\n\nThen put this card in your Discard Pile and draw one card."
         },
         {
           "label": "Refused",
@@ -2037,7 +2037,7 @@
       ],
       "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
       "terms": "When you offer Terms, before the opponent accepts or refuses, you may reveal Trade Concessions from your Hand and set it aside.",
-      "accepted": "The opponent chooses one available option:\n\n- Draw two cards.\n- Bank one eligible card from Hand without using an Action Opportunity.\n\nThen put this card in your Discard Pile and draw one card.",
+      "accepted": "The opponent chooses one available option:\n\n- Draw two cards.\n- Bank one eligible card from Hand without spending an Action.\n\nThen put this card in your Discard Pile and draw one card.",
       "refused": "Return Trade Concessions to your Hand before Gambits are set.",
       "battle": "The opponent draws one card. Add +2 to your battle total."
     },
@@ -2139,11 +2139,11 @@
       "effects": [
         {
           "label": "Terms",
-          "text": "After your Terms are accepted and the Proposal's Accepted effect applies, you may place Demilitarized Zone from your Hand as an Overlay on the contested Territory without using an Action Opportunity. Each player still there withdraws.\n\nNeither player may enter this Territory during the turn Demilitarized Zone is placed.\n\nTo enter it while no Player Token is there, discard one card.\n\nIt cannot be captured or change control while Demilitarized Zone remains.\n\nAt the start of the placing player's turn, before the Capture step, if their Player Token is there, they discard one card or withdraw.\n\nAfter the next battle fought here, put this card in its owner's Discard Pile."
+          "text": "After your Terms are accepted and the Proposal's Accepted effect applies, you may place Demilitarized Zone from your Hand as an Overlay on the contested Territory without spending an Action. Each player still there withdraws.\n\nNeither player may enter this Territory during the turn Demilitarized Zone is placed.\n\nTo enter it while no Player Token is there, discard one card.\n\nIt cannot be captured or change control while Demilitarized Zone remains.\n\nAt the start of the placing player's turn, before the Capture step, if their Player Token is there, they discard one card or withdraw.\n\nAfter the next battle fought here, put this card in its owner's Discard Pile."
         }
       ],
       "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
-      "terms": "After your Terms are accepted and the Proposal's Accepted effect applies, you may place Demilitarized Zone from your Hand as an Overlay on the contested Territory without using an Action Opportunity. Each player still there withdraws.\n\nNeither player may enter this Territory during the turn Demilitarized Zone is placed.\n\nTo enter it while no Player Token is there, discard one card.\n\nIt cannot be captured or change control while Demilitarized Zone remains.\n\nAt the start of the placing player's turn, before the Capture step, if their Player Token is there, they discard one card or withdraw.\n\nAfter the next battle fought here, put this card in its owner's Discard Pile.",
+      "terms": "After your Terms are accepted and the Proposal's Accepted effect applies, you may place Demilitarized Zone from your Hand as an Overlay on the contested Territory without spending an Action. Each player still there withdraws.\n\nNeither player may enter this Territory during the turn Demilitarized Zone is placed.\n\nTo enter it while no Player Token is there, discard one card.\n\nIt cannot be captured or change control while Demilitarized Zone remains.\n\nAt the start of the placing player's turn, before the Capture step, if their Player Token is there, they discard one card or withdraw.\n\nAfter the next battle fought here, put this card in its owner's Discard Pile.",
       "rules_notes": [
         "The placing-player reference does not change when Overlay control changes."
       ]
@@ -2219,11 +2219,11 @@
       "effects": [
         {
           "label": "Text",
-          "text": "After an opponent refuses your Terms, you may bank Sanctions: Censure from your Hand without using an Action Opportunity. Identify that opponent.\nWhile banked, the first time each turn that opponent plays a card for its Action effect, they choose one: discard one card; or you draw one card.\nAfter that opponent accepts your Terms, put Sanctions: Censure in its owner's Discard Pile."
+          "text": "After an opponent refuses your Terms, you may bank Sanctions: Censure from your Hand without spending an Action. Identify that opponent.\nWhile banked, the first time each turn that opponent plays a card for its Action effect, they choose one: discard one card; or you draw one card.\nAfter that opponent accepts your Terms, put Sanctions: Censure in its owner's Discard Pile."
         }
       ],
       "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
-      "text": "After an opponent refuses your Terms, you may bank Sanctions: Censure from your Hand without using an Action Opportunity. Identify that opponent.\nWhile banked, the first time each turn that opponent plays a card for its Action effect, they choose one: discard one card; or you draw one card.\nAfter that opponent accepts your Terms, put Sanctions: Censure in its owner's Discard Pile."
+      "text": "After an opponent refuses your Terms, you may bank Sanctions: Censure from your Hand without spending an Action. Identify that opponent.\nWhile banked, the first time each turn that opponent plays a card for its Action effect, they choose one: discard one card; or you draw one card.\nAfter that opponent accepts your Terms, put Sanctions: Censure in its owner's Discard Pile."
     },
     {
       "id": "diplomats-gunboat-diplomacy",
@@ -2272,11 +2272,11 @@
       "effects": [
         {
           "label": "Text",
-          "text": "After an opponent refuses your Terms, you may bank Sanctions: Embargo from your Hand without using an Action Opportunity. Identify that opponent.\nWhile banked, that opponent's Asset limit is reduced by 1, to a minimum of 0.\nAfter that opponent accepts your Terms, put Sanctions: Embargo in its owner's Discard Pile."
+          "text": "After an opponent refuses your Terms, you may bank Sanctions: Embargo from your Hand without spending an Action. Identify that opponent.\nWhile banked, that opponent's Asset limit is reduced by 1, to a minimum of 0.\nAfter that opponent accepts your Terms, put Sanctions: Embargo in its owner's Discard Pile."
         }
       ],
       "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
-      "text": "After an opponent refuses your Terms, you may bank Sanctions: Embargo from your Hand without using an Action Opportunity. Identify that opponent.\nWhile banked, that opponent's Asset limit is reduced by 1, to a minimum of 0.\nAfter that opponent accepts your Terms, put Sanctions: Embargo in its owner's Discard Pile."
+      "text": "After an opponent refuses your Terms, you may bank Sanctions: Embargo from your Hand without spending an Action. Identify that opponent.\nWhile banked, that opponent's Asset limit is reduced by 1, to a minimum of 0.\nAfter that opponent accepts your Terms, put Sanctions: Embargo in its owner's Discard Pile."
     },
     {
       "id": "diplomats-sanctions-blockade",
@@ -2291,11 +2291,11 @@
       "effects": [
         {
           "label": "Text",
-          "text": "During the Aftermath of a battle following an opponent's refusal of your Terms, you may place Sanctions: Blockade from your Hand as an Overlay on a Territory that opponent controls without using an Action Opportunity. Identify that opponent and this card's owner.\nThe first time each turn the identified opponent enters or leaves this Territory, they choose one: discard one card; or the identified owner gains 1 Influence.\nPut Sanctions: Blockade in its owner's Discard Pile after the identified opponent accepts that owner's Terms or loses control of this Territory."
+          "text": "During the Aftermath of a battle following an opponent's refusal of your Terms, you may place Sanctions: Blockade from your Hand as an Overlay on a Territory that opponent controls without spending an Action. Identify that opponent and this card's owner.\nThe first time each turn the identified opponent enters or leaves this Territory, they choose one: discard one card; or the identified owner gains 1 Influence.\nPut Sanctions: Blockade in its owner's Discard Pile after the identified opponent accepts that owner's Terms or loses control of this Territory."
         }
       ],
       "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
-      "text": "During the Aftermath of a battle following an opponent's refusal of your Terms, you may place Sanctions: Blockade from your Hand as an Overlay on a Territory that opponent controls without using an Action Opportunity. Identify that opponent and this card's owner.\nThe first time each turn the identified opponent enters or leaves this Territory, they choose one: discard one card; or the identified owner gains 1 Influence.\nPut Sanctions: Blockade in its owner's Discard Pile after the identified opponent accepts that owner's Terms or loses control of this Territory."
+      "text": "During the Aftermath of a battle following an opponent's refusal of your Terms, you may place Sanctions: Blockade from your Hand as an Overlay on a Territory that opponent controls without spending an Action. Identify that opponent and this card's owner.\nThe first time each turn the identified opponent enters or leaves this Territory, they choose one: discard one card; or the identified owner gains 1 Influence.\nPut Sanctions: Blockade in its owner's Discard Pile after the identified opponent accepts that owner's Terms or loses control of this Territory."
     },
     {
       "id": "financiers-speculation",
@@ -2438,7 +2438,7 @@
       "effects": [
         {
           "label": "Action",
-          "text": "Bank this card. Draw two cards, then take another Action Opportunity this turn."
+          "text": "Bank this card. Draw two cards, then gain 1 Action and immediately take another Action Opportunity."
         },
         {
           "label": "Asset",
@@ -2450,7 +2450,7 @@
         }
       ],
       "source": "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
-      "action": "Bank this card. Draw two cards, then take another Action Opportunity this turn.",
+      "action": "Bank this card. Draw two cards, then gain 1 Action and immediately take another Action Opportunity.",
       "asset": "While Tariffs is banked, skip your normal draw. You cannot bank it while you control another banked Tariffs. You cannot voluntarily cause it to leave play during the turn it is banked.",
       "battle": "Your opponent may discard one card from Hand. If they do not, add +1 to your battle total."
     },
@@ -2467,7 +2467,7 @@
       "effects": [
         {
           "label": "Action",
-          "text": "Make one Deed you own unowned. Gain Capital equal to the number of Deeds you owned before doing so, then take another Action Opportunity this turn."
+          "text": "Make one Deed you own unowned. Gain Capital equal to the number of Deeds you owned before doing so, then gain 1 Action and immediately take another Action Opportunity."
         },
         {
           "label": "Battle",
@@ -2475,7 +2475,7 @@
         }
       ],
       "source": "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
-      "action": "Make one Deed you own unowned. Gain Capital equal to the number of Deeds you owned before doing so, then take another Action Opportunity this turn.",
+      "action": "Make one Deed you own unowned. Gain Capital equal to the number of Deeds you owned before doing so, then gain 1 Action and immediately take another Action Opportunity.",
       "battle": "Before dice are rolled, you may make one Deed you own unowned. If you do, gain Capital equal to the number of Deeds you owned before doing so, then you may immediately Subsidize."
     },
     {
@@ -2491,7 +2491,7 @@
       "effects": [
         {
           "label": "Action",
-          "text": "Choose one other card in your Hand or Treasury and place it beneath this card as collateral. Bank this card. Gain Capital equal to the collateral card's value plus 2, then take another Action Opportunity this turn."
+          "text": "Choose one other card in your Hand or Treasury and place it beneath this card as collateral. Bank this card. Gain Capital equal to the collateral card's value plus 2, then gain 1 Action and immediately take another Action Opportunity."
         },
         {
           "label": "Loan",
@@ -2503,7 +2503,7 @@
         }
       ],
       "source": "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
-      "action": "Choose one other card in your Hand or Treasury and place it beneath this card as collateral. Bank this card. Gain Capital equal to the collateral card's value plus 2, then take another Action Opportunity this turn.",
+      "action": "Choose one other card in your Hand or Treasury and place it beneath this card as collateral. Bank this card. Gain Capital equal to the collateral card's value plus 2, then gain 1 Action and immediately take another Action Opportunity.",
       "loan": "At the start of your next turn, after the Capture step and income, choose one:\n\n- Repay: Pay Capital equal to the collateral card's value plus 3. Return the collateral to your Hand, then put this card in your Discard Pile.\n- Default: Put this card and its collateral in your Graveyard.",
       "battle": "Before dice are rolled, you may place one other card from your Hand or Treasury beneath this card as collateral. If you do, gain Capital equal to its value, then you may immediately Subsidize. In the Aftermath, if you won, return the collateral to your Hand. Otherwise, put this card and its collateral in your Graveyard.\n\nIf this card leaves play before the loan is settled, you default.",
       "rules_notes": [
@@ -2955,36 +2955,29 @@
       "effects": [
         {
           "label": "Action",
-          "text": "Bank this card with one other card from your Hand face down beneath it."
+          "text": "Bank this card and bind another card from your Hand to it face down."
         },
         {
           "label": "Asset",
-          "text": "At the end of each of your later turns, you may place one other card from your Hand face down beneath it."
-        },
-        {
-          "label": "Capacity",
-          "text": "Sleeper Network can hold no more cards than the number of Territories you control. If it holds too many, immediately put cards beneath it of your choice in your Discard Pile until within capacity."
+          "text": "At the end of each later turn, you may bind a card from your Hand to it face down, up to the number of Territories you control."
         },
         {
           "label": "Use",
-          "text": "At the start of your turn, you may put this card in your Graveyard. If you do, reveal the cards beneath it. Play each card whose Action effect can legally be applied, one at a time and in any order, without using Action Opportunities. Put the rest in your Discard Pile."
+          "text": "During an Action Opportunity, spend 1 Action to put this card in your Graveyard and reveal its bound cards. Play each whose Action effect can apply now, one at a time and in any order, without spending Actions. Discard the rest."
         },
         {
           "label": "Compromised",
-          "text": "When an opposing effect would cause Sleeper Network to leave play, before it does, reveal the cards beneath it. You may play one card whose Action effect can legally be applied without using an Action Opportunity. Put the rest in your Discard Pile."
-        },
-        {
-          "label": "Other removal",
-          "text": "If this card leaves play for any other reason, put all cards beneath it in your Discard Pile."
+          "text": "Before an opposing effect causes this card to leave play, reveal its bound cards. You may play one whose Action effect can apply now without spending an Action. Discard the rest."
         }
       ],
       "source": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
-      "action": "Bank this card with one other card from your Hand face down beneath it.",
-      "asset": "At the end of each of your later turns, you may place one other card from your Hand face down beneath it.",
-      "capacity": "Sleeper Network can hold no more cards than the number of Territories you control. If it holds too many, immediately put cards beneath it of your choice in your Discard Pile until within capacity.",
-      "use": "At the start of your turn, you may put this card in your Graveyard. If you do, reveal the cards beneath it. Play each card whose Action effect can legally be applied, one at a time and in any order, without using Action Opportunities. Put the rest in your Discard Pile.",
-      "compromised": "When an opposing effect would cause Sleeper Network to leave play, before it does, reveal the cards beneath it. You may play one card whose Action effect can legally be applied without using an Action Opportunity. Put the rest in your Discard Pile.",
-      "other_removal": "If this card leaves play for any other reason, put all cards beneath it in your Discard Pile."
+      "action": "Bank this card and bind another card from your Hand to it face down.",
+      "asset": "At the end of each later turn, you may bind a card from your Hand to it face down, up to the number of Territories you control.",
+      "use": "During an Action Opportunity, spend 1 Action to put this card in your Graveyard and reveal its bound cards. Play each whose Action effect can apply now, one at a time and in any order, without spending Actions. Discard the rest.",
+      "compromised": "Before an opposing effect causes this card to leave play, reveal its bound cards. You may play one whose Action effect can apply now without spending an Action. Discard the rest.",
+      "rules_notes": [
+        "If Sleeper Network has more bound cards than Territories you control, immediately discard bound cards of your choice until within the limit. If it leaves play without applying its Use or Compromised effect, discard all cards bound to it."
+      ]
     },
     {
       "id": "mystics-dark-omens",
@@ -3868,13 +3861,13 @@
       "name": "Command Tent",
       "arena": false,
       "complexity": "Advanced",
-      "text": "If a player begins their turn occupying and controlling Command Tent, they may play one card for its Action effect during the Action Opportunity before movement and one card for its Action effect during the Action Opportunity after movement that turn.",
+      "text": "If a player begins their turn occupying and controlling Command Tent, they may gain 1 additional Action that turn. If they do, both Actions may be spent only to play cards for their Action effects, one during each normal Action Opportunity.",
       "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
           "label": "Text",
-          "text": "If a player begins their turn occupying and controlling Command Tent, they may play one card for its Action effect during the Action Opportunity before movement and one card for its Action effect during the Action Opportunity after movement that turn."
+          "text": "If a player begins their turn occupying and controlling Command Tent, they may gain 1 additional Action that turn. If they do, both Actions may be spent only to play cards for their Action effects, one during each normal Action Opportunity."
         }
       ]
     },
@@ -3948,13 +3941,13 @@
       "name": "Smuggler's Pass",
       "arena": false,
       "complexity": "Advanced",
-      "text": "During an Action Opportunity, while occupying and controlling Smuggler's Pass, a player may stash one card from their Hand face down beneath it instead of playing a card for its Action effect. The stashed card does not count toward the Hand limit.\nWhile that player occupies and controls Smuggler's Pass, they may play the stashed card for its Action effect or set it as a Gambit as though it were in their Hand, if eligible. It counts as a card played or set from Hand.\nAt the start of the stashing player's turn, if they control Smuggler's Pass, they may return the stashed card to their Hand. If they lose control of Smuggler's Pass, put the stashed card in its owner's Discard Pile. Only one card may be stashed here.",
+      "text": "During an Action Opportunity, while occupying and controlling Smuggler's Pass, a player may spend 1 Action to stash one card from their Hand face down beneath it. The stashed card does not count toward the Hand limit.\nWhile that player occupies and controls Smuggler's Pass, they may play the stashed card for its Action effect or set it as a Gambit as though it were in their Hand, if eligible. It counts as a card played or set from Hand.\nAt the start of the stashing player's turn, if they control Smuggler's Pass, they may return the stashed card to their Hand. If they lose control of Smuggler's Pass, put the stashed card in its owner's Discard Pile. Only one card may be stashed here.",
       "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
           "label": "Text",
-          "text": "During an Action Opportunity, while occupying and controlling Smuggler's Pass, a player may stash one card from their Hand face down beneath it instead of playing a card for its Action effect. The stashed card does not count toward the Hand limit.\nWhile that player occupies and controls Smuggler's Pass, they may play the stashed card for its Action effect or set it as a Gambit as though it were in their Hand, if eligible. It counts as a card played or set from Hand.\nAt the start of the stashing player's turn, if they control Smuggler's Pass, they may return the stashed card to their Hand. If they lose control of Smuggler's Pass, put the stashed card in its owner's Discard Pile. Only one card may be stashed here."
+          "text": "During an Action Opportunity, while occupying and controlling Smuggler's Pass, a player may spend 1 Action to stash one card from their Hand face down beneath it. The stashed card does not count toward the Hand limit.\nWhile that player occupies and controls Smuggler's Pass, they may play the stashed card for its Action effect or set it as a Gambit as though it were in their Hand, if eligible. It counts as a card played or set from Hand.\nAt the start of the stashing player's turn, if they control Smuggler's Pass, they may return the stashed card to their Hand. If they lose control of Smuggler's Pass, put the stashed card in its owner's Discard Pile. Only one card may be stashed here."
         }
       ],
       "rules_notes": [

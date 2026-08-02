@@ -21,9 +21,13 @@ Use these terms consistently:
 
 Mnemonic: **Gambits go to the Graveyard.**
 
+### Actions and Action Opportunities
+
+An **Action** is a spendable allowance; an **Action Opportunity** is a timing window. A player normally has 1 Action and two normal Action Opportunities each turn, before and after movement. No more than 1 Action may be spent during the same Action Opportunity.
+
 ### Printed effect headings
 
-- **Action:** played during an Action Opportunity.
+- **Action:** normally played by spending 1 Action during an Action Opportunity.
 - **Gambit:** may only be set as a Gambit.
 - **Tactic:** may only be chosen as a Tactic.
 - **Battle:** may be used as either a Gambit or Tactic.

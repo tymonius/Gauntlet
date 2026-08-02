@@ -38,7 +38,7 @@ export interface SleeperNetworkActivationState {
 export interface SleeperNetworkState {
   cards: CardID[];
   bankedTurn: number;
-  startOfferTurn?: number;
+  activationOfferKey?: string;
   endOfferTurn?: number;
   activation?: SleeperNetworkActivationState;
 }

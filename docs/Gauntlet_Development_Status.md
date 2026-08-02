@@ -14,7 +14,7 @@ Test specifically whether:
 
 ## Financier Financial Capacity playtest
 
-Financiers now determine Financial Capacity after the Capture step and its effects, before drawing. When Treasury value exceeds Territories controlled, they may use both normal Action Opportunities that turn, provided at least one is used for a Financier faction action.
+Financiers now determine Financial Capacity after the Capture step and its effects, before drawing. When Treasury value exceeds Territories controlled, they gain 1 additional Action that turn, provided at least one Action is spent on a Financier Faction Action.
 
 Test specifically whether:
 

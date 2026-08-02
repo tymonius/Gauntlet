@@ -24,7 +24,7 @@ Complete enough Missions to make a **Special Operation** ready, satisfy its hidd
 
 ## Faction Actions
 
-Intelligence has the following Faction Actions. Each uses one Action Opportunity and may be performed only after movement:
+Intelligence has the following Faction Actions. Each costs 1 Action and may be used only during an Action Opportunity after movement:
 
 - **Start a Mission:** Place one eligible Intelligence card from Hand face down as your Active Mission.
 - **Complete a Mission:** Reveal a satisfied Active Mission, gain its Mission reward, and put it in your Discard Pile.
@@ -32,7 +32,7 @@ Intelligence has the following Faction Actions. Each uses one Action Opportunity
 - **Start a Special Operation:** When ready, place one eligible Intelligence card from Hand face down as your Special Operation.
 - **Complete a Special Operation:** Reveal a satisfied, ready Special Operation, pay its Intel cost, and win the game.
 
-Surveillance, Interference, Fieldcraft, and Mission Control are Faction Abilities, not Faction Actions. Mission Control may start a Mission without using an Action Opportunity only because its text expressly permits it.
+Surveillance, Interference, Fieldcraft, and Mission Control are Faction Abilities, not Faction Actions. Mission Control may start a Mission without spending an Action only because its text expressly permits it.
 
 # 2. Components and setup
 
@@ -51,7 +51,7 @@ Both values begin at 0 and have no maximum. Only an Intelligence card with a pri
 
 ## How it works
 
-During an Action Opportunity after movement, place an eligible card face down as your Active Mission instead of playing an Action. Once you have satisfied its requirement on a later turn, use another after-movement Action Opportunity to reveal and complete it.
+During an Action Opportunity after movement, spend 1 Action to place an eligible card face down as your Active Mission. Once you have satisfied its requirement on a later turn, spend 1 Action during another after-movement Action Opportunity to reveal and complete it.
 
 A completed Mission gives 1 Operation Progress and Intel equal to the card's value. When Operation Progress exceeds the number of Territories the opponent controls, you may begin a Special Operation.
 
@@ -67,7 +67,7 @@ Operation Progress begins at 0 and is not normally spent. Each completed normal 
 
 ### Starting a Mission
 
-During an Action Opportunity after movement, instead of playing a card for its Action effect, place one eligible Intelligence card from your Hand face down near your Leader as your **Active Mission**.
+During an Action Opportunity after movement, spend 1 Action to place one eligible Intelligence card from your Hand face down near your Leader as your **Active Mission**.
 
 - You may inspect it at any time.
 - You may have only one Active Mission.
@@ -78,7 +78,7 @@ During an Action Opportunity after movement, instead of playing a card for its A
 
 ### Completing a Mission
 
-During an Action Opportunity after movement, instead of playing a card for its Action effect, reveal and complete the Active Mission if its requirement has been satisfied.
+During an Action Opportunity after movement, spend 1 Action to reveal and complete the Active Mission if its requirement has been satisfied.
 
 1. Gain 1 Operation Progress.
 2. Gain Intel equal to its value.
@@ -88,7 +88,7 @@ Satisfying the requirement does not complete it automatically.
 
 ### Aborting and failing
 
-During an Action Opportunity after movement, reveal the Active Mission and spend Intel equal to its value to abort it. Put it in the Discard Pile. Aborting is not failure.
+During an Action Opportunity after movement, spend 1 Action, reveal the Active Mission, and spend Intel equal to its value to abort it. Put it in the Discard Pile. Aborting is not failure.
 
 A Mission fails only when a rule, effect, or continuing requirement causes failure. Reveal it and put it in the Graveyard.
 
@@ -100,7 +100,7 @@ You may start a Special Operation only when:
 - you have no Active Mission or Special Operation; and
 - you have an eligible Intelligence card in Hand.
 
-During an Action Opportunity after movement, place that card face down as your Special Operation.
+During an Action Opportunity after movement, spend 1 Action to place that card face down as your Special Operation.
 
 A Special Operation uses the printed Mission requirement but is not a normal Mission. It grants no Mission reward and does not trigger normal-Mission effects.
 
@@ -108,7 +108,7 @@ A Special Operation uses the printed Mission requirement but is not a normal Mis
 
 The Special Operation remains ready only while Operation Progress exceeds the number of Territories the opponent controls. If readiness is lost, it immediately fails and goes to the Graveyard.
 
-During an Action Opportunity after movement, if its requirement is satisfied and readiness remains valid, reveal it and pay:
+During an Action Opportunity after movement, if its requirement is satisfied and readiness remains valid, spend 1 Action, reveal it, and pay:
 
 > **Territories currently in the Gauntlet − Special Operation card's value**
 
@@ -179,7 +179,7 @@ Fieldcraft does not alter Territory control, Occupation, capture, Defender's Adv
 **Archetype:** Mission tempo and operational coordination  
 **Motto:** *Information never rests. Momentum is the weapon.*
 
-> **Mission Control:** Once per turn, after completing a normal Mission, you may immediately start another eligible Mission from your Hand without using an Action Opportunity. It cannot complete that turn. Mission Control cannot start a Special Operation.
+> **Mission Control:** Once per turn, after completing a normal Mission, you may immediately start another eligible Mission from your Hand without spending an Action. It cannot complete that turn. Mission Control cannot start a Special Operation.
 
 # 6. Intelligence-specific rules
 
@@ -323,17 +323,15 @@ Treason cannot select an effect that has already been applied and follows the sh
 **Unique:** Maximum one copy per Playable Deck  
 **Card form:** Asset
 
-> **Action:** Bank this card with one other card from your Hand face down beneath it.
+> **Action:** Bank this card and bind another card from your Hand to it face down.
 >
-> **Asset:** At the end of each of your later turns, you may place one other card from your Hand face down beneath it.
+> **Asset:** At the end of each later turn, you may bind a card from your Hand to it face down, up to the number of Territories you control.
 >
-> **Capacity:** Sleeper Network can hold no more cards than the number of Territories you control. If it holds too many, immediately put cards beneath it of your choice in your Discard Pile until within capacity.
+> **Use:** During an Action Opportunity, spend 1 Action to put this card in your Graveyard and reveal its bound cards. Play each whose Action effect can apply now, one at a time and in any order, without spending Actions. Discard the rest.
 >
-> **Use:** At the start of your turn, you may put this card in your Graveyard. If you do, reveal the cards beneath it. Play each card whose Action effect can legally be applied, one at a time and in any order, without using Action Opportunities. Put the rest in your Discard Pile.
->
-> **Compromised:** When an opposing effect would cause Sleeper Network to leave play, before it does, reveal the cards beneath it. You may play one card whose Action effect can legally be applied without using an Action Opportunity. Put the rest in your Discard Pile.
->
-> **Other removal:** If this card leaves play for any other reason, put all cards beneath it in your Discard Pile.
+> **Compromised:** Before an opposing effect causes this card to leave play, reveal its bound cards. You may play one whose Action effect can apply now without spending an Action. Discard the rest.
+
+If Sleeper Network has more bound cards than Territories you control, immediately discard bound cards of your choice until within the limit. If it leaves play without applying its Use or Compromised effect, discard all cards bound to it.
 
 # 8. Quick reference
 

@@ -226,7 +226,7 @@ Counterintelligence does not prevent a card from being set face up by a rule suc
 
 > **Action:** Bank this card.
 >
-> **Use:** During your turn, you may discard this card to take another Action Opportunity.
+> **Use:** During your turn, you may discard this card to gain 1 Action, then immediately take another Action Opportunity.
 >
 > **Battle:** After Tactics are revealed, draw one additional card into your Reserve. You may immediately play it face up as an additional Tactic.
 
@@ -350,7 +350,7 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 **Cost:** 3  
 **Complexity:** Basic
 
-> **Action:** Draw one card. You may immediately play one card from your Hand whose Action effect banks it, without using another Action Opportunity.
+> **Action:** Draw one card. You may immediately play one card from your Hand whose Action effect banks it without spending another Action.
 >
 > **Gambit:** When Gambits are revealed, draw one additional card into your Reserve. You may choose one additional Tactic during this battle.
 
@@ -401,7 +401,7 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 **Cost:** 3  
 **Complexity:** Advanced
 
-> **Action:** Discard your Hand. Each player shuffles their Discard Pile into their Draw Pile. Draw three cards, then take another Action Opportunity.
+> **Action:** Discard your Hand. Each player shuffles their Discard Pile into their Draw Pile. Draw three cards, then gain 1 Action and immediately take another Action Opportunity.
 >
 > **Battle:** If this battle is a Counterattack, gain double advantage. Otherwise, if you are the attacker, gain advantage.
 
@@ -412,7 +412,7 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 
 > **Action:** Bank this card.
 >
-> **Asset:** After you win a Counterattack, draw one card, then take another Action Opportunity.
+> **Asset:** After you win a Counterattack, draw one card, then gain 1 Action and immediately take another Action Opportunity.
 >
 > **Battle:** If this battle is a Counterattack, form your Reserve with one additional card and you may choose one additional Tactic.
 

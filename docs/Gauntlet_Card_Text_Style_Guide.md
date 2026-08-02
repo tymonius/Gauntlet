@@ -13,7 +13,7 @@ This guide governs player-facing card wording. It favors natural English, define
 
 ## Standard card headings
 
-- **Action:** One-time instructions for playing the card during an Action Opportunity.
+- **Action:** One-time instructions normally played by spending 1 Action during an Action Opportunity.
 - **Asset:** Continuous or automatic text that applies while the card is a banked Asset.
 - **Use:** An optional ability of a banked Asset.
 - **Battle, Gambit, Tactic, Mission, Terms, Accepted, Refused, Overlay,** and faction-specific headings retain their established meanings.
@@ -31,7 +31,12 @@ Use **Action: Bank this card.** rather than repeating the title and “as an Ass
 - **Aftermath:** “In the Aftermath, …”
 - **Narrow Aftermath timing:** “before battle cards are cleared”; “after battle cards are cleared”; “at the end of the Aftermath”; “after you retreat”
 - **Card movement:** “put this card in your Graveyard”; “return it to your Hand”; “bank this card”
-- **Additional action:** “take another Action Opportunity”
+- **Timing:** “during an Action Opportunity”
+- **Action cost:** “spend 1 Action”
+- **Free effect:** “without spending an Action”
+- **Additional Action:** “gain 1 Action”
+- **Additional opportunity:** “take another Action Opportunity”
+- **Both:** “gain 1 Action, then immediately take another Action Opportunity”
 - **Reserve size:** “form your Reserve with one additional card”
 - **Additional Tactic:** “play it face up as an additional Tactic”
 - **Current timing:** “whose effect can apply now”

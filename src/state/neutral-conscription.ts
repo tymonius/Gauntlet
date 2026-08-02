@@ -141,7 +141,7 @@ export function beginConscriptionAssetPlay(
 
   // Give the ordinary Action-card pipeline a temporary opportunity. The
   // snapshot is restored after the selected card and its complete Action
-  // effect resolve, so Conscription never spends another Action Opportunity.
+  // effect resolve, so Conscription never spends another Action.
   player.actionsRemaining += 1;
   player.hasPlayedActionThisTurn = false;
   player.hasPlayedBattleThisTurn = false;
@@ -161,7 +161,7 @@ export function finishConscriptionAssetPlay(
     game,
     playerId,
     'neutral_conscription_action_asset',
-    `${player.name} immediately played an Asset with Conscription without using another Action Opportunity.`,
+    `${player.name} immediately played an Asset with Conscription without spending another Action.`,
   );
 }
 
