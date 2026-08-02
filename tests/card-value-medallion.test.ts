@@ -10,6 +10,6 @@ describe("card value medallion", () => {
     expect(baseCss).toMatch(/\.value-medallion\s*\{[\s\S]*?place-items:\s*center;/);
     expect(refinementCss).toMatch(/\.value-medallion\s*\{[\s\S]*?width:\s*0\.34in;/);
     expect(refinementCss).toMatch(/\.value-medallion\s*\{[\s\S]*?height:\s*0\.34in;/);
-    expect(refinementCss).toMatch(/\.value-medallion\s*\{[\s\S]*?padding-top:\s*0\.018in;/);
+    expect(refinementCss).toMatch(/\.value-medallion\s*\{[\s\S]*?padding-top:\s*0\.036in;/);
   });
 });
