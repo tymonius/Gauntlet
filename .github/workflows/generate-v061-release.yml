@@ -1,60 +1,172 @@
-name: Apply Sleeper fixture correction
+name: Generate and validate v0.6.1 sources
 
 on:
+  push:
+    branches:
+      - rules/v0.6.1-playtest-revision
+    paths:
+      - "README.md"
+      - "index.html"
+      - "docs/README.md"
+      - "docs/Gauntlet_Development_Status.md"
+      - "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
+      - "docs/Gauntlet_v0.6.1_Territory_Pool.md"
+      - "releases/v0.6.1/**"
+      - "rules-assistant/**"
+      - "workers/playtest-sessions/**"
+      - "playtest/session/**"
+      - "playtest/batch/**"
+      - "deckbuilder/**"
+      - "package.json"
+      - "scripts/finalize_v061_publication.py"
+      - "scripts/generate_v061_release.py"
+      - "scripts/sync_v061_deckbuilder.py"
+      - "scripts/sync_v061_rules_assistant.py"
+      - "scripts/validate_v061_release.py"
+      - "scripts/validate_v061_playtest_sessions.py"
+      - "scripts/test_v061_formal_session_e2e.mjs"
+      - ".github/workflows/generate-v061-release.yml"
   pull_request:
     branches:
       - main
+    paths:
+      - "README.md"
+      - "index.html"
+      - "docs/README.md"
+      - "docs/Gauntlet_Development_Status.md"
+      - "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
+      - "docs/Gauntlet_v0.6.1_Territory_Pool.md"
+      - "releases/v0.6.1/**"
+      - "rules-assistant/**"
+      - "workers/playtest-sessions/**"
+      - "playtest/session/**"
+      - "playtest/batch/**"
+      - "deckbuilder/**"
+      - "package.json"
+      - "scripts/finalize_v061_publication.py"
+      - "scripts/generate_v061_release.py"
+      - "scripts/sync_v061_deckbuilder.py"
+      - "scripts/sync_v061_rules_assistant.py"
+      - "scripts/validate_v061_release.py"
+      - "scripts/validate_v061_playtest_sessions.py"
+      - "scripts/test_v061_formal_session_e2e.mjs"
+      - ".github/workflows/generate-v061-release.yml"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: sleeper-fixture-${{ github.ref }}
+  group: generate-v061-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  fix:
+  generate:
     runs-on: ubuntu-latest
     steps:
       - name: Check out source branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref || github.ref_name }}
-          fetch-depth: 0
-          persist-credentials: true
+          fetch-depth: 1
 
-      - uses: actions/setup-python@v5
+      - name: Set up Python
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - uses: actions/setup-node@v4
+      - name: Set up Node
+        uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Update stale fixture
-        run: python scripts/fix_sleeper_subversion_fixture.py
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Typecheck and test
+      - name: Apply governed source migrations
         run: |
-          npm run typecheck
-          npm test
+          python - <<'PY'
+          from pathlib import Path
 
-      - name: Restore workflow and remove temporary script
-        run: |
-          git fetch origin main
-          git checkout origin/main -- .github/workflows/generate-v061-release.yml
-          rm -f package-lock.json scripts/fix_sleeper_subversion_fixture.py
+          card_source = Path("docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md")
+          card_text = card_source.read_text(encoding="utf-8")
+          if "Siege Weaponry" in card_text:
+              card_source.write_text(card_text.replace("Siege Weaponry", "Bombardment"), encoding="utf-8")
 
-      - name: Commit fixture correction
+          validator = Path("scripts/validate_v061_release.py")
+          validator_text = validator.read_text(encoding="utf-8")
+          obsolete = '            \'main = "worker-v061.js"\','
+          current = '            \'main = "worker-entry.js"\','
+          if obsolete in validator_text:
+              validator.write_text(validator_text.replace(obsolete, current, 1), encoding="utf-8")
+          elif current not in validator_text:
+              raise SystemExit("Could not reconcile Rules Arbiter deployment marker in release validator")
+          PY
+
+      - name: Finalize publication metadata
+        run: python scripts/finalize_v061_publication.py
+
+      - name: Synchronize browser and Rules Arbiter sources
         run: |
-          set -euo pipefail
+          python scripts/sync_v061_deckbuilder.py
+          python scripts/sync_v061_rules_assistant.py
+
+      - name: Generate and validate canonical data
+        run: python scripts/generate_v061_release.py
+
+      - name: Commit synchronized and generated outputs when changed
+        run: |
+          git add \
+            README.md \
+            index.html \
+            docs/README.md \
+            docs/Gauntlet_Development_Status.md \
+            docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md \
+            scripts/finalize_v061_publication.py \
+            scripts/generate_v061_release.py \
+            scripts/validate_v061_release.py \
+            deckbuilder/ \
+            rules-assistant/ \
+            releases/v0.6.1/
+          if git diff --cached --quiet; then
+            exit 0
+          fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          git commit -m "Update Sleeper Network Subversion fixture"
+          git commit -m "Publish and synchronize Gauntlet v0.6.1"
           git pull --rebase origin ${{ github.head_ref || github.ref_name }}
           git push origin HEAD:${{ github.head_ref || github.ref_name }}
+
+      - name: Verify generated outputs are current
+        run: |
+          python scripts/finalize_v061_publication.py
+          python scripts/sync_v061_deckbuilder.py
+          python scripts/sync_v061_rules_assistant.py
+          python scripts/generate_v061_release.py --check
+          git diff --exit-code -- README.md index.html docs/README.md docs/Gauntlet_Development_Status.md docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md scripts/finalize_v061_publication.py scripts/generate_v061_release.py scripts/validate_v061_release.py deckbuilder/ rules-assistant/ releases/v0.6.1/
+
+      - name: Install test dependencies
+        run: npm install
+
+      - name: Test Rules Arbiter retrieval and worker helpers
+        run: npm run test:rules-assistant
+
+      - name: Test playtest session service
+        run: npm run test:playtest-sessions
+
+      - name: Test formal coded-sheet lifecycle
+        run: npm run test:formal-session-e2e
+
+      - name: Test Deckbuilder data
+        run: npm run test:deckbuilder
+
+      - name: Validate v0.6.1 source package
+        run: |
+          python scripts/validate_v061_release.py
+          python scripts/validate_v061_playtest_sessions.py
+
+      - name: Upload generated release data
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-v061-generated-data
+          path: |
+            releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json
+            releases/v0.6.1/Gauntlet_v0.6.1_Complete_Card_Reference.md
+          if-no-files-found: error
