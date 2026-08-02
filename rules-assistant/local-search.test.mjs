@@ -64,12 +64,38 @@ test("uses v0.6.1 canonical source URLs", () => {
   const urls = defaultSourceUrls("https://example.test");
   expect(urls.canonicalDataUrl).toContain("releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json");
   expect(urls.rulebookUrl).toContain("releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md");
+  expect(urls.rulebookBrowserUrl).toBe("https://example.test/rulebook/");
 });
 
 test("parses layered markdown into titled rulebook sections", () => {
-  const sections = parseRulebookSections(rulebook, "https://example.test/rulebook.pdf");
-  expect(sections.some((section) => section.title.includes("How it works"))).toBe(true);
+  const sections = parseRulebookSections(rulebook, "https://example.test/rulebook/");
+  const howItWorks = sections.find((section) => section.title.includes("How it works"));
+  expect(howItWorks).toBeDefined();
+  expect(howItWorks.sourceUrl).toBe("https://example.test/rulebook/#how-it-works");
   expect(sections.some((section) => section.body.includes("occupied position"))).toBe(true);
+});
+
+test("matches duplicate browser-rulebook heading anchors", () => {
+  const repeatedHeadings = `# First chapter
+
+## Timing
+
+First timing rule.
+
+# Second chapter
+
+## Timing
+
+Second timing rule.
+`;
+  const sections = parseRulebookSections(repeatedHeadings, "https://example.test/rulebook/");
+  const timingUrls = sections
+    .filter((section) => section.heading === "Timing")
+    .map((section) => section.sourceUrl);
+  expect(timingUrls).toEqual([
+    "https://example.test/rulebook/#timing",
+    "https://example.test/rulebook/#timing-2"
+  ]);
 });
 
 test("ranks an exact card title above generic movement text", () => {
@@ -95,7 +121,10 @@ test("indexes canonical Gambit text", () => {
 test("finds capture timing in the rulebook", () => {
   const corpus = buildRulesCorpus({ canonicalData, rulebookMarkdown: rulebook });
   const results = retrieveRules(corpus, "When is an occupied Territory captured?", { limit: 4 });
-  expect(results.some((result) => result.title.includes("Capture"))).toBe(true);
+  const capture = results.find((result) => result.title.includes("Capture"));
+  expect(capture).toBeDefined();
+  expect(capture.sourceUrl).toBe("https://gauntlet.run/rulebook/#capture");
+  expect(capture.sourceUrl).not.toContain(".pdf");
 });
 
 test("indexes canonical Territory text", () => {
