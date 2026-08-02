@@ -25,23 +25,18 @@
   break-inside: avoid;
 }
 
-/* These two long, indivisible bullet groups previously generated pages
-   containing only the list. They remain one semantic block but use the same
-   compact two-column reference treatment as the quick-reference pages. */
-.continuation-page[data-context-title="Detailed Card and Timing Rules"]
-  .keep-group:has(> [data-heading-title="Copied effects"]) ul,
-.continuation-page[data-context-title="Detailed Card and Timing Rules"]
-  .keep-group:has(> [data-heading-title="Copied effects"]) + ul,
+/* Chapter 11's continuation pages consist primarily of technical lookup lists.
+   Two-column list flow keeps the copied-effect restrictions on the same page as
+   their heading instead of generating a nearly empty final side. */
+.continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow ul,
+.continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow ol,
 .continuation-page[data-context-title="Factions"]
   .keep-group:has(> [data-heading-title="General use"]) ul {
   columns: 2;
   column-gap: 18px;
   column-rule: 1px solid var(--line);
 }
-.continuation-page[data-context-title="Detailed Card and Timing Rules"]
-  .keep-group:has(> [data-heading-title="Copied effects"]) li,
-.continuation-page[data-context-title="Detailed Card and Timing Rules"]
-  .keep-group:has(> [data-heading-title="Copied effects"]) + ul li,
+.continuation-page[data-context-title="Detailed Card and Timing Rules"] .production-flow li,
 .continuation-page[data-context-title="Factions"]
   .keep-group:has(> [data-heading-title="General use"]) li {
   break-inside: avoid;
@@ -82,30 +77,29 @@
   margin: 5px 0;
 }
 
-/* In this fixed v0.6.1 pagination, the Withdrawal and Retreat spread leaves
- * one two-line retreat-trigger sentence alone on page 22. Tighten only the
- * preceding continuation page's vertical rhythm so the sentence remains with
- * its section. The approved 9pt body size and heading sizes are unchanged. */
-.page[data-page="21"] .production-flow {
+/* Withdrawal and Retreat is a dense nested section within Battles. Target the
+   chapter semantically rather than by page number so front-matter or rules edits
+   cannot invalidate the keep. The approved 9pt body size is unchanged. */
+.continuation-page[data-context-title="Battles"] .production-flow {
   line-height: 1.24;
 }
-.page[data-page="21"] .production-flow p {
+.continuation-page[data-context-title="Battles"] .production-flow p {
   margin-bottom: 4px;
 }
-.page[data-page="21"] .production-flow h2 {
+.continuation-page[data-context-title="Battles"] .production-flow h2 {
   margin: 9px 0 4px;
   padding-top: 5px;
 }
-.page[data-page="21"] .production-flow h3 {
+.continuation-page[data-context-title="Battles"] .production-flow h3 {
   margin: 6px 0 2px;
 }
-.page[data-page="21"] .production-flow h4 {
+.continuation-page[data-context-title="Battles"] .production-flow h4 {
   margin: 5px 0 2px;
 }
-.page[data-page="21"] .production-flow ul,
-.page[data-page="21"] .production-flow ol {
+.continuation-page[data-context-title="Battles"] .production-flow ul,
+.continuation-page[data-context-title="Battles"] .production-flow ol {
   margin-bottom: 4px;
 }
-.page[data-page="21"] .production-flow li {
+.continuation-page[data-context-title="Battles"] .production-flow li {
   margin-bottom: 1px;
 }
