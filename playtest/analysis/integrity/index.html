@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-8YYYZJGGPE');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="description" content="Owner-only exclusion, restoration, and audit controls for Gauntlet tracked-playtest research data." />
+  <meta name="theme-color" content="#171512" />
+  <title>Gauntlet Playtest Data Integrity</title>
+  <link rel="preconnect" href="https://use.typekit.net" />
+  <link rel="preconnect" href="https://p.typekit.net" crossorigin />
+  <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
+  <link rel="stylesheet" href="../../../site.css" />
+  <link rel="stylesheet" href="../styles.css?v=20260802-2" />
+  <link rel="stylesheet" href="styles.css?v=20260802-1" />
+</head>
+<body>
+  <header class="site-header analysis-header">
+    <a class="brand" href="../../../" aria-label="Gauntlet home">
+      <span class="brand-mark" aria-hidden="true">G</span>
+      <span>Gauntlet</span>
+    </a>
+    <nav aria-label="Integrity navigation">
+      <a href="../">Playtest Analysis</a>
+      <a href="../../host/">Host Home</a>
+      <a href="../../../">Main site</a>
+    </nav>
+  </header>
+
+  <main class="analysis-main integrity-main">
+    <section class="analysis-hero integrity-hero">
+      <div>
+        <p class="eyebrow">Owner research controls</p>
+        <h1>Data <span>Integrity.</span></h1>
+        <p>Exclude test, duplicate, incomplete, corrupted, or otherwise invalid records from every playtest summary and export without destroying their provenance.</p>
+      </div>
+      <aside>
+        <strong>Audited exclusion</strong>
+        <p>Excluded records leave the active research dataset immediately. Their original contents and exclusion history remain protected here so an error can be reviewed or restored.</p>
+      </aside>
+    </section>
+
+    <section id="accessPanel" class="analysis-panel access-panel" aria-labelledby="access-title">
+      <div>
+        <p class="eyebrow">Owner access</p>
+        <h2 id="access-title">Open integrity controls.</h2>
+        <p>Use the facilitator creation key. Your reviewer name or initials are written to the audit history; neither value is stored in the browser.</p>
+      </div>
+      <form id="accessForm">
+        <label for="adminToken">Facilitator creation key</label>
+        <input id="adminToken" type="password" autocomplete="off" required />
+        <label for="reviewerName">Reviewer name or initials</label>
+        <input id="reviewerName" type="text" maxlength="80" autocomplete="off" required />
+        <button class="button primary" type="submit">Open integrity controls</button>
+        <p id="accessStatus" class="form-status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section id="integrityApp" hidden>
+      <section class="analysis-toolbar analysis-panel">
+        <div>
+          <p class="eyebrow">Protected research record</p>
+          <h2>Tracked-playtest exclusions</h2>
+          <p id="dataFreshness">Loading…</p>
+        </div>
+        <div class="toolbar-actions">
+          <span id="connectionStatus" class="connection-status">Protected</span>
+          <a class="button secondary" href="../">Open Analysis</a>
+          <button id="refreshData" class="button secondary" type="button">Refresh</button>
+          <button id="lockPage" class="button secondary" type="button">Lock page</button>
+        </div>
+      </section>
+
+      <section class="integrity-metrics" aria-label="Integrity totals">
+        <article><span>Active games</span><strong id="metricActiveGames">0</strong></article>
+        <article><span>Excluded games</span><strong id="metricExcludedGames">0</strong></article>
+        <article><span>Excluded responses</span><strong id="metricExcludedResponses">0</strong></article>
+        <article><span>Audit actions</span><strong id="metricHistory">0</strong></article>
+      </section>
+
+      <section class="analysis-panel integrity-section" aria-labelledby="active-title">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Included dataset</p><h2 id="active-title">Active games and responses.</h2></div>
+          <p>Excluding a game removes its result, both questionnaires, linked Arbiter questions, and outcome from analysis. Excluding one response leaves the game and the other player’s response intact.</p>
+        </div>
+        <div id="activeRecords" class="integrity-records"></div>
+      </section>
+
+      <section class="analysis-panel integrity-section excluded-section" aria-labelledby="excluded-title">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Quarantined data</p><h2 id="excluded-title">Excluded records.</h2></div>
+          <p>These records do not contribute to dashboard metrics or any JSON or CSV export. Restore only after confirming the record is valid.</p>
+        </div>
+        <div id="excludedRecords" class="integrity-records"></div>
+      </section>
+
+      <section class="analysis-panel integrity-section" aria-labelledby="history-title">
+        <div class="section-heading split-heading">
+          <div><p class="eyebrow">Provenance</p><h2 id="history-title">Exclusion audit history.</h2></div>
+          <p>Every exclusion and restoration remains visible even after a record returns to the active dataset.</p>
+        </div>
+        <div class="table-scroll">
+          <table class="audit-table">
+            <thead><tr><th>Status</th><th>Target</th><th>Reason</th><th>Excluded</th><th>Restored</th></tr></thead>
+            <tbody id="historyRows"></tbody>
+          </table>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <dialog id="excludeDialog" class="exclude-dialog">
+    <form id="excludeForm" method="dialog">
+      <p class="eyebrow">Remove from research dataset</p>
+      <h2>Exclude this record?</h2>
+      <p id="excludeTarget"></p>
+      <input id="excludeTargetType" type="hidden" />
+      <input id="excludeTargetId" type="hidden" />
+      <label for="reasonCode">Reason</label>
+      <select id="reasonCode" required>
+        <option value="">Select a reason</option>
+        <option value="test">Test or deployment check</option>
+        <option value="duplicate">Duplicate submission</option>
+        <option value="incomplete">Incomplete or abandoned record</option>
+        <option value="invalid">Invalid or unreliable response</option>
+        <option value="corrupted">Corrupted or technically malformed</option>
+        <option value="other">Other</option>
+      </select>
+      <label for="reasonNote">Audit note</label>
+      <textarea id="reasonNote" rows="4" maxlength="1000" placeholder="Optional context; required when Other is selected."></textarea>
+      <p id="dialogStatus" class="form-status" aria-live="polite"></p>
+      <div class="dialog-actions">
+        <button id="cancelExclude" class="button secondary" type="button">Cancel</button>
+        <button class="button danger" type="submit">Exclude from analysis</button>
+      </div>
+    </form>
+  </dialog>
+
+  <footer>
+    <div><strong>Gauntlet</strong><p>Unpublished pre-release playtest project.</p></div>
+    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  </footer>
+
+  <script src="app.js?v=20260802-1" defer></script>
+</body>
+</html>
