@@ -70,10 +70,25 @@ jobs:
           python scripts/validate_v061_rulebook_content.py
           python scripts/validate_v061_release.py
 
-      - name: Install and test
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
         run: |
-          npm install
-          npm test
+          set +e
+          npm test > /tmp/action-tests.log 2>&1
+          status=$?
+          set -e
+          cat /tmp/action-tests.log
+          exit "$status"
+
+      - name: Upload test failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: action-terminology-test-failure
+          path: /tmp/action-tests.log
+          if-no-files-found: ignore
 
       - name: Restore workflows and remove migration material
         run: |
