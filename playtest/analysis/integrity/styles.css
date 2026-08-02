@@ -4,11 +4,16 @@
 .integrity-hero h1{font-size:clamp(3.9rem,8vw,7rem)}
 .integrity-hero aside{background:rgba(28,25,21,.96);border-color:rgba(214,183,131,.42)}
 .integrity-hero aside p{color:#d5c8b5}
-.access-panel form{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:12px;align-items:end}
-.access-panel form label{grid-row:1}
-.access-panel form input{min-height:48px;padding:0 14px;border:1px solid rgba(214,183,131,.34);background:rgba(255,255,255,.06);color:#fff8ed}
-.access-panel form button{grid-column:3;grid-row:2}
-.access-panel .form-status{grid-column:1/-1}
+.access-panel form{display:grid;grid-template-columns:repeat(2,minmax(180px,1fr));gap:12px;align-items:end}
+.access-field{display:grid;gap:7px;min-width:0}
+.access-field label{color:#3b3328;font-size:.84rem;font-weight:800;letter-spacing:.01em;line-height:1.25}
+.access-field input{width:100%;min-height:48px;padding:0 14px;border:1px solid rgba(69,50,26,.34);border-radius:.55rem;background:#fffaf0;color:#171512;font:inherit;box-shadow:inset 0 1px 2px rgba(50,35,15,.06)}
+.access-field input:focus{outline:3px solid rgba(184,139,53,.24);outline-offset:2px;border-color:#9d6e21}
+.access-field input:-webkit-autofill,
+.access-field input:-webkit-autofill:hover,
+.access-field input:-webkit-autofill:focus{-webkit-text-fill-color:#171512;box-shadow:0 0 0 1000px #fffaf0 inset;caret-color:#171512}
+.access-panel form button{grid-column:1/-1;min-height:48px;white-space:nowrap}
+.access-panel .form-status{grid-column:1/-1;margin:0}
 
 .integrity-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}
 .integrity-metrics article{min-height:126px;padding:24px;border:1px solid rgba(214,183,131,.24);background:rgba(23,21,18,.94);box-shadow:0 18px 44px rgba(20,16,10,.13)}
@@ -52,10 +57,10 @@
 
 @media(max-width:900px){
   .integrity-metrics{grid-template-columns:repeat(2,1fr)}
-  .access-panel form{grid-template-columns:1fr}
-  .access-panel form label,.access-panel form button{grid-column:auto;grid-row:auto}
 }
 @media(max-width:620px){
+  .access-panel form{grid-template-columns:1fr}
+  .access-panel form button{grid-column:auto;width:100%}
   .integrity-metrics,.player-integrity-grid{grid-template-columns:1fr}
   .integrity-game summary,.excluded-record{align-items:flex-start;grid-template-columns:1fr}
   .integrity-game summary{display:grid}
