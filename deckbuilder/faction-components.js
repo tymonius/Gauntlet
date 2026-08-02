@@ -1,4 +1,8 @@
 (() => {
+  const MYSTICS_RITUAL_COMPONENT_ID = "mystics-ritual-of-ascendance";
+
+  installMysticsRitualComponent();
+
   const baseRenderAll = renderAll;
 
   renderAll = function renderAllWithFactionComponents() {
@@ -7,6 +11,49 @@
   };
 
   document.addEventListener("DOMContentLoaded", installFactionComponentDisplay);
+
+  function installMysticsRitualComponent() {
+    const packageData = window.GAUNTLET_V06_SUPPLEMENTALS?.mystics;
+    if (!packageData) return;
+
+    const summaryLabel = "Ritual of Ascendance card";
+    packageData.summary ||= [];
+    if (!packageData.summary.includes(summaryLabel)) {
+      const riteSummaryIndex = packageData.summary.findIndex(item => /Rite cards/i.test(item));
+      if (riteSummaryIndex >= 0) packageData.summary.splice(riteSummaryIndex, 0, summaryLabel);
+      else packageData.summary.push(summaryLabel);
+    }
+
+    packageData.components ||= [];
+    if (packageData.components.some(component => component.id === MYSTICS_RITUAL_COMPONENT_ID)) return;
+
+    packageData.components.push({
+      type: "reference",
+      kind: "ritual",
+      id: MYSTICS_RITUAL_COMPONENT_ID,
+      title: "Ritual of Ascendance",
+      subtitle: "Mystics victory ritual",
+      sections: [
+        {
+          label: "Begin",
+          text: "After completing all three Rites, during an Action Opportunity after movement, spend 1 Action. Bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard."
+        },
+        {
+          label: "Convergence",
+          text: "While the Ritual is underway, during a battle you initiated, add +1 to your battle total for each card bound to the Ritual."
+        },
+        {
+          label: "Complete",
+          text: "Initiate a battle while all three Ritual cards remain bound. If you win that battle, complete the Ritual and immediately win the game."
+        },
+        {
+          label: "Interruption",
+          text: "If you lose any battle before completion, put all three Ritual-bound cards in your Graveyard. Withdrawal neither completes nor interrupts the Ritual."
+        }
+      ],
+      footer: "Supplemental Ritual card — not a Playable Deck card"
+    });
+  }
 
   function installFactionComponentDisplay() {
     const territoryList = document.getElementById("deckTerritories");
@@ -46,13 +93,15 @@
       },
       ...(packageData.components || []).map(component => ({
         name: component.type === "deed-set" ? `${component.count || 8} × ${component.title}` : component.title,
-        meta: component.type === "capital" || /ledger/i.test(component.title || "")
-          ? "Supplemental ledger"
-          : component.type === "tracker" || /tracker/i.test(component.footer || component.subtitle || "")
-            ? "Supplemental tracker"
-            : component.type === "deed-set"
-              ? "Shared supplemental cards"
-              : "Supplemental reference"
+        meta: component.kind === "ritual"
+          ? "Supplemental Ritual card"
+          : component.type === "capital" || /ledger/i.test(component.title || "")
+            ? "Supplemental ledger"
+            : component.type === "tracker" || /tracker/i.test(component.footer || component.subtitle || "")
+              ? "Supplemental tracker"
+              : component.type === "deed-set"
+                ? "Shared supplemental cards"
+                : "Supplemental reference"
       }))
     ];
 
