@@ -18,6 +18,8 @@ This guide governs player-facing card wording. It favors natural English, define
 - **Use:** An optional ability of a banked Asset.
 - **Battle, Gambit, Tactic, Mission, Terms, Accepted, Refused, Overlay,** and faction-specific headings retain their established meanings.
 
+Use the **Use** heading only for an optional banked-Asset ability; keep continuous and automatic text under **Asset**.
+
 When several apply, preserve this order: **Action**, **Asset**, **Use**, then the card's battle or faction-specific headings.
 
 Use **Action: Bank this card.** rather than repeating the title and “as an Asset.”
