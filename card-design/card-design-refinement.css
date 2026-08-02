@@ -35,7 +35,7 @@
   --overlay-title-ink: #f7efdf;
 }
 
-.overlay-card[data-faction="neutral"] {
+.overlay-neutral {
   --overlay-title-ink: var(--card-ink);
 }
 
@@ -90,7 +90,7 @@
   writing-mode: vertical-rl;
 }
 
-.overlay-card[data-faction="neutral"] .overlay-title {
+.overlay-neutral .overlay-title {
   text-shadow: none;
 }
 
