@@ -2,7 +2,7 @@ import type { GameState } from '../types';
 import { evaluateIntelligenceMissionRequirements } from './intelligence-mission-triggers';
 import { reconcileIntelligenceState } from './intelligence-missions';
 import {
-  maybeOpenSleeperNetworkStartTurnWindow,
+  maybeOpenSleeperNetworkActionOpportunityWindow,
   reconcileSleeperNetworks,
 } from './intelligence-sleeper-network';
 import { evaluateWinConditions } from './win';
@@ -31,7 +31,7 @@ export function runPostActionAutomationPipeline(game: GameState): AutomationPipe
   steps.push('intelligence_reconciliation');
 
   reconcileSleeperNetworks(game);
-  maybeOpenSleeperNetworkStartTurnWindow(game);
+  maybeOpenSleeperNetworkActionOpportunityWindow(game);
 
   evaluateIntelligenceMissionRequirements(game);
   steps.push('intelligence_mission_requirements');

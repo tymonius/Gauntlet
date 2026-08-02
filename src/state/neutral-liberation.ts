@@ -115,7 +115,7 @@ export function applyLiberationAssetAfterBattle(
     game,
     playerId,
     'neutral_liberation_asset',
-    `${player.name} drew ${draw.drawnCards.length} card${draw.drawnCards.length === 1 ? '' : 's'} and gained ${copies} additional Action Opportunity${copies === 1 ? '' : 's'} with Liberation after winning a counterattack.`,
+    `${player.name} drew ${draw.drawnCards.length} card${draw.drawnCards.length === 1 ? '' : 's'} and gained ${copies} Action${copies === 1 ? '' : 's'} and ${copies} additional Action Opportunity${copies === 1 ? '' : 's'} with Liberation after winning a counterattack.`,
     {
       battleId: battle.id,
       copies,

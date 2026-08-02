@@ -101,7 +101,7 @@ describe('Neutral Reinforcements', () => {
   it('cannot use an inactive copy or create an extra opportunity before spending the normal one', () => {
     const tooEarly = game();
     tooEarly.players.player_1.zones.assetBank = [REINFORCEMENTS];
-    expect(() => applyGameAction(tooEarly, { type: 'use_neutral_reinforcements_asset', playerId: 'player_1' })).toThrow(/cannot create/);
+    expect(() => applyGameAction(tooEarly, { type: 'use_neutral_reinforcements_asset', playerId: 'player_1' })).toThrow(/cannot grant/);
 
     const inactive = game();
     inactive.players.player_1.zones.assetBank = [REINFORCEMENTS];
@@ -113,7 +113,7 @@ describe('Neutral Reinforcements', () => {
     occupiedTerritory.controller = 'player_2';
     occupiedTerritory.occupant = 'player_1';
     inactive.players.player_1.occupiedSpaceId = occupiedTerritory.id;
-    expect(() => applyGameAction(inactive, { type: 'use_neutral_reinforcements_asset', playerId: 'player_1' })).toThrow(/cannot create/);
+    expect(() => applyGameAction(inactive, { type: 'use_neutral_reinforcements_asset', playerId: 'player_1' })).toThrow(/cannot grant/);
   });
 
   it('pauses reveal after cancellation, draws one card, and may reveal it before modifiers resolve', () => {

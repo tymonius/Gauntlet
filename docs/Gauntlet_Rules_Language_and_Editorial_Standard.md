@@ -21,7 +21,7 @@ Avoid generic phrases such as “use a Gambit,” “use a Tactic,” or “use 
 
 ## Capitalization and formal terms
 
-Capitalize the names of game zones and formal procedures when referring to them as game terms: Hand, Reserve, Draw Pile, Discard Pile, Graveyard, Asset Bank, Gambit, Tactic, Aftermath, Territory, and Action Opportunity.
+Capitalize the names of game zones and formal procedures when referring to them as game terms: Hand, Reserve, Draw Pile, Discard Pile, Graveyard, Asset Bank, Gambit, Tactic, Aftermath, Territory, Action, and Action Opportunity.
 
 Use **the Aftermath of the battle**, not “the battle's Aftermath.”
 

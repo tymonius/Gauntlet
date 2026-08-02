@@ -24,7 +24,7 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 
 ## Faction Actions
 
-Mystics have the following Faction Actions. Each uses one Action Opportunity and may be performed only after movement:
+Mystics have the following Faction Actions. Each costs 1 Action and may be used only during an Action Opportunity after movement:
 
 - **Begin a Rite:** Choose one incomplete Rite you may legally begin and pay its beginning cost.
 - **Begin the Ritual of Ascendance:** After completing all three Rites, bind the required Arcane cards from Hand, Discard Pile, and Graveyard.
@@ -46,7 +46,7 @@ Place all three Rite cards incomplete side up. Mystics use no resource tracker.
 
 ## How it works
 
-During an Action Opportunity after movement, pay a Rite's beginning cost to begin it. You may have only one begun but incomplete Rite at a time, and a Rite cannot complete on the turn it begins.
+During an Action Opportunity after movement, spend 1 Action and pay a Rite's beginning cost to begin it. You may have only one begun but incomplete Rite at a time, and a Rite cannot complete on the turn it begins.
 
 Once its condition is met on a later turn, complete it and unlock the next faction ability. Completed Rites remain complete.
 
@@ -54,7 +54,7 @@ Once its condition is met on a later turn, complete it and unlock the next facti
 
 ### Beginning a Rite
 
-During an Action Opportunity after movement, instead of playing a card for its Action effect, begin one incomplete Rite by paying its beginning cost.
+During an Action Opportunity after movement, spend 1 Action to begin one incomplete Rite by paying its beginning cost.
 
 - You may have only one begun but incomplete Rite.
 - You may begin any uncompleted Rite; there is no required order.
@@ -70,12 +70,7 @@ During an Action Opportunity after movement, instead of playing a card for its A
 
 ### Bound cards
 
-A card bound to a Rite, Ritual, or another card is outside normal zones.
-
-- A face-up bound card is public.
-- A face-down bound card may be inspected only by its owner.
-- A bound card cannot be played, moved, or affected except as instructed by the effect to which it is bound.
-- If the binding effect ends without telling you where to put the bound card, put it in its owner's Graveyard.
+Bound cards follow the shared rules. If a Rite or Ritual binding ends without another instruction, put its bound cards in their owners' Graveyards.
 
 ### Invocation
 
@@ -118,7 +113,7 @@ If you lose a battle before completion, reset the Rite.
 
 ## Rite of Crossing
 
-You may begin this Rite only during an Action Opportunity after movement after winning a battle that made you the occupier of a Territory the opponent controlled immediately before that battle.
+You may begin this Rite only by spending 1 Action during an Action Opportunity after movement after winning a battle that made you the occupier of a Territory the opponent controlled immediately before that battle.
 
 **Beginning cost:** Put one Arcane card from your Hand in your Graveyard. If you have none, reveal your Hand and move one Arcane card from your Discard Pile to your Graveyard instead.
 
@@ -128,7 +123,7 @@ You may begin this Rite only during an Action Opportunity after movement after w
 
 ## How it works
 
-After completing all three Rites, use an Action Opportunity after movement to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. This begins the Ritual.
+After completing all three Rites, spend 1 Action during an Action Opportunity after movement to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. This begins the Ritual.
 
 Initiate a battle while all three remain bound. Convergence adds +1 for each Ritual card. Win that battle to win the game. Lose any battle before completion and the Ritual is interrupted.
 
@@ -136,7 +131,7 @@ Initiate a battle while all three remain bound. Convergence adds +1 for each Rit
 
 ### Beginning the Ritual
 
-After completing all three Rites, during an Action Opportunity after movement, instead of playing a card for its Action effect, bind:
+After completing all three Rites, during an Action Opportunity after movement, spend 1 Action to bind:
 
 - one Arcane card from your Hand;
 - one Arcane card from your Discard Pile; and

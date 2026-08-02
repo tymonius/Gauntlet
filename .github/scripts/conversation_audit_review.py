@@ -15,7 +15,7 @@ SIGNALS = {
     "rules-arbiter": re.compile(r"\brules arbiter\b", re.I),
     "leader-art": re.compile(r"\b(banker|executive|general|commandant|ambassador|senator|alchemist|occultist|inquisitor|zealot|spymaster|operative)\b.{0,80}\b(leader|sketch|art|image)\b|\b(leader|sketch|art|image)\b.{0,80}\b(banker|executive|general|commandant|ambassador|senator|alchemist|occultist|inquisitor|zealot|spymaster|operative)\b", re.I | re.S),
     "repo-path": re.compile(r"(?:images|docs|releases|governance|website|deckbuilder)/[\w./-]+", re.I),
-    "game-terms": re.compile(r"\b(Territor(?:y|ies)|Asset Bank|Last Stand|Action Opportunity|Reserve|Gambit|Tactic|Battle Hand|Graveyard|faction|Leader Card)\b", re.I),
+    "game-terms": re.compile(r"\b(Territor(?:y|ies)|Asset Bank|Last Stand|Action|Action Opportunity|Reserve|Gambit|Tactic|Battle Hand|Graveyard|faction|Leader Card)\b", re.I),
 }
 
 

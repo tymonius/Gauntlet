@@ -96,7 +96,7 @@ export function useReinforcementsAsset(
   action: UseNeutralReinforcementsAssetAction,
 ): void {
   if (!canUseReinforcementsAsset(game, action.playerId)) {
-    throw new GameActionError('Reinforcements cannot create an additional Action Opportunity now.');
+    throw new GameActionError('Reinforcements cannot grant an additional Action and Action Opportunity now.');
   }
   const player = game.players[action.playerId];
   const index = player.zones.assetBank.indexOf(REINFORCEMENTS);
@@ -109,7 +109,7 @@ export function useReinforcementsAsset(
     game,
     action.playerId,
     'neutral_reinforcements_asset_used',
-    `${player.name} discarded Reinforcements to take an additional Action Opportunity.`,
+    `${player.name} discarded Reinforcements to gain 1 Action and take another Action Opportunity.`,
   );
 }
 

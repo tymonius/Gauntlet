@@ -30,4 +30,11 @@ describe("player-facing terminology", () => {
   it("describes Purge through use of Action Opportunities, not performance", () => {
     expect(combined).not.toMatch(/\bPurge may be performed\b/i);
   });
+
+  it("distinguishes Action costs from Action Opportunity timing", () => {
+    expect(combined).not.toMatch(/without using (?:another |an )?Action Opportunit(?:y|ies)/i);
+    expect(combined).not.toMatch(/(?:uses|using) (?:one|an) Action Opportunity/i);
+    expect(combined).toMatch(/No more than 1 Action may be spent during the same Action Opportunity/i);
+  });
+
 });

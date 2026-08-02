@@ -117,7 +117,7 @@
 
 **Complexity:** Advanced
 
-> If a player begins their turn occupying and controlling Command Tent, they may play one card for its Action effect during the Action Opportunity before movement and one card for its Action effect during the Action Opportunity after movement that turn.
+> If a player begins their turn occupying and controlling Command Tent, they may gain 1 additional Action that turn. If they do, both Actions may be spent only to play cards for their Action effects, one during each normal Action Opportunity.
 
 ## 17. Monastery
 
@@ -147,7 +147,7 @@
 
 **Complexity:** Advanced
 
-> During an Action Opportunity, while occupying and controlling Smuggler's Pass, a player may stash one card from their Hand face down beneath it instead of playing a card for its Action effect. The stashed card does not count toward the Hand limit.
+> During an Action Opportunity, while occupying and controlling Smuggler's Pass, a player may spend 1 Action to stash one card from their Hand face down beneath it. The stashed card does not count toward the Hand limit.
 >
 > While that player occupies and controls Smuggler's Pass, they may play the stashed card for its Action effect or set it as a Gambit as though it were in their Hand, if eligible. It counts as a card played or set from Hand.
 >

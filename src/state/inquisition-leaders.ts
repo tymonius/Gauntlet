@@ -76,7 +76,7 @@ export const inquisitionLeaderAbilityDefinitions: readonly LeaderAbilityDefiniti
     id: FINAL_JUDGMENT_ABILITY_ID,
     leaderName: 'Grand Inquisitor',
     name: 'Final Judgment',
-    text: 'Once per turn, after you win a battle, you may immediately Purge without using an Action Opportunity. Reduce that Purge’s Conviction cost by 1, to a minimum of 1.',
+    text: 'Once per turn, after you win a battle, you may immediately Purge without spending an Action. Reduce that Purge’s Conviction cost by 1, to a minimum of 1.',
     timing: 'after_battle',
     usageLimit: 'once_per_turn',
     canUse: canUseFinalJudgment,

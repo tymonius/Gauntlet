@@ -8,6 +8,9 @@ import type {
 } from '../types';
 import type { ActionCardTarget, ResolveIntelligenceChoiceAction } from './actions';
 import { bankedAssetCardUseAllowed } from './intelligence-subversion-battle';
+import { insurrectionActionOpportunityActive, consumeInsurrectionActionOpportunity } from './neutral-insurrection';
+import { liberationActionOpportunityActive, consumeLiberationActionOpportunity } from './neutral-liberation';
+import { reinforcementsActionOpportunityActive, consumeReinforcementsActionOpportunity } from './neutral-reinforcements';
 
 export const SLEEPER_NETWORK = 'intelligence-sleeper-network';
 
@@ -127,7 +130,7 @@ export function beginSleeperNetwork(game: GameState, playerId: PlayerID): void {
     options: ['select'],
   };
   game.priorityPlayer = playerId;
-  publicLog(game, playerId, 'intelligence_sleeper_network_banked', `${player.name} banked Sleeper Network with one hidden card.`);
+  publicLog(game, playerId, 'intelligence_sleeper_network_banked', `${player.name} banked Sleeper Network with one hidden bound card.`);
 }
 
 function attachFromHand(game: GameState, playerId: PlayerID, cardId: CardID): void {
@@ -135,8 +138,8 @@ function attachFromHand(game: GameState, playerId: PlayerID, cardId: CardID): vo
   const state = requireNetwork(game, playerId);
   if (!removeOne(player.zones.hand, cardId)) throw new SleeperNetworkError(`${cardId} is no longer in hand.`);
   state.cards.push(cardId);
-  privateLog(game, playerId, 'intelligence_sleeper_network_card_added', `You placed ${cardId} face down beneath Sleeper Network.`, { cardId });
-  publicLog(game, playerId, 'intelligence_sleeper_network_loaded', `${player.name} placed a card face down beneath Sleeper Network.`, { cardCount: state.cards.length });
+  privateLog(game, playerId, 'intelligence_sleeper_network_card_added', `You bound ${cardId} face down to Sleeper Network.`, { cardId });
+  publicLog(game, playerId, 'intelligence_sleeper_network_loaded', `${player.name} bound a card face down to Sleeper Network.`, { cardCount: state.cards.length });
 }
 
 export function maybeOpenSleeperNetworkEndTurnWindow(game: GameState, playerId: PlayerID): boolean {
@@ -156,12 +159,20 @@ export function maybeOpenSleeperNetworkEndTurnWindow(game: GameState, playerId: 
   return true;
 }
 
-export function maybeOpenSleeperNetworkStartTurnWindow(game: GameState): boolean {
-  if (game.phase !== 'turn_start' || hasPendingWindow(game)) return false;
+export function maybeOpenSleeperNetworkActionOpportunityWindow(game: GameState): boolean {
+  if ((game.phase !== 'action_before_movement' && game.phase !== 'action_after_movement') || hasPendingWindow(game)) return false;
   const playerId = game.activePlayer;
+  const player = game.players[playerId];
   const state = network(game, playerId);
-  if (!state || state.activation || !bankedAssetCardUseAllowed(game, playerId, SLEEPER_NETWORK) || state.bankedTurn >= game.turn || state.startOfferTurn === game.turn) return false;
-  state.startOfferTurn = game.turn;
+  const offerKey = `${game.turn}:${game.phase}`;
+  if (game.priorityPlayer !== playerId
+    || player.actionsRemaining < 1
+    || !state
+    || state.activation
+    || !bankedAssetCardUseAllowed(game, playerId, SLEEPER_NETWORK)
+    || state.bankedTurn >= game.turn
+    || state.activationOfferKey === offerKey) return false;
+  state.activationOfferKey = offerKey;
   game.pendingIntelligenceChoice = {
     kind: 'sleeper_network_activate',
     playerId,
@@ -192,8 +203,8 @@ function openCapacityChoice(game: GameState, playerId: PlayerID): boolean {
 function discardAttachments(game: GameState, playerId: PlayerID, cardIds: CardID[], reason: string): void {
   if (cardIds.length === 0) return;
   game.players[playerId].zones.discard.push(...cardIds);
-  privateLog(game, playerId, 'intelligence_sleeper_network_cards_discarded', `You discarded ${cardIds.join(', ')} from beneath Sleeper Network.`, { cardIds, reason });
-  publicLog(game, playerId, 'intelligence_sleeper_network_cards_cleared', `${game.players[playerId].name} discarded ${cardIds.length} card${cardIds.length === 1 ? '' : 's'} from beneath Sleeper Network.`, { count: cardIds.length, reason });
+  privateLog(game, playerId, 'intelligence_sleeper_network_cards_discarded', `You discarded ${cardIds.join(', ')} bound to Sleeper Network.`, { cardIds, reason });
+  publicLog(game, playerId, 'intelligence_sleeper_network_cards_cleared', `${game.players[playerId].name} discarded ${cardIds.length} card${cardIds.length === 1 ? '' : 's'} bound to Sleeper Network.`, { count: cardIds.length, reason });
 }
 
 function moveNetworkCard(game: GameState, playerId: PlayerID, destination: 'discard' | 'graveyard' | 'removed'): void {
@@ -231,12 +242,31 @@ function openActivationPlayChoice(game: GameState, playerId: PlayerID): boolean 
   return true;
 }
 
+function consumeActivationAction(game: GameState, playerId: PlayerID): void {
+  const player = game.players[playerId];
+  if (game.activePlayer !== playerId
+    || game.priorityPlayer !== playerId
+    || (game.phase !== 'action_before_movement' && game.phase !== 'action_after_movement')
+    || player.actionsRemaining < 1) {
+    throw new SleeperNetworkError('Sleeper Network must be used by spending an Action during an Action Opportunity.');
+  }
+  player.actionsRemaining -= 1;
+  player.hasPlayedActionThisTurn = true;
+  if (reinforcementsActionOpportunityActive(game, playerId)) {
+    consumeReinforcementsActionOpportunity(game, playerId);
+  } else if (insurrectionActionOpportunityActive(game, playerId)) {
+    consumeInsurrectionActionOpportunity(game, playerId);
+  } else if (liberationActionOpportunityActive(game, playerId)) {
+    consumeLiberationActionOpportunity(game, playerId);
+  }
+}
+
 function beginActivation(game: GameState, playerId: PlayerID, resumePriorityPlayer?: PlayerID): void {
   const state = requireNetwork(game, playerId);
   moveNetworkCard(game, playerId, 'graveyard');
   state.activation = { mode: 'activate', resumePriorityPlayer };
   game.pendingIntelligenceChoice = undefined;
-  publicLog(game, playerId, 'intelligence_sleeper_network_activated', `${game.players[playerId].name} put Sleeper Network in the Graveyard and revealed the cards beneath it.`, { cardCount: state.cards.length });
+  publicLog(game, playerId, 'intelligence_sleeper_network_activated', `${game.players[playerId].name} put Sleeper Network in the Graveyard and revealed its bound cards.`, { cardCount: state.cards.length });
   openActivationPlayChoice(game, playerId);
 }
 
@@ -340,7 +370,7 @@ export function resolveSleeperNetworkChoice(
   }
 
   if (pending.kind === 'sleeper_network_capacity') {
-    if (action.choice !== 'select' || !action.cardId || !pending.cardOptions.includes(action.cardId)) throw new SleeperNetworkError('Choose a card beneath Sleeper Network to discard.');
+    if (action.choice !== 'select' || !action.cardId || !pending.cardOptions.includes(action.cardId)) throw new SleeperNetworkError('Choose a card bound to Sleeper Network to discard.');
     const state = requireNetwork(game, action.playerId);
     if (!removeOne(state.cards, action.cardId)) throw new SleeperNetworkError('That card is no longer beneath Sleeper Network.');
     game.players[action.playerId].zones.discard.push(action.cardId);
@@ -357,12 +387,13 @@ export function resolveSleeperNetworkChoice(
       return { kind: 'none' };
     }
     if (action.choice !== 'activate') throw new SleeperNetworkError('Choose whether to activate Sleeper Network.');
+    consumeActivationAction(game, action.playerId);
     beginActivation(game, action.playerId, pending.resumePriorityPlayer);
     return { kind: 'none' };
   }
 
   if (pending.kind === 'sleeper_network_play_card') {
-    if (action.choice !== 'select' || !action.cardId || !pending.eligibleCardIds.includes(action.cardId)) throw new SleeperNetworkError('Choose a legally resolvable Action card beneath Sleeper Network.');
+    if (action.choice !== 'select' || !action.cardId || !pending.eligibleCardIds.includes(action.cardId)) throw new SleeperNetworkError('Choose a legally resolvable Action card bound to Sleeper Network.');
     const state = requireNetwork(game, action.playerId);
     if (!removeOne(state.cards, action.cardId)) throw new SleeperNetworkError('That card is no longer beneath Sleeper Network.');
     game.pendingIntelligenceChoice = undefined;

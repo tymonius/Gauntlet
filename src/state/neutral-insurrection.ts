@@ -147,7 +147,7 @@ export function applyInsurrectionAction(
     game,
     playerId,
     'neutral_insurrection_action',
-    `${player.name} discarded their hand, recycled both Discard Piles, drew ${draw.drawnCards.length} card${draw.drawnCards.length === 1 ? '' : 's'}, and gained an additional Action Opportunity with Insurrection.`,
+    `${player.name} discarded their hand, recycled both Discard Piles, drew ${draw.drawnCards.length} card${draw.drawnCards.length === 1 ? '' : 's'}, and gained 1 Action and another Action Opportunity with Insurrection.`,
     {
       discardedHandCount: prepared.remainingHand.length,
       recycled,

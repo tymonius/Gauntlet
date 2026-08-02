@@ -219,12 +219,12 @@ describe('Subversion Asset effect', () => {
     let state = game();
     state.activePlayer = 'player_2';
     state.priorityPlayer = 'player_2';
-    state.phase = 'turn_start';
+    state.phase = 'action_before_movement';
+    state.players.player_2.actionsRemaining = 1;
     state.players.player_2.zones.assetBank = ['intelligence-sleeper-network'];
     state.players.player_2.intelligence!.sleeperNetwork = {
       cards: ['intelligence-spies'],
       bankedTurn: state.turn - 1,
-      startOfferTurn: state.turn,
     };
     state.pendingIntelligenceChoice = {
       kind: 'sleeper_network_activate',

@@ -17,7 +17,7 @@ Deed ownership is independent of token position and Territory control. Own the D
 | Victory | Run the Gauntlet or achieve Controlling Interest. |
 | Resource | Capital, minimum 0; maximum determined by the Capital limit. |
 | Capital limit | Territories you control plus total card value in Treasury. |
-| Financial Capacity | If Treasury value exceeds Territories controlled at the start of your turn, you may use both normal Action Opportunities; at least one must be a Financier Faction Action. |
+| Financial Capacity | If Treasury value exceeds Territories controlled at the start of your turn, gain 1 additional Action that turn; at least one Action must be spent on a Financier Faction Action. |
 | Faction Actions | Place a card in Treasury, buy or buy out a Deed, Play the Market, or use Hostile Takeover; all occur after movement. |
 | Income | After the Capture step, gain 1 Capital per Deed you own. |
 | Leaders | Banker and Executive. |
@@ -26,14 +26,14 @@ Deed ownership is independent of token position and Territory control. Own the D
 
 ## Faction Actions
 
-Financiers have the following Faction Actions. Each uses one Action Opportunity and may be performed only after movement:
+Financiers have the following Faction Actions. Each costs 1 Action and may be used only during an Action Opportunity after movement:
 
 - **Place a card in Treasury:** Place one card from your Hand face up in your Treasury.
 - **Buy or buy out a Deed:** Pay the full current cost to acquire one unowned Deed or buy out one opposing Financier's Deed.
 - **Play the Market:** Discard one card from Hand, roll one die, and gain Capital according to the result.
 - **Hostile Takeover — Executive only:** After winning a battle as the attacker that turn and becoming the occupier of the enemy Territory, buy or buy out its Deed; a successful purchase also gives you control of that Territory.
 
-When Financial Capacity permits both normal Action Opportunities, at least one must be used for one of these Faction Actions. Line of Credit modifies a Deed purchase, and Subsidize modifies a battle; neither is a separate Faction Action.
+When Financial Capacity grants an additional Action, at least one Action spent that turn must be spent on one of these Faction Actions. Line of Credit modifies a Deed purchase, and Subsidize modifies a battle; neither is a separate Faction Action.
 
 # 2. Components and setup
 
@@ -53,9 +53,9 @@ Begin with 0 Capital and an empty Treasury. Place Deed Cards in the shared unown
 
 Capital is public and pays for Deeds, Subsidize, and card effects. Your Capital limit rises when you control Territories or place valuable cards in Treasury. You may temporarily exceed the limit, but excess Capital is lost at the end of each turn.
 
-At the start of your turn, if the total card value in your Treasury is greater than the number of Territories you control, you may use both normal Action Opportunities that turn. At least one must be used for a Financier Faction Action.
+At the start of your turn, if the total card value in your Treasury is greater than the number of Territories you control, gain 1 additional Action that turn. At least one Action spent that turn must be spent on a Financier Faction Action.
 
-During an Action Opportunity after movement, you may place a card in Treasury, buy a Deed, or Play the Market instead of playing a card for its Action effect.
+During an Action Opportunity after movement, you may spend 1 Action to place a card in Treasury, buy a Deed, or Play the Market.
 
 ## Complete rules
 
@@ -71,16 +71,16 @@ Capital may exceed the limit temporarily. At the end of every turn, including an
 
 After completing the Capture step and applying all effects that occur after it, but before the Draw step, compare the total card value of cards in your Treasury with the number of Territories you control.
 
-If the Treasury value is greater, you may use both normal Action Opportunities that turn. If you use both, at least one must be used for a Financier Faction Action. If the before-movement opportunity was not used for a Financier Faction Action, the after-movement opportunity may be used only for one.
+If the Treasury value is greater, gain 1 additional Action that turn. You may spend at most 1 Action during each normal Action Opportunity. If you spend both Actions, at least one must be spent on a Financier Faction Action. If you spend an Action before movement, the Action spent after movement must be spent on a Financier Faction Action.
 
-Qualifying Financier Faction Actions include placing a card in your Treasury, buying or buying out a Deed, Play the Market, Hostile Takeover, or another Financier Faction Action that explicitly uses an Action Opportunity.
+Qualifying Financier Faction Actions include placing a card in your Treasury, buying or buying out a Deed, Play the Market, Hostile Takeover, or another Financier Faction Action that costs 1 Action.
 
-Determine eligibility once at this timing. Later changes to Treasury value or Territories controlled do not grant or remove this permission during that turn. The two opportunities remain at their normal timings: one before movement and one after movement.
+Determine eligibility once at this timing. Later changes to Treasury value or Territories controlled do not grant or remove this permission during that turn. The two normal Action Opportunities remain at their normal timings: one before movement and one after movement.
 
 
 ### Treasury
 
-During an Action Opportunity after movement, instead of playing a card for its Action effect, place one card from your Hand face up in your Treasury.
+During an Action Opportunity after movement, spend 1 Action to place one card from your Hand face up in your Treasury.
 
 - Treasury cards are outside normal card zones.
 - They cannot be played or affected unless a rule specifically refers to Treasury.
@@ -101,7 +101,7 @@ Deed ownership is independent of token position and Territory control. Changing 
 
 ### Buying and buying out Deeds
 
-During an Action Opportunity after movement, instead of playing a card for its Action effect, buy or buy out one Deed by paying its full cost.
+During an Action Opportunity after movement, spend 1 Action to buy or buy out one Deed by paying its full cost.
 
 When an effect permits several purchases, complete each purchase before recalculating the next cost.
 
@@ -133,7 +133,7 @@ A Territory added to the Gauntlet has a normal Deed and expands the required por
 
 ### Play the Market
 
-During an Action Opportunity after movement, instead of playing a card for its Action effect, discard one card from Hand and roll one die:
+During an Action Opportunity after movement, spend 1 Action, discard one card from Hand, and roll one die:
 
 | Roll | Result |
 |---:|---|
@@ -157,7 +157,7 @@ The progression continues without a fixed maximum. Each additional +1 costs one 
 
 ### Additional Action Opportunities
 
-An additional Action Opportunity permits one additional qualifying action at its legal timing. During an after-movement opportunity this may include Treasury, a Deed purchase, Play the Market, or Hostile Takeover. It does not grant movement.
+An additional Action Opportunity does not grant an Action. During an after-movement opportunity, you may spend 1 available Action on Treasury, a Deed purchase, Play the Market, Hostile Takeover, or another legal choice. It does not grant movement.
 
 # 4. Leaders
 
@@ -180,7 +180,7 @@ An additional Action Opportunity permits one additional qualifying action at its
 **Archetype:** Offensive acquisition, Occupation, and immediate control  
 **Motto:** *Take the ground. Close the deal.*
 
-> **Hostile Takeover:** During an Action Opportunity after movement, if you won a battle as the attacker this turn and are now the occupier of that enemy Territory, you may buy or buy out its Deed instead of playing a card for its Action effect. Treat yourself as the occupier, but not the controller, for the cost calculation. If the purchase succeeds, immediately take control of that Territory.
+> **Hostile Takeover:** During an Action Opportunity after movement, if you won a battle as the attacker this turn and are now the occupier of that enemy Territory, you may spend 1 Action to buy or buy out its Deed. Treat yourself as the occupier, but not the controller, for the cost calculation. If the purchase succeeds, immediately take control of that Territory.
 
 # 5. Financier-specific rules
 
@@ -268,7 +268,7 @@ Withdrawal counts as ending without you winning.
 **Cost:** 3  
 **Card form:** Asset
 
-> **Action:** Bank this card. Draw two cards, then take another Action Opportunity this turn.
+> **Action:** Bank this card. Draw two cards, then gain 1 Action and immediately take another Action Opportunity.
 >
 > **Asset:** While Tariffs is banked, skip your normal draw. You cannot bank it while you control another banked Tariffs. You cannot voluntarily cause it to leave play during the turn it is banked.
 >
@@ -278,7 +278,7 @@ Withdrawal counts as ending without you winning.
 
 **Cost:** 3
 
-> **Action:** Make one Deed you own unowned. Gain Capital equal to the number of Deeds you owned before doing so, then take another Action Opportunity this turn.
+> **Action:** Make one Deed you own unowned. Gain Capital equal to the number of Deeds you owned before doing so, then gain 1 Action and immediately take another Action Opportunity.
 >
 > **Battle:** Before dice are rolled, you may make one Deed you own unowned. If you do, gain Capital equal to the number of Deeds you owned before doing so, then you may immediately Subsidize.
 
@@ -287,7 +287,7 @@ Withdrawal counts as ending without you winning.
 **Cost:** 3  
 **Card form:** Asset with collateral
 
-> **Action:** Choose one other card in your Hand or Treasury and place it beneath this card as collateral. Bank this card. Gain Capital equal to the collateral card's value plus 2, then take another Action Opportunity this turn.
+> **Action:** Choose one other card in your Hand or Treasury and place it beneath this card as collateral. Bank this card. Gain Capital equal to the collateral card's value plus 2, then gain 1 Action and immediately take another Action Opportunity.
 >
 > **Loan:** At the start of your next turn, after the Capture step and income, choose one:
 >
@@ -339,7 +339,7 @@ Withdrawal defaults on the Battle effect because you did not win.
 # 7. Quick reference
 
 - Capital limit = controlled Territories + total Treasury value.
-- Financial Capacity: if Treasury value exceeds controlled Territories at the start-of-turn check, you may use both normal Action Opportunities; at least one must be a Financier Faction Action.
+- Financial Capacity: if Treasury value exceeds controlled Territories at the start-of-turn check, gain 1 additional Action that turn; at least one Action must be spent on a Financier Faction Action.
 - Gain 1 Capital per owned Deed after your Capture step.
 - Deed ownership is independent of token position and Territory control.
 - Added Territories have normal Deeds.

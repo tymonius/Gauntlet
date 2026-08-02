@@ -40,6 +40,7 @@ Examples include:
 - Position;
 - Occupation and Occupier;
 - Counterattack;
+- Action;
 - Action Opportunity;
 - Faction Ability and Faction Action;
 - Gambit;

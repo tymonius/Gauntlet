@@ -18,14 +18,14 @@ Accepted or successfully imposed Proposals become Treaty Articles. Ratify five d
 | Resource | Influence, minimum 0 and maximum 10. |
 | Starting value | 1 Influence. |
 | Faction procedure | Offer Terms during opening effects. |
-| Faction Actions | None. Terms and Leverage do not use Action Opportunities. |
+| Faction Actions | None. Terms and Leverage do not spend Actions. |
 | Leaders | Ambassador and Senator. |
 | Proposal set | Nine double-sided Proposal / Treaty Article cards. |
 | Faction pool | 12 Diplomat card titles. |
 
 ## Faction Actions
 
-Diplomats have **no Faction Actions**. Offering Terms is a faction procedure during opening effects, and Leverage is a Faction Ability used before dice are rolled after refused Terms. Neither uses an Action Opportunity. Playing a Diplomat card for its Action effect still uses an Action Opportunity under the shared rules.
+Diplomats have **no Faction Actions**. Offering Terms is a faction procedure during opening effects, and Leverage is a Faction Ability used before dice are rolled after refused Terms. Neither spends an Action. Playing a Diplomat card for its Action effect still costs 1 Action under the shared rules.
 
 # 2. Components and setup
 
@@ -202,9 +202,9 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 **Stake:** 1  
 **Requirement:** You must have a card in Hand that can be banked as an Asset.
 
-> **Accepted:** Each player may bank one eligible card from Hand as an Asset without using an Action Opportunity. Then both players withdraw.
+> **Accepted:** Each player may bank one eligible card from Hand as an Asset without spending an Action. Then both players withdraw.
 >
-> **Refused:** During the Aftermath of the battle, you may bank one eligible card from Hand as an Asset without using an Action Opportunity.
+> **Refused:** During the Aftermath of the battle, you may bank one eligible card from Hand as an Asset without spending an Action.
 
 ## Ultimatum
 
@@ -261,7 +261,7 @@ Its ongoing effect and relief condition continue to refer to those identified pl
 > **Accepted:** The opponent chooses one available option:
 >
 > - Draw two cards.
-> - Bank one eligible card from Hand without using an Action Opportunity.
+> - Bank one eligible card from Hand without spending an Action.
 >
 > Then put this card in your Discard Pile and draw one card.
 >
@@ -307,7 +307,7 @@ Neutral Observers does not change Tactic order. Fog may still determine Tactic o
 **Cost:** 3  
 **Card form:** Territory Overlay
 
-> **Terms:** After your Terms are accepted and the Proposal's Accepted effect applies, you may place Demilitarized Zone from your Hand as an Overlay on the contested Territory without using an Action Opportunity. Each player still there withdraws.
+> **Terms:** After your Terms are accepted and the Proposal's Accepted effect applies, you may place Demilitarized Zone from your Hand as an Overlay on the contested Territory without spending an Action. Each player still there withdraws.
 >
 > Neither player may enter this Territory during the turn Demilitarized Zone is placed.
 >
@@ -353,7 +353,7 @@ The placing-player reference does not change when Overlay control changes.
 **Cost:** 3  
 **Card form:** Asset
 
-> After an opponent refuses your Terms, you may bank Sanctions: Censure from your Hand without using an Action Opportunity. Identify that opponent.
+> After an opponent refuses your Terms, you may bank Sanctions: Censure from your Hand without spending an Action. Identify that opponent.
 >
 > While banked, the first time each turn that opponent plays a card for its Action effect, they choose one: discard one card; or you draw one card.
 >
@@ -376,7 +376,7 @@ The placing-player reference does not change when Overlay control changes.
 **Cost:** 4  
 **Card form:** Asset
 
-> After an opponent refuses your Terms, you may bank Sanctions: Embargo from your Hand without using an Action Opportunity. Identify that opponent.
+> After an opponent refuses your Terms, you may bank Sanctions: Embargo from your Hand without spending an Action. Identify that opponent.
 >
 > While banked, that opponent's Asset limit is reduced by 1, to a minimum of 0.
 >
@@ -387,7 +387,7 @@ The placing-player reference does not change when Overlay control changes.
 **Cost:** 5  
 **Card form:** Territory Overlay
 
-> During the Aftermath of a battle following an opponent's refusal of your Terms, you may place Sanctions: Blockade from your Hand as an Overlay on a Territory that opponent controls without using an Action Opportunity. Identify that opponent and this card's owner.
+> During the Aftermath of a battle following an opponent's refusal of your Terms, you may place Sanctions: Blockade from your Hand as an Overlay on a Territory that opponent controls without spending an Action. Identify that opponent and this card's owner.
 >
 > The first time each turn the identified opponent enters or leaves this Territory, they choose one: discard one card; or the identified owner gains 1 Influence.
 >

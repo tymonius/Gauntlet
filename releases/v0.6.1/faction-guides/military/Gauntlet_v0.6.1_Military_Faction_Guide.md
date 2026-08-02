@@ -17,14 +17,14 @@ Military has no alternate victory condition. It wins by running the Gauntlet.
 | Victory | Run the Gauntlet. |
 | Resource | Command, maximum 2. |
 | Resource gain | The first time each turn you win a battle, gain 1 Command. |
-| Faction Actions | None. Orders use their printed timings and do not use Action Opportunities. |
+| Faction Actions | None. Orders use their printed timings and do not spend Actions. |
 | Leaders | General and Commandant. |
 | Faction pool | 12 Military card titles. |
 | Unique card | Shock and Awe, cost 5; maximum one copy per Playable Deck. |
 
 ## Faction Actions
 
-Military has **no Faction Actions**. Orders are Faction Abilities used at their printed timings; they do not use an Action Opportunity. Playing a Military card for its Action effect still uses an Action Opportunity under the shared rules.
+Military has **no Faction Actions**. Orders are Faction Abilities used at their printed timings; they do not use an Action Opportunity. Playing a Military card for its Action effect still costs 1 Action under the shared rules.
 
 # 2. Components and setup
 
