@@ -261,9 +261,9 @@ Its ongoing effect and relief condition continue to refer to those identified pl
 > **Accepted:** The opponent chooses one available option:
 >
 > - Draw two cards.
-> - Bank one eligible card from Hand as an Asset without using an Action Opportunity.
+> - Bank one eligible card from Hand without using an Action Opportunity.
 >
-> Then put Trade Concessions in your Discard Pile and draw one card.
+> Then put this card in your Discard Pile and draw one card.
 >
 > **Refused:** Return Trade Concessions to your Hand before Gambits are set.
 >
@@ -274,16 +274,18 @@ Its ongoing effect and relief condition continue to refer to those identified pl
 **Cost:** 2  
 **Card form:** Asset
 
-> **Action:** Bank Safe Conduct as an Asset.
+> **Action:** Bank this card.
 >
-> When you would lose a battle following refused Terms, you may discard Safe Conduct to withdraw instead. The opponent remains at or takes the contested position. The battle ends without a winner.
+> **Use:** When you would lose a battle following refused Terms, you may discard this card to withdraw instead. The opponent remains at or takes the contested position. The battle ends without a winner.
 
 ## Neutral Observers
 
 **Cost:** 2  
 **Card form:** Asset
 
-> **Action:** Bank Neutral Observers as an Asset. After Terms are refused, before Gambits are set, you may discard it. The opponent sets a Gambit face up or passes. Then you set a Gambit face down or pass. This overrides other Gambit-order effects.
+> **Action:** Bank this card.
+>
+> **Use:** After Terms are refused, before Gambits are set, you may discard this card. The opponent sets a Gambit face up or passes. Then you set a Gambit face down or pass. This overrides other Gambit-order effects.
 
 Neutral Observers does not change Tactic order. Fog may still determine Tactic order.
 
@@ -292,9 +294,9 @@ Neutral Observers does not change Tactic order. Fog may still determine Tactic o
 **Cost:** 3  
 **Card form:** Asset
 
-> **Action:** Bank Good Faith as an Asset.
+> **Action:** Bank this card.
 >
-> When you offer Terms, before the opponent accepts or refuses, you may discard Good Faith to draw one card, then reveal one card from your Hand and set it aside.
+> **Use:** When you offer Terms, before the opponent accepts or refuses, you may discard this card to draw one card, then reveal one card from your Hand and set it aside.
 >
 > **Accepted:** Put that card in your Graveyard.
 >
@@ -315,7 +317,7 @@ Neutral Observers does not change Tactic order. Fog may still determine Tactic o
 >
 > At the start of the placing player's turn, before the Capture step, if their Player Token is there, they discard one card or withdraw.
 >
-> After the next battle fought here, put Demilitarized Zone in its owner's Discard Pile.
+> After the next battle fought here, put this card in its owner's Discard Pile.
 
 The placing-player reference does not change when Overlay control changes.
 
@@ -329,7 +331,7 @@ The placing-player reference does not change when Overlay control changes.
 >
 > **Refused:** Choose one Proposal before applying its Refused effect. Only it may be imposed.
 >
-> The other Proposal does not take effect or become ratified. After the Terms conclude, put Diplomatic Latitude in your Discard Pile.
+> The other Proposal does not take effect or become ratified. After the Terms conclude, put this card in your Discard Pile.
 
 ## Nonbinding Resolution
 
@@ -342,7 +344,7 @@ The placing-player reference does not change when Overlay control changes.
 > - Ratify it normally.
 > - Leave it unratified; you gain 2 Influence.
 >
-> After the accepted Terms conclude, put Nonbinding Resolution in your Discard Pile, then draw one card.
+> After the accepted Terms conclude, put this card in your Discard Pile, then draw one card.
 >
 > **Refused:** Put Nonbinding Resolution in your Discard Pile, then draw one card before Gambits are set.
 
@@ -367,7 +369,7 @@ The placing-player reference does not change when Overlay control changes.
 >
 > **Refused:** Set Gunboat Diplomacy face up as an additional Gambit in the resulting battle. It does not count against your Gambit limit.
 >
-> **Battle:** Add +2 to your battle total. During the Aftermath of the battle, put Gunboat Diplomacy in your Discard Pile.
+> **Battle:** Add +2 to your battle total. In the Aftermath, put this card in your Discard Pile.
 
 ## Sanctions: Embargo
 

@@ -198,11 +198,13 @@ When the controller of Watchtower defends there, the attacker sets their Gambit 
 **Cost:** 1  
 **Card form:** Asset
 
-> **Action:** Bank Exfiltration as an Asset. After an opposing Gambit or Tactic is revealed in a battle involving you, before the battle result is determined, you may discard Exfiltration. If you do, withdraw.
+> **Action:** Bank this card.
+>
+> **Use:** After an opposing Gambit or Tactic is revealed in a battle involving you, before the battle result is determined, you may discard this card. If you do, withdraw.
 >
 > **Mission:** Complete after you withdraw from a battle after an opposing Tactic was revealed.
 
-After withdrawal, Gambits still go to their owners' Graveyards, and Tactics and cards remaining in Reserve still go to their owners' Discard Piles unless another effect says otherwise.
+After withdrawal, clear battle cards normally unless another effect says otherwise.
 
 ## Spies
 
@@ -212,7 +214,7 @@ After withdrawal, Gambits still go to their owners' Graveyards, and Tactics and 
 >
 > **Battle:** Before Tactics normally reveal, reveal each opposing face-down Tactic. You may then revise your own Tactics or withdraw.
 >
-> If you chose to remove Spies as a Tactic, put it in your Graveyard.
+> If you chose to remove Spies as a Tactic, put this card in your Graveyard.
 >
 > **Mission:** Complete after you reveal an opposing face-down battle card before its normal reveal, then win that battle.
 
@@ -231,7 +233,7 @@ After withdrawal, Gambits still go to their owners' Graveyards, and Tactics and 
 
 **Cost:** 2
 
-> **Gambit:** When Gambits are revealed, if the opponent also set a Gambit, gain advantage. During the Aftermath of the battle, return Disinformation to your Hand instead of putting it in your Graveyard.
+> **Gambit:** When Gambits are revealed, if the opponent also set a Gambit, gain advantage. In the Aftermath, return Disinformation to your Hand instead of putting it in your Graveyard.
 >
 > **Mission:** Complete after you win a battle in which the opponent set a Gambit and you did not.
 
@@ -241,7 +243,7 @@ After withdrawal, Gambits still go to their owners' Graveyards, and Tactics and 
 
 > **Action:** Return your Active Mission to your Hand, then place another eligible Intelligence card from your Hand face down as your Active Mission. It cannot complete this turn.
 >
-> **Battle:** After Tactics are revealed, choose one: withdraw; or replace Operational Reassessment with an eligible Battle card from your Hand whose effect can still be applied. If you replace it, put Operational Reassessment in your Graveyard and place the replacement face up.
+> **Battle:** After Tactics are revealed, choose one: withdraw; or replace Operational Reassessment with an eligible Battle card from your Hand whose effect can apply now. If you replace it, put this card in your Graveyard and place the replacement face up.
 
 The replacement takes Operational Reassessment's current Gambit or Tactic role.
 
@@ -249,7 +251,9 @@ The replacement takes Operational Reassessment's current Gambit or Tactic role.
 
 **Cost:** 3
 
-> **Action:** Bank Intercepted Orders as an Asset. When an opponent forms their Reserve in a battle involving you, before they choose Tactics, you may discard Intercepted Orders. If you do, reveal that Reserve and choose one card. They cannot choose that card during this battle.
+> **Action:** Bank this card.
+>
+> **Use:** When an opponent forms their Reserve in a battle involving you, before they choose Tactics, you may discard this card. If you do, reveal that Reserve and choose one card. They cannot choose that card during this battle.
 >
 > **Battle:** Before Tactics normally reveal, reveal each opposing face-down Tactic and the opponent's Reserve. Return one opposing Tactic of your choice to that Reserve. The opponent cannot choose that card again during this battle. They may choose one eligible replacement from the Reserve or pass.
 
@@ -257,7 +261,9 @@ The replacement takes Operational Reassessment's current Gambit or Tactic role.
 
 **Cost:** 3
 
-> **Action:** Bank Reconnaissance as an Asset. During opening effects in a battle you initiated, you may discard Reconnaissance to reveal the opponent's Hand. You may then withdraw or continue the attack.
+> **Action:** Bank this card.
+>
+> **Use:** During opening effects in a battle you initiated, you may discard this card to reveal the opponent's Hand. You may then withdraw or continue the attack.
 >
 > **Battle:** After Tactics are revealed, you may withdraw.
 >
@@ -267,7 +273,9 @@ The replacement takes Operational Reassessment's current Gambit or Tactic role.
 
 **Cost:** 3
 
-> **Action:** Bank Deep Cover as an Asset. When your Active Mission would fail, you may put Deep Cover in your Graveyard. If you do, return that Mission to your Hand instead.
+> **Action:** Bank this card.
+>
+> **Use:** When your Active Mission would fail, you may put this card in your Graveyard. If you do, return that Mission to your Hand instead.
 >
 > **Battle:** If an opposing effect revealed one of your Gambits or Tactics before its normal reveal, gain advantage.
 
@@ -279,7 +287,7 @@ Deep Cover prevents Mission failure; it does not preserve a Special Operation un
 
 > **Action:** Reveal the opponent's Hand. Choose one card there and discard it.
 >
-> **Battle:** When Assassins is revealed, negate one opposing Gambit. If Assassins is revealed with Gambits, apply this before other Gambit effects. If the opponent set no Gambit, give them disadvantage during this battle.
+> **Battle:** When revealed, negate one opposing Gambit. If Assassins is revealed with Gambits, apply this before other Gambit effects. If the opponent set no Gambit, give them disadvantage during this battle.
 >
 > **Mission:** Complete after you reveal one or more cards in the opponent's Hand outside a battle, then win a battle against that opponent in which they set a Gambit.
 
@@ -288,7 +296,9 @@ Deep Cover prevents Mission failure; it does not preserve a Special Operation un
 **Cost:** 4  
 **Card form:** Asset
 
-> **Action:** Bank Treason as an Asset. After Tactics are revealed in a battle involving you, before an opposing Battle effect applies, you may discard Treason. If you do, choose one opposing Battle effect that has not yet been applied. Negate it, then apply that printed effect as though you controlled it.
+> **Action:** Bank this card.
+>
+> **Use:** After Tactics are revealed in a battle involving you, before an opposing Battle effect applies, you may discard this card. If you do, choose one opposing Battle effect that has not yet been applied. Negate it, then apply that printed effect as though you controlled it.
 >
 > **Battle:** After Tactics are revealed, choose one opposing Battle effect that has not yet been applied. Negate it, then apply that printed effect as though you controlled it.
 
@@ -299,7 +309,9 @@ Treason cannot select an effect that has already been applied and follows the sh
 **Cost:** 4  
 **Card form:** Asset
 
-> **Action:** Bank Subversion as an Asset. When an opposing banked Asset's effect would apply, you may put Subversion in your Graveyard. If you do, negate that effect and put the opposing Asset in its owner's Discard Pile if it remains in play.
+> **Action:** Bank this card.
+>
+> **Use:** When an opposing banked Asset's effect would apply, you may put this card in your Graveyard. If you do, negate that effect and put the opposing Asset in its owner's Discard Pile if it remains in play.
 >
 > **Battle:** Opposing banked Assets cannot be used during this battle.
 >
@@ -311,15 +323,17 @@ Treason cannot select an effect that has already been applied and follows the sh
 **Unique:** Maximum one copy per Playable Deck  
 **Card form:** Asset
 
-> **Action:** Bank Sleeper Network as an Asset with one other card from your Hand face down beneath it. At the end of each of your later turns, you may place one other card from your Hand face down beneath it.
+> **Action:** Bank this card with one other card from your Hand face down beneath it.
+>
+> **Asset:** At the end of each of your later turns, you may place one other card from your Hand face down beneath it.
 >
 > **Capacity:** Sleeper Network can hold no more cards than the number of Territories you control. If it holds too many, immediately put cards beneath it of your choice in your Discard Pile until within capacity.
 >
-> **Use:** At the start of your turn, you may put Sleeper Network in your Graveyard. If you do, reveal the cards beneath it. Play each card whose Action effect can legally be applied, one at a time and in any order, without using Action Opportunities. Put the rest in your Discard Pile.
+> **Use:** At the start of your turn, you may put this card in your Graveyard. If you do, reveal the cards beneath it. Play each card whose Action effect can legally be applied, one at a time and in any order, without using Action Opportunities. Put the rest in your Discard Pile.
 >
 > **Compromised:** When an opposing effect would cause Sleeper Network to leave play, before it does, reveal the cards beneath it. You may play one card whose Action effect can legally be applied without using an Action Opportunity. Put the rest in your Discard Pile.
 >
-> **Other removal:** If Sleeper Network leaves play for any other reason, put all cards beneath it in your Discard Pile.
+> **Other removal:** If this card leaves play for any other reason, put all cards beneath it in your Discard Pile.
 
 # 8. Quick reference
 

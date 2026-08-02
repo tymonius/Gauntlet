@@ -220,7 +220,7 @@ Witchcraft and similar effects follow the shared copied-effect rules. A repeat e
 
 > **Action:** After the next battle you initiate this turn, the losing player puts one card from their Hand in their Graveyard, if able.
 >
-> **Battle:** During the Aftermath of the battle, the losing player puts one card from their Hand in their Graveyard, if able.
+> **Battle:** In the Aftermath, the losing player puts one card from their Hand in their Graveyard, if able.
 
 Withdrawal produces no losing player.
 
@@ -239,9 +239,11 @@ Withdrawal produces no losing player.
 **Trait:** Arcane  
 **Card form:** Asset
 
-> **Action:** Bank Grave Ward as an Asset. When a card enters your Graveyard, you may discard Grave Ward. If you do, move that card from your Graveyard to your Discard Pile.
+> **Action:** Bank this card.
 >
-> **Battle:** During the Aftermath of the battle, after Gambits enter your Graveyard, choose one other Gambit you set during this battle. Move it from your Graveyard to your Discard Pile.
+> **Use:** When a card enters your Graveyard, you may discard this card. If you do, move that card from your Graveyard to your Discard Pile.
+>
+> **Battle:** In the Aftermath, after Gambits enter your Graveyard, choose one other Gambit you set during this battle. Move it from your Graveyard to your Discard Pile.
 
 ## Spirit Hollow
 
@@ -251,11 +253,11 @@ Withdrawal produces no losing player.
 
 > **Action:** Place Spirit Hollow as an Overlay on your current Territory or an adjacent Territory.
 >
-> **Battle:** During the Aftermath of the battle, place Spirit Hollow as an Overlay on the contested Territory.
+> **Battle:** In the Aftermath, place this card as an Overlay on the contested Territory.
 >
-> **Overlay:** After the battle cards are cleared during the Aftermath following a battle here, each player may put one card from their Hand in their Graveyard. A player who does may move one other card from their Graveyard to their Discard Pile.
+> **Overlay:** After battle cards are cleared in the Aftermath following a battle here, each player may put one card from their Hand in their Graveyard. A player who does may move one other card from their Graveyard to their Discard Pile.
 >
-> When this Territory is captured, put Spirit Hollow in its owner's Graveyard.
+> When this Territory is captured, put this card in its owner's Graveyard.
 
 ## Soul for Soul
 
@@ -264,7 +266,7 @@ Withdrawal produces no losing player.
 
 > **Action:** Choose one card in your Hand and one card in your Graveyard. Exchange them.
 >
-> **Battle:** During the Aftermath of the battle, after Gambits enter your Graveyard, you may exchange one card in your Hand with one other Gambit you set during this battle that is in your Graveyard.
+> **Battle:** In the Aftermath, after Gambits enter your Graveyard, you may exchange one card in your Hand with one other Gambit you set during this battle that is in your Graveyard.
 
 ## Rend the Veil
 
@@ -272,11 +274,13 @@ Withdrawal produces no losing player.
 **Trait:** Arcane  
 **Card form:** Asset
 
-> **Action:** Bank Rend the Veil as an Asset. After Tactics are revealed in a battle involving you, you may discard Rend the Veil. If you do, choose one card in your Graveyard whose Battle effect can be applied now and does not copy another card's effect or another copied effect. Reveal the chosen card face up in your Graveyard and apply its Battle effect as though you played it.
+> **Action:** Bank this card.
+>
+> **Use:** After Tactics are revealed in a battle involving you, you may discard this card. If you do, choose one card in your Graveyard whose Battle effect can be applied now and does not copy another card's effect or another copied effect. Reveal the chosen card face up in your Graveyard and apply its Battle effect as though you played it.
 >
 > **Battle:** After Tactics are revealed, you may choose one card in your Graveyard whose Battle effect can be applied now and does not copy another card's effect or another copied effect. Reveal the chosen card face up in your Graveyard and apply its Battle effect as though you played it.
 >
-> During the Aftermath of the battle, move the chosen card from your Graveyard to your Discard Pile.
+> In the Aftermath, move the chosen card from your Graveyard to your Discard Pile.
 
 The chosen card remains in the Graveyard while its effect applies and follows the shared copied-effect rules.
 
@@ -287,7 +291,7 @@ The chosen card remains in the Graveyard while its effect applies and follows th
 
 > **Action:** Move to any Territory you control. This movement cannot start a battle.
 >
-> **Battle:** During the Aftermath of the battle, if you lose, you may move to any Territory you control instead of retreating normally.
+> **Battle:** In the Aftermath, if you lose, you may move to any Territory you control instead of retreating normally.
 
 ## Witchcraft
 
@@ -295,9 +299,11 @@ The chosen card remains in the Graveyard while its effect applies and follows th
 **Trait:** Arcane  
 **Card form:** Asset
 
-> **Action:** Bank Witchcraft as an Asset. Once per turn, after Tactics are revealed in a battle involving you, you may put one card from your Hand in your Graveyard. If you do, choose one other active card you control in the battle with an eligible Battle effect. Apply that effect one additional time.
+> **Action:** Bank this card.
 >
-> **Battle:** After Tactics are revealed, choose one other active card you control in the battle with an eligible Battle effect. Apply that effect one additional time. If you cannot choose one, gain advantage. During the Aftermath of the battle, put Witchcraft in your Graveyard.
+> **Use:** Once per turn, after Tactics are revealed in a battle involving you, you may put one card from your Hand in your Graveyard. If you do, choose one other active card you control in the battle with an eligible Battle effect. Apply that effect one additional time.
+>
+> **Battle:** After Tactics are revealed, choose one other active card you control in the battle with an eligible Battle effect. Apply that effect one additional time. If you cannot choose one, gain advantage. In the Aftermath, put this card in your Graveyard.
 
 Make all choices and pay all costs again when repeating the effect.
 
@@ -306,7 +312,7 @@ Make all choices and pay all costs again when repeating the effect.
 **Cost:** 4  
 **Trait:** Arcane
 
-> **Tactic:** When Black Covenant is revealed, you may bind one other card from your Hand with a Tactic or Battle effect. Play it face up as an additional Tactic and apply its effect immediately after Black Covenant's effect. During the Aftermath of the battle, put Black Covenant and the bound card in your Graveyard.
+> **Tactic:** When revealed, you may bind one other card from your Hand with a Tactic or Battle effect. Play it face up as an additional Tactic and apply its effect immediately after this card's effect. In the Aftermath, put this card and the bound card in your Graveyard.
 
 ## Circle of Bones
 
@@ -316,11 +322,11 @@ Make all choices and pay all costs again when repeating the effect.
 
 > **Action:** Place Circle of Bones as an Overlay on your current Territory or an adjacent Territory.
 >
-> **Battle:** During the Aftermath of the battle, place Circle of Bones as an Overlay on the contested Territory.
+> **Battle:** In the Aftermath, place this card as an Overlay on the contested Territory.
 >
 > **Overlay:** Once during each battle here involving you, after dice are rolled, you may put one card from your Hand in your Graveyard. If you do, choose either player. That player rerolls and must use the new result.
 >
-> When this Territory is captured, put Circle of Bones in its owner's Graveyard.
+> When this Territory is captured, put this card in its owner's Graveyard.
 
 ## Necromancy
 
@@ -333,7 +339,7 @@ Make all choices and pay all costs again when repeating the effect.
 > - Place Necromancy face down beneath your Draw Pile, then draw one card.
 > - Choose up to three non-Necromancy cards in your Graveyard. Put every other card in your Hand in your Graveyard, then return the chosen cards to your Hand. Put Necromancy in your Graveyard.
 >
-> **Battle:** During the Aftermath of the battle, after your other cards in battle have been cleared, choose up to three non-Necromancy cards in your Graveyard. Put every card remaining in your Hand in your Graveyard, then return the chosen cards to your Hand. Put Necromancy in your Graveyard if it was your Gambit, or in your Discard Pile if it was your Tactic.
+> **Battle:** In the Aftermath, after your other battle cards are cleared, choose up to three non-Necromancy cards in your Graveyard. Put every card remaining in your Hand in your Graveyard, then return the chosen cards to your Hand. Put this card in your Graveyard if it was your Gambit, or in your Discard Pile if it was your Tactic.
 
 # 9. Quick reference
 

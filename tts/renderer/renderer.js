@@ -12,11 +12,8 @@
   }
 
   const sectionEntries = Object.entries(card.sections || {});
-  const action = sectionEntries.find(([label]) => label.toLowerCase() === 'action');
-  const battle = sectionEntries.find(([label]) => label.toLowerCase() === 'battle');
   const reminder = sectionEntries.find(([label]) => label.toLowerCase() === 'reminder');
-  const other = sectionEntries.filter(([label]) => !['action', 'battle', 'reminder'].includes(label.toLowerCase()));
-  const sections = [action, battle, ...other].filter(Boolean);
+  const sections = sectionEntries.filter(([label]) => label.toLowerCase() !== 'reminder');
   const isOverlayCard = /\boverlay\b/i.test(card.form || '')
     || sectionEntries.some(([label]) => label.toLowerCase() === 'overlay');
   const overlayClasses = isOverlayCard
@@ -38,7 +35,7 @@
           </aside>` : ''}
         <header class="card-heading">
           <h1 class="card-title">${escapeHtml(card.name)}</h1>
-          <div class="value-medallion" aria-label="Deckbuilding value ${card.cost}">${card.cost}</div>
+          <div class="value-medallion" aria-label="Card value ${card.cost}">${card.cost}</div>
         </header>
         <figure class="card-art${card.artwork ? '' : ' pending-art'}">${art}</figure>
         <div class="card-rules">

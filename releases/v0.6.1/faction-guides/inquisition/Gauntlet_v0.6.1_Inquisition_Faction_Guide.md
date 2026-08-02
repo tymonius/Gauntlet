@@ -141,7 +141,7 @@ Heresy follows the shared copied-effect rule but retains permission for one addi
 
 > **Action:** Choose one card in the opponent's Discard Pile. They put it on top of their Draw Pile or in their Graveyard.
 >
-> **Battle:** During the Aftermath of the battle, choose one card in the opponent's Discard Pile. They put it on top of their Draw Pile or in their Graveyard.
+> **Battle:** In the Aftermath, choose one card in the opponent's Discard Pile. They put it on top of their Draw Pile or in their Graveyard.
 
 ## Confession
 
@@ -176,7 +176,9 @@ The Battle effect applies when Penance's Gambit or Tactic is revealed.
 **Cost:** 3  
 **Card form:** Asset
 
-> **Action:** Bank No Martyrs as an Asset. After Tactics are revealed in a battle involving you, before dice are rolled, you may discard it. If the opponent loses, they cannot benefit from effects they control triggered by that loss or resulting retreat, and they retreat one additional position.
+> **Action:** Bank this card.
+>
+> **Use:** After Tactics are revealed in a battle involving you, before dice are rolled, you may discard this card. If the opponent loses, they cannot benefit from effects they control triggered by that loss or resulting retreat, and they retreat one additional position.
 >
 > **Battle:** If the opponent loses, they cannot benefit from effects they control triggered by that loss or resulting retreat, and they retreat one additional position.
 
@@ -188,7 +190,7 @@ Withdrawal does not trigger No Martyrs.
 
 > **Action:** Choose one or more cards in the opponent's Discard Pile with combined card value up to 5. Put them in their Graveyard.
 >
-> **Battle:** During the Aftermath of the battle, choose one or more cards in the opponent's Discard Pile with combined card value up to 3. Put them in their Graveyard.
+> **Battle:** In the Aftermath, choose one or more cards in the opponent's Discard Pile with combined card value up to 3. Put them in their Graveyard.
 
 ## Guilt by Association
 
@@ -196,7 +198,7 @@ Withdrawal does not trigger No Martyrs.
 
 > **Action:** Choose one card in the opponent's Discard Pile. Put every card there with that title in their Graveyard.
 >
-> **Battle:** During the Aftermath of the battle, choose one opposing Gambit, Tactic, or other card the opponent controlled in this battle. Put every card in the opponent's Discard Pile with that title in their Graveyard.
+> **Battle:** In the Aftermath, choose one opposing Gambit, Tactic, or other card the opponent controlled in this battle. Put every card in the opponent's Discard Pile with that title in their Graveyard.
 
 ## Act of Faith
 
@@ -204,7 +206,7 @@ Withdrawal does not trigger No Martyrs.
 
 > **Action:** Reveal up to three cards from the top of the opponent's Draw Pile. Put one in their Graveyard and the rest in their Discard Pile.
 >
-> **Battle:** During the Aftermath of the battle, reveal up to two cards from the top of the opponent's Draw Pile. Put one in their Graveyard and the rest in their Discard Pile.
+> **Battle:** In the Aftermath, reveal up to two cards from the top of the opponent's Draw Pile. Put one in their Graveyard and the rest in their Discard Pile.
 
 If only one card is revealed, put it in the Graveyard.
 
@@ -213,9 +215,11 @@ If only one card is revealed, put it in the Graveyard.
 **Cost:** 4  
 **Card form:** Asset
 
-> **Action:** Bank Tyranny as an Asset. Once per turn, when one or more opposing Gambits or Tactics are revealed, before their effects apply, you may spend 1 Conviction to negate one of them.
+> **Action:** Bank this card.
 >
-> **Battle:** When Tyranny is revealed, before other effects at that reveal stage are applied, negate one opposing Gambit or Tactic whose effect has not yet been applied.
+> **Asset:** Once per turn, when one or more opposing Gambits or Tactics are revealed, before their effects apply, you may spend 1 Conviction to negate one of them.
+>
+> **Battle:** When revealed, before other effects at this stage, negate one opposing Gambit or Tactic whose effect has not been applied.
 
 A Tactic Tyranny cannot undo an ordinary Gambit effect that has already been applied, but may negate a delayed Gambit effect that has not yet been applied.
 
@@ -225,7 +229,7 @@ A Tactic Tyranny cannot undo an ordinary Gambit effect that has already been app
 
 > **Action:** The opponent reveals their Hand. Put the card there with the highest card value in their Graveyard; choose among ties. If it has the Arcane trait, gain 1 Conviction.
 >
-> **Battle:** During the Aftermath of the battle, if the opponent lost, they reveal their Hand. Put the card there with the highest card value in their Graveyard; choose among ties. If it has the Arcane trait, gain 1 Conviction.
+> **Battle:** In the Aftermath, if the opponent lost, they reveal their Hand. Put the card there with the highest card value in their Graveyard; choose among ties. If it has the Arcane trait, gain 1 Conviction.
 
 If the opponent has no cards in Hand, the effect does nothing.
 
@@ -253,9 +257,9 @@ Each Conviction provides only one chosen benefit.
 - Conviction maximum 4.
 - First qualifying opposing Graveyard entry each turn gives 1 normal Conviction.
 - Condemnation sends opposing Tactics to the Graveyard.
-- Blasphemy triggers from opposing Arcane cards played for their Action effects and from revealed Arcane Gambits or Tactics.
-- On your turn, you may use both normal Action Opportunities if one is used to Purge; only one Action Opportunity may be used to Purge that turn.
-- Final Judgment occurs after the battle cards are cleared and is separate from the Action-Opportunity Purge limit.
+- Blasphemy triggers from opposing Arcane Action cards and revealed Arcane Gambits or Tactics.
+- On your turn, you may use both normal Action Opportunities if one is used to Purge; no more than one Purge may be performed through Action Opportunities that turn.
+- Final Judgment occurs after battle cards are cleared and is separate from the Action-Opportunity Purge limit.
 - Withdrawal has no loser and does not trigger victory-, loss-, or retreat-based abilities.
 - Purification checks only the opponent's normal start-of-turn draw.
 
