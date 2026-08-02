@@ -1,0 +1,41 @@
+/* Targeted publication compaction for chapters whose procedural material
+ * would otherwise create an almost-empty continuation page. Type size and
+ * hierarchy remain unchanged; related short lists use the approved
+ * reference-style columns already established elsewhere in the package. */
+.page[data-anchor="5. Actions and Assets"] .production-flow ol,
+.page[data-anchor="5. Actions and Assets"] .production-flow ul {
+  columns: 2;
+  column-gap: 18px;
+  column-rule: 1px solid var(--line);
+}
+.page[data-anchor="5. Actions and Assets"] .production-flow li {
+  break-inside: avoid;
+}
+
+/* In this fixed v0.6.1 pagination, the Withdrawal and Retreat spread leaves
+ * one two-line retreat-trigger sentence alone on page 22. Tighten only the
+ * preceding continuation page's vertical rhythm so the sentence remains with
+ * its section. The approved 9pt body size and heading sizes are unchanged. */
+.page[data-page="21"] .production-flow {
+  line-height: 1.24;
+}
+.page[data-page="21"] .production-flow p {
+  margin-bottom: 4px;
+}
+.page[data-page="21"] .production-flow h2 {
+  margin: 9px 0 4px;
+  padding-top: 5px;
+}
+.page[data-page="21"] .production-flow h3 {
+  margin: 6px 0 2px;
+}
+.page[data-page="21"] .production-flow h4 {
+  margin: 5px 0 2px;
+}
+.page[data-page="21"] .production-flow ul,
+.page[data-page="21"] .production-flow ol {
+  margin-bottom: 4px;
+}
+.page[data-page="21"] .production-flow li {
+  margin-bottom: 1px;
+}

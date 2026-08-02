@@ -1,0 +1,36 @@
+/*
+ * Browser font loading and final PDF rasterization can move the last line of a
+ * page by a few pixels after the paginator measures it. Reserve a small,
+ * consistent baseline of white space while pagination is in progress so
+ * borderline material moves to the following page instead of being clipped.
+ * The reserve disappears before final validation and rendering.
+ */
+html:not([data-pagination-ready="true"]) .production-flow::after {
+  content: "";
+  display: block;
+  height: 18px;
+}
+
+/* Booklet mode still needs the ordinary half-letter reader pages visible while
+ * their geometry is measured and the imposed sheet model is constructed. The
+ * production stylesheet switches to the booklet root only after pagination. */
+html:not([data-pagination-ready="true"]) .production-document[data-mode="booklet"] #reader-root {
+  display: block !important;
+}
+html:not([data-pagination-ready="true"]) .production-document[data-mode="booklet"] #booklet-root {
+  display: none !important;
+}
+
+/* The approved proof demonstrated one-digit chapter numerals. Production uses
+ * Chapters 10-18 as well, so the numeral column must size to its content rather
+ * than allowing two digits to intrude into the title. */
+.production-document .chapter-title-row {
+  display: grid !important;
+  grid-template-columns: max-content minmax(0, 1fr) !important;
+  align-items: end !important;
+  column-gap: 8px !important;
+}
+.production-document .chapter-title-row .chapter-number {
+  width: auto !important;
+  min-width: 0 !important;
+}
