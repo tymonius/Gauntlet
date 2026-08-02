@@ -325,13 +325,11 @@ Treason cannot select an effect that has already been applied and follows the sh
 
 > **Action:** Bank this card and bind another card from your Hand to it face down.
 >
-> **Asset:** At the end of each later turn, you may bind a card from your Hand to it face down, up to the number of Territories you control.
+> **Asset:** At the end of each later turn, you may bind a card from your Hand to it face down, up to the number of Territories you control. Before an opposing effect causes this card to leave play, reveal its bound cards. You may play one whose Action effect can apply now without spending an Action. Discard the rest.
 >
-> **Use:** During an Action Opportunity, spend 1 Action to put this card in your Graveyard and reveal its bound cards. Play each whose Action effect can apply now, one at a time and in any order, without spending Actions. Discard the rest.
->
-> **Compromised:** Before an opposing effect causes this card to leave play, reveal its bound cards. You may play one whose Action effect can apply now without spending an Action. Discard the rest.
+> **Use:** During an Action Opportunity, spend 1 Action to put this card in your Graveyard and reveal its bound cards. Play each whose Action effect can apply now, one at a time and in any order, without spending additional Actions. Discard the rest.
 
-If Sleeper Network has more bound cards than Territories you control, immediately discard bound cards of your choice until within the limit. If it leaves play without applying its Use or Compromised effect, discard all cards bound to it.
+If Sleeper Network has more bound cards than Territories you control, immediately discard bound cards of your choice until within the limit. If it leaves play without revealing its bound cards through its own effect, discard all cards bound to it.
 
 # 8. Quick reference
 

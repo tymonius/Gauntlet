@@ -235,21 +235,12 @@ Cards left in the opponent's Reserve are unaffected.
 
 > **Action:** Bank this card.
 >
-> **Use:** During opening effects, when you initiate a battle on an enemy-controlled Territory, you may put this card in your Graveyard to use the effect below.
+> **Asset:** During opening effects when attacking on an enemy-controlled Territory, you may put this card in your Graveyard to apply its Battle effect.
 >
-> **Battle:** If you initiated this battle on an enemy-controlled Territory, use the effect below. In the Aftermath, put this card in your Graveyard.
->
-> **Effect:** After Tactics are revealed, you may play one eligible card from your Hand face up as an additional Tactic. In the Aftermath, put that card in your Graveyard instead of your Discard Pile.
->
-> If you lose, retreat one additional position.
->
-> If you win, choose **Breakthrough** or **Consolidate**.
->
-> **Breakthrough:** Choose only if the opponent can retreat one additional position. After their normal retreat, they retreat one additional position. Then advance one position. This movement cannot start a battle.
->
-> **Consolidate:** Capture the contested Territory, then set your Command to 2.
->
-> **Limit:** After either option, you cannot move again, capture another Territory, or use an Order as a result of that victory.
+> **Battle:** When attacking on an enemy-controlled Territory, after Tactics are revealed, you may play an eligible card from your Hand face up as an additional Tactic. If you lose, retreat one additional position. If you win, choose one:
+> Breakthrough — Choose only if the opponent can retreat one additional position. After their normal retreat, they do so, then you advance one. This cannot start a battle.
+> Consolidate — Capture the contested Territory and set your Command to 2.
+> After either option, you cannot move again, capture another Territory, or use an Order from that victory. In the Aftermath, put any card played this way and this card, if still in play, in your Graveyard.
 
 # 7. Quick reference
 
