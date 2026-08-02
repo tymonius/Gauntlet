@@ -54,15 +54,15 @@ Battles now proceed in this order:
 - Added attacker-first alternating application when both players control effects at the same timing.
 - Clarified that simultaneous reveal does not cause effects to be applied simultaneously.
 - Clarified that a face-up Gambit or Tactic still waits for its normal reveal timing unless stated otherwise.
-- Clarified that effects cannot be negated after they take effect.
+- Clarified that effects cannot be negated after they have been applied.
 - Added shared rules for replacement cards, revised choices, multiple Tactics, and additional Tactics.
 - A replacement takes the same role and does not reopen an earlier timing window.
 
 ## Aftermath, withdrawal, and retreat
 
 - Replaced loose uses of “after battle” and the obsolete term “battle cleanup” with the formal **Aftermath of the battle**.
-- Added a complete Aftermath order covering result, withdrawal replacement, retreat, Occupation, additional retreat, card destinations, destination triggers, and follow-up movement.
-- Normal card destinations are now stated centrally:
+- Added a complete Aftermath order covering result, withdrawal replacement, retreat, changes in Occupation, additional retreat, clearing battle cards, effects triggered by that movement, and follow-up movement.
+- The rules now state directly where battle cards go:
   - Gambits go to the Graveyard;
   - Tactics go to the Discard Pile; and
   - cards remaining in Reserve go to the Discard Pile.
@@ -93,7 +93,7 @@ Battles now proceed in this order:
 - Copied effects retain costs, requirements, targets, and timing restrictions.
 - Copied effects cannot reopen earlier timing windows.
 - A copied effect cannot normally select another copied-effect instruction.
-- Added standard verbs for setting Gambits, choosing Tactics, playing cards, activating Assets, using Faction Abilities, and applying effects.
+- Added standard verbs for setting Gambits, choosing Tactics, playing cards, using Assets and Faction Abilities, and applying effects.
 
 ## Diplomats
 
@@ -130,7 +130,7 @@ Battles now proceed in this order:
 - Clarified Conviction timing during the Aftermath.
 - Condemnation now sends opposing Tactics to the Graveyard.
 - Blasphemy triggers when an opposing Arcane card is played; face-down battle cards trigger when revealed.
-- Final Judgment occurs after normal card destinations, allowing the normal Conviction gain first.
+- Final Judgment occurs after the battle cards are cleared, allowing the normal Conviction gain first.
 - Relentless Pursuit occurs at the end of the Aftermath.
 - Revised Tyranny priority, Heresy copied-effect timing, Hellfire, No Martyrs, and the Graveyard-pressure cards.
 - Reworked Confession as a Tactic-stage information and self-replacement effect.

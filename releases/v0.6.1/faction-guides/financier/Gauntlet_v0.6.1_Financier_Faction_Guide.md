@@ -55,7 +55,7 @@ Capital is public and pays for Deeds, Subsidize, and card effects. Your Capital 
 
 At the start of your turn, if the total card value in your Treasury is greater than the number of Territories you control, you may use both normal Action Opportunities that turn. At least one must be used for a Financier Faction Action.
 
-During an Action Opportunity after movement, you may place a card in Treasury, buy a Deed, or Play the Market instead of playing an Action card.
+During an Action Opportunity after movement, you may place a card in Treasury, buy a Deed, or Play the Market instead of playing a card for its Action effect.
 
 ## Complete rules
 
@@ -190,7 +190,7 @@ Collateral is not a separate zone. Place the collateral beneath the card or effe
 
 - Line of Credit collateral goes to the Discard Pile after purchase.
 - Margin Loan collateral returns only after repayment or a qualifying battle victory; default puts both cards in the Graveyard.
-- Leveraged Buyout collateral goes to the Graveyard after purchase or instead of its normal battle destination.
+- Leveraged Buyout collateral used from battle goes to the Graveyard after the purchase.
 - Collateral contributes payment value but does not become Capital unless stated.
 - Unused collateral value is lost.
 
@@ -224,7 +224,7 @@ Underwriting and Property Dues may be replaced normally. Replacing Margin Loan b
 
 > **Action:** Choose one Territory you neither control nor occupy. Place Speculation face up beside it. At the start of your next turn, if you occupy or control that Territory, gain 2 Capital and put Speculation in your Discard Pile. Otherwise, put it in your Graveyard.
 >
-> **Battle:** If you initiated this battle, you may spend 1 Capital. If you do and win, gain 2 Capital during the Aftermath of the battle. If the battle ends without you winning, put Speculation in your Graveyard instead of its normal destination.
+> **Battle:** If you initiated this battle, you may spend 1 Capital. If you do and win, gain 2 Capital during the Aftermath of the battle. If the battle ends without you winning, put Speculation in your Graveyard.
 
 Withdrawal counts as ending without you winning.
 
@@ -304,7 +304,7 @@ Withdrawal defaults on the Battle effect because you did not win.
 
 > **Action:** Buy or buy out one Deed. For this purchase, you may use any number of cards from your Hand or Treasury as collateral. Each contributes payment equal to its value and goes to your Graveyard after the purchase. Collateral may pay the entire cost.
 >
-> **Battle:** During the Aftermath of the battle, before cards leave battle, if you won as the attacker on a Territory whose Deed you do not own, you may buy or buy out that Deed, treating yourself as its occupier. For this purchase, you may use any number of other cards you controlled in this battle as collateral. Each contributes payment equal to its value and goes to your Graveyard instead of its normal destination. Collateral may pay the entire cost.
+> **Battle:** During the Aftermath of the battle, before cards leave battle, if you won as the attacker on a Territory whose Deed you do not own, you may buy or buy out that Deed, treating yourself as its occupier. For this purchase, you may use any number of other cards you controlled in this battle as collateral. Each contributes payment equal to its value and goes to your Graveyard after the purchase. Collateral may pay the entire cost.
 
 ## Foreclosure
 

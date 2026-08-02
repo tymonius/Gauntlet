@@ -15,11 +15,11 @@
 
 ## Card-text conventions
 
-- **Discard** means put the card in its owner's Discard Pile unless another destination is stated.
+- **Discard** means put the card in its owner's Discard Pile unless the card says otherwise.
 - **Bank** means put the card in its controller's Asset Bank, subject to the Asset limit and Asset-replacement rule.
 - A Gambit normally goes to its owner's Graveyard during the Aftermath of the battle.
 - A Tactic and each card remaining in Reserve normally go to the owner's Discard Pile.
-- A negated card has no effect and follows its normal destination unless stated otherwise.
+- A negated card has no effect. Unless stated otherwise, a negated Gambit still goes to its owner's Graveyard and a negated Tactic still goes to its owner's Discard Pile.
 - Overlays follow the shared v0.6.1 Overlay rules.
 
 # Cost 1
@@ -253,7 +253,7 @@ Turning an existing Asset face up does not count as banking it.
 
 > **Action:** Bank Scorched Earth as an Asset. During the Aftermath of a battle you lost while defending a Territory you control, after you retreat, you may place Scorched Earth on that Territory as a Ruins Overlay.
 >
-> **Battle:** During the Aftermath of the battle, if you lose while defending a Territory you control and retreat, place Scorched Earth on that Territory as a Ruins Overlay instead of putting it in its normal destination.
+> **Battle:** During the Aftermath of the battle, if you lose while defending a Territory you control and retreat, place Scorched Earth on that Territory as a Ruins Overlay; do not put it in a Graveyard or Discard Pile.
 
 ## Sedition
 
@@ -282,7 +282,7 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 
 > **Action:** Return one banked Asset you control to your Hand. If you do, move one additional position this turn.
 >
-> **Battle:** During the Aftermath of the battle, if you lose, after your normal retreat you may move one additional position toward your own end. If you do, return one other card you controlled in this battle to your Hand instead of putting it in its normal destination.
+> **Battle:** During the Aftermath of the battle, if you lose, after your normal retreat you may move one additional position toward your own end. If you do, return one other card you controlled in this battle to your Hand rather than putting it in a Graveyard or Discard Pile.
 
 ## Tactical Planning
 
@@ -311,7 +311,7 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 
 > **Action:** Bank Attrition as an Asset. During the Aftermath of a battle the opponent lost against you, put each opposing Tactic from that battle in their Graveyard instead of their Discard Pile.
 >
-> **Battle:** During the Aftermath of the battle, if the opponent loses, put every card from their initial Reserve in their Graveyard instead of its normal destination.
+> **Battle:** During the Aftermath of the battle, if the opponent loses, put every card remaining from their initial Reserve in their Graveyard rather than their Discard Pile.
 
 ## Conscription
 
@@ -329,7 +329,7 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 
 > **Action:** Return one card from your Discard Pile to your Hand.
 >
-> **Battle:** When Contraband is revealed, choose one eligible card in your Discard Pile whose Battle effect can still be applied at this stage. Put Contraband in your Graveyard and place the chosen card face up in Contraband's role. During the Aftermath of the battle, put the chosen card in your Graveyard unless its text gives another destination.
+> **Battle:** When Contraband is revealed, choose one eligible card in your Discard Pile whose Battle effect can still be applied at this stage. Put Contraband in your Graveyard and place the chosen card face up in Contraband's role. During the Aftermath of the battle, put the chosen card in your Graveyard unless its text tells you to put it elsewhere.
 
 ## Counterworks
 
@@ -384,7 +384,7 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 
 > **Action:** Bank Protracted Siege as an Asset. When an opponent would capture a Territory you control during their Capture step, you may place Protracted Siege on that Territory as an Overlay. If you do, that capture does not occur. During their next Capture step, they capture it normally if they are still the occupier of that Territory.
 >
-> **Battle:** During the Aftermath of the battle, if you lose while defending a Territory you control, place Protracted Siege on that Territory as an Overlay instead of putting it in its normal destination. The opponent does not capture it during their next Capture step. During their following Capture step, they capture it normally if they are still the occupier of that Territory.
+> **Battle:** During the Aftermath of the battle, if you lose while defending a Territory you control, place Protracted Siege on that Territory as an Overlay; do not put it in a Graveyard or Discard Pile. The opponent does not capture it during their next Capture step. During their following Capture step, they capture it normally if they are still the occupier of that Territory.
 >
 > After it delays one Capture step, or if the occupier leaves first, put Protracted Siege in its owner's Graveyard.
 
@@ -395,7 +395,7 @@ Stand Ground does not prevent normal required retreat or voluntary movement or w
 
 > **Action:** Bank Resistance as an Asset. When initiating a Counterattack, draw two additional cards when forming your Reserve.
 >
-> **Battle:** If this battle is a Counterattack, gain advantage. During the Aftermath of the battle, if you win, bank Resistance as an Asset instead of putting it in its normal destination.
+> **Battle:** If this battle is a Counterattack, gain advantage. During the Aftermath of the battle, if you win, bank Resistance as an Asset; do not put it in a Graveyard or Discard Pile.
 
 If your Asset Bank is full, you may use the normal Asset-replacement rule to make room.
 
@@ -404,7 +404,7 @@ If your Asset Bank is full, you may use the normal Asset-replacement rule to mak
 **Cost:** 3  
 **Complexity:** Advanced
 
-> **Action:** Bank Resourcefulness as an Asset. You may have only one banked Resourcefulness. The first time during each of your turns that the Action, Gambit, Tactic, or Battle effect of a cost-1 card you play, set, or choose takes effect, draw one card.
+> **Action:** Bank Resourcefulness as an Asset. You may have only one banked Resourcefulness. The first time during each of your turns that you apply the Action, Gambit, Tactic, or Battle effect of a cost-1 card you played, set, or chose, draw one card.
 >
 > **Battle:** If another active card you control in this battle has cost 1, gain advantage.
 
@@ -440,9 +440,9 @@ Effects already applied are not undone.
 **Cost:** 4  
 **Complexity:** Advanced
 
-> **Action:** Bank Assimilation as an Asset. During the Aftermath of a battle you initiated and won on a Territory the opponent controls, you may put Assimilation in your Graveyard. If you do, capture that Territory instead of entering Occupation.
+> **Action:** Bank Assimilation as an Asset. During the Aftermath of a battle you initiated and won on a Territory the opponent controls, you may put Assimilation in your Graveyard. If you do, capture that Territory rather than becoming its occupier.
 >
-> **Battle:** During the Aftermath of the battle, if you win as the attacker on a Territory the opponent controls, capture that Territory instead of entering Occupation. Put Assimilation in your Graveyard after the capture is completed.
+> **Battle:** During the Aftermath of the battle, if you win as the attacker on a Territory the opponent controls, capture that Territory rather than becoming its occupier. Put Assimilation in your Graveyard after the capture is completed.
 
 ## Capital Punishment
 
@@ -451,7 +451,7 @@ Effects already applied are not undone.
 
 > **Action:** If you won a battle this turn, choose one opposing Asset and put it in its owner's Graveyard.
 >
-> **Battle:** When Capital Punishment is revealed, before other effects at that stage are applied, negate one opposing Gambit or Tactic whose effect has not yet been applied. During the Aftermath of the battle, if you won, put the chosen card in its owner's Graveyard instead of its normal destination.
+> **Battle:** When Capital Punishment is revealed, before other effects at that stage are applied, negate one opposing Gambit or Tactic whose effect has not yet been applied. During the Aftermath of the battle, if you won, put the chosen card in its owner's Graveyard.
 
 ## Invasion
 
@@ -491,7 +491,7 @@ If both players exchange results, no exchange occurs.
 
 > **Action:** Place Bombardment face up on the nearest enemy-controlled Territory ahead of you with an active printed effect. While it remains there, that printed Territory effect is inactive. The next time you attack there, put Bombardment in its owner's Graveyard if you lose. If you win, or if you capture the Territory without a battle, turn Bombardment face down; it becomes a Ruins Overlay.
 >
-> **Battle:** If you are attacking on an enemy-controlled Territory, place Bombardment face up on it. That Territory's printed effect is inactive during this battle. During the Aftermath of the battle, if you win, turn Bombardment face down; it becomes a Ruins Overlay instead of putting it in its normal destination.
+> **Battle:** If you are attacking on an enemy-controlled Territory, place Bombardment face up on it. That Territory's printed effect is inactive during this battle. During the Aftermath of the battle, if you win, turn Bombardment face down; it becomes a Ruins Overlay and does not go to a Graveyard or Discard Pile.
 
 # Cost 5
 
@@ -503,7 +503,7 @@ If both players exchange results, no exchange occurs.
 
 > **Action:** As an additional cost, put every other card in your Hand in your Graveyard. Then put banked Assets you control in your Graveyard until you have put at least three cards there this way, including at least one Asset. Add Manifest Destiny to your end of the Gauntlet. It becomes a blank Territory under your control.
 >
-> **Battle:** During the Aftermath of the battle, if you win as the attacker on a Territory the opponent controls, insert Manifest Destiny between the contested Territory and the position from which you attacked. It becomes a blank Territory under your control instead of putting it in its normal destination.
+> **Battle:** During the Aftermath of the battle, if you win as the attacker on a Territory the opponent controls, insert Manifest Destiny between the contested Territory and the position from which you attacked. It becomes a blank Territory under your control and does not go to a Graveyard or Discard Pile.
 
 Manifest Destiny is a normal Territory after entering the Gauntlet and has a normal Deed.
 

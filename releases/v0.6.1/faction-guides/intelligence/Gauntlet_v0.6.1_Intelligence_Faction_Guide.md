@@ -202,7 +202,7 @@ When the controller of Watchtower defends there, the attacker sets their Gambit 
 >
 > **Mission:** Complete after you withdraw from a battle after an opposing Tactic was revealed.
 
-Withdrawal uses normal battle destinations unless another effect says otherwise.
+After withdrawal, Gambits still go to their owners' Graveyards, and Tactics and cards remaining in Reserve still go to their owners' Discard Piles unless another effect says otherwise.
 
 ## Spies
 
@@ -301,9 +301,9 @@ Treason cannot select an effect that has already been applied and follows the sh
 
 > **Action:** Bank Subversion as an Asset. When an opposing banked Asset's effect would apply, you may put Subversion in your Graveyard. If you do, negate that effect and put the opposing Asset in its owner's Discard Pile if it remains in play.
 >
-> **Battle:** Opposing banked Assets cannot be activated and their effects cannot be applied during this battle.
+> **Battle:** Opposing banked Assets have no effect during this battle.
 >
-> **Mission:** Complete after you win a battle in which an opposing banked Asset was activated or had its effect applied and none of your banked Assets were activated or had their effects applied.
+> **Mission:** Complete after you win a battle in which an opposing banked Asset had an effect and none of your banked Assets had an effect.
 
 ## Sleeper Network
 
@@ -315,7 +315,7 @@ Treason cannot select an effect that has already been applied and follows the sh
 >
 > **Capacity:** Sleeper Network can hold no more cards than the number of Territories you control. If it holds too many, immediately put cards beneath it of your choice in your Discard Pile until within capacity.
 >
-> **Activate:** At the start of your turn, you may put Sleeper Network in your Graveyard. If you do, reveal the cards beneath it. Play each card whose Action effect can legally be applied, one at a time and in any order, without using Action Opportunities. Put the rest in your Discard Pile.
+> **Use:** At the start of your turn, you may put Sleeper Network in your Graveyard. If you do, reveal the cards beneath it. Play each card whose Action effect can legally be applied, one at a time and in any order, without using Action Opportunities. Put the rest in your Discard Pile.
 >
 > **Compromised:** When an opposing effect would cause Sleeper Network to leave play, before it does, reveal the cards beneath it. You may play one card whose Action effect can legally be applied without using an Action Opportunity. Put the rest in your Discard Pile.
 >

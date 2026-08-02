@@ -63,7 +63,7 @@
 
 **Complexity:** Basic
 
-> During the Aftermath of a battle on Field Hospital, when battle cards move to their destinations, its controller may put one card they controlled in that battle that would enter their Graveyard in their Discard Pile instead.
+> During the Aftermath of a battle on Field Hospital, when the battle cards are cleared, its controller may put one card they controlled in that battle that would enter their Graveyard in their Discard Pile instead.
 
 ## 8. Exposed Flank
 

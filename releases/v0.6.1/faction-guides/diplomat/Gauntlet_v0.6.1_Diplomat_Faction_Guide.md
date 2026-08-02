@@ -218,7 +218,7 @@ At the start of the Diplomat's turn, after the Capture step and before the Draw 
 ## Diplomatic Recognition
 
 **Stake:** 2  
-**Requirement:** You must be defending a Counterattack while you are the occupier of a Territory the opponent controlled immediately before you entered Occupation.
+**Requirement:** You must be defending a Counterattack while you are the occupier of a Territory the opponent controlled immediately before you became its occupier.
 
 > **Accepted:** Capture that Territory. The opponent withdraws, then draws two cards.
 >
@@ -367,7 +367,7 @@ The placing-player reference does not change when Overlay control changes.
 >
 > **Refused:** Set Gunboat Diplomacy face up as an additional Gambit in the resulting battle. It does not count against your Gambit limit.
 >
-> **Battle:** Add +2 to your battle total. During the Aftermath of the battle, put Gunboat Diplomacy in your Discard Pile instead of its normal destination.
+> **Battle:** Add +2 to your battle total. During the Aftermath of the battle, put Gunboat Diplomacy in your Discard Pile.
 
 ## Sanctions: Embargo
 
