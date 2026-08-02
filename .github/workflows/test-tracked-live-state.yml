@@ -110,10 +110,12 @@ jobs:
           if (!await creator.locator('#showStoppedResult').isDisabled()) throw new Error('Stopped control unlocked before start');
 
           await creator.click('#recordStart');
-          await creator.waitForFunction(() => document.querySelector('#statusLabel')?.textContent === 'Playing');
-          if (!await creator.locator('#recordStart').isDisabled()) throw new Error('Start control stayed enabled after start');
-          if (await creator.locator('#showCompletedResult').isDisabled()) throw new Error('Completion control did not unlock during play');
-          if (await creator.locator('#showStoppedResult').isDisabled()) throw new Error('Stopped control did not unlock during play');
+          await creator.waitForFunction(() => {
+            const start = document.querySelector('#recordStart');
+            const completed = document.querySelector('#showCompletedResult');
+            const stopped = document.querySelector('#showStoppedResult');
+            return document.querySelector('#statusLabel')?.textContent === 'Playing' && start?.disabled && !completed?.disabled && !stopped?.disabled;
+          }, null, { timeout: 7000 });
 
           const opponentContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
           await opponentContext.addInitScript(({ prefix, participant }) => {
@@ -145,9 +147,11 @@ jobs:
           game.closedAt = new Date().toISOString();
           await creator.waitForSelector('#completionPanel:not([hidden])', { timeout: 7000 });
           await opponent.waitForSelector('#completionPanel:not([hidden])', { timeout: 7000 });
-          if (!await creator.locator('#recordStart').isDisabled()) throw new Error('Start control was enabled after closure');
-          if (!await creator.locator('#showCompletedResult').isDisabled()) throw new Error('Completion control was enabled after closure');
-          if (!await creator.locator('#showStoppedResult').isDisabled()) throw new Error('Stopped control was enabled after closure');
+          await creator.waitForFunction(() => {
+            return document.querySelector('#recordStart')?.disabled &&
+              document.querySelector('#showCompletedResult')?.disabled &&
+              document.querySelector('#showStoppedResult')?.disabled;
+          }, null, { timeout: 7000 });
           if (await opponent.locator('#playPanel').isVisible()) throw new Error('Opponent creator controls appeared after closure');
           if (creatorNavigations !== 1 || opponentNavigations !== 1) throw new Error('A page reloaded when the game closed');
 
