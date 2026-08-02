@@ -7,6 +7,7 @@ const app = read("playtest/tracked/app.js");
 const styles = read("playtest/tracked/styles.css");
 const start = read("start/app.js");
 const worker = read("workers/playtest-sessions/src/tracked.js");
+const analysisWorker = read("workers/playtest-sessions/src/analysis.js");
 const migration = read("rules-assistant/migrations/0005_tracked_playtests.sql");
 const wrangler = read("workers/playtest-sessions/wrangler.toml");
 
@@ -71,8 +72,10 @@ describe("streamlined tracked playtests", () => {
     expect(app).toContain("downloadReviewCsv");
   });
 
-  it("deploys the tracked wrapper and applies public creation abuse control", () => {
-    expect(wrangler).toContain('main = "src/tracked.js"');
+  it("deploys the tracked and analysis wrappers while preserving public creation abuse control", () => {
+    expect(wrangler).toContain('main = "src/analysis.js"');
+    expect(analysisWorker).toContain('import trackedWorker from "./tracked.js"');
+    expect(analysisWorker).toContain("compiledAnalysisSupported");
     expect(migration).toContain("playtest_public_creation_limits");
     expect(worker).toContain("CREATION_LIMIT_PER_DAY");
     expect(worker).toContain("cf-connecting-ip");
