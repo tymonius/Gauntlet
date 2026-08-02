@@ -6,7 +6,7 @@ on:
       - main
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: run-public-rules-sync
@@ -51,29 +51,33 @@ jobs:
           python scripts/sync_v061_public_rules.py
           rm -f deckbuilder/.rules-sync-trigger
 
-      - name: Commit synchronized outputs
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add \
-            scripts/sync_v061_public_rules.py \
-            deckbuilder/ \
-            start/ \
-            playtest/onboarding/ \
-            playtest/player-mat/ \
-            factions/ \
-            faction-sheets/
-          if git diff --cached --quiet; then
-            echo "No synchronized changes were required."
-            exit 0
-          fi
-          git commit -m "Synchronize public v0.6.1 browser and print rules"
-          git pull --rebase origin agent/sync-website-rules-terminology
-          git push origin HEAD:agent/sync-website-rules-terminology
-
       - name: Verify idempotent synchronization
         run: |
+          git diff --binary > /tmp/public-rules-before.patch
           python scripts/sync_v061_print_supplementals.py
           python scripts/sync_v061_deckbuilder.py
           python scripts/sync_v061_public_rules.py
-          git diff --exit-code -- scripts/sync_v061_public_rules.py deckbuilder/ start/ playtest/onboarding/ playtest/player-mat/ factions/ faction-sheets/
+          git diff --binary > /tmp/public-rules-after.patch
+          cmp /tmp/public-rules-before.patch /tmp/public-rules-after.patch
+
+      - name: Package synchronized files and patch
+        run: |
+          mkdir -p public-rules-sync/files
+          git diff --name-only --diff-filter=ACM > public-rules-sync/changed-files.txt
+          git diff --name-only --diff-filter=D > public-rules-sync/deleted-files.txt
+          git diff --binary > public-rules-sync/changes.patch
+          git rev-parse HEAD > public-rules-sync/base-head.txt
+          while IFS= read -r file; do
+            [ -n "$file" ] || continue
+            mkdir -p "public-rules-sync/files/$(dirname "$file")"
+            cp "$file" "public-rules-sync/files/$file"
+          done < public-rules-sync/changed-files.txt
+          cat public-rules-sync/changed-files.txt
+          sed 's/^/DELETE /' public-rules-sync/deleted-files.txt
+
+      - name: Upload synchronized sources
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-public-rules-sync
+          path: public-rules-sync/
+          if-no-files-found: error
