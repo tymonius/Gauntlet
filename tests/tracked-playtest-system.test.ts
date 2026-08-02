@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 const read = (path: string) => readFileSync(path, "utf8");
 const page = read("playtest/tracked/index.html");
 const app = read("playtest/tracked/app.js");
+const start = read("start/app.js");
 const worker = read("workers/playtest-sessions/src/tracked.js");
 const migration = read("rules-assistant/migrations/0005_tracked_playtests.sql");
 const wrangler = read("workers/playtest-sessions/wrangler.toml");
@@ -23,6 +24,8 @@ describe("streamlined tracked playtests", () => {
     expect(app).toContain('gauntlet_standalone_onboarding_v1');
     expect(app).toContain("restoreStartChoice");
     expect(app).toContain("standalone-onboarding");
+    expect(start).toContain("Start a tracked playtest");
+    expect(start).toContain('new URL("../playtest/tracked/"');
   });
 
   it("creates two authenticated player seats and player-attributed Arbiter links", () => {
@@ -35,13 +38,13 @@ describe("streamlined tracked playtests", () => {
     expect(app).toContain("/arbiter");
   });
 
-  it("stores shared results and private per-player responses in normalized tables", () => {
+  it("stores shared results and individual per-player responses in normalized tables", () => {
     expect(migration).toContain("CREATE TABLE IF NOT EXISTS playtest_session_results");
     expect(migration).toContain("CREATE TABLE IF NOT EXISTS playtest_participant_responses");
     expect(worker).toContain("submitSharedResult");
     expect(worker).toContain("submitPlayerResponse");
-    expect(page).toContain("Your private response");
-    expect(page).toContain("Your opponent can see only that you submitted");
+    expect(page).toContain("Your individual response");
+    expect(page).toContain("The public game view shows only that you submitted");
   });
 
   it("automatically closes only after one result and both responses", () => {
@@ -49,10 +52,10 @@ describe("streamlined tracked playtests", () => {
     expect(worker).toContain("Number(counts?.results || 0) !== 1");
     expect(worker).toContain("Number(counts?.responses || 0) !== 2");
     expect(worker).toContain("tracked_session_submitted");
-    expect(page).toContain("The shared result and both private responses are complete");
+    expect(page).toContain("The shared result and both individual responses are complete");
   });
 
-  it("keeps private answers behind the creator review key and supports exports", () => {
+  it("keeps detailed answers behind the creator review key and supports exports", () => {
     expect(worker).toContain("Invalid review key");
     expect(worker).toContain("readTrackedReview");
     expect(app).toContain("X-Host-Key");
