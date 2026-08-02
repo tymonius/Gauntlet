@@ -34,10 +34,15 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install Playwright
+      - name: Install dependencies and validate real session lifecycles
         run: |
-          npm install --no-save playwright
-          npx playwright install --with-deps chromium
+          npm install
+          npm run test:playtest-sessions
+          npm run test:formal-session-e2e
+          npm run test:tracked-session-e2e
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
 
       - name: Serve repository
         run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
