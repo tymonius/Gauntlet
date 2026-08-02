@@ -28,7 +28,22 @@ jobs:
           node-version: 22
 
       - name: Apply asserted source and implementation migration
-        run: python scripts/apply_action_terminology_migration.py
+        run: |
+          set +e
+          python scripts/apply_action_terminology_migration.py > /tmp/action-migration.log 2>&1
+          status=$?
+          set -e
+          cat /tmp/action-migration.log
+          if [ "$status" -ne 0 ]; then
+            git reset --hard HEAD
+            cp /tmp/action-migration.log tmp/action-migration-failure.txt
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add -f tmp/action-migration-failure.txt
+            git commit -m "Record Action terminology migration failure"
+            git push origin HEAD:agent/distinguish-actions-opportunities
+            exit "$status"
+          fi
 
       - name: Synchronize governed sources and generated outputs
         run: |
@@ -58,11 +73,13 @@ jobs:
       - name: Remove temporary migration material
         run: |
           rm -f \
+            package-lock.json \
             scripts/apply_action_terminology_migration.py \
             tmp/action-terminology-audit.txt \
             tmp/v061-generation-audit.txt \
             tmp/sleeper-action-hook-audit.txt \
-            tmp/special-action-opportunities-audit.txt
+            tmp/special-action-opportunities-audit.txt \
+            tmp/action-migration-failure.txt
           git rm .github/workflows/apply-action-terminology-migration.yml
 
       - name: Commit migration
@@ -73,5 +90,3 @@ jobs:
           git add -A
           git commit -m "Distinguish Actions from Action Opportunities"
           git push origin HEAD:agent/distinguish-actions-opportunities
-
-# Triggered after the asserted migration was reviewed.
