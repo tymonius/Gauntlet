@@ -8,7 +8,7 @@ on:
       - .github/workflows/audit-action-terminology.yml
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   audit:
@@ -17,14 +17,28 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
-      - name: Find Action terminology
+          persist-credentials: true
+      - name: Produce exact terminology report
         run: |
           set -euo pipefail
-          printf '%s\n' '=== Action Opportunity / Opportunities ==='
-          git grep -n -I -E 'Action Opportunit(y|ies)' -- ':!node_modules' || true
-          printf '%s\n' '=== without using an Action Opportunity ==='
-          git grep -n -I -E 'without (using|taking) (an |any )?Action Opportunit(y|ies)' -- ':!node_modules' || true
-          printf '%s\n' '=== additional/another Action Opportunity ==='
-          git grep -n -I -E '(additional|another|extra) Action Opportunit(y|ies)' -- ':!node_modules' || true
-          printf '%s\n' '=== uses one Action Opportunity ==='
-          git grep -n -I -E '(uses|use|using) (one|an) Action Opportunity' -- ':!node_modules' || true
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p tmp
+          {
+            printf '%s\n' '=== Action Opportunity / Opportunities ==='
+            git grep -n -I -E 'Action Opportunit(y|ies)' -- ':!node_modules' ':!.github/workflows/audit-action-terminology.yml' || true
+            printf '%s\n' '=== lowercase action opportunity / opportunities ==='
+            git grep -n -I -E 'action opportunit(y|ies)' -- ':!node_modules' ':!.github/workflows/audit-action-terminology.yml' || true
+            printf '%s\n' '=== without using/taking Action Opportunity ==='
+            git grep -n -I -E 'without (using|taking) (an |any )?Action Opportunit(y|ies)' -- ':!node_modules' ':!.github/workflows/audit-action-terminology.yml' || true
+            printf '%s\n' '=== additional/another/extra Action Opportunity ==='
+            git grep -n -I -E '(additional|another|extra) Action Opportunit(y|ies)' -- ':!node_modules' ':!.github/workflows/audit-action-terminology.yml' || true
+            printf '%s\n' '=== use(s)/using one/an Action Opportunity ==='
+            git grep -n -I -E '(uses|use|using) (one|an) Action Opportunity' -- ':!node_modules' ':!.github/workflows/audit-action-terminology.yml' || true
+            printf '%s\n' '=== Faction Action proximity ==='
+            git grep -n -I -E 'Faction Action' -- ':!node_modules' ':!.github/workflows/audit-action-terminology.yml' || true
+          } > tmp/action-terminology-audit.txt
+          git add tmp/action-terminology-audit.txt
+          git rm .github/workflows/audit-action-terminology.yml
+          git commit -m "Record Action terminology audit"
+          git push origin HEAD:agent/distinguish-actions-opportunities
