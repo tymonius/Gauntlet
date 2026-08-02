@@ -37,7 +37,7 @@ jobs:
               ("Pair with the incomplete side · no deckbuilding value", "Pair with the incomplete side · not a Playable Deck card"),
               ("Flip when complete · no deckbuilding value", "Flip when complete · not a Playable Deck card"),
           ],
-'''
+          '''
           if obsolete in text:
               path.write_text(text.replace(obsolete, "", 1), encoding="utf-8")
           else:
