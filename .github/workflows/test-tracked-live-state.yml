@@ -1,0 +1,168 @@
+name: Test tracked playtest live state
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "playtest/tracked/**"
+      - "tests/tracked-playtest-live-state.test.ts"
+      - ".github/workflows/test-tracked-live-state.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-tracked-live-state-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  live-state:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Playwright
+        run: |
+          npm install --no-save playwright
+          npx playwright install --with-deps chromium
+
+      - name: Serve repository
+        run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
+
+      - name: Verify live updates and creator-only lifecycle controls
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from 'playwright';
+
+          const browser = await chromium.launch({ headless: true });
+          const origin = 'http://127.0.0.1:8000';
+          const apiPattern = 'https://gauntlet-playtest-sessions.tymon-scott.workers.dev/**';
+          const token = 'abcdefghijklmnopqrstuvwxYZ012345';
+          const prefix = `gauntlet_tracked_${token.slice(0, 16)}`;
+          const hostKey = 'host-key-abcdefghijklmnopqrstuvwxyz012345';
+          const playerOne = {
+            participantId: '11111111-1111-4111-8111-111111111111',
+            participantToken: 'player-one-access-token-abcdefghijklmnopqrstuvwxyz',
+            displayName: 'Creator', seatIndex: 1, faction: 'diplomats', leader: 'Ambassador', responseSubmitted: false
+          };
+          const playerTwo = {
+            participantId: '22222222-2222-4222-8222-222222222222',
+            participantToken: 'player-two-access-token-abcdefghijklmnopqrstuvwxyz',
+            displayName: 'Opponent', seatIndex: 2, faction: 'military', leader: 'General', responseSubmitted: false
+          };
+          const game = {
+            sessionId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+            sheetSerial: 'G061-LIVE001', rulesVersion: 'v0.6.1', status: 'open', lifecycleState: 'joining',
+            createdAt: '2026-08-02T16:00:00.000Z', closedAt: null, players: [playerOne], playerCount: 1,
+            resultSubmitted: false, responseCount: 0, arbiterQuestionCount: 0, complete: false
+          };
+
+          const installRoutes = async page => {
+            await page.route(apiPattern, async route => {
+              const request = route.request();
+              const url = new URL(request.url());
+              const path = url.pathname;
+              const method = request.method();
+              const fulfill = payload => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(payload) });
+              if (path === `/api/tracked-games/${token}` && method === 'GET') return fulfill(game);
+              if (path === `/api/tracked-games/${token}/review` && method === 'GET') {
+                return fulfill({ session: game, result: null, responses: [], arbiterLinks: [], events: [], generatedAt: new Date().toISOString() });
+              }
+              if (path === `/api/tracked-games/${token}/event` && method === 'POST') {
+                game.lifecycleState = 'playing';
+                return fulfill({ ok: true, eventType: 'game_started', recordedAt: new Date().toISOString(), session: game });
+              }
+              return route.fulfill({ status: 404, contentType: 'application/json', body: JSON.stringify({ error: `Unmocked ${method} ${path}` }) });
+            });
+          };
+
+          const creatorContext = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+          await creatorContext.addInitScript(({ prefix, participant, hostKey }) => {
+            localStorage.setItem(`${prefix}_participant`, JSON.stringify(participant));
+            localStorage.setItem(`${prefix}_host`, hostKey);
+            window.QRCode = { toDataURL: async () => 'data:image/png;base64,iVBORw0KGgo=' };
+          }, { prefix, participant: playerOne, hostKey });
+          const creator = await creatorContext.newPage();
+          await installRoutes(creator);
+          let creatorNavigations = 0;
+          creator.on('framenavigated', frame => { if (frame === creator.mainFrame()) creatorNavigations += 1; });
+          await creator.goto(`${origin}/playtest/tracked/?code=${token}`, { waitUntil: 'networkidle' });
+          await creator.waitForSelector('body[data-tracked-role="creator"]');
+          if (await creator.locator('#playerCount').textContent() !== '1 / 2') throw new Error('Creator did not begin with one seat');
+
+          game.players.push(playerTwo);
+          game.playerCount = 2;
+          game.lifecycleState = 'ready';
+          await creator.waitForFunction(() => document.querySelector('#playerCount')?.textContent === '2 / 2', null, { timeout: 7000 });
+          if (creatorNavigations !== 1) throw new Error(`Creator page reloaded while opponent joined (${creatorNavigations} navigations)`);
+          if (await creator.locator('#recordStart').isDisabled()) throw new Error('Start control did not unlock at ready');
+          if (!await creator.locator('#showCompletedResult').isDisabled()) throw new Error('Completion control unlocked before start');
+          if (!await creator.locator('#showStoppedResult').isDisabled()) throw new Error('Stopped control unlocked before start');
+
+          await creator.click('#recordStart');
+          await creator.waitForFunction(() => {
+            const start = document.querySelector('#recordStart');
+            const completed = document.querySelector('#showCompletedResult');
+            const stopped = document.querySelector('#showStoppedResult');
+            return document.querySelector('#statusLabel')?.textContent === 'Playing' && start?.disabled && !completed?.disabled && !stopped?.disabled;
+          }, null, { timeout: 7000 });
+
+          const opponentContext = await browser.newContext({ viewport: { width: 390, height: 844 } });
+          await opponentContext.addInitScript(({ prefix, participant }) => {
+            localStorage.setItem(`${prefix}_participant`, JSON.stringify(participant));
+            window.QRCode = { toDataURL: async () => 'data:image/png;base64,iVBORw0KGgo=' };
+          }, { prefix, participant: playerTwo });
+          const opponent = await opponentContext.newPage();
+          await installRoutes(opponent);
+          let opponentNavigations = 0;
+          opponent.on('framenavigated', frame => { if (frame === opponent.mainFrame()) opponentNavigations += 1; });
+          await opponent.goto(`${origin}/playtest/tracked/?code=${token}`, { waitUntil: 'networkidle' });
+          await opponent.waitForSelector('body[data-tracked-role="participant"]');
+          if (await opponent.locator('#playPanel').isVisible()) throw new Error('Opponent received creator lifecycle controls');
+          if (await opponent.locator('#resultSection').isVisible()) throw new Error('Opponent received shared-result controls');
+
+          game.resultSubmitted = true;
+          game.lifecycleState = 'feedback';
+          playerOne.responseSubmitted = true;
+          game.responseCount = 1;
+          await creator.waitForFunction(() => document.querySelector('#responseCount')?.textContent === '1 / 2', null, { timeout: 7000 });
+          await opponent.waitForSelector('#responseSection:not([hidden])', { timeout: 7000 });
+          if (creatorNavigations !== 1 || opponentNavigations !== 1) throw new Error('A page reloaded during feedback synchronization');
+
+          playerTwo.responseSubmitted = true;
+          game.responseCount = 2;
+          game.status = 'closed';
+          game.lifecycleState = 'submitted';
+          game.complete = true;
+          game.closedAt = new Date().toISOString();
+          await creator.waitForSelector('#completionPanel:not([hidden])', { timeout: 7000 });
+          await opponent.waitForSelector('#completionPanel:not([hidden])', { timeout: 7000 });
+          await creator.waitForFunction(() => {
+            return document.querySelector('#recordStart')?.disabled &&
+              document.querySelector('#showCompletedResult')?.disabled &&
+              document.querySelector('#showStoppedResult')?.disabled;
+          }, null, { timeout: 7000 });
+          if (await opponent.locator('#playPanel').isVisible()) throw new Error('Opponent creator controls appeared after closure');
+          if (creatorNavigations !== 1 || opponentNavigations !== 1) throw new Error('A page reloaded when the game closed');
+
+          await creator.screenshot({ path: '/tmp/tracked-live-creator.png', fullPage: true });
+          await opponent.screenshot({ path: '/tmp/tracked-live-opponent.png', fullPage: true });
+          await browser.close();
+          NODE
+
+      - name: Upload live-state screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: tracked-live-state-screenshots
+          path: /tmp/tracked-live-*.png
+          if-no-files-found: error

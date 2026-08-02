@@ -21,6 +21,7 @@
   <link rel="stylesheet" href="../../site.css" />
   <link rel="stylesheet" href="../../rules-assistant/widget.css" />
   <link rel="stylesheet" href="styles.css?v=20260802-1" />
+  <link rel="stylesheet" href="live-state.css?v=20260802-1" />
 </head>
 <body>
   <header class="site-header">
@@ -66,8 +67,8 @@
         <ol>
           <li>Create the game using your faction and Leader.</li>
           <li>Let the opponent scan the QR code and confirm their own choice.</li>
-          <li>Record the start once, then play normally.</li>
-          <li>One player submits the shared result; both players submit individual responses.</li>
+          <li>The creator records the start once, then both players play normally.</li>
+          <li>The creator submits the shared result; both players submit individual responses.</li>
         </ol>
         <p class="privacy-note"><strong>No account is required.</strong> The public join code cannot read questionnaire answers. A separate review key is saved only for the game creator.</p>
       </div>
@@ -143,8 +144,8 @@
       </section>
 
       <section id="playPanel" class="tracked-panel play-panel" hidden>
-        <div class="panel-heading"><div><p class="eyebrow">During play</p><h2>Record only the shared milestones.</h2></div></div>
-        <p>The Rules Arbiter links questions automatically. Only one player needs to record the game start and shared result.</p>
+        <div class="panel-heading"><div><p class="eyebrow">Creator controls</p><h2>Record the shared milestones.</h2></div></div>
+        <p>The Rules Arbiter links questions automatically. Only the game creator records the start, factual notes, and shared result.</p>
         <div class="button-row">
           <button id="recordStart" type="button" class="button primary">Game started</button>
           <button id="showCompletedResult" type="button" class="button secondary">Game completed</button>
@@ -160,7 +161,7 @@
       <section id="resultSection" class="feedback-section" hidden aria-labelledby="result-title">
         <div class="section-heading split-heading">
           <div><p class="eyebrow">Shared record</p><h2 id="result-title">What happened in the game?</h2></div>
-          <p>Either player submits this once for the game. Both players can see whether it has been submitted, but the detailed answers are reserved for review.</p>
+          <p>The creator submits this once for the game. Both players can see whether it has been submitted, but the detailed answers are reserved for review.</p>
         </div>
         <form id="resultForm" class="tracked-panel feedback-form">
           <div class="three-field-grid">
@@ -230,6 +231,7 @@
   </footer>
 
   <script src="app.js?v=20260802-1" defer></script>
+  <script src="live-state.js?v=20260802-1" defer></script>
   <script type="module" src="../../rules-assistant/widget.js"></script>
 </body>
 </html>
