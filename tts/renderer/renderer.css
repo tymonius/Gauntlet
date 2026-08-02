@@ -92,6 +92,11 @@ body {
   column-gap: 0.025in;
 }
 
+.gauntlet-card.overlay-card.tts-text-only .rule-section {
+  grid-template-columns: 0.42in minmax(0, 1fr);
+  column-gap: 0.022in;
+}
+
 .gauntlet-card.tts-text-only .rule-section h4 {
   font-size: calc(4.2pt * var(--rules-scale));
   line-height: 0.95;
@@ -111,4 +116,9 @@ body {
 .gauntlet-card.tts-text-only .card-footer {
   font-size: 4pt;
   letter-spacing: 0.035em;
+}
+
+.gauntlet-card.overlay-card.tts-text-only .card-footer {
+  font-size: 3.8pt;
+  letter-spacing: 0.025em;
 }
