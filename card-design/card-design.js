@@ -5,6 +5,7 @@
   const TITLE_STEP = 0.05 * CSS_PIXELS_PER_POINT;
   const RULE_SCALE_STEP = 0.01;
   const DEFAULT_MINIMUM_TITLE_SIZE = 8 * CSS_PIXELS_PER_POINT;
+  const DEFAULT_MINIMUM_OVERLAY_TITLE_SIZE = 6.2 * CSS_PIXELS_PER_POINT;
   const DEFAULT_MINIMUM_RULE_SCALE = 0.93;
   const PARCHMENT_SOURCES = Object.freeze({
     neutral: '../images/artwork/card-backgrounds/neutral-parchment-v2.png',
@@ -105,6 +106,10 @@
     return Number.isFinite(declared) ? Math.max(declared, DEFAULT_MINIMUM_RULE_SCALE) : DEFAULT_MINIMUM_RULE_SCALE;
   }
 
+  function textOverflows(element) {
+    return Boolean(element && element.scrollWidth > element.clientWidth + 0.5);
+  }
+
   function cardOverflows(card) {
     const interior = card.querySelector('.card-interior');
     const rules = card.querySelector('.card-rules');
@@ -116,8 +121,9 @@
     const footerPastFrame = footerRect.bottom > interiorRect.bottom + 0.5;
     const rulesClip = rules.scrollHeight > rules.clientHeight + 0.5;
     const frameClip = interior.scrollHeight > interior.clientHeight + 0.5;
+    const overlayTitleClip = textOverflows(card.querySelector('.overlay-title-text'));
 
-    return footerPastFrame || rulesClip || frameClip;
+    return footerPastFrame || rulesClip || frameClip || overlayTitleClip;
   }
 
   function fitTitle(card) {
@@ -131,15 +137,43 @@
     const minimum = Number(card.dataset.titleMin || DEFAULT_MINIMUM_TITLE_SIZE / CSS_PIXELS_PER_POINT)
       * CSS_PIXELS_PER_POINT;
 
-    while (title.scrollWidth > title.clientWidth + 0.5 && size > minimum) {
+    while (textOverflows(title) && size > minimum) {
       size = Math.max(minimum, size - TITLE_STEP);
       title.style.fontSize = `${size}px`;
       forceLayout(title);
     }
 
-    const fits = title.scrollWidth <= title.clientWidth + 0.5;
+    const fits = !textOverflows(title);
     card.classList.toggle('title-fit-warning', !fits);
     card.dataset.titleFit = fits ? 'true' : 'false';
+    return fits;
+  }
+
+  function fitOverlayTitle(card) {
+    const title = card.querySelector('.overlay-title-text');
+    if (!title) {
+      card.classList.remove('overlay-title-fit-warning');
+      card.dataset.overlayTitleFit = 'not-applicable';
+      return true;
+    }
+
+    title.style.removeProperty('font-size');
+    forceLayout(title);
+
+    let size = Number.parseFloat(window.getComputedStyle(title).fontSize);
+    const minimum = Number(
+      card.dataset.overlayTitleMin || DEFAULT_MINIMUM_OVERLAY_TITLE_SIZE / CSS_PIXELS_PER_POINT
+    ) * CSS_PIXELS_PER_POINT;
+
+    while (textOverflows(title) && size > minimum) {
+      size = Math.max(minimum, size - TITLE_STEP);
+      title.style.fontSize = `${size}px`;
+      forceLayout(title);
+    }
+
+    const fits = !textOverflows(title);
+    card.classList.toggle('overlay-title-fit-warning', !fits);
+    card.dataset.overlayTitleFit = fits ? 'true' : 'false';
     return fits;
   }
 
@@ -150,6 +184,7 @@
 
     card.classList.remove('fit-warning');
     const titleFits = fitTitle(card);
+    const overlayTitleFits = fitOverlayTitle(card);
 
     const maximum = Number(card.dataset.artMax || 1.72) * CSS_PIXELS_PER_INCH;
     const minimum = Number(card.dataset.artMin || 0.62) * CSS_PIXELS_PER_INCH;
@@ -176,7 +211,7 @@
       forceLayout(interior);
     }
 
-    if (!titleFits || cardOverflows(card)) {
+    if (!titleFits || !overlayTitleFits || cardOverflows(card)) {
       card.classList.add('fit-warning');
       console.warn(`Card content still exceeds the available area: ${card.getAttribute('aria-label') || 'unnamed card'}`);
     }
