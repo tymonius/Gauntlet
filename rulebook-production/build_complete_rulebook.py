@@ -55,6 +55,56 @@ function intentionalBlank(reason = '') {
         "faction recto",
     )
 
+    old_golden_page = '''  const goldenPage = createPage({ className: 'frontmatter-page', label: 'WELCOME', runningLeft: 'Welcome', runningRight: 'Golden Rules', anchor: 'Golden Rules' });
+  const goldenFlow = flowOf(goldenPage);
+  goldenFlow.innerHTML = '<p class="flavor-overline">Rules before exceptions</p>';
+  const goldenHeading = document.createElement('h2');
+  goldenHeading.className = 'page-title';
+  goldenHeading.dataset.sourceId = golden.heading.id;
+  goldenHeading.textContent = golden.heading.title;
+  goldenFlow.append(goldenHeading);
+  const goldenGrid = document.createElement('div');
+  goldenGrid.className = 'golden-rules';
+  for (const token of sectionContent(golden)) {
+    if (token.kind === 'list') {
+      token.items.forEach((item, index) => {
+        const entry = document.createElement('div');
+        entry.dataset.sourceId = token.id;
+        entry.dataset.fragment = String(index + 1);
+        entry.innerHTML = item;
+        goldenGrid.append(entry);
+      });
+    } else {
+      goldenGrid.append(makeTokenElement(token));
+    }
+  }
+  goldenFlow.append(goldenGrid);'''
+    new_golden_page = '''  const goldenSection = document.createElement('section');
+  goldenSection.className = 'golden-rules-compact';
+  const goldenHeading = document.createElement('h3');
+  goldenHeading.dataset.sourceId = golden.heading.id;
+  goldenHeading.textContent = golden.heading.title;
+  goldenSection.append(goldenHeading);
+  const goldenGrid = document.createElement('div');
+  goldenGrid.className = 'golden-rules';
+  for (const token of sectionContent(golden)) {
+    if (token.kind === 'list') {
+      token.items.forEach((item, index) => {
+        const entry = document.createElement('div');
+        entry.dataset.sourceId = token.id;
+        entry.dataset.fragment = String(index + 1);
+        entry.innerHTML = item;
+        goldenGrid.append(entry);
+      });
+    } else {
+      goldenGrid.append(makeTokenElement(token));
+    }
+  }
+  goldenSection.append(goldenGrid);
+  glanceFlow.append(goldenSection);
+  if (!anchors.has('Golden Rules')) anchors.set('Golden Rules', glancePage);'''
+    source = replace_once(source, old_golden_page, new_golden_page, "Golden Rules consolidation")
+
     old_continuation = '''function newContinuationPage(context) {
   const page = createPage({
     className: 'chapter-page continuation-page',
