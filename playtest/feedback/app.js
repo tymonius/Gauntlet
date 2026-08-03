@@ -23,6 +23,7 @@
     ["factionClarity", "Faction clarity", "How understandable was your faction and Leader?"],
     ["tableOrganization", "Table organization", "How manageable were cards, zones, and components?"]
   ]);
+  const RATING_LABELS = Object.freeze({ 1: "Very poor", 2: "Poor", 3: "Mixed", 4: "Good", 5: "Excellent" });
   const el = {};
 
   document.addEventListener("DOMContentLoaded", init);
@@ -88,16 +89,18 @@
 
   function renderRatings() {
     el.ratingGrid.innerHTML = RATINGS.map(([key, label, help]) => `
-      <label>${label}<span>${help}</span>
-        <select data-rating="${key}" required>
-          <option value="">Choose</option>
-          <option value="1">1 · Very poor</option>
-          <option value="2">2</option>
-          <option value="3">3 · Mixed</option>
-          <option value="4">4</option>
-          <option value="5">5 · Excellent</option>
-        </select>
-      </label>`).join("");
+      <fieldset class="rating-card">
+        <legend class="visually-hidden">${label}</legend>
+        <h3>${label}</h3>
+        <p>${help}</p>
+        <div class="rating-scale" role="radiogroup" aria-label="${label}">
+          ${[1, 2, 3, 4, 5].map((value) => `
+            <label class="rating-option" title="${RATING_LABELS[value]}">
+              <input type="radio" name="rating_${key}" value="${value}" data-rating="${key}" />
+              <span aria-hidden="true">${value}</span>
+            </label>`).join("")}
+        </div>
+      </fieldset>`).join("");
   }
 
   async function submitFeedback(event) {
@@ -105,10 +108,7 @@
     setBusy(true);
     setStatus("Submitting feedback…");
     try {
-      const ratings = {};
-      for (const select of el.ratingGrid.querySelectorAll("select[data-rating]")) {
-        ratings[select.dataset.rating] = Number(select.value);
-      }
+      const ratings = collectRatings();
       const payload = await request("/api/standalone-feedback", {
         method: "POST",
         headers: { "content-type": "application/json" },
@@ -148,6 +148,16 @@
     } finally {
       setBusy(false);
     }
+  }
+
+  function collectRatings() {
+    const ratings = {};
+    for (const [key, label] of RATINGS) {
+      const selected = el.ratingGrid.querySelector(`input[name="rating_${key}"]:checked`);
+      if (!selected) throw new Error(`Please rate "${label}" before submitting.`);
+      ratings[key] = Number(selected.value);
+    }
+    return ratings;
   }
 
   function resetForAnother() {
