@@ -190,10 +190,11 @@
     if (!me) return;
 
     const canRespond = session.status === "open" && !me.responseSubmitted;
-    responseSection.hidden = !canRespond;
+    const shouldHideResponse = !canRespond;
+    if (responseSection.hidden !== shouldHideResponse) responseSection.hidden = shouldHideResponse;
 
     if (!feedbackNotice) return;
-    feedbackNotice.hidden = false;
+    if (feedbackNotice.hidden) feedbackNotice.hidden = false;
     if (me.responseSubmitted) {
       feedbackNotice.className = "independent-feedback-notice success";
       feedbackNotice.innerHTML = "<strong>Your feedback is saved.</strong> The other player may still join and submit separately later.";
