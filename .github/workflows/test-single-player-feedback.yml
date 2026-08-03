@@ -1,0 +1,123 @@
+name: Test single-player playtest feedback
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "playtest/tracked/journal.js"
+      - "tests/single-player-feedback.test.ts"
+      - ".github/workflows/test-single-player-feedback.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-single-player-feedback-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  feedback:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies and browser
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+
+      - name: Check companion syntax and contract
+        run: |
+          node --check playtest/tracked/journal.js
+          npx vitest run tests/single-player-feedback.test.ts
+
+      - name: Serve repository
+        run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
+
+      - name: Submit feedback with only one joined player
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from 'playwright';
+
+          const browser = await chromium.launch({ headless: true });
+          const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+          const origin = 'http://127.0.0.1:8000';
+          const apiPattern = 'https://gauntlet-playtest-sessions.tymon-scott.workers.dev/**';
+          const token = 'singleplayerfeedbacktoken1234567890';
+          const participant = {
+            participantId: '11111111-1111-4111-8111-111111111111',
+            participantToken: 'single-player-private-token-abcdefghijklmnopqrstuvwxyz',
+            displayName: 'Alice', seatIndex: 1, faction: 'diplomats', leader: 'Ambassador', responseSubmitted: false
+          };
+          const game = {
+            sessionId: 'aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa',
+            sheetSerial: 'G061-SOLO001', rulesVersion: 'v0.6.1', status: 'open', lifecycleState: 'joining',
+            createdAt: '2026-08-02T22:00:00.000Z', closedAt: null,
+            players: [participant], playerCount: 1, resultSubmitted: false,
+            responseCount: 0, arbiterQuestionCount: 0, complete: false
+          };
+
+          await page.route(apiPattern, async route => {
+            const request = route.request();
+            const url = new URL(request.url());
+            const path = url.pathname;
+            const method = request.method();
+            const fulfill = payload => route.fulfill({ status: 200, contentType: 'application/json', body: JSON.stringify(payload) });
+
+            if (path === '/api/tracked-games' && method === 'POST') {
+              return fulfill({
+                sessionId: game.sessionId, sheetSerial: game.sheetSerial, rulesVersion: game.rulesVersion,
+                status: game.status, lifecycleState: game.lifecycleState, joinToken: token,
+                hostKey: 'host-key-abcdefghijklmnopqrstuvwxyz012345',
+                joinUrl: `${origin}/playtest/tracked/?code=${token}`,
+                reviewUrl: `${origin}/playtest/tracked/?code=${token}&host=host-key-abcdefghijklmnopqrstuvwxyz012345`,
+                participantId: participant.participantId, participantToken: participant.participantToken,
+                seatIndex: 1, faction: participant.faction, leader: participant.leader, createdAt: game.createdAt
+              });
+            }
+            if (path === `/api/tracked-games/${token}` && method === 'GET') return fulfill(game);
+            if (path.endsWith('/notes') && method === 'GET') return fulfill({ sessionId: game.sessionId, collectionMode: 'live-tracked', notes: [] });
+            if (path.endsWith('/response') && method === 'POST') {
+              participant.responseSubmitted = true;
+              game.responseCount = 1;
+              return fulfill({ ok: true, session: game });
+            }
+            return route.fulfill({ status: 404, contentType: 'application/json', body: JSON.stringify({ error: `Unmocked ${method} ${path}` }) });
+          });
+
+          await page.goto(`${origin}/playtest/tracked/`, { waitUntil: 'networkidle' });
+          await page.fill('#createName', 'Alice');
+          await page.selectOption('#createFaction', 'diplomats');
+          await page.selectOption('#createLeader', 'ambassador');
+          await Promise.all([
+            page.waitForURL(new RegExp(`/playtest/tracked/\\?code=${token}`)),
+            page.click('#createForm button[type="submit"]')
+          ]);
+
+          await page.waitForSelector('#responseSection:not([hidden])');
+          const notice = await page.locator('#independentFeedbackNotice').textContent();
+          if (!notice?.includes('do not need to wait for the other player')) {
+            throw new Error(`Missing independent-feedback explanation: ${notice}`);
+          }
+          if (game.playerCount !== 1 || game.resultSubmitted) throw new Error('Test setup unexpectedly gained a second player or shared result');
+
+          await page.fill('#factionInterest', 'Negotiation and political leverage interested me.');
+          for (const select of await page.locator('#ratingGrid select').all()) await select.selectOption('4');
+          await page.selectOption('#playAgain', 'yes');
+          await page.fill('#responseComments', 'Submitting without the opponent present.');
+          await page.click('#responseForm button[type="submit"]');
+          await page.waitForFunction(() => document.querySelector('#independentFeedbackNotice')?.textContent?.includes('Your feedback is saved'));
+
+          if (!participant.responseSubmitted || game.responseCount !== 1) throw new Error('Single-player response was not submitted');
+          await browser.close();
+          NODE
