@@ -5,21 +5,25 @@ const favicon = readFileSync("favicon.ico");
 const homepage = readFileSync("index.html", "utf8");
 
 describe("temporary Gauntlet favicon", () => {
-  it("is a multi-resolution Windows icon for the site-wide fallback path", () => {
+  it("uses broadly compatible BMP frames inside the Windows icon container", () => {
     expect(favicon.readUInt16LE(0)).toBe(0);
     expect(favicon.readUInt16LE(2)).toBe(1);
 
     const imageCount = favicon.readUInt16LE(4);
-    expect(imageCount).toBe(6);
+    expect(imageCount).toBe(2);
 
     const sizes = Array.from({ length: imageCount }, (_, index) => {
-      const width = favicon[6 + index * 16] || 256;
-      const height = favicon[7 + index * 16] || 256;
+      const entryOffset = 6 + index * 16;
+      const width = favicon[entryOffset] || 256;
+      const height = favicon[entryOffset + 1] || 256;
+      const imageOffset = favicon.readUInt32LE(entryOffset + 12);
+
       expect(width).toBe(height);
+      expect(favicon.readUInt32LE(imageOffset)).toBe(40);
       return width;
     });
 
-    expect(sizes).toEqual([16, 32, 48, 64, 128, 256]);
+    expect(sizes).toEqual([16, 32]);
   });
 
   it("declares a cache-busted favicon on the homepage", () => {
