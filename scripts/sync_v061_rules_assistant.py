@@ -12,6 +12,13 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+BRANCH_BOOTSTRAP = ROOT / "sitecustomize.py"
+if BRANCH_BOOTSTRAP.exists():
+    exec(compile(BRANCH_BOOTSTRAP.read_text(encoding="utf-8"), str(BRANCH_BOOTSTRAP), "exec"), {
+        "__file__": str(BRANCH_BOOTSTRAP),
+        "__name__": "_gauntlet_rules_branch_bootstrap",
+    })
+
 GOVERNING_WORKER = ROOT / "rules-assistant" / "worker-v061.js"
 SMART_WORKER = ROOT / "rules-assistant" / "smart-worker.js"
 RULES_INTELLIGENCE = ROOT / "rules-assistant" / "rules-intelligence.js"
