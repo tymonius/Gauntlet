@@ -30,7 +30,7 @@ export async function handleReviewIntelligence(request, env) {
       env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions"),
       env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE review_status = 'unreviewed'"),
       env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE feedback_rating IN ('unclear', 'incorrect')"),
-      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE ruling_status = 'provisional'"),
+      env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE COALESCE(ruling_status_v2, ruling_status) = 'provisional'"),
       env.DB.prepare("SELECT COUNT(*) AS count FROM rules_interactions WHERE confidence = 'low'")
     ]);
     const provisional = countFromBatch(results[3]);
@@ -250,15 +250,16 @@ async function listInteractions(env, url, origin) {
   } else if (feedback === "none") {
     conditions.push("feedback_rating IS NULL");
   }
-  if (["explicit", "inferred", "provisional", "out_of_scope", "unresolved"].includes(rulingStatus)) {
-    conditions.push("ruling_status = ?"); params.push(rulingStatus);
+  if (["explicit", "inferred", "provisional", "out_of_scope", "unresolved", "source_lookup"].includes(rulingStatus)) {
+    conditions.push("COALESCE(ruling_status_v2, ruling_status) = ?"); params.push(rulingStatus);
   }
   if (["high", "medium", "low"].includes(confidence)) { conditions.push("confidence = ?"); params.push(confidence); }
   if (version) { conditions.push("game_version = ?"); params.push(version); }
   const where = conditions.length ? `WHERE ${conditions.join(" AND ")}` : "";
   const rows = await env.DB.prepare(`
     SELECT id, session_id, sequence_index, created_at, question, answer, game_version,
-      ruling_status, confidence, answer_mode, model, source_count, review_status,
+      COALESCE(ruling_status_v2, ruling_status) AS ruling_status,
+      confidence, answer_mode, model, source_count, review_status,
       issue_types_json, reviewer_notes, resolution, feedback_rating, feedback_comment,
       feedback_at, updated_at
     FROM rules_interactions ${where}

@@ -1,3 +1,8 @@
+import {
+  normalizeCurrentRulingStatus,
+  toLegacyRulingStatus
+} from "./rules-status.js";
+
 const RULES_VERSION = "v0.6.1";
 
 export async function persistSmartInteraction(env, record) {
@@ -11,18 +16,20 @@ export async function persistSmartInteraction(env, record) {
     const sequenceIndex = Number(previous?.sequence_index || 0) + 1;
     const createdAt = new Date().toISOString();
     const sourceRows = Array.isArray(record.sources) ? record.sources.slice(0, 8) : [];
+    const currentStatus = normalizeCurrentRulingStatus(record.rulingStatus);
+    const legacyStatus = toLegacyRulingStatus(currentStatus);
     const statements = [
       env.DB.prepare(`
         INSERT INTO rules_interactions (
           id, session_id, previous_interaction_id, sequence_index, created_at, updated_at,
-          question, answer, game_version, ruling_status, confidence, answer_mode, model,
-          source_count, playtest_session_id, sheet_serial, review_status,
-          issue_types_json, reviewer_notes, resolution
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unreviewed', '[]', '', '')
+          question, answer, game_version, ruling_status, ruling_status_v2,
+          confidence, answer_mode, model, source_count, playtest_session_id, sheet_serial,
+          review_status, issue_types_json, reviewer_notes, resolution
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unreviewed', '[]', '', '')
       `).bind(
         id, record.sessionId, previous?.id || null, sequenceIndex, createdAt, createdAt,
         record.question, record.answer, record.gameVersion || RULES_VERSION,
-        record.rulingStatus || "provisional", record.confidence || "low",
+        legacyStatus, currentStatus, record.confidence || "low",
         record.mode || "ai_verified", record.model || null, sourceRows.length,
         record.playtestSessionId || null, record.sheetSerial || null
       )
@@ -90,7 +97,8 @@ async function linkFormalPlaytest(db, interactionId, record, sources, timestamp)
         answer_excerpt, source_json, linked_at
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
     `).bind(
-      crypto.randomUUID(), session.id, interactionId, record.rulingStatus || null,
+      crypto.randomUUID(), session.id, interactionId,
+      normalizeCurrentRulingStatus(record.rulingStatus),
       String(record.question || "").slice(0, 300) || null,
       String(record.answer || "").slice(0, 500) || null,
       JSON.stringify(sources.map(({ id, title, sourcePath, sourceUrl }) => ({ id, title, sourcePath, sourceUrl }))),
@@ -102,7 +110,11 @@ async function linkFormalPlaytest(db, interactionId, record, sources, timestamp)
         VALUES (?, ?, 'arbiter_linked', ?, ?)
       `).bind(
         crypto.randomUUID(), session.id,
-        JSON.stringify({ interactionId, classification: record.rulingStatus || null }), timestamp
+        JSON.stringify({
+          interactionId,
+          classification: normalizeCurrentRulingStatus(record.rulingStatus)
+        }),
+        timestamp
       ).run();
     }
   } catch (error) {
