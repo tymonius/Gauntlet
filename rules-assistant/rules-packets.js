@@ -221,6 +221,22 @@ PACKET_DEFINITIONS.push(
     scopeNotes: ["Attacker and defender remain fixed through the Aftermath."],
     requiredClaims: ["A retreat or victory does not switch or end those roles before the Aftermath finishes."],
     forbiddenClaims: ["Do not say the winner stops being the attacker after the defender retreats."]
+  },
+  {
+    id: "resourcefulness",
+    subject: "Resourcefulness",
+    aliases: ["resourcefulness"],
+    sourceIds: ["card:neutral-resourcefulness", "rulebook:printed-card-effects"],
+    scopeNotes: [
+      "Resourcefulness checks whether the cost-1 card itself was played, set, or chosen and then resolved its printed effect.",
+      "Copying an effect does not play, set, or choose the source card again."
+    ],
+    requiredClaims: [
+      "A copied effect does not trigger Resourcefulness unless the cost-1 card itself was played, set, or chosen for that resolution."
+    ],
+    forbiddenClaims: [
+      "Do not treat copying a cost-1 card's effect as playing, setting, or choosing that card."
+    ]
   }
 );
 

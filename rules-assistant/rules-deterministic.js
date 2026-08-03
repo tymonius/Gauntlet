@@ -251,6 +251,18 @@ export function resolveDeterministicRuling(corpus, { question, history = [], gam
     });
   }
 
+  if (/\bresourcefulness\b/i.test(text)
+      && /\b(copy|copied|copying)\b/i.test(text)
+      && /\bwithout\b[\s\S]*\b(play(?:ing|ed)?|set(?:ting)?|choos(?:ing|e|en))\b/i.test(text)) {
+    return result({
+      id: "resourcefulness-copied-effect",
+      answer: "No. Resourcefulness triggers only when a cost-1 card you played, set, or chose resolves its printed effect. Copying that effect without playing, setting, or choosing the card again does not trigger Resourcefulness.",
+      sourceIds: ["card:neutral-resourcefulness", "rulebook:printed-card-effects"],
+      subject: "Resourcefulness",
+      topic: "copied effect"
+    });
+  }
+
   if (/\bfieldcraft\b/i.test(text) && /\b(changes? control|control of a territory|territory control)\b/i.test(text)) {
     return result({
       id: "fieldcraft-control-change",
