@@ -1,5 +1,5 @@
 import { isAdminAuthorized } from "./worker.js";
-import { defaultSourceUrls, loadRulesCorpus } from "./local-search.js";
+import { buildRulesCorpus, defaultSourceUrls, loadRulesCorpus } from "./local-search.js";
 import { buildCorpusReviewSnapshot } from "./rules-intelligence.js";
 
 const HISTORICAL_ACCURACY = new Set(["correct", "incorrect", "indeterminate", "not_applicable"]);
@@ -16,6 +16,7 @@ const RECOMMENDED_ACTIONS = new Set([
 
 let corpusPromise;
 let snapshotPromise;
+let archivedSnapshotPromise;
 
 export async function handleReviewIntelligence(request, env) {
   const url = new URL(request.url);
@@ -63,9 +64,15 @@ export async function handleReviewIntelligence(request, env) {
   }
 
   if (request.method === "GET" && url.pathname === "/api/admin/review-corpus") {
-    const corpus = await getCorpus(env);
-    const snapshot = await getSnapshot(corpus);
-    return jsonResponse(snapshot, 200, origin);
+    const [current, archived] = await Promise.all([
+      getCorpus(env).then(getSnapshot),
+      getArchivedSnapshots(env)
+    ]);
+    return jsonResponse({
+      currentVersion: current.version,
+      current,
+      byVersion: { ...archived, [current.version]: current }
+    }, 200, origin);
   }
 
   if (request.method === "POST" && url.pathname === "/api/admin/review-audits") {
@@ -167,6 +174,50 @@ async function getCorpus(env) {
     });
   }
   return corpusPromise;
+}
+
+async function getArchivedSnapshots(env) {
+  if (!archivedSnapshotPromise) {
+    archivedSnapshotPromise = Promise.all([
+      loadArchivedCorpus(env, "v0.6.0")
+    ]).then(async (corpora) => {
+      const entries = await Promise.all(corpora.map(async (corpus) => [
+        corpus.version,
+        await buildCorpusReviewSnapshot(corpus)
+      ]));
+      return Object.fromEntries(entries);
+    }).catch((error) => {
+      archivedSnapshotPromise = null;
+      throw error;
+    });
+  }
+  return archivedSnapshotPromise;
+}
+
+async function loadArchivedCorpus(env, version) {
+  const origin = String(env.SITE_ORIGIN || "https://gauntlet.run").replace(/\/$/, "");
+  const canonicalDataUrl = `${origin}/releases/${version}/Gauntlet_${version}_Canonical_Data.json`;
+  const rulebookUrl = `${origin}/releases/${version}/Gauntlet_${version}_Rulebook.md`;
+  const [canonicalResponse, rulebookResponse] = await Promise.all([
+    fetch(canonicalDataUrl, { cache: "no-store" }),
+    fetch(rulebookUrl, { cache: "no-store" })
+  ]);
+  if (!canonicalResponse.ok || !rulebookResponse.ok) {
+    throw new Error(`Could not load archived ${version} corpus.`);
+  }
+  const [canonicalData, rulebookMarkdown] = await Promise.all([
+    canonicalResponse.json(),
+    rulebookResponse.text()
+  ]);
+  return buildRulesCorpus({
+    canonicalData,
+    rulebookMarkdown,
+    siteOrigin: origin,
+    canonicalDataUrl,
+    rulebookUrl,
+    rulebookBrowserUrl: `${origin}/releases/${version}/Gauntlet_${version}_Rulebook.md`,
+    rulebookPdfUrl: `${origin}/releases/${version}/Gauntlet_${version}_Rulebook.pdf`
+  });
 }
 
 async function getSnapshot(corpus) {
