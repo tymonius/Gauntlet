@@ -6,6 +6,7 @@ const trackedPage = read("playtest/tracked/index.html");
 const controls = read("playtest/tracked/session-controls.js");
 const feedbackPage = read("playtest/feedback/index.html");
 const feedbackApp = read("playtest/feedback/app.js");
+const feedbackStyles = read("playtest/feedback/styles.css");
 const worker = read("workers/playtest-sessions/src/closure.js");
 const wrangler = read("workers/playtest-sessions/wrangler.toml");
 const deployment = read(".github/workflows/deploy-v061-workers.yml");
@@ -38,6 +39,16 @@ describe("manual session closure and standalone feedback", () => {
     expect(feedbackPage).toContain("does not invent an opponent, shared result, live timeline, or Rules Arbiter history");
     expect(feedbackApp).toContain("/api/standalone-feedback");
     expect(feedbackApp).not.toContain("joinToken");
+  });
+
+  it("uses a structured mobile form and direct 1-to-5 rating controls", () => {
+    expect(feedbackPage).toContain('class="field-label"');
+    expect(feedbackPage).toContain('class="section-note"');
+    expect(feedbackApp).toContain('class="rating-card"');
+    expect(feedbackApp).toContain('type="radio"');
+    expect(feedbackApp).toContain("collectRatings");
+    expect(feedbackStyles).toContain(".rating-scale");
+    expect(feedbackStyles).toContain(".choice-card");
   });
 
   it("stores standalone feedback as a closed one-respondent record with remembered context", () => {
