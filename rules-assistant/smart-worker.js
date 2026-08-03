@@ -20,6 +20,7 @@ import {
 } from "./rules-intelligence.js";
 import { answerQuestion, planQuestion, verifyDraft } from "./rules-openai.js";
 import { persistSmartInteraction } from "./rules-persistence.js";
+import { enrichPlanFromEntityDocuments } from "./rules-plan-enrichment.js";
 
 const RULES_VERSION = "v0.6.1";
 const FALLBACK_MODEL = "gpt-5.6-terra";
@@ -99,12 +100,12 @@ export default {
       });
       const history = mergeConversationHistory(storedHistory, suppliedHistory);
       const localPlan = analyzeQuestionLocally(corpus, question, history, gameState);
-      let plan = localPlan;
+      let plan = enrichPlanFromEntityDocuments(corpus, localPlan);
 
       if (shouldUseSemanticPlanner(localPlan, env)) {
         try {
           const semanticPlan = await planQuestion({ env, request, question, history, gameState });
-          plan = mergeSemanticPlan(localPlan, semanticPlan);
+          plan = enrichPlanFromEntityDocuments(corpus, mergeSemanticPlan(plan, semanticPlan));
         } catch (error) {
           console.error("Rules semantic planner failed; continuing with local plan", error);
         }
