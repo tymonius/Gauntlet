@@ -11,25 +11,21 @@ const pngAssets = [
 ] as const;
 
 describe("temporary Gauntlet favicon", () => {
-  it("uses clean compatible BMP frames inside the Windows icon container", () => {
+  it("uses one clean compatible BMP frame for the legacy ICO fallback", () => {
     expect(favicon.readUInt16LE(0)).toBe(0);
     expect(favicon.readUInt16LE(2)).toBe(1);
+    expect(favicon.readUInt16LE(4)).toBe(1);
 
-    const imageCount = favicon.readUInt16LE(4);
-    expect(imageCount).toBe(3);
+    const entryOffset = 6;
+    const width = favicon[entryOffset] || 256;
+    const height = favicon[entryOffset + 1] || 256;
+    const imageSize = favicon.readUInt32LE(entryOffset + 8);
+    const imageOffset = favicon.readUInt32LE(entryOffset + 12);
 
-    const sizes = Array.from({ length: imageCount }, (_, index) => {
-      const entryOffset = 6 + index * 16;
-      const width = favicon[entryOffset] || 256;
-      const height = favicon[entryOffset + 1] || 256;
-      const imageOffset = favicon.readUInt32LE(entryOffset + 12);
-
-      expect(width).toBe(height);
-      expect(favicon.readUInt32LE(imageOffset)).toBe(40);
-      return width;
-    });
-
-    expect(sizes).toEqual([16, 32, 48]);
+    expect([width, height]).toEqual([16, 16]);
+    expect(imageOffset).toBe(22);
+    expect(imageOffset + imageSize).toBe(favicon.length);
+    expect(favicon.readUInt32LE(imageOffset)).toBe(40);
   });
 
   it.each(pngAssets)("ships %s at %d by %d pixels", (path, size) => {
