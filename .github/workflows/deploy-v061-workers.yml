@@ -122,5 +122,11 @@ jobs:
               raise SystemExit(f'Retrospective feedback unavailable: {sessions}')
           if not sessions.get('privatePlayerNotesSupported'):
               raise SystemExit(f'Private player notes unavailable: {sessions}')
-          print('Verified production v0.6.1 playtest sessions, journals, retrospective feedback, compiled analysis, and audited exclusions.')
+          if not sessions.get('manualSessionClosureSupported'):
+              raise SystemExit(f'Manual session closure unavailable: {sessions}')
+          if not sessions.get('sessionCancellationSupported'):
+              raise SystemExit(f'Session cancellation unavailable: {sessions}')
+          if not sessions.get('standaloneFeedbackSupported'):
+              raise SystemExit(f'Standalone feedback unavailable: {sessions}')
+          print('Verified production v0.6.1 playtest sessions, journals, closure controls, standalone feedback, compiled analysis, and audited exclusions.')
           PY
