@@ -48,6 +48,17 @@ function canonicalComponentAnswer(document) {
   return `${title}:\n${lines.join("\n")}`;
 }
 
+function namedEntityNames(plan) {
+  return (plan?.entities || [])
+    .filter((entity) => entity?.documentId)
+    .map((entity) => normalizeForSearch(entity.name));
+}
+
+function hasNamedEntityOutside(plan, allowed = []) {
+  const allowedNames = new Set(allowed.map(normalizeForSearch));
+  return namedEntityNames(plan).some((name) => !allowedNames.has(name));
+}
+
 export function resolveDeterministicRuling(corpus, { question, history = [], gameState = null, plan = null, packet = null } = {}) {
   const text = String(question || "").trim();
   if (!text) return null;
@@ -80,6 +91,91 @@ export function resolveDeterministicRuling(corpus, { question, history = [], gam
     });
   }
 
+  if (/\b(tied|tie)\b/i.test(text) && /\b(first player|goes first|initial roll)\b/i.test(text)) {
+    return result({
+      id: "setup-first-player-tie",
+      answer: "Roll again. The higher result goes first, and tied initial rolls are rerolled until one player has the higher result.",
+      sourceIds: ["rulebook:complete-rules-2"],
+      subject: "Setup",
+      topic: "first player"
+    });
+  }
+
+  if (/\bcleanup\b/i.test(text) && /\b(five|5) cards?\b/i.test(text) && /\bhand\b/i.test(text)) {
+    return result({
+      id: "cleanup-hand-limit",
+      answer: "Discard two cards. During Cleanup, reduce your Hand to the normal limit of three cards.",
+      sourceIds: ["rulebook:cleanup", "rulebook:hand"],
+      subject: "Cleanup",
+      topic: "Hand limit"
+    });
+  }
+
+  if (/\bdraw (?:three|3) cards?\b/i.test(text) && /\bdraw pile\b/i.test(text) && /\bdiscard pile\b/i.test(text)) {
+    return result({
+      id: "partial-draw-refill",
+      answer: "Draw the available card from your Draw Pile, shuffle the Discard Pile to form a new Draw Pile, and continue the same draw. If the two piles still cannot provide all three cards, draw as many as possible; do not shuffle back cards already drawn.",
+      sourceIds: ["rulebook:draw"],
+      subject: "Draw",
+      topic: "incomplete draw"
+    });
+  }
+
+  if (/\bbattle totals? (?:are )?tied|\btied battle totals?\b/i.test(text)
+      && /\bdefender\b/i.test(text)
+      && /\bdoes not control|doesn't control|not control\b/i.test(text)) {
+    return result({
+      id: "unbroken-battle-tie",
+      answer: "Defender's Advantage does not break this tie because the defender does not control the contested Territory. Both players reroll; cards and effects already in use remain active.",
+      sourceIds: ["rulebook:determine-the-winner"],
+      subject: "Battle tie",
+      topic: "reroll"
+    });
+  }
+
+  if (/\bprevents? the pending battle|pending battle.*prevent/i.test(text)
+      && /\bopening effects?\b/i.test(text)) {
+    return result({
+      id: "prevented-pending-battle",
+      answer: "No battle is fought, so battle, victory, loss, retreat, and Aftermath triggers do not occur. Follow only the preventing effect's own remaining instructions, including any withdrawal movement it specifies.",
+      sourceIds: ["rulebook:1-opening-effects", "rulebook:withdrawal-during-opening-effects"],
+      subject: "Prevented battle",
+      topic: "opening effects"
+    });
+  }
+
+  if (/\bpurification\b/i.test(text) && /\breserve\b/i.test(text)) {
+    return result({
+      id: "purification-reserve-draw",
+      answer: "No. Failing to form a Reserve does not trigger Purification. Purification checks only after the opponent's normal start-of-turn draw attempt draws no cards because both their Draw Pile and Discard Pile are empty.",
+      sourceIds: ["rulebook:purification"],
+      subject: "Purification",
+      topic: "Reserve draw"
+    });
+  }
+
+  if (/\brite of blood\b/i.test(text) && /\btransmutation\b/i.test(text)) {
+    return result({
+      id: "rite-of-blood-transmutation",
+      answer: "Yes. Rite of Blood completes if you win without setting a Gambit or choosing a Tactic; using Transmutation does not prevent completion.",
+      sourceIds: ["rulebook:rite-of-blood", "rulebook:transmutation"],
+      subject: "Rite of Blood",
+      topic: "completion with Transmutation"
+    });
+  }
+
+  if (/\bpenance\b/i.test(text) && /\bhand\b/i.test(text) && /\b(empty|no cards?|nothing)\b/i.test(text)) {
+    return result({
+      id: "penance-empty-hand-provisional",
+      answer: "Provisional Arbiter Ruling: With no card in Hand, the opponent cannot choose Penance's first option, so you gain 1 Conviction. Use this ruling for the rest of this game; it has been logged for designer review.",
+      rulingStatus: "provisional",
+      sourceIds: ["card:inquisition-penance", "rulebook:golden-rules", "rulebook:complete-rules-12"],
+      subject: "Penance",
+      topic: "unperformable option",
+      confidence: "low"
+    });
+  }
+
   if (matches(text, /\b(how many cards.*start|draw to start|starting hand|opening hand|hand.*start)\b/i)) {
     return result({
       id: "setup-opening-hand",
@@ -90,7 +186,8 @@ export function resolveDeterministicRuling(corpus, { question, history = [], gam
     });
   }
 
-  if (matches(text, /\bwhere do gambits and tactics go|gambits? and tactics?.*(go|resolve|aftermath)|where.*gambits?.*tactics?\b/i)) {
+  if (matches(text, /\bwhere do gambits and tactics go|gambits? and tactics?.*(go|resolve|aftermath)|where.*gambits?.*tactics?\b/i)
+      && !hasNamedEntityOutside(plan, [])) {
     return result({
       id: "battle-card-destinations",
       answer: "During the Aftermath, Gambits normally go to their owners' Graveyards. Tactics and cards remaining in Reserve normally go to their owners' Discard Piles. Follow a card if it explicitly sends itself somewhere else.",
@@ -225,8 +322,11 @@ export function resolveDeterministicRuling(corpus, { question, history = [], gam
     });
   }
 
-  if (matches(text, /\b(card|action).*\b(discard|played|play)\b|when does a card go to the discard after being played/i)
-      && !/gambit|tactic/i.test(text)) {
+  if ((/^when does a card go to the discard after being played\??$/i.test(text)
+      || (/\b(action card|action effect|played for (?:its )?action)\b/i.test(text)
+        && /\b(discard pile|where does|where do|destination|after resolving)\b/i.test(text)))
+      && !hasNamedEntityOutside(plan, [])
+      && !/gambit|tactic|reserve|cleanup|draw pile/i.test(text)) {
     return result({
       id: "action-card-destination",
       answer: "When you play a card from Hand for its Action effect, apply the effect and then put the card in your Discard Pile unless it becomes an Asset, becomes an Overlay, or its text sends it somewhere else. Battle cards use the Aftermath destinations instead: Gambits normally go to the Graveyard, while Tactics and unused Reserve cards go to the Discard Pile.",
@@ -246,7 +346,9 @@ export function resolveDeterministicRuling(corpus, { question, history = [], gam
     });
   }
 
-  if (matches(text, /\btransmutation\b/i)) {
+  if (matches(text, /\btransmutation\b/i)
+      && !hasNamedEntityOutside(plan, ["Transmutation", "Spirit Walker", "Alchemist"])
+      && !/\brite of (?:blood|crossing|echoes)\b/i.test(text)) {
     return result({
       id: "transmutation",
       answer: "After you complete your second Rite, Transmutation is unlocked. Once per turn, before dice are rolled in a battle involving you, you may put one card from your Hand in your Graveyard and add that card's value to your battle total. The card is not played, so none of its printed effects apply. Spirit Walker uses Transmutation the same way as any other Mystics Leader.",

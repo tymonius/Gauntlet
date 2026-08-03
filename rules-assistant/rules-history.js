@@ -1,33 +1,19 @@
-export async function loadStoredHistoryV2(env, { sessionId, playtestSessionId } = {}) {
-  if (!env?.DB) return [];
+export async function loadStoredHistoryV2(env, { sessionId } = {}) {
+  if (!env?.DB || !sessionId) return [];
 
   try {
-    const usePlaytest = Boolean(playtestSessionId);
-    const statement = usePlaytest
-      ? env.DB.prepare(`
-          SELECT
-            i.question,
-            i.answer,
-            COALESCE(i.ruling_status_v2, i.ruling_status) AS ruling_status,
-            d.question_plan_json
-          FROM rules_interactions i
-          LEFT JOIN rules_interaction_diagnostics d ON d.interaction_id = i.id
-          WHERE i.playtest_session_id = ?
-          ORDER BY i.created_at DESC
-          LIMIT 8
-        `).bind(playtestSessionId)
-      : env.DB.prepare(`
-          SELECT
-            i.question,
-            i.answer,
-            COALESCE(i.ruling_status_v2, i.ruling_status) AS ruling_status,
-            d.question_plan_json
-          FROM rules_interactions i
-          LEFT JOIN rules_interaction_diagnostics d ON d.interaction_id = i.id
-          WHERE i.session_id = ?
-          ORDER BY i.sequence_index DESC, i.created_at DESC
-          LIMIT 8
-        `).bind(sessionId);
+    const statement = env.DB.prepare(`
+      SELECT
+        i.question,
+        i.answer,
+        COALESCE(i.ruling_status_v2, i.ruling_status) AS ruling_status,
+        d.question_plan_json
+      FROM rules_interactions i
+      LEFT JOIN rules_interaction_diagnostics d ON d.interaction_id = i.id
+      WHERE i.session_id = ?
+      ORDER BY i.sequence_index DESC, i.created_at DESC
+      LIMIT 8
+    `).bind(sessionId);
 
     const rows = await statement.all();
     const results = Array.isArray(rows?.results) ? rows.results : [];
