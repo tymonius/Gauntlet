@@ -1,0 +1,1 @@
+The root favicon uses uncompressed BMP frames inside the ICO container for compatibility with browsers that fail to decode PNG-compressed ICO frames. The existing favicon test continues to verify the ICO container and embedded sizes.
