@@ -428,11 +428,8 @@ export async function buildCorpusReviewSnapshot(corpus) {
     bodyLength: String(document.body || "").length
   }));
   const corpusHash = await sha256Text(sourceDocuments.map((document) =>
-    `${document.id || ""}
-${document.body || ""}`
-  ).join("
----
-"));
+    `${document.id || ""}\n${document.body || ""}`
+  ).join("\n---\n"));
   return {
     version: String(corpus?.version || ""),
     generatedAt: new Date().toISOString(),
