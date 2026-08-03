@@ -23,7 +23,8 @@ describe("retrospective playtests and player journals", () => {
   it("reuses the established two-player result and questionnaire lifecycle", () => {
     expect(worker).toContain('upstreamUrl.pathname = "/api/tracked-games"');
     expect(worker).toContain('withQuery(payload.joinUrl, "retrospective", "1")');
-    expect(retrospectiveApp).toContain(`${"gauntlet_tracked_"}`);
+    expect(retrospectiveApp).toContain("gauntlet_tracked_");
+    expect(retrospectiveApp).toContain("payload.reviewUrl");
     expect(retrospectivePage).toContain("Each player submits their own private questionnaire");
   });
 
