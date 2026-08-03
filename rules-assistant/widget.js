@@ -4,6 +4,7 @@ import {
   loadRulesCorpus,
   retrieveRules
 } from "./local-search.js";
+import { presentRulesAnswer } from "./answer-presentation.js";
 
 const configuredApiEndpoint = window.GAUNTLET_RULES_ASSISTANT_ENDPOINT || "https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/rules";
 const CONFIG = {
@@ -295,14 +296,25 @@ class GauntletRulesAssistant {
     role.textContent = message.role === "user" ? "You" : CONFIG.assistantName;
     article.append(role);
 
+    const presentation = message.role === "user"
+      ? { answer: message.answer, details: "" }
+      : presentRulesAnswer(message);
+
     const body = document.createElement("div");
     body.className = "ga-rules-answer";
-    for (const paragraph of String(message.answer || "").split(/\n{2,}/)) {
-      const p = document.createElement("p");
-      p.textContent = paragraph.trim();
-      body.append(p);
-    }
+    appendTextParagraphs(body, presentation.answer);
     article.append(body);
+
+    if (message.role !== "user" && presentation.details) {
+      const details = document.createElement("details");
+      details.className = "ga-rules-answer-details";
+      const summary = document.createElement("summary");
+      summary.textContent = "Details and exceptions";
+      const detailsBody = document.createElement("div");
+      appendTextParagraphs(detailsBody, presentation.details);
+      details.append(summary, detailsBody);
+      article.append(details);
+    }
 
     if (message.role !== "user" && message.rulingStatus && !["welcome", "error"].includes(message.rulingStatus)) {
       const meta = document.createElement("div");
@@ -456,6 +468,16 @@ class GauntletRulesAssistant {
     requestAnimationFrame(() => {
       this.elements.messages.scrollTop = this.elements.messages.scrollHeight;
     });
+  }
+}
+
+function appendTextParagraphs(container, text) {
+  for (const paragraph of String(text || "").split(/\n{2,}/)) {
+    const value = paragraph.trim();
+    if (!value) continue;
+    const p = document.createElement("p");
+    p.textContent = value;
+    container.append(p);
   }
 }
 
