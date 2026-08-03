@@ -100,6 +100,12 @@ jobs:
                 });
               }
               if (path === `/api/tracked-games/${token}` && method === 'GET') return fulfill(game);
+              if (path.endsWith('/notes') && method === 'GET') {
+                return fulfill({ sessionId: game.sessionId, collectionMode: 'live-tracked', notes: [] });
+              }
+              if (path.endsWith('/notes') && method === 'POST') {
+                return fulfill({ ok: true, notes: [] });
+              }
               if (path.endsWith('/event') && method === 'POST') {
                 if (body.eventType === 'game_started') game.lifecycleState = 'playing';
                 return fulfill({ ok: true, eventType: body.eventType, recordedAt: new Date().toISOString(), session: game });
