@@ -164,7 +164,7 @@ export function resolveDeterministicRuling(corpus, { question, history = [], gam
     });
   }
 
-  if (/\bpenance\b/i.test(text) && /\b(empty|no cards?|nothing)\b[\s\S]*\bhand\b/i.test(text)) {
+  if (/\bpenance\b/i.test(text) && /\bhand\b/i.test(text) && /\b(empty|no cards?|nothing)\b/i.test(text)) {
     return result({
       id: "penance-empty-hand-provisional",
       answer: "Provisional Arbiter Ruling: With no card in Hand, the opponent cannot choose Penance's first option, so you gain 1 Conviction. Use this ruling for the rest of this game; it has been logged for designer review.",
