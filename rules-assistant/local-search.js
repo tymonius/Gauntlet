@@ -256,6 +256,7 @@ export function retrieveRules(corpus, query, options = {}) {
     .slice(0, limit)
     .map(({ document, score }, index) => ({
       id: `S${index + 1}`,
+      canonicalId: document.id,
       score,
       title: document.title,
       heading: document.heading,

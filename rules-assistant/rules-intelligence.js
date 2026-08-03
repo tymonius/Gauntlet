@@ -299,10 +299,10 @@ export function retrieveIntelligentRules(corpus, question, history = [], plan, o
     ...(options.baseQueries || []),
     ...(plan?.retrievalQueries || []),
     ...(options.additionalQueries || [])
-  ], 30);
+  ], 18);
 
   queries.forEach((query, queryIndex) => {
-    const results = retrieveRules(corpus, query, { limit: 12, excerptLength });
+    const results = retrieveRules(corpus, query, { limit: 8, excerptLength });
     for (const result of results) {
       const score = Number(result.score || 0)
         + Math.max(0, 22 - queryIndex)
@@ -417,21 +417,22 @@ export async function sha256Text(value) {
 }
 
 export async function buildCorpusReviewSnapshot(corpus) {
-  const documents = [];
-  for (const document of corpus?.documents || []) {
-    const body = String(document.body || "");
-    documents.push({
-      id: String(document.id || ""),
-      kind: String(document.kind || ""),
-      title: String(document.title || ""),
-      heading: String(document.heading || ""),
-      sourcePath: String(document.sourcePath || ""),
-      sourceUrl: String(document.sourceUrl || ""),
-      body,
-      sha256: await sha256Text(body)
-    });
-  }
-  const corpusHash = await sha256Text(documents.map((document) => `${document.id}\n${document.sha256}`).join("\n"));
+  const sourceDocuments = Array.isArray(corpus?.documents) ? corpus.documents : [];
+  const documents = sourceDocuments.map((document) => ({
+    id: String(document.id || ""),
+    kind: String(document.kind || ""),
+    title: String(document.title || ""),
+    heading: String(document.heading || ""),
+    sourcePath: String(document.sourcePath || ""),
+    sourceUrl: String(document.sourceUrl || ""),
+    bodyLength: String(document.body || "").length
+  }));
+  const corpusHash = await sha256Text(sourceDocuments.map((document) =>
+    `${document.id || ""}
+${document.body || ""}`
+  ).join("
+---
+"));
   return {
     version: String(corpus?.version || ""),
     generatedAt: new Date().toISOString(),

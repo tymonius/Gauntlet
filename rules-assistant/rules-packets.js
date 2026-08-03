@@ -330,7 +330,7 @@ export function prioritizeRulePacketSources(retrieval, corpus, packet, options =
   }
   const sources = [...merged.values()].slice(0, limit).map((source, index) => ({
     ...source,
-    id: `S${index + 1}`
+    id: source.canonicalId || source.id || `S${index + 1}`
   }));
   return {
     ...retrieval,
