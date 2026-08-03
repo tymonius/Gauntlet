@@ -21,7 +21,9 @@ import { loadStoredHistoryV2 } from "./rules-history.js";
 import { persistSmartInteraction } from "./rules-persistence.js";
 import { enrichPlanFromEntityDocuments } from "./rules-plan-enrichment.js";
 import {
+  buildOutOfScopeRuling,
   buildScopeRecoveryRuling,
+  isClearlyOutOfScopeQuestion,
   isGameplayQuestionPlan
 } from "./rules-status.js";
 import {
@@ -108,6 +110,46 @@ export default {
       const corpus = await getCorpus(env);
       if (corpus.version && corpus.version !== RULES_VERSION) {
         throw new Error(`Canonical corpus reports ${corpus.version}, expected ${RULES_VERSION}.`);
+      }
+
+      if (isClearlyOutOfScopeQuestion(question)) {
+        const plan = {
+          entities: [],
+          mechanics: [],
+          roles: [],
+          zones: [],
+          timing: [],
+          questionType: "out_of_scope",
+          complexity: "low",
+          contextDependent: false,
+          assumptions: [],
+          retrievalQueries: [],
+          activeSubject: null,
+          activeTopic: "scope",
+          rulePacket: null
+        };
+        const packet = {
+          id: "scope",
+          subject: null,
+          topic: "scope",
+          sourceIds: [],
+          scopeNotes: [],
+          requiredClaims: [],
+          forbiddenClaims: []
+        };
+        return handleDeterministicAnswer({
+          request,
+          env,
+          allowedOrigin,
+          corpus,
+          sessionId,
+          playtestContext,
+          question,
+          gameState,
+          plan,
+          packet,
+          deterministic: buildOutOfScopeRuling()
+        });
       }
 
       const storedHistory = await loadStoredHistoryV2(env, {

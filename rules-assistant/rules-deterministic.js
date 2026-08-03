@@ -176,6 +176,91 @@ export function resolveDeterministicRuling(corpus, { question, history = [], gam
     });
   }
 
+  if (/\b(attacker|defender)\b/i.test(text)
+      && /\b(remain fixed|roles? remain|stop being the attacker|through the aftermath)\b/i.test(text)
+      && /\baftermath\b/i.test(text)) {
+    return result({
+      id: "battle-roles-remain-fixed",
+      answer: "Attacker and defender remain fixed through the entire Aftermath. The defender's retreat and the battle result do not change those roles.",
+      sourceIds: ["rulebook:complete-rules-7", "rulebook:normal-result"],
+      subject: "Battle roles",
+      topic: "Aftermath"
+    });
+  }
+
+  if (/\bfortifications\b/i.test(text)
+      && /\b(two tactics|choose two|choose the second|opponent'?s choice)\b/i.test(text)) {
+    return result({
+      id: "fortifications-simultaneous-choice",
+      answer: "No. Choose both Tactics during the same Choose Tactics stage. Fortifications changes how many Tactics you choose, not the timing, so you cannot wait to see the opponent's choice before choosing the second.",
+      sourceIds: ["card:neutral-fortifications", "rulebook:5-choose-tactics"],
+      subject: "Fortifications",
+      topic: "choosing Tactics"
+    });
+  }
+
+  if (/\bvalor\b/i.test(text) && /\b(withdraw|withdrawal|withdrew|withdrawn)\b/i.test(text) && /\bbattle\b/i.test(text)) {
+    return result({
+      id: "valor-withdrawal",
+      answer: "No. Withdrawal from a battle ends it without a winner or loser, so you did not lose the battle and Valor does not trigger. Loss and retreat triggers do not occur.",
+      sourceIds: ["rulebook:effect-caused-withdrawal-from-battle", "card:neutral-valor"],
+      subject: "Valor",
+      topic: "withdrawal"
+    });
+  }
+
+  if (/\bcommandant\b/i.test(text) && /\brepel\b/i.test(text)
+      && /\b(first battle|first time)\b/i.test(text) && /\b(win|won)\b/i.test(text)) {
+    return result({
+      id: "commandant-command-repel",
+      answer: "Yes. The first time each turn you win a battle, you gain 1 Command even during the opponent's turn. That Command is available during the same Aftermath, so you may spend it on Repel after the opponent's normal retreat.",
+      sourceIds: ["rulebook:complete-rules-13", "rulebook:commandant", "rulebook:orders-2"],
+      subject: "Commandant",
+      topic: "Command and Repel"
+    });
+  }
+
+  if (/\b(active )?mission\b/i.test(text) && /\b(same turn|turn (?:i|it) (?:started|began)|began that turn)\b/i.test(text)
+      && /\b(complete|completion)\b/i.test(text)) {
+    return result({
+      id: "mission-no-same-turn-completion",
+      answer: "No. An Active Mission cannot complete during the turn it begins, even if you satisfy its requirement that turn. It may be completed during an Action Opportunity on a later turn if it remains satisfied.",
+      sourceIds: ["rulebook:starting-a-mission", "rulebook:completing-a-mission"],
+      subject: "Active Mission",
+      topic: "same-turn completion"
+    });
+  }
+
+  if (/\bsafe conduct\b/i.test(text) && /\bpolitical capital\b/i.test(text)) {
+    return result({
+      id: "safe-conduct-political-capital",
+      answer: "No. Safe Conduct replaces the refused-Terms loss with withdrawal, returns your staked Influence, and ends the battle without a winner or loser. Because you do not lose the battle or lose the Stake, Political Capital does not trigger.",
+      sourceIds: ["card:diplomats-safe-conduct", "rulebook:senator", "rulebook:refused-terms", "rulebook:influence"],
+      subject: "Political Capital",
+      topic: "Safe Conduct"
+    });
+  }
+
+  if (/\brousing speech\b/i.test(text) && /\b(face[- ]?up|turns? .* face[- ]?up|existing face[- ]?down asset)\b/i.test(text)) {
+    return result({
+      id: "rousing-speech-existing-asset",
+      answer: "No. Rousing Speech triggers when the opponent banks an Asset. Turning an already banked face-down Asset face up does not bank it again, so Rousing Speech does not trigger.",
+      sourceIds: ["card:neutral-rousing-speech", "rulebook:assets"],
+      subject: "Rousing Speech",
+      topic: "banking an Asset"
+    });
+  }
+
+  if (/\bfieldcraft\b/i.test(text) && /\b(changes? control|control of a territory|territory control)\b/i.test(text)) {
+    return result({
+      id: "fieldcraft-control-change",
+      answer: "No. Fieldcraft may ignore a printed Territory effect that would affect you, your movement, or your battle. It expressly does not alter Territory control, Occupation, or capture, so it cannot ignore an effect that changes control.",
+      sourceIds: ["rulebook:ranger", "rulebook:control"],
+      subject: "Fieldcraft",
+      topic: "Territory control"
+    });
+  }
+
   if (matches(text, /\b(how many cards.*start|draw to start|starting hand|opening hand|hand.*start)\b/i)) {
     return result({
       id: "setup-opening-hand",
