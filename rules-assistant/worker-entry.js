@@ -1,7 +1,11 @@
-import worker from "./smart-worker.js";
+import worker from "./worker-v061.js";
+import smartWorker from "./smart-worker.js";
+import { ADMIN_PAGE_WITH_INCREMENTAL_EXPORT } from "./admin-incremental-export-page.js";
 import { ADMIN_PAGE_WITH_RULES_INTELLIGENCE } from "./admin-intelligence-page.js";
 import { handleReviewExportCheckpoint } from "./review-export-checkpoint.js";
 import { handleReviewIntelligence } from "./review-intelligence.js";
+
+const ADMIN_PAGE = ADMIN_PAGE_WITH_RULES_INTELLIGENCE || ADMIN_PAGE_WITH_INCREMENTAL_EXPORT;
 
 export default {
   async fetch(request, env, context) {
@@ -23,12 +27,12 @@ export default {
 
     if (request.method === "GET" && ["/admin", "/admin/"].includes(url.pathname)) {
       const response = await worker.fetch(request, env, context);
-      return new Response(ADMIN_PAGE_WITH_RULES_INTELLIGENCE, {
+      return new Response(ADMIN_PAGE, {
         status: response.status,
         statusText: response.statusText,
         headers: response.headers
       });
     }
-    return worker.fetch(request, env, context);
+    return smartWorker.fetch(request, env, context);
   }
 };
