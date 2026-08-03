@@ -109,6 +109,10 @@ def validate(
             "export async function answerQuestion",
             "export async function verifyDraft",
             'const FALLBACK_MODEL = "gpt-5.6-terra"',
+            "DEFAULT_SOURCE_LIMIT = 8",
+            "DEFAULT_SOURCE_EXCERPT_LENGTH = 1000",
+            "prompt_cache_key",
+            'console.log("Rules model usage"',
         ],
     )
 
@@ -150,9 +154,11 @@ def validate(
             'main = "worker-entry.js"',
             'SITE_ORIGIN = "https://gauntlet.run"',
             'OPENAI_MODEL = "gpt-5.6-terra"',
-            'OPENAI_REASONING_EFFORT = "adaptive"',
-            'RULES_SEMANTIC_PLANNER = "on"',
-            'RULES_VERIFIER = "on"',
+            'OPENAI_REASONING_EFFORT = "low"',
+            'RULES_SEMANTIC_PLANNER = "off"',
+            'RULES_VERIFIER = "off"',
+            'RULES_SOURCE_LIMIT = "8"',
+            'RULES_SOURCE_EXCERPT_LENGTH = "1000"',
         ],
     )
 
@@ -211,9 +217,9 @@ def main() -> int:
 
     print(
         "Synchronized Rules Arbiter browser sources and validated the canonical "
-        "v0.6.1 worker, smart orchestration, adaptive model passes, version-aware "
-        "review pipeline, integrated entry, deployment configuration, and formal-"
-        "playtest linkage."
+        "v0.6.1 worker, cost-controlled live model pass, optional planning and "
+        "verification capabilities, version-aware review pipeline, integrated "
+        "entry, deployment configuration, and formal-playtest linkage."
     )
     return 0
 
