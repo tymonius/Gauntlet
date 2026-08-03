@@ -75,7 +75,7 @@
         leader: payload.leader
       });
       writeStorage(`${prefix}_host`, payload.hostKey);
-      window.location.assign(payload.joinUrl);
+      window.location.assign(payload.reviewUrl);
     } catch (error) {
       console.error(error);
       status.className = "form-status error";
@@ -125,7 +125,7 @@
     try {
       window.localStorage.setItem(key, String(value));
     } catch {
-      // The review key remains available in the returned URL for this navigation.
+      // The review URL supplies the creator key for the first navigation.
     }
   }
 })();
