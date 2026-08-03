@@ -24,27 +24,31 @@
   });
 
   let participant = null;
+  let session = null;
+  let notes = [];
   let panel = null;
   let form = null;
-  let notes = [];
+  let feedbackNotice = null;
   let refreshTimer = null;
   let participantTimer = null;
+  let refreshInFlight = false;
 
   document.addEventListener("DOMContentLoaded", init);
 
   function init() {
     installStyles();
-    installPanel();
+    installJournalPanel();
+    installFeedbackNotice();
     hideLegacyNoteControl();
-    if (retrospective) installRetrospectiveTreatment();
     bindEvents();
     restoreDraft();
     watchForParticipant();
-    window.addEventListener("online", () => void flushQueue());
-    window.addEventListener("focus", () => void refreshJournal());
+    observeAppRenders();
+    window.addEventListener("online", () => void refreshAll());
+    window.addEventListener("focus", () => void refreshAll());
   }
 
-  function installPanel() {
+  function installJournalPanel() {
     panel = document.createElement("section");
     panel.id = "playerJournalPanel";
     panel.className = "tracked-panel player-journal-panel";
@@ -93,11 +97,35 @@
     form = panel.querySelector("#playerJournalForm");
   }
 
+  function installFeedbackNotice() {
+    feedbackNotice = document.createElement("div");
+    feedbackNotice.id = "independentFeedbackNotice";
+    feedbackNotice.className = "independent-feedback-notice";
+    feedbackNotice.hidden = true;
+    feedbackNotice.setAttribute("role", "status");
+    feedbackNotice.setAttribute("aria-live", "polite");
+
+    const responseSection = document.getElementById("responseSection");
+    const joinedPanel = document.getElementById("joinedPanel");
+    if (responseSection) responseSection.insertAdjacentElement("beforebegin", feedbackNotice);
+    else if (joinedPanel) joinedPanel.insertAdjacentElement("afterend", feedbackNotice);
+    else document.getElementById("sessionApp")?.append(feedbackNotice);
+  }
+
+  function hideLegacyNoteControl() {
+    const legacy = document.getElementById("noteForm");
+    const legacyPanel = legacy?.closest(".note-form, .quick-note, form");
+    if (legacyPanel) legacyPanel.hidden = true;
+  }
+
   function bindEvents() {
     form?.addEventListener("submit", saveNote);
     form?.querySelectorAll("textarea, input, select").forEach((control) => {
       control.addEventListener("input", saveDraft);
       control.addEventListener("change", saveDraft);
+    });
+    document.getElementById("responseForm")?.addEventListener("submit", () => {
+      window.setTimeout(() => void refreshAll(), 500);
     });
   }
 
@@ -106,33 +134,80 @@
     participantTimer = window.setInterval(() => {
       const priorId = participant?.participantId;
       detectParticipant();
-      if (participant?.participantId && participant.participantId !== priorId) void refreshJournal();
-    }, 900);
+      if (participant?.participantId && participant.participantId !== priorId) void refreshAll();
+    }, 750);
   }
 
   function detectParticipant() {
     participant = readJsonStorage(participantKey);
     const available = Boolean(participant?.participantId && participant?.participantToken);
     if (panel) panel.hidden = !available;
-    if (available && !refreshTimer) {
-      void refreshJournal();
-      refreshTimer = window.setInterval(() => void refreshJournal(), 8000);
+    if (!available) {
+      session = null;
+      if (feedbackNotice) feedbackNotice.hidden = true;
+      return;
+    }
+    if (!refreshTimer) {
+      void refreshAll();
+      refreshTimer = window.setInterval(() => void refreshAll(), 4000);
     }
   }
 
-  async function refreshJournal() {
-    if (!participant?.participantId || !participant?.participantToken || document.hidden) return;
+  function observeAppRenders() {
+    const sessionApp = document.getElementById("sessionApp");
+    if (!sessionApp) return;
+    const observer = new MutationObserver(() => applyFeedbackAccess());
+    observer.observe(sessionApp, { subtree: true, attributes: true, attributeFilter: ["hidden"] });
+  }
+
+  async function refreshAll() {
+    if (refreshInFlight || !participant?.participantId || !participant?.participantToken || document.hidden) return;
+    refreshInFlight = true;
     setSyncState("Syncing…", "checking");
     try {
       await flushQueue(false);
-      const [notePayload, session] = await Promise.all([getNotes(), getSession()]);
+      const [notePayload, nextSession] = await Promise.all([getNotes(), getSession()]);
       notes = Array.isArray(notePayload.notes) ? notePayload.notes : [];
+      session = nextSession;
       renderTimeline();
+      applyFeedbackAccess();
       setFormDisabled(session.status !== "open");
       setSyncState(session.status === "open" ? "Saved" : "Journal closed", session.status === "open" ? "connected" : "closed");
     } catch (error) {
-      console.info("Playtest journal refresh skipped.", error);
+      console.info("Playtest companion refresh skipped.", error);
       setSyncState(navigator.onLine ? "Retrying…" : "Offline — drafts safe", "paused");
+    } finally {
+      refreshInFlight = false;
+    }
+  }
+
+  function applyFeedbackAccess() {
+    const responseSection = document.getElementById("responseSection");
+    if (!responseSection || !participant || !session) return;
+    const me = Array.isArray(session.players)
+      ? session.players.find((player) => player.participantId === participant.participantId)
+      : null;
+    if (!me) return;
+
+    const canRespond = session.status === "open" && !me.responseSubmitted;
+    const shouldHideResponse = !canRespond;
+    if (responseSection.hidden !== shouldHideResponse) responseSection.hidden = shouldHideResponse;
+
+    if (!feedbackNotice) return;
+    if (feedbackNotice.hidden) feedbackNotice.hidden = false;
+    if (me.responseSubmitted) {
+      feedbackNotice.className = "independent-feedback-notice success";
+      feedbackNotice.innerHTML = "<strong>Your feedback is saved.</strong> The other player may still join and submit separately later.";
+      return;
+    }
+
+    feedbackNotice.className = "independent-feedback-notice";
+    if (Number(session.playerCount || 0) < 2) {
+      feedbackNotice.innerHTML = "<strong>You do not need to wait for the other player.</strong> Submit your individual feedback below now. The second player can still scan the code and add their own response later.";
+    } else if (!session.resultSubmitted) {
+      feedbackNotice.innerHTML = "<strong>Individual feedback is independent.</strong> You may submit your questionnaire before the shared result is entered.";
+    } else {
+      feedbackNotice.innerHTML = "<strong>Complete your own response.</strong> Your opponent submits a separate questionnaire.";
     }
   }
 
@@ -179,50 +254,51 @@
         remaining.push(item);
       }
     }
-    writeJsonStorage(queueKey, remaining);
-    if (showStatus && !remaining.length) setFormStatus("Offline notes synchronized.", "success");
-    renderTimeline();
+    writeJsonStorage(queueKey, remaining.slice(-50));
+    if (showStatus && !remaining.length) setFormStatus("Offline notes synced.", "success");
   }
 
-  async function getNotes() {
-    const response = await fetch(`${API_ORIGIN}/api/tracked-games/${encodeURIComponent(code)}/notes`, {
-      method: "GET",
-      cache: "no-store",
-      headers: participantHeaders()
-    });
-    const payload = await response.json().catch(() => null);
-    if (!response.ok) throw new Error(payload?.error || `Journal service returned ${response.status}.`);
-    return payload;
-  }
-
-  async function postNote(note) {
-    const response = await fetch(`${API_ORIGIN}/api/tracked-games/${encodeURIComponent(code)}/notes`, {
-      method: "POST",
-      headers: { ...participantHeaders(), "content-type": "application/json" },
-      body: JSON.stringify({
-        participantId: participant.participantId,
-        participantToken: participant.participantToken,
-        ...note
-      })
-    });
-    const payload = await response.json().catch(() => null);
-    if (!response.ok) throw new Error(payload?.error || `Journal service returned ${response.status}.`);
-    return payload;
+  function queueNote(payload) {
+    const queue = readJsonStorage(queueKey) || [];
+    const next = Array.isArray(queue) ? [...queue, payload].slice(-50) : [payload];
+    writeJsonStorage(queueKey, next);
   }
 
   async function getSession() {
-    const response = await fetch(`${API_ORIGIN}/api/tracked-games/${encodeURIComponent(code)}`, {
+    return request(`/api/tracked-games/${encodeURIComponent(code)}`);
+  }
+
+  async function getNotes() {
+    return request(`/api/tracked-games/${encodeURIComponent(code)}/notes`, {
+      headers: participantHeaders()
+    });
+  }
+
+  async function postNote(payload) {
+    return request(`/api/tracked-games/${encodeURIComponent(code)}/notes`, {
+      method: "POST",
+      headers: { "content-type": "application/json", ...participantHeaders() },
+      body: JSON.stringify({
+        ...payload,
+        participantId: participant.participantId,
+        participantToken: participant.participantToken
+      })
+    });
+  }
+
+  async function request(path, options = {}) {
+    const response = await fetch(`${API_ORIGIN}${path}`, {
       cache: "no-store",
-      headers: { accept: "application/json" }
+      ...options,
+      headers: { accept: "application/json", ...(options.headers || {}) }
     });
     const payload = await response.json().catch(() => null);
-    if (!response.ok) throw new Error(payload?.error || `Tracked service returned ${response.status}.`);
+    if (!response.ok) throw new Error(payload?.error || `The playtest service returned ${response.status}.`);
     return payload;
   }
 
   function participantHeaders() {
     return {
-      accept: "application/json",
       "X-Participant-Id": participant.participantId,
       "X-Participant-Token": participant.participantToken
     };
@@ -231,33 +307,29 @@
   function renderTimeline() {
     const timeline = panel?.querySelector("#journalTimeline");
     if (!timeline) return;
-    const queue = readJsonStorage(queueKey) || [];
-    if (!notes.length && (!Array.isArray(queue) || !queue.length)) {
-      timeline.innerHTML = `<p class="journal-empty">No notes yet. Add one when something becomes worth remembering.</p>`;
+    if (!notes.length) {
+      timeline.innerHTML = "<p class=\"journal-empty\">No journal entries yet.</p>";
       return;
     }
-    const saved = notes.map((item) => noteMarkup(item, false)).join("");
-    const pending = Array.isArray(queue) ? queue.map((item) => noteMarkup({ ...item, source: retrospective ? "reconstructed" : "live" }, true)).join("") : "";
-    timeline.innerHTML = `${saved}${pending}`;
+    timeline.innerHTML = notes.map((item) => {
+      const context = [
+        Number.isInteger(item.round) ? `Round ${item.round}` : "",
+        Number.isInteger(item.elapsedMinutes) ? `${item.elapsedMinutes} min` : "",
+        item.source === "reconstructed" ? "Reconstructed" : ""
+      ].filter(Boolean).join(" · ");
+      return `<article class="journal-entry">
+        <div class="journal-entry-meta"><strong>${escapeHtml(CATEGORY_LABELS[item.category] || "Other")}</strong>${context ? `<span>${escapeHtml(context)}</span>` : ""}</div>
+        <p>${escapeHtml(item.note)}</p>
+      </article>`;
+    }).join("");
   }
 
   function renderQueuedState() {
-    renderTimeline();
-  }
-
-  function noteMarkup(item, pending) {
-    const details = [];
-    if (item.round !== null && item.round !== undefined && item.round !== "") details.push(`Round ${escapeHtml(item.round)}`);
-    if (item.elapsedMinutes !== null && item.elapsedMinutes !== undefined && item.elapsedMinutes !== "") details.push(`${escapeHtml(item.elapsedMinutes)} min`);
-    if (!details.length && item.createdAt) details.push(new Date(item.createdAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }));
-    return `<article class="journal-entry${pending ? " pending" : ""}">
-      <div class="journal-entry-meta">
-        <strong>${escapeHtml(CATEGORY_LABELS[item.category] || "Other")}</strong>
-        <span>${details.join(" · ") || (pending ? "Pending sync" : "Saved")}${item.source === "reconstructed" ? " · Reconstructed" : ""}</span>
-      </div>
-      <p>${escapeHtml(item.note)}</p>
-      ${pending ? '<span class="journal-pending-label">Pending sync</span>' : ""}
-    </article>`;
+    const timeline = panel?.querySelector("#journalTimeline");
+    const queue = readJsonStorage(queueKey) || [];
+    if (!timeline || !Array.isArray(queue) || !queue.length) return;
+    const queued = `<p class="journal-queued">${queue.length} note${queue.length === 1 ? "" : "s"} waiting to sync.</p>`;
+    timeline.insertAdjacentHTML("afterbegin", queued);
   }
 
   function saveDraft() {
@@ -273,141 +345,78 @@
   function restoreDraft() {
     const draft = readJsonStorage(draftKey);
     if (!draft || !panel) return;
-    if (draft.category && CATEGORY_LABELS[draft.category]) panel.querySelector("#journalCategory").value = draft.category;
+    if (CATEGORY_LABELS[draft.category]) panel.querySelector("#journalCategory").value = draft.category;
     panel.querySelector("#journalRound").value = draft.round || "";
     panel.querySelector("#journalElapsed").value = draft.elapsedMinutes || "";
     panel.querySelector("#journalText").value = draft.note || "";
   }
 
   function clearDraftAndForm() {
-    try { window.localStorage.removeItem(draftKey); } catch {}
-    panel.querySelector("#journalText").value = "";
-    panel.querySelector("#journalRound").value = "";
-    panel.querySelector("#journalElapsed").value = "";
-  }
-
-  function queueNote(note) {
-    const queue = readJsonStorage(queueKey);
-    const next = Array.isArray(queue) ? queue : [];
-    next.push(note);
-    writeJsonStorage(queueKey, next.slice(-50));
+    try { localStorage.removeItem(draftKey); } catch {}
+    form?.reset();
   }
 
   function setFormDisabled(disabled) {
-    form?.querySelectorAll("button, textarea, input, select").forEach((control) => {
-      control.disabled = Boolean(disabled);
-      control.setAttribute("aria-disabled", disabled ? "true" : "false");
+    form?.querySelectorAll("input, select, textarea, button").forEach((control) => {
+      control.disabled = disabled;
     });
   }
 
-  function setSyncState(text, state) {
-    const element = panel?.querySelector("#journalSyncState");
-    if (!element) return;
-    element.textContent = text;
-    element.dataset.state = state || "";
+  function setFormStatus(message, tone = "") {
+    const status = panel?.querySelector("#journalFormStatus");
+    if (!status) return;
+    status.textContent = message;
+    status.className = `form-status ${tone}`.trim();
   }
 
-  function setFormStatus(text, state = "") {
-    const element = panel?.querySelector("#journalFormStatus");
-    if (!element) return;
-    element.textContent = text;
-    element.dataset.state = state;
-  }
-
-  function hideLegacyNoteControl() {
-    const legacy = document.querySelector(".note-details");
-    if (legacy) legacy.hidden = true;
-  }
-
-  function installRetrospectiveTreatment() {
-    document.body.dataset.collectionMode = "retrospective";
-    const hero = document.querySelector(".tracked-hero");
-    if (hero && !document.getElementById("retrospectiveBanner")) {
-      const banner = document.createElement("div");
-      banner.id = "retrospectiveBanner";
-      banner.className = "retrospective-banner";
-      banner.innerHTML = `<strong>Retrospective record</strong><span>This game was entered after play. Results, questionnaires, and notes remain explicitly separated from live tracking.</span>`;
-      hero.insertAdjacentElement("afterend", banner);
-    }
-    const title = document.getElementById("tracked-title");
-    if (title) title.innerHTML = `Record this <span>playtest.</span>`;
-    const lede = document.querySelector(".hero-lede");
-    if (lede) lede.textContent = "Invite the other player, record the remembered result, reconstruct only specific moments you actually remember, and complete separate individual questionnaires.";
-    const start = document.getElementById("recordStart");
-    if (start) start.hidden = true;
-    const completed = document.getElementById("showCompletedResult");
-    const stopped = document.getElementById("showStoppedResult");
-    if (completed) completed.textContent = "Record completed game";
-    if (stopped) stopped.textContent = "Record stopped game";
-    const heading = document.querySelector("#playPanel .panel-heading h2");
-    if (heading) heading.textContent = "Record the remembered outcome.";
-    const copy = document.querySelector("#playPanel > p");
-    if (copy) copy.textContent = "The creator records the shared result once. Both players then complete their own questionnaires.";
-    const observer = new MutationObserver(() => {
-      const guidance = document.getElementById("lifecycleControlGuidance");
-      if (guidance && guidance.textContent !== "Record the remembered result when both players have joined.") {
-        guidance.textContent = "Record the remembered result when both players have joined.";
-      }
-      if (start) start.hidden = true;
-    });
-    observer.observe(document.getElementById("sessionApp") || document.body, { subtree: true, childList: true, characterData: true, attributes: true });
-  }
-
-  function installStyles() {
-    if (document.getElementById("playerJournalStyles")) return;
-    const style = document.createElement("style");
-    style.id = "playerJournalStyles";
-    style.textContent = `
-      .player-journal-panel{margin-top:1.5rem;border-top:5px solid #8f1f25}
-      .journal-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:1.5rem}
-      .journal-heading h2{margin:.2rem 0 .45rem}
-      .journal-heading p:last-child{max-width:68ch}
-      .journal-sync-state{flex:0 0 auto;border:1px solid #9a8267;padding:.35rem .55rem;font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;background:#f8f0e2}
-      .journal-sync-state[data-state="connected"]{border-color:#456c50;color:#31533a}
-      .journal-sync-state[data-state="paused"]{border-color:#9b7128;color:#765317}
-      .journal-form{display:grid;gap:.9rem;margin-top:1.1rem}
-      .journal-form label{display:grid;gap:.35rem;font-weight:700}
-      .journal-form textarea,.journal-form input,.journal-form select{width:100%;padding:.65rem .7rem;border:1px solid #8f775e;background:#fffdf8;color:#211d19;font:inherit}
-      .journal-fields{display:grid;grid-template-columns:1.3fr .65fr .8fr;gap:.75rem}
-      .journal-actions{display:flex;align-items:center;gap:.8rem;flex-wrap:wrap}
-      .journal-actions .form-status{margin:0;min-height:0}
-      .journal-actions .form-status[data-state="warning"]{color:#765317}
-      .journal-actions .form-status[data-state="success"]{color:#31533a}
-      .journal-privacy{margin-top:1rem;padding:.7rem .85rem;background:#eee3d1;border-left:3px solid #8f1f25;color:#4e4235;font-size:.9rem}
-      .journal-timeline{display:grid;gap:.65rem;margin-top:1rem}
-      .journal-entry{border:1px solid rgba(77,57,38,.24);background:#fffaf0;padding:.8rem .9rem}
-      .journal-entry.pending{border-style:dashed;opacity:.82}
-      .journal-entry-meta{display:flex;justify-content:space-between;gap:.75rem;font-size:.78rem;text-transform:uppercase;letter-spacing:.05em;color:#6a5947}
-      .journal-entry-meta strong{color:#8f1f25}
-      .journal-entry p{margin:.45rem 0 0;white-space:pre-wrap}
-      .journal-pending-label{display:inline-block;margin-top:.45rem;font-size:.72rem;font-weight:700;color:#765317}
-      .journal-empty{margin:.25rem 0;color:#6a5947;font-style:italic}
-      .retrospective-banner{width:min(1180px,calc(100% - 2rem));margin:-.5rem auto 1.5rem;padding:.8rem 1rem;background:#211d19;color:#f4ead7;border:1px solid #9c783c;display:flex;gap:.8rem;align-items:baseline;flex-wrap:wrap}
-      .retrospective-banner strong{color:#ddb973;text-transform:uppercase;letter-spacing:.07em;font-size:.8rem}
-      @media(max-width:720px){.journal-heading{display:grid}.journal-fields{grid-template-columns:1fr}.journal-entry-meta{display:grid;gap:.2rem}.retrospective-banner{margin-top:.5rem}}
-    `;
-    document.head.append(style);
-  }
-
-  function makeId() {
-    return typeof crypto?.randomUUID === "function"
-      ? crypto.randomUUID()
-      : `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+  function setSyncState(message, tone = "") {
+    const status = panel?.querySelector("#journalSyncState");
+    if (!status) return;
+    status.textContent = message;
+    status.className = `journal-sync-state ${tone}`.trim();
   }
 
   function readJsonStorage(key) {
-    try { return JSON.parse(window.localStorage.getItem(key) || "null"); }
+    try { return JSON.parse(localStorage.getItem(key) || "null"); }
     catch { return null; }
   }
 
   function writeJsonStorage(key, value) {
-    try { window.localStorage.setItem(key, JSON.stringify(value)); }
+    try { localStorage.setItem(key, JSON.stringify(value)); }
     catch {}
+  }
+
+  function makeId() {
+    return crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
   }
 
   function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>'"]/g, (character) => ({
       "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;"
     })[character]);
+  }
+
+  function installStyles() {
+    const style = document.createElement("style");
+    style.textContent = `
+      .player-journal-panel{margin-top:1rem}
+      .journal-heading{display:flex;justify-content:space-between;gap:1rem;align-items:flex-start}
+      .journal-heading h2{margin:.2rem 0 .5rem}
+      .journal-sync-state{font-size:.82rem;font-weight:700;white-space:nowrap}
+      .journal-fields{display:grid;grid-template-columns:1.4fr .7fr .8fr;gap:.75rem}
+      .journal-form textarea{width:100%}
+      .journal-actions{display:flex;gap:.75rem;align-items:center;margin-top:.75rem}
+      .journal-privacy{margin-top:1rem;padding:.75rem;border-left:3px solid currentColor;background:rgba(0,0,0,.04)}
+      .journal-timeline{display:grid;gap:.65rem;margin-top:1rem}
+      .journal-entry{padding:.75rem;border:1px solid rgba(0,0,0,.13);border-radius:.45rem;background:rgba(255,255,255,.45)}
+      .journal-entry p{margin:.35rem 0 0;white-space:pre-wrap}
+      .journal-entry-meta{display:flex;justify-content:space-between;gap:1rem;font-size:.82rem}
+      .journal-empty,.journal-queued{margin:.25rem 0;font-style:italic}
+      .independent-feedback-notice{margin:1rem 0;padding:1rem 1.1rem;border-left:4px solid #8f1f25;background:#f5ede5}
+      .independent-feedback-notice.success{border-left-color:#227044;background:#eaf3ed}
+      .optional{font-size:.78em;font-weight:400;opacity:.75}
+      @media(max-width:700px){.journal-fields{grid-template-columns:1fr}.journal-heading{display:block}.journal-sync-state{display:inline-block;margin-bottom:.5rem}}
+    `;
+    document.head.append(style);
   }
 })();
