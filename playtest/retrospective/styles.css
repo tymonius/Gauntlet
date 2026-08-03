@@ -1,0 +1,23 @@
+[hidden]{display:none!important}
+.retrospective-main{width:min(1180px,calc(100% - 2rem));margin:0 auto;padding:3rem 0 5rem}
+.retrospective-hero{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(280px,.65fr);gap:2rem;align-items:end;margin-bottom:2rem}
+.retrospective-hero h1{font-size:clamp(3rem,8vw,6.5rem);line-height:.88;margin:.35rem 0 1rem;max-width:9ch}
+.retrospective-hero h1 span{color:#8f1f25}
+.retrospective-hero .hero-lede{font-size:1.15rem;max-width:62ch}
+.retrospective-callout{background:#211d19;color:#f4ead7;border:1px solid #8d6a36;padding:1.35rem 1.5rem;box-shadow:0 12px 32px rgba(0,0,0,.16)}
+.retrospective-callout strong{display:block;color:#d9b878;margin-bottom:.35rem;text-transform:uppercase;letter-spacing:.08em;font-size:.78rem}
+.retrospective-layout{display:grid;grid-template-columns:minmax(0,.85fr) minmax(360px,1.15fr);gap:1.5rem;align-items:start}
+.retrospective-panel{background:#f4ead7;border:1px solid rgba(70,47,27,.24);box-shadow:0 14px 34px rgba(45,31,19,.1);padding:1.5rem}
+.retrospective-panel h2{margin:.2rem 0 .8rem;font-size:2rem}
+.retrospective-panel ol{padding-left:1.25rem;margin:1rem 0}
+.retrospective-panel li+li{margin-top:.6rem}
+.retrospective-form{display:grid;gap:1rem}
+.retrospective-form label{display:grid;gap:.38rem;font-weight:700}
+.retrospective-form input,.retrospective-form select{width:100%;min-height:3rem;padding:.65rem .75rem;border:1px solid #8f775e;background:#fffdf8;color:#211d19;font:inherit}
+.retrospective-form input:focus,.retrospective-form select:focus{outline:3px solid rgba(143,31,37,.18);border-color:#8f1f25}
+.two-field-grid{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+.saved-choice-note,.form-status{min-height:1.4rem;margin:0;color:#625342}
+.form-status.error{color:#8f1f25;font-weight:700}
+.retrospective-warning{border-left:4px solid #8f1f25;padding-left:1rem;color:#544638}
+.retrospective-actions{display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1.2rem}
+@media(max-width:780px){.retrospective-main{padding-top:2rem}.retrospective-hero,.retrospective-layout{grid-template-columns:1fr}.retrospective-hero h1{font-size:clamp(3.25rem,17vw,5rem)}.two-field-grid{grid-template-columns:1fr}}

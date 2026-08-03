@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-8YYYZJGGPE');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="description" content="Submit Gauntlet playtest results and individual feedback after a game that was not digitally tracked." />
+  <meta name="theme-color" content="#8f1f25" />
+  <title>Retrospective Gauntlet Playtest Feedback</title>
+  <link rel="preconnect" href="https://use.typekit.net" />
+  <link rel="preconnect" href="https://p.typekit.net" crossorigin />
+  <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
+  <link rel="stylesheet" href="../../site.css" />
+  <link rel="stylesheet" href="styles.css?v=20260802-1" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../../" aria-label="Gauntlet home">
+      <span class="brand-mark" aria-hidden="true">G</span>
+      <span>Gauntlet</span>
+    </a>
+    <nav aria-label="Playtest navigation">
+      <a href="../../start/">Start</a>
+      <a href="../tracked/">Track a game</a>
+      <a href="../../rulebook/">Rules</a>
+      <a href="../../deckbuilder/">Deckbuilder</a>
+    </nav>
+  </header>
+
+  <main class="retrospective-main">
+    <section class="retrospective-hero" aria-labelledby="retrospective-title">
+      <div>
+        <p class="eyebrow">The game already happened</p>
+        <h1 id="retrospective-title">Preserve the <span>feedback.</span></h1>
+        <p class="hero-lede">Create a retrospective game record, invite the other player, record the remembered result, and complete the same individual questionnaires used by tracked playtests.</p>
+      </div>
+      <aside class="retrospective-callout">
+        <strong>Marked separately</strong>
+        This record will be identified as retrospective. It will not pretend that live timing, Rules Arbiter activity, or reconstructed notes were captured during play.
+      </aside>
+    </section>
+
+    <section class="retrospective-layout">
+      <div class="retrospective-panel">
+        <p class="eyebrow">How it works</p>
+        <h2>Recover an untracked playtest.</h2>
+        <ol>
+          <li>Enter your faction, Leader, and the date the game was played.</li>
+          <li>Share the resulting join link with the other player.</li>
+          <li>Record the shared result from memory.</li>
+          <li>Each player submits their own private questionnaire.</li>
+        </ol>
+        <p class="retrospective-warning"><strong>Do not recreate live activity.</strong> Add only what the players actually remember, and use the journal’s reconstructed-note labels when recording specific moments afterward.</p>
+        <div class="retrospective-actions">
+          <a class="button secondary" href="../tracked/">Track a new game live</a>
+          <a class="button secondary" href="../">Open playtest resources</a>
+        </div>
+      </div>
+
+      <form id="retrospectiveForm" class="retrospective-panel retrospective-form">
+        <div>
+          <p class="eyebrow">Create retrospective record</p>
+          <h2>Which game are you recording?</h2>
+        </div>
+        <label>Your name
+          <input id="retrospectiveName" type="text" maxlength="80" autocomplete="name" required placeholder="Name your opponent will recognize" />
+        </label>
+        <label>Date played
+          <input id="playedOn" type="date" required />
+        </label>
+        <div class="two-field-grid">
+          <label>Faction
+            <select id="retrospectiveFaction" required></select>
+          </label>
+          <label>Leader
+            <select id="retrospectiveLeader" required disabled></select>
+          </label>
+        </div>
+        <p id="savedChoiceNote" class="saved-choice-note"></p>
+        <button class="button primary" type="submit">Create retrospective playtest</button>
+        <p id="formStatus" class="form-status" aria-live="polite"></p>
+      </form>
+    </section>
+  </main>
+
+  <footer>
+    <div><strong>Gauntlet</strong><p>Unpublished pre-release playtest project.</p></div>
+    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  </footer>
+
+  <script src="app.js?v=20260802-1" defer></script>
+</body>
+</html>

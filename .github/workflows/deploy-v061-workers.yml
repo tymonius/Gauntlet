@@ -116,5 +116,11 @@ jobs:
               raise SystemExit(f'Playtest data-integrity controls unavailable: {sessions}')
           if sessions.get('analysisExclusionSchema') != 'gauntlet-playtest-integrity-v1':
               raise SystemExit(f'Unexpected exclusion schema: {sessions}')
-          print('Verified production v0.6.1 playtest sessions, compiled analysis, and audited exclusions.')
+          if not sessions.get('playtestJournalSupported'):
+              raise SystemExit(f'Playtest journal unavailable: {sessions}')
+          if not sessions.get('retrospectiveFeedbackSupported'):
+              raise SystemExit(f'Retrospective feedback unavailable: {sessions}')
+          if not sessions.get('privatePlayerNotesSupported'):
+              raise SystemExit(f'Private player notes unavailable: {sessions}')
+          print('Verified production v0.6.1 playtest sessions, journals, retrospective feedback, compiled analysis, and audited exclusions.')
           PY

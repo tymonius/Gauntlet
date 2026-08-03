@@ -7,6 +7,7 @@ const app = read("playtest/analysis/app.js");
 const styles = read("playtest/analysis/styles.css");
 const worker = read("workers/playtest-sessions/src/analysis.js");
 const integrityWorker = read("workers/playtest-sessions/src/integrity.js");
+const journalWorker = read("workers/playtest-sessions/src/journal.js");
 const integrityPage = read("playtest/analysis/integrity/index.html");
 const integrityApp = read("playtest/analysis/integrity/app.js");
 const integrityStyles = read("playtest/analysis/integrity/styles.css");
@@ -101,10 +102,11 @@ describe("compiled tracked playtest analysis", () => {
     expect(integrityStyles).toContain("[hidden]{display:none!important}");
   });
 
-  it("uses the host visual language and deploys through the integrity wrapper", () => {
+  it("uses the host visual language and deploys through the complete wrapper chain", () => {
     expect(styles).toContain("--analysis-gold");
     expect(styles).toContain("--analysis-ink");
-    expect(wrangler).toContain('main = "src/integrity.js"');
+    expect(wrangler).toContain('main = "src/journal.js"');
+    expect(journalWorker).toContain('import integrityWorker from "./integrity.js"');
     expect(integrityWorker).toContain('import analysisWorker, { readTrackedAnalysis, summarizeGames } from "./analysis.js"');
     expect(worker).toContain('import trackedWorker from "./tracked.js"');
   });

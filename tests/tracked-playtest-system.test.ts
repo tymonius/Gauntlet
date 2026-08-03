@@ -9,6 +9,7 @@ const start = read("start/app.js");
 const worker = read("workers/playtest-sessions/src/tracked.js");
 const analysisWorker = read("workers/playtest-sessions/src/analysis.js");
 const integrityWorker = read("workers/playtest-sessions/src/integrity.js");
+const journalWorker = read("workers/playtest-sessions/src/journal.js");
 const migration = read("rules-assistant/migrations/0005_tracked_playtests.sql");
 const wrangler = read("workers/playtest-sessions/wrangler.toml");
 
@@ -73,8 +74,9 @@ describe("streamlined tracked playtests", () => {
     expect(app).toContain("downloadReviewCsv");
   });
 
-  it("deploys the tracked, analysis, and integrity wrappers while preserving public creation abuse control", () => {
-    expect(wrangler).toContain('main = "src/integrity.js"');
+  it("deploys the tracked, analysis, integrity, and journal wrappers while preserving public creation abuse control", () => {
+    expect(wrangler).toContain('main = "src/journal.js"');
+    expect(journalWorker).toContain('import integrityWorker from "./integrity.js"');
     expect(integrityWorker).toContain('import analysisWorker, { readTrackedAnalysis, summarizeGames } from "./analysis.js"');
     expect(analysisWorker).toContain('import trackedWorker from "./tracked.js"');
     expect(analysisWorker).toContain("compiledAnalysisSupported");
