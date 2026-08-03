@@ -71,7 +71,7 @@ class GauntletRulesAssistant {
           <button class="ga-rules-close" type="button" aria-label="Close rules assistant">×</button>
         </header>
         <div class="ga-rules-notice">
-          Answers use the canonical ${escapeHtml(CONFIG.version)} sources. Questions, answers, citations, ruling status, and optional feedback may be logged to improve the rules and this tool. When opened from a formal playtest session, the sheet serial and session identifier are included automatically. Printed rules and component text remain authoritative.
+          Answers use the canonical ${escapeHtml(CONFIG.version)} sources. When those rules do not decide a gameplay interaction, the Arbiter issues a clearly labeled provisional ruling for the rest of the current game and logs it for designer review. Questions, answers, citations, ruling status, and optional feedback may be logged to improve the rules and this tool. When opened from a formal playtest session, the sheet serial and session identifier are included automatically. Printed rules and component text remain authoritative over provisional rulings.
         </div>
         <div class="ga-rules-messages" aria-live="polite" aria-label="Rules conversation"></div>
         <div class="ga-rules-suggestions" aria-label="Suggested questions"></div>
@@ -131,7 +131,7 @@ class GauntletRulesAssistant {
     this.elements.messages.innerHTML = "";
     this.appendMessage({
       role: "assistant",
-      answer: "Ask me about the v0.6.1 rulebook, cards, Leaders, faction systems, Territories, Gambits, Tactics, battle timing, or victory conditions.",
+      answer: "Ask me about the v0.6.1 rulebook, cards, Leaders, faction systems, Territories, Gambits, Tactics, battle timing, or victory conditions. If the written rules leave a genuine gap, I will issue a provisional ruling so play can continue.",
       rulingStatus: "welcome",
       sources: []
     });
@@ -207,9 +207,13 @@ class GauntletRulesAssistant {
       const answer = await this.requestAnswer(question);
       loading.replaceWith(this.createMessageElement({ role: "assistant", ...answer }));
       this.history.push({ role: "user", content: question });
-      this.history.push({ role: "assistant", content: answer.answer });
+      this.history.push({
+        role: "assistant",
+        content: answer.answer,
+        rulingStatus: answer.rulingStatus || null
+      });
       this.history = this.history.slice(-8);
-      this.setStatus(answer.mode === "local" ? "Source lookup mode" : "AI ruling complete");
+      this.setStatus(formatCompletionStatus(answer));
     } catch (error) {
       console.error(error);
       loading.replaceWith(this.createMessageElement({
@@ -546,11 +550,23 @@ function createSessionId() {
   return `session_${Date.now()}_${Math.random().toString(36).slice(2, 12)}`;
 }
 
+function formatCompletionStatus(answer) {
+  if (answer?.mode === "local") return "Source lookup mode";
+  return {
+    provisional: "Provisional ruling issued",
+    out_of_scope: "Question outside gameplay rules",
+    explicit: "Explicit rule found",
+    inferred: "Rules interpretation complete"
+  }[answer?.rulingStatus] || "AI ruling complete";
+}
+
 function formatStatus(status) {
   return {
     explicit: "Explicit rule",
-    inferred: "Inferred ruling",
-    unresolved: "Unresolved",
+    inferred: "Rules interpretation",
+    provisional: "Provisional Arbiter Ruling",
+    out_of_scope: "Out of scope",
+    unresolved: "Unresolved source lookup",
     source_lookup: "Direct source lookup"
   }[status] || status;
 }
