@@ -134,9 +134,11 @@ function presentInterference(raw, topic) {
 }
 
 function splitLongAnswer(raw, rulingStatus = "") {
-  if (raw.length <= MAX_PRIMARY_LENGTH) return { answer: raw, details: "" };
-
   const sentences = raw.match(/[^.!?]+[.!?]+(?:[”'\"])?|[^.!?]+$/g)?.map(clean).filter(Boolean) || [raw];
+  if (sentences.length <= 2 && raw.length <= MAX_PRIMARY_LENGTH) {
+    return { answer: raw, details: "" };
+  }
+
   const primary = [];
   let length = 0;
   for (const sentence of sentences) {
@@ -147,17 +149,12 @@ function splitLongAnswer(raw, rulingStatus = "") {
   }
   if (!primary.length) primary.push(raw.slice(0, MAX_PRIMARY_LENGTH).trimEnd());
 
-  const used = primary.join(" ");
-  let remaining = raw.startsWith(used) ? raw.slice(used.length).trim() : sentences.slice(primary.length).join(" ");
-
   if (rulingStatus === "provisional") {
     const scope = sentences.find((sentence) => /rest of (this|the) (game|play session)/i.test(sentence));
-    if (scope && !used.includes(scope)) {
-      primary.push(scope);
-      remaining = sentences.filter((sentence) => !primary.includes(sentence)).join(" ");
-    }
+    if (scope && !primary.includes(scope)) primary.push(scope);
   }
 
+  const remaining = sentences.filter((sentence) => !primary.includes(sentence)).join(" ");
   return { answer: primary.join(" "), details: remaining };
 }
 
