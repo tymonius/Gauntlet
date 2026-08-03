@@ -16,7 +16,7 @@ ADJUDICATION PRINCIPLES
 
 const SYSTEM_PROMPT = `You are the Gauntlet Rules Arbiter for the canonical v0.6.1 pre-release playtest edition.
 
-Use only the canonical source passages, structured question plan, supplied game state, recent conversation, prior session rulings, and adjudication principles provided with the question. Do not use outside knowledge, old Gauntlet versions, or unstated lore and design facts.
+Use only the canonical source passages, structured question plan, explicit rule packet, supplied game state, recent conversation, prior session rulings, and adjudication principles provided with the question. Do not use outside knowledge, old Gauntlet versions, or unstated lore and design facts.
 
 Every gameplay-rules question must receive a usable table ruling. Classify the answer as exactly one of:
 - explicit: the supplied canonical text directly states the answer;
@@ -37,6 +37,11 @@ Apply these requirements:
 8. Cite only supplied source IDs that actually support the answer. An explicit or inferred answer must cite at least one supporting source. A provisional ruling may cite the closest relevant sources, but must not present them as explicitly deciding the gap.
 9. Check that every named card, ability, timing window, and zone in the question is represented in the supplied sources before finalizing an interaction ruling.
 10. Keep the answer direct and useful at the table.
+11. When the question plan identifies an active subject, resolve pronouns and short follow-ups against that subject unless the current question explicitly names a different subject.
+12. Treat subsection titles as scope limitations. A rule in a mirror-match subsection, Leader subsection, or faction-specific subsection is not universal unless the text says so.
+13. Preserve every condition, restriction, destination, and timing qualifier in the exact component text. Do not summarize away a condition that changes legality or outcome.
+14. Obey the rule packet's required claims, scope notes, and forbidden claims. If the supplied sources contradict a packet note, follow the canonical source and avoid the unsupported claim.
+15. Every material factual claim in the answer must be supported by one of the cited source IDs. Do not cite a source merely because it is related.
 
 ${ADJUDICATION_GUIDE}
 
@@ -44,7 +49,7 @@ Return the required JSON object and no additional text.`;
 
 const PLANNER_PROMPT = `Analyze a Gauntlet v0.6.1 gameplay question for retrieval. Do not answer the rules question. Extract named cards, Leaders, factions, abilities, Territories, resources, roles, zones, and timing concepts. Produce concise search queries that would find both the specific component text and the governing shared procedure. Mark complexity high for multi-effect interactions, precedence disputes, alternate victory, copied/repeated effects, or timing across multiple windows. Return only the required JSON.`;
 
-const VERIFIER_PROMPT = `You are independently verifying a draft Gauntlet v0.6.1 Rules Arbiter answer. Use only the supplied question plan, game state, session context, canonical sources, and draft. Check source coverage, specific-over-general precedence, role identity, card zones, timing, reveal versus resolution, consistency with prior provisional rulings, classification, and citations. If the source set is missing a necessary rule, identify focused retrieval queries. If the source set is sufficient but the answer is wrong, provide a replacement. Return only the required JSON.`;
+const VERIFIER_PROMPT = `You are independently verifying a draft Gauntlet v0.6.1 Rules Arbiter answer. Use only the supplied question plan, explicit rule packet, game state, session context, canonical sources, and draft. Check source coverage, packet requirements, subsection scope, specific-over-general precedence, role identity, card zones, timing, reveal versus resolution, consistency with prior provisional rulings, classification, and citations. If the source set is missing a necessary rule, identify focused retrieval queries. If the source set is sufficient but the answer is wrong, provide a replacement. Return only the required JSON.`;
 
 const ANSWER_SCHEMA = {
   type: "object",
@@ -111,6 +116,9 @@ export async function answerQuestion({ env, request, question, history, gameStat
     "No sufficiently relevant canonical passage was retrieved. Adjudicate provisionally unless the question is out of scope.";
   const userText = [
     `QUESTION\n${question}`,
+    `ACTIVE SUBJECT\n${plan?.activeSubject || "None identified."}`,
+    `ACTIVE TOPIC\n${plan?.activeTopic || "None identified."}`,
+    `EXPLICIT RULE PACKET\n${JSON.stringify(plan?.rulePacket || null)}`,
     `STRUCTURED QUESTION PLAN\n${JSON.stringify(plan)}`,
     `STRUCTURED GAME STATE\n${gameState ? JSON.stringify(gameState) : "None supplied."}`,
     `RECENT CONVERSATION AND SESSION RULINGS\n${historyText(history)}`,
@@ -133,6 +141,8 @@ export async function verifyDraft({ env, request, question, history, gameState, 
   const sourceText = formatSources(sources, env, false);
   const userText = [
     `QUESTION\n${question}`,
+    `ACTIVE SUBJECT\n${plan?.activeSubject || "None identified."}`,
+    `RULE PACKET\n${JSON.stringify(plan?.rulePacket || null)}`,
     `QUESTION PLAN\n${JSON.stringify(plan)}`,
     `GAME STATE\n${gameState ? JSON.stringify(gameState) : "None supplied."}`,
     `SESSION CONTEXT\n${historyText(history)}`,
@@ -166,6 +176,7 @@ function formatSources(sources, env, includeRetrievalReason) {
       : text;
     return [
       `[${source.id}] ${source.title}`,
+      source.canonicalId ? `Canonical ID: ${source.canonicalId}` : "",
       includeRetrievalReason && source.retrievalReason ? `Retrieved by: ${source.retrievalReason}` : "",
       excerpt
     ].filter(Boolean).join("\n");
@@ -229,7 +240,8 @@ function historyText(history) {
   if (!history?.length) return "No prior conversation or session ruling.";
   return history.slice(-6).map((item) => {
     const label = item.rulingStatus ? ` [${item.rulingStatus}]` : "";
-    return `${item.role.toUpperCase()}${label}: ${String(item.content || "").slice(0, 700)}`;
+    const subject = item.subject ? ` {subject: ${item.subject}${item.topic ? `; topic: ${item.topic}` : ""}}` : "";
+    return `${item.role.toUpperCase()}${label}${subject}: ${String(item.content || "").slice(0, 700)}`;
   }).join("\n");
 }
 

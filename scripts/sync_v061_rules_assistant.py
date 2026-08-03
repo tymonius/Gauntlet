@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 """Synchronize and validate the governing v0.6.1 Rules Arbiter sources.
 
-The deployed v0.6.1 service runs through the integrated administrative entry,
-which delegates live rulings to the smart orchestration layer while retaining
-the canonical v0.6.1 worker for shared helpers and administrative routes. This
-script updates browser-facing version labels and validates that complete chain.
+The deployed service runs through the integrated administrative entry. Live
+rulings now use deterministic canonical answers first, explicit rule packets
+for remaining interactions, and at most one model answer pass by default.
 """
 
 from __future__ import annotations
@@ -17,6 +16,8 @@ GOVERNING_WORKER = ROOT / "rules-assistant" / "worker-v061.js"
 SMART_WORKER = ROOT / "rules-assistant" / "smart-worker.js"
 RULES_INTELLIGENCE = ROOT / "rules-assistant" / "rules-intelligence.js"
 RULES_OPENAI = ROOT / "rules-assistant" / "rules-openai.js"
+RULES_PACKETS = ROOT / "rules-assistant" / "rules-packets.js"
+RULES_DETERMINISTIC = ROOT / "rules-assistant" / "rules-deterministic.js"
 REVIEW_INTELLIGENCE = ROOT / "rules-assistant" / "review-intelligence.js"
 WORKER_ENTRY = ROOT / "rules-assistant" / "worker-entry.js"
 WRANGLER = ROOT / "rules-assistant" / "wrangler.toml"
@@ -42,6 +43,8 @@ def validate(
     smart_worker: str,
     rules_intelligence: str,
     rules_openai: str,
+    rules_packets: str,
+    rules_deterministic: str,
     review_intelligence: str,
     worker_entry: str,
     wrangler: str,
@@ -74,16 +77,18 @@ def validate(
         [
             'import baseWorker, {',
             'from "./worker-v061.js"',
-            "analyzeQuestionLocally",
-            "retrieveIntelligentRules",
-            "chooseReasoningEffort",
-            "planQuestion",
-            "verifyDraft",
-            "verification.missing_queries",
+            'from "./rules-packets.js"',
+            'from "./rules-deterministic.js"',
+            "resolveDeterministicRuling",
+            "buildRulePacket",
+            "prioritizeRulePacketSources",
+            'mode: "retrieval_only"',
+            'executionPath: "deterministic"',
             "persistSmartInteraction",
-            "structuredQuestionPlanning: true",
-            "relationshipAwareRetrieval: true",
-            "independentVerification: true",
+            "deterministicRuleAnswers: true",
+            "explicitRulePackets: true",
+            "structuredSubjectContinuity: true",
+            "oneModelCallDefault",
         ],
     )
 
@@ -111,8 +116,42 @@ def validate(
             'const FALLBACK_MODEL = "gpt-5.6-terra"',
             "DEFAULT_SOURCE_LIMIT = 8",
             "DEFAULT_SOURCE_EXCERPT_LENGTH = 1000",
+            "ACTIVE SUBJECT",
+            "EXPLICIT RULE PACKET",
             "prompt_cache_key",
             'console.log("Rules model usage"',
+        ],
+    )
+
+    require_markers(
+        errors,
+        "Rules packet layer",
+        rules_packets,
+        [
+            "PACKET_DEFINITIONS",
+            "export function resolveActiveContext",
+            "export function buildRulePacket",
+            "export function canonicalSourcesForIds",
+            "export function prioritizeRulePacketSources",
+            "Intelligence mirrors is a specialized subsection",
+            "Revision is permitted after the opponent makes a replacement",
+        ],
+    )
+
+    require_markers(
+        errors,
+        "Deterministic Rules Arbiter layer",
+        rules_deterministic,
+        [
+            "export function resolveDeterministicRuling",
+            "setup-opening-hand",
+            "territory-capture",
+            "surveillance-overview",
+            "peace-treaty-timing",
+            "good-faith",
+            "shock-and-awe",
+            "impossible-choice-provisional",
+            "export function materializeDeterministicSources",
         ],
     )
 
@@ -189,6 +228,8 @@ def main() -> int:
         smart_worker = SMART_WORKER.read_text(encoding="utf-8")
         rules_intelligence = RULES_INTELLIGENCE.read_text(encoding="utf-8")
         rules_openai = RULES_OPENAI.read_text(encoding="utf-8")
+        rules_packets = RULES_PACKETS.read_text(encoding="utf-8")
+        rules_deterministic = RULES_DETERMINISTIC.read_text(encoding="utf-8")
         review_intelligence = REVIEW_INTELLIGENCE.read_text(encoding="utf-8")
         worker_entry = WORKER_ENTRY.read_text(encoding="utf-8")
         wrangler = WRANGLER.read_text(encoding="utf-8")
@@ -199,6 +240,8 @@ def main() -> int:
             smart_worker,
             rules_intelligence,
             rules_openai,
+            rules_packets,
+            rules_deterministic,
             review_intelligence,
             worker_entry,
             wrangler,
@@ -217,9 +260,9 @@ def main() -> int:
 
     print(
         "Synchronized Rules Arbiter browser sources and validated the canonical "
-        "v0.6.1 worker, cost-controlled live model pass, optional planning and "
-        "verification capabilities, version-aware review pipeline, integrated "
-        "entry, deployment configuration, and formal-playtest linkage."
+        "v0.6.1 worker, deterministic answers, explicit rule packets, structured "
+        "subject continuity, cost-controlled model fallback, version-aware review "
+        "pipeline, integrated entry, and formal-playtest linkage."
     )
     return 0
 

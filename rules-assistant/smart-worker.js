@@ -1,7 +1,6 @@
 import baseWorker, {
   buildRetrievalQueries,
   deriveConfidence,
-  mergeConversationHistory,
   normalizeRulingStatus,
   sanitizePlaytestContext,
   sanitizeSessionId
@@ -25,6 +24,14 @@ import {
   buildScopeRecoveryRuling,
   isGameplayQuestionPlan
 } from "./rules-status.js";
+import {
+  buildRulePacket,
+  prioritizeRulePacketSources
+} from "./rules-packets.js";
+import {
+  materializeDeterministicSources,
+  resolveDeterministicRuling
+} from "./rules-deterministic.js";
 
 const RULES_VERSION = "v0.6.1";
 const FALLBACK_MODEL = "gpt-5.6-terra";
@@ -42,13 +49,18 @@ export default {
         const payload = await response.clone().json();
         return new Response(JSON.stringify({
           ...payload,
-          structuredQuestionPlanning: true,
+          deterministicRuleAnswers: true,
+          explicitRulePackets: true,
+          structuredSubjectContinuity: true,
           relationshipAwareRetrieval: true,
-          adaptiveReasoning: true,
-          independentVerification: true,
+          structuredQuestionPlanning: true,
+          semanticPlanningEnabled: isFeatureEnabled(env.RULES_SEMANTIC_PLANNER),
+          independentVerificationEnabled: isFeatureEnabled(env.RULES_VERIFIER),
+          oneModelCallDefault: !isFeatureEnabled(env.RULES_SEMANTIC_PLANNER) && !isFeatureEnabled(env.RULES_VERIFIER),
           reviewDiagnostics: Boolean(env.DB),
           structuredGameStateSupported: true,
-          reviewBundleSchema: "gauntlet.rules-review-bundle.v2"
+          reviewBundleSchema: "gauntlet.rules-review-bundle.v2",
+          experimental: true
         }), {
           status: response.status,
           statusText: response.statusText,
@@ -102,7 +114,7 @@ export default {
         sessionId,
         playtestSessionId: playtestContext.playtestSessionId
       });
-      const history = mergeConversationHistory(storedHistory, suppliedHistory);
+      const history = mergeSmartHistory(storedHistory, suppliedHistory);
       const localPlan = analyzeQuestionLocally(corpus, question, history, gameState);
       let plan = enrichPlanFromEntityDocuments(corpus, localPlan);
 
@@ -115,13 +127,55 @@ export default {
         }
       }
 
+      const packet = buildRulePacket(corpus, { question, history, plan });
+      plan = {
+        ...plan,
+        activeSubject: packet.subject || null,
+        activeTopic: packet.topic || null,
+        rulePacket: {
+          id: packet.id,
+          sourceIds: packet.sourceIds,
+          scopeNotes: packet.scopeNotes,
+          requiredClaims: packet.requiredClaims,
+          forbiddenClaims: packet.forbiddenClaims
+        }
+      };
+
+      const deterministic = resolveDeterministicRuling(corpus, {
+        question,
+        history,
+        gameState,
+        plan,
+        packet
+      });
+      if (deterministic) {
+        return handleDeterministicAnswer({
+          request,
+          env,
+          allowedOrigin,
+          corpus,
+          sessionId,
+          playtestContext,
+          question,
+          gameState,
+          plan,
+          packet,
+          deterministic
+        });
+      }
+
       const baseQueries = buildRetrievalQueries(question, history);
       let retrieval = retrieveIntelligentRules(corpus, question, history, plan, {
         baseQueries,
-        limit: 14,
-        excerptLength: 1500
+        limit: 10,
+        excerptLength: 1200
       });
-      let reasoningEffort = chooseReasoningEffort(plan, env.OPENAI_REASONING_EFFORT || "adaptive");
+      retrieval = prioritizeRulePacketSources(retrieval, corpus, packet, {
+        limit: 10,
+        excerptLength: 1200
+      });
+
+      const reasoningEffort = chooseReasoningEffort(plan, env.OPENAI_REASONING_EFFORT || "low");
       let draft = await answerQuestion({
         env,
         request,
@@ -133,39 +187,8 @@ export default {
         reasoningEffort
       });
       let verification = null;
-      let retryCount = 0;
       let draftSources = selectUsedSources(retrieval.sources, draft.source_ids);
       let draftStatus = normalizeRulingStatus(draft.ruling_status, draftSources.length);
-
-      if (draftStatus === "out_of_scope" && isGameplayQuestionPlan(plan)) {
-        retryCount = 1;
-        reasoningEffort = "high";
-        draft = await answerQuestion({
-          env,
-          request,
-          question,
-          history,
-          gameState,
-          plan,
-          sources: retrieval.sources,
-          reasoningEffort,
-          verifierIssues: [
-            "This question describes an in-game card or rules interaction and is not out of scope.",
-            "If the supplied canonical text does not decide it, make a concrete provisional table ruling instead of declining to rule."
-          ]
-        });
-        draftSources = selectUsedSources(retrieval.sources, draft.source_ids);
-        draftStatus = normalizeRulingStatus(draft.ruling_status, draftSources.length);
-        if (draftStatus === "out_of_scope") {
-          draft = {
-            answer: buildScopeRecoveryRuling(question),
-            ruling_status: "provisional",
-            source_ids: retrieval.sources.slice(0, 3).map((source) => source.id)
-          };
-          draftSources = selectUsedSources(retrieval.sources, draft.source_ids);
-          draftStatus = "provisional";
-        }
-      }
 
       if (shouldVerifyAnswer(plan, draftStatus, draftSources.length, env)) {
         try {
@@ -179,41 +202,6 @@ export default {
             sources: retrieval.sources,
             draft
           });
-
-          if (!verification.valid && verification.missing_queries.length) {
-            retryCount = Math.max(retryCount, 1);
-            retrieval = retrieveIntelligentRules(corpus, question, history, plan, {
-              baseQueries,
-              additionalQueries: verification.missing_queries,
-              limit: 16,
-              excerptLength: 1600
-            });
-            reasoningEffort = "high";
-            draft = await answerQuestion({
-              env,
-              request,
-              question,
-              history,
-              gameState,
-              plan,
-              sources: retrieval.sources,
-              reasoningEffort,
-              verifierIssues: verification.issues
-            });
-            draftSources = selectUsedSources(retrieval.sources, draft.source_ids);
-            draftStatus = normalizeRulingStatus(draft.ruling_status, draftSources.length);
-            verification = await verifyDraft({
-              env,
-              request,
-              question,
-              history,
-              gameState,
-              plan,
-              sources: retrieval.sources,
-              draft
-            });
-          }
-
           if (!verification.valid && verification.replacement_status !== "none" && verification.replacement_answer) {
             draft = {
               answer: verification.replacement_answer,
@@ -258,7 +246,10 @@ export default {
         confidence,
         sources: usedSources,
         version: corpus.version || RULES_VERSION,
-        rulingScope: rulingStatus === "provisional" ? "play_session" : null
+        rulingScope: rulingStatus === "provisional" ? "play_session" : null,
+        subject: packet.subject || null,
+        topic: packet.topic || null,
+        executionPath: "model"
       };
 
       result.interactionId = await persistSmartInteraction(env, {
@@ -275,17 +266,10 @@ export default {
         diagnostics: {
           questionPlan: plan,
           retrievalQueries: retrieval.queries,
-          candidateSources: retrieval.sources.map((source) => ({
-            id: source.id,
-            title: source.title,
-            sourcePath: source.sourcePath,
-            excerpt: source.excerpt,
-            retrievalReason: source.retrievalReason,
-            retrievalScore: source.retrievalScore
-          })),
+          candidateSources: retrieval.sources.map(toDiagnosticSource),
           reasoningEffort,
           verification,
-          retryCount,
+          retryCount: 0,
           gameState,
           corpusHash: corpusSnapshot.corpusHash
         }
@@ -298,6 +282,74 @@ export default {
     }
   }
 };
+
+async function handleDeterministicAnswer({
+  env,
+  allowedOrigin,
+  corpus,
+  sessionId,
+  playtestContext,
+  question,
+  gameState,
+  plan,
+  packet,
+  deterministic
+}) {
+  const sources = materializeDeterministicSources(corpus, deterministic);
+  const corpusSnapshot = await getCorpusSnapshot(corpus);
+  const result = {
+    answer: deterministic.answer,
+    rulingStatus: deterministic.rulingStatus,
+    confidence: deterministic.confidence,
+    sources,
+    version: corpus.version || RULES_VERSION,
+    rulingScope: deterministic.rulingStatus === "provisional" ? "play_session" : null,
+    subject: deterministic.subject || packet.subject || null,
+    topic: deterministic.topic || packet.topic || null,
+    responseType: deterministic.responseType,
+    executionPath: "deterministic"
+  };
+  result.interactionId = await persistSmartInteraction(env, {
+    sessionId,
+    ...playtestContext,
+    question,
+    answer: result.answer,
+    gameVersion: result.version,
+    rulingStatus: result.rulingStatus,
+    confidence: result.confidence,
+    mode: "retrieval_only",
+    model: null,
+    sources,
+    diagnostics: {
+      questionPlan: {
+        ...plan,
+        activeSubject: result.subject,
+        activeTopic: result.topic,
+        deterministicCaseId: deterministic.id,
+        executionPath: "deterministic"
+      },
+      retrievalQueries: [],
+      candidateSources: sources.map(toDiagnosticSource),
+      reasoningEffort: "low",
+      verification: null,
+      retryCount: 0,
+      gameState,
+      corpusHash: corpusSnapshot.corpusHash
+    }
+  });
+  return jsonResponse(result, 200, allowedOrigin);
+}
+
+function toDiagnosticSource(source) {
+  return {
+    id: source.canonicalId || source.id,
+    title: source.title,
+    sourcePath: source.sourcePath,
+    excerpt: source.excerpt,
+    retrievalReason: source.retrievalReason,
+    retrievalScore: source.retrievalScore
+  };
+}
 
 async function getCorpus(env) {
   if (!corpusPromise) {
@@ -324,7 +376,13 @@ function selectUsedSources(sources, sourceIds) {
   return sources
     .filter((source) => requested.has(source.id))
     .slice(0, 8)
-    .map(({ id, title, sourcePath, sourceUrl, excerpt }) => ({ id, title, sourcePath, sourceUrl, excerpt }));
+    .map(({ id, canonicalId, title, sourcePath, sourceUrl, excerpt }) => ({
+      id: canonicalId || id,
+      title,
+      sourcePath,
+      sourceUrl,
+      excerpt
+    }));
 }
 
 function ensureProvisionalAnswer(answer) {
@@ -348,8 +406,26 @@ function sanitizeHistory(history) {
   return history.slice(-12).map((item) => ({
     role: item?.role === "assistant" ? "assistant" : "user",
     content: String(item?.content || "").trim().slice(0, 1200),
-    rulingStatus: item?.rulingStatus ? String(item.rulingStatus).trim().slice(0, 40) : null
+    rulingStatus: item?.rulingStatus ? String(item.rulingStatus).trim().slice(0, 40) : null,
+    subject: item?.subject ? String(item.subject).trim().slice(0, 160) : null,
+    topic: item?.topic ? String(item.topic).trim().slice(0, 160) : null
   })).filter((item) => item.content);
+}
+
+function mergeSmartHistory(storedHistory, suppliedHistory) {
+  const merged = [];
+  const seen = new Set();
+  for (const item of [...sanitizeHistory(storedHistory), ...sanitizeHistory(suppliedHistory)]) {
+    const key = `${item.role}\u0000${item.content}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    merged.push(item);
+  }
+  return merged.slice(-12);
+}
+
+function isFeatureEnabled(value) {
+  return String(value || "off").toLowerCase() === "on";
 }
 
 function getAllowedOrigin(request, env) {
