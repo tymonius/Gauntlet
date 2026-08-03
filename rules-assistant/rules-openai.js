@@ -1,4 +1,6 @@
 const FALLBACK_MODEL = "gpt-5.6-terra";
+const DEFAULT_SOURCE_LIMIT = 8;
+const DEFAULT_SOURCE_EXCERPT_LENGTH = 1000;
 
 const ADJUDICATION_GUIDE = `
 ADJUDICATION PRINCIPLES
@@ -100,19 +102,13 @@ export async function planQuestion({ env, request, question, history, gameState 
     schema: PLANNER_SCHEMA,
     schemaName: "gauntlet_rules_retrieval_plan",
     reasoningEffort: "low",
-    maxOutputTokens: 650
+    maxOutputTokens: 420
   });
 }
 
 export async function answerQuestion({ env, request, question, history, gameState, plan, sources, reasoningEffort, verifierIssues = [] }) {
-  const sourceText = sources.length
-    ? sources.map((source) => [
-      `[${source.id}] ${source.title}`,
-      `Path: ${source.sourcePath}`,
-      `Retrieved by: ${source.retrievalReason || "search"}`,
-      source.body
-    ].join("\n")).join("\n\n---\n\n")
-    : "No sufficiently relevant canonical passage was retrieved. Adjudicate provisionally unless the question is out of scope.";
+  const sourceText = formatSources(sources, env, true) ||
+    "No sufficiently relevant canonical passage was retrieved. Adjudicate provisionally unless the question is out of scope.";
   const userText = [
     `QUESTION\n${question}`,
     `STRUCTURED QUESTION PLAN\n${JSON.stringify(plan)}`,
@@ -129,16 +125,12 @@ export async function answerQuestion({ env, request, question, history, gameStat
     schema: ANSWER_SCHEMA,
     schemaName: "gauntlet_rules_answer",
     reasoningEffort,
-    maxOutputTokens: 1100
+    maxOutputTokens: 700
   });
 }
 
 export async function verifyDraft({ env, request, question, history, gameState, plan, sources, draft }) {
-  const sourceText = sources.map((source) => [
-    `[${source.id}] ${source.title}`,
-    `Path: ${source.sourcePath}`,
-    source.body
-  ].join("\n")).join("\n\n---\n\n");
+  const sourceText = formatSources(sources, env, false);
   const userText = [
     `QUESTION\n${question}`,
     `QUESTION PLAN\n${JSON.stringify(plan)}`,
@@ -155,11 +147,33 @@ export async function verifyDraft({ env, request, question, history, gameState, 
     schema: VERIFIER_SCHEMA,
     schemaName: "gauntlet_rules_verification",
     reasoningEffort: "low",
-    maxOutputTokens: 900
+    maxOutputTokens: 550
   });
 }
 
+function formatSources(sources, env, includeRetrievalReason) {
+  const limit = boundedInteger(env?.RULES_SOURCE_LIMIT, DEFAULT_SOURCE_LIMIT, 4, 12);
+  const excerptLength = boundedInteger(
+    env?.RULES_SOURCE_EXCERPT_LENGTH,
+    DEFAULT_SOURCE_EXCERPT_LENGTH,
+    500,
+    1600
+  );
+  return (sources || []).slice(0, limit).map((source) => {
+    const text = String(source.excerpt || source.body || "").trim();
+    const excerpt = text.length > excerptLength
+      ? `${text.slice(0, excerptLength - 1).trimEnd()}…`
+      : text;
+    return [
+      `[${source.id}] ${source.title}`,
+      includeRetrievalReason && source.retrievalReason ? `Retrieved by: ${source.retrievalReason}` : "",
+      excerpt
+    ].filter(Boolean).join("\n");
+  }).join("\n\n---\n\n");
+}
+
 async function callStructuredModel({ env, request, systemPrompt, userText, schema, schemaName, reasoningEffort, maxOutputTokens }) {
+  const traceId = request.headers.get("CF-Ray") || crypto.randomUUID();
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",
     headers: {
@@ -172,6 +186,7 @@ async function callStructuredModel({ env, request, systemPrompt, userText, schem
       reasoning: { effort: reasoningEffort },
       max_output_tokens: maxOutputTokens,
       safety_identifier: await makeSafetyIdentifier(request, env),
+      prompt_cache_key: `gauntlet_rules_v061_${schemaName}`,
       input: [
         { role: "system", content: [{ type: "input_text", text: systemPrompt }] },
         { role: "user", content: [{ type: "input_text", text: userText }] }
@@ -187,21 +202,41 @@ async function callStructuredModel({ env, request, systemPrompt, userText, schem
     throw new Error(`OpenAI request failed (${response.status}): ${errorBody.slice(0, 500)}`);
   }
   const payload = await response.json();
+  const usage = normalizeUsage(payload.usage);
+  console.log("Rules model usage", JSON.stringify({ traceId, stage: schemaName, reasoningEffort, ...usage }));
   const outputText = extractOutputText(payload);
   if (!outputText) throw new Error("OpenAI returned no output text.");
   try {
-    return JSON.parse(outputText);
+    const parsed = JSON.parse(outputText);
+    Object.defineProperty(parsed, "__usage", { value: usage, enumerable: false });
+    return parsed;
   } catch {
     throw new Error("OpenAI returned invalid structured output.");
   }
 }
 
+function normalizeUsage(usage) {
+  return {
+    inputTokens: Number(usage?.input_tokens || 0),
+    cachedInputTokens: Number(usage?.input_tokens_details?.cached_tokens || 0),
+    outputTokens: Number(usage?.output_tokens || 0),
+    reasoningTokens: Number(usage?.output_tokens_details?.reasoning_tokens || 0),
+    totalTokens: Number(usage?.total_tokens || 0)
+  };
+}
+
 function historyText(history) {
   if (!history?.length) return "No prior conversation or session ruling.";
-  return history.map((item) => {
+  return history.slice(-6).map((item) => {
     const label = item.rulingStatus ? ` [${item.rulingStatus}]` : "";
-    return `${item.role.toUpperCase()}${label}: ${item.content}`;
+    return `${item.role.toUpperCase()}${label}: ${String(item.content || "").slice(0, 700)}`;
   }).join("\n");
+}
+
+function boundedInteger(value, fallback, minimum, maximum) {
+  const parsed = Number.parseInt(String(value ?? ""), 10);
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.max(minimum, Math.min(maximum, parsed));
 }
 
 async function makeSafetyIdentifier(request, env) {
