@@ -80,7 +80,9 @@ jobs:
           await page.fill('#durationMinutes', '75');
           await page.fill('#rounds', '8');
           await page.fill('#factionInterest', 'Negotiation and concessions interested me.');
-          for (const select of await page.locator('#ratingGrid select').all()) await select.selectOption('4');
+          for (const card of await page.locator('#ratingGrid .rating-card').all()) {
+            await card.locator('.rating-option').nth(3).click();
+          }
           await page.selectOption('#playAgain', 'yes');
           await page.fill('#strongestMoment', 'A late Proposal changed the map.');
           await page.fill('#confusingPoint', 'We checked the timing of a concession.');
