@@ -2,7 +2,9 @@ import { expect, test } from "vitest";
 import {
   buildScopeRecoveryRuling,
   isGameplayQuestionPlan,
+  normalizeCurrentAnswerMode,
   normalizeCurrentRulingStatus,
+  toLegacyAnswerMode,
   toLegacyRulingStatus
 } from "./rules-status.js";
 
@@ -21,6 +23,21 @@ test("preserves every current player-facing ruling status", () => {
     expect(normalizeCurrentRulingStatus(status)).toBe(status);
   }
   expect(normalizeCurrentRulingStatus("made_up")).toBe("provisional");
+});
+
+test("maps current answer modes through the legacy database constraint", () => {
+  expect(toLegacyAnswerMode("ai")).toBe("ai");
+  expect(toLegacyAnswerMode("ai_verified")).toBe("ai");
+  expect(toLegacyAnswerMode("local_fallback")).toBe("retrieval_only");
+  expect(toLegacyAnswerMode("source_lookup")).toBe("retrieval_only");
+  expect(toLegacyAnswerMode("retrieval_only")).toBe("retrieval_only");
+});
+
+test("preserves every current answer mode for review diagnostics", () => {
+  for (const mode of ["ai", "ai_verified", "local_fallback", "retrieval_only", "source_lookup"]) {
+    expect(normalizeCurrentAnswerMode(mode)).toBe(mode);
+  }
+  expect(normalizeCurrentAnswerMode("made_up")).toBe("ai");
 });
 
 test("does not permit a gameplay ruling plan to be treated as out of scope", () => {

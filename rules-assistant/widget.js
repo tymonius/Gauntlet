@@ -70,9 +70,10 @@ class GauntletRulesAssistant {
           </div>
           <button class="ga-rules-close" type="button" aria-label="Close rules assistant">×</button>
         </header>
-        <div class="ga-rules-notice">
-          Answers use the canonical ${escapeHtml(CONFIG.version)} sources. When those rules do not decide a gameplay interaction, the Arbiter issues a clearly labeled provisional ruling for the rest of the current game and logs it for designer review. Questions, answers, citations, ruling status, and optional feedback may be logged to improve the rules and this tool. When opened from a formal playtest session, the sheet serial and session identifier are included automatically. Printed rules and component text remain authoritative over provisional rulings.
-        </div>
+        <details class="ga-rules-notice">
+          <summary>About the Rules Arbiter</summary>
+          <p>Answers use the canonical ${escapeHtml(CONFIG.version)} sources. When those rules do not decide a gameplay interaction, the Arbiter issues a clearly labeled provisional ruling for the rest of the current game and logs it for designer review. Questions, answers, citations, ruling status, and optional feedback may be logged to improve the rules and this tool. When opened from a formal playtest session, the sheet serial and session identifier are included automatically. Printed rules and component text remain authoritative over provisional rulings.</p>
+        </details>
         <div class="ga-rules-messages" aria-live="polite" aria-label="Rules conversation"></div>
         <div class="ga-rules-suggestions" aria-label="Suggested questions"></div>
         <form class="ga-rules-form">
@@ -250,7 +251,7 @@ class GauntletRulesAssistant {
         });
         if (response.ok) {
           const payload = await response.json();
-          if (payload?.answer) return { ...payload, mode: "ai" };
+          if (payload?.answer) return { ...payload, mode: payload.mode || "ai" };
         }
       } catch (error) {
         console.info("Gauntlet AI endpoint unavailable; using local source lookup.", error);

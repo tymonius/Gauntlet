@@ -1,5 +1,7 @@
 import {
+  normalizeCurrentAnswerMode,
   normalizeCurrentRulingStatus,
+  toLegacyAnswerMode,
   toLegacyRulingStatus
 } from "./rules-status.js";
 
@@ -18,19 +20,22 @@ export async function persistSmartInteraction(env, record) {
     const sourceRows = Array.isArray(record.sources) ? record.sources.slice(0, 8) : [];
     const currentStatus = normalizeCurrentRulingStatus(record.rulingStatus);
     const legacyStatus = toLegacyRulingStatus(currentStatus);
+    const currentMode = normalizeCurrentAnswerMode(record.mode || "ai_verified");
+    const legacyMode = toLegacyAnswerMode(currentMode);
     const statements = [
       env.DB.prepare(`
         INSERT INTO rules_interactions (
           id, session_id, previous_interaction_id, sequence_index, created_at, updated_at,
           question, answer, game_version, ruling_status, ruling_status_v2,
-          confidence, answer_mode, model, source_count, playtest_session_id, sheet_serial,
-          review_status, issue_types_json, reviewer_notes, resolution
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unreviewed', '[]', '', '')
+          confidence, answer_mode, answer_mode_v2, model, source_count,
+          playtest_session_id, sheet_serial, review_status,
+          issue_types_json, reviewer_notes, resolution
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'unreviewed', '[]', '', '')
       `).bind(
         id, record.sessionId, previous?.id || null, sequenceIndex, createdAt, createdAt,
         record.question, record.answer, record.gameVersion || RULES_VERSION,
         legacyStatus, currentStatus, record.confidence || "low",
-        record.mode || "ai_verified", record.model || null, sourceRows.length,
+        legacyMode, currentMode, record.model || null, sourceRows.length,
         record.playtestSessionId || null, record.sheetSerial || null
       )
     ];

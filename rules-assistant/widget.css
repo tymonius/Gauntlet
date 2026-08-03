@@ -47,7 +47,8 @@
 .ga-rules-launcher:focus-visible,
 .ga-rules-panel button:focus-visible,
 .ga-rules-panel textarea:focus-visible,
-.ga-rules-panel a:focus-visible {
+.ga-rules-panel a:focus-visible,
+.ga-rules-panel summary:focus-visible {
   outline: 3px solid #e9bd67;
   outline-offset: 2px;
 }
@@ -133,11 +134,48 @@
 }
 
 .ga-rules-notice {
-  padding: 10px 16px;
   border-bottom: 1px solid rgba(113, 77, 35, 0.24);
   background: rgba(198, 154, 75, 0.13);
   color: #5a4328;
   font: 12px/1.4 system-ui, sans-serif;
+}
+
+.ga-rules-notice summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 16px;
+  cursor: pointer;
+  color: #5a4328;
+  font-weight: 800;
+  list-style: none;
+  user-select: none;
+}
+
+.ga-rules-notice summary::-webkit-details-marker {
+  display: none;
+}
+
+.ga-rules-notice summary::after {
+  content: "+";
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  width: 20px;
+  height: 20px;
+  border: 1px solid rgba(90, 67, 40, 0.35);
+  border-radius: 50%;
+  font: 800 15px/1 system-ui, sans-serif;
+}
+
+.ga-rules-notice[open] summary::after {
+  content: "−";
+}
+
+.ga-rules-notice p {
+  margin: 0;
+  padding: 0 16px 12px;
 }
 
 .ga-rules-messages {

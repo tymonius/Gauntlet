@@ -259,9 +259,9 @@ async function listInteractions(env, url, origin) {
   const rows = await env.DB.prepare(`
     SELECT id, session_id, sequence_index, created_at, question, answer, game_version,
       COALESCE(ruling_status_v2, ruling_status) AS ruling_status,
-      confidence, answer_mode, model, source_count, review_status,
-      issue_types_json, reviewer_notes, resolution, feedback_rating, feedback_comment,
-      feedback_at, updated_at
+      confidence, COALESCE(answer_mode_v2, answer_mode) AS answer_mode,
+      model, source_count, review_status, issue_types_json, reviewer_notes, resolution,
+      feedback_rating, feedback_comment, feedback_at, updated_at
     FROM rules_interactions ${where}
     ORDER BY created_at DESC LIMIT ? OFFSET ?
   `).bind(...params, limit, offset).all();
