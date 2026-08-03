@@ -1,0 +1,324 @@
+import { normalizeForSearch } from "./rules-intelligence.js";
+import {
+  canonicalSourcesForIds,
+  findComponentDocument,
+  resolveActiveContext
+} from "./rules-packets.js";
+
+function matches(text, pattern) {
+  pattern.lastIndex = 0;
+  return pattern.test(text);
+}
+
+function result({ id, answer, rulingStatus = "explicit", sourceIds = [], subject = null, topic = null, confidence = null, responseType = "ruling" }) {
+  return {
+    id,
+    answer,
+    rulingStatus,
+    sourceIds,
+    subject,
+    topic,
+    confidence: confidence || (rulingStatus === "explicit" ? "high" : rulingStatus === "inferred" ? "medium" : "low"),
+    responseType
+  };
+}
+
+function historyHasTopic(history, pattern) {
+  return [...(history || [])].reverse().some((item) => pattern.test(String(item?.topic || item?.content || "")));
+}
+
+function impossibleChoiceQuestion(text) {
+  return /\b(either|choose)\b[\s\S]*\bor\b/i.test(text)
+    && /\b(no cards?|nothing)\b[\s\S]*\bhand\b|\bcannot\b[\s\S]*\bdiscard\b/i.test(text)
+    && /\b(battle total|\+1|plus one)\b/i.test(text);
+}
+
+function genericComponentQuestion(question, subject) {
+  if (!subject) return false;
+  const normalizedQuestion = normalizeForSearch(question);
+  const normalizedSubject = normalizeForSearch(subject);
+  if (!normalizedQuestion.includes(normalizedSubject)) return false;
+  return /\b(what does|how does|explain|what is)\b/i.test(question)
+    && /\b(do|does|work|effect|card|ability|leader|territory|faction)\b/i.test(question);
+}
+
+function canonicalComponentAnswer(document) {
+  const title = String(document.title || "Canonical component").replace(/^[^:]+:\s*/, "");
+  const lines = String(document.body || "").split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
+  return `${title}:\n${lines.join("\n")}`;
+}
+
+export function resolveDeterministicRuling(corpus, { question, history = [], gameState = null, plan = null, packet = null } = {}) {
+  const text = String(question || "").trim();
+  if (!text) return null;
+  const active = resolveActiveContext(corpus, text, history, plan);
+  const subject = packet?.subject || active.subject;
+  const topic = packet?.topic || active.topic;
+
+  if (/^can i use this ability right now\??$/i.test(text) && !subject) {
+    return result({
+      id: "needs-context-ability",
+      answer: "I need the ability's name or exact text, whose turn it is, the current phase or battle step, and any relevant state such as resources available or once-per-turn uses already spent. Without that information, I cannot determine whether it may be used now.",
+      rulingStatus: "source_lookup",
+      sourceIds: [],
+      subject: null,
+      topic: "timing eligibility",
+      confidence: "low",
+      responseType: "clarification"
+    });
+  }
+
+  if (impossibleChoiceQuestion(text)) {
+    return result({
+      id: "impossible-choice-provisional",
+      answer: "Provisional Arbiter Ruling: The opponent must choose an option they can actually perform. With no card in Hand, the discard option is unavailable, so they must choose the option that gives you +1 to your battle total. Use this ruling for the rest of this game; it has been logged for designer review.",
+      rulingStatus: "provisional",
+      sourceIds: ["rulebook:golden-rules", "rulebook:complete-rules-12", "rulebook:hand"],
+      subject: "Choice legality",
+      topic: "unperformable option",
+      confidence: "low"
+    });
+  }
+
+  if (matches(text, /\b(how many cards.*start|draw to start|starting hand|opening hand|hand.*start)\b/i)) {
+    return result({
+      id: "setup-opening-hand",
+      answer: "At setup, each player draws three cards to form their opening Hand.",
+      sourceIds: ["rulebook:complete-rules-2", "rulebook:how-it-works-3"],
+      subject: "Setup",
+      topic: "opening Hand"
+    });
+  }
+
+  if (matches(text, /\bwhere do gambits and tactics go|gambits? and tactics?.*(go|resolve|aftermath)|where.*gambits?.*tactics?\b/i)) {
+    return result({
+      id: "battle-card-destinations",
+      answer: "During the Aftermath, Gambits normally go to their owners' Graveyards. Tactics and cards remaining in Reserve normally go to their owners' Discard Piles. Follow a card if it explicitly sends itself somewhere else.",
+      sourceIds: ["rulebook:clearing-battle-cards", "rulebook:gambit-area", "rulebook:tactic-area", "rulebook:reserve"],
+      subject: "Battle card destinations",
+      topic: "Aftermath"
+    });
+  }
+
+  if (matches(text, /\bwhen.*occupied territory.*captur|when is an occupied territory captured|occupier.*capture\b/i)) {
+    return result({
+      id: "territory-capture",
+      answer: "Winning an attack on an opposing Territory normally makes you its occupier; it does not capture the Territory immediately. If you are still the occupier at the start of your next turn, capture it during the Capture step by rotating it to face you. A specific effect may cause an earlier capture.",
+      sourceIds: ["rulebook:occupation", "rulebook:capture", "rulebook:capture-2", "rulebook:counterattack"],
+      subject: "Territory capture",
+      topic: "Capture step"
+    });
+  }
+
+  if (matches(text, /\b(defender'?s? advantage|defender advantage)\b/i)) {
+    return result({
+      id: "defenders-advantage",
+      answer: "Defender's Advantage is a tie rule, not ordinary advantage. If battle totals are tied and the defender controls the contested Territory, the defender wins. It does not grant an additional die. It also applies during a Last Stand battle; the separate Last Stand +1 bonus still applies as well.",
+      sourceIds: ["rulebook:determine-the-winner", "rulebook:last-stand-battle"],
+      subject: "Defender's Advantage",
+      topic: "tied battle total"
+    });
+  }
+
+  if (matches(text, /\bhow many action opportunities|action opportunities.*normally|normal.*action opportunities\b/i)) {
+    return result({
+      id: "normal-action-opportunities",
+      answer: "A normal turn has two Action Opportunities: one before movement and one after movement. You normally begin with only 1 Action, and you may spend at most 1 Action during each opportunity.",
+      sourceIds: ["rulebook:actions-and-action-opportunities", "rulebook:actions-and-action-opportunities-2"],
+      subject: "Action Opportunities",
+      topic: "normal turn"
+    });
+  }
+
+  if (matches(text, /\bonward\b/i) && matches(text, /\b(after|continue|battle)\b/i)) {
+    return result({
+      id: "onward-after-battle",
+      answer: "No. Onward is used during your Movement step before a battle begins to move one additional position. If that movement starts a battle, the movement sequence ends and Onward cannot continue after the battle. Movement after the battle requires an effect that explicitly permits it, such as Rout when its conditions are met.",
+      sourceIds: ["rulebook:orders", "rulebook:movement", "rulebook:movement-after-battle"],
+      subject: "Onward",
+      topic: "movement after battle"
+    });
+  }
+
+  if (matches(text, /\bsurveillance\b/i) && matches(text, /\b(interference|same face[- ]?down|commitment)\b/i)) {
+    return result({
+      id: "surveillance-then-interference",
+      answer: "Yes. After revealing a face-down opposing Gambit or Tactic through Surveillance, Intelligence may immediately spend 2 additional Intel per revealed card to Interfere with it. Surveillance costs 1 Intel per card revealed, so revealing and removing one face-down card costs 3 Intel total. The owner may replace it from the same source or pass; the replacement creates no new Surveillance or Interference opportunity.",
+      sourceIds: ["rulebook:gambit-surveillance", "rulebook:tactic-surveillance", "rulebook:interference-after-surveillance"],
+      subject: "Surveillance",
+      topic: "face-down Interference"
+    });
+  }
+
+  if (matches(text, /\binterference\b/i) && matches(text, /\b(already|set|chosen|commitment).*face[- ]?up|face[- ]?up.*(cost|interference|commitment)\b/i)) {
+    return result({
+      id: "direct-interference-face-up",
+      answer: "Yes, if the opposing effect sets or chooses the card face up at the normal response timing. Direct Interference costs 2 Intel. It does not use Surveillance, but it does use that stage's Interference opportunity. A card that becomes face up after the response window has closed does not create a new Interference opportunity.",
+      sourceIds: ["rulebook:direct-interference", "rulebook:multiple-and-additional-gambits-or-tactics"],
+      subject: "Interference",
+      topic: "face-up commitment"
+    });
+  }
+
+  if (matches(text, /\bspecific instruction.*conflict|specific.*normal battle sequence|card.*conflicts?.*general|specific rule.*general\b/i)) {
+    return result({
+      id: "specific-over-general",
+      answer: "Follow the card's specific instruction where it conflicts with the normal battle sequence. Apply it only at its stated timing and follow its instructions in order. Do not reopen an earlier timing window, repeat a completed step, or create a new response opportunity unless the card or another rule explicitly says to do so.",
+      sourceIds: ["rulebook:golden-rules", "rulebook:complete-rules-12", "rulebook:replacements-and-revisions"],
+      subject: "Specific-over-general rule",
+      topic: "battle sequence conflict"
+    });
+  }
+
+  if (matches(text, /\bbattle hands?\b/i)) {
+    return result({
+      id: "obsolete-battle-hand-term",
+      answer: "'Battle Hand' is not a current v0.6.1 term. If you mean both players have set their Gambits, next set Hands aside, form three-card Reserves, and then reveal Gambits. If you mean both players have chosen their Tactics, reveal the Tactics next. Your ordinary advantage matters later when dice are rolled: roll one additional die per net advantage and keep the highest.",
+      sourceIds: [
+        "rulebook:complete-rules-6",
+        "rulebook:2-set-gambits",
+        "rulebook:3-form-reserves",
+        "rulebook:4-reveal-gambits",
+        "rulebook:5-choose-tactics",
+        "rulebook:6-reveal-tactics",
+        "rulebook:advantage-and-disadvantage"
+      ],
+      subject: "Battle sequence",
+      topic: "obsolete terminology"
+    });
+  }
+
+  if (/^how does surveillance work\??$/i.test(text)) {
+    return result({
+      id: "surveillance-overview",
+      answer: "Surveillance gives Intelligence two independent once-per-battle opportunities. After the opponent sets a face-down Gambit, spend 1 Intel to reveal it. After the opponent chooses one or more face-down Tactics, spend 1 Intel for each opposing Tactic you reveal. Immediately after a Surveillance reveal, you may spend 2 additional Intel per revealed card to Interfere. A removed Gambit returns to Hand; a removed Tactic returns to Reserve. The owner may replace it from the same source or pass, and a replacement creates no new reveal or response opportunity. If an opposing effect sets or chooses a card face up, Direct Interference costs 2 Intel without using Surveillance. The separate Intelligence-mirror sequence applies only when both players are Intelligence.",
+      sourceIds: [
+        "rulebook:gambit-surveillance",
+        "rulebook:tactic-surveillance",
+        "rulebook:interference-after-surveillance",
+        "rulebook:direct-interference",
+        "rulebook:intelligence-mirrors"
+      ],
+      subject: "Surveillance",
+      topic: "overview"
+    });
+  }
+
+  if (matches(text, /\bwhat if.*already face[- ]?up|commitment.*already face[- ]?up\b/i) && /Surveillance|Interference/i.test(subject || "")) {
+    return result({
+      id: "surveillance-follow-up-face-up",
+      answer: "If an opposing effect sets or chooses the card face up at the normal response timing, you may use Direct Interference for 2 Intel. This does not use Surveillance, but it does use that stage's Interference opportunity. If the card became face up by Surveillance, Interference costs 2 additional Intel after the 1-Intel reveal. A card that becomes face up after the response window has closed does not create a new Interference opportunity.",
+      sourceIds: ["rulebook:direct-interference", "rulebook:interference-after-surveillance", "rulebook:multiple-and-additional-gambits-or-tactics"],
+      subject: "Surveillance",
+      topic: "face-up commitment"
+    });
+  }
+
+  if (matches(text, /\bdoes that change the cost|change.*cost of interference|cost of interference\b/i)
+      && (/Surveillance|Interference/i.test(subject || "") || historyHasTopic(history, /face-up commitment/i))) {
+    return result({
+      id: "interference-cost-follow-up",
+      answer: "Being face up does not increase the Interference cost. If an opposing effect sets or chooses the card face up at the response timing, Direct Interference costs 2 Intel and no Surveillance cost is paid. If you first reveal a face-down card with Surveillance, pay 1 Intel to reveal it and then 2 additional Intel to Interfere, for 3 total. If the response window has already closed, Interference is unavailable.",
+      sourceIds: ["rulebook:direct-interference", "rulebook:interference-after-surveillance"],
+      subject: "Interference",
+      topic: "face-up commitment cost"
+    });
+  }
+
+  if (matches(text, /\b(card|action).*\b(discard|played|play)\b|when does a card go to the discard after being played/i)
+      && !/gambit|tactic/i.test(text)) {
+    return result({
+      id: "action-card-destination",
+      answer: "When you play a card from Hand for its Action effect, apply the effect and then put the card in your Discard Pile unless it becomes an Asset, becomes an Overlay, or its text sends it somewhere else. Battle cards use the Aftermath destinations instead: Gambits normally go to the Graveyard, while Tactics and unused Reserve cards go to the Discard Pile.",
+      sourceIds: ["rulebook:action-effects", "rulebook:clearing-battle-cards", "rulebook:printed-card-effects"],
+      subject: "Action card resolution",
+      topic: "card destination"
+    });
+  }
+
+  if (matches(text, /\b(fifth|five|5)\b.*\bproposal|proposal.*\b(fifth|five|5)\b/i)) {
+    return result({
+      id: "peace-treaty-timing",
+      answer: "You do not win immediately. At the start of your next turn, after the Capture step and before the Draw step, you win through the Peace Treaty if five different Proposals are ratified.",
+      sourceIds: ["rulebook:treaty-articles-and-peace-treaty"],
+      subject: "Peace Treaty",
+      topic: "victory timing"
+    });
+  }
+
+  if (matches(text, /\btransmutation\b/i)) {
+    return result({
+      id: "transmutation",
+      answer: "After you complete your second Rite, Transmutation is unlocked. Once per turn, before dice are rolled in a battle involving you, you may put one card from your Hand in your Graveyard and add that card's value to your battle total. The card is not played, so none of its printed effects apply. Spirit Walker uses Transmutation the same way as any other Mystics Leader.",
+      sourceIds: ["rulebook:progression", "rulebook:transmutation", "rulebook:spirit-walker"],
+      subject: "Transmutation",
+      topic: "use and timing"
+    });
+  }
+
+  if (matches(text, /\bwhat does good faith do|good faith.*(do|work|effect)\b/i)) {
+    return result({
+      id: "good-faith",
+      answer: "Good Faith is a cost-3 Diplomat Asset. Its Action banks it. When you offer Terms, before the opponent accepts or refuses, you may discard Good Faith to draw one card, then reveal one card from your Hand and set that revealed card aside. If the Terms are accepted, put the set-aside card in your Graveyard. If they are refused, return the set-aside card to your Hand before Gambits are set. Good Faith itself is discarded as the cost of using the Asset unless another effect changes that destination.",
+      sourceIds: ["card:diplomats-good-faith", "rulebook:using-and-discarding-assets", "rulebook:offering-terms"],
+      subject: "Good Faith",
+      topic: "card overview"
+    });
+  }
+
+  if (matches(text, /\bwhat does shock and awe do|shock and awe.*(do|work|effect)\b/i)) {
+    return result({
+      id: "shock-and-awe",
+      answer: "Shock and Awe is a cost-5 Unique Military card. Its Action banks it. When attacking on an enemy-controlled Territory, its Battle effect lets you play an eligible Hand card face up as an additional Tactic after Tactics are revealed. If you lose, retreat one additional position. If you win, choose Breakthrough only if the opponent can retreat one additional position; after that retreat, advance one position, but this advance cannot start a battle. Or choose Consolidate to capture the contested Territory and set Command to 2. After either option, you cannot move again, capture another Territory, or use an Order from that victory. During opening effects while attacking on an enemy-controlled Territory, its banked Asset ability may put it in the Graveyard to apply the Battle effect.",
+      sourceIds: ["card:military-shock-and-awe", "rulebook:conflicting-victory-benefits", "rulebook:additional-tactics"],
+      subject: "Shock and Awe",
+      topic: "card overview"
+    });
+  }
+
+  if (matches(text, /\bwhat does it do in battle|what.*battle effect\b/i) && /Shock and Awe/i.test(subject || "")) {
+    return result({
+      id: "shock-and-awe-battle-follow-up",
+      answer: "Shock and Awe's Battle effect applies when you are attacking on an enemy-controlled Territory. After Tactics are revealed, you may play an eligible card from your Hand face up as an additional Tactic. If you lose, retreat one additional position. If you win, choose Breakthrough or Consolidate under the card's printed restrictions.",
+      sourceIds: ["card:military-shock-and-awe"],
+      subject: "Shock and Awe",
+      topic: "battle effect"
+    });
+  }
+
+  if (matches(text, /\bwhat benefit does this give me|what benefit.*(this|it)|what does this give me\b/i)
+      && /Ritual of Ascendance/i.test(subject || "")) {
+    return result({
+      id: "ritual-benefit-follow-up",
+      answer: "The Ritual of Ascendance is an alternate victory condition: if you initiate and win the qualifying battle while all three Ritual cards remain bound, you immediately win the game. During that battle, Convergence also adds +1 to your battle total for each card bound to the Ritual—normally +3.",
+      sourceIds: ["rulebook:convergence", "rulebook:completion", "rulebook:how-it-works-26"],
+      subject: "Ritual of Ascendance",
+      topic: "benefit"
+    });
+  }
+
+  if (genericComponentQuestion(text, subject)) {
+    const document = findComponentDocument(corpus, subject);
+    if (document && /^(card|leader|territory|faction):/i.test(String(document.id || ""))) {
+      return result({
+        id: "canonical-component-text",
+        answer: canonicalComponentAnswer(document),
+        sourceIds: [document.id],
+        subject,
+        topic: "canonical component text"
+      });
+    }
+  }
+
+  return null;
+}
+
+export function materializeDeterministicSources(corpus, deterministic, excerptLength = 1600) {
+  return canonicalSourcesForIds(corpus, deterministic?.sourceIds || [], excerptLength).map((source) => ({
+    id: source.canonicalId,
+    title: source.title,
+    sourcePath: source.sourcePath,
+    sourceUrl: source.sourceUrl,
+    excerpt: source.excerpt
+  }));
+}
