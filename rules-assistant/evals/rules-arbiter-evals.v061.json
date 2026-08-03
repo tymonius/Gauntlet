@@ -1,0 +1,31 @@
+{
+  "schema": "gauntlet.rules-arbiter-evals.v1",
+  "rulesVersion": "v0.6.1",
+  "cases": [
+    {
+      "id": "setup-opening-hand-1",
+      "question": "How many cards do I draw to start?",
+      "expectedRetrievalPatterns": ["Setup", "draws three cards"]
+    },
+    {
+      "id": "setup-opening-hand-2",
+      "question": "How big is your starting hand?",
+      "expectedRetrievalPatterns": ["Setup", "draws three cards"]
+    },
+    {
+      "id": "action-destination",
+      "question": "When does a card go to the discard after being played?",
+      "expectedRetrievalPatterns": ["Actions and Assets", "Discard Pile"]
+    },
+    {
+      "id": "spirit-walker-transmutation",
+      "question": "I am a Spirit Walker. How do I do Transmutation?",
+      "expectedRetrievalPatterns": ["Transmutation", "before dice are rolled", "Graveyard"]
+    },
+    {
+      "id": "peace-treaty-timing",
+      "question": "I just ratified my fifth proposal. Do I win immediately, or at the start of my next turn?",
+      "expectedRetrievalPatterns": ["Peace Treaty", "after the Capture step and before the Draw step"]
+    }
+  ]
+}
