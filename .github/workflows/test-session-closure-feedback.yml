@@ -1,0 +1,104 @@
+name: Test session closure and standalone feedback
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "playtest/tracked/**"
+      - "playtest/feedback/**"
+      - "workers/playtest-sessions/**"
+      - "tests/session-closure-standalone-feedback.test.ts"
+      - ".github/workflows/test-session-closure-feedback.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-session-closure-feedback-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies and run contracts
+        run: |
+          npm install
+          node --check workers/playtest-sessions/src/closure.js
+          node --check playtest/tracked/session-controls.js
+          node --check playtest/feedback/app.js
+          npx vitest run workers/playtest-sessions/src/closure.test.mjs tests/session-closure-standalone-feedback.test.ts
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: Serve repository
+        run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
+
+      - name: Submit standalone feedback without a session
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from 'playwright';
+
+          const browser = await chromium.launch({ headless: true });
+          const page = await browser.newPage({ viewport: { width: 390, height: 844 } });
+          let submitted = null;
+
+          await page.route('https://gauntlet-playtest-sessions.tymon-scott.workers.dev/**', async route => {
+            const request = route.request();
+            const url = new URL(request.url());
+            if (url.pathname === '/api/standalone-feedback' && request.method() === 'POST') {
+              submitted = request.postDataJSON();
+              return route.fulfill({
+                status: 201,
+                contentType: 'application/json',
+                body: JSON.stringify({ ok: true, receipt: 'G061-FEED001', collectionMode: 'standalone-feedback' })
+              });
+            }
+            return route.fulfill({ status: 404, contentType: 'application/json', body: JSON.stringify({ error: 'Unmocked request' }) });
+          });
+
+          const response = await page.goto('http://127.0.0.1:8000/playtest/feedback/', { waitUntil: 'networkidle' });
+          if (!response?.ok()) throw new Error(`Feedback page returned ${response?.status()}`);
+          await page.fill('#displayName', 'Alice');
+          await page.selectOption('#faction', 'diplomats');
+          await page.selectOption('#leader', 'ambassador');
+          await page.selectOption('#opponentFaction', 'military');
+          await page.selectOption('#opponentLeader', 'general');
+          await page.fill('#durationMinutes', '75');
+          await page.fill('#rounds', '8');
+          await page.fill('#factionInterest', 'Negotiation and concessions interested me.');
+          for (const select of await page.locator('#ratingGrid select').all()) await select.selectOption('4');
+          await page.selectOption('#playAgain', 'yes');
+          await page.fill('#strongestMoment', 'A late Proposal changed the map.');
+          await page.fill('#confusingPoint', 'We checked the timing of a concession.');
+          await page.fill('#importantObservation', 'Terms created meaningful pressure throughout the game.');
+          await page.click('#feedbackForm button[type="submit"]');
+          await page.waitForSelector('#successPanel:not([hidden])');
+
+          if (!submitted) throw new Error('Standalone endpoint was not called');
+          if (submitted.context.opponentFaction !== 'military') throw new Error('Opponent context was not submitted');
+          if (submitted.response.fun !== 4) throw new Error('Ratings were not submitted');
+          if (await page.locator('#receiptCode').textContent() !== 'G061-FEED001') throw new Error('Receipt was not shown');
+          await page.screenshot({ path: '/tmp/standalone-feedback-mobile.png', fullPage: true });
+          await browser.close();
+          NODE
+
+      - name: Upload browser screenshot
+        uses: actions/upload-artifact@v4
+        with:
+          name: standalone-feedback-browser
+          path: /tmp/standalone-feedback-mobile.png
+          if-no-files-found: error
