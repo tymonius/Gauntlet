@@ -1,0 +1,26 @@
+.ga-rules-answer-details {
+  margin-top: 10px;
+  padding-top: 8px;
+  border-top: 1px solid rgba(100, 72, 42, 0.18);
+  color: #5c5145;
+  font: 12px/1.45 system-ui, sans-serif;
+}
+
+.ga-rules-answer-details summary {
+  cursor: pointer;
+  color: #704d23;
+  font-weight: 800;
+}
+
+.ga-rules-answer-details div {
+  margin-top: 8px;
+}
+
+.ga-rules-answer-details p {
+  margin: 0 0 8px;
+  white-space: pre-wrap;
+}
+
+.ga-rules-answer-details p:last-child {
+  margin-bottom: 0;
+}
