@@ -27,5 +27,6 @@ test("audit import is version-aware and never automatically promotes precedent",
 test("production entry routes review intelligence without replacing detail editing", () => {
   expect(entry).toContain('url.pathname === "/api/admin/review-audits"');
   expect(entry).toContain('request.method === "GET" && url.pathname === "/api/admin/interactions"');
-  expect(entry).toContain("return worker.fetch(request, env, context)");
+  expect(entry).toContain("const response = await worker.fetch(request, env, context)");
+  expect(entry).toContain("return smartWorker.fetch(request, env, context)");
 });
