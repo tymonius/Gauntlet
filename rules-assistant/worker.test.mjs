@@ -1,5 +1,9 @@
 import { expect, test } from "vitest";
 import worker, {
+  buildRetrievalQueries,
+  deriveConfidence,
+  mergeConversationHistory,
+  normalizeRulingStatus,
   sanitizePlaytestContext,
   sanitizeSessionId
 } from "./worker-v061.js";
@@ -60,12 +64,15 @@ test("serves the private review shell without exposing data", async () => {
   expect(html).toContain("anonymous session identifiers");
 });
 
-test("reports the governing v0.6.1 worker and optional logging bindings", async () => {
+test("reports adjudication and session-continuity capabilities", async () => {
   const response = await worker.fetch(new Request("https://rules.example/health"), {});
   const payload = await response.json();
   expect(payload.version).toBe("v0.6.1");
   expect(payload.interactionLogging).toBe(false);
   expect(payload.playtestLinking).toBe(false);
+  expect(payload.provisionalRulings).toBe(true);
+  expect(payload.sessionRulingContinuity).toBe(true);
+  expect(payload.confidenceDerivedFromSupport).toBe(true);
 });
 
 test("rejects requests for a different rules version before retrieval", async () => {
@@ -85,4 +92,59 @@ test("rejects requests for a different rules version before retrieval", async ()
   });
   expect(response.status).toBe(409);
   expect((await response.json()).error).toContain("v0.6.1");
+});
+
+test("expands foundational setup questions toward the opening-hand rule", () => {
+  const queries = buildRetrievalQueries("How many cards do I draw to start?");
+  expect(queries.join(" ")).toMatch(/setup/i);
+  expect(queries.join(" ")).toMatch(/opening hands/i);
+  expect(queries.join(" ")).toMatch(/three cards/i);
+});
+
+test("expands general Action destination questions toward the shared discard rule", () => {
+  const queries = buildRetrievalQueries("When does a card go to the discard after being played?");
+  expect(queries.join(" ")).toMatch(/Action effects/i);
+  expect(queries.join(" ")).toMatch(/Discard Pile/i);
+});
+
+test("expands fifth-Proposal questions toward Peace Treaty timing", () => {
+  const queries = buildRetrievalQueries("I just ratified my fifth proposal. Do I win immediately?");
+  expect(queries.join(" ")).toMatch(/Peace Treaty/i);
+  expect(queries.join(" ")).toMatch(/after Capture before Draw/i);
+});
+
+test("uses recent conversation to resolve context-dependent follow-ups", () => {
+  const queries = buildRetrievalQueries("What benefit does this give me?", [{
+    role: "assistant",
+    content: "Complete the Ritual of Ascendance by binding three cards and winning the battle."
+  }]);
+  expect(queries.join(" ")).toMatch(/Ritual of Ascendance/i);
+  expect(queries.join(" ")).toMatch(/winning the battle/i);
+});
+
+test("keeps prior session rulings while removing duplicate browser history", () => {
+  const history = mergeConversationHistory([
+    { role: "user", content: "Can I do this?" },
+    { role: "assistant", content: "No.", rulingStatus: "provisional" }
+  ], [
+    { role: "user", content: "Can I do this?" },
+    { role: "assistant", content: "No." }
+  ]);
+  expect(history.filter((item) => item.role === "user")).toHaveLength(1);
+  expect(history.some((item) => item.rulingStatus === "provisional")).toBe(true);
+});
+
+test("does not permit unsupported explicit or inferred classifications", () => {
+  expect(normalizeRulingStatus("explicit", 0)).toBe("provisional");
+  expect(normalizeRulingStatus("inferred", 0)).toBe("provisional");
+  expect(normalizeRulingStatus("explicit", 1)).toBe("explicit");
+  expect(normalizeRulingStatus("unresolved", 2)).toBe("provisional");
+});
+
+test("derives confidence from ruling class and source support", () => {
+  expect(deriveConfidence("explicit", 1)).toBe("high");
+  expect(deriveConfidence("inferred", 2)).toBe("medium");
+  expect(deriveConfidence("provisional", 1)).toBe("medium");
+  expect(deriveConfidence("provisional", 0)).toBe("low");
+  expect(deriveConfidence("out_of_scope", 0)).toBe("high");
 });

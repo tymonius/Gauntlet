@@ -6,20 +6,43 @@ import {
 } from "./local-search.js";
 
 const RULES_VERSION = "v0.6.1";
+const FALLBACK_MODEL = "gpt-5.6-terra";
+const ADJUDICATION_GUIDE = `
+ADJUDICATION PRINCIPLES
+- First apply the current canonical rules and component text. Specific text overrides general text.
+- An exception, permission, timing window, additional play, movement, or victory condition exists only when a rule grants it.
+- Do not reopen a completed timing window or reapply an effect unless a rule expressly does so.
+- Resolve one instruction as fully as possible before moving to the next instruction.
+- Preserve established ownership, control, card-zone, and timing defaults unless an effect changes them.
+- Prefer the ruling that uses the least new machinery, keeps the game moving, preserves meaningful player choices, and avoids loops or exploitable repetition.
+- Use closely analogous explicit interactions before relying on a broad thematic guess.
+- A provisional ruling is binding for the rest of the current play session. A later canonical clarification supersedes it.
+`;
+
 const SYSTEM_PROMPT = `You are the Gauntlet Rules Arbiter for the canonical v0.6.1 pre-release playtest edition.
 
-Use only the source passages supplied with the question. Do not use outside knowledge, prior conversations, old Gauntlet versions, or invented rulings.
+Use only the canonical source passages, recent conversation, prior session rulings, and adjudication principles supplied with the question. Do not use outside knowledge, old Gauntlet versions, or unstated lore and design facts.
 
-Apply these rules:
+Every gameplay-rules question must receive a usable table ruling. Classify the answer as exactly one of:
+- explicit: the supplied canonical text directly states the answer;
+- inferred: the answer is compelled by applying one or more supplied canonical rules, with no discretionary gap;
+- provisional: the rules leave a genuine gap or ambiguity, so you must make the ruling most consistent with the adjudication principles and likely designer intent;
+- out_of_scope: the question is not a gameplay-rules question.
+
+Never return "unresolved." Absence of an explicit rule is the point at which adjudication begins, not where the answer ends. For a provisional ruling, explain that "The current v0.6.1 rules do not specify this clearly," then make the ruling rather than stopping there.
+
+Apply these requirements:
 1. A specific card, Leader, faction, Territory, or supplemental-component rule overrides a general rule.
 2. Resolve instructions in the order written unless a supplied rule says otherwise.
-3. Distinguish an explicit rule from an inferred ruling. If the sources do not resolve the question, classify it as unresolved.
-4. If the supplied sources do not answer the question, say: "The current v0.6.1 rules do not specify this clearly."
-5. Never silently fill a gap or invent precedence. State the unresolved point and identify the closest relevant source.
-6. Identify attacker, defender, controller, owner, or active player whenever those roles determine the result.
-7. Reveal and resolution are different timings. Do not treat a revealed effect as resolved unless the supplied rule says so.
-8. Keep the answer direct and useful at the table. Explain the sequence only when timing or interaction matters.
-9. Cite only supplied source IDs. Do not cite a source that does not support the answer.
+3. Identify attacker, defender, controller, owner, occupier, or active player whenever those roles determine the result.
+4. Reveal and resolution are different timings. Do not treat a revealed effect as resolved unless the supplied rule says so.
+5. Treat a prior provisional ruling from the same play session as binding unless a supplied canonical source directly contradicts it.
+6. For a provisional ruling, state the ruling first, briefly explain the closest rules analogy or design principle, and say that it applies for the rest of the current game and is logged for designer review.
+7. For an out-of-scope question, say that the Rules Arbiter handles gameplay rulings and do not invent an answer.
+8. Cite only supplied source IDs that actually support the answer. An explicit or inferred answer must cite at least one supporting source. A provisional ruling may cite the closest relevant sources, but must not present them as explicitly deciding the gap.
+9. Keep the answer direct and useful at the table.
+
+${ADJUDICATION_GUIDE}
 
 Return the required JSON object and no additional text.`;
 
@@ -30,11 +53,7 @@ const OUTPUT_SCHEMA = {
     answer: { type: "string", minLength: 1, maxLength: 2400 },
     ruling_status: {
       type: "string",
-      enum: ["explicit", "inferred", "unresolved"]
-    },
-    confidence: {
-      type: "string",
-      enum: ["high", "medium", "low"]
+      enum: ["explicit", "inferred", "provisional", "out_of_scope"]
     },
     source_ids: {
       type: "array",
@@ -42,8 +61,31 @@ const OUTPUT_SCHEMA = {
       maxItems: 6
     }
   },
-  required: ["answer", "ruling_status", "confidence", "source_ids"]
+  required: ["answer", "ruling_status", "source_ids"]
 };
+
+const FOUNDATIONAL_QUERY_EXPANSIONS = [
+  {
+    match: /\b(start|starting|opening)\b.*\b(hand|cards?|draw)\b|\bhow many cards do i draw to start\b/i,
+    text: "game setup draw opening hands each player draws three cards"
+  },
+  {
+    match: /\b(card|action)\b.*\b(discard|played|play)\b|\bwhere does an action go\b/i,
+    text: "Action effects after applying put the card in the Discard Pile unless it becomes an Asset Overlay or says otherwise"
+  },
+  {
+    match: /\b(fifth|five|5)\b.*\bproposal|proposal.*\b(fifth|five|5)\b/i,
+    text: "Diplomats Treaty Articles Peace Treaty five different Proposals start of turn after Capture before Draw victory"
+  },
+  {
+    match: /\btransmutation\b/i,
+    text: "Mystics Transmutation once per turn before dice put one card from Hand in Graveyard add its value to battle total"
+  },
+  {
+    match: /\britual of ascendance\b|\britual\b.*\bbenefit|\bbenefit\b.*\britual\b/i,
+    text: "Mystics Ritual of Ascendance alternate victory win the battle while three cards remain bound"
+  }
+];
 
 let corpusPromise;
 
@@ -62,9 +104,12 @@ export default {
         ok: true,
         service: "gauntlet-rules-assistant",
         version: RULES_VERSION,
-        model: env.OPENAI_MODEL || "gpt-5.6-luna",
+        model: env.OPENAI_MODEL || FALLBACK_MODEL,
         interactionLogging: Boolean(env.DB),
-        playtestLinking: Boolean(env.DB)
+        playtestLinking: Boolean(env.DB),
+        provisionalRulings: true,
+        sessionRulingContinuity: true,
+        confidenceDerivedFromSupport: true
       }, 200, allowedOrigin);
     }
 
@@ -104,7 +149,7 @@ export default {
       }, 409, allowedOrigin);
     }
 
-    const history = sanitizeHistory(payload?.history);
+    const suppliedHistory = sanitizeHistory(payload?.history);
     const sessionId = sanitizeSessionId(payload?.sessionId);
     const playtestContext = sanitizePlaytestContext(payload);
 
@@ -114,29 +159,15 @@ export default {
         throw new Error(`Canonical corpus reports ${corpus.version}, expected ${RULES_VERSION}.`);
       }
 
-      const sources = retrieveRules(corpus, question, { limit: 8, excerptLength: 1300 });
-      if (!sources.length) {
-        const result = {
-          answer: "The current v0.6.1 rules do not specify this clearly, and I could not identify a sufficiently relevant canonical passage.",
-          rulingStatus: "unresolved",
-          confidence: "low",
-          sources: [],
-          version: corpus.version || RULES_VERSION
-        };
-        result.interactionId = await persistInteraction(env, {
-          sessionId,
-          ...playtestContext,
-          question,
-          answer: result.answer,
-          gameVersion: result.version,
-          rulingStatus: result.rulingStatus,
-          confidence: result.confidence,
-          mode: "retrieval_only",
-          model: null,
-          sources: []
-        });
-        return jsonResponse(result, 200, allowedOrigin);
-      }
+      const storedHistory = await loadStoredHistory(env, {
+        sessionId,
+        playtestSessionId: playtestContext.playtestSessionId
+      });
+      const history = mergeConversationHistory(storedHistory, suppliedHistory);
+      const sources = retrieveRulesForQuestion(corpus, question, history, {
+        limit: 10,
+        excerptLength: 1300
+      });
 
       const modelResult = await askOpenAI({
         env,
@@ -145,13 +176,20 @@ export default {
         history,
         sources
       });
-      const usedSources = selectUsedSources(sources, modelResult.source_ids);
+      let usedSources = selectUsedSources(sources, modelResult.source_ids);
+      const rulingStatus = normalizeRulingStatus(modelResult.ruling_status, usedSources.length);
+      if (rulingStatus === "out_of_scope") usedSources = [];
+      const answer = rulingStatus === "provisional"
+        ? ensureProvisionalAnswer(modelResult.answer)
+        : String(modelResult.answer || "").trim();
+      const confidence = deriveConfidence(rulingStatus, usedSources.length);
       const result = {
-        answer: modelResult.answer,
-        rulingStatus: modelResult.ruling_status,
-        confidence: modelResult.confidence,
+        answer,
+        rulingStatus,
+        confidence,
         sources: usedSources,
-        version: corpus.version || RULES_VERSION
+        version: corpus.version || RULES_VERSION,
+        rulingScope: rulingStatus === "provisional" ? "play_session" : null
       };
       result.interactionId = await persistInteraction(env, {
         sessionId,
@@ -162,7 +200,7 @@ export default {
         rulingStatus: result.rulingStatus,
         confidence: result.confidence,
         mode: "ai",
-        model: env.OPENAI_MODEL || "gpt-5.6-luna",
+        model: env.OPENAI_MODEL || FALLBACK_MODEL,
         sources: usedSources
       });
       return jsonResponse(result, 200, allowedOrigin);
@@ -187,19 +225,24 @@ async function getCorpus(env) {
 }
 
 async function askOpenAI({ env, request, question, history, sources }) {
-  const sourceText = sources.map((source) => [
-    `[${source.id}] ${source.title}`,
-    `Path: ${source.sourcePath}`,
-    source.body
-  ].join("\n")).join("\n\n---\n\n");
+  const sourceText = sources.length
+    ? sources.map((source) => [
+      `[${source.id}] ${source.title}`,
+      `Path: ${source.sourcePath}`,
+      source.body
+    ].join("\n")).join("\n\n---\n\n")
+    : "No sufficiently relevant canonical passage was retrieved. Adjudicate the gameplay question provisionally unless it is out of scope.";
 
   const historyText = history.length
-    ? history.map((item) => `${item.role.toUpperCase()}: ${item.content}`).join("\n")
-    : "No prior conversation.";
+    ? history.map((item) => {
+      const label = item.rulingStatus ? ` [${item.rulingStatus}]` : "";
+      return `${item.role.toUpperCase()}${label}: ${item.content}`;
+    }).join("\n")
+    : "No prior conversation or session ruling.";
 
   const userText = [
     `QUESTION\n${question}`,
-    `RECENT CONVERSATION\n${historyText}`,
+    `RECENT CONVERSATION AND SESSION RULINGS\n${historyText}`,
     `CANONICAL SOURCES\n${sourceText}`
   ].join("\n\n");
 
@@ -210,7 +253,7 @@ async function askOpenAI({ env, request, question, history, sources }) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      model: env.OPENAI_MODEL || "gpt-5.6-luna",
+      model: env.OPENAI_MODEL || FALLBACK_MODEL,
       store: false,
       reasoning: { effort: env.OPENAI_REASONING_EFFORT || "low" },
       max_output_tokens: 900,
@@ -252,6 +295,130 @@ async function askOpenAI({ env, request, question, history, sources }) {
   }
 }
 
+export function buildRetrievalQueries(question, history = []) {
+  const queries = [String(question || "").trim()];
+  for (const expansion of FOUNDATIONAL_QUERY_EXPANSIONS) {
+    if (expansion.match.test(question)) queries.push(`${question} ${expansion.text}`);
+  }
+
+  if (isContextDependentQuestion(question) && history.length) {
+    const context = history
+      .slice(-4)
+      .map((item) => item.content)
+      .filter(Boolean)
+      .join(" ")
+      .slice(-1800);
+    if (context) queries.push(`${context} ${question}`);
+  }
+
+  return [...new Set(queries.map((value) => value.trim()).filter(Boolean))];
+}
+
+export function retrieveRulesForQuestion(corpus, question, history = [], options = {}) {
+  const limit = Math.max(1, Math.min(Number(options.limit) || 8, 12));
+  const queries = buildRetrievalQueries(question, history);
+  const merged = new Map();
+
+  queries.forEach((query, queryIndex) => {
+    const results = retrieveRules(corpus, query, {
+      limit: Math.max(limit, 8),
+      excerptLength: options.excerptLength || 1300
+    });
+    for (const result of results) {
+      const key = `${result.sourcePath}\u0000${result.title}\u0000${result.body}`;
+      const adjustedScore = Number(result.score || 0) + (queryIndex === 0 ? 20 : Math.max(0, 10 - queryIndex));
+      const existing = merged.get(key);
+      if (!existing || adjustedScore > existing.adjustedScore) {
+        merged.set(key, { ...result, adjustedScore });
+      }
+    }
+  });
+
+  return [...merged.values()]
+    .sort((a, b) => b.adjustedScore - a.adjustedScore || a.title.localeCompare(b.title))
+    .slice(0, limit)
+    .map(({ adjustedScore, ...result }, index) => ({ ...result, id: `S${index + 1}` }));
+}
+
+function isContextDependentQuestion(question) {
+  const value = String(question || "").trim();
+  return value.length < 44 || /\b(it|its|this|that|these|those|they|them|he|she|benefit|in battle|do so|work)\b/i.test(value);
+}
+
+export async function loadStoredHistory(env, { sessionId, playtestSessionId } = {}) {
+  if (!env?.DB) return [];
+
+  try {
+    const usePlaytest = Boolean(playtestSessionId);
+    const statement = usePlaytest
+      ? env.DB.prepare(`
+          SELECT question, answer, ruling_status
+          FROM rules_interactions
+          WHERE playtest_session_id = ?
+          ORDER BY created_at DESC
+          LIMIT 8
+        `).bind(playtestSessionId)
+      : env.DB.prepare(`
+          SELECT question, answer, ruling_status
+          FROM rules_interactions
+          WHERE session_id = ?
+          ORDER BY sequence_index DESC, created_at DESC
+          LIMIT 8
+        `).bind(sessionId);
+    const rows = await statement.all();
+    const results = Array.isArray(rows?.results) ? rows.results : [];
+    return results.reverse().flatMap((row) => [
+      { role: "user", content: String(row.question || "").trim() },
+      {
+        role: "assistant",
+        content: String(row.answer || "").trim(),
+        rulingStatus: String(row.ruling_status || "").trim() || null
+      }
+    ]).filter((item) => item.content);
+  } catch (error) {
+    console.error("Could not load prior Rules Arbiter session history", error);
+    return [];
+  }
+}
+
+export function mergeConversationHistory(storedHistory, suppliedHistory) {
+  const merged = [];
+  const seen = new Set();
+  for (const item of [...sanitizeHistory(storedHistory), ...sanitizeHistory(suppliedHistory)]) {
+    const key = `${item.role}\u0000${item.content}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    merged.push(item);
+  }
+  return merged.slice(-12);
+}
+
+export function normalizeRulingStatus(status, usedSourceCount = 0) {
+  const normalized = ["explicit", "inferred", "provisional", "out_of_scope"].includes(status)
+    ? status
+    : "provisional";
+  if (["explicit", "inferred"].includes(normalized) && usedSourceCount < 1) return "provisional";
+  return normalized;
+}
+
+export function deriveConfidence(rulingStatus, usedSourceCount = 0) {
+  if (rulingStatus === "explicit") return "high";
+  if (rulingStatus === "inferred") return "medium";
+  if (rulingStatus === "out_of_scope") return "high";
+  return usedSourceCount > 0 ? "medium" : "low";
+}
+
+function ensureProvisionalAnswer(answer) {
+  let value = String(answer || "").trim();
+  if (!/^Provisional Arbiter Ruling:/i.test(value)) {
+    value = `Provisional Arbiter Ruling: ${value}`;
+  }
+  if (!/rest of (this|the) (game|play session)/i.test(value)) {
+    value += " Use this ruling for the rest of this game; it has been logged for designer review.";
+  }
+  return value;
+}
+
 async function persistInteraction(env, record) {
   if (!env.DB) return null;
 
@@ -286,7 +453,7 @@ async function persistInteraction(env, record) {
         record.question,
         record.answer,
         record.gameVersion || RULES_VERSION,
-        record.rulingStatus || "unresolved",
+        record.rulingStatus || "provisional",
         record.confidence || "low",
         record.mode || "ai",
         record.model || null,
@@ -383,24 +550,28 @@ function extractOutputText(payload) {
 
 function selectUsedSources(sources, sourceIds) {
   const requested = new Set(Array.isArray(sourceIds) ? sourceIds : []);
-  const selected = sources.filter((source) => requested.has(source.id));
-  const finalSources = selected.length ? selected : sources.slice(0, 2);
-  return finalSources.map(({ id, title, sourcePath, sourceUrl, excerpt }) => ({
-    id,
-    title,
-    sourcePath,
-    sourceUrl,
-    excerpt
-  }));
+  return sources
+    .filter((source) => requested.has(source.id))
+    .slice(0, 6)
+    .map(({ id, title, sourcePath, sourceUrl, excerpt }) => ({
+      id,
+      title,
+      sourcePath,
+      sourceUrl,
+      excerpt
+    }));
 }
 
 function sanitizeHistory(history) {
   if (!Array.isArray(history)) return [];
   return history
-    .slice(-6)
+    .slice(-12)
     .map((item) => ({
       role: item?.role === "assistant" ? "assistant" : "user",
-      content: String(item?.content || "").trim().slice(0, 800)
+      content: String(item?.content || "").trim().slice(0, 1200),
+      rulingStatus: item?.rulingStatus
+        ? String(item.rulingStatus).trim().slice(0, 40)
+        : null
     }))
     .filter((item) => item.content);
 }
