@@ -1,0 +1,54 @@
+name: Test playtest journal and retrospective feedback
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "playtest/tracked/journal.js"
+      - "playtest/tracked/index.html"
+      - "playtest/retrospective/**"
+      - "workers/playtest-sessions/src/journal.js"
+      - "workers/playtest-sessions/src/journal.test.mjs"
+      - "workers/playtest-sessions/wrangler.toml"
+      - "tests/playtest-journal-retrospective.test.ts"
+      - "tests/tracked-playtest-system.test.ts"
+      - ".github/workflows/test-playtest-journal.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: test-playtest-journal-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Check JavaScript syntax
+        run: |
+          node --check playtest/retrospective/app.js
+          node --check playtest/tracked/journal.js
+          node --check workers/playtest-sessions/src/journal.js
+
+      - name: Run journal and tracked-playtest contracts
+        run: |
+          npx vitest run \
+            workers/playtest-sessions/src/journal.test.mjs \
+            tests/playtest-journal-retrospective.test.ts \
+            tests/tracked-playtest-system.test.ts
