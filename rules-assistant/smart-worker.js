@@ -1,7 +1,6 @@
 import baseWorker, {
   buildRetrievalQueries,
   deriveConfidence,
-  loadStoredHistory,
   mergeConversationHistory,
   normalizeRulingStatus,
   sanitizePlaytestContext,
@@ -19,8 +18,13 @@ import {
   shouldVerifyAnswer
 } from "./rules-intelligence.js";
 import { answerQuestion, planQuestion, verifyDraft } from "./rules-openai.js";
+import { loadStoredHistoryV2 } from "./rules-history.js";
 import { persistSmartInteraction } from "./rules-persistence.js";
 import { enrichPlanFromEntityDocuments } from "./rules-plan-enrichment.js";
+import {
+  buildScopeRecoveryRuling,
+  isGameplayQuestionPlan
+} from "./rules-status.js";
 
 const RULES_VERSION = "v0.6.1";
 const FALLBACK_MODEL = "gpt-5.6-terra";
@@ -94,7 +98,7 @@ export default {
         throw new Error(`Canonical corpus reports ${corpus.version}, expected ${RULES_VERSION}.`);
       }
 
-      const storedHistory = await loadStoredHistory(env, {
+      const storedHistory = await loadStoredHistoryV2(env, {
         sessionId,
         playtestSessionId: playtestContext.playtestSessionId
       });
@@ -133,6 +137,36 @@ export default {
       let draftSources = selectUsedSources(retrieval.sources, draft.source_ids);
       let draftStatus = normalizeRulingStatus(draft.ruling_status, draftSources.length);
 
+      if (draftStatus === "out_of_scope" && isGameplayQuestionPlan(plan)) {
+        retryCount = 1;
+        reasoningEffort = "high";
+        draft = await answerQuestion({
+          env,
+          request,
+          question,
+          history,
+          gameState,
+          plan,
+          sources: retrieval.sources,
+          reasoningEffort,
+          verifierIssues: [
+            "This question describes an in-game card or rules interaction and is not out of scope.",
+            "If the supplied canonical text does not decide it, make a concrete provisional table ruling instead of declining to rule."
+          ]
+        });
+        draftSources = selectUsedSources(retrieval.sources, draft.source_ids);
+        draftStatus = normalizeRulingStatus(draft.ruling_status, draftSources.length);
+        if (draftStatus === "out_of_scope") {
+          draft = {
+            answer: buildScopeRecoveryRuling(question),
+            ruling_status: "provisional",
+            source_ids: retrieval.sources.slice(0, 3).map((source) => source.id)
+          };
+          draftSources = selectUsedSources(retrieval.sources, draft.source_ids);
+          draftStatus = "provisional";
+        }
+      }
+
       if (shouldVerifyAnswer(plan, draftStatus, draftSources.length, env)) {
         try {
           verification = await verifyDraft({
@@ -147,7 +181,7 @@ export default {
           });
 
           if (!verification.valid && verification.missing_queries.length) {
-            retryCount = 1;
+            retryCount = Math.max(retryCount, 1);
             retrieval = retrieveIntelligentRules(corpus, question, history, plan, {
               baseQueries,
               additionalQueries: verification.missing_queries,
@@ -201,7 +235,16 @@ export default {
       }
 
       let usedSources = selectUsedSources(retrieval.sources, draft.source_ids);
-      const rulingStatus = normalizeRulingStatus(draft.ruling_status, usedSources.length);
+      let rulingStatus = normalizeRulingStatus(draft.ruling_status, usedSources.length);
+      if (rulingStatus === "out_of_scope" && isGameplayQuestionPlan(plan)) {
+        draft = {
+          answer: buildScopeRecoveryRuling(question),
+          ruling_status: "provisional",
+          source_ids: retrieval.sources.slice(0, 3).map((source) => source.id)
+        };
+        usedSources = selectUsedSources(retrieval.sources, draft.source_ids);
+        rulingStatus = "provisional";
+      }
       if (rulingStatus === "out_of_scope") usedSources = [];
       const answer = rulingStatus === "provisional"
         ? ensureProvisionalAnswer(draft.answer)
