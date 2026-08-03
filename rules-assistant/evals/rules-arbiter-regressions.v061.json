@@ -1,0 +1,202 @@
+{
+  "schema": "gauntlet.rules-arbiter-regressions.v2",
+  "rulesVersion": "v0.6.1",
+  "minimumDeterministicCases": 18,
+  "cases": [
+    {
+      "id": "opening-hand-draw",
+      "question": "How many cards do I draw to start?",
+      "expectedStatus": "explicit",
+      "expectedSubject": "Setup",
+      "expectedSourceIds": ["rulebook:complete-rules-2"],
+      "requiredAnswerPatterns": ["three cards", "opening Hand"],
+      "forbiddenAnswerPatterns": ["one card"]
+    },
+    {
+      "id": "opening-hand-size",
+      "question": "How big is your starting hand?",
+      "expectedStatus": "explicit",
+      "expectedSubject": "Setup",
+      "expectedSourceIds": ["rulebook:complete-rules-2"],
+      "requiredAnswerPatterns": ["three cards"],
+      "forbiddenAnswerPatterns": ["one card"]
+    },
+    {
+      "id": "battle-card-destinations",
+      "question": "Where do Gambits and Tactics go after they resolve?",
+      "expectedStatus": "explicit",
+      "expectedSourceIds": ["rulebook:clearing-battle-cards"],
+      "requiredAnswerPatterns": ["Gambits", "Graveyards", "Tactics", "Discard Piles"]
+    },
+    {
+      "id": "territory-capture",
+      "question": "When is an occupied Territory captured?",
+      "expectedStatus": "explicit",
+      "expectedSourceIds": ["rulebook:capture-2", "rulebook:occupation"],
+      "requiredAnswerPatterns": ["start of your next turn", "Capture step"],
+      "forbiddenAnswerPatterns": ["immediately captures"]
+    },
+    {
+      "id": "defenders-advantage",
+      "question": "How does defender advantage work?",
+      "expectedStatus": "explicit",
+      "expectedSourceIds": ["rulebook:determine-the-winner"],
+      "requiredAnswerPatterns": ["tie rule", "does not grant an additional die"]
+    },
+    {
+      "id": "action-opportunities",
+      "question": "How many Action Opportunities do I normally have?",
+      "expectedStatus": "explicit",
+      "expectedSourceIds": ["rulebook:actions-and-action-opportunities-2"],
+      "requiredAnswerPatterns": ["two Action Opportunities", "before movement", "after movement"]
+    },
+    {
+      "id": "onward-stops-at-battle",
+      "question": "Can Onward continue after the battle it helped initiate?",
+      "expectedStatus": "explicit",
+      "expectedSubject": "Onward",
+      "expectedSourceIds": ["rulebook:orders", "rulebook:movement-after-battle"],
+      "requiredAnswerPatterns": ["No", "cannot continue after the battle"],
+      "forbiddenAnswerPatterns": ["remaining movement continues"]
+    },
+    {
+      "id": "surveillance-interference",
+      "question": "Can Intelligence use Surveillance and then Interference on the same face-down commitment?",
+      "expectedStatus": "explicit",
+      "expectedSubject": "Surveillance",
+      "expectedSourceIds": ["rulebook:interference-after-surveillance"],
+      "requiredAnswerPatterns": ["Yes", "3 Intel total", "replacement creates no new"]
+    },
+    {
+      "id": "direct-interference",
+      "question": "Can Interference target a commitment that is already face up, and what does it cost?",
+      "expectedStatus": "explicit",
+      "expectedSubject": "Interference",
+      "expectedSourceIds": ["rulebook:direct-interference"],
+      "requiredAnswerPatterns": ["2 Intel", "does not use Surveillance"]
+    },
+    {
+      "id": "specific-over-general",
+      "question": "What happens when a card's specific instruction conflicts with the normal battle sequence?",
+      "expectedStatus": "explicit",
+      "expectedSourceIds": ["rulebook:golden-rules", "rulebook:complete-rules-12"],
+      "requiredAnswerPatterns": ["specific instruction", "Do not reopen an earlier timing window"]
+    },
+    {
+      "id": "obsolete-battle-hand",
+      "question": "I am the defender, I currently have advantage, and both players have committed their Battle Hands. What happens next?",
+      "expectedStatus": "explicit",
+      "expectedSubject": "Battle sequence",
+      "expectedSourceIds": ["rulebook:complete-rules-6", "rulebook:advantage-and-disadvantage"],
+      "requiredAnswerPatterns": ["not a current v0.6.1 term", "If you mean", "advantage matters later"]
+    },
+    {
+      "id": "missing-context-ability",
+      "question": "Can I use this ability right now?",
+      "expectedStatus": "source_lookup",
+      "expectedResponseType": "clarification",
+      "requiredAnswerPatterns": ["ability's name or exact text", "whose turn", "current phase"]
+    },
+    {
+      "id": "surveillance-overview",
+      "question": "How does Surveillance work?",
+      "expectedStatus": "explicit",
+      "expectedSubject": "Surveillance",
+      "expectedSourceIds": ["rulebook:gambit-surveillance", "rulebook:tactic-surveillance", "rulebook:direct-interference"],
+      "requiredAnswerPatterns": ["two independent once-per-battle opportunities", "only when both players are Intelligence"],
+      "forbiddenAnswerPatterns": ["replaces or passes, you may revise"]
+    },
+    {
+      "id": "surveillance-face-up-follow-up",
+      "question": "What if the commitment is already face up?",
+      "history": [
+        {"role": "assistant", "content": "Surveillance overview", "subject": "Surveillance", "topic": "overview"}
+      ],
+      "expectedStatus": "explicit",
+      "expectedSubject": "Surveillance",
+      "expectedSourceIds": ["rulebook:direct-interference"],
+      "requiredAnswerPatterns": ["Direct Interference", "2 Intel", "response window"]
+    },
+    {
+      "id": "interference-cost-follow-up",
+      "question": "Does that change the cost of Interference?",
+      "history": [
+        {"role": "assistant", "content": "The commitment is already face up.", "subject": "Surveillance", "topic": "face-up commitment"}
+      ],
+      "expectedStatus": "explicit",
+      "expectedSourceIds": ["rulebook:direct-interference", "rulebook:interference-after-surveillance"],
+      "requiredAnswerPatterns": ["does not increase", "2 Intel", "3 total"]
+    },
+    {
+      "id": "action-card-destination",
+      "question": "When does a card go to the discard after being played?",
+      "expectedStatus": "explicit",
+      "expectedSourceIds": ["rulebook:action-effects", "rulebook:clearing-battle-cards"],
+      "requiredAnswerPatterns": ["Action effect", "Discard Pile", "Gambits normally go to the Graveyard"]
+    },
+    {
+      "id": "transmutation-spirit-walker",
+      "question": "I am a Spirit Walker. How do I do Transmutation?",
+      "expectedStatus": "explicit",
+      "expectedSubject": "Transmutation",
+      "expectedSourceIds": ["rulebook:progression", "rulebook:transmutation"],
+      "requiredAnswerPatterns": ["second Rite", "before dice are rolled", "not played"]
+    },
+    {
+      "id": "peace-treaty-timing",
+      "question": "I just ratified my fifth proposal. Do I win immediately, or at the start of my next turn?",
+      "expectedStatus": "explicit",
+      "expectedSubject": "Peace Treaty",
+      "expectedSourceIds": ["rulebook:treaty-articles-and-peace-treaty"],
+      "requiredAnswerPatterns": ["do not win immediately", "after the Capture step", "before the Draw step"]
+    },
+    {
+      "id": "good-faith-antecedent",
+      "question": "What does Good Faith do?",
+      "expectedStatus": "explicit",
+      "expectedSubject": "Good Faith",
+      "expectedSourceIds": ["card:diplomats-good-faith"],
+      "requiredAnswerPatterns": ["set-aside card", "Good Faith itself is discarded"],
+      "forbiddenAnswerPatterns": ["return Good Faith to your Hand"]
+    },
+    {
+      "id": "shock-and-awe",
+      "question": "What does Shock and Awe do?",
+      "expectedStatus": "explicit",
+      "expectedSubject": "Shock and Awe",
+      "expectedSourceIds": ["card:military-shock-and-awe"],
+      "requiredAnswerPatterns": ["only if the opponent can retreat", "cannot start a battle", "cannot move again"]
+    },
+    {
+      "id": "shock-and-awe-follow-up",
+      "question": "What does it do in battle?",
+      "history": [
+        {"role": "assistant", "content": "Shock and Awe overview", "subject": "Shock and Awe", "topic": "card overview"}
+      ],
+      "expectedStatus": "explicit",
+      "expectedSubject": "Shock and Awe",
+      "expectedSourceIds": ["card:military-shock-and-awe"],
+      "requiredAnswerPatterns": ["Shock and Awe's Battle effect", "additional Tactic"]
+    },
+    {
+      "id": "ritual-benefit-follow-up",
+      "question": "What benefit does this give me?",
+      "history": [
+        {"role": "assistant", "content": "Ritual of Ascendance overview", "subject": "Ritual of Ascendance", "topic": "overview"}
+      ],
+      "expectedStatus": "explicit",
+      "expectedSubject": "Ritual of Ascendance",
+      "expectedSourceIds": ["rulebook:convergence", "rulebook:completion"],
+      "requiredAnswerPatterns": ["immediately win the game", "normally +3"]
+    },
+    {
+      "id": "impossible-choice-consistent",
+      "question": "If a card says the opponent can choose either to discard a card or to let me have +1 to my battle total, but they have no cards in hand, do they have to choose the +1? or can they choose the discard option, which would have no effect?",
+      "expectedStatus": "provisional",
+      "expectedSubject": "Choice legality",
+      "expectedSourceIds": ["rulebook:golden-rules", "rulebook:complete-rules-12"],
+      "requiredAnswerPatterns": ["must choose an option they can actually perform", "rest of this game"],
+      "forbiddenAnswerPatterns": ["may choose the discard option"]
+    }
+  ]
+}
