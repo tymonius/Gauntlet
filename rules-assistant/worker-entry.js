@@ -1,5 +1,6 @@
 import worker from "./worker-v061.js";
 import smartWorker from "./smart-worker.js";
+import reliableWorker from "./reliable-worker.js";
 import { ADMIN_PAGE_WITH_INCREMENTAL_EXPORT } from "./admin-incremental-export-page.js";
 import { ADMIN_PAGE_WITH_RULES_INTELLIGENCE } from "./admin-intelligence-page.js";
 import { handleReviewExportCheckpoint } from "./review-export-checkpoint.js";
@@ -33,6 +34,10 @@ export default {
         headers: response.headers
       });
     }
-    return smartWorker.fetch(request, env, context);
+
+    if (String(env.RULES_RELIABLE_FALLBACK || "on").toLowerCase() === "off") {
+      return smartWorker.fetch(request, env, context);
+    }
+    return reliableWorker.fetch(request, env, context);
   }
 };
