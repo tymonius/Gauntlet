@@ -199,7 +199,7 @@ export function resolveDeterministicRuling(corpus, { question, history = [], gam
     });
   }
 
-  if (/\bvalor\b/i.test(text) && /\bwithdraw(?:al|rew|n)?\b/i.test(text) && /\bbattle\b/i.test(text)) {
+  if (/\bvalor\b/i.test(text) && /\b(withdraw|withdrawal|withdrew|withdrawn)\b/i.test(text) && /\bbattle\b/i.test(text)) {
     return result({
       id: "valor-withdrawal",
       answer: "No. Withdrawal from a battle ends it without a winner or loser, so you did not lose the battle and Valor does not trigger. Loss and retreat triggers do not occur.",
@@ -210,7 +210,7 @@ export function resolveDeterministicRuling(corpus, { question, history = [], gam
   }
 
   if (/\bcommandant\b/i.test(text) && /\brepel\b/i.test(text)
-      && /\b(first battle|first time)\b/i.test(text) && /\bwin|won\b/i.test(text)) {
+      && /\b(first battle|first time)\b/i.test(text) && /\b(win|won)\b/i.test(text)) {
     return result({
       id: "commandant-command-repel",
       answer: "Yes. The first time each turn you win a battle, you gain 1 Command even during the opponent's turn. That Command is available during the same Aftermath, so you may spend it on Repel after the opponent's normal retreat.",
@@ -221,7 +221,7 @@ export function resolveDeterministicRuling(corpus, { question, history = [], gam
   }
 
   if (/\b(active )?mission\b/i.test(text) && /\b(same turn|turn (?:i|it) (?:started|began)|began that turn)\b/i.test(text)
-      && /\bcomplete|completion\b/i.test(text)) {
+      && /\b(complete|completion)\b/i.test(text)) {
     return result({
       id: "mission-no-same-turn-completion",
       answer: "No. An Active Mission cannot complete during the turn it begins, even if you satisfy its requirement that turn. It may be completed during an Action Opportunity on a later turn if it remains satisfied.",
