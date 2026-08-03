@@ -7,6 +7,7 @@ const journalApp = read("playtest/tracked/journal.js");
 const retrospectivePage = read("playtest/retrospective/index.html");
 const retrospectiveApp = read("playtest/retrospective/app.js");
 const worker = read("workers/playtest-sessions/src/journal.js");
+const closureWorker = read("workers/playtest-sessions/src/closure.js");
 const wrangler = read("workers/playtest-sessions/wrangler.toml");
 
 describe("retrospective playtests and player journals", () => {
@@ -55,8 +56,10 @@ describe("retrospective playtests and player journals", () => {
     expect(worker).toContain("Retrospective records were entered after play");
   });
 
-  it("deploys the journal wrapper and advertises its capabilities", () => {
-    expect(wrangler).toContain('main = "src/journal.js"');
+  it("deploys the complete wrapper chain and advertises journal capabilities", () => {
+    expect(wrangler).toContain('main = "src/closure.js"');
+    expect(closureWorker).toContain('import journalWorker from "./journal.js"');
+    expect(worker).toContain('import integrityWorker from "./integrity.js"');
     expect(worker).toContain("playtestJournalSupported");
     expect(worker).toContain("retrospectiveFeedbackSupported");
     expect(worker).toContain("privatePlayerNotesSupported");

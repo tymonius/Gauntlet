@@ -1,0 +1,121 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-8YYYZJGGPE');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="referrer" content="no-referrer" />
+  <meta name="description" content="Submit Gauntlet playtest feedback without creating or joining a tracked session." />
+  <meta name="theme-color" content="#8f1f25" />
+  <title>Gauntlet Playtest Feedback</title>
+  <link rel="preconnect" href="https://use.typekit.net" />
+  <link rel="preconnect" href="https://p.typekit.net" crossorigin />
+  <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
+  <link rel="stylesheet" href="../../site.css" />
+  <link rel="stylesheet" href="../tracked/styles.css?v=20260802-1" />
+  <link rel="stylesheet" href="styles.css?v=20260803-1" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../../" aria-label="Gauntlet home">
+      <span class="brand-mark" aria-hidden="true">G</span>
+      <span>Gauntlet</span>
+    </a>
+    <nav aria-label="Feedback navigation">
+      <a href="../tracked/">Tracked playtest</a>
+      <a href="../retrospective/">Retrospective record</a>
+      <a href="../../rulebook/">Rules</a>
+      <a href="../../">Main site</a>
+    </nav>
+  </header>
+
+  <main class="feedback-main">
+    <section class="feedback-hero">
+      <div>
+        <p class="eyebrow">No session code required</p>
+        <h1>Submit playtest <span>feedback.</span></h1>
+        <p class="hero-lede">Use this form when you played Gauntlet but did not create or join a tracked session. Your response stands on its own; the other player does not need to be present.</p>
+      </div>
+      <aside class="feedback-explainer">
+        <strong>This is not a reconstructed tracker.</strong>
+        <p>It records one player’s feedback and remembered game context. It does not invent an opponent, shared result, live timeline, or Rules Arbiter history.</p>
+      </aside>
+    </section>
+
+    <section id="successPanel" class="tracked-panel success-panel" hidden aria-live="polite">
+      <p class="eyebrow">Feedback submitted</p>
+      <h2>Thank you.</h2>
+      <p>Your standalone response has been saved as a feedback-only record.</p>
+      <p>Receipt: <strong id="receiptCode"></strong></p>
+      <div class="button-row">
+        <button id="submitAnother" type="button" class="button primary">Submit another response</button>
+        <a class="button secondary" href="../../">Return to Gauntlet</a>
+      </div>
+    </section>
+
+    <form id="feedbackForm" class="feedback-form-layout">
+      <section class="tracked-panel form-section">
+        <p class="eyebrow">Player and game</p>
+        <h2>What did you play?</h2>
+        <div class="two-field-grid">
+          <label>Your name<input id="displayName" type="text" maxlength="80" autocomplete="name" required /></label>
+          <label>Date played<input id="playedOn" type="date" required /></label>
+        </div>
+        <div class="two-field-grid">
+          <label>Your faction<select id="faction" required></select></label>
+          <label>Your Leader<select id="leader" required disabled></select></label>
+        </div>
+        <div class="two-field-grid">
+          <label>Opponent faction <span class="optional">optional</span><select id="opponentFaction"></select></label>
+          <label>Opponent Leader <span class="optional">optional</span><select id="opponentLeader" disabled></select></label>
+        </div>
+        <div class="three-field-grid">
+          <label>Game status<select id="completionStatus"><option value="completed">Completed</option><option value="stopped">Stopped early</option><option value="unknown">Not sure / other</option></select></label>
+          <label>Outcome<select id="outcomePerspective"><option value="self">I won</option><option value="opponent">Opponent won</option><option value="no_winner">No winner</option><option value="unknown">Not sure / other</option></select></label>
+          <label>Duration in minutes <span class="optional">optional</span><input id="durationMinutes" type="number" min="1" max="1440" inputmode="numeric" /></label>
+        </div>
+        <label>Rounds <span class="optional">optional</span><input id="rounds" type="number" min="0" max="100" inputmode="numeric" /></label>
+        <div class="check-grid">
+          <label><input id="packageUnmodified" type="checkbox" checked /> We used the generated Decks and components without modification.</label>
+          <label><input id="variantUsed" type="checkbox" /> We used a noncanonical ruling or variant.</label>
+        </div>
+        <label>Did printing, cutting, missing pieces, or component identification interfere with play? <span class="optional">optional</span><textarea id="productionIssue" rows="3" maxlength="1000"></textarea></label>
+      </section>
+
+      <section class="tracked-panel form-section">
+        <p class="eyebrow">Your experience</p>
+        <h2>How did the game feel?</h2>
+        <label>Why did this faction or Leader interest you?<textarea id="factionInterest" rows="3" maxlength="1000" required></textarea></label>
+        <div id="ratingGrid" class="rating-grid"></div>
+        <label>Would you play Gauntlet again?<select id="playAgain" required><option value="">Choose</option><option value="yes">Yes</option><option value="no">No</option></select></label>
+      </section>
+
+      <section class="tracked-panel form-section">
+        <p class="eyebrow">What should be remembered</p>
+        <h2>Describe the playtest.</h2>
+        <label>Strongest moment<textarea id="strongestMoment" rows="3" maxlength="1500" required></textarea></label>
+        <label>Most confusing or frustrating point<textarea id="confusingPoint" rows="3" maxlength="1500" required></textarea></label>
+        <label>One important observation<textarea id="importantObservation" rows="3" maxlength="1500" required></textarea></label>
+        <label>Additional comments <span class="optional">optional</span><textarea id="comments" rows="4" maxlength="2000"></textarea></label>
+        <p class="privacy-note"><strong>No account or session code is required.</strong> This submission is stored as one respondent’s standalone feedback, separately labeled in analysis.</p>
+        <button class="button primary full-width" type="submit">Submit feedback</button>
+        <p id="formStatus" class="form-status" aria-live="polite"></p>
+      </section>
+    </form>
+  </main>
+
+  <footer>
+    <div><strong>Gauntlet</strong><p>Unpublished pre-release playtest project.</p></div>
+    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  </footer>
+
+  <script src="app.js?v=20260803-1" defer></script>
+</body>
+</html>
