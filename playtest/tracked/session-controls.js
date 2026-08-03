@@ -9,7 +9,7 @@
   if (!TOKEN_PATTERN.test(code)) return;
 
   const storagePrefix = `gauntlet_tracked_${code.slice(0, 16)}`;
-  const hostKey = readStorage(`${storagePrefix}_host`);
+  let hostKey = String(params.get("host") || "").trim() || readStorage(`${storagePrefix}_host`);
   let controls = null;
   let closedPanel = null;
   let currentSession = null;
@@ -70,6 +70,7 @@
 
   async function refresh() {
     if (document.hidden) return;
+    if (!hostKey) hostKey = readStorage(`${storagePrefix}_host`);
     try {
       currentSession = await request(`/api/tracked-games/${encodeURIComponent(code)}`);
       render();
