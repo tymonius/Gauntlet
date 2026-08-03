@@ -20,7 +20,7 @@
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
   <link rel="stylesheet" href="../../site.css" />
   <link rel="stylesheet" href="../tracked/styles.css?v=20260802-1" />
-  <link rel="stylesheet" href="styles.css?v=20260803-1" />
+  <link rel="stylesheet" href="styles.css?v=20260803-2" />
 </head>
 <body>
   <header class="site-header">
@@ -62,48 +62,143 @@
 
     <form id="feedbackForm" class="feedback-form-layout">
       <section class="tracked-panel form-section">
-        <p class="eyebrow">Player and game</p>
-        <h2>What did you play?</h2>
-        <div class="two-field-grid">
-          <label>Your name<input id="displayName" type="text" maxlength="80" autocomplete="name" required /></label>
-          <label>Date played<input id="playedOn" type="date" required /></label>
+        <div class="section-heading">
+          <p class="eyebrow">Player and game</p>
+          <h2>What did you play?</h2>
+          <p class="section-note">Record the basic context of the game you are describing. Unknown opponent details can be left blank.</p>
         </div>
+
         <div class="two-field-grid">
-          <label>Your faction<select id="faction" required></select></label>
-          <label>Your Leader<select id="leader" required disabled></select></label>
+          <label class="field">
+            <span class="field-label-row"><span class="field-label">Your name</span></span>
+            <input id="displayName" type="text" maxlength="80" autocomplete="name" required />
+          </label>
+          <label class="field">
+            <span class="field-label-row"><span class="field-label">Date played</span></span>
+            <input id="playedOn" type="date" required />
+          </label>
         </div>
+
         <div class="two-field-grid">
-          <label>Opponent faction <span class="optional">optional</span><select id="opponentFaction"></select></label>
-          <label>Opponent Leader <span class="optional">optional</span><select id="opponentLeader" disabled></select></label>
+          <label class="field">
+            <span class="field-label-row"><span class="field-label">Your faction</span></span>
+            <select id="faction" required></select>
+          </label>
+          <label class="field">
+            <span class="field-label-row"><span class="field-label">Your Leader</span></span>
+            <select id="leader" required disabled></select>
+          </label>
         </div>
+
+        <div class="two-field-grid">
+          <label class="field">
+            <span class="field-label-row"><span class="field-label">Opponent faction</span><span class="optional">Optional</span></span>
+            <select id="opponentFaction"></select>
+          </label>
+          <label class="field">
+            <span class="field-label-row"><span class="field-label">Opponent Leader</span><span class="optional">Optional</span></span>
+            <select id="opponentLeader" disabled></select>
+          </label>
+        </div>
+
         <div class="three-field-grid">
-          <label>Game status<select id="completionStatus"><option value="completed">Completed</option><option value="stopped">Stopped early</option><option value="unknown">Not sure / other</option></select></label>
-          <label>Outcome<select id="outcomePerspective"><option value="self">I won</option><option value="opponent">Opponent won</option><option value="no_winner">No winner</option><option value="unknown">Not sure / other</option></select></label>
-          <label>Duration in minutes <span class="optional">optional</span><input id="durationMinutes" type="number" min="1" max="1440" inputmode="numeric" /></label>
+          <label class="field">
+            <span class="field-label-row"><span class="field-label">Game status</span></span>
+            <select id="completionStatus">
+              <option value="completed">Completed</option>
+              <option value="stopped">Stopped early</option>
+              <option value="unknown">Not sure / other</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label-row"><span class="field-label">Outcome</span></span>
+            <select id="outcomePerspective">
+              <option value="self">I won</option>
+              <option value="opponent">Opponent won</option>
+              <option value="no_winner">No winner</option>
+              <option value="unknown">Not sure / other</option>
+            </select>
+          </label>
+          <label class="field">
+            <span class="field-label-row"><span class="field-label">Duration in minutes</span><span class="optional">Optional</span></span>
+            <input id="durationMinutes" type="number" min="1" max="1440" inputmode="numeric" />
+          </label>
         </div>
-        <label>Rounds <span class="optional">optional</span><input id="rounds" type="number" min="0" max="100" inputmode="numeric" /></label>
-        <div class="check-grid">
-          <label><input id="packageUnmodified" type="checkbox" checked /> We used the generated Decks and components without modification.</label>
-          <label><input id="variantUsed" type="checkbox" /> We used a noncanonical ruling or variant.</label>
+
+        <label class="field field-narrow">
+          <span class="field-label-row"><span class="field-label">Rounds</span><span class="optional">Optional</span></span>
+          <input id="rounds" type="number" min="0" max="100" inputmode="numeric" />
+        </label>
+
+        <div class="choice-grid">
+          <label class="choice-card">
+            <input id="packageUnmodified" type="checkbox" checked />
+            <span>We used the generated Decks and components without modification.</span>
+          </label>
+          <label class="choice-card">
+            <input id="variantUsed" type="checkbox" />
+            <span>We used a noncanonical ruling or variant.</span>
+          </label>
         </div>
-        <label>Did printing, cutting, missing pieces, or component identification interfere with play? <span class="optional">optional</span><textarea id="productionIssue" rows="3" maxlength="1000"></textarea></label>
+
+        <label class="field">
+          <span class="field-label-row"><span class="field-label">Production or component issues</span><span class="optional">Optional</span></span>
+          <span class="field-help">Did printing, cutting, missing pieces, or component identification interfere with play?</span>
+          <textarea id="productionIssue" rows="3" maxlength="1000"></textarea>
+        </label>
       </section>
 
       <section class="tracked-panel form-section">
-        <p class="eyebrow">Your experience</p>
-        <h2>How did the game feel?</h2>
-        <label>Why did this faction or Leader interest you?<textarea id="factionInterest" rows="3" maxlength="1000" required></textarea></label>
-        <div id="ratingGrid" class="rating-grid"></div>
-        <label>Would you play Gauntlet again?<select id="playAgain" required><option value="">Choose</option><option value="yes">Yes</option><option value="no">No</option></select></label>
+        <div class="section-heading">
+          <p class="eyebrow">Your experience</p>
+          <h2>How did the game feel?</h2>
+          <p class="section-note">Rate each item from 1 to 5, where 1 is very poor and 5 is excellent.</p>
+        </div>
+
+        <label class="field">
+          <span class="field-label-row"><span class="field-label">Why did this faction or Leader interest you?</span></span>
+          <textarea id="factionInterest" rows="4" maxlength="1000" required></textarea>
+        </label>
+
+        <div id="ratingGrid" class="rating-grid" role="group" aria-label="Experience ratings"></div>
+
+        <label class="field field-narrow">
+          <span class="field-label-row"><span class="field-label">Would you play Gauntlet again?</span></span>
+          <select id="playAgain" required>
+            <option value="">Choose</option>
+            <option value="yes">Yes</option>
+            <option value="no">No</option>
+          </select>
+        </label>
       </section>
 
       <section class="tracked-panel form-section">
-        <p class="eyebrow">What should be remembered</p>
-        <h2>Describe the playtest.</h2>
-        <label>Strongest moment<textarea id="strongestMoment" rows="3" maxlength="1500" required></textarea></label>
-        <label>Most confusing or frustrating point<textarea id="confusingPoint" rows="3" maxlength="1500" required></textarea></label>
-        <label>One important observation<textarea id="importantObservation" rows="3" maxlength="1500" required></textarea></label>
-        <label>Additional comments <span class="optional">optional</span><textarea id="comments" rows="4" maxlength="2000"></textarea></label>
+        <div class="section-heading">
+          <p class="eyebrow">What should be remembered</p>
+          <h2>Describe the playtest.</h2>
+          <p class="section-note">Summarize the moments that mattered most, especially the parts worth revisiting in later design work.</p>
+        </div>
+
+        <label class="field">
+          <span class="field-label-row"><span class="field-label">Strongest moment</span></span>
+          <textarea id="strongestMoment" rows="4" maxlength="1500" required></textarea>
+        </label>
+
+        <label class="field">
+          <span class="field-label-row"><span class="field-label">Most confusing or frustrating point</span></span>
+          <textarea id="confusingPoint" rows="4" maxlength="1500" required></textarea>
+        </label>
+
+        <label class="field">
+          <span class="field-label-row"><span class="field-label">One important observation</span></span>
+          <textarea id="importantObservation" rows="4" maxlength="1500" required></textarea>
+        </label>
+
+        <label class="field">
+          <span class="field-label-row"><span class="field-label">Additional comments</span><span class="optional">Optional</span></span>
+          <textarea id="comments" rows="4" maxlength="2000"></textarea>
+        </label>
+
         <p class="privacy-note"><strong>No account or session code is required.</strong> This submission is stored as one respondent’s standalone feedback, separately labeled in analysis.</p>
         <button class="button primary full-width" type="submit">Submit feedback</button>
         <p id="formStatus" class="form-status" aria-live="polite"></p>
@@ -116,6 +211,6 @@
     <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
   </footer>
 
-  <script src="app.js?v=20260803-1" defer></script>
+  <script src="app.js?v=20260803-2" defer></script>
 </body>
 </html>
