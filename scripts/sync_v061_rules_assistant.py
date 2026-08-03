@@ -130,7 +130,9 @@ def validate(
         "Integrated Rules Arbiter entry",
         worker_entry,
         [
-            'import worker from "./smart-worker.js"',
+            'import worker from "./worker-v061.js"',
+            'import smartWorker from "./smart-worker.js"',
+            'import { ADMIN_PAGE_WITH_INCREMENTAL_EXPORT } from "./admin-incremental-export-page.js"',
             'import { ADMIN_PAGE_WITH_RULES_INTELLIGENCE } from "./admin-intelligence-page.js"',
             'import { handleReviewExportCheckpoint } from "./review-export-checkpoint.js"',
             'import { handleReviewIntelligence } from "./review-intelligence.js"',
