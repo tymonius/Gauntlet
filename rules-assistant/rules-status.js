@@ -55,3 +55,29 @@ export function buildScopeRecoveryRuling(question) {
 
   return "Treat an option that cannot be completed as unavailable and resolve a legal option instead. The written rules do not expressly decide this interaction, so this is a provisional table ruling.";
 }
+
+const CLEAR_NON_GAMEPLAY_PATTERNS = [
+  /\b(morally|moral(?:ity)?|ethical(?:ly)?|ethics|justified|right or wrong|good or evil)\b/i,
+  /\b(lore|backstory|fictional history|historical inspiration|real[- ]world analogue)\b/i,
+  /\b(art|illustration|aesthetic|what does .* look like|appearance)\b/i,
+  /\b(design intent|why was .* designed|balance suggestion|buffed|nerfed)\b/i,
+  /\b(best strategy|best deck|deck recommendation|who should i play)\b/i
+];
+
+export function isClearlyOutOfScopeQuestion(question) {
+  const text = String(question || "").trim();
+  return Boolean(text) && CLEAR_NON_GAMEPLAY_PATTERNS.some((pattern) => pattern.test(text));
+}
+
+export function buildOutOfScopeRuling() {
+  return {
+    id: "out-of-scope-precheck",
+    answer: "The Rules Arbiter handles gameplay rules and table rulings. It does not determine lore, morality, historical interpretation, artwork, strategy, or game-design judgments.",
+    rulingStatus: "out_of_scope",
+    sourceIds: [],
+    subject: null,
+    topic: "scope",
+    confidence: "high",
+    responseType: "scope"
+  };
+}

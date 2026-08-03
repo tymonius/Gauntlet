@@ -145,6 +145,85 @@ const PACKET_DEFINITIONS = [
   }
 ];
 
+PACKET_DEFINITIONS.push(
+  {
+    id: "withdrawal",
+    subject: "Withdrawal",
+    aliases: ["withdrawal", "withdrew from a battle", "withdraw from a battle", "valor"],
+    sourceIds: [
+      "rulebook:effect-caused-withdrawal-from-battle",
+      "rulebook:retreat",
+      "card:neutral-valor"
+    ],
+    scopeNotes: ["Withdrawal from a battle ends it without a winner or loser; it is not a battle loss or retreat."],
+    requiredClaims: ["Win, loss, and retreat triggers do not occur after withdrawal from a battle."],
+    forbiddenClaims: ["Do not say ordinary withdrawal from a battle triggers Valor or any other loss trigger."]
+  },
+  {
+    id: "commandant-repel",
+    subject: "Commandant",
+    aliases: ["commandant", "repel"],
+    sourceIds: ["rulebook:complete-rules-13", "rulebook:commandant", "rulebook:orders-2"],
+    scopeNotes: ["The first battle victory each turn grants Command even during the opponent's turn."],
+    requiredClaims: ["Command gained from that victory is available for Repel during the same Aftermath."],
+    forbiddenClaims: ["Do not limit Command gain to the Military player's own turn."]
+  },
+  {
+    id: "active-mission",
+    subject: "Active Mission",
+    aliases: ["active mission", "started the mission", "began the mission"],
+    sourceIds: ["rulebook:starting-a-mission", "rulebook:completing-a-mission"],
+    scopeNotes: ["An Active Mission cannot complete during the turn it begins."],
+    requiredClaims: ["A satisfied Mission must wait until a later turn before it can be completed."],
+    forbiddenClaims: ["Do not permit same-turn Mission completion."]
+  },
+  {
+    id: "political-capital",
+    subject: "Political Capital",
+    aliases: ["political capital"],
+    sourceIds: ["rulebook:senator", "card:diplomats-safe-conduct", "rulebook:refused-terms", "rulebook:influence"],
+    scopeNotes: ["Safe Conduct replaces the refused-Terms loss with withdrawal and returns the Stake."],
+    requiredClaims: ["Political Capital does not trigger because no staked Influence would be lost after losing a battle."],
+    forbiddenClaims: ["Do not condition the answer on missing Political Capital text when the Senator source is supplied."]
+  },
+  {
+    id: "fieldcraft",
+    subject: "Fieldcraft",
+    aliases: ["fieldcraft"],
+    sourceIds: ["rulebook:ranger", "rulebook:control"],
+    scopeNotes: ["Fieldcraft ignores printed Territory effects only."],
+    requiredClaims: ["Fieldcraft does not alter Territory control, Occupation, or capture."],
+    forbiddenClaims: ["Do not let Fieldcraft ignore an effect that changes control merely because a Territory is involved."]
+  },
+  {
+    id: "fortifications",
+    subject: "Fortifications",
+    aliases: ["fortifications"],
+    sourceIds: ["card:neutral-fortifications", "rulebook:5-choose-tactics"],
+    scopeNotes: ["Fortifications changes the number of Tactics chosen, not the timing of choosing them."],
+    requiredClaims: ["Choose both Tactics during the same Choose Tactics stage before seeing the opponent's revealed choice."],
+    forbiddenClaims: ["Do not allow the second Tactic to be chosen after seeing the opponent's choice."]
+  },
+  {
+    id: "rousing-speech",
+    subject: "Rousing Speech",
+    aliases: ["rousing speech"],
+    sourceIds: ["card:neutral-rousing-speech", "rulebook:assets"],
+    scopeNotes: ["Turning an existing banked Asset face up is not banking it again."],
+    requiredClaims: ["Rousing Speech does not trigger from merely turning a face-down Asset face up."],
+    forbiddenClaims: ["Do not treat a reveal or face-up change as a new banking event."]
+  },
+  {
+    id: "battle-roles",
+    subject: "Battle roles",
+    aliases: ["attacker and defender remain", "roles remain fixed", "stop being the attacker"],
+    sourceIds: ["rulebook:complete-rules-7", "rulebook:normal-result"],
+    scopeNotes: ["Attacker and defender remain fixed through the Aftermath."],
+    requiredClaims: ["A retreat or victory does not switch or end those roles before the Aftermath finishes."],
+    forbiddenClaims: ["Do not say the winner stops being the attacker after the defender retreats."]
+  }
+);
+
 const FOLLOW_UP_PATTERN = /\b(it|its|this|that|these|those|they|them|benefit|in battle|right now|already face up|change the cost|do so)\b/i;
 
 function unique(values) {
