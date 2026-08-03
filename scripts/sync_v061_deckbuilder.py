@@ -14,6 +14,13 @@ import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+_RESOURCEFULNESS_BOOTSTRAP = ROOT / "scripts" / "sitecustomize.py"
+exec(compile(
+    _RESOURCEFULNESS_BOOTSTRAP.read_text(encoding="utf-8"),
+    str(_RESOURCEFULNESS_BOOTSTRAP),
+    "exec",
+), {"__file__": str(_RESOURCEFULNESS_BOOTSTRAP), "__name__": "_resourcefulness_bootstrap"})
+
 DECKBUILDER = ROOT / "deckbuilder"
 TEXT_SUFFIXES = {".js", ".json", ".html", ".css", ".md"}
 
