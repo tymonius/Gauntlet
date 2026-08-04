@@ -4,7 +4,7 @@
 **Compatibility audit:** `Gauntlet_v0.6.2_Faction_Component_Compatibility_Audit.md`  
 **Primary matrix:** `Gauntlet_v0.6.2_Faction_Component_Test_Matrix.md`
 
-These 23 scenarios supplement the primary 85-scenario Wave B matrix. Together they form a 108-scenario source-level acceptance surface.
+These 26 scenarios supplement the primary 85-scenario Wave B matrix. Together they form a 111-scenario source-level acceptance surface.
 
 ---
 
@@ -104,4 +104,4 @@ These 23 scenarios supplement the primary 85-scenario Wave B matrix. Together th
 
 # Combined gate
 
-The primary and compatibility matrices must contain 108 unique scenario IDs across the shared family prefixes. Later implementation may add scenarios but may not remove these without an explicit superseding design decision.
+The primary and compatibility matrices must contain 111 unique scenario IDs across the shared family prefixes. Later implementation may add scenarios but may not remove these without an explicit superseding design decision.
