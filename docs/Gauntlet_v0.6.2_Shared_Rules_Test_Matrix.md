@@ -186,51 +186,63 @@ A scenario marked **Wave B dependency** requires exact card or faction text befo
 
 # D. Defensive Edge and Tiebreak Roll
 
-## D01 — Defender controls the contested Territory
+## D01 — Controlled-Territory Defensive Edge
 
-**Given:** Battle totals are tied and the defender controls the contested Territory.  
+**Given:** Battle totals are tied, the defender controls the contested Territory, and no effect removes Defensive Edge.  
 **When:** The Outcome is determined.  
-**Expect:** The defender wins through Defensive Edge; no Tiebreak Roll occurs.
+**Expect:** The defender has Defensive Edge and wins the tied battle; no Tiebreak Roll occurs.
 
-## D02 — Defender does not control the contested Territory
+## D02 — Last Stand Defensive Edge
 
-**Given:** Battle totals are tied and the defender does not control the contested Territory.  
+**Given:** Battle totals are tied while the defender is making a Last Stand, and no effect removes Defensive Edge.  
+**When:** The Outcome is determined.  
+**Expect:** The defender has Defensive Edge and wins the tied Last Stand battle even though no Territory is contested.
+
+## D03 — Defensive Edge removed
+
+**Given:** The defender would normally have Defensive Edge, but an applicable effect removes it.  
+**When:** Battle totals are tied and no other tie-breaking rule resolves the tie.  
+**Expect:** Defensive Edge does not resolve the battle; proceed to a Tiebreak Roll.
+
+## D04 — Defender lacks Defensive Edge
+
+**Given:** Battle totals are tied, the defender neither controls the contested Territory nor is making a Last Stand, and no effect grants Defensive Edge.  
 **When:** No other tie-breaking rule resolves the tie.  
 **Expect:** Proceed to a Tiebreak Roll.
 
-## D03 — Tiebreak ignores original totals
+## D05 — Tiebreak ignores original totals
 
 **Given:** The original battle totals were tied after substantial card bonuses.  
 **When:** A Tiebreak Roll occurs.  
 **Expect:** Each player rolls one die; the prior totals are not added or compared again.
 
-## D04 — Tiebreak ignores advantage and disadvantage
+## D06 — Tiebreak ignores advantage and disadvantage
 
 **Given:** One or both players had advantage or disadvantage during the battle.  
 **When:** A Tiebreak Roll occurs.  
 **Expect:** Each player rolls exactly one die unless an effect expressly modifies a Tiebreak Roll.
 
-## D05 — Tiebreak ignores ordinary card effects and numerical modifiers
+## D07 — Tiebreak ignores ordinary card effects and numerical modifiers
 
 **Given:** Cards or abilities modified the original battle roll or total.  
 **When:** A Tiebreak Roll occurs.  
 **Expect:** Those effects do not modify the Tiebreak Roll unless they expressly refer to a Tiebreak Roll.
 
-## D06 — Express Tiebreak modifier
+## D08 — Express Tiebreak modifier
 
 **Given:** A future effect expressly says it modifies a Tiebreak Roll.  
 **When:** Its condition is satisfied.  
 **Expect:** Apply it according to its text.
 
-## D07 — Further tied Tiebreak Roll
+## D09 — Further tied Tiebreak Roll
 
 **Given:** Both players roll the same result on a Tiebreak Roll.  
 **When:** The tie remains.  
 **Expect:** Reroll the Tiebreak Roll until one result is higher.
 
-## D08 — Defensive Edge terminology
+## D10 — Defensive Edge terminology
 
-**Given:** A v0.6.2 player-facing source describes the defender-controlled tie rule.  
+**Given:** A v0.6.2 player-facing source describes the conditional defender tie benefit.  
 **When:** Terminology validation runs.  
 **Expect:** It uses **Defensive Edge**, not Defender's Advantage.
 
@@ -372,7 +384,7 @@ The battle's opening stage must use **Onset**. **Opening** is reserved for the t
 
 ## G05 — Defensive Edge audit
 
-The defender-controlled tie rule must use **Defensive Edge**.
+The conditional defender tie benefit must use **Defensive Edge**.
 
 ## G06 — Front Line audit
 
