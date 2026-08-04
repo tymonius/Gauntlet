@@ -270,9 +270,9 @@ A scenario marked **Wave B dependency** requires exact card or faction text befo
 
 ## E04 — Active-battle withdrawal before Outcome
 
-**Given:** A battle reached Onset and cards were committed, but an effect ends it without determining a winner.  
+**Given:** A battle reached Onset, but an effect ends it without determining a winner, before or after battle cards are committed.  
 **When:** The player or players withdraw.  
-**Expect:** Carry out withdrawal, clear committed battle cards using normal destinations, and do not apply win, loss, or retreat triggers. If only the defender withdraws, the attacker remains in the contested position and becomes the occupier when applicable.
+**Expect:** Carry out withdrawal; complete the remaining non-result steps of the Aftermath; clear any committed battle cards using their normal destinations; and do not apply win, loss, or retreat triggers. If only the defender withdraws, the attacker remains in the contested position and becomes the occupier when applicable.
 
 ## E05 — Both players withdraw
 
