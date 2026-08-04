@@ -48,6 +48,9 @@ const requiredRules = [
   "Each player rolls one die. Do not apply advantage, disadvantage, card effects, numerical modifiers, or the previous battle totals.",
   "A losing player retreats; a player who leaves without losing withdraws.",
   "if only the defender withdrew, the attacker remains in the contested position and becomes its occupier if it is an opposing Territory they do not control",
+  "If an active battle ends by withdrawal at any time after Onset",
+  "complete the remaining non-result steps of the Aftermath",
+  "Clear any committed battle cards using their normal destinations",
   "Normal Capture advances the Front Line by no more than one Territory per turn",
   "The Territory captured during the Capture step is not necessarily the Territory containing the active player's token.",
 ];
@@ -60,6 +63,7 @@ const requiredReference = [
   "An effect may remove Defensive Edge",
   "A losing player retreats; a player who leaves without losing withdraws.",
   "only the defender withdraws: the attacker remains in the contested position and becomes the occupier when applicable",
+  "after Onset: complete the remaining non-result steps of the Aftermath and clear any committed battle cards using their normal destinations",
   "The captured Territory may be behind your token.",
 ];
 
@@ -70,6 +74,7 @@ requireText("implementation ledger", source.ledger, [
   "the defender is making a Last Stand",
   "An effect may remove Defensive Edge",
   "Preserve the existing Occupation consequence when only the defender withdraws",
+  "withdrawal at any time after Onset completes the remaining non-result steps of the Aftermath and clears any committed battle cards normally",
 ]);
 
 const obsoleteHeading = "# 10. Obsolete Shared Language";
@@ -147,6 +152,8 @@ requireText("shared rules matrix", source.matrix, [
   "G08 — `revealed Territory` audit",
   "D02 — Last Stand Defensive Edge",
   "D03 — Defensive Edge removed",
+  "before or after battle cards are committed",
+  "complete the remaining non-result steps of the Aftermath",
   "If only the defender withdraws, the attacker remains in the contested position and becomes the occupier when applicable.",
 ]);
 
