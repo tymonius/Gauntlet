@@ -6,7 +6,40 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
+  apply-sitewide-favicon:
+    if: github.event_name == 'pull_request' && github.head_ref == 'agent/add-favicons-to-subpages'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout pull request branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Apply favicon links
+        run: node scripts/apply-sitewide-favicon.mjs
+
+      - name: Commit generated HTML updates
+        run: |
+          if git diff --quiet -- '*.html' '**/*.html'; then
+            echo "No HTML updates needed."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- '*.html' '**/*.html'
+          git commit -m "Apply favicon links to static pages"
+          git push
+
   test:
     runs-on: ubuntu-latest
 
