@@ -10,13 +10,13 @@ const ignoredDirectories = new Set([
   "node_modules"
 ]);
 
-const faviconBlock = [
+export const faviconBlock = [
   '  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />',
   '  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />',
   '  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />'
 ].join("\n");
 
-async function collectHtmlFiles(directory) {
+export async function collectHtmlFiles(directory = root) {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
 
@@ -36,20 +36,20 @@ async function collectHtmlFiles(directory) {
 
 function removeExistingFaviconLinks(head) {
   return head.replace(
-    /^\s*<link\b[^>]*\brel=(?:"(?:icon|shortcut icon|apple-touch-icon)"|'(?:icon|shortcut icon|apple-touch-icon)')[^>]*>\s*\n?/gim,
+    /^[\t ]*<link\b[^>]*\brel=(?:"(?:icon|shortcut icon|apple-touch-icon)"|'(?:icon|shortcut icon|apple-touch-icon)')[^>]*>[\t ]*(?:\r?\n)?/gim,
     ""
   );
 }
 
-function addFaviconLinks(html) {
+export function addFaviconLinks(html) {
   const headMatch = html.match(/<head\b[^>]*>[\s\S]*?<\/head>/i);
   if (!headMatch) return null;
 
   const originalHead = headMatch[0];
   let head = removeExistingFaviconLinks(originalHead);
 
-  const canonical = /^(\s*<link\b[^>]*\brel=(?:"canonical"|'canonical')[^>]*>\s*)$/im;
-  const viewport = /^(\s*<meta\b[^>]*\bname=(?:"viewport"|'viewport')[^>]*>\s*)$/im;
+  const canonical = /^([\t ]*<link\b[^>]*\brel=(?:"canonical"|'canonical')[^>]*>[\t ]*)$/im;
+  const viewport = /^([\t ]*<meta\b[^>]*\bname=(?:"viewport"|'viewport')[^>]*>[\t ]*)$/im;
 
   if (canonical.test(head)) {
     head = head.replace(canonical, `$1\n${faviconBlock}`);
@@ -59,33 +59,36 @@ function addFaviconLinks(html) {
     head = head.replace(/<head\b[^>]*>/i, `$&\n${faviconBlock}`);
   }
 
+  head = head.replace(/^(<(?:meta|link|title|script|style)\b)/gim, "  $1");
   return html.replace(originalHead, head);
 }
 
-const htmlFiles = await collectHtmlFiles(root);
-const changed = [];
-const skipped = [];
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname)) {
+  const htmlFiles = await collectHtmlFiles(root);
+  const changed = [];
+  const skipped = [];
 
-for (const absolutePath of htmlFiles) {
-  const relativePath = path.relative(root, absolutePath).replaceAll(path.sep, "/");
-  const before = await readFile(absolutePath, "utf8");
-  const after = addFaviconLinks(before);
+  for (const absolutePath of htmlFiles) {
+    const relativePath = path.relative(root, absolutePath).replaceAll(path.sep, "/");
+    const before = await readFile(absolutePath, "utf8");
+    const after = addFaviconLinks(before);
 
-  if (after === null) {
-    skipped.push(relativePath);
-    continue;
+    if (after === null) {
+      skipped.push(relativePath);
+      continue;
+    }
+
+    if (after !== before) {
+      await writeFile(absolutePath, after);
+      changed.push(relativePath);
+    }
   }
 
-  if (after !== before) {
-    await writeFile(absolutePath, after);
-    changed.push(relativePath);
+  console.log(`Applied site-wide favicon links to ${changed.length} HTML file(s).`);
+  for (const file of changed) console.log(`- ${file}`);
+
+  if (skipped.length > 0) {
+    console.log(`Skipped ${skipped.length} headless HTML fragment(s).`);
+    for (const file of skipped) console.log(`- ${file}`);
   }
-}
-
-console.log(`Applied site-wide favicon links to ${changed.length} HTML file(s).`);
-for (const file of changed) console.log(`- ${file}`);
-
-if (skipped.length > 0) {
-  console.log(`Skipped ${skipped.length} headless HTML fragment(s).`);
-  for (const file of skipped) console.log(`- ${file}`);
 }
