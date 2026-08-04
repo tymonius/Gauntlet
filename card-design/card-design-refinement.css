@@ -64,9 +64,12 @@
 .overlay-title {
   position: absolute;
   z-index: 1;
-  inset: 0.06in 0.012in;
-  display: block;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
+  padding: 0.06in 0.012in;
   font-family: var(--font-display-historical);
   font-size: 12.1pt;
   font-style: normal;
@@ -88,11 +91,6 @@
 .overlay-card .card-heading {
   padding-right: 0.46in;
   padding-left: 0.07in;
-}
-
-.overlay-card .card-art {
-  margin-right: 0.055in;
-  margin-left: 0.03in;
 }
 
 .overlay-card .card-rules,
@@ -136,7 +134,7 @@
   width: auto;
   height: auto;
   min-height: 0;
-  margin: 0 0.07in 0.045in 0.04in;
+  margin: 0 0.055in 0.045in;
   overflow: hidden;
   border: 1px solid rgba(54, 41, 29, 0.94);
   border-radius: 0.025in;
