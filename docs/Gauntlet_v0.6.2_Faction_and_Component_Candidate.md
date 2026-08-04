@@ -323,7 +323,7 @@ Détente does not trigger when the accepted Proposal becomes ratified during tho
 
 Replace its Accepted result with:
 
-> **Accepted:** Put the set-aside card in your Graveyard, then gain 1 Influence.
+> **Accepted:** Put that card in your Graveyard, then gain 1 Influence.
 
 ### Gunboat Diplomacy
 
