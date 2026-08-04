@@ -2,10 +2,10 @@
   const CSS_PIXELS_PER_INCH = 96;
   const CSS_PIXELS_PER_POINT = CSS_PIXELS_PER_INCH / 72;
   const TITLE_STEP = 0.05 * CSS_PIXELS_PER_POINT;
-  const ART_WIDTH_STEP = 2;
+  const ART_HEIGHT_STEP = 2;
   const EFFECT_STEP = 0.01;
   const MINIMUM_TITLE_SIZE = 8 * CSS_PIXELS_PER_POINT;
-  const MINIMUM_ART_WIDTH = 0.78 * CSS_PIXELS_PER_INCH;
+  const MINIMUM_ART_HEIGHT = 0.55 * CSS_PIXELS_PER_INCH;
   const MINIMUM_EFFECT_SCALE = 0.68;
   const PARCHMENT_SOURCE = '/images/artwork/card-backgrounds/neutral-parchment-v2.png';
   const catalog = window.GAUNTLET_TTS_CATALOG;
@@ -113,10 +113,11 @@
 
   function fitTerritory(card) {
     const title = card.querySelector('.territory-title');
+    const body = card.querySelector('.territory-body');
     const art = card.querySelector('.territory-art');
     const effect = card.querySelector('.territory-effect');
     let titleSize = Number.parseFloat(getComputedStyle(title).fontSize);
-    let artWidth = Number.parseFloat(getComputedStyle(card).getPropertyValue('--art-width'));
+    let artHeight = Number.parseFloat(getComputedStyle(card).getPropertyValue('--art-height'));
     let effectScale = 1;
 
     while (textOverflows(title) && titleSize > MINIMUM_TITLE_SIZE) {
@@ -125,9 +126,9 @@
       forceLayout(card);
     }
 
-    while (cardOverflows(card) && artWidth > MINIMUM_ART_WIDTH) {
-      artWidth = Math.max(MINIMUM_ART_WIDTH, artWidth - ART_WIDTH_STEP);
-      card.style.setProperty('--art-width', `${artWidth}px`);
+    while (cardOverflows(card) && artHeight > MINIMUM_ART_HEIGHT) {
+      artHeight = Math.max(MINIMUM_ART_HEIGHT, artHeight - ART_HEIGHT_STEP);
+      card.style.setProperty('--art-height', `${artHeight}px`);
       forceLayout(card);
     }
 
@@ -148,14 +149,26 @@
       forceLayout(card);
     }
 
+    const bodyRect = body?.getBoundingClientRect();
     const artRect = art?.getBoundingClientRect();
+    const artSpansBody = Boolean(
+      bodyRect
+      && artRect
+      && Math.abs(artRect.left - bodyRect.left) <= 0.75
+      && Math.abs(artRect.right - bodyRect.right) <= 0.75
+    );
+
     card.dataset.titleFit = textOverflows(title) ? 'false' : 'true';
     card.dataset.effectScale = effectScale.toFixed(2);
+    card.dataset.artHeight = artRect ? artRect.height.toFixed(2) : '0';
     card.dataset.artWidth = artRect ? artRect.width.toFixed(2) : '0';
+    card.dataset.artSpansBody = String(artSpansBody);
+
     const fits = !cardOverflows(card)
       && !textOverflows(title)
       && Boolean(effect.textContent.trim())
-      && Boolean(artRect && artRect.width >= MINIMUM_ART_WIDTH - 0.5 && artRect.height > 0);
+      && Boolean(artRect && artRect.height >= MINIMUM_ART_HEIGHT - 0.5 && artRect.width > 0)
+      && artSpansBody;
     card.classList.toggle('fit-warning', !fits);
   }
 
