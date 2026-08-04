@@ -9,6 +9,7 @@ const paths = {
   rules: path.join(repoRoot, "docs", "Gauntlet_v0.6.2_Shared_Rules_Candidate.md"),
   reference: path.join(repoRoot, "docs", "Gauntlet_v0.6.2_Shared_Reference_Candidate.md"),
   matrix: path.join(repoRoot, "docs", "Gauntlet_v0.6.2_Shared_Rules_Test_Matrix.md"),
+  ledger: path.join(repoRoot, "docs", "Gauntlet_v0.6.2_Implementation_Ledger.md"),
   readme: path.join(repoRoot, "docs", "README.md"),
 };
 
@@ -35,10 +36,13 @@ function forbidPatterns(name, text, patterns) {
   }
 }
 
+const defensiveEdgeDefinition =
+  "Defensive Edge: When the defender has Defensive Edge, the defender wins tied battle totals.";
+
 const requiredRules = [
   "Capture → Draw → Opening → Movement → Denouement → Cleanup",
   "Pending battle → Terms → Onset → Gambits",
-  "Defensive Edge: When the defender has Defensive Edge, the defender wins tied battle totals.",
+  defensiveEdgeDefinition,
   "the defender is making a Last Stand",
   "An effect may remove Defensive Edge",
   "Each player rolls one die. Do not apply advantage, disadvantage, card effects, numerical modifiers, or the previous battle totals.",
@@ -61,6 +65,12 @@ const requiredReference = [
 
 requireText("shared rules candidate", source.rules, requiredRules);
 requireText("shared reference candidate", source.reference, requiredReference);
+requireText("implementation ledger", source.ledger, [
+  defensiveEdgeDefinition,
+  "the defender is making a Last Stand",
+  "An effect may remove Defensive Edge",
+  "Preserve the existing Occupation consequence when only the defender withdraws",
+]);
 
 const obsoleteHeading = "# 10. Obsolete Shared Language";
 const obsoleteIndex = source.rules.indexOf(obsoleteHeading);
