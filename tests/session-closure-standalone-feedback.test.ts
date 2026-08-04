@@ -42,6 +42,7 @@ describe("manual session closure and standalone feedback", () => {
     expect(feedbackPage).toContain("completeness.js");
     expect(feedbackApp).toContain("/api/standalone-feedback");
     expect(feedbackApp).not.toContain("joinToken");
+    expect(() => new Function(feedbackCompleteness)).not.toThrow();
   });
 
   it("uses a structured mobile form and direct 1-to-5 rating controls", () => {
@@ -65,7 +66,7 @@ describe("manual session closure and standalone feedback", () => {
     expect(trackedPage).not.toContain("firstPlayerPerspective");
   });
 
-  it("stores standalone feedback as a closed one-respondent record with complete remembered context", () => {
+  it("stores standalone feedback as a closed one-respondent record with complete remembered context", async () => {
     expect(worker).toContain('metadata.collectionMode = "standalone-feedback"');
     expect(worker).toContain("metadata.standaloneContext = context");
     expect(worker).toContain('responseUrl.pathname = `/api/tracked-games/${encodeURIComponent(created.joinToken)}/response`');
@@ -77,6 +78,8 @@ describe("manual session closure and standalone feedback", () => {
     expect(completenessWorker).toContain("battles");
     expect(completenessWorker).toContain("stopReason");
     expect(completenessWorker).toContain("metadata.standaloneContext");
+    const module = await import("../workers/playtest-sessions/src/completeness.js");
+    expect(module.default).toBeTruthy();
   });
 
   it("deploys the completeness wrapper while preserving closure capabilities", () => {
