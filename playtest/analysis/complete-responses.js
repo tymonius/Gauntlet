@@ -1,6 +1,6 @@
 (() => {
   const nativeFetch = window.fetch.bind(window);
-  const RATING_DEFS = Object.freeze([
+  const RATINGS = Object.freeze([
     ["expectationMatch", "Expectation matched play"],
     ["leaderDistinction", "Leader felt distinct"],
     ["fun", "Overall fun"],
@@ -24,25 +24,22 @@
   let scheduled = false;
   let lastSignature = "";
 
-  window.fetch = captureAnalysisPayload;
+  window.fetch = captureAnalysis;
   document.addEventListener("DOMContentLoaded", init);
 
   function init() {
-    const target = document.getElementById("analysisApp");
-    if (target) {
-      new MutationObserver(scheduleEnhancement).observe(target, {
+    const gameRecords = document.getElementById("gameRecords");
+    if (gameRecords) {
+      new MutationObserver(scheduleEnhancement).observe(gameRecords, {
         childList: true,
-        subtree: true,
-        characterData: true,
-        attributes: true,
-        attributeFilter: ["hidden"]
+        subtree: true
       });
     }
-    document.addEventListener("click", interceptCompleteExports, true);
+    document.addEventListener("click", interceptExports, true);
     scheduleEnhancement();
   }
 
-  async function captureAnalysisPayload(input, init) {
+  async function captureAnalysis(input, init) {
     const response = await nativeFetch(input, init);
     const url = typeof input === "string" ? input : input?.url || "";
     const method = String(init?.method || input?.method || "GET").toUpperCase();
@@ -50,15 +47,15 @@
 
     try {
       rawPayload = await response.clone().json();
-      const viewPayload = clone(rawPayload);
-      viewPayload.games = Array.isArray(viewPayload.games)
-        ? viewPayload.games.map(addStandaloneViewResult)
-        : [];
+      const view = clone(rawPayload);
+      view.games = (view.games || []).map(addStandaloneViewResult);
       scheduleEnhancement();
-      return new Response(JSON.stringify(viewPayload), {
+      const headers = new Headers(response.headers);
+      headers.delete("content-length");
+      return new Response(JSON.stringify(view), {
         status: response.status,
         statusText: response.statusText,
-        headers: response.headers
+        headers
       });
     } catch {
       return response;
@@ -67,14 +64,14 @@
 
   function addStandaloneViewResult(game) {
     if (game.result || collectionMode(game) !== "standalone-feedback") return game;
-    const player = game.players?.[0];
     const context = standaloneContext(game);
+    const player = game.players?.[0];
     game.result = {
       submittedByParticipantId: player?.participantId || null,
       completionStatus: context.completionStatus || "unknown",
       firstPlayerParticipantId: context.firstPlayerPerspective === "self" ? player?.participantId || null : null,
       winnerParticipantId: context.outcomePerspective === "self" ? player?.participantId || null : null,
-      victoryRoute: knownValue(context.victoryRoute),
+      victoryRoute: known(context.victoryRoute),
       durationMinutes: numberOrNull(context.durationMinutes),
       rounds: numberOrNull(context.rounds),
       battles: numberOrNull(context.battles),
@@ -85,8 +82,6 @@
       strongestMoment: context.strongestMoment || "",
       confusingPoint: context.confusingPoint || "",
       importantObservation: context.importantObservation || "",
-      submittedAt: player?.response?.submittedAt || game.closedAt || null,
-      updatedAt: player?.response?.updatedAt || game.closedAt || null,
       analysisSynthetic: true
     };
     return game;
@@ -106,44 +101,40 @@
     const records = Array.from(document.querySelectorAll("#gameRecords .game-record"));
     if (!records.length) return;
 
+    const bySerial = new Map((rawPayload.games || []).map((game) => [game.sheetSerial, game]));
     const serials = records.map((record) => record.querySelector("h3")?.textContent?.trim()).filter(Boolean);
-    const gamesBySerial = new Map((rawPayload.games || []).map((game) => [game.sheetSerial, game]));
-    const games = serials.map((serial) => gamesBySerial.get(serial)).filter(Boolean);
+    const games = serials.map((serial) => bySerial.get(serial)).filter(Boolean);
     const signature = `${rawPayload.generatedAt || ""}|${serials.join("|")}`;
+    const unpatched = records.some((record) => record.dataset.completeResponseSignature !== signature);
+    if (!unpatched && signature === lastSignature) return;
 
     for (const record of records) {
-      const serial = record.querySelector("h3")?.textContent?.trim();
-      const game = gamesBySerial.get(serial);
-      if (game) enhanceGameRecord(record, game, signature);
+      const game = bySerial.get(record.querySelector("h3")?.textContent?.trim());
+      if (game) patchGameRecord(record, game, signature);
     }
-
-    if (signature !== lastSignature) {
-      renderCompleteWrittenFeedback(games);
-      lastSignature = signature;
-    }
-    renderEffectiveOutcomes(games);
-    renderEffectiveDuration(games);
+    renderWrittenFeedback(games);
+    renderOutcomes(games);
+    renderDuration(games);
     const summary = document.getElementById("filterSummary");
     if (summary) summary.textContent = `${games.length} of ${(rawPayload.games || []).length} playtest game${(rawPayload.games || []).length === 1 ? "" : "s"} in this research slice.`;
+    lastSignature = signature;
   }
 
-  function enhanceGameRecord(record, game, signature) {
+  function patchGameRecord(record, game, signature) {
     if (record.dataset.completeResponseSignature === signature) return;
-    record.dataset.completeResponseSignature = signature;
-
     const sections = Array.from(record.querySelectorAll(".game-section"));
-    const playerSection = sections.find((section) => section.querySelector("h4")?.textContent?.includes("Players"));
-    const resultSection = sections.find((section) => section.querySelector("h4")?.textContent?.includes("result"));
-
-    if (playerSection) {
-      playerSection.innerHTML = `<h4>Players and complete questionnaires</h4><div class="player-grid">${(game.players || []).map((player) => playerCard(game, player)).join("") || "<p>No players joined.</p>"}</div>`;
+    const players = sections.find((section) => section.querySelector("h4")?.textContent?.includes("Players"));
+    const result = sections.find((section) => section.querySelector("h4")?.textContent?.toLowerCase().includes("result"));
+    if (players) {
+      players.innerHTML = `<h4>Players and complete questionnaires</h4><div class="player-grid">${(game.players || []).map((player) => playerCard(player)).join("") || "<p>No players joined.</p>"}</div>`;
     }
-    if (resultSection) {
-      resultSection.innerHTML = `<h4>${collectionMode(game) === "standalone-feedback" ? "Standalone game context" : "Shared game result"}</h4>${gameContextHtml(game)}`;
+    if (result) {
+      result.innerHTML = `<h4>${collectionMode(game) === "standalone-feedback" ? "Standalone game context" : "Shared game result"}</h4>${contextHtml(game)}`;
     }
+    record.dataset.completeResponseSignature = signature;
   }
 
-  function renderCompleteWrittenFeedback(games) {
+  function renderWrittenFeedback(games) {
     const target = document.getElementById("writtenFeedback");
     if (!target) return;
     const cards = [];
@@ -153,14 +144,14 @@
         cards.push(`<article class="feedback-card">
           <header>
             <div><h3>${escapeHtml(player.displayName)}</h3><div class="meta">${escapeHtml(player.leader)} · ${escapeHtml(factionName(player.faction))} · ${escapeHtml(collectionLabel(game))}</div></div>
-            <div class="meta">${escapeHtml(game.sheetSerial)}<br>${escapeHtml(displayPlayDate(game))}</div>
+            <div class="meta">${escapeHtml(game.sheetSerial)}<br>${escapeHtml(playDate(game))}</div>
           </header>
           <dl>
             <div><dt>Why this faction or Leader?</dt><dd>${escapeHtml(player.response.factionInterest || "")}</dd></div>
             <div><dt>All ratings</dt><dd>${ratingsHtml(player.response)}</dd></div>
             <div><dt>Would play again?</dt><dd>${player.response.playAgain ? "Yes" : "No"}</dd></div>
             ${player.response.comments ? `<div><dt>Additional comments</dt><dd>${escapeHtml(player.response.comments)}</dd></div>` : ""}
-            <div><dt>Game context and observations</dt><dd>${gameContextHtml(game)}</dd></div>
+            <div><dt>Game context and observations</dt><dd>${contextHtml(game)}</dd></div>
           </dl>
         </article>`);
       }
@@ -168,7 +159,7 @@
     target.innerHTML = cards.length ? cards.join("") : `<div class="empty-state">No written questionnaire responses are present in this slice.</div>`;
   }
 
-  function playerCard(game, player) {
+  function playerCard(player) {
     const response = player.response;
     return `<article class="player-detail">
       <h5>Seat ${escapeHtml(player.seatIndex)}: ${escapeHtml(player.displayName)}</h5>
@@ -183,14 +174,14 @@
   }
 
   function ratingsHtml(response) {
-    return RATING_DEFS.map(([key, label]) => `${escapeHtml(label)}: <strong>${formatRating(response?.[key])}</strong>`).join(" · ");
+    return RATINGS.map(([key, label]) => `${escapeHtml(label)}: <strong>${rating(response?.[key])}</strong>`).join(" · ");
   }
 
-  function gameContextHtml(game) {
-    const context = normalizedGameContext(game);
+  function contextHtml(game) {
+    const context = normalizedContext(game);
     const facts = [
       ["Collection", collectionLabel(game)],
-      ["Date played", displayPlayDate(game)],
+      ["Date played", playDate(game)],
       ["Opponent", context.opponent],
       ["Status", titleCase(context.completionStatus)],
       ["First player", context.firstPlayer],
@@ -201,8 +192,7 @@
       ["Battles", context.battles == null ? "Unknown / not recorded" : String(context.battles)],
       ["Generated package unmodified", context.packageUnmodified == null ? "Unknown / not recorded" : context.packageUnmodified ? "Yes" : "No"],
       ["Noncanonical ruling or variant", context.variantUsed == null ? "Unknown / not recorded" : context.variantUsed ? "Yes" : "No"]
-    ].filter(([, value]) => value);
-
+    ];
     return `<div class="complete-game-context">
       ${facts.map(([label, value]) => `<p><strong>${escapeHtml(label)}:</strong> ${escapeHtml(value)}</p>`).join("")}
       ${context.stopReason ? `<p><strong>Stop reason:</strong> ${escapeHtml(context.stopReason)}</p>` : ""}
@@ -213,29 +203,16 @@
     </div>`;
   }
 
-  function normalizedGameContext(game) {
+  function normalizedContext(game) {
     if (collectionMode(game) === "standalone-feedback") {
       const context = standaloneContext(game);
       const player = game.players?.[0];
-      const opponent = [context.opponentLeader, factionName(context.opponentFaction)].filter(Boolean).join(" · ") || "Unknown / not entered";
-      const firstPlayer = context.firstPlayerPerspective === "self"
-        ? player?.displayName || "Respondent"
-        : context.firstPlayerPerspective === "opponent"
-          ? "Opponent"
-          : "Unknown / not recorded";
-      const outcome = context.outcomePerspective === "self"
-        ? `${player?.displayName || "Respondent"} won`
-        : context.outcomePerspective === "opponent"
-          ? "Opponent won"
-          : context.outcomePerspective === "no_winner"
-            ? "No winner"
-            : "Unknown / not recorded";
       return {
-        opponent,
+        opponent: [context.opponentLeader, factionName(context.opponentFaction)].filter(Boolean).join(" · ") || "Unknown / not entered",
         completionStatus: context.completionStatus || "unknown",
-        firstPlayer,
-        outcome,
-        victoryRoute: knownValue(context.victoryRoute),
+        firstPlayer: context.firstPlayerPerspective === "self" ? player?.displayName || "Respondent" : context.firstPlayerPerspective === "opponent" ? "Opponent" : "Unknown / not recorded",
+        outcome: context.outcomePerspective === "self" ? `${player?.displayName || "Respondent"} won` : context.outcomePerspective === "opponent" ? "Opponent won" : context.outcomePerspective === "no_winner" ? "No winner" : "Unknown / not recorded",
+        victoryRoute: known(context.victoryRoute),
         durationMinutes: numberOrNull(context.durationMinutes),
         rounds: numberOrNull(context.rounds),
         battles: numberOrNull(context.battles),
@@ -248,16 +225,15 @@
         importantObservation: context.importantObservation || ""
       };
     }
-
     const result = game.result || {};
-    const first = findPlayer(game, result.firstPlayerParticipantId);
-    const winner = findPlayer(game, result.winnerParticipantId);
+    const first = playerById(game, result.firstPlayerParticipantId);
+    const winner = playerById(game, result.winnerParticipantId);
     return {
       opponent: "Recorded from both joined players",
       completionStatus: result.completionStatus || (game.status === "closed" ? "unknown" : "pending"),
       firstPlayer: first ? `${first.displayName} (${first.leader})` : "Unknown / not recorded",
       outcome: winner ? `${winner.displayName} (${winner.leader}) won` : result.completionStatus === "completed" ? "No winner recorded" : "No winner",
-      victoryRoute: knownValue(result.victoryRoute),
+      victoryRoute: known(result.victoryRoute),
       durationMinutes: numberOrNull(result.durationMinutes),
       rounds: numberOrNull(result.rounds),
       battles: numberOrNull(result.battles),
@@ -271,15 +247,14 @@
     };
   }
 
-  function renderEffectiveOutcomes(games) {
+  function renderOutcomes(games) {
     const target = document.getElementById("outcomeSummary");
     if (!target) return;
     const completion = { completed: 0, stopped: 0, unknown: 0, pending: 0 };
     const routes = new Map();
     for (const game of games) {
-      const context = normalizedGameContext(game);
-      const status = context.completionStatus;
-      completion[status] = (completion[status] || 0) + 1;
+      const context = normalizedContext(game);
+      completion[context.completionStatus] = (completion[context.completionStatus] || 0) + 1;
       if (context.victoryRoute) routes.set(context.victoryRoute, (routes.get(context.victoryRoute) || 0) + 1);
     }
     const routeText = Array.from(routes.entries()).sort((a, b) => b[1] - a[1]).map(([route, count]) => `${titleCase(route)}: ${count}`).join(" · ") || "—";
@@ -290,40 +265,38 @@
       <div class="outcome-card"><strong>${escapeHtml(routeText)}</strong><span>victory routes</span></div>`;
   }
 
-  function renderEffectiveDuration(games) {
-    const values = games.map((game) => normalizedGameContext(game).durationMinutes).filter(Number.isFinite);
+  function renderDuration(games) {
+    const values = games.map((game) => normalizedContext(game).durationMinutes).filter(Number.isFinite);
     const target = document.getElementById("metricDuration");
     if (target) target.textContent = values.length ? `${Math.round(values.reduce((sum, value) => sum + value, 0) / values.length)}m` : "—";
   }
 
-  function interceptCompleteExports(event) {
+  function interceptExports(event) {
     const button = event.target.closest?.("#downloadBundle, #downloadResponses, #downloadGames");
     if (!button || !rawPayload) return;
     event.preventDefault();
     event.stopImmediatePropagation();
-
-    const games = exportGames(currentVisibleGames());
-    if (button.id === "downloadBundle") downloadBundle(games);
-    if (button.id === "downloadResponses") downloadResponses(games);
-    if (button.id === "downloadGames") downloadGames(games);
+    const games = anonymizedExportGames(visibleRawGames());
+    if (button.id === "downloadBundle") exportBundle(games);
+    if (button.id === "downloadResponses") exportResponses(games);
+    if (button.id === "downloadGames") exportGameRows(games);
   }
 
-  function currentVisibleGames() {
+  function visibleRawGames() {
     const serials = Array.from(document.querySelectorAll("#gameRecords .game-record h3")).map((heading) => heading.textContent.trim());
     const bySerial = new Map((rawPayload.games || []).map((game) => [game.sheetSerial, game]));
     return serials.map((serial) => bySerial.get(serial)).filter(Boolean);
   }
 
-  function exportGames(games) {
+  function anonymizedExportGames(games) {
     const exported = clone(games);
-    const anonymize = document.getElementById("anonymizeExports")?.checked !== false;
-    if (!anonymize) return exported;
+    if (document.getElementById("anonymizeExports")?.checked === false) return exported;
     exported.forEach((game, gameIndex) => {
       const ids = new Map();
       for (const player of game.players || []) {
-        const replacementId = `game-${gameIndex + 1}-seat-${player.seatIndex}`;
-        ids.set(player.participantId, replacementId);
-        player.participantId = replacementId;
+        const replacement = `game-${gameIndex + 1}-seat-${player.seatIndex}`;
+        ids.set(player.participantId, replacement);
+        player.participantId = replacement;
         player.displayName = `Player ${gameIndex + 1}-${player.seatIndex}`;
       }
       if (game.result) {
@@ -335,13 +308,13 @@
         if (ids.has(question.participantId)) question.participantId = ids.get(question.participantId);
         if (question.seatIndex) question.displayName = `Player ${gameIndex + 1}-${question.seatIndex}`;
       }
-      game.events = replaceParticipantReferences(game.events || [], ids);
+      game.events = replaceIds(game.events || [], ids);
     });
     return exported;
   }
 
-  function downloadBundle(games) {
-    const bundle = {
+  function exportBundle(games) {
+    downloadJson(`gauntlet-playtest-analysis-${dateStamp()}.json`, {
       schemaVersion: "gauntlet-playtest-analysis-export-v2",
       sourceSchemaVersion: rawPayload.schemaVersion || null,
       generatedAt: new Date().toISOString(),
@@ -355,17 +328,18 @@
         caveats: rawPayload.caveats || []
       },
       games
-    };
-    downloadJson(`gauntlet-playtest-analysis-${dateStamp()}.json`, bundle);
-    setExportStatus(`${games.length} playtest game${games.length === 1 ? "" : "s"} exported as a complete analysis bundle.`);
+    });
+    exportStatus(`${games.length} playtest game${games.length === 1 ? "" : "s"} exported as a complete analysis bundle.`);
   }
 
-  function downloadResponses(games) {
+  function exportResponses(games) {
     const rows = [];
     for (const game of games) {
-      const context = normalizedGameContext(game);
+      const context = normalizedContext(game);
       for (const player of game.players || []) {
         if (!player.response) continue;
+        const opponent = collectionMode(game) === "standalone-feedback" ? null : (game.players || []).find((candidate) => candidate.participantId !== player.participantId);
+        const standalone = standaloneContext(game);
         rows.push({
           sheet_serial: game.sheetSerial,
           collection_mode: collectionMode(game),
@@ -374,8 +348,8 @@
           rules_version: game.rulesVersion,
           created_at: game.createdAt,
           closed_at: game.closedAt || "",
-          opponent_faction: collectionMode(game) === "standalone-feedback" ? factionName(standaloneContext(game).opponentFaction) : opponentForPlayer(game, player)?.faction || "",
-          opponent_leader: collectionMode(game) === "standalone-feedback" ? standaloneContext(game).opponentLeader || "" : opponentForPlayer(game, player)?.leader || "",
+          opponent_faction: opponent ? factionName(opponent.faction) : factionName(standalone.opponentFaction),
+          opponent_leader: opponent?.leader || standalone.opponentLeader || "",
           completion_status: context.completionStatus,
           first_player: context.firstPlayer,
           outcome: context.outcome,
@@ -384,8 +358,8 @@
           rounds: context.rounds ?? "",
           battles: context.battles ?? "",
           stop_reason: context.stopReason,
-          package_unmodified: yesNoUnknown(context.packageUnmodified),
-          variant_used: yesNoUnknown(context.variantUsed),
+          package_unmodified: yesNo(context.packageUnmodified),
+          variant_used: yesNo(context.variantUsed),
           production_issue: context.productionIssue,
           strongest_moment: context.strongestMoment,
           confusing_point: context.confusingPoint,
@@ -410,12 +384,12 @@
       }
     }
     downloadCsv(`gauntlet-playtest-responses-${dateStamp()}.csv`, rows);
-    setExportStatus(`${rows.length} complete questionnaire response${rows.length === 1 ? "" : "s"} exported.`);
+    exportStatus(`${rows.length} complete questionnaire response${rows.length === 1 ? "" : "s"} exported.`);
   }
 
-  function downloadGames(games) {
+  function exportGameRows(games) {
     const rows = games.map((game) => {
-      const context = normalizedGameContext(game);
+      const context = normalizedContext(game);
       const first = game.players?.find((player) => player.seatIndex === 1);
       const second = game.players?.find((player) => player.seatIndex === 2);
       const standalone = standaloneContext(game);
@@ -441,8 +415,8 @@
         rounds: context.rounds ?? "",
         battles: context.battles ?? "",
         stop_reason: context.stopReason,
-        package_unmodified: yesNoUnknown(context.packageUnmodified),
-        variant_used: yesNoUnknown(context.variantUsed),
+        package_unmodified: yesNo(context.packageUnmodified),
+        variant_used: yesNo(context.variantUsed),
         production_issue: context.productionIssue,
         strongest_moment: context.strongestMoment,
         confusing_point: context.confusingPoint,
@@ -452,25 +426,19 @@
       };
     });
     downloadCsv(`gauntlet-playtest-games-${dateStamp()}.csv`, rows);
-    setExportStatus(`${rows.length} complete game record${rows.length === 1 ? "" : "s"} exported.`);
+    exportStatus(`${rows.length} complete game record${rows.length === 1 ? "" : "s"} exported.`);
   }
 
   function standaloneContext(game) {
     return game.standaloneContext || game.metadata?.standaloneContext || {};
   }
-
   function collectionMode(game) {
     return game.collectionMode || game.metadata?.collectionMode || "live-tracked";
   }
-
   function collectionLabel(game) {
-    const mode = collectionMode(game);
-    if (mode === "standalone-feedback") return "Standalone feedback";
-    if (mode === "retrospective") return "Retrospective record";
-    return "Live tracked game";
+    return collectionMode(game) === "standalone-feedback" ? "Standalone feedback" : collectionMode(game) === "retrospective" ? "Retrospective record" : "Live tracked game";
   }
-
-  function displayPlayDate(game) {
+  function playDate(game) {
     const playedOn = game.playedOn || game.metadata?.playedOn;
     if (playedOn) {
       const date = new Date(`${playedOn}T00:00:00`);
@@ -478,28 +446,34 @@
     }
     return formatDate(game.createdAt, false);
   }
-
-  function opponentForPlayer(game, player) {
-    return (game.players || []).find((candidate) => candidate.participantId !== player.participantId) || null;
+  function playerById(game, id) {
+    return (game.players || []).find((player) => player.participantId === id) || null;
   }
-
-  function findPlayer(game, participantId) {
-    return (game.players || []).find((player) => player.participantId === participantId) || null;
-  }
-
-  function knownValue(value) {
+  function known(value) {
     return value && value !== "unknown" ? value : null;
   }
-
   function numberOrNull(value) {
     const number = Number(value);
-    return Number.isFinite(number) && value !== null && value !== "" ? number : null;
+    return value !== null && value !== "" && Number.isFinite(number) ? number : null;
   }
-
-  function yesNoUnknown(value) {
+  function yesNo(value) {
     return value == null ? "" : value ? "yes" : "no";
   }
-
+  function rating(value) {
+    const number = Number(value);
+    return Number.isFinite(number) ? number.toFixed(0) : "—";
+  }
+  function factionName(value) {
+    return value ? FACTIONS[value] || titleCase(value) : "";
+  }
+  function titleCase(value) {
+    return String(value || "").replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
+  }
+  function formatDate(value, includeTime = true) {
+    const date = new Date(value);
+    if (Number.isNaN(date.valueOf())) return String(value || "");
+    return new Intl.DateTimeFormat(undefined, includeTime ? { dateStyle: "medium", timeStyle: "short" } : { dateStyle: "medium" }).format(date);
+  }
   function readFilters() {
     return {
       status: document.getElementById("filterStatus")?.value || "all",
@@ -511,31 +485,26 @@
       search: document.getElementById("filterSearch")?.value?.trim() || ""
     };
   }
-
-  function replaceParticipantReferences(value, ids) {
-    if (Array.isArray(value)) return value.map((item) => replaceParticipantReferences(item, ids));
+  function replaceIds(value, ids) {
+    if (Array.isArray(value)) return value.map((item) => replaceIds(item, ids));
     if (!value || typeof value !== "object") return ids.has(value) ? ids.get(value) : value;
-    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, replaceParticipantReferences(item, ids)]));
+    return Object.fromEntries(Object.entries(value).map(([key, item]) => [key, replaceIds(item, ids)]));
   }
-
-  function setExportStatus(message) {
+  function exportStatus(message) {
     const target = document.getElementById("exportStatus");
-    if (!target) return;
-    target.textContent = message;
-    target.className = "form-status success";
+    if (target) {
+      target.textContent = message;
+      target.className = "form-status success";
+    }
   }
-
   function downloadJson(filename, value) {
     downloadBlob(filename, `${JSON.stringify(value, null, 2)}\n`, "application/json");
   }
-
   function downloadCsv(filename, rows) {
     const headers = unique(rows.flatMap((row) => Object.keys(row)));
-    const content = [headers, ...rows.map((row) => headers.map((header) => row[header] ?? ""))]
-      .map((row) => row.map(csvCell).join(",")).join("\n");
+    const content = [headers, ...rows.map((row) => headers.map((header) => row[header] ?? ""))].map((row) => row.map(csvCell).join(",")).join("\n");
     downloadBlob(filename, `${content}\n`, "text/csv");
   }
-
   function downloadBlob(filename, content, type) {
     const url = URL.createObjectURL(new Blob([content], { type }));
     const link = document.createElement("a");
@@ -546,43 +515,19 @@
     link.remove();
     URL.revokeObjectURL(url);
   }
-
   function csvCell(value) {
     const text = String(value ?? "");
     return /[",\n]/.test(text) ? `"${text.replaceAll('"', '""')}"` : text;
   }
-
-  function factionName(value) {
-    return value ? FACTIONS[value] || titleCase(value) : "";
-  }
-
-  function formatRating(value) {
-    const number = Number(value);
-    return Number.isFinite(number) ? number.toFixed(0) : "—";
-  }
-
-  function titleCase(value) {
-    return String(value || "").replaceAll("_", " ").replace(/\b\w/g, (letter) => letter.toUpperCase());
-  }
-
-  function formatDate(value, includeTime = true) {
-    const date = new Date(value);
-    if (Number.isNaN(date.valueOf())) return String(value || "");
-    return new Intl.DateTimeFormat(undefined, includeTime ? { dateStyle: "medium", timeStyle: "short" } : { dateStyle: "medium" }).format(date);
-  }
-
-  function dateStamp() {
-    return new Date().toISOString().slice(0, 10);
-  }
-
   function unique(values) {
     return Array.from(new Set(values));
   }
-
+  function dateStamp() {
+    return new Date().toISOString().slice(0, 10);
+  }
   function clone(value) {
     return typeof structuredClone === "function" ? structuredClone(value) : JSON.parse(JSON.stringify(value));
   }
-
   function escapeHtml(value) {
     return String(value ?? "").replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;").replaceAll("'", "&#039;");
   }
