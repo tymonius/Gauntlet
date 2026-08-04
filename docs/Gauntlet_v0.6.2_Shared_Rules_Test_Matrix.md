@@ -254,19 +254,19 @@ A scenario marked **Wave B dependency** requires exact card or faction text befo
 
 **Given:** An effect ends a pending battle before Onset without a winner.  
 **When:** A player withdraws.  
-**Expect:** Use the shared withdrawal position; no battle or Aftermath occurs; win, loss, and retreat triggers do not occur.
+**Expect:** Use the shared withdrawal position; no battle or Aftermath occurs; win, loss, and retreat triggers do not occur. If only the defender withdraws, the attacker remains in the contested position and becomes the occupier when applicable.
 
 ## E04 — Active-battle withdrawal before Outcome
 
 **Given:** A battle reached Onset and cards were committed, but an effect ends it without determining a winner.  
 **When:** The player or players withdraw.  
-**Expect:** Carry out withdrawal, clear committed battle cards using normal destinations, and do not apply win, loss, or retreat triggers.
+**Expect:** Carry out withdrawal, clear committed battle cards using normal destinations, and do not apply win, loss, or retreat triggers. If only the defender withdraws, the attacker remains in the contested position and becomes the occupier when applicable.
 
 ## E05 — Both players withdraw
 
 **Given:** An effect makes both players withdraw.  
 **When:** Positions are resolved.  
-**Expect:** Move the attacker first, then the defender.
+**Expect:** Move the attacker first, then the defender; neither becomes the occupier because of the withdrawal.
 
 ## E06 — Fall Back is neither retreat nor withdrawal
 
