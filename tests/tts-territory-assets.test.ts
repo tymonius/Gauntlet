@@ -29,16 +29,19 @@ describe("TTS Territory assets", () => {
     expect(sharedStyles).toContain("background: var(--card-ivory");
     expect(sharedStyles).toContain("border: 1px solid var(--card-keyline");
     expect(sharedStyles).toContain("var(--parchment-image)");
-    expect(sharedStyles).toContain("font-family: var(--font-display-historical)");
     expect(sharedStyles).not.toContain(".territory-complexity");
     expect(renderer).not.toContain("value-medallion");
   });
 
-  it("matches the standard playable-card title-panel height", () => {
+  it("uses a compact Territory title panel without losing the standard card identity", () => {
     expect(playableStyles).toContain("grid-template-rows: 0.46in 1.42in minmax(0, 1fr) 0.16in");
-    expect(sharedStyles).toContain("grid-template-rows: 0.46in minmax(0, 1fr) 0.18in");
-    expect(sharedStyles).toContain("padding: 0.075in 0.09in 0.035in");
-    expect(dedicatedSpecimenPage).toContain("same 0.46-inch title panel as a standard playable card");
+    expect(sharedStyles).toContain("grid-template-rows: 0.4in minmax(0, 1fr) 0.18in");
+    expect(sharedStyles).toContain("padding: 0.045in 0.09in 0.025in");
+    expect(sharedStyles).toContain("font-family: var(--font-display-historical)");
+    expect(sharedStyles).toContain("font-size: 12.1pt");
+    expect(sharedStyles).toContain("letter-spacing: 0.035em");
+    expect(dedicatedSpecimenPage).toContain("compact 0.40-inch title panel");
+    expect(dedicatedSpecimenPage).toContain("historical title face, parchment, keylines, margins, and footer grammar");
   });
 
   it("uses a full-width artwork window above a bottom rules panel", () => {
@@ -90,7 +93,7 @@ describe("TTS Territory assets", () => {
   });
 
   it("maximizes art height before reducing text", () => {
-    expect(sharedStyles).toContain("--art-height: 1.33in");
+    expect(sharedStyles).toContain("--art-height: 1.39in");
     expect(renderer).toContain("const MINIMUM_ART_HEIGHT = 0.55 * CSS_PIXELS_PER_INCH");
     expect(renderer).toContain("while (cardOverflows(card) && artHeight > MINIMUM_ART_HEIGHT)");
     expect(renderer).toContain("card.dataset.artHeight");
