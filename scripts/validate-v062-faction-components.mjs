@@ -106,7 +106,7 @@ for (const prefix of ['A', 'M', 'D', 'F', 'I', 'Y', 'Q', 'N']) {
 }
 
 for (const text of [
-  'Détente triggers only when the Proposal was already ratified when offered',
+  'Détente does not trigger when the accepted Proposal becomes ratified during those Terms.',
   'Tariffs, Divestment, and Margin Loan grant an Action but no same-phase permission',
   'Arenas remove Defensive Edge and use a separate Tiebreak Roll',
   'published v0.6.1 sources remain unchanged',
