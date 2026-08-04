@@ -89,7 +89,8 @@
     "card_reference": "https://gauntlet.run/card-reference/",
     "deckbuilder": "https://gauntlet.run/deckbuilder/",
     "faction_sheets": "https://gauntlet.run/faction-sheets/",
-    "playtest_sheet": "https://gauntlet.run/playtest/"
+    "playtest_sheet": "https://gauntlet.run/playtest/",
+    "rulebook_booklet_pdf": "https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf"
   },
   "retired_outputs": [
     "Gauntlet_v0.6.1_Reference_Guide.docx",
