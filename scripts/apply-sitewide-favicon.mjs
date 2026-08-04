@@ -41,11 +41,9 @@ function removeExistingFaviconLinks(head) {
   );
 }
 
-function addFaviconLinks(html, relativePath) {
+function addFaviconLinks(html) {
   const headMatch = html.match(/<head\b[^>]*>[\s\S]*?<\/head>/i);
-  if (!headMatch) {
-    throw new Error(`${relativePath} has no <head> element`);
-  }
+  if (!headMatch) return null;
 
   const originalHead = headMatch[0];
   let head = removeExistingFaviconLinks(originalHead);
@@ -66,11 +64,17 @@ function addFaviconLinks(html, relativePath) {
 
 const htmlFiles = await collectHtmlFiles(root);
 const changed = [];
+const skipped = [];
 
 for (const absolutePath of htmlFiles) {
   const relativePath = path.relative(root, absolutePath).replaceAll(path.sep, "/");
   const before = await readFile(absolutePath, "utf8");
-  const after = addFaviconLinks(before, relativePath);
+  const after = addFaviconLinks(before);
+
+  if (after === null) {
+    skipped.push(relativePath);
+    continue;
+  }
 
   if (after !== before) {
     await writeFile(absolutePath, after);
@@ -80,3 +84,8 @@ for (const absolutePath of htmlFiles) {
 
 console.log(`Applied site-wide favicon links to ${changed.length} HTML file(s).`);
 for (const file of changed) console.log(`- ${file}`);
+
+if (skipped.length > 0) {
+  console.log(`Skipped ${skipped.length} headless HTML fragment(s).`);
+  for (const file of skipped) console.log(`- ${file}`);
+}
