@@ -148,7 +148,7 @@ Retreat and withdrawal normally move a player the same way:
 - ends or prevents a pending or active battle without a winner;
 - win, loss, and retreat effects do not occur;
 - before Onset: no battle or Aftermath occurs;
-- after cards are committed: clear those cards using their normal destinations.
+- after Onset: complete the remaining non-result steps of the Aftermath and clear any committed battle cards using their normal destinations.
 
 **Fall Back** is ordinary Movement. It is neither retreat nor withdrawal.
 
