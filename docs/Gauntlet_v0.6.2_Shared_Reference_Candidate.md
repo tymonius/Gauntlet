@@ -106,7 +106,14 @@ The higher battle total wins.
 
 ### Defensive Edge
 
-If battle totals are tied and the defender controls the contested Territory, the defender wins through **Defensive Edge**.
+> **Defensive Edge:** When the defender has Defensive Edge, the defender wins tied battle totals.
+
+The defender normally has Defensive Edge when:
+
+- the defender controls the contested Territory; or
+- the defender is making a Last Stand.
+
+An effect may remove Defensive Edge, including an applicable Arena Territory effect.
 
 ### Tiebreak Roll
 
@@ -171,7 +178,7 @@ Your **Front Line** is the unbroken sequence of Territories you control from you
 | Pending battle | Pre-battle state before Onset. |
 | Onset | Opening stage of an active battle. |
 | Aftermath | Closing stage of an active battle. |
-| Defensive Edge | Defender-controlled Territory wins tied battle totals. |
+| Defensive Edge | Conditional benefit that causes the defender to win tied battle totals. |
 | Tiebreak Roll | Separate unmodified one-die sudden-death roll. |
 | Front Line | Contiguous controlled Territories from your own end. |
 | Retreat | Displacement after losing a battle. |
