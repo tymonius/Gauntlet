@@ -206,7 +206,7 @@ for (const text of [
   "BOUND — outside Hand, Draw Pile, Discard Pile, Graveyard, Reserve, Tactic, and Asset Bank",
   "YOUR TURN",
   "Military — General vs Inquisition — Grand Inquisitor",
-  "five-minute guided first battle",
+  "Five-minute guided first battle",
   "one authoritative tableside faction reference",
   "The Deckbuilder and `/start/` flow remain on the published v0.6.1 catalog until Wave D",
 ]) requireText(teaching, text, "teaching candidate");
