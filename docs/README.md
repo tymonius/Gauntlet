@@ -18,12 +18,13 @@ These files govern the current published playtest game:
 
 When a derived PDF, printable sheet, Deckbuilder entry, or digital implementation conflicts with these sources, correct the governing source and regenerate the derived artifact.
 
-## Active v0.6.1 implementation records
+## Active implementation records
 
+- [v0.6.2 Implementation Ledger](Gauntlet_v0.6.2_Implementation_Ledger.md) — adopted post-playtest changes, unresolved release dependencies, ordered propagation waves, and validation gates for the next playtest revision.
 - [v0.6.1 Implementation Ledger](Gauntlet_v0.6.1_Implementation_Ledger.md) — approved first-playtest corrections and synchronization checklist.
 - [v0.6.1 Rulebook Layering Standard](Gauntlet_v0.6.1_Rulebook_Layering_Standard.md) — approved **How it works / Complete rules** structure for combining first-game teaching with technical reference.
 
-These implementation records preserve the decisions and production history behind v0.6.1. They do not override the canonical release sources above and may be archived when they no longer serve an active development purpose.
+These implementation records preserve decisions and production history while a revision is being assembled. They do not override the canonical release sources and may be archived when they no longer serve an active development purpose.
 
 ## Active development documents and tools
 
