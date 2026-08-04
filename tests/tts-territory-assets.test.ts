@@ -31,14 +31,15 @@ describe("TTS Territory assets", () => {
     expect(renderer).not.toContain("value-medallion");
   });
 
-  it("includes an adaptive framed artwork window", () => {
+  it("uses a full-width artwork window above a bottom rules panel", () => {
     expect(renderer).toContain('class="territory-art"');
     expect(renderer).toContain("Artwork pending");
     expect(renderer).toContain("territoryArtworkCandidates");
     expect(renderer).toContain("/images/artwork/territories/");
-    expect(renderer).toContain("while (cardOverflows(card) && artWidth > MINIMUM_ART_WIDTH)");
-    expect(renderer).toContain("card.dataset.artWidth");
-    expect(sharedStyles).toContain("grid-template-columns: var(--art-width) minmax(0, 1fr)");
+    expect(sharedStyles).toContain("grid-template-rows: var(--art-height) minmax(0, 1fr)");
+    expect(sharedStyles).not.toContain("grid-template-columns: var(--art-width)");
+    expect(sharedStyles).toContain(".territory-art {");
+    expect(sharedStyles).toContain("width: 100%");
     expect(sharedStyles).toContain(".territory-art img");
     expect(sharedStyles).toContain("object-fit: cover");
     expect(specimenPage).toContain('class="territory-art"');
@@ -65,8 +66,12 @@ describe("TTS Territory assets", () => {
     expect(sharedStyles).toContain(".territory-card.arena .territory-title");
   });
 
-  it("fits long canonical text without removing the artwork window", () => {
-    expect(renderer).toContain("const MINIMUM_ART_WIDTH = 0.78 * CSS_PIXELS_PER_INCH");
+  it("maximizes art height before reducing text", () => {
+    expect(sharedStyles).toContain("--art-height: 1.3in");
+    expect(renderer).toContain("const MINIMUM_ART_HEIGHT = 0.55 * CSS_PIXELS_PER_INCH");
+    expect(renderer).toContain("while (cardOverflows(card) && artHeight > MINIMUM_ART_HEIGHT)");
+    expect(renderer).toContain("card.dataset.artHeight");
+    expect(renderer).toContain("card.dataset.artSpansBody");
     expect(renderer).toContain("while (cardOverflows(card) && effectScale > 0.78)");
     expect(renderer).toContain("card.classList.add('compact')");
     expect(renderer).toContain("while (cardOverflows(card) && effectScale > MINIMUM_EFFECT_SCALE)");
