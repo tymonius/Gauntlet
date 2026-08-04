@@ -7,8 +7,10 @@ on:
     paths:
       - "playtest/tracked/**"
       - "playtest/feedback/**"
+      - "playtest/analysis/**"
       - "workers/playtest-sessions/**"
       - "tests/session-closure-standalone-feedback.test.ts"
+      - "tests/playtest-analysis-complete-responses.test.ts"
       - ".github/workflows/test-session-closure-feedback.yml"
   workflow_dispatch:
 
@@ -37,9 +39,12 @@ jobs:
         run: |
           npm install
           node --check workers/playtest-sessions/src/closure.js
+          node --check workers/playtest-sessions/src/completeness.js
           node --check playtest/tracked/session-controls.js
           node --check playtest/feedback/app.js
-          npx vitest run workers/playtest-sessions/src/closure.test.mjs tests/session-closure-standalone-feedback.test.ts
+          node --check playtest/feedback/completeness.js
+          node --check playtest/analysis/complete-responses.js
+          npx vitest run workers/playtest-sessions/src/closure.test.mjs tests/session-closure-standalone-feedback.test.ts tests/playtest-analysis-complete-responses.test.ts
 
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
@@ -77,8 +82,11 @@ jobs:
           await page.selectOption('#leader', 'ambassador');
           await page.selectOption('#opponentFaction', 'military');
           await page.selectOption('#opponentLeader', 'general');
+          await page.selectOption('#firstPlayerPerspective', 'opponent');
           await page.fill('#durationMinutes', '75');
           await page.fill('#rounds', '8');
+          await page.fill('#battles', '5');
+          await page.selectOption('#victoryRoute', 'faction_victory');
           await page.fill('#factionInterest', 'Negotiation and concessions interested me.');
           for (const card of await page.locator('#ratingGrid .rating-card').all()) {
             await card.locator('.rating-option').nth(3).click();
@@ -92,6 +100,9 @@ jobs:
 
           if (!submitted) throw new Error('Standalone endpoint was not called');
           if (submitted.context.opponentFaction !== 'military') throw new Error('Opponent context was not submitted');
+          if (submitted.context.firstPlayerPerspective !== 'opponent') throw new Error('First-player context was not submitted');
+          if (submitted.context.battles !== '5') throw new Error('Battle count was not submitted');
+          if (submitted.context.victoryRoute !== 'faction_victory') throw new Error('Victory route was not submitted');
           if (submitted.response.fun !== 4) throw new Error('Ratings were not submitted');
           if (await page.locator('#receiptCode').textContent() !== 'G061-FEED001') throw new Error('Receipt was not shown');
           await page.screenshot({ path: '/tmp/standalone-feedback-mobile.png', fullPage: true });
