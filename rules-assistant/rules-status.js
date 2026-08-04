@@ -58,10 +58,15 @@ export function buildScopeRecoveryRuling(question) {
 
 const CLEAR_NON_GAMEPLAY_PATTERNS = [
   /\b(morally|moral(?:ity)?|ethical(?:ly)?|ethics|justified|right or wrong|good or evil)\b/i,
-  /\b(lore|backstory|fictional history|historical inspiration|real[- ]world analogue)\b/i,
-  /\b(art|illustration|aesthetic|what does .* look like|appearance)\b/i,
-  /\b(design intent|why was .* designed|balance suggestion|buffed|nerfed)\b/i,
-  /\b(best strategy|best deck|deck recommendation|who should i play)\b/i
+  /\b(lore|backstory|fictional history|worldbuilding|setting canon)\b/i,
+  /\b(historical inspiration|historically inspired|real[- ]world analogue|real[- ]world analog|inspired by|inspiration for)\b/i,
+  /\b(real[- ]world|historical)\b[\s\S]{0,60}\b(ideology|politics|religion|culture|movement|figure|event)\b/i,
+  /\b(ideology|political philosophy|religious movement)\b[\s\S]{0,60}\b(inspired|influence|basis|analogue|analog)\b/i,
+  /\b(art|illustration|aesthetic|visual design|character design|what does .* look like|appearance)\b/i,
+  /\b(design intent|why was .* designed|balance suggestion|balance change|buffed|nerfed|should .* cost|should .* be stronger)\b/i,
+  /\b(best|strongest|optimal|most powerful|most competitive)\b[\s\S]{0,50}\b(strategy|deck|build|faction|leader|card|matchup)\b/i,
+  /\b(strategy|deck|build|faction|leader|card|matchup)\b[\s\S]{0,50}\b(best|strongest|optimal|most powerful|most competitive)\b/i,
+  /\b(deck recommendation|recommend(?:ed)? deck|who should i play|what should i play|how do i crush|how to crush|counterpick)\b/i
 ];
 
 export function isClearlyOutOfScopeQuestion(question) {
@@ -72,7 +77,7 @@ export function isClearlyOutOfScopeQuestion(question) {
 export function buildOutOfScopeRuling() {
   return {
     id: "out-of-scope-precheck",
-    answer: "The Rules Arbiter handles gameplay rules and table rulings. It does not determine lore, morality, historical interpretation, artwork, strategy, or game-design judgments.",
+    answer: "The Rules Arbiter handles gameplay rules and table rulings. It does not determine lore, morality, historical interpretation, artwork, strategy, deck recommendations, or game-design judgments.",
     rulingStatus: "out_of_scope",
     sourceIds: [],
     subject: null,
