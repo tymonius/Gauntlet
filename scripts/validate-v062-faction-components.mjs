@@ -1,0 +1,121 @@
+import fs from 'node:fs';
+import path from 'node:path';
+import process from 'node:process';
+
+const root = process.cwd();
+const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'utf8');
+const candidatePath = 'docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md';
+const matrixPath = 'docs/Gauntlet_v0.6.2_Faction_Component_Test_Matrix.md';
+const sharedPath = 'docs/Gauntlet_v0.6.2_Shared_Rules_Candidate.md';
+const ledgerPath = 'docs/Gauntlet_v0.6.2_Implementation_Ledger.md';
+
+const candidate = read(candidatePath);
+const matrix = read(matrixPath);
+const shared = read(sharedPath);
+const ledger = read(ledgerPath);
+
+const failures = [];
+const requireText = (source, text, label) => {
+  if (!source.includes(text)) failures.push(`${label}: missing ${JSON.stringify(text)}`);
+};
+const forbidText = (source, text, label) => {
+  if (source.includes(text)) failures.push(`${label}: forbidden ${JSON.stringify(text)}`);
+};
+
+for (const [text, label] of [
+  ['Neutral | 50 | Remove Invasion; add Landslide.', 'Neutral replacement'],
+  ['Military | 13 | Add Invasion.', 'Military count'],
+  ['Diplomats | 13 | Add Détente.', 'Diplomat count'],
+  ['Financiers | 13 | Add Compound Interest.', 'Financier count'],
+  ['Intelligence | 13 | Add Extraordinary Rendition.', 'Intelligence count'],
+  ["Mystics | 13 | Add Nature's Altar.", 'Mystics count'],
+  ['Inquisition | 13 | Add Martyrdom.', 'Inquisition count'],
+  ['**Action — Opening:** During your Movement this turn, you may advance up to two additional Positions', 'Invasion Action'],
+  ['Unused additional movement is lost when a pending battle is created.', 'Invasion movement loss'],
+  ['**Asset:** The first time each turn an opponent accepts one of your Proposals that was already ratified when you offered it, gain 1 Influence.', 'Détente Asset'],
+  ['**Asset:** After your normal Draw, if your Treasury contains at least one card, you may reveal the top card of your Draw Pile.', 'Compound Interest Asset'],
+  ['Whenever you discard one or more Assets you control, discard Extraordinary Rendition before any others, if able.', 'Extraordinary Rendition priority'],
+  ["**Overlay:** During your Opening, if your Player Token is on this Territory, you may take the Begin a Rite Faction Action.", "Nature's Altar Overlay"],
+  ['cards remaining in the opponent\'s Reserve go to their Graveyard instead of their Discard Pile', 'Martyrdom Reserve destination'],
+  ['**Overlay:** When a player retreats onto this Territory, they retreat one additional Position, if able.', 'Landslide Overlay'],
+  ['**Purge — Opening or Denouement:**', 'Purge phase label'],
+  ['**Defensive Edge:** When the defender has Defensive Edge, the defender wins tied battle totals.', 'Defensive Edge definition'],
+  ['During battles here, Defensive Edge does not apply. If battle totals remain tied, make a Tiebreak Roll.', 'Arena tie replacement'],
+]) requireText(candidate, text, label);
+
+for (const text of [
+  'Defender\'s Advantage',
+  'If battle totals are tied, reroll the battle dice.',
+  'gain 1 Influence for each Influence spent',
+]) forbidText(candidate, text, 'candidate vocabulary');
+
+for (const text of [
+  'Capture → Draw → Opening → Movement → Denouement → Cleanup',
+  'Pending battle → Terms → Onset → Gambits',
+  '**Defensive Edge:** When the defender has Defensive Edge, the defender wins tied battle totals.',
+  'advance your Front Line',
+]) requireText(shared + candidate, text, 'Wave A/B parity');
+
+for (const text of [
+  'Landslide',
+  'Détente',
+  'Compound Interest',
+  'Extraordinary Rendition',
+  "Nature's Altar",
+  'Martyrdom',
+  'Complete interaction and stacking validation for Military Invasion',
+]) requireText(ledger, text, 'implementation ledger parity');
+
+const proposalStart = candidate.indexOf('## Proposal set — exact v0.6.2 text');
+const proposalEnd = candidate.indexOf('## Diplomats — Détente');
+if (proposalStart < 0 || proposalEnd <= proposalStart) {
+  failures.push('Proposal block could not be isolated.');
+} else {
+  const proposalBlock = candidate.slice(proposalStart, proposalEnd);
+  const proposalNames = [
+    'De-escalation',
+    'Orderly Withdrawal',
+    'Capitulation',
+    'Open Channels',
+    'Mutual Disarmament',
+    'Prisoner Exchange',
+    'Rebuilding Pact',
+    'Ultimatum',
+    'Diplomatic Recognition',
+  ];
+  for (const name of proposalNames) requireText(proposalBlock, `### ${name}`, `Proposal ${name}`);
+  const perspectiveTerms = proposalBlock.match(/\b(?:you|your|yours)\b/gi) ?? [];
+  if (perspectiveTerms.length > 0) {
+    failures.push(`Proposal block contains ambiguous reader-perspective terms: ${perspectiveTerms.join(', ')}`);
+  }
+  const acceptedCount = (proposalBlock.match(/> \*\*Accepted:\*\*/g) ?? []).length;
+  const refusedCount = (proposalBlock.match(/> \*\*Refused:\*\*/g) ?? []).length;
+  if (acceptedCount !== 9 || refusedCount !== 9) {
+    failures.push(`Proposal block must contain 9 Accepted and 9 Refused results; found ${acceptedCount}/${refusedCount}.`);
+  }
+}
+
+const scenarioIds = [...matrix.matchAll(/^## ([A-Z]\d{2}) —/gm)].map((match) => match[1]);
+const uniqueScenarioIds = new Set(scenarioIds);
+if (scenarioIds.length !== 85 || uniqueScenarioIds.size !== 85) {
+  failures.push(`Expected 85 unique Wave B scenarios; found ${scenarioIds.length} headings and ${uniqueScenarioIds.size} unique IDs.`);
+}
+
+for (const prefix of ['A', 'M', 'D', 'F', 'I', 'Y', 'Q', 'N']) {
+  if (!scenarioIds.some((id) => id.startsWith(prefix))) failures.push(`Missing scenario family ${prefix}.`);
+}
+
+for (const text of [
+  'Détente triggers only when the Proposal was already ratified when offered',
+  'Tariffs, Divestment, and Margin Loan grant an Action but no same-phase permission',
+  'Arenas remove Defensive Edge and use a separate Tiebreak Roll',
+  'published v0.6.1 sources remain unchanged',
+]) requireText(candidate, text, 'cross-faction requirement');
+
+if (failures.length > 0) {
+  console.error('v0.6.2 faction/component validation failed:');
+  for (const failure of failures) console.error(`- ${failure}`);
+  process.exit(1);
+}
+
+console.log(`v0.6.2 faction/component validation passed (${scenarioIds.length} scenarios, exact-text and parity gates).`);
