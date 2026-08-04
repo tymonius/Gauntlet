@@ -45,7 +45,19 @@ jobs:
       - name: Checkout publication branch
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            .github/workflows/publish-v061-rulebook.yml
+            README.md
+            package.json
+            package-lock.json
+            rulebook
+            rulebook-design
+            rulebook-production
+            releases/v0.6.1
+            images/sketches
+            rules-assistant
 
       - name: Set up Node
         uses: actions/setup-node@v4
