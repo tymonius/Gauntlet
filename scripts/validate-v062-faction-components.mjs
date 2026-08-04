@@ -41,6 +41,12 @@ for (const [text, label] of [
   ['**Purge — Opening or Denouement:**', 'Purge phase label'],
   ['**Defensive Edge:** When the defender has Defensive Edge, the defender wins tied battle totals.', 'Defensive Edge definition'],
   ['During battles here, Defensive Edge does not apply. If battle totals remain tied, make a Tiebreak Roll.', 'Arena tie replacement'],
+  ['**Accepted:** Put that card in your Graveyard, then gain 1 Influence.', 'Good Faith accepted result'],
+  ['**Tactic:** Gain advantage. Then you may play one card from your Hand with a Tactic or Battle effect face up as an additional Tactic. In the Aftermath, put this card and that card in your Graveyard.', 'Black Covenant'],
+  ['| First Rite | 1 |\n| Second Rite | 2 |\n| Third Rite | 3 |\n| Ritual of Ascendance | 4 |', 'Guardians scaling'],
+  ['| Starting Capital | 2, as a v0.6.2 test revision. |', 'Financier starting Capital'],
+  ['If Treasury value is greater, the Financier may take one Action during both Opening and Denouement that turn', 'Financial Capacity'],
+  ['| +1 | 1 |\n| +2 | 3 |\n| +3 | 6 |\n| +4 | 10 |', 'Leverage progression'],
 ]) requireText(candidate, text, label);
 
 for (const text of [
