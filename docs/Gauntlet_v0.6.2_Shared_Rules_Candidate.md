@@ -287,9 +287,14 @@ The higher total wins.
 
 ### Defensive Edge
 
-> If battle totals are tied and the defender controls the contested Territory, the defender wins through Defensive Edge.
+> **Defensive Edge:** When the defender has Defensive Edge, the defender wins tied battle totals.
 
-Defensive Edge resolves the battle immediately.
+The defender normally has Defensive Edge when:
+
+- the defender controls the contested Territory; or
+- the defender is making a Last Stand.
+
+An effect may remove Defensive Edge, including an applicable Arena Territory effect. Defensive Edge is conditional; the defender does not have it merely because they are the defender.
 
 If the tied totals are not resolved by Defensive Edge or another applicable tie-breaking rule, make a Tiebreak Roll.
 
@@ -425,7 +430,8 @@ Withdrawal does not count as Fall Back or ordinary movement for effects unless a
 
 - Accepted Terms prevent the battle from reaching Onset.
 - Onset begins the battle.
-- Defensive Edge: tied totals are won by a defender who controls the contested Territory.
+- A defender with Defensive Edge wins tied battle totals.
+- The defender normally has Defensive Edge while controlling the contested Territory or making a Last Stand, unless an effect removes it.
 - Otherwise make an unmodified Tiebreak Roll.
 
 ## Retreat and withdrawal
@@ -482,7 +488,7 @@ The formal opening stage of an active battle, parallel to Aftermath as its closi
 
 ## Defensive Edge
 
-The rule by which a defender who controls the contested Territory wins tied battle totals.
+A conditional benefit that causes the defender to win tied battle totals. The surrounding rules and effects determine whether the defender has it.
 
 ## Tiebreak Roll
 
