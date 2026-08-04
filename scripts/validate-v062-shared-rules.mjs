@@ -38,7 +38,9 @@ function forbidPatterns(name, text, patterns) {
 const requiredRules = [
   "Capture → Draw → Opening → Movement → Denouement → Cleanup",
   "Pending battle → Terms → Onset → Gambits",
-  "If battle totals are tied and the defender controls the contested Territory, the defender wins through Defensive Edge.",
+  "Defensive Edge: When the defender has Defensive Edge, the defender wins tied battle totals.",
+  "the defender is making a Last Stand",
+  "An effect may remove Defensive Edge",
   "Each player rolls one die. Do not apply advantage, disadvantage, card effects, numerical modifiers, or the previous battle totals.",
   "A losing player retreats; a player who leaves without losing withdraws.",
   "if only the defender withdrew, the attacker remains in the contested position and becomes its occupier if it is an opposing Territory they do not control",
@@ -49,7 +51,9 @@ const requiredRules = [
 const requiredReference = [
   "Capture → Draw → Opening → Movement → Denouement → Cleanup",
   "Pending battle → Terms → Onset → Gambits",
-  "If battle totals are tied and the defender controls the contested Territory, the defender wins through **Defensive Edge**.",
+  "Defensive Edge:** When the defender has Defensive Edge, the defender wins tied battle totals.",
+  "the defender is making a Last Stand",
+  "An effect may remove Defensive Edge",
   "A losing player retreats; a player who leaves without losing withdraws.",
   "only the defender withdraws: the attacker remains in the contested position and becomes the occupier when applicable",
   "The captured Territory may be behind your token.",
@@ -101,8 +105,8 @@ const scenarioMatches = [...source.matrix.matchAll(/^## ([A-G]\d{2}) — /gm)];
 const scenarioIds = scenarioMatches.map((match) => match[1]);
 const uniqueScenarioIds = new Set(scenarioIds);
 
-if (scenarioIds.length !== 61) {
-  failures.push(`shared rules matrix contains ${scenarioIds.length} numbered scenarios; expected 61`);
+if (scenarioIds.length !== 63) {
+  failures.push(`shared rules matrix contains ${scenarioIds.length} numbered scenarios; expected 63`);
 }
 if (uniqueScenarioIds.size !== scenarioIds.length) {
   failures.push("shared rules matrix contains duplicate scenario IDs");
@@ -112,7 +116,7 @@ const expectedRanges = {
   A: 13,
   B: 6,
   C: 8,
-  D: 8,
+  D: 10,
   E: 8,
   F: 10,
   G: 8,
@@ -131,6 +135,8 @@ requireText("shared rules matrix", source.matrix, [
   "# H. Cross-Surface Acceptance Gate",
   "A passing Markdown review alone does not complete the release gate.",
   "G08 — `revealed Territory` audit",
+  "D02 — Last Stand Defensive Edge",
+  "D03 — Defensive Edge removed",
   "If only the defender withdraws, the attacker remains in the contested position and becomes the occupier when applicable.",
 ]);
 
@@ -148,4 +154,4 @@ if (failures.length > 0) {
   process.exit(1);
 }
 
-console.log("v0.6.2 shared-rules validation passed (61 scenarios, terminology and parity gates).")
+console.log("v0.6.2 shared-rules validation passed (63 scenarios, terminology and parity gates).")
