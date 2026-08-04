@@ -21,6 +21,7 @@ When a derived PDF, printable sheet, Deckbuilder entry, or digital implementatio
 ## Active implementation records
 
 - [v0.6.2 Shared Rules Candidate](Gauntlet_v0.6.2_Shared_Rules_Candidate.md) — adopted Wave A player-facing and technical text for the turn, Action, movement, pending-battle, Terms, Onset, Defensive Edge, Tiebreak Roll, Front Line, withdrawal, and retreat systems.
+- [v0.6.2 Shared Reference Candidate](Gauntlet_v0.6.2_Shared_Reference_Candidate.md) — compact tableside form of the adopted Wave A shared rules.
 - [v0.6.2 Shared Rules Test Matrix](Gauntlet_v0.6.2_Shared_Rules_Test_Matrix.md) — normative scenarios and cross-surface acceptance gates for the Wave A shared-rule implementation.
 - [v0.6.2 Implementation Ledger](Gauntlet_v0.6.2_Implementation_Ledger.md) — adopted post-playtest changes, unresolved release dependencies, ordered propagation waves, and validation gates for the next playtest revision.
 - [v0.6.1 Implementation Ledger](Gauntlet_v0.6.1_Implementation_Ledger.md) — approved first-playtest corrections and synchronization checklist.
