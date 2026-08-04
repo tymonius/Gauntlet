@@ -117,7 +117,7 @@
     const art = card.querySelector('.territory-art');
     const effect = card.querySelector('.territory-effect');
     let titleSize = Number.parseFloat(getComputedStyle(title).fontSize);
-    let artHeight = Number.parseFloat(getComputedStyle(card).getPropertyValue('--art-height'));
+    let artHeight = art?.getBoundingClientRect().height || 0;
     let effectScale = 1;
 
     while (textOverflows(title) && titleSize > MINIMUM_TITLE_SIZE) {
