@@ -10,7 +10,7 @@ Gauntlet is a two-player tactical card-and-territory game about deck constructio
 
 The complete package is under [`releases/v0.6.1/`](releases/v0.6.1/):
 
-- official rulebook in Markdown, DOCX, and PDF;
+- official rulebook in Markdown, a color reader PDF, and a grayscale-compatible imposed color booklet PDF;
 - quick-reference guide;
 - canonical structured data and manifest;
 - release notes and changelog;
@@ -50,6 +50,7 @@ To run the Gauntlet, a player must defeat the opponent on their final Territory,
 
 - [Gauntlet v0.6.1 Browser Rulebook](https://gauntlet.run/rulebook/) — searchable, responsive rendering of the complete canonical rulebook with direct section links and integrated Rules Arbiter access.
 - [Gauntlet v0.6.1 Rulebook (PDF)](releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf) — the complete official rules for the current release.
+- [Gauntlet v0.6.1 Imposed Booklet (PDF)](releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf) — color, grayscale-compatible, and ordered for Letter duplex printing with short-edge flip.
 - [Gauntlet v0.6.1 Rules Arbiter](https://gauntlet.run/#rules-assistant) — ask about rules, cards, Leaders, faction systems, Territories, timing, and victory conditions using canonical v0.6.1 sources.
 - [Gauntlet v0.6.1 Deckbuilder](https://gauntlet.run/deckbuilder/) — load a recommended Leader Deck or build, validate, save, export, randomize, and print a complete package containing its Leader, Territories, playable cards, and required faction components.
 - [Gauntlet v0.6.1 Printable Playtest Sheet (PDF)](playtest/Gauntlet_v0.6.1_Playtest_Sheet.pdf) — one-page paper questionnaire designed to be printed and completed by hand.
@@ -67,7 +68,7 @@ Scan to open the v0.6 Deckbuilder:
 4. [`docs/Gauntlet_v0.6.1_Territory_Pool.md`](docs/Gauntlet_v0.6.1_Territory_Pool.md) governs exact Territory and Arena text.
 5. `Gauntlet_v0.6.1_Canonical_Data.json` is generated from those sources and must not be edited independently.
 
-Generated PDFs, DOCX files, printable sheets, and Deckbuilder output are derived production artifacts. If a derived file conflicts with its governing source, correct the source and regenerate the supported artifact.
+Generated PDFs, printable sheets, and Deckbuilder output are derived production artifacts. The retired DOCX files remain only as historical release artifacts and are not maintained. If a derived file conflicts with its governing source, correct the source and regenerate the supported artifact.
 
 ## Repository map
 
