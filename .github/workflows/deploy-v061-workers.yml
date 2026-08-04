@@ -128,5 +128,7 @@ jobs:
               raise SystemExit(f'Session cancellation unavailable: {sessions}')
           if not sessions.get('standaloneFeedbackSupported'):
               raise SystemExit(f'Standalone feedback unavailable: {sessions}')
-          print('Verified production v0.6.1 playtest sessions, journals, closure controls, standalone feedback, compiled analysis, and audited exclusions.')
+          if not sessions.get('completeStandaloneContextSupported'):
+              raise SystemExit(f'Complete standalone context unavailable: {sessions}')
+          print('Verified production v0.6.1 playtest sessions, journals, closure controls, complete standalone feedback, compiled analysis, and audited exclusions.')
           PY
