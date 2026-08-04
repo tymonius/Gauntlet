@@ -79,6 +79,19 @@ export function resolveDeterministicRuling(corpus, { question, history = [], gam
     });
   }
 
+  if (/^can i (?:deploy|play|use|set|choose|reveal|discard|return|move) (?:the|this|that|my) (?:stored|bound|set[- ]aside|face[- ]down|hidden) card(?: now| right now)?\??$/i.test(text) && !subject) {
+    return result({
+      id: "needs-context-unnamed-card",
+      answer: "I need the card's name or exact text and the current timing or phase. 'Stored card' is not enough to identify which component holds it or when it may be used, so I cannot make a reliable ruling yet.",
+      rulingStatus: "source_lookup",
+      sourceIds: [],
+      subject: null,
+      topic: "missing card context",
+      confidence: "low",
+      responseType: "clarification"
+    });
+  }
+
   if (impossibleChoiceQuestion(text)) {
     return result({
       id: "impossible-choice-provisional",
@@ -173,6 +186,51 @@ export function resolveDeterministicRuling(corpus, { question, history = [], gam
       subject: "Penance",
       topic: "unperformable option",
       confidence: "low"
+    });
+  }
+
+  if (/\boverlay\b/i.test(text)
+      && /\b(dormant|covered|lower)\b/i.test(text)
+      && /\b(timer|expiration|removal condition)\b/i.test(text)) {
+    return result({
+      id: "dormant-overlay-timing",
+      answer: "No. A dormant Overlay's expiration timer pauses while it is covered. Its printed removal condition remains active and can still remove it while it is dormant.",
+      sourceIds: ["rulebook:complete-rules-13"],
+      subject: "Dormant Overlay",
+      topic: "expiration and removal"
+    });
+  }
+
+  if (/\bdecoys\b/i.test(text) && /\bcapital punishment\b/i.test(text)) {
+    return result({
+      id: "decoys-capital-punishment",
+      answer: "Yes. When Capital Punishment would make another banked Asset leave play, discard Decoys to keep the targeted Asset in play. Decoys goes to its owner's Discard Pile.",
+      sourceIds: ["card:neutral-decoys", "card:neutral-capital-punishment", "rulebook:using-and-discarding-assets"],
+      subject: "Decoys",
+      topic: "Capital Punishment"
+    });
+  }
+
+  if (/\brearguard\b/i.test(text) && /\brout\b/i.test(text)) {
+    return result({
+      id: "rearguard-rout-order",
+      answer: "Discard Rearguard to prevent Rout's movement. No Command is spent, and Rout cannot be used again that turn. Rout is an Order, not a card, so it does not return to Hand.",
+      sourceIds: ["card:military-rearguard", "rulebook:orders"],
+      subject: "Rearguard",
+      topic: "Rout"
+    });
+  }
+
+  if (/\bbrothers in arms\b/i.test(text)
+      && /\b(additional|second) tactic\b/i.test(text)
+      && /\bhand\b/i.test(text)
+      && /\b(where|go|destination|aftermath)\b/i.test(text)) {
+    return result({
+      id: "brothers-in-arms-destinations",
+      answer: "Discard Brothers in Arms to its owner's Discard Pile. The ordinary Tactic chosen from Reserve goes to its owner's Discard Pile in the Aftermath. The additional Tactic chosen from Hand goes to its owner's Graveyard.",
+      sourceIds: ["card:military-brothers-in-arms", "rulebook:clearing-battle-cards", "rulebook:using-and-discarding-assets"],
+      subject: "Brothers in Arms",
+      topic: "Aftermath destinations"
     });
   }
 
