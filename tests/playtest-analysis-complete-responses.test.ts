@@ -6,12 +6,13 @@ const page = read("playtest/analysis/index.html");
 const enhancement = read("playtest/analysis/complete-responses.js");
 
 describe("complete playtest response analysis", () => {
-  it("loads the completeness layer before the existing analysis application", () => {
+  it("loads a syntactically valid completeness layer before the existing analysis application", () => {
     const completenessIndex = page.indexOf("complete-responses.js");
     const appIndex = page.indexOf('src="app.js');
     expect(completenessIndex).toBeGreaterThan(-1);
     expect(appIndex).toBeGreaterThan(completenessIndex);
     expect(page).toContain("tracked, retrospective, and standalone");
+    expect(() => new Function(enhancement)).not.toThrow();
   });
 
   it("renders every questionnaire rating rather than a selected subset", () => {
