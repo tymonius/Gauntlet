@@ -37,7 +37,7 @@ function forbidPatterns(name, text, patterns) {
 }
 
 const defensiveEdgeDefinition =
-  "Defensive Edge: When the defender has Defensive Edge, the defender wins tied battle totals.";
+  "**Defensive Edge:** When the defender has Defensive Edge, the defender wins tied battle totals.";
 
 const requiredRules = [
   "Capture → Draw → Opening → Movement → Denouement → Cleanup",
@@ -58,7 +58,7 @@ const requiredRules = [
 const requiredReference = [
   "Capture → Draw → Opening → Movement → Denouement → Cleanup",
   "Pending battle → Terms → Onset → Gambits",
-  "Defensive Edge:** When the defender has Defensive Edge, the defender wins tied battle totals.",
+  defensiveEdgeDefinition,
   "the defender is making a Last Stand",
   "An effect may remove Defensive Edge",
   "A losing player retreats; a player who leaves without losing withdraws.",
