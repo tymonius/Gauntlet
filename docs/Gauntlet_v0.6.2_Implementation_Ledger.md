@@ -25,7 +25,6 @@ The vocabulary and card-design dependencies that previously blocked broad source
 - [x] Use **Onset of the battle** in explanatory prose where clarity benefits, but use **Onset** as the formal stage name.
 - [x] Treat **Onset** and **Aftermath** as the parallel opening and closing stages of a battle.
 - [x] Replace **Defender's Advantage** with **Defensive Edge**.
-- [x] Preserve Defensive Edge as a tie rule, distinct from the ordinary advantage mechanic.
 - [x] Adopt **Advance / Hold / Fall Back** for ordinary Movement choices.
 - [x] Reserve **withdraw** for leaving or preventing a pending or active battle without a winner.
 - [x] Reserve **retreat** for displacement after losing a battle.
@@ -126,7 +125,6 @@ Replace **Defender's Advantage** with **Defensive Edge**.
 > If battle totals are tied and the defender controls the contested Territory, the defender wins through Defensive Edge.
 
 - Defensive Edge is a tie rule.
-- Defensive Edge does not grant ordinary advantage, change the number of dice rolled, or modify a roll.
 - If Defensive Edge does not resolve the tie, proceed to the Tiebreak Roll.
 - Audit every rule, card, Territory, example, UI label, test, and Rules Arbiter packet that uses Defender's Advantage.
 
