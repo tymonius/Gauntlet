@@ -11,6 +11,34 @@ const searchStatus = document.querySelector('[data-search-status]');
 const tocToggle = document.querySelector('[data-toc-toggle]');
 const sidebar = document.querySelector('[data-rulebook-sidebar]');
 
+const FACTIONS = new Map([
+  ['Military', '#8f1f25'],
+  ['Diplomats', '#244b8f'],
+  ['Financiers', '#276744'],
+  ['Intelligence', '#34373b'],
+  ['Mystics', '#603d78'],
+  ['Inquisition', '#9a6e21'],
+]);
+
+const LEADERS = new Set([
+  'General',
+  'Commandant',
+  'Ambassador',
+  'Senator',
+  'Banker',
+  'Executive',
+  'Ranger',
+  'Spymaster',
+  'Alchemist',
+  'Spirit Walker',
+  'Grand Inquisitor',
+  'Witch Hunter',
+]);
+
+function cleanChapterLabel(label) {
+  return label.replace(/^\d+\.\s*/, '').trim();
+}
+
 function buildToc(headings) {
   if (!toc) return;
 
@@ -22,22 +50,103 @@ function buildToc(headings) {
   const fragment = document.createDocumentFragment();
   visibleHeadings.forEach(({ id, level, label }) => {
     const link = document.createElement('a');
+    const chapterLabel = cleanChapterLabel(label);
     link.href = `#${id}`;
     link.textContent = label;
     link.dataset.tocId = id;
     link.className = level === 1 ? 'toc-primary' : 'toc-secondary';
+    if (/^Part\s+[IVX]+\b/.test(label)) link.classList.add('toc-part');
+    if (/^\d+\.\s+/.test(label)) link.classList.add('toc-chapter');
+    if (FACTIONS.has(chapterLabel)) {
+      link.classList.add('toc-faction');
+      link.style.setProperty('--toc-accent', FACTIONS.get(chapterLabel));
+    }
     fragment.append(link);
   });
   toc.replaceChildren(fragment);
 }
 
+function decoratePublication() {
+  let activeFaction = null;
+
+  content.querySelectorAll('h1, h2, h3, h4').forEach((heading) => {
+    const label = heading.textContent.trim();
+
+    if (heading.tagName === 'H1') {
+      const partMatch = label.match(/^Part\s+([IVX]+)\s+[—-]\s+(.+)$/);
+      const chapterMatch = label.match(/^(\d+)\.\s+(.+)$/);
+
+      if (partMatch) {
+        activeFaction = null;
+        heading.classList.add('part-heading');
+        const partLabel = document.createElement('span');
+        partLabel.className = 'part-label';
+        partLabel.textContent = `Part ${partMatch[1]}`;
+        const partTitle = document.createElement('span');
+        partTitle.className = 'part-title';
+        partTitle.textContent = partMatch[2];
+        heading.replaceChildren(partLabel, partTitle);
+      } else if (chapterMatch) {
+        const chapterTitle = chapterMatch[2].trim();
+        activeFaction = FACTIONS.has(chapterTitle) ? chapterTitle : null;
+        heading.classList.add('chapter-heading');
+        heading.dataset.chapterTitle = chapterTitle;
+        if (activeFaction) {
+          heading.classList.add('faction-heading');
+          heading.dataset.faction = activeFaction;
+        }
+
+        const number = document.createElement('span');
+        number.className = 'chapter-number';
+        number.textContent = chapterMatch[1];
+        const title = document.createElement('span');
+        title.className = 'chapter-title';
+        title.textContent = chapterTitle;
+        heading.replaceChildren(number, title);
+      } else {
+        activeFaction = null;
+      }
+    }
+
+    if (label === 'How it works') heading.classList.add('how-it-works-heading');
+    if (label === 'Complete rules') heading.classList.add('complete-rules-heading');
+    if (LEADERS.has(label)) {
+      heading.classList.add('leader-heading');
+      if (activeFaction) heading.dataset.faction = activeFaction;
+    }
+  });
+
+  content.querySelectorAll('h2.how-it-works-heading').forEach((heading) => {
+    const wrapper = document.createElement('section');
+    wrapper.className = 'how-it-works-block';
+    wrapper.setAttribute('aria-labelledby', heading.id);
+
+    let next = heading.nextElementSibling;
+    heading.before(wrapper);
+    wrapper.append(heading);
+    while (next && !['H1', 'H2'].includes(next.tagName)) {
+      const following = next.nextElementSibling;
+      wrapper.append(next);
+      next = following;
+    }
+  });
+
+  content.querySelectorAll('img').forEach((image) => {
+    const alt = image.alt.toLocaleLowerCase();
+    if ([...LEADERS].some((leader) => alt.includes(leader.toLocaleLowerCase()))) {
+      image.classList.add('leader-portrait');
+    }
+  });
+}
+
 function decorateHeadings() {
   const headings = content.querySelectorAll('h1[id], h2[id], h3[id]');
   headings.forEach((heading) => {
+    const label = heading.textContent.trim();
     const anchor = document.createElement('a');
     anchor.className = 'heading-anchor';
     anchor.href = `#${heading.id}`;
-    anchor.setAttribute('aria-label', `Link to ${heading.textContent.trim()}`);
+    anchor.setAttribute('aria-label', `Link to ${label}`);
     anchor.textContent = '#';
     heading.append(anchor);
   });
@@ -167,6 +276,7 @@ async function loadRulebook() {
     content.innerHTML = rendered.html;
     content.removeAttribute('aria-busy');
     buildToc(rendered.headings);
+    decoratePublication();
     decorateHeadings();
     observeSections();
 
