@@ -406,7 +406,7 @@ There is no winner or loser. Victory, loss, and retreat triggers do not occur.
 
 If withdrawal prevents a pending battle before Onset, no battle or Aftermath occurs.
 
-If an active battle ends by withdrawal after cards have been committed, carry out the withdrawal, then clear committed battle cards using their normal destinations. Result-dependent triggers do not occur because the battle has no winner or loser.
+If an active battle ends by withdrawal at any time after Onset, carry out the withdrawal and complete the remaining non-result steps of the Aftermath. Clear any committed battle cards using their normal destinations. Result-dependent triggers do not occur because the battle has no winner or loser.
 
 Withdrawal does not count as Fall Back or ordinary movement for effects unless an effect says otherwise.
 
@@ -442,6 +442,8 @@ Withdrawal does not count as Fall Back or ordinary movement for effects unless a
 - Defender moves one position toward their own end.
 - If only the defender withdraws, the attacker remains and becomes the occupier when applicable.
 - If both withdraw, move the attacker first; neither becomes the occupier because of the withdrawal.
+- Before Onset, withdrawal prevents the battle and no Aftermath occurs.
+- After Onset, complete the remaining non-result Aftermath steps and clear any committed battle cards normally.
 
 ## Front Line
 
