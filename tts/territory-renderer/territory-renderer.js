@@ -109,6 +109,14 @@
     return Boolean(element && element.scrollWidth > element.clientWidth + 0.5);
   }
 
+  function footerOverflows(footer) {
+    if (!footer || footer.scrollHeight > footer.clientHeight + 0.5) return true;
+    return Array.from(footer.querySelectorAll('span')).some((label) => (
+      label.scrollWidth > label.clientWidth + 0.5
+      || label.scrollHeight > label.clientHeight + 0.5
+    ));
+  }
+
   function cardOverflows(card) {
     const interior = card.querySelector('.territory-interior');
     const effect = card.querySelector('.territory-effect');
@@ -119,7 +127,8 @@
     const footerRect = footer.getBoundingClientRect();
     return effect.scrollHeight > effect.clientHeight + 0.5
       || interior.scrollHeight > interior.clientHeight + 0.5
-      || footerRect.bottom > interiorRect.bottom + 0.5;
+      || footerRect.bottom > interiorRect.bottom + 0.5
+      || footerOverflows(footer);
   }
 
   function forceLayout(element) {
