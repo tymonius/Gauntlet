@@ -126,7 +126,9 @@ Retreat and withdrawal normally move a player the same way:
 
 - attacker: return to the position from which they entered;
 - defender: move one position toward their own end;
-- both withdraw: move the attacker first, then the defender.
+- only the attacker withdraws: the defender remains in the contested position;
+- only the defender withdraws: the attacker remains in the contested position and becomes the occupier when applicable;
+- both withdraw: move the attacker first, then the defender; neither becomes the occupier because of the withdrawal.
 
 ## Retreat
 
