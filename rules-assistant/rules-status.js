@@ -58,10 +58,12 @@ export function buildScopeRecoveryRuling(question) {
 
 const CLEAR_NON_GAMEPLAY_PATTERNS = [
   /\b(morally|moral(?:ity)?|ethical(?:ly)?|ethics|justified|right or wrong|good or evil)\b/i,
-  /\b(lore|backstory|fictional history|historical inspiration|real[- ]world analogue)\b/i,
+  /\b(lore|backstory|fictional history|historical inspiration|real[- ]world (?:analogue|ideology|inspiration)|ideology inspired)\b/i,
   /\b(art|illustration|aesthetic|what does .* look like|appearance)\b/i,
   /\b(design intent|why was .* designed|balance suggestion|buffed|nerfed)\b/i,
-  /\b(best strategy|best deck|deck recommendation|who should i play)\b/i
+  /\b(best|strongest|optimal|most powerful)\b[\s\S]*\b(strategy|deck|build|faction|leader)\b/i,
+  /\b(strategy|deck|build) recommendation\b/i,
+  /\bwho should i play\b/i
 ];
 
 export function isClearlyOutOfScopeQuestion(question) {
