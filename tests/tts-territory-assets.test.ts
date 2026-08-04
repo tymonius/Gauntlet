@@ -43,6 +43,8 @@ describe("TTS Territory assets", () => {
     expect(sharedStyles).toContain(".territory-art img");
     expect(sharedStyles).toContain("object-fit: cover");
     expect(specimenPage).toContain('class="territory-art"');
+    expect(specimenPage).toContain("a framed illustration spans the card beneath it");
+    expect(specimenPage).toContain("a full-width panel across the bottom");
   });
 
   it("packs the canonical pool into a seven by four sheet", () => {
