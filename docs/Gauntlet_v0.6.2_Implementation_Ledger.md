@@ -92,6 +92,7 @@ Canonical behavior to propagate:
 - [ ] Use **withdraw** only when a pending or active battle ends without determining a winner.
 - [ ] Use **retreat** only after a battle loss.
 - [ ] Preserve the same normal attacker and defender fallback positions for retreat and withdrawal unless an effect says otherwise.
+- [ ] Preserve the existing Occupation consequence when only the defender withdraws: the attacker remains in the contested Position and becomes the occupier when applicable.
 - [ ] Teach the distinction plainly: **a losing player retreats; a player who leaves without losing withdraws**.
 
 ### Contiguous Front Line — issue #460
@@ -118,15 +119,22 @@ Use this sequence:
 - Use phrases such as **during Onset** or **at the Onset of the battle** according to sentence structure.
 - Do not confuse the battle's Onset with the turn's Opening phase.
 
-### Defensive Edge
+### Defensive Edge — issue #452
 
 Replace **Defender's Advantage** with **Defensive Edge**.
 
-> If battle totals are tied and the defender controls the contested Territory, the defender wins through Defensive Edge.
+> **Defensive Edge:** When the defender has Defensive Edge, the defender wins tied battle totals.
 
-- Defensive Edge is a tie rule.
+The defender normally has Defensive Edge when:
+
+- the defender controls the contested Territory; or
+- the defender is making a Last Stand.
+
+An effect may remove Defensive Edge, including an applicable Arena Territory effect. Defensive Edge is conditional; the defender does not have it merely because they are the defender.
+
 - If Defensive Edge does not resolve the tie, proceed to the Tiebreak Roll.
 - Audit every rule, card, Territory, example, UI label, test, and Rules Arbiter packet that uses Defender's Advantage.
+- Retain Defender's Advantage only as a recognized legacy search synonym.
 
 ### Straight Tiebreak Roll — issue #476
 
@@ -543,8 +551,8 @@ Do not describe an open investigation as a release feature merely because relate
 
 ## 9. Immediate next work
 
-1. Merge this implementation-ledger PR after review.
-2. Begin Wave A shared-rule propagation using the locked vocabulary: Opening, Denouement, Onset, Aftermath, Defensive Edge, Fall Back, withdraw, retreat, Front Line, and Tiebreak Roll.
+1. Review and merge Wave A shared-rule candidate PR #493 after its validation suite passes.
+2. Integrate the approved Wave A text into the complete v0.6.2 rulebook, glossary, compact references, and executable rule fixtures.
 3. Propagate the seven-card #481 slate into faction and Neutral governing sources and complete the Invasion interaction audit.
 4. Run the obsolete `revealed Territory` audit while touching card and rules sources.
 5. Rebuild starter Decks after the legal pools and exact card values are present in canonical structured data.
