@@ -17,28 +17,31 @@ The status categories below are binding:
 
 ## 1. Release dependencies and locks
 
-Broad source propagation should not begin until the following dependencies are settled sufficiently to prevent repeated repository-wide rewrites.
+The vocabulary and card-design dependencies that previously blocked broad source propagation are now settled.
 
-### Required terminology locks
+### Terminology locks
 
-- [ ] Lock the replacement for battle **opening effects**. **Battle Onset** is the leading term.
-- [ ] Lock the replacement for **Defender's Advantage**. **Defensive Edge** is the leading term.
+- [x] Replace battle **opening effects** with **Onset**.
+- [x] Use **Onset of the battle** in explanatory prose where clarity benefits, but use **Onset** as the formal stage name.
+- [x] Treat **Onset** and **Aftermath** as the parallel opening and closing stages of a battle.
+- [x] Replace **Defender's Advantage** with **Defensive Edge**.
+- [x] Preserve Defensive Edge as a tie rule, distinct from the ordinary advantage mechanic.
 - [x] Adopt **Advance / Hold / Fall Back** for ordinary Movement choices.
 - [x] Reserve **withdraw** for leaving or preventing a pending or active battle without a winner.
 - [x] Reserve **retreat** for displacement after losing a battle.
 
-### Required card locks — issue #481
+### Card locks — issue #481
 
-The seven-card pool expansion is adopted in concept, but these fields remain unresolved:
+The seven-card pool expansion is locked for the initial v0.6.2 test build.
 
-- [ ] final value and uniqueness for Landslide;
-- [ ] exact Landslide placement modes and complete Overlay text;
-- [ ] final value and complete templating for Détente;
-- [ ] final value and complete templating for Compound Interest;
-- [ ] final value, uniqueness, and complete templating for Extraordinary Rendition;
-- [ ] final value, placement modes, and complete templating for Nature's Altar;
-- [ ] final value, uniqueness, and complete templating for Martyrdom;
-- [ ] interaction and stacking audit for Military Invasion.
+- [x] Landslide: cost, modes, placement, stacking restriction, and Overlay text.
+- [x] Military Invasion: cost, faction migration, and retained modes.
+- [x] Détente: cost, one-banked restriction, and complete modes.
+- [x] Compound Interest: cost, one-banked restriction, and revealed-card destination.
+- [x] Extraordinary Rendition: cost, one-banked restriction, detention rules, and first-discard rule.
+- [x] Nature's Altar: cost, modes, placement, and control-based same-turn completion tether.
+- [x] Martyrdom: cost 5, Unique status, timing, destinations, and non-prevention clause.
+- [ ] Complete interaction and stacking validation for Military Invasion during propagation and testing.
 
 See [Issue #481](https://github.com/tymonius/Gauntlet/issues/481).
 
@@ -101,6 +104,32 @@ Canonical behavior to propagate:
 - [ ] Audit every immediate-capture effect, including Fortify, Shock and Awe / Consolidate, and Diplomatic Recognition.
 - [ ] Audit Asset limits, Deeds, Income, capture triggers, Counterattacks, retreats, final-Territory capture, and Last Stand access against contiguous control.
 
+### Onset
+
+**Onset** is the formal opening stage of a battle, parallel to **Aftermath** as its closing stage.
+
+Use this sequence:
+
+> **Pending battle → Terms → Onset → Gambits**
+
+- Establish the attacker, defender, contested Position, and all pending-battle facts before Terms.
+- Accepted Terms prevent the battle from reaching Onset.
+- Refused Terms or no Terms proceed into Onset.
+- Replace `opening effects`, `battle opening`, and `Battle Onset` with **Onset** where they refer to this stage.
+- Use phrases such as **during Onset** or **at the Onset of the battle** according to sentence structure.
+- Do not confuse the battle's Onset with the turn's Opening phase.
+
+### Defensive Edge
+
+Replace **Defender's Advantage** with **Defensive Edge**.
+
+> If battle totals are tied and the defender controls the contested Territory, the defender wins through Defensive Edge.
+
+- Defensive Edge is a tie rule.
+- Defensive Edge does not grant ordinary advantage, change the number of dice rolled, or modify a roll.
+- If Defensive Edge does not resolve the tie, proceed to the Tiebreak Roll.
+- Audit every rule, card, Territory, example, UI label, test, and Rules Arbiter packet that uses Defender's Advantage.
+
 ### Straight Tiebreak Roll — issue #476
 
 Canonical rule to propagate:
@@ -113,11 +142,11 @@ Only an effect that expressly refers to a Tiebreak Roll may modify it.
 
 Use this sequence:
 
-> **Pending battle → Terms → [final battle-start term] → Gambits**
+> **Pending battle → Terms → Onset → Gambits**
 
 - Establish attacker, defender, and contested Position before Terms.
-- Accepted Terms prevent the battle from beginning.
-- Refused Terms or no offer proceed into the battle-start stage.
+- Accepted Terms prevent the battle from beginning and therefore prevent Onset.
+- Refused Terms or no offer proceed into Onset.
 - Ordinary accepted-position baseline: attacker withdraws; defender remains at the contested Position.
 - Mutual Disarmament retains both players withdrawing.
 - Specialized positional Proposals retain their deliberate outcomes.
@@ -221,15 +250,117 @@ Target pool structure:
 | Mystics | 13 cards |
 | Inquisition | 13 cards |
 
-Accepted mechanical slate:
+Accepted values and structures:
 
-- **Neutral — Landslide:** one-use Territory Overlay that causes a player retreating onto its Territory to retreat one additional Position, if able, then leaves play. It never triggers from Fall Back or withdrawal.
-- **Military — Invasion:** existing Neutral card moved into the Military pool.
-- **Diplomats — Détente:** persistent Asset; first accepted use each turn of one of the Diplomat's previously ratified Proposals grants 1 Influence.
-- **Financiers — Compound Interest:** after the normal Draw, if Treasury contains a card, the Financier may reveal the top Draw-Pile card and place it face up in Treasury.
-- **Intelligence — Extraordinary Rendition:** persistent Asset that reveals the opponent's Hand, binds one chosen card face up beneath it, requires itself to be discarded before other controlled Assets when able, and sends the bound card to its owner's Discard Pile when the Asset leaves play.
-- **Mystics — Nature's Altar:** Territory Overlay that permits a Rite to begin during Opening while the Mystic is on the Territory and to complete that turn only if the Mystic is on that Territory when the completion condition and timing are satisfied.
-- **Inquisition — Martyrdom:** Aftermath response from Hand after losing; redirects cards remaining in the opponent's Reserve to the Graveyard, then sets Conviction to 4 after clearing and sends itself to the Graveyard. The normal loss, retreat, Occupation, and other result consequences still occur.
+| Pool | Card | Cost | Restriction | Modes |
+|---|---|---:|---|---|
+| Neutral | Landslide | 4 | Maximum one Landslide on each Territory | Action, Battle, Overlay |
+| Military | Invasion | 4 | None | Action, Battle |
+| Diplomats | Détente | 3 | Maximum one banked Détente | Action, Asset |
+| Financiers | Compound Interest | 4 | Maximum one banked Compound Interest | Action, Asset |
+| Intelligence | Extraordinary Rendition | 4 | Maximum one banked Extraordinary Rendition | Action, Asset |
+| Mystics | Nature's Altar | 4 | None | Action, Battle, Overlay |
+| Inquisition | Martyrdom | 5 | Unique; maximum one copy per Playable Deck | Aftermath response from Hand |
+
+#### Neutral — Landslide
+
+**Cost:** 4  
+**Card form:** Territory Overlay
+
+> **Action:** Place Landslide as an Overlay on any Territory that does not already have a Landslide.
+>
+> **Battle:** During the Aftermath, if you lose and retreat from a Territory, after retreating you may place Landslide as an Overlay on the contested Territory.
+>
+> **Overlay:** When a player retreats onto this Territory, they retreat one additional Position, if able. Then put Landslide in its owner's Discard Pile.
+
+- Separate Landslides on consecutive Territories may chain.
+- Several copies cannot occupy the same Territory.
+- Landslide never triggers from Fall Back or withdrawal.
+
+#### Military — Invasion
+
+**Cost:** 4  
+**Unique:** No
+
+Retain the existing Battle mode and migrate the card from Neutral to Military. Revise the Action wording for the Opening / Movement structure.
+
+Working Action formulation:
+
+> **Action:** During your Movement this turn, you may advance up to two additional Positions. Move one Position at a time. This additional movement may only be used to advance and may start a battle.
+
+- Unused movement is lost when a battle begins.
+- Audit Onward, Rout, Give Chase, Shock and Awe, and all additional-Tactic interactions.
+
+#### Diplomats — Détente
+
+**Cost:** 3  
+**Card form:** Asset
+
+> **Action:** Bank this card. You may have only one banked Détente.
+>
+> **Asset:** The first time each turn an opponent accepts one of your Proposals that was already ratified when you offered it, gain 1 Influence.
+
+No Battle mode.
+
+#### Financiers — Compound Interest
+
+**Cost:** 4  
+**Card form:** Asset
+
+> **Action:** Bank this card. You may have only one banked Compound Interest.
+>
+> **Asset:** After your normal Draw, if your Treasury contains at least one card, you may reveal the top card of your Draw Pile. Place it face up in your Treasury or put it in your Discard Pile.
+
+- Revealing the card is optional.
+- Once revealed, it cannot remain on top of the Draw Pile.
+- No Battle mode.
+
+#### Intelligence — Extraordinary Rendition
+
+**Cost:** 4  
+**Card form:** Asset
+
+> **Action:** Bank this card. When you do, reveal the opponent's Hand, choose one card there, and bind it face up beneath Extraordinary Rendition. You may have only one banked Extraordinary Rendition.
+>
+> **Asset:** The bound card cannot be played, moved, or affected except by Extraordinary Rendition. Whenever you discard one or more Assets you control, discard Extraordinary Rendition before any others, if able. When Extraordinary Rendition leaves play, put the bound card in its owner's Discard Pile.
+
+- The first-discard rule includes voluntary Asset discard and replacement.
+- No Use, Battle, or Mission mode.
+
+#### Mystics — Nature's Altar
+
+**Cost:** 4  
+**Trait:** Arcane  
+**Card form:** Territory Overlay
+
+> **Action:** Place Nature's Altar as an Overlay on your current Territory or an adjacent Territory.
+>
+> **Battle:** During the Aftermath, if you win, you may place Nature's Altar as an Overlay on the contested Territory.
+>
+> **Overlay:** During your Opening, if your Player Token is on this Territory, you may take the Begin a Rite Faction Action. A Rite begun this way may complete during that turn if you control this Territory when its completion condition and timing are satisfied.
+>
+> This does not change the Rite's beginning cost, requirements, or completion condition.
+
+The earlier token-at-completion formulation is superseded by the control-based completion tether.
+
+#### Inquisition — Martyrdom
+
+**Cost:** 5  
+**Unique:** Maximum one copy per Playable Deck
+
+> When you lose a battle while Martyrdom is in your Hand, during the Aftermath before battle cards are cleared, you may play it without taking an Action. If you do, cards remaining in the opponent's Reserve go to their Graveyard instead of their Discard Pile during this Aftermath. After battle cards are cleared, set your Conviction to 4 and put Martyrdom in your Graveyard.
+>
+> Martyrdom does not prevent the loss, retreat, Occupation, or other normal consequences of the battle result.
+
+### Obsolete `revealed Territory` audit
+
+Since all Territories begin revealed, `revealed Territory` is obsolete when used as a normal eligibility qualifier.
+
+- [ ] Remove the qualifier from Landslide and Nature's Altar.
+- [ ] Audit every existing card, Leader, Territory, rule, reference, starter definition, structured-data record, schema, Deckbuilder surface, generated artifact, test, scenario fixture, and Rules Arbiter source.
+- [ ] Replace `revealed Territory` with **Territory** where revelation no longer changes eligibility.
+- [ ] Preserve occurrences that genuinely describe revealing hidden information, historical rules, migration notes, or compatibility aliases.
+- [ ] Add a regression or repository search gate preventing obsolete card text from returning.
 
 ---
 
@@ -310,6 +441,8 @@ Apply adopted changes in this order to minimize drift and regenerated-artifact c
 - [ ] Glossary and editorial terminology references.
 - [ ] Reference guide and shared turn/battle examples.
 - [ ] Shared rules tests and scenario fixtures.
+- [ ] Onset and Defensive Edge terminology migration.
+- [ ] Obsolete `revealed Territory` audit across shared and card-facing sources.
 
 ### Wave B — faction sources and exact component text
 
@@ -340,7 +473,7 @@ Apply adopted changes in this order to minimize drift and regenerated-artifact c
 
 - [ ] Regenerate the v0.6.2 corpus and source IDs.
 - [ ] Update deterministic packets and judgment guidance.
-- [ ] Add revised timing, Tiebreak Roll, Front Line, Terms, Purge, Influence, destinations, and new-card regressions.
+- [ ] Add revised timing, Onset, Defensive Edge, Tiebreak Roll, Front Line, Terms, Purge, Influence, destinations, and new-card regressions.
 - [ ] Preserve follow-up continuity, concise presentation, logging, and export behavior.
 - [ ] Audit degraded fallbacks and source parity.
 - [ ] Update any digital-game UI, prompts, validation, logs, replay state, or fixtures that claim v0.6.2 compatibility.
@@ -353,13 +486,13 @@ Apply adopted changes in this order to minimize drift and regenerated-artifact c
 
 - [ ] Every accepted mechanical change has one canonical formulation.
 - [ ] Every affected source and player-facing surface uses that formulation.
-- [ ] Obsolete Action Opportunity and movement terminology is removed or retained only as an intentional search/compatibility alias.
+- [ ] Obsolete Action Opportunity, movement, battle-start, defensive-tie, and `revealed Territory` terminology is removed or retained only as an intentional search/compatibility alias.
 - [ ] Repository-wide terminology audit passes.
 - [ ] Source-parity audit passes.
 
 ### Faction and card systems
 
-- [ ] Front Line Capture, Terms, Purge, Influence, and Tiebreak examples pass rules review.
+- [ ] Front Line Capture, Terms, Purge, Influence, Onset, Defensive Edge, and Tiebreak examples pass rules review.
 - [ ] All seven #481 cards pass interaction, cost-curve, and templating review.
 - [ ] Every faction contains 13 cards and Neutral remains at 50.
 - [ ] Test revisions are labeled as tests in design records and release notes.
@@ -394,16 +527,17 @@ Apply adopted changes in this order to minimize drift and regenerated-artifact c
 
 The v0.6.2 release notes should contain separate sections for:
 
-1. shared turn, Action, battle, movement, and capture revisions;
+1. shared turn, Action, Onset, Defensive Edge, Tiebreak, movement, and capture revisions;
 2. Diplomat Terms, Proposals, Influence, Good Faith, Leverage, and Gunboat Diplomacy;
 3. Financier 2-Capital test revision;
 4. Mystic Black Covenant and Guardians of the Circle revisions;
 5. Military Invasion migration and the seven-card pool expansion;
 6. rebuilt starter Decks and retired Basic / Advanced classification;
 7. first-game teaching, zone references, and active-player marker;
-8. Rules Arbiter corpus and behavior synchronization;
-9. migration guidance from v0.6.1;
-10. open investigations that remain intentionally unresolved.
+8. obsolete-language and source-parity audits;
+9. Rules Arbiter corpus and behavior synchronization;
+10. migration guidance from v0.6.1;
+11. open investigations that remain intentionally unresolved.
 
 Do not describe an open investigation as a release feature merely because related files were touched.
 
@@ -411,8 +545,8 @@ Do not describe an open investigation as a release feature merely because relate
 
 ## 9. Immediate next work
 
-1. Complete the value, uniqueness, printed-mode, and templating review for the seven-card #481 slate.
-2. Lock the final battle-start and defensive tie-benefit terminology.
-3. Begin Wave A shared-rule propagation from the resulting locked vocabulary.
-4. Propagate faction and card changes only after those dependencies are stable.
-5. Rebuild starter Decks after the legal pools and exact card values are final.
+1. Merge this implementation-ledger PR after review.
+2. Begin Wave A shared-rule propagation using the locked vocabulary: Opening, Denouement, Onset, Aftermath, Defensive Edge, Fall Back, withdraw, retreat, Front Line, and Tiebreak Roll.
+3. Propagate the seven-card #481 slate into faction and Neutral governing sources and complete the Invasion interaction audit.
+4. Run the obsolete `revealed Territory` audit while touching card and rules sources.
+5. Rebuild starter Decks after the legal pools and exact card values are present in canonical structured data.
