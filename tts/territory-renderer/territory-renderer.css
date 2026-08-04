@@ -1,0 +1,192 @@
+* {
+  box-sizing: border-box;
+  font-synthesis: none;
+}
+
+:root {
+  --card-ivory: #eee7d5;
+  --card-parchment: #e6d4ae;
+  --card-ink: #241c15;
+  --card-muted-ink: #5c4d3e;
+  --card-keyline: #3d3024;
+  --card-shadow: rgba(38, 28, 20, 0.22);
+  --arena-crimson: #7e2027;
+}
+
+html,
+body {
+  width: max-content;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+#renderTarget {
+  width: 3.5in;
+  height: 2.5in;
+}
+
+.territory-card {
+  --effect-scale: 1;
+  --parchment-image: none;
+  position: relative;
+  width: 3.5in;
+  height: 2.5in;
+  overflow: hidden;
+  padding: 0.075in;
+  border: 1px solid rgba(47, 37, 28, 0.48);
+  border-radius: 0.125in;
+  background: var(--card-ivory);
+  color: var(--card-ink);
+  box-shadow:
+    0 0.16in 0.36in var(--card-shadow),
+    inset 0 0 0 0.015in rgba(255, 255, 255, 0.42);
+}
+
+.territory-card::before {
+  position: absolute;
+  inset: 0.03in;
+  border: 0.5px solid rgba(74, 57, 42, 0.22);
+  border-radius: 0.09in;
+  content: "";
+  pointer-events: none;
+}
+
+.territory-interior {
+  position: relative;
+  display: grid;
+  grid-template-rows: 0.49in minmax(0, 1fr) 0.16in;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--card-keyline);
+  border-radius: 0.055in;
+  background-color: var(--card-parchment);
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.08), rgba(121, 88, 48, 0.035)),
+    var(--parchment-image);
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.territory-interior::after {
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(0deg, transparent 0, transparent 0.055in, rgba(75, 51, 27, 0.012) 0.057in),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.08), transparent 16%, transparent 84%, rgba(93, 61, 26, 0.035));
+  content: "";
+  pointer-events: none;
+}
+
+.territory-heading,
+.territory-effect,
+.territory-footer {
+  position: relative;
+  z-index: 1;
+}
+
+.territory-heading {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  padding: 0.075in 0.105in 0.035in;
+}
+
+.territory-title {
+  max-width: 100%;
+  margin: 0;
+  overflow: hidden;
+  color: var(--card-ink);
+  font-family: var(--font-display-historical);
+  font-size: 12.1pt;
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.035em;
+  line-height: 0.9;
+  text-overflow: clip;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.territory-effect {
+  min-height: 0;
+  margin: 0 0.055in 0.045in;
+  overflow: hidden;
+  padding: 0.06in 0.075in 0.045in;
+  border-top: 0.65px solid rgba(61, 48, 36, 0.38);
+  font-family: var(--font-reading);
+}
+
+.territory-effect p {
+  margin: 0;
+  font-family: "adobe-caslon-pro", Georgia, serif;
+  font-size: calc(8.5pt * var(--effect-scale));
+  line-height: 1.12;
+  text-wrap: pretty;
+}
+
+.territory-effect p + p {
+  margin-top: calc(0.075in * var(--effect-scale));
+}
+
+.territory-footer {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  min-width: 0;
+  padding: 0.018in 0.06in 0.012in;
+  border-top: 0.65px solid rgba(61, 48, 36, 0.45);
+  color: var(--card-muted-ink);
+  font-family: var(--font-interface);
+  font-size: 4.2pt;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.territory-footer span {
+  overflow: hidden;
+  text-overflow: clip;
+  white-space: nowrap;
+}
+
+.territory-footer span:nth-child(2) {
+  padding-inline: 0.05in;
+  text-align: center;
+}
+
+.territory-footer span:last-child {
+  text-align: right;
+}
+
+.territory-card.arena .territory-title,
+.territory-card.arena .territory-footer span:first-child {
+  color: var(--arena-crimson);
+}
+
+.territory-card.arena .territory-effect {
+  border-top-color: rgba(126, 32, 39, 0.42);
+}
+
+.territory-card.compact .territory-heading {
+  padding-top: 0.06in;
+  padding-bottom: 0.025in;
+}
+
+.territory-card.compact .territory-effect {
+  padding-top: 0.045in;
+  padding-bottom: 0.03in;
+}
+
+.territory-card.compact .territory-effect p {
+  line-height: 1.06;
+}
+
+.territory-card.fit-warning {
+  outline: 3px solid red;
+  outline-offset: -3px;
+}
