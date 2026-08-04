@@ -1,0 +1,94 @@
+import { readdir, readFile, writeFile } from "node:fs/promises";
+import path from "node:path";
+
+const root = process.cwd();
+const ignoredDirectories = new Set([
+  ".git",
+  ".wrangler",
+  "coverage",
+  "dist",
+  "node_modules"
+]);
+
+export const faviconBlock = [
+  '  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />',
+  '  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />',
+  '  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />'
+].join("\n");
+
+export async function collectHtmlFiles(directory = root) {
+  const entries = await readdir(directory, { withFileTypes: true });
+  const files = [];
+
+  for (const entry of entries) {
+    if (ignoredDirectories.has(entry.name)) continue;
+
+    const absolutePath = path.join(directory, entry.name);
+    if (entry.isDirectory()) {
+      files.push(...await collectHtmlFiles(absolutePath));
+    } else if (entry.isFile() && entry.name.endsWith(".html")) {
+      files.push(absolutePath);
+    }
+  }
+
+  return files;
+}
+
+function removeExistingFaviconLinks(head) {
+  return head.replace(
+    /^[\t ]*<link\b[^>]*\brel=(?:"(?:icon|shortcut icon|apple-touch-icon)"|'(?:icon|shortcut icon|apple-touch-icon)')[^>]*>[\t ]*(?:\r?\n)?/gim,
+    ""
+  );
+}
+
+export function addFaviconLinks(html) {
+  const headMatch = html.match(/<head\b[^>]*>[\s\S]*?<\/head>/i);
+  if (!headMatch) return null;
+
+  const originalHead = headMatch[0];
+  let head = removeExistingFaviconLinks(originalHead);
+
+  const canonical = /^([\t ]*<link\b[^>]*\brel=(?:"canonical"|'canonical')[^>]*>[\t ]*)$/im;
+  const viewport = /^([\t ]*<meta\b[^>]*\bname=(?:"viewport"|'viewport')[^>]*>[\t ]*)$/im;
+
+  if (canonical.test(head)) {
+    head = head.replace(canonical, `$1\n${faviconBlock}`);
+  } else if (viewport.test(head)) {
+    head = head.replace(viewport, `$1\n${faviconBlock}`);
+  } else {
+    head = head.replace(/<head\b[^>]*>/i, `$&\n${faviconBlock}`);
+  }
+
+  head = head.replace(/^(<(?:meta|link|title|script|style)\b)/gim, "  $1");
+  return html.replace(originalHead, head);
+}
+
+if (process.argv[1] && path.resolve(process.argv[1]) === path.resolve(new URL(import.meta.url).pathname)) {
+  const htmlFiles = await collectHtmlFiles(root);
+  const changed = [];
+  const skipped = [];
+
+  for (const absolutePath of htmlFiles) {
+    const relativePath = path.relative(root, absolutePath).replaceAll(path.sep, "/");
+    const before = await readFile(absolutePath, "utf8");
+    const after = addFaviconLinks(before);
+
+    if (after === null) {
+      skipped.push(relativePath);
+      continue;
+    }
+
+    if (after !== before) {
+      await writeFile(absolutePath, after);
+      changed.push(relativePath);
+    }
+  }
+
+  console.log(`Applied site-wide favicon links to ${changed.length} HTML file(s).`);
+  for (const file of changed) console.log(`- ${file}`);
+
+  if (skipped.length > 0) {
+    console.log(`Skipped ${skipped.length} headless HTML fragment(s).`);
+    for (const file of skipped) console.log(`- ${file}`);
+  }
+}
