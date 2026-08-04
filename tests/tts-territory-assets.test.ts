@@ -3,7 +3,9 @@ import { describe, expect, it } from "vitest";
 
 const generator = readFileSync("scripts/generate-tts-territory-assets.mjs", "utf8");
 const renderer = readFileSync("tts/territory-renderer/territory-renderer.js", "utf8");
-const styles = readFileSync("tts/territory-renderer/territory-renderer.css", "utf8");
+const rendererStyles = readFileSync("tts/territory-renderer/territory-renderer.css", "utf8");
+const sharedStyles = readFileSync("card-design/territory-card.css", "utf8");
+const specimenPage = readFileSync("card-design/index.html", "utf8");
 const packageJson = JSON.parse(readFileSync("package.json", "utf8"));
 
 describe("TTS Territory assets", () => {
@@ -12,19 +14,34 @@ describe("TTS Territory assets", () => {
     expect(generator).toContain("const TERRITORY_HEIGHT = 400");
     expect(generator).toContain("const CSS_TERRITORY_WIDTH = 336");
     expect(generator).toContain("const CSS_TERRITORY_HEIGHT = 240");
-    expect(styles).toContain("width: 3.5in");
-    expect(styles).toContain("height: 2.5in");
+    expect(sharedStyles).toContain("width: 3.5in");
+    expect(sharedStyles).toContain("height: 2.5in");
   });
 
-  it("reuses the normal Gauntlet card family", () => {
-    expect(styles).toContain("padding: 0.075in");
-    expect(styles).toContain("border-radius: 0.125in");
-    expect(styles).toContain("background: var(--card-ivory)");
-    expect(styles).toContain("border: 1px solid var(--card-keyline)");
-    expect(styles).toContain("var(--parchment-image)");
-    expect(styles).toContain("font-family: var(--font-display-historical)");
-    expect(styles).not.toContain(".territory-complexity");
+  it("reuses one shared Gauntlet-family frame in the renderer and specimen page", () => {
+    expect(rendererStyles).toContain("@import url('/card-design/territory-card.css')");
+    expect(specimenPage).toContain('href="territory-card.css"');
+    expect(sharedStyles).toContain("padding: 0.075in");
+    expect(sharedStyles).toContain("border-radius: 0.125in");
+    expect(sharedStyles).toContain("background: var(--card-ivory");
+    expect(sharedStyles).toContain("border: 1px solid var(--card-keyline");
+    expect(sharedStyles).toContain("var(--parchment-image)");
+    expect(sharedStyles).toContain("font-family: var(--font-display-historical)");
+    expect(sharedStyles).not.toContain(".territory-complexity");
     expect(renderer).not.toContain("value-medallion");
+  });
+
+  it("includes an adaptive framed artwork window", () => {
+    expect(renderer).toContain('class="territory-art"');
+    expect(renderer).toContain("Artwork pending");
+    expect(renderer).toContain("territoryArtworkCandidates");
+    expect(renderer).toContain("/images/artwork/territories/");
+    expect(renderer).toContain("while (cardOverflows(card) && artWidth > MINIMUM_ART_WIDTH)");
+    expect(renderer).toContain("card.dataset.artWidth");
+    expect(sharedStyles).toContain("grid-template-columns: var(--art-width) minmax(0, 1fr)");
+    expect(sharedStyles).toContain(".territory-art img");
+    expect(sharedStyles).toContain("object-fit: cover");
+    expect(specimenPage).toContain('class="territory-art"');
   });
 
   it("packs the canonical pool into a seven by four sheet", () => {
@@ -45,10 +62,11 @@ describe("TTS Territory assets", () => {
   it("uses restrained Arena accents", () => {
     expect(renderer).toContain("territory.arena ? ' arena' : ''");
     expect(renderer).toContain("territory.name.replace(/^Arena:\\s*/i, '')");
-    expect(styles).toContain(".territory-card.arena .territory-title");
+    expect(sharedStyles).toContain(".territory-card.arena .territory-title");
   });
 
-  it("fits long canonical text", () => {
+  it("fits long canonical text without removing the artwork window", () => {
+    expect(renderer).toContain("const MINIMUM_ART_WIDTH = 0.78 * CSS_PIXELS_PER_INCH");
     expect(renderer).toContain("while (cardOverflows(card) && effectScale > 0.78)");
     expect(renderer).toContain("card.classList.add('compact')");
     expect(renderer).toContain("while (cardOverflows(card) && effectScale > MINIMUM_EFFECT_SCALE)");
