@@ -5,14 +5,19 @@ import process from 'node:process';
 const root = process.cwd();
 const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'utf8');
 const candidatePath = 'docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md';
+const compatibilityAuditPath = 'docs/Gauntlet_v0.6.2_Faction_Component_Compatibility_Audit.md';
 const matrixPath = 'docs/Gauntlet_v0.6.2_Faction_Component_Test_Matrix.md';
+const compatibilityMatrixPath = 'docs/Gauntlet_v0.6.2_Faction_Component_Compatibility_Test_Matrix.md';
 const sharedPath = 'docs/Gauntlet_v0.6.2_Shared_Rules_Candidate.md';
 const ledgerPath = 'docs/Gauntlet_v0.6.2_Implementation_Ledger.md';
 
 const candidate = read(candidatePath);
+const compatibilityAudit = read(compatibilityAuditPath);
 const matrix = read(matrixPath);
+const compatibilityMatrix = read(compatibilityMatrixPath);
 const shared = read(sharedPath);
 const ledger = read(ledgerPath);
+const normativeWaveB = `${candidate}\n${compatibilityAudit}`;
 
 const failures = [];
 const requireText = (source, text, label) => {
@@ -49,6 +54,30 @@ for (const [text, label] of [
   ['| +1 | 1 |\n| +2 | 3 |\n| +3 | 6 |\n| +4 | 10 |', 'Leverage progression'],
 ]) requireText(candidate, text, label);
 
+for (const [text, label] of [
+  ['**Start a Mission — Denouement:**', 'Intelligence Mission timing'],
+  ['**Complete a Special Operation — Denouement:**', 'Intelligence Special Operation timing'],
+  ['Fieldcraft does not alter Territory control, Occupation, Capture, Defensive Edge', 'Fieldcraft terminology'],
+  ['**Action:** Place Fog of War as an Overlay on a Territory.', 'Fog of War placement'],
+  ['**Use:** During Onset in a battle you initiated', 'Reconnaissance Onset timing'],
+  ['**Use:** During Opening or Denouement, as an Action, put this card in your Graveyard', 'Sleeper Network timing'],
+  ['All 13 Mystics cards, including Nature\'s Altar, have the Arcane trait.', 'Mystics Arcane count'],
+  ['**Beginning restriction:** You may take the Begin a Rite Faction Action for Rite of Crossing during Denouement only after winning a battle that turn', 'Rite of Crossing timing'],
+  ['**Relentless Pursuit:** Once per turn, at the end of the Aftermath', 'Relentless Pursuit'],
+  ['the losing opponent cannot play or benefit from Martyrdom', 'No Martyrs and Martyrdom'],
+  ['**Asset:** Opposing effects cannot reveal your Hand, Reserve, or face-down Gambits or Tactics.', 'Neutral Counterintelligence'],
+  ['**Action — Opening:** During your Movement this turn, you may move one additional Position. This additional movement cannot create a pending battle.', 'Forced March'],
+  ['If that additional movement creates a pending battle, you cannot set a Gambit in that battle.', 'Advance Guard'],
+  ['they cannot play a card for its Action effect during Denouement that turn.', 'Entrenchment'],
+  ['**Use:** During Onset while you are the defender', 'Palisade Wall'],
+  ['**Use:** During your turn, you may discard this card to gain one additional Action that turn.', 'Reinforcements'],
+  ['If you play Strategic Withdrawal during Denouement after your normal Movement has ended, begin a new Movement sequence', 'Strategic Withdrawal'],
+  ['Assimilation cannot create isolated control.', 'Assimilation'],
+  ['The next time the opponent would add this Territory to their Front Line during Capture, prevent that Front Line advance.', 'Protracted Siege'],
+  ['Manifest Destiny never creates isolated control.', 'Manifest Destiny'],
+  ['After a player voluntarily Falls Back onto Refuge, they draw one card.', 'Refuge'],
+]) requireText(compatibilityAudit, text, label);
+
 for (const text of [
   'Defender\'s Advantage',
   'If battle totals are tied, reroll the battle dice.',
@@ -60,7 +89,7 @@ for (const text of [
   'Pending battle → Terms → Onset → Gambits',
   '**Defensive Edge:** When the defender has Defensive Edge, the defender wins tied battle totals.',
   'advance your Front Line',
-]) requireText(shared + candidate, text, 'Wave A/B parity');
+]) requireText(shared + normativeWaveB, text, 'Wave A/B parity');
 
 for (const text of [
   'Landslide',
@@ -101,10 +130,20 @@ if (proposalStart < 0 || proposalEnd <= proposalStart) {
   }
 }
 
-const scenarioIds = [...matrix.matchAll(/^## ([A-Z]\d{2}) —/gm)].map((match) => match[1]);
+const getScenarioIds = (source) => [...source.matchAll(/^## ([A-Z]\d{2}) —/gm)].map((match) => match[1]);
+const primaryScenarioIds = getScenarioIds(matrix);
+const compatibilityScenarioIds = getScenarioIds(compatibilityMatrix);
+const scenarioIds = [...primaryScenarioIds, ...compatibilityScenarioIds];
 const uniqueScenarioIds = new Set(scenarioIds);
-if (scenarioIds.length !== 85 || uniqueScenarioIds.size !== 85) {
-  failures.push(`Expected 85 unique Wave B scenarios; found ${scenarioIds.length} headings and ${uniqueScenarioIds.size} unique IDs.`);
+
+if (primaryScenarioIds.length !== 85) {
+  failures.push(`Expected 85 primary Wave B scenarios; found ${primaryScenarioIds.length}.`);
+}
+if (compatibilityScenarioIds.length !== 26) {
+  failures.push(`Expected 26 compatibility scenarios; found ${compatibilityScenarioIds.length}.`);
+}
+if (scenarioIds.length !== 111 || uniqueScenarioIds.size !== 111) {
+  failures.push(`Expected 111 unique combined Wave B scenarios; found ${scenarioIds.length} headings and ${uniqueScenarioIds.size} unique IDs.`);
 }
 
 for (const prefix of ['A', 'M', 'D', 'F', 'I', 'Y', 'Q', 'N']) {
@@ -116,7 +155,7 @@ for (const text of [
   'Tariffs, Divestment, and Margin Loan grant an Action but no same-phase permission',
   'Arenas remove Defensive Edge and use a separate Tiebreak Roll',
   'published v0.6.1 sources remain unchanged',
-]) requireText(candidate, text, 'cross-faction requirement');
+]) requireText(normativeWaveB, text, 'cross-faction requirement');
 
 if (failures.length > 0) {
   console.error('v0.6.2 faction/component validation failed:');
