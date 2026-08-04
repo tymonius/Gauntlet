@@ -93,6 +93,7 @@ Canonical behavior to propagate:
 - [ ] Use **retreat** only after a battle loss.
 - [ ] Preserve the same normal attacker and defender fallback positions for retreat and withdrawal unless an effect says otherwise.
 - [ ] Preserve the existing Occupation consequence when only the defender withdraws: the attacker remains in the contested Position and becomes the occupier when applicable.
+- [ ] Distinguish timing: withdrawal before Onset prevents the battle and has no Aftermath; withdrawal at any time after Onset completes the remaining non-result steps of the Aftermath and clears any committed battle cards normally.
 - [ ] Teach the distinction plainly: **a losing player retreats; a player who leaves without losing withdraws**.
 
 ### Contiguous Front Line — issue #460
