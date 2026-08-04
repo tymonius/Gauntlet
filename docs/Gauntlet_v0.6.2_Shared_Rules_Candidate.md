@@ -377,7 +377,11 @@ Unless an effect says otherwise, when a player retreats or withdraws from a batt
 - an attacker returns to the position from which they entered the contested position; and
 - a defender moves one position toward their own end.
 
-If both players withdraw, move the attacker first, then the defender.
+After applying that movement:
+
+- if only the attacker withdrew, the defender remains in the contested position;
+- if only the defender withdrew, the attacker remains in the contested position and becomes its occupier if it is an opposing Territory they do not control; and
+- if both players withdraw, move the attacker first, then the defender, and neither becomes the occupier because of that withdrawal.
 
 Specific edge-of-Gauntlet and effect instructions continue to override this general procedure.
 
@@ -430,7 +434,8 @@ Withdrawal does not count as Fall Back or ordinary movement for effects unless a
 - Leave without a winner: withdraw.
 - Attacker returns to the position from which they entered.
 - Defender moves one position toward their own end.
-- If both withdraw, move the attacker first.
+- If only the defender withdraws, the attacker remains and becomes the occupier when applicable.
+- If both withdraw, move the attacker first; neither becomes the occupier because of the withdrawal.
 
 ## Front Line
 
