@@ -1,8 +1,11 @@
 (() => {
-  const CSS_PIXELS_PER_POINT = 96 / 72;
+  const CSS_PIXELS_PER_INCH = 96;
+  const CSS_PIXELS_PER_POINT = CSS_PIXELS_PER_INCH / 72;
   const TITLE_STEP = 0.05 * CSS_PIXELS_PER_POINT;
+  const ART_WIDTH_STEP = 2;
   const EFFECT_STEP = 0.01;
   const MINIMUM_TITLE_SIZE = 8 * CSS_PIXELS_PER_POINT;
+  const MINIMUM_ART_WIDTH = 0.78 * CSS_PIXELS_PER_INCH;
   const MINIMUM_EFFECT_SCALE = 0.68;
   const PARCHMENT_SOURCE = '/images/artwork/card-backgrounds/neutral-parchment-v2.png';
   const catalog = window.GAUNTLET_TTS_CATALOG;
@@ -23,6 +26,7 @@
     .split('\n')
     .map((line) => line.trim())
     .filter(Boolean);
+  const artworkCandidates = territoryArtworkCandidates(territory, displayName);
 
   target.innerHTML = `
     <article class="territory-card${territory.arena ? ' arena' : ''}" aria-label="${escapeAttribute(territory.name)} Territory card">
@@ -30,9 +34,15 @@
         <header class="territory-heading">
           <h1 class="territory-title">${escapeHtml(displayName)}</h1>
         </header>
-        <section class="territory-effect" aria-label="Territory effect">
-          ${paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('')}
-        </section>
+        <div class="territory-body">
+          <figure class="territory-art" aria-label="Territory artwork">
+            <img alt="" hidden>
+            <span>Artwork pending</span>
+          </figure>
+          <section class="territory-effect" aria-label="Territory effect">
+            ${paragraphs.map((paragraph) => `<p>${escapeHtml(paragraph)}</p>`).join('')}
+          </section>
+        </div>
         <footer class="territory-footer">
           <span>${territory.arena ? 'Arena' : 'Territory'}</span>
           <span>${escapeHtml(territory.complexity)}</span>
@@ -46,39 +56,78 @@
   async function prepareTerritory() {
     if (document.fonts?.ready) await document.fonts.ready.catch(() => {});
     const card = target.querySelector('.territory-card');
-    await loadParchment(card);
+    await Promise.all([
+      loadParchment(card),
+      loadArtwork(card, artworkCandidates),
+    ]);
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     fitTerritory(card);
     document.body.dataset.renderReady = 'true';
   }
 
   function loadParchment(card) {
+    return loadImage(PARCHMENT_SOURCE).then((loaded) => {
+      card.dataset.parchmentLoaded = loaded ? 'true' : 'false';
+      if (loaded) card.style.setProperty('--parchment-image', `url("${PARCHMENT_SOURCE}")`);
+    });
+  }
+
+  async function loadArtwork(card, candidates) {
+    const figure = card.querySelector('.territory-art');
+    const image = figure?.querySelector('img');
+    if (!figure || !image) {
+      card.dataset.artworkLoaded = 'false';
+      return;
+    }
+
+    for (const source of candidates) {
+      if (!await loadImage(source)) continue;
+      image.src = source;
+      image.alt = `${displayName} Territory artwork`;
+      image.hidden = false;
+      figure.classList.add('has-image');
+      card.dataset.artworkLoaded = 'true';
+      card.dataset.artworkSource = source;
+      if (image.decode) await image.decode().catch(() => {});
+      return;
+    }
+
+    card.dataset.artworkLoaded = 'false';
+  }
+
+  function loadImage(source) {
     return new Promise((resolve) => {
       const image = new Image();
       let settled = false;
       const finish = (loaded) => {
         if (settled) return;
         settled = true;
-        card.dataset.parchmentLoaded = loaded ? 'true' : 'false';
-        if (loaded) card.style.setProperty('--parchment-image', `url("${PARCHMENT_SOURCE}")`);
-        resolve();
+        resolve(loaded);
       };
       image.addEventListener('load', () => finish(true), { once: true });
       image.addEventListener('error', () => finish(false), { once: true });
-      image.src = PARCHMENT_SOURCE;
+      image.src = source;
       if (image.complete) finish(image.naturalWidth > 0);
     });
   }
 
   function fitTerritory(card) {
     const title = card.querySelector('.territory-title');
+    const art = card.querySelector('.territory-art');
     const effect = card.querySelector('.territory-effect');
     let titleSize = Number.parseFloat(getComputedStyle(title).fontSize);
+    let artWidth = Number.parseFloat(getComputedStyle(card).getPropertyValue('--art-width'));
     let effectScale = 1;
 
     while (textOverflows(title) && titleSize > MINIMUM_TITLE_SIZE) {
       titleSize = Math.max(MINIMUM_TITLE_SIZE, titleSize - TITLE_STEP);
       title.style.fontSize = `${titleSize}px`;
+      forceLayout(card);
+    }
+
+    while (cardOverflows(card) && artWidth > MINIMUM_ART_WIDTH) {
+      artWidth = Math.max(MINIMUM_ART_WIDTH, artWidth - ART_WIDTH_STEP);
+      card.style.setProperty('--art-width', `${artWidth}px`);
       forceLayout(card);
     }
 
@@ -99,9 +148,14 @@
       forceLayout(card);
     }
 
+    const artRect = art?.getBoundingClientRect();
     card.dataset.titleFit = textOverflows(title) ? 'false' : 'true';
     card.dataset.effectScale = effectScale.toFixed(2);
-    const fits = !cardOverflows(card) && !textOverflows(title) && Boolean(effect.textContent.trim());
+    card.dataset.artWidth = artRect ? artRect.width.toFixed(2) : '0';
+    const fits = !cardOverflows(card)
+      && !textOverflows(title)
+      && Boolean(effect.textContent.trim())
+      && Boolean(artRect && artRect.width >= MINIMUM_ART_WIDTH - 0.5 && artRect.height > 0);
     card.classList.toggle('fit-warning', !fits);
   }
 
@@ -119,16 +173,43 @@
 
   function cardOverflows(card) {
     const interior = card.querySelector('.territory-interior');
+    const body = card.querySelector('.territory-body');
     const effect = card.querySelector('.territory-effect');
     const footer = card.querySelector('.territory-footer');
-    if (!interior || !effect || !footer) return true;
+    if (!interior || !body || !effect || !footer) return true;
 
     const interiorRect = interior.getBoundingClientRect();
     const footerRect = footer.getBoundingClientRect();
     return effect.scrollHeight > effect.clientHeight + 0.5
+      || body.scrollHeight > body.clientHeight + 0.5
       || interior.scrollHeight > interior.clientHeight + 0.5
       || footerRect.bottom > interiorRect.bottom + 0.5
       || footerOverflows(footer);
+  }
+
+  function territoryArtworkCandidates(item, name) {
+    const explicit = String(item.artwork || '').trim();
+    const slugs = [...new Set([
+      String(item.id || '').replace(/^territory-/, ''),
+      slugify(name),
+    ].filter(Boolean))];
+    const candidates = explicit
+      ? [`/${explicit.replace(/^\/+/, '')}`]
+      : [];
+    for (const slug of slugs) {
+      for (const extension of ['png', 'webp', 'jpg', 'jpeg']) {
+        candidates.push(`/images/artwork/territories/${slug}.${extension}`);
+      }
+    }
+    return [...new Set(candidates)];
+  }
+
+  function slugify(value) {
+    return String(value || '')
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
   }
 
   function forceLayout(element) {
