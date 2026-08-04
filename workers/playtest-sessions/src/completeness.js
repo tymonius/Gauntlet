@@ -32,9 +32,12 @@ export default {
     }
 
     const additionalContext = normalizeAdditionalContext(body?.context);
+    const forwardedHeaders = new Headers(request.headers);
+    forwardedHeaders.set("content-type", "application/json");
+    forwardedHeaders.delete("content-length");
     const forwarded = new Request(request.url, {
       method: request.method,
-      headers: request.headers,
+      headers: forwardedHeaders,
       body: JSON.stringify(body)
     });
     const response = await closureWorker.fetch(forwarded, env);
