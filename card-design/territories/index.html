@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-8YYYZJGGPE');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="description" content="Internal Gauntlet landscape Territory-card mockup." />
+  <title>Gauntlet Territory Card Mockup</title>
+  <link rel="preconnect" href="https://use.typekit.net" />
+  <link rel="preconnect" href="https://p.typekit.net" crossorigin />
+  <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
+  <link rel="stylesheet" href="../../design-tokens.css" />
+  <link rel="stylesheet" href="../card-design.css" />
+  <link rel="stylesheet" href="../territory-card.css" />
+  <style>
+    body {
+      min-height: 100vh;
+    }
+
+    .territory-review-header {
+      width: min(62rem, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: clamp(3rem, 8vw, 6rem) 0 2rem;
+    }
+
+    .territory-review-header h1 {
+      max-width: 12ch;
+      margin: 0;
+      font-family: var(--font-display-web);
+      font-size: clamp(2.7rem, 7vw, 5.5rem);
+      line-height: 0.96;
+    }
+
+    .territory-review-header p:last-child {
+      max-width: 48rem;
+      margin: 1.25rem 0 0;
+      color: #51483f;
+      font-size: 1.05rem;
+      line-height: 1.55;
+    }
+
+    .territory-review-stage {
+      display: grid;
+      place-items: center;
+      min-height: 28rem;
+      padding: 2rem 1rem 5rem;
+      overflow-x: auto;
+    }
+
+    .territory-review-card {
+      width: max-content;
+    }
+
+    .territory-review-label {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      margin: 0 0 0.7rem;
+      color: var(--page-muted);
+      font-family: var(--font-interface);
+      font-size: 0.68rem;
+    }
+
+    .territory-review-label strong {
+      color: var(--page-ink);
+      font-size: 0.75rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    @media print {
+      .site-header,
+      .territory-review-header,
+      .territory-review-label {
+        display: none;
+      }
+
+      body,
+      .territory-review-stage {
+        min-height: 0;
+        padding: 0;
+        background: #fff;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand-link" href="../" aria-label="Return to the card-design page">
+      <span class="brand-mark" aria-hidden="true">G</span>
+      <span>Gauntlet</span>
+    </a>
+    <nav aria-label="Territory mockup navigation">
+      <a href="../">All card studies</a>
+      <button type="button" onclick="window.print()">Print at 100%</button>
+    </nav>
+  </header>
+
+  <main>
+    <section class="territory-review-header">
+      <p class="eyebrow">Landscape component · shared production frame</p>
+      <h1>Territory card mockup</h1>
+      <p>The Territory uses the same 0.46-inch title panel as a standard playable card. The recovered vertical space belongs to the full-width artwork window, while the printed effect remains in a panel across the bottom.</p>
+    </section>
+
+    <section class="territory-review-stage" aria-label="High Ground Territory mockup">
+      <div class="territory-review-card">
+        <p class="territory-review-label"><strong>High Ground</strong><span>3.5 × 2.5 inches · actual size</span></p>
+        <article class="territory-card" style="--parchment-image: url('../../images/artwork/card-backgrounds/neutral-parchment-v2.png');" aria-label="High Ground Territory card-front prototype">
+          <div class="territory-interior">
+            <header class="territory-heading">
+              <h2 class="territory-title">High Ground</h2>
+            </header>
+            <div class="territory-body">
+              <figure class="territory-art" aria-label="High Ground Territory artwork">
+                <span>Artwork pending</span>
+              </figure>
+              <section class="territory-effect" aria-label="Territory effect">
+                <p>The defending player in a battle on High Ground gains advantage.</p>
+              </section>
+            </div>
+            <footer class="territory-footer">
+              <span>Territory</span>
+              <span>Basic</span>
+              <span>v0.6.1</span>
+            </footer>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
