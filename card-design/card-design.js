@@ -5,7 +5,7 @@
   const TITLE_STEP = 0.05 * CSS_PIXELS_PER_POINT;
   const RULE_SCALE_STEP = 0.01;
   const DEFAULT_MINIMUM_TITLE_SIZE = 8 * CSS_PIXELS_PER_POINT;
-  const DEFAULT_MINIMUM_OVERLAY_TITLE_SIZE = 5.5 * CSS_PIXELS_PER_POINT;
+  const DEFAULT_MINIMUM_OVERLAY_TITLE_SIZE = 12.1 * CSS_PIXELS_PER_POINT;
   const DEFAULT_MINIMUM_RULE_SCALE = 0.93;
   const PARCHMENT_SOURCES = Object.freeze({
     neutral: '../images/artwork/card-backgrounds/neutral-parchment-v2.png',

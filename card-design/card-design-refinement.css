@@ -31,7 +31,7 @@
    rail repeats the title for identification when the card is turned sideways
    across a landscape Territory. */
 .overlay-card {
-  --overlay-title-bar-width: 0.27in;
+  --overlay-title-bar-width: 0.285in;
   --overlay-title-ink: #f7efdf;
 }
 
@@ -61,26 +61,20 @@
   color: var(--overlay-title-ink);
 }
 
-.overlay-title-bar::before {
-  position: absolute;
-  inset: 0.045in 0.04in;
-  border-right: 0.5px solid color-mix(in srgb, currentColor 42%, transparent);
-  border-left: 0.5px solid color-mix(in srgb, currentColor 42%, transparent);
-  content: "";
-  pointer-events: none;
-}
-
 .overlay-title {
   position: absolute;
   z-index: 1;
-  inset: 0.08in 0.045in;
-  display: block;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
+  padding: 0.06in 0.012in;
   font-family: var(--font-display-historical);
-  font-size: 7.8pt;
+  font-size: 12.1pt;
   font-style: normal;
   font-weight: 400;
-  letter-spacing: 0.075em;
+  letter-spacing: 0.035em;
   line-height: 1;
   text-align: center;
   text-orientation: mixed;
@@ -97,11 +91,6 @@
 .overlay-card .card-heading {
   padding-right: 0.46in;
   padding-left: 0.07in;
-}
-
-.overlay-card .card-art {
-  margin-right: 0.055in;
-  margin-left: 0.03in;
 }
 
 .overlay-card .card-rules,
@@ -145,7 +134,7 @@
   width: auto;
   height: auto;
   min-height: 0;
-  margin: 0 0.07in 0.045in 0.04in;
+  margin: 0 0.055in 0.045in;
   overflow: hidden;
   border: 1px solid rgba(54, 41, 29, 0.94);
   border-radius: 0.025in;
