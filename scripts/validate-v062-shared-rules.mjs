@@ -41,6 +41,7 @@ const requiredRules = [
   "If battle totals are tied and the defender controls the contested Territory, the defender wins through Defensive Edge.",
   "Each player rolls one die. Do not apply advantage, disadvantage, card effects, numerical modifiers, or the previous battle totals.",
   "A losing player retreats; a player who leaves without losing withdraws.",
+  "if only the defender withdrew, the attacker remains in the contested position and becomes its occupier if it is an opposing Territory they do not control",
   "Normal Capture advances the Front Line by no more than one Territory per turn",
   "The Territory captured during the Capture step is not necessarily the Territory containing the active player's token.",
 ];
@@ -50,6 +51,7 @@ const requiredReference = [
   "Pending battle → Terms → Onset → Gambits",
   "If battle totals are tied and the defender controls the contested Territory, the defender wins through **Defensive Edge**.",
   "A losing player retreats; a player who leaves without losing withdraws.",
+  "only the defender withdraws: the attacker remains in the contested position and becomes the occupier when applicable",
   "The captured Territory may be behind your token.",
 ];
 
@@ -129,6 +131,7 @@ requireText("shared rules matrix", source.matrix, [
   "# H. Cross-Surface Acceptance Gate",
   "A passing Markdown review alone does not complete the release gate.",
   "G08 — `revealed Territory` audit",
+  "If only the defender withdraws, the attacker remains in the contested position and becomes the occupier when applicable.",
 ]);
 
 requireText("documentation README", source.readme, [
