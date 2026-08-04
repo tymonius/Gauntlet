@@ -24,7 +24,10 @@ When a derived PDF, printable sheet, Deckbuilder entry, or digital implementatio
 - [v0.6.2 Shared Reference Candidate](Gauntlet_v0.6.2_Shared_Reference_Candidate.md) — compact tableside form of the adopted Wave A shared rules.
 - [v0.6.2 Shared Rules Test Matrix](Gauntlet_v0.6.2_Shared_Rules_Test_Matrix.md) — normative scenarios and cross-surface acceptance gates for the Wave A shared-rule implementation.
 - [v0.6.2 Faction and Component Candidate](Gauntlet_v0.6.2_Faction_and_Component_Candidate.md) — normative Wave B faction rules, Proposal text, revised components, seven-card expansion, Territory changes, and interaction requirements.
-- [v0.6.2 Faction and Component Test Matrix](Gauntlet_v0.6.2_Faction_Component_Test_Matrix.md) — 85 cross-faction and component scenarios governing later structured-data and digital propagation.
+- [v0.6.2 Faction and Component Compatibility Audit](Gauntlet_v0.6.2_Faction_Component_Compatibility_Audit.md) — exact inherited-source replacements for retired timing, visibility, movement, tie, and control language.
+- [v0.6.2 Faction and Component Test Matrix](Gauntlet_v0.6.2_Faction_Component_Test_Matrix.md) — 85 primary cross-faction and component scenarios governing later structured-data and digital propagation.
+- [v0.6.2 Faction and Component Compatibility Test Matrix](Gauntlet_v0.6.2_Faction_Component_Compatibility_Test_Matrix.md) — 26 inherited-source scenarios; together the Wave B matrices contain 111 normative cases.
+- [v0.6.2 Wave B Review Checklist](Gauntlet_v0.6.2_Wave_B_Review_Checklist.md) — focused review gate for faction, component, compatibility, and source-boundary changes.
 - [v0.6.2 Implementation Ledger](Gauntlet_v0.6.2_Implementation_Ledger.md) — adopted post-playtest changes, unresolved release dependencies, ordered propagation waves, and validation gates for the next playtest revision.
 - [v0.6.1 Implementation Ledger](Gauntlet_v0.6.1_Implementation_Ledger.md) — approved first-playtest corrections and synchronization checklist.
 - [v0.6.1 Rulebook Layering Standard](Gauntlet_v0.6.1_Rulebook_Layering_Standard.md) — approved **How it works / Complete rules** structure for combining first-game teaching with technical reference.
