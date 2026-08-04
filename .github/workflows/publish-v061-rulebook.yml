@@ -1,0 +1,252 @@
+name: Publish v0.6.1 Rulebook package
+
+on:
+  push:
+    branches: [publication/v061-rulebook-publication]
+    paths:
+      - ".github/workflows/publish-v061-rulebook.yml"
+      - "rulebook/**"
+      - "rulebook-production/**"
+      - "rulebook-design/**"
+      - "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md"
+      - "images/sketches/**"
+      - "package.json"
+      - "package-lock.json"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/publish-v061-rulebook.yml"
+      - "rulebook/**"
+      - "rulebook-production/**"
+      - "rulebook-design/**"
+      - "README.md"
+      - "releases/v0.6.1/README.md"
+      - "releases/v0.6.1/Gauntlet_v0.6.1_Manifest.json"
+      - "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md"
+      - "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf"
+      - "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf"
+      - "images/sketches/**"
+      - "package.json"
+      - "package-lock.json"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-v061-rulebook-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate-and-publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout publication branch
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            .github/workflows/publish-v061-rulebook.yml
+            README.md
+            package.json
+            package-lock.json
+            rulebook
+            rulebook-design
+            rulebook-production
+            releases/v0.6.1
+            images/sketches
+            rules-assistant
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install renderer
+        run: |
+          npm install
+          npm install --no-save pdf-lib
+          npx playwright install --with-deps chromium
+
+      - name: Build approved Rulebook
+        run: |
+          python rulebook-design/build_proofs.py
+          python rulebook-production/build_fidelity_gate.py
+          python rulebook-production/build_complete_rulebook.py
+
+      - name: Render PDFs and validate Browser Rulebook
+        run: |
+          python -m http.server 8000 >/tmp/rulebook-publication-server.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID' EXIT
+          node rulebook-production/render_fidelity_gate.mjs
+          node rulebook-production/run_rulebook_renderer.mjs
+          node rulebook/validate-publication.mjs
+
+      - name: Validate publication geometry
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          import { PDFDocument } from 'pdf-lib';
+
+          async function validate(path, expectedPages, expectedWidth, expectedHeight, label) {
+            const pdf = await PDFDocument.load(fs.readFileSync(path));
+            if (pdf.getPageCount() !== expectedPages) {
+              throw new Error(`${label}: expected ${expectedPages} pages; found ${pdf.getPageCount()}.`);
+            }
+            for (const [index, page] of pdf.getPages().entries()) {
+              const { width, height } = page.getSize();
+              if (Math.abs(width - expectedWidth) > 1 || Math.abs(height - expectedHeight) > 1) {
+                throw new Error(`${label} page ${index + 1} is ${width} x ${height} pt.`);
+              }
+            }
+          }
+
+          const report = JSON.parse(fs.readFileSync('/tmp/rulebook-production/production-report.json', 'utf8'));
+          if (report.outputs.readerPages !== 76 || report.outputs.bookletSides !== 38) {
+            throw new Error(`Approved pagination changed: ${JSON.stringify(report.outputs)}`);
+          }
+          await validate('/tmp/rulebook-production/Gauntlet_v0.6.1_Rulebook.pdf', 76, 396, 612, 'Reader Rulebook');
+          await validate('/tmp/rulebook-production/Gauntlet_v0.6.1_Rulebook_Booklet.pdf', 38, 792, 612, 'Imposed booklet');
+          NODE
+
+      - name: Stage release PDFs and maintained metadata
+        run: |
+          cp /tmp/rulebook-production/Gauntlet_v0.6.1_Rulebook.pdf releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf
+          cp /tmp/rulebook-production/Gauntlet_v0.6.1_Rulebook_Booklet.pdf releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf
+
+          python <<'PY'
+          from __future__ import annotations
+
+          import hashlib
+          import json
+          from pathlib import Path
+
+          def replace_once(text: str, old: str, new: str, label: str) -> str:
+              if new in text:
+                  return text
+              if old not in text:
+                  raise RuntimeError(f"Could not update {label}; expected source text was not found.")
+              return text.replace(old, new, 1)
+
+          root_readme = Path('README.md')
+          text = root_readme.read_text(encoding='utf-8')
+          text = replace_once(
+              text,
+              '- official rulebook in Markdown, DOCX, and PDF;',
+              '- official rulebook in Markdown, a color reader PDF, and a grayscale-compatible imposed color booklet PDF;',
+              'root Rulebook output summary',
+          )
+          reader_link = '- [Gauntlet v0.6.1 Rulebook (PDF)](releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf) — the complete official rules for the current release.'
+          booklet_link = '- [Gauntlet v0.6.1 Imposed Booklet (PDF)](releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf) — color, grayscale-compatible, and ordered for Letter duplex printing with short-edge flip.'
+          if booklet_link not in text:
+              if reader_link not in text:
+                  raise RuntimeError('Could not add the root booklet link.')
+              text = text.replace(reader_link, f'{reader_link}\n{booklet_link}', 1)
+          text = replace_once(
+              text,
+              'Generated PDFs, DOCX files, printable sheets, and Deckbuilder output are derived production artifacts.',
+              'Generated PDFs, printable sheets, and Deckbuilder output are derived production artifacts. The retired DOCX files remain only as historical release artifacts and are not maintained.',
+              'root generated-artifact policy',
+          )
+          root_readme.write_text(text, encoding='utf-8')
+
+          release_readme = Path('releases/v0.6.1/README.md')
+          text = release_readme.read_text(encoding='utf-8')
+          text = replace_once(
+              text,
+              '- editable DOCX and print-ready PDF versions of both documents;',
+              '- a 76-page color reader Rulebook and a grayscale-compatible 38-side imposed color booklet PDF;',
+              'release output summary',
+          )
+          old_validation = '- Rulebook and Reference Guide generation and visual review;'
+          new_validation = '- 76-page color reader Rulebook and 38-side imposed color booklet generation, complete visual review, and grayscale preflight;'
+          text = replace_once(text, old_validation, new_validation, 'release Rulebook validation')
+          public_reader = '- [Rulebook PDF](https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf)'
+          public_booklet = '- [Imposed Booklet PDF](https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf)'
+          if public_booklet not in text:
+              if public_reader not in text:
+                  raise RuntimeError('Could not add the release booklet link.')
+              text = text.replace(public_reader, f'{public_reader}\n{public_booklet}', 1)
+          verification = (
+              'The final 76-page Rulebook was printed on Letter paper from the imposed color booklet PDF, '
+              'duplexed with short-edge flip, folded, assembled, and verified successfully on August 4, 2026. '
+              'Page order, orientation, fold margins, color, grayscale legibility, and small-type readability passed the physical test.'
+          )
+          if verification not in text:
+              marker = '## Deferred final priority: playable digital implementation'
+              if marker not in text:
+                  raise RuntimeError('Could not record physical Rulebook verification.')
+              text = text.replace(marker, f'{verification}\n\n{marker}', 1)
+          release_readme.write_text(text, encoding='utf-8')
+
+          manifest_path = Path('releases/v0.6.1/Gauntlet_v0.6.1_Manifest.json')
+          manifest = json.loads(manifest_path.read_text(encoding='utf-8'))
+          outputs = [item for item in manifest['current_outputs'] if not item.lower().endswith('.docx')]
+          booklet_name = 'Gauntlet_v0.6.1_Rulebook_Booklet.pdf'
+          if booklet_name not in outputs:
+              reader_index = outputs.index('Gauntlet_v0.6.1_Rulebook.pdf')
+              outputs.insert(reader_index + 1, booklet_name)
+          manifest['current_outputs'] = outputs
+          manifest['retired_outputs'] = sorted(set(manifest.get('retired_outputs', []) + [
+              'Gauntlet_v0.6.1_Rulebook.docx',
+              'Gauntlet_v0.6.1_Reference_Guide.docx',
+          ]))
+
+          reader = Path('releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf')
+          booklet = Path('releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf')
+          digest = lambda path: hashlib.sha256(path.read_bytes()).hexdigest()
+          manifest['rulebook_publication'] = {
+              'reader_pdf': reader.name,
+              'reader_pages': 76,
+              'reader_sha256': digest(reader),
+              'booklet_pdf': booklet.name,
+              'booklet_sides': 38,
+              'duplex_letter_sheets': 19,
+              'booklet_sha256': digest(booklet),
+              'duplex_setting': 'landscape, flip on short edge, actual size',
+              'grayscale_compatible': True,
+              'physical_print_verified': '2026-08-04',
+          }
+          manifest['validation'].update({
+              'rulebook_source_parity_passed': True,
+              'rulebook_reader_visual_review_passed': True,
+              'rulebook_spread_review_passed': True,
+              'rulebook_grayscale_preflight_passed': True,
+              'physical_rulebook_booklet_test_passed': True,
+              'browser_rulebook_cosmetic_pass_complete': True,
+              'browser_rulebook_desktop_mobile_checks_passed': True,
+          })
+          manifest['public_links']['rulebook_booklet_pdf'] = 'https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf'
+          manifest_path.write_text(json.dumps(manifest, indent=2) + '\n', encoding='utf-8')
+          PY
+
+      - name: Upload publication review package
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-v061-rulebook-publication
+          path: |
+            /tmp/rulebook-production/**
+            /tmp/rulebook-browser-publication/**
+            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf
+            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf
+          if-no-files-found: error
+
+      - name: Commit approved release artifacts
+        if: github.event_name == 'push' && github.ref_name == 'publication/v061-rulebook-publication'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add README.md \
+            releases/v0.6.1/README.md \
+            releases/v0.6.1/Gauntlet_v0.6.1_Manifest.json \
+            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf \
+            releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf
+          if git diff --cached --quiet; then
+            echo "Published Rulebook artifacts are already current."
+            exit 0
+          fi
+          git commit -m "Publish approved v0.6.1 Rulebook artifacts [skip ci]"
+          git push origin HEAD:${GITHUB_REF_NAME}

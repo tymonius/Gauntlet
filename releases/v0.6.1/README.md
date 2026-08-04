@@ -21,7 +21,7 @@ The governing Markdown sources must be updated before any generated data, printa
 The published release contains or drives:
 
 - the layered Markdown Rulebook and compact Reference Guide;
-- editable DOCX and print-ready PDF versions of both documents;
+- a 76-page color reader Rulebook and a grayscale-compatible 38-side imposed color booklet PDF;
 - release notes, detailed changelog, package manifest, and first-game material;
 - canonical structured JSON and a complete one-file card reference;
 - all six definitive faction guides;
@@ -73,7 +73,7 @@ The current source candidate has passed:
 - a complete in-memory coded-session lifecycle test: create session, join, record event, link an Arbiter interaction, close, and reject later use;
 - Deckbuilder source and recommended-Deck validation;
 - desktop and mobile browser smoke tests;
-- Rulebook and Reference Guide generation and visual review;
+- 76-page color reader Rulebook and 38-side imposed color booklet generation, complete visual review, and grayscale preflight;
 - playtest-sheet and player-mat generation;
 - six-faction card-overflow validation;
 - exact faction-PDF page counts with nonblank final pages;
@@ -89,6 +89,7 @@ The archived v0.6.0 PDFs remain byte-for-byte aligned with `main`; the legacy v0
 - [Project site](https://gauntlet.run/)
 - [Browser Rulebook](https://gauntlet.run/rulebook/)
 - [Rulebook PDF](https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf)
+- [Imposed Booklet PDF](https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf)
 - [Card Reference](https://gauntlet.run/card-reference/)
 - [Deckbuilder](https://gauntlet.run/deckbuilder/)
 - [Faction Sheets](https://gauntlet.run/faction-sheets/)
@@ -97,6 +98,8 @@ The archived v0.6.0 PDFs remain byte-for-byte aligned with `main`; the legacy v0
 ## Publication verification
 
 Production D1 migrations and both Cloudflare Worker deployments passed, both health endpoints were verified, and the physical coded-sheet lifecycle passed in production on July 30, 2026. The completed evidence is preserved in `Gauntlet_v0.6.1_Physical_Verification_Checklist.md` and `deployment-status.json`.
+
+The final 76-page Rulebook was printed on Letter paper from the imposed color booklet PDF, duplexed with short-edge flip, folded, assembled, and verified successfully on August 4, 2026. Page order, orientation, fold margins, color, grayscale legibility, and small-type readability passed the physical test.
 
 ## Deferred final priority: playable digital implementation
 

@@ -24,10 +24,9 @@
   "current_outputs": [
     "README.md",
     "Gauntlet_v0.6.1_Rulebook.md",
-    "Gauntlet_v0.6.1_Rulebook.docx",
     "Gauntlet_v0.6.1_Rulebook.pdf",
+    "Gauntlet_v0.6.1_Rulebook_Booklet.pdf",
     "Gauntlet_v0.6.1_Reference_Guide.md",
-    "Gauntlet_v0.6.1_Reference_Guide.docx",
     "Gauntlet_v0.6.1_Reference_Guide.pdf",
     "Gauntlet_v0.6.1_Release_Notes.md",
     "Gauntlet_v0.6.1_Changelog.md",
@@ -73,7 +72,14 @@
     "complete_print_package_visual_checks_passed": true,
     "production_workers_deployed": true,
     "physical_qr_session_test_passed": true,
-    "ready_for_publication": true
+    "ready_for_publication": true,
+    "rulebook_source_parity_passed": true,
+    "rulebook_reader_visual_review_passed": true,
+    "rulebook_spread_review_passed": true,
+    "rulebook_grayscale_preflight_passed": true,
+    "physical_rulebook_booklet_test_passed": true,
+    "browser_rulebook_cosmetic_pass_complete": true,
+    "browser_rulebook_desktop_mobile_checks_passed": true
   },
   "public_links": {
     "project_site": "https://gauntlet.run/",
@@ -83,6 +89,23 @@
     "card_reference": "https://gauntlet.run/card-reference/",
     "deckbuilder": "https://gauntlet.run/deckbuilder/",
     "faction_sheets": "https://gauntlet.run/faction-sheets/",
-    "playtest_sheet": "https://gauntlet.run/playtest/"
+    "playtest_sheet": "https://gauntlet.run/playtest/",
+    "rulebook_booklet_pdf": "https://gauntlet.run/releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf"
+  },
+  "retired_outputs": [
+    "Gauntlet_v0.6.1_Reference_Guide.docx",
+    "Gauntlet_v0.6.1_Rulebook.docx"
+  ],
+  "rulebook_publication": {
+    "reader_pdf": "Gauntlet_v0.6.1_Rulebook.pdf",
+    "reader_pages": 76,
+    "reader_sha256": "9ce9389468d72da2666e33555d1c0b381bcf8f776ac72ffefdcf9638458e4060",
+    "booklet_pdf": "Gauntlet_v0.6.1_Rulebook_Booklet.pdf",
+    "booklet_sides": 38,
+    "duplex_letter_sheets": 19,
+    "booklet_sha256": "678f70e584445e6ff5c5180a3458a9630554b62858a980bf0f4b1d7f221c5312",
+    "duplex_setting": "landscape, flip on short edge, actual size",
+    "grayscale_compatible": true,
+    "physical_print_verified": "2026-08-04"
   }
 }

@@ -14,9 +14,13 @@
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
+  <meta name="theme-color" content="#8f1f25" />
   <meta name="description" content="Read the complete canonical Gauntlet v0.6.1 rulebook in a searchable, responsive browser format." />
   <title>Gauntlet v0.6.1 Browser Rulebook</title>
+  <link rel="preconnect" href="https://use.typekit.net" />
+  <link rel="preconnect" href="https://p.typekit.net" crossorigin />
   <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="publication.css" />
   <link rel="stylesheet" href="../rules-assistant/widget.css" />
 </head>
 <body>
@@ -32,16 +36,20 @@
   </header>
 
   <section class="rulebook-hero">
-    <div>
+    <div class="hero-copy">
       <p class="eyebrow">Canonical rules · version 0.6.1</p>
       <h1>Official Browser Rulebook</h1>
       <p class="hero-lede">The complete shared rules and faction systems, rendered directly from the canonical release source for comfortable reading at the table or on the go.</p>
       <p class="source-status" data-rulebook-status aria-live="polite">Loading the canonical rulebook…</p>
     </div>
+    <div class="hero-art" aria-hidden="true">
+      <img src="../images/sketches/hero sketch.png" alt="" decoding="async" />
+    </div>
     <div class="hero-actions" aria-label="Rulebook actions">
       <button type="button" data-open-rules-assistant>Ask the Rules Arbiter</button>
-      <a href="../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf">Download PDF</a>
-      <button type="button" data-print-rulebook>Print</button>
+      <a href="../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf">Reader PDF</a>
+      <a href="../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf">Print booklet</a>
+      <button type="button" data-print-rulebook>Print browser view</button>
     </div>
   </section>
 
@@ -65,9 +73,10 @@
       </nav>
 
       <div class="source-links">
-        <strong>Canonical source</strong>
+        <strong>Canonical source and downloads</strong>
         <a href="../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md">Markdown</a>
-        <a href="../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf">PDF</a>
+        <a href="../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf">Reader PDF</a>
+        <a href="../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf">Booklet PDF</a>
       </div>
     </aside>
 
@@ -90,7 +99,8 @@
   <noscript>
     <div class="noscript">
       JavaScript is required for the browser-rendered rulebook. Read the
-      <a href="../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf">official PDF</a>
+      <a href="../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf">official reader PDF</a>,
+      the <a href="../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf">imposed booklet PDF</a>,
       or the <a href="../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md">canonical Markdown source</a>.
     </div>
   </noscript>
