@@ -85,11 +85,12 @@ if (obsoleteIndex < 0) {
 
 let normativeRules = obsoleteIndex >= 0 ? source.rules.slice(0, obsoleteIndex) : source.rules;
 
-// These implementation instructions name the retired timing model solely to
-// prohibit recreating it. Remove them before testing player-facing terminology.
+// These implementation instructions name retired vocabulary solely to prohibit
+// or replace it. Remove those exact lines before testing player-facing text.
 for (const allowedEditorialLine of [
   "- does not create another Action phase or Action window.",
   "Do not create immediate or additional Action Opportunities or Action Windows.",
+  "- Replace `opening effects`, `battle opening`, and `Battle Onset` with **Onset** where they refer to this stage.",
 ]) {
   normativeRules = normativeRules.replace(allowedEditorialLine, "");
 }
