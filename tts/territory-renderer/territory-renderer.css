@@ -56,7 +56,7 @@ body {
 .territory-interior {
   position: relative;
   display: grid;
-  grid-template-rows: 0.49in minmax(0, 1fr) 0.16in;
+  grid-template-rows: 0.49in minmax(0, 1fr) 0.18in;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -136,12 +136,14 @@ body {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
+  gap: 0.04in;
   min-width: 0;
-  padding: 0.018in 0.06in 0.012in;
-  border-top: 0.65px solid rgba(61, 48, 36, 0.45);
+  padding: 0.025in 0.055in 0.02in;
+  border-top: 0.65px solid rgba(61, 48, 36, 0.62);
+  background: rgba(177, 139, 83, 0.16);
   color: var(--card-muted-ink);
   font-family: var(--font-interface);
-  font-size: 4.2pt;
+  font-size: 4.35pt;
   font-weight: 700;
   letter-spacing: 0.07em;
   line-height: 1;
@@ -149,13 +151,11 @@ body {
 }
 
 .territory-footer span {
-  overflow: hidden;
-  text-overflow: clip;
+  min-width: 0;
   white-space: nowrap;
 }
 
 .territory-footer span:nth-child(2) {
-  padding-inline: 0.05in;
   text-align: center;
 }
 
