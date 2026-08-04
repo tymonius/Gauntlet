@@ -237,6 +237,75 @@ PACKET_DEFINITIONS.push(
     forbiddenClaims: [
       "Do not treat copying a cost-1 card's effect as playing, setting, or choosing that card."
     ]
+  },
+  {
+    id: "operational-reassessment",
+    subject: "Operational Reassessment",
+    aliases: ["operational reassessment"],
+    sourceIds: [
+      "card:intelligence-operational-reassessment",
+      "rulebook:printed-card-effects",
+      "rulebook:complete-rules-6",
+      "rulebook:clearing-battle-cards"
+    ],
+    scopeNotes: [
+      "Operational Reassessment itself goes to the Graveyard and the eligible replacement is placed face up in the same current battle role.",
+      "A replacement does not reopen an earlier reveal or resolution timing window.",
+      "These outcomes are directly stated by the supplied canonical text; classify them explicit, not inferred or provisional."
+    ],
+    requiredClaims: [
+      "Operational Reassessment goes to the Graveyard.",
+      "The replacement is placed face up in the same Gambit or Tactic role.",
+      "A Gambit effect whose reveal timing has passed cannot apply and the replacement does not reopen that timing."
+    ],
+    forbiddenClaims: [
+      "Do not classify the replacement role or passed-timing result as a discretionary gap.",
+      "Do not let the replacement reopen the Gambit reveal stage."
+    ]
+  },
+  {
+    id: "margin-loan",
+    subject: "Margin Loan",
+    aliases: ["margin loan"],
+    sourceIds: [
+      "card:financiers-margin-loan",
+      "rulebook:collateral",
+      "rulebook:effect-caused-withdrawal-from-battle",
+      "rulebook:clearing-battle-cards"
+    ],
+    scopeNotes: [
+      "Keep Margin Loan's Action/Asset loan separate from its Battle effect.",
+      "A Margin Loan used as a Battle card is not banked and has no next-turn Repay or Default settlement.",
+      "Withdrawal from the battle produces no winner, so the Battle effect's non-win result puts Margin Loan and its collateral in the Graveyard.",
+      "If its controller wins, return the collateral to Hand and clear Margin Loan according to its current role: Gambit to Graveyard, Tactic to Discard Pile.",
+      "These outcomes are directly stated by the supplied canonical text; classify them explicit, not inferred or provisional."
+    ],
+    requiredClaims: [
+      "After a Battle Margin Loan withdrawal, Margin Loan and its collateral go to the Graveyard.",
+      "After a Battle Margin Loan win, return the collateral to Hand.",
+      "After that win, Margin Loan itself clears as a Gambit to Graveyard or as a Tactic to Discard Pile."
+    ],
+    forbiddenClaims: [
+      "Do not say a Battle Margin Loan remains banked.",
+      "Do not apply next-turn Repay or Default instructions to a Margin Loan used for its Battle effect."
+    ]
+  },
+  {
+    id: "capital-punishment",
+    subject: "Capital Punishment",
+    aliases: ["capital punishment"],
+    sourceIds: ["card:neutral-capital-punishment", "rulebook:action-effects"],
+    scopeNotes: [
+      "Capital Punishment's Action requires choosing one opposing Asset.",
+      "If the opponent controls no Assets, the required target is absent; the card cannot be played for its Action and the player cannot choose nothing.",
+      "This is directly stated by the component instruction and Action rules; classify it explicit, not inferred."
+    ],
+    requiredClaims: [
+      "Capital Punishment cannot be played for its Action when no opposing Asset can be chosen."
+    ],
+    forbiddenClaims: [
+      "Do not permit choosing no target or partially resolving the Action."
+    ]
   }
 );
 
