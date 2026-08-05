@@ -29,6 +29,10 @@ source = source.replace(
   "let sharedBody = section(sharedRulesSource, '# 1. Turn Structure', '# 8. Compact Shared Reference');",
   "chapters123 = chapters123\n  .replace('construction requirements for a custom Deck appear in Chapter 10', 'construction requirements for a custom Deck appear in Chapter 11')\n  .replace('Faction packages and their starting states appear in Part III', 'Faction packages and their starting states appear in Part IV')\n  .replace('Part III explains each faction\\'s exact arrangement', 'Part IV explains each faction\\'s exact arrangement')\n  .replace('Chapter 8 explains how control changes', 'Chapter 9 explains how control changes');\n\nlet sharedBody = section(sharedRulesSource, '# 1. Turn Structure', '# 8. Compact Shared Reference');"
 );
+source = source.replace(
+  "let returningGuide = returningSource\n  .replace('**Status:** Release-candidate source for returning v0.6.1 players'",
+  "let returningGuide = returningSource\n  .replace('The Peace Treaty threshold remains unresolved unless separately adopted before publication.', 'The Peace Treaty still requires five different ratified Proposals in v0.6.2. Any later threshold change remains unresolved.')\n  .replace('**Status:** Release-candidate source for returning v0.6.1 players'"
+);
 source = source
   .replaceAll(
     '<link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32">',
