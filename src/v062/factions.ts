@@ -25,7 +25,7 @@ const FACTION_ACTION_PHASES: Record<FactionActionName, readonly ActionPhase[]> =
   play_the_market: ['denouement'],
   hostile_takeover: ['denouement'],
   intelligence_operation: ['denouement'],
-  begin_rite: ['opening'],
+  begin_rite: ['denouement'],
   purge: ['opening', 'denouement'],
 };
 
