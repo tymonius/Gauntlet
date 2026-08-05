@@ -25,6 +25,10 @@ source = source.replace(
   "const starterSource = read('docs/Gauntlet_v0.6.2_Starter_Decks_Candidate.json');",
   "const starterData = JSON.parse(read('docs/Gauntlet_v0.6.2_Starter_Decks_Candidate.json'));\nstarterData.version = 'v0.6.2';\nstarterData.status = 'published';\nconst starterSource = JSON.stringify(starterData, null, 2);"
 );
+source = source.replace(
+  "let sharedBody = section(sharedRulesSource, '# 1. Turn Structure', '# 8. Compact Shared Reference');",
+  "chapters123 = chapters123\n  .replace('construction requirements for a custom Deck appear in Chapter 10', 'construction requirements for a custom Deck appear in Chapter 11')\n  .replace('Faction packages and their starting states appear in Part III', 'Faction packages and their starting states appear in Part IV')\n  .replace('Part III explains each faction\\'s exact arrangement', 'Part IV explains each faction\\'s exact arrangement')\n  .replace('Chapter 8 explains how control changes', 'Chapter 9 explains how control changes');\n\nlet sharedBody = section(sharedRulesSource, '# 1. Turn Structure', '# 8. Compact Shared Reference');"
+);
 source = source
   .replaceAll(
     '<link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32">',
