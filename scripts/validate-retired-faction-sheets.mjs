@@ -70,13 +70,16 @@ requireCondition(
 const homepagePromotesCompletePackage =
   homepage.includes('required faction components') ||
   homepage.includes('complete playtest package');
+const homepageDeckbuilderLink = /href=["'](?:v\d+\.\d+\.\d+\/)?deckbuilder\/["']/i.test(homepage);
 requireCondition(
-  homepage.includes('href="deckbuilder/"') && homepagePromotesCompletePackage,
-  'The homepage must direct complete-package printing to the Deckbuilder.',
+  homepageDeckbuilderLink && homepagePromotesCompletePackage,
+  'The homepage must direct complete-package printing to the current Deckbuilder.',
 );
+
+const readmeDeckbuilderLink = /https:\/\/gauntlet\.run\/(?:v\d+\.\d+\.\d+\/)?deckbuilder\//i.test(readme);
 requireCondition(
-  readme.includes('https://gauntlet.run/deckbuilder/') && readme.includes('required faction components'),
-  'The root README must identify the Deckbuilder as the supported complete-package printer.',
+  readmeDeckbuilderLink && readme.includes('required faction components'),
+  'The root README must identify the current Deckbuilder as the supported complete-package printer.',
 );
 
 for (const legacyPath of [
@@ -100,5 +103,5 @@ requireCondition(
 );
 
 console.log(
-  `Printable faction sheets remain as legacy pages and are absent from ${activeHtmlPaths.length} active HTML surfaces.`,
+  `Printable faction sheets remain as legacy pages and are absent from ${activeHtmlPaths.length} active HTML surfaces; complete-package printing routes to the current Deckbuilder.`,
 );
