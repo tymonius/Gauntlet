@@ -1,4 +1,4 @@
-import { loadV062CanonicalData, V062_VERSION } from "../data/canonical-data.js";
+const V062_VERSION = "v0.6.2";
 
 const STORAGE_KEY = "gauntlet-v062-deckbuilder";
 const state = { data: null, starters: [], factionId: "military", leaderId: "general", deckName: "", cards: {}, territories: [], search: "", allegiance: "all", cost: "all" };
@@ -6,13 +6,13 @@ const $ = id => document.getElementById(id);
 
 init().catch(error => {
   console.error(error);
-  $("sourceStatus").innerHTML = `<strong class="status-bad">Candidate load failed.</strong><p>${escapeHtml(error.message)}</p>`;
+  $("sourceStatus").innerHTML = `<strong class="status-bad">Published release load failed.</strong><p>${escapeHtml(error.message)}</p>`;
 });
 
 async function init() {
   const [data, starterData] = await Promise.all([
-    loadV062CanonicalData("../../releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json"),
-    fetch("../../docs/Gauntlet_v0.6.2_Starter_Decks_Candidate.json", { cache: "no-store" }).then(assertJson)
+    fetch("../../releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json", { cache: "no-store" }).then(assertJson),
+    fetch("../../releases/v0.6.2/Gauntlet_v0.6.2_Starter_Decks.json", { cache: "no-store" }).then(assertJson)
   ]);
   state.data = data;
   state.starters = starterData.decks ?? [];
@@ -87,7 +87,7 @@ function renderStarterPreview() {
   const deck = selectedStarter();
   $("loadStarter").disabled = !deck;
   $("starterPreview").innerHTML = deck
-    ? `<p class="eyebrow">Approved Wave C starter</p><h3>${escapeHtml(deck.name)}</h3><p>${escapeHtml(deck.summary)}</p><p><strong>Opening plan:</strong> ${escapeHtml(deck.openingPlan ?? "Establish the faction engine early.")}</p><p><strong>Signature cards:</strong> ${(deck.signatureCards ?? []).map(escapeHtml).join(", ")}</p><p><strong>Territories:</strong> ${deck.territories.map(escapeHtml).join(" → ")}</p>`
+    ? `<p class="eyebrow">Approved v0.6.2 starter</p><h3>${escapeHtml(deck.name)}</h3><p>${escapeHtml(deck.summary)}</p><p><strong>Opening plan:</strong> ${escapeHtml(deck.openingPlan ?? "Establish the faction engine early.")}</p><p><strong>Signature cards:</strong> ${(deck.signatureCards ?? []).map(escapeHtml).join(", ")}</p><p><strong>Territories:</strong> ${deck.territories.map(escapeHtml).join(" → ")}</p>`
     : "No approved starter matches this faction and Leader.";
 }
 
@@ -195,7 +195,7 @@ function renderSummary() {
     return item;
   }));
   $("validationMessages").innerHTML = validation.valid
-    ? `<p class="status-good"><strong>Legal v0.6.2 candidate Deck.</strong></p>`
+    ? `<p class="status-good"><strong>Legal v0.6.2 Deck.</strong></p>`
     : `<p class="status-bad"><strong>Resolve before play:</strong></p><ul>${validation.messages.map(message => `<li>${escapeHtml(message)}</li>`).join("")}</ul>`;
 }
 

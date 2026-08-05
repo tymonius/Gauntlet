@@ -251,7 +251,7 @@ The effective pool contains 128 playable card titles: 50 Neutral and 13 for each
 
 # What did not change
 
-- A constructed Deck remains 30 cards with a total deckbuilding value of 60.
+- A constructed Deck still requires at least 30 cards and no more than 60 total deckbuilding value. The recommended starter Decks are exact 30-card, 60-value lists.
 - Players still select one faction and one Leader and use three Territories.
 - Gambits, Reserves, Tactics, Outcome, and Aftermath remain the core active-battle stages after Onset.
 - A specific card, Territory, Proposal, Leader, or faction rule still overrides a general rule when it directly addresses the situation.
