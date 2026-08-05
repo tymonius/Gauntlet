@@ -64,6 +64,8 @@ for (const functionName of [
 assert(factionsSource.includes('FINANCIER_STARTING_CAPITAL = 2'), 'Financier starting Capital is not 2');
 assert(factionsSource.includes("place_treasury: ['denouement']"), 'Financier Faction Actions are not Denouement procedures');
 assert(factionsSource.includes("intelligence_operation: ['denouement']"), 'Intelligence Faction Actions are not Denouement procedures');
+assert(factionsSource.includes("begin_rite: ['denouement']"), 'Begin a Rite is not a normal Denouement Faction Action');
+assert(!factionsSource.includes("begin_rite: ['opening']"), "Nature's Altar exception leaked into the default Begin a Rite timing");
 assert(factionsSource.includes("purge: ['opening', 'denouement']"), 'Purge does not have adopted two-phase permission');
 assert(factionsSource.includes('first_rite: 1') && factionsSource.includes('ritual: 4'), 'Guardians scaling is not 1/2/3/4');
 assert(factionsSource.includes('consumesAction: false'), 'Final Judgment Purge is not represented as a no-Action ability');

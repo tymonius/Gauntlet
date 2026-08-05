@@ -24,9 +24,9 @@ describe('Faction Action timing', () => {
     expect(canUseFactionAction('intelligence_operation', 'denouement')).toBe(true);
   });
 
-  test('allows Begin a Rite during Opening and Purge during either Action phase', () => {
-    expect(canUseFactionAction('begin_rite', 'opening')).toBe(true);
-    expect(canUseFactionAction('begin_rite', 'denouement')).toBe(false);
+  test('keeps Begin a Rite in Denouement and Purge in either Action phase', () => {
+    expect(canUseFactionAction('begin_rite', 'opening')).toBe(false);
+    expect(canUseFactionAction('begin_rite', 'denouement')).toBe(true);
     expect(canUseFactionAction('purge', 'opening')).toBe(true);
     expect(canUseFactionAction('purge', 'denouement')).toBe(true);
   });
