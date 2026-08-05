@@ -315,7 +315,7 @@
 
   function exportBundle(games) {
     downloadJson(`gauntlet-playtest-analysis-${dateStamp()}.json`, {
-      schemaVersion: "gauntlet-playtest-analysis-export-v2",
+      schemaVersion: "gauntlet-tracked-analysis-export-v1",
       sourceSchemaVersion: rawPayload.schemaVersion || null,
       generatedAt: new Date().toISOString(),
       sourceGeneratedAt: rawPayload.generatedAt || null,
