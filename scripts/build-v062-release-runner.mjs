@@ -39,6 +39,10 @@ source = source
     '<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />'
   );
 source = source.replace(
+  'This release revises turn timing, battles, Territory control, all six faction systems, starter Decks, browser tools, the Rules Arbiter, and the executable digital rules layer.',
+  'This release revises turn timing, battles, Territory control, all six faction systems, starter Decks, the 128-card pool, browser tools, the Rules Arbiter, and the executable digital rules layer.'
+);
+source = source.replace(
   "  .replace('Entering the opponent\\'s position begins a battle', 'Entering the opponent\\'s Position creates a pending battle');",
   "  .replace('Entering the opponent\\'s position begins a battle', 'Entering the opponent\\'s Position creates a pending battle')\n  .replaceAll('complete v0.6.1 rules', 'complete v0.6.2 rules')\n  .replaceAll('v0.6.1 Deckbuilder', 'v0.6.2 Deckbuilder')\n  .replaceAll('href=\"releases/v0.6.1/\"', 'href=\"releases/v0.6.2/\"')\n  .replaceAll('v0.6.1 Release', 'v0.6.2 Release')\n  .replace('build a deck of at least 30 cards within 60 value', 'build a 30-card Deck totaling 60 value')\n  .replace('href=\"releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf\">Rulebook PDF', 'href=\"releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md\">Rulebook source');"
 );
