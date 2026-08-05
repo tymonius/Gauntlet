@@ -357,7 +357,7 @@ Entering the opponent's position creates a pending battle.
 
 ## Complete rules
 
-A position is any space where a Player Token may be placed under the v0.6.1 positioning rules.
+A position is any space where a Player Token may be placed under the positioning rules in this rulebook.
 
 A player cannot voluntarily Fall Back beyond their own end of the Gauntlet. Player Tokens cannot move through or past one another.
 
@@ -1144,7 +1144,7 @@ Revealing is optional. Once revealed, the card cannot remain on top of the Draw 
 
 - Treasury placement, Deed purchase, Play the Market, and Hostile Takeover are Faction Actions during Denouement.
 - Tariffs, Divestment, and Margin Loan grant an additional Action but do not create an immediate Action Opportunity. Resolve the card fully; the additional Action may be taken during a legal remaining Action phase, subject to the one-Action-per-phase limit.
-- If one of those cards is played during Denouement after an Action was already taken during Opening, the additional Action cannot be used that turn unless the card expressly permits two Actions during Denouement. The inherited v0.6.1 wording does not grant that permission.
+- If one of those cards is played during Denouement after an Action was already taken during Opening, the additional Action cannot be used that turn unless the card expressly permits two Actions during Denouement. Those cards do not grant that permission.
 
 ---
 
@@ -1152,7 +1152,7 @@ Revealing is optional. Once revealed, the card cannot remain on top of the Draw 
 
 ## Faction structure
 
-Intelligence retains its v0.6.1 resource, Mission, Leader, and victory systems. Faction Actions must state their legal phase, and all battle procedures use Onset, Defensive Edge, Tiebreak Roll, Fall Back, withdraw, retreat, and Front Line under the shared candidate.
+Intelligence retains its existing resource, Mission, Leader, and victory systems. Faction Actions must state their legal phase, and all battle procedures use Onset, Defensive Edge, Tiebreak Roll, Fall Back, withdraw, retreat, and Front Line under the shared v0.6.2 rules.
 
 ## Intelligence — Extraordinary Rendition
 
@@ -1304,9 +1304,9 @@ The remaining Arena effects are unchanged:
 
 ---
 
-# 24. Source-level interaction requirements
+# 24. Consolidated interaction rules
 
-The following behavior is fixed for later executable implementation:
+The following interaction rules apply:
 
 1. accepted Terms end the pending battle before Onset;
 2. refused Terms proceed to Onset unless their effect prevents the battle;
@@ -1325,4 +1325,3 @@ The following behavior is fixed for later executable implementation:
 15. Extraordinary Rendition is discarded before another Asset whenever possible;
 16. Landslide triggers only from retreat and may chain across Territories;
 17. Martyrdom changes remaining-Reserve destinations but does not change the battle result;
-18. published v0.6.1 sources remain unchanged.

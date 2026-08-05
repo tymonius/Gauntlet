@@ -425,7 +425,7 @@ For each recommended first-game Deck, present:
 
 Do not describe the starter as a reduced card pool. It is a coherent recommended Deck built from the full legal pool.
 
-The Deckbuilder and `/start/` flow remain on the published v0.6.1 catalog until Wave D propagates this release into structured data and browser tools.
+The published Deckbuilder and `/start/` flow use this release's canonical data and starter catalog.
 
 ---
 
@@ -433,10 +433,9 @@ The Deckbuilder and `/start/` flow remain on the published v0.6.1 catalog until 
 
 For the v0.6.2 release:
 
-1. Waves A and B govern rules and component behavior.
-2. `Gauntlet_v0.6.2_Starter_Decks_Candidate.json` governs the twelve starter compositions.
+1. The Official Rulebook and specific component text govern play.
+2. `Gauntlet_v0.6.2_Starter_Decks.json` governs the twelve recommended starter compositions.
 3. This document governs first-game and tableside presentation.
-4. The Wave C test matrix governs source-level acceptance.
-5. Published v0.6.1 files remain canonical for current play until v0.6.2 is released.
+4. v0.6.1 remains available as an immutable historical release package.
 
 Later layout work may change typography, iconography, dimensions, and illustration, but it may not change the sequences, terminology, faction summaries, or starter compositions without a recorded superseding decision.
