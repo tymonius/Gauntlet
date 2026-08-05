@@ -1,5 +1,6 @@
 import { loadV062CanonicalData, V062_VERSION } from "../data/canonical-data.js";
 
+const SURFACE_VERSION = "v0.6.2";
 const state = { data: null, search: "", allegiance: "all", cost: "all" };
 const $ = id => document.getElementById(id);
 
@@ -10,7 +11,7 @@ init().catch(error => {
 
 async function init() {
   state.data = await loadV062CanonicalData("../../releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json");
-  $("status").innerHTML = `<strong class="status-good">${escapeHtml(V062_VERSION)}</strong><p>${state.data.cards.length} cards · ${state.data.territories.length} Territories · ${state.data.proposals.length} Proposals</p>`;
+  $("status").innerHTML = `<strong class="status-good">${escapeHtml(SURFACE_VERSION)} · ${escapeHtml(V062_VERSION)}</strong><p>${state.data.cards.length} cards · ${state.data.territories.length} Territories · ${state.data.proposals.length} Proposals</p>`;
   $("cardCount").textContent = state.data.cards.length;
   $("cardAllegiance").append(...Object.keys(state.data.card_pool_summary).map(name => option(name, name)));
   $("cardSearch").addEventListener("input", () => { state.search = $("cardSearch").value.toLowerCase().trim(); renderCards(); });
