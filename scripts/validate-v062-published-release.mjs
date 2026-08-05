@@ -98,8 +98,8 @@ assert(publishedWorker.includes('candidate: false'), 'published worker still rep
 assert(corpus.includes('releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md'), 'published corpus does not cite release sources');
 assert(currentContent.includes("CURRENT_RULES_VERSION = 'v0.6.2'"), 'digital default is not v0.6.2');
 
-assert(packageJson.scripts?.['release:v062:build'] === 'node scripts/build-v062-release.mjs', 'missing release build script');
-assert(packageJson.scripts?.['release:v062:check'] === 'node scripts/build-v062-release.mjs --check && node scripts/validate-v062-published-release.mjs', 'missing release check script');
+assert(packageJson.scripts?.['release:v062:build'] === 'node scripts/build-v062-release-runner.mjs', 'missing safe release build runner');
+assert(packageJson.scripts?.['release:v062:check'] === 'node scripts/build-v062-release-runner.mjs --check && node scripts/validate-v062-published-release.mjs', 'missing release check script');
 assert(String(packageJson.scripts?.test || '').includes('validate-v062-published-release.mjs'), 'main test chain does not run published-release validation');
 
 console.log('Published Gauntlet v0.6.2 release validation passed: 128 cards, 25 Territories, 9 Proposals, 12 starters, 416 scenarios, and synchronized public defaults.');
