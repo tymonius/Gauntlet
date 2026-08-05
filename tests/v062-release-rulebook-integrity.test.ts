@@ -5,6 +5,12 @@ const read = (path: string) => readFileSync(path, 'utf8');
 const rulebook = () => read(
   'releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md',
 );
+const factionGuide = () => read(
+  'releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md',
+);
+const firstGameGuide = () => read(
+  'releases/v0.6.2/Gauntlet_v0.6.2_First_Game_Guide.md',
+);
 const returningGuide = () => read(
   'releases/v0.6.2/Gauntlet_v0.6.2_Returning_Player_Changes.md',
 );
@@ -35,6 +41,23 @@ describe('published v0.6.2 rulebook integrity', () => {
     ]) {
       expect(text).toContain(marker);
     }
+  });
+
+  test('removes candidate, implementation-wave, and historical dependency language from player documents', () => {
+    for (const text of [rulebook(), factionGuide(), firstGameGuide()]) {
+      expect(text).not.toContain('under the shared candidate');
+      expect(text).not.toContain('fixed for later executable implementation');
+      expect(text).not.toContain('Source-level interaction requirements');
+      expect(text).not.toContain('Compatibility Audit');
+      expect(text).not.toContain('Wave C test matrix');
+      expect(text).not.toContain('until Wave D propagates');
+      expect(text).not.toContain('current play until v0.6.2 is released');
+    }
+
+    expect(rulebook()).toContain('under the positioning rules in this rulebook');
+    expect(factionGuide()).toContain('# 24. Consolidated interaction rules');
+    expect(firstGameGuide()).toContain('The published Deckbuilder and `/start/` flow use this release');
+    expect(firstGameGuide()).toContain('The Official Rulebook and specific component text govern play.');
   });
 
   test('states the retained Peace Treaty threshold without presenting a later change as adopted', () => {
