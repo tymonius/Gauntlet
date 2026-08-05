@@ -51,10 +51,10 @@ describe("complete playtest response analysis", () => {
     expect(enhancement).toContain("importantObservation");
   });
 
-  it("keeps standalone recollections labeled instead of exporting them as verified shared results", () => {
+  it("keeps standalone recollections labeled while preserving the additive v1 export contract", () => {
     expect(enhancement).toContain('collection_mode: collectionMode(game)');
     expect(enhancement).toContain("standalone-feedback records contain one respondent's remembered context");
-    expect(enhancement).toContain("gauntlet-playtest-analysis-export-v2");
+    expect(enhancement).toContain("gauntlet-tracked-analysis-export-v1");
     expect(enhancement).toContain("complete questionnaire response");
     expect(enhancement).toContain("complete game record");
   });
