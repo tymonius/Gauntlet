@@ -28,6 +28,10 @@ When a derived PDF, printable sheet, Deckbuilder entry, or digital implementatio
 - [v0.6.2 Faction and Component Test Matrix](Gauntlet_v0.6.2_Faction_Component_Test_Matrix.md) — 85 primary cross-faction and component scenarios governing later structured-data and digital propagation.
 - [v0.6.2 Faction and Component Compatibility Test Matrix](Gauntlet_v0.6.2_Faction_Component_Compatibility_Test_Matrix.md) — 26 inherited-source scenarios; together the Wave B matrices contain 111 normative cases.
 - [v0.6.2 Wave B Review Checklist](Gauntlet_v0.6.2_Wave_B_Review_Checklist.md) — focused review gate for faction, component, compatibility, and source-boundary changes.
+- [v0.6.2 Starter Decks Candidate](Gauntlet_v0.6.2_Starter_Decks_Candidate.json) — twelve exact 30-card, 60-value Leader starters rebuilt from the full legal v0.6.2 pools, with ordered Territories, signature packages, opening plans, and consistency thresholds.
+- [v0.6.2 First-Game and Tableside Candidate](Gauntlet_v0.6.2_First_Game_and_Tableside_Candidate.md) — normative Wave C teaching order, faction and opponent summaries, physical zones, bound-card handling, active-player marker text, pairings, and guided first battle.
+- [v0.6.2 Wave C Test Matrix](Gauntlet_v0.6.2_Wave_C_Test_Matrix.md) — 66 normative starter, onboarding, tableside, and faction-teaching scenarios.
+- [v0.6.2 Wave C Review Checklist](Gauntlet_v0.6.2_Wave_C_Review_Checklist.md) — review gate for starter legality, Leader identity, early access, teaching sequence, faction presentation, and release boundaries.
 - [v0.6.2 Implementation Ledger](Gauntlet_v0.6.2_Implementation_Ledger.md) — adopted post-playtest changes, unresolved release dependencies, ordered propagation waves, and validation gates for the next playtest revision.
 - [v0.6.1 Implementation Ledger](Gauntlet_v0.6.1_Implementation_Ledger.md) — approved first-playtest corrections and synchronization checklist.
 - [v0.6.1 Rulebook Layering Standard](Gauntlet_v0.6.1_Rulebook_Layering_Standard.md) — approved **How it works / Complete rules** structure for combining first-game teaching with technical reference.
