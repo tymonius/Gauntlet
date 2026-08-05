@@ -9,9 +9,12 @@ on:
       - "docs/Gauntlet_v0.6.2_Starter_Decks_Candidate.json"
       - "v0.6.2/**"
       - "releases/v0.6.2/**"
+      - "factions/**"
       - "rules-assistant/**"
       - "src/content/**"
       - "scripts/build-v062-release.mjs"
+      - "scripts/build-v062-release-runner.mjs"
+      - "scripts/synchronize-v062-public-site.mjs"
       - "scripts/validate-v062-published-release.mjs"
       - "package.json"
       - "index.html"
@@ -50,6 +53,7 @@ jobs:
         run: |
           git add \
             index.html \
+            factions/ \
             v0.6.2/ \
             releases/v0.6.2/ \
             rules-assistant/widget.js \
