@@ -8,6 +8,7 @@ const retrospectivePage = read("playtest/retrospective/index.html");
 const retrospectiveApp = read("playtest/retrospective/app.js");
 const worker = read("workers/playtest-sessions/src/journal.js");
 const closureWorker = read("workers/playtest-sessions/src/closure.js");
+const completenessWorker = read("workers/playtest-sessions/src/completeness.js");
 const wrangler = read("workers/playtest-sessions/wrangler.toml");
 
 describe("retrospective playtests and player journals", () => {
@@ -57,7 +58,8 @@ describe("retrospective playtests and player journals", () => {
   });
 
   it("deploys the complete wrapper chain and advertises journal capabilities", () => {
-    expect(wrangler).toContain('main = "src/closure.js"');
+    expect(wrangler).toContain('main = "src/completeness.js"');
+    expect(completenessWorker).toContain('import closureWorker from "./closure.js"');
     expect(closureWorker).toContain('import journalWorker from "./journal.js"');
     expect(worker).toContain('import integrityWorker from "./integrity.js"');
     expect(worker).toContain("playtestJournalSupported");
