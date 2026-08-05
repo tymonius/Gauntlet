@@ -55,6 +55,7 @@ describe("complete playtest response analysis", () => {
     expect(enhancement).toContain('collection_mode: collectionMode(game)');
     expect(enhancement).toContain("standalone-feedback records contain one respondent's remembered context");
     expect(enhancement).toContain("gauntlet-tracked-analysis-export-v1");
+    expect(enhancement).toContain("recommendedTasks");
     expect(enhancement).toContain("complete questionnaire response");
     expect(enhancement).toContain("complete game record");
   });
