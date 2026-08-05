@@ -2,38 +2,48 @@
   "version": "v0.6.2",
   "candidateVersion": "v0.6.2-candidate",
   "previousVersion": "v0.6.1",
-  "status": "release-candidate",
-  "published": false,
+  "status": "published",
+  "published": true,
+  "publicationDate": "2026-08-05",
   "releaseTracker": 470,
   "closeoutTracker": 506,
   "returningPlayerTracker": 503,
-  "propagationPullRequests": [493, 496, 500, 502, 505],
+  "propagationPullRequests": [
+    493,
+    496,
+    500,
+    502,
+    505,
+    507
+  ],
   "scenarioCounts": {
     "waveA": 63,
     "waveB": 111,
     "waveC": 66,
     "waveD": 48,
     "waveE": 80,
-    "total": 368
+    "closeout": 48,
+    "total": 416
   },
   "publicDefaults": {
-    "rulesArbiter": "v0.6.1",
-    "website": "v0.6.1",
-    "browserTools": "v0.6.1",
-    "digital": "v0.6.1"
+    "rulesArbiter": "v0.6.2",
+    "website": "v0.6.2",
+    "browserTools": "v0.6.2",
+    "digital": "v0.6.2"
+  },
+  "historicalAccess": {
+    "releasePackage": "releases/v0.6.1/",
+    "rulesArbiter": "/api/v061/rules"
   },
   "unresolved": [
     "Military alternate victory",
-    "Peace Treaty threshold",
+    "Peace Treaty threshold beyond retained five-Proposal test rule",
     "Leader Ability taxonomy beyond adopted wording",
     "Unadopted balance experiments"
   ],
-  "cutoverRequirements": [
-    "Final v0.6.1 to v0.6.2 source comparison is complete",
-    "Returning-player changes are reviewed against final sources",
-    "Publishable v0.6.2 package and generated artifacts are synchronized",
-    "All Wave A-E validators and repository tests pass",
-    "Public version defaults switch together",
-    "Published v0.6.1 release files remain unchanged"
+  "publicationRequirementsSatisfiedBy": [
+    "scripts/build-v062-release.mjs",
+    "scripts/validate-v062-published-release.mjs",
+    "npm test"
   ]
 }
