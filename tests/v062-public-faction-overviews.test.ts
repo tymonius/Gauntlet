@@ -25,9 +25,9 @@ describe('v0.6.2 public faction overviews', () => {
     }
   });
 
-  test('uses the adopted Financier timing and contiguous-control result', () => {
+  test('uses the adopted Financier timing and contiguous-control result exactly once', () => {
     const html = read('factions/financiers/index.html');
-    expect(html).toContain('Begin with 2 Capital.');
+    expect(html.match(/Begin with 2 Capital\./g)).toHaveLength(1);
     expect(html).toContain('After Capture and its effects, but before Draw');
     expect(html).toContain('one Action during both Opening and Denouement');
     expect(html).toContain('A successful purchase advances your Front Line by one Territory, if able; it never creates isolated control.');
@@ -61,5 +61,16 @@ describe('v0.6.2 public faction overviews', () => {
     const homepage = read('index.html');
     expect(homepage).toContain('build a Deck of at least 30 cards with no more than 60 total value');
     expect(homepage).not.toContain('build a 30-card Deck totaling 60 value');
+  });
+
+  test('keeps historical v0.6.1 synchronization away from current faction pages', () => {
+    const historicalSync = read('scripts/sync_v061_public_rules.py');
+    const historicalPaths = historicalSync.slice(
+      historicalSync.indexOf('HISTORICAL_PATHS'),
+      historicalSync.indexOf('CURRENT_FACTION_PATHS'),
+    );
+
+    expect(historicalPaths).not.toContain('factions/');
+    expect(historicalSync).toContain('must never rewrite current faction pages');
   });
 });
