@@ -17,6 +17,10 @@ if (start < 0 || end < 0) {
 }
 
 source = `${source.slice(0, start)}const publishedCorpus = read('rules-assistant/v062-published-corpus.js');\n${marker}${source.slice(end + marker.length)}`;
+source = source.replace(
+  "section(sharedReferenceSource, '# Turn')",
+  "section(sharedReferenceSource, '# Your Turn')"
+);
 fs.writeFileSync(temporaryPath, source, 'utf8');
 
 try {
