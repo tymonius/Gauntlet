@@ -54,8 +54,8 @@ test("materializes candidate sources for deterministic rulings", () => {
   expect(sources.every((source) => !source.sourcePath.includes("v0.6.1_Canonical_Data"))).toBe(true);
 });
 
-test("reports candidate health through the versioned dispatcher", async () => {
-  const response = await workerEntry.fetch(new Request("https://rules.example/api/v062/health"), {});
+test("reports candidate health through the explicit candidate dispatcher route", async () => {
+  const response = await workerEntry.fetch(new Request("https://rules.example/api/v062-candidate/health"), {});
   expect(response.status).toBe(200);
   const payload = await response.json();
   expect(payload.version).toBe("v0.6.2-candidate");

@@ -1,129 +1,124 @@
 # Gauntlet
 
-Gauntlet is a two-player tactical card-and-territory game about deck construction, hidden battle commitments, territorial control, faction asymmetry, and running the Gauntlet.
+Gauntlet is a two-player tactical card-and-territory game about Deck construction, hidden battle commitments, territorial control, faction asymmetry, and running the Gauntlet.
 
-**Project site:** [gauntlet.run](https://gauntlet.run/) — the custom URL for Gauntlet repository materials, releases, and browser tools.
+**Project site:** [gauntlet.run](https://gauntlet.run/) — the public home for current rules, browser tools, releases, and playtest resources.
 
 ## Canonical release
 
-**Current canonical version:** v0.6.1 — First Playtest Revision
+**Current canonical version:** v0.6.2 — Second Playtest Revision
 
-The complete package is under [`releases/v0.6.1/`](releases/v0.6.1/):
+The immutable source package is under [`releases/v0.6.2/`](releases/v0.6.2/). It contains:
 
-- official rulebook in Markdown, a color reader PDF, and a grayscale-compatible imposed color booklet PDF;
-- quick-reference guide;
-- canonical structured data and manifest;
-- release notes and changelog;
-- archived release printables; and
-- complete canonical source and reference materials.
+- the official rulebook and compact reference guide;
+- the faction and component guide;
+- the first-game guide and twelve recommended starter Decks;
+- the complete 128-card, 25-Territory, and nine-Proposal references;
+- canonical structured data and release manifests;
+- release notes; and
+- [What Changed Since v0.6.1](releases/v0.6.2/Gauntlet_v0.6.2_Returning_Player_Changes.md), a returning-player summary.
 
-Earlier releases remain available for historical reference but are obsolete for current playtesting.
+v0.6.1 remains available under [`releases/v0.6.1/`](releases/v0.6.1/) as an immutable historical release. It is obsolete for current playtesting but preserved for comparison and existing playtest records.
 
 ## Game overview
 
-Each player builds a Deck consisting of:
+Each player chooses:
 
 - one faction;
 - one Leader;
-- one Playable Deck of at least 30 cards and no more than 60 total card value;
+- a Playable Deck of at least 30 cards and no more than 60 total value;
 - three different Territories; and
 - any required faction- or Leader-specific supplemental components.
 
-The players secretly arrange their Territories, reveal all six, and join them into the Gauntlet. They then advance, fight battles, become occupiers of enemy-controlled Territories, survive Counterattacks, capture ground, and attempt to run the Gauntlet.
+The players secretly arrange their Territories, reveal all six, and join them into the Gauntlet. They then advance, fight battles, occupy enemy-controlled Territories, survive Counterattacks, capture supported ground, and attempt to run the Gauntlet.
 
-A Player Token always has a Position. Occupation begins only when that token is on an opposing Territory the player does not control.
+A Player Token always has a Position. Occupation begins only when that token is on an opposing Territory the player does not control. Territory control advances contiguously from each player’s end as their Front Line.
 
-To run the Gauntlet, a player must defeat the opponent on their final Territory, become its occupier and capture it, advance beyond the Territory column, force the opponent to make a Last Stand, and win the resulting battle.
+To run the Gauntlet, a player must capture the opponent’s final Territory, advance beyond the Territory column, force a Last Stand, and win the resulting battle.
 
 ## Factions
 
 | Faction | Leaders | Core system | Additional victory |
 |---|---|---|---|
 | Military | General, Commandant | Command and Orders | None |
-| Diplomats | Ambassador, Senator | Influence, Terms, Proposals | Peace Treaty |
-| Financiers | Banker, Executive | Capital, Treasury, Deeds | Controlling Interest |
-| Intelligence | Ranger, Spymaster | Intel, Missions, Operation Progress | Special Operation |
-| Mystics | Alchemist, Spirit Walker | Rites, Invocation, Transmutation | Ritual |
-| Inquisition | Grand Inquisitor, Witch Hunter | Conviction, Condemnation, Purge | Purification |
+| Diplomats | Ambassador, Senator | Influence, Terms, and Proposals | Peace Treaty |
+| Financiers | Banker, Executive | Capital, Treasury, and Deeds | Controlling Interest |
+| Intelligence | Ranger, Spymaster | Intel, Missions, and Operation Progress | Special Operation |
+| Mystics | Alchemist, Spirit Walker | Rites, Invocation, and Transmutation | Ritual |
+| Inquisition | Grand Inquisitor, Witch Hunter | Conviction, Condemnation, and Purge | Purification |
 
-## Playtest tools
+## Current player tools
 
-- [Gauntlet v0.6.1 Browser Rulebook](https://gauntlet.run/rulebook/) — searchable, responsive rendering of the complete canonical rulebook with direct section links and integrated Rules Arbiter access.
-- [Gauntlet v0.6.1 Rulebook (PDF)](releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf) — the complete official rules for the current release.
-- [Gauntlet v0.6.1 Imposed Booklet (PDF)](releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf) — color, grayscale-compatible, and ordered for Letter duplex printing with short-edge flip.
-- [Gauntlet v0.6.1 Rules Arbiter](https://gauntlet.run/#rules-assistant) — ask about rules, cards, Leaders, faction systems, Territories, timing, and victory conditions using canonical v0.6.1 sources.
-- [Gauntlet v0.6.1 Deckbuilder](https://gauntlet.run/deckbuilder/) — load a recommended Leader Deck or build, validate, save, export, randomize, and print a complete package containing its Leader, Territories, playable cards, and required faction components.
-- [Gauntlet v0.6.1 Printable Playtest Sheet (PDF)](playtest/Gauntlet_v0.6.1_Playtest_Sheet.pdf) — one-page paper questionnaire designed to be printed and completed by hand.
-- [Playtest Sheet browser page](https://gauntlet.run/playtest/) — preview the sheet and print or save it directly from a browser.
+- [Start Playing](https://gauntlet.run/v0.6.2/start/) — layered first-game guidance, recommended Leaders and pairings, faction teaching cards, and direct starter-Deck handoff.
+- [Gauntlet v0.6.2 Browser Rulebook](https://gauntlet.run/v0.6.2/rulebook/) — searchable rendering of the complete current rules.
+- [Gauntlet v0.6.2 Deckbuilder](https://gauntlet.run/v0.6.2/deckbuilder/) — load one of twelve recommended Leader Decks or build, validate, save, export, and print a complete playtest package containing the Leader, Territories, playable cards, and required faction components.
+- [Gauntlet v0.6.2 Card Reference](https://gauntlet.run/v0.6.2/reference/) — search all 128 playable cards, 25 Territories, and nine Proposals.
+- [What Changed Since v0.6.1](https://gauntlet.run/v0.6.2/changes/) — practical patch notes for returning playtesters.
+- [Rules Arbiter](https://gauntlet.run/#rules-assistant) — asks the published v0.6.2 corpus and labels written rules, clarifications, and provisional rulings distinctly.
+- [Gauntlet v0.6.2 Release Package](https://gauntlet.run/releases/v0.6.2/) — canonical source documents, data, and manifests.
+- [Playtest resources](https://gauntlet.run/playtest/) — tracked sessions, questionnaires, and organizer tools.
 
-Scan to open the v0.6 Deckbuilder:
-
-<img src="images/qr/gauntlet-v0.6-deckbuilder.svg" alt="QR code for the Gauntlet v0.6.1 Deckbuilder" width="180">
+Historical Rules Arbiter access remains available at `/api/v061/rules`. The public `/api/rules` and explicit `/api/v062/rules` routes use published v0.6.2 sources.
 
 ## Canonical source hierarchy
 
-1. [`releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md`](releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md) governs shared rules.
-2. The six definitive faction guides under [`releases/v0.6.1/faction-guides/`](releases/v0.6.1/faction-guides/) govern faction-specific rules and exact faction-card text.
-3. [`docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md`](docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md) governs exact Neutral-card text.
-4. [`docs/Gauntlet_v0.6.1_Territory_Pool.md`](docs/Gauntlet_v0.6.1_Territory_Pool.md) governs exact Territory and Arena text.
-5. `Gauntlet_v0.6.1_Canonical_Data.json` is generated from those sources and must not be edited independently.
+For v0.6.2:
 
-Generated PDFs, printable sheets, and Deckbuilder output are derived production artifacts. The retired DOCX files remain only as historical release artifacts and are not maintained. If a derived file conflicts with its governing source, correct the source and regenerate the supported artifact.
+1. [`releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md`](releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md) governs shared rules.
+2. [`releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md`](releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md) governs faction, Leader, Proposal, and supplemental-component rules.
+3. [`releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md`](releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md) provides the complete current card and Territory reference.
+4. [`releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json`](releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json) is the published machine-readable data generated from the adopted sources and must not be edited independently.
+5. [`releases/v0.6.2/Gauntlet_v0.6.2_Manifest.json`](releases/v0.6.2/Gauntlet_v0.6.2_Manifest.json) and [`v0.6.2/release-manifest.json`](v0.6.2/release-manifest.json) record package and public-default status.
+
+Browser pages, Deckbuilder output, Rules Arbiter packets, and digital state behavior are derived production surfaces. When a derived surface conflicts with a governing source, correct the source or generator and regenerate the affected output.
 
 ## Repository map
 
 ### `releases/`
 
-Versioned canonical and historical release packages. The current package is [`releases/v0.6.1/`](releases/v0.6.1/).
+Immutable versioned release packages. [`releases/v0.6.2/`](releases/v0.6.2/) is current; [`releases/v0.6.1/`](releases/v0.6.1/) remains historical.
+
+### `v0.6.2/`
+
+Versioned current player surfaces and the canonical-data builder used to materialize the published package.
 
 ### `docs/`
 
-The [documentation index](docs/README.md) separates canonical sources, active design and testing documents, and archived provenance. Current post-release priorities are in [Gauntlet Development Status](docs/Gauntlet_Development_Status.md).
+Design sources, propagation matrices, release-closeout records, testing documentation, and the [documentation index](docs/README.md).
+
+### `factions/`
+
+Public faction overviews synchronized to current v0.6.2 terminology and timing.
 
 ### `faction-sheets/`
 
-Legacy browser-printable faction sheets retained for compatibility with existing bookmarks and release-era references. They are no longer actively maintained, linked from the public site, or treated as a supported production surface. Use the Deckbuilder for current complete-package printing.
-
-### `images/`
-
-Leader portraits and production artwork. Canonical rulebook Leader sketches are under `images/sketches/`. QR codes for public tools are under `images/qr/`.
-
-### `deckbuilder/`
-
-Faction-era browser Deckbuilder and the supported printing surface for complete Deck packages, including Leaders, Territories, playable cards, and required faction supplemental components.
-
-### `deckbuilder-v0.5/`
-
-Historical v0.5 Deckbuilder.
-
-### `rulebook/`
-
-Responsive browser rulebook. It renders the canonical v0.6.1 Markdown source directly, with search, anchored navigation, print support, and Rules Arbiter access.
+Legacy browser-printable faction sheets retained only for compatibility with old bookmarks and release-era references. They are no longer an active production surface. Use the current Deckbuilder for complete-package printing.
 
 ### `rules-assistant/`
 
-Static Rules Arbiter widget, canonical-source retrieval, regression tests, and a deployable serverless OpenAI endpoint. The browser automatically falls back to direct source lookup when the AI endpoint is unavailable.
+Published and historical Rules Arbiter workers, deterministic rulings, corpus builders, route tests, and browser widget.
+
+### `src/v062/` and `src/content/`
+
+Executable v0.6.2 shared rules, new and migrated card behavior, faction procedures, and the current digital-content selector.
 
 ### `scripts/`
 
-Canonical-data generation, document rendering, package validation, and release-production scripts.
+Release generation, source synchronization, validation, media generation, and production checks.
 
 ### `.github/workflows/`
 
-Automated validation, rendering, and release-publication workflows.
-
-### `src/` and `data/`
-
-Legacy pre-v0.6 digital-prototype code and starter data. They are retained for architecture and testing provenance but do not implement the canonical faction-era game. Future work is governed by the [Digital Roadmap](docs/Gauntlet_Digital_Roadmap.md).
+Automated testing, release materialization, source validation, rendering, and asset-generation workflows.
 
 ## Development workflow
 
-1. Change the appropriate canonical Markdown source.
-2. Regenerate and validate canonical data.
-3. Regenerate the affected documents, cards, or supported tools.
-4. Visually inspect rendered documents and Deckbuilder print output.
-5. Record release-facing changes in the changelog.
-6. Record open testing concerns in `docs/Gauntlet_Development_Status.md`; do not silently settle them in generated data or production artifacts.
+1. Change the appropriate governing source or adopted candidate document.
+2. Update the relevant structured-data or executable behavior layer.
+3. Regenerate synchronized release and public outputs.
+4. Run type checking, the full test chain, and version-specific validation.
+5. Visually inspect affected browser, print, card, and rulebook surfaces.
+6. Record release-facing changes in release notes and returning-player documentation.
+7. Preserve unresolved design questions in the issue tracker rather than silently settling them in generated files.
 
 ## Running browser tools locally
 
@@ -137,21 +132,19 @@ Then open:
 
 ```text
 http://localhost:8000/
-http://localhost:8000/rulebook/
-http://localhost:8000/deckbuilder/
+http://localhost:8000/v0.6.2/start/
+http://localhost:8000/v0.6.2/rulebook/
+http://localhost:8000/v0.6.2/deckbuilder/
+http://localhost:8000/v0.6.2/reference/
 http://localhost:8000/playtest/
 ```
 
-The Rules Arbiter source-lookup mode works through the local server without an API key. Deploying the optional AI endpoint is documented in [`rules-assistant/README.md`](rules-assistant/README.md).
-
-For the legacy TypeScript prototype:
+For repository validation:
 
 ```bash
 npm install
 npm run typecheck
 npm test
-npm run dev:cli
-npm run dev:gui
 ```
 
 ## Copyright and use
@@ -161,11 +154,3 @@ Copyright © 2026 Tymon Scott. All rights reserved.
 Gauntlet is an unpublished playtest project. Repository materials are provided for private review and playtesting only. They may not be copied, redistributed, sold, republished, or used to create commercial derivative works without written permission.
 
 Submitted comments, corrections, suggestions, and playtest feedback may be used or adapted in future versions without compensation or attribution unless agreed otherwise in writing.
-
-
-## New-player onboarding
-
-- [First-Game Guide](releases/v0.6.1/Gauntlet_v0.6.1_First_Game_Guide.md)
-- [Faction Introductions](releases/v0.6.1/Gauntlet_v0.6.1_Faction_Introductions.md)
-- [Printable Playtest Sheet](playtest/)
-- [Player Mat and Zone Reference](playtest/player-mat/)

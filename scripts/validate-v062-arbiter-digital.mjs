@@ -45,11 +45,14 @@ const digitalRules = read("src/v062/rules.ts");
 const digitalTests = read("src/v062/rules.test.ts");
 const contentLoader = read("src/content/v062.ts");
 
-assert(workerEntry.includes('import worker from "./worker-v061.js"'), "published v0.6.1 worker is no longer the default import");
+assert(workerEntry.includes('import worker from "./worker-v061.js"'), "historical v0.6.1 worker is not imported");
 assert(workerEntry.includes('import candidateWorker from "./worker-v062-candidate.js"'), "candidate worker is not imported");
-assert(workerEntry.includes('url.pathname.startsWith("/api/v062/")'), "candidate API route is not version-separated");
+assert(workerEntry.includes('import publishedWorker from "./worker-v062.js"'), "published v0.6.2 worker is not imported");
+assert(workerEntry.includes('url.pathname.startsWith("/api/v062-candidate/")'), "candidate API route is not version-separated");
+assert(workerEntry.includes('url.pathname === "/api/v062/rules"'), "published v0.6.2 API route is not explicit");
+assert(workerEntry.includes("return candidateWorker.fetch(rewriteCandidatePath(request)"), "candidate route does not reach the candidate worker");
 assert(candidateWorker.includes('const RULES_VERSION = "v0.6.2-candidate"'), "candidate worker version is incorrect");
-assert(candidateWorker.includes('publishedVersion: "v0.6.1"'), "candidate response does not identify the published version");
+assert(candidateWorker.includes('publishedVersion: "v0.6.1"'), "candidate response does not identify the publication baseline used during Wave E");
 for (const responseType of ["written_rule", "clarification", "provisional_ruling", "out_of_scope"]) {
   assert(candidateWorker.includes(responseType), `candidate worker does not expose ${responseType}`);
 }

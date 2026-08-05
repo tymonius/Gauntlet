@@ -5,6 +5,7 @@ import { buildV062CanonicalData, NEW_CARD_NAMES, V062_VERSION } from "../v0.6.2/
 
 const root = process.cwd();
 const read = relative => fs.readFileSync(path.join(root, relative), "utf8");
+const exists = relative => fs.existsSync(path.join(root, relative));
 const base = JSON.parse(read("releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json"));
 const data = buildV062CanonicalData(base);
 const secondBuild = buildV062CanonicalData(JSON.parse(JSON.stringify(base)));
@@ -12,6 +13,10 @@ const starters = JSON.parse(read("docs/Gauntlet_v0.6.2_Starter_Decks_Candidate.j
 const matrix = read("docs/Gauntlet_v0.6.2_Wave_D_Test_Matrix.md");
 const readme = read("docs/README.md");
 const packageJson = JSON.parse(read("package.json"));
+const releaseManifest = exists("v0.6.2/release-manifest.json")
+  ? JSON.parse(read("v0.6.2/release-manifest.json"))
+  : null;
+const published = releaseManifest?.published === true && releaseManifest?.status === "published";
 const failures = [];
 
 const requireValue = (condition, message) => { if (!condition) failures.push(message); };
@@ -98,8 +103,14 @@ const surfaces = {
   referenceApp: read("v0.6.2/reference/app.js")
 };
 for (const [label, source] of Object.entries(surfaces)) requireText(source, "v0.6.2", label);
-for (const source of [surfaces.startApp, surfaces.deckbuilderApp, surfaces.referenceApp]) requireText(source, "canonical-data.js", "candidate data consumer");
-requireText(surfaces.landing, "128-card pool", "candidate landing");
+const dataConsumers = [surfaces.startApp, surfaces.deckbuilderApp, surfaces.referenceApp];
+const expectedDataMarker = published ? "Gauntlet_v0.6.2_Canonical_Data.json" : "canonical-data.js";
+for (const source of dataConsumers) requireText(source, expectedDataMarker, `${published ? "published" : "candidate"} data consumer`);
+if (published) {
+  for (const source of [surfaces.startApp, surfaces.deckbuilderApp]) requireText(source, "Gauntlet_v0.6.2_Starter_Decks.json", "published starter consumer");
+  for (const source of dataConsumers) forbidText(source, "canonical-data.js", "published data consumer");
+}
+requireText(surfaces.landing, "128-card pool", `${published ? "published" : "candidate"} landing`);
 requireText(surfaces.start, "Capture → Draw → Opening → Movement → Denouement → Cleanup", "start surface");
 requireText(surfaces.start, "Pending battle → Terms → Onset", "start surface");
 requireText(surfaces.start, "BOUND — outside Hand", "start surface");
@@ -133,4 +144,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log(`v0.6.2 Wave D validation passed: ${data.cards.length} cards, ${data.territories.length} Territories, ${data.proposals.length} Proposals, ${starters.decks.length} starters, ${scenarioIds.length} scenarios, and three candidate player surfaces.`);
+console.log(`v0.6.2 Wave D validation passed: ${data.cards.length} cards, ${data.territories.length} Territories, ${data.proposals.length} Proposals, ${starters.decks.length} starters, ${scenarioIds.length} scenarios, and three ${published ? "published" : "candidate"} player surfaces.`);

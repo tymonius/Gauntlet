@@ -1,5 +1,3 @@
-import { loadV062CanonicalData } from "../data/canonical-data.js";
-
 const STORAGE_KEY = "gauntlet-v062-start";
 const TEACHING = {
   military: {
@@ -66,14 +64,14 @@ const $ = id => document.getElementById(id);
 
 init().catch(error => {
   console.error(error);
-  $("loading").textContent = `Unable to load the v0.6.2 candidate: ${error.message}`;
+  $("loading").textContent = `Unable to load the published v0.6.2 release: ${error.message}`;
   $("loading").classList.add("status-bad");
 });
 
 async function init() {
   const [data, starterData] = await Promise.all([
-    loadV062CanonicalData("../../releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json"),
-    fetch("../../docs/Gauntlet_v0.6.2_Starter_Decks_Candidate.json", { cache: "no-store" }).then(assertJson)
+    fetch("../../releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json", { cache: "no-store" }).then(assertJson),
+    fetch("../../releases/v0.6.2/Gauntlet_v0.6.2_Starter_Decks.json", { cache: "no-store" }).then(assertJson)
   ]);
   state.data = data;
   state.starters = starterData.decks ?? [];

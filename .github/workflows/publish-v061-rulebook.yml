@@ -19,7 +19,6 @@ on:
       - "rulebook/**"
       - "rulebook-production/**"
       - "rulebook-design/**"
-      - "README.md"
       - "releases/v0.6.1/README.md"
       - "releases/v0.6.1/Gauntlet_v0.6.1_Manifest.json"
       - "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md"
@@ -49,7 +48,6 @@ jobs:
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             .github/workflows/publish-v061-rulebook.yml
-            README.md
             package.json
             package-lock.json
             rulebook
@@ -112,7 +110,7 @@ jobs:
           await validate('/tmp/rulebook-production/Gauntlet_v0.6.1_Rulebook_Booklet.pdf', 38, 792, 612, 'Imposed booklet');
           NODE
 
-      - name: Stage release PDFs and maintained metadata
+      - name: Stage historical release PDFs and maintained metadata
         run: |
           cp /tmp/rulebook-production/Gauntlet_v0.6.1_Rulebook.pdf releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf
           cp /tmp/rulebook-production/Gauntlet_v0.6.1_Rulebook_Booklet.pdf releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf
@@ -130,28 +128,6 @@ jobs:
               if old not in text:
                   raise RuntimeError(f"Could not update {label}; expected source text was not found.")
               return text.replace(old, new, 1)
-
-          root_readme = Path('README.md')
-          text = root_readme.read_text(encoding='utf-8')
-          text = replace_once(
-              text,
-              '- official rulebook in Markdown, DOCX, and PDF;',
-              '- official rulebook in Markdown, a color reader PDF, and a grayscale-compatible imposed color booklet PDF;',
-              'root Rulebook output summary',
-          )
-          reader_link = '- [Gauntlet v0.6.1 Rulebook (PDF)](releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf) — the complete official rules for the current release.'
-          booklet_link = '- [Gauntlet v0.6.1 Imposed Booklet (PDF)](releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf) — color, grayscale-compatible, and ordered for Letter duplex printing with short-edge flip.'
-          if booklet_link not in text:
-              if reader_link not in text:
-                  raise RuntimeError('Could not add the root booklet link.')
-              text = text.replace(reader_link, f'{reader_link}\n{booklet_link}', 1)
-          text = replace_once(
-              text,
-              'Generated PDFs, DOCX files, printable sheets, and Deckbuilder output are derived production artifacts.',
-              'Generated PDFs, printable sheets, and Deckbuilder output are derived production artifacts. The retired DOCX files remain only as historical release artifacts and are not maintained.',
-              'root generated-artifact policy',
-          )
-          root_readme.write_text(text, encoding='utf-8')
 
           release_readme = Path('releases/v0.6.1/README.md')
           text = release_readme.read_text(encoding='utf-8')
@@ -234,18 +210,17 @@ jobs:
             releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf
           if-no-files-found: error
 
-      - name: Commit approved release artifacts
+      - name: Commit approved historical release artifacts
         if: github.event_name == 'push' && github.ref_name == 'publication/v061-rulebook-publication'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add README.md \
-            releases/v0.6.1/README.md \
+          git add releases/v0.6.1/README.md \
             releases/v0.6.1/Gauntlet_v0.6.1_Manifest.json \
             releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf \
             releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf
           if git diff --cached --quiet; then
-            echo "Published Rulebook artifacts are already current."
+            echo "Published v0.6.1 Rulebook artifacts are already current."
             exit 0
           fi
           git commit -m "Publish approved v0.6.1 Rulebook artifacts [skip ci]"

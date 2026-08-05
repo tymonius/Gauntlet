@@ -1,0 +1,251 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8YYYZJGGPE');</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A returning-player guide to the changes from Gauntlet v0.6.1.">
+  <link rel="canonical" href="https://gauntlet.run/v0.6.2/changes/">
+  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
+  <title>What Changed in Gauntlet v0.6.2</title>
+  <link rel="stylesheet" href="/v0.6.2/styles.css">
+  <style>
+    .release-shell{max-width:1060px;margin:0 auto;padding:2rem 1rem 5rem}.release-nav{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem}.release-nav a{font-weight:700}.release-doc{background:rgba(255,255,255,.78);padding:clamp(1rem,3vw,3rem);border:1px solid rgba(80,55,30,.25);box-shadow:0 18px 50px rgba(60,35,20,.12)}.release-doc h2,.release-doc h3{scroll-margin-top:1rem}.release-doc table{width:100%;border-collapse:collapse;display:block;overflow:auto}.release-doc td{border:1px solid rgba(80,55,30,.25);padding:.45rem .6rem;vertical-align:top}.release-doc blockquote{margin:1rem 0;padding:.2rem 1rem;border-left:4px solid #8f1f25;background:rgba(143,31,37,.06)}.release-actions{display:flex;flex-wrap:wrap;gap:.75rem;margin:1.5rem 0}.release-actions a{display:inline-block;padding:.7rem 1rem;border:1px solid currentColor;text-decoration:none;font-weight:700}.release-actions a:first-child{background:#8f1f25;color:white;border-color:#8f1f25}
+  </style>
+</head>
+<body>
+  <main class="release-shell">
+    <nav class="release-nav" aria-label="v0.6.2 release navigation"><a href="/">Gauntlet home</a><a href="/v0.6.2/">v0.6.2</a><a href="/v0.6.2/start/">Start</a><a href="/v0.6.2/deckbuilder/">Deckbuilder</a><a href="/v0.6.2/reference/">Card reference</a><a href="/v0.6.2/changes/">What changed</a></nav>
+    <article class="release-doc"><h2 id="what-changed-in-gauntlet-v0-6-2">What Changed in Gauntlet v0.6.2</h2>
+<p><strong>Status:</strong> Published returning-player guide</p>
+<p><strong>Release tracker:</strong> <a href="https://github.com/tymonius/Gauntlet/issues/470">#470</a></p>
+<p><strong>Closeout tracker:</strong> <a href="https://github.com/tymonius/Gauntlet/issues/506">#506</a></p>
+<p><strong>Document tracker:</strong> <a href="https://github.com/tymonius/Gauntlet/issues/503">#503</a></p>
+<p>This handout explains what a player who already knows v0.6.1 must do differently in v0.6.2. It is organized around play at the table, not repository implementation history.</p>
+<p>v0.6.2 is the current canonical playtest release. v0.6.1 remains available as an immutable historical package.</p>
+<h3 id="change-labels">Change labels</h3>
+<ul>
+<li><strong>Mechanical change:</strong> the game now plays differently.</li>
+<li><strong>Terminology change:</strong> the procedure is substantially familiar, but its formal name or presentation changed.</li>
+<li><strong>Clarification:</strong> the rule is now stated more precisely to prevent inconsistent readings.</li>
+<li><strong>Test revision:</strong> intentionally adopted for v0.6.2 playtesting and subject to later evaluation.</li>
+</ul>
+<h2 id="at-a-glance">At a glance</h2>
+<p>The changes most likely to affect every game are:</p>
+<ol>
+<li><strong>[Mechanical change] Turns now have six named phases:</strong> Capture, Draw, Opening, Movement, Denouement, Cleanup.</li>
+<li><strong>[Mechanical change] Your normal Action may be taken during Opening or saved for Denouement.</strong> An additional Action does not by itself allow two Actions in the same phase.</li>
+<li><strong>[Terminology change] Ordinary Movement choices are Advance, Hold, and Fall Back.</strong> Fall Back is not retreat or withdrawal.</li>
+<li><strong>[Mechanical change] A collision first creates a pending battle.</strong> Terms occur before Onset; accepted Terms prevent the battle from beginning.</li>
+<li><strong>[Terminology change] Onset is the formal opening stage of an active battle.</strong> Gambits follow Onset.</li>
+<li><strong>[Mechanical change] Tied battles use Defensive Edge or a separate Tiebreak Roll.</strong> The original modified battle totals are not rerolled.</li>
+<li><strong>[Mechanical change] Territory control must remain contiguous.</strong> Your token's Position may extend beyond your controlled Front Line without granting isolated control.</li>
+<li><strong>[Clarification] Retreat, withdrawal, and Fall Back are different events</strong> even when they move a token in the same direction.</li>
+<li><strong>[Mechanical change] Recommended starter Decks now use each Leader's full legal pool.</strong> Basic and Advanced are no longer active construction restrictions.</li>
+<li><strong>[Mechanical change] Seven card titles are new or moved between pools,</strong> and several inherited cards, Territories, Proposals, and faction procedures have compatibility revisions.</li>
+</ol>
+<h2 id="setup-and-starting-decks">Setup and starting Decks</h2>
+<h3 id="recommended-starter-decks">Recommended starter Decks</h3>
+<p><strong>[Mechanical change]</strong> All twelve Leader starter Decks have been rebuilt from their full legal construction pools. A recommended starter is still a legal 30-card, 60-value Deck with three Territories, but it is no longer restricted by the retired Basic/Advanced teaching split.</p>
+<p>Use the printed v0.6.2 starter for the selected Leader rather than carrying forward a v0.6.1 list.</p>
+<h3 id="card-complexity-labels">Card complexity labels</h3>
+<p><strong>[Terminology change]</strong> Basic and Advanced no longer determine whether a card may appear in a starter Deck or teaching game. Complexity may still be communicated for player guidance, but it is not an active construction rule.</p>
+<h3 id="first-game-materials">First-game materials</h3>
+<p><strong>[Clarification]</strong> v0.6.2 separates the complete rules from first-game guidance and tableside references. New players should follow the first-game sequence and faction summary supplied with their Leader rather than infer procedure from card text alone.</p>
+<p>A shared active-player marker may be passed after Cleanup to help track long interactive turns.</p>
+<h2 id="turn-and-movement">Turn and Movement</h2>
+<h3 id="the-turn-sequence">The turn sequence</h3>
+<p><strong>[Mechanical change]</strong> Complete each turn in this order:</p>
+<blockquote>
+<p><strong>Capture → Draw → Opening → Movement → Denouement → Cleanup</strong></p>
+</blockquote>
+<p>Capture now occurs before the normal draw. Resolve effects and victory checks following Capture before proceeding to Draw.</p>
+<h3 id="actions">Actions</h3>
+<p><strong>[Mechanical change]</strong> You normally take one Action total during either Opening or Denouement.</p>
+<p>An Action may:</p>
+<ul>
+<li>play a card for its Action effect;</li>
+<li>take a legal Faction Action; or</li>
+<li>discard an Asset you control.</li>
+</ul>
+<p>A Faction Ability occurs at its stated timing and does not use an Action unless it expressly says otherwise.</p>
+<p>No more than one Action may normally be taken during Opening, and no more than one during Denouement. An effect granting an additional Action increases the total available that turn; it does not automatically increase either phase's capacity.</p>
+<h3 id="movement-choices">Movement choices</h3>
+<p><strong>[Terminology change]</strong> During ordinary Movement, choose:</p>
+<ul>
+<li><strong>Advance:</strong> move one Position toward the opponent's end;</li>
+<li><strong>Hold:</strong> remain in place and end the current Movement sequence;</li>
+<li><strong>Fall Back:</strong> move one Position toward your own end.</li>
+</ul>
+<p>Entering the opponent's Position creates a pending battle and immediately ends that Movement sequence. Any unused movement from that sequence is lost even if Terms later prevent the battle.</p>
+<h2 id="battles">Battles</h2>
+<h3 id="pending-battle-terms-and-onset">Pending battle, Terms, and Onset</h3>
+<p><strong>[Mechanical change]</strong> The pre-battle sequence is:</p>
+<blockquote>
+<p><strong>Pending battle → Terms → Onset → Gambits</strong></p>
+</blockquote>
+<p>The attacker, defender, contested Position, and attack origin are established when the pending battle is created.</p>
+<p>Terms occur before Onset. A pending battle is not yet an active battle, so battle, win, loss, retreat, and Aftermath triggers do not occur unless the battle reaches Onset.</p>
+<p>If Terms are accepted, resolve the Proposal's Accepted effect. Unless that Proposal gives another positional result, the attacker withdraws to the attack origin and the defender remains at the contested Position. There is no Onset, battle result, Occupation caused by the accepted Terms, or Aftermath.</p>
+<p>If Terms are refused or none are offered, proceed to Onset.</p>
+<h3 id="onset">Onset</h3>
+<p><strong>[Terminology change]</strong> Onset replaces informal references to battle opening effects. During Onset, the pending battle becomes active, roles are fixed, and effects that apply during Onset or when the battle begins resolve before Gambits.</p>
+<h3 id="defensive-edge">Defensive Edge</h3>
+<p><strong>[Mechanical change]</strong> A defender with Defensive Edge wins tied battle totals.</p>
+<p>The defender normally has Defensive Edge while defending a Territory they control or making a Last Stand. Merely being the defender is not enough. An effect or Arena may remove Defensive Edge.</p>
+<h3 id="tiebreak-roll">Tiebreak Roll</h3>
+<p><strong>[Mechanical change]</strong> If tied totals are not resolved by Defensive Edge or another explicit rule, make a separate Tiebreak Roll:</p>
+<blockquote>
+<p>Each player rolls one unmodified die. Higher roll wins. Reroll further ties.</p>
+</blockquote>
+<p>Do not apply advantage, disadvantage, card effects, numerical modifiers, or the previous battle totals unless an effect expressly refers to a Tiebreak Roll.</p>
+<h3 id="retreat-and-withdrawal">Retreat and withdrawal</h3>
+<p><strong>[Clarification]</strong> A losing player retreats. A player who leaves a pending or active battle without losing withdraws. Fall Back is ordinary Movement and is neither.</p>
+<p>Unless an effect says otherwise:</p>
+<ul>
+<li>an attacking player who retreats or withdraws returns to the Position from which they attacked;</li>
+<li>a defending player who retreats or withdraws moves one Position toward their own end;</li>
+<li>defender-only withdrawal leaves the attacker at the contested Position and may create Occupation;</li>
+<li>mutual withdrawal moves the attacker first, then the defender, and creates no Occupation from that withdrawal.</li>
+</ul>
+<p>Withdrawal before Onset prevents the battle and Aftermath. Withdrawal after Onset ends the battle without a winner, then completes the remaining non-result Aftermath and clears committed battle cards normally.</p>
+<h2 id="front-line-position-and-capture">Front Line, Position, and Capture</h2>
+<h3 id="contiguous-control">Contiguous control</h3>
+<p><strong>[Mechanical change]</strong> Your controlled Territories must always form one unbroken line from your own end. That line is your <strong>Front Line</strong>.</p>
+<p>Your <strong>Position</strong> is where your Player Token stands. Position and control are separate. A token may stand several Territories beyond its Front Line without controlling those Territories or the intervening ones.</p>
+<h3 id="normal-capture">Normal Capture</h3>
+<p><strong>[Mechanical change]</strong> During Capture, identify the next opponent-controlled Territory immediately beyond your Front Line. If your token is on or beyond it, add that Territory to your Front Line.</p>
+<p>Normal Capture advances the Front Line by no more than one Territory per turn, regardless of how far the token has advanced. The Territory captured may therefore differ from the Territory containing the token.</p>
+<h3 id="immediate-capture-effects">Immediate capture effects</h3>
+<p><strong>[Clarification]</strong> Effects that previously appeared to capture a specific occupied Territory cannot create isolated control. Revised effects advance the player's Front Line by the permitted amount, if the token can support each addition.</p>
+<p>Deep Position alone does not establish control of the opponent's final Territory or satisfy the normal Last Stand victory sequence.</p>
+<h2 id="faction-and-leader-changes">Faction and Leader changes</h2>
+<h3 id="military">Military</h3>
+<ul>
+<li><strong>[Clarification]</strong> Orders are Faction Abilities, not Actions. They occur at their printed timings.</li>
+<li><strong>[Mechanical change]</strong> Invasion moves from Neutral to Military at cost 4. Its Opening Action grants up to two additional advance-only Positions during that turn's Movement. Its Battle mode gives an attacking Military one additional Reserve card and one additional Tactic.</li>
+<li><strong>[Mechanical change]</strong> Creating a pending battle loses unused Invasion movement; accepted Terms do not restore it.</li>
+<li><strong>[Terminology change]</strong> Hold the Line and Shock and Awe now use Onset.</li>
+<li><strong>[Mechanical change]</strong> Battlefield Promotion and Give Chase are Denouement Actions.</li>
+<li><strong>[Clarification]</strong> Fortify, Consolidate, and similar effects advance the contiguous Front Line rather than creating isolated control.</li>
+</ul>
+<p>The Military alternate victory remains unresolved and is not introduced by v0.6.2.</p>
+<h3 id="diplomats">Diplomats</h3>
+<ul>
+<li><strong>[Clarification]</strong> Proposal cards use explicit player roles because they are physically presented to the receiving player.</li>
+<li><strong>[Mechanical change]</strong> Accepted unratified Proposals normally grant 1 Influence. Imposed unratified Proposals normally grant 2 Influence. Already-ratified Proposals grant no default ratification reward.</li>
+<li><strong>[Mechanical change]</strong> Leverage uses triangular total costs: +1 costs 1 Influence, +2 costs 3, +3 costs 6, and +4 costs 10.</li>
+<li><strong>[Mechanical change]</strong> Détente is a new cost-3 Asset. Once each turn, it grants 1 Influence when an opponent accepts a Proposal that was already ratified when offered.</li>
+<li><strong>[Clarification]</strong> Good Faith's Accepted result puts the selected card in the Graveyard, then grants 1 Influence.</li>
+<li><strong>[Clarification]</strong> Gunboat Diplomacy uses its normal role destination: Discard when accepted or normally chosen as a Tactic; Graveyard when set as the refusal Gambit and cleared.</li>
+<li><strong>[Mechanical change]</strong> Safe Conduct after Onset causes withdrawal and non-result Aftermath rather than a loss.</li>
+<li><strong>[Clarification]</strong> Diplomatic Recognition advances the Diplomat's Front Line instead of creating isolated control.</li>
+</ul>
+<p>The Peace Treaty still requires five different ratified Proposals in v0.6.2. Any later threshold change remains unresolved.</p>
+<h3 id="financiers">Financiers</h3>
+<ul>
+<li><strong>[Test revision]</strong> Financiers begin with 2 Capital in v0.6.2 testing.</li>
+<li><strong>[Mechanical change]</strong> Financial Capacity is checked after Capture effects and before Draw. When Treasury value exceeds controlled Territories, the Financier may take one Action during Opening and one during Denouement, provided at least one is a Financier Faction Action.</li>
+<li><strong>[Clarification]</strong> Financier Faction Actions remain Denouement procedures. Financial Capacity does not permit two Actions in one phase.</li>
+<li><strong>[Mechanical change]</strong> Compound Interest is a new cost-4 Asset. After the normal Draw, with a nonempty Treasury, its controller may reveal the top Draw Pile card and place it in Treasury or Discard it.</li>
+<li><strong>[Clarification]</strong> Hostile Takeover and Foreclosure preserve contiguous Front Line control.</li>
+<li><strong>[Clarification]</strong> Tariffs, Divestment, Margin Loan, and other additional-Action effects use the shared Action rules rather than Action Opportunities.</li>
+</ul>
+<p>Line of Credit keeps its existing collateral cap.</p>
+<h3 id="intelligence">Intelligence</h3>
+<ul>
+<li><strong>[Mechanical change]</strong> Extraordinary Rendition is a new cost-4 Asset that binds one revealed opposing Hand card beneath it. The bound card cannot be played, moved, or affected except by Extraordinary Rendition.</li>
+<li><strong>[Mechanical change]</strong> When Assets are discarded, Extraordinary Rendition must be discarded before other controlled Assets if able. Its bound card then goes to its owner's Discard Pile.</li>
+<li><strong>[Clarification]</strong> Intelligence Missions and Special Operations taken as Faction Actions are Denouement procedures. Mission Control remains a direct permission that does not use an Action.</li>
+<li><strong>[Terminology change]</strong> Fieldcraft uses Defensive Edge and Reconnaissance uses Onset.</li>
+<li><strong>[Clarification]</strong> Counterintelligence and Fog of War no longer rely on obsolete hidden-Territory wording.</li>
+<li><strong>[Mechanical change]</strong> Sleeper Network may be used as an Action during Opening or Denouement.</li>
+</ul>
+<h3 id="mystics">Mystics</h3>
+<ul>
+<li><strong>[Clarification]</strong> Begin a Rite and Begin the Ritual of Ascendance are normally Denouement Faction Actions.</li>
+<li><strong>[Mechanical change]</strong> Guardians of the Circle now requires an Arcane sacrifice of value at least 1 for the first Rite, 2 for the second, 3 for the third, and 4 for the Ritual.</li>
+<li><strong>[Mechanical change]</strong> Black Covenant grants advantage and may add an additional Tactic or Battle card; both cards go to the Graveyard.</li>
+<li><strong>[Mechanical change]</strong> Nature's Altar is a new cost-4 Arcane Overlay. It may be placed by Action on the current or adjacent Territory, or after winning on the contested Territory.</li>
+<li><strong>[Mechanical change]</strong> Nature's Altar creates the special Opening permission to take Begin a Rite while the token is on its Territory. This does not change the Rite's cost or requirements. Same-turn completion applies only if the Altar's controller controls that Territory at completion timing.</li>
+<li><strong>[Clarification]</strong> Nature's Altar does not waive Rite of Crossing's specialized beginning requirement.</li>
+</ul>
+<p>All thirteen Mystics faction cards are Arcane.</p>
+<h3 id="inquisition">Inquisition</h3>
+<ul>
+<li><strong>[Mechanical change]</strong> Purge is a Faction Action legal during Opening or Denouement, normally no more than once per turn. The Inquisition may take an Action in both phases when one of them is Purge, but never two Actions in the same phase.</li>
+<li><strong>[Clarification]</strong> Final Judgment's Aftermath Purge is a separate Faction Ability. It does not use an Action or consume the normal Purge Faction Action.</li>
+<li><strong>[Mechanical change]</strong> Martyrdom is a new cost-5 Unique card played after losing, before battle cards clear. Remaining opposing Reserve cards go to the opponent's Graveyard, the Inquisition sets Conviction to 4, and Martyrdom goes to the Graveyard.</li>
+<li><strong>[Clarification]</strong> Martyrdom does not prevent the loss, retreat, Occupation, or other battle-result consequences.</li>
+<li><strong>[Clarification]</strong> Relentless Pursuit now follows pending battle, Terms, and Onset without inserting an Opening or Denouement.</li>
+<li><strong>[Mechanical change]</strong> In an Inquisition mirror, the opposing No Martyrs can prevent the losing player's Martyrdom benefit.</li>
+</ul>
+<h2 id="cards-territories-and-proposals">Cards, Territories, and Proposals</h2>
+<h3 id="new-and-moved-titles">New and moved titles</h3>
+<table><tbody>
+<tr><td>Allegiance</td><td>Card</td><td>Cost</td><td>Summary</td></tr>
+<tr><td>Neutral</td><td>Landslide</td><td>4</td><td>Overlay that chains an additional Position of retreat when entered by retreat.</td></tr>
+<tr><td>Military</td><td>Invasion</td><td>4</td><td>Moved from Neutral; additional advance movement or expanded attacking battle limits.</td></tr>
+<tr><td>Diplomats</td><td>Détente</td><td>3</td><td>Asset rewarding acceptance of already-ratified Proposals.</td></tr>
+<tr><td>Financiers</td><td>Compound Interest</td><td>4</td><td>Asset converting the top Draw Pile card into Treasury or Discard after Draw.</td></tr>
+<tr><td>Intelligence</td><td>Extraordinary Rendition</td><td>4</td><td>Asset binding an opposing Hand card.</td></tr>
+<tr><td>Mystics</td><td>Nature's Altar</td><td>4</td><td>Arcane Overlay enabling a special Opening Rite procedure.</td></tr>
+<tr><td>Inquisition</td><td>Martyrdom</td><td>5</td><td>Unique Aftermath response after losing.</td></tr>
+</tbody></table>
+<p>The effective pool contains 128 playable card titles: 50 Neutral and 13 for each faction.</p>
+<h3 id="notable-inherited-compatibility-revisions">Notable inherited compatibility revisions</h3>
+<ul>
+<li>Forced March grants Opening movement that cannot create a pending battle.</li>
+<li>Advance Guard grants Opening movement that may create a battle, but no Gambit may be set when its extra Position causes it.</li>
+<li>Entrenchment and Difficult Terrain block Denouement Action cards under their revised timing.</li>
+<li>Palisade Wall uses Onset.</li>
+<li>Reinforcements, Insurrection, and Liberation grant additional Actions without granting same-phase capacity.</li>
+<li>Strategic Withdrawal distinguishes its Opening addition to normal Movement from its Denouement-created later Movement sequence.</li>
+<li>Assimilation advances the Front Line by one.</li>
+<li>Protracted Siege prevents one future attempt to add its Territory to the opposing Front Line.</li>
+<li>Manifest Destiny inserts its blank Territory only when it immediately joins the player's Front Line.</li>
+<li>Quicksand uses Fall Back.</li>
+<li>Command Tent permits one Action in each phase, but both must be card Action effects.</li>
+<li>Smuggler's Pass is an Action during Opening or Denouement.</li>
+<li>Refuge triggers from voluntary Fall Back, not retreat or withdrawal.</li>
+<li>Arenas remove Defensive Edge and use the separate Tiebreak Roll.</li>
+</ul>
+<h2 id="what-did-not-change">What did not change</h2>
+<ul>
+<li>A constructed Deck still requires at least 30 cards and no more than 60 total deckbuilding value. The recommended starter Decks are exact 30-card, 60-value lists.</li>
+<li>Players still select one faction and one Leader and use three Territories.</li>
+<li>Gambits, Reserves, Tactics, Outcome, and Aftermath remain the core active-battle stages after Onset.</li>
+<li>A specific card, Territory, Proposal, Leader, or faction rule still overrides a general rule when it directly addresses the situation.</li>
+<li>v0.6.2 does not silently adopt unresolved alternate victories, thresholds, or balance experiments.</li>
+</ul>
+<h2 id="returning-player-checklist">Returning-player checklist</h2>
+<p>Before the first v0.6.2 game:</p>
+<ul>
+<li>use the v0.6.2 starter Deck or rebuild from the full legal pool;</li>
+<li>remember <strong>Capture before Draw</strong>;</li>
+<li>choose whether to use your Action during <strong>Opening</strong> or save it for <strong>Denouement</strong>;</li>
+<li>use <strong>Advance, Hold, or Fall Back</strong> during ordinary Movement;</li>
+<li>stop the Movement sequence when a pending battle is created;</li>
+<li>resolve <strong>Terms before Onset</strong>;</li>
+<li>use <strong>Defensive Edge</strong>, then a separate <strong>Tiebreak Roll</strong> if needed;</li>
+<li>track <strong>Position</strong> separately from the contiguous <strong>Front Line</strong>;</li>
+<li>distinguish <strong>Fall Back</strong>, <strong>withdrawal</strong>, and <strong>retreat</strong>;</li>
+<li>review the selected faction's revised timing and its new card;</li>
+<li>use the complete v0.6.2 rules whenever a component-specific interaction is not covered here.</li>
+</ul>
+<h2 id="intentionally-unresolved-during-closeout">Intentionally unresolved during closeout</h2>
+<p>The following are not v0.6.2 rules unless a later recorded decision explicitly adopts them before publication:</p>
+<ul>
+<li>Military alternate victory;</li>
+<li>Peace Treaty threshold;</li>
+<li>Leader Ability taxonomy beyond adopted wording;</li>
+<li>unadopted balance experiments.</li>
+</ul></article>
+  </main>
+  <script type="module" src="/rules-assistant/widget.js"></script>
+</body>
+</html>
