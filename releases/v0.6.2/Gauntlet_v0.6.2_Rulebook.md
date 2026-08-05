@@ -58,7 +58,7 @@ A complete Deck contains:
 - three different Territory Cards; and
 - any components required by that faction or Leader.
 
-Together, both players' Territory Cards form the **Gauntlet**, a single six-Territory column. The exact construction requirements for a custom Deck appear in Chapter 10. Faction packages and their starting states appear in Part III.
+Together, both players' Territory Cards form the **Gauntlet**, a single six-Territory column. The exact construction requirements for a custom Deck appear in Chapter 11. Faction packages and their starting states appear in Part IV.
 
 ---
 
@@ -121,11 +121,11 @@ The temporary area containing cards chosen or added as Tactics for the current b
 
 ### Leader and faction area
 
-Keep the Leader and all faction trackers, references, progress cards, and other public faction components together and visible. Part III explains each faction's exact arrangement.
+Keep the Leader and all faction trackers, references, progress cards, and other public faction components together and visible. Part IV explains each faction's exact arrangement.
 
 ### Territories and Player Tokens
 
-Territory orientation shows control: the player a Territory faces controls it. A Player Token shows the player's position. Occupation and control are related but are not the same; Chapter 8 explains how control changes.
+Territory orientation shows control: the player a Territory faces controls it. A Player Token shows the player's position. Occupation and control are related but are not the same; Chapter 9 explains how control changes.
 
 ### Bound cards
 
