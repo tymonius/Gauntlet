@@ -174,7 +174,7 @@ The Military alternate victory remains unresolved and is not introduced by v0.6.
 - **[Mechanical change]** Safe Conduct after Onset causes withdrawal and non-result Aftermath rather than a loss.
 - **[Clarification]** Diplomatic Recognition advances the Diplomat's Front Line instead of creating isolated control.
 
-The Peace Treaty threshold remains unresolved unless separately adopted before publication.
+The Peace Treaty still requires five different ratified Proposals in v0.6.2. Any later threshold change remains unresolved.
 
 ## Financiers
 
