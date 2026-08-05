@@ -21,6 +21,10 @@ source = source.replace(
   "section(sharedReferenceSource, '# Turn')",
   "section(sharedReferenceSource, '# Your Turn')"
 );
+source = source.replace(
+  "const starterSource = read('docs/Gauntlet_v0.6.2_Starter_Decks_Candidate.json');",
+  "const starterData = JSON.parse(read('docs/Gauntlet_v0.6.2_Starter_Decks_Candidate.json'));\nstarterData.version = 'v0.6.2';\nstarterData.status = 'published';\nconst starterSource = JSON.stringify(starterData, null, 2);"
+);
 fs.writeFileSync(temporaryPath, source, 'utf8');
 
 try {
