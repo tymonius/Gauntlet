@@ -1,4 +1,5 @@
 import worker from "./worker-v061.js";
+import candidateWorker from "./worker-v062-candidate.js";
 import smartWorker from "./smart-worker.js";
 import reliableWorker from "./reliable-worker.js";
 import { ADMIN_PAGE_WITH_INCREMENTAL_EXPORT } from "./admin-incremental-export-page.js";
@@ -50,6 +51,10 @@ export function allowSiteImages(contentSecurityPolicy, origin = DEFAULT_SITE_ORI
 export default {
   async fetch(request, env, context) {
     const url = new URL(request.url);
+
+    if (url.pathname.startsWith("/api/v062/") || url.pathname.startsWith("/v062/")) {
+      return candidateWorker.fetch(request, env, context);
+    }
 
     if (url.pathname === "/api/admin/review-export-checkpoint") {
       return handleReviewExportCheckpoint(request, env);
