@@ -85,7 +85,7 @@ const deterministicChecks = [
   ["How does Extraordinary Rendition work?", "extraordinary-rendition"],
   ["How does Nature's Altar work?", "natures-altar"],
   ["How does Martyrdom work?", "martyrdom"],
-  ["How does Landslide work?", "landslde"]
+  ["How does Landslide work?", "landslide"]
 ];
 for (const [question, expectedId] of deterministicChecks) {
   const ruling = resolveV062DeterministicRuling({ question });
