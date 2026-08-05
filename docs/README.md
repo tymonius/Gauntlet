@@ -33,7 +33,7 @@ When a derived PDF, printable sheet, Deckbuilder entry, or digital implementatio
 - [v0.6.2 Wave C Test Matrix](Gauntlet_v0.6.2_Wave_C_Test_Matrix.md) — 66 normative starter, onboarding, tableside, and faction-teaching scenarios.
 - [v0.6.2 Wave C Review Checklist](Gauntlet_v0.6.2_Wave_C_Review_Checklist.md) — review gate for starter legality, Leader identity, early access, teaching sequence, faction presentation, and release boundaries.
 - [v0.6.2 Wave D Test Matrix](Gauntlet_v0.6.2_Wave_D_Test_Matrix.md) — 48 normative structured-data, candidate-surface, starter-handoff, generated-reference, and release-integrity scenarios.
-- [v0.6.2 Wave D Review Checklist](Gauntlet_v0.6.2_Wave_D_Review_Checklist.md) — review gate for the effective 129-card data source, versioned Start and Deckbuilder surfaces, generated reference, and immutable v0.6.1 boundary.
+- [v0.6.2 Wave D Review Checklist](Gauntlet_v0.6.2_Wave_D_Review_Checklist.md) — review gate for the effective 128-card data source, versioned Start and Deckbuilder surfaces, generated reference, and immutable v0.6.1 boundary.
 - [v0.6.2 Candidate Player Surfaces](../v0.6.2/) — versioned Start, Deckbuilder, canonical-data download, and generated reference built from immutable v0.6.1 plus the merged Wave A–C sources.
 - [v0.6.2 Implementation Ledger](Gauntlet_v0.6.2_Implementation_Ledger.md) — adopted post-playtest changes, unresolved release dependencies, ordered propagation waves, and validation gates for the next playtest revision.
 - [v0.6.1 Implementation Ledger](Gauntlet_v0.6.1_Implementation_Ledger.md) — approved first-playtest corrections and synchronization checklist.
@@ -46,7 +46,7 @@ These implementation records preserve decisions and production history while a r
 - [Development Status](Gauntlet_Development_Status.md) — current post-release priorities and playtest watchlist.
 - [Design Principles and Guardrails](Gauntlet_Design_Principles_and_Guardrails.md) — durable game-design constraints.
 - [Editorial Style and Capitalization Guide](Gauntlet_Editorial_Style_and_Capitalization_Guide.md) — audience-aware rules for Protected Words, public-facing prose, interface labels, and terminology consistency.
-- [Visual Identity and Design System](Gauntlet_Visual_Identity_and_Design_System.md) — cross-channel framework for brand, typography, color, shapes, icons, cards, rulebook, website, tools, digital play, physical components, and production assets.
+- [Visual Identity and Design System](Gauntlet_Visual_Identity_and_Design_System.md) — cross-channel framework for brand, typography, color, shapes, icons, cards, print materials, and interfaces.
 - [Typography System](Gauntlet_Typography_System.md) — approved working type families, role boundaries, Caslon italic usage, shared web tokens, and the print and screen tests required before exact sizes are locked.
 - [Live Typography Specimen](../typography/) — internal browser specimen for P22 1722 Pro, Adobe Caslon Pro, Georgia, P22 Declaration Pro, Inter, and actual-size card typography tests.
 - [Live Neutral Card-Front Prototype](../card-design/) — actual-size frame and hierarchy study using sparse, dense, and reminder-text Neutral cards.
