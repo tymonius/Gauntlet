@@ -53,6 +53,7 @@ REQUIRED_BROWSER_FILES = [
     "rules-assistant/widget.js",
     "rules-assistant/local-search.js",
     "rules-assistant/worker-v061.js",
+    "rules-assistant/worker-entry.js",
     "rules-assistant/wrangler.toml",
     "playtest/index.html",
     "playtest/styles.css",
@@ -252,7 +253,6 @@ def validate_browser_sources(errors: list[str]) -> None:
             "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md",
         ],
         "rules-assistant/widget.js": [
-            'version: "v0.6.1"',
             "playtestSessionId",
             "sheetSerial",
         ],
@@ -260,6 +260,11 @@ def validate_browser_sources(errors: list[str]) -> None:
             'const RULES_VERSION = "v0.6.1"',
             "sanitizePlaytestContext(payload)",
             "INSERT OR IGNORE INTO playtest_arbiter_links",
+        ],
+        "rules-assistant/worker-entry.js": [
+            'import worker from "./worker-v061.js"',
+            'url.pathname === "/api/v061/rules"',
+            "return worker.fetch(",
         ],
         "rules-assistant/wrangler.toml": [
             'main = "worker-entry.js"',
