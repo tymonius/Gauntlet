@@ -245,7 +245,7 @@ export function defenderHasDefensiveEdge(battle: BattleState): boolean {
 
 export function acceptTerms(
   battle: BattleState,
-  withdrawingPlayers: readonly PlayerId[] = [battle.attacker, battle.defender],
+  withdrawingPlayers: readonly PlayerId[] = [battle.attacker],
 ): BattleState {
   if (battle.stage !== 'pending') throw new Error('Terms may be accepted only during a pending battle.');
   return resolveWithdrawal({ ...battle, termsAccepted: true }, withdrawingPlayers);
