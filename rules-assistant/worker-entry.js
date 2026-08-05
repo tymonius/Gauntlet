@@ -49,6 +49,14 @@ export function allowSiteImages(contentSecurityPolicy, origin = DEFAULT_SITE_ORI
   return `${contentSecurityPolicy.trim().replace(/;?$/, ";")} img-src 'self' data: ${origin};`;
 }
 
+function rewriteCandidatePath(request) {
+  const candidateUrl = new URL(request.url);
+  candidateUrl.pathname = candidateUrl.pathname
+    .replace(/^\/api\/v062-candidate\//, "/api/v062/")
+    .replace(/^\/v062-candidate\//, "/v062/");
+  return new Request(candidateUrl, request);
+}
+
 export default {
   async fetch(request, env, context) {
     const url = new URL(request.url);
@@ -59,12 +67,21 @@ export default {
       return worker.fetch(new Request(legacyUrl, request), env, context);
     }
 
-    if (url.pathname === "/api/rules" || url.pathname === "/rules" || url.pathname === "/api/health" || url.pathname === "/health") {
+    if (
+      url.pathname === "/api/rules" ||
+      url.pathname === "/rules" ||
+      url.pathname === "/api/health" ||
+      url.pathname === "/health" ||
+      url.pathname === "/api/v062/rules" ||
+      url.pathname === "/v062/rules" ||
+      url.pathname === "/api/v062/health" ||
+      url.pathname === "/v062/health"
+    ) {
       return publishedWorker.fetch(request, env, context);
     }
 
-    if (url.pathname.startsWith("/api/v062/") || url.pathname.startsWith("/v062/")) {
-      return candidateWorker.fetch(request, env, context);
+    if (url.pathname.startsWith("/api/v062-candidate/") || url.pathname.startsWith("/v062-candidate/")) {
+      return candidateWorker.fetch(rewriteCandidatePath(request), env, context);
     }
 
     if (url.pathname === "/api/admin/review-export-checkpoint") {
