@@ -17,7 +17,7 @@ Build v0.6.2 from the published v0.6.1 canonical JSON without modifying that fil
 The effective data identifies itself as `v0.6.2-candidate`, not v0.6.1.
 
 ## A03 — Complete card count
-The effective pool contains exactly 129 playable-card titles.
+The effective pool contains exactly 128 playable-card titles: 50 Neutral and 13 in each of six faction pools.
 
 ## A04 — Pool counts
 Neutral contains 50 titles and each faction contains 13.
@@ -84,7 +84,7 @@ Every starter contains three known Territories in an explicit order.
 No starter contains more than one Arena.
 
 ## C08 — New-card coverage
-The seven-card v0.6.2 expansion is represented across the approved starter catalog.
+The seven-card v0.6.2 expansion—six new titles plus Invasion's pool migration—is represented across the approved starter catalog.
 
 # D. Candidate onboarding
 
@@ -127,7 +127,7 @@ The Deckbuilder offers no Basic/Advanced construction filter.
 Loading a starter reproduces every approved card quantity and ordered Territory.
 
 ## E05 — Legal validation
-The tool checks card count, value, allegiance, Unique limits, Territories, and Arena count.
+The tool checks card count, value, allegiance, Unique limits, Territories, and Arena count. Non-Unique cards have no general copy ceiling unless a specific card says otherwise.
 
 ## E06 — Print
 The selected Deck and ordered Territories have a print-friendly output path.
@@ -141,7 +141,7 @@ The tool can download the materialized effective canonical JSON.
 # F. Generated reference and release integrity
 
 ## F01 — Card reference
-The generated reference exposes all 129 card titles and exact modes.
+The generated reference exposes all 128 card titles and exact modes.
 
 ## F02 — Territory reference
 The generated reference exposes all 25 Territories with revised text.
