@@ -68,7 +68,8 @@ for (const title of ['Landslide','Invasion','Détente','Compound Interest','Extr
   assert(canonical.cards.some((card) => card.name === title), `canonical data is missing ${title}`);
 }
 
-const starterList = Array.isArray(starters) ? starters : starters.starters;
+assert(starters.version === 'v0.6.2' && starters.status === 'published', 'starter catalog is not published v0.6.2');
+const starterList = Array.isArray(starters) ? starters : (starters.decks ?? starters.starters);
 assert(Array.isArray(starterList) && starterList.length === 12, 'release package must contain twelve starter Decks');
 
 for (const marker of ['Capture → Draw → Opening → Movement → Denouement → Cleanup','Pending battle → Terms → Onset → Gambits','Defensive Edge','Tiebreak Roll','Front Line','Begin a Rite — Denouement']) {
