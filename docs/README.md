@@ -46,7 +46,7 @@ These implementation records preserve decisions and production history while a r
 - [Development Status](Gauntlet_Development_Status.md) — current post-release priorities and playtest watchlist.
 - [Design Principles and Guardrails](Gauntlet_Design_Principles_and_Guardrails.md) — durable game-design constraints.
 - [Editorial Style and Capitalization Guide](Gauntlet_Editorial_Style_and_Capitalization_Guide.md) — audience-aware rules for Protected Words, public-facing prose, interface labels, and terminology consistency.
-- [Visual Identity and Design System](Gauntlet_Visual_Identity_and_Design_System.md) — cross-channel framework for brand, typography, color, shapes, icons, cards, print materials, and interfaces.
+- [Visual Identity and Design System](Gauntlet_Visual_Identity_and_Design_System.md) — cross-channel framework for brand, typography, color, shapes, icons, cards, rulebook, website, tools, digital play, physical components, and production assets.
 - [Typography System](Gauntlet_Typography_System.md) — approved working type families, role boundaries, Caslon italic usage, shared web tokens, and the print and screen tests required before exact sizes are locked.
 - [Live Typography Specimen](../typography/) — internal browser specimen for P22 1722 Pro, Adobe Caslon Pro, Georgia, P22 Declaration Pro, Inter, and actual-size card typography tests.
 - [Live Neutral Card-Front Prototype](../card-design/) — actual-size frame and hierarchy study using sparse, dense, and reminder-text Neutral cards.
