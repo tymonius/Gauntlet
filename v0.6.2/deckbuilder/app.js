@@ -1,18 +1,7 @@
 import { loadV062CanonicalData, V062_VERSION } from "../data/canonical-data.js";
 
 const STORAGE_KEY = "gauntlet-v062-deckbuilder";
-const state = {
-  data: null,
-  starters: [],
-  factionId: "military",
-  leaderId: "general",
-  deckName: "",
-  cards: {},
-  territories: [],
-  search: "",
-  allegiance: "all",
-  cost: "all"
-};
+const state = { data: null, starters: [], factionId: "military", leaderId: "general", deckName: "", cards: {}, territories: [], search: "", allegiance: "all", cost: "all" };
 const $ = id => document.getElementById(id);
 
 init().catch(error => {
@@ -45,8 +34,7 @@ async function assertJson(response) {
 function bind() {
   $("faction").addEventListener("change", () => {
     state.factionId = $("faction").value;
-    const faction = selectedFaction();
-    state.leaderId = slug(faction.leaders[0].name);
+    state.leaderId = slug(selectedFaction().leaders[0].name);
     state.cards = {};
     state.territories = [];
     renderLeaderOptions();
@@ -59,7 +47,13 @@ function bind() {
   $("allegiance").addEventListener("change", () => { state.allegiance = $("allegiance").value; renderAvailableCards(); });
   $("cost").addEventListener("change", () => { state.cost = $("cost").value; renderAvailableCards(); });
   $("loadStarter").addEventListener("click", loadStarter);
-  $("clearDeck").addEventListener("click", () => { if (confirm("Clear every selected card and Territory?")) { state.cards = {}; state.territories = []; renderAll(); save(); } });
+  $("clearDeck").addEventListener("click", () => {
+    if (!confirm("Clear every selected card and Territory?")) return;
+    state.cards = {};
+    state.territories = [];
+    renderAll();
+    save();
+  });
   $("printDeck").addEventListener("click", () => window.print());
   $("exportDeck").addEventListener("click", exportDeck);
   $("downloadCanonical").addEventListener("click", () => downloadJson(`Gauntlet_${V062_VERSION}_Canonical_Data.json`, state.data));
@@ -72,8 +66,8 @@ function renderFactionOptions() {
 
 function renderLeaderOptions() {
   const faction = selectedFaction();
-  const leaderIds = faction.leaders.map(leader => slug(leader.name));
-  if (!leaderIds.includes(state.leaderId)) state.leaderId = leaderIds[0];
+  const ids = faction.leaders.map(leader => slug(leader.name));
+  if (!ids.includes(state.leaderId)) state.leaderId = ids[0];
   $("leader").replaceChildren(...faction.leaders.map(leader => option(slug(leader.name), leader.name, slug(leader.name) === state.leaderId)));
   renderStarterPreview();
 }
@@ -97,17 +91,20 @@ function renderStarterPreview() {
     : "No approved starter matches this faction and Leader.";
 }
 
-function renderAvailableCards() {
+function legalCards() {
   const factionName = selectedFaction().name;
-  const cards = state.data.cards.filter(card => {
-    const legal = card.allegiance === "Neutral" || card.allegiance === factionName;
-    if (!legal) return false;
+  return state.data.cards.filter(card => {
+    if (card.allegiance !== "Neutral" && card.allegiance !== factionName) return false;
     if (state.allegiance === "neutral" && card.allegiance !== "Neutral") return false;
     if (state.allegiance === "faction" && card.allegiance !== factionName) return false;
     if (state.cost !== "all" && String(card.cost) !== state.cost) return false;
     const haystack = `${card.name} ${card.allegiance} ${(card.effects ?? []).map(effect => `${effect.label} ${effect.text}`).join(" ")}`.toLowerCase();
     return !state.search || haystack.includes(state.search);
   });
+}
+
+function renderAvailableCards() {
+  const cards = legalCards();
   $("availableCount").textContent = `${cards.length} titles`;
   const host = $("availableCards");
   host.replaceChildren();
@@ -118,15 +115,15 @@ function renderAvailableCards() {
     row.innerHTML = `<div><h3>${escapeHtml(card.name)} <span class="pill">${card.cost}</span></h3><p>${escapeHtml(card.allegiance)}${card.trait ? ` · ${escapeHtml(card.trait)}` : ""}${card.unique ? " · Unique" : ""}</p><p>${escapeHtml(card.effects?.map(effect => `${effect.label}: ${effect.text}`).join(" · ") ?? "")}</p></div><div class="counter"><button class="secondary minus" aria-label="Remove ${escapeHtml(card.name)}">−</button><strong>${quantity}</strong><button class="plus" aria-label="Add ${escapeHtml(card.name)}">+</button></div>`;
     row.querySelector(".minus").disabled = quantity === 0;
     row.querySelector(".minus").addEventListener("click", () => changeQuantity(card, -1));
-    row.querySelector(".plus").disabled = quantity >= (card.unique ? 1 : 3);
+    row.querySelector(".plus").disabled = card.unique && quantity >= 1;
     row.querySelector(".plus").addEventListener("click", () => changeQuantity(card, 1));
     host.append(row);
   }
 }
 
 function changeQuantity(card, delta) {
-  const maximum = card.unique ? 1 : 3;
-  const next = Math.max(0, Math.min(maximum, (state.cards[card.id] ?? 0) + delta));
+  const current = state.cards[card.id] ?? 0;
+  const next = card.unique ? Math.max(0, Math.min(1, current + delta)) : Math.max(0, current + delta);
   if (next) state.cards[card.id] = next;
   else delete state.cards[card.id];
   renderAvailableCards();
@@ -168,9 +165,7 @@ function renderSummary() {
   $("validity").className = validation.valid ? "status-good" : "status-bad";
   $("validityDetail").textContent = validation.valid ? "Ready to print" : `${validation.messages.length} issue${validation.messages.length === 1 ? "" : "s"}`;
   $("printTitle").textContent = state.deckName.trim() || selectedStarter()?.name || "Untitled Deck";
-  const faction = selectedFaction();
-  const leader = selectedLeader();
-  $("printIdentity").textContent = `${leader.name} · ${faction.name} · ${count} cards · ${value}/60 value`;
+  $("printIdentity").textContent = `${selectedLeader().name} · ${selectedFaction().name} · ${count} cards · ${value}/60 value`;
 
   const host = $("selectedCards");
   host.replaceChildren();
@@ -193,8 +188,8 @@ function renderSummary() {
     }
     host.append(list);
   }
-  const territoryList = $("selectedTerritories");
-  territoryList.replaceChildren(...state.territories.map(id => {
+
+  $("selectedTerritories").replaceChildren(...state.territories.map(id => {
     const item = document.createElement("li");
     item.textContent = state.data.territories.find(entry => entry.id === id)?.name ?? id;
     return item;
@@ -211,10 +206,7 @@ function validateDeck(selected, count, value) {
   if (state.territories.length !== 3) messages.push("Choose exactly three Territories.");
   const arenas = state.territories.filter(id => state.data.territories.find(entry => entry.id === id)?.arena).length;
   if (arenas > 1) messages.push("Choose no more than one Arena.");
-  for (const entry of selected) {
-    if (entry.card.unique && entry.quantity > 1) messages.push(`${entry.card.name} is Unique.`);
-    if (!entry.card.unique && entry.quantity > 3) messages.push(`${entry.card.name} exceeds the three-copy limit.`);
-  }
+  for (const entry of selected) if (entry.card.unique && entry.quantity > 1) messages.push(`${entry.card.name} is Unique.`);
   return { valid: messages.length === 0, messages };
 }
 
@@ -259,7 +251,10 @@ function downloadJson(filename, value) {
 }
 
 function selectedCardEntries() {
-  return Object.entries(state.cards).map(([id, quantity]) => ({ card: state.data.cards.find(entry => entry.id === id), quantity })).filter(entry => entry.card).sort((a, b) => a.card.allegiance.localeCompare(b.card.allegiance) || a.card.cost - b.card.cost || a.card.name.localeCompare(b.card.name));
+  return Object.entries(state.cards)
+    .map(([id, quantity]) => ({ card: state.data.cards.find(entry => entry.id === id), quantity }))
+    .filter(entry => entry.card)
+    .sort((a, b) => a.card.allegiance.localeCompare(b.card.allegiance) || a.card.cost - b.card.cost || a.card.name.localeCompare(b.card.name));
 }
 function selectedFaction() { return state.data.factions.find(entry => entry.id === state.factionId) ?? state.data.factions[0]; }
 function selectedLeader() { return selectedFaction().leaders.find(entry => slug(entry.name) === state.leaderId) ?? selectedFaction().leaders[0]; }
