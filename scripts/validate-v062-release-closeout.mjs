@@ -23,19 +23,32 @@ const packageJson = JSON.parse(read('package.json'));
 assert(manifest.version === 'v0.6.2', `manifest version is ${String(manifest.version)}`);
 assert(manifest.candidateVersion === 'v0.6.2-candidate', 'manifest candidate version is incorrect');
 assert(manifest.previousVersion === 'v0.6.1', 'manifest previous version is not v0.6.1');
-assert(manifest.status === 'release-candidate', 'pre-cutover manifest must remain release-candidate');
-assert(manifest.published === false, 'pre-cutover manifest must not report published');
-assert(JSON.stringify(manifest.propagationPullRequests) === JSON.stringify([493, 496, 500, 502, 505]), 'propagation PR record is incomplete');
-assert(manifest.scenarioCounts?.total === 368, `expected 368 Wave A-E scenarios, received ${String(manifest.scenarioCounts?.total)}`);
-assert(Object.values(manifest.publicDefaults || {}).every((value) => value === 'v0.6.1'), 'all public defaults must remain v0.6.1 before cutover');
 
-for (const unresolved of [
+const candidateState = manifest.status === 'release-candidate' && manifest.published === false;
+const publishedState = manifest.status === 'published' && manifest.published === true;
+assert(candidateState || publishedState, 'manifest must be a coherent release-candidate or published state');
+
+if (candidateState) {
+  assert(JSON.stringify(manifest.propagationPullRequests) === JSON.stringify([493, 496, 500, 502, 505]), 'candidate propagation PR record is incomplete');
+  assert(manifest.scenarioCounts?.total === 368, `candidate manifest expected 368 Wave A-E scenarios, received ${String(manifest.scenarioCounts?.total)}`);
+  assert(Object.values(manifest.publicDefaults || {}).every((value) => value === 'v0.6.1'), 'all public defaults must remain v0.6.1 before cutover');
+} else {
+  assert(JSON.stringify(manifest.propagationPullRequests) === JSON.stringify([493, 496, 500, 502, 505, 507]), 'published propagation and closeout PR record is incomplete');
+  assert(manifest.scenarioCounts?.closeout === 48, 'published manifest must include 48 closeout scenarios');
+  assert(manifest.scenarioCounts?.total === 416, `published manifest expected 416 total scenarios, received ${String(manifest.scenarioCounts?.total)}`);
+  assert(Object.values(manifest.publicDefaults || {}).every((value) => value === 'v0.6.2'), 'all public defaults must be v0.6.2 after cutover');
+  assert(Boolean(manifest.publicationDate), 'published manifest is missing its publication date');
+  assert(manifest.historicalAccess?.releasePackage === 'releases/v0.6.1/', 'published manifest does not preserve the v0.6.1 package');
+  assert(manifest.historicalAccess?.rulesArbiter === '/api/v061/rules', 'published manifest does not preserve the v0.6.1 Rules Arbiter route');
+}
+
+for (const unresolvedPrefix of [
   'Military alternate victory',
   'Peace Treaty threshold',
   'Leader Ability taxonomy beyond adopted wording',
   'Unadopted balance experiments',
 ]) {
-  assert(manifest.unresolved?.includes(unresolved), `manifest does not preserve unresolved item: ${unresolved}`);
+  assert(manifest.unresolved?.some((item) => item.startsWith(unresolvedPrefix)), `manifest does not preserve unresolved item: ${unresolvedPrefix}`);
 }
 
 const scenarioIds = [...matrix.matchAll(/\bRC-(\d{3})\b/g)].map((match) => match[0]);
@@ -127,4 +140,4 @@ for (const earlierValidator of [
   assert(String(packageJson.scripts?.test || '').includes(earlierValidator), `main test chain dropped ${earlierValidator}`);
 }
 
-console.log('v0.6.2 release closeout validation passed: 48 scenarios, release-candidate manifest, returning-player source, and Rite-timing parity.');
+console.log(`v0.6.2 release closeout validation passed: 48 scenarios, ${publishedState ? 'published' : 'release-candidate'} manifest, returning-player source, and Rite-timing parity.`);
