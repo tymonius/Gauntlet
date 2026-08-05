@@ -1,0 +1,85 @@
+name: Publish v0.6.2 release package
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "docs/Gauntlet_v0.6.2_*.md"
+      - "docs/Gauntlet_v0.6.2_Starter_Decks_Candidate.json"
+      - "v0.6.2/**"
+      - "releases/v0.6.2/**"
+      - "rules-assistant/**"
+      - "src/content/**"
+      - "scripts/build-v062-release.mjs"
+      - "scripts/validate-v062-published-release.mjs"
+      - "package.json"
+      - "index.html"
+      - ".github/workflows/publish-v062-release.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-v062-${{ github.head_ref || github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out release branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build synchronized v0.6.2 release
+        run: npm run release:v062:build
+
+      - name: Commit generated release outputs when changed
+        run: |
+          git add \
+            index.html \
+            v0.6.2/ \
+            releases/v0.6.2/ \
+            rules-assistant/widget.js \
+            rules-assistant/worker-entry.js \
+            rules-assistant/worker-v062.js \
+            rules-assistant/v062-published-corpus.js \
+            src/content/current.ts
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Materialize and synchronize Gauntlet v0.6.2 release"
+          git pull --rebase origin ${{ github.head_ref || github.ref_name }}
+          git push origin HEAD:${{ github.head_ref || github.ref_name }}
+
+      - name: Verify release outputs are reproducible
+        run: npm run release:v062:check
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Run complete repository validation
+        run: npm test
+
+      - name: Upload v0.6.2 source package
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-v062-release-source
+          path: |
+            releases/v0.6.2/
+            v0.6.2/release-manifest.json
+          if-no-files-found: error
