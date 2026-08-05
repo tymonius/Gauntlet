@@ -324,6 +324,14 @@
       analysisBrief: {
         purpose: "Review all Gauntlet playtest results and complete questionnaire responses, including standalone recollections.",
         ratingScale: "All questionnaire ratings use a 1–5 scale, with 5 most positive.",
+        recommendedTasks: [
+          "Summarize the strongest recurring positive and negative themes.",
+          "Compare factions and Leaders while explicitly accounting for sample size.",
+          "Identify rules, cards, phases, or terminology that repeatedly caused confusion.",
+          "Examine whether fun, pacing, meaningful decisions, and replay interest move together.",
+          "Distinguish production or component problems from game-design problems.",
+          "Propose prioritized follow-up questions or playtest targets without treating small samples as conclusive."
+        ],
         collectionModes: "live-tracked and retrospective records may contain a shared result; standalone-feedback records contain one respondent's remembered context and are explicitly labeled.",
         caveats: rawPayload.caveats || []
       },
