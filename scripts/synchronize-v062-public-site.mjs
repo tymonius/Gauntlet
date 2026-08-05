@@ -50,7 +50,7 @@ function diplomats(html) {
 function financiers(html) {
   return commonFactionPage(html)
     .replace(
-      'Place cards face up in Treasury to raise your Capital limit. Capital may exceed that limit temporarily, but excess is lost at the end of the turn.',
+      /(?:Begin with 2 Capital\.\s*)*Place cards face up in Treasury to raise your Capital limit\. Capital may exceed that limit temporarily, but excess is lost at the end of the turn\./,
       'Begin with 2 Capital. Place cards face up in Treasury to raise your Capital limit. Capital may exceed that limit temporarily, but excess is lost at the end of the turn.'
     )
     .replace(
