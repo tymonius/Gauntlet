@@ -1,0 +1,39 @@
+{
+  "version": "v0.6.2",
+  "candidateVersion": "v0.6.2-candidate",
+  "previousVersion": "v0.6.1",
+  "status": "release-candidate",
+  "published": false,
+  "releaseTracker": 470,
+  "closeoutTracker": 506,
+  "returningPlayerTracker": 503,
+  "propagationPullRequests": [493, 496, 500, 502, 505],
+  "scenarioCounts": {
+    "waveA": 63,
+    "waveB": 111,
+    "waveC": 66,
+    "waveD": 48,
+    "waveE": 80,
+    "total": 368
+  },
+  "publicDefaults": {
+    "rulesArbiter": "v0.6.1",
+    "website": "v0.6.1",
+    "browserTools": "v0.6.1",
+    "digital": "v0.6.1"
+  },
+  "unresolved": [
+    "Military alternate victory",
+    "Peace Treaty threshold",
+    "Leader Ability taxonomy beyond adopted wording",
+    "Unadopted balance experiments"
+  ],
+  "cutoverRequirements": [
+    "Final v0.6.1 to v0.6.2 source comparison is complete",
+    "Returning-player changes are reviewed against final sources",
+    "Publishable v0.6.2 package and generated artifacts are synchronized",
+    "All Wave A-E validators and repository tests pass",
+    "Public version defaults switch together",
+    "Published v0.6.1 release files remain unchanged"
+  ]
+}
