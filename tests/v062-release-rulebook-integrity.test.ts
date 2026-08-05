@@ -1,9 +1,12 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 
-const rulebook = () => readFileSync(
+const read = (path: string) => readFileSync(path, 'utf8');
+const rulebook = () => read(
   'releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md',
-  'utf8',
+);
+const returningGuide = () => read(
+  'releases/v0.6.2/Gauntlet_v0.6.2_Returning_Player_Changes.md',
 );
 
 describe('published v0.6.2 rulebook integrity', () => {
@@ -32,5 +35,12 @@ describe('published v0.6.2 rulebook integrity', () => {
     ]) {
       expect(text).toContain(marker);
     }
+  });
+
+  test('states the retained Peace Treaty threshold without presenting a later change as adopted', () => {
+    const text = returningGuide();
+    expect(text).toContain('The Peace Treaty still requires five different ratified Proposals in v0.6.2.');
+    expect(text).toContain('Any later threshold change remains unresolved.');
+    expect(text).not.toContain('The Peace Treaty threshold remains unresolved unless separately adopted before publication.');
   });
 });
