@@ -5,9 +5,9 @@
 ## Structured data
 
 - [ ] Effective data is derived from immutable v0.6.1 plus merged Wave A–C sources.
-- [ ] Pool totals are 50 Neutral and 13 for each faction, 129 overall.
+- [ ] Pool totals are 50 Neutral and 13 for each faction, 128 overall.
 - [ ] Invasion is Military; Landslide replaces it in Neutral.
-- [ ] All six other new cards have exact accepted values, modes, traits, restrictions, and text.
+- [ ] All six genuinely new titles have exact accepted values, modes, traits, restrictions, and text.
 - [ ] Every adopted inherited-card and Territory replacement is present.
 - [ ] All nine Proposal outcomes use explicit roles.
 - [ ] Basic/Advanced is absent as an active v0.6.2 data field.
@@ -26,12 +26,13 @@
 - [ ] No Basic/Advanced filter or restriction remains.
 - [ ] All twelve starters reproduce their exact card quantities and ordered Territories.
 - [ ] Validation covers count, value, allegiance, uniqueness, Territories, and Arena limit.
+- [ ] Non-Unique cards are not given an invented general copy ceiling.
 - [ ] Print/PDF and JSON export are usable.
 - [ ] The materialized canonical JSON can be downloaded.
 
 ## Generated reference
 
-- [ ] All 129 cards render with modes and notes.
+- [ ] All 128 cards render with modes and notes.
 - [ ] All 25 Territories render with revised text.
 - [ ] All nine Proposals render with Stake, requirement, Accepted, and Refused text.
 - [ ] Search, allegiance, and value filters operate correctly.
