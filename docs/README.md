@@ -32,6 +32,9 @@ When a derived PDF, printable sheet, Deckbuilder entry, or digital implementatio
 - [v0.6.2 First-Game and Tableside Candidate](Gauntlet_v0.6.2_First_Game_and_Tableside_Candidate.md) — normative Wave C teaching order, faction and opponent summaries, physical zones, bound-card handling, active-player marker text, pairings, and guided first battle.
 - [v0.6.2 Wave C Test Matrix](Gauntlet_v0.6.2_Wave_C_Test_Matrix.md) — 66 normative starter, onboarding, tableside, and faction-teaching scenarios.
 - [v0.6.2 Wave C Review Checklist](Gauntlet_v0.6.2_Wave_C_Review_Checklist.md) — review gate for starter legality, Leader identity, early access, teaching sequence, faction presentation, and release boundaries.
+- [v0.6.2 Wave D Test Matrix](Gauntlet_v0.6.2_Wave_D_Test_Matrix.md) — 48 normative structured-data, candidate-surface, starter-handoff, generated-reference, and release-integrity scenarios.
+- [v0.6.2 Wave D Review Checklist](Gauntlet_v0.6.2_Wave_D_Review_Checklist.md) — review gate for the effective 128-card data source, versioned Start and Deckbuilder surfaces, generated reference, and immutable v0.6.1 boundary.
+- [v0.6.2 Candidate Player Surfaces](../v0.6.2/) — versioned Start, Deckbuilder, canonical-data download, and generated reference built from immutable v0.6.1 plus the merged Wave A–C sources.
 - [v0.6.2 Implementation Ledger](Gauntlet_v0.6.2_Implementation_Ledger.md) — adopted post-playtest changes, unresolved release dependencies, ordered propagation waves, and validation gates for the next playtest revision.
 - [v0.6.1 Implementation Ledger](Gauntlet_v0.6.1_Implementation_Ledger.md) — approved first-playtest corrections and synchronization checklist.
 - [v0.6.1 Rulebook Layering Standard](Gauntlet_v0.6.1_Rulebook_Layering_Standard.md) — approved **How it works / Complete rules** structure for combining first-game teaching with technical reference.
