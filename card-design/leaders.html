@@ -83,6 +83,46 @@
       text-transform: uppercase;
     }
 
+    .faction-symbol-review {
+      width: min(54rem, calc(100% - 2rem));
+      margin: 0 auto 2rem;
+      padding: 1.25rem 1.5rem;
+      border: 1px solid var(--page-rule);
+      background: rgba(255, 255, 255, 0.48);
+    }
+
+    .faction-symbol-review h2 {
+      margin: 0 0 1rem;
+      font-family: var(--font-interface);
+      font-size: 0.78rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+    }
+
+    .faction-symbol-grid {
+      display: grid;
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+      gap: 0.85rem;
+    }
+
+    .faction-symbol-swatch {
+      display: grid;
+      gap: 0.45rem;
+      justify-items: center;
+      color: var(--component-accent-ink);
+      font-family: var(--font-interface);
+      font-size: 0.62rem;
+      font-weight: 750;
+      letter-spacing: 0.05em;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .faction-symbol-swatch .leader-faction-emblem {
+      width: 0.3in;
+      height: 0.3in;
+    }
+
     .leader-review-notes {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -117,6 +157,10 @@
     @media (max-width: 42rem) {
       .leader-card-sheet {
         grid-template-columns: 2.5in;
+      }
+
+      .faction-symbol-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
       .leader-review-notes {
@@ -156,20 +200,20 @@
       <div class="leader-review-copy screen-only">
         <p class="eyebrow">Card system · Leader face</p>
         <h1>Leader card prototypes</h1>
-        <p>The Leader face keeps the ordinary faction border, parchment, mounted portrait frame, and footer grammar while removing deckbuilding value, enlarging the portrait, and replacing Action/Battle hierarchy with named faction abilities.</p>
+        <p>The Leader face uses full-color portraits from <code>/images/</code>, a restrained faction tint over the parchment, dedicated faction symbols, the ordinary mounted portrait frame, and a corrected metadata footer.</p>
       </div>
 
       <div class="leader-card-sheet">
         <div class="leader-specimen">
           <p class="leader-specimen-label screen-only"><strong>General</strong><span>Movement and attack</span></p>
-          <article class="gauntlet-card military-card leader-card general-card" data-faction="military" data-art-max="1.86" data-art-min="1.34" data-title-min="10" aria-label="General Military card-front prototype">
+          <article class="gauntlet-card military-card faction-component-card leader-card general-card" data-faction="military" data-art-max="1.86" data-art-min="1.34" data-title-min="10" aria-label="General Military card-front prototype">
             <div class="card-interior">
               <header class="card-heading">
                 <h2 class="card-title">General</h2>
-                <div class="leader-faction-line"><span class="leader-faction-emblem" aria-hidden="true">⚔︎</span><span>Military</span></div>
+                <div class="leader-faction-line"><span class="leader-faction-emblem" aria-hidden="true"></span><span>Military</span></div>
               </header>
               <figure class="card-art has-image">
-                <img src="../images/sketches/general.png" alt="Portrait of the General" />
+                <img src="../images/general.png" alt="Portrait of the General" />
               </figure>
               <div class="card-rules">
                 <section class="leader-rule-section">
@@ -200,14 +244,14 @@
 
         <div class="leader-specimen">
           <p class="leader-specimen-label screen-only"><strong>Commandant</strong><span>Defense and control</span></p>
-          <article class="gauntlet-card military-card leader-card commandant-card" data-faction="military" data-art-max="1.86" data-art-min="1.34" data-title-min="10" aria-label="Commandant Military card-front prototype">
+          <article class="gauntlet-card military-card faction-component-card leader-card commandant-card" data-faction="military" data-art-max="1.86" data-art-min="1.34" data-title-min="10" aria-label="Commandant Military card-front prototype">
             <div class="card-interior">
               <header class="card-heading">
                 <h2 class="card-title">Commandant</h2>
-                <div class="leader-faction-line"><span class="leader-faction-emblem" aria-hidden="true">⚔︎</span><span>Military</span></div>
+                <div class="leader-faction-line"><span class="leader-faction-emblem" aria-hidden="true"></span><span>Military</span></div>
               </header>
               <figure class="card-art has-image">
-                <img src="../images/sketches/commandant.png" alt="Portrait of the Commandant" />
+                <img src="../images/commandant.png" alt="Portrait of the Commandant" />
               </figure>
               <div class="card-rules">
                 <section class="leader-rule-section">
@@ -238,11 +282,23 @@
       </div>
     </section>
 
+    <section class="faction-symbol-review screen-only" aria-label="Dedicated faction symbol set">
+      <h2>Dedicated faction symbols</h2>
+      <div class="faction-symbol-grid">
+        <div class="faction-symbol-swatch faction-component-card" data-faction="military"><span class="leader-faction-emblem" aria-hidden="true"></span><span>Military</span></div>
+        <div class="faction-symbol-swatch faction-component-card" data-faction="diplomats"><span class="leader-faction-emblem" aria-hidden="true"></span><span>Diplomats</span></div>
+        <div class="faction-symbol-swatch faction-component-card" data-faction="financiers"><span class="leader-faction-emblem" aria-hidden="true"></span><span>Financiers</span></div>
+        <div class="faction-symbol-swatch faction-component-card" data-faction="intelligence"><span class="leader-faction-emblem" aria-hidden="true"></span><span>Intelligence</span></div>
+        <div class="faction-symbol-swatch faction-component-card" data-faction="mystics"><span class="leader-faction-emblem" aria-hidden="true"></span><span>Mystics</span></div>
+        <div class="faction-symbol-swatch faction-component-card" data-faction="inquisition"><span class="leader-faction-emblem" aria-hidden="true"></span><span>Inquisition</span></div>
+      </div>
+    </section>
+
     <section class="leader-review-notes screen-only" aria-label="Leader card review criteria">
       <article><h2>Hierarchy</h2><p>Name first, faction identity second, then portrait and named abilities. No value medallion or generic ability heading.</p></article>
-      <article><h2>Portrait</h2><p>The shared mounted-print frame remains, but the portrait starts substantially larger and yields space only when rules require it.</p></article>
-      <article><h2>Rules</h2><p>Ability names and resource costs form a compact left rail. Adobe Caslon carries the operational text.</p></article>
-      <article><h2>Emblem</h2><p>The crossed-swords glyph is a temporary stand-in occupying the approved header position until the final vector emblem is available.</p></article>
+      <article><h2>Portrait</h2><p>Full-color production portraits from <code>/images/</code> use the shared mounted-print frame and retain top-biased crops.</p></article>
+      <article><h2>Color</h2><p>The parchment remains visible beneath a restrained faction wash. The same reusable treatment is available to faction-specific supplemental cards.</p></article>
+      <article><h2>Metadata</h2><p>The footer row has additional height and leading so all metadata capitals render completely rather than clipping at the top.</p></article>
     </section>
   </main>
 </body>
