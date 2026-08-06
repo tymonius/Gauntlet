@@ -11,11 +11,21 @@ const root = process.cwd();
 const base = process.env.GAUNTLET_PRINT_BASE_URL || 'http://127.0.0.1:8000';
 const releaseDir = path.join(root, 'releases/v0.6.2');
 const previewDir = process.env.GAUNTLET_PRINT_PREVIEW_DIR || '/tmp/gauntlet-v062-print-previews';
-const heroPlateRelativePaths = [
-  'images/sketches/hero-plates/financiers.png',
-  'images/sketches/hero-plates/military.png',
-  'images/sketches/hero-plates/institutions.png',
+const heroPlateAssignments = [
+  {
+    asset: 'images/sketches/hero-plates/alchemist-executive-ambassador.png',
+    leaders: ['Alchemist', 'Executive', 'Ambassador'],
+  },
+  {
+    asset: 'images/sketches/hero-plates/ranger-commandant-senator.png',
+    leaders: ['Ranger', 'Commandant', 'Senator'],
+  },
+  {
+    asset: 'images/sketches/hero-plates/witch-hunter-banker-spymaster.png',
+    leaders: ['Witch Hunter', 'Banker', 'Spymaster'],
+  },
 ];
+const heroPlateRelativePaths = heroPlateAssignments.map(({ asset }) => asset);
 const heroPlatePaths = heroPlateRelativePaths.map((relativePath) => path.join(root, relativePath));
 fs.mkdirSync(releaseDir, { recursive: true });
 fs.mkdirSync(previewDir, { recursive: true });
@@ -141,7 +151,7 @@ try {
 async function imposeBooklet(readerPath, bookletPath) {
   for (const [index, heroPlatePath] of heroPlatePaths.entries()) {
     if (!fs.existsSync(heroPlatePath)) {
-      throw new Error(`Missing booklet hero-plate asset ${index + 1}: ${heroPlateRelativePaths[index]}`);
+      throw new Error(`Missing booklet Leader-plate asset ${index + 1}: ${heroPlateRelativePaths[index]}`);
     }
   }
 
@@ -149,8 +159,8 @@ async function imposeBooklet(readerPath, bookletPath) {
   const sourceCount = source.getPageCount();
   const total = Math.ceil(sourceCount / 4) * 4;
   const paddingCount = total - sourceCount;
-  if (paddingCount !== heroPlateRelativePaths.length) {
-    throw new Error(`Rulebook requires ${paddingCount} padding pages, but ${heroPlateRelativePaths.length} approved hero plates are configured.`);
+  if (paddingCount !== heroPlateAssignments.length) {
+    throw new Error(`Rulebook requires ${paddingCount} padding pages, but ${heroPlateAssignments.length} approved Leader plates are configured.`);
   }
 
   const booklet = await PDFDocument.create();
@@ -168,7 +178,7 @@ async function imposeBooklet(readerPath, bookletPath) {
     const paddingIndex = sourceIndex - sourceCount;
     const heroPlate = heroPlates[paddingIndex];
     if (!heroPlate) {
-      throw new Error(`No approved hero plate is assigned to logical source page ${sourceIndex + 1}.`);
+      throw new Error(`No approved Leader plate is assigned to logical source page ${sourceIndex + 1}.`);
     }
     destination.drawImage(heroPlate.image, {
       x: x + ((396 - heroPlate.width) / 2),
@@ -204,12 +214,13 @@ async function imposeBooklet(readerPath, bookletPath) {
   return {
     source_pages: sourceCount,
     padded_pages: total,
-    hero_plate_count: paddingCount,
-    hero_assets: [...heroPlateRelativePaths],
-    hero_source_pages: heroSourcePages,
-    hero_plates: heroPlateRelativePaths.map((asset, index) => ({
+    leader_plate_count: paddingCount,
+    leader_assets: [...heroPlateRelativePaths],
+    leader_source_pages: heroSourcePages,
+    leader_plates: heroPlateAssignments.map(({ asset, leaders }, index) => ({
       source_page: heroSourcePages[index],
       asset,
+      leaders: [...leaders],
     })),
   };
 }
@@ -251,7 +262,7 @@ const manifest = {
   outputs: results.map(({ key, file, pages, sizes, sha256 }) => ({ key, file, pages, sizes, sha256 })),
   printing: {
     reader_rulebook: 'Half-Letter portrait, actual size',
-    imposed_booklet: 'Letter landscape, duplex, flip on short edge, actual size; three distinct hero-art plates fill unavoidable padding pages',
+    imposed_booklet: 'Letter landscape, duplex, flip on short edge, actual size; three distinct faction-Leader plates fill unavoidable padding pages',
     tableside_materials: 'Letter; respect portrait or landscape orientation shown in each file',
   },
 };
