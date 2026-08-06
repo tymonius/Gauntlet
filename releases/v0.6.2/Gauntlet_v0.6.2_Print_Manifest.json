@@ -1,6 +1,6 @@
 {
   "version": "v0.6.2",
-  "generated_at": "2026-08-06T07:02:13.737Z",
+  "generated_at": "2026-08-06T07:50:45.284Z",
   "source_package": "releases/v0.6.2/",
   "print_source": "v0.6.2/print/",
   "booklet_padding": {
@@ -169,7 +169,7 @@
           "height": 612
         }
       ],
-      "sha256": "f17a60bd1cd8f7dee581e63fb12eb827c01d9916cc281be9d30f5bddc23412ee"
+      "sha256": "04a1fe6f19a2228c907ac48e60630a58bb8500e9d07c97351d39664f398bef60"
     },
     {
       "key": "reference",
@@ -193,7 +193,7 @@
           "height": 792
         }
       ],
-      "sha256": "42e479c2789a25b365a509fa556cb3ee8308a7d1c867b3caafaec8de036499ae"
+      "sha256": "7523e455baa24e5a9cbeefeb139853a38da599914d9e0e4e23024f48e8d5e2ed"
     },
     {
       "key": "first_game",
@@ -237,7 +237,7 @@
           "height": 792
         }
       ],
-      "sha256": "df5d27c4116819bcd09b4ec6af3de61eb989f6a23bfb4f939ec01690a1ade6d6"
+      "sha256": "5af35be047037dc3e7680f0b4fcfb9d5d8d258a0d3b0539e1960653d9643c3b1"
     },
     {
       "key": "faction_guide",
@@ -293,7 +293,7 @@
           "height": 792
         }
       ],
-      "sha256": "ffa320caaf0cfc1687c60aa038b738dd399d3bfe81dda4aaaa9fa5d59928fec7"
+      "sha256": "9d8668d8ed9be23fdbe3f8aedf7c8812da397d674b8903091edae87cd579571a"
     },
     {
       "key": "returning_changes",
@@ -329,7 +329,7 @@
           "height": 792
         }
       ],
-      "sha256": "d6386454358a5623b685fd74d4a3d2f3c50c4981d0e7b2a776db80bd93521694"
+      "sha256": "958ad0475599e3fbd47f37abe65a5fe8570421cdd5522f6c4004076a9f3c3d48"
     },
     {
       "key": "player_mat",
@@ -341,7 +341,7 @@
           "height": 612
         }
       ],
-      "sha256": "5a779f44a71e022ba392baeba0175b5a9f44c96c978582d2970e9ccffa278b23"
+      "sha256": "c075d0015971be505ef9eef9e1791e38132f0c4b1b32d675173b9a24b3ecd131"
     },
     {
       "key": "playtest_sheet",
@@ -357,7 +357,7 @@
           "height": 792
         }
       ],
-      "sha256": "fc5df65f9ec0080881fa94ee4944ff0eea5c22312f6ace7bdbb0fdbfd484b523"
+      "sha256": "281e6bce2006cc694b8fe90dbfee6f46e93a492ae2cd7c93c125de04936cb77c"
     },
     {
       "key": "faction_cards",
@@ -377,7 +377,7 @@
           "height": 612
         }
       ],
-      "sha256": "01bea640fbaedf2917226298a3ee7572f301156755376061e59446419c1be6b5"
+      "sha256": "e11f20c5795705a985d9ac43dd800c2fd078d0d895dbf75af42c3c2aaa6997a3"
     },
     {
       "key": "active_marker",
@@ -389,7 +389,7 @@
           "height": 792
         }
       ],
-      "sha256": "51b5062eae884cbe842a5e8b30d57625cd8515c84ef249c8d44da9fefbd733f3"
+      "sha256": "02d337cdc62f72315cb45cf6dd6d6a41543e359a16c288c348f5ef9683892755"
     },
     {
       "key": "rulebook_booklet",
@@ -477,7 +477,7 @@
           "height": 612
         }
       ],
-      "sha256": "8aa627359112e9838b5f2913cceb392552d2cedacb81216b50803475b0e75ad5"
+      "sha256": "8d18c3c8d41c9ad199078beeafec05dbf77713cc0d8752a1e530d798bff3ce6d"
     },
     {
       "key": "tableside_pack",
@@ -593,7 +593,7 @@
           "height": 792
         }
       ],
-      "sha256": "23e21a5c5d7970cb4a87133bf20b6e09db903449401a250f78be6ae1556545ab"
+      "sha256": "481172e459f2544baaf74d833b3b4961ddb346b75a6d527f8d0275b9e19312df"
     }
   ],
   "printing": {
