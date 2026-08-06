@@ -1,0 +1,113 @@
+name: Publish v0.6.2 printed materials
+
+on:
+  push:
+    branches: [agent/v062-printed-materials]
+    paths:
+      - ".github/workflows/publish-v062-print-package.yml"
+      - "v0.6.2/print/**"
+      - "releases/v0.6.2/*.md"
+      - "scripts/build-v062-print-html.mjs"
+      - "scripts/render-v062-print-package.mjs"
+      - "scripts/synchronize-v062-print-release.mjs"
+      - "scripts/validate-v062-print-package.mjs"
+      - "package.json"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/publish-v062-print-package.yml"
+      - "v0.6.2/print/**"
+      - "releases/v0.6.2/**"
+      - "playtest/index.html"
+      - "playtest/player-mat/index.html"
+      - "scripts/build-v062-print-html.mjs"
+      - "scripts/render-v062-print-package.mjs"
+      - "scripts/synchronize-v062-print-release.mjs"
+      - "scripts/validate-v062-print-package.mjs"
+      - "package.json"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publish-v062-print-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render-and-validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies and PDF tools
+        run: |
+          npm install
+          npm install --no-save pdf-lib
+          npx playwright install --with-deps chromium
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+
+      - name: Serve repository
+        run: |
+          python -m http.server 8000 >/tmp/v062-print-server.log 2>&1 &
+          echo $! > /tmp/v062-print-server.pid
+
+      - name: Build and render printed materials
+        run: npm run print:v062:build
+
+      - name: Verify reproducibility
+        run: npm run print:v062:check
+
+      - name: Rasterize PDFs for visual review
+        run: |
+          mkdir -p /tmp/gauntlet-v062-pdf-renders
+          for file in releases/v0.6.2/Gauntlet_v0.6.2_*.pdf; do
+            stem=$(basename "$file" .pdf)
+            mkdir -p "/tmp/gauntlet-v062-pdf-renders/$stem"
+            pdftoppm -png -r 110 "$file" "/tmp/gauntlet-v062-pdf-renders/$stem/page"
+          done
+
+      - name: Upload print review package
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-v062-printed-materials
+          path: |
+            /tmp/gauntlet-v062-print-previews/**
+            /tmp/gauntlet-v062-pdf-renders/**
+            releases/v0.6.2/Gauntlet_v0.6.2_*.pdf
+            releases/v0.6.2/Gauntlet_v0.6.2_Print_Manifest.json
+          if-no-files-found: error
+
+      - name: Commit generated print package
+        if: github.event_name == 'push' && github.ref_name == 'agent/v062-printed-materials'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add \
+            README.md \
+            package.json \
+            playtest/index.html \
+            playtest/player-mat/index.html \
+            v0.6.2/index.html \
+            v0.6.2/release-manifest.json \
+            v0.6.2/print \
+            releases/v0.6.2/README.md \
+            releases/v0.6.2/Gauntlet_v0.6.2_Manifest.json \
+            releases/v0.6.2/Gauntlet_v0.6.2_*.pdf \
+            releases/v0.6.2/Gauntlet_v0.6.2_Print_Manifest.json
+          if git diff --cached --quiet; then
+            echo "v0.6.2 printed materials are already current."
+            exit 0
+          fi
+          git commit -m "Materialize v0.6.2 printed materials [skip ci]"
+          git push origin HEAD:${GITHUB_REF_NAME}
