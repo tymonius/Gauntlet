@@ -6,6 +6,8 @@ import childProcess from 'node:child_process';
 const root = process.cwd();
 const failures = [];
 const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'utf8');
+const heroPlateRelativePath = 'images/sketches/hero sketch.png';
+const heroPlatePath = path.join(root, heroPlateRelativePath);
 
 const activeHtml = [
   'v0.6.2/print/index.html',
@@ -58,6 +60,14 @@ for (const [relativePath, tokens] of Object.entries(requiredRules)) {
   for (const token of tokens) if (!content.includes(token)) failures.push(`${relativePath} is missing required print token: ${token}`);
 }
 
+if (!fs.existsSync(heroPlatePath)) failures.push(`Missing booklet hero-plate asset: ${heroPlateRelativePath}`);
+else {
+  const heroBytes = fs.readFileSync(heroPlatePath);
+  if (heroBytes.length < 1000) failures.push(`Booklet hero-plate asset is unexpectedly small (${heroBytes.length} bytes).`);
+  const pngSignature = heroBytes.subarray(0, 8).toString('hex');
+  if (pngSignature !== '89504e470d0a1a0a') failures.push(`${heroPlateRelativePath} is not a valid PNG.`);
+}
+
 const pdfFiles = [
   'Gauntlet_v0.6.2_Rulebook.pdf',
   'Gauntlet_v0.6.2_Rulebook_Booklet.pdf',
@@ -94,8 +104,24 @@ else {
   const readerPages = byKey.get('rulebook')?.pages;
   const bookletPages = byKey.get('rulebook_booklet')?.pages;
   if (!Number.isInteger(readerPages) || readerPages < 20) failures.push(`Rulebook page count is invalid: ${readerPages}.`);
-  const expectedBooklet = Number.isInteger(readerPages) ? Math.ceil(readerPages / 4) * 2 : null;
+  const paddedPages = Number.isInteger(readerPages) ? Math.ceil(readerPages / 4) * 4 : null;
+  const expectedBooklet = Number.isInteger(paddedPages) ? paddedPages / 2 : null;
+  const expectedHeroPlates = Number.isInteger(readerPages) ? paddedPages - readerPages : null;
   if (bookletPages !== expectedBooklet) failures.push(`Booklet page count ${bookletPages} does not match imposed reader count ${expectedBooklet}.`);
+
+  const padding = manifest.booklet_padding;
+  if (!padding) failures.push('Print manifest omits booklet_padding metadata.');
+  else {
+    if (padding.source_pages !== readerPages) failures.push(`Booklet padding source_pages ${padding.source_pages} does not match reader pages ${readerPages}.`);
+    if (padding.padded_pages !== paddedPages) failures.push(`Booklet padding padded_pages ${padding.padded_pages} does not match ${paddedPages}.`);
+    if (padding.hero_plate_count !== expectedHeroPlates) failures.push(`Booklet padding expected ${expectedHeroPlates} hero plates; found ${padding.hero_plate_count}.`);
+    if (padding.hero_asset !== heroPlateRelativePath) failures.push(`Booklet padding hero asset is ${padding.hero_asset}; expected ${heroPlateRelativePath}.`);
+    const expectedSourcePages = Array.from({ length: expectedHeroPlates || 0 }, (_, index) => readerPages + index + 1);
+    if (JSON.stringify(padding.hero_source_pages) !== JSON.stringify(expectedSourcePages)) {
+      failures.push(`Booklet padding source-page metadata is invalid: ${JSON.stringify(padding.hero_source_pages)}.`);
+    }
+  }
+
   for (const file of pdfFiles) if (!(manifest.outputs || []).some((item) => item.file === file)) failures.push(`Print manifest omits ${file}.`);
 }
 
@@ -131,4 +157,4 @@ if (failures.length) {
   console.error(failures.join('\n'));
   process.exit(1);
 }
-console.log(`v0.6.2 printed-materials validation passed: ${pdfFiles.length} PDFs, current browser sources, and immutable v0.6.1 boundary.`);
+console.log(`v0.6.2 printed-materials validation passed: ${pdfFiles.length} PDFs, hero-art booklet padding, current browser sources, and immutable v0.6.1 boundary.`);
