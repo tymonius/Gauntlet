@@ -21,10 +21,10 @@ These scenarios govern the v0.6.3 setup and Run the Gauntlet revisions. Later st
 **Given:** A player begins on the Territory at their own end.  
 **Then:** The Territory remains controlled by that player because it faces them.
 
-### V063-S03 — Starting Territory is not occupied
+### V063-S03 — Setup placement does not alter control
 
-**Given:** A player begins on a Territory they control.  
-**Then:** The player is not occupying it. Occupation remains limited to a Player Token on an opponent-controlled Territory.
+**Given:** A Player Token is placed on its starting Territory during setup.  
+**Then:** The placement does not rotate the Territory or otherwise change who controls it.
 
 ### V063-S04 — Setup placement is not movement
 
@@ -251,9 +251,9 @@ These scenarios govern the v0.6.3 setup and Run the Gauntlet revisions. Later st
 
 No active v0.6.3 player-facing or digital setup source may instruct players to place tokens immediately before their first Territories.
 
-### V063-S44 — No controlled-Territory Occupation
+### V063-S44 — No setup-entry trigger
 
-No active v0.6.3 source may describe a player as occupying a Territory that player controls.
+No active v0.6.3 source may treat placement on the starting Territory during setup as entering that Territory or trigger an enter effect from that placement.
 
 ### V063-S45 — No random three-card opening
 
@@ -285,7 +285,7 @@ The initial v0.6.3 source-layer implementation must not modify files under `rele
 
 The source layer passes when all 50 scenarios are represented and later implementations can demonstrate:
 
-- correct starting position and terminology;
+- correct starting position and first-turn Territory behavior;
 - first-turn Territory applicability without false enter triggers;
 - draw four, discard one, keep three before initiative;
 - final-Territory capture and Last Stand victory as equal Run the Gauntlet routes;
