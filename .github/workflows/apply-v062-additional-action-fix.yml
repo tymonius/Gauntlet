@@ -4,16 +4,21 @@ on:
   push:
     branches:
       - agent/fix-v062-additional-action-effects
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: write
 
 jobs:
   apply-and-validate:
+    if: github.event_name == 'push' || github.head_ref == 'agent/fix-v062-additional-action-effects'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: agent/fix-v062-additional-action-effects
           fetch-depth: 0
 
       - uses: actions/setup-node@v4
@@ -34,7 +39,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           git commit -m "Clarify additional Action card effects"
-          git push
+          git push origin HEAD:agent/fix-v062-additional-action-effects
 
       - run: npm run typecheck
       - run: npm test
