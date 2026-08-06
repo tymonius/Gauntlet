@@ -26,6 +26,17 @@ const outputs = [
   { key: 'active_marker', url: '/v0.6.2/print/active-player-marker.html', file: 'Gauntlet_v0.6.2_Active_Player_Marker.pdf', exactPages: 1 },
 ];
 
+// Governing and migration documents may quote superseded v0.6.1 phrases to
+// explain a change. Operational aids must contain only current terminology.
+const strictTerminologyKeys = new Set([
+  'reference',
+  'first_game',
+  'player_mat',
+  'playtest_sheet',
+  'faction_cards',
+  'active_marker',
+]);
+
 function sha256(filePath) {
   return crypto.createHash('sha256').update(fs.readFileSync(filePath)).digest('hex');
 }
@@ -76,7 +87,9 @@ try {
       }
     }
     if (!geometry.versionText) throw new Error(`${output.url} does not identify v0.6.2.`);
-    if (geometry.staleActionOpportunity || geometry.staleOpeningEffects) throw new Error(`${output.url} contains retired player-facing terminology.`);
+    if (strictTerminologyKeys.has(output.key) && (geometry.staleActionOpportunity || geometry.staleOpeningEffects)) {
+      throw new Error(`${output.url} contains retired terminology in a current play instruction.`);
+    }
 
     const filePath = path.join(releaseDir, output.file);
     await page.pdf({ path: filePath, printBackground: true, preferCSSPageSize: true, displayHeaderFooter: false });
