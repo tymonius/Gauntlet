@@ -11,6 +11,8 @@ const root = process.cwd();
 const base = process.env.GAUNTLET_PRINT_BASE_URL || 'http://127.0.0.1:8000';
 const releaseDir = path.join(root, 'releases/v0.6.2');
 const previewDir = process.env.GAUNTLET_PRINT_PREVIEW_DIR || '/tmp/gauntlet-v062-print-previews';
+const heroPlateRelativePath = 'images/sketches/hero sketch.png';
+const heroPlatePath = path.join(root, heroPlateRelativePath);
 fs.mkdirSync(releaseDir, { recursive: true });
 fs.mkdirSync(previewDir, { recursive: true });
 
@@ -113,13 +115,34 @@ try {
 }
 
 async function imposeBooklet(readerPath, bookletPath) {
+  if (!fs.existsSync(heroPlatePath)) {
+    throw new Error(`Missing booklet hero-plate asset: ${heroPlateRelativePath}`);
+  }
+
   const source = await PDFDocument.load(fs.readFileSync(readerPath));
   const sourceCount = source.getPageCount();
   const total = Math.ceil(sourceCount / 4) * 4;
   const booklet = await PDFDocument.create();
+  const heroPlate = await booklet.embedPng(fs.readFileSync(heroPlatePath));
+  const heroScale = Math.min(276 / heroPlate.width, 340 / heroPlate.height);
+  const heroWidth = heroPlate.width * heroScale;
+  const heroHeight = heroPlate.height * heroScale;
+
+  const drawHeroPlate = (destination, x) => {
+    destination.drawImage(heroPlate, {
+      x: x + ((396 - heroWidth) / 2),
+      y: (612 - heroHeight) / 2,
+      width: heroWidth,
+      height: heroHeight,
+      opacity: 0.92,
+    });
+  };
 
   const drawSourcePage = async (destination, sourceIndex, x) => {
-    if (sourceIndex < 0 || sourceIndex >= sourceCount) return;
+    if (sourceIndex < 0 || sourceIndex >= sourceCount) {
+      drawHeroPlate(destination, x);
+      return;
+    }
     const embedded = await booklet.embedPage(source.getPage(sourceIndex));
     destination.drawPage(embedded, { x, y: 0, width: 396, height: 612 });
   };
@@ -135,11 +158,18 @@ async function imposeBooklet(readerPath, bookletPath) {
     await drawPair(1 + (sheet * 2), total - 2 - (sheet * 2));
   }
   fs.writeFileSync(bookletPath, await booklet.save());
+  return {
+    source_pages: sourceCount,
+    padded_pages: total,
+    hero_plate_count: total - sourceCount,
+    hero_asset: heroPlateRelativePath,
+    hero_source_pages: Array.from({ length: total - sourceCount }, (_, index) => sourceCount + index + 1),
+  };
 }
 
 const reader = results.find((item) => item.key === 'rulebook');
 const bookletPath = path.join(releaseDir, 'Gauntlet_v0.6.2_Rulebook_Booklet.pdf');
-await imposeBooklet(reader.path, bookletPath);
+const bookletPadding = await imposeBooklet(reader.path, bookletPath);
 const bookletInfo = await inspectPdf(bookletPath);
 results.push({
   key: 'rulebook_booklet',
@@ -170,10 +200,11 @@ const manifest = {
   generated_at: new Date().toISOString(),
   source_package: 'releases/v0.6.2/',
   print_source: 'v0.6.2/print/',
+  booklet_padding: bookletPadding,
   outputs: results.map(({ key, file, pages, sizes, sha256 }) => ({ key, file, pages, sizes, sha256 })),
   printing: {
     reader_rulebook: 'Half-Letter portrait, actual size',
-    imposed_booklet: 'Letter landscape, duplex, flip on short edge, actual size',
+    imposed_booklet: 'Letter landscape, duplex, flip on short edge, actual size; hero-art plates fill unavoidable padding pages',
     tableside_materials: 'Letter; respect portrait or landscape orientation shown in each file',
   },
 };
