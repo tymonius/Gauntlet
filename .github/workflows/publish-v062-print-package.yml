@@ -9,6 +9,7 @@ on:
       - "v0.6.2/print/**"
       - "releases/v0.6.2/*.md"
       - "scripts/build-v062-print-html.mjs"
+      - "scripts/commit-generated-files.mjs"
       - "scripts/render-v062-print-package.mjs"
       - "scripts/synchronize-v062-print-release.mjs"
       - "scripts/validate-v062-print-package.mjs"
@@ -23,6 +24,7 @@ on:
       - "playtest/index.html"
       - "playtest/player-mat/index.html"
       - "scripts/build-v062-print-html.mjs"
+      - "scripts/commit-generated-files.mjs"
       - "scripts/render-v062-print-package.mjs"
       - "scripts/synchronize-v062-print-release.mjs"
       - "scripts/validate-v062-print-package.mjs"
@@ -113,4 +115,6 @@ jobs:
             exit 0
           fi
           git commit -m "Materialize v0.6.2 printed materials [skip ci]"
-          git push origin HEAD:${GITHUB_REF_NAME}
+          git fetch origin "${GITHUB_REF_NAME}"
+          git rebase "origin/${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"
