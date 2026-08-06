@@ -4,821 +4,530 @@
 **Base rules:** [Gauntlet v0.6.2](../../releases/v0.6.2/README.md)  
 **Format:** Four-player free-for-all  
 **Target release:** Provisionally v0.7; v0.8 if the Complete Illustrated Edition publishes first  
-**Rules authority:** v0.6.2 remains authoritative except during expressly identified Arena tests  
 **Tracking issue:** [#523 — Design and prototype Gauntlet: Arena](https://github.com/tymonius/Gauntlet/issues/523)  
 **Last updated:** August 6, 2026
 
----
+Gauntlet: Arena inherits v0.6.2 except where this record expressly replaces or supplements it. This document governs only identified Arena prototypes and does not alter canonical two-player play.
 
-## 1. Purpose
+## Decision states
 
-Gauntlet: Arena is a proposed four-player free-for-all mode built from the stable two-player structure of Gauntlet v0.6.2.
-
-Arena should preserve the identity of Gauntlet:
-
-- constructed Decks and faction asymmetry;
-- hidden Gambit, Reserve, and Tactic commitments;
-- movement through Territories;
-- battle, occupation, Counterattack, and delayed Capture;
-- visible territorial progress;
-- alternate faction victories that remain interactive and disruptable; and
-- the danger of overextending beyond support.
-
-Arena adds a larger battlefield, multiple opponents, two independently positioned forces per player, directional retreat, encirclement, and player elimination.
-
-Arena is not intended to replace standard two-player Gauntlet. It is a separate format using the same cards and core systems wherever practical.
-
-## 2. Inheritance and document authority
-
-Gauntlet: Arena inherits all shared rules, terminology, playable-card text, Territory text, faction rules, Leader rules, and component rules from v0.6.2 except where this document expressly replaces or supplements them.
-
-This document is the single active source of truth for the early Arena prototype. It is not a published rulebook and does not override any canonical release source outside an expressly identified Arena test.
-
-Development states used in this record:
-
-- **Prototype rule** — part of the current model and intended for the next Arena test.
+- **Prototype rule** — part of the current model and intended for the next test.
 - **Open question** — unresolved and requiring design work or testing.
-- **Deferred** — deliberately excluded from the current prototype.
-
-No rule should be treated as adopted merely because it appears in this record. Arena rules become canonical only through a later approved release process.
+- **Deferred** — outside the current prototype.
 
 ---
 
-## 3. Design goals
+## 1. Design goals
 
-### 3.1 Preserve one player-level engine
+Arena should:
 
-Each player should still operate one Gauntlet Deck and one faction engine. Two Force tokens represent two battlefield positions, not two separate turns, Hands, Decks, or economies.
-
-### 3.2 Make defense physical
-
-A player should defend their own arm by positioning a force there, not through an abstract universal garrison bonus. Leaving home undefended should create a real opportunity for another player.
-
-### 3.3 Reward maneuver without creating routine multi-party battles
-
-Arena should permit flanking, rear attacks, relief attempts, pincers, encirclement, divided offensives, and opportunistic breakthroughs. Battles should nevertheless remain between two players unless an effect expressly says otherwise.
-
-### 3.4 Preserve delayed Capture
-
-Winning a battle and occupying a Territory should not normally equal immediate control. The existing occupation, Counterattack, and Capture rhythm should remain central.
-
-### 3.5 Keep elimination legible and earned
-
-A player should be eliminated by losing their Home Territory through the normal Capture structure or by losing both forces. Elimination should arise from visible battlefield failure rather than arbitrary victory points.
-
-### 3.6 Avoid excessive multiplayer exception text
-
-Arena should define a small set of general translation rules for movement, opponents, durations, Fronts, and battles. Individual cards should receive special wording only where the general rules cannot resolve them cleanly.
+- preserve one Deck, Hand, faction engine, Action economy, Front, and Capture step per player;
+- make defense depend on physical force placement;
+- create flanking, rear attacks, encirclement, and divided offensives;
+- preserve one-on-one battles and delayed Capture;
+- punish exposed outermost Territories without using abstract victory points; and
+- use broad multiplayer translation rules before card-specific exceptions.
 
 ---
 
-## 4. Current prototype summary
+## 2. Prototype summary
 
 **Prototype rule**
 
-The current model is:
-
-- four players arranged around a cross-shaped battlefield;
-- three player-supplied Territories in each arm;
-- one central Arena Position;
-- two Force tokens per player;
-- two movement points per player during Movement;
-- one shared Deck, Hand, Asset Bank, faction engine, Front, and Capture allowance per player;
-- one force per ordinary Position;
-- one-on-one battles only;
-- directional retreat away from the attacker;
-- immediate Breakout battles when retreat enters an enemy-occupied Position;
-- permanent removal of a force that loses a Breakout;
-- immediate player elimination when an opponent captures that player's Home Territory;
-- player elimination when both of that player's forces have been removed; and
-- victory for the last remaining player.
-
-Negotiation and temporary cooperation are permitted as table talk. There are no formal alliances, shared-control rules, shared victories, or teammate permissions in the current model.
+- Four players play on a cross-shaped battlefield.
+- Each player contributes three Territories to one arm.
+- The four arms meet at one shared neutral Arena tile.
+- Each player controls an **Advance Force** and a **Rear Guard**.
+- Both forces begin on that player's outermost Territory.
+- Each player receives 2 movement points during Movement and divides them between the two forces as desired.
+- Both forces share all player-level cards, resources, limits, faction progress, Territory control, and Capture.
+- Battles remain one-on-one.
+- A defeated defender retreats directly away from the attacker.
+- Retreat into an enemy force begins an immediate Breakout battle.
+- A force that loses its Breakout is removed from the game.
+- Capturing an opponent's outermost Territory eliminates that player.
+- Losing both forces also eliminates a player.
+- The last remaining player wins.
+- Negotiation is allowed, but alliances are nonbinding and there is only one winner.
 
 ---
 
-## 5. Battlefield
+## 3. Battlefield and setup
 
-### 5.1 Layout
+### 3.1 Layout
 
 **Prototype rule**
 
-Arena uses thirteen Territory Positions:
+Arena uses thirteen board Positions:
 
-- three Territories in each of four player arms; and
-- one central Arena connecting all four arms.
+- three Territories in each of four arms; and
+- one central Arena tile.
 
 Each arm contains, from the center outward:
 
-1. an **Inner Territory** adjacent to the central Arena;
-2. a **Middle Territory**; and
-3. a **Home Territory** at the outer end.
+1. **inner Territory**;
+2. **middle Territory**;
+3. **outermost Territory**.
 
 ```text
-                              North Home
-                                  |
-                         [Home][Middle][Inner]
-                                  |
-West Home — [Home][Middle][Inner]—[ARENA]—[Inner][Middle][Home] — East Home
-                                  |
-                         [Inner][Middle][Home]
-                                  |
-                              South Home
+                           [Outermost][Middle][Inner]
+                                      |
+[Outermost][Middle][Inner] — [SELECTED ARENA] — [Inner][Middle][Outermost]
+                                      |
+                           [Inner][Middle][Outermost]
 ```
 
-The off-board space beyond each Home Territory is that player's **Home Refuge**.
+There is no off-board starting Position. The battlefield ends at each outermost Territory.
 
-### 5.2 Territory contribution and ordering
-
-**Open question**
-
-The working assumption is that each player contributes three different legal Territories and orders their own arm secretly before all arms are revealed. This needs testing for setup time, information load, and first-player advantage.
-
-Questions:
-
-- Must one of the twelve contributed Territories be an Arena, or is the center always supplied separately?
-- Are normal Arena Territories legal in the arms?
-- Should Territory ordering be simultaneous and secret?
-- Does the center use one fixed Arena, a randomly selected Arena, or a jointly selected Arena?
-
-### 5.3 Central Arena status
-
-**Open question**
-
-The center must connect all four arms, but its control status remains unresolved.
-
-Current candidate:
-
-- the center is a neutral Arena Junction;
-- its printed Arena battle rule applies;
-- it cannot be captured or controlled;
-- it has no Deed;
-- it does not count toward Territory totals or limits; and
-- it cannot initially receive Overlays.
-
-This candidate reduces central snowballing and avoids making one player's Front depend on owning the only junction. It also creates exceptions to normal Territory behavior and must therefore be tested against simplicity and card compatibility.
-
-### 5.4 Position capacity
+### 3.2 Territory construction
 
 **Prototype rule**
 
-An ordinary board Position can contain only one Force token.
+Each player contributes three different legal Territories and orders them to form their arm.
 
-Both forces belonging to the Home player may occupy that player's off-board Home Refuge. Opposing forces cannot enter another player's Home Refuge.
+**Open questions**
+
+- Are Territory orders chosen simultaneously and secretly?
+- Can standard Arena Territory cards appear within an arm?
+- How is first player determined?
+
+### 3.3 Arena selection
+
+**Prototype rule**
+
+Before play begins, the players choose one Arena tile from the shared Arena set and place it in the center.
+
+Each Arena tile corresponds to an existing Arena Territory card and uses that card's name, presentation, and printed Arena rule. It is not one of the twelve Territories contributed to the arms.
 
 **Open question**
 
-Voluntary movement through a friendly occupied Position remains unresolved. The preferred candidate is that a force may pass through a friendly force only when it has enough movement to end in a different legal Position.
+A fallback procedure is needed when the players do not agree on a tile. Random selection is the current candidate.
+
+### 3.4 Neutral Arena
+
+**Prototype rule**
+
+No player controls or captures the Arena.
+
+The Arena:
+
+- is never oriented toward a player;
+- is never part of a player's Front;
+- has no Deed;
+- cannot receive an Overlay;
+- cannot receive a Condition;
+- cannot receive or hold another card, marker, token, attachment, ownership component, or persistent effect unless an Arena rule expressly creates an exception;
+- does not count as a controlled Territory;
+- does not count toward Territory-based limits, costs, thresholds, or victory conditions; and
+- does not grant control-based Defensive Edge.
+
+Its printed Arena rule applies normally.
+
+The Arena remains a Position for movement, battles, occupation by a force, retreat direction, adjacency, and route tracing. Occupying it never establishes control.
+
+### 3.5 Arena as connector
+
+**Prototype rule**
+
+The Arena connects all four inner Territories.
+
+For Front and Capture purposes, it may connect a player's controlled inner Territory in their own arm to a controlled inner Territory in another arm without itself becoming controlled or joining that Front.
+
+The Arena never requires Capture. Territorial progress into another arm begins with that arm's inner Territory.
+
+### 3.6 Starting forces and Position capacity
+
+**Prototype rule**
+
+Each player places both forces on their own outermost Territory during setup.
+
+Ordinarily, no Position contains more than one force. Setup creates a temporary exception for the two starting forces.
+
+**Open questions**
+
+- What happens if both forces remain together when that Territory is attacked?
+- May both friendly forces continue sharing their own outermost Territory?
+- May a force pass through a friendly occupied Position if it ends elsewhere?
 
 ---
 
-## 6. Players and forces
+## 4. Players and forces
 
-### 6.1 Player-level components
+### 4.1 Shared player state
 
 **Prototype rule**
 
-Each player has one:
-
-- Deck;
-- Hand;
-- Draw Pile;
-- Discard Pile;
-- Graveyard;
-- Leader;
-- Asset Bank;
-- faction resource and faction progress package;
-- Action allowance;
-- Front and Territory-control state; and
-- normal Capture opportunity per turn.
+Each player has one Deck, Hand, Draw Pile, Discard Pile, Graveyard, Leader, Asset Bank, faction resource package, faction progress package, Action allowance, Front, Territory-control state, and normal Capture opportunity.
 
 Both forces use and affect those shared components.
 
-### 6.2 Force tokens
+### 4.2 Force-local state
 
 **Prototype rule**
 
-Each player controls two Force tokens:
+Each force separately has a Position, attack direction, occupation state, retreat direction, and in-play or removed state.
 
-- **Advance Force**; and
-- **Rear Guard**.
+Movement, occupation, withdrawal, retreat, and post-battle movement normally apply to the participating force. Cards, resources, control, faction progress, and victory progress belong to the player.
 
-The names identify the tokens but do not currently impose different abilities, movement rules, battle modifiers, or permitted regions. Their strategic roles arise from position and player choice.
-
-Each force separately has:
-
-- a Position;
-- an attack direction when it enters a battle;
-- an occupation state;
-- a retreat direction; and
-- an in-play or removed state.
-
-A reference to a participating force means the specific token involved in the current movement, battle, occupation, retreat, or effect.
-
-### 6.3 Losing one force
+### 4.3 Losing one force
 
 **Prototype rule**
 
-Removing one force does not eliminate its player. The player continues with the surviving force and still receives two movement points during normal Movement.
-
-This preserves a possibility of recovery while making force loss permanently consequential.
+Removing one force does not eliminate its player. The surviving force still receives access to both normal movement points.
 
 ---
 
-## 7. Movement
+## 5. Movement
 
-### 7.1 Movement allowance
+### 5.1 Movement points
 
 **Prototype rule**
 
 During Movement, the active player receives **2 movement points**.
 
-Spend each movement point to move one of that player's forces one adjacent Position by Advancing or Falling Back. The player may:
+Each point moves one force one adjacent Position by Advancing or Falling Back. The player may spend:
 
-- spend both points on one force;
-- spend one point on each force; or
-- leave one or both points unspent.
+- both points on one force;
+- one point on each force; or
+- fewer than two points.
 
-Movement points are spent sequentially and need not be allocated in advance.
+Movement points are spent sequentially.
 
-Examples:
-
-```text
-2 + 0: one force moves twice; the other Holds.
-1 + 1: each force moves once.
-0 + 2: the second force moves twice; the first Holds.
-```
-
-Holding costs no movement point.
-
-### 7.2 Advance and Fall Back
+### 5.2 Direction
 
 **Prototype rule**
 
-Relative to a player's own Home Refuge:
+Relative to a player's own outermost Territory:
 
-- **Advance** moves away from that player's Home Refuge toward the center and then outward through an opposing arm.
-- **Fall Back** moves along the reverse route toward that player's Home Refuge.
+- **Advance** moves inward toward the Arena, then outward through an opposing arm.
+- **Fall Back** moves along the reverse route toward that player's own outermost Territory.
 
-At the central Arena, an Advancing force may enter any opposing Inner Territory. Once it enters an opposing arm, continuing to Advance moves outward toward that opponent's Home Territory.
+At the Arena, an Advancing force may enter any opposing inner Territory.
 
-To change from one opposing arm to another through ordinary movement, a force must Fall Back to the central Arena and then Advance into the new arm.
+A force changes opposing arms by Falling Back to the Arena and then Advancing into a different arm.
 
-### 7.3 Battles during movement
+A force on its own outermost Territory cannot Fall Back farther through normal movement.
+
+### 5.3 Battles during Movement
 
 **Prototype rule**
 
-Entering a Position occupied by an opposing force creates a pending battle under the inherited battle procedure.
+Entering an enemy-occupied Position begins a pending battle. The moving force is the attacker.
 
-The moving force is the attacker. The stationary force is the defender.
+A battle ends that force's current normal movement sequence. An unspent point may still be used by the player's other force after the battle resolves.
 
-When a force creates a pending battle, that force's current normal movement sequence ends. A remaining movement point may still be spent on the player's other force after the battle is completely resolved.
-
-Current prototype permits each force to initiate no more than one battle during the same normal Movement, allowing a maximum of two player-initiated battles in one Movement.
+The current prototype permits each force to initiate at most one battle during the same normal Movement.
 
 **Open question**
 
-Track whether permitting two initiated battles makes turns or rounds unacceptably long. A later prototype may cap the active player at one initiated battle per normal Movement.
+Track whether allowing two initiated battles per turn makes rounds too long.
 
-### 7.4 Additional movement
+### 5.4 Additional movement
 
 **Prototype rule**
 
-When an effect grants additional movement to a force participating in a battle or occupation, that movement applies to that force unless the effect expressly identifies another force.
-
-When an effect grants the player additional movement without identifying a force, the player chooses one legal force when resolving the effect.
-
-Additional movement remains distinct from the two normal movement points and follows inherited additional-movement timing unless Arena expressly changes it.
+Additional movement tied to a battle or occupation applies to the participating force. When an effect grants movement without identifying a force, the player chooses one legal force.
 
 ---
 
-## 8. Battles
+## 6. Battles
 
-### 8.1 One-on-one battles
-
-**Prototype rule**
-
-Every battle has one attacking player and one defending player. Only the two participating forces occupy the contested Position for purposes of that battle.
-
-A third or fourth player cannot contribute cards, resources, modifiers, Terms, or choices unless an effect expressly permits it.
-
-### 8.2 Shared player resources
+### 6.1 One-on-one only
 
 **Prototype rule**
 
-A battle involving either force uses the controlling player's shared:
+Every battle has one attacking player and one defending player. A third or fourth player cannot contribute cards, resources, modifiers, Terms, or choices unless an effect expressly permits it.
 
-- Hand;
-- Deck and other card zones;
-- Assets;
-- faction resources;
-- once-per-turn permissions;
-- Leader ability; and
-- other player-level state.
-
-Using cards or resources in one force's battle can therefore weaken the other force's later defense or attack during the same round.
-
-### 8.3 Force-local outcomes
+### 6.2 Shared resources
 
 **Prototype rule**
 
-Movement, occupation, retreat, withdrawal, and post-battle movement resulting from a battle apply to the participating force unless an effect expressly says otherwise.
+All battles use the player's shared Hand, Assets, faction resources, Leader ability, and once-per-turn permissions. Spending in one force's battle can weaken the other force's later battle.
 
-Territory control, resources, cards, faction progress, and victory progress belong to the player rather than to an individual force.
-
-### 8.4 Multiple battles in one turn
+### 6.3 Multiple battles
 
 **Prototype rule**
 
-The inherited limits and spent states remain spent across all battles during the same turn. A second battle does not refresh the player's Hand, Assets, Leader ability, faction resource, or once-per-turn effects.
-
-**Open question**
-
-A full audit is required for effects that currently assume at most one relevant battle per turn or one opposing player per turn.
+Spent cards, resources, and once-per-turn permissions do not refresh between battles in the same turn.
 
 ---
 
-## 9. Directional retreat
+## 7. Directional retreat
 
-### 9.1 Entry edge
+### 7.1 Entry edge
 
 **Prototype rule**
 
 Every attack has an **entry edge**: the connection crossed by the attacker to enter the contested Position.
 
-The entry edge determines the direction of retreat.
-
-### 9.2 Losing attacker
+### 7.2 Losing attacker
 
 **Prototype rule**
 
-A defeated attacker retreats back through the entry edge toward the Position from which it attacked, following inherited retreat distance and additional-retreat effects.
+A defeated attacker retreats back through the entry edge.
 
-### 9.3 Losing defender
-
-**Prototype rule**
-
-A defeated defender retreats through the edge opposite the attacker's entry edge, directly away from the attacker.
-
-This rule applies even when retreat carries the defender farther away from its own Home Refuge or deeper through an opposing arm.
-
-Example:
-
-```text
-A attacks from behind → B → C is farther ahead
-
-A defeats B.
-B retreats away from A, toward C.
-```
-
-At the central Arena, the opposite edge is the arm directly across the center from the attacker's entry arm. A force attacked from the north is driven south, not east or west.
-
-### 9.4 Continued retreat
+### 7.3 Losing defender
 
 **Prototype rule**
 
-Additional retreat caused by the same battle continues in the direction established by that battle unless an effect expressly redirects the force.
+A defeated defender retreats through the opposite edge, directly away from the attacker, even when this drives it farther through an opposing arm.
 
-### 9.5 Retreat into an empty Position
+At the Arena, a force attacked from one arm is driven into the arm directly opposite it.
 
-**Prototype rule**
-
-The retreating force enters the empty Position normally.
-
-### 9.6 Retreat into a friendly force
+### 7.4 Continued retreat
 
 **Prototype rule**
 
-A retreating force does not battle a friendly force. It passes through the friendly-occupied Position and continues in the same direction until it reaches:
+Additional retreat from the same battle continues in the direction established by that battle unless an effect expressly redirects it.
 
-- the first empty legal Position;
-- an enemy-occupied Position, which begins a Breakout; or
-- a board edge that removes it under the applicable rule.
+### 7.5 Friendly collision
 
-This forced passage does not require movement points.
+**Prototype candidate**
+
+A retreating force passes through a friendly force and continues in the same direction until it reaches an empty Position, an enemy force, or the end of an arm.
 
 **Open question**
 
-Test whether this creates unintuitive long displacement or makes tight friendly formations too dangerous. Alternatives include displacing the friendly force or removing the retreating force when no adjacent space is available.
+Test whether this produces excessive displacement or makes friendly formations too dangerous.
 
-### 9.7 Retreat beyond a Home Territory
+### 7.6 Board edge
 
-**Prototype rule**
+**Open question**
 
-A player may retreat into their own Home Refuge.
+There is no off-board Position beyond an outermost Territory.
 
-A force cannot enter another player's Home Refuge. If a non-owner would be forced beyond that player's Home Territory, remove the force from the game.
+Current candidate:
 
-This makes the outer end of an opposing arm a dangerous boundary rather than a safe space beyond the objective.
+> If a force would be forced beyond any outermost Territory, remove it from the game.
 
 ---
 
-## 10. Breakout battles and encirclement
+## 8. Breakout battles
 
-### 10.1 Beginning a Breakout
+### 8.1 Beginning a Breakout
 
 **Prototype rule**
 
 When a retreating force would enter a Position occupied by an enemy force, it immediately begins a **Breakout battle** against that blocking force.
 
-- The retreating force is the Breakout attacker.
-- The blocking force is the Breakout defender.
-- The force that won the preceding battle remains in the Position from which it drove the retreating force.
+- The retreating force is the attacker.
+- The blocking force is the defender.
 - The Breakout costs no movement point.
-- Resolve it completely before the interrupted turn or retreat chain continues.
+- Resolve it before the interrupted turn or retreat chain continues.
 
-Example:
-
-```text
-A defeats B from behind.
-B is forced forward into C.
-B immediately attacks C in a Breakout battle.
-```
-
-### 10.2 Successful Breakout
+### 8.2 Successful Breakout
 
 **Prototype rule**
 
-If the Breakout attacker wins:
+If the Breakout attacker wins, the blocking force retreats normally and the attacker takes the Position.
 
-1. the blocking force retreats normally away from the Breakout attacker;
-2. the Breakout attacker takes the contested Position; and
-3. the Breakout attacker remains in play.
-
-The blocking force's retreat can itself cause another collision and Breakout.
-
-### 10.3 Failed Breakout
+### 8.3 Failed Breakout
 
 **Prototype rule**
 
-If the Breakout attacker loses, remove that force from the game.
+If the Breakout attacker loses, remove it from the game. It cannot retreat backward through the force that defeated it in the preceding battle.
 
-It cannot retreat backward because the Position behind it is held by the force that defeated it in the preceding battle. The force has been defeated by enemies on both sides.
+The forces trapping it may belong to the same opponent or to different opponents.
 
-Example:
-
-```text
-A → B ← C
-
-A defeats B from behind.
-B is forced to attack C.
-C defeats B.
-B is removed.
-```
-
-A and C may belong to different opponents or may be the same opponent's two forces.
-
-### 10.4 Withdrawal and unresolved Breakouts
+### 8.4 Withdrawal and unusual endings
 
 **Prototype rule**
 
-The Breakout attacker cannot voluntarily withdraw backward through the force that drove it into the Breakout. If it loses or an effect requires it to withdraw without placing it in another legal Position, remove it.
+A Breakout attacker cannot voluntarily withdraw backward. If an effect would end the battle by sending it backward without another legal Position, remove it.
 
-**Open question**
+**Open questions**
 
-The following require an exact compatibility ruling before faction-complete playtesting:
+Exact rulings are still required for Terms, battle-ending effects, retreat replacement, defender movement, ties, and copied effects.
 
-- Accepted Terms that move one or both participants;
-- effects that end a battle without a normal winner;
-- effects that replace retreat with withdrawal or post-battle movement;
-- effects that move the Breakout defender before the battle ends; and
-- ties or copied effects that create an otherwise unresolved Position.
-
-### 10.5 Retreat cascades
+### 8.5 Cascades
 
 **Prototype rule**
 
-Breakout displacement is recursive. Continue resolving retreat, collisions, Breakouts, and force removal until every affected force has reached a legal Position or been removed.
-
-With eight starting forces, the total chain remains physically bounded, but the procedure must be tested for clarity and duration.
+Continue resolving retreat, collisions, Breakouts, and removals until every affected force reaches a legal Position or is removed.
 
 ---
 
-## 11. Fronts, occupation, and Capture
+## 9. Fronts, occupation, and Capture
 
-### 11.1 One player-level Front
-
-**Prototype rule**
-
-Each player has one branching Front shared by both forces.
-
-A player's Front consists of the Territories they control that remain continuously connected to their Home Territory through Territories they control, subject to the final rule for the central Arena.
-
-The two forces do not maintain separate Fronts.
-
-### 11.2 Occupation
+### 9.1 One branching Front
 
 **Prototype rule**
 
-Either force may occupy a Territory under inherited occupation rules. A player can therefore have occupation on two different branches at the same time.
+Each player has one Front shared by both forces.
 
-Occupation belongs to the participating force for positional purposes, but any later control gained belongs to the player.
+It consists of controlled Territories continuously connected to that player's own outermost Territory. The Arena may connect controlled inner Territories across arms without itself joining the Front.
 
-### 11.3 Normal Capture limit
-
-**Prototype rule**
-
-Normal Capture still adds no more than one Territory to a player's Front per turn, regardless of how many forces occupy eligible Territories.
-
-If both forces support eligible Capture progress on different branches, the player chooses one branch during Capture.
-
-This preserves the distinction between tactical reach and logistical consolidation.
-
-### 11.4 Capture path
+### 9.2 Occupation
 
 **Prototype rule**
 
-To Capture through normal progression, trace a continuous path from the player's Home Territory toward an occupying force. The next uncontrolled or unsupported Territory on that path is the candidate added to the player's Front, provided all inherited Capture requirements are met.
+Either force may occupy a Territory. A player can maintain occupations on different branches at the same time.
 
-**Open question**
+A force may occupy the Arena, but cannot Capture or control it.
 
-Exact wording depends on the status of the central Arena and on whether cut-off control remains control, becomes dormant control, or is lost.
+### 9.3 Capture limit
 
-### 11.5 Cut-off holdings
+**Prototype rule**
+
+Normal Capture adds no more than one Territory to a player's Front per turn, regardless of how many forces support eligible progress.
+
+When both forces support different branches, the player chooses one.
+
+### 9.4 Capture route
+
+**Prototype rule**
+
+Trace a continuous route from the player's own outermost Territory toward an occupying force. The Arena may be crossed as a neutral connector and is skipped when identifying the next Territory eligible for Capture.
+
+### 9.5 Cut-off control
 
 **Open question**
 
 Current candidate:
 
-- a Territory whose connection to its controller's Home Territory is broken remains oriented toward and nominally controlled by that player;
-- it is not part of that player's Front;
-- it does not count toward Territory-scaled limits, thresholds, or Home defense;
-- it does not grant Defensive Edge based solely on control; and
-- it reactivates when a controlled connection is restored.
+- disconnected Territories remain oriented toward and nominally controlled by their controller;
+- they are not part of the Front;
+- they do not count toward Territory-scaled limits, thresholds, or defense of the controller's outermost Territory;
+- they do not grant control-based Defensive Edge; and
+- they reactivate when reconnected.
 
-This candidate preserves visible territorial history while making supply-line cuts meaningful. It may create too many control states and must be tested against simpler alternatives:
+Simpler alternatives remain under consideration.
 
-- immediately lose control of disconnected Territories;
-- return them to their previous owner;
-- make them uncontrolled; or
-- allow isolated control with fewer penalties.
-
-### 11.6 Capture effects that advance the Front
+### 9.6 Front-advancement effects
 
 **Open question**
 
-Effects that immediately advance a Front, create a Territory, add a Territory to the Gauntlet, or bypass ordinary Capture need a dedicated audit. They must identify the affected branch and cannot silently create disconnected control.
-
-Manifest Destiny is a priority case because it can add a new Territory Position and alter board geometry.
+Effects that immediately advance a Front, add a Territory, insert a Position, or bypass Capture must identify a branch and preserve connection. Manifest Destiny is a priority case.
 
 ---
 
-## 12. Home Territories, elimination, and victory
+## 10. Elimination and victory
 
-### 12.1 Home Territory
-
-**Prototype rule**
-
-Each player's outermost contributed Territory is their Home Territory.
-
-The Home Territory is an ordinary Territory for battle, occupation, Counterattack, and Capture unless Arena expressly provides an exception.
-
-### 12.2 Capturing a Home Territory
+### 10.1 Capturing an outermost Territory
 
 **Prototype rule**
 
-When an opponent captures a player's Home Territory, that player is immediately eliminated.
+When an opponent captures a player's outermost Territory, that player is immediately eliminated.
 
-Merely winning a battle there or occupying it does not eliminate the Home player. The attacker must complete a legal Capture, preserving a final Counterattack opportunity under the normal delayed-Capture structure.
+Winning a battle there or occupying it is not enough. The attacker must complete legal Capture, preserving a final Counterattack opportunity.
 
-Arena does not use the standard Last Stand as the normal territorial victory procedure.
+Arena does not use standard Last Stand as its normal territorial victory procedure.
 
-### 12.3 Losing both forces
-
-**Prototype rule**
-
-A player is immediately eliminated when both of their forces have been removed from the game, even if they still control their Home Territory.
-
-### 12.4 Winning Arena
+### 10.2 Losing both forces
 
 **Prototype rule**
 
-The last player who has not been eliminated wins the game.
+A player is immediately eliminated when both forces have been removed, even if that player still controls their outermost Territory.
 
-### 12.5 Eliminated-player cleanup
+### 10.3 Winning
+
+**Prototype rule**
+
+The last player who has not been eliminated wins.
+
+### 10.4 Eliminated-player cleanup
 
 **Open question**
 
-The complete cleanup procedure must determine what happens to:
+The cleanup procedure must resolve:
 
-- the eliminated player's remaining force, if any;
-- their Hand, Deck, Draw Pile, Discard Pile, and Graveyard;
-- Assets and faction components;
-- Conditions they created;
-- Overlays they control;
-- Deeds they own;
-- Territory control and orientation;
-- pending durations and delayed effects;
-- Missions, Rites, Proposals, Treaty Articles, and other progress components; and
+- any surviving force;
+- card zones and faction components;
+- resources and progress;
+- Territories and Deeds;
+- persistent effects elsewhere on the board; and
 - turn order.
 
 Current candidate:
 
-- remove all remaining forces and personal card-zone components;
+- remove the player's remaining force and personal components;
 - remove player-bound progress and resources;
-- end effects that require that player to make choices or remain in the game;
-- leave surviving players' Territory control intact;
+- end effects requiring that player;
+- leave surviving players' control intact;
 - make Territories controlled only by the eliminated player uncontrolled;
 - make their Deeds unowned; and
-- skip the eliminated player in turn order.
+- skip their turns.
 
-Persistent board objects created by the eliminated player require case-by-case rules until ownership and source-dependence are fully audited.
-
-### 12.6 Abandoned arm
+### 10.5 Eliminated arms
 
 **Open question**
 
-An eliminated player's arm remains part of the battlefield. It no longer represents an active Home capable of eliminating another player.
-
-The arm may remain useful as a route, contested ground, or source of Territory control. Testing must determine whether this creates desirable strategic space or an overly safe expansion zone for the player who secured the elimination.
+An eliminated player's arm remains on the battlefield. Its outermost Territory no longer functions as an elimination objective. Testing must determine whether these arms create useful routes or overly safe expansion.
 
 ---
 
-## 13. Multiplayer terminology and targeting
-
-### 13.1 Opponent in a battle
+## 11. Multiplayer terminology
 
 **Prototype rule**
 
-During a battle, **the opponent** means the other participating player.
-
-A reference to **both players** during a battle means the attacker and defender in that battle, not all players in Arena.
-
-### 13.2 Opponent outside a battle
-
-**Prototype rule**
-
-Outside a battle, when an effect instructs a player to choose or affect **an opponent**, choose one opposing player unless the effect expressly says every opponent or all opponents.
-
-### 13.3 Target persistence
-
-**Prototype rule**
-
-When an effect creates a duration or delayed instruction involving one opponent, record or remember the chosen opponent. The effect does not automatically transfer to another opponent later.
-
-### 13.4 Hidden information
-
-**Prototype rule**
-
-Permission to view, reveal, alter, or replace hidden information applies only to the identified opponent and card zone. Other players do not gain that information merely because they are present at the table.
-
-### 13.5 Force references
-
-**Prototype rule**
-
-When an effect arising from a battle moves **you**, **your Position**, or **your current Territory**, it applies to the participating force.
-
-Outside a battle, if an effect moves the player without identifying a force, the player chooses one legal force when resolving it.
-
-### 13.6 Global effects
+- During a battle, **the opponent** means the other participant.
+- During a battle, **both players** means only the attacker and defender.
+- Outside a battle, **an opponent** means one chosen opposing player.
+- A duration involving one opponent remains attached to that opponent.
+- Hidden-information permissions apply only to the identified player and zone.
+- A battle effect that moves **you** moves the participating force.
+- Outside battle, an effect moving the player without identifying a force lets that player choose one legal force.
 
 **Open question**
 
-Cards using terms such as every player, each player, both players, every Territory, the Gauntlet, final Territory, or end of the Gauntlet require explicit multiplayer review. Do not infer that two-player global language automatically scales to four players.
+Cards using every player, each player, both players, every Territory, the Gauntlet, final Territory, or end of the Gauntlet require explicit audit.
 
 ---
 
-## 14. Alliances and negotiation
-
-### 14.1 Table talk
+## 12. Alliances
 
 **Prototype rule**
 
-Players may negotiate, threaten, promise, coordinate, and form temporary nonbinding arrangements through ordinary table talk.
+Players may negotiate, threaten, promise, and coordinate through table talk.
 
-### 14.2 No formal alliance object
+There is no formal ally, team, alliance duration, shared control, shared Front, shared victory, or targeting exemption.
 
-**Prototype rule**
-
-Arena currently has no rules-defined ally, team, alliance duration, shared Territory control, shared Front, shared victory, or allied targeting exemption.
-
-A promise is not enforceable by the rules.
-
-### 14.3 No unsupported transfers
-
-**Prototype rule**
-
-Players cannot reveal hidden cards, transfer cards or resources, contribute to another player's battle, share control, or permit movement through occupied Positions unless a card or Arena rule expressly allows it.
+Players cannot reveal hidden cards, transfer cards or resources, contribute to another player's battle, or share control unless an effect expressly permits it.
 
 ---
 
-## 15. Faction adaptation status
+## 13. Faction adaptation status
 
-All faction alternate victories and several faction procedures require multiplayer review. The table below records directions, not final rules.
-
-| Faction | Standard structure | Arena issue | Current direction | Status |
-|---|---|---|---|---|
-| Military | Run the Gauntlet; no alternate victory | Standard Last Stand is removed | Win by being the last player remaining; adapt Orders only where branch or force identification is required | Prototype candidate |
-| Diplomats | Peace Treaty through five different ratified Proposals | One cooperative opponent could enable the victory | Require meaningful ratification or Terms involvement across multiple opponents | Open question |
-| Financiers | Controlling Interest through Deeds to every Territory | The board has twelve arm Territories plus a central Arena | Use a board-wide threshold with geographic breadth rather than every Position | Open question |
-| Intelligence | Missions and Special Operation compare progress to the opponent | Missions and readiness need identified targets | Mark the relevant opponent when a Mission or Special Operation begins; require multi-opponent involvement | Open question |
-| Mystics | Complete Rites and win the Ritual battle | More opponents create interruption and collusion concerns | Retain the basic structure with clear opponent and force targeting, then test disruption pressure | Open question |
-| Inquisition | Purification when the opponent fails the normal draw | Multiple opponents can exhaust at different times | Identify a condemned or qualifying opponent and resolve competing claims | Open question |
-
-### 15.1 Military
-
-**Prototype candidate**
-
-Military uses the normal Arena victory of eliminating all opponents. There is no separate Triumph or Last Stand requirement.
-
-Orders and Leader abilities that move the player or advance the Front must identify the affected force or branch.
-
-### 15.2 Diplomats
-
-**Open question**
-
-Peace Treaty should not be achievable solely through repeated cooperation with one opponent while ignoring the others.
-
-Current candidate requires:
-
-- five different ratified Proposals; and
-- at least one qualifying ratification or Terms interaction involving each remaining opponent.
-
-The exact endorsement marker, persistence after elimination, and interaction with refused or imposed Terms remain unresolved.
-
-### 15.3 Financiers
-
-**Open question**
-
-Controlling Interest cannot simply require every Position. Candidate thresholds include:
-
-- a strict majority of all deed-bearing arm Territories plus at least one Deed in every arm;
-- eight of twelve arm Territories;
-- control of two complete Home-to-Arena routes; or
-- a value-based portfolio threshold tied to controlled and connected Territories.
-
-The center likely has no Deed if it remains neutral.
-
-### 15.4 Intelligence
-
-**Open question**
-
-Missions referring to the opponent should identify a target opponent when begun. Special Operation should identify its target when initiated.
-
-A candidate readiness rule compares Operation Progress to the chosen target's effective controlled-Territory count and requires completed normal Missions involving multiple opponents before Special Operation can win.
-
-### 15.5 Mystics
-
-**Open question**
-
-The Rite structure may translate with relatively little change, but the final Ritual battle needs a specified opponent and participating force.
-
-Testing must watch both directions:
-
-- three opponents create more opportunities to interrupt Rites; and
-- one opponent could intentionally throw the final Ritual battle.
-
-### 15.6 Inquisition
-
-**Open question**
-
-Purification could trigger when any identified opponent fails their normal own-turn draw because their Draw Pile and Discard Pile are empty.
-
-A target, condemnation, or attribution rule may be necessary to prevent opportunistic wins caused almost entirely by another player's deck pressure.
+| Faction | Arena direction | Status |
+|---|---|---|
+| Military | Use normal last-player-standing victory; identify force and branch for movement Orders | Prototype candidate |
+| Diplomats | Peace Treaty must involve multiple opponents rather than one cooperative partner | Open |
+| Financiers | Arena has no Deed; Controlling Interest needs a board-wide threshold and geographic breadth | Open |
+| Intelligence | Missions and Special Operation must identify target opponents | Open |
+| Mystics | Retain Rites with clear opponent and force targeting; test interruption and collusion | Open |
+| Inquisition | Purification needs a target or attribution rule among multiple opponents | Open |
 
 ---
 
-## 16. Compatibility audit
+## 14. Compatibility audit priorities
 
-The first complete audit should classify every playable card, Territory, Leader, and supplemental component under one or more of these categories:
+Audit every card, Territory, Leader, and supplemental component for:
 
-1. **Battle-local effects** — likely translate through the participating forces.
-2. **Opponent targeting** — requires selection among multiple opponents.
-3. **Both-player or global language** — may need a multiplayer definition or replacement.
-4. **Durations** — must identify whose turn, which opponent, and when the effect ends.
-5. **Movement and Position** — must identify the affected force and legal branch.
-6. **Retreat and withdrawal** — may interact with Breakouts, cascades, and board edges.
-7. **Front advancement** — must identify the affected branch and preserve connection.
-8. **Final Territory and Last Stand** — requires Home Territory translation or removal.
-9. **Territory-count scaling** — may exceed the normal six-Territory range.
-10. **Deeds and control** — must address twelve arm Territories, the center, and disconnected holdings.
-11. **Added Territories and geometry** — may alter the cross or create new branches.
-12. **Arena and Overlay eligibility** — must resolve the central Position.
-13. **Once-per-turn effects during opposing turns** — may trigger up to three times between a player's turns.
-14. **Hidden zones** — must preserve target-specific information.
-15. **Elimination persistence** — must say whether effects survive their source player's elimination.
+1. battle-local effects;
+2. opponent targeting;
+3. both-player and global language;
+4. durations;
+5. force and Position selection;
+6. retreat, withdrawal, Breakouts, and board edges;
+7. Front advancement and branch selection;
+8. final-Territory and Last Stand references;
+9. Territory-count scaling;
+10. Deeds and control;
+11. added Territories and geometry;
+12. attempts to modify or attach to the Arena;
+13. once-per-turn effects during opposing turns;
+14. hidden information; and
+15. persistence after elimination.
 
-Priority cases include:
-
-- Manifest Destiny and other effects that add or insert Territories;
-- immediate Front-advancement effects;
-- effects referring to the final Territory or end of the Gauntlet;
-- retreat multiplication or replacement;
-- effects that last through the opponent's turn;
-- copied or source-dependent effects;
-- Deed ownership and purchase rules;
-- central Arena Overlays; and
-- effects that can create, prevent, or interrupt a Breakout.
-
-The audit should not begin as a rewrite of all card text. First identify which general Arena rules resolve entire categories and isolate only the remaining exceptions.
+Priority cases include Manifest Destiny, immediate Front advancement, extra retreat, long durations, copied effects, Deeds, and effects that could modify the Arena or interrupt a Breakout.
 
 ---
 
-## 17. First-prototype boundaries
+## 15. First-prototype boundaries
 
 **Prototype rule**
 
-The first physical Arena test should use:
+Use:
 
 - exactly four players;
 - four different factions;
@@ -826,164 +535,93 @@ The first physical Arena test should use:
 - standard v0.6.2 Deck construction;
 - no Arena-exclusive playable cards;
 - no formal alliances;
-- no shared combat assistance;
-- no three-way or four-way battles;
+- no combat assistance;
+- no three-way battles;
 - no team victory;
-- one central Arena selected before play; and
-- provisional faction-victory rulings recorded before the session begins.
+- one selected Arena tile;
+- both forces beginning on each player's outermost Territory; and
+- provisional faction-victory rulings recorded before play.
 
 **Deferred**
 
-The following are outside the first prototype:
-
-- two-player or three-player Arena scaling;
+- two- or three-player scaling;
 - five or more players;
-- two-versus-two team play;
-- duplicate-faction procedures;
-- duplicate-Leader procedures;
-- allied movement or shared defense;
-- player respawn;
-- replacement forces;
+- team play;
+- duplicate-faction and duplicate-Leader rules;
+- shared defense;
+- respawn or replacement forces;
 - Arena-exclusive Deck construction;
-- new multiplayer-only factions; and
-- a full digital implementation.
-
-The first test may temporarily disable faction alternate victories if necessary to isolate board geometry, movement, retreat, and elimination. Any such test must be labeled as a geometry test rather than a complete balance test.
+- multiplayer-only factions; and
+- full digital implementation.
 
 ---
 
-## 18. Open design questions
+## 16. First playtest questions
 
-### Battlefield and setup
+Record:
 
-- Is the central Arena neutral and uncapturable?
-- Can the center receive Overlays, Conditions, Deeds, or added Territories?
-- Can normal Arena Territories appear in player arms?
-- How are Territory order and central Arena selection determined?
-- Who takes the first turn, and how is turn order chosen?
+1. whether two-force movement creates meaningful choices;
+2. whether a rear defender feels useful without becoming mandatory;
+3. how players divide movement points;
+4. how often turns contain two battles;
+5. whether shared resources naturally limit repeated battles;
+6. whether rear attacks and directional retreat feel intuitive;
+7. whether Breakouts are dramatic rather than cumbersome;
+8. whether a player can recover after losing one force;
+9. whether exposing an outermost Territory creates fair punishment and warning;
+10. whether delayed Capture creates meaningful Counterattack;
+11. whether one Capture per turn is too slow;
+12. whether the Arena becomes congested;
+13. whether the cross produces four-way play rather than two parallel duels;
+14. whether informal alliances arise naturally;
+15. when the first elimination occurs;
+16. total game and turn length;
+17. eliminated-player downtime;
+18. alternate-victory viability; and
+19. rules requiring repeated explanation.
 
-### Movement and Position
-
-- Can a force voluntarily pass through a friendly occupied Position?
-- Can both forces initiate separate battles during one normal Movement?
-- Does a battle permanently end that force's normal movement for the phase?
-- How should a force change opposing arms through the center?
-- Should a player with one force retain both movement points?
-
-### Retreat and Breakouts
-
-- Is passing through friendly forces during forced retreat sufficiently clear?
-- What happens when an effect redirects retreat sideways at the center?
-- Are Terms available during Breakouts?
-- How do battle-ending effects resolve when the Breakout attacker has no legal retreat?
-- How are simultaneous or chained retreat effects ordered?
-- Does force removal occur often enough to matter without being too punishing?
-
-### Front and Capture
-
-- What precisely constitutes a connected branching Front?
-- What happens to cut-off controlled Territories?
-- Does the center count as a connector without being controlled?
-- Does one normal Capture per turn make a twelve-Territory battlefield too slow?
-- Can a player Capture in an arm where no force is currently present?
-- How do Front-advancement effects select a branch?
-
-### Elimination
-
-- What is the complete cleanup procedure?
-- Do persistent Overlays or Conditions survive their creator?
-- What happens to Deeds and Territory ownership?
-- Does an eliminated arm become too easy to exploit?
-- Can a player be eliminated too early to remain engaged with the session?
-
-### Factions and cards
-
-- What are the exact alternate-victory thresholds?
-- Should alternate victory eliminate all opponents, win immediately, or create a final response window?
-- How are duplicate factions handled later?
-- Which current cards require Arena-specific errata or replacement text?
-- Should Territory-count formulas be capped at six unless expressly expanded?
+Also record faction and Leader choices, Territory order, Arena tile, turn order, rounds, battles, Breakouts, force removals, outermost-Territory occupations and Captures, eliminations, winning route, and total time.
 
 ---
 
-## 19. First playtest questions
+## 17. Documentation roadmap
 
-Record at minimum:
-
-1. Does two-force movement create meaningful choices without making turns too long?
-2. Does a Rear Guard feel useful without becoming mandatory?
-3. How often do players spend both movement points on one force?
-4. How often does one player initiate two battles in one Movement?
-5. Does shared Hand and resource pressure naturally limit multi-battle turns?
-6. Are rear attacks and directional retreats intuitive at the table?
-7. Are Breakouts dramatic and legible rather than procedural clutter?
-8. Can a player recover after losing one force?
-9. Does leaving home undefended produce fair punishment and sufficient warning?
-10. Does delayed Capture provide a meaningful final Counterattack opportunity?
-11. Does one normal Capture per turn make offensives too slow?
-12. Does the central Arena become permanently congested?
-13. Do players use the whole cross or collapse into two parallel duels?
-14. Do temporary alliances arise naturally without formal enforcement?
-15. Does the table target exposed players, leaders, or weak players for understandable strategic reasons?
-16. When does the first elimination occur?
-17. How long does an eliminated player remain out of the game?
-18. How long does a complete game take?
-19. How long is the average player turn?
-20. How long does each player wait between meaningful decisions?
-21. Do alternate victories remain visible, interactive, and plausible?
-22. Which rules require repeated explanation or physical reminders?
-
-The first test should also record:
-
-- faction and Leader selections;
-- Territory order for every arm;
-- central Arena used;
-- turn order;
-- total rounds;
-- total battles;
-- battles initiated by each force;
-- Breakouts attempted and won;
-- forces removed and cause of removal;
-- Home Territories occupied and captured;
-- eliminations and round of elimination;
-- winning route; and
-- total session time.
-
----
-
-## 20. Documentation roadmap
-
-Keep this record unified during early exploration. Split out new documents only when they have a distinct operational purpose.
+Keep this record unified until a new document has a distinct operational purpose.
 
 Expected later records:
 
-1. **Arena Compatibility Audit** — exact card, Territory, Leader, and component findings.
-2. **Arena Faction Adaptation Matrix** — normative multiplayer faction procedures and victory rules.
-3. **Arena Prototype Specification** — board layout, tokens, markers, and print requirements.
-4. **Arena Playtest Matrix** — normative scenarios after the foundational rules stabilize.
-5. **Arena Rules Candidate** — player-facing complete rules suitable for release review.
-6. **Arena Reference Candidate** — compact tableside procedures.
+1. Arena Compatibility Audit;
+2. Arena Faction Adaptation Matrix;
+3. Arena Prototype Specification;
+4. Arena Playtest Matrix;
+5. Arena Rules Candidate; and
+6. Arena Reference Candidate.
 
-When one of these becomes active, add it to [the Arena documentation index](README.md). Archive superseded snapshots instead of maintaining multiple active versions of the same rule.
+Add each to [the Arena documentation index](README.md) when activated. Archive superseded records rather than maintaining competing active authorities.
 
 ---
 
-## 21. Revision history
+## 18. Revision history
+
+### August 6, 2026 — Arena selection and outermost start
+
+- Established player selection of a shared Arena tile corresponding to an existing Arena Territory card.
+- Established that no player controls or captures the Arena.
+- Established that the Arena has no Deed and cannot receive cards, markers, attachments, ownership, or persistent effects.
+- Established the Arena as a neutral connector outside every Front.
+- Standardized the arm positions as inner, middle, and outermost Territories.
+- Removed the off-board starting Position.
+- Established that both forces begin on their player's outermost Territory.
+- Established elimination when an opponent captures that outermost Territory.
+- Reopened board-edge retreat because there is no off-board Position.
 
 ### August 6, 2026 — Initial working design
 
-- Established Gauntlet: Arena as a proposed four-player free-for-all format.
-- Recorded the provisional release-number policy: Arena is v0.7 unless the Complete Illustrated Edition publishes first.
-- Established the thirteen-Position crossed battlefield as the current model.
-- Added Advance Force and Rear Guard tokens for each player.
-- Added two freely allocated movement points per normal Movement.
-- Preserved one shared Deck, Hand, Asset Bank, faction engine, Front, and normal Capture allowance per player.
+- Established the four-player cross battlefield.
+- Added two forces and two freely allocated movement points per player.
+- Preserved one shared player-level engine.
 - Preserved one-on-one battles.
-- Added directional retreat away from the attacker.
-- Added immediate Breakout battles after retreat into an enemy force.
-- Added permanent force removal after a failed Breakout.
-- Replaced standard Last Stand victory with elimination by Home Territory Capture.
-- Added elimination after loss of both forces.
+- Added directional retreat, Breakouts, and permanent force loss.
+- Added elimination after losing both forces.
 - Established last-player-standing victory.
 - Established nonbinding negotiation without formal alliances.
-- Deferred exact central Arena, branching Front, cleanup, alternate-victory, and compatibility rules.
