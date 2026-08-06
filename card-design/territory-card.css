@@ -188,7 +188,7 @@
   min-width: 0;
   min-height: 0;
   overflow: hidden;
-  padding: 0.045in 0.07in 0.035in;
+  padding: 0.045in 0.07in 0.045in;
   border-top: 0;
   background: rgba(238, 226, 198, 0.14);
   font-family: var(--font-reading);
@@ -198,7 +198,7 @@
   margin: 0;
   font-family: "adobe-caslon-pro", Georgia, serif;
   font-size: calc(8.5pt * var(--effect-scale));
-  line-height: 1.1;
+  line-height: 1.18;
   text-wrap: pretty;
 }
 
@@ -253,11 +253,11 @@
 
 .territory-card.compact .territory-effect {
   padding-top: 0.035in;
-  padding-bottom: 0.025in;
+  padding-bottom: 0.035in;
 }
 
 .territory-card.compact .territory-effect p {
-  line-height: 1.04;
+  line-height: 1.12;
 }
 
 .territory-card.fit-warning {
