@@ -98,6 +98,15 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git checkout origin/main -- \
+            releases/v0.6.0/Gauntlet_v0.6.0_Reference_Guide.docx \
+            releases/v0.6.0/Gauntlet_v0.6.0_Reference_Guide.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.docx \
+            releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Rulebook_Booklet.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Rulebook_Booklet_Print.pdf
+          git rm -f .github/workflows/restore-pr510-v060-binaries.yml
           git add \
             README.md \
             package.json \
@@ -106,6 +115,12 @@ jobs:
             v0.6.2/index.html \
             v0.6.2/release-manifest.json \
             v0.6.2/print \
+            releases/v0.6.0/Gauntlet_v0.6.0_Reference_Guide.docx \
+            releases/v0.6.0/Gauntlet_v0.6.0_Reference_Guide.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.docx \
+            releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Rulebook_Booklet.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Rulebook_Booklet_Print.pdf \
             releases/v0.6.2/README.md \
             releases/v0.6.2/Gauntlet_v0.6.2_Manifest.json \
             releases/v0.6.2/Gauntlet_v0.6.2_*.pdf \
