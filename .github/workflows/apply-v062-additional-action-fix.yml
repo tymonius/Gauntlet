@@ -1,0 +1,40 @@
+name: Apply v0.6.2 additional Action correction
+
+on:
+  push:
+    branches:
+      - agent/fix-v062-additional-action-effects
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+      - run: node scripts/apply-v062-additional-action-fix.mjs
+      - run: npm run data:v062:write
+      - run: npm run release:v062:build
+
+      - name: Commit generated correction
+        run: |
+          rm scripts/apply-v062-additional-action-fix.mjs
+          rm .github/workflows/apply-v062-additional-action-fix.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "Clarify additional Action card effects"
+          git push
+
+      - run: npm run typecheck
+      - run: npm test
