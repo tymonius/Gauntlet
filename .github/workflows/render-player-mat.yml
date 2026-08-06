@@ -1,127 +1,59 @@
-name: Render v0.6.1 player mat
+name: Validate current player mat
 
 on:
   push:
-    branches:
-      - main
-      - rules/v0.6.1-playtest-revision
+    branches: [main, agent/v062-printed-materials]
     paths:
-      - playtest/player-mat/**
-      - .github/workflows/render-player-mat.yml
+      - ".github/workflows/render-player-mat.yml"
+      - "playtest/player-mat/index.html"
+      - "v0.6.2/print/player-mat.html"
+      - "releases/v0.6.1/Gauntlet_v0.6.1_Player_Mat.pdf"
   pull_request:
-    branches:
-      - main
+    branches: [main]
     paths:
-      - playtest/player-mat/**
-      - .github/workflows/render-player-mat.yml
+      - ".github/workflows/render-player-mat.yml"
+      - "playtest/player-mat/index.html"
+      - "v0.6.2/print/player-mat.html"
+      - "releases/v0.6.1/Gauntlet_v0.6.1_Player_Mat.pdf"
   workflow_dispatch:
 
 permissions:
-  contents: write
-
-concurrency:
-  group: render-player-mat-${{ github.ref }}
-  cancel-in-progress: true
+  contents: read
 
 jobs:
-  render:
+  validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout source
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
 
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install rendering tools
-        run: |
-          npm install --no-save playwright
-          npx playwright install --with-deps chromium
-          python3 -m pip install pypdf
-
-      - name: Serve repository
-        run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
-
-      - name: Render landscape PDF and preview
+      - name: Validate current and historical player-mat boundaries
         run: |
           node --input-type=module <<'NODE'
-          import { chromium } from 'playwright';
+          import fs from 'node:fs';
 
-          const browser = await chromium.launch({ headless: true });
-          const page = await browser.newPage({ viewport: { width: 1650, height: 1275 }, deviceScaleFactor: 1 });
-          const errors = [];
-          page.on('pageerror', error => errors.push(error.message));
-          page.on('console', message => {
-            if (message.type() === 'error') errors.push(message.text());
-          });
+          const redirectPath = 'playtest/player-mat/index.html';
+          const currentPath = 'v0.6.2/print/player-mat.html';
+          const historicalPdf = 'releases/v0.6.1/Gauntlet_v0.6.1_Player_Mat.pdf';
 
-          await page.goto('http://127.0.0.1:8000/playtest/player-mat/', { waitUntil: 'networkidle' });
-          await page.screenshot({
-            path: 'playtest/player-mat/Gauntlet_v0.6.1_Player_Mat_Preview.png',
-            fullPage: true
-          });
+          for (const file of [redirectPath, currentPath, historicalPdf]) {
+            if (!fs.existsSync(file)) throw new Error(`Missing player-mat artifact: ${file}`);
+          }
 
-          await page.emulateMedia({ media: 'print' });
-          await page.pdf({
-            path: 'playtest/player-mat/Gauntlet_v0.6.1_Player_Mat.pdf',
-            format: 'Letter',
-            landscape: true,
-            printBackground: true,
-            preferCSSPageSize: true,
-            margin: { top: '0', right: '0', bottom: '0', left: '0' }
-          });
-          await browser.close();
+          const redirect = fs.readFileSync(redirectPath, 'utf8');
+          const current = fs.readFileSync(currentPath, 'utf8');
 
-          if (errors.length) throw new Error(`Browser rendering errors:\n${errors.join('\n')}`);
+          for (const marker of ['../../v0.6.2/print/player-mat.html', 'Gauntlet Player Mat — v0.6.2']) {
+            if (!redirect.includes(marker)) throw new Error(`Current player-mat redirect is missing: ${marker}`);
+          }
+
+          for (const marker of ['Gauntlet Player Mat', 'v0.6.2', 'Capture', 'Draw', 'Opening', 'Movement', 'Denouement', 'Cleanup']) {
+            if (!current.includes(marker)) throw new Error(`v0.6.2 player mat is missing: ${marker}`);
+          }
+
+          if (/Action Opportunity/i.test(current)) {
+            throw new Error('v0.6.2 player mat contains retired Action Opportunity terminology.');
+          }
+
+          console.log('Validated current v0.6.2 player-mat entry point and preserved v0.6.1 PDF.');
           NODE
-
-      - name: Validate PDF
-        run: |
-          python3 <<'PY'
-          from pathlib import Path
-          from pypdf import PdfReader
-
-          path = Path('playtest/player-mat/Gauntlet_v0.6.1_Player_Mat.pdf')
-          if not path.exists() or path.stat().st_size < 20_000:
-              raise SystemExit('Generated Player Mat PDF is missing or unexpectedly small')
-          reader = PdfReader(str(path))
-          if len(reader.pages) != 1:
-              raise SystemExit(f'Expected exactly one page, found {len(reader.pages)}')
-          page = reader.pages[0]
-          width = float(page.mediabox.width)
-          height = float(page.mediabox.height)
-          if abs(width - 792) > 2 or abs(height - 612) > 2:
-              raise SystemExit(f'Expected landscape Letter size, found {width} x {height} points')
-          text = (page.extract_text() or '').strip()
-          required = [
-              'Player Mat', 'Hand', 'Draw Pile', 'Discard Pile', 'Graveyard',
-              'Reserve', 'Gambit', 'Tactic', 'Asset Bank', 'Battle Staging',
-              'Gambits go to the Graveyard.'
-          ]
-          missing = [item for item in required if item not in text]
-          if missing:
-              raise SystemExit(f'Generated Player Mat is missing required text: {missing}')
-          if len(text) < 700:
-              raise SystemExit(f'Generated Player Mat contains too little text: {len(text)} characters')
-          print(f'Validated {path}: one landscape Letter page, {path.stat().st_size} bytes, {len(text)} text characters.')
-          PY
-
-      - name: Upload rendered player mat
-        uses: actions/upload-artifact@v4
-        with:
-          name: gauntlet-v061-player-mat
-          path: |
-            playtest/player-mat/Gauntlet_v0.6.1_Player_Mat.pdf
-            playtest/player-mat/Gauntlet_v0.6.1_Player_Mat_Preview.png
-          if-no-files-found: error
-
-      - name: Commit generated PDF on main
-        if: github.event_name == 'push' && github.ref_name == 'main'
-        run: |
-          node scripts/commit-generated-files.mjs \
-            "Render v0.6.1 player mat PDF" \
-            -- playtest/player-mat/Gauntlet_v0.6.1_Player_Mat.pdf
