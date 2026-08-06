@@ -15,6 +15,7 @@ function contentType(path) {
     '.js': 'text/javascript; charset=utf-8',
     '.mjs': 'text/javascript; charset=utf-8',
     '.css': 'text/css; charset=utf-8',
+    '.svg': 'image/svg+xml',
     '.png': 'image/png',
     '.jpg': 'image/jpeg',
     '.jpeg': 'image/jpeg',
@@ -71,7 +72,8 @@ async function main() {
       return cards.length === 2
         && cards.every(card => card.dataset.parchmentLoaded === 'true')
         && cards.every(card => card.dataset.titleFit === 'true')
-        && cards.every(card => card.querySelector('.card-interior')?.style.getPropertyValue('--art-height'));
+        && cards.every(card => card.querySelector('.card-interior')?.style.getPropertyValue('--art-height'))
+        && [...document.images].every(image => image.complete && image.naturalWidth > 0);
     });
     await page.evaluate(async () => document.fonts?.ready);
     await page.waitForTimeout(150);
@@ -84,9 +86,35 @@ async function main() {
       throw new Error(`Required Leader fonts failed to load: ${JSON.stringify(fonts)}`);
     }
 
+    const symbolMetrics = await page.locator('.faction-symbol-swatch').evaluateAll(swatches => swatches.map(swatch => {
+      const symbol = swatch.querySelector('.leader-faction-emblem');
+      const style = symbol ? getComputedStyle(symbol) : null;
+      return {
+        faction: swatch.getAttribute('data-faction'),
+        maskImage: style?.maskImage || style?.webkitMaskImage || 'none',
+        width: symbol?.getBoundingClientRect().width,
+        height: symbol?.getBoundingClientRect().height,
+      };
+    }));
+
+    if (symbolMetrics.length !== 6 || symbolMetrics.some(symbol => symbol.maskImage === 'none')) {
+      throw new Error(`Faction symbols did not load: ${JSON.stringify(symbolMetrics)}.`);
+    }
+
     const metrics = await page.locator('.leader-card').evaluateAll(cards => cards.map(card => {
       const interior = card.querySelector('.card-interior');
+      const portrait = card.querySelector('.card-art img');
+      const footer = card.querySelector('.card-footer');
+      const footerRect = footer?.getBoundingClientRect();
+      const footerSpans = [...(footer?.querySelectorAll('span') || [])];
+      const footerClipped = Boolean(footerRect) && footerSpans.some(span => {
+        const rect = span.getBoundingClientRect();
+        return rect.top < footerRect.top - 0.5 || rect.bottom > footerRect.bottom + 0.5;
+      });
       const rect = card.getBoundingClientRect();
+      const symbol = card.querySelector('.leader-faction-emblem');
+      const symbolStyle = symbol ? getComputedStyle(symbol) : null;
+      const tintStyle = interior ? getComputedStyle(interior, '::after') : null;
       return {
         name: card.querySelector('.card-title')?.textContent?.trim(),
         width: rect.width,
@@ -96,6 +124,12 @@ async function main() {
         fitWarning: card.classList.contains('fit-warning'),
         titleFit: card.dataset.titleFit,
         parchmentLoaded: card.dataset.parchmentLoaded,
+        portraitPath: portrait ? new URL(portrait.src).pathname : '',
+        portraitNaturalWidth: portrait?.naturalWidth || 0,
+        portraitFilter: portrait ? getComputedStyle(portrait).filter : '',
+        symbolMask: symbolStyle?.maskImage || symbolStyle?.webkitMaskImage || 'none',
+        tintBackground: tintStyle?.backgroundImage || 'none',
+        footerClipped,
       };
     }));
 
@@ -106,6 +140,18 @@ async function main() {
       if (metric.fitWarning || metric.titleFit !== 'true' || metric.parchmentLoaded !== 'true') {
         throw new Error(`Leader face does not fit or load correctly: ${JSON.stringify(metric)}.`);
       }
+      if (!metric.portraitPath.startsWith('/images/') || metric.portraitPath.includes('/sketches/')) {
+        throw new Error(`Leader portrait is not using the full-color /images source: ${JSON.stringify(metric)}.`);
+      }
+      if (!metric.portraitNaturalWidth || metric.portraitFilter !== 'none') {
+        throw new Error(`Leader portrait failed full-color validation: ${JSON.stringify(metric)}.`);
+      }
+      if (metric.symbolMask === 'none' || metric.tintBackground === 'none') {
+        throw new Error(`Leader faction identity treatment failed: ${JSON.stringify(metric)}.`);
+      }
+      if (metric.footerClipped) {
+        throw new Error(`Leader metadata footer is clipped: ${JSON.stringify(metric)}.`);
+      }
     }
 
     await page.screenshot({ path: join(OUTPUT, 'leader-card-review-page.png'), fullPage: true });
@@ -115,7 +161,7 @@ async function main() {
         omitBackground: true,
       });
     }
-    await writeFile(join(OUTPUT, 'metrics.json'), `${JSON.stringify({ fonts, cards: metrics }, null, 2)}\n`);
+    await writeFile(join(OUTPUT, 'metrics.json'), `${JSON.stringify({ fonts, symbols: symbolMetrics, cards: metrics }, null, 2)}\n`);
   } finally {
     await browser.close();
     await new Promise(resolve => server.close(resolve));
