@@ -6,11 +6,21 @@ import childProcess from 'node:child_process';
 const root = process.cwd();
 const failures = [];
 const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'utf8');
-const heroPlateRelativePaths = [
-  'images/sketches/hero-plates/financiers.png',
-  'images/sketches/hero-plates/military.png',
-  'images/sketches/hero-plates/institutions.png',
+const heroPlateAssignments = [
+  {
+    asset: 'images/sketches/hero-plates/alchemist-executive-ambassador.png',
+    leaders: ['Alchemist', 'Executive', 'Ambassador'],
+  },
+  {
+    asset: 'images/sketches/hero-plates/ranger-commandant-senator.png',
+    leaders: ['Ranger', 'Commandant', 'Senator'],
+  },
+  {
+    asset: 'images/sketches/hero-plates/witch-hunter-banker-spymaster.png',
+    leaders: ['Witch Hunter', 'Banker', 'Spymaster'],
+  },
 ];
+const heroPlateRelativePaths = heroPlateAssignments.map(({ asset }) => asset);
 const heroPlatePaths = heroPlateRelativePaths.map((relativePath) => path.join(root, relativePath));
 
 const activeHtml = [
@@ -65,12 +75,16 @@ for (const [relativePath, tokens] of Object.entries(requiredRules)) {
 }
 
 if (new Set(heroPlateRelativePaths).size !== heroPlateRelativePaths.length) {
-  failures.push('Booklet hero-plate asset list contains duplicate paths.');
+  failures.push('Booklet faction-Leader plate asset list contains duplicate paths.');
+}
+const allPlateLeaders = heroPlateAssignments.flatMap(({ leaders }) => leaders);
+if (new Set(allPlateLeaders).size !== allPlateLeaders.length) {
+  failures.push('Booklet faction-Leader plate sequence repeats a Leader.');
 }
 for (const [index, heroPlatePath] of heroPlatePaths.entries()) {
   const relativePath = heroPlateRelativePaths[index];
   if (!fs.existsSync(heroPlatePath)) {
-    failures.push(`Missing booklet hero-plate asset ${index + 1}: ${relativePath}`);
+    failures.push(`Missing booklet faction-Leader plate ${index + 1}: ${relativePath}`);
     continue;
   }
   const heroBytes = fs.readFileSync(heroPlatePath);
@@ -117,7 +131,7 @@ else {
   if (!Number.isInteger(readerPages) || readerPages < 20) failures.push(`Rulebook page count is invalid: ${readerPages}.`);
   const paddedPages = Number.isInteger(readerPages) ? Math.ceil(readerPages / 4) * 4 : null;
   const expectedBooklet = Number.isInteger(paddedPages) ? paddedPages / 2 : null;
-  const expectedHeroPlates = Number.isInteger(readerPages) ? paddedPages - readerPages : null;
+  const expectedLeaderPlates = Number.isInteger(readerPages) ? paddedPages - readerPages : null;
   if (bookletPages !== expectedBooklet) failures.push(`Booklet page count ${bookletPages} does not match imposed reader count ${expectedBooklet}.`);
 
   const padding = manifest.booklet_padding;
@@ -125,23 +139,24 @@ else {
   else {
     if (padding.source_pages !== readerPages) failures.push(`Booklet padding source_pages ${padding.source_pages} does not match reader pages ${readerPages}.`);
     if (padding.padded_pages !== paddedPages) failures.push(`Booklet padding padded_pages ${padding.padded_pages} does not match ${paddedPages}.`);
-    if (padding.hero_plate_count !== expectedHeroPlates) failures.push(`Booklet padding expected ${expectedHeroPlates} hero plates; found ${padding.hero_plate_count}.`);
-    if (expectedHeroPlates !== heroPlateRelativePaths.length) {
-      failures.push(`Rulebook requires ${expectedHeroPlates} padding pages, but ${heroPlateRelativePaths.length} approved hero plates are configured.`);
+    if (padding.leader_plate_count !== expectedLeaderPlates) failures.push(`Booklet padding expected ${expectedLeaderPlates} faction-Leader plates; found ${padding.leader_plate_count}.`);
+    if (expectedLeaderPlates !== heroPlateAssignments.length) {
+      failures.push(`Rulebook requires ${expectedLeaderPlates} padding pages, but ${heroPlateAssignments.length} approved faction-Leader plates are configured.`);
     }
-    if (JSON.stringify(padding.hero_assets) !== JSON.stringify(heroPlateRelativePaths)) {
-      failures.push(`Booklet padding hero assets are invalid: ${JSON.stringify(padding.hero_assets)}.`);
+    if (JSON.stringify(padding.leader_assets) !== JSON.stringify(heroPlateRelativePaths)) {
+      failures.push(`Booklet padding Leader assets are invalid: ${JSON.stringify(padding.leader_assets)}.`);
     }
-    const expectedSourcePages = Array.from({ length: expectedHeroPlates || 0 }, (_, index) => readerPages + index + 1);
-    if (JSON.stringify(padding.hero_source_pages) !== JSON.stringify(expectedSourcePages)) {
-      failures.push(`Booklet padding source-page metadata is invalid: ${JSON.stringify(padding.hero_source_pages)}.`);
+    const expectedSourcePages = Array.from({ length: expectedLeaderPlates || 0 }, (_, index) => readerPages + index + 1);
+    if (JSON.stringify(padding.leader_source_pages) !== JSON.stringify(expectedSourcePages)) {
+      failures.push(`Booklet padding Leader source-page metadata is invalid: ${JSON.stringify(padding.leader_source_pages)}.`);
     }
-    const expectedPlateAssignments = heroPlateRelativePaths.map((asset, index) => ({
+    const expectedPlateAssignments = heroPlateAssignments.map(({ asset, leaders }, index) => ({
       source_page: expectedSourcePages[index],
       asset,
+      leaders,
     }));
-    if (JSON.stringify(padding.hero_plates) !== JSON.stringify(expectedPlateAssignments)) {
-      failures.push(`Booklet padding ordered plate assignments are invalid: ${JSON.stringify(padding.hero_plates)}.`);
+    if (JSON.stringify(padding.leader_plates) !== JSON.stringify(expectedPlateAssignments)) {
+      failures.push(`Booklet padding ordered faction-Leader assignments are invalid: ${JSON.stringify(padding.leader_plates)}.`);
     }
   }
 
@@ -180,4 +195,4 @@ if (failures.length) {
   console.error(failures.join('\n'));
   process.exit(1);
 }
-console.log(`v0.6.2 printed-materials validation passed: ${pdfFiles.length} PDFs, three distinct hero-art booklet padding plates, current browser sources, and immutable v0.6.1 boundary.`);
+console.log(`v0.6.2 printed-materials validation passed: ${pdfFiles.length} PDFs; Alchemist, Executive, and Ambassador on plate 1; Ranger, Commandant, and Senator on plate 2; Witch Hunter, Banker, and Spymaster on plate 3; current browser sources; and immutable v0.6.1 boundary.`);
