@@ -51,6 +51,7 @@ for (const [text, label] of [
   ['| First Rite | 1 |\n| Second Rite | 2 |\n| Third Rite | 3 |\n| Ritual of Ascendance | 4 |', 'Guardians scaling'],
   ['| Starting Capital | 2, as a v0.6.2 test revision. |', 'Financier starting Capital'],
   ['If Treasury value is greater, the Financier may take one Action during both Opening and Denouement that turn', 'Financial Capacity'],
+  ["Tariffs, Divestment, and Margin Loan each permit one additional Action during the phase in which the card's Action resolves.", 'Financier same-phase Action permission'],
   ['| +1 | 1 |\n| +2 | 3 |\n| +3 | 6 |\n| +4 | 10 |', 'Leverage progression'],
 ]) requireText(candidate, text, label);
 
@@ -70,7 +71,9 @@ for (const [text, label] of [
   ['If that additional movement creates a pending battle, you cannot set a Gambit in that battle.', 'Advance Guard'],
   ['they cannot play a card for its Action effect during Denouement that turn.', 'Entrenchment'],
   ['**Use:** During Onset while you are the defender', 'Palisade Wall'],
-  ['**Use:** During your turn, you may discard this card to gain one additional Action that turn.', 'Reinforcements'],
+  ['**Use:** During Opening or Denouement, you may discard this card. If you do, you may take one additional Action during that phase.', 'Reinforcements'],
+  ['Draw three cards. After this Action resolves, you may take one additional Action during this phase.', 'Insurrection'],
+  ['After you win a Counterattack, draw one card. During your Denouement that turn, you may take one additional Action, even if you take another Action during that phase.', 'Liberation'],
   ['If you play Strategic Withdrawal during Denouement after your normal Movement has ended, begin a new Movement sequence', 'Strategic Withdrawal'],
   ['Assimilation cannot create isolated control.', 'Assimilation'],
   ['The next time the opponent would add this Territory to their Front Line during Capture, prevent that Front Line advance.', 'Protracted Siege'],
@@ -152,7 +155,7 @@ for (const prefix of ['A', 'M', 'D', 'F', 'I', 'Y', 'Q', 'N']) {
 
 for (const text of [
   'Détente does not trigger when the accepted Proposal becomes ratified during those Terms.',
-  'Tariffs, Divestment, and Margin Loan grant an Action but no same-phase permission',
+  "Tariffs, Divestment, and Margin Loan each permit one additional Action during the phase in which the card's Action resolves.",
   'Arenas remove Defensive Edge and use a separate Tiebreak Roll',
   'published v0.6.1 sources remain unchanged',
 ]) requireText(normativeWaveB, text, 'cross-faction requirement');

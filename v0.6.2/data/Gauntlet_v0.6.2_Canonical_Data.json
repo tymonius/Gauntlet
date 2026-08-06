@@ -1,8 +1,8 @@
 {
-  "version": "v0.6.2",
-  "name": "Second Playtest Revision",
-  "date": "2026-08-05",
-  "status": "Published playtest edition",
+  "version": "v0.6.2-candidate",
+  "name": "Second Playtest Revision Candidate",
+  "date": "2026-08-04",
+  "status": "Development candidate — not the published v0.6.1 release",
   "deck_construction": {
     "minimum_playable_cards": 30,
     "maximum_deckbuilding_value": 60,
@@ -71,7 +71,8 @@
       ],
       "victory": "Run the Gauntlet.",
       "card_count": 13,
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
+      "source": "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
+      "source_candidate": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
     },
     {
       "id": "diplomats",
@@ -90,7 +91,8 @@
       ],
       "victory": "Run the Gauntlet or complete the Peace Treaty.",
       "card_count": 13,
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
+      "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
+      "source_candidate": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
     },
     {
       "id": "financiers",
@@ -109,7 +111,8 @@
       ],
       "victory": "Run the Gauntlet or achieve Controlling Interest.",
       "card_count": 13,
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
+      "source": "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
+      "source_candidate": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
     },
     {
       "id": "intelligence",
@@ -128,7 +131,8 @@
       ],
       "victory": "Run the Gauntlet or complete a Special Operation.",
       "card_count": 13,
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
+      "source": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
+      "source_candidate": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
     },
     {
       "id": "mystics",
@@ -147,7 +151,8 @@
       ],
       "victory": "Run the Gauntlet or complete the Ritual of Ascendance.",
       "card_count": 13,
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
+      "source": "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
+      "source_candidate": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
     },
     {
       "id": "inquisition",
@@ -166,7 +171,8 @@
       ],
       "victory": "Run the Gauntlet or achieve Purification.",
       "card_count": 13,
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
+      "source": "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
+      "source_candidate": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
     }
   ],
   "card_pool_summary": {
@@ -287,7 +293,7 @@
           "text": "In the Aftermath, the losing player puts one card from their Hand in their Graveyard, if able."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
       "action": "After the next battle you initiate this turn, the losing player puts one card from their Hand in their Graveyard, if able.",
       "battle": "In the Aftermath, the losing player puts one card from their Hand in their Graveyard, if able.",
       "rules_notes": [
@@ -313,7 +319,7 @@
           "text": "In the Aftermath, choose one card in the opponent's Discard Pile. They put it on top of their Draw Pile or in their Graveyard."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
       "action": "Choose one card in the opponent's Discard Pile. They put it on top of their Draw Pile or in their Graveyard.",
       "battle": "In the Aftermath, choose one card in the opponent's Discard Pile. They put it on top of their Draw Pile or in their Graveyard."
     },
@@ -336,7 +342,7 @@
           "text": "In the Aftermath, reveal up to two cards from the top of the opponent's Draw Pile. Put one in their Graveyard and the rest in their Discard Pile."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
       "action": "Reveal up to three cards from the top of the opponent's Draw Pile. Put one in their Graveyard and the rest in their Discard Pile.",
       "battle": "In the Aftermath, reveal up to two cards from the top of the opponent's Draw Pile. Put one in their Graveyard and the rest in their Discard Pile.",
       "rules_notes": [
@@ -362,7 +368,7 @@
           "text": "If you are the attacker and did not set a Gambit, gain advantage."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "During Opening, during your Movement this turn, you may move one additional Position. If that additional movement creates a pending battle, you cannot set a Gambit in that battle.",
       "battle": "If you are the attacker and did not set a Gambit, gain advantage.",
       "source_candidate": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
@@ -386,7 +392,7 @@
           "text": "When revealed, choose one card in your Graveyard with a Battle effect that can be applied now. Apply that effect as though you played it. Leave the chosen card in your Graveyard."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Move one card from your Graveyard to your Discard Pile.",
       "battle": "When revealed, choose one card in your Graveyard with a Battle effect that can be applied now. Apply that effect as though you played it. Leave the chosen card in your Graveyard.",
       "rules_notes": [
@@ -416,7 +422,7 @@
           "text": "When revealed, apply effects that could negate it before other effects at that stage. If this card is not negated, the attacker withdraws and the battle ends without a winner. Do not apply any remaining Battle effects. Put every other Gambit and Tactic still in battle in its owner's Discard Pile, then put this card in its owner's Graveyard. Cards remaining in Reserve are discarded normally."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "asset": "While this card is banked, neither player can start a battle. After your normal Draw step at the start of each of your turns, discard two cards from your Hand or discard this card. You cannot voluntarily discard this card at another time.",
       "battle": "When revealed, apply effects that could negate it before other effects at that stage. If this card is not negated, the attacker withdraws and the battle ends without a winner. Do not apply any remaining Battle effects. Put every other Gambit and Tactic still in battle in its owner's Discard Pile, then put this card in its owner's Graveyard. Cards remaining in Reserve are discarded normally.",
@@ -447,7 +453,7 @@
           "text": "Complete after you reveal one or more cards in the opponent's Hand outside a battle, then win a battle against that opponent in which they set a Gambit."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
       "action": "Reveal the opponent's Hand. Choose one card there and discard it.",
       "battle": "When revealed, negate one opposing Gambit. If Assassins is revealed with Gambits, apply this before other Gambit effects. If the opponent set no Gambit, give them disadvantage during this battle.",
       "mission": "Complete after you reveal one or more cards in the opponent's Hand outside a battle, then win a battle against that opponent in which they set a Gambit."
@@ -475,7 +481,7 @@
           "text": "During the Aftermath, if you win as the attacker on a Territory the opponent controls, advance your Front Line by one Territory, if able, instead of becoming the occupier. Put this card in your Graveyard after the Front Line advance."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "use": "During the Aftermath of a battle you initiated and won on a Territory the opponent controls, you may put this card in your Graveyard. If you do, advance your Front Line by one Territory, if able, instead of becoming the occupier.",
       "battle": "During the Aftermath, if you win as the attacker on a Territory the opponent controls, advance your Front Line by one Territory, if able, instead of becoming the occupier. Put this card in your Graveyard after the Front Line advance.",
@@ -504,7 +510,7 @@
           "text": "In the Aftermath, if the opponent loses, put every card from their initial Reserve in their Graveyard."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "asset": "In the Aftermath of a battle the opponent lost against you, put each opposing Tactic from that battle in their Graveyard instead of their Discard Pile.",
       "battle": "In the Aftermath, if the opponent loses, put every card from their initial Reserve in their Graveyard."
@@ -528,7 +534,7 @@
           "text": "In the Aftermath, if you won, return one other Tactic you chose to your Hand instead of putting it in your Discard Pile."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
       "action": "Play only during Denouement if you won a battle this turn. Return one Tactic you chose during that battle from your Discard Pile to your Hand.",
       "battle": "In the Aftermath, if you won, return one other Tactic you chose to your Hand instead of putting it in your Discard Pile.",
       "source_candidate": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
@@ -548,7 +554,7 @@
           "text": "Gain advantage. Then you may play one card from your Hand with a Tactic or Battle effect face up as an additional Tactic. In the Aftermath, put this card and that card in your Graveyard."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
       "tactic": "Gain advantage. Then you may play one card from your Hand with a Tactic or Battle effect face up as an additional Tactic. In the Aftermath, put this card and that card in your Graveyard.",
       "source_candidate": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
     },
@@ -571,7 +577,7 @@
           "text": "If you are attacking on an enemy-controlled Territory, place Bombardment face up on it. That Territory's printed effect is inactive during this battle. In the Aftermath, if you win, turn Bombardment face down; it becomes a Ruins Overlay."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Place Bombardment face up on the nearest enemy-controlled Territory ahead of you with an active printed effect. While it remains there, that printed Territory effect is inactive. The next time you attack there, put this card in its owner's Graveyard if you lose. If you win, or if you capture the Territory without a battle, turn Bombardment face down; it becomes a Ruins Overlay.",
       "battle": "If you are attacking on an enemy-controlled Territory, place Bombardment face up on it. That Territory's printed effect is inactive during this battle. In the Aftermath, if you win, turn Bombardment face down; it becomes a Ruins Overlay."
     },
@@ -598,7 +604,7 @@
           "text": "When you choose Brothers in Arms as your Tactic, if you did not set a Gambit, you may also choose one card from your Hand with a Tactic or Battle effect as an additional Tactic. Set it face down and reveal both together.\n\nIn the Aftermath, put the card chosen from your Hand in your Graveyard instead of your Discard Pile."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "When choosing Tactics, if you did not set a Gambit, you may discard this card. If you do, choose one eligible Tactic from your Reserve and one card from your Hand with a Tactic or Battle effect. Set both face down as your Tactics, or pass.",
       "tactic": "When you choose Brothers in Arms as your Tactic, if you did not set a Gambit, you may also choose one card from your Hand with a Tactic or Battle effect as an additional Tactic. Set it face down and reveal both together.\n\nIn the Aftermath, put the card chosen from your Hand in your Graveyard instead of your Discard Pile."
@@ -622,7 +628,7 @@
           "text": "In the Aftermath, if the opponent lost, they reveal their Hand. Put the card there with the highest card value in their Graveyard; choose among ties. If it has the Arcane trait, gain 1 Conviction."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
       "action": "The opponent reveals their Hand. Put the card there with the highest card value in their Graveyard; choose among ties. If it has the Arcane trait, gain 1 Conviction.",
       "battle": "In the Aftermath, if the opponent lost, they reveal their Hand. Put the card there with the highest card value in their Graveyard; choose among ties. If it has the Arcane trait, gain 1 Conviction.",
       "rules_notes": [
@@ -648,7 +654,7 @@
           "text": "In the Aftermath, if you won, choose one other card you controlled in this battle that would go to a Discard Pile or Graveyard. Place that card face up in your Treasury instead."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
       "action": "Place Capital Gains beneath one card in your Treasury. At the start of your next turn, after the Capture step and income, return that Treasury card to your Hand and gain Capital equal to its value, then put this card in your Discard Pile. If you lose a battle before then, put both cards in your Discard Pile instead. If the chosen card leaves Treasury first, put this card in your Discard Pile.",
       "battle": "In the Aftermath, if you won, choose one other card you controlled in this battle that would go to a Discard Pile or Graveyard. Place that card face up in your Treasury instead."
     },
@@ -671,7 +677,7 @@
           "text": "When revealed, before other effects at that stage are applied, negate one opposing Gambit or Tactic whose effect has not been applied. In the Aftermath, if you won, put the chosen card in its owner's Graveyard."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "If you won a battle this turn, choose one opposing Asset and put it in its owner's Graveyard.",
       "battle": "When revealed, before other effects at that stage are applied, negate one opposing Gambit or Tactic whose effect has not been applied. In the Aftermath, if you won, put the chosen card in its owner's Graveyard."
     },
@@ -698,7 +704,7 @@
           "text": "Once during each battle here involving you, after dice are rolled, you may put one card from your Hand in your Graveyard. If you do, choose either player. That player rerolls and must use the new result.\n\nWhen this Territory is captured, put this card in its owner's Graveyard."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
       "action": "Place Circle of Bones as an Overlay on your current Territory or an adjacent Territory.",
       "battle": "In the Aftermath, place this card as an Overlay on the contested Territory.",
       "overlay": "Once during each battle here involving you, after dice are rolled, you may put one card from your Hand in your Graveyard. If you do, choose either player. That player rerolls and must use the new result.\n\nWhen this Territory is captured, put this card in its owner's Graveyard."
@@ -718,7 +724,7 @@
           "text": "Choose one card in the opponent's Graveyard. They choose one:\n\n- Move it to their Discard Pile; you gain 1 Influence.\n- Leave it there; you draw one card."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
       "action": "Choose one card in the opponent's Graveyard. They choose one:\n\n- Move it to their Discard Pile; you gain 1 Influence.\n- Leave it there; you draw one card."
     },
     {
@@ -740,7 +746,7 @@
           "text": "After your normal Draw, if your Treasury contains at least one card, you may reveal the top card of your Draw Pile. Place it face up in your Treasury or put it in your Discard Pile."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md",
       "action": "Bank this card. You may have only one banked Compound Interest.",
       "asset": "After your normal Draw, if your Treasury contains at least one card, you may reveal the top card of your Draw Pile. Place it face up in your Treasury or put it in your Discard Pile."
     },
@@ -763,7 +769,7 @@
           "text": "After Tactics are chosen, before they are normally revealed, reveal Confession if it is face down. Reveal one opposing face-down Tactic. You may return Confession to your Reserve and choose another eligible Tactic from your Reserve face down."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
       "action": "Reveal the opponent's Hand. Choose one eligible Gambit there. Until the end of the turn, if they set a Gambit in a battle involving you, they must set that card if able.",
       "tactic": "After Tactics are chosen, before they are normally revealed, reveal Confession if it is face down. Reveal one opposing face-down Tactic. You may return Confession to your Reserve and choose another eligible Tactic from your Reserve face down.",
       "rules_notes": [
@@ -789,7 +795,7 @@
           "text": "When Gambits are revealed, draw one additional card into your Reserve. You may choose one additional Tactic during this battle."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Draw one card. You may immediately play one card from your Hand whose Action effect banks it without spending another Action.",
       "gambit": "When Gambits are revealed, draw one additional card into your Reserve. You may choose one additional Tactic during this battle."
     },
@@ -812,7 +818,7 @@
           "text": "In the Aftermath, if you won as the attacker on a Territory your opponent controls, draw one card."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Play only if you captured a Territory this turn. Draw two cards.",
       "battle": "In the Aftermath, if you won as the attacker on a Territory your opponent controls, draw one card."
     },
@@ -839,7 +845,7 @@
           "text": "If your opponent controls more Territories than you, add +1 to your battle total."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "asset": "If you discard this card because your Asset limit decreased, draw one card.",
       "battle": "If your opponent controls more Territories than you, add +1 to your battle total."
@@ -863,7 +869,7 @@
           "text": "When revealed, choose one eligible card in your Discard Pile whose Battle effect can apply now. Put Contraband in your Graveyard and place the chosen card face up in Contraband's role. In the Aftermath, put the chosen card in your Graveyard unless its text says otherwise."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Return one card from your Discard Pile to your Hand.",
       "battle": "When revealed, choose one eligible card in your Discard Pile whose Battle effect can apply now. Put Contraband in your Graveyard and place the chosen card face up in Contraband's role. In the Aftermath, put the chosen card in your Graveyard unless its text says otherwise."
     },
@@ -886,7 +892,7 @@
           "text": "In the Aftermath, if you won, you may buy or buy out any number of Deeds. Complete each purchase before calculating the next cost."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
       "action": "Buy or buy out any number of Deeds. Complete each purchase before calculating the next cost.",
       "battle": "In the Aftermath, if you won, you may buy or buy out any number of Deeds. Complete each purchase before calculating the next cost."
     },
@@ -913,7 +919,7 @@
           "text": "At the end of the Aftermath of a battle you did not initiate and won, put this card in your Graveyard, then advance one position. This movement may start a battle."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "At the end of the Aftermath of a battle you did not initiate and won, you may put this card in your Graveyard. If you do, advance one position. This movement may start a battle.",
       "battle": "At the end of the Aftermath of a battle you did not initiate and won, put this card in your Graveyard, then advance one position. This movement may start a battle.",
@@ -944,7 +950,7 @@
           "text": "If an opposing effect would reveal Counterintelligence or another face-down Gambit or Tactic you control at Counterintelligence's reveal stage before the normal reveal, reveal Counterintelligence and prevent that entire effect. Add +1 to your battle total."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "asset": "Opposing effects cannot reveal your Hand, Reserve, or face-down Gambits or Tactics. This does not prevent reveals required by the rules.",
       "battle": "If an opposing effect would reveal Counterintelligence or another face-down Gambit or Tactic you control at Counterintelligence's reveal stage before the normal reveal, reveal Counterintelligence and prevent that entire effect. Add +1 to your battle total.",
@@ -976,7 +982,7 @@
           "text": "Choose one: one Overlay on the contested Territory is inactive during this battle; or the next opposing Overlay that would be placed there during this battle or its Aftermath is not placed. If a card would have become it, put that card in its owner's Discard Pile."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "use": "When an opposing effect would place an Overlay on a Territory, you may discard this card. If you do, that Overlay is not placed. If a card would have become it, put that card in its owner's Discard Pile.",
       "battle": "Choose one: one Overlay on the contested Territory is inactive during this battle; or the next opposing Overlay that would be placed there during this battle or its Aftermath is not placed. If a card would have become it, put that card in its owner's Discard Pile."
@@ -1004,7 +1010,7 @@
           "text": "The opponent gains disadvantage during this battle. If they lose, after their normal retreat they retreat one additional position, if able."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "use": "In the Aftermath of a battle an opponent lost against you, after their normal retreat, you may discard this card. If you do, they retreat one additional position, if able.",
       "battle": "The opponent gains disadvantage during this battle. If they lose, after their normal retreat they retreat one additional position, if able."
@@ -1028,7 +1034,7 @@
           "text": "Draw one card. You may put it in your Graveyard. If you do, gain advantage."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
       "action": "Draw two cards, then put one of them in your Graveyard.",
       "battle": "Draw one card. You may put it in your Graveyard. If you do, gain advantage."
     },
@@ -1055,7 +1061,7 @@
           "text": "An opposing effect that would negate or remove a card you have in battle must choose Decoys before another eligible card you control, if able."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "use": "If an opposing effect would cause one or more of your other Assets to leave play, you may discard this card. If you do, choose one affected Asset; it remains in play.",
       "battle": "An opposing effect that would negate or remove a card you have in battle must choose Decoys before another eligible card you control, if able."
@@ -1083,7 +1089,7 @@
           "text": "If an opposing effect revealed one of your Gambits or Tactics before its normal reveal, gain advantage."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "When your Active Mission would fail, you may put this card in your Graveyard. If you do, return that Mission to your Hand instead.",
       "battle": "If an opposing effect revealed one of your Gambits or Tactics before its normal reveal, gain advantage.",
@@ -1106,7 +1112,7 @@
           "text": "After your Terms are accepted and the Proposal's Accepted effect applies, you may place Demilitarized Zone from your Hand as an Overlay on the contested Territory without spending an Action. Each player still there withdraws.\n\nNeither player may enter this Territory during the turn Demilitarized Zone is placed.\n\nTo enter it while no Player Token is there, discard one card.\n\nIt cannot be captured or change control while Demilitarized Zone remains.\n\nAt the start of the placing player's turn, before the Capture step, if their Player Token is there, they discard one card or withdraw.\n\nAfter the next battle fought here, put this card in its owner's Discard Pile."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
       "terms": "After your Terms are accepted and the Proposal's Accepted effect applies, you may place Demilitarized Zone from your Hand as an Overlay on the contested Territory without spending an Action. Each player still there withdraws.\n\nNeither player may enter this Territory during the turn Demilitarized Zone is placed.\n\nTo enter it while no Player Token is there, discard one card.\n\nIt cannot be captured or change control while Demilitarized Zone remains.\n\nAt the start of the placing player's turn, before the Capture step, if their Player Token is there, they discard one card or withdraw.\n\nAfter the next battle fought here, put this card in its owner's Discard Pile.",
       "rules_notes": [
         "The placing-player reference does not change when Overlay control changes."
@@ -1131,7 +1137,7 @@
           "text": "The first time each turn an opponent accepts one of your Proposals that was already ratified when you offered it, gain 1 Influence."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md",
       "action": "Bank this card. You may have only one banked Détente.",
       "asset": "The first time each turn an opponent accepts one of your Proposals that was already ratified when you offered it, gain 1 Influence.",
       "rules_notes": [
@@ -1161,7 +1167,7 @@
           "text": "Choose one Proposal before applying its Refused effect. Only it may be imposed.\n\nThe other Proposal does not take effect or become ratified. After the Terms conclude, put this card in your Discard Pile."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
       "terms": "When you offer Terms, you may reveal Diplomatic Latitude from your Hand and offer two eligible Proposals with the same Stake instead of one. Stake that amount once.",
       "accepted": "The opponent chooses which Proposal is accepted.",
       "refused": "Choose one Proposal before applying its Refused effect. Only it may be imposed.\n\nThe other Proposal does not take effect or become ratified. After the Terms conclude, put this card in your Discard Pile."
@@ -1185,7 +1191,7 @@
           "text": "Complete after you win a battle in which the opponent set a Gambit and you did not."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
       "gambit": "When Gambits are revealed, if the opponent also set a Gambit, gain advantage. In the Aftermath, return Disinformation to your Hand instead of putting it in your Graveyard.",
       "mission": "Complete after you win a battle in which the opponent set a Gambit and you did not."
     },
@@ -1208,7 +1214,7 @@
           "text": "When revealed, before other effects at this stage, choose one opposing Gambit or Tactic at that stage whose effect has not been applied. Negate it. Return a Gambit to its owner's Hand or a Tactic to its owner's Reserve. That specific card cannot be set or chosen again during this battle."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "The opponent discards one random card from their Hand.",
       "battle": "When revealed, before other effects at this stage, choose one opposing Gambit or Tactic at that stage whose effect has not been applied. Negate it. Return a Gambit to its owner's Hand or a Tactic to its owner's Reserve. That specific card cannot be set or chosen again during this battle."
     },
@@ -1231,7 +1237,7 @@
           "text": "Before dice are rolled, you may make one Deed you own unowned. If you do, gain Capital equal to the number of Deeds you owned before doing so, then you may immediately Subsidize."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
       "action": "Make one Deed you own unowned. Gain Capital equal to the number of Deeds you owned before doing so. After this Action resolves, you may take one additional Action during this phase.",
       "battle": "Before dice are rolled, you may make one Deed you own unowned. If you do, gain Capital equal to the number of Deeds you owned before doing so, then you may immediately Subsidize.",
       "source_candidate": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
@@ -1255,7 +1261,7 @@
           "text": "Move one card from the opponent's Graveyard to their Discard Pile. Add +2 to your battle total."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
       "action": "Choose one card in the opponent's Graveyard and move it to their Discard Pile. Then gain 2 Conviction.",
       "battle": "Move one card from the opponent's Graveyard to their Discard Pile. Add +2 to your battle total."
     },
@@ -1282,7 +1288,7 @@
           "text": "In the Aftermath, if you won while defending a Territory you control, place this card on that Territory as an Overlay."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
       "action": "Place Encampment as an Overlay on a Territory you occupy and control.",
       "overlay": "At the end of Encampment's owner's turn, if they occupy and control this Territory, they gain 1 Command. When another player gains control of this Territory, put this card in its owner's Graveyard.",
       "battle": "In the Aftermath, if you won while defending a Territory you control, place this card on that Territory as an Overlay.",
@@ -1314,7 +1320,7 @@
           "text": "If you are the defender, the opponent gains disadvantage during this battle."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "asset": "When the opponent advances onto a Territory adjacent to your Player Token, their movement ends and they cannot play a card for its Action effect during their Denouement that turn.",
       "battle": "If you are the defender, the opponent gains disadvantage during this battle.",
@@ -1339,7 +1345,7 @@
           "text": "In the Aftermath, choose one or more cards in the opponent's Discard Pile with combined card value up to 3. Put them in their Graveyard."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
       "action": "Choose one or more cards in the opponent's Discard Pile with combined card value up to 5. Put them in their Graveyard.",
       "battle": "In the Aftermath, choose one or more cards in the opponent's Discard Pile with combined card value up to 3. Put them in their Graveyard."
     },
@@ -1366,7 +1372,7 @@
           "text": "Complete after you withdraw from a battle after an opposing Tactic was revealed."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "After an opposing Gambit or Tactic is revealed in a battle involving you, before the battle result is determined, you may discard this card. If you do, withdraw.",
       "mission": "Complete after you withdraw from a battle after an opposing Tactic was revealed.",
@@ -1393,7 +1399,7 @@
           "text": "The bound card cannot be played, moved, or affected except by Extraordinary Rendition. Whenever you discard one or more Assets you control, discard Extraordinary Rendition before any others, if able. When Extraordinary Rendition leaves play, put the bound card in its owner's Discard Pile."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md",
       "action": "Bank this card. When you do, reveal the opponent's Hand, choose one card there, and bind it face up beneath Extraordinary Rendition. You may have only one banked Extraordinary Rendition.",
       "asset": "The bound card cannot be played, moved, or affected except by Extraordinary Rendition. Whenever you discard one or more Assets you control, discard Extraordinary Rendition before any others, if able. When Extraordinary Rendition leaves play, put the bound card in its owner's Discard Pile.",
       "rules_notes": [
@@ -1419,7 +1425,7 @@
           "text": "After you roll, you may put one other card from your Hand in your Graveyard to reroll. You must use the new result."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
       "action": "Put one other card from your Hand in your Graveyard. Move one additional position this turn. Move one position at a time.",
       "battle": "After you roll, you may put one other card from your Hand in your Graveyard to reroll. You must use the new result."
     },
@@ -1446,7 +1452,7 @@
           "text": "Ignore one disadvantage affecting you during this battle. If you have no disadvantage, add +1 to your battle total instead."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "asset": "Opposing card effects cannot give you disadvantage.",
       "battle": "Ignore one disadvantage affecting you during this battle. If you have no disadvantage, add +1 to your battle total instead."
@@ -1474,7 +1480,7 @@
           "text": "After you use a 1-Command Order during this battle while Field Command is face up, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command. If you do, put this card in your Graveyard after that Order takes effect."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "After you use a 1-Command Order, you may discard this card. If you do, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command.",
       "battle": "After you use a 1-Command Order during this battle while Field Command is face up, you may use your Leader's other 1-Command Order once this turn at its next legal timing without spending Command. If you do, put this card in your Graveyard after that Order takes effect.",
@@ -1505,7 +1511,7 @@
           "text": "Complete after your opponent has both a Gambit and one or more Tactics in a battle involving you, then loses that battle."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
       "action": "Place Fog of War as an Overlay on a Territory. Remove it after the next battle fought there. During that battle, the controller of this Territory sets their Gambit and chooses their Tactics after the opponent's corresponding choice, regardless of who initiated the battle.",
       "battle": "After Tactics are revealed, if your opponent set a Gambit and has one or more Tactics in battle, they choose one: return their Gambit to their Hand; or return each of their Tactics to its source. They have no Gambit or no Tactics in this battle, as chosen.",
       "mission": "Complete after your opponent has both a Gambit and one or more Tactics in a battle involving you, then loses that battle.",
@@ -1534,7 +1540,7 @@
           "text": "If you are defending against a Counterattack, gain advantage. In the Aftermath, if you won, draw one card."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "use": "After you win while defending against a Counterattack, you may discard this card. If you do, draw two cards.",
       "battle": "If you are defending against a Counterattack, gain advantage. In the Aftermath, if you won, draw one card."
@@ -1558,7 +1564,7 @@
           "text": "If you are the attacker, add +1 to your battle total."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "During Opening, during your Movement this turn, you may move one additional Position. This additional movement cannot create a pending battle.",
       "battle": "If you are the attacker, add +1 to your battle total.",
       "source_candidate": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
@@ -1582,7 +1588,7 @@
           "text": "During the Aftermath, if you initiated the battle on a Territory whose Deed you owned when the battle began and you won, advance your Front Line by one Territory, if able, instead of becoming the occupier."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
       "action": "During Denouement, choose the next opposing Territory immediately beyond your Front Line if its Deed is yours and it is unoccupied. Advance your Front Line by one Territory.",
       "battle": "During the Aftermath, if you initiated the battle on a Territory whose Deed you owned when the battle began and you won, advance your Front Line by one Territory, if able, instead of becoming the occupier.",
       "source_candidate": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
@@ -1610,7 +1616,7 @@
           "text": "If you are the defender, add +1 to your battle total. If you lose, after your normal retreat you may move one additional position toward your own end."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "asset": "When defending, you may choose up to two Tactics instead of one.",
       "battle": "If you are the defender, add +1 to your battle total. If you lose, after your normal retreat you may move one additional position toward your own end."
@@ -1634,7 +1640,7 @@
           "text": "At the end of the Aftermath of a battle you initiated and won, you may advance one position. Apply the same follow-up-battle restrictions. Put Give Chase in your Graveyard."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
       "action": "Play only during Denouement if you won a battle you initiated this turn. Advance one Position. This movement may create a pending battle. If it does, you cannot set a Gambit or use Orders during that battle. Form your Reserve with one fewer card for each earlier battle after the first that you fought this turn. This may reduce your Reserve to zero cards. Put Give Chase in your Graveyard after this movement.",
       "battle": "At the end of the Aftermath of a battle you initiated and won, you may advance one position. Apply the same follow-up-battle restrictions. Put Give Chase in your Graveyard.",
       "source_candidate": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
@@ -1666,7 +1672,7 @@
           "text": "Return it to your Hand before Gambits are set."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "When you offer Terms, before the opponent accepts or refuses, you may discard this card to draw one card, then reveal one card from your Hand and set it aside.",
       "accepted": "Put that card in your Graveyard, then gain 1 Influence.",
@@ -1696,7 +1702,7 @@
           "text": "In the Aftermath, after Gambits enter your Graveyard, choose one other Gambit you set during this battle. Move it from your Graveyard to your Discard Pile."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "When a card enters your Graveyard, you may discard this card. If you do, move that card from your Graveyard to your Discard Pile.",
       "battle": "In the Aftermath, after Gambits enter your Graveyard, choose one other Gambit you set during this battle. Move it from your Graveyard to your Discard Pile."
@@ -1720,7 +1726,7 @@
           "text": "In the Aftermath, choose one opposing Gambit, Tactic, or other card the opponent controlled in this battle. Put every card in the opponent's Discard Pile with that title in their Graveyard."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
       "action": "Choose one card in the opponent's Discard Pile. Put every card there with that title in their Graveyard.",
       "battle": "In the Aftermath, choose one opposing Gambit, Tactic, or other card the opponent controlled in this battle. Put every card in the opponent's Discard Pile with that title in their Graveyard."
     },
@@ -1751,7 +1757,7 @@
           "text": "Add +2 to your battle total."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
       "terms": "When you offer Terms, before the opponent accepts or refuses, you may reveal Gunboat Diplomacy from your Hand.",
       "accepted": "Put Gunboat Diplomacy in your Discard Pile.",
       "refused": "Set Gunboat Diplomacy face up as an additional Gambit in the resulting battle. It does not count against your Gambit limit.",
@@ -1779,7 +1785,7 @@
           "text": "After Tactics are revealed, spend any amount of Conviction. For each Conviction spent, choose one: add +1 to your battle total; or, if you win, during the Aftermath of the battle put the top card of the opponent's Draw Pile in their Graveyard. You may choose either option more than once."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
       "action": "Spend any amount of Conviction. Put that many cards from the top of the opponent's Draw Pile in their Graveyard.",
       "battle": "After Tactics are revealed, spend any amount of Conviction. For each Conviction spent, choose one: add +1 to your battle total; or, if you win, during the Aftermath of the battle put the top card of the opponent's Draw Pile in their Graveyard. You may choose either option more than once.",
       "rules_notes": [
@@ -1801,7 +1807,7 @@
           "text": "You may spend 4 Conviction to apply the Battle effect of a card in the opponent's Graveyard whose effect can be applied now, as though you played it. That card remains in the opponent's Graveyard."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
       "battle": "You may spend 4 Conviction to apply the Battle effect of a card in the opponent's Graveyard whose effect can be applied now, as though you played it. That card remains in the opponent's Graveyard.",
       "rules_notes": [
         "Heresy retains one additional copied-effect layer; the additional layer cannot create another."
@@ -1830,7 +1836,7 @@
           "text": "If you are defending a Territory you control, after Tactics are revealed, draw two cards into your Reserve. You may immediately play one face up as an additional Tactic. If you lose, after you retreat, the attacker captures that Territory. In the Aftermath, put this card in your Graveyard."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "During Onset in a battle where you are defending a Territory you control, you may put this card in your Graveyard. If you do, after Tactics are revealed, draw two cards into your Reserve. You may immediately play one face up as an additional Tactic. If you lose, after you retreat, the attacker captures that Territory.",
       "battle": "If you are defending a Territory you control, after Tactics are revealed, draw two cards into your Reserve. You may immediately play one face up as an additional Tactic. If you lose, after you retreat, the attacker captures that Territory. In the Aftermath, put this card in your Graveyard.",
@@ -1862,7 +1868,7 @@
           "text": "If this battle is a Counterattack, their banked Assets are inactive during this battle and you gain advantage."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "asset": "While the opponent occupies a Territory you control, their banked Assets are inactive.",
       "battle": "If this battle is a Counterattack, their banked Assets are inactive during this battle and you gain advantage."
@@ -1886,7 +1892,7 @@
           "text": "If this battle is a Counterattack, gain double advantage. Otherwise, if you are the attacker, gain advantage."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Discard your Hand. Each player shuffles their Discard Pile into their Draw Pile. Draw three cards. After this Action resolves, you may take one additional Action during this phase.",
       "battle": "If this battle is a Counterattack, gain double advantage. Otherwise, if you are the attacker, gain advantage.",
       "source_candidate": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
@@ -1914,7 +1920,7 @@
           "text": "Before Tactics normally reveal, reveal each opposing face-down Tactic and the opponent's Reserve. Return one opposing Tactic of your choice to that Reserve. The opponent cannot choose that card again during this battle. They may choose one eligible replacement from the Reserve or pass."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "When an opponent forms their Reserve in a battle involving you, before they choose Tactics, you may discard this card. If you do, reveal that Reserve and choose one card. They cannot choose that card during this battle.",
       "battle": "Before Tactics normally reveal, reveal each opposing face-down Tactic and the opponent's Reserve. Return one opposing Tactic of your choice to that Reserve. The opponent cannot choose that card again during this battle. They may choose one eligible replacement from the Reserve or pass."
@@ -1938,7 +1944,7 @@
           "text": "If you are the attacker, form your Reserve with one additional card and you may choose one additional Tactic."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md",
       "rules_notes": [
         "Unused additional movement is lost when a pending battle is created.",
         "Accepted Terms do not restore unused movement.",
@@ -1971,7 +1977,7 @@
           "text": "When a player retreats onto this Territory, they retreat one additional Position, if able. Then put Landslide in its owner's Discard Pile."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md",
       "action": "Place Landslide as an Overlay on any Territory that does not already have a Landslide.",
       "battle": "During the Aftermath, if you lose and retreat from a Territory, after retreating you may place Landslide as an Overlay on the contested Territory.",
       "overlay": "When a player retreats onto this Territory, they retreat one additional Position, if able. Then put Landslide in its owner's Discard Pile.",
@@ -1999,7 +2005,7 @@
           "text": "In the Aftermath, before battle cards are cleared, if you won as the attacker on a Territory whose Deed you do not own, you may buy or buy out that Deed, treating yourself as though you occupy it. For this purchase, you may use any number of other cards you controlled in this battle as collateral. Each contributes payment equal to its value. Put each collateral card in your Graveyard when battle cards are cleared. Collateral may pay the entire cost."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
       "action": "Buy or buy out one Deed. For this purchase, you may use any number of cards from your Hand or Treasury as collateral. Each contributes payment equal to its value and goes to your Graveyard after the purchase. Collateral may pay the entire cost.",
       "battle": "In the Aftermath, before battle cards are cleared, if you won as the attacker on a Territory whose Deed you do not own, you may buy or buy out that Deed, treating yourself as though you occupy it. For this purchase, you may use any number of other cards you controlled in this battle as collateral. Each contributes payment equal to its value. Put each collateral card in your Graveyard when battle cards are cleared. Collateral may pay the entire cost."
     },
@@ -2026,7 +2032,7 @@
           "text": "If this battle is a Counterattack, form your Reserve with one additional card and you may choose one additional Tactic."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "asset": "After you win a Counterattack, draw one card. During your Denouement that turn, you may take one additional Action, even if you take another Action during that phase.",
       "battle": "If this battle is a Counterattack, form your Reserve with one additional card and you may choose one additional Tactic.",
@@ -2051,7 +2057,7 @@
           "text": "Before dice are rolled, you may choose one card in your Treasury and put it in your Discard Pile. If you do, gain Capital equal to its value, then you may immediately Subsidize."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
       "action": "Choose one card in your Treasury and put it in your Discard Pile. Gain Capital equal to its value, then you may immediately buy or buy out one Deed.",
       "battle": "Before dice are rolled, you may choose one card in your Treasury and put it in your Discard Pile. If you do, gain Capital equal to its value, then you may immediately Subsidize."
     },
@@ -2074,7 +2080,7 @@
           "text": "During the Aftermath, if you win as the attacker and inserting Manifest Destiny between the contested Territory and the Position from which you attacked would place it immediately beyond your Front Line, insert it there. It becomes a blank Territory under your control."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "As an additional cost, put every other card in your Hand in your Graveyard. Then put banked Assets you control in your Graveyard until you have put at least three cards there this way, including at least one Asset. Add Manifest Destiny to your end of the Gauntlet. It becomes a blank Territory under your control.",
       "battle": "During the Aftermath, if you win as the attacker and inserting Manifest Destiny between the contested Territory and the Position from which you attacked would place it immediately beyond your Front Line, insert it there. It becomes a blank Territory under your control.",
       "rules_notes": [
@@ -2106,7 +2112,7 @@
           "text": "Before dice are rolled, you may place one other card from your Hand or Treasury beneath this card as collateral. If you do, gain Capital equal to its value, then you may immediately Subsidize. In the Aftermath, if you won, return the collateral to your Hand. Otherwise, put this card and its collateral in your Graveyard.\n\nIf this card leaves play before the loan is settled, you default."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
       "action": "Choose one other card in your Hand or Treasury and place it beneath this card as collateral. Bank this card. Gain Capital equal to the collateral card's value plus 2. After this Action resolves, you may take one additional Action during this phase.",
       "loan": "At the start of your next turn, after the Capture step and income, choose one:\n\n- Repay: Pay Capital equal to the collateral card's value plus 3. Return the collateral to your Hand, then put this card in your Discard Pile.\n- Default: Put this card and its collateral in your Graveyard.",
       "battle": "Before dice are rolled, you may place one other card from your Hand or Treasury beneath this card as collateral. If you do, gain Capital equal to its value, then you may immediately Subsidize. In the Aftermath, if you won, return the collateral to your Hand. Otherwise, put this card and its collateral in your Graveyard.\n\nIf this card leaves play before the loan is settled, you default.",
@@ -2130,7 +2136,7 @@
           "text": "When you lose a battle while Martyrdom is in your Hand, during the Aftermath before battle cards are cleared, you may play it without taking an Action. If you do, cards remaining in the opponent's Reserve go to their Graveyard instead of their Discard Pile during this Aftermath. After battle cards are cleared, set your Conviction to 4 and put Martyrdom in your Graveyard. Martyrdom does not prevent the loss, retreat, Occupation, or other normal consequences of the battle result."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md",
       "aftermath": "When you lose a battle while Martyrdom is in your Hand, during the Aftermath before battle cards are cleared, you may play it without taking an Action. If you do, cards remaining in the opponent's Reserve go to their Graveyard instead of their Discard Pile during this Aftermath. After battle cards are cleared, set your Conviction to 4 and put Martyrdom in your Graveyard. Martyrdom does not prevent the loss, retreat, Occupation, or other normal consequences of the battle result."
     },
     {
@@ -2152,7 +2158,7 @@
           "text": "In the Aftermath, each player with more than one card in Hand chooses one and discards the rest."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
       "action": "Each player discards their Hand, then draws two cards.",
       "battle": "In the Aftermath, each player with more than one card in Hand chooses one and discards the rest."
     },
@@ -2179,7 +2185,7 @@
           "text": "During your Opening, if your Player Token is on this Territory, you may take the Begin a Rite Faction Action. A Rite begun this way may complete during that turn if you control this Territory when its completion condition and timing are satisfied. This does not change the Rite's beginning cost, requirements, or completion condition."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md",
       "action": "Place Nature's Altar as an Overlay on your current Territory or an adjacent Territory.",
       "battle": "During the Aftermath, if you win, you may place Nature's Altar as an Overlay on the contested Territory.",
       "overlay": "During your Opening, if your Player Token is on this Territory, you may take the Begin a Rite Faction Action. A Rite begun this way may complete during that turn if you control this Territory when its completion condition and timing are satisfied. This does not change the Rite's beginning cost, requirements, or completion condition."
@@ -2203,7 +2209,7 @@
           "text": "In the Aftermath, after your other battle cards are cleared, choose up to three non-Necromancy cards in your Graveyard. Put every card remaining in your Hand in your Graveyard, then return the chosen cards to your Hand. Put this card in your Graveyard if it was your Gambit, or in your Discard Pile if it was your Tactic."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
       "action": "Choose one:\n\n- Place Necromancy face down beneath your Draw Pile, then draw one card.\n- Choose up to three non-Necromancy cards in your Graveyard. Put every other card in your Hand in your Graveyard, then return the chosen cards to your Hand. Put Necromancy in your Graveyard.",
       "battle": "In the Aftermath, after your other battle cards are cleared, choose up to three non-Necromancy cards in your Graveyard. Put every card remaining in your Hand in your Graveyard, then return the chosen cards to your Hand. Put this card in your Graveyard if it was your Gambit, or in your Discard Pile if it was your Tactic."
     },
@@ -2226,7 +2232,7 @@
           "text": "After Terms are refused, before Gambits are set, you may discard this card. The opponent sets a Gambit face up or passes. Then you set a Gambit face down or pass. This overrides other Gambit-order effects."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "After Terms are refused, before Gambits are set, you may discard this card. The opponent sets a Gambit face up or passes. Then you set a Gambit face down or pass. This overrides other Gambit-order effects.",
       "rules_notes": [
@@ -2252,7 +2258,7 @@
           "text": "Add +1 to your battle total."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Discard one other card from your Hand, then draw two cards.",
       "battle": "Add +1 to your battle total."
     },
@@ -2279,7 +2285,7 @@
           "text": "If the opponent loses, they cannot benefit from effects they control triggered by that loss or resulting retreat, and they retreat one additional position."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "After Tactics are revealed in a battle involving you, before dice are rolled, you may discard this card. If the opponent loses, they cannot benefit from effects they control triggered by that loss or resulting retreat, and they retreat one additional position.",
       "battle": "If the opponent loses, they cannot benefit from effects they control triggered by that loss or resulting retreat, and they retreat one additional position.",
@@ -2310,7 +2316,7 @@
           "text": "Put Nonbinding Resolution in your Discard Pile, then draw one card before Gambits are set."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
       "terms": "When you offer Terms, before the opponent accepts or refuses, you may reveal Nonbinding Resolution from your Hand and set it aside.",
       "accepted": "If the Proposal is unratified, the opponent chooses one before ratification:\n\n- Ratify it normally.\n- Leave it unratified; you gain 2 Influence.\n\nAfter the accepted Terms conclude, put this card in your Discard Pile, then draw one card.",
       "refused": "Put Nonbinding Resolution in your Discard Pile, then draw one card before Gambits are set."
@@ -2334,7 +2340,7 @@
           "text": "After Tactics are revealed, choose one: withdraw; or replace Operational Reassessment with an eligible Battle card from your Hand whose effect can apply now. If you replace it, put this card in your Graveyard and place the replacement face up."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
       "action": "Return your Active Mission to your Hand, then place another eligible Intelligence card from your Hand face down as your Active Mission. It cannot complete this turn.",
       "battle": "After Tactics are revealed, choose one: withdraw; or replace Operational Reassessment with an eligible Battle card from your Hand whose effect can apply now. If you replace it, put this card in your Graveyard and place the replacement face up.",
       "rules_notes": [
@@ -2364,7 +2370,7 @@
           "text": "When revealed, before other effects at this stage, if you are the defender, negate one opposing Gambit whose effect has not been applied. If there is no eligible Gambit, gain advantage instead."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "use": "During Onset while you are the defender, you may discard this card. If you do, the opponent's banked Assets are inactive during that battle.",
       "battle": "When revealed, before other effects at this stage, if you are the defender, negate one opposing Gambit whose effect has not been applied. If there is no eligible Gambit, gain advantage instead.",
@@ -2389,7 +2395,7 @@
           "text": "If this battle is on a Territory with an active printed effect, add +1 to your battle total."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Choose one Territory. Its printed effect is inactive during your movement this turn.",
       "battle": "If this battle is on a Territory with an active printed effect, add +1 to your battle total."
     },
@@ -2412,7 +2418,7 @@
           "text": "In the Aftermath, if you lose, you may move to any Territory you control instead of retreating normally."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
       "action": "Move to any Territory you control. This movement cannot start a battle.",
       "battle": "In the Aftermath, if you lose, you may move to any Territory you control instead of retreating normally."
     },
@@ -2435,7 +2441,7 @@
           "text": "The opponent chooses one: put one card from their Hand in their Graveyard; or add +1 to your battle total."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
       "action": "The opponent chooses one: put one card from their Hand in their Graveyard; or you gain 1 Conviction.",
       "battle": "The opponent chooses one: put one card from their Hand in their Graveyard; or add +1 to your battle total.",
       "rules_notes": [
@@ -2465,7 +2471,7 @@
           "text": "If this battle takes place on a Territory whose Deed you own, your opponent chooses one: discard one card from Hand; or you gain 3 Capital during the Aftermath of the battle."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
       "action": "Bank this card.",
       "asset": "The first time each turn your opponent advances onto a Territory whose Deed you own, they choose one: discard one card from Hand; or you gain 2 Capital.",
       "battle": "If this battle takes place on a Territory whose Deed you own, your opponent chooses one: discard one card from Hand; or you gain 3 Capital during the Aftermath of the battle."
@@ -2497,7 +2503,7 @@
           "text": "After Protracted Siege prevents one Front Line advance, or if the opposing Player Token leaves this Territory first, put Protracted Siege in its owner's Graveyard."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "use": "When an opponent would add a Territory you control to their Front Line during Capture, you may place this card on that Territory as an Overlay. If you do, prevent that Front Line advance.",
       "battle": "During the Aftermath, if you lose while defending a Territory you control, place this card on the contested Territory as an Overlay. The next time the opponent would add this Territory to their Front Line during Capture, prevent that Front Line advance.",
@@ -2522,7 +2528,7 @@
           "text": "Add +1 to your battle total."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Draw one card.",
       "battle": "Add +1 to your battle total."
     },
@@ -2549,7 +2555,7 @@
           "text": "In the Aftermath, if you lose and retreat, bank this card."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "After you lose a battle and retreat, when your opponent would use an Order or card effect to enter your position during that turn, you may discard this card. If you do, prevent that movement. No Command is spent, and any card used for that effect returns to its owner's Hand. That Order cannot be used again that turn, and that specific card cannot be played again that turn.",
       "battle": "In the Aftermath, if you lose and retreat, bank this card.",
@@ -2584,7 +2590,7 @@
           "text": "Complete after you win a battle you did not initiate while occupying an enemy-controlled Territory."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "During Onset in a battle you initiated, you may discard this card to reveal the opponent's Hand. You may then withdraw or continue the attack.",
       "battle": "After Tactics are revealed, you may withdraw.",
@@ -2614,7 +2620,7 @@
           "text": "If an opposing effect negates one other Tactic you chose and that card would enter your Discard Pile, return it to your Hand during the Aftermath of the battle instead."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "use": "When an opposing effect puts one or more of your other cards in your Discard Pile, you may discard this card. If you do, return one of those cards to your Hand after the effect applies.",
       "battle": "If an opposing effect negates one other Tactic you chose and that card would enter your Discard Pile, return it to your Hand during the Aftermath of the battle instead."
@@ -2642,7 +2648,7 @@
           "text": "After Tactics are revealed, draw one additional card into your Reserve. You may immediately play it face up as an additional Tactic."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "use": "During Opening or Denouement, you may discard this card. If you do, you may take one additional Action during that phase.",
       "battle": "After Tactics are revealed, draw one additional card into your Reserve. You may immediately play it face up as an additional Tactic.",
@@ -2671,7 +2677,7 @@
           "text": "After Tactics are revealed, you may choose one card in your Graveyard whose Battle effect can be applied now and does not copy another card's effect or another copied effect. Reveal the chosen card face up in your Graveyard and apply its Battle effect as though you played it.\n\nIn the Aftermath, move the chosen card from your Graveyard to your Discard Pile."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "After Tactics are revealed in a battle involving you, you may discard this card. If you do, choose one card in your Graveyard whose Battle effect can be applied now and does not copy another card's effect or another copied effect. Reveal the chosen card face up in your Graveyard and apply its Battle effect as though you played it.",
       "battle": "After Tactics are revealed, you may choose one card in your Graveyard whose Battle effect can be applied now and does not copy another card's effect or another copied effect. Reveal the chosen card face up in your Graveyard and apply its Battle effect as though you played it.\n\nIn the Aftermath, move the chosen card from your Graveyard to your Discard Pile.",
@@ -2698,7 +2704,7 @@
           "text": "You may discard one banked Asset you control. If you do, gain advantage."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Discard one banked Asset you control. If you do, draw two cards.",
       "battle": "You may discard one banked Asset you control. If you do, gain advantage."
     },
@@ -2729,7 +2735,7 @@
           "text": "After Tactics are revealed, you may replace Reserve Force with an eligible card from your Hand whose effect can apply now. If you do, put this card in your Graveyard and place the replacement face up. If you do not, put this card in your Discard Pile during the Aftermath of the battle."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
       "action": "Bank this card with one card from your Hand that has a Tactic or Battle effect face down beneath it.",
       "asset": "If this card leaves play without deploying the stored card, put that card in your Graveyard.",
       "use": "After Tactics are revealed in a battle involving you, you may discard this card. If you do, play the stored card face up as an additional Tactic. In the Aftermath, put the stored card in your Graveyard.",
@@ -2757,7 +2763,7 @@
           "text": "In the Aftermath, you may place one card remaining in your Reserve on top of your Draw Pile instead of putting it in your Discard Pile."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Draw one card, then place one card from your Hand on top of your Draw Pile.",
       "battle": "In the Aftermath, you may place one card remaining in your Reserve on top of your Draw Pile instead of putting it in your Discard Pile."
     },
@@ -2784,7 +2790,7 @@
           "text": "If this battle is a Counterattack, gain advantage. In the Aftermath, if you win, bank this card."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "asset": "When initiating a Counterattack, form your Reserve with two additional cards.",
       "battle": "If this battle is a Counterattack, gain advantage. In the Aftermath, if you win, bank this card.",
@@ -2815,7 +2821,7 @@
           "text": "If another active card you control in this battle has cost 1, gain advantage."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "asset": "You may have only one banked Resourcefulness. The first time during each of your turns that you apply the Action, Gambit, Tactic, or Battle effect of a cost-1 card you played, set, or chose, draw one card.",
       "battle": "If another active card you control in this battle has cost 1, gain advantage.",
@@ -2842,7 +2848,7 @@
           "text": "After all rerolls, you may exchange the players' final selected die results. Each player retains their own modifiers."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Each player discards their Hand, then draws cards equal to the number of cards the other player discarded.",
       "battle": "After all rerolls, you may exchange the players' final selected die results. Each player retains their own modifiers.",
       "rules_notes": [
@@ -2872,7 +2878,7 @@
           "text": "If the opponent has more face-up Assets than you, gain advantage."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "asset": "Whenever the opponent banks an Asset, you may draw one card, then discard one card.",
       "battle": "If the opponent has more face-up Assets than you, gain advantage.",
@@ -2899,7 +2905,7 @@
           "text": "When revealed, before other effects at this stage, choose one opposing Gambit or Tactic at that stage whose effect has not been applied. Negate it and put it in its owner's Discard Pile immediately."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Choose one face-up opposing Asset. Turn it face down until the start of your next turn.",
       "battle": "When revealed, before other effects at this stage, choose one opposing Gambit or Tactic at that stage whose effect has not been applied. Negate it and put it in its owner's Discard Pile immediately."
     },
@@ -2922,7 +2928,7 @@
           "text": "When you would lose a battle following refused Terms, you may discard this card to withdraw instead. The opponent remains at or takes the contested position. The battle ends without a winner."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "When you would lose a battle following refused Terms, you may discard this card to withdraw instead. The opponent remains at or takes the contested position. The battle ends without a winner.",
       "rules_notes": [
@@ -2948,7 +2954,7 @@
           "text": "In the Aftermath, if you won, you may put one card remaining in your Reserve in your Hand instead of your Discard Pile. If you do, discard one card from your Hand."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Return one card from your Discard Pile to your Hand, then discard one card from your Hand.",
       "battle": "In the Aftermath, if you won, you may put one card remaining in your Reserve in your Hand instead of your Discard Pile. If you do, discard one card from your Hand."
     },
@@ -2967,7 +2973,7 @@
           "text": "During the Aftermath of a battle following an opponent's refusal of your Terms, you may place Sanctions: Blockade from your Hand as an Overlay on a Territory that opponent controls without spending an Action. Identify that opponent and this card's owner.\nThe first time each turn the identified opponent enters or leaves this Territory, they choose one: discard one card; or the identified owner gains 1 Influence.\nPut Sanctions: Blockade in its owner's Discard Pile after the identified opponent accepts that owner's Terms or loses control of this Territory."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
       "text": "During the Aftermath of a battle following an opponent's refusal of your Terms, you may place Sanctions: Blockade from your Hand as an Overlay on a Territory that opponent controls without spending an Action. Identify that opponent and this card's owner.\nThe first time each turn the identified opponent enters or leaves this Territory, they choose one: discard one card; or the identified owner gains 1 Influence.\nPut Sanctions: Blockade in its owner's Discard Pile after the identified opponent accepts that owner's Terms or loses control of this Territory."
     },
     {
@@ -2985,7 +2991,7 @@
           "text": "After an opponent refuses your Terms, you may bank Sanctions: Censure from your Hand without spending an Action. Identify that opponent.\nWhile banked, the first time each turn that opponent plays a card for its Action effect, they choose one: discard one card; or you draw one card.\nAfter that opponent accepts your Terms, put Sanctions: Censure in its owner's Discard Pile."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
       "text": "After an opponent refuses your Terms, you may bank Sanctions: Censure from your Hand without spending an Action. Identify that opponent.\nWhile banked, the first time each turn that opponent plays a card for its Action effect, they choose one: discard one card; or you draw one card.\nAfter that opponent accepts your Terms, put Sanctions: Censure in its owner's Discard Pile."
     },
     {
@@ -3003,7 +3009,7 @@
           "text": "After an opponent refuses your Terms, you may bank Sanctions: Embargo from your Hand without spending an Action. Identify that opponent.\nWhile banked, that opponent's Asset limit is reduced by 1, to a minimum of 0.\nAfter that opponent accepts your Terms, put Sanctions: Embargo in its owner's Discard Pile."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
       "text": "After an opponent refuses your Terms, you may bank Sanctions: Embargo from your Hand without spending an Action. Identify that opponent.\nWhile banked, that opponent's Asset limit is reduced by 1, to a minimum of 0.\nAfter that opponent accepts your Terms, put Sanctions: Embargo in its owner's Discard Pile."
     },
     {
@@ -3029,7 +3035,7 @@
           "text": "In the Aftermath, if you lose while defending a Territory you control and retreat, place this card on that Territory as a Ruins Overlay."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "use": "In the Aftermath of a battle you lost while defending a Territory you control, after you retreat, you may place this card on that Territory as a Ruins Overlay.",
       "battle": "In the Aftermath, if you lose while defending a Territory you control and retreat, place this card on that Territory as a Ruins Overlay."
@@ -3053,7 +3059,7 @@
           "text": "When revealed, before other effects at this stage, reveal one opposing face-down Gambit or Tactic at the same stage. You may replace Scouting Report with one eligible card from your Reserve whose effect can apply now. If you do, put this card in your Graveyard and place the replacement face up in the same role."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Reveal the top card of either Draw Pile or one random card from the opponent's Hand.",
       "battle": "When revealed, before other effects at this stage, reveal one opposing face-down Gambit or Tactic at the same stage. You may replace Scouting Report with one eligible card from your Reserve whose effect can apply now. If you do, put this card in your Graveyard and place the replacement face up in the same role."
     },
@@ -3076,7 +3082,7 @@
           "text": "The opponent chooses one face-up Asset they control. It is inactive during this battle. If they control no face-up Assets, add +1 to your battle total."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "The opponent chooses one Asset they control and discards it.",
       "battle": "The opponent chooses one face-up Asset they control. It is inactive during this battle. If they control no face-up Assets, add +1 to your battle total."
     },
@@ -3099,7 +3105,7 @@
           "text": "All banked Assets are inactive during this battle."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Each player chooses one banked Asset they control to keep, if able, and discards the rest.",
       "battle": "All banked Assets are inactive during this battle."
     },
@@ -3126,7 +3132,7 @@
           "text": "When attacking on an enemy-controlled Territory, after Tactics are revealed, you may play an eligible card from your Hand face up as an additional Tactic. If you lose, retreat one additional Position. If you win, choose one:\nBreakthrough — Choose only if the opponent can retreat one additional Position. After their normal retreat, they do so, then you advance one Position. This cannot create a pending battle.\nConsolidate — Advance your Front Line by one Territory, if able, then set your Command to 2.\nAfter either option, you cannot move again, advance your Front Line again, or use an Order from that victory. In the Aftermath, put any card played this way and this card, if still in play, in your Graveyard."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
       "action": "Bank this card.",
       "asset": "During Onset when attacking on an enemy-controlled Territory, you may put this card in your Graveyard to apply its Battle effect.",
       "battle": "When attacking on an enemy-controlled Territory, after Tactics are revealed, you may play an eligible card from your Hand face up as an additional Tactic. If you lose, retreat one additional Position. If you win, choose one:\nBreakthrough — Choose only if the opponent can retreat one additional Position. After their normal retreat, they do so, then you advance one Position. This cannot create a pending battle.\nConsolidate — Advance your Front Line by one Territory, if able, then set your Command to 2.\nAfter either option, you cannot move again, advance your Front Line again, or use an Order from that victory. In the Aftermath, put any card played this way and this card, if still in play, in your Graveyard.",
@@ -3155,7 +3161,7 @@
           "text": "During Opening or Denouement, as an Action, put this card in your Graveyard and reveal its bound cards. Play each whose Action effect can apply now, one at a time and in any order, without taking additional Actions. Discard the rest."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
       "action": "Bank this card and bind another card from your Hand to it face down.",
       "asset": "At the end of each later turn, you may bind a card from your Hand to it face down, up to the number of Territories you control. Before an opposing effect causes this card to leave play, reveal its bound cards. You may play one whose Action effect can apply now without spending an Action. Discard the rest.",
       "use": "During Opening or Denouement, as an Action, put this card in your Graveyard and reveal its bound cards. Play each whose Action effect can apply now, one at a time and in any order, without taking additional Actions. Discard the rest.",
@@ -3183,7 +3189,7 @@
           "text": "In the Aftermath, after Gambits enter your Graveyard, you may exchange one card in your Hand with one other Gambit you set during this battle that is in your Graveyard."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
       "action": "Choose one card in your Hand and one card in your Graveyard. Exchange them.",
       "battle": "In the Aftermath, after Gambits enter your Graveyard, you may exchange one card in your Hand with one other Gambit you set during this battle that is in your Graveyard."
     },
@@ -3206,7 +3212,7 @@
           "text": "If you initiated this battle, you may spend 1 Capital. If you do and win, gain 2 Capital during the Aftermath of the battle. If the battle ends without you winning, put this card in your Graveyard."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
       "action": "Choose one Territory you neither control nor occupy. Place Speculation face up beside it. At the start of your next turn, if you occupy or control that Territory, gain 2 Capital and put this card in your Discard Pile. Otherwise, put this card in your Graveyard.",
       "battle": "If you initiated this battle, you may spend 1 Capital. If you do and win, gain 2 Capital during the Aftermath of the battle. If the battle ends without you winning, put this card in your Graveyard.",
       "rules_notes": [
@@ -3236,7 +3242,7 @@
           "text": "Complete after you reveal an opposing face-down battle card before its normal reveal, then win that battle."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
       "action": "Reveal the opponent's Hand. Draw one card, then discard one card.",
       "battle": "Before Tactics normally reveal, reveal each opposing face-down Tactic. You may then revise your own Tactics or withdraw.\n\nIf you chose to remove Spies as a Tactic, put this card in your Graveyard.",
       "mission": "Complete after you reveal an opposing face-down battle card before its normal reveal, then win that battle."
@@ -3264,7 +3270,7 @@
           "text": "After battle cards are cleared in the Aftermath following a battle here, each player may put one card from their Hand in their Graveyard. A player who does may move one other card from their Graveyard to their Discard Pile.\n\nWhen this Territory is captured, put this card in its owner's Graveyard."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
       "action": "Place Spirit Hollow as an Overlay on your current Territory or an adjacent Territory.",
       "battle": "In the Aftermath, place this card as an Overlay on the contested Territory.",
       "overlay": "After battle cards are cleared in the Aftermath following a battle here, each player may put one card from their Hand in their Graveyard. A player who does may move one other card from their Graveyard to their Discard Pile.\n\nWhen this Territory is captured, put this card in its owner's Graveyard."
@@ -3292,7 +3298,7 @@
           "text": "If you are the defender, gain advantage."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "use": "When an opposing card effect would move you, you may discard this card. If you do, ignore that movement.",
       "battle": "If you are the defender, gain advantage.",
@@ -3319,7 +3325,7 @@
           "text": "In the Aftermath, if you lose, after your normal retreat you may move one additional position toward your own end. If you do, return one other card you controlled in this battle to your Hand."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Return one banked Asset you control to your Hand. If you do, gain one additional Position of movement this turn. If you play Strategic Withdrawal during Denouement after your normal Movement has ended, begin a new Movement sequence with up to one Position of movement.",
       "battle": "In the Aftermath, if you lose, after your normal retreat you may move one additional position toward your own end. If you do, return one other card you controlled in this battle to your Hand.",
       "source_candidate": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
@@ -3351,7 +3357,7 @@
           "text": "Complete after you win a battle in which the opponent used a banked Asset and you used none of your banked Assets."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "When an opposing banked Asset's effect would apply, you may put this card in your Graveyard. If you do, negate that effect and put the opposing Asset in its owner's Discard Pile if it remains in play.",
       "battle": "Opposing banked Assets cannot be used during this battle.",
@@ -3380,7 +3386,7 @@
           "text": "In the Aftermath, draw two cards, then discard one card."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "use": "After your normal Draw step, you may discard this card. If you do, draw two cards.",
       "battle": "In the Aftermath, draw two cards, then discard one card."
@@ -3404,7 +3410,7 @@
           "text": "When Gambits are revealed, draw one additional card into your Reserve. This does not increase the number of Tactics you may choose."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Draw two cards, then place one card from your Hand on the bottom of your Draw Pile.",
       "gambit": "When Gambits are revealed, draw one additional card into your Reserve. This does not increase the number of Tactics you may choose."
     },
@@ -3431,7 +3437,7 @@
           "text": "Your opponent may discard one card from Hand. If they do not, add +1 to your battle total."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
       "action": "Bank this card. Draw two cards. After this Action resolves, you may take one additional Action during this phase.",
       "asset": "While Tariffs is banked, skip your normal draw. You cannot bank it while you control another banked Tariffs. You cannot voluntarily cause it to leave play during the turn it is banked.",
       "battle": "Your opponent may discard one card from Hand. If they do not, add +1 to your battle total.",
@@ -3464,7 +3470,7 @@
           "text": "The opponent draws one card. Add +2 to your battle total."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
       "terms": "When you offer Terms, before the opponent accepts or refuses, you may reveal Trade Concessions from your Hand and set it aside.",
       "accepted": "The opponent chooses one available option:\n\n- Draw two cards.\n- Bank one eligible card from Hand without spending an Action.\n\nThen put this card in your Discard Pile and draw one card.",
       "refused": "Return Trade Concessions to your Hand before Gambits are set.",
@@ -3493,7 +3499,7 @@
           "text": "After Tactics are revealed, choose one opposing Battle effect that has not yet been applied. Negate it, then apply that printed effect as though you controlled it."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "After Tactics are revealed in a battle involving you, before an opposing Battle effect applies, you may discard this card. If you do, choose one opposing Battle effect that has not yet been applied. Negate it, then apply that printed effect as though you controlled it.",
       "battle": "After Tactics are revealed, choose one opposing Battle effect that has not yet been applied. Negate it, then apply that printed effect as though you controlled it.",
@@ -3524,7 +3530,7 @@
           "text": "When revealed, before other effects at this stage, negate one opposing Gambit or Tactic whose effect has not been applied."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
       "action": "Bank this card.",
       "asset": "Once per turn, when one or more opposing Gambits or Tactics are revealed, before their effects apply, you may spend 1 Conviction to negate one of them.",
       "battle": "When revealed, before other effects at this stage, negate one opposing Gambit or Tactic whose effect has not been applied.",
@@ -3555,7 +3561,7 @@
           "text": "If you win this battle and used no Orders during it, gain 1 Command."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "After you win a battle in which you used no Orders, you may discard this card. If you do, gain 1 Command.",
       "battle": "If you win this battle and used no Orders during it, gain 1 Command.",
@@ -3586,7 +3592,7 @@
           "text": "In the Aftermath, if you lost and used Subsidize, gain Capital equal to the bonus you purchased."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "In the Aftermath of a battle you lost after using Subsidize, you may discard this card. If you do, gain Capital equal to the bonus you purchased.",
       "battle": "In the Aftermath, if you lost and used Subsidize, gain Capital equal to the bonus you purchased."
@@ -3614,7 +3620,7 @@
           "text": "After battle dice are rolled, if your battle total is lower than the opponent's, you may reroll your battle die. You must use the new result."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md",
       "action": "Bank this card.",
       "asset": "Whenever you lose a battle, after you retreat, draw one card.",
       "battle": "After battle dice are rolled, if your battle total is lower than the opponent's, you may reroll your battle die. You must use the new result."
@@ -3642,7 +3648,7 @@
           "text": "In the Aftermath, if you won, you may apply the same effect. If you do, put this card in your Graveyard."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "In the Aftermath of a battle you won, you may put this card in your Graveyard. If you do, put all opposing Tactics from that battle in their owner's Graveyard instead of their Discard Pile, and the opponent retreats one additional position. You cannot move, capture a Territory, or use an Order as a result of that victory.",
       "battle": "In the Aftermath, if you won, you may apply the same effect. If you do, put this card in your Graveyard.",
@@ -3673,7 +3679,7 @@
           "text": "After Tactics are revealed, choose one other active card you control in the battle with an eligible Battle effect. Apply that effect one additional time. If you cannot choose one, gain advantage. In the Aftermath, put this card in your Graveyard."
         }
       ],
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
       "action": "Bank this card.",
       "use": "Once per turn, after Tactics are revealed in a battle involving you, you may put one card from your Hand in your Graveyard. If you do, choose one other active card you control in the battle with an eligible Battle effect. Apply that effect one additional time.",
       "battle": "After Tactics are revealed, choose one other active card you control in the battle with an eligible Battle effect. Apply that effect one additional time. If you cannot choose one, gain advantage. In the Aftermath, put this card in your Graveyard.",
@@ -3689,7 +3695,7 @@
       "name": "Quicksand",
       "arena": false,
       "text": "If a player begins their Movement on Quicksand, they cannot voluntarily Fall Back or move more than one Position that turn. Forced displacement is unaffected.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -3705,7 +3711,7 @@
       "name": "Poisonous Gas",
       "arena": false,
       "text": "During a battle on Poisonous Gas, each player may set a Gambit or choose a Tactic, but not both. A player cannot have more than one Gambit or Tactic in that battle.\nA Tactic chosen during that battle goes to its owner's Graveyard during the Aftermath of the battle instead of their Discard Pile. If a player chooses no Tactic, they put one unchosen card from their initial Reserve in their Graveyard during the Aftermath, if able.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -3720,7 +3726,7 @@
       "name": "Difficult Terrain",
       "arena": false,
       "text": "When a player enters Difficult Terrain, their movement ends. A player who begins their turn there or enters it during their turn cannot play a card for its Action effect during Denouement that turn.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -3736,7 +3742,7 @@
       "name": "Garrison",
       "arena": false,
       "text": "When Garrison's controller defends it, they draw one additional card when forming their initial Reserve.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -3751,7 +3757,7 @@
       "name": "Disrupted Supply Lines",
       "arena": false,
       "text": "While a player occupies Disrupted Supply Lines, only one banked Asset they control can be active. They choose which one remains active; all their other banked Assets are inactive until they leave.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -3766,7 +3772,7 @@
       "name": "Ruined Storehouse",
       "arena": false,
       "text": "Once during their Draw step, a player occupying Ruined Storehouse may draw the top card of their Discard Pile instead of drawing from their Draw Pile.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -3781,7 +3787,7 @@
       "name": "Field Hospital",
       "arena": false,
       "text": "During the Aftermath of a battle on Field Hospital, when the battle cards are cleared, its controller may put one card they controlled in that battle that would enter their Graveyard in their Discard Pile instead.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -3796,7 +3802,7 @@
       "name": "Exposed Flank",
       "arena": false,
       "text": "When Exposed Flank's controller counterattacks an opponent occupying it, that opponent cannot set a Gambit.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -3811,7 +3817,7 @@
       "name": "High Ground",
       "arena": false,
       "text": "The defending player in a battle on High Ground gains advantage.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -3826,7 +3832,7 @@
       "name": "Fortified Pass",
       "arena": false,
       "text": "When Fortified Pass's controller defends it, the attacking player's banked Assets are inactive during that battle.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -3841,7 +3847,7 @@
       "name": "Insurgency",
       "arena": false,
       "text": "While an opponent occupies Insurgency without controlling it, their banked Assets are inactive.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -3856,7 +3862,7 @@
       "name": "Watchtower",
       "arena": false,
       "text": "When Watchtower's controller defends it, the attacker sets their Gambit face up or passes. The defender then sets their Gambit normally or passes.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -3871,7 +3877,7 @@
       "name": "Supply Depot",
       "arena": false,
       "text": "During the Draw step, a player occupying and controlling Supply Depot draws one additional card as part of their normal draw.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -3886,7 +3892,7 @@
       "name": "Old Battlefield",
       "arena": false,
       "text": "During the Aftermath of a battle on Old Battlefield, when cards remaining in Reserve move to the Discard Pile, its controller may put one unchosen card from their Reserve in their Graveyard instead.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -3901,7 +3907,7 @@
       "name": "Refuge",
       "arena": false,
       "text": "After a player voluntarily Falls Back onto Refuge, they draw one card.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -3917,7 +3923,7 @@
       "name": "Command Tent",
       "arena": false,
       "text": "If a player begins their turn occupying and controlling Command Tent, they may take one Action during both Opening and Denouement that turn. If they do, both Actions may be used only to play cards for their Action effects.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -3933,7 +3939,7 @@
       "name": "Monastery",
       "arena": false,
       "text": "While Monastery's controller occupies it, cards cannot leave either player's Graveyard. During battles on Monastery, cards with the Arcane trait have no effect.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -3948,7 +3954,7 @@
       "name": "Training Grounds",
       "arena": false,
       "text": "When Training Grounds's controller defends it, after forming their initial Reserve but before choosing Tactics, they may discard that entire Reserve and draw the same number of replacement cards. Those cards become their Reserve.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -3963,7 +3969,7 @@
       "name": "King's Road",
       "arena": false,
       "text": "A player who begins their turn on King's Road gains one additional position of movement during that turn's Movement step.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -3978,7 +3984,7 @@
       "name": "Toll Bridge",
       "arena": false,
       "text": "To voluntarily advance from Toll Bridge, a player must discard one card from their Hand. If they cannot, they cannot advance from it.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -3993,7 +3999,7 @@
       "name": "Smuggler's Pass",
       "arena": false,
       "text": "During Opening or Denouement, as an Action, while occupying and controlling Smuggler's Pass, a player may stash one card from their Hand face down beneath it. The stashed card does not count toward the Hand limit.\nWhile that player occupies and controls Smuggler's Pass, they may play the stashed card for its Action effect or set it as a Gambit as though it were in their Hand, if eligible. It counts as a card played or set from Hand.\nAt the start of the stashing player's turn, if they control Smuggler's Pass, they may return the stashed card to their Hand. If they lose control of Smuggler's Pass, put the stashed card in its owner's Discard Pile. Only one card may be stashed here.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Territory",
       "effects": [
         {
@@ -4012,7 +4018,7 @@
       "name": "Arena: Spoils of War",
       "arena": true,
       "text": "During battles on Spoils of War, Defensive Edge does not apply. If battle totals remain tied, make a Tiebreak Roll.\nDuring the Aftermath of the battle, when cards remaining in Reserve move to the Discard Pile, the winner may put one unchosen card from their Reserve in their Hand instead.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Arena",
       "effects": [
         {
@@ -4027,7 +4033,7 @@
       "name": "Arena: No Quarter",
       "arena": true,
       "text": "During battles on No Quarter, Defensive Edge does not apply. If battle totals remain tied, make a Tiebreak Roll. The losing player retreats one additional position, if able.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Arena",
       "effects": [
         {
@@ -4042,7 +4048,7 @@
       "name": "Arena: Single Combat",
       "arena": true,
       "text": "During battles on Single Combat, Defensive Edge does not apply. If battle totals remain tied, make a Tiebreak Roll. All banked Assets are inactive during the battle.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Arena",
       "effects": [
         {
@@ -4057,7 +4063,7 @@
       "name": "Arena: Grand Melee",
       "arena": true,
       "text": "During battles on Grand Melee, Defensive Edge does not apply. If battle totals remain tied, make a Tiebreak Roll. Each player draws one additional card when forming their initial Reserve and may choose one additional Tactic from it.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
+      "source": "docs/Gauntlet_v0.6.1_Territory_Pool.md",
       "type": "Arena",
       "effects": [
         {
@@ -4170,7 +4176,7 @@
       "requirement": "None",
       "accepted": "Both players withdraw. The accepting player draws one card.",
       "refused": "The Diplomat draws one card.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
+      "source": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
     },
     {
       "id": "orderly-withdrawal",
@@ -4179,7 +4185,7 @@
       "requirement": "The Diplomat must be the attacker.",
       "accepted": "The Diplomat withdraws. The accepting player remains at the contested Position, then draws one card.",
       "refused": "Add +1 to the Diplomat's battle total.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
+      "source": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
     },
     {
       "id": "capitulation",
@@ -4188,7 +4194,7 @@
       "requirement": "The Diplomat must be the defender.",
       "accepted": "The Diplomat withdraws. The accepting player remains at the contested Position and becomes the occupier when applicable, then draws one card.",
       "refused": "If the Diplomat loses, the Diplomat draws two cards.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
+      "source": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
     },
     {
       "id": "open-channels",
@@ -4197,7 +4203,7 @@
       "requirement": "The Diplomat must have a card in Hand.",
       "accepted": "Both players reveal their Hands, then both players withdraw. The accepting player draws one card.",
       "refused": "The refusing player reveals their Hand. When the Diplomat forms their Reserve, the Diplomat draws one additional card.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
+      "source": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
     },
     {
       "id": "mutual-disarmament",
@@ -4206,7 +4212,7 @@
       "requirement": "Both players must have a card in Hand.",
       "accepted": "Each player discards one card from Hand. The accepting player draws one card, then both players withdraw.",
       "refused": "The Diplomat may discard one card from Hand. If they do, the Diplomat draws one additional card when forming their Reserve.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
+      "source": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
     },
     {
       "id": "prisoner-exchange",
@@ -4215,7 +4221,7 @@
       "requirement": "Each player must have a card in their Graveyard.",
       "accepted": "Each player may move one card from their Graveyard to their Discard Pile. Then both players withdraw.",
       "refused": "If the Diplomat loses, the Diplomat may move one card from their Graveyard to their Discard Pile.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
+      "source": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
     },
     {
       "id": "rebuilding-pact",
@@ -4224,7 +4230,7 @@
       "requirement": "The Diplomat must have a card in Hand that can be banked as an Asset.",
       "accepted": "Each player may bank one eligible card from Hand as an Asset without taking an Action. Then both players withdraw.",
       "refused": "During the Aftermath, the Diplomat may bank one eligible card from Hand as an Asset without taking an Action.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
+      "source": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
     },
     {
       "id": "ultimatum",
@@ -4233,7 +4239,7 @@
       "requirement": "None",
       "accepted": "The accepting player withdraws. The Diplomat remains at the contested Position and becomes the occupier when applicable.",
       "refused": "Add +1 to the Diplomat's battle total.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
+      "source": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
     },
     {
       "id": "diplomatic-recognition",
@@ -4242,7 +4248,7 @@
       "requirement": "The Diplomat must be defending a Counterattack while occupying a Territory the opposing player controlled immediately before the Diplomat became its occupier.",
       "accepted": "The Diplomat advances their Front Line by one Territory, if able. The accepting player withdraws, then draws two cards.",
       "refused": "If the Diplomat wins, advance the Diplomat's Front Line by one Territory during the Aftermath, if able. The Diplomat gains no Influence for imposing this Proposal.",
-      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
+      "source": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md"
     }
   ],
   "starter_decks": {
@@ -4250,6 +4256,5 @@
     "source": "docs/Gauntlet_v0.6.2_Starter_Decks_Candidate.json",
     "count": 12,
     "construction": "Each approved starter contains exactly 30 cards with total deckbuilding value 60."
-  },
-  "release_manifest": "releases/v0.6.2/Gauntlet_v0.6.2_Manifest.json"
+  }
 }
