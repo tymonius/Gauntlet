@@ -62,7 +62,9 @@ const browser = await chromium.launch({ headless: true });
 const results = [];
 try {
   for (const output of outputs) {
+    console.log(`[print] ${output.key}: opening ${output.url}`);
     const page = await browser.newPage({ viewport: { width: 1440, height: 1100 }, deviceScaleFactor: 1 });
+    await page.route(/googletagmanager\.com|google-analytics\.com/, (route) => route.abort());
     const browserErrors = [];
     page.on('pageerror', (error) => browserErrors.push(error.message));
     page.on('console', (message) => {
@@ -70,13 +72,21 @@ try {
     });
     const response = await page.goto(`${base}${output.url}`, { waitUntil: 'load', timeout: 90000 });
     if (!response?.ok()) throw new Error(`${output.url} returned HTTP ${response?.status()}`);
-    await page.evaluate(async () => {
-      if (!document.fonts) return;
-      await Promise.race([
-        document.fonts.ready,
-        new Promise((resolve) => setTimeout(resolve, 15000)),
+    const fontStatus = await page.evaluate(async () => {
+      if (!document.fonts) return 'unsupported';
+      const status = await Promise.race([
+        document.fonts.ready.then(() => 'ready'),
+        new Promise((resolve) => setTimeout(() => resolve('timeout'), 15000)),
       ]);
+      if (status === 'timeout') {
+        for (const link of document.querySelectorAll('link[href*="typekit.net"], link[href*="use.typekit"]')) {
+          link.remove();
+        }
+        document.fonts.clear?.();
+      }
+      return status;
     });
+    console.log(`[print] ${output.key}: fonts ${fontStatus}`);
     const geometry = await page.evaluate(() => ({
       width: document.documentElement.scrollWidth,
       clientWidth: document.documentElement.clientWidth,
@@ -104,10 +114,13 @@ try {
     }
 
     const filePath = path.join(releaseDir, output.file);
+    console.log(`[print] ${output.key}: rendering PDF`);
     await page.pdf({ path: filePath, printBackground: true, preferCSSPageSize: true, displayHeaderFooter: false });
+    console.log(`[print] ${output.key}: rendering browser preview`);
     await page.screenshot({
       path: path.join(previewDir, `${output.key}-browser.png`),
       fullPage: geometry.fixedPages.length > 0,
+      timeout: 30000,
     });
     await page.close();
 
@@ -118,6 +131,7 @@ try {
     if (output.minimumPages && pdfInfo.pages < output.minimumPages) {
       throw new Error(`${output.file}: expected at least ${output.minimumPages} pages; found ${pdfInfo.pages}.`);
     }
+    console.log(`[print] ${output.key}: complete (${pdfInfo.pages} pages)`);
     results.push({ ...output, path: filePath, ...pdfInfo, sha256: sha256(filePath) });
   }
 } finally {
