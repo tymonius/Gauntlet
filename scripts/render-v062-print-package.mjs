@@ -70,7 +70,13 @@ try {
     });
     const response = await page.goto(`${base}${output.url}`, { waitUntil: 'load', timeout: 90000 });
     if (!response?.ok()) throw new Error(`${output.url} returned HTTP ${response?.status()}`);
-    await page.evaluate(async () => { await document.fonts?.ready; });
+    await page.evaluate(async () => {
+      if (!document.fonts) return;
+      await Promise.race([
+        document.fonts.ready,
+        new Promise((resolve) => setTimeout(resolve, 15000)),
+      ]);
+    });
     const geometry = await page.evaluate(() => ({
       width: document.documentElement.scrollWidth,
       clientWidth: document.documentElement.clientWidth,
