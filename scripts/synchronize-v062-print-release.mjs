@@ -50,10 +50,9 @@ const printSection = `## Printed materials
 - [Active-Player Marker PDF](Gauntlet_v0.6.2_Active_Player_Marker.pdf)
 - [Combined Tableside Pack](Gauntlet_v0.6.2_Tableside_Pack.pdf)
 - [Print Manifest](Gauntlet_v0.6.2_Print_Manifest.json)
-- [Browser print center](../../v0.6.2/print/)
-`;
-releaseReadme = releaseReadme.replace(/\n## Printed materials[\s\S]*?(?=\n## Browser tools)/, '');
-releaseReadme = releaseReadme.replace('\n## Browser tools', `\n\n${printSection}\n## Browser tools`);
+- [Browser print center](../../v0.6.2/print/)`;
+releaseReadme = releaseReadme.replace(/\n+## Printed materials[\s\S]*?(?=\n+## Browser tools)/, '');
+releaseReadme = releaseReadme.replace(/\n+## Browser tools/, `\n\n${printSection}\n\n## Browser tools`);
 expected('releases/v0.6.2/README.md', releaseReadme);
 
 const releaseManifestPath = 'releases/v0.6.2/Gauntlet_v0.6.2_Manifest.json';
@@ -108,8 +107,10 @@ let playtest = read('playtest/index.html');
 playtest = playtest
   .replaceAll('Gauntlet v0.6.1 Playtest Sheet', 'Gauntlet v0.6.2 Playtest Sheet')
   .replaceAll('Official v0.6.1 human-playtest questionnaire', 'Official v0.6.2 human-playtest questionnaire')
-  .replace(/(?:\s*<a class="button-link secondary" href="guide\/">Game-night guide<\/a>){2,}/, '\n      <a class="button-link secondary" href="guide/">Game-night guide</a>')
-  .replace('<a class="button-link secondary" href="batch/">Generate coded batch</a>', '<a class="button-link secondary" href="/v0.6.2/print/">v0.6.2 print package</a>\n      <a class="button-link secondary" href="batch/">Generate coded batch</a>');
+  .replace(/(?:\s*<a class="button-link secondary" href="guide\/">Game-night guide<\/a>){2,}/, '\n      <a class="button-link secondary" href="guide/">Game-night guide</a>');
+if (!playtest.includes('href="/v0.6.2/print/"')) {
+  playtest = playtest.replace('<a class="button-link secondary" href="batch/">Generate coded batch</a>', '<a class="button-link secondary" href="/v0.6.2/print/">v0.6.2 print package</a>\n      <a class="button-link secondary" href="batch/">Generate coded batch</a>');
+}
 expected('playtest/index.html', playtest);
 
 const playerMatRedirect = `<!doctype html>
