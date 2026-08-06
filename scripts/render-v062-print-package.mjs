@@ -80,7 +80,10 @@ try {
 
     const filePath = path.join(releaseDir, output.file);
     await page.pdf({ path: filePath, printBackground: true, preferCSSPageSize: true, displayHeaderFooter: false });
-    await page.screenshot({ path: path.join(previewDir, `${output.key}-browser.png`), fullPage: true });
+    await page.screenshot({
+      path: path.join(previewDir, `${output.key}-browser.png`),
+      fullPage: geometry.fixedPages.length > 0,
+    });
     await page.close();
 
     const pdfInfo = await inspectPdf(filePath);
