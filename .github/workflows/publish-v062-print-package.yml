@@ -5,6 +5,7 @@ on:
     branches: [agent/v062-printed-materials]
     paths:
       - ".github/workflows/publish-v062-print-package.yml"
+      - "images/sketches/hero sketch.png"
       - "v0.6.2/print/**"
       - "releases/v0.6.2/*.md"
       - "scripts/build-v062-print-html.mjs"
@@ -16,6 +17,7 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/publish-v062-print-package.yml"
+      - "images/sketches/hero sketch.png"
       - "v0.6.2/print/**"
       - "releases/v0.6.2/**"
       - "playtest/index.html"
