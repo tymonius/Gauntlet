@@ -1,4 +1,14 @@
 const V062_VERSION = "v0.6.2";
+const REFERENCE_REVISION = "20260806-1";
+const REQUIRED_V062_CARD_ALLEGIANCES = {
+  Landslide: "Neutral",
+  Invasion: "Military",
+  "Détente": "Diplomats",
+  "Compound Interest": "Financiers",
+  "Extraordinary Rendition": "Intelligence",
+  "Nature's Altar": "Mystics",
+  Martyrdom: "Inquisition",
+};
 
 const SURFACE_VERSION = "v0.6.2";
 const state = { data: null, search: "", allegiance: "all", cost: "all" };
@@ -10,7 +20,8 @@ init().catch(error => {
 });
 
 async function init() {
-  state.data = await fetch("../../releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json", { cache: "no-store" }).then(assertJson);
+  state.data = await fetch(`../../releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json?rev=${REFERENCE_REVISION}`, { cache: "no-store" }).then(assertJson);
+  validateReferenceData(state.data);
   $("status").innerHTML = `<strong class="status-good">Published ${escapeHtml(SURFACE_VERSION)}</strong><p>${state.data.cards.length} cards · ${state.data.territories.length} Territories · ${state.data.proposals.length} Proposals</p>`;
   $("cardCount").textContent = state.data.cards.length;
   $("cardAllegiance").append(...Object.keys(state.data.card_pool_summary).map(name => option(name, name)));
@@ -25,6 +36,21 @@ async function init() {
 async function assertJson(response) {
   if (!response.ok) throw new Error(`Canonical data returned ${response.status}`);
   return response.json();
+}
+
+function validateReferenceData(data) {
+  if (data?.version !== V062_VERSION) throw new Error(`Expected ${V062_VERSION} canonical data, received ${data?.version ?? "unknown version"}.`);
+  if (!Array.isArray(data.cards) || data.cards.length !== 128) throw new Error(`Expected 128 v0.6.2 cards, received ${data?.cards?.length ?? 0}.`);
+  const expectedPools = { Neutral: 50, Military: 13, Diplomats: 13, Financiers: 13, Intelligence: 13, Mystics: 13, Inquisition: 13 };
+  for (const [allegiance, expected] of Object.entries(expectedPools)) {
+    const actual = data.cards.filter(card => card.allegiance === allegiance).length;
+    if (actual !== expected) throw new Error(`Expected ${expected} ${allegiance} cards, received ${actual}.`);
+  }
+  for (const [name, allegiance] of Object.entries(REQUIRED_V062_CARD_ALLEGIANCES)) {
+    const card = data.cards.find(entry => entry.name === name);
+    if (!card) throw new Error(`Published v0.6.2 Card Reference is missing ${name}.`);
+    if (card.allegiance !== allegiance) throw new Error(`${name} must be ${allegiance}; received ${card.allegiance}.`);
+  }
 }
 
 function renderCards() {
