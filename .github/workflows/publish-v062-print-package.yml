@@ -36,7 +36,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: publish-v062-print-${{ github.ref }}
+  group: publish-v062-print-refs/pull/510/merge
   cancel-in-progress: true
 
 jobs:
