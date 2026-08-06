@@ -11,9 +11,19 @@ const paths = args.slice(separator + 1);
 const repository = process.env.GITHUB_REPOSITORY;
 const token = process.env.GITHUB_TOKEN;
 const branch = process.env.GITHUB_HEAD_REF || process.env.GITHUB_REF_NAME;
+const eventName = process.env.GITHUB_EVENT_NAME;
 
 if (!repository || !token || !branch) {
   throw new Error('GITHUB_REPOSITORY, GITHUB_TOKEN, and branch context are required.');
+}
+
+// v0.6.0 is an immutable historical release. Its legacy render workflows may
+// still validate generated artifacts on pull requests, but they must not move
+// an active feature branch by committing regenerated historical binaries.
+const onlyHistoricalV060Outputs = paths.every((filePath) => filePath.startsWith('releases/v0.6.0/'));
+if (eventName === 'pull_request' && onlyHistoricalV060Outputs) {
+  console.log('Validated historical v0.6.0 outputs without committing them to the pull-request branch.');
+  process.exit(0);
 }
 
 async function api(path, options = {}) {
