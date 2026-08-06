@@ -114,16 +114,22 @@ try {
 
 async function imposeBooklet(readerPath, bookletPath) {
   const source = await PDFDocument.load(fs.readFileSync(readerPath));
-  while (source.getPageCount() % 4 !== 0) source.addPage([396, 612]);
-  const total = source.getPageCount();
+  const sourceCount = source.getPageCount();
+  const total = Math.ceil(sourceCount / 4) * 4;
   const booklet = await PDFDocument.create();
+
+  const drawSourcePage = async (destination, sourceIndex, x) => {
+    if (sourceIndex < 0 || sourceIndex >= sourceCount) return;
+    const embedded = await booklet.embedPage(source.getPage(sourceIndex));
+    destination.drawPage(embedded, { x, y: 0, width: 396, height: 612 });
+  };
+
   const drawPair = async (leftIndex, rightIndex) => {
     const page = booklet.addPage([792, 612]);
-    const left = await booklet.embedPage(source.getPage(leftIndex));
-    const right = await booklet.embedPage(source.getPage(rightIndex));
-    page.drawPage(left, { x: 0, y: 0, width: 396, height: 612 });
-    page.drawPage(right, { x: 396, y: 0, width: 396, height: 612 });
+    await drawSourcePage(page, leftIndex, 0);
+    await drawSourcePage(page, rightIndex, 396);
   };
+
   for (let sheet = 0; sheet < total / 4; sheet += 1) {
     await drawPair(total - 1 - (sheet * 2), sheet * 2);
     await drawPair(1 + (sheet * 2), total - 2 - (sheet * 2));
