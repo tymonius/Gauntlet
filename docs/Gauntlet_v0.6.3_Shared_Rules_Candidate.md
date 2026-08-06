@@ -33,15 +33,10 @@ Prepare the game in this order:
 
 ### Starting Territory
 
-Each player controls the three Territories facing them, including the Territory at their own end where their Player Token begins.
-
-A player on a Territory they control is not occupying that Territory. **Occupation** describes a Player Token on an opponent-controlled Territory under the Occupation rules.
-
 Placing a Player Token during setup:
 
 - is not movement;
-- does not count as entering the Territory;
-- does not create Occupation; and
+- does not count as entering the Territory; and
 - does not trigger an effect that occurs when the Territory is entered.
 
 An effect that applies continuously, at the beginning of a turn, at the start of a turn, during Capture, or during another named phase may apply during the first turn normally when its requirements are satisfied.
@@ -157,7 +152,7 @@ A General Order then directly permits another movement sequence. During that seq
 
 ## Example D — setup placement and Territory effects
 
-A player begins on the Territory at their own end. The Territory remains controlled by that player and is not occupied.
+A player begins on the Territory at their own end.
 
 An effect that triggers when the Territory is entered does not trigger during setup. A continuous effect or an effect that applies at the beginning of the player's first turn may apply normally.
 
@@ -174,7 +169,6 @@ A first-turn effect that can use the Discard Pile may interact with the chosen c
 ## Setup
 
 - Place each Player Token on the Territory at that player's own end.
-- A player does not occupy a Territory they control.
 - Setup placement is not movement and does not count as entering.
 - Shuffle the remaining Playable Deck.
 - Draw four, discard one face up, and keep three.
