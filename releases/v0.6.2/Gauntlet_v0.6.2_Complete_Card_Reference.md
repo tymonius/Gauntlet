@@ -234,7 +234,7 @@
 **Cost:** 3
 **Unique:** No
 
-> **Action:** Discard your Hand. Each player shuffles their Discard Pile into their Draw Pile. Draw three cards, then gain one additional Action that turn.
+> **Action:** Discard your Hand. Each player shuffles their Discard Pile into their Draw Pile. Draw three cards. After this Action resolves, you may take one additional Action during this phase.
 >
 > **Battle:** If this battle is a Counterattack, gain double advantage. Otherwise, if you are the attacker, gain advantage.
 
@@ -257,7 +257,7 @@
 
 > **Action:** Bank this card.
 >
-> **Asset:** After you win a Counterattack, draw one card, then gain one additional Action that turn.
+> **Asset:** After you win a Counterattack, draw one card. During your Denouement that turn, you may take one additional Action, even if you take another Action during that phase.
 >
 > **Battle:** If this battle is a Counterattack, form your Reserve with one additional card and you may choose one additional Tactic.
 
@@ -340,7 +340,7 @@
 
 > **Action:** Bank this card.
 >
-> **Use:** During your turn, you may discard this card to gain one additional Action that turn.
+> **Use:** During Opening or Denouement, you may discard this card. If you do, you may take one additional Action during that phase.
 >
 > **Battle:** After Tactics are revealed, draw one additional card into your Reserve. You may immediately play it face up as an additional Tactic.
 
@@ -857,7 +857,7 @@ Then put this card in your Discard Pile and draw one card.
 **Cost:** 3
 **Unique:** No
 
-> **Action:** Make one Deed you own unowned. Gain Capital equal to the number of Deeds you owned before doing so, then gain one additional Action that turn.
+> **Action:** Make one Deed you own unowned. Gain Capital equal to the number of Deeds you owned before doing so. After this Action resolves, you may take one additional Action during this phase.
 >
 > **Battle:** Before dice are rolled, you may make one Deed you own unowned. If you do, gain Capital equal to the number of Deeds you owned before doing so, then you may immediately Subsidize.
 
@@ -894,7 +894,7 @@ Then put this card in your Discard Pile and draw one card.
 **Unique:** No
 **Card form:** Asset with collateral
 
-> **Action:** Choose one other card in your Hand or Treasury and place it beneath this card as collateral. Bank this card. Gain Capital equal to the collateral card's value plus 2, then gain one additional Action that turn.
+> **Action:** Choose one other card in your Hand or Treasury and place it beneath this card as collateral. Bank this card. Gain Capital equal to the collateral card's value plus 2. After this Action resolves, you may take one additional Action during this phase.
 >
 > **Loan:** At the start of your next turn, after the Capture step and income, choose one:
 
@@ -941,7 +941,7 @@ If this card leaves play before the loan is settled, you default.
 **Unique:** No
 **Card form:** Asset
 
-> **Action:** Bank this card. Draw two cards, then gain one additional Action that turn.
+> **Action:** Bank this card. Draw two cards. After this Action resolves, you may take one additional Action during this phase.
 >
 > **Asset:** While Tariffs is banked, skip your normal draw. You cannot bank it while you control another banked Tariffs. You cannot voluntarily cause it to leave play during the turn it is banked.
 >

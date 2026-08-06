@@ -158,9 +158,9 @@ export function buildV062CanonicalData(baseData) {
   const foreclosure = card(data, "Foreclosure");
   setEffect(foreclosure, "Action", "During Denouement, choose the next opposing Territory immediately beyond your Front Line if its Deed is yours and it is unoccupied. Advance your Front Line by one Territory.");
   setEffect(foreclosure, "Battle", "During the Aftermath, if you initiated the battle on a Territory whose Deed you owned when the battle began and you won, advance your Front Line by one Territory, if able, instead of becoming the occupier.");
-  for (const name of ["Tariffs", "Divestment", "Margin Loan"]) {
-    replaceCardText(card(data, name), "gain 1 Action and immediately take another Action Opportunity", "gain one additional Action that turn");
-  }
+  setEffect(card(data, "Tariffs"), "Action", "Bank this card. Draw two cards. After this Action resolves, you may take one additional Action during this phase.");
+  setEffect(card(data, "Divestment"), "Action", "Make one Deed you own unowned. Gain Capital equal to the number of Deeds you owned before doing so. After this Action resolves, you may take one additional Action during this phase.");
+  setEffect(card(data, "Margin Loan"), "Action", "Choose one other card in your Hand or Treasury and place it beneath this card as collateral. Bank this card. Gain Capital equal to the collateral card's value plus 2. After this Action resolves, you may take one additional Action during this phase.");
 
   setEffect(card(data, "Fog of War"), "Action", "Place Fog of War as an Overlay on a Territory. Remove it after the next battle fought there. During that battle, the controller of this Territory sets their Gambit and chooses their Tactics after the opponent's corresponding choice, regardless of who initiated the battle.");
   setEffect(card(data, "Reconnaissance"), "Use", "During Onset in a battle you initiated, you may discard this card to reveal the opponent's Hand. You may then withdraw or continue the attack.");
@@ -174,11 +174,10 @@ export function buildV062CanonicalData(baseData) {
   setEffect(card(data, "Advance Guard"), "Action", "During Opening, during your Movement this turn, you may move one additional Position. If that additional movement creates a pending battle, you cannot set a Gambit in that battle.");
   replaceCardText(card(data, "Entrenchment"), "their movement ends and they cannot use their Action Opportunity after movement", "their movement ends and they cannot play a card for its Action effect during Denouement");
   setEffect(card(data, "Palisade Wall"), "Use", "During Onset while you are the defender, you may discard this card. If you do, the opponent's banked Assets are inactive during that battle.");
-  setEffect(card(data, "Reinforcements"), "Use", "During your turn, you may discard this card to gain one additional Action that turn.");
-  appendRule(card(data, "Reinforcements"), "The additional Action does not permit two Actions in one phase.");
+  setEffect(card(data, "Reinforcements"), "Use", "During Opening or Denouement, you may discard this card. If you do, you may take one additional Action during that phase.");
   setEffect(card(data, "Strategic Withdrawal"), "Action", "Return one banked Asset you control to your Hand. If you do, gain one additional Position of movement this turn. If you play Strategic Withdrawal during Denouement after your normal Movement has ended, begin a new Movement sequence with up to one Position of movement.");
-  replaceCardText(card(data, "Insurrection"), "gain 1 Action and immediately take another Action Opportunity", "gain one additional Action that turn");
-  replaceCardText(card(data, "Liberation"), "gain 1 Action and immediately take another Action Opportunity", "gain one additional Action that turn");
+  setEffect(card(data, "Insurrection"), "Action", "Discard your Hand. Each player shuffles their Discard Pile into their Draw Pile. Draw three cards. After this Action resolves, you may take one additional Action during this phase.");
+  setEffect(card(data, "Liberation"), "Asset", "After you win a Counterattack, draw one card. During your Denouement that turn, you may take one additional Action, even if you take another Action during that phase.");
   const assimilation = card(data, "Assimilation");
   setEffect(assimilation, "Use", "During the Aftermath of a battle you initiated and won on a Territory the opponent controls, you may put this card in your Graveyard. If you do, advance your Front Line by one Territory, if able, instead of becoming the occupier.");
   setEffect(assimilation, "Battle", "During the Aftermath, if you win as the attacker on a Territory the opponent controls, advance your Front Line by one Territory, if able, instead of becoming the occupier. Put this card in your Graveyard after the Front Line advance.");

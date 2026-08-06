@@ -404,8 +404,8 @@ Revealing is optional. Once revealed, the card cannot remain on top of the Draw 
 ## Revised inherited Financier timing
 
 - Treasury placement, Deed purchase, Play the Market, and Hostile Takeover are Faction Actions during Denouement.
-- Tariffs, Divestment, and Margin Loan grant an additional Action but do not create an immediate Action Opportunity. Resolve the card fully; the additional Action may be taken during a legal remaining Action phase, subject to the one-Action-per-phase limit.
-- If one of those cards is played during Denouement after an Action was already taken during Opening, the additional Action cannot be used that turn unless the card expressly permits two Actions during Denouement. The inherited v0.6.1 wording does not grant that permission.
+- Tariffs, Divestment, and Margin Loan each permit one additional Action during the phase in which the card's Action resolves. This explicit card permission overrides the normal one-Action-per-phase limit.
+- Resolve the card fully before taking the additional Action. The permission expires when that phase ends.
 
 ---
 
