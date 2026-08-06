@@ -1,0 +1,40 @@
+name: Render Leader card specimens
+
+on:
+  pull_request:
+    paths:
+      - "card-design/leaders.html"
+      - "card-design/leader-card.css"
+      - "card-design/card-design.css"
+      - "card-design/card-design-refinement.css"
+      - "card-design/card-design.js"
+      - "card-design/card-parchment.css"
+      - "card-design/faction-specimens.css"
+      - "design-tokens.css"
+      - "images/sketches/general.png"
+      - "images/sketches/commandant.png"
+      - "scripts/render-leader-card-specimens.mjs"
+      - ".github/workflows/render-leader-card-specimens.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+      - name: Render and validate Leader faces
+        run: node scripts/render-leader-card-specimens.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-leader-card-specimens
+          path: card-design/generated/leaders/
+          if-no-files-found: error

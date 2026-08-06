@@ -11,7 +11,8 @@ on:
       - '!faction-sheets/v061-*.css'
       - faction-sheets/*.js
       - '!faction-sheets/v061-*.js'
-      - images/**
+      # v0.6.0 is a historical release. Do not rerender it for unrelated
+      # additions to the shared images tree, such as later faction symbols.
       - scripts/build-v0.6.0-card-sheets.mjs
       - scripts/print-v0.6.0-card-sheets.mjs
       - scripts/render-v0.6.0-card-sheets.sh

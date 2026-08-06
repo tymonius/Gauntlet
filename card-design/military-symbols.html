@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>Gauntlet Military Symbol Review</title>
+  <link rel="preconnect" href="https://use.typekit.net" />
+  <link rel="preconnect" href="https://p.typekit.net" crossorigin />
+  <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
+  <link rel="stylesheet" href="../design-tokens.css" />
+  <link rel="stylesheet" href="card-design.css" />
+  <link rel="stylesheet" href="card-design-refinement.css" />
+  <link rel="stylesheet" href="card-parchment.css" />
+  <link rel="stylesheet" href="faction-specimens.css" />
+  <link rel="stylesheet" href="leader-card.css" />
+  <style>
+    .symbol-review {
+      width: min(88rem, calc(100% - 2rem));
+      margin: 0 auto;
+      padding: 3.5rem 0 5rem;
+    }
+
+    .symbol-review h1 {
+      margin: 0;
+      font-family: var(--font-display-web);
+      font-size: clamp(2.4rem, 6vw, 4.8rem);
+      line-height: .96;
+    }
+
+    .symbol-review-copy {
+      max-width: 52rem;
+      margin: 1rem 0 2.5rem;
+      color: #51483f;
+      font-size: 1rem;
+      line-height: 1.5;
+    }
+
+    .scale-grid {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+
+    .scale-card {
+      padding: 1rem;
+      border: 1px solid var(--page-rule);
+      background: rgba(255,255,255,.58);
+    }
+
+    .scale-card h2 {
+      margin: 0 0 .85rem;
+      font-family: var(--font-interface);
+      font-size: .72rem;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+    }
+
+    .scale-row {
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+      color: #66151b;
+    }
+
+    .symbol-mask {
+      display: block;
+      flex: 0 0 auto;
+      background: currentColor;
+      -webkit-mask: var(--review-symbol) center / contain no-repeat;
+      mask: var(--review-symbol) center / contain no-repeat;
+    }
+
+    .symbol-16 { width: 16px; height: 16px; }
+    .symbol-24 { width: 24px; height: 24px; }
+    .symbol-48 { width: 48px; height: 48px; }
+
+    .candidate-current { --review-symbol: url("../images/faction-symbols/military.svg"); }
+    .candidate-arming { --review-symbol: url("../images/faction-symbols/candidates/military-arming-swords.svg"); }
+    .candidate-heraldic { --review-symbol: url("../images/faction-symbols/candidates/military-heraldic-swords.svg"); }
+    .candidate-command { --review-symbol: url("../images/faction-symbols/candidates/military-command-swords.svg"); }
+    .candidate-sabers { --review-symbol: url("../images/faction-symbols/candidates/military-cavalry-sabers.svg"); }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 2.5in);
+      gap: .34in;
+      justify-content: center;
+      width: max-content;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    .candidate {
+      width: 2.5in;
+    }
+
+    .candidate-label {
+      min-height: 3rem;
+      margin: 0 0 .55rem;
+      font-family: var(--font-interface);
+      font-size: .66rem;
+      line-height: 1.25;
+    }
+
+    .candidate-label strong {
+      display: block;
+      margin-bottom: .15rem;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+    }
+
+    .candidate-current .leader-card { --faction-symbol: url("../images/faction-symbols/military.svg"); }
+    .candidate-arming .leader-card { --faction-symbol: url("../images/faction-symbols/candidates/military-arming-swords.svg"); }
+    .candidate-heraldic .leader-card { --faction-symbol: url("../images/faction-symbols/candidates/military-heraldic-swords.svg"); }
+    .candidate-command .leader-card { --faction-symbol: url("../images/faction-symbols/candidates/military-command-swords.svg"); }
+    .candidate-sabers .leader-card { --faction-symbol: url("../images/faction-symbols/candidates/military-cavalry-sabers.svg"); }
+
+    @media (max-width: 84rem) {
+      .scale-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .card-grid { grid-template-columns: repeat(3, 2.5in); }
+    }
+
+    @media (max-width: 54rem) {
+      .scale-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .card-grid { grid-template-columns: repeat(2, 2.5in); }
+    }
+
+    @media (max-width: 38rem) {
+      .scale-grid { grid-template-columns: 1fr; }
+      .card-grid { grid-template-columns: 2.5in; }
+    }
+  </style>
+  <script src="card-design.js" defer></script>
+</head>
+<body class="faction-specimen-page">
+  <main class="symbol-review">
+    <p class="eyebrow">Faction symbol review · Military</p>
+    <h1>Crossed-weapons construction</h1>
+    <p class="symbol-review-copy">The current mark is included as a baseline. The four candidates use solid silhouettes rather than thin stroked pieces. Candidate D introduces curved cavalry sabers to give the Military a more historically specific eighteenth-century command identity while preserving recognition at the 0.16-inch Leader-header size.</p>
+
+    <section class="scale-grid" aria-label="Military symbol scale comparison">
+      <article class="scale-card candidate-current"><h2>Current baseline</h2><div class="scale-row"><span class="symbol-mask symbol-16"></span><span class="symbol-mask symbol-24"></span><span class="symbol-mask symbol-48"></span></div></article>
+      <article class="scale-card candidate-arming"><h2>A · Arming swords</h2><div class="scale-row"><span class="symbol-mask symbol-16"></span><span class="symbol-mask symbol-24"></span><span class="symbol-mask symbol-48"></span></div></article>
+      <article class="scale-card candidate-heraldic"><h2>B · Heraldic swords</h2><div class="scale-row"><span class="symbol-mask symbol-16"></span><span class="symbol-mask symbol-24"></span><span class="symbol-mask symbol-48"></span></div></article>
+      <article class="scale-card candidate-command"><h2>C · Command swords</h2><div class="scale-row"><span class="symbol-mask symbol-16"></span><span class="symbol-mask symbol-24"></span><span class="symbol-mask symbol-48"></span></div></article>
+      <article class="scale-card candidate-sabers"><h2>D · Cavalry sabers</h2><div class="scale-row"><span class="symbol-mask symbol-16"></span><span class="symbol-mask symbol-24"></span><span class="symbol-mask symbol-48"></span></div></article>
+    </section>
+
+    <section class="card-grid" aria-label="Military symbol Leader-card comparison">
+      <div class="candidate candidate-current"><p class="candidate-label"><strong>Current baseline</strong>Thin, separated construction.</p><div class="card-host"></div></div>
+      <div class="candidate candidate-arming"><p class="candidate-label"><strong>A · Arming swords</strong>Balanced weight, straight guards, round pommels.</p><div class="card-host"></div></div>
+      <div class="candidate candidate-heraldic"><p class="candidate-label"><strong>B · Heraldic swords</strong>Broad blades and angular furniture; strongest silhouette.</p><div class="card-host"></div></div>
+      <div class="candidate candidate-command"><p class="candidate-label"><strong>C · Command swords</strong>Narrower blades with curved guards; more formal.</p><div class="card-host"></div></div>
+      <div class="candidate candidate-sabers"><p class="candidate-label"><strong>D · Cavalry sabers</strong>Curved blades and protective guards; historically specific and mobile.</p><div class="card-host"></div></div>
+    </section>
+  </main>
+
+  <template id="general-card-template">
+    <article class="gauntlet-card military-card faction-component-card leader-card general-card" data-faction="military" data-art-max="1.86" data-art-min="1.34" data-title-min="10" aria-label="General Military Leader card symbol specimen">
+      <div class="card-interior">
+        <header class="card-heading">
+          <h2 class="card-title">General</h2>
+          <div class="leader-faction-line"><span class="leader-faction-emblem" aria-hidden="true"></span><span>Military</span></div>
+        </header>
+        <figure class="card-art has-image"><img src="../images/general.png" alt="Portrait of the General" /></figure>
+        <div class="card-rules">
+          <section class="leader-rule-section"><h4>Command</h4><p>Maximum 2. The first time each turn you win a battle, gain 1 Command.</p></section>
+          <section class="leader-rule-section"><h4>Onward<span>1 Command</span></h4><p>During your Movement, before a pending battle is created, move one additional Position. This movement may create a pending battle.</p></section>
+          <section class="leader-rule-section"><h4>Rally<span>1 Command</span></h4><p>Before dice are rolled in a battle you initiated, add +1 to your battle total.</p></section>
+          <section class="leader-rule-section"><h4>Rout<span>2 Command</span></h4><p>At the end of the Aftermath of a battle you initiated and won, advance one Position. This movement may create a pending battle.</p></section>
+        </div>
+        <footer class="card-footer"><span>Military</span><span>Leader</span><span>v0.6.2</span></footer>
+      </div>
+    </article>
+  </template>
+  <script>
+    const template = document.getElementById('general-card-template');
+    document.querySelectorAll('.card-host').forEach(host => host.append(template.content.cloneNode(true)));
+  </script>
+</body>
+</html>
