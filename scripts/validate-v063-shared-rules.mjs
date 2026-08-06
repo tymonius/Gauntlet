@@ -12,7 +12,6 @@ const matrix = readFileSync(matrixPath, 'utf8');
 
 const requiredCandidateText = [
   'Place each Player Token on the Territory at that player\'s end of the Gauntlet.',
-  'A player on a Territory they control is not occupying that Territory.',
   'does not count as entering the Territory',
   'Draw four cards, choose one card from those four, and place it face up in your Discard Pile.',
   'After both players have chosen their opening discard',
@@ -57,7 +56,7 @@ const expectedIds = Array.from({ length: 50 }, (_, index) => `V063-S${String(ind
 assert.deepEqual(ids, expectedIds, 'v0.6.3 scenario IDs must be sequential from V063-S01 through V063-S50');
 
 const requiredMatrixText = [
-  'Starting Territory is not occupied',
+  'Setup placement does not alter control',
   'Choice occurs before initiative',
   'Capture route is running the Gauntlet',
   'Last Stand route is running the Gauntlet',
