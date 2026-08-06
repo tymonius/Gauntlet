@@ -1,8 +1,19 @@
 {
   "version": "v0.6.2",
-  "generated_at": "2026-08-06T06:44:00.113Z",
+  "generated_at": "2026-08-06T07:02:13.737Z",
   "source_package": "releases/v0.6.2/",
   "print_source": "v0.6.2/print/",
+  "booklet_padding": {
+    "source_pages": 37,
+    "padded_pages": 40,
+    "hero_plate_count": 3,
+    "hero_asset": "images/sketches/hero sketch.png",
+    "hero_source_pages": [
+      38,
+      39,
+      40
+    ]
+  },
   "outputs": [
     {
       "key": "rulebook",
@@ -158,7 +169,7 @@
           "height": 612
         }
       ],
-      "sha256": "5f16d81763cd263584cf35feafa5e8466607cd19d3ef990c1d96936b0c9b444d"
+      "sha256": "f17a60bd1cd8f7dee581e63fb12eb827c01d9916cc281be9d30f5bddc23412ee"
     },
     {
       "key": "reference",
@@ -182,7 +193,7 @@
           "height": 792
         }
       ],
-      "sha256": "669dd9af3349b0fee33f1e666eab0449a7b55df5b08ec55a2f36684db1056f80"
+      "sha256": "42e479c2789a25b365a509fa556cb3ee8308a7d1c867b3caafaec8de036499ae"
     },
     {
       "key": "first_game",
@@ -226,7 +237,7 @@
           "height": 792
         }
       ],
-      "sha256": "029750eb9b817ab9f30d34746d66c31a4ac8e3165da0828f86e2acdc9f50b06d"
+      "sha256": "df5d27c4116819bcd09b4ec6af3de61eb989f6a23bfb4f939ec01690a1ade6d6"
     },
     {
       "key": "faction_guide",
@@ -282,7 +293,7 @@
           "height": 792
         }
       ],
-      "sha256": "aee696f47dc37533ed93c541642711d9f2b7af84187e25a514b510495f8b144a"
+      "sha256": "ffa320caaf0cfc1687c60aa038b738dd399d3bfe81dda4aaaa9fa5d59928fec7"
     },
     {
       "key": "returning_changes",
@@ -318,7 +329,7 @@
           "height": 792
         }
       ],
-      "sha256": "d26dc7e22a4cdb2602e3620079b94af955da9cd4e4a195ec40c682ddec6a06bf"
+      "sha256": "d6386454358a5623b685fd74d4a3d2f3c50c4981d0e7b2a776db80bd93521694"
     },
     {
       "key": "player_mat",
@@ -330,7 +341,7 @@
           "height": 612
         }
       ],
-      "sha256": "cc0b4045a20031f43e10b62c10c6a261219a1f1a918e086b0d3f1e46852f21b0"
+      "sha256": "5a779f44a71e022ba392baeba0175b5a9f44c96c978582d2970e9ccffa278b23"
     },
     {
       "key": "playtest_sheet",
@@ -346,7 +357,7 @@
           "height": 792
         }
       ],
-      "sha256": "7eb341f7eb56a547082a32946b51186301d084ac5b9dbbe1e5dd93e97a3caba4"
+      "sha256": "fc5df65f9ec0080881fa94ee4944ff0eea5c22312f6ace7bdbb0fdbfd484b523"
     },
     {
       "key": "faction_cards",
@@ -366,7 +377,7 @@
           "height": 612
         }
       ],
-      "sha256": "066604b4352c74a808bdc580abec647156aeaf059fd6b858b29aa9fc2d0a6cec"
+      "sha256": "01bea640fbaedf2917226298a3ee7572f301156755376061e59446419c1be6b5"
     },
     {
       "key": "active_marker",
@@ -378,7 +389,7 @@
           "height": 792
         }
       ],
-      "sha256": "be2a960ccd9c0123c0b66a5468fcea574c5e1111ed604ef1951edaf06e9929a6"
+      "sha256": "51b5062eae884cbe842a5e8b30d57625cd8515c84ef249c8d44da9fefbd733f3"
     },
     {
       "key": "rulebook_booklet",
@@ -466,7 +477,7 @@
           "height": 612
         }
       ],
-      "sha256": "2597263197c290aab25ce2b797c942a22dc3f2cc49380bfb478c1984b125e6a5"
+      "sha256": "8aa627359112e9838b5f2913cceb392552d2cedacb81216b50803475b0e75ad5"
     },
     {
       "key": "tableside_pack",
@@ -582,12 +593,12 @@
           "height": 792
         }
       ],
-      "sha256": "76ec873db02517e104dc352735c6ba34527c1452ddd04a92f825af9cc1d9c0ad"
+      "sha256": "23e21a5c5d7970cb4a87133bf20b6e09db903449401a250f78be6ae1556545ab"
     }
   ],
   "printing": {
     "reader_rulebook": "Half-Letter portrait, actual size",
-    "imposed_booklet": "Letter landscape, duplex, flip on short edge, actual size",
+    "imposed_booklet": "Letter landscape, duplex, flip on short edge, actual size; hero-art plates fill unavoidable padding pages",
     "tableside_materials": "Letter; respect portrait or landscape orientation shown in each file"
   }
 }
