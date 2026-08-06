@@ -1,0 +1,125 @@
+/* Shared production Leader face layered over the ordinary Gauntlet card shell. */
+
+.leader-card {
+  --minimum-rules-scale: 0.93;
+}
+
+.leader-card .card-interior {
+  --art-height: 1.86in;
+  grid-template-rows: 0.58in var(--art-height) auto 0.16in;
+}
+
+.leader-card .card-heading {
+  display: grid;
+  grid-template-rows: auto auto;
+  align-content: center;
+  gap: 0.025in;
+  padding: 0.05in 0.09in 0.035in;
+}
+
+.leader-card .card-title {
+  max-width: 100%;
+  font-size: 14.1pt;
+  letter-spacing: 0.04em;
+  line-height: 0.88;
+}
+
+.leader-faction-line {
+  display: flex;
+  align-items: center;
+  gap: 0.042in;
+  min-width: 0;
+  color: var(--card-muted-ink);
+  font-family: var(--font-interface);
+  font-size: 4.75pt;
+  font-weight: 750;
+  letter-spacing: 0.105em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+/* Temporary typographic stand-in for the approved emblem position. The final
+   vector emblem can replace this glyph without changing the header geometry. */
+.leader-faction-emblem {
+  display: grid;
+  width: 0.14in;
+  height: 0.14in;
+  flex: 0 0 0.14in;
+  place-items: center;
+  border: 0.65px solid currentColor;
+  border-radius: 50%;
+  font-family: Georgia, serif;
+  font-size: 7pt;
+  font-weight: 400;
+  letter-spacing: 0;
+  line-height: 1;
+}
+
+.leader-card .card-art {
+  margin-bottom: 0.045in;
+}
+
+.leader-card .card-art img {
+  object-position: center 16%;
+}
+
+.leader-card.commandant-card .card-art img {
+  object-position: center 14%;
+}
+
+.leader-card .card-rules {
+  display: grid;
+  align-content: start;
+  gap: 0.032in;
+  min-height: 0;
+  padding: 0.038in 0.075in 0.032in;
+}
+
+.leader-rule-section {
+  display: grid;
+  grid-template-columns: 0.63in minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: 0.045in;
+  min-width: 0;
+}
+
+.leader-rule-section h4 {
+  margin: 0;
+  color: var(--card-muted-ink);
+  font-family: var(--font-interface);
+  font-size: calc(4.75pt * var(--rules-scale));
+  font-weight: 800;
+  letter-spacing: 0.035em;
+  line-height: 1.04;
+  text-transform: uppercase;
+}
+
+.leader-rule-section h4 span {
+  display: block;
+  margin-top: 0.012in;
+  font-size: calc(4.1pt * var(--rules-scale));
+  font-weight: 700;
+  letter-spacing: 0.018em;
+  white-space: nowrap;
+}
+
+.leader-rule-section p {
+  margin: 0;
+  font-family: "adobe-caslon-pro", Georgia, serif;
+  font-size: calc(5.55pt * var(--rules-scale));
+  line-height: 1.07;
+}
+
+.leader-card .card-footer {
+  grid-template-columns: 1fr auto 1fr;
+}
+
+.leader-card .card-footer span:nth-child(2) {
+  color: var(--card-muted-ink);
+}
+
+@media print {
+  .leader-faction-emblem {
+    print-color-adjust: exact;
+  }
+}
