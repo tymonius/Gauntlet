@@ -1,19 +1,22 @@
 .territory-card {
   --effect-scale: 1;
-  --art-height: 1.33in;
+  --art-height: 1.49in;
   --parchment-image: none;
+  --territory-border: #795332;
+  --territory-border-outline: #49301d;
+  --territory-border-rule: rgba(255, 244, 222, 0.34);
   position: relative;
   width: 3.5in;
   height: 2.5in;
   overflow: hidden;
   padding: 0.075in;
-  border: 1px solid rgba(47, 37, 28, 0.48);
+  border: 1px solid var(--territory-border-outline);
   border-radius: 0.125in;
-  background: var(--card-ivory, #eee7d5);
+  background: var(--territory-border);
   color: var(--card-ink, #241c15);
   box-shadow:
     0 0.16in 0.36in var(--card-shadow, rgba(38, 28, 20, 0.22)),
-    inset 0 0 0 0.015in rgba(255, 255, 255, 0.42);
+    inset 0 0 0 0.015in rgba(255, 255, 255, 0.14);
   break-inside: avoid;
   page-break-inside: avoid;
 }
@@ -21,7 +24,7 @@
 .territory-card::before {
   position: absolute;
   inset: 0.03in;
-  border: 0.5px solid rgba(74, 57, 42, 0.22);
+  border: 0.5px solid var(--territory-border-rule);
   border-radius: 0.09in;
   content: "";
   pointer-events: none;
@@ -29,30 +32,39 @@
 
 .territory-interior {
   position: relative;
+  isolation: isolate;
   display: grid;
-  grid-template-rows: 0.46in minmax(0, 1fr) 0.18in;
+  grid-template-rows: 0.3in minmax(0, 1fr) 0.18in;
   width: 100%;
   height: 100%;
   overflow: hidden;
   border: 1px solid var(--card-keyline, #3d3024);
   border-radius: 0.055in;
   background-color: var(--card-parchment, #e6d4ae);
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.08), rgba(121, 88, 48, 0.035)),
-    var(--parchment-image);
+}
+
+/* The approved Neutral parchment source is portrait-oriented. Rotate the
+   original texture as a single opaque layer so its grain and lighting follow
+   the landscape Territory rather than cropping the portrait face sideways. */
+.territory-interior::before {
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  left: 50%;
+  width: 70.15%;
+  height: 142.55%;
+  background-image: var(--parchment-image);
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
+  content: "";
+  transform: translate(-50%, -50%) rotate(90deg);
+  transform-origin: center;
+  pointer-events: none;
 }
 
 .territory-interior::after {
-  position: absolute;
-  inset: 0;
-  background:
-    repeating-linear-gradient(0deg, transparent 0, transparent 0.055in, rgba(75, 51, 27, 0.012) 0.057in),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.08), transparent 16%, transparent 84%, rgba(93, 61, 26, 0.035));
-  content: "";
-  pointer-events: none;
+  content: none;
 }
 
 .territory-heading,
@@ -66,7 +78,7 @@
   display: flex;
   align-items: center;
   min-width: 0;
-  padding: 0.075in 0.09in 0.035in;
+  padding: 0.022in 0.09in 0.012in;
 }
 
 .territory-title {
@@ -94,47 +106,61 @@
   margin: 0 0.055in 0.04in 0.045in;
 }
 
+/* Match the standard playable card's mounted-print artwork frame. */
 .territory-art {
   position: relative;
+  isolation: isolate;
   width: 100%;
   min-width: 0;
   min-height: 0;
   margin: 0;
   overflow: hidden;
-  border: 1px solid var(--card-keyline, #3d3024);
-  border-radius: 0.012in;
-  background:
-    radial-gradient(circle at 40% 28%, rgba(242, 224, 181, 0.24), transparent 28%),
-    linear-gradient(145deg, #8b7a63, #615547 58%, #40372f);
+  border: 1px solid rgba(54, 41, 29, 0.94);
+  border-radius: 0.025in;
+  background-color: #8a7a67;
+  box-shadow:
+    0 0 0 0.007in rgba(231, 212, 176, 0.78),
+    0 0 0 0.012in rgba(65, 48, 32, 0.72),
+    0 0.012in 0.026in rgba(43, 31, 22, 0.16),
+    inset 0 0.012in 0.024in rgba(255, 249, 230, 0.1),
+    inset 0 -0.018in 0.035in rgba(27, 19, 14, 0.18);
 }
 
 .territory-art::before,
 .territory-art::after {
   position: absolute;
   inset: 0;
+  border-radius: inherit;
   content: "";
   pointer-events: none;
 }
 
 .territory-art::before {
   z-index: 1;
-  background:
-    repeating-linear-gradient(116deg, rgba(255, 255, 255, 0.04) 0 1px, transparent 1px 5px),
-    repeating-linear-gradient(64deg, rgba(24, 19, 15, 0.045) 0 1px, transparent 1px 6px);
-  mix-blend-mode: overlay;
+  box-shadow:
+    inset 0 0 0 0.008in rgba(247, 232, 198, 0.76),
+    inset 0 0 0 0.015in rgba(59, 43, 29, 0.82),
+    inset 0 0 0 0.022in rgba(227, 207, 169, 0.52);
 }
 
 .territory-art::after {
   z-index: 2;
-  background: linear-gradient(180deg, transparent 58%, rgba(24, 18, 13, 0.36));
+  background:
+    linear-gradient(180deg, rgba(20, 16, 12, 0.02), transparent 58%, rgba(24, 18, 13, 0.24)),
+    linear-gradient(90deg, rgba(255, 244, 213, 0.07), transparent 18%, transparent 82%, rgba(34, 25, 18, 0.08));
+  box-shadow:
+    inset 0 0.01in 0.018in rgba(255, 249, 231, 0.12),
+    inset 0 -0.014in 0.026in rgba(25, 18, 12, 0.18);
 }
 
 .territory-art img {
   position: absolute;
+  z-index: 0;
   inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center 52%;
 }
 
 .territory-art span {
@@ -163,7 +189,7 @@
   min-height: 0;
   overflow: hidden;
   padding: 0.045in 0.07in 0.035in;
-  border-top: 0.65px solid rgba(61, 48, 36, 0.38);
+  border-top: 0;
   background: rgba(238, 226, 198, 0.14);
   font-family: var(--font-reading);
 }
@@ -216,13 +242,9 @@
   color: var(--arena-crimson, #7e2027);
 }
 
-.territory-card.arena .territory-effect {
-  border-top-color: rgba(126, 32, 39, 0.42);
-}
-
 .territory-card.compact .territory-heading {
-  padding-top: 0.06in;
-  padding-bottom: 0.025in;
+  padding-top: 0.016in;
+  padding-bottom: 0.008in;
 }
 
 .territory-card.compact .territory-body {

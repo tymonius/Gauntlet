@@ -5,6 +5,7 @@ const generator = readFileSync("scripts/generate-tts-territory-assets.mjs", "utf
 const renderer = readFileSync("tts/territory-renderer/territory-renderer.js", "utf8");
 const rendererStyles = readFileSync("tts/territory-renderer/territory-renderer.css", "utf8");
 const playableStyles = readFileSync("card-design/card-design.css", "utf8");
+const refinedPlayableStyles = readFileSync("card-design/card-design-refinement.css", "utf8");
 const sharedStyles = readFileSync("card-design/territory-card.css", "utf8");
 const specimenPage = readFileSync("card-design/index.html", "utf8");
 const dedicatedSpecimenPage = readFileSync("card-design/territories/index.html", "utf8");
@@ -26,22 +27,36 @@ describe("TTS Territory assets", () => {
     expect(dedicatedSpecimenPage).toContain('href="../territory-card.css"');
     expect(sharedStyles).toContain("padding: 0.075in");
     expect(sharedStyles).toContain("border-radius: 0.125in");
-    expect(sharedStyles).toContain("background: var(--card-ivory");
+    expect(sharedStyles).toContain("border: 1px solid var(--territory-border-outline)");
+    expect(sharedStyles).toContain("background: var(--territory-border)");
     expect(sharedStyles).toContain("border: 1px solid var(--card-keyline");
     expect(sharedStyles).toContain("var(--parchment-image)");
-    expect(sharedStyles).toContain("font-family: var(--font-display-historical)");
     expect(sharedStyles).not.toContain(".territory-complexity");
     expect(renderer).not.toContain("value-medallion");
   });
 
-  it("matches the standard playable-card title-panel height", () => {
-    expect(playableStyles).toContain("grid-template-rows: 0.46in 1.42in minmax(0, 1fr) 0.16in");
-    expect(sharedStyles).toContain("grid-template-rows: 0.46in minmax(0, 1fr) 0.18in");
-    expect(sharedStyles).toContain("padding: 0.075in 0.09in 0.035in");
-    expect(dedicatedSpecimenPage).toContain("same 0.46-inch title panel as a standard playable card");
+  it("uses the approved Neutral parchment rotated for the landscape face", () => {
+    expect(renderer).toContain("/images/artwork/card-backgrounds/neutral-parchment-v2.png");
+    expect(dedicatedSpecimenPage).toContain("neutral-parchment-v2.png");
+    expect(sharedStyles).toContain(".territory-interior::before");
+    expect(sharedStyles).toContain("width: 70.15%");
+    expect(sharedStyles).toContain("height: 142.55%");
+    expect(sharedStyles).toContain("rotate(90deg)");
+    expect(sharedStyles).toContain("background-image: var(--parchment-image)");
+    expect(dedicatedSpecimenPage).toContain("approved Neutral parchment rotated into landscape orientation");
   });
 
-  it("uses a full-width artwork window above a bottom rules panel", () => {
+  it("uses a substantially narrower Territory title panel", () => {
+    expect(playableStyles).toContain("grid-template-rows: 0.46in 1.42in minmax(0, 1fr) 0.16in");
+    expect(sharedStyles).toContain("grid-template-rows: 0.3in minmax(0, 1fr) 0.18in");
+    expect(sharedStyles).toContain("padding: 0.022in 0.09in 0.012in");
+    expect(sharedStyles).toContain("font-family: var(--font-display-historical)");
+    expect(sharedStyles).toContain("font-size: 12.1pt");
+    expect(sharedStyles).toContain("letter-spacing: 0.035em");
+    expect(dedicatedSpecimenPage).toContain("0.30-inch title panel");
+  });
+
+  it("uses the normal playable-card artwork frame without a text divider", () => {
     expect(renderer).toContain('class="territory-art"');
     expect(renderer).toContain("Artwork pending");
     expect(renderer).toContain("territoryArtworkCandidates");
@@ -52,6 +67,14 @@ describe("TTS Territory assets", () => {
     expect(sharedStyles).toContain("width: 100%");
     expect(sharedStyles).toContain(".territory-art img");
     expect(sharedStyles).toContain("object-fit: cover");
+    expect(sharedStyles).toContain("border: 1px solid rgba(54, 41, 29, 0.94)");
+    expect(sharedStyles).toContain("0 0 0 0.007in rgba(231, 212, 176, 0.78)");
+    expect(sharedStyles).toContain("inset 0 0 0 0.022in rgba(227, 207, 169, 0.52)");
+    expect(refinedPlayableStyles).toContain("0 0 0 0.007in rgba(231, 212, 176, 0.78)");
+    expect(refinedPlayableStyles).toContain("inset 0 0 0 0.022in rgba(227, 207, 169, 0.52)");
+    expect(sharedStyles).toContain("border-top: 0");
+    expect(dedicatedSpecimenPage).toContain("same mounted-print frame as a normal card");
+    expect(dedicatedSpecimenPage).toContain("open parchment spacing rather than a divider");
     expect(specimenPage).toContain('class="territory-art"');
     expect(dedicatedSpecimenPage).toContain('class="territory-art"');
     expect(specimenPage).toContain("a framed illustration spans the card beneath it");
@@ -90,7 +113,7 @@ describe("TTS Territory assets", () => {
   });
 
   it("maximizes art height before reducing text", () => {
-    expect(sharedStyles).toContain("--art-height: 1.33in");
+    expect(sharedStyles).toContain("--art-height: 1.49in");
     expect(renderer).toContain("const MINIMUM_ART_HEIGHT = 0.55 * CSS_PIXELS_PER_INCH");
     expect(renderer).toContain("while (cardOverflows(card) && artHeight > MINIMUM_ART_HEIGHT)");
     expect(renderer).toContain("card.dataset.artHeight");
