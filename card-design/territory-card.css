@@ -1,6 +1,6 @@
 .territory-card {
   --effect-scale: 1;
-  --art-height: 1.49in;
+  --art-height: 1.42in;
   --parchment-image: none;
   --territory-border: #795332;
   --territory-border-outline: #49301d;
@@ -99,7 +99,7 @@
 
 .territory-body {
   display: grid;
-  grid-template-rows: var(--art-height) minmax(0, 1fr);
+  grid-template-rows: minmax(0, var(--art-height)) auto;
   gap: 0.04in;
   min-width: 0;
   min-height: 0;
@@ -187,7 +187,7 @@
 .territory-effect {
   min-width: 0;
   min-height: 0;
-  overflow: hidden;
+  overflow: visible;
   padding: 0.045in 0.07in 0.045in;
   border-top: 0;
   background: rgba(238, 226, 198, 0.14);
@@ -198,7 +198,7 @@
   margin: 0;
   font-family: "adobe-caslon-pro", Georgia, serif;
   font-size: calc(8.5pt * var(--effect-scale));
-  line-height: 1.18;
+  line-height: 1.1;
   text-wrap: pretty;
 }
 
@@ -257,7 +257,7 @@
 }
 
 .territory-card.compact .territory-effect p {
-  line-height: 1.12;
+  line-height: 1.1;
 }
 
 .territory-card.fit-warning {

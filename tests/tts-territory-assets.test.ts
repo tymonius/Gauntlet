@@ -61,7 +61,7 @@ describe("TTS Territory assets", () => {
     expect(renderer).toContain("Artwork pending");
     expect(renderer).toContain("territoryArtworkCandidates");
     expect(renderer).toContain("/images/artwork/territories/");
-    expect(sharedStyles).toContain("grid-template-rows: var(--art-height) minmax(0, 1fr)");
+    expect(sharedStyles).toContain("grid-template-rows: minmax(0, var(--art-height)) auto");
     expect(sharedStyles).not.toContain("grid-template-columns: var(--art-width)");
     expect(sharedStyles).toContain(".territory-art {");
     expect(sharedStyles).toContain("width: 100%");
@@ -79,6 +79,13 @@ describe("TTS Territory assets", () => {
     expect(dedicatedSpecimenPage).toContain('class="territory-art"');
     expect(specimenPage).toContain("a framed illustration spans the card beneath it");
     expect(specimenPage).toContain("a full-width panel across the bottom");
+  });
+
+  it("gives Territory effect text its natural height before clipping", () => {
+    expect(sharedStyles).toContain("overflow: visible");
+    expect(sharedStyles).toContain("padding: 0.045in 0.07in 0.045in");
+    expect(sharedStyles).toContain("line-height: 1.1");
+    expect(sharedStyles).not.toContain("line-height: 1.18");
   });
 
   it("implements Territory mockups on the card-design webpages", () => {
@@ -113,7 +120,7 @@ describe("TTS Territory assets", () => {
   });
 
   it("maximizes art height before reducing text", () => {
-    expect(sharedStyles).toContain("--art-height: 1.49in");
+    expect(sharedStyles).toContain("--art-height: 1.42in");
     expect(renderer).toContain("const MINIMUM_ART_HEIGHT = 0.55 * CSS_PIXELS_PER_INCH");
     expect(renderer).toContain("while (cardOverflows(card) && artHeight > MINIMUM_ART_HEIGHT)");
     expect(renderer).toContain("card.dataset.artHeight");
