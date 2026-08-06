@@ -1,0 +1,593 @@
+{
+  "version": "v0.6.2",
+  "generated_at": "2026-08-06T06:44:00.113Z",
+  "source_package": "releases/v0.6.2/",
+  "print_source": "v0.6.2/print/",
+  "outputs": [
+    {
+      "key": "rulebook",
+      "file": "Gauntlet_v0.6.2_Rulebook.pdf",
+      "pages": 37,
+      "sizes": [
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        },
+        {
+          "width": 396,
+          "height": 612
+        }
+      ],
+      "sha256": "5f16d81763cd263584cf35feafa5e8466607cd19d3ef990c1d96936b0c9b444d"
+    },
+    {
+      "key": "reference",
+      "file": "Gauntlet_v0.6.2_Reference_Guide.pdf",
+      "pages": 4,
+      "sizes": [
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        }
+      ],
+      "sha256": "669dd9af3349b0fee33f1e666eab0449a7b55df5b08ec55a2f36684db1056f80"
+    },
+    {
+      "key": "first_game",
+      "file": "Gauntlet_v0.6.2_First_Game_Guide.pdf",
+      "pages": 9,
+      "sizes": [
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        }
+      ],
+      "sha256": "029750eb9b817ab9f30d34746d66c31a4ac8e3165da0828f86e2acdc9f50b06d"
+    },
+    {
+      "key": "faction_guide",
+      "file": "Gauntlet_v0.6.2_Faction_and_Component_Guide.pdf",
+      "pages": 12,
+      "sizes": [
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        }
+      ],
+      "sha256": "aee696f47dc37533ed93c541642711d9f2b7af84187e25a514b510495f8b144a"
+    },
+    {
+      "key": "returning_changes",
+      "file": "Gauntlet_v0.6.2_Returning_Player_Changes.pdf",
+      "pages": 7,
+      "sizes": [
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        }
+      ],
+      "sha256": "d26dc7e22a4cdb2602e3620079b94af955da9cd4e4a195ec40c682ddec6a06bf"
+    },
+    {
+      "key": "player_mat",
+      "file": "Gauntlet_v0.6.2_Player_Mat.pdf",
+      "pages": 1,
+      "sizes": [
+        {
+          "width": 792,
+          "height": 612
+        }
+      ],
+      "sha256": "cc0b4045a20031f43e10b62c10c6a261219a1f1a918e086b0d3f1e46852f21b0"
+    },
+    {
+      "key": "playtest_sheet",
+      "file": "Gauntlet_v0.6.2_Formal_Playtest_Sheet.pdf",
+      "pages": 2,
+      "sizes": [
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        }
+      ],
+      "sha256": "7eb341f7eb56a547082a32946b51186301d084ac5b9dbbe1e5dd93e97a3caba4"
+    },
+    {
+      "key": "faction_cards",
+      "file": "Gauntlet_v0.6.2_Faction_Teaching_Cards.pdf",
+      "pages": 3,
+      "sizes": [
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        }
+      ],
+      "sha256": "066604b4352c74a808bdc580abec647156aeaf059fd6b858b29aa9fc2d0a6cec"
+    },
+    {
+      "key": "active_marker",
+      "file": "Gauntlet_v0.6.2_Active_Player_Marker.pdf",
+      "pages": 1,
+      "sizes": [
+        {
+          "width": 612,
+          "height": 792
+        }
+      ],
+      "sha256": "be2a960ccd9c0123c0b66a5468fcea574c5e1111ed604ef1951edaf06e9929a6"
+    },
+    {
+      "key": "rulebook_booklet",
+      "file": "Gauntlet_v0.6.2_Rulebook_Booklet.pdf",
+      "pages": 20,
+      "sizes": [
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        }
+      ],
+      "sha256": "2597263197c290aab25ce2b797c942a22dc3f2cc49380bfb478c1984b125e6a5"
+    },
+    {
+      "key": "tableside_pack",
+      "file": "Gauntlet_v0.6.2_Tableside_Pack.pdf",
+      "pages": 27,
+      "sizes": [
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 792,
+          "height": 612
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        },
+        {
+          "width": 612,
+          "height": 792
+        }
+      ],
+      "sha256": "76ec873db02517e104dc352735c6ba34527c1452ddd04a92f825af9cc1d9c0ad"
+    }
+  ],
+  "printing": {
+    "reader_rulebook": "Half-Letter portrait, actual size",
+    "imposed_booklet": "Letter landscape, duplex, flip on short edge, actual size",
+    "tableside_materials": "Letter; respect portrait or landscape orientation shown in each file"
+  }
+}
