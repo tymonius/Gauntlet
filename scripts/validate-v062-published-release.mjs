@@ -26,6 +26,8 @@ const requiredFiles = [
   'releases/v0.6.2/deployment-status.json',
   'v0.6.2/rulebook/index.html',
   'v0.6.2/changes/index.html',
+  'v0.6.2/reference/index.html',
+  'v0.6.2/reference/app.js',
   'rules-assistant/v062-published-corpus.js',
   'rules-assistant/worker-v062.js',
   'src/content/current.ts'
@@ -38,7 +40,10 @@ const deployment = JSON.parse(read('releases/v0.6.2/deployment-status.json'));
 const canonical = JSON.parse(read('releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'));
 const starters = JSON.parse(read('releases/v0.6.2/Gauntlet_v0.6.2_Starter_Decks.json'));
 const rulebook = read('releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md');
+const completeCardReference = read('releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md');
 const returning = read('releases/v0.6.2/Gauntlet_v0.6.2_Returning_Player_Changes.md');
+const referenceHtml = read('v0.6.2/reference/index.html');
+const referenceApp = read('v0.6.2/reference/app.js');
 const home = read('index.html');
 const widget = read('rules-assistant/widget.js');
 const workerEntry = read('rules-assistant/worker-entry.js');
@@ -64,8 +69,51 @@ assert(canonical.cards.filter((card) => card.allegiance === 'Neutral').length ==
 for (const faction of ['Military','Diplomats','Financiers','Intelligence','Mystics','Inquisition']) {
   assert(canonical.cards.filter((card) => card.allegiance === faction).length === 13, `${faction} pool must contain 13 titles`);
 }
-for (const title of ['Landslide','Invasion','Détente','Compound Interest','Extraordinary Rendition',"Nature's Altar",'Martyrdom']) {
-  assert(canonical.cards.some((card) => card.name === title), `canonical data is missing ${title}`);
+
+const requiredV062Cards = {
+  Landslide: 'Neutral',
+  Invasion: 'Military',
+  'Détente': 'Diplomats',
+  'Compound Interest': 'Financiers',
+  'Extraordinary Rendition': 'Intelligence',
+  "Nature's Altar": 'Mystics',
+  Martyrdom: 'Inquisition',
+};
+for (const [title, allegiance] of Object.entries(requiredV062Cards)) {
+  const card = canonical.cards.find((entry) => entry.name === title);
+  assert(card, `canonical data is missing ${title}`);
+  assert(card.allegiance === allegiance, `${title} must be ${allegiance}, found ${card.allegiance}`);
+}
+
+const cardsOnlyReference = completeCardReference.split('\n# Territories\n')[0];
+const referenceCardHeadings = [...cardsOnlyReference.matchAll(/^## (.+)$/gm)].map((match) => match[1]);
+assert(referenceCardHeadings.length === 128, `Complete Card Reference must contain 128 card headings, found ${referenceCardHeadings.length}`);
+assert(new Set(referenceCardHeadings).size === 128, 'Complete Card Reference contains duplicate card headings');
+for (const card of canonical.cards) {
+  assert(referenceCardHeadings.includes(card.name), `Complete Card Reference is missing ${card.name}`);
+}
+const allegianceOrder = ['Neutral','Military','Diplomats','Financiers','Intelligence','Mystics','Inquisition'];
+function cardReferenceSection(allegiance) {
+  const start = cardsOnlyReference.indexOf(`\n# ${allegiance}\n`);
+  assert(start >= 0, `Complete Card Reference is missing ${allegiance} section`);
+  const laterStarts = allegianceOrder
+    .slice(allegianceOrder.indexOf(allegiance) + 1)
+    .map((next) => cardsOnlyReference.indexOf(`\n# ${next}\n`, start + 1))
+    .filter((index) => index >= 0);
+  const end = laterStarts.length ? Math.min(...laterStarts) : cardsOnlyReference.length;
+  return cardsOnlyReference.slice(start, end);
+}
+for (const [title, allegiance] of Object.entries(requiredV062Cards)) {
+  assert(cardReferenceSection(allegiance).includes(`\n## ${title}\n`), `Complete Card Reference must list ${title} under ${allegiance}`);
+}
+assert(!cardReferenceSection('Neutral').includes('\n## Invasion\n'), 'Complete Card Reference still lists Invasion as Neutral');
+
+assert(referenceHtml.includes('src="app.js?v=20260806-1"'), 'Card Reference HTML does not cache-bust the corrected app');
+assert(referenceApp.includes('REQUIRED_V062_CARD_ALLEGIANCES'), 'Card Reference app lacks v0.6.2 card integrity guards');
+assert(referenceApp.includes('Gauntlet_v0.6.2_Canonical_Data.json?rev='), 'Card Reference app does not cache-bust canonical data');
+for (const [title, allegiance] of Object.entries(requiredV062Cards)) {
+  assert(referenceApp.includes(title), `Card Reference app guard is missing ${title}`);
+  assert(referenceApp.includes(allegiance), `Card Reference app guard is missing ${allegiance}`);
 }
 
 assert(starters.version === 'v0.6.2' && starters.status === 'published', 'starter catalog is not published v0.6.2');
@@ -109,4 +157,4 @@ assert(
 );
 assert(String(packageJson.scripts?.test || '').includes('validate-v062-published-release.mjs'), 'main test chain does not run published-release validation');
 
-console.log('Published Gauntlet v0.6.2 release validation passed: 128 cards, 25 Territories, 9 Proposals, 12 starters, 416 scenarios, and synchronized public defaults.');
+console.log('Published Gauntlet v0.6.2 release validation passed: 128 cards with exact v0.6.2 allegiance assignments, 25 Territories, 9 Proposals, 12 starters, 416 scenarios, synchronized public defaults, and a guarded Card Reference.');
