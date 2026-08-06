@@ -1,4 +1,4 @@
-name: Test v0.6.1 browser tools
+name: Test legacy browser tools and current Card Reference
 
 on:
   pull_request:
@@ -11,6 +11,7 @@ on:
       - "rules-assistant/**"
       - "playtest/**"
       - "releases/v0.6.1/**"
+      - "releases/v0.6.2/**"
       - "docs/Gauntlet_v0.6.1_*.md"
       - ".github/workflows/test-v061-browser-tools.yml"
   workflow_dispatch:
@@ -19,7 +20,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: test-v061-browser-${{ github.ref }}
+  group: test-browser-tools-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -109,18 +110,43 @@ jobs:
 
             {
               const { page, errors } = await openPage('/card-reference/', viewport);
-              await page.waitForFunction(() => document.querySelector('#cardTotal')?.textContent === '122');
+              await page.waitForFunction(() => document.querySelector('#cardTotal')?.textContent === '128');
               if ((await page.locator('#territoryTotal').textContent()) !== '25') {
                 throw new Error('Card reference did not load 25 Territories');
               }
+              const status = await page.locator('#dataStatus').innerText();
+              if (!status.includes('v0.6.2')) throw new Error(`Card reference did not identify v0.6.2: ${status}`);
+
+              for (const cardName of ['Landslide', 'Détente', 'Compound Interest', 'Extraordinary Rendition', "Nature's Altar", 'Martyrdom']) {
+                await page.fill('#searchInput', cardName);
+                await page.waitForFunction(() => document.querySelector('#resultCount')?.textContent === '1');
+                if ((await page.locator('.reference-row-title').first().innerText()) !== cardName) {
+                  throw new Error(`Card reference did not find new v0.6.2 card ${cardName}`);
+                }
+              }
+
+              await page.fill('#searchInput', 'Invasion');
+              await page.selectOption('#factionFilter', 'neutral');
+              await page.waitForFunction(() => document.querySelector('#resultCount')?.textContent === '0');
+              await page.selectOption('#factionFilter', 'military');
+              await page.waitForFunction(() => document.querySelector('#resultCount')?.textContent === '1');
+              const invasion = page.locator('.reference-row').first();
+              await invasion.click();
+              await page.waitForFunction(() => document.querySelector('#preview h3')?.textContent === 'Invasion');
+              const invasionPreview = await page.locator('#preview').innerText();
+              if (!invasionPreview.includes('Military card')) {
+                throw new Error(`Invasion is not presented as Military:\n${invasionPreview}`);
+              }
+
               await page.fill('#searchInput', 'Black Covenant');
+              await page.selectOption('#factionFilter', 'all');
               await page.waitForFunction(() => document.querySelector('#resultCount')?.textContent === '1');
               const result = page.locator('.reference-row').first();
               await result.click();
               await page.waitForFunction(() => document.querySelector('#preview h3')?.textContent === 'Black Covenant');
               const preview = await page.locator('#preview').innerText();
               if (!preview.includes('Tactic') || !preview.includes('additional Tactic')) {
-                throw new Error(`Black Covenant preview is not synchronized with v0.6.1:\n${preview}`);
+                throw new Error(`Black Covenant preview is not synchronized with v0.6.2:\n${preview}`);
               }
               await page.screenshot({ path: `/tmp/card-reference-${suffix}.png`, fullPage: true });
               if (errors.length) throw new Error(`Card reference ${suffix} errors:\n${errors.join('\n')}`);
@@ -164,6 +190,6 @@ jobs:
       - name: Upload browser screenshots
         uses: actions/upload-artifact@v4
         with:
-          name: gauntlet-v061-browser-smoke
+          name: gauntlet-browser-smoke
           path: /tmp/*.png
           if-no-files-found: error
