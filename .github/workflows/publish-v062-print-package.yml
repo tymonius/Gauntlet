@@ -5,7 +5,7 @@ on:
     branches: [agent/v062-printed-materials]
     paths:
       - ".github/workflows/publish-v062-print-package.yml"
-      - "images/sketches/hero sketch.png"
+      - "images/sketches/**"
       - "v0.6.2/print/**"
       - "releases/v0.6.2/*.md"
       - "scripts/build-v062-print-html.mjs"
@@ -17,7 +17,7 @@ on:
     branches: [main]
     paths:
       - ".github/workflows/publish-v062-print-package.yml"
-      - "images/sketches/hero sketch.png"
+      - "images/sketches/**"
       - "v0.6.2/print/**"
       - "releases/v0.6.2/**"
       - "playtest/index.html"
@@ -86,6 +86,7 @@ jobs:
           path: |
             /tmp/gauntlet-v062-print-previews/**
             /tmp/gauntlet-v062-pdf-renders/**
+            images/sketches/**
             releases/v0.6.2/Gauntlet_v0.6.2_*.pdf
             releases/v0.6.2/Gauntlet_v0.6.2_Print_Manifest.json
           if-no-files-found: error
