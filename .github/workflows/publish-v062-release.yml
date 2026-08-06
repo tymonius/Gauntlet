@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref || github.ref_name }}
-          fetch-depth: 1
+          fetch-depth: 0
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -46,27 +46,30 @@ jobs:
       - name: Install dependencies
         run: npm install
 
+      - name: Apply additional Action wording correction
+        run: node scripts/apply-v062-additional-action-fix.mjs
+
+      - name: Materialize corrected canonical data
+        run: npm run data:v062:write
+
       - name: Build synchronized v0.6.2 release
         run: npm run release:v062:build
 
-      - name: Commit generated release outputs when changed
+      - name: Restore workflow and remove one-off applicator
         run: |
-          git add \
-            index.html \
-            factions/ \
-            v0.6.2/ \
-            releases/v0.6.2/ \
-            rules-assistant/widget.js \
-            rules-assistant/worker-entry.js \
-            rules-assistant/worker-v062.js \
-            rules-assistant/v062-published-corpus.js \
-            src/content/current.ts
+          rm scripts/apply-v062-additional-action-fix.mjs
+          rm .github/workflows/apply-v062-additional-action-fix.yml
+          git checkout origin/main -- .github/workflows/publish-v062-release.yml
+
+      - name: Commit source and generated corrections
+        run: |
+          git add -A
           if git diff --cached --quiet; then
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Materialize and synchronize Gauntlet v0.6.2 release"
+          git commit -m "Clarify additional Action card effects"
           git pull --rebase origin ${{ github.head_ref || github.ref_name }}
           git push origin HEAD:${{ github.head_ref || github.ref_name }}
 
