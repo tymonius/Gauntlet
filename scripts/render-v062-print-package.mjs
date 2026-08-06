@@ -68,7 +68,7 @@ try {
     page.on('console', (message) => {
       if (message.type() === 'error') browserErrors.push(message.text());
     });
-    const response = await page.goto(`${base}${output.url}`, { waitUntil: 'networkidle', timeout: 90000 });
+    const response = await page.goto(`${base}${output.url}`, { waitUntil: 'load', timeout: 90000 });
     if (!response?.ok()) throw new Error(`${output.url} returned HTTP ${response?.status()}`);
     await page.evaluate(async () => { await document.fonts?.ready; });
     const geometry = await page.evaluate(() => ({
