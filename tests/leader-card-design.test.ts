@@ -28,12 +28,20 @@ describe("Leader card design", () => {
     expect(leaderFaces.every(face => face.includes('class="card-art has-image"'))).toBe(true);
   });
 
-  it("removes playable-card value and generic Leader labels", () => {
+  it("removes playable-card value and generic Leader labels from the body", () => {
     for (const face of leaderFaces) {
       expect(face).not.toContain("value-medallion");
       expect(face).not.toContain("Leader Ability");
       expect(face).not.toContain("Supplemental Leader");
-      expect(face).not.toContain(">Leader<");
+    }
+  });
+
+  it("identifies the component type in the metadata footer", () => {
+    for (const face of leaderFaces) {
+      expect(face).toContain("<span>Military</span>");
+      expect(face).toContain("<span>Leader</span>");
+      expect(face).toContain("<span>v0.6.2</span>");
+      expect(face).not.toContain("<span>Command</span>");
     }
   });
 
