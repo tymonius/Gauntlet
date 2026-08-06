@@ -1,3 +1,4 @@
+# One-use synchronization helper; removes itself after restoring the files.
 name: Restore unrelated v0.6.0 binaries for PR 510
 
 on:
