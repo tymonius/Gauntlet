@@ -11,8 +11,12 @@ const root = process.cwd();
 const base = process.env.GAUNTLET_PRINT_BASE_URL || 'http://127.0.0.1:8000';
 const releaseDir = path.join(root, 'releases/v0.6.2');
 const previewDir = process.env.GAUNTLET_PRINT_PREVIEW_DIR || '/tmp/gauntlet-v062-print-previews';
-const heroPlateRelativePath = 'images/sketches/hero sketch.png';
-const heroPlatePath = path.join(root, heroPlateRelativePath);
+const heroPlateRelativePaths = [
+  'images/sketches/hero-plates/financiers.png',
+  'images/sketches/hero-plates/military.png',
+  'images/sketches/hero-plates/institutions.png',
+];
+const heroPlatePaths = heroPlateRelativePaths.map((relativePath) => path.join(root, relativePath));
 fs.mkdirSync(releaseDir, { recursive: true });
 fs.mkdirSync(previewDir, { recursive: true });
 
@@ -115,32 +119,49 @@ try {
 }
 
 async function imposeBooklet(readerPath, bookletPath) {
-  if (!fs.existsSync(heroPlatePath)) {
-    throw new Error(`Missing booklet hero-plate asset: ${heroPlateRelativePath}`);
+  for (const [index, heroPlatePath] of heroPlatePaths.entries()) {
+    if (!fs.existsSync(heroPlatePath)) {
+      throw new Error(`Missing booklet hero-plate asset ${index + 1}: ${heroPlateRelativePaths[index]}`);
+    }
   }
 
   const source = await PDFDocument.load(fs.readFileSync(readerPath));
   const sourceCount = source.getPageCount();
   const total = Math.ceil(sourceCount / 4) * 4;
-  const booklet = await PDFDocument.create();
-  const heroPlate = await booklet.embedPng(fs.readFileSync(heroPlatePath));
-  const heroScale = Math.min(276 / heroPlate.width, 340 / heroPlate.height);
-  const heroWidth = heroPlate.width * heroScale;
-  const heroHeight = heroPlate.height * heroScale;
+  const paddingCount = total - sourceCount;
+  if (paddingCount !== heroPlateRelativePaths.length) {
+    throw new Error(`Rulebook requires ${paddingCount} padding pages, but ${heroPlateRelativePaths.length} approved hero plates are configured.`);
+  }
 
-  const drawHeroPlate = (destination, x) => {
-    destination.drawImage(heroPlate, {
-      x: x + ((396 - heroWidth) / 2),
-      y: (612 - heroHeight) / 2,
-      width: heroWidth,
-      height: heroHeight,
+  const booklet = await PDFDocument.create();
+  const heroPlates = await Promise.all(heroPlatePaths.map(async (heroPlatePath) => {
+    const image = await booklet.embedPng(fs.readFileSync(heroPlatePath));
+    const scale = Math.min(276 / image.width, 340 / image.height);
+    return {
+      image,
+      width: image.width * scale,
+      height: image.height * scale,
+    };
+  }));
+
+  const drawHeroPlate = (destination, sourceIndex, x) => {
+    const paddingIndex = sourceIndex - sourceCount;
+    const heroPlate = heroPlates[paddingIndex];
+    if (!heroPlate) {
+      throw new Error(`No approved hero plate is assigned to logical source page ${sourceIndex + 1}.`);
+    }
+    destination.drawImage(heroPlate.image, {
+      x: x + ((396 - heroPlate.width) / 2),
+      y: (612 - heroPlate.height) / 2,
+      width: heroPlate.width,
+      height: heroPlate.height,
       opacity: 0.92,
     });
   };
 
   const drawSourcePage = async (destination, sourceIndex, x) => {
     if (sourceIndex < 0 || sourceIndex >= sourceCount) {
-      drawHeroPlate(destination, x);
+      drawHeroPlate(destination, sourceIndex, x);
       return;
     }
     const embedded = await booklet.embedPage(source.getPage(sourceIndex));
@@ -158,12 +179,18 @@ async function imposeBooklet(readerPath, bookletPath) {
     await drawPair(1 + (sheet * 2), total - 2 - (sheet * 2));
   }
   fs.writeFileSync(bookletPath, await booklet.save());
+
+  const heroSourcePages = Array.from({ length: paddingCount }, (_, index) => sourceCount + index + 1);
   return {
     source_pages: sourceCount,
     padded_pages: total,
-    hero_plate_count: total - sourceCount,
-    hero_asset: heroPlateRelativePath,
-    hero_source_pages: Array.from({ length: total - sourceCount }, (_, index) => sourceCount + index + 1),
+    hero_plate_count: paddingCount,
+    hero_assets: [...heroPlateRelativePaths],
+    hero_source_pages: heroSourcePages,
+    hero_plates: heroPlateRelativePaths.map((asset, index) => ({
+      source_page: heroSourcePages[index],
+      asset,
+    })),
   };
 }
 
@@ -204,7 +231,7 @@ const manifest = {
   outputs: results.map(({ key, file, pages, sizes, sha256 }) => ({ key, file, pages, sizes, sha256 })),
   printing: {
     reader_rulebook: 'Half-Letter portrait, actual size',
-    imposed_booklet: 'Letter landscape, duplex, flip on short edge, actual size; hero-art plates fill unavoidable padding pages',
+    imposed_booklet: 'Letter landscape, duplex, flip on short edge, actual size; three distinct hero-art plates fill unavoidable padding pages',
     tableside_materials: 'Letter; respect portrait or landscape orientation shown in each file',
   },
 };
