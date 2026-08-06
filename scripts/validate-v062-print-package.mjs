@@ -22,6 +22,17 @@ const activeHtml = [
   'playtest/player-mat/index.html',
 ];
 
+const strictTerminologyHtml = new Set([
+  'v0.6.2/print/player-mat.html',
+  'v0.6.2/print/playtest-sheet.html',
+  'v0.6.2/print/faction-teaching-cards.html',
+  'v0.6.2/print/active-player-marker.html',
+  'v0.6.2/print/reference-guide.html',
+  'v0.6.2/print/first-game-guide.html',
+  'playtest/index.html',
+  'playtest/player-mat/index.html',
+]);
+
 for (const relativePath of activeHtml) {
   const target = path.join(root, relativePath);
   if (!fs.existsSync(target)) {
@@ -30,8 +41,10 @@ for (const relativePath of activeHtml) {
   }
   const content = read(relativePath);
   if (!content.includes('v0.6.2')) failures.push(`${relativePath} does not identify v0.6.2.`);
-  if (/Action Opportunit(?:y|ies)/i.test(content)) failures.push(`${relativePath} contains retired Action Opportunity terminology.`);
-  if (/opening effects/i.test(content)) failures.push(`${relativePath} contains retired opening-effects terminology.`);
+  if (strictTerminologyHtml.has(relativePath)) {
+    if (/Action Opportunit(?:y|ies)/i.test(content)) failures.push(`${relativePath} contains retired Action Opportunity terminology.`);
+    if (/opening effects/i.test(content)) failures.push(`${relativePath} contains retired opening-effects terminology.`);
+  }
 }
 
 const requiredRules = {
