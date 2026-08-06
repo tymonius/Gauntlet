@@ -150,9 +150,7 @@ Its Battle mode is unchanged.
 
 Replace its Use mode with:
 
-> **Use:** During your turn, you may discard this card to gain one additional Action that turn.
-
-The additional Action does not permit two Actions in one phase.
+> **Use:** During Opening or Denouement, you may discard this card. If you do, you may take one additional Action during that phase.
 
 ## Strategic Withdrawal
 
@@ -166,17 +164,13 @@ This movement may create a pending battle. Its Battle mode remains movement afte
 
 Replace the end of its Action mode with:
 
-> Draw three cards, then gain one additional Action that turn.
-
-The additional Action does not permit two Actions in one phase.
+> Draw three cards. After this Action resolves, you may take one additional Action during this phase.
 
 ## Liberation
 
 Replace the end of its Asset mode with:
 
-> After you win a Counterattack, draw one card, then gain one additional Action that turn.
-
-The additional Action does not permit two Actions in one phase.
+> After you win a Counterattack, draw one card. During your Denouement that turn, you may take one additional Action, even if you take another Action during that phase.
 
 ## Assimilation
 
