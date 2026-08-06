@@ -23,13 +23,10 @@ A decision recorded here is adopted for v0.6.3 unless later discussion expressly
 
 Each player begins with their Player Token on the Territory at their own end of the Gauntlet.
 
-That Territory already faces and is controlled by that player. The player does **not** occupy it. Occupation remains the state of a token on an opponent-controlled Territory.
-
 Placement during setup:
 
 - is not movement;
-- does not count as entering a Territory;
-- does not create Occupation; and
+- does not count as entering a Territory; and
 - does not trigger effects that occur when a Territory is entered.
 
 Start-of-turn, beginning-of-turn, and continuous Territory effects may apply normally during the player's first turn when their requirements are satisfied.
@@ -79,7 +76,7 @@ Do not create a victory-only exception that delays or suppresses an immediate-ca
 
 ### 3.3 Last Stand route
 
-When a player wins a battle on the Territory at the opponent's end and forces that opponent beyond the Gauntlet, the winner remains on the opposing final Territory under the normal Occupation rules unless another effect moves them.
+When a player wins a battle on the Territory at the opponent's end and forces that opponent beyond the Gauntlet, the winner remains on the opposing final Territory unless another effect moves them.
 
 A player may initiate the opponent's Last Stand by using a **separate legal movement sequence** to Advance beyond the opponent's end of the Gauntlet while that opponent is beyond the Gauntlet.
 
@@ -210,7 +207,6 @@ At minimum, audit:
 The v0.6.3 implementation is not complete until:
 
 - no active v0.6.3 source places tokens before the Gauntlet during setup;
-- no active v0.6.3 source calls a player an occupier of a Territory they control;
 - no active v0.6.3 source uses a random three-card opening Hand;
 - the opening discard always occurs before the first-player roll;
 - setup placement is expressly not entering a Territory;
