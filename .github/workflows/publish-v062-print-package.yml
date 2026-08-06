@@ -46,6 +46,7 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.head_ref || github.ref_name }}
           fetch-depth: 2
 
       - name: Set up Node
@@ -94,8 +95,9 @@ jobs:
           if-no-files-found: error
 
       - name: Commit generated print package
-        if: github.event_name == 'push' && github.ref_name == 'agent/v062-printed-materials'
+        if: (github.event_name == 'push' && github.ref_name == 'agent/v062-printed-materials') || (github.event_name == 'pull_request' && github.head_ref == 'agent/v062-printed-materials')
         run: |
+          branch="${GITHUB_HEAD_REF:-$GITHUB_REF_NAME}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git fetch origin main
@@ -130,6 +132,6 @@ jobs:
             exit 0
           fi
           git commit -m "Materialize v0.6.2 printed materials [skip ci]"
-          git fetch origin "${GITHUB_REF_NAME}"
-          git rebase "origin/${GITHUB_REF_NAME}"
-          git push origin "HEAD:${GITHUB_REF_NAME}"
+          git fetch origin "$branch"
+          git rebase "origin/$branch"
+          git push origin "HEAD:$branch"
