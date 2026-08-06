@@ -7,14 +7,12 @@ on:
       - ".github/workflows/render-player-mat.yml"
       - "playtest/player-mat/index.html"
       - "v0.6.2/print/player-mat.html"
-      - "releases/v0.6.1/Gauntlet_v0.6.1_Player_Mat.pdf"
   pull_request:
     branches: [main]
     paths:
       - ".github/workflows/render-player-mat.yml"
       - "playtest/player-mat/index.html"
       - "v0.6.2/print/player-mat.html"
-      - "releases/v0.6.1/Gauntlet_v0.6.1_Player_Mat.pdf"
   workflow_dispatch:
 
 permissions:
@@ -27,16 +25,15 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Validate current and historical player-mat boundaries
+      - name: Validate current player-mat entry point and source
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
 
           const redirectPath = 'playtest/player-mat/index.html';
           const currentPath = 'v0.6.2/print/player-mat.html';
-          const historicalPdf = 'releases/v0.6.1/Gauntlet_v0.6.1_Player_Mat.pdf';
 
-          for (const file of [redirectPath, currentPath, historicalPdf]) {
+          for (const file of [redirectPath, currentPath]) {
             if (!fs.existsSync(file)) throw new Error(`Missing player-mat artifact: ${file}`);
           }
 
@@ -55,5 +52,5 @@ jobs:
             throw new Error('v0.6.2 player mat contains retired Action Opportunity terminology.');
           }
 
-          console.log('Validated current v0.6.2 player-mat entry point and preserved v0.6.1 PDF.');
+          console.log('Validated the current v0.6.2 player-mat redirect and printable source.');
           NODE
