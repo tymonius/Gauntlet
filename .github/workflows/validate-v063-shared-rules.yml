@@ -10,8 +10,6 @@ on:
       - '.github/workflows/validate-v063-shared-rules.yml'
       - 'releases/v0.6.2/**'
   push:
-    branches:
-      - main
     paths:
       - 'docs/Gauntlet_v0.6.3_Implementation_Ledger.md'
       - 'docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md'
@@ -37,10 +35,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
-
-      - name: Fetch pull-request base
-        if: github.event_name == 'pull_request'
-        run: git fetch origin "${{ github.base_ref }}:${{ github.base_ref }}" --force
 
       - name: Validate v0.6.3 opening and victory sources
         run: node scripts/validate-v063-shared-rules.mjs
