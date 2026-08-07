@@ -140,10 +140,10 @@ The shared tableside battle reference may restate the same lesson in its own ins
 
 **Secondary placement — complete Rulebook:** use a compact visual memory cue near Onset or the beginning of the battle sequence. Do not make it a numbered procedure.
 
-Use a concise callout along these lines:
+Use this terse callout:
 
 > **DON'T FORGET THE BOARD**  
-> Before setting Gambits, scan the contested Territory and your Asset Bank for effects that could matter in this battle.
+> Territory. Assets. Then Gambits.
 
 The surrounding Rulebook text should state that this is only a reminder and does not alter battle timing or grant permission to use an effect.
 
