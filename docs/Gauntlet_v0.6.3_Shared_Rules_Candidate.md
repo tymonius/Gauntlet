@@ -5,7 +5,7 @@
 **Release tracker:** [Issue #528](https://github.com/tymonius/Gauntlet/issues/528)  
 **Implementation ledger:** [Gauntlet v0.6.3 Implementation Ledger](Gauntlet_v0.6.3_Implementation_Ledger.md)
 
-This document governs the adopted v0.6.3 changes to setup, starting position, opening Hand selection, the final Territory, Last Stand access, and the normal shared victory condition.
+This document governs the adopted v0.6.3 changes to setup, starting position, opening Hand selection, the final Territory, Last Stand access, the normal shared victory condition, and the player-facing battle-start reminder.
 
 All v0.6.2 rules not expressly replaced here remain inherited during v0.6.3 development. v0.6.2 remains the sole canonical published playtest release until v0.6.3 is assembled and released.
 
@@ -184,3 +184,13 @@ You run the Gauntlet and win immediately when you either:
 Any legal immediate capture of the final Territory can win.
 
 After forcing the opponent beyond the Gauntlet, you may initiate a Last Stand with a separate legal Advance beyond their end. You do not need to control the final Territory first.
+
+---
+
+# 7. Rulebook Editorial Addition — Battle-Start Check
+
+Place the following player-facing reminder in the v0.6.3 Rulebook at **Onset**, where the rules establish that the battle formally begins, before players proceed into Gambits:
+
+> **Good battle habit:** When a battle begins, review the contested Territory for effects that may apply, then review the Assets you control and decide whether you intend to use any of them during the battle. This is a reminder, not a new timing window; use each effect only at its stated timing.
+
+This reminder is instructional rather than a new rule. It does not alter the battle sequence, grant permission to use an effect, or change the timing printed on a Territory, Asset, card, Leader ability, faction ability, or other rule.
