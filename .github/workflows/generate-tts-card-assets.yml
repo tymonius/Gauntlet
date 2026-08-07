@@ -3,9 +3,7 @@ name: Generate TTS card assets
 on:
   pull_request:
     paths:
-      - "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
-      - "docs/Gauntlet_v0.6.1_Territory_Pool.md"
-      - "releases/v0.6.1/faction-guides/**"
+      - "releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json"
       - "images/artwork/cards/**"
       - "images/artwork/card-backgrounds/**"
       - "card-design/**"
@@ -41,9 +39,7 @@ jobs:
             scripts/generate-tts-territory-assets.mjs
             tts
             card-design
-            docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md
-            docs/Gauntlet_v0.6.1_Territory_Pool.md
-            releases/v0.6.1/faction-guides
+            releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json
             images/artwork/cards
             images/artwork/card-backgrounds
       - uses: actions/setup-node@v4
@@ -57,6 +53,6 @@ jobs:
         run: npm run tts:territories
       - uses: actions/upload-artifact@v4
         with:
-          name: gauntlet-v061-tts-card-assets
-          path: tts/generated/v0.6.1/
+          name: gauntlet-v062-tts-card-assets
+          path: tts/generated/v0.6.2/
           if-no-files-found: error
