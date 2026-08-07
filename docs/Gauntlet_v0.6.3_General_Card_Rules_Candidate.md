@@ -165,7 +165,17 @@ If the affected player is not otherwise clear, identify them, for example `Oppon
 
 ### Advantage and disadvantage
 
-`Advantage`, `Double Advantage`, and `Disadvantage` may be used as direct instructions instead of `gain advantage`, `gain double advantage`, or `gain disadvantage`.
+`Advantage` is a direct instruction to gain **one instance of advantage**. `Double Advantage` grants **two instances of advantage**. `Disadvantage` grants **one instance of disadvantage**. These are additive instructions, not binary statuses.
+
+Instances from separate cards, Territory effects, faction abilities, and other effects **stack**. No later source replaces an earlier one unless an effect expressly says so. Before rolling battle dice, combine all advantage and disadvantage affecting each player and cancel opposing instances one-for-one.
+
+- If **N advantage** remains, roll **N + 1 dice** and use the highest result.
+- If **N disadvantage** remains, roll **N + 1 dice** and use the lowest result.
+- If neither remains, roll normally.
+
+There is no fixed stacking cap unless a rule or effect expressly creates one. For example, two separate `Advantage` effects produce Double Advantage; `Double Advantage` plus one Disadvantage produces one net Advantage.
+
+Effects that ignore or prevent **one disadvantage** affect only one instance. They do not remove other disadvantage instances unless they say so.
 
 Identify another affected player when necessary, for example `Opponent: Disadvantage.`
 
