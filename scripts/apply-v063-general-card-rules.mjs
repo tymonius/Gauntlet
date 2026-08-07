@@ -136,10 +136,10 @@ function applyAdditionalTacticRule() {
 }
 
 function applySanctionsRule() {
+  replaceExact('Sanctions: Blockade', 'Text', 'Put this card in its owner\'s Discard Pile after the identified opponent accepts that owner\'s Terms or loses control of this Territory.', 'Put this card in its owner\'s Discard Pile if that opponent loses control of this Territory.');
   replaceExact('Sanctions: Blockade', 'Text', ' Identify that opponent and this card\'s owner.', '');
   replaceExact('Sanctions: Blockade', 'Text', 'identified opponent', 'that opponent', true);
   replaceExact('Sanctions: Blockade', 'Text', 'identified owner', 'you', true);
-  replaceExact('Sanctions: Blockade', 'Text', 'Put this card in its owner\'s Discard Pile after that opponent accepts your Terms or loses control of this Territory.', 'Put this card in its owner\'s Discard Pile if that opponent loses control of this Territory.');
   stats.sanctions_reduced += 1;
 
   for (const name of ['Sanctions: Censure', 'Sanctions: Embargo']) {
