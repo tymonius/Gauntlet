@@ -1,5 +1,5 @@
 import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { basename, dirname, join } from 'node:path';
+import { dirname, join } from 'node:path';
 
 const baselinePath = process.env.V063_CARD_BASELINE ?? 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json';
 const firstPassPath = process.env.V063_CARD_FIRST_PASS ?? 'artifacts/v0.6.3/Gauntlet_v0.6.3_Card_Language_Candidate.json';
@@ -32,14 +32,16 @@ const firstPassById = new Map(firstPass.cards.map((card) => [card.id, card]));
 
 for (const card of candidate.cards) {
   const override = overrides.get(card.id);
-  if (!override) continue;
-  if (override.name !== card.name) throw new Error(`Override name mismatch for ${card.id}: ${override.name} !== ${card.name}`);
-  card.effects = structuredClone(override.effects);
+  if (override) {
+    if (override.name !== card.name) throw new Error(`Override name mismatch for ${card.id}: ${override.name} !== ${card.name}`);
+    card.effects = structuredClone(override.effects);
+    card.v063_language_review = {
+      class: override.change_class,
+      source: overrideSources.get(card.id)
+    };
+  }
+  card.effects = (card.effects ?? []).map((effect) => ({ ...effect, text: applyFinalSafeConventions(effect.text) }));
   syncLegacyEffectFields(card);
-  card.v063_language_review = {
-    class: override.change_class,
-    source: overrideSources.get(card.id)
-  };
 }
 
 candidate.status = 'Development candidate — complete shared-convention normalization';
@@ -84,6 +86,18 @@ mkdirSync(dirname(candidatePath), { recursive: true });
 mkdirSync(dirname(reportPath), { recursive: true });
 writeFileSync(candidatePath, `${JSON.stringify(candidate, null, 2)}\n`);
 writeFileSync(reportPath, buildReport(rows));
+
+function applyFinalSafeConventions(text) {
+  return String(text ?? '')
+    .replace(/\bwhose effect has not (?:yet )?been applied\b/g, 'that has not taken effect')
+    .replace(/\bcan be applied now\b/g, 'can apply now')
+    .replace(/\bone additional Tactic\b/g, 'an additional Tactic')
+    .replace(/\bDuring the Aftermath of (?:the|a) battle,\s*/g, 'In the Aftermath, ')
+    .replace(/\bDuring the Aftermath,\s*/g, 'In the Aftermath, ')
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\s+([,.;:!?])/g, '$1')
+    .trim();
+}
 
 function syncLegacyEffectFields(card) {
   const labels = new Map((card.effects ?? []).map((effect) => [String(effect.label).toLowerCase(), effect.text]));
