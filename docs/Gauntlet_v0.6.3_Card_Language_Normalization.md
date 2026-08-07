@@ -1,15 +1,15 @@
 # Gauntlet v0.6.3 Card-Language Normalization
 
-**Status:** Complete shared-convention review awaiting bespoke density pass  
+**Status:** Shared normalization complete through compact shorthand; bespoke density pass follows  
 **Release tracker:** [Issue #528](https://github.com/tymonius/Gauntlet/issues/528)  
 **Card review:** [Issue #405](https://github.com/tymonius/Gauntlet/issues/405)  
 **Deck terminology:** [Issue #539](https://github.com/tymonius/Gauntlet/issues/539)
 
 ## Purpose
 
-Apply the approved shared wording conventions across the complete 128-card v0.6.2 card pool **before** deciding which cards need bespoke compression.
+Normalize the complete 128-card published v0.6.2 pool before bespoke card compression so the density ranking reflects actual card-specific burden rather than repeated rules prose.
 
-The output of this stage is a convention-normalized v0.6.3 development candidate and a density report. It is not yet the final v0.6.3 card pool and does not modify the immutable published v0.6.2 package.
+The generated v0.6.3 candidates are development artifacts only. The immutable published v0.6.2 package is read as the baseline and is never modified.
 
 ## Terminology
 
@@ -17,122 +17,139 @@ For v0.6.3:
 
 - **Deck** means the constructed set of ordinary cards selected under Deck-construction rules.
 - **Draw Pile** means the shuffled in-play pile formed from the Deck during setup.
-- The former broader use of `deck` for a player's Deck plus Leader, Territories, faction supplements, and other components is retired. Those objects may be described collectively as **components** or **game materials** when necessary; no single formal umbrella term is required.
+- The former broader use of `deck` for a player's Deck plus Leader, Territories, faction supplements, and other components is retired without a replacement formal umbrella term.
 
-## Review method
+## Five-stage normalization build
 
-The normalization stage has two layers.
+### 1. Conservative automatic conventions
 
-### 1. Conservative automatic pass
-
-The first pass applies only shared conventions whose semantic effect can be established from the wording itself, including:
-
-- `Playable Deck` → `Deck`;
-- `During the Aftermath of the battle` / `During the Aftermath of a battle` → `In the Aftermath`;
-- long self-banking boilerplate → `Bank this card`;
-- `whose effect has not yet been applied` → `that has not taken effect`;
-- `one additional Tactic` → `an additional Tactic`;
-- standard additional-Tactic and replacement phrasing;
-- the approved direct copied-effect template where the complete matching construction is present; and
-- `can be applied now` → `can apply now`.
-
-The normalizer also changes the candidate Deck-construction key from `minimum_playable_cards` to `minimum_cards`.
+`scripts/build-v063-card-normalization.mjs` applies only semantics-safe global transforms, including Deck terminology, Aftermath phrasing, self-banking boilerplate, copied-effect phrasing, replacement phrasing, and other approved templates.
 
 ### 2. Complete card-level convention review
 
-Every residual convention opportunity is then reviewed card by card. Exact reviewed overrides are stored by allegiance under `docs/v063-card-language-overrides/`.
+`scripts/finalize-v063-card-conventions.mjs` applies reviewed card-specific overrides from `docs/v063-card-language-overrides/`.
 
-The review covers:
+Every card receives an explicit review result. Ten intentionally retained convention residuals are recorded in `review.json` with their rules reasons. The finalizer fails if an unapproved residual appears.
 
-- `If you do` cost/effect structures;
-- direct zone movement instead of destination terminology;
-- remaining copied-effect boilerplate;
-- additional-Tactic eligibility clauses;
-- replacement clauses;
-- Asset Bank setup boilerplate;
-- self-reference by printed card title;
-- `Use` labels, which become `Activate` for optional banked abilities or `Asset` where the banked effect is automatic; and
-- the other repeated-language conventions approved in #405.
+This stage reduces the published pool from **8,108 to 7,840 words** and **47,085 to 45,283 characters**.
 
-A convention is not applied when it would erase a real rule distinction. Those cases are recorded in `docs/v063-card-language-overrides/review.json` with the reason the residual wording is retained.
+### 3. General-rule centralization
 
-## Intentional residuals
+`scripts/apply-v063-general-card-rules.mjs` removes procedures now governed once in the shared rules:
 
-Ten cards retain a flagged convention pattern for a specific rules reason:
+- inherent Bank Actions;
+- directly permitted card procedures not spending another Action;
+- effect-granted movement and new movement sequences;
+- additional-Tactic eligibility, face state, timing, destination, and default Reserve source;
+- Sanction association/default expiration; and
+- reveal-stage interference priority.
 
-- Compound Interest — title matching across copies;
-- Détente — title matching across copies;
-- Extraordinary Rendition — one-banked-copy title restriction;
-- Hold the Line — delayed consequence requires the `If you do` gate;
-- Landslide — one-per-Territory title matching;
-- Margin Loan — later collateral resolution depends on whether the Battle cost was paid;
-- Martyrdom — optional play from Hand gates later Aftermath consequences;
-- Necromancy — explicit title exclusion across copies;
-- Resourcefulness — one-banked-copy title restriction; and
-- Tariffs — copy restrictions.
+### 4. Reserve/Tactic numeric shorthand
 
-The finalizer fails if any other reviewed convention residual appears.
+`scripts/apply-v063-numeric-shorthand.mjs` introduces the first signed modifiers:
+
+- `+N Reserve` / `−N Reserve`;
+- `+N Tactic`;
+- Reserve as the default Tactic source, with another source printed only when it overrides or narrows the default.
+
+### 5. Compact shorthand and final shared-rule cleanup
+
+`scripts/apply-v063-compact-shorthand.mjs` applies the adopted broader shorthand only where timing, subject, source, optionality, and eligible set remain exact:
+
+- `+N Card(s)`;
+- `+N Action`;
+- positive fixed resource gains such as `+2 Capital`;
+- `+N Battle Total`;
+- `Retreat +N`;
+- `Advantage`, `Double Advantage`, and `Disadvantage`;
+- set-value notation such as `Command = 2`;
+- `Advance Front Line N`;
+- concise condition prefixes such as `Attacker —`, `Defender —`, `Counterattack —`, `Win —`, and `Lose —`; and
+- the shared rule that a reroll uses the new result unless expressly stated otherwise.
+
+This stage also repairs and validates the malformed intermediate **Sanctions: Blockade** phrases produced by the earlier Sanctions reducer, preventing them from reaching the final candidate.
+
+The complete shorthand semantics are governed by `docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md`.
+
+## Intentional residuals and limits
+
+Shorthand is not applied blindly.
+
+Examples of information that remains explicit when necessary include:
+
+- optional compound procedures where a bare numeric modifier would obscure optionality;
+- nondefault Tactic sources;
+- costs, payments, resource losses, and reductions;
+- unusual card destinations;
+- bespoke movement ordering and battle restrictions;
+- title-matching rules across copies;
+- delayed consequences whose later resolution depends on an earlier choice; and
+- card-specific `if able`, timing, source, target, or replacement conditions.
+
+For example, **Rousing Speech** retains `you may draw one card, then discard one card` because the optional compound procedure is clearer than forcing `+1 Card` into that sentence. **Shock and Awe** retains the explicit Breakthrough retreat sequence because its ordering and legality condition are card-specific.
 
 ## Density sequence
 
-The v0.6.3 review proceeds in this order:
+The v0.6.3 card review therefore proceeds in this order:
 
-1. apply the safe automatic conventions across all 128 cards;
-2. apply and validate the complete card-level convention review;
-3. measure the resulting convention-normalized pool;
-4. rank cards by remaining word count, character count, and rendered burden;
-5. perform bespoke compression on cards that remain too dense or awkward;
-6. record explicit mechanics changes separately from wording-only edits; and
-7. propagate the final approved text through canonical data, card rendering, references, Deckbuilder, Rules Arbiter, digital implementation, print/export surfaces, tests, and governance records.
-
-This order prevents obsolete boilerplate from distorting the density ranking.
+1. safe automatic conventions;
+2. complete card-level convention review;
+3. general-rule centralization;
+4. Reserve/Tactic shorthand;
+5. broader compact shorthand and reroll cleanup;
+6. recalculate the complete 128-card density ranking;
+7. perform bespoke compression beginning with the remaining densest cards;
+8. review the rest of the pool for smaller card-specific improvements;
+9. distinguish actual mechanics changes from wording/shared-rule changes;
+10. propagate final approved text through canonical data, references, Deckbuilder, rendered cards, browser surfaces, Rules Arbiter, digital implementation, print/export surfaces, starter materials, tests, and governance; and
+11. render every changed card at production size and audit fit.
 
 ## Approved mechanics-sensitive revisions already in scope
 
 ### Margin Loan
 
-The reviewed override carries forward the approved compact wording recorded in #405, including the same-phase additional-Action permission established in [PR #511](https://github.com/tymonius/Gauntlet/pull/511).
+Carry forward the approved compact rewrite recorded in #405, including the same-phase additional-Action permission established in [PR #511](https://github.com/tymonius/Gauntlet/pull/511).
 
 ### Protracted Siege
 
-The reviewed override carries forward the approved #405 revision in which:
+Carry forward the approved #405 mechanics revision in which:
 
 - the banked Asset directly prevents a capture from the Asset Bank;
 - only the Battle mode creates the delayed Overlay;
 - the banked effect uses `Asset`, not `Use`; and
 - shared capture rules replace repeated Front Line explanation.
 
-This is a **mechanics change**, not merely a wording reduction, and must receive separate implementation tests and release-note treatment.
+This remains an explicit mechanics change and must receive separate implementation tests and release-note treatment.
 
 ## Generated outputs
 
-The workflow runs both:
+The workflow runs:
 
 ```text
 node scripts/build-v063-card-normalization.mjs
 node scripts/finalize-v063-card-conventions.mjs
+node scripts/apply-v063-general-card-rules.mjs
+node scripts/apply-v063-numeric-shorthand.mjs
+node scripts/apply-v063-compact-shorthand.mjs
 ```
 
-The first command produces the conservative candidate and diagnostic report. The second applies the reviewed allegiance overrides and produces the authoritative outputs for the next review stage:
+The authoritative pre-bespoke outputs are:
 
-- `artifacts/v0.6.3/Gauntlet_v0.6.3_Convention_Normalized_Candidate.json`
-- `artifacts/v0.6.3/Gauntlet_v0.6.3_Convention_Normalized_Density.md`
+- `artifacts/v0.6.3/Gauntlet_v0.6.3_Compact_Shorthand_Normalized_Candidate.json`
+- `artifacts/v0.6.3/Gauntlet_v0.6.3_Compact_Shorthand_Density.md`
 
-The final report includes:
+Earlier-stage candidates and reports remain in the artifact for auditability.
 
-- aggregate v0.6.2 → convention-normalized word and character counts;
-- the 30 densest cards after complete convention normalization;
-- the accepted intentional residuals and reasons; and
-- a complete 128-card review table.
+## Acceptance before bespoke editing
 
-## Acceptance for this stage
+This normalization phase is ready for bespoke editing when:
 
-This stage is complete when:
-
-- all 128 cards have an explicit review result;
+- all 128 cards have an explicit convention review result;
 - pool counts remain 50 Neutral plus 13 per faction;
 - the v0.6.2 release files remain unchanged;
 - no unapproved convention residual remains;
-- all intentionally retained residuals have an explicit rules reason;
-- the final convention-normalized density report becomes the basis for bespoke compression; and
-- `Deck` / `Draw Pile` terminology is used in the v0.6.3 candidate output.
+- no malformed Sanctions text reaches the final candidate;
+- all adopted shorthand has been applied only where semantically exact;
+- `Deck` / `Draw Pile` terminology is used in the final v0.6.3 candidate;
+- all normalization, Test, and Governance Integrity workflows pass; and
+- the compact-shorthand density report becomes the basis for bespoke card compression.
