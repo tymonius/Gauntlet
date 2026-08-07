@@ -111,12 +111,25 @@ jobs:
 
           validator = Path("scripts/validate_v061_release.py")
           validator_text = validator.read_text(encoding="utf-8")
+          validator_updated = validator_text
           obsolete = '            \'main = "worker-v061.js"\','
           current = '            \'main = "worker-entry.js"\','
-          if obsolete in validator_text:
-              validator.write_text(validator_text.replace(obsolete, current, 1), encoding="utf-8")
-          elif current not in validator_text:
+          if obsolete in validator_updated:
+              validator_updated = validator_updated.replace(obsolete, current, 1)
+          elif current not in validator_updated:
               raise SystemExit("Could not reconcile Rules Arbiter deployment marker in release validator")
+
+          # The public Card Reference tracks the current release (v0.6.2+). The
+          # historical v0.6.1 release validator must not pin that live surface
+          # back to v0.6.1; its own frozen release artifacts remain validated.
+          card_reference_pattern = re.compile(
+              r'\n        "card-reference/app\.js": \[\n'
+              r'(?:            .*\n)+'
+              r'        \],\n'
+          )
+          validator_updated, _ = card_reference_pattern.subn("\n", validator_updated, count=1)
+          if validator_updated != validator_text:
+              validator.write_text(validator_updated, encoding="utf-8")
 
           public_path = Path("scripts/sync_v061_public_rules.py")
           public_text = public_path.read_text(encoding="utf-8")
