@@ -193,16 +193,17 @@ This guidance is instructional rather than a new rule. It should be taught promi
 
 ## First Game Guide / Learn to Play — primary placement
 
-Teach this habit when demonstrating the first ordinary battle and repeat it in the shared tableside battle reference immediately before or with Onset:
+Teach the habit as part of the first ordinary battle demonstration, before introducing the player's Gambit decision:
 
-> **Battle habit:** Whenever a battle begins, first check the contested Territory for any effect that may apply. Then check your Asset Bank and consider whether any of your Assets may be useful in this battle. Use each effect only at its stated timing.
+> **Before you commit cards to a battle, look beyond your Hand. Read the contested Territory and scan your Asset Bank. Those effects are easy to overlook once Gambits, Reserves, and Tactics begin, and some may matter at different points in the battle. Check when each effect can be used before you act.**
 
-The purpose is to train players to notice the two persistent public sources of battle-relevant effects before they become absorbed in Gambits, Reserves, and Tactics.
+The shared tableside battle reference may summarize the same teaching point in its own instructional language, but should not simply repeat the Rulebook callout verbatim.
 
 ## Complete Rulebook — secondary callout
 
-Place a visually distinct callout near **Onset** or the beginning of the battle sequence. Do not add it as a numbered battle step:
+Place a visually distinct reminder near **Onset** or the beginning of the battle sequence. Do not add it as a numbered battle step:
 
-> **Battle Habit:** At the start of a battle, check the contested Territory and your Assets for relevant effects. This is only a reminder; it does not create a new timing window or let you use an effect outside its stated timing.
+> **DON'T FORGET THE BOARD**  
+> Before setting Gambits, scan the contested Territory and your Asset Bank for effects that could matter in this battle.
 
-Neither placement alters the battle sequence, grants permission to use an effect, or changes the timing printed on a Territory, Asset, card, Leader ability, faction ability, or other rule.
+The surrounding Rulebook text should make clear that this is a memory cue only. It does not alter the battle sequence, grant permission to use an effect, or change any printed timing.
