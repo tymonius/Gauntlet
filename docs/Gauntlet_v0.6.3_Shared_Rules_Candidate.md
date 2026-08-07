@@ -204,6 +204,6 @@ The shared tableside battle reference may summarize the same teaching point in i
 Place a visually distinct reminder near **Onset** or the beginning of the battle sequence. Do not add it as a numbered battle step:
 
 > **DON'T FORGET THE BOARD**  
-> Before setting Gambits, scan the contested Territory and your Asset Bank for effects that could matter in this battle.
+> Territory. Assets. Then Gambits.
 
 The surrounding Rulebook text should make clear that this is a memory cue only. It does not alter the battle sequence, grant permission to use an effect, or change any printed timing.
