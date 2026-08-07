@@ -26,12 +26,12 @@ for (const sourceCard of source.cards) {
   const finalByLabel = new Map((finalCard.effects ?? []).map((effect) => [effect.label, effect]));
 
   for (const sourceEffect of sourceCard.effects ?? []) {
-    const before = grantUnits(sourceEffect.text, true);
+    const before = grantUnits(sourceEffect.text);
     if (!before.advantage && !before.disadvantage) continue;
 
     const finalEffect = finalByLabel.get(sourceEffect.label);
     if (!finalEffect) throw new Error(`Missing final ${sourceCard.name} ${sourceEffect.label} effect.`);
-    const after = grantUnits(finalEffect.text, false);
+    const after = grantUnits(finalEffect.text);
 
     if (before.advantage !== after.advantage || before.disadvantage !== after.disadvantage) {
       throw new Error(
@@ -45,36 +45,36 @@ for (const sourceCard of source.cards) {
 
 const insurrection = candidate.cards.find((card) => card.name === 'Insurrection');
 const insurrectionBattle = insurrection?.effects?.find((effect) => effect.label === 'Battle')?.text ?? '';
-if (!insurrectionBattle.includes('Counterattack — Double Advantage.') || !insurrectionBattle.includes('Otherwise, Attacker — Advantage.')) {
-  throw new Error('Insurrection no longer preserves its one-versus-two advantage instances.');
+if (!insurrectionBattle.includes('Counterattack — gain double advantage.') || !insurrectionBattle.includes('Otherwise, Attacker — gain advantage.')) {
+  throw new Error('Insurrection no longer preserves its one-versus-two advantage instances in natural wording.');
+}
+
+const finalText = candidate.cards.flatMap((card) => (card.effects ?? []).map((effect) => effect.text)).join('\n');
+for (const unnatural of ['Opponent: Disadvantage', 'Double Advantage', ' — Advantage.', 'for Advantage']) {
+  if (finalText.includes(unnatural)) throw new Error(`Unnatural Advantage shorthand remains on a card face: ${unnatural}`);
 }
 
 if (checkedEffects !== 18) {
   throw new Error(`Expected to verify 18 Advantage/Disadvantage-granting effects, checked ${checkedEffects}. Review the pool before changing this assertion.`);
 }
 
-console.log(`Verified stackable Advantage/Disadvantage instance identity across ${checkedEffects} shorthand-converted effects.`);
+console.log(`Verified stackable Advantage/Disadvantage instance identity across ${checkedEffects} granting effects.`);
+console.log('Card faces retain natural gain advantage / gain double advantage / gain disadvantage wording.');
 console.log('Advantage remains additive, cancels Disadvantage one-for-one, and has no fixed stacking cap.');
 
-function grantUnits(text, longForm) {
+function grantUnits(text) {
   let value = String(text ?? '');
   let advantage = 0;
   let disadvantage = 0;
 
-  if (longForm) {
-    const doubles = value.match(/\bgain double advantage\b/gi) ?? [];
-    advantage += doubles.length * 2;
-    value = value.replace(/\bgain double advantage\b/gi, '');
-    advantage += (value.match(/\bgain advantage\b/gi) ?? []).length;
-    disadvantage += (value.match(/\bgive them disadvantage during this battle\b/gi) ?? []).length;
-    disadvantage += (value.match(/\bthe opponent gains disadvantage during this battle\b/gi) ?? []).length;
-    return { advantage, disadvantage };
-  }
-
-  const doubles = value.match(/\bDouble Advantage\b/g) ?? [];
+  const doubles = value.match(/\bgain double advantage\b/gi) ?? [];
   advantage += doubles.length * 2;
-  value = value.replace(/\bDouble Advantage\b/g, '');
-  advantage += (value.match(/\bAdvantage\b/g) ?? []).length;
-  disadvantage += (value.match(/\bDisadvantage\b/g) ?? []).length;
+  value = value.replace(/\bgain double advantage\b/gi, '');
+
+  advantage += (value.match(/\bgain advantage\b/gi) ?? []).length;
+  disadvantage += (value.match(/\bgain disadvantage\b/gi) ?? []).length;
+  disadvantage += (value.match(/\bgains disadvantage\b/gi) ?? []).length;
+  disadvantage += (value.match(/\bgive them disadvantage during this battle\b/gi) ?? []).length;
+
   return { advantage, disadvantage };
 }
