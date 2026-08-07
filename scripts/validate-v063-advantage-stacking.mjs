@@ -35,7 +35,7 @@ for (const sourceCard of source.cards) {
 
     if (before.advantage !== after.advantage || before.disadvantage !== after.disadvantage) {
       throw new Error(
-        `${sourceCard.name} ${sourceEffect.label} changed advantage instances: ` +
+        `${sourceCard.name} ${sourceEffect.label} changed Advantage instances: ` +
         `before +${before.advantage}/-${before.disadvantage}, after +${after.advantage}/-${after.disadvantage}.`
       );
     }
@@ -45,13 +45,22 @@ for (const sourceCard of source.cards) {
 
 const insurrection = candidate.cards.find((card) => card.name === 'Insurrection');
 const insurrectionBattle = insurrection?.effects?.find((effect) => effect.label === 'Battle')?.text ?? '';
-if (!insurrectionBattle.includes('Counterattack — gain double advantage.') || !insurrectionBattle.includes('Otherwise, Attacker — gain advantage.')) {
-  throw new Error('Insurrection no longer preserves its one-versus-two advantage instances in natural wording.');
+if (!insurrectionBattle.includes('Counterattack — gain double Advantage.') || !insurrectionBattle.includes('Otherwise, Attacker — gain Advantage.')) {
+  throw new Error('Insurrection no longer preserves its one-versus-two Advantage instances in natural wording.');
 }
 
 const finalText = candidate.cards.flatMap((card) => (card.effects ?? []).map((effect) => effect.text)).join('\n');
-for (const unnatural of ['Opponent: Disadvantage', 'Double Advantage', ' — Advantage.', 'for Advantage']) {
-  if (finalText.includes(unnatural)) throw new Error(`Unnatural Advantage shorthand remains on a card face: ${unnatural}`);
+for (const bad of [
+  'Opponent: Disadvantage',
+  'Double Advantage',
+  ' — Advantage.',
+  'for Advantage',
+  'gain advantage',
+  'gain double advantage',
+  'gain disadvantage',
+  'gains disadvantage'
+]) {
+  if (finalText.includes(bad)) throw new Error(`Invalid final Advantage/Disadvantage card wording remains: ${bad}`);
 }
 
 if (checkedEffects !== 18) {
@@ -59,7 +68,7 @@ if (checkedEffects !== 18) {
 }
 
 console.log(`Verified stackable Advantage/Disadvantage instance identity across ${checkedEffects} granting effects.`);
-console.log('Card faces retain natural gain advantage / gain double advantage / gain disadvantage wording.');
+console.log('Card faces retain natural gain Advantage / gain double Advantage / gain Disadvantage wording.');
 console.log('Advantage remains additive, cancels Disadvantage one-for-one, and has no fixed stacking cap.');
 
 function grantUnits(text) {
