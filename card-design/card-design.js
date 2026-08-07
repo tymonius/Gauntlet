@@ -224,7 +224,123 @@
     document.querySelectorAll('.gauntlet-card[data-art-max]').forEach(fitCard);
   }
 
+  function ensureStylesheet(href) {
+    const resolved = new URL(href, document.baseURI).href;
+    const existing = Array.from(document.querySelectorAll('link[rel="stylesheet"]'))
+      .find(link => link.href === resolved);
+    if (existing) return Promise.resolve();
+
+    return new Promise(resolve => {
+      const link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = href;
+      link.addEventListener('load', resolve, { once: true });
+      link.addEventListener('error', resolve, { once: true });
+      document.head.append(link);
+    });
+  }
+
+  async function integrateLeaderSpecimens() {
+    const territorySection = document.querySelector('.territory-specimen-section');
+    if (!territorySection || document.querySelector('.leader-specimen-section')) return;
+
+    await Promise.all([
+      ensureStylesheet('leader-card.css'),
+      ensureStylesheet('leader-card-section.css'),
+    ]);
+
+    const section = document.createElement('section');
+    section.className = 'card-section leader-specimen-section';
+    section.setAttribute('aria-labelledby', 'leaders-title');
+    section.innerHTML = `
+      <div class="section-shell card-section-heading screen-only">
+        <p class="section-label">Faction component</p>
+        <h2 id="leaders-title">Leader card mockups</h2>
+        <p>Leader cards use the shared poker-card shell with full-color portraits, faction-tinted parchment, a dedicated faction symbol beside the faction name, no deckbuilding-value medallion, and a component metadata footer.</p>
+      </div>
+      <div class="card-sheet">
+        <div class="specimen-column">
+          <p class="specimen-label screen-only"><strong>General</strong><span>Movement and attack</span></p>
+          <article class="gauntlet-card military-card faction-component-card leader-card general-card" data-faction="military" data-art-max="1.86" data-art-min="1.34" data-title-min="10" aria-label="General Military card-front prototype">
+            <div class="card-interior">
+              <header class="card-heading">
+                <h3 class="card-title">General</h3>
+                <div class="leader-faction-line"><span class="leader-faction-emblem" aria-hidden="true"></span><span>Military</span></div>
+              </header>
+              <figure class="card-art has-image">
+                <img src="../images/general.png" alt="Portrait of the General" />
+              </figure>
+              <div class="card-rules">
+                <section class="leader-rule-section">
+                  <h4>Command</h4>
+                  <p>Maximum 2. The first time each turn you win a battle, gain 1 Command.</p>
+                </section>
+                <section class="leader-rule-section">
+                  <h4>Onward<span>1 Command</span></h4>
+                  <p>During your Movement, before a pending battle is created, move one additional Position. This movement may create a pending battle.</p>
+                </section>
+                <section class="leader-rule-section">
+                  <h4>Rally<span>1 Command</span></h4>
+                  <p>Before dice are rolled in a battle you initiated, add +1 to your battle total.</p>
+                </section>
+                <section class="leader-rule-section">
+                  <h4>Rout<span>2 Command</span></h4>
+                  <p>At the end of the Aftermath of a battle you initiated and won, advance one Position. This movement may create a pending battle.</p>
+                </section>
+              </div>
+              <footer class="card-footer">
+                <span>Military</span>
+                <span>Leader</span>
+                <span>v0.6.2</span>
+              </footer>
+            </div>
+          </article>
+        </div>
+        <div class="specimen-column">
+          <p class="specimen-label screen-only"><strong>Commandant</strong><span>Defense and control</span></p>
+          <article class="gauntlet-card military-card faction-component-card leader-card commandant-card" data-faction="military" data-art-max="1.86" data-art-min="1.34" data-title-min="10" aria-label="Commandant Military card-front prototype">
+            <div class="card-interior">
+              <header class="card-heading">
+                <h3 class="card-title">Commandant</h3>
+                <div class="leader-faction-line"><span class="leader-faction-emblem" aria-hidden="true"></span><span>Military</span></div>
+              </header>
+              <figure class="card-art has-image">
+                <img src="../images/commandant.png" alt="Portrait of the Commandant" />
+              </figure>
+              <div class="card-rules">
+                <section class="leader-rule-section">
+                  <h4>Command</h4>
+                  <p>Maximum 2. The first time each turn you win a battle, gain 1 Command.</p>
+                </section>
+                <section class="leader-rule-section">
+                  <h4>Entrench<span>1 Command</span></h4>
+                  <p>Before dice are rolled in a battle you did not initiate, add +1 to your battle total.</p>
+                </section>
+                <section class="leader-rule-section">
+                  <h4>Repel<span>1 Command</span></h4>
+                  <p>During the Aftermath of a battle you did not initiate and won, after the opponent's normal retreat, they retreat one additional Position, if able.</p>
+                </section>
+                <section class="leader-rule-section">
+                  <h4>Fortify<span>2 Command</span></h4>
+                  <p>During the Aftermath of a battle you won while occupying an enemy-controlled Territory, advance your Front Line by one Territory, if able.</p>
+                </section>
+              </div>
+              <footer class="card-footer">
+                <span>Military</span>
+                <span>Leader</span>
+                <span>v0.6.2</span>
+              </footer>
+            </div>
+          </article>
+        </div>
+      </div>`;
+
+    territorySection.before(section);
+  }
+
   async function prepareCards() {
+    await integrateLeaderSpecimens();
+
     if (document.fonts?.ready) {
       try {
         await document.fonts.ready;

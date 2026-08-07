@@ -1,0 +1,13 @@
+.leader-specimen-section {
+  padding-top: 0;
+}
+
+.leader-specimen-section .card-sheet {
+  grid-template-columns: repeat(2, 2.5in);
+}
+
+@media (max-width: 38rem) {
+  .leader-specimen-section .card-sheet {
+    grid-template-columns: 2.5in;
+  }
+}
