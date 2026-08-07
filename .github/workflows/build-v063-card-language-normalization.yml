@@ -4,13 +4,17 @@ on:
   pull_request:
     paths:
       - 'docs/Gauntlet_v0.6.3_Card_Language_Normalization.md'
+      - 'docs/v063-card-language-overrides/**'
       - 'scripts/build-v063-card-normalization.mjs'
+      - 'scripts/finalize-v063-card-conventions.mjs'
       - '.github/workflows/build-v063-card-language-normalization.yml'
       - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
   push:
     paths:
       - 'docs/Gauntlet_v0.6.3_Card_Language_Normalization.md'
+      - 'docs/v063-card-language-overrides/**'
       - 'scripts/build-v063-card-normalization.mjs'
+      - 'scripts/finalize-v063-card-conventions.mjs'
       - '.github/workflows/build-v063-card-language-normalization.yml'
       - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
   workflow_dispatch:
@@ -30,14 +34,17 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Build convention-normalized card candidate
+      - name: Build conservative first-pass candidate
         run: node scripts/build-v063-card-normalization.mjs
 
-      - name: Verify Deck terminology in candidate
+      - name: Apply reviewed convention overrides
+        run: node scripts/finalize-v063-card-conventions.mjs
+
+      - name: Verify Deck terminology in final candidate
         run: |
           node --input-type=module <<'NODE'
           import { readFileSync } from 'node:fs';
-          const candidate = JSON.parse(readFileSync('artifacts/v0.6.3/Gauntlet_v0.6.3_Card_Language_Candidate.json', 'utf8'));
+          const candidate = JSON.parse(readFileSync('artifacts/v0.6.3/Gauntlet_v0.6.3_Convention_Normalized_Candidate.json', 'utf8'));
           delete candidate.normalization;
           if (JSON.stringify(candidate).includes('Playable Deck')) {
             console.error('Obsolete Playable Deck terminology remains in v0.6.3 player-facing candidate content.');
@@ -45,10 +52,10 @@ jobs:
           }
           NODE
 
-      - name: Print convention-review summary
-        run: sed -n '1,/^## Complete per-card measurement/p' artifacts/v0.6.3/Gauntlet_v0.6.3_Card_Language_Density.md
+      - name: Print final convention-normalized summary
+        run: sed -n '1,/^## Complete 128-card review/p' artifacts/v0.6.3/Gauntlet_v0.6.3_Convention_Normalized_Density.md
 
-      - name: Upload normalization candidate and density report
+      - name: Upload normalization candidates and density reports
         uses: actions/upload-artifact@v4
         with:
           name: v063-card-language-normalization
