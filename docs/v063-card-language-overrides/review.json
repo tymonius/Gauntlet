@@ -1,0 +1,16 @@
+{
+  "version": "v0.6.3",
+  "stage": "shared-convention-normalization",
+  "accepted_residuals": {
+    "financiers-compound-interest": {"flags":["self-title-repeat"],"reason":"Retain the printed title because the one-banked-copy restriction is a title-matching rule across copies."},
+    "diplomats-detente": {"flags":["self-title-repeat"],"reason":"Retain the printed title because the one-banked-copy restriction is a title-matching rule across copies."},
+    "intelligence-extraordinary-rendition": {"flags":["self-title-repeat"],"reason":"Retain the printed title in the one-banked-copy restriction; other self-references use this card."},
+    "military-hold-the-line": {"flags":["if-you-do"],"reason":"Retain If you do because the cost is paid during Onset and its primary effect occurs later after Tactics are revealed."},
+    "neutral-landslide": {"flags":["self-title-repeat"],"reason":"Retain Landslide in the one-per-Territory restriction because it matches other copies by title."},
+    "financiers-margin-loan": {"flags":["if-you-do"],"reason":"Retain the approved branch wording for the collateral Battle mode; the later Aftermath resolution depends on whether collateral was bound."},
+    "inquisition-martyrdom": {"flags":["if-you-do"],"reason":"Retain If you do because playing the card from Hand is the optional gate for several later Aftermath consequences."},
+    "mystics-necromancy": {"flags":["self-title-repeat"],"reason":"Retain non-Necromancy because the restriction explicitly excludes cards by title, including other copies."},
+    "neutral-resourcefulness": {"flags":["self-title-repeat"],"reason":"Retain the printed title because the one-banked-copy restriction is a title-matching rule across copies."},
+    "financiers-tariffs": {"flags":["self-title-repeat"],"reason":"Retain the printed title because both banked-copy restrictions compare this card with other Tariffs copies."}
+  }
+}

@@ -15,7 +15,7 @@ const catalog = {
 
 const config = {
   schemaVersion: 1,
-  gameVersion: 'v0.6.1',
+  gameVersion: 'v0.6.2',
   compositions: [
     {
       id: 'test-fan',

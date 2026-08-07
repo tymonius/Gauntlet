@@ -1,0 +1,222 @@
+# Gauntlet v0.6.3 General Card Rules Candidate
+
+**Status:** Adopted v0.6.3 rules for card-language centralization, awaiting full release propagation  
+**Release tracker:** [Issue #528](https://github.com/tymonius/Gauntlet/issues/528)  
+**Card-language review:** [Issue #405](https://github.com/tymonius/Gauntlet/issues/405)  
+**Implementation PR:** [PR #540](https://github.com/tymonius/Gauntlet/pull/540)
+
+This document centralizes procedures repeatedly restated on individual cards. Cards should state exceptional information while these shared rules govern routine procedures.
+
+All inherited shared rules remain in force unless expressly revised below.
+
+---
+
+## 1. Inherent banking Action
+
+A card with an **Asset** or **Activate** effect has an inherent banking Action:
+
+> **Bank:** As an Action, play this card from your Hand and bank it.
+
+This inherent Action does not need to be printed on the card.
+
+If a card has a printed Action effect that provides a special banking procedure, use that procedure instead. A special banking Action may impose costs, bind cards, draw cards, grant another Action, limit copies, or otherwise change what happens when the card is banked.
+
+For rules and effects that refer to an Action effect that banks a card, the inherent Bank Action counts as such an effect.
+
+Cards whose only printed Action was `Bank this card.` therefore omit that Action section in v0.6.3.
+
+---
+
+## 2. Directly permitted card procedures do not spend another Action
+
+When a rule or effect directly instructs or permits a player to play, bank, place, reveal, or otherwise use a card at a stated timing, that procedure is part of resolving that rule or effect. It does not spend or require another Action unless expressly stated.
+
+Cards therefore do not need phrases such as:
+
+- `without spending an Action`;
+- `without spending another Action`;
+- `without taking an Action`; or
+- `without taking additional Actions`.
+
+An instruction that expressly says **as an Action**, **take an Action**, or otherwise identifies an Action still uses the applicable Action permission.
+
+---
+
+## 3. Effect-granted movement and new movement sequences
+
+When an effect grants movement, apply the normal movement rules unless it says otherwise.
+
+- If the effect modifies a movement sequence already in progress, the granted movement remains part of that sequence.
+- If the effect grants movement while no movement sequence is in progress, it begins a new movement sequence.
+- Effect-granted movement may create a pending battle and may initiate a legal Last Stand unless expressly prohibited.
+- When movement creates a pending battle, that movement sequence ends and unused movement from it is lost normally.
+
+Cards therefore do not need affirmative text saying that granted movement may start or create a battle. Negative exceptions remain printed.
+
+---
+
+## 4. Additional Tactics use the shared Tactic rules
+
+When an effect permits an **additional Tactic**:
+
+- it must be eligible for the Tactic role;
+- before Tactics are revealed, it is set face down with the other chosen Tactics;
+- after Tactics are revealed, it is played face up;
+- only timing still available may apply;
+- choosing it does not reopen an earlier choice, reveal, or response window; and
+- it uses the normal Tactic destination unless an effect gives another destination.
+
+Unless an effect says otherwise, the source of a Tactic is the player's **Reserve**.
+
+---
+
+## 5. Sanctions
+
+A card whose title begins **Sanctions:** is a **Sanction**.
+
+When a Sanction is played, placed, or banked because an opponent refused its owner's Terms:
+
+- that opponent remains associated with that Sanction for as long as it remains in play; and
+- unless the Sanction says otherwise, after that opponent accepts the owner's Terms, put the Sanction in its owner's Discard Pile.
+
+A Sanction may state additional removal conditions. Cards therefore do not need to repeat identification of the refusing opponent or the default expiration after later acceptance.
+
+---
+
+## 6. Reveal-stage interference
+
+A **reveal-stage interference effect** is an effect of a revealed Gambit or Tactic that reveals, negates, returns, discards, replaces, or otherwise prevents another Gambit or Tactic at that same reveal stage from applying normally.
+
+At each Gambit or Tactic reveal stage:
+
+1. resolve reveal-stage interference before ordinary effects at that stage;
+2. if multiple interference effects remain at the same timing, use the normal shared-timing rule among them; and
+3. after interference is complete, resolve the remaining ordinary effects normally.
+
+An effect still cannot negate or cancel a card after that card's effect has applied.
+
+This does **not** give general priority to every `When revealed` effect. An effect that merely applies its own result, copies another effect, or replaces its own card remains an ordinary reveal effect unless it interferes with another Gambit or Tactic at that same stage.
+
+---
+
+## 7. Compact card shorthand
+
+Routine quantitative instructions may use compact shorthand when timing, subject, source, and eligible set remain unambiguous.
+
+### Reserve and Tactics
+
+`+N Reserve` adds N cards to the player's Reserve at the stated timing. During Reserve formation, it increases the normal Reserve size by N.
+
+`−N Reserve` reduces that quantity by N. Any applicable minimum remains printed.
+
+`+N Tactic` permits N additional Tactics under the shared additional-Tactic rule.
+
+**Reserve is the default Tactic source.** Do not print `from Reserve` merely to restate the default. Print another source only when the effect overrides or narrows it, such as:
+
+- `+1 Tactic from Hand`
+- `+1 Tactic from those cards`
+- `+1 Tactic using the stored card`
+
+A standard combined effect may therefore read:
+
+> `+1 Reserve, +1 Tactic.`
+
+### Cards
+
+`+N Card` / `+N Cards` means draw N cards from your Draw Pile into your Hand.
+
+If another player receives the draw, identify that player. If the cards go somewhere other than the Hand, state that destination instead of using this shorthand.
+
+Optional compound procedures may remain in natural language when shorthand would obscure what is optional.
+
+### Actions
+
+`+N Action` grants N additional Actions during the **current phase**. If another phase is intended, state that phase.
+
+This inherits the same-phase additional-Action rule established for v0.6.2: it expands the number of Actions permitted in that phase rather than reopening a phase that has ended.
+
+### Resources
+
+`+N Capital`, `+N Influence`, `+N Command`, and `+N Conviction` mean gain that amount of the named resource.
+
+Do **not** use negative resource shorthand for costs, payments, losses, or reductions when their rules meaning differs. Continue to write `spend`, `pay`, `lose`, or the applicable instruction.
+
+`Resource = N` sets that resource to N. Examples include `Command = 2` and `Conviction = 4`.
+
+### Battle total
+
+`+N Battle Total` adds N to your battle total.
+
+### Retreat
+
+`Retreat +N` increases the distance of the retreat identified by that clause by N Positions. It modifies that retreat; it does not create a separate retreat.
+
+If the affected player is not otherwise clear, identify them.
+
+### Advantage and disadvantage
+
+Card faces retain natural instruction wording:
+
+- `gain advantage` = gain **one instance of advantage**;
+- `gain double advantage` = gain **two instances of advantage**;
+- `gain disadvantage` = gain **one instance of disadvantage**.
+
+These are additive instructions, not binary statuses.
+
+Instances from separate cards, Territory effects, faction abilities, and other effects **stack**. No later source replaces an earlier one unless an effect expressly says so. Before rolling battle dice, combine all advantage and disadvantage affecting each player and cancel opposing instances one-for-one.
+
+- If **N advantage** remains, roll **N + 1 dice** and use the highest result.
+- If **N disadvantage** remains, roll **N + 1 dice** and use the lowest result.
+- If neither remains, roll normally.
+
+There is no fixed stacking cap unless a rule or effect expressly creates one. Two separate effects that each say `gain advantage` therefore produce double advantage; double advantage plus one disadvantage leaves one net advantage.
+
+Effects that ignore or prevent **one disadvantage** affect only one instance unless they say otherwise.
+
+The words `Advantage`, `Double Advantage`, and `Disadvantage` may still be used as rules terms when discussing the mechanic, but card-facing instructions use the natural `gain ...` form unless another sentence structure requires equivalent wording.
+
+### Front Line
+
+Use **`Advance Front Line N`**, not `+N Front Line`, to advance the Front Line by N Territories.
+
+Card-specific qualifications such as `if able` and replacement of Occupation remain printed when they matter.
+
+### Condition prefixes
+
+When a condition governs the entire following clause, cards may use concise prefixes such as:
+
+- `Attacker —`
+- `Defender —`
+- `Counterattack —`
+- `Win —`
+- `Lose —`
+
+The prefix scopes only the clause that follows it. More complex conditions remain in natural language.
+
+---
+
+## 8. Rerolls use the new result
+
+When a rule or effect causes a die to be rerolled, the reroll replaces the result it rerolls and the new result is used unless the rule or effect expressly says otherwise.
+
+Cards therefore do not need to repeat `use the new result` or `you must use the new result` after a reroll instruction.
+
+---
+
+## 9. Card-text consequences
+
+The v0.6.3 card-language build may remove or replace:
+
+- a printed `Action: Bank this card.` when that is the card's entire banking Action;
+- redundant no-Action disclaimers on directly permitted card procedures;
+- affirmative statements that effect-granted movement may create a battle;
+- repeated additional-Tactic eligibility, face-state, and default-Reserve-source instructions;
+- repeated Reserve/Tactic quantity sentences represented by numeric shorthand;
+- routine draw, extra-Action, fixed resource-gain, battle-total, retreat, resource-setting, and Front Line sentences represented by the shorthand above;
+- repeated `use the new result` text after rerolls;
+- repeated Sanction identification/default-expiration clauses; and
+- repeated reveal-priority clauses covered by reveal-stage interference.
+
+Advantage/Disadvantage is deliberately **not** reduced to a bare card-facing status label; cards retain `gain advantage`, `gain double advantage`, or equivalent natural wording while the shared stacking rule governs how instances combine.
+
+Card-specific costs, restrictions, nondefault sources, destinations, timing differences, negative exceptions, title-matching rules, unusual movement, and other deviations remain printed.

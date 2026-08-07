@@ -4,7 +4,8 @@ import { extname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
-const VERSION = 'v0.6.1';
+const VERSION = 'v0.6.2';
+const CANONICAL_DATA_SOURCE = 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json';
 const OUTPUT_ROOT = join(ROOT, 'tts', 'generated', VERSION);
 const CARD_WIDTH = 400;
 const CARD_HEIGHT = 560;
@@ -16,12 +17,12 @@ const HIDDEN_SLOT = SHEET_COLUMNS * SHEET_ROWS - 1;
 const CARDS_PER_SHEET = HIDDEN_SLOT;
 const EXPECTED_COUNTS = Object.freeze({
   neutral: 50,
-  military: 12,
-  diplomats: 12,
-  financiers: 12,
-  intelligence: 12,
-  mystics: 12,
-  inquisition: 12,
+  military: 13,
+  diplomats: 13,
+  financiers: 13,
+  intelligence: 13,
+  mystics: 13,
+  inquisition: 13,
   territories: 25,
 });
 const GROUP_ORDER = Object.freeze([
@@ -33,48 +34,10 @@ const GROUP_ORDER = Object.freeze([
   'mystics',
   'inquisition',
 ]);
-const SOURCE_CONFIG = Object.freeze({
-  neutral: {
-    label: 'Neutral',
-    path: 'docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md',
-    factionGuide: false,
-  },
-  military: {
-    label: 'Military',
-    path: 'releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md',
-    factionGuide: true,
-  },
-  diplomats: {
-    label: 'Diplomats',
-    path: 'releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md',
-    factionGuide: true,
-  },
-  financiers: {
-    label: 'Financiers',
-    path: 'releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md',
-    factionGuide: true,
-  },
-  intelligence: {
-    label: 'Intelligence',
-    path: 'releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md',
-    factionGuide: true,
-  },
-  mystics: {
-    label: 'Mystics',
-    path: 'releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md',
-    factionGuide: true,
-  },
-  inquisition: {
-    label: 'Inquisition',
-    path: 'releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md',
-    factionGuide: true,
-  },
-});
-const TERRITORY_SOURCE = 'docs/Gauntlet_v0.6.1_Territory_Pool.md';
 const ART_EXTENSIONS = new Set(['.png', '.webp', '.jpg', '.jpeg']);
 
 function slugify(value) {
-  return value
+  return String(value ?? '')
     .toLowerCase()
     .normalize('NFKD')
     .replace(/[^a-z0-9]+/g, '-')
@@ -92,7 +55,7 @@ function cleanInlineMarkdown(text) {
 
 function canonicalCardSection(markdown, source) {
   const normalized = markdown.replace(/\r/g, '');
-  if (!source.factionGuide) return normalized;
+  if (!source?.factionGuide) return normalized;
 
   const marker = normalized.match(/^#\s+\d+\.\s+Canonical[^\n]*card pool\s*$/mi);
   if (!marker || marker.index === undefined) {
@@ -132,6 +95,8 @@ function parseQuotedSections(block) {
   );
 }
 
+// Retained for compatibility with parser unit tests and historical tooling.
+// The production catalog below reads the published canonical JSON instead.
 function parseCardPool(markdown, faction, source) {
   const section = canonicalCardSection(markdown, source);
   const headings = [...section.matchAll(/^##\s+(.+)$/gm)];
@@ -164,7 +129,7 @@ function parseCardPool(markdown, faction, source) {
   return cards;
 }
 
-function parseTerritoryPool(markdown) {
+function parseTerritoryPool(markdown, sourcePath = 'legacy-territory-pool') {
   const source = markdown.replace(/\r/g, '');
   const headings = [...source.matchAll(/^##\s+(\d+)\.\s+(.+)$/gm)];
 
@@ -187,9 +152,55 @@ function parseTerritoryPool(markdown) {
         .map((line) => cleanInlineMarkdown(line.trim().replace(/^>\s?/, '')))
         .filter(Boolean)
         .join('\n'),
-      source: TERRITORY_SOURCE,
+      source: sourcePath,
     };
   });
+}
+
+function sectionsFromEffects(effects) {
+  const sections = {};
+  for (const effect of effects || []) {
+    const label = String(effect?.label || '').trim();
+    const text = String(effect?.text || '').trim();
+    if (!label || !text) continue;
+    sections[label] = sections[label] ? `${sections[label]}\n${text}` : text;
+  }
+  return sections;
+}
+
+function playableCardFromCanonical(card) {
+  const faction = slugify(card.allegiance);
+  if (!GROUP_ORDER.includes(faction)) {
+    throw new Error(`Unknown canonical allegiance for ${card.id}: ${card.allegiance}.`);
+  }
+  return {
+    id: card.id,
+    kind: 'playable',
+    name: card.name,
+    faction,
+    factionLabel: card.allegiance,
+    cost: Number(card.cost),
+    complexity: 'Unspecified',
+    trait: card.trait || '',
+    form: card.card_form || '',
+    unique: Boolean(card.unique),
+    sections: sectionsFromEffects(card.effects),
+    source: card.source || CANONICAL_DATA_SOURCE,
+  };
+}
+
+function territoryFromCanonical(territory) {
+  return {
+    id: territory.id,
+    kind: 'territory',
+    name: territory.name,
+    arena: Boolean(territory.arena),
+    complexity: territory.complexity || 'Unspecified',
+    watchlist: territory.watchlist || 'None',
+    status: territory.status || 'Approved',
+    text: String(territory.text || '').trim(),
+    source: territory.source || CANONICAL_DATA_SOURCE,
+  };
 }
 
 async function walkImages(directory, files = []) {
@@ -242,16 +253,18 @@ function stableCardSort(a, b) {
 }
 
 async function buildCatalog() {
-  const playableCards = [];
-  for (const [faction, source] of Object.entries(SOURCE_CONFIG)) {
-    const markdown = await readFile(join(ROOT, source.path), 'utf8');
-    playableCards.push(...parseCardPool(markdown, faction, source));
+  const canonical = JSON.parse(await readFile(join(ROOT, CANONICAL_DATA_SOURCE), 'utf8'));
+  if (canonical.version !== VERSION) {
+    throw new Error(`Canonical data version is ${canonical.version}; expected ${VERSION}.`);
   }
-  playableCards.sort(stableCardSort);
+  if (!Array.isArray(canonical.cards) || !Array.isArray(canonical.territories)) {
+    throw new Error(`Canonical data is missing cards or territories: ${CANONICAL_DATA_SOURCE}.`);
+  }
 
-  const territories = parseTerritoryPool(
-    await readFile(join(ROOT, TERRITORY_SOURCE), 'utf8'),
-  ).sort((a, b) => a.name.localeCompare(b.name, 'en-US'));
+  const playableCards = canonical.cards.map(playableCardFromCanonical).sort(stableCardSort);
+  const territories = canonical.territories
+    .map(territoryFromCanonical)
+    .sort((a, b) => a.name.localeCompare(b.name, 'en-US'));
 
   const artworkIndex = await buildArtworkIndex();
   const cardsWithArtwork = playableCards.map((card) => ({
@@ -278,12 +291,7 @@ async function buildCatalog() {
   return {
     schemaVersion: 1,
     gameVersion: VERSION,
-    sourceHierarchy: [
-      'releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md',
-      'releases/v0.6.1/faction-guides/',
-      'docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md',
-      'docs/Gauntlet_v0.6.1_Territory_Pool.md',
-    ],
+    sourceHierarchy: [CANONICAL_DATA_SOURCE],
     counts,
     playableCards: cardsWithArtwork,
     territories,
@@ -355,7 +363,7 @@ async function startStaticServer() {
 
 function prototypeBackHtml() {
   return `<!doctype html><html><head><meta charset="utf-8"><style>
-    *{box-sizing:border-box}html,body{margin:0;background:transparent}.back{position:relative;width:${CSS_CARD_WIDTH}px;height:${CSS_CARD_HEIGHT}px;overflow:hidden;border:1px solid #241c15;border-radius:12px;background:#7e2027;color:#f3ead7;font-family:Georgia,serif}.back:before{position:absolute;inset:7px;border:2px solid #d0ae6a;border-radius:8px;content:""}.back:after{position:absolute;inset:17px;border:1px solid rgba(243,234,215,.5);content:""}.mark{position:absolute;inset:0;display:grid;place-items:center;font-size:95px;line-height:1}.title{position:absolute;left:0;right:0;bottom:35px;text-align:center;font-size:20px;letter-spacing:.2em;text-transform:uppercase}.edition{position:absolute;left:0;right:0;bottom:18px;text-align:center;font:700 7px Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase}</style></head><body><div class="back"><div class="mark">G</div><div class="title">Gauntlet</div><div class="edition">v0.6.1 prototype back</div></div></body></html>`;
+    *{box-sizing:border-box}html,body{margin:0;background:transparent}.back{position:relative;width:${CSS_CARD_WIDTH}px;height:${CSS_CARD_HEIGHT}px;overflow:hidden;border:1px solid #241c15;border-radius:12px;background:#7e2027;color:#f3ead7;font-family:Georgia,serif}.back:before{position:absolute;inset:7px;border:2px solid #d0ae6a;border-radius:8px;content:""}.back:after{position:absolute;inset:17px;border:1px solid rgba(243,234,215,.5);content:""}.mark{position:absolute;inset:0;display:grid;place-items:center;font-size:95px;line-height:1}.title{position:absolute;left:0;right:0;bottom:35px;text-align:center;font-size:20px;letter-spacing:.2em;text-transform:uppercase}.edition{position:absolute;left:0;right:0;bottom:18px;text-align:center;font:700 7px Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase}</style></head><body><div class="back"><div class="mark">G</div><div class="title">Gauntlet</div><div class="edition">v0.6.2 prototype back</div></div></body></html>`;
 }
 
 function sheetHtml(baseUrl, sheetCards) {
@@ -541,4 +549,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   });
 }
 
-export { buildCatalog, parseCardPool, parseTerritoryPool, slugify };
+export {
+  buildCatalog,
+  parseCardPool,
+  parseTerritoryPool,
+  playableCardFromCanonical,
+  slugify,
+  territoryFromCanonical,
+};
