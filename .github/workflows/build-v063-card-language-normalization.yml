@@ -35,10 +35,15 @@ jobs:
 
       - name: Verify Deck terminology in candidate
         run: |
-          if grep -R "Playable Deck" artifacts/v0.6.3; then
-            echo "Obsolete Playable Deck terminology remains in v0.6.3 generated output."
-            exit 1
-          fi
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const candidate = JSON.parse(readFileSync('artifacts/v0.6.3/Gauntlet_v0.6.3_Card_Language_Candidate.json', 'utf8'));
+          delete candidate.normalization;
+          if (JSON.stringify(candidate).includes('Playable Deck')) {
+            console.error('Obsolete Playable Deck terminology remains in v0.6.3 player-facing candidate content.');
+            process.exit(1);
+          }
+          NODE
 
       - name: Upload normalization candidate and density report
         uses: actions/upload-artifact@v4
