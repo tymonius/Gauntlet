@@ -187,10 +187,22 @@ After forcing the opponent beyond the Gauntlet, you may initiate a Last Stand wi
 
 ---
 
-# 7. Rulebook Editorial Addition — Battle-Start Check
+# 7. Player-Facing Editorial Additions — Battle Habit
 
-Place the following player-facing reminder in the v0.6.3 Rulebook at **Onset**, where the rules establish that the battle formally begins, before players proceed into Gambits:
+This guidance is instructional rather than a new rule. It should be taught prominently in first-game material and reinforced in the complete Rulebook without becoming a numbered battle step.
 
-> **Good battle habit:** When a battle begins, review the contested Territory for effects that may apply, then review the Assets you control and decide whether you intend to use any of them during the battle. This is a reminder, not a new timing window; use each effect only at its stated timing.
+## First Game Guide / Learn to Play — primary placement
 
-This reminder is instructional rather than a new rule. It does not alter the battle sequence, grant permission to use an effect, or change the timing printed on a Territory, Asset, card, Leader ability, faction ability, or other rule.
+Teach this habit when demonstrating the first ordinary battle and repeat it in the shared tableside battle reference immediately before or with Onset:
+
+> **Battle habit:** Whenever a battle begins, first check the contested Territory for any effect that may apply. Then check your Asset Bank and consider whether any of your Assets may be useful in this battle. Use each effect only at its stated timing.
+
+The purpose is to train players to notice the two persistent public sources of battle-relevant effects before they become absorbed in Gambits, Reserves, and Tactics.
+
+## Complete Rulebook — secondary callout
+
+Place a visually distinct callout near **Onset** or the beginning of the battle sequence. Do not add it as a numbered battle step:
+
+> **Battle Habit:** At the start of a battle, check the contested Territory and your Assets for relevant effects. This is only a reminder; it does not create a new timing window or let you use an effect outside its stated timing.
+
+Neither placement alters the battle sequence, grants permission to use an effect, or changes the timing printed on a Territory, Asset, card, Leader ability, faction ability, or other rule.
