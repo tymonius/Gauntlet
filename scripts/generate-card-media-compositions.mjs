@@ -5,7 +5,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { buildCatalog } from './generate-tts-card-assets.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
-const VERSION = 'v0.6.1';
+const VERSION = 'v0.6.2';
 const CONFIG_PATH = join(ROOT, 'media', 'compositions.json');
 const GENERATED_ROOT = join(ROOT, 'media', 'generated', VERSION);
 const CARD_MANIFEST_PATH = join(GENERATED_ROOT, 'manifest.json');

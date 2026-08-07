@@ -49,7 +49,7 @@
         <footer class="card-footer">
           <span>${escapeHtml(card.factionLabel)}</span>
           <span>${escapeHtml(footerCenter)}</span>
-          <span>v0.6.1</span>
+          <span>v0.6.2</span>
         </footer>
       </div>
     </article>`;

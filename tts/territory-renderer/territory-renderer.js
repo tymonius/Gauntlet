@@ -46,7 +46,7 @@
         <footer class="territory-footer">
           <span>${territory.arena ? 'Arena' : 'Territory'}</span>
           <span>${escapeHtml(territory.complexity)}</span>
-          <span>v0.6.1</span>
+          <span>v0.6.2</span>
         </footer>
       </div>
     </article>`;

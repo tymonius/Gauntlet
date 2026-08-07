@@ -5,7 +5,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { buildCatalog } from './generate-tts-card-assets.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
-const VERSION = 'v0.6.1';
+const VERSION = 'v0.6.2';
 const OUTPUT_ROOT = join(ROOT, 'tts', 'generated', VERSION);
 const TERRITORY_WIDTH = 560;
 const TERRITORY_HEIGHT = 400;
@@ -83,7 +83,7 @@ async function startStaticServer() {
 
 function territoryBackHtml() {
   return `<!doctype html><html><head><meta charset="utf-8"><style>
-    *{box-sizing:border-box}html,body{margin:0;background:transparent}.back{position:relative;width:${CSS_TERRITORY_WIDTH}px;height:${CSS_TERRITORY_HEIGHT}px;overflow:hidden;border:1px solid #241c15;border-radius:12px;background:#7e2027;color:#f3ead7;font-family:Georgia,serif}.back:before{position:absolute;inset:7px;border:2px solid #d0ae6a;border-radius:8px;content:""}.back:after{position:absolute;inset:17px;border:1px solid rgba(243,234,215,.5);content:""}.mark{position:absolute;inset:0;display:grid;place-items:center;font-size:84px;line-height:1}.title{position:absolute;left:0;right:0;bottom:35px;text-align:center;font-size:18px;letter-spacing:.2em;text-transform:uppercase}.edition{position:absolute;left:0;right:0;bottom:18px;text-align:center;font:700 7px Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase}</style></head><body><div class="back"><div class="mark">G</div><div class="title">Gauntlet</div><div class="edition">v0.6.1 prototype territory back</div></div></body></html>`;
+    *{box-sizing:border-box}html,body{margin:0;background:transparent}.back{position:relative;width:${CSS_TERRITORY_WIDTH}px;height:${CSS_TERRITORY_HEIGHT}px;overflow:hidden;border:1px solid #241c15;border-radius:12px;background:#7e2027;color:#f3ead7;font-family:Georgia,serif}.back:before{position:absolute;inset:7px;border:2px solid #d0ae6a;border-radius:8px;content:""}.back:after{position:absolute;inset:17px;border:1px solid rgba(243,234,215,.5);content:""}.mark{position:absolute;inset:0;display:grid;place-items:center;font-size:84px;line-height:1}.title{position:absolute;left:0;right:0;bottom:35px;text-align:center;font-size:18px;letter-spacing:.2em;text-transform:uppercase}.edition{position:absolute;left:0;right:0;bottom:18px;text-align:center;font:700 7px Arial,sans-serif;letter-spacing:.14em;text-transform:uppercase}</style></head><body><div class="back"><div class="mark">G</div><div class="title">Gauntlet</div><div class="edition">v0.6.2 prototype territory back</div></div></body></html>`;
 }
 
 function territorySheetHtml(baseUrl, territories) {
