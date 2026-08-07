@@ -49,8 +49,8 @@ if (!insurrectionBattle.includes('Counterattack — Double Advantage.') || !insu
   throw new Error('Insurrection no longer preserves its one-versus-two advantage instances.');
 }
 
-if (checkedEffects !== 17) {
-  throw new Error(`Expected to verify 17 Advantage/Disadvantage-granting effects, checked ${checkedEffects}. Review the pool before changing this assertion.`);
+if (checkedEffects !== 18) {
+  throw new Error(`Expected to verify 18 Advantage/Disadvantage-granting effects, checked ${checkedEffects}. Review the pool before changing this assertion.`);
 }
 
 console.log(`Verified stackable Advantage/Disadvantage instance identity across ${checkedEffects} shorthand-converted effects.`);
@@ -66,7 +66,6 @@ function grantUnits(text, longForm) {
     advantage += doubles.length * 2;
     value = value.replace(/\bgain double advantage\b/gi, '');
     advantage += (value.match(/\bgain advantage\b/gi) ?? []).length;
-    advantage += (value.match(/\byou gain advantage\b/gi) ?? []).length;
     disadvantage += (value.match(/\bgive them disadvantage during this battle\b/gi) ?? []).length;
     disadvantage += (value.match(/\bthe opponent gains disadvantage during this battle\b/gi) ?? []).length;
     return { advantage, disadvantage };
