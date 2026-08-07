@@ -72,7 +72,7 @@ When an effect permits an **additional Tactic**:
 - choosing it does not reopen an earlier choice, reveal, or response window; and
 - it uses the normal Tactic destination unless an effect gives another destination.
 
-Card text therefore needs to identify only the source, quantity, timing, and any exception. For example, `Choose an additional Tactic from your Hand` is sufficient when no other exception applies.
+Unless an effect says otherwise, the source of a Tactic is the player's **Reserve**.
 
 ---
 
@@ -109,15 +109,52 @@ This centralizes the repeated priority clauses on **Assassins, Capital Punishmen
 
 ---
 
-## 7. Card-text consequences
+## 7. Numeric Reserve and Tactic shorthand
 
-The v0.6.3 card-language build may therefore remove:
+Cards may use signed numeric modifiers for routine Reserve and Tactic quantities.
+
+### Reserve
+
+`+N Reserve` means add N cards to the player's Reserve at the stated timing. During Reserve formation, it increases the normal number of cards drawn into the Reserve by N.
+
+`−N Reserve` means reduce that number by N. A card states any applicable minimum when the reduction could reach zero or below.
+
+Examples:
+
+- `+1 Reserve`
+- `+2 Reserve`
+- `Reserve −1 for each earlier battle after the first, to a minimum of 0.`
+
+### Tactics
+
+`+N Tactic` means the player may choose N additional Tactics under the shared additional-Tactic rule.
+
+**Reserve is the default source.** Do not print `from Reserve` merely to restate that default.
+
+Print a source only when the effect overrides or narrows the default, for example:
+
+- `+1 Tactic from Hand`
+- `+1 Tactic from those cards`
+- `+1 Tactic using the stored card`
+
+The timing surrounding the shorthand still controls when the modifier is granted. Other card-specific restrictions remain printed.
+
+Thus a standard effect such as `form your Reserve with one additional card and you may choose an additional Tactic` may become simply:
+
+> `+1 Reserve, +1 Tactic.`
+
+---
+
+## 8. Card-text consequences
+
+The v0.6.3 card-language build may therefore remove or replace:
 
 - a printed `Action: Bank this card.` when that is the card's entire banking Action;
 - redundant no-Action disclaimers on directly permitted card procedures;
 - affirmative statements that effect-granted movement may create a battle;
-- repeated additional-Tactic eligibility and face-state instructions;
+- repeated additional-Tactic eligibility, face-state, and default-Reserve-source instructions;
+- repeated Reserve/Tactic quantity sentences that can be represented by numeric shorthand;
 - repeated Sanction identification/default-expiration clauses; and
 - repeated reveal-priority clauses covered by reveal-stage interference.
 
-Card-specific costs, restrictions, destinations, timing differences, negative exceptions, title-matching rules, and other deviations remain printed.
+Card-specific costs, restrictions, nondefault sources, destinations, timing differences, negative exceptions, title-matching rules, and other deviations remain printed.
