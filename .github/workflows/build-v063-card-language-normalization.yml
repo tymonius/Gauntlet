@@ -11,6 +11,7 @@ on:
       - 'scripts/apply-v063-general-card-rules.mjs'
       - 'scripts/apply-v063-numeric-shorthand.mjs'
       - 'scripts/apply-v063-compact-shorthand.mjs'
+      - 'scripts/apply-v063-natural-advantage-wording.mjs'
       - 'scripts/validate-v063-advantage-stacking.mjs'
       - '.github/workflows/build-v063-card-language-normalization.yml'
       - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
@@ -24,6 +25,7 @@ on:
       - 'scripts/apply-v063-general-card-rules.mjs'
       - 'scripts/apply-v063-numeric-shorthand.mjs'
       - 'scripts/apply-v063-compact-shorthand.mjs'
+      - 'scripts/apply-v063-natural-advantage-wording.mjs'
       - 'scripts/validate-v063-advantage-stacking.mjs'
       - '.github/workflows/build-v063-card-language-normalization.yml'
       - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
@@ -59,6 +61,9 @@ jobs:
       - name: Apply compact shorthand and Sanctions repair
         run: node scripts/apply-v063-compact-shorthand.mjs
 
+      - name: Restore natural Advantage wording
+        run: node scripts/apply-v063-natural-advantage-wording.mjs
+
       - name: Verify Advantage stacking identity
         run: node scripts/validate-v063-advantage-stacking.mjs
 
@@ -69,16 +74,16 @@ jobs:
           const candidate = JSON.parse(readFileSync('artifacts/v0.6.3/Gauntlet_v0.6.3_Compact_Shorthand_Normalized_Candidate.json', 'utf8'));
           delete candidate.normalization;
           const text = JSON.stringify(candidate);
-          for (const obsolete of ['Playable Deck', 'the that opponent', 'the you gains']) {
+          for (const obsolete of ['Playable Deck', 'the that opponent', 'the you gains', 'Opponent: Disadvantage', 'Double Advantage', ' — Advantage.', 'for Advantage']) {
             if (text.includes(obsolete)) {
-              console.error(`Obsolete or malformed player-facing text remains: ${obsolete}`);
+              console.error(`Obsolete, malformed, or unnatural player-facing text remains: ${obsolete}`);
               process.exit(1);
             }
           }
           NODE
 
-      - name: Print final compact-shorthand density summary
-        run: sed -n '1,/^## Complete 128-card measurement/p' artifacts/v0.6.3/Gauntlet_v0.6.3_Compact_Shorthand_Density.md
+      - name: Print final shared-normalization density summary
+        run: sed -n '1,90p' artifacts/v0.6.3/Gauntlet_v0.6.3_Compact_Shorthand_Density.md
 
       - name: Upload normalization candidates and density reports
         uses: actions/upload-artifact@v4
