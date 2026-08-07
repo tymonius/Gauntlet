@@ -3,7 +3,7 @@
 **Status:** Active next-release decision and propagation record  
 **Current canonical release:** [Gauntlet v0.6.2](../releases/v0.6.2/README.md)  
 **Release tracker:** [Issue #528](https://github.com/tymonius/Gauntlet/issues/528)  
-**Last updated:** August 6, 2026
+**Last updated:** August 7, 2026
 
 ---
 
@@ -119,6 +119,19 @@ Because both discards occur before the first-player roll:
 - effects that can use the Discard Pile on the first turn interact with a deliberately chosen card; and
 - the opening Hand remains three cards.
 
+### 4.4 Battle-start gameplay habit
+
+The v0.6.3 Rulebook should teach players to pause at Onset and make two quick checks before proceeding into the rest of the battle:
+
+1. review the contested Territory for effects that may apply; and
+2. review the Assets they control and decide whether any may be useful during the battle.
+
+Use this player-facing wording:
+
+> **Good battle habit:** When a battle begins, review the contested Territory for effects that may apply, then review the Assets you control and decide whether you intend to use any of them during the battle. This is a reminder, not a new timing window; use each effect only at its stated timing.
+
+This is instructional guidance, not a new rule, timing window, permission, or battle step. Its purpose is to reduce missed optional effects and help players develop a reliable battle routine.
+
 ---
 
 ## 5. Required interaction audit
@@ -174,7 +187,7 @@ At minimum, audit:
    - immediate-capture and follow-up-movement compatibility audit.
 
 3. **Player-facing layer**
-   - complete Rulebook;
+   - complete Rulebook, including the Onset battle-start gameplay reminder;
    - compact Reference Guide;
    - First Game Guide;
    - returning-player changes;
@@ -214,5 +227,6 @@ The v0.6.3 implementation is not complete until:
 - immediate-capture effects can legally win on the final Territory;
 - Last Stand access does not require prior control of the final Territory;
 - a separate legal movement sequence is still required after the battle that forces the opponent beyond the Gauntlet;
+- the v0.6.3 Rulebook includes the non-normative battle-start reminder at Onset without creating a new timing window;
 - all affected Leader, faction, card, Territory, Rules Arbiter, and digital interactions are tested; and
 - the published v0.6.2 package remains unchanged.
