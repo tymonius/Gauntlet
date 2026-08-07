@@ -16,7 +16,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
   <meta name="robots" content="noindex, nofollow" />
   <meta name="referrer" content="no-referrer" />
-  <meta name="description" content="Owner-only aggregate review and export of Gauntlet tracked playtests, questionnaires, and Rules Arbiter questions." />
+  <meta name="description" content="Owner-only aggregate review and export of Gauntlet playtests, questionnaires, and Rules Arbiter questions." />
   <meta name="theme-color" content="#171512" />
   <title>Gauntlet Playtest Analysis</title>
   <link rel="preconnect" href="https://use.typekit.net" />
@@ -45,7 +45,7 @@
       <div>
         <p class="eyebrow">Owner research workspace</p>
         <h1>Playtest <span>Analysis.</span></h1>
-        <p>Compile every tracked game, shared result, individual questionnaire, and attributed Rules Arbiter question in one private research surface.</p>
+        <p>Compile every tracked, retrospective, and standalone game record, complete questionnaire, shared result or remembered context, and attributed Rules Arbiter question in one private research surface.</p>
       </div>
       <aside>
         <strong>Protected feedback</strong>
@@ -73,7 +73,7 @@
       <section class="analysis-toolbar analysis-panel">
         <div>
           <p class="eyebrow">Compiled record</p>
-          <h2>Tracked playtests</h2>
+          <h2>All playtests</h2>
           <p id="dataFreshness">Loading…</p>
         </div>
         <div class="toolbar-actions">
@@ -89,7 +89,7 @@
         <article><span>Responses</span><strong id="metricResponses">0</strong><small id="metricResponsesDetail"></small></article>
         <article><span>Play again</span><strong id="metricReplay">—</strong><small>among submitted responses</small></article>
         <article><span>Average duration</span><strong id="metricDuration">—</strong><small>completed or stopped games</small></article>
-        <article><span>Arbiter questions</span><strong id="metricArbiter">0</strong><small>attributed to tracked games</small></article>
+        <article><span>Arbiter questions</span><strong id="metricArbiter">0</strong><small>attributed where tracking was available</small></article>
         <article><span>Rules versions</span><strong id="metricVersions">0</strong><small id="metricVersionsDetail"></small></article>
       </section>
 
@@ -105,7 +105,7 @@
           <label>Leader<select id="filterLeader"><option value="all">All Leaders</option></select></label>
           <label>Created after<input id="filterFrom" type="date" /></label>
           <label>Created before<input id="filterTo" type="date" /></label>
-          <label class="search-filter">Search responses, players, serials, and questions<input id="filterSearch" type="search" placeholder="clarity, Ambassador, capture timing…" /></label>
+          <label class="search-filter">Search responses, players, serials, context, and questions<input id="filterSearch" type="search" placeholder="clarity, Ambassador, capture timing…" /></label>
         </div>
         <div class="filter-actions">
           <button id="resetFilters" class="button secondary" type="button">Reset filters</button>
@@ -116,7 +116,7 @@
       <section class="analysis-panel export-panel" aria-labelledby="export-title">
         <div class="section-heading split-heading">
           <div><p class="eyebrow">Portable research record</p><h2 id="export-title">Export for review and analysis.</h2></div>
-          <p>The analysis bundle is the canonical upload format for a full ChatGPT review. CSV exports support spreadsheet work.</p>
+          <p>The analysis bundle preserves collection mode and complete stored responses. CSV exports include the same game context in tabular form.</p>
         </div>
         <label class="privacy-toggle"><input id="anonymizeExports" type="checkbox" checked /> Anonymize player names in downloaded files</label>
         <div class="export-actions">
@@ -149,8 +149,8 @@
 
       <section class="analysis-panel" aria-labelledby="written-title">
         <div class="section-heading split-heading">
-          <div><p class="eyebrow">Qualitative feedback</p><h2 id="written-title">Written responses and observations.</h2></div>
-          <p>Player questionnaire answers remain associated with their game, faction, Leader, and outcome.</p>
+          <div><p class="eyebrow">Complete feedback</p><h2 id="written-title">Questionnaires and observations.</h2></div>
+          <p>Every stored rating and written answer remains associated with its game, collection mode, faction, Leader, and result or remembered context.</p>
         </div>
         <div id="writtenFeedback" class="written-feedback"></div>
       </section>
@@ -158,7 +158,7 @@
       <section class="analysis-panel" aria-labelledby="games-title">
         <div class="section-heading split-heading">
           <div><p class="eyebrow">Complete records</p><h2 id="games-title">Games in this research slice.</h2></div>
-          <p>Expand a game to inspect its result, both questionnaires, Arbiter questions, and recorded timeline.</p>
+          <p>Expand a game to inspect complete questionnaires, the shared result or standalone context, Arbiter questions, and recorded timeline.</p>
         </div>
         <div id="gameRecords" class="game-records"></div>
       </section>
@@ -170,6 +170,7 @@
     <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
   </footer>
 
+  <script src="complete-responses.js?v=20260804-1" defer></script>
   <script src="app.js?v=20260802-1" defer></script>
 </body>
 </html>

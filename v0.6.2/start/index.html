@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-8YYYZJGGPE');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="description" content="Choose a Gauntlet v0.6.2 faction and Leader and load an approved first-game Deck." />
+  <title>Start Gauntlet v0.6.2</title>
+  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
+  <link rel="stylesheet" href="../styles.css" />
+</head>
+<body>
+  <div class="release-banner"><strong>v0.6.2</strong> · current canonical playtest edition</div>
+  <header class="site-header">
+    <a class="brand" href="../"><span class="brand-mark">G</span><span>Gauntlet</span></a>
+    <nav><a href="#shared">Shared game</a><a href="#choose">Choose</a><a href="#battle">Battle</a><a href="../deckbuilder/">Deckbuilder</a><a href="../reference/">Reference</a></nav>
+  </header>
+  <main class="shell">
+    <section class="hero">
+      <div><p class="eyebrow">First-game path</p><h1>Learn the game in layers.</h1><p class="lede">First learn the shared turn and one ordinary battle. Then learn your own faction. Finally read only the public information needed to play against the opponent.</p></div>
+      <aside class="panel"><p class="eyebrow">Teaching order</p><ol><li>The shared game</li><li>Your faction and Leader</li><li>The opponent summary</li></ol><p class="muted">Do not read both complete faction guides before playing.</p></aside>
+    </section>
+
+    <section id="shared" class="section">
+      <div class="section-heading"><div><p class="eyebrow">Layer 1</p><h2>The shared turn</h2></div><p>Take one Action during either Opening or Denouement. An additional Action does not by itself permit two Actions in one phase.</p></div>
+      <article class="panel"><p class="sequence">Capture → Draw → Opening → Movement → Denouement → Cleanup</p><div class="grid"><div><h3>Capture</h3><p>Add the next opposing Territory immediately beyond your Front Line if your token is on or beyond it. Normal Capture advances the Front Line by at most one Territory.</p></div><div><h3>Opening</h3><p>Take your Action now, or save it.</p></div><div><h3>Movement</h3><p>Advance, Hold, or Fall Back. Entering the opponent's Position creates a pending battle and ends that Movement sequence.</p></div><div><h3>Denouement</h3><p>Take your Action now if you did not take it during Opening.</p></div></div></article>
+    </section>
+
+    <section id="choose" class="section">
+      <div class="section-heading"><div><p class="eyebrow">Layer 2</p><h2>Choose your faction and Leader</h2></div><p>Each Leader has an exact 30-card, 60-value starter Deck built from the full v0.6.2 pool.</p></div>
+      <div id="loading" class="panel">Loading published v0.6.2 data…</div>
+      <div id="choiceApp" class="hidden">
+        <div id="factionChoices" class="choice-grid" role="radiogroup" aria-label="Faction"></div>
+        <section id="leaderSection" class="section hidden"><h3>Choose a Leader</h3><div id="leaderChoices" class="choice-grid"></div></section>
+        <section id="selection" class="section hidden"><div class="split"><article class="panel"><p class="eyebrow">Your faction</p><h2 id="selectionTitle"></h2><div id="ownFaction"></div></article><aside class="panel"><p class="eyebrow">Approved starter</p><h2 id="starterTitle"></h2><p id="starterSummary"></p><p id="starterOpening"></p><p id="starterTip"></p><p><strong>Territories:</strong> <span id="starterTerritories"></span></p><div class="actions"><button id="openDeckbuilder">Load this Deck</button></div></aside></div></section>
+      </div>
+    </section>
+
+    <section id="opponent" class="section">
+      <div class="section-heading"><div><p class="eyebrow">Layer 3</p><h2>What the opponent needs to know</h2></div><p>These parallel summaries expose public decision-relevant information without teaching the opponent's entire faction procedure.</p></div>
+      <div id="opponentCards" class="grid"></div>
+    </section>
+
+    <section id="battle" class="section">
+      <div class="section-heading"><div><p class="eyebrow">Guided demonstration</p><h2>Run one battle before the game begins</h2></div><p>Physically keep Hand, Gambit, Reserve, and Tactic separate.</p></div>
+      <article class="panel"><p class="sequence">Pending battle → Terms → Onset → set Gambits → form Reserves → reveal Gambits → choose Tactics → reveal Tactics → Outcome → Aftermath</p><ol><li>Put both tokens on the same Position and identify attacker and defender.</li><li>Demonstrate that accepted Terms stop before Onset; otherwise begin the battle.</li><li>Set one optional Gambit from Hand.</li><li>Draw a three-card private Reserve and choose one optional Tactic.</li><li>Reveal, resolve, roll, and compare totals.</li><li>Use Defensive Edge only when the defender has it. If the tie remains, make a separate unmodified Tiebreak Roll.</li><li>Retreat the loser, establish Occupation, resolve the remaining Aftermath, and clear cards.</li></ol><p><strong>Movement reminder:</strong> Fall Back is ordinary Movement. A losing player retreats. A player who leaves without losing withdraws.</p></article>
+    </section>
+
+    <section class="section"><div class="section-heading"><div><p class="eyebrow">Physical clarity</p><h2>Zones and bound cards</h2></div></div><div class="grid"><article class="card"><h3>Battle zones</h3><p class="sequence">Hand → Gambit | Reserve → Tactic</p><p>Reserve is temporary and private but is never part of Hand. Unchosen Reserve cards do not become Tactics.</p></article><article class="card"><h3>Bound cards</h3><p><strong>BOUND — outside Hand, Draw Pile, Discard Pile, Graveyard, Reserve, Tactic, and Asset Bank.</strong></p><p>A bound card can be moved or affected only by the effect that binds it.</p></article><article class="card"><h3>Active-player marker</h3><p><strong>YOUR TURN</strong><br />Capture → Draw → Opening → Movement → Denouement → Cleanup</p><p>Pass it after Cleanup. It tracks neither battle initiative nor Actions remaining.</p></article></div></section>
+  </main>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

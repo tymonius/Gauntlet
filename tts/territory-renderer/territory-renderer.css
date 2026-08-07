@@ -1,0 +1,30 @@
+@import url('/card-design/territory-card.css');
+
+* {
+  box-sizing: border-box;
+  font-synthesis: none;
+}
+
+:root {
+  --card-ivory: #eee7d5;
+  --card-parchment: #e6d4ae;
+  --card-ink: #241c15;
+  --card-muted-ink: #5c4d3e;
+  --card-keyline: #3d3024;
+  --card-shadow: rgba(38, 28, 20, 0.22);
+  --arena-crimson: #7e2027;
+}
+
+html,
+body {
+  width: max-content;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  background: transparent;
+}
+
+#renderTarget {
+  width: 3.5in;
+  height: 2.5in;
+}

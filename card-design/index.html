@@ -15,8 +15,8 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
   <meta name="robots" content="noindex,nofollow" />
-  <meta name="description" content="Internal Gauntlet playable-card front prototype covering adaptive Neutral layouts and the Territory Overlay variant." />
-  <title>Gauntlet Playable Card-Front Prototype</title>
+  <meta name="description" content="Internal Gauntlet card-front prototype covering adaptive playable cards, Territory Overlays, and landscape Territory cards." />
+  <title>Gauntlet Card-Front Prototypes</title>
   <link rel="preconnect" href="https://use.typekit.net" />
   <link rel="preconnect" href="https://p.typekit.net" crossorigin />
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="card-design.css" />
   <link rel="stylesheet" href="card-design-refinement.css" />
   <link rel="stylesheet" href="faction-specimens.css" />
+  <link rel="stylesheet" href="territory-card.css" />
   <style>
     @media screen {
       .card-sheet {
@@ -55,6 +56,43 @@
       letter-spacing: 0.12em;
       text-align: center;
     }
+
+    .territory-specimen-section {
+      padding-top: 0;
+    }
+
+    .territory-specimen-wrap {
+      width: max-content;
+      max-width: calc(100vw - 2rem);
+      margin-inline: auto;
+      padding: 0 1rem 1.2rem;
+    }
+
+    .territory-specimen-label {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.8rem;
+      margin: 0 0 0.65rem;
+      color: var(--page-muted);
+      font-family: var(--font-interface);
+      font-size: 0.62rem;
+    }
+
+    .territory-specimen-label strong {
+      color: var(--page-ink);
+      font-size: 0.7rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    @media screen {
+      .territory-specimen-wrap .territory-card {
+        box-shadow:
+          0 0.16in 0.36in var(--card-shadow),
+          inset 0 0 0 0.015in rgba(255, 255, 255, 0.42);
+      }
+    }
   </style>
   <script src="card-design.js" defer></script>
 </head>
@@ -72,14 +110,14 @@
 
   <main>
     <section class="intro section-shell screen-only">
-      <p class="eyebrow">Playable card system · adaptive frame study</p>
-      <h1>Playable card-front prototype</h1>
-      <p class="intro-copy">This pass compares the adaptive Neutral card composition with the Territory Overlay variant. Ordinary cards expand their illustration toward an aesthetic maximum, while Overlay cards retain the portrait face and add a faction-colored title rail that remains readable when the card is turned sideways across a Territory.</p>
+      <p class="eyebrow">Card system · adaptive frame study</p>
+      <h1>Card-front prototypes</h1>
+      <p class="intro-copy">This pass compares the adaptive playable-card composition, the Territory Overlay variant, and the landscape Territory frame. All three use the same ivory shell, parchment field, historical display face, rules typography, artwork framing, and footer grammar.</p>
       <div class="status-row" aria-label="Prototype status">
-        <span>2.5 × 3.5 in trim</span>
+        <span>2.5 × 3.5 in playable cards</span>
+        <span>3.5 × 2.5 in Territories</span>
         <span>Actual-size print test</span>
-        <span>Adaptive art window</span>
-        <span>Two-column rules</span>
+        <span>Adaptive art windows</span>
         <span>Overlay title rail</span>
       </div>
     </section>
@@ -92,15 +130,15 @@
       <div class="review-grid">
         <article>
           <h3>Adaptive composition</h3>
-          <p>The framed illustration uses the largest approved height that the rules permit. Dense cards reduce art before reducing otherwise readable text.</p>
+          <p>The framed illustration uses the largest approved size that the rules permit. Dense cards reduce art before reducing otherwise readable text.</p>
         </article>
         <article>
           <h3>Rules hierarchy</h3>
-          <p>Action and Battle labels occupy a fixed left column while Adobe Caslon rules align in a wider right column. Reminders remain Caslon italic.</p>
+          <p>Action and Battle labels occupy a fixed left column while Adobe Caslon rules align in a wider right column. Territory effects use the same reading face in a full-width panel below the artwork.</p>
         </article>
         <article>
-          <h3>Header geometry</h3>
-          <p>Titles remain all caps at one primary scale. The value medallion shares the art frame's right alignment and equal top inset.</p>
+          <h3>Shared identity</h3>
+          <p>Playable cards and Territories share the ivory shell, layered keylines, parchment, title face, artwork frame, and restrained three-part footer.</p>
         </article>
         <article>
           <h3>Overlay identification</h3>
@@ -112,8 +150,8 @@
     <section class="card-section" aria-labelledby="cards-title">
       <div class="section-shell card-section-heading screen-only">
         <p class="section-label">Print and compare</p>
-        <h2 id="cards-title">Four layout conditions</h2>
-        <p>The same system adapts its illustration height to each card. The first three specimens use finished artwork to test sparse, dense, and reminder layouts; Encampment adds the Territory Overlay rail and its three-section rules structure while its illustration remains pending.</p>
+        <h2 id="cards-title">Four playable-card conditions</h2>
+        <p>The same portrait system adapts its illustration height to each card. The first three specimens use finished artwork to test sparse, dense, and reminder layouts; Encampment adds the Territory Overlay rail and its three-section rules structure while its illustration remains pending.</p>
       </div>
 
       <div class="card-sheet">
@@ -247,6 +285,38 @@
       </div>
     </section>
 
+    <section class="card-section territory-specimen-section" aria-labelledby="territory-title">
+      <div class="section-shell card-section-heading screen-only">
+        <p class="section-label">Landscape component</p>
+        <h2 id="territory-title">Territory card mockup</h2>
+        <p>The Territory frame is the normal Gauntlet visual system turned landscape: the title remains across the top, a framed illustration spans the card beneath it, the printed effect occupies a full-width panel across the bottom, and the familiar footer closes the card. Dense Territory text reduces artwork height only as much as necessary.</p>
+      </div>
+
+      <div class="territory-specimen-wrap">
+        <p class="territory-specimen-label screen-only"><strong>High Ground</strong><span>Landscape sibling · artwork pending</span></p>
+        <article class="territory-card" style="--parchment-image: url('../images/artwork/card-backgrounds/neutral-parchment-v2.png');" aria-label="High Ground Territory card-front prototype">
+          <div class="territory-interior">
+            <header class="territory-heading">
+              <h3 class="territory-title">High Ground</h3>
+            </header>
+            <div class="territory-body">
+              <figure class="territory-art" aria-label="High Ground Territory artwork">
+                <span>Artwork pending</span>
+              </figure>
+              <section class="territory-effect" aria-label="Territory effect">
+                <p>The defending player in a battle on High Ground gains advantage.</p>
+              </section>
+            </div>
+            <footer class="territory-footer">
+              <span>Territory</span>
+              <span>Basic</span>
+              <span>v0.6.1</span>
+            </footer>
+          </div>
+        </article>
+      </div>
+    </section>
+
     <section class="evaluation section-shell screen-only" aria-labelledby="evaluation-title">
       <div>
         <p class="section-label">Physical review</p>
@@ -254,12 +324,12 @@
       </div>
       <ol>
         <li>Whether each illustration reaches a satisfying size without forcing the rules below a comfortable reading threshold.</li>
-        <li>Whether the three finished paintings integrate naturally with the ivory border, parchment field, and restrained frame.</li>
-        <li>Whether all-caps P22 1722 gives the cards a stronger common silhouette without making long titles feel compressed.</li>
-        <li>Whether Counterintelligence now reads at the same title scale as the other cards.</li>
+        <li>Whether the finished paintings integrate naturally with the ivory border, parchment field, and restrained frame.</li>
+        <li>Whether all-caps P22 1722 gives the cards a strong common silhouette without making long titles feel compressed.</li>
         <li>Whether the Action and Battle columns align cleanly and remain easier to scan than a single full-width rules column.</li>
         <li>Whether the value medallion feels anchored by its shared alignment with the illustration frame.</li>
         <li>Whether Encampment remains legible both upright and sideways, and whether the widened Military rail is prominent without overwhelming the ordinary card face.</li>
+        <li>Whether High Ground reads as an unmistakable landscape sibling of the playable cards, with its artwork spanning the card and its short effect using only the space it needs.</li>
       </ol>
     </section>
   </main>

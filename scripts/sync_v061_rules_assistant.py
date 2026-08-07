@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Synchronize and validate the governing v0.6.1 Rules Arbiter sources.
+"""Validate the preserved v0.6.1 Rules Arbiter after public-version cutover.
 
-The deployed service runs through the integrated administrative entry. Live
-rulings now use deterministic canonical answers first, explicit rule packets
-for remaining interactions, and at most one model answer pass by default.
+The public widget may advance to a later release. Historical v0.6.1 integrity is
+therefore established by the immutable worker, its canonical retrieval source,
+and the explicit versioned route in the integrated dispatcher—not by requiring
+the public widget to remain pinned to v0.6.1 forever.
 """
 
 from __future__ import annotations
@@ -24,12 +25,6 @@ WRANGLER = ROOT / "rules-assistant" / "wrangler.toml"
 WIDGET = ROOT / "rules-assistant" / "widget.js"
 LOCAL_SEARCH = ROOT / "rules-assistant" / "local-search.js"
 VERSION = "v0.6.1"
-
-
-def synchronize_browser_source(path: Path) -> str:
-    text = path.read_text(encoding="utf-8").replace("v0.6.0", VERSION)
-    path.write_text(text, encoding="utf-8")
-    return text
 
 
 def require_markers(errors: list[str], label: str, text: str, markers: list[str]) -> None:
@@ -55,7 +50,7 @@ def validate(
 
     require_markers(
         errors,
-        "Governing Rules Arbiter worker",
+        "Governing v0.6.1 Rules Arbiter worker",
         worker,
         [
             'const RULES_VERSION = "v0.6.1"',
@@ -68,7 +63,7 @@ def validate(
         ],
     )
     if "v0.6.0" in worker:
-        errors.append("Governing Rules Arbiter worker still identifies v0.6.0")
+        errors.append("Governing v0.6.1 worker still identifies v0.6.0")
 
     require_markers(
         errors,
@@ -140,7 +135,7 @@ def validate(
 
     require_markers(
         errors,
-        "Deterministic Rules Arbiter layer",
+        "Deterministic v0.6.1 Rules Arbiter layer",
         rules_deterministic,
         [
             "export function resolveDeterministicRuling",
@@ -179,6 +174,9 @@ def validate(
             'import { ADMIN_PAGE_WITH_RULES_INTELLIGENCE } from "./admin-intelligence-page.js"',
             'import { handleReviewExportCheckpoint } from "./review-export-checkpoint.js"',
             'import { handleReviewIntelligence } from "./review-intelligence.js"',
+            'url.pathname === "/api/v061/rules"',
+            'url.pathname === "/api/v061/health"',
+            'return worker.fetch(new Request(legacyUrl, request), env, context);',
             "/api/admin/review-export-checkpoint",
             "/api/admin/review-corpus",
             "/api/admin/review-audits",
@@ -201,52 +199,41 @@ def validate(
         ],
     )
 
-    browser_checks = {
-        "rules-assistant/widget.js": (
-            widget,
-            ['version: "v0.6.1"', "playtestSessionId", "sheetSerial"],
-        ),
-        "rules-assistant/local-search.js": (
-            local_search,
-            [
-                "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json",
-                "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md",
-            ],
-        ),
-    }
-    for label, (text, markers) in browser_checks.items():
-        if "v0.6.0" in text:
-            errors.append(f"{label} still identifies v0.6.0")
-        require_markers(errors, label, text, list(markers))
+    require_markers(
+        errors,
+        "Current Rules Arbiter widget",
+        widget,
+        ["playtestSessionId", "sheetSerial"],
+    )
+    require_markers(
+        errors,
+        "Historical v0.6.1 local search",
+        local_search,
+        [
+            "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json",
+            "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md",
+        ],
+    )
+    if "v0.6.0" in local_search:
+        errors.append("Historical v0.6.1 local search still identifies v0.6.0")
 
     return errors
 
 
 def main() -> int:
     try:
-        worker = GOVERNING_WORKER.read_text(encoding="utf-8")
-        smart_worker = SMART_WORKER.read_text(encoding="utf-8")
-        rules_intelligence = RULES_INTELLIGENCE.read_text(encoding="utf-8")
-        rules_openai = RULES_OPENAI.read_text(encoding="utf-8")
-        rules_packets = RULES_PACKETS.read_text(encoding="utf-8")
-        rules_deterministic = RULES_DETERMINISTIC.read_text(encoding="utf-8")
-        review_intelligence = REVIEW_INTELLIGENCE.read_text(encoding="utf-8")
-        worker_entry = WORKER_ENTRY.read_text(encoding="utf-8")
-        wrangler = WRANGLER.read_text(encoding="utf-8")
-        widget = synchronize_browser_source(WIDGET)
-        local_search = synchronize_browser_source(LOCAL_SEARCH)
         errors = validate(
-            worker,
-            smart_worker,
-            rules_intelligence,
-            rules_openai,
-            rules_packets,
-            rules_deterministic,
-            review_intelligence,
-            worker_entry,
-            wrangler,
-            widget,
-            local_search,
+            GOVERNING_WORKER.read_text(encoding="utf-8"),
+            SMART_WORKER.read_text(encoding="utf-8"),
+            RULES_INTELLIGENCE.read_text(encoding="utf-8"),
+            RULES_OPENAI.read_text(encoding="utf-8"),
+            RULES_PACKETS.read_text(encoding="utf-8"),
+            RULES_DETERMINISTIC.read_text(encoding="utf-8"),
+            REVIEW_INTELLIGENCE.read_text(encoding="utf-8"),
+            WORKER_ENTRY.read_text(encoding="utf-8"),
+            WRANGLER.read_text(encoding="utf-8"),
+            WIDGET.read_text(encoding="utf-8"),
+            LOCAL_SEARCH.read_text(encoding="utf-8"),
         )
     except OSError as exc:
         print(f"Rules Arbiter synchronization failed: {exc}", file=sys.stderr)
@@ -259,10 +246,10 @@ def main() -> int:
         return 1
 
     print(
-        "Synchronized Rules Arbiter browser sources and validated the canonical "
-        "v0.6.1 worker, deterministic answers, explicit rule packets, structured "
-        "subject continuity, cost-controlled model fallback, version-aware review "
-        "pipeline, integrated entry, and formal-playtest linkage."
+        "Validated the preserved v0.6.1 worker, deterministic answers, explicit "
+        "rule packets, canonical retrieval sources, formal-playtest linkage, and "
+        "explicit historical dispatcher routes without pinning the current public "
+        "widget to v0.6.1."
     )
     return 0
 
