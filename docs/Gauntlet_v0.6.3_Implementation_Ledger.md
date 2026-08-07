@@ -121,16 +121,26 @@ Because both discards occur before the first-player roll:
 
 ### 4.4 Battle-start gameplay habit
 
-The v0.6.3 Rulebook should teach players to pause at Onset and make two quick checks before proceeding into the rest of the battle:
+The v0.6.3 player-facing materials should teach a simple routine whenever a battle begins:
 
 1. review the contested Territory for effects that may apply; and
-2. review the Assets they control and decide whether any may be useful during the battle.
+2. review the Assets the player controls and consider whether any may be useful during the battle.
 
-Use this player-facing wording:
+This is a gameplay habit, not a new rule, timing window, permission, or battle step.
 
-> **Good battle habit:** When a battle begins, review the contested Territory for effects that may apply, then review the Assets you control and decide whether you intend to use any of them during the battle. This is a reminder, not a new timing window; use each effect only at its stated timing.
+**Primary placement — First Game Guide / Learn to Play:** teach the habit during the first ordinary battle demonstration and repeat it in the shared tableside battle reference immediately before or with Onset.
 
-This is instructional guidance, not a new rule, timing window, permission, or battle step. Its purpose is to reduce missed optional effects and help players develop a reliable battle routine.
+Use this teaching wording:
+
+> **Battle habit:** Whenever a battle begins, first check the contested Territory for any effect that may apply. Then check your Asset Bank and consider whether any of your Assets may be useful in this battle. Use each effect only at its stated timing.
+
+**Secondary placement — complete Rulebook:** add a visually distinct callout near Onset or the beginning of the battle sequence. Do not make it a numbered procedure.
+
+Use this compact callout wording:
+
+> **Battle Habit:** At the start of a battle, check the contested Territory and your Assets for relevant effects. This is only a reminder; it does not create a new timing window or let you use an effect outside its stated timing.
+
+The purpose is to reduce missed optional effects and help players develop a reliable battle routine without changing battle timing.
 
 ---
 
@@ -187,9 +197,9 @@ At minimum, audit:
    - immediate-capture and follow-up-movement compatibility audit.
 
 3. **Player-facing layer**
-   - complete Rulebook, including the Onset battle-start gameplay reminder;
+   - complete Rulebook, including a non-normative Battle Habit callout near Onset or the battle sequence;
+   - First Game Guide / Learn to Play material, including the fuller taught battle-start habit during the ordinary-battle walkthrough and shared battle reference;
    - compact Reference Guide;
-   - First Game Guide;
    - returning-player changes;
    - playtest and tableside references.
 
@@ -227,6 +237,7 @@ The v0.6.3 implementation is not complete until:
 - immediate-capture effects can legally win on the final Territory;
 - Last Stand access does not require prior control of the final Territory;
 - a separate legal movement sequence is still required after the battle that forces the opponent beyond the Gauntlet;
-- the v0.6.3 Rulebook includes the non-normative battle-start reminder at Onset without creating a new timing window;
+- the v0.6.3 First Game Guide / Learn to Play material teaches the battle-start Territory-and-Assets check;
+- the v0.6.3 Rulebook includes the same habit as a non-normative callout near the battle sequence without creating a new timing window;
 - all affected Leader, faction, card, Territory, Rules Arbiter, and digital interactions are tested; and
 - the published v0.6.2 package remains unchanged.
