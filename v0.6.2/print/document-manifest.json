@@ -1,0 +1,36 @@
+{
+  "version": "v0.6.2",
+  "status": "published",
+  "generated_from": [
+    {
+      "key": "rulebook",
+      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md",
+      "output": "v0.6.2/print/rulebook.html",
+      "page_size": "5.5in 8.5in"
+    },
+    {
+      "key": "reference",
+      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Reference_Guide.md",
+      "output": "v0.6.2/print/reference-guide.html",
+      "page_size": "Letter portrait"
+    },
+    {
+      "key": "first-game",
+      "source": "releases/v0.6.2/Gauntlet_v0.6.2_First_Game_Guide.md",
+      "output": "v0.6.2/print/first-game-guide.html",
+      "page_size": "Letter portrait"
+    },
+    {
+      "key": "faction-guide",
+      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md",
+      "output": "v0.6.2/print/faction-guide.html",
+      "page_size": "Letter portrait"
+    },
+    {
+      "key": "changes",
+      "source": "releases/v0.6.2/Gauntlet_v0.6.2_Returning_Player_Changes.md",
+      "output": "v0.6.2/print/returning-player-changes.html",
+      "page_size": "Letter portrait"
+    }
+  ]
+}

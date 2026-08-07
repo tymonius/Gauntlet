@@ -1,0 +1,38 @@
+# One-use synchronization helper; removes itself after restoring the files.
+name: Restore unrelated v0.6.0 binaries for PR 510
+
+on:
+  push:
+    branches:
+      - agent/v062-printed-materials
+    paths:
+      - .github/workflows/restore-pr510-v060-binaries.yml
+
+permissions:
+  contents: write
+
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: agent/v062-printed-materials
+          fetch-depth: 0
+
+      - name: Restore legacy v0.6.0 release binaries from main
+        run: |
+          git fetch origin main
+          git checkout origin/main -- \
+            releases/v0.6.0/Gauntlet_v0.6.0_Reference_Guide.docx \
+            releases/v0.6.0/Gauntlet_v0.6.0_Reference_Guide.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.docx \
+            releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Rulebook_Booklet.pdf \
+            releases/v0.6.0/Gauntlet_v0.6.0_Rulebook_Booklet_Print.pdf
+          git rm .github/workflows/restore-pr510-v060-binaries.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Restore unrelated v0.6.0 release binaries"
+          git push origin HEAD:agent/v062-printed-materials

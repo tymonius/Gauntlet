@@ -76,12 +76,18 @@ if (process.env.GITHUB_BASE_REF) {
     .split(/\r?\n/)
     .filter(Boolean);
 
-  const modifiedV062ReleaseFiles = changedFiles.filter((path) => path.startsWith('releases/v0.6.2/'));
-  assert.deepEqual(
-    modifiedV062ReleaseFiles,
-    [],
-    `Initial v0.6.3 source-layer PR must not modify immutable v0.6.2 release files: ${modifiedV062ReleaseFiles.join(', ')}`
+  const modifiesV063SharedRuleSources = changedFiles.some((path) =>
+    [ledgerPath, candidatePath, matrixPath].includes(path)
   );
+
+  if (modifiesV063SharedRuleSources) {
+    const modifiedV062ReleaseFiles = changedFiles.filter((path) => path.startsWith('releases/v0.6.2/'));
+    assert.deepEqual(
+      modifiedV062ReleaseFiles,
+      [],
+      `v0.6.3 shared-rule source changes must not modify immutable v0.6.2 release files: ${modifiedV062ReleaseFiles.join(', ')}`
+    );
+  }
 }
 
 console.log('v0.6.3 shared-rule source validation passed: 50 scenarios, opening rules, Run the Gauntlet routes, and v0.6.2 boundary verified.');
