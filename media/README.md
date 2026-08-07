@@ -22,15 +22,17 @@ The exporter renders one 1500 × 2100 master from the live HTML/CSS card compone
 
 ## Compositions
 
-`media/compositions.json` defines reusable multi-card arrangements. Each composition references canonical card IDs and consumes the matching generated card profile. The first composition is `financiers-fanned-hand`, using:
+`media/compositions.json` defines reusable multi-card arrangements. Each composition references canonical card IDs and consumes the matching generated card profile.
 
-- `neutral-scouting-report`
-- `financiers-leveraged-buyout`
-- `financiers-corner-the-market`
-- `financiers-monetary-crisis`
-- `neutral-sabotage`
+The current artwork-led compositions are:
 
-It exports a transparent five-card fan in three profiles:
+- `financiers-fanned-hand`: Scouting Report, Leveraged Buyout, Corner the Market, Monetary Crisis, and Sabotage;
+- `neutral-battlefront-spread`: Bombardment, Rallying Cry, Invasion, Valor, and Scorched Earth; and
+- `intelligence-intrigue-stack`: Counterintelligence, Spies, Assassins, Sedition, and Sabotage.
+
+The battlefront composition uses a broad, shallow spread to feature the vivid sunset, fire, banners, and battlefield artwork. The Intelligence composition is a tighter stack with a darker charcoal, blue, and lamplit palette. Both remain legal-looking faction-plus-Neutral groups rather than arbitrary cross-faction collages.
+
+Every composition exports with a transparent background in three profiles:
 
 | Profile | Dimensions | Formats |
 |---|---:|---|
@@ -84,6 +86,6 @@ media/generated/v0.6.1/
 
 ## Current scope
 
-The card-media pass covers all 122 playable cards. The composition system currently contains the first approved five-card fan and is designed to accept additional hands, stacks, battle reveals, and other website or publication arrangements without creating independent card artwork.
+The card-media pass covers all 122 playable cards. The composition system currently contains three approved five-card treatments and is designed to accept additional hands, stacks, battle reveals, and other website or publication arrangements without creating independent card artwork.
 
 Territories remain cataloged by the shared canonical parser but require their own component renderer and are not forced into the playable-card frame.
