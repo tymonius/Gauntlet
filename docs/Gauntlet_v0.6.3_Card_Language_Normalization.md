@@ -1,6 +1,6 @@
 # Gauntlet v0.6.3 Card-Language Normalization
 
-**Status:** Shared normalization complete through compact shorthand; bespoke density pass follows  
+**Status:** Shared normalization complete through compact shorthand with natural Advantage wording; bespoke density pass follows  
 **Release tracker:** [Issue #528](https://github.com/tymonius/Gauntlet/issues/528)  
 **Card review:** [Issue #405](https://github.com/tymonius/Gauntlet/issues/405)  
 **Deck terminology:** [Issue #539](https://github.com/tymonius/Gauntlet/issues/539)
@@ -9,7 +9,7 @@
 
 Normalize the complete 128-card published v0.6.2 pool before bespoke card compression so the density ranking reflects actual card-specific burden rather than repeated rules prose.
 
-The generated v0.6.3 candidates are development artifacts only. The immutable published v0.6.2 package is read as the baseline and is never modified.
+The generated v0.6.3 candidates are development artifacts only. The immutable published v0.6.2 package is the baseline and is never modified.
 
 ## Terminology
 
@@ -17,9 +17,9 @@ For v0.6.3:
 
 - **Deck** means the constructed set of ordinary cards selected under Deck-construction rules.
 - **Draw Pile** means the shuffled in-play pile formed from the Deck during setup.
-- The former broader use of `deck` for a player's Deck plus Leader, Territories, faction supplements, and other components is retired without a replacement formal umbrella term.
+- The former broader use of `deck` for a player's complete collection of game materials is retired without a replacement formal umbrella term.
 
-## Five-stage normalization build
+## Six-stage normalization build
 
 ### 1. Conservative automatic conventions
 
@@ -46,63 +46,73 @@ This stage reduces the published pool from **8,108 to 7,840 words** and **47,085
 
 ### 4. Reserve/Tactic numeric shorthand
 
-`scripts/apply-v063-numeric-shorthand.mjs` introduces the first signed modifiers:
+`scripts/apply-v063-numeric-shorthand.mjs` introduces:
 
 - `+N Reserve` / `−N Reserve`;
-- `+N Tactic`;
+- `+N Tactic`; and
 - Reserve as the default Tactic source, with another source printed only when it overrides or narrows the default.
 
-### 5. Compact shorthand and final shared-rule cleanup
+### 5. Broader compact shorthand and shared cleanup
 
-`scripts/apply-v063-compact-shorthand.mjs` applies the adopted broader shorthand only where timing, subject, source, optionality, and eligible set remain exact:
+`scripts/apply-v063-compact-shorthand.mjs` applies the broader adopted shorthand only where timing, subject, source, optionality, and eligible set remain exact:
 
 - `+N Card(s)`;
 - `+N Action`;
 - positive fixed resource gains such as `+2 Capital`;
 - `+N Battle Total`;
 - `Retreat +N`;
-- `Advantage`, `Double Advantage`, and `Disadvantage`;
 - set-value notation such as `Command = 2`;
 - `Advance Front Line N`;
 - concise condition prefixes such as `Attacker —`, `Defender —`, `Counterattack —`, `Win —`, and `Lose —`; and
 - the shared rule that a reroll uses the new result unless expressly stated otherwise.
 
-This stage also repairs and validates the malformed intermediate **Sanctions: Blockade** phrases produced by the earlier Sanctions reducer, preventing them from reaching the final candidate.
+This stage also repairs and validates the malformed intermediate **Sanctions: Blockade** phrases produced by the earlier Sanctions reducer.
 
-The complete shorthand semantics are governed by `docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md`.
+### 6. Natural Advantage/Disadvantage wording
 
-## Intentional residuals and limits
+`scripts/apply-v063-natural-advantage-wording.mjs` restores natural card-facing instructions after the mechanical shorthand pass:
 
-Shorthand is not applied blindly.
+- `gain advantage`;
+- `gain double advantage`; and
+- `gain disadvantage` / `opponent gains disadvantage` as grammatically appropriate.
 
-Examples of information that remains explicit when necessary include:
+Advantage is **not** treated as a bare status label on cards. The underlying mechanic remains instance-based and stackable: every source grants its stated number of Advantage or Disadvantage instances; opposing instances cancel one-for-one; surviving instances determine how many dice are rolled.
 
-- optional compound procedures where a bare numeric modifier would obscure optionality;
+`scripts/validate-v063-advantage-stacking.mjs` compares all 18 Advantage/Disadvantage-granting effects before and after compression and fails if any effect changes the number of instances it grants.
+
+The complete shorthand and Advantage semantics are governed by `docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md`.
+
+## Intentional limits
+
+Shorthand is not applied blindly. Keep natural language when compact notation would obscure:
+
+- optional compound procedures;
 - nondefault Tactic sources;
 - costs, payments, resource losses, and reductions;
 - unusual card destinations;
 - bespoke movement ordering and battle restrictions;
 - title-matching rules across copies;
-- delayed consequences whose later resolution depends on an earlier choice; and
+- delayed consequences dependent on an earlier choice; or
 - card-specific `if able`, timing, source, target, or replacement conditions.
 
 For example, **Rousing Speech** retains `you may draw one card, then discard one card` because the optional compound procedure is clearer than forcing `+1 Card` into that sentence. **Shock and Awe** retains the explicit Breakthrough retreat sequence because its ordering and legality condition are card-specific.
 
 ## Density sequence
 
-The v0.6.3 card review therefore proceeds in this order:
+The v0.6.3 card review proceeds in this order:
 
 1. safe automatic conventions;
 2. complete card-level convention review;
 3. general-rule centralization;
 4. Reserve/Tactic shorthand;
 5. broader compact shorthand and reroll cleanup;
-6. recalculate the complete 128-card density ranking;
-7. perform bespoke compression beginning with the remaining densest cards;
-8. review the rest of the pool for smaller card-specific improvements;
-9. distinguish actual mechanics changes from wording/shared-rule changes;
-10. propagate final approved text through canonical data, references, Deckbuilder, rendered cards, browser surfaces, Rules Arbiter, digital implementation, print/export surfaces, starter materials, tests, and governance; and
-11. render every changed card at production size and audit fit.
+6. natural Advantage/Disadvantage wording;
+7. recalculate the complete 128-card density ranking;
+8. perform bespoke compression beginning with the remaining densest cards;
+9. review the rest of the pool for smaller card-specific improvements;
+10. distinguish actual mechanics changes from wording/shared-rule changes;
+11. propagate final approved text through canonical data, references, Deckbuilder, rendered cards, browser surfaces, Rules Arbiter, digital implementation, print/export surfaces, starter materials, tests, and governance; and
+12. render every changed card at production size and audit fit.
 
 ## Approved mechanics-sensitive revisions already in scope
 
@@ -131,6 +141,8 @@ node scripts/finalize-v063-card-conventions.mjs
 node scripts/apply-v063-general-card-rules.mjs
 node scripts/apply-v063-numeric-shorthand.mjs
 node scripts/apply-v063-compact-shorthand.mjs
+node scripts/apply-v063-natural-advantage-wording.mjs
+node scripts/validate-v063-advantage-stacking.mjs
 ```
 
 The authoritative pre-bespoke outputs are:
@@ -138,7 +150,7 @@ The authoritative pre-bespoke outputs are:
 - `artifacts/v0.6.3/Gauntlet_v0.6.3_Compact_Shorthand_Normalized_Candidate.json`
 - `artifacts/v0.6.3/Gauntlet_v0.6.3_Compact_Shorthand_Density.md`
 
-Earlier-stage candidates and reports remain in the artifact for auditability.
+Earlier-stage candidates and reports remain in the workflow artifact for auditability.
 
 ## Acceptance before bespoke editing
 
@@ -149,7 +161,8 @@ This normalization phase is ready for bespoke editing when:
 - the v0.6.2 release files remain unchanged;
 - no unapproved convention residual remains;
 - no malformed Sanctions text reaches the final candidate;
+- natural Advantage/Disadvantage wording is preserved while stack counts remain identical;
 - all adopted shorthand has been applied only where semantically exact;
 - `Deck` / `Draw Pile` terminology is used in the final v0.6.3 candidate;
 - all normalization, Test, and Governance Integrity workflows pass; and
-- the compact-shorthand density report becomes the basis for bespoke card compression.
+- the final shared-normalization density report becomes the basis for bespoke card compression.
