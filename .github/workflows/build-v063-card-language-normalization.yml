@@ -45,6 +45,9 @@ jobs:
           }
           NODE
 
+      - name: Print convention-review summary
+        run: sed -n '1,/^## Complete per-card measurement/p' artifacts/v0.6.3/Gauntlet_v0.6.3_Card_Language_Density.md
+
       - name: Upload normalization candidate and density report
         uses: actions/upload-artifact@v4
         with:
