@@ -9,6 +9,7 @@ on:
       - 'scripts/build-v063-card-normalization.mjs'
       - 'scripts/finalize-v063-card-conventions.mjs'
       - 'scripts/apply-v063-general-card-rules.mjs'
+      - 'scripts/apply-v063-numeric-shorthand.mjs'
       - '.github/workflows/build-v063-card-language-normalization.yml'
       - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
   push:
@@ -19,6 +20,7 @@ on:
       - 'scripts/build-v063-card-normalization.mjs'
       - 'scripts/finalize-v063-card-conventions.mjs'
       - 'scripts/apply-v063-general-card-rules.mjs'
+      - 'scripts/apply-v063-numeric-shorthand.mjs'
       - '.github/workflows/build-v063-card-language-normalization.yml'
       - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
   workflow_dispatch:
@@ -47,11 +49,14 @@ jobs:
       - name: Apply centralized general card rules
         run: node scripts/apply-v063-general-card-rules.mjs
 
+      - name: Apply Reserve and Tactic numeric shorthand
+        run: node scripts/apply-v063-numeric-shorthand.mjs
+
       - name: Verify Deck terminology in final candidate
         run: |
           node --input-type=module <<'NODE'
           import { readFileSync } from 'node:fs';
-          const candidate = JSON.parse(readFileSync('artifacts/v0.6.3/Gauntlet_v0.6.3_General_Rules_Normalized_Candidate.json', 'utf8'));
+          const candidate = JSON.parse(readFileSync('artifacts/v0.6.3/Gauntlet_v0.6.3_Shorthand_Normalized_Candidate.json', 'utf8'));
           delete candidate.normalization;
           if (JSON.stringify(candidate).includes('Playable Deck')) {
             console.error('Obsolete Playable Deck terminology remains in v0.6.3 player-facing candidate content.');
@@ -59,8 +64,8 @@ jobs:
           }
           NODE
 
-      - name: Print final general-rules density summary
-        run: sed -n '1,/^## Complete 128-card measurement/p' artifacts/v0.6.3/Gauntlet_v0.6.3_General_Rules_Density.md
+      - name: Print final shorthand density summary
+        run: sed -n '1,/^## Complete 128-card measurement/p' artifacts/v0.6.3/Gauntlet_v0.6.3_Shorthand_Density.md
 
       - name: Upload normalization candidates and density reports
         uses: actions/upload-artifact@v4
