@@ -128,19 +128,26 @@ The v0.6.3 player-facing materials should teach a simple routine whenever a batt
 
 This is a gameplay habit, not a new rule, timing window, permission, or battle step.
 
-**Primary placement — First Game Guide / Learn to Play:** teach the habit during the first ordinary battle demonstration and repeat it in the shared tableside battle reference immediately before or with Onset.
+The two player-facing placements should deliberately use different language because they serve different functions.
 
-Use this teaching wording:
+**Primary placement — First Game Guide / Learn to Play:** explain and teach the habit during the first ordinary battle demonstration, before introducing the player's Gambit decision.
 
-> **Battle habit:** Whenever a battle begins, first check the contested Territory for any effect that may apply. Then check your Asset Bank and consider whether any of your Assets may be useful in this battle. Use each effect only at its stated timing.
+Use explanatory teaching language along these lines:
 
-**Secondary placement — complete Rulebook:** add a visually distinct callout near Onset or the beginning of the battle sequence. Do not make it a numbered procedure.
+> **Before you commit cards to a battle, look beyond your Hand. Read the contested Territory and scan your Asset Bank. Those effects are easy to overlook once Gambits, Reserves, and Tactics begin, and some may matter at different points in the battle. Check when each effect can be used before you act.**
 
-Use this compact callout wording:
+The shared tableside battle reference may restate the same lesson in its own instructional language rather than copying the complete Rulebook callout.
 
-> **Battle Habit:** At the start of a battle, check the contested Territory and your Assets for relevant effects. This is only a reminder; it does not create a new timing window or let you use an effect outside its stated timing.
+**Secondary placement — complete Rulebook:** use a compact visual memory cue near Onset or the beginning of the battle sequence. Do not make it a numbered procedure.
 
-The purpose is to reduce missed optional effects and help players develop a reliable battle routine without changing battle timing.
+Use a concise callout along these lines:
+
+> **DON'T FORGET THE BOARD**  
+> Before setting Gambits, scan the contested Territory and your Asset Bank for effects that could matter in this battle.
+
+The surrounding Rulebook text should state that this is only a reminder and does not alter battle timing or grant permission to use an effect.
+
+The purpose is to reduce missed optional effects and help players develop a reliable battle routine without duplicating instructional prose across player-facing materials.
 
 ---
 
@@ -197,8 +204,8 @@ At minimum, audit:
    - immediate-capture and follow-up-movement compatibility audit.
 
 3. **Player-facing layer**
-   - complete Rulebook, including a non-normative Battle Habit callout near Onset or the battle sequence;
-   - First Game Guide / Learn to Play material, including the fuller taught battle-start habit during the ordinary-battle walkthrough and shared battle reference;
+   - complete Rulebook, including a concise non-normative Battle Habit memory cue near Onset or the battle sequence;
+   - First Game Guide / Learn to Play material, including fuller explanatory teaching of the Territory-and-Assets habit during the ordinary-battle walkthrough;
    - compact Reference Guide;
    - returning-player changes;
    - playtest and tableside references.
@@ -237,7 +244,7 @@ The v0.6.3 implementation is not complete until:
 - immediate-capture effects can legally win on the final Territory;
 - Last Stand access does not require prior control of the final Territory;
 - a separate legal movement sequence is still required after the battle that forces the opponent beyond the Gauntlet;
-- the v0.6.3 First Game Guide / Learn to Play material teaches the battle-start Territory-and-Assets check;
-- the v0.6.3 Rulebook includes the same habit as a non-normative callout near the battle sequence without creating a new timing window;
+- the v0.6.3 First Game Guide / Learn to Play material teaches the battle-start Territory-and-Assets habit in explanatory teaching language;
+- the v0.6.3 Rulebook reinforces that habit with a distinct, concise, non-normative callout rather than repeating the same text;
 - all affected Leader, faction, card, Territory, Rules Arbiter, and digital interactions are tested; and
 - the published v0.6.2 package remains unchanged.
