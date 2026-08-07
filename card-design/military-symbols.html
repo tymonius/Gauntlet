@@ -27,7 +27,7 @@
   <link rel="stylesheet" href="leader-card.css" />
   <style>
     .symbol-review {
-      width: min(88rem, calc(100% - 2rem));
+      width: min(74rem, calc(100% - 2rem));
       margin: 0 auto;
       padding: 3.5rem 0 5rem;
     }
@@ -49,7 +49,7 @@
 
     .scale-grid {
       display: grid;
-      grid-template-columns: repeat(5, minmax(0, 1fr));
+      grid-template-columns: repeat(4, minmax(0, 1fr));
       gap: 1rem;
       margin-bottom: 2.5rem;
     }
@@ -91,24 +91,21 @@
     .candidate-arming { --review-symbol: url("../images/faction-symbols/candidates/military-arming-swords.svg"); }
     .candidate-heraldic { --review-symbol: url("../images/faction-symbols/candidates/military-heraldic-swords.svg"); }
     .candidate-command { --review-symbol: url("../images/faction-symbols/candidates/military-command-swords.svg"); }
-    .candidate-sabers { --review-symbol: url("../images/faction-symbols/candidates/military-cavalry-sabers.svg"); }
 
     .card-grid {
       display: grid;
-      grid-template-columns: repeat(5, 2.5in);
-      gap: .34in;
+      grid-template-columns: repeat(4, 2.5in);
+      gap: .38in;
       justify-content: center;
       width: max-content;
       max-width: 100%;
       margin: 0 auto;
     }
 
-    .candidate {
-      width: 2.5in;
-    }
+    .candidate { width: 2.5in; }
 
     .candidate-label {
-      min-height: 3rem;
+      min-height: 2.6rem;
       margin: 0 0 .55rem;
       font-family: var(--font-interface);
       font-size: .66rem;
@@ -126,14 +123,8 @@
     .candidate-arming .leader-card { --faction-symbol: url("../images/faction-symbols/candidates/military-arming-swords.svg"); }
     .candidate-heraldic .leader-card { --faction-symbol: url("../images/faction-symbols/candidates/military-heraldic-swords.svg"); }
     .candidate-command .leader-card { --faction-symbol: url("../images/faction-symbols/candidates/military-command-swords.svg"); }
-    .candidate-sabers .leader-card { --faction-symbol: url("../images/faction-symbols/candidates/military-cavalry-sabers.svg"); }
 
-    @media (max-width: 84rem) {
-      .scale-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-      .card-grid { grid-template-columns: repeat(3, 2.5in); }
-    }
-
-    @media (max-width: 54rem) {
+    @media (max-width: 70rem) {
       .scale-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       .card-grid { grid-template-columns: repeat(2, 2.5in); }
     }
@@ -148,23 +139,21 @@
 <body class="faction-specimen-page">
   <main class="symbol-review">
     <p class="eyebrow">Faction symbol review · Military</p>
-    <h1>Crossed-weapons construction</h1>
-    <p class="symbol-review-copy">The current mark is included as a baseline. The four candidates use solid silhouettes rather than thin stroked pieces. Candidate D introduces curved cavalry sabers to give the Military a more historically specific eighteenth-century command identity while preserving recognition at the 0.16-inch Leader-header size.</p>
+    <h1>Approved cavalry-saber mark</h1>
+    <p class="symbol-review-copy">Crossed cavalry sabers are now the production Military symbol. Their curved blades and protective guards give the faction a historically specific eighteenth-century command identity while remaining legible at the 0.16-inch Leader-header size. The earlier straight-sword alternatives remain below for comparison.</p>
 
     <section class="scale-grid" aria-label="Military symbol scale comparison">
-      <article class="scale-card candidate-current"><h2>Current baseline</h2><div class="scale-row"><span class="symbol-mask symbol-16"></span><span class="symbol-mask symbol-24"></span><span class="symbol-mask symbol-48"></span></div></article>
+      <article class="scale-card candidate-current"><h2>Production · Cavalry sabers</h2><div class="scale-row"><span class="symbol-mask symbol-16"></span><span class="symbol-mask symbol-24"></span><span class="symbol-mask symbol-48"></span></div></article>
       <article class="scale-card candidate-arming"><h2>A · Arming swords</h2><div class="scale-row"><span class="symbol-mask symbol-16"></span><span class="symbol-mask symbol-24"></span><span class="symbol-mask symbol-48"></span></div></article>
       <article class="scale-card candidate-heraldic"><h2>B · Heraldic swords</h2><div class="scale-row"><span class="symbol-mask symbol-16"></span><span class="symbol-mask symbol-24"></span><span class="symbol-mask symbol-48"></span></div></article>
       <article class="scale-card candidate-command"><h2>C · Command swords</h2><div class="scale-row"><span class="symbol-mask symbol-16"></span><span class="symbol-mask symbol-24"></span><span class="symbol-mask symbol-48"></span></div></article>
-      <article class="scale-card candidate-sabers"><h2>D · Cavalry sabers</h2><div class="scale-row"><span class="symbol-mask symbol-16"></span><span class="symbol-mask symbol-24"></span><span class="symbol-mask symbol-48"></span></div></article>
     </section>
 
     <section class="card-grid" aria-label="Military symbol Leader-card comparison">
-      <div class="candidate candidate-current"><p class="candidate-label"><strong>Current baseline</strong>Thin, separated construction.</p><div class="card-host"></div></div>
+      <div class="candidate candidate-current"><p class="candidate-label"><strong>Production · Cavalry sabers</strong>Curved blades and protective guards; historically specific and mobile.</p><div class="card-host"></div></div>
       <div class="candidate candidate-arming"><p class="candidate-label"><strong>A · Arming swords</strong>Balanced weight, straight guards, round pommels.</p><div class="card-host"></div></div>
       <div class="candidate candidate-heraldic"><p class="candidate-label"><strong>B · Heraldic swords</strong>Broad blades and angular furniture; strongest silhouette.</p><div class="card-host"></div></div>
       <div class="candidate candidate-command"><p class="candidate-label"><strong>C · Command swords</strong>Narrower blades with curved guards; more formal.</p><div class="card-host"></div></div>
-      <div class="candidate candidate-sabers"><p class="candidate-label"><strong>D · Cavalry sabers</strong>Curved blades and protective guards; historically specific and mobile.</p><div class="card-host"></div></div>
     </section>
   </main>
 

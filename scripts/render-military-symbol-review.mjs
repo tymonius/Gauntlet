@@ -52,7 +52,7 @@ async function main() {
 
   const { server, baseUrl } = await startStaticServer();
   const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({ viewport: { width: 1740, height: 1100 }, deviceScaleFactor: 2 });
+  const context = await browser.newContext({ viewport: { width: 1500, height: 1100 }, deviceScaleFactor: 2 });
   const page = await context.newPage();
 
   try {
@@ -60,7 +60,7 @@ async function main() {
     await page.waitForSelector('.candidate .leader-card');
     await page.waitForFunction(() => {
       const cards = [...document.querySelectorAll('.candidate .leader-card')];
-      return cards.length === 5
+      return cards.length === 4
         && cards.every(card => card.dataset.parchmentLoaded === 'true')
         && cards.every(card => card.dataset.titleFit === 'true')
         && cards.every(card => card.querySelector('.card-interior')?.style.getPropertyValue('--art-height'));
@@ -98,7 +98,7 @@ async function main() {
     }
 
     await page.screenshot({ path: join(OUTPUT, 'military-symbol-review.png'), fullPage: true });
-    const slugs = ['current', 'arming-swords', 'heraldic-swords', 'command-swords', 'cavalry-sabers'];
+    const slugs = ['production-cavalry-sabers', 'arming-swords', 'heraldic-swords', 'command-swords'];
     for (let index = 0; index < slugs.length; index += 1) {
       await page.locator('.candidate').nth(index).screenshot({
         path: join(OUTPUT, `${slugs[index]}.png`),
