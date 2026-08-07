@@ -134,7 +134,7 @@ jobs:
               await invasion.click();
               await page.waitForFunction(() => document.querySelector('#preview h3')?.textContent === 'Invasion');
               const invasionPreview = await page.locator('#preview').innerText();
-              if (!invasionPreview.includes('Military card')) {
+              if (!invasionPreview.toLowerCase().includes('military card')) {
                 throw new Error(`Invasion is not presented as Military:\n${invasionPreview}`);
               }
 
