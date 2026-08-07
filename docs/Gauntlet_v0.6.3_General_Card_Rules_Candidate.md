@@ -109,43 +109,95 @@ This centralizes the repeated priority clauses on **Assassins, Capital Punishmen
 
 ---
 
-## 7. Numeric Reserve and Tactic shorthand
+## 7. Compact card shorthand
 
-Cards may use signed numeric modifiers for routine Reserve and Tactic quantities.
+Routine quantitative instructions may use compact shorthand when the timing, subject, source, and eligible set remain unambiguous.
 
-### Reserve
+### Reserve and Tactics
 
-`+N Reserve` means add N cards to the player's Reserve at the stated timing. During Reserve formation, it increases the normal number of cards drawn into the Reserve by N.
+`+N Reserve` adds N cards to the player's Reserve at the stated timing. During Reserve formation, it increases the normal Reserve size by N.
 
-`−N Reserve` means reduce that number by N. A card states any applicable minimum when the reduction could reach zero or below.
+`−N Reserve` reduces that quantity by N. Any applicable minimum remains printed.
 
-Examples:
+`+N Tactic` permits N additional Tactics under the shared additional-Tactic rule.
 
-- `+1 Reserve`
-- `+2 Reserve`
-- `Reserve −1 for each earlier battle after the first, to a minimum of 0.`
-
-### Tactics
-
-`+N Tactic` means the player may choose N additional Tactics under the shared additional-Tactic rule.
-
-**Reserve is the default source.** Do not print `from Reserve` merely to restate that default.
-
-Print a source only when the effect overrides or narrows the default, for example:
+**Reserve is the default Tactic source.** Do not print `from Reserve` merely to restate that default. Print a source only when the effect overrides or narrows the default, such as:
 
 - `+1 Tactic from Hand`
 - `+1 Tactic from those cards`
 - `+1 Tactic using the stored card`
 
-The timing surrounding the shorthand still controls when the modifier is granted. Other card-specific restrictions remain printed.
-
-Thus a standard effect such as `form your Reserve with one additional card and you may choose an additional Tactic` may become simply:
+A standard combined effect may therefore read:
 
 > `+1 Reserve, +1 Tactic.`
 
+### Cards
+
+`+N Card` / `+N Cards` means draw N cards from your Draw Pile into your Hand.
+
+If another player receives the draw, identify that player, for example `Opponent: +1 Card.` If the cards go somewhere other than the Hand, state that destination instead of using this shorthand.
+
+Optional compound procedures may remain in natural language when shorthand would obscure what is optional.
+
+### Actions
+
+`+N Action` grants N additional Actions during the **current phase**. If another phase is intended, state that phase.
+
+This shorthand inherits the same-phase additional-Action rule established for v0.6.2: it expands the number of Actions permitted in that phase rather than reopening a phase that has ended.
+
+### Resources
+
+`+N Capital`, `+N Influence`, `+N Command`, and `+N Conviction` mean gain that amount of the named resource.
+
+Do **not** use negative numeric resource shorthand for costs, payments, losses, or reductions when their rules meaning differs. Continue to write `spend`, `pay`, `lose`, or the applicable instruction.
+
+`Resource = N` sets that resource to N. Examples include `Command = 2` and `Conviction = 4`.
+
+### Battle total
+
+`+N Battle Total` adds N to your battle total.
+
+### Retreat
+
+`Retreat +N` increases the distance of the retreat identified by that clause by N Positions. It modifies that retreat; it does not create a separate retreat.
+
+If the affected player is not otherwise clear, identify them, for example `Opponent: Retreat +1.`
+
+### Advantage and disadvantage
+
+`Advantage`, `Double Advantage`, and `Disadvantage` may be used as direct instructions instead of `gain advantage`, `gain double advantage`, or `gain disadvantage`.
+
+Identify another affected player when necessary, for example `Opponent: Disadvantage.`
+
+### Front Line
+
+Use **`Advance Front Line N`**, not `+N Front Line`, to advance the Front Line by N Territories.
+
+Card-specific qualifications such as `if able` and replacement of Occupation remain printed when they matter.
+
+### Condition prefixes
+
+When a condition governs the entire following clause, cards may use concise prefixes such as:
+
+- `Attacker —`
+- `Defender —`
+- `Counterattack —`
+- `Win —`
+- `Lose —`
+
+The prefix scopes only the clause that follows it. More complex conditions remain in natural language.
+
 ---
 
-## 8. Card-text consequences
+## 8. Rerolls use the new result
+
+When a rule or effect causes a die to be rerolled, the reroll replaces the result it rerolls and the new result is used unless the rule or effect expressly says otherwise.
+
+Cards therefore do not need to repeat `use the new result` or `you must use the new result` after a reroll instruction.
+
+---
+
+## 9. Card-text consequences
 
 The v0.6.3 card-language build may therefore remove or replace:
 
@@ -153,8 +205,10 @@ The v0.6.3 card-language build may therefore remove or replace:
 - redundant no-Action disclaimers on directly permitted card procedures;
 - affirmative statements that effect-granted movement may create a battle;
 - repeated additional-Tactic eligibility, face-state, and default-Reserve-source instructions;
-- repeated Reserve/Tactic quantity sentences that can be represented by numeric shorthand;
+- repeated Reserve/Tactic quantity sentences represented by numeric shorthand;
+- routine draw, extra-Action, fixed resource-gain, battle-total, retreat, advantage/disadvantage, resource-setting, and Front Line sentences represented by the shorthand above;
+- repeated `use the new result` text after rerolls;
 - repeated Sanction identification/default-expiration clauses; and
 - repeated reveal-priority clauses covered by reveal-stage interference.
 
-Card-specific costs, restrictions, nondefault sources, destinations, timing differences, negative exceptions, title-matching rules, and other deviations remain printed.
+Card-specific costs, restrictions, nondefault sources, destinations, timing differences, negative exceptions, title-matching rules, unusual movement, and other deviations remain printed.
