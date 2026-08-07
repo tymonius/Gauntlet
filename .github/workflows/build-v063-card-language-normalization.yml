@@ -1,0 +1,110 @@
+name: Build v0.6.3 card-language normalization
+
+on:
+  pull_request:
+    paths:
+      - 'docs/Gauntlet_v0.6.3_Card_Language_Normalization.md'
+      - 'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md'
+      - 'docs/v063-card-language-overrides/**'
+      - 'scripts/build-v063-card-normalization.mjs'
+      - 'scripts/finalize-v063-card-conventions.mjs'
+      - 'scripts/apply-v063-general-card-rules.mjs'
+      - 'scripts/apply-v063-numeric-shorthand.mjs'
+      - 'scripts/apply-v063-compact-shorthand.mjs'
+      - 'scripts/apply-v063-natural-advantage-wording.mjs'
+      - 'scripts/apply-v063-advantage-capitalization.mjs'
+      - 'scripts/validate-v063-advantage-stacking.mjs'
+      - '.github/workflows/build-v063-card-language-normalization.yml'
+      - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
+  push:
+    paths:
+      - 'docs/Gauntlet_v0.6.3_Card_Language_Normalization.md'
+      - 'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md'
+      - 'docs/v063-card-language-overrides/**'
+      - 'scripts/build-v063-card-normalization.mjs'
+      - 'scripts/finalize-v063-card-conventions.mjs'
+      - 'scripts/apply-v063-general-card-rules.mjs'
+      - 'scripts/apply-v063-numeric-shorthand.mjs'
+      - 'scripts/apply-v063-compact-shorthand.mjs'
+      - 'scripts/apply-v063-natural-advantage-wording.mjs'
+      - 'scripts/apply-v063-advantage-capitalization.mjs'
+      - 'scripts/validate-v063-advantage-stacking.mjs'
+      - '.github/workflows/build-v063-card-language-normalization.yml'
+      - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  normalize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Build conservative first-pass candidate
+        run: node scripts/build-v063-card-normalization.mjs
+
+      - name: Apply reviewed convention overrides
+        run: node scripts/finalize-v063-card-conventions.mjs
+
+      - name: Apply centralized general card rules
+        run: node scripts/apply-v063-general-card-rules.mjs
+
+      - name: Apply Reserve and Tactic numeric shorthand
+        run: node scripts/apply-v063-numeric-shorthand.mjs
+
+      - name: Apply compact shorthand and Sanctions repair
+        run: node scripts/apply-v063-compact-shorthand.mjs
+
+      - name: Restore natural Advantage wording
+        run: node scripts/apply-v063-natural-advantage-wording.mjs
+
+      - name: Capitalize Advantage and Disadvantage terms
+        run: node scripts/apply-v063-advantage-capitalization.mjs
+
+      - name: Verify Advantage stacking identity
+        run: node scripts/validate-v063-advantage-stacking.mjs
+
+      - name: Verify final candidate
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const candidate = JSON.parse(readFileSync('artifacts/v0.6.3/Gauntlet_v0.6.3_Compact_Shorthand_Normalized_Candidate.json', 'utf8'));
+          delete candidate.normalization;
+          const text = JSON.stringify(candidate);
+          for (const obsolete of [
+            'Playable Deck',
+            'the that opponent',
+            'the you gains',
+            'Opponent: Disadvantage',
+            'Double Advantage',
+            ' — Advantage.',
+            'for Advantage',
+            'gain advantage',
+            'gain double advantage',
+            'gain disadvantage',
+            'gains disadvantage'
+          ]) {
+            if (text.includes(obsolete)) {
+              console.error(`Obsolete, malformed, unnatural, or improperly capitalized player-facing text remains: ${obsolete}`);
+              process.exit(1);
+            }
+          }
+          NODE
+
+      - name: Print final shared-normalization density summary
+        run: sed -n '1,90p' artifacts/v0.6.3/Gauntlet_v0.6.3_Compact_Shorthand_Density.md
+
+      - name: Upload normalization candidates and density reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: v063-card-language-normalization
+          path: artifacts/v0.6.3/
+          if-no-files-found: error
