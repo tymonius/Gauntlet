@@ -1,0 +1,121 @@
+# Card Artwork Tracker
+
+This file tracks playable cards that still need canonical artwork.
+
+Current basis: Gauntlet v0.6.2 canonical card pool. An entry should remain here until its approved artwork has been added to the canonical card-art path and merged to `main`. As artwork is completed and uploaded, remove the corresponding entry and update the counts.
+
+Canonical artwork paths:
+
+- Neutral: `images/artwork/cards/neutral/`
+- Military: `images/artwork/cards/military/`
+- Diplomats: `images/artwork/cards/diplomats/`
+- Financiers: `images/artwork/cards/financiers/`
+- Intelligence: `images/artwork/cards/intelligence/`
+- Mystics: `images/artwork/cards/mystics/`
+- Inquisition: `images/artwork/cards/inquisition/`
+
+## Summary
+
+- Total playable cards: 128
+- Illustrated: 60
+- Still needing artwork: 68
+
+| Faction | Still needed |
+| --- | ---: |
+| Neutral | 7 |
+| Military | 11 |
+| Diplomats | 12 |
+| Financiers | 1 |
+| Intelligence | 11 |
+| Mystics | 13 |
+| Inquisition | 13 |
+| **Total** | **68** |
+
+## Neutral — 7
+
+- [ ] Contingency Plan
+- [ ] Fealty
+- [ ] Forced March
+- [ ] Pathfinders
+- [ ] Redemption
+- [ ] Reserves
+- [ ] Landslide
+
+## Military — 11
+
+- [ ] Battlefield Promotion
+- [ ] Brothers in Arms
+- [ ] Countercharge
+- [ ] Encampment
+- [ ] Field Command
+- [ ] Give Chase
+- [ ] Hold the Line
+- [ ] Rearguard
+- [ ] Reserve Force
+- [ ] Unbroken Ranks
+- [ ] War Crimes
+
+## Diplomats — 12
+
+- [ ] Clemency
+- [ ] Demilitarized Zone
+- [ ] Diplomatic Latitude
+- [ ] Détente
+- [ ] Good Faith
+- [ ] Gunboat Diplomacy
+- [ ] Neutral Observers
+- [ ] Nonbinding Resolution
+- [ ] Safe Conduct
+- [ ] Sanctions: Blockade
+- [ ] Sanctions: Censure
+- [ ] Trade Concessions
+
+## Financiers — 1
+
+- [ ] Compound Interest
+
+## Intelligence — 11
+
+- [ ] Deep Cover
+- [ ] Disinformation
+- [ ] Exfiltration
+- [ ] Extraordinary Rendition
+- [ ] Fog of War
+- [ ] Intercepted Orders
+- [ ] Operational Reassessment
+- [ ] Reconnaissance
+- [ ] Sleeper Network
+- [ ] Subversion
+- [ ] Treason
+
+## Mystics — 13
+
+- [ ] Accursed Wager
+- [ ] Black Covenant
+- [ ] Circle of Bones
+- [ ] Dark Omens
+- [ ] Fate's Toll
+- [ ] Grave Ward
+- [ ] Nature's Altar
+- [ ] Necromancy
+- [ ] Paths of Shadow
+- [ ] Rend the Veil
+- [ ] Soul for Soul
+- [ ] Spirit Hollow
+- [ ] Witchcraft
+
+## Inquisition — 13
+
+- [ ] Accusation
+- [ ] Act of Faith
+- [ ] Burning at the Stake
+- [ ] Confession
+- [ ] Divine Mercy
+- [ ] Excommunication
+- [ ] Guilt by Association
+- [ ] Hellfire
+- [ ] Heresy
+- [ ] Martyrdom
+- [ ] No Martyrs
+- [ ] Penance
+- [ ] Tyranny
