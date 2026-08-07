@@ -1,8 +1,8 @@
 # Card Artwork Tracker
 
-This file tracks playable cards that still need canonical artwork.
+This file tracks playable cards and Territory cards that still need canonical artwork.
 
-Current basis: Gauntlet v0.6.2 canonical card pool. An entry should remain here until its approved artwork has been added to the canonical card-art path and merged to `main`. As artwork is completed and uploaded, remove the corresponding entry and update the counts.
+Current basis: Gauntlet v0.6.2 canonical component pools. An entry should remain here until its approved artwork has been added to the canonical artwork path and merged to `main`. As artwork is completed and uploaded, remove the corresponding entry and update the counts.
 
 Canonical artwork paths:
 
@@ -13,12 +13,17 @@ Canonical artwork paths:
 - Intelligence: `images/artwork/cards/intelligence/`
 - Mystics: `images/artwork/cards/mystics/`
 - Inquisition: `images/artwork/cards/inquisition/`
+- Territories and Arenas: `images/artwork/territories/`
 
 ## Summary
 
-- Total playable cards: 128
-- Illustrated: 60
-- Still needing artwork: 68
+| Component pool | Total | Illustrated | Still needed |
+| --- | ---: | ---: | ---: |
+| Playable cards | 128 | 60 | 68 |
+| Territory cards | 25 | 2 | 23 |
+| **All tracked cards** | **153** | **62** | **91** |
+
+### Playable cards by faction
 
 | Faction | Still needed |
 | --- | ---: |
@@ -29,7 +34,7 @@ Canonical artwork paths:
 | Intelligence | 11 |
 | Mystics | 13 |
 | Inquisition | 13 |
-| **Total** | **68** |
+| **Playable-card total** | **68** |
 
 ## Neutral — 7
 
@@ -119,3 +124,36 @@ Canonical artwork paths:
 - [ ] No Martyrs
 - [ ] Penance
 - [ ] Tyranny
+
+## Territories — 23
+
+Approved Territory artwork already present on `main`:
+
+- High Ground
+- Supply Depot
+
+Still needed:
+
+- [ ] Quicksand
+- [ ] Poisonous Gas
+- [ ] Difficult Terrain
+- [ ] Garrison
+- [ ] Disrupted Supply Lines
+- [ ] Ruined Storehouse
+- [ ] Field Hospital
+- [ ] Exposed Flank
+- [ ] Fortified Pass
+- [ ] Insurgency
+- [ ] Watchtower
+- [ ] Old Battlefield
+- [ ] Refuge
+- [ ] Command Tent
+- [ ] Monastery
+- [ ] Training Grounds
+- [ ] King's Road
+- [ ] Toll Bridge
+- [ ] Smuggler's Pass
+- [ ] Arena: Spoils of War
+- [ ] Arena: No Quarter
+- [ ] Arena: Single Combat
+- [ ] Arena: Grand Melee
