@@ -1,18 +1,29 @@
-import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
+import { basename, dirname, join } from 'node:path';
 
 const baselinePath = process.env.V063_CARD_BASELINE ?? 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json';
 const firstPassPath = process.env.V063_CARD_FIRST_PASS ?? 'artifacts/v0.6.3/Gauntlet_v0.6.3_Card_Language_Candidate.json';
-const overridesPath = process.env.V063_CARD_OVERRIDES ?? 'docs/Gauntlet_v0.6.3_Card_Language_Overrides.json';
+const overridesDir = process.env.V063_CARD_OVERRIDES_DIR ?? 'docs/v063-card-language-overrides';
 const candidatePath = process.env.V063_CARD_FINAL_CANDIDATE ?? 'artifacts/v0.6.3/Gauntlet_v0.6.3_Convention_Normalized_Candidate.json';
 const reportPath = process.env.V063_CARD_FINAL_REPORT ?? 'artifacts/v0.6.3/Gauntlet_v0.6.3_Convention_Normalized_Density.md';
 
 const baseline = JSON.parse(readFileSync(baselinePath, 'utf8'));
 const firstPass = JSON.parse(readFileSync(firstPassPath, 'utf8'));
 const candidate = structuredClone(firstPass);
-const overrideData = JSON.parse(readFileSync(overridesPath, 'utf8'));
-const overrides = new Map(Object.entries(overrideData.cards ?? {}));
-const acceptedResiduals = overrideData.accepted_residuals ?? {};
+const overrides = new Map();
+const overrideSources = new Map();
+let acceptedResiduals = {};
+
+for (const fileName of readdirSync(overridesDir).filter((name) => name.endsWith('.json')).sort()) {
+  const filePath = join(overridesDir, fileName);
+  const data = JSON.parse(readFileSync(filePath, 'utf8'));
+  if (data.accepted_residuals) acceptedResiduals = { ...acceptedResiduals, ...data.accepted_residuals };
+  for (const [id, override] of Object.entries(data.cards ?? {})) {
+    if (overrides.has(id)) throw new Error(`Duplicate v0.6.3 card-language override: ${id}`);
+    overrides.set(id, override);
+    overrideSources.set(id, `${overridesDir}/${fileName}`);
+  }
+}
 
 assertPool(baseline);
 assertPool(candidate);
@@ -27,7 +38,7 @@ for (const card of candidate.cards) {
   syncLegacyEffectFields(card);
   card.v063_language_review = {
     class: override.change_class,
-    source: overridesPath
+    source: overrideSources.get(card.id)
   };
 }
 
@@ -100,6 +111,7 @@ function flagsFor(card) {
     ['if-you-do', /\bIf you do\b/],
     ['destination-language', /\b(?:normal )?destination(?: step| trigger)?\b/i],
     ['as-though-played', /\bas though you played it\b/i],
+    ['effect-not-applied', /\bwhose effect has not (?:yet )?been applied\b/i],
     ['additional-tactic-longform', /additional Tactic.*(?:Tactic|Battle) effect.*(?:apply|applied)/i],
     ['replacement-longform', /replace .*eligible.*(?:same role|timing|effect)/i],
     ['asset-bank-boilerplate', /(?:bank|place) this card .*Asset Bank/i],
