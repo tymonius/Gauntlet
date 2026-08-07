@@ -3,9 +3,7 @@ name: Generate card media assets
 on:
   pull_request:
     paths:
-      - "docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
-      - "docs/Gauntlet_v0.6.1_Territory_Pool.md"
-      - "releases/v0.6.1/faction-guides/**"
+      - "releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json"
       - "images/artwork/cards/**"
       - "images/artwork/card-backgrounds/**"
       - "card-design/**"
@@ -57,9 +55,7 @@ jobs:
             tts/renderer
             card-design
             media
-            docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md
-            docs/Gauntlet_v0.6.1_Territory_Pool.md
-            releases/v0.6.1/faction-guides
+            releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json
             images/artwork/cards
             images/artwork/card-backgrounds
       - uses: actions/setup-node@v4
@@ -81,14 +77,14 @@ jobs:
           npm run media:build -- --profile="$profile" $strict
       - uses: actions/upload-artifact@v4
         with:
-          name: gauntlet-v061-card-media-${{ github.event_name == 'workflow_dispatch' && inputs.profile || 'all' }}
-          path: media/generated/v0.6.1/
+          name: gauntlet-v062-card-media-${{ github.event_name == 'workflow_dispatch' && inputs.profile || 'all' }}
+          path: media/generated/v0.6.2/
           if-no-files-found: error
       - name: Upload card composition preview
         uses: actions/upload-artifact@v4
         with:
-          name: gauntlet-v061-card-compositions-${{ github.event_name == 'workflow_dispatch' && inputs.profile || 'all' }}
+          name: gauntlet-v062-card-compositions-${{ github.event_name == 'workflow_dispatch' && inputs.profile || 'all' }}
           path: |
-            media/generated/v0.6.1/compositions/
-            media/generated/v0.6.1/compositions-manifest.json
+            media/generated/v0.6.2/compositions/
+            media/generated/v0.6.2/compositions-manifest.json
           if-no-files-found: error
