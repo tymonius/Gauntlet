@@ -10,6 +10,7 @@ on:
       - 'scripts/finalize-v063-card-conventions.mjs'
       - 'scripts/apply-v063-general-card-rules.mjs'
       - 'scripts/apply-v063-numeric-shorthand.mjs'
+      - 'scripts/apply-v063-compact-shorthand.mjs'
       - '.github/workflows/build-v063-card-language-normalization.yml'
       - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
   push:
@@ -21,6 +22,7 @@ on:
       - 'scripts/finalize-v063-card-conventions.mjs'
       - 'scripts/apply-v063-general-card-rules.mjs'
       - 'scripts/apply-v063-numeric-shorthand.mjs'
+      - 'scripts/apply-v063-compact-shorthand.mjs'
       - '.github/workflows/build-v063-card-language-normalization.yml'
       - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
   workflow_dispatch:
@@ -52,20 +54,26 @@ jobs:
       - name: Apply Reserve and Tactic numeric shorthand
         run: node scripts/apply-v063-numeric-shorthand.mjs
 
-      - name: Verify Deck terminology in final candidate
+      - name: Apply compact shorthand and Sanctions repair
+        run: node scripts/apply-v063-compact-shorthand.mjs
+
+      - name: Verify final candidate
         run: |
           node --input-type=module <<'NODE'
           import { readFileSync } from 'node:fs';
-          const candidate = JSON.parse(readFileSync('artifacts/v0.6.3/Gauntlet_v0.6.3_Shorthand_Normalized_Candidate.json', 'utf8'));
+          const candidate = JSON.parse(readFileSync('artifacts/v0.6.3/Gauntlet_v0.6.3_Compact_Shorthand_Normalized_Candidate.json', 'utf8'));
           delete candidate.normalization;
-          if (JSON.stringify(candidate).includes('Playable Deck')) {
-            console.error('Obsolete Playable Deck terminology remains in v0.6.3 player-facing candidate content.');
-            process.exit(1);
+          const text = JSON.stringify(candidate);
+          for (const obsolete of ['Playable Deck', 'the that opponent', 'the you gains']) {
+            if (text.includes(obsolete)) {
+              console.error(`Obsolete or malformed player-facing text remains: ${obsolete}`);
+              process.exit(1);
+            }
           }
           NODE
 
-      - name: Print final shorthand density summary
-        run: sed -n '1,/^## Complete 128-card measurement/p' artifacts/v0.6.3/Gauntlet_v0.6.3_Shorthand_Density.md
+      - name: Print final compact-shorthand density summary
+        run: sed -n '1,/^## Complete 128-card measurement/p' artifacts/v0.6.3/Gauntlet_v0.6.3_Compact_Shorthand_Density.md
 
       - name: Upload normalization candidates and density reports
         uses: actions/upload-artifact@v4
