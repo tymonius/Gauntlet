@@ -6,7 +6,7 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { buildCatalog } from './generate-tts-card-assets.mjs';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
-const VERSION = 'v0.6.1';
+const VERSION = 'v0.6.2';
 const OUTPUT_ROOT = join(ROOT, 'media', 'generated', VERSION);
 const CSS_CARD_WIDTH = 240;
 const CSS_CARD_HEIGHT = 336;
