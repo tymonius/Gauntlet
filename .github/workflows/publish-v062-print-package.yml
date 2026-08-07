@@ -1,3 +1,4 @@
+# Final human-triggered validation run.
 # Generates, validates, and materializes the v0.6.2 printed-materials package.
 name: Publish v0.6.2 printed materials
 
