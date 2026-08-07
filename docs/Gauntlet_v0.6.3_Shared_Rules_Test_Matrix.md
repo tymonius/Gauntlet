@@ -21,10 +21,11 @@ These scenarios govern the v0.6.3 setup and Run the Gauntlet revisions. Later st
 **Given:** A player begins on the Territory at their own end.  
 **Then:** The Territory remains controlled by that player because it faces them.
 
-### V063-S03 — Setup placement does not alter control
+### V063-S03 — Territory arrangement follows opening selection
 
-**Given:** A Player Token is placed on its starting Territory during setup.  
-**Then:** The placement does not rotate the Territory or otherwise change who controls it.
+**Given:** A player has not yet arranged their three Territories.  
+**When:** The player completes the draw-four-discard-one opening selection.  
+**Then:** The player secretly arranges their Territories with the three-card opening Hand and face-up opening discard known.
 
 ### V063-S04 — Setup placement is not movement
 
@@ -47,10 +48,10 @@ These scenarios govern the v0.6.3 setup and Run the Gauntlet revisions. Later st
 **Given:** A player's starting Territory has an effect that applies at the beginning or start of that player's turn.  
 **Then:** The effect may apply during the player's first turn.
 
-### V063-S08 — Territory ordering affects opening plan
+### V063-S08 — Territory ordering uses opening information
 
-**Given:** A player chooses the order of their three Territories.  
-**Then:** Placing a start-of-turn, draw, Action, movement, or continuous-benefit Territory at the player's own end may affect the first turn without requiring the token to enter it.
+**Given:** A player has completed opening selection.  
+**Then:** The player may use the known opening Hand and opening discard when choosing which Territory will be at their own end and how the other two Territories are ordered.
 
 ---
 
@@ -77,15 +78,15 @@ These scenarios govern the v0.6.3 setup and Run the Gauntlet revisions. Later st
 **Given:** Setup is complete.  
 **Then:** Each player normally has one face-up card in the Discard Pile before the first turn begins.
 
-### V063-S13 — Choice occurs before initiative
+### V063-S13 — Opening selection precedes initiative
 
-**Given:** Both players are preparing their opening Hands.  
-**Then:** Both choose their opening discard before either player rolls to determine who takes the first turn.
+**Given:** Both players are preparing their opening state.  
+**Then:** Both complete opening selection and Territory arrangement before either player rolls to determine who takes the first turn.
 
-### V063-S14 — First-player roll cannot inform discard
+### V063-S14 — First-player roll cannot inform setup choices
 
-**Given:** A player would choose a different discard if they knew they were first or second.  
-**Then:** That information is unavailable because the roll occurs only after both opening discards are complete.
+**Given:** A player would choose a different discard or Territory order if they knew they were first or second.  
+**Then:** That information is unavailable because the roll occurs only after both opening selection and Territory arrangement are complete.
 
 ### V063-S15 — Mandatory procedure
 
@@ -259,9 +260,9 @@ No active v0.6.3 source may treat placement on the starting Territory during set
 
 No active v0.6.3 source may instruct players simply to draw three opening cards without the draw-four-discard-one procedure.
 
-### V063-S46 — No initiative-before-discard
+### V063-S46 — No initiative before opening decisions
 
-No active v0.6.3 source may determine first player before both opening discards are chosen.
+No active v0.6.3 source may determine first player before both opening selection and Territory arrangement are complete.
 
 ### V063-S47 — No final-control prerequisite for Last Stand
 
@@ -286,6 +287,7 @@ The initial v0.6.3 source-layer implementation must not modify files under `rele
 The source layer passes when all 50 scenarios are represented and later implementations can demonstrate:
 
 - correct starting position and first-turn Territory behavior;
+- opening selection before informed Territory arrangement;
 - first-turn Territory applicability without false enter triggers;
 - draw four, discard one, keep three before initiative;
 - final-Territory capture and Last Stand victory as equal Run the Gauntlet routes;

@@ -14,7 +14,8 @@ const requiredCandidateText = [
   'Place each Player Token on the Territory at that player\'s end of the Gauntlet.',
   'does not count as entering the Territory',
   'Draw four cards, choose one card from those four, and place it face up in your Discard Pile.',
-  'After both players have chosen their opening discard',
+  'After seeing your opening Hand and opening discard, secretly arrange your three Territory Cards',
+  'After both players have chosen their opening discard and arranged their Territories',
   'A player runs the Gauntlet and wins immediately when that player either captures the Territory at the opponent\'s end of the Gauntlet or wins the opponent\'s Last Stand.',
   'The advancing player does not need to control or have captured the final Territory before initiating the Last Stand.',
   'The attacker must receive another movement sequence from a rule or effect.',
@@ -26,6 +27,8 @@ for (const text of requiredCandidateText) {
 }
 
 const requiredLedgerText = [
+  'After choosing the opening discard and seeing the resulting three-card opening Hand, each player secretly arranges their three Territories.',
+  'This preserves the information-order principle adopted for testing in issue #487',
   'Both are running the Gauntlet.',
   'Do not create a victory-only exception',
   'the **General** can exploit follow-up movement',
@@ -40,6 +43,7 @@ for (const text of requiredLedgerText) {
 const forbiddenCandidateText = [
   'Place each token immediately before the Territory',
   'Each player draws three cards.',
+  'Place the remaining card face down beneath the Draw Pile',
   'requires the opponent\'s final Territory to be controlled',
   'the normal way to win is to run the Gauntlet and win the final Last Stand battle'
 ];
@@ -56,8 +60,9 @@ const expectedIds = Array.from({ length: 50 }, (_, index) => `V063-S${String(ind
 assert.deepEqual(ids, expectedIds, 'v0.6.3 scenario IDs must be sequential from V063-S01 through V063-S50');
 
 const requiredMatrixText = [
-  'Setup placement does not alter control',
-  'Choice occurs before initiative',
+  'Territory arrangement follows opening selection',
+  'Territory ordering uses opening information',
+  'Opening selection precedes initiative',
   'Capture route is running the Gauntlet',
   'Last Stand route is running the Gauntlet',
   'Immediate-capture ability wins',
@@ -84,4 +89,4 @@ if (process.env.GITHUB_BASE_REF) {
   );
 }
 
-console.log('v0.6.3 shared-rule source validation passed: 50 scenarios, opening rules, Run the Gauntlet routes, and v0.6.2 boundary verified.');
+console.log('v0.6.3 shared-rule source validation passed: 50 scenarios, informed Territory arrangement, opening rules, Run the Gauntlet routes, and v0.6.2 boundary verified.');
