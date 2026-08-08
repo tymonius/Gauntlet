@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ .Campaign.Subject }}</title>
+</head>
+<body style="margin:0;padding:0;background:#f3eddf;color:#181614;font-family:Arial,Helvetica,sans-serif;">
+  <div style="display:none;max-height:0;overflow:hidden;opacity:0;color:transparent;">{{ .Campaign.Subject }}</div>
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;background:#f3eddf;">
+    <tr>
+      <td align="center" style="padding:28px 12px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="width:100%;max-width:680px;background:#fffaf0;border:1px solid #d2c4aa;">
+          <tr>
+            <td style="padding:22px 32px;border-bottom:1px solid #d2c4aa;">
+              <table role="presentation" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td width="40" height="40" align="center" valign="middle" style="width:40px;height:40px;background:#5f1418;color:#fff7e8;border:1px solid #a37338;font-family:Georgia,'Times New Roman',serif;font-size:22px;font-weight:bold;">G</td>
+                  <td style="padding-left:12px;font-family:Georgia,'Times New Roman',serif;font-size:24px;font-weight:bold;letter-spacing:.02em;">Gauntlet</td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:42px 32px 38px;font-size:16px;line-height:1.7;">
+              {{ template "content" . }}
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:24px 32px;border-top:1px solid #d2c4aa;color:#655f56;font-size:12px;line-height:1.6;">
+              <p style="margin:0 0 8px;">Gauntlet is an unpublished playtest project by Tymon Scott.</p>
+              <p style="margin:0;">
+                <a href="https://gauntlet.run/" style="color:#5f1418;">gauntlet.run</a>
+                &nbsp;·&nbsp;
+                <a href="{{ MessageURL }}" style="color:#5f1418;">View in browser</a>
+                &nbsp;·&nbsp;
+                <a href="{{ UnsubscribeURL }}" style="color:#5f1418;">Manage subscription</a>
+              </p>
+              {{ TrackView }}
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
