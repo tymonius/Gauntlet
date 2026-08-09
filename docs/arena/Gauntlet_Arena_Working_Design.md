@@ -5,7 +5,7 @@
 **Format:** Four-player free-for-all  
 **Target release:** Provisionally v0.7; v0.8 if the Complete Illustrated Edition publishes first  
 **Tracking issue:** [#523 — Design and prototype Gauntlet: Arena](https://github.com/tymonius/Gauntlet/issues/523)  
-**Last updated:** August 6, 2026
+**Last updated:** August 8, 2026
 
 Gauntlet: Arena inherits v0.6.2 except where this record expressly replaces or supplements it. This document governs only identified Arena prototypes and does not alter canonical two-player play.
 
@@ -25,6 +25,7 @@ Arena should:
 - make defense depend on physical force placement;
 - create flanking, rear attacks, encirclement, and divided offensives;
 - preserve one-on-one battles and delayed Capture;
+- make battles in the central Arena tactically distinctive and important;
 - punish exposed outermost Territories without using abstract victory points; and
 - use broad multiplayer translation rules before card-specific exceptions.
 
@@ -42,7 +43,8 @@ Arena should:
 - Each player receives 2 movement points during Movement and divides them between the two forces as desired.
 - Both forces share all player-level cards, resources, limits, faction progress, Territory control, and Capture.
 - Battles remain one-on-one.
-- A defeated defender retreats directly away from the attacker.
+- Battles fought on the central Arena use the selected Arena tile's printed rule, receive no Defensive Edge, use Tiebreak Roll for tied final Battle Totals, and let the winner choose the arm into which the defeated force retreats.
+- Outside the Arena, a defeated defender retreats directly away from the attacker.
 - Retreat into an enemy force begins an immediate Breakout battle.
 - A force that loses its Breakout is removed from the game.
 - Capturing an opponent's outermost Territory eliminates that player.
@@ -123,7 +125,7 @@ The Arena:
 
 Its printed Arena rule applies normally.
 
-The Arena remains a Position for movement, battles, occupation by a force, retreat direction, adjacency, and route tracing. Occupying it never establishes control.
+The Arena remains a Position for movement, battles, occupation by a force, retreat, adjacency, and route tracing. Occupying it never establishes control.
 
 ### 3.5 Arena as connector
 
@@ -250,6 +252,27 @@ All battles use the player's shared Hand, Assets, faction resources, Leader abil
 
 Spent cards, resources, and once-per-turn permissions do not refresh between battles in the same turn.
 
+### 6.4 Arena Battles
+
+**Prototype rule**
+
+A battle fought on the central Arena is an **Arena Battle**.
+
+For every Arena Battle:
+
+- apply the selected Arena tile's printed Arena rule;
+- neither player receives Defensive Edge;
+- if final Battle Totals are tied, resolve the tie with a Tiebreak Roll; and
+- after the battle, the winner chooses which adjacent arm the defeated force retreats into.
+
+The winner may choose any of the four arms. This replaces the normal entry-edge and opposite-edge retreat direction for the defeated force in that Arena Battle.
+
+If the chosen inner Territory is empty, the defeated force retreats there. If the chosen Position contains a friendly or enemy force, resolve the resulting collision, forced passage, or Breakout normally.
+
+Arena Battles remain one-on-one. Winning an Arena Battle never grants control of the Arena.
+
+The selected tile therefore determines the environmental rule for fighting in the Arena, while winner-directed retreat is the universal positional reward for winning there.
+
 ---
 
 ## 7. Directional retreat
@@ -258,27 +281,29 @@ Spent cards, resources, and once-per-turn permissions do not refresh between bat
 
 **Prototype rule**
 
-Every attack has an **entry edge**: the connection crossed by the attacker to enter the contested Position.
+Every attack outside an Arena Battle has an **entry edge**: the connection crossed by the attacker to enter the contested Position.
 
 ### 7.2 Losing attacker
 
 **Prototype rule**
 
-A defeated attacker retreats back through the entry edge.
+Outside an Arena Battle, a defeated attacker retreats back through the entry edge.
 
 ### 7.3 Losing defender
 
 **Prototype rule**
 
-A defeated defender retreats through the opposite edge, directly away from the attacker, even when this drives it farther through an opposing arm.
+Outside an Arena Battle, a defeated defender retreats through the opposite edge, directly away from the attacker, even when this drives it farther through an opposing arm.
 
-At the Arena, a force attacked from one arm is driven into the arm directly opposite it.
+Arena Battles instead use the winner-directed retreat rule in section 6.4.
 
 ### 7.4 Continued retreat
 
 **Prototype rule**
 
 Additional retreat from the same battle continues in the direction established by that battle unless an effect expressly redirects it.
+
+For an Arena Battle, the arm chosen by the winner establishes that retreat direction.
 
 ### 7.5 Friendly collision
 
@@ -314,6 +339,8 @@ When a retreating force would enter a Position occupied by an enemy force, it im
 - The blocking force is the defender.
 - The Breakout costs no movement point.
 - Resolve it before the interrupted turn or retreat chain continues.
+
+An Arena Battle can deliberately create a Breakout when its winner directs the defeated force into an arm whose inner Territory is occupied by an enemy force.
 
 ### 8.2 Successful Breakout
 
@@ -508,7 +535,7 @@ Audit every card, Territory, Leader, and supplemental component for:
 3. both-player and global language;
 4. durations;
 5. force and Position selection;
-6. retreat, withdrawal, Breakouts, and board edges;
+6. retreat, withdrawal, Breakouts, Arena Battles, and board edges;
 7. Front advancement and branch selection;
 8. final-Territory and Last Stand references;
 9. Territory-count scaling;
@@ -539,6 +566,7 @@ Use:
 - no three-way battles;
 - no team victory;
 - one selected Arena tile;
+- the universal Arena Battle rule in section 6.4;
 - both forces beginning on each player's outermost Territory; and
 - provisional faction-victory rulings recorded before play.
 
@@ -566,21 +594,24 @@ Record:
 4. how often turns contain two battles;
 5. whether shared resources naturally limit repeated battles;
 6. whether rear attacks and directional retreat feel intuitive;
-7. whether Breakouts are dramatic rather than cumbersome;
-8. whether a player can recover after losing one force;
-9. whether exposing an outermost Territory creates fair punishment and warning;
-10. whether delayed Capture creates meaningful Counterattack;
-11. whether one Capture per turn is too slow;
-12. whether the Arena becomes congested;
-13. whether the cross produces four-way play rather than two parallel duels;
-14. whether informal alliances arise naturally;
-15. when the first elimination occurs;
-16. total game and turn length;
-17. eliminated-player downtime;
-18. alternate-victory viability; and
-19. rules requiring repeated explanation.
+7. whether Arena Battles feel distinctive and strategically important;
+8. whether winner-directed Arena retreat creates good positional choices without being too strong;
+9. how often an Arena Battle directly causes a collision or Breakout;
+10. whether Breakouts are dramatic rather than cumbersome;
+11. whether a player can recover after losing one force;
+12. whether exposing an outermost Territory creates fair punishment and warning;
+13. whether delayed Capture creates meaningful Counterattack;
+14. whether one Capture per turn is too slow;
+15. whether the Arena becomes congested;
+16. whether the cross produces four-way play rather than two parallel duels;
+17. whether informal alliances arise naturally;
+18. when the first elimination occurs;
+19. total game and turn length;
+20. eliminated-player downtime;
+21. alternate-victory viability; and
+22. rules requiring repeated explanation.
 
-Also record faction and Leader choices, Territory order, Arena tile, turn order, rounds, battles, Breakouts, force removals, outermost-Territory occupations and Captures, eliminations, winning route, and total time.
+Also record faction and Leader choices, Territory order, Arena tile, turn order, rounds, battles, Arena Battles, Breakouts, force removals, outermost-Territory occupations and Captures, eliminations, winning route, and total time.
 
 ---
 
@@ -602,6 +633,17 @@ Add each to [the Arena documentation index](README.md) when activated. Archive s
 ---
 
 ## 18. Revision history
+
+### August 8, 2026 — Arena Battle rule
+
+- Established battles on the central Arena as **Arena Battles**.
+- Preserved the selected Arena tile's printed Arena rule.
+- Established no Defensive Edge in Arena Battles.
+- Established Tiebreak Roll for tied final Battle Totals in Arena Battles.
+- Established that the Arena Battle winner chooses which adjacent arm the defeated force retreats into.
+- Established that the chosen arm sets the direction for additional retreat from that battle.
+- Established that collisions and Breakouts created by winner-directed Arena retreat resolve normally.
+- Preserved the Arena as neutral and uncapturable after a battle.
 
 ### August 6, 2026 — Arena selection and outermost start
 
