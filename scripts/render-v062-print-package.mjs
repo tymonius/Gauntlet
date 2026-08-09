@@ -97,20 +97,26 @@ try {
       return status;
     });
     console.log(`[print] ${output.key}: fonts ${fontStatus}`);
-    const geometry = await page.evaluate(() => ({
-      width: document.documentElement.scrollWidth,
-      clientWidth: document.documentElement.clientWidth,
-      fixedPages: [...document.querySelectorAll('.page')].map((item, index) => ({
-        index: index + 1,
-        scrollWidth: item.scrollWidth,
-        clientWidth: item.clientWidth,
-        scrollHeight: item.scrollHeight,
-        clientHeight: item.clientHeight,
-      })),
-      versionText: document.body.innerText.includes('v0.6.2'),
-      staleActionOpportunity: /Action Opportunit(?:y|ies)/i.test(document.body.innerText),
-      staleOpeningEffects: /opening effects/i.test(document.body.innerText),
-    }));
+    const geometry = await page.evaluate(() => {
+      const bodyText = document.body.innerText;
+      return {
+        width: document.documentElement.scrollWidth,
+        clientWidth: document.documentElement.clientWidth,
+        fixedPages: [...document.querySelectorAll('.page')].map((item, index) => ({
+          index: index + 1,
+          scrollWidth: item.scrollWidth,
+          clientWidth: item.clientWidth,
+          scrollHeight: item.scrollHeight,
+          clientHeight: item.clientHeight,
+        })),
+        versionText: bodyText.includes('v0.6.2'),
+        staleActionOpportunity: /\bOne normal Action Opportunity\b/i.test(bodyText)
+          || /without using (?:the |an |another )?Action Opportunit(?:y|ies)/i.test(bodyText)
+          || /without an Action Opportunity/i.test(bodyText)
+          || /(?:uses|using) (?:one|an) Action Opportunity/i.test(bodyText),
+        staleOpeningEffects: /opening effects/i.test(bodyText),
+      };
+    });
     if (browserErrors.length) throw new Error(`${output.url} browser errors:\n${browserErrors.join('\n')}`);
     if (geometry.width > geometry.clientWidth + 2) throw new Error(`${output.url} has horizontal overflow (${geometry.width} > ${geometry.clientWidth}).`);
     for (const item of geometry.fixedPages) {
