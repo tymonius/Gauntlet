@@ -54,6 +54,27 @@ const documents = [
   },
 ];
 
+const standaloneHtml = [
+  'playtest/player-mat/index.html',
+  'v0.6.2/print/active-player-marker.html',
+  'v0.6.2/print/faction-teaching-cards.html',
+  'v0.6.2/print/index.html',
+  'v0.6.2/print/player-mat.html',
+  'v0.6.2/print/playtest-sheet.html',
+];
+
+const faviconLinks = [
+  '  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />',
+  '  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />',
+  '  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />',
+];
+
+const faviconHrefs = [
+  '/favicon-32.png?v=20260804-1',
+  '/favicon.ico?v=20260804-1',
+  '/apple-touch-icon.png?v=20260804-1',
+];
+
 const normalize = (value) => String(value).replace(/\r\n/g, '\n');
 const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'utf8');
 
@@ -72,6 +93,37 @@ function expected(relativePath, content) {
   }
   fs.mkdirSync(path.dirname(target), { recursive: true });
   fs.writeFileSync(target, output, 'utf8');
+}
+
+function escapeRegex(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function synchronizeSiteFavicons(relativePath, content) {
+  let output = normalize(content);
+  for (const href of faviconHrefs) {
+    output = output.replace(new RegExp(`^\\s*<link\\b[^>]*href="${escapeRegex(href)}"[^>]*>\\s*\\n?`, 'gm'), '');
+  }
+
+  const viewport = '  <meta name="viewport" content="width=device-width, initial-scale=1">\n';
+  if (!output.includes(viewport)) {
+    failures.push(`Cannot place favicon links in ${relativePath}: missing viewport meta tag.`);
+    return output;
+  }
+  return output.replace(viewport, `${viewport}${faviconLinks.join('\n')}\n`);
+}
+
+function synchronizeStandaloneHtml(relativePath, content) {
+  let output = synchronizeSiteFavicons(relativePath, content);
+  if (relativePath === 'v0.6.2/print/player-mat.html') {
+    const oldActionHeading = '<div class="zone-heading"><h3>Action Reminder</h3><span>Normally one total</span></div>';
+    const currentActionHeading = '<div class="zone-heading"><h3>Action Reminder</h3><span>1 Action · two normal Action Opportunities</span></div>';
+    output = output.replace(oldActionHeading, currentActionHeading);
+    if (!output.includes(currentActionHeading)) {
+      failures.push(`${relativePath} is missing the current Action Opportunity reminder.`);
+    }
+  }
+  return output;
 }
 
 function escapeHtml(value) {
@@ -212,7 +264,7 @@ function page(document, markdown) {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32">
+${faviconLinks.join('\n')}
   <title>${escapeHtml(document.title)}</title>
   <link rel="stylesheet" href="styles.css">
   <style>@page{size:${document.pageSize};margin:${document.key === 'rulebook' ? '.38in .4in .45in' : '.45in .5in .55in'}}</style>
@@ -234,6 +286,10 @@ for (const document of documents) {
   const source = read(document.source);
   if (!source.includes('v0.6.2')) failures.push(`${document.source} does not identify v0.6.2.`);
   expected(document.output, page(document, source));
+}
+
+for (const relativePath of standaloneHtml) {
+  expected(relativePath, synchronizeStandaloneHtml(relativePath, read(relativePath)));
 }
 
 expected('v0.6.2/print/document-manifest.json', `${JSON.stringify({
