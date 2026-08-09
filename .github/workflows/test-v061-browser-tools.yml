@@ -138,6 +138,11 @@ jobs:
                 throw new Error(`Invasion is not presented as Military:\n${invasionPreview}`);
               }
 
+              if (viewport.width < 600) {
+                await page.locator('.mobile-reference-preview-close').click();
+                await page.waitForFunction(() => !document.querySelector('#preview')?.classList.contains('mobile-open'));
+              }
+
               await page.fill('#searchInput', 'Black Covenant');
               await page.selectOption('#factionFilter', 'all');
               await page.waitForFunction(() => document.querySelector('#resultCount')?.textContent === '1');
