@@ -5,7 +5,7 @@
 **Release tracker:** [Issue #528](https://github.com/tymonius/Gauntlet/issues/528)  
 **Implementation ledger:** [Gauntlet v0.6.3 Implementation Ledger](Gauntlet_v0.6.3_Implementation_Ledger.md)
 
-This document governs the adopted v0.6.3 changes to setup, starting position, opening Hand selection, the final Territory, Last Stand access, and the normal shared victory condition.
+This document governs the adopted v0.6.3 changes to setup, starting position, opening Hand selection, the final Territory, Last Stand access, the normal shared victory condition, and the player-facing battle-start reminder.
 
 All v0.6.2 rules not expressly replaced here remain inherited during v0.6.3 development. v0.6.2 remains the sole canonical published playtest release until v0.6.3 is assembled and released.
 
@@ -184,3 +184,26 @@ You run the Gauntlet and win immediately when you either:
 Any legal immediate capture of the final Territory can win.
 
 After forcing the opponent beyond the Gauntlet, you may initiate a Last Stand with a separate legal Advance beyond their end. You do not need to control the final Territory first.
+
+---
+
+# 7. Player-Facing Editorial Additions — Battle Habit
+
+This guidance is instructional rather than a new rule. It should be taught prominently in first-game material and reinforced in the complete Rulebook without becoming a numbered battle step.
+
+## First Game Guide / Learn to Play — primary placement
+
+Teach the habit as part of the first ordinary battle demonstration, before introducing the player's Gambit decision:
+
+> **Before you commit cards to a battle, look beyond your Hand. Read the contested Territory and scan your Asset Bank. Those effects are easy to overlook once Gambits, Reserves, and Tactics begin, and some may matter at different points in the battle. Check when each effect can be used before you act.**
+
+The shared tableside battle reference may summarize the same teaching point in its own instructional language, but should not simply repeat the Rulebook callout verbatim.
+
+## Complete Rulebook — secondary callout
+
+Place a visually distinct reminder near **Onset** or the beginning of the battle sequence. Do not add it as a numbered battle step:
+
+> **DON'T FORGET THE BOARD**  
+> Territory. Assets. Then Gambits.
+
+The surrounding Rulebook text should make clear that this is a memory cue only. It does not alter the battle sequence, grant permission to use an effect, or change any printed timing.

@@ -3,7 +3,7 @@
 **Status:** Active next-release decision and propagation record  
 **Current canonical release:** [Gauntlet v0.6.2](../releases/v0.6.2/README.md)  
 **Release tracker:** [Issue #528](https://github.com/tymonius/Gauntlet/issues/528)  
-**Last updated:** August 6, 2026
+**Last updated:** August 7, 2026
 
 ---
 
@@ -119,6 +119,36 @@ Because both discards occur before the first-player roll:
 - effects that can use the Discard Pile on the first turn interact with a deliberately chosen card; and
 - the opening Hand remains three cards.
 
+### 4.4 Battle-start gameplay habit
+
+The v0.6.3 player-facing materials should teach a simple routine whenever a battle begins:
+
+1. review the contested Territory for effects that may apply; and
+2. review the Assets the player controls and consider whether any may be useful during the battle.
+
+This is a gameplay habit, not a new rule, timing window, permission, or battle step.
+
+The two player-facing placements should deliberately use different language because they serve different functions.
+
+**Primary placement — First Game Guide / Learn to Play:** explain and teach the habit during the first ordinary battle demonstration, before introducing the player's Gambit decision.
+
+Use explanatory teaching language along these lines:
+
+> **Before you commit cards to a battle, look beyond your Hand. Read the contested Territory and scan your Asset Bank. Those effects are easy to overlook once Gambits, Reserves, and Tactics begin, and some may matter at different points in the battle. Check when each effect can be used before you act.**
+
+The shared tableside battle reference may restate the same lesson in its own instructional language rather than copying the complete Rulebook callout.
+
+**Secondary placement — complete Rulebook:** use a compact visual memory cue near Onset or the beginning of the battle sequence. Do not make it a numbered procedure.
+
+Use this terse callout:
+
+> **DON'T FORGET THE BOARD**  
+> Territory. Assets. Then Gambits.
+
+The surrounding Rulebook text should state that this is only a reminder and does not alter battle timing or grant permission to use an effect.
+
+The purpose is to reduce missed optional effects and help players develop a reliable battle routine without duplicating instructional prose across player-facing materials.
+
 ---
 
 ## 5. Required interaction audit
@@ -174,9 +204,9 @@ At minimum, audit:
    - immediate-capture and follow-up-movement compatibility audit.
 
 3. **Player-facing layer**
-   - complete Rulebook;
+   - complete Rulebook, including a concise non-normative Battle Habit memory cue near Onset or the battle sequence;
+   - First Game Guide / Learn to Play material, including fuller explanatory teaching of the Territory-and-Assets habit during the ordinary-battle walkthrough;
    - compact Reference Guide;
-   - First Game Guide;
    - returning-player changes;
    - playtest and tableside references.
 
@@ -214,5 +244,7 @@ The v0.6.3 implementation is not complete until:
 - immediate-capture effects can legally win on the final Territory;
 - Last Stand access does not require prior control of the final Territory;
 - a separate legal movement sequence is still required after the battle that forces the opponent beyond the Gauntlet;
+- the v0.6.3 First Game Guide / Learn to Play material teaches the battle-start Territory-and-Assets habit in explanatory teaching language;
+- the v0.6.3 Rulebook reinforces that habit with a distinct, concise, non-normative callout rather than repeating the same text;
 - all affected Leader, faction, card, Territory, Rules Arbiter, and digital interactions are tested; and
 - the published v0.6.2 package remains unchanged.
