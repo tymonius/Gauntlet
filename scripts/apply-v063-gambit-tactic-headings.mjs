@@ -8,6 +8,7 @@ const before = structuredClone(candidate);
 const byName = new Map((candidate.cards ?? []).map((card) => [card.name, card]));
 let renamedHeadings = 0;
 let proseEffectsChanged = 0;
+let rulesNotesChanged = 0;
 
 for (const card of candidate.cards ?? []) {
   for (const effect of card.effects ?? []) {
@@ -61,6 +62,13 @@ replaceText('Witchcraft', 'Gambit/Tactic',
   'with an eligible Battle effect',
   'with an eligible Gambit or Tactic effect');
 
+replaceRuleNote('Margin Loan',
+  'Withdrawal defaults on the Battle effect because you did not win.',
+  'Withdrawal defaults on the Gambit or Tactic effect because you did not win.');
+replaceRuleNote('Penance',
+  "The Battle effect applies when Penance's Gambit or Tactic is revealed.",
+  "The Gambit or Tactic effect applies when Penance's Gambit or Tactic is revealed.");
+
 for (const card of candidate.cards ?? []) syncLegacyEffectFields(card);
 
 candidate.normalization = {
@@ -70,7 +78,8 @@ candidate.normalization = {
     rendering: 'Card faces stack the label as Gambit/ over Tactic; the line break is presentation only.',
     prose: 'Use Gambit effect, Tactic effect, or Gambit or Tactic effect as the sentence requires. Never use Gambit/Tactic as a prose effect category.',
     headings_renamed: renamedHeadings,
-    prose_effects_changed: proseEffectsChanged
+    prose_effects_changed: proseEffectsChanged,
+    rules_notes_changed: rulesNotesChanged
   }
 };
 
@@ -88,6 +97,15 @@ function replaceText(cardName, label, from, to, countEffect = true) {
   if (countEffect) proseEffectsChanged += 1;
 }
 
+function replaceRuleNote(cardName, from, to) {
+  const card = byName.get(cardName);
+  if (!card) throw new Error(`Card not found: ${cardName}`);
+  const index = (card.rules_notes ?? []).findIndex((note) => note.includes(from));
+  if (index < 0) throw new Error(`Expected rules note not found on ${cardName}: ${from}`);
+  card.rules_notes[index] = card.rules_notes[index].replace(from, to);
+  rulesNotesChanged += 1;
+}
+
 function syncLegacyEffectFields(card) {
   const labels = new Map((card.effects ?? []).map((effect) => [String(effect.label), effect.text]));
   const mappings = {
@@ -97,6 +115,7 @@ function syncLegacyEffectFields(card) {
     tactic: 'Tactic',
     asset: 'Asset',
     activate: 'Activate',
+    use: 'Activate',
     overlay: 'Overlay'
   };
   for (const [key, label] of Object.entries(mappings)) {
@@ -109,6 +128,7 @@ function syncLegacyEffectFields(card) {
 function validate() {
   if (renamedHeadings !== 106) throw new Error(`Expected 106 Battle headings, found ${renamedHeadings}.`);
   if (proseEffectsChanged !== 13) throw new Error(`Expected 13 effects with Battle-effect prose, changed ${proseEffectsChanged}.`);
+  if (rulesNotesChanged !== 2) throw new Error(`Expected 2 rules-note terminology changes, found ${rulesNotesChanged}.`);
 
   const labels = (candidate.cards ?? []).flatMap((card) => (card.effects ?? []).map((effect) => effect.label));
   if (labels.includes('Battle')) throw new Error('A Battle effect heading remains in the v0.6.3 candidate.');
@@ -116,7 +136,9 @@ function validate() {
     throw new Error('Unexpected Gambit/Tactic heading count.');
   }
 
-  const text = (candidate.cards ?? []).flatMap((card) => (card.effects ?? []).map((effect) => effect.text)).join('\n');
+  const withoutNormalization = structuredClone(candidate);
+  delete withoutNormalization.normalization;
+  const text = JSON.stringify(withoutNormalization);
   if (/\bBattle effects?\b/.test(text)) throw new Error('Battle effect prose remains in the v0.6.3 candidate.');
   if (/Gambit\/Tactic effect/.test(text)) throw new Error('Gambit/Tactic is being used as a prose effect category.');
   if ((candidate.cards ?? []).some((card) => Object.hasOwn(card, 'battle'))) {
@@ -162,7 +184,8 @@ function buildReport() {
     '',
     `**Cards:** ${rows.length}  `,
     `**Battle headings replaced:** ${renamedHeadings}  `,
-    `**Effects with prose terminology revised:** ${proseEffectsChanged}`,
+    `**Effects with prose terminology revised:** ${proseEffectsChanged}  `,
+    `**Rules notes revised:** ${rulesNotesChanged}`,
     '',
     '## Convention',
     '',
@@ -180,4 +203,4 @@ function buildReport() {
   ].join('\n')}\n`;
 }
 
-console.log(`Replaced ${renamedHeadings} Battle headings with Gambit/Tactic and revised ${proseEffectsChanged} prose effects.`);
+console.log(`Replaced ${renamedHeadings} Battle headings with Gambit/Tactic, revised ${proseEffectsChanged} prose effects, and updated ${rulesNotesChanged} rules notes.`);
