@@ -73,18 +73,25 @@ replaceText(
 );
 
 // Asset is itself the banked-card mode; an Asset section does not need to say
-// that its text applies while this card is banked.
+// that its text applies while this card is banked. The ordinary start-of-turn
+// draw timing is consistently called the player's normal Draw.
 replaceText(
   'Armistice',
   'Asset',
   'While this card is banked, neither player can start a battle. After your normal Draw step at the start of each of your turns, discard two cards from your Hand or discard this card. You cannot voluntarily discard this card at another time.',
-  'Neither player can start a battle. After your normal Draw step at the start of each of your turns, discard two cards from your Hand or discard this card. You cannot voluntarily discard this card at another time.'
+  'Neither player can start a battle. After your normal Draw, discard two cards from your Hand or discard this card. You cannot voluntarily discard this card at another time.'
+);
+replaceText(
+  'Supplies',
+  'Asset',
+  'After your normal Draw step, you may discard this card for +2 Cards.',
+  'After your normal Draw, you may discard this card for +2 Cards.'
 );
 replaceText(
   'Tariffs',
   'Asset',
   'While Tariffs is banked, skip your normal draw. You cannot bank it while you control another banked Tariffs. You cannot voluntarily cause it to leave play during the turn it is banked.',
-  'Skip your normal draw. You cannot bank it while you control another banked Tariffs. You cannot voluntarily cause it to leave play during the turn it is banked.'
+  'Skip your normal Draw. You cannot bank it while you control another banked Tariffs. You cannot voluntarily cause it to leave play during the turn it is banked.'
 );
 
 // Advantage and Disadvantage are capitalized defined terms everywhere on card
@@ -141,7 +148,8 @@ for (const [pattern, description] of [
   [/as though you (?:played|controlled) it/i, 'obsolete copied-effect as-though instruction'],
   [/Gambit\/Tactic effect/, 'slash heading used as a prose effect category'],
   [/When this card leaves play, put the bound card in its owner's Discard Pile\./i, 'redundant shared Bind cleanup'],
-  [/\bwithdraws?[^.]*battle ends without a winner\b|\bwithdraw instead\.[^.]*\bThe battle ends without a winner\./i, 'redundant no-winner explanation after withdrawal']
+  [/\bwithdraws?[^.]*battle ends without a winner\b|\bwithdraw instead\.[^.]*\bThe battle ends without a winner\./i, 'redundant no-winner explanation after withdrawal'],
+  [/\bnormal Draw step\b|\bnormal draw\b/, 'inconsistent normal Draw timing language']
 ]) {
   if (pattern.test(playerFacing)) {
     throw new Error(`Final artifact audit failed: ${description} (${pattern}).`);
@@ -182,6 +190,7 @@ candidate.normalization = {
     copied_effect_source_zone_redundancy_removed: 3,
     redundant_banked_asset_uses_removed: 7,
     redundant_asset_banked_leads_removed: 2,
+    normal_draw_variants_normalized: 3,
     advantage_capitalization_residuals_removed: 3,
     redundant_default_bind_cleanup_removed: 1,
     redundant_withdrawal_no_winner_phrases_removed: 2,
@@ -191,7 +200,7 @@ candidate.normalization = {
 };
 
 writeFileSync(candidatePath, `${JSON.stringify(candidate, null, 2)}\n`);
-console.log('Applied final generated-artifact cleanup to copied-effect, Asset, Advantage, Bind, and withdrawal wording.');
+console.log('Applied final generated-artifact cleanup to copied-effect, Asset, Draw, Advantage, Bind, and withdrawal wording.');
 
 function replaceText(cardName, label, from, to) {
   const card = byName.get(cardName);
