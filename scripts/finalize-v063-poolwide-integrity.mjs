@@ -11,6 +11,7 @@ const source = JSON.parse(readFileSync(sourcePath, 'utf8'));
 const candidate = JSON.parse(readFileSync(candidatePath, 'utf8'));
 const sourceById = new Map((source.cards ?? []).map((card) => [card.id, card]));
 const byName = new Map((candidate.cards ?? []).map((card) => [card.name, card]));
+let redundantRevealLeadsRemoved = 0;
 
 function effect(cardName, label) {
   const card = byName.get(cardName);
@@ -28,6 +29,19 @@ function replaceText(cardName, label, from, to) {
 
 function replaceEffect(cardName, label, text) {
   effect(cardName, label).text = text;
+}
+
+// A Gambit/Tactic, Gambit, or Tactic effect with no later timing applies when
+// that card is revealed. The heading/default timing and shared interference
+// rule make an opening "When revealed," lead redundant.
+for (const card of candidate.cards ?? []) {
+  for (const entry of card.effects ?? []) {
+    if (!['Gambit/Tactic', 'Gambit', 'Tactic'].includes(entry.label)) continue;
+    if (entry.text.startsWith('When revealed, ')) {
+      entry.text = entry.text.slice('When revealed, '.length);
+      redundantRevealLeadsRemoved += 1;
+    }
+  }
 }
 
 // Variants found only after inspecting the generated final artifact.
@@ -61,7 +75,7 @@ replaceEffect('War Crimes', 'Asset',
 replaceEffect('Battlefield Promotion', 'Gambit/Tactic',
   'In the Aftermath, if you win, return one other Tactic you chose to your Hand instead of putting it in your Discard Pile.');
 replaceEffect('Capital Punishment', 'Gambit/Tactic',
-  "When revealed, negate one opposing Gambit or Tactic that has not taken effect. In the Aftermath, if you win, put the chosen card in its owner's Graveyard.");
+  "Negate one opposing Gambit or Tactic that has not taken effect. In the Aftermath, if you win, put the chosen card in its owner's Graveyard.");
 replaceEffect('Corner the Market', 'Gambit/Tactic',
   'In the Aftermath, if you win, you may buy or buy out any number of Deeds. Complete each purchase before calculating the next cost.');
 replaceEffect('Foothold', 'Gambit/Tactic',
@@ -135,6 +149,9 @@ for (const card of candidate.cards ?? []) {
     if (hasWin !== hasLose) {
       throw new Error(`Unpaired Win/Lose shorthand remains on ${card.name} ${entry.label}.`);
     }
+    if (['Gambit/Tactic', 'Gambit', 'Tactic'].includes(entry.label) && entry.text.startsWith('When revealed,')) {
+      throw new Error(`Redundant default reveal timing remains on ${card.name} ${entry.label}.`);
+    }
   }
 }
 
@@ -160,6 +177,7 @@ candidate.normalization = {
     aftermath_variants_normalized: true,
     unpaired_win_lose_shorthand_forbidden: true,
     subject_prefixed_outcome_shorthand_forbidden: true,
+    redundant_default_reveal_leads_removed: redundantRevealLeadsRemoved,
     defined_position_capitalized: true,
     accepted_convention_residuals_checked_poolwide: true
   }
@@ -167,7 +185,7 @@ candidate.normalization = {
 
 writeFileSync(candidatePath, `${JSON.stringify(candidate, null, 2)}\n`);
 writeFileSync(reportPath, buildReport());
-console.log('Final v0.6.3 card-text integrity gate passed across all 128 cards.');
+console.log(`Final v0.6.3 card-text integrity gate passed across all 128 cards; removed ${redundantRevealLeadsRemoved} redundant reveal lead(s).`);
 
 function words(text) {
   const matches = String(text ?? '').trim().match(/\b[\p{L}\p{N}][\p{L}\p{N}’'\-+]*\b/gu);
