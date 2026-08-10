@@ -1,6 +1,6 @@
 # Gauntlet v0.6.3 Card-Language Normalization
 
-**Status:** Shared normalization complete through compact shorthand; bespoke density pass follows  
+**Status:** Shared normalization complete through Asset ownership/Removal language; bespoke density pass follows  
 **Release tracker:** [Issue #528](https://github.com/tymonius/Gauntlet/issues/528)  
 **Card review:** [Issue #405](https://github.com/tymonius/Gauntlet/issues/405)  
 **Deck terminology:** [Issue #539](https://github.com/tymonius/Gauntlet/issues/539)
@@ -18,9 +18,12 @@ For v0.6.3:
 - **Deck** means the constructed set of ordinary cards selected under Deck-construction rules.
 - **Draw Pile** means the shuffled in-play pile formed from the Deck during setup.
 - **Advantage** and **Disadvantage** are capitalized defined game terms. Card-facing instructions use `gain Advantage`, `gain double Advantage`, and `gain Disadvantage`; `double` remains a normal modifier rather than a separate keyword.
+- **Remove / Removed** is a defined Asset event: an Asset is Removed when a rule or effect forces it to leave play. The underlying instruction determines its destination. Asset loss caused by a decreased Asset limit counts as Removal; voluntary Asset use/discard and normal self-expiration do not.
+- Natural destination verbs remain preferred when they are clearer than explicitly saying `Remove`. A card may therefore `discard 1 Asset` while the shared rules classify that forced loss as Removal.
+- When Asset ownership is already clear, use `your Assets`, `opposing Assets`, or `their Assets` rather than `Asset(s) you control` / `Asset(s) they control` boilerplate.
 - The former broader use of `deck` for a player's Deck plus Leader, Territories, faction supplements, and other components is retired without a replacement formal umbrella term.
 
-## Five-stage normalization build
+## Six-stage normalization build
 
 ### 1. Conservative automatic conventions
 
@@ -72,9 +75,24 @@ This stage also repairs and validates the malformed intermediate **Sanctions: Bl
 
 The complete shorthand semantics are governed by `docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md`.
 
+### 6. Asset ownership and Removal language
+
+`scripts/apply-v063-asset-language.mjs` performs the final shared-language pass before bespoke editing.
+
+It:
+
+- introduces card-facing **Removed** triggers only where another effect cares that involuntary Asset loss occurred;
+- keeps natural verbs such as `discard` and `put ... in the Graveyard` when those instructions are clearer than the keyword;
+- classifies forced Asset loss from a reduced Asset limit as Removal;
+- excludes voluntary Asset use/discard and normal self-expiration from Removal;
+- removes redundant `Asset(s) you control` / `Asset(s) they control` wording where ownership is already established; and
+- validates that obsolete forced-leave-play language and redundant Asset-control boilerplate do not survive in the final candidate.
+
+The pass also applies the same ownership-language cleanup to Territory text when the canonical data contains the affected Territory records.
+
 ## Intentional residuals and limits
 
-Shorthand is not applied blindly.
+Shorthand and defined terminology are not applied blindly.
 
 Examples of information that remains explicit when necessary include:
 
@@ -87,7 +105,7 @@ Examples of information that remains explicit when necessary include:
 - delayed consequences whose later resolution depends on an earlier choice; and
 - card-specific `if able`, timing, source, target, or replacement conditions.
 
-For example, **Rousing Speech** retains `you may draw one card, then discard one card` because the optional compound procedure is clearer than forcing `+1 Card` into that sentence. **Shock and Awe** retains the explicit Breakthrough retreat sequence because its ordering and legality condition are card-specific.
+For example, **Rousing Speech** retains `you may draw one card, then discard one card` because the optional compound procedure is clearer than forcing `+1 Card` into that sentence. **Shock and Awe** retains the explicit Breakthrough retreat sequence because its ordering and legality condition are card-specific. **Sedition** and **Sequestration** retain natural `discard` wording rather than forcing the word `Remove` onto the card face; the shared rule classifies those forced losses as Removal.
 
 ## Density sequence
 
@@ -98,12 +116,13 @@ The v0.6.3 card review therefore proceeds in this order:
 3. general-rule centralization;
 4. Reserve/Tactic shorthand;
 5. broader compact shorthand and reroll cleanup;
-6. recalculate the complete 128-card density ranking;
-7. perform bespoke compression beginning with the remaining densest cards;
-8. review the rest of the pool for smaller card-specific improvements;
-9. distinguish actual mechanics changes from wording/shared-rule changes;
-10. propagate final approved text through canonical data, references, Deckbuilder, rendered cards, browser surfaces, Rules Arbiter, digital implementation, print/export surfaces, starter materials, tests, and governance; and
-11. render every changed card at production size and audit fit.
+6. Asset ownership/Removal language;
+7. recalculate the complete 128-card density ranking;
+8. perform bespoke compression beginning with the remaining densest cards;
+9. review the rest of the pool for smaller card-specific improvements;
+10. distinguish actual mechanics changes from wording/shared-rule changes;
+11. propagate final approved text through canonical data, references, Deckbuilder, rendered cards, browser surfaces, Rules Arbiter, digital implementation, print/export surfaces, starter materials, tests, and governance; and
+12. render every changed card at production size and audit fit.
 
 ## Approved mechanics-sensitive revisions already in scope
 
@@ -134,13 +153,14 @@ node scripts/apply-v063-numeric-shorthand.mjs
 node scripts/apply-v063-compact-shorthand.mjs
 node scripts/apply-v063-natural-advantage-wording.mjs
 node scripts/apply-v063-advantage-capitalization.mjs
+node scripts/apply-v063-asset-language.mjs
 node scripts/validate-v063-advantage-stacking.mjs
 ```
 
 The authoritative pre-bespoke outputs are:
 
 - `artifacts/v0.6.3/Gauntlet_v0.6.3_Compact_Shorthand_Normalized_Candidate.json`
-- `artifacts/v0.6.3/Gauntlet_v0.6.3_Compact_Shorthand_Density.md`
+- `artifacts/v0.6.3/Gauntlet_v0.6.3_Asset_Language_Density.md`
 
 Earlier-stage candidates and reports remain in the artifact for auditability.
 
@@ -155,6 +175,8 @@ This normalization phase is ready for bespoke editing when:
 - no malformed Sanctions text reaches the final candidate;
 - all adopted shorthand has been applied only where semantically exact;
 - Advantage and Disadvantage remain stackable instance-based mechanics and are capitalized on card faces;
+- **Removed** is used only as the defined involuntary Asset-loss event, while natural destination verbs remain available where clearer;
+- redundant `Asset(s) you control` / `Asset(s) they control` language is absent where ownership is already clear;
 - `Deck` / `Draw Pile` terminology is used in the final v0.6.3 candidate;
 - all normalization, Test, and Governance Integrity workflows pass; and
-- the compact-shorthand density report becomes the basis for bespoke card compression.
+- the Asset-language density report becomes the basis for bespoke card compression.
