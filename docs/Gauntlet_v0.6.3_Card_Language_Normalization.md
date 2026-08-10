@@ -11,17 +11,19 @@ Normalize the complete 128-card published v0.6.2 pool before and during bespoke 
 
 The generated v0.6.3 candidates are development artifacts only. The immutable published v0.6.2 package is read as the baseline and is never modified.
 
+The critical process rule is now explicit: **an accepted pool-wide convention is not considered propagated merely because it is documented. It must be represented by a complete-pool migration or validation rule, and finalized bespoke text must match the canonical #405 tracker.**
+
 ## Terminology
 
 For v0.6.3:
 
 - **Deck** means the constructed set of ordinary cards selected under Deck-construction rules.
 - **Draw Pile** means the shuffled in-play pile formed from the Deck during setup.
-- **Advantage** and **Disadvantage** are capitalized defined game terms. Card-facing instructions use `gain Advantage`, `gain double Advantage`, and `gain Disadvantage`; `double` remains a normal modifier rather than a separate keyword.
+- **Advantage** and **Disadvantage** are capitalized defined game terms everywhere on card faces. Card-facing instructions use forms such as `gain Advantage`, `gain double Advantage`, and `gain Disadvantage`; `double` remains a normal modifier rather than a separate keyword.
 - **Remove / Removed** is a defined Asset event: an Asset is Removed when a rule or effect forces it to leave play. The underlying instruction determines its destination. Asset loss caused by a decreased Asset limit counts as Removal; voluntary Asset use/discard and normal self-expiration do not.
 - Natural destination verbs remain preferred when they are clearer than explicitly saying `Remove`. A card may therefore `discard 1 Asset` while the shared rules classify that forced loss as Removal.
 - **Asset** is the sole banked-card effect heading. The former `Activate` heading is retired; optional, triggered, continuous, and Action-timed banked abilities all appear under Asset.
-- When Asset ownership is already clear, use `your Assets`, `opposing Assets`, or `their Assets` rather than `Asset(s) you control` / `Asset(s) they control` boilerplate.
+- Because **Asset** already identifies a banked card, prefer `Asset`, `your Assets`, `opposing Assets`, or `their Assets` over `banked Asset(s)` or `Asset(s) you/they control` unless an accepted card-specific reason requires the longer wording.
 - A card effect usable when the card is committed as either a Gambit or a Tactic has the canonical label **`Gambit/Tactic`**. On the card face, render that label as `Gambit/` on the first line and `Tactic` on the second so the heading column remains narrow.
 - **`Gambit/Tactic` is not a prose effect category.** In sentences, say `Gambit effect`, `Tactic effect`, or `Gambit or Tactic effect` according to the actual scope.
 - In standard 1v1 v0.6.3, card text does not repeat `in a battle involving you`; every battle necessarily involves both players.
@@ -29,10 +31,13 @@ For v0.6.3:
 - Applying or repeating another effect uses one shared procedure for timing legality, control, choices, costs, source-card state, trigger identity, and recursion.
 - Ending a battle **without a winner** uses one shared procedure for result status, unresolved effects, cleanup, and remaining positional consequences.
 - On a physical Overlay card, prefer `place this Overlay` rather than `place this card as an Overlay`.
-- Compact instruction tokens such as `+1 Action`, `−1 Reserve`, `+1 Tactic`, `+2 Cards`, `Retreat +1`, `Advance Front Line 1`, and `Command = 2` are rendered **bold as complete instruction tokens** on card faces. The emphasis is presentation, not part of canonical text.
+- Use natural `In the Aftermath` wording unless a genuinely distinct timing such as `At the end of the Aftermath` or `before battle cards are cleared` matters.
+- `Win —` / `Lose —` shorthand is reserved for genuinely paired or branching outcomes. A lone win/loss condition is written naturally as `if you win` / `if you lose`.
+- **Position** is the defined movement term and is capitalized in player-facing card text. Do not repeat the general rule that movement occurs one Position at a time.
+- Compact instruction tokens such as `+1 Action`, `−1 Reserve`, `+1 Tactic`, `+2 Cards`, `+1 Tactic from Hand`, `+1 Tactic from those cards`, `+1 Tactic using that card`, `Retreat +1`, `Advance Front Line 1`, and `Command = 2` are rendered **bold as complete instruction tokens** on card faces. The emphasis is presentation, not part of canonical text.
 - The former broader use of `deck` for a player's Deck plus Leader, Territories, faction supplements, and other components is retired without a replacement formal umbrella term.
 
-## Eight-stage normalization build
+## Eight semantic normalization stages
 
 ### 1. Conservative automatic conventions
 
@@ -80,7 +85,7 @@ This stage reduces the published pool from **8,108 to 7,840 words** and **47,085
 - concise condition prefixes such as `Attacker —`, `Defender —`, `Counterattack —`, `Win —`, and `Lose —`; and
 - the shared rule that a reroll uses the new result unless expressly stated otherwise.
 
-On rendered card faces, each complete compact instruction token is bolded. Source qualifiers and surrounding prose remain normal weight unless independently emphasized.
+On rendered card faces, each complete compact instruction token is bolded, including an applicable source qualifier. Surrounding prose remains normal weight unless independently emphasized.
 
 This stage also repairs and validates malformed intermediate Sanctions phrases so they cannot reach the final candidate.
 
@@ -112,30 +117,76 @@ It:
 
 The slash label is deliberately limited to canonical data and compact card-face typography. Rules prose continues to use ordinary grammatical role names.
 
-### 8. Exhaustive pool-wide refinement and finalized-text integrity
+### 8. Exhaustive pool-wide refinement and finalized-text propagation
 
-`scripts/apply-v063-poolwide-card-refinements.mjs` is the final normalization gate before bespoke review continues.
-
-Unlike the earlier incremental passes, this stage is deliberately exhaustive. It rechecks the complete generated 128-card pool against every accepted convention that can be mechanically validated and fails when a known obsolete pattern survives.
+`scripts/apply-v063-poolwide-card-refinements.mjs` rechecks the complete generated 128-card pool against accepted conventions and applies the currently finalized bespoke text as the last major text layer.
 
 It currently:
 
 - converts all **34** surviving `Activate` headings to `Asset`, merging the two cards that previously had both headings;
-- removes all **9** redundant `in a battle involving you` phrases;
-- normalizes all **14** legacy physical-Overlay placement phrases to `place this Overlay` wording;
-- finishes the adopted `Attacker —` / `Counterattack —` condition-prefix typography;
+- removes all initially identified redundant `in a battle involving you` phrases;
+- normalizes legacy physical-Overlay placement phrases to `place this Overlay` wording;
+- finishes adopted `Attacker —` / `Counterattack —` condition-prefix typography;
 - centralizes copied/repeated-effect procedure and removes redundant card-specific copied-effect notes;
 - centralizes battles ending without a winner and removes redundant cleanup/result notes;
 - removes Rules Notes already supplied by shared replacement, movement, banking, numeric-modifier, and destination rules;
-- removes stale terminology and a stray publication footer found during the full-pool audit;
-- mirrors the **13 currently finalized bespoke cards** from the single canonical #405 finalized-text tracker as the last text-changing operation; and
-- verifies those 13 entries exactly so no earlier normalization stage can overwrite accepted bespoke wording.
+- removes stale terminology and a stray publication footer found during the complete-pool audit; and
+- mirrors the **13 currently finalized bespoke cards** from the single canonical #405 finalized-text tracker.
 
 The editorial authority for finalized bespoke card text remains the single tracker comment:
 
 - [#405 comment 5221286097](https://github.com/tymonius/Gauntlet/issues/405#issuecomment-5221286097)
 
-The build-stage mirror exists only to propagate those accepted texts into generated artifacts and to detect drift.
+## Post-stage artifact audit and integrity gates
+
+The eight semantic stages are followed by additional safeguards because inspecting the **generated artifact** revealed variants that earlier source-level searches did not catch.
+
+### Generated-artifact cleanup
+
+`scripts/apply-v063-final-artifact-audit.mjs` removes residual shared-rule boilerplate and terminology found only after generating the complete candidate. It currently covers, among other things:
+
+- copied-effect source-zone reminders already guaranteed by the shared copied/repeated-effect rule;
+- redundant `banked Asset(s)` wording outside the deliberately preserved finalized Manifest Destiny text;
+- residual Advantage/Disadvantage capitalization in sentence-initial and non-`gain` constructions; and
+- complete-pool validation that every standalone `Advantage` / `Disadvantage` token is capitalized correctly.
+
+### Final wording integrity
+
+`scripts/finalize-v063-poolwide-integrity.mjs` catches variant forms of accepted conventions and applies small full-pool repairs discovered by generated-artifact inspection, including:
+
+- alternate `involving you` wording;
+- residual `Aftermath of a battle` constructions while preserving genuinely distinct end-of-Aftermath timing;
+- unpaired `Win —` / `Lose —` shorthand;
+- redundant one-Position-at-a-time movement reminders; and
+- lowercase uses of the defined **Position** term.
+
+It also regenerates the final density ranking from the fully refined card text.
+
+### Compatibility-field synchronization
+
+`cards[].effects[]` is the authoritative machine-readable card text within the generated candidate. `scripts/sync-v063-final-card-mirrors.mjs` synchronizes compatibility fields such as `action`, `asset`, `gambit_tactic`, `overlay`, and similar mirrors from `effects[]`, removes obsolete `battle`, `activate`, and `use` fields, and fails if any mirror disagrees with its corresponding effect.
+
+This safeguard was added after artifact inspection found that otherwise-correct final `effects[]` text could coexist with stale compatibility mirrors.
+
+### Live canonical #405 validation
+
+`scripts/validate-v063-finalized-tracker.mjs` reads the canonical #405 finalized-text comment directly through the GitHub API and compares every finalized card section against the generated candidate. It does not rely only on the build's local mirror.
+
+Consequently:
+
+- changing the #405 finalized tracker without propagating the build causes CI to fail;
+- changing the generated candidate away from an accepted finalized card causes CI to fail; and
+- adding another finalized card to the tracker automatically adds it to the live comparison set.
+
+### Rendering validation
+
+The card renderer keeps formatting separate from canonical text.
+
+`scripts/validate-v063-card-rendering-conventions.mjs` and `.github/workflows/validate-v063-card-rendering-conventions.yml` verify that:
+
+- `Gambit/Tactic` is displayed as `Gambit/` over `Tactic` with the prose accessibility label `Gambit or Tactic`;
+- compact instructions are emphasized only for v0.6.3, preserving v0.6.2 rendering; and
+- the **entire** qualified instruction is bolded for forms such as `+1 Tactic from Hand`, `+1 Tactic from those cards`, and `+1 Tactic using that card`, not merely the numeric prefix.
 
 ## Intentional residuals and limits
 
@@ -154,6 +205,8 @@ Examples of information that remains explicit when necessary include:
 
 For example, **Rousing Speech** retains `you may draw one card, then discard one card` because the optional compound procedure is clearer than forcing `+1 Card` into that sentence. **Shock and Awe** retains its explicit Breakthrough ordering because that sequence is card-specific. **Sedition** and **Sequestration** retain natural `discard` wording rather than forcing `Remove` onto the card face; the shared rule classifies those forced losses as Removal.
 
+The finalized **Manifest Destiny** Action currently retains `banked Asset` because #405 is authoritative for finalized bespoke text until that card is explicitly reopened. The final artifact audit allows that one deliberate exception and rejects additional occurrences elsewhere.
+
 ## Density sequence
 
 The v0.6.3 card review therefore proceeds in this order:
@@ -165,13 +218,14 @@ The v0.6.3 card review therefore proceeds in this order:
 5. broader compact shorthand and reroll cleanup;
 6. Asset ownership/Removal language;
 7. Gambit/Tactic effect-heading migration;
-8. exhaustive complete-pool convention/integrity pass plus finalized-text propagation;
-9. recalculate the complete 128-card density ranking;
-10. continue bespoke compression with the remaining genuinely dense cards;
-11. review the rest of the pool for smaller card-specific improvements;
-12. distinguish actual mechanics changes from wording/shared-rule changes;
-13. propagate final approved text through canonical data, references, Deckbuilder, rendered cards, browser surfaces, Rules Arbiter, digital implementation, print/export surfaces, starter materials, tests, and governance; and
-14. render every changed card at production size and audit fit.
+8. exhaustive complete-pool convention pass plus finalized-text propagation;
+9. generated-artifact cleanup, integrity validation, compatibility synchronization, and live #405 comparison;
+10. recalculate the complete 128-card density ranking;
+11. continue bespoke compression with the remaining genuinely dense cards;
+12. review the rest of the pool for smaller card-specific improvements;
+13. distinguish actual mechanics changes from wording/shared-rule changes;
+14. propagate final approved text through canonical data, references, Deckbuilder, rendered cards, browser surfaces, Rules Arbiter, digital implementation, print/export surfaces, starter materials, tests, and governance; and
+15. render every changed card at production size and audit fit.
 
 ## Approved mechanics-sensitive revisions already in scope
 
@@ -179,7 +233,7 @@ The final-stage mirror carries forward every card currently marked finalized in 
 
 ## Generated outputs
 
-The workflow runs:
+The normalization workflow runs, in order:
 
 ```text
 node scripts/build-v063-card-normalization.mjs
@@ -193,6 +247,16 @@ node scripts/apply-v063-asset-language.mjs
 node scripts/validate-v063-advantage-stacking.mjs
 node scripts/apply-v063-gambit-tactic-headings.mjs
 node scripts/apply-v063-poolwide-card-refinements.mjs
+node scripts/apply-v063-final-artifact-audit.mjs
+node scripts/finalize-v063-poolwide-integrity.mjs
+node scripts/sync-v063-final-card-mirrors.mjs
+node scripts/validate-v063-finalized-tracker.mjs
+```
+
+Rendering conventions are validated separately with:
+
+```text
+node scripts/validate-v063-card-rendering-conventions.mjs
 ```
 
 The authoritative current card-text candidate is:
@@ -215,16 +279,19 @@ This normalization phase is ready for continued bespoke editing only when:
 - no unapproved convention residual remains;
 - no malformed Sanctions text reaches the final candidate;
 - all adopted shorthand has been applied only where semantically exact;
-- Advantage and Disadvantage remain stackable instance-based mechanics and are capitalized on card faces;
+- every standalone **Advantage** and **Disadvantage** occurrence is capitalized as a defined term;
 - **Removed** is used only as the defined involuntary Asset-loss event, while natural destination verbs remain available where clearer;
 - `Asset` is the only banked-card effect heading and no `Activate` heading or legacy `activate` field remains;
-- redundant `Asset(s) you control` / `Asset(s) they control` language is absent where ownership is already clear;
+- redundant Asset ownership/control and `banked Asset(s)` wording is absent except for explicitly accepted finalized-card exceptions;
 - no `Battle` effect heading or `Battle effect` prose terminology remains;
 - `Gambit/Tactic` appears only as a canonical/printed heading, never as a prose effect category;
-- no redundant `in a battle involving you` wording remains in the standard 1v1 card pool;
+- no redundant `in a battle involving you` or variant 1v1 scope wording remains;
 - physical Overlay cards use the settled placement wording;
 - copied/repeated-effect and no-winner cleanup reminders are not restated card by card when the shared rule supplies them;
-- every currently finalized #405 card exactly matches the canonical finalized-text tracker;
-- compact instruction tokens render bold on card faces without changing canonical text;
+- unpaired `Win —` / `Lose —` shorthand is absent;
+- defined **Position** is capitalized and redundant one-at-a-time movement reminders are absent;
+- every compatibility field exactly matches its authoritative `effects[]` entry;
+- every currently finalized #405 card exactly matches the live canonical finalized-text tracker;
+- compact instruction tokens render bold as complete instruction phrases on v0.6.3 card faces without changing canonical text or v0.6.2 rendering;
 - `Deck` / `Draw Pile` terminology is used in the final v0.6.3 candidate; and
-- normalization, Test, and Governance Integrity workflows pass.
+- normalization, rendering-convention, Test, Governance Integrity, and applicable render-generation workflows pass.
