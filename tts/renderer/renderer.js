@@ -1,6 +1,8 @@
 (() => {
   const RENDER_TIMEOUT_MS = 30000;
+  const COMPACT_INSTRUCTION_PATTERN = /(?:[+−-]\d+\s+(?:Reserve|Tactics?|Cards?|Actions?|Capital|Influence|Command|Conviction|Battle Total)|Retreat\s+\+\d+|Advance Front Line\s+\d+|(?:Capital|Influence|Command|Conviction)\s*=\s*\d+)/g;
   const catalog = window.GAUNTLET_TTS_CATALOG;
+  const emphasizeCompactInstructions = catalog?.gameVersion === 'v0.6.3';
   const target = document.getElementById('renderTarget');
   const cardId = new URLSearchParams(window.location.search).get('card');
   const card = catalog?.playableCards?.find((item) => item.id === cardId);
@@ -39,17 +41,13 @@
         </header>
         <figure class="card-art${card.artwork ? '' : ' pending-art'}">${art}</figure>
         <div class="card-rules">
-          ${sections.map(([label, text]) => `
-            <section class="rule-section">
-              <h4>${escapeHtml(label)}</h4>
-              <p>${formatText(text)}</p>
-            </section>`).join('')}
+          ${sections.map(([label, text]) => renderRuleSection(label, text)).join('')}
           ${reminder ? `<aside class="card-reminder"><strong>Reminder:</strong> ${formatText(reminder[1])}</aside>` : ''}
         </div>
         <footer class="card-footer">
           <span>${escapeHtml(card.factionLabel)}</span>
           <span>${escapeHtml(footerCenter)}</span>
-          <span>v0.6.2</span>
+          <span>${escapeHtml(catalog?.gameVersion || 'v0.6.2')}</span>
         </footer>
       </div>
     </article>`;
@@ -76,6 +74,18 @@
     fitForTts(element);
     document.body.dataset.renderReady = 'true';
   }, { once: true });
+
+  function renderRuleSection(label, text) {
+    const dualRole = String(label).toLowerCase() === 'gambit/tactic';
+    const heading = dualRole
+      ? '<h4 class="dual-role-heading" aria-label="Gambit or Tactic"><span aria-hidden="true">Gambit/<br>Tactic</span></h4>'
+      : `<h4>${escapeHtml(label)}</h4>`;
+    return `
+      <section class="rule-section${dualRole ? ' dual-role-section' : ''}">
+        ${heading}
+        <p>${formatText(text)}</p>
+      </section>`;
+  }
 
   function elementOverflows(element) {
     return Boolean(element)
@@ -146,7 +156,11 @@
   }
 
   function formatText(value) {
-    return escapeHtml(value).replaceAll('\n', '<br>');
+    const escaped = escapeHtml(value);
+    const emphasized = emphasizeCompactInstructions
+      ? escaped.replace(COMPACT_INSTRUCTION_PATTERN, '<strong>$&</strong>')
+      : escaped;
+    return emphasized.replaceAll('\n', '<br>');
   }
 
   function escapeHtml(value) {

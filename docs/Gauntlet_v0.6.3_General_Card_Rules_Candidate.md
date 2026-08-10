@@ -9,6 +9,18 @@ This document centralizes procedures repeatedly restated on individual cards. Ca
 
 All inherited shared rules remain in force unless expressly revised below.
 
+### Gambit and Tactic effect headings
+
+v0.6.3 no longer uses **Battle** as a printed effect heading.
+
+- **Gambit/Tactic** means the same printed effect is available when the card is committed as either a Gambit or a Tactic. On the card face, this heading is stacked as `Gambit/` over `Tactic` to preserve the narrow heading column.
+- **Gambit** means the effect is available only when the card is committed as a Gambit.
+- **Tactic** means the effect is available only when the card is committed as a Tactic.
+
+The heading identifies eligible battle-card roles; it does not change the effect's printed timing. An effect applies only when its stated timing is reached.
+
+`Gambit/Tactic` is a compact heading, not a prose rules term. In prose, use **Gambit effect**, **Tactic effect**, or **Gambit or Tactic effect** as applicable.
+
 ---
 
 ## 1. Inherent banking Action

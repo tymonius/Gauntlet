@@ -103,6 +103,11 @@ body {
   letter-spacing: 0.025em;
 }
 
+.gauntlet-card.tts-text-only .rule-section h4.dual-role-heading {
+  line-height: 0.88;
+  letter-spacing: 0.04em;
+}
+
 .gauntlet-card.tts-text-only .rule-section + .rule-section {
   margin-top: 0.018in;
   padding-top: 0.012in;

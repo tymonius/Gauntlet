@@ -195,6 +195,10 @@
   column-gap: 0.05in;
 }
 
+.rule-section.dual-role-section {
+  align-items: start;
+}
+
 .rule-section + .rule-section,
 .dense-card .rule-section + .rule-section {
   margin-top: 0.04in;
@@ -207,6 +211,13 @@
   margin: 0;
   font-size: calc(5.45pt * var(--rules-scale));
   line-height: 1;
+}
+
+.rule-section h4.dual-role-heading,
+.dense-card .rule-section h4.dual-role-heading {
+  align-self: start;
+  letter-spacing: 0.055em;
+  line-height: 0.9;
 }
 
 .rule-section p {
