@@ -16,6 +16,7 @@ on:
       - 'scripts/apply-v063-asset-language.mjs'
       - 'scripts/apply-v063-gambit-tactic-headings.mjs'
       - 'scripts/apply-v063-poolwide-card-refinements.mjs'
+      - 'scripts/finalize-v063-poolwide-integrity.mjs'
       - 'scripts/validate-v063-advantage-stacking.mjs'
       - '.github/workflows/build-v063-card-language-normalization.yml'
       - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
@@ -34,6 +35,7 @@ on:
       - 'scripts/apply-v063-asset-language.mjs'
       - 'scripts/apply-v063-gambit-tactic-headings.mjs'
       - 'scripts/apply-v063-poolwide-card-refinements.mjs'
+      - 'scripts/finalize-v063-poolwide-integrity.mjs'
       - 'scripts/validate-v063-advantage-stacking.mjs'
       - '.github/workflows/build-v063-card-language-normalization.yml'
       - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
@@ -86,6 +88,9 @@ jobs:
 
       - name: Apply exhaustive pool-wide refinements and finalized card text
         run: node scripts/apply-v063-poolwide-card-refinements.mjs
+
+      - name: Apply final integrity gate
+        run: node scripts/finalize-v063-poolwide-integrity.mjs
 
       - name: Verify final candidate
         run: |
