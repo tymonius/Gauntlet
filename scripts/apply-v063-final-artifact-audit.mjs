@@ -93,6 +93,15 @@ replaceText(
   'Ignore one Disadvantage affecting you during this battle. If you have no Disadvantage, +1 Battle Total instead.'
 );
 
+// Bound-card cleanup uses the shared Bind default unless a card overrides the
+// destination or creates another exceptional resolution.
+replaceText(
+  'Extraordinary Rendition',
+  'Asset',
+  "The bound card cannot be played, moved, or affected except by this card. Whenever you discard one or more of your Assets, discard this card before any others, if able. When this card leaves play, put the bound card in its owner's Discard Pile.",
+  'The bound card cannot be played, moved, or affected except by this card. Whenever you discard one or more of your Assets, discard this card before any others, if able.'
+);
+
 const playerFacing = (candidate.cards ?? [])
   .flatMap((card) => (card.effects ?? []).flatMap((effect) => [effect.label, effect.text]))
   .join('\n');
@@ -100,7 +109,8 @@ const playerFacing = (candidate.cards ?? [])
 for (const [pattern, description] of [
   [/\bLeave (?:that|the|chosen) card in (?:your|the opponent's|its owner's) (?:Graveyard|Discard Pile)\b/i, 'redundant copied-effect source-zone instruction'],
   [/as though you (?:played|controlled) it/i, 'obsolete copied-effect as-though instruction'],
-  [/Gambit\/Tactic effect/, 'slash heading used as a prose effect category']
+  [/Gambit\/Tactic effect/, 'slash heading used as a prose effect category'],
+  [/When this card leaves play, put the bound card in its owner's Discard Pile\./i, 'redundant shared Bind cleanup']
 ]) {
   if (pattern.test(playerFacing)) {
     throw new Error(`Final artifact audit failed: ${description} (${pattern}).`);
@@ -133,13 +143,14 @@ candidate.normalization = {
     copied_effect_source_zone_redundancy_removed: 3,
     redundant_banked_asset_uses_removed: 7,
     advantage_capitalization_residuals_removed: 3,
+    redundant_default_bind_cleanup_removed: 1,
     source_card_state_inherited_from_shared_rule: true,
     finalized_manifest_destiny_exception_preserved: true
   }
 };
 
 writeFileSync(candidatePath, `${JSON.stringify(candidate, null, 2)}\n`);
-console.log('Applied final generated-artifact cleanup to copied-effect, Asset, and Advantage wording.');
+console.log('Applied final generated-artifact cleanup to copied-effect, Asset, Advantage, and Bind wording.');
 
 function replaceText(cardName, label, from, to) {
   const card = byName.get(cardName);
