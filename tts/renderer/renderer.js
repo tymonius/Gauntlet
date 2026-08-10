@@ -2,6 +2,7 @@
   const RENDER_TIMEOUT_MS = 30000;
   const COMPACT_INSTRUCTION_PATTERN = /(?:[+−-]\d+\s+(?:Reserve|Tactics?|Cards?|Actions?|Capital|Influence|Command|Conviction|Battle Total)|Retreat\s+\+\d+|Advance Front Line\s+\d+|(?:Capital|Influence|Command|Conviction)\s*=\s*\d+)/g;
   const catalog = window.GAUNTLET_TTS_CATALOG;
+  const emphasizeCompactInstructions = catalog?.gameVersion === 'v0.6.3';
   const target = document.getElementById('renderTarget');
   const cardId = new URLSearchParams(window.location.search).get('card');
   const card = catalog?.playableCards?.find((item) => item.id === cardId);
@@ -46,7 +47,7 @@
         <footer class="card-footer">
           <span>${escapeHtml(card.factionLabel)}</span>
           <span>${escapeHtml(footerCenter)}</span>
-          <span>v0.6.2</span>
+          <span>${escapeHtml(catalog?.gameVersion || 'v0.6.2')}</span>
         </footer>
       </div>
     </article>`;
@@ -155,9 +156,11 @@
   }
 
   function formatText(value) {
-    return escapeHtml(value)
-      .replace(COMPACT_INSTRUCTION_PATTERN, '<strong>$&</strong>')
-      .replaceAll('\n', '<br>');
+    const escaped = escapeHtml(value);
+    const emphasized = emphasizeCompactInstructions
+      ? escaped.replace(COMPACT_INSTRUCTION_PATTERN, '<strong>$&</strong>')
+      : escaped;
+    return emphasized.replaceAll('\n', '<br>');
   }
 
   function escapeHtml(value) {
