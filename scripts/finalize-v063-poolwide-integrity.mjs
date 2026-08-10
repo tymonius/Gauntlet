@@ -76,6 +76,10 @@ replaceEffect('Salvage', 'Gambit/Tactic',
   'In the Aftermath, if you win, you may put one card remaining in your Reserve in your Hand instead of your Discard Pile, then discard one card from your Hand.');
 replaceEffect('War Crimes', 'Gambit/Tactic',
   'In the Aftermath, if you win, you may apply the same effect and put this card in your Graveyard.');
+replaceEffect('No Martyrs', 'Asset',
+  'After Tactics are revealed, before dice are rolled, you may discard this card. If the opponent loses, they cannot benefit from effects they control triggered by that loss or resulting retreat; Retreat +1.');
+replaceEffect('No Martyrs', 'Gambit/Tactic',
+  'If the opponent loses, they cannot benefit from effects they control triggered by that loss or resulting retreat; Retreat +1.');
 
 // Shared movement rules already establish one-Position-at-a-time movement.
 replaceEffect("Fate's Toll", 'Action',
@@ -103,6 +107,7 @@ const playerFacing = (candidate.cards ?? [])
 
 const forbiddenPatterns = [
   [/(?:^|\s)(?:Attacker|Defender|Counterattack|Win|Lose):(?=\s)/m, 'stale colon-form condition prefix'],
+  [/\b(?:You|Opponent|Attacker|Defender)\s+(?:win|wins|lose|loses)\s+—/i, 'subject-prefixed unpaired win/loss shorthand'],
   [/\bActivate\b/, 'retired Activate term'],
   [/\bBattle effects?\b/, 'retired Battle-effect prose'],
   [/Gambit\/Tactic effect/, 'slash label used as prose category'],
@@ -154,6 +159,7 @@ candidate.normalization = {
     condition_prefix_colons_forbidden: true,
     aftermath_variants_normalized: true,
     unpaired_win_lose_shorthand_forbidden: true,
+    subject_prefixed_outcome_shorthand_forbidden: true,
     defined_position_capitalized: true,
     accepted_convention_residuals_checked_poolwide: true
   }
