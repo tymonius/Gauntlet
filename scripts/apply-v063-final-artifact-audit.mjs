@@ -72,6 +72,27 @@ replaceText(
   'Complete after you win a battle in which the opponent used an Asset and you used none of your Assets.'
 );
 
+// Advantage and Disadvantage are capitalized defined terms everywhere on card
+// faces, including sentence-initial and non-"gain" constructions.
+replaceText(
+  'Black Covenant',
+  'Tactic',
+  'Gain advantage. +1 Tactic from Hand. In the Aftermath, put this card and that card in your Graveyard.',
+  'Gain Advantage. +1 Tactic from Hand. In the Aftermath, put this card and that card in your Graveyard.'
+);
+replaceText(
+  'Fealty',
+  'Asset',
+  'Opposing card effects cannot give you disadvantage.',
+  'Opposing card effects cannot give you Disadvantage.'
+);
+replaceText(
+  'Fealty',
+  'Gambit/Tactic',
+  'Ignore one disadvantage affecting you during this battle. If you have no disadvantage, +1 Battle Total instead.',
+  'Ignore one Disadvantage affecting you during this battle. If you have no Disadvantage, +1 Battle Total instead.'
+);
+
 const playerFacing = (candidate.cards ?? [])
   .flatMap((card) => (card.effects ?? []).flatMap((effect) => [effect.label, effect.text]))
   .join('\n');
@@ -83,6 +104,16 @@ for (const [pattern, description] of [
 ]) {
   if (pattern.test(playerFacing)) {
     throw new Error(`Final artifact audit failed: ${description} (${pattern}).`);
+  }
+}
+
+for (const card of candidate.cards ?? []) {
+  for (const effect of card.effects ?? []) {
+    for (const match of effect.text.matchAll(/\b(?:advantage|disadvantage)\b/gi)) {
+      if (match[0] !== 'Advantage' && match[0] !== 'Disadvantage') {
+        throw new Error(`Improper Advantage/Disadvantage capitalization on ${card.name} ${effect.label}: ${match[0]}.`);
+      }
+    }
   }
 }
 
@@ -101,13 +132,14 @@ candidate.normalization = {
   generated_artifact_audit: {
     copied_effect_source_zone_redundancy_removed: 3,
     redundant_banked_asset_uses_removed: 7,
+    advantage_capitalization_residuals_removed: 3,
     source_card_state_inherited_from_shared_rule: true,
     finalized_manifest_destiny_exception_preserved: true
   }
 };
 
 writeFileSync(candidatePath, `${JSON.stringify(candidate, null, 2)}\n`);
-console.log('Applied final generated-artifact cleanup to copied-effect and Asset wording.');
+console.log('Applied final generated-artifact cleanup to copied-effect, Asset, and Advantage wording.');
 
 function replaceText(cardName, label, from, to) {
   const card = byName.get(cardName);
