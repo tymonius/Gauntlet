@@ -17,6 +17,7 @@ on:
       - 'scripts/apply-v063-gambit-tactic-headings.mjs'
       - 'scripts/apply-v063-poolwide-card-refinements.mjs'
       - 'scripts/finalize-v063-poolwide-integrity.mjs'
+      - 'scripts/sync-v063-final-card-mirrors.mjs'
       - 'scripts/validate-v063-advantage-stacking.mjs'
       - '.github/workflows/build-v063-card-language-normalization.yml'
       - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
@@ -36,6 +37,7 @@ on:
       - 'scripts/apply-v063-gambit-tactic-headings.mjs'
       - 'scripts/apply-v063-poolwide-card-refinements.mjs'
       - 'scripts/finalize-v063-poolwide-integrity.mjs'
+      - 'scripts/sync-v063-final-card-mirrors.mjs'
       - 'scripts/validate-v063-advantage-stacking.mjs'
       - '.github/workflows/build-v063-card-language-normalization.yml'
       - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
@@ -92,6 +94,9 @@ jobs:
       - name: Apply final integrity gate
         run: node scripts/finalize-v063-poolwide-integrity.mjs
 
+      - name: Synchronize final compatibility fields
+        run: node scripts/sync-v063-final-card-mirrors.mjs
+
       - name: Verify final candidate
         run: |
           node --input-type=module <<'NODE'
@@ -134,6 +139,11 @@ jobs:
               process.exit(1);
             }
           }
+          const mappings = {
+            action: 'Action', gambit_tactic: 'Gambit/Tactic', gambit: 'Gambit', tactic: 'Tactic',
+            asset: 'Asset', overlay: 'Overlay', placement: 'Placement', terms: 'Terms', accepted: 'Accepted',
+            refused: 'Refused', mission: 'Mission', aftermath: 'Aftermath', text: 'Text'
+          };
           const labels = candidate.cards.flatMap((card) => (card.effects ?? []).map((effect) => effect.label));
           if (labels.includes('Battle') || labels.includes('Activate')) {
             console.error('Obsolete Battle or Activate effect heading remains.');
@@ -143,9 +153,22 @@ jobs:
             console.error('Expected exactly 106 Gambit/Tactic effect headings.');
             process.exit(1);
           }
-          if (candidate.cards.some((card) => Object.hasOwn(card, 'battle') || Object.hasOwn(card, 'activate'))) {
-            console.error('Obsolete battle/activate legacy field remains.');
-            process.exit(1);
+          for (const card of candidate.cards) {
+            const effects = new Map((card.effects ?? []).map((effect) => [effect.label, effect.text]));
+            if (Object.hasOwn(card, 'battle') || Object.hasOwn(card, 'activate') || Object.hasOwn(card, 'use')) {
+              console.error(`Obsolete compatibility field remains on ${card.name}.`);
+              process.exit(1);
+            }
+            for (const [field, label] of Object.entries(mappings)) {
+              if (effects.has(label) && card[field] !== effects.get(label)) {
+                console.error(`Stale ${field} compatibility field on ${card.name}.`);
+                process.exit(1);
+              }
+              if (!effects.has(label) && Object.hasOwn(card, field)) {
+                console.error(`Unexpected ${field} compatibility field on ${card.name}.`);
+                process.exit(1);
+              }
+            }
           }
           NODE
 
