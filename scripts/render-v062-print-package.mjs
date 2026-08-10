@@ -68,7 +68,11 @@ async function inspectPdf(filePath) {
   };
 }
 
-const browser = await chromium.launch({ headless: true });
+// Run Chromium through a BrowserServer so teardown can force-terminate the
+// browser process if a normal Playwright connection shutdown would hang. This
+// keeps CI from burning the entire job timeout after all pages have rendered.
+const browserServer = await chromium.launchServer({ headless: true });
+const browser = await chromium.connect(browserServer.wsEndpoint());
 const results = [];
 try {
   for (const output of outputs) {
@@ -151,7 +155,7 @@ try {
     results.push({ ...output, path: filePath, ...pdfInfo, sha256: sha256(filePath) });
   }
 } finally {
-  await browser.close();
+  await browserServer.kill();
 }
 
 async function imposeBooklet(readerPath, bookletPath) {
