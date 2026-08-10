@@ -38,7 +38,8 @@ for (const card of candidate.cards ?? []) {
   for (const entry of card.effects ?? []) {
     if (!['Gambit/Tactic', 'Gambit', 'Tactic'].includes(entry.label)) continue;
     if (entry.text.startsWith('When revealed, ')) {
-      entry.text = entry.text.slice('When revealed, '.length);
+      const remainder = entry.text.slice('When revealed, '.length);
+      entry.text = remainder ? `${remainder[0].toUpperCase()}${remainder.slice(1)}` : remainder;
       redundantRevealLeadsRemoved += 1;
     }
   }
@@ -95,6 +96,11 @@ replaceEffect('No Martyrs', 'Asset',
 replaceEffect('No Martyrs', 'Gambit/Tactic',
   'If the opponent loses, they cannot benefit from effects they control triggered by that loss or resulting retreat; Retreat +1.');
 
+// A negated card never applies its effect, so Armistice does not need to restate
+// that its effect happens only if the card was not negated.
+replaceEffect('Armistice', 'Gambit/Tactic',
+  "The attacker withdraws. Put every other Gambit and Tactic still in battle in its owner's Discard Pile, then put this card in its owner's Graveyard.");
+
 // Shared movement rules already establish one-Position-at-a-time movement.
 replaceEffect("Fate's Toll", 'Action',
   'Put one other card from your Hand in your Graveyard. Move one additional Position this turn.');
@@ -122,6 +128,7 @@ const playerFacing = (candidate.cards ?? [])
 const forbiddenPatterns = [
   [/(?:^|\s)(?:Attacker|Defender|Counterattack|Win|Lose):(?=\s)/m, 'stale colon-form condition prefix'],
   [/\b(?:You|Opponent|Attacker|Defender)\s+(?:win|wins|lose|loses)\s+—/i, 'subject-prefixed unpaired win/loss shorthand'],
+  [/\bif this card is not negated\b/i, 'redundant negation guard'],
   [/\bActivate\b/, 'retired Activate term'],
   [/\bBattle effects?\b/, 'retired Battle-effect prose'],
   [/Gambit\/Tactic effect/, 'slash label used as prose category'],
@@ -178,6 +185,7 @@ candidate.normalization = {
     unpaired_win_lose_shorthand_forbidden: true,
     subject_prefixed_outcome_shorthand_forbidden: true,
     redundant_default_reveal_leads_removed: redundantRevealLeadsRemoved,
+    redundant_negation_guard_removed: true,
     defined_position_capitalized: true,
     accepted_convention_residuals_checked_poolwide: true
   }
