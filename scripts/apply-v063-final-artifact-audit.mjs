@@ -128,8 +128,8 @@ replaceText(
 replaceText(
   'Safe Conduct',
   'Asset',
-  'When you would lose a battle following refused Terms, you may discard this card to withdraw instead. The opponent remains at or takes the contested Position. The battle ends without a winner.',
-  'When you would lose a battle following refused Terms, you may discard this card to withdraw instead. The opponent remains at or takes the contested Position.'
+  'When you would lose a battle following refused Terms, you may discard this card to withdraw instead. The opponent remains at or takes the contested position. The battle ends without a winner.',
+  'When you would lose a battle following refused Terms, you may discard this card to withdraw instead. The opponent remains at or takes the contested position.'
 );
 
 const playerFacing = (candidate.cards ?? [])
