@@ -83,6 +83,13 @@ for (const name of FINALIZED_NAMES) {
   }
 }
 
+// This field belonged to the superseded exception logic in the preceding
+// artifact-audit stage. The final candidate must not claim that exception was
+// preserved after this forward-convention pass removes it.
+if (candidate.normalization?.generated_artifact_audit) {
+  delete candidate.normalization.generated_artifact_audit.finalized_manifest_destiny_exception_preserved;
+}
+
 candidate.normalization = {
   ...(candidate.normalization ?? {}),
   finalized_forward_conventions: {
