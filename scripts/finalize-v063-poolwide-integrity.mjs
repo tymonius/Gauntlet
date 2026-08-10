@@ -1,9 +1,15 @@
 import { readFileSync, writeFileSync } from 'node:fs';
 
+const sourcePath = process.env.V063_POOLWIDE_SOURCE
+  ?? 'artifacts/v0.6.3/Gauntlet_v0.6.3_Compact_Shorthand_Normalized_Candidate.json';
 const candidatePath = process.env.V063_CARD_TEXT_CANDIDATE
   ?? 'artifacts/v0.6.3/Gauntlet_v0.6.3_Card_Text_Candidate.json';
+const reportPath = process.env.V063_POOLWIDE_REPORT
+  ?? 'artifacts/v0.6.3/Gauntlet_v0.6.3_Poolwide_Refinement_Density.md';
 
+const source = JSON.parse(readFileSync(sourcePath, 'utf8'));
 const candidate = JSON.parse(readFileSync(candidatePath, 'utf8'));
+const sourceById = new Map((source.cards ?? []).map((card) => [card.id, card]));
 const byName = new Map((candidate.cards ?? []).map((card) => [card.name, card]));
 
 function effect(cardName, label) {
@@ -154,4 +160,61 @@ candidate.normalization = {
 };
 
 writeFileSync(candidatePath, `${JSON.stringify(candidate, null, 2)}\n`);
+writeFileSync(reportPath, buildReport());
 console.log('Final v0.6.3 card-text integrity gate passed across all 128 cards.');
+
+function words(text) {
+  const matches = String(text ?? '').trim().match(/\b[\p{L}\p{N}][\p{L}\p{N}’'\-+]*\b/gu);
+  return matches ? matches.length : 0;
+}
+
+function cardText(card) {
+  return (card.effects ?? []).map((entry) => `${entry.label}: ${entry.text}`).join(' ');
+}
+
+function buildReport() {
+  const rows = (candidate.cards ?? []).map((card) => {
+    const before = sourceById.get(card.id);
+    if (!before) throw new Error(`Missing source card for density comparison: ${card.id}`);
+    const beforeText = cardText(before);
+    const afterText = cardText(card);
+    return {
+      name: card.name,
+      allegiance: card.allegiance,
+      beforeWords: words(beforeText),
+      afterWords: words(afterText),
+      beforeChars: beforeText.length,
+      afterChars: afterText.length
+    };
+  });
+  const totals = rows.reduce((acc, row) => {
+    acc.beforeWords += row.beforeWords;
+    acc.afterWords += row.afterWords;
+    acc.beforeChars += row.beforeChars;
+    acc.afterChars += row.afterChars;
+    return acc;
+  }, { beforeWords: 0, afterWords: 0, beforeChars: 0, afterChars: 0 });
+  const ranked = [...rows].sort((a, b) => b.afterChars - a.afterChars || b.afterWords - a.afterWords || a.name.localeCompare(b.name));
+
+  return `${[
+    '# Gauntlet v0.6.3 Final Pool-Wide Refinement',
+    '',
+    `**Source:** \`${sourcePath}\`  `,
+    `**Final candidate:** \`${candidatePath}\`  `,
+    `**Cards:** ${rows.length}`,
+    '',
+    '## Aggregate density',
+    '',
+    '| Measure | Before final pool-wide pass | Final candidate | Change |',
+    '|---|---:|---:|---:|',
+    `| Words | ${totals.beforeWords} | ${totals.afterWords} | ${totals.afterWords - totals.beforeWords} |`,
+    `| Characters | ${totals.beforeChars} | ${totals.afterChars} | ${totals.afterChars - totals.beforeChars} |`,
+    '',
+    '## Densest cards in the final candidate',
+    '',
+    '| Rank | Card | Allegiance | Words | Characters | Δ chars |',
+    '|---:|---|---|---:|---:|---:|',
+    ...ranked.slice(0, 40).map((row, index) => `| ${index + 1} | ${row.name} | ${row.allegiance} | ${row.afterWords} | ${row.afterChars} | ${row.afterChars - row.beforeChars} |`),
+    ''
+  ].join('\n')}\n`;
+}
