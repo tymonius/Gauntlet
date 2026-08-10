@@ -72,6 +72,21 @@ replaceText(
   'Complete after you win a battle in which the opponent used an Asset and you used none of your Assets.'
 );
 
+// Asset is itself the banked-card mode; an Asset section does not need to say
+// that its text applies while this card is banked.
+replaceText(
+  'Armistice',
+  'Asset',
+  'While this card is banked, neither player can start a battle. After your normal Draw step at the start of each of your turns, discard two cards from your Hand or discard this card. You cannot voluntarily discard this card at another time.',
+  'Neither player can start a battle. After your normal Draw step at the start of each of your turns, discard two cards from your Hand or discard this card. You cannot voluntarily discard this card at another time.'
+);
+replaceText(
+  'Tariffs',
+  'Asset',
+  'While Tariffs is banked, skip your normal draw. You cannot bank it while you control another banked Tariffs. You cannot voluntarily cause it to leave play during the turn it is banked.',
+  'Skip your normal draw. You cannot bank it while you control another banked Tariffs. You cannot voluntarily cause it to leave play during the turn it is banked.'
+);
+
 // Advantage and Disadvantage are capitalized defined terms everywhere on card
 // faces, including sentence-initial and non-"gain" constructions.
 replaceText(
@@ -141,6 +156,14 @@ for (const card of candidate.cards ?? []) {
       }
     }
   }
+
+  const asset = (card.effects ?? []).find((effect) => effect.label === 'Asset');
+  if (asset) {
+    const redundantLead = new RegExp(`^While (?:this card|${escapeRegex(card.name)}) is banked,\\s*`, 'i');
+    if (redundantLead.test(asset.text)) {
+      throw new Error(`Redundant banked-card lead remains on ${card.name} Asset.`);
+    }
+  }
 }
 
 const remainingBankedAssetUses = [];
@@ -158,6 +181,7 @@ candidate.normalization = {
   generated_artifact_audit: {
     copied_effect_source_zone_redundancy_removed: 3,
     redundant_banked_asset_uses_removed: 7,
+    redundant_asset_banked_leads_removed: 2,
     advantage_capitalization_residuals_removed: 3,
     redundant_default_bind_cleanup_removed: 1,
     redundant_withdrawal_no_winner_phrases_removed: 2,
@@ -176,4 +200,8 @@ function replaceText(cardName, label, from, to) {
   if (!effect) throw new Error(`Effect ${label} not found on ${cardName}.`);
   if (effect.text !== from) throw new Error(`Unexpected current text on ${cardName} ${label}.`);
   effect.text = to;
+}
+
+function escapeRegex(value) {
+  return String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
