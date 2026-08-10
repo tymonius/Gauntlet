@@ -19,6 +19,7 @@ on:
       - 'scripts/apply-v063-final-artifact-audit.mjs'
       - 'scripts/finalize-v063-poolwide-integrity.mjs'
       - 'scripts/sync-v063-final-card-mirrors.mjs'
+      - 'scripts/validate-v063-finalized-tracker.mjs'
       - 'scripts/validate-v063-advantage-stacking.mjs'
       - '.github/workflows/build-v063-card-language-normalization.yml'
       - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
@@ -40,6 +41,7 @@ on:
       - 'scripts/apply-v063-final-artifact-audit.mjs'
       - 'scripts/finalize-v063-poolwide-integrity.mjs'
       - 'scripts/sync-v063-final-card-mirrors.mjs'
+      - 'scripts/validate-v063-finalized-tracker.mjs'
       - 'scripts/validate-v063-advantage-stacking.mjs'
       - '.github/workflows/build-v063-card-language-normalization.yml'
       - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
@@ -47,6 +49,7 @@ on:
 
 permissions:
   contents: read
+  issues: read
 
 jobs:
   normalize:
@@ -101,6 +104,11 @@ jobs:
 
       - name: Synchronize final compatibility fields
         run: node scripts/sync-v063-final-card-mirrors.mjs
+
+      - name: Verify canonical #405 finalized tracker
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/validate-v063-finalized-tracker.mjs
 
       - name: Verify final candidate
         run: |
