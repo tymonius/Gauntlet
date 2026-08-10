@@ -32,7 +32,7 @@ replaceEffect('Capital Punishment', 'Action',
 
 replaceEffect('Sedition', 'Action',
   'The opponent chooses one Asset they control and discards it.',
-  'The opponent discards 1 Asset of their choice.');
+  'The opponent discards 1 Asset.');
 
 replaceEffect('Sedition', 'Battle',
   'The opponent chooses one face-up Asset they control. It is inactive during this battle. If they control no face-up Assets, +1 Battle Total.',
