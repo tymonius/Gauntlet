@@ -17,19 +17,21 @@ v0.6.3 no longer uses **Battle** as a printed effect heading.
 - **Gambit** means the effect is available only when the card is committed as a Gambit.
 - **Tactic** means the effect is available only when the card is committed as a Tactic.
 
-The heading identifies eligible battle-card roles; it does not change the effect's printed timing. An effect applies only when its stated timing is reached.
+The heading identifies eligible battle-card roles; it does not change the effect's printed timing. An effect applies only when its stated timing is reached. If a Gambit or Tactic effect states no later timing, it applies when that card is revealed in that role.
 
 `Gambit/Tactic` is a compact heading, not a prose rules term. In prose, use **Gambit effect**, **Tactic effect**, or **Gambit or Tactic effect** as applicable.
 
 ---
 
-## 1. Inherent banking Action
+## 1. Inherent banking Action and Asset text
 
-A card with an **Asset** or **Activate** effect has an inherent banking Action:
+A card with an **Asset** effect has an inherent banking Action:
 
 > **Bank:** As an Action, play this card from your Hand and bank it.
 
 This inherent Action does not need to be printed on the card.
+
+**Asset is the only banked-card effect heading in v0.6.3.** Asset text may be continuous, triggered, optional, or expressly usable as an Action while the card is banked. The former **Activate** heading is retired. An Asset ability that says `as an Action` still uses the applicable Action permission.
 
 If a card has a printed Action effect that provides a special banking procedure, use that procedure instead. A special banking Action may impose costs, bind cards, draw cards, grant another Action, limit copies, or otherwise change what happens when the card is banked.
 
@@ -51,6 +53,10 @@ Cards therefore do not need phrases such as:
 - `without taking additional Actions`.
 
 An instruction that expressly says **as an Action**, **take an Action**, or otherwise identifies an Action still uses the applicable Action permission.
+
+### Battle scope in standard v0.6.3
+
+The standard v0.6.3 game is 1v1, so every battle involves both players. A battle-timed effect on a player's card therefore does not need to say `in a battle involving you`. The printed timing and other conditions still determine whether the effect can apply.
 
 ---
 
@@ -79,6 +85,8 @@ When an effect permits an **additional Tactic**:
 - it uses the normal Tactic destination unless an effect gives another destination.
 
 Unless an effect says otherwise, the source of a Tactic is the player's **Reserve**.
+
+Multiple applicable `+N Reserve` and `+N Tactic` instructions add together unless a rule or effect expressly says otherwise.
 
 ---
 
@@ -118,6 +126,14 @@ When ownership is already clear from the sentence, prefer:
 - `their Asset` / `their Assets`.
 
 Do not write `Asset you control`, `Assets you control`, `Asset they control`, or equivalent control boilerplate unless a genuine ownership or control ambiguity requires it.
+
+### Bound cards
+
+**Bind** attaches one card to another for as long as the relevant effect requires.
+
+- Unless an effect gives a different instruction, when a card leaves play, cards bound to it are put in their owners' Discard Piles.
+- If a rule or card sets a maximum number of cards that may be bound to a card and that maximum decreases below the number currently bound, immediately choose and discard excess bound cards until the limit is satisfied.
+- A card-specific destination or resolution for a bound card overrides these defaults.
 
 ---
 
@@ -241,21 +257,58 @@ Cards therefore do not need to repeat `use the new result` or `you must use the 
 
 ---
 
-## 10. Card-text consequences
+## 10. Applying and repeating another effect
+
+When an effect tells you to **apply** another card's effect or **repeat** an effect, resolve that effect as a new application at the current timing.
+
+- The effect must be able to apply at the current timing, with its printed conditions and legal targets satisfied.
+- The player instructed to apply or repeat the effect controls that application.
+- Make all choices again and pay all costs again for each new application.
+- Applying another card's effect does not play, set, choose, or otherwise move the source card unless the instruction expressly says so. The source card remains in its current zone.
+- Because the source card was not played, set, or chosen again, triggers that care about those events do not occur merely because its effect was applied or repeated.
+- A copied or repeated effect may create one further application if its own printed text instructs it to do so. That further application cannot create another copied or repeated effect in the same chain.
+
+Cards therefore do not need phrases such as `as though you played it`, `as though you controlled it`, repeated instructions to leave the source card in its zone, or card-specific reminders to remake choices and repay costs.
+
+---
+
+## 11. Battles ending without a winner
+
+When a rule or effect ends a battle **without a winner**:
+
+- neither player wins or loses that battle; withdrawal is not a loss;
+- after the battle-ending instruction resolves, unresolved Gambit or Tactic effects from that battle do not apply unless the ending effect expressly says otherwise;
+- effects that already applied are not undone;
+- complete any remaining non-result Aftermath procedures that are still applicable;
+- clear committed cards and cards remaining in Reserve normally unless the ending effect gives them another destination; and
+- apply normal positional consequences, including Occupation when applicable, based on the Player Tokens that remain after any instructed withdrawal.
+
+An effect conditioned on a player winning or losing does not apply when the battle ends without a winner.
+
+Cards that end a battle without a winner therefore do not need to restate ordinary cleanup, that withdrawal is not a loss, or that already-applied effects remain applied.
+
+---
+
+## 12. Card-text consequences
 
 The v0.6.3 card-language build may remove or replace:
 
 - a printed `Action: Bank this card.` when that is the card's entire banking Action;
+- the former `Activate` heading by folding all banked-card abilities into `Asset`;
+- redundant `in a battle involving you` wording in the standard 1v1 card pool;
 - redundant no-Action disclaimers on directly permitted card procedures;
 - affirmative statements that effect-granted movement may create a battle;
-- repeated additional-Tactic eligibility, face-state, and default-Reserve-source instructions;
+- repeated additional-Tactic eligibility, face-state, timing, destination, and default-Reserve-source instructions;
 - repeated Reserve/Tactic quantity sentences represented by numeric shorthand;
 - routine draw, extra-Action, fixed resource-gain, battle-total, retreat, resource-setting, and Front Line sentences represented by the shorthand above;
 - repeated `use the new result` text after rerolls;
 - repeated Sanction identification/default-expiration clauses;
 - repeated reveal-priority clauses covered by reveal-stage interference;
-- redundant `Asset(s) you control` / `Asset(s) they control` wording where ownership is already clear; and
-- long forced-Asset-loss descriptions when the defined **Removed** event states the needed trigger more directly.
+- copied/repeated-effect reminders covered by the shared application rule;
+- battle-ending cleanup/result reminders covered by the shared no-winner rule;
+- redundant `Asset(s) you control` / `Asset(s) they control` wording where ownership is already clear;
+- long forced-Asset-loss descriptions when the defined **Removed** event states the needed trigger more directly; and
+- `place this card as an Overlay` on a physical Overlay card in favor of the shorter `place this Overlay`.
 
 Advantage/Disadvantage is deliberately **not** reduced to a bare card-facing status label; cards retain `gain advantage`, `gain double advantage`, or equivalent natural wording while the shared stacking rule governs how instances combine.
 
