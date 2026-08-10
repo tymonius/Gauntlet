@@ -18,6 +18,7 @@ on:
       - 'scripts/apply-v063-poolwide-card-refinements.mjs'
       - 'scripts/apply-v063-final-artifact-audit.mjs'
       - 'scripts/finalize-v063-poolwide-integrity.mjs'
+      - 'scripts/apply-v063-finalized-forward-conventions.mjs'
       - 'scripts/sync-v063-final-card-mirrors.mjs'
       - 'scripts/validate-v063-finalized-tracker.mjs'
       - 'scripts/validate-v063-advantage-stacking.mjs'
@@ -40,6 +41,7 @@ on:
       - 'scripts/apply-v063-poolwide-card-refinements.mjs'
       - 'scripts/apply-v063-final-artifact-audit.mjs'
       - 'scripts/finalize-v063-poolwide-integrity.mjs'
+      - 'scripts/apply-v063-finalized-forward-conventions.mjs'
       - 'scripts/sync-v063-final-card-mirrors.mjs'
       - 'scripts/validate-v063-finalized-tracker.mjs'
       - 'scripts/validate-v063-advantage-stacking.mjs'
@@ -101,6 +103,9 @@ jobs:
 
       - name: Apply final integrity gate
         run: node scripts/finalize-v063-poolwide-integrity.mjs
+
+      - name: Apply later conventions to finalized bespoke cards
+        run: node scripts/apply-v063-finalized-forward-conventions.mjs
 
       - name: Synchronize final compatibility fields
         run: node scripts/sync-v063-final-card-mirrors.mjs
