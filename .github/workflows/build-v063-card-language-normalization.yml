@@ -16,6 +16,7 @@ on:
       - 'scripts/apply-v063-asset-language.mjs'
       - 'scripts/apply-v063-gambit-tactic-headings.mjs'
       - 'scripts/apply-v063-poolwide-card-refinements.mjs'
+      - 'scripts/apply-v063-final-artifact-audit.mjs'
       - 'scripts/finalize-v063-poolwide-integrity.mjs'
       - 'scripts/sync-v063-final-card-mirrors.mjs'
       - 'scripts/validate-v063-advantage-stacking.mjs'
@@ -36,6 +37,7 @@ on:
       - 'scripts/apply-v063-asset-language.mjs'
       - 'scripts/apply-v063-gambit-tactic-headings.mjs'
       - 'scripts/apply-v063-poolwide-card-refinements.mjs'
+      - 'scripts/apply-v063-final-artifact-audit.mjs'
       - 'scripts/finalize-v063-poolwide-integrity.mjs'
       - 'scripts/sync-v063-final-card-mirrors.mjs'
       - 'scripts/validate-v063-advantage-stacking.mjs'
@@ -91,6 +93,9 @@ jobs:
       - name: Apply exhaustive pool-wide refinements and finalized card text
         run: node scripts/apply-v063-poolwide-card-refinements.mjs
 
+      - name: Audit generated artifact for shared-rule redundancies
+        run: node scripts/apply-v063-final-artifact-audit.mjs
+
       - name: Apply final integrity gate
         run: node scripts/finalize-v063-poolwide-integrity.mjs
 
@@ -132,7 +137,9 @@ jobs:
             'normal role destination',
             'All rights reserved',
             'place this card as an Overlay',
-            'place this card from your Hand as an Overlay'
+            'place this card from your Hand as an Overlay',
+            'Leave that card in your Graveyard',
+            "Leave that card in the opponent's Graveyard"
           ]) {
             if (text.includes(obsolete)) {
               console.error(`Obsolete, malformed, unnatural, or improperly normalized player-facing text remains: ${obsolete}`);
