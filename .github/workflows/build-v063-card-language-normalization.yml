@@ -14,6 +14,7 @@ on:
       - 'scripts/apply-v063-natural-advantage-wording.mjs'
       - 'scripts/apply-v063-advantage-capitalization.mjs'
       - 'scripts/apply-v063-asset-language.mjs'
+      - 'scripts/apply-v063-gambit-tactic-headings.mjs'
       - 'scripts/validate-v063-advantage-stacking.mjs'
       - '.github/workflows/build-v063-card-language-normalization.yml'
       - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
@@ -30,6 +31,7 @@ on:
       - 'scripts/apply-v063-natural-advantage-wording.mjs'
       - 'scripts/apply-v063-advantage-capitalization.mjs'
       - 'scripts/apply-v063-asset-language.mjs'
+      - 'scripts/apply-v063-gambit-tactic-headings.mjs'
       - 'scripts/validate-v063-advantage-stacking.mjs'
       - '.github/workflows/build-v063-card-language-normalization.yml'
       - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
@@ -77,6 +79,9 @@ jobs:
       - name: Verify Advantage stacking identity
         run: node scripts/validate-v063-advantage-stacking.mjs
 
+      - name: Replace Battle effect headings with Gambit/Tactic
+        run: node scripts/apply-v063-gambit-tactic-headings.mjs
+
       - name: Verify final candidate
         run: |
           node --input-type=module <<'NODE'
@@ -101,17 +106,29 @@ jobs:
             'Asset they control',
             'Assets they control',
             'Before an opposing effect causes this card to leave play',
-            'If you discard this card because your Asset limit decreased'
+            'If you discard this card because your Asset limit decreased',
+            'Battle effect',
+            'Battle effects',
+            'Gambit/Tactic effect'
           ]) {
             if (text.includes(obsolete)) {
               console.error(`Obsolete, malformed, unnatural, or improperly normalized player-facing text remains: ${obsolete}`);
               process.exit(1);
             }
           }
+          const labels = candidate.cards.flatMap((card) => (card.effects ?? []).map((effect) => effect.label));
+          if (labels.includes('Battle')) {
+            console.error('Obsolete Battle effect heading remains.');
+            process.exit(1);
+          }
+          if (labels.filter((label) => label === 'Gambit/Tactic').length !== 106) {
+            console.error('Expected exactly 106 Gambit/Tactic effect headings.');
+            process.exit(1);
+          }
           NODE
 
       - name: Print final shared-normalization density summary
-        run: sed -n '1,90p' artifacts/v0.6.3/Gauntlet_v0.6.3_Asset_Language_Density.md
+        run: sed -n '1,90p' artifacts/v0.6.3/Gauntlet_v0.6.3_Gambit_Tactic_Heading_Density.md
 
       - name: Upload normalization candidates and density reports
         uses: actions/upload-artifact@v4
