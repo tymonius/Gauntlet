@@ -83,7 +83,33 @@ A Sanction may state additional removal conditions. Cards therefore do not need 
 
 ---
 
-## 6. Reveal-stage interference
+## 6. Asset Removal
+
+**Remove** is a defined Asset event. An Asset is **Removed** when a rule or effect forces it to leave play.
+
+- Removal applies regardless of the destination or the natural verb used by the rule or effect. An instruction may `discard` an Asset, put it in a Graveyard, return it to a Hand, or otherwise make it leave play and still cause Removal.
+- If a player's Asset limit decreases below the number of Assets they have banked, every Asset they are forced to discard to return within that limit is Removed. A forced choice of which Asset leaves play still counts as Removal.
+- Voluntarily discarding, spending, returning, or otherwise using one of your own Assets does **not** count as Removal unless a rule expressly says otherwise.
+- An Asset leaving play through its own normal resolution, expiration, or self-removal condition does **not** count as Removal unless a rule expressly says otherwise.
+- **Remove** does not itself assign a destination. Follow the rule or effect that caused the Removal.
+
+Cards should still use the clearest natural instruction for the physical result. For example, `discard 1 Asset` is preferable to forcing the word `Remove` into the sentence when discard is the actual instruction. Use **Remove/Removed** when another rule or effect cares that involuntary Asset loss occurred.
+
+Capitalized **Remove/Removed** carries this defined meaning. Lowercase `remove` may continue to appear in ordinary English with its contextual meaning.
+
+### Asset ownership language
+
+When ownership is already clear from the sentence, prefer:
+
+- `your Asset` / `your Assets`;
+- `opposing Asset` / `opposing Assets`; and
+- `their Asset` / `their Assets`.
+
+Do not write `Asset you control`, `Assets you control`, `Asset they control`, or equivalent control boilerplate unless a genuine ownership or control ambiguity requires it.
+
+---
+
+## 7. Reveal-stage interference
 
 A **reveal-stage interference effect** is an effect of a revealed Gambit or Tactic that reveals, negates, returns, discards, replaces, or otherwise prevents another Gambit or Tactic at that same reveal stage from applying normally.
 
@@ -99,7 +125,7 @@ This does **not** give general priority to every `When revealed` effect. An effe
 
 ---
 
-## 7. Compact card shorthand
+## 8. Compact card shorthand
 
 Routine quantitative instructions may use compact shorthand when timing, subject, source, and eligible set remain unambiguous.
 
@@ -111,7 +137,7 @@ Routine quantitative instructions may use compact shorthand when timing, subject
 
 `+N Tactic` permits N additional Tactics under the shared additional-Tactic rule.
 
-**Reserve is the default Tactic source.** Do not print `from Reserve` merely to restate the default. Print another source only when the effect overrides or narrows it, such as:
+**Reserve is the default Tactic source.** Do not print `from Reserve` merely to restate the default. Print another source only when the effect overrides or narrows the default, such as:
 
 - `+1 Tactic from Hand`
 - `+1 Tactic from those cards`
@@ -195,7 +221,7 @@ The prefix scopes only the clause that follows it. More complex conditions remai
 
 ---
 
-## 8. Rerolls use the new result
+## 9. Rerolls use the new result
 
 When a rule or effect causes a die to be rerolled, the reroll replaces the result it rerolls and the new result is used unless the rule or effect expressly says otherwise.
 
@@ -203,7 +229,7 @@ Cards therefore do not need to repeat `use the new result` or `you must use the 
 
 ---
 
-## 9. Card-text consequences
+## 10. Card-text consequences
 
 The v0.6.3 card-language build may remove or replace:
 
@@ -214,8 +240,10 @@ The v0.6.3 card-language build may remove or replace:
 - repeated Reserve/Tactic quantity sentences represented by numeric shorthand;
 - routine draw, extra-Action, fixed resource-gain, battle-total, retreat, resource-setting, and Front Line sentences represented by the shorthand above;
 - repeated `use the new result` text after rerolls;
-- repeated Sanction identification/default-expiration clauses; and
-- repeated reveal-priority clauses covered by reveal-stage interference.
+- repeated Sanction identification/default-expiration clauses;
+- repeated reveal-priority clauses covered by reveal-stage interference;
+- redundant `Asset(s) you control` / `Asset(s) they control` wording where ownership is already clear; and
+- long forced-Asset-loss descriptions when the defined **Removed** event states the needed trigger more directly.
 
 Advantage/Disadvantage is deliberately **not** reduced to a bare card-facing status label; cards retain `gain advantage`, `gain double advantage`, or equivalent natural wording while the shared stacking rule governs how instances combine.
 
