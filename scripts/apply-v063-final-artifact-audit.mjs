@@ -102,6 +102,21 @@ replaceText(
   'The bound card cannot be played, moved, or affected except by this card. Whenever you discard one or more of your Assets, discard this card before any others, if able.'
 );
 
+// Withdrawal already ends a battle without a winner. Cards state only their
+// exceptional withdrawal trigger and any nondefault positional/destination result.
+replaceText(
+  'Armistice',
+  'Gambit/Tactic',
+  "When revealed, if this card is not negated, the attacker withdraws and the battle ends without a winner. Put every other Gambit and Tactic still in battle in its owner's Discard Pile, then put this card in its owner's Graveyard.",
+  "When revealed, if this card is not negated, the attacker withdraws. Put every other Gambit and Tactic still in battle in its owner's Discard Pile, then put this card in its owner's Graveyard."
+);
+replaceText(
+  'Safe Conduct',
+  'Asset',
+  'When you would lose a battle following refused Terms, you may discard this card to withdraw instead. The opponent remains at or takes the contested Position. The battle ends without a winner.',
+  'When you would lose a battle following refused Terms, you may discard this card to withdraw instead. The opponent remains at or takes the contested Position.'
+);
+
 const playerFacing = (candidate.cards ?? [])
   .flatMap((card) => (card.effects ?? []).flatMap((effect) => [effect.label, effect.text]))
   .join('\n');
@@ -110,7 +125,8 @@ for (const [pattern, description] of [
   [/\bLeave (?:that|the|chosen) card in (?:your|the opponent's|its owner's) (?:Graveyard|Discard Pile)\b/i, 'redundant copied-effect source-zone instruction'],
   [/as though you (?:played|controlled) it/i, 'obsolete copied-effect as-though instruction'],
   [/Gambit\/Tactic effect/, 'slash heading used as a prose effect category'],
-  [/When this card leaves play, put the bound card in its owner's Discard Pile\./i, 'redundant shared Bind cleanup']
+  [/When this card leaves play, put the bound card in its owner's Discard Pile\./i, 'redundant shared Bind cleanup'],
+  [/\bwithdraws?[^.]*battle ends without a winner\b|\bwithdraw instead\.[^.]*\bThe battle ends without a winner\./i, 'redundant no-winner explanation after withdrawal']
 ]) {
   if (pattern.test(playerFacing)) {
     throw new Error(`Final artifact audit failed: ${description} (${pattern}).`);
@@ -144,13 +160,14 @@ candidate.normalization = {
     redundant_banked_asset_uses_removed: 7,
     advantage_capitalization_residuals_removed: 3,
     redundant_default_bind_cleanup_removed: 1,
+    redundant_withdrawal_no_winner_phrases_removed: 2,
     source_card_state_inherited_from_shared_rule: true,
     finalized_manifest_destiny_exception_preserved: true
   }
 };
 
 writeFileSync(candidatePath, `${JSON.stringify(candidate, null, 2)}\n`);
-console.log('Applied final generated-artifact cleanup to copied-effect, Asset, Advantage, and Bind wording.');
+console.log('Applied final generated-artifact cleanup to copied-effect, Asset, Advantage, Bind, and withdrawal wording.');
 
 function replaceText(cardName, label, from, to) {
   const card = byName.get(cardName);
