@@ -13,6 +13,7 @@ on:
       - 'scripts/apply-v063-compact-shorthand.mjs'
       - 'scripts/apply-v063-natural-advantage-wording.mjs'
       - 'scripts/apply-v063-advantage-capitalization.mjs'
+      - 'scripts/apply-v063-asset-language.mjs'
       - 'scripts/validate-v063-advantage-stacking.mjs'
       - '.github/workflows/build-v063-card-language-normalization.yml'
       - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
@@ -28,6 +29,7 @@ on:
       - 'scripts/apply-v063-compact-shorthand.mjs'
       - 'scripts/apply-v063-natural-advantage-wording.mjs'
       - 'scripts/apply-v063-advantage-capitalization.mjs'
+      - 'scripts/apply-v063-asset-language.mjs'
       - 'scripts/validate-v063-advantage-stacking.mjs'
       - '.github/workflows/build-v063-card-language-normalization.yml'
       - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
@@ -69,6 +71,9 @@ jobs:
       - name: Capitalize Advantage and Disadvantage terms
         run: node scripts/apply-v063-advantage-capitalization.mjs
 
+      - name: Apply Asset ownership and Removal language
+        run: node scripts/apply-v063-asset-language.mjs
+
       - name: Verify Advantage stacking identity
         run: node scripts/validate-v063-advantage-stacking.mjs
 
@@ -90,17 +95,23 @@ jobs:
             'gain advantage',
             'gain double advantage',
             'gain disadvantage',
-            'gains disadvantage'
+            'gains disadvantage',
+            'Asset you control',
+            'Assets you control',
+            'Asset they control',
+            'Assets they control',
+            'Before an opposing effect causes this card to leave play',
+            'If you discard this card because your Asset limit decreased'
           ]) {
             if (text.includes(obsolete)) {
-              console.error(`Obsolete, malformed, unnatural, or improperly capitalized player-facing text remains: ${obsolete}`);
+              console.error(`Obsolete, malformed, unnatural, or improperly normalized player-facing text remains: ${obsolete}`);
               process.exit(1);
             }
           }
           NODE
 
       - name: Print final shared-normalization density summary
-        run: sed -n '1,90p' artifacts/v0.6.3/Gauntlet_v0.6.3_Compact_Shorthand_Density.md
+        run: sed -n '1,90p' artifacts/v0.6.3/Gauntlet_v0.6.3_Asset_Language_Density.md
 
       - name: Upload normalization candidates and density reports
         uses: actions/upload-artifact@v4
