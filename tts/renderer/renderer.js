@@ -1,6 +1,6 @@
 (() => {
   const RENDER_TIMEOUT_MS = 30000;
-  const COMPACT_INSTRUCTION_PATTERN = /(?:[+−-]\d+\s+(?:Reserve|Tactics?|Cards?|Actions?|Capital|Influence|Command|Conviction|Battle Total)|Retreat\s+\+\d+|Advance Front Line\s+\d+|(?:Capital|Influence|Command|Conviction)\s*=\s*\d+)/g;
+  const COMPACT_INSTRUCTION_PATTERN = /(?:[+−-]\d+\s+(?:Reserve|Cards?|Actions?|Capital|Influence|Command|Conviction|Battle Total)|[+−-]\d+\s+Tactics?(?:\s+(?:(?:from|using)\s+(?:Hand|those cards|that card|the stored card)))?|Retreat\s+\+\d+|Advance Front Line\s+\d+|(?:Capital|Influence|Command|Conviction)\s*=\s*\d+)/g;
   const catalog = window.GAUNTLET_TTS_CATALOG;
   const emphasizeCompactInstructions = catalog?.gameVersion === 'v0.6.3';
   const target = document.getElementById('renderTarget');
