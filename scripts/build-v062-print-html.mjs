@@ -75,6 +75,16 @@ const faviconHrefs = [
   '/apple-touch-icon.png?v=20260804-1',
 ];
 
+const analyticsMeasurementId = 'G-8YYYZJGGPE';
+const googleAnalyticsTag = `  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=${analyticsMeasurementId}"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', '${analyticsMeasurementId}');
+  </script>`;
+
 const normalize = (value) => String(value).replace(/\r\n/g, '\n');
 const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'utf8');
 
@@ -113,8 +123,24 @@ function synchronizeSiteFavicons(relativePath, content) {
   return output.replace(viewport, `${viewport}${faviconLinks.join('\n')}\n`);
 }
 
+function synchronizeGoogleAnalytics(relativePath, content) {
+  let output = normalize(content);
+  if (!relativePath.startsWith('v0.6.2/print/')) return output;
+  if (output.includes(analyticsMeasurementId)) return output;
+  if (output.includes('googletagmanager.com/gtag/js?id=')) {
+    failures.push(`${relativePath} contains a different Google Analytics tag.`);
+    return output;
+  }
+  if (!/<head(?:\s[^>]*)?>/i.test(output)) {
+    failures.push(`Cannot place Google Analytics tag in ${relativePath}: missing head element.`);
+    return output;
+  }
+  return output.replace(/<head(?:\s[^>]*)?>/i, (head) => `${head}\n${googleAnalyticsTag}`);
+}
+
 function synchronizeStandaloneHtml(relativePath, content) {
   let output = synchronizeSiteFavicons(relativePath, content);
+  output = synchronizeGoogleAnalytics(relativePath, output);
   if (relativePath === 'v0.6.2/print/player-mat.html') {
     const oldActionHeading = '<div class="zone-heading"><h3>Action Reminder</h3><span>Normally one total</span></div>';
     const currentActionHeading = '<div class="zone-heading"><h3>Action Reminder</h3><span>1 Action · two normal Action Opportunities</span></div>';
@@ -262,6 +288,7 @@ function page(document, markdown) {
   return `<!doctype html>
 <html lang="en">
 <head>
+${googleAnalyticsTag}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 ${faviconLinks.join('\n')}
