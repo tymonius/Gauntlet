@@ -1,0 +1,115 @@
+name: Build v0.6.3 player-facing candidates
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-v063-player-facing-candidates.yml'
+      - 'scripts/generate-v063-player-facing-candidates.mjs'
+      - 'scripts/sync-v063-rulebook-card-text.mjs'
+      - 'scripts/normalize-v063-player-facing-candidates.mjs'
+      - 'scripts/validate-v063-player-facing-candidates.mjs'
+      - 'scripts/build-v063-card-normalization.mjs'
+      - 'scripts/finalize-v063-card-conventions.mjs'
+      - 'scripts/apply-v063-general-card-rules.mjs'
+      - 'scripts/apply-v063-numeric-shorthand.mjs'
+      - 'scripts/apply-v063-compact-shorthand.mjs'
+      - 'scripts/apply-v063-natural-advantage-wording.mjs'
+      - 'scripts/apply-v063-advantage-capitalization.mjs'
+      - 'scripts/apply-v063-asset-language.mjs'
+      - 'scripts/validate-v063-advantage-stacking.mjs'
+      - 'scripts/apply-v063-gambit-tactic-headings.mjs'
+      - 'scripts/apply-v063-poolwide-card-refinements.mjs'
+      - 'scripts/apply-v063-final-artifact-audit.mjs'
+      - 'scripts/finalize-v063-poolwide-integrity.mjs'
+      - 'scripts/apply-v063-finalized-forward-conventions.mjs'
+      - 'scripts/sync-v063-final-card-mirrors.mjs'
+      - 'scripts/validate-v063-finalized-tracker.mjs'
+      - 'docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md'
+      - 'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md'
+      - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
+      - 'releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md'
+      - 'releases/v0.6.2/Gauntlet_v0.6.2_First_Game_Guide.md'
+      - 'releases/v0.6.2/Gauntlet_v0.6.2_Reference_Guide.md'
+  push:
+    branches: [agent/v063-player-facing-candidates]
+    paths:
+      - '.github/workflows/build-v063-player-facing-candidates.yml'
+      - 'scripts/generate-v063-player-facing-candidates.mjs'
+      - 'scripts/sync-v063-rulebook-card-text.mjs'
+      - 'scripts/normalize-v063-player-facing-candidates.mjs'
+      - 'scripts/validate-v063-player-facing-candidates.mjs'
+      - 'scripts/build-v063-card-normalization.mjs'
+      - 'scripts/finalize-v063-card-conventions.mjs'
+      - 'scripts/apply-v063-general-card-rules.mjs'
+      - 'scripts/apply-v063-numeric-shorthand.mjs'
+      - 'scripts/apply-v063-compact-shorthand.mjs'
+      - 'scripts/apply-v063-natural-advantage-wording.mjs'
+      - 'scripts/apply-v063-advantage-capitalization.mjs'
+      - 'scripts/apply-v063-asset-language.mjs'
+      - 'scripts/validate-v063-advantage-stacking.mjs'
+      - 'scripts/apply-v063-gambit-tactic-headings.mjs'
+      - 'scripts/apply-v063-poolwide-card-refinements.mjs'
+      - 'scripts/apply-v063-final-artifact-audit.mjs'
+      - 'scripts/finalize-v063-poolwide-integrity.mjs'
+      - 'scripts/apply-v063-finalized-forward-conventions.mjs'
+      - 'scripts/sync-v063-final-card-mirrors.mjs'
+      - 'scripts/validate-v063-finalized-tracker.mjs'
+      - 'docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md'
+      - 'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: read
+
+jobs:
+  build-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build final v0.6.3 card-text candidate
+        run: |
+          node scripts/build-v063-card-normalization.mjs
+          node scripts/finalize-v063-card-conventions.mjs
+          node scripts/apply-v063-general-card-rules.mjs
+          node scripts/apply-v063-numeric-shorthand.mjs
+          node scripts/apply-v063-compact-shorthand.mjs
+          node scripts/apply-v063-natural-advantage-wording.mjs
+          node scripts/apply-v063-advantage-capitalization.mjs
+          node scripts/apply-v063-asset-language.mjs
+          node scripts/validate-v063-advantage-stacking.mjs
+          node scripts/apply-v063-gambit-tactic-headings.mjs
+          node scripts/apply-v063-poolwide-card-refinements.mjs
+          node scripts/apply-v063-final-artifact-audit.mjs
+          node scripts/finalize-v063-poolwide-integrity.mjs
+          node scripts/apply-v063-finalized-forward-conventions.mjs
+          node scripts/sync-v063-final-card-mirrors.mjs
+          node scripts/validate-v063-finalized-tracker.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Generate player-facing candidates
+        run: |
+          node scripts/generate-v063-player-facing-candidates.mjs
+          node scripts/sync-v063-rulebook-card-text.mjs
+          node scripts/normalize-v063-player-facing-candidates.mjs
+
+      - name: Validate player-facing propagation
+        run: node scripts/validate-v063-player-facing-candidates.mjs
+
+      - name: Upload review candidates
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-v063-player-facing-candidates
+          path: |
+            artifacts/v0.6.3/player-facing/*.md
+            artifacts/v0.6.3/Gauntlet_v0.6.3_Card_Text_Candidate.json
+          if-no-files-found: error
