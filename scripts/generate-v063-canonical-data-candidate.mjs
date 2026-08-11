@@ -185,7 +185,7 @@ data.card_rules = {
 
 data.cards = data.cards.map((card) => ({
   ...card,
-  source_candidate: 'artifacts/v0.6.3/Gauntlet_v0.6.3_Card_Text_Candidate.json',
+  v063_source: 'artifacts/v0.6.3/Gauntlet_v0.6.3_Card_Text_Candidate.json',
 }));
 
 data.starter_decks = {
