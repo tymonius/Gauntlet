@@ -20,7 +20,6 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-
           renderer = Path('scripts/render-v062-print-package.mjs')
           text = renderer.read_text()
           replacements = [
@@ -36,21 +35,13 @@ jobs:
                   raise SystemExit(f'Expected renderer marker not found: {old[:80]}')
               text = text.replace(old, new, 1)
           renderer.write_text(text)
-
-          workflow = Path('.github/workflows/publish-v062-print-package.yml')
-          text = workflow.read_text()
-          old = '        run: npm run print:v062:build'
-          new = '        run: timeout 45s npm run print:v062:build'
-          if old not in text:
-              raise SystemExit('Expected print build workflow command not found')
-          workflow.write_text(text.replace(old, new, 1))
           PY
 
-      - name: Commit print-build diagnostics
+      - name: Commit renderer diagnostics
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add scripts/render-v062-print-package.mjs .github/workflows/publish-v062-print-package.yml
-          git diff --cached --quiet && { echo "No diagnostic changes to commit."; exit 0; }
-          git commit -m "Instrument v0.6.2 print build stages"
+          git add scripts/render-v062-print-package.mjs
+          git diff --cached --quiet && { echo "No renderer diagnostic changes to commit."; exit 0; }
+          git commit -m "Instrument v0.6.2 print renderer stages"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
