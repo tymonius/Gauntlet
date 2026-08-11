@@ -60,6 +60,22 @@ setEffects('Sleeper Network', [
   ['Asset', 'At the end of each later turn, you may bind 1 card from your Hand face down. Maximum: number of Territories you control.\n\nAs an Action, put this card in your Graveyard and reveal its bound cards. Play each bound card you can for its Action effect; discard the rest.\n\nIf this card is Removed, reveal its bound cards; immediately play 1 for its Action effect and discard the rest.']
 ]);
 
+// Card-size formatting uses single line breaks for choices/list items and
+// reserves blank lines for genuinely separate paragraphs. Remove inherited
+// paragraph gaps that do not carry semantic structure on the long-card faces.
+replaceEffectText(
+  'Trade Concessions',
+  'Accepted',
+  'The opponent chooses one available option:\n\n- +2 Cards.\n- Bank one eligible card from Hand. Then put this card in your Discard Pile; +1 Card.',
+  'The opponent chooses one available option:\n- +2 Cards.\n- Bank one eligible card from Hand. Then put this card in your Discard Pile; +1 Card.'
+);
+replaceEffectText(
+  'Nonbinding Resolution',
+  'Accepted',
+  'If the Proposal is unratified, the opponent chooses one before ratification:\n\n- Ratify it normally.\n- Leave it unratified; +2 Influence. After the accepted Terms conclude, put this card in your Discard Pile, then +1 Card.',
+  'If the Proposal is unratified, the opponent chooses one before ratification:\n- Ratify it normally.\n- Leave it unratified; +2 Influence. After the accepted Terms conclude, put this card in your Discard Pile, then +1 Card.'
+);
+
 const mappings = {
   action: 'Action',
   gambit_tactic: 'Gambit/Tactic',
@@ -126,7 +142,8 @@ candidate.normalization = {
     leveraged_buyout_tracker_spacing_synced: true,
     sleeper_network_one_card_per_turn_cadence_preserved: true,
     sleeper_network_dynamic_bound_card_maximum_preserved: true,
-    compact_choice_line_breaks_applied: ['Shock and Awe', 'Margin Loan']
+    compact_choice_line_breaks_applied: ['Shock and Awe', 'Margin Loan', 'Trade Concessions', 'Nonbinding Resolution'],
+    long_card_blank_line_cleanup_applied: ['Leveraged Buyout']
   },
   final_mirror_sync: {
     synchronized_fields: synchronizedFields,
@@ -189,6 +206,15 @@ function setEffects(cardName, effects) {
   if (!card) throw new Error(`Card not found: ${cardName}.`);
   card.effects = effects.map(([label, text]) => ({ label, text }));
   delete card.rules_notes;
+}
+
+function replaceEffectText(cardName, label, from, to) {
+  const card = byName.get(cardName);
+  if (!card) throw new Error(`Card not found: ${cardName}.`);
+  const effect = (card.effects ?? []).find((entry) => entry.label === label);
+  if (!effect) throw new Error(`Effect ${label} not found on ${cardName}.`);
+  if (effect.text !== from) throw new Error(`Unexpected current text on ${cardName} ${label}.`);
+  effect.text = to;
 }
 
 function validate() {
