@@ -1,0 +1,120 @@
+name: Materialize refreshed v0.6.3 Arbiter candidate outputs
+
+on:
+  push:
+    branches: [agent/v063-rules-arbiter-candidate]
+
+permissions:
+  contents: write
+  issues: read
+
+concurrency:
+  group: materialize-v063-arbiter-refresh
+  cancel-in-progress: true
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/v063-rules-arbiter-candidate
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+
+      - name: Build final v0.6.3 card text
+        run: |
+          node scripts/build-v063-card-normalization.mjs
+          node scripts/finalize-v063-card-conventions.mjs
+          node scripts/apply-v063-general-card-rules.mjs
+          node scripts/apply-v063-numeric-shorthand.mjs
+          node scripts/apply-v063-compact-shorthand.mjs
+          node scripts/apply-v063-natural-advantage-wording.mjs
+          node scripts/apply-v063-advantage-capitalization.mjs
+          node scripts/apply-v063-asset-language.mjs
+          node scripts/validate-v063-advantage-stacking.mjs
+          node scripts/apply-v063-gambit-tactic-headings.mjs
+          node scripts/apply-v063-poolwide-card-refinements.mjs
+          node scripts/apply-v063-final-artifact-audit.mjs
+          node scripts/finalize-v063-poolwide-integrity.mjs
+          node scripts/apply-v063-finalized-forward-conventions.mjs
+          node scripts/sync-v063-final-card-mirrors.mjs
+          node scripts/validate-v063-finalized-tracker.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Build player-facing and canonical candidates
+        run: |
+          node scripts/generate-v063-player-facing-candidates.mjs
+          node scripts/sync-v063-rulebook-card-text.mjs
+          node scripts/normalize-v063-player-facing-candidates.mjs
+          node scripts/validate-v063-player-facing-candidates.mjs
+          node scripts/generate-v063-canonical-data-candidate.mjs
+          node scripts/finalize-v063-canonical-data-candidate.mjs
+          node scripts/generate-v063-complete-card-reference-candidate.mjs
+          node scripts/validate-v063-canonical-data-candidate.mjs
+          node scripts/validate-v063-canonical-promotion-boundary.mjs
+
+      - name: Materialize development browser surfaces
+        run: |
+          node scripts/build-v063-browser-development.mjs
+          node scripts/refine-v063-browser-development.mjs
+          node scripts/validate-v063-browser-development.mjs
+          node scripts/validate-v063-browser-site-conventions.mjs
+
+      - name: Render production catalog
+        run: npm run preview:v063:cards
+
+      - name: Materialize long-card review catalog
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync, writeFileSync } from 'node:fs';
+          const production = JSON.parse(readFileSync('artifacts/v0.6.3/production-render/catalog.json', 'utf8'));
+          const path = 'card-design/generated/v0.6.3/long-card-review-catalog.js';
+          const source = readFileSync(path, 'utf8');
+          const review = JSON.parse(source.slice(source.indexOf('{'), source.lastIndexOf('};') + 1));
+          const ids = [
+            'military-shock-and-awe',
+            'financiers-margin-loan',
+            'diplomats-trade-concessions',
+            'intelligence-sleeper-network',
+            'intelligence-fog-of-war',
+            'diplomats-nonbinding-resolution',
+            'military-reserve-force',
+            'mystics-spirit-hollow',
+            'diplomats-demilitarized-zone',
+            'financiers-leveraged-buyout',
+            'mystics-nature-s-altar',
+            'military-field-command'
+          ];
+          const byId = new Map(production.playableCards.map((card) => [card.id, card]));
+          review.reviewCardIds = ids;
+          review.playableCards = ids.map((id) => {
+            const card = byId.get(id);
+            if (!card) throw new Error(`Production catalog missing ${id}.`);
+            return card;
+          });
+          review.missingArtwork = review.playableCards.filter((card) => !card.artwork).map((card) => card.id);
+          writeFileSync(path, `// Generated from the v0.6.3 production-render catalog. Do not hand-edit card text.\nwindow.GAUNTLET_TTS_CATALOG = ${JSON.stringify(review)};\n`);
+          NODE
+          node scripts/validate-v063-long-card-review.mjs
+
+      - name: Commit generated outputs
+        run: |
+          git add v0.6.3/ card-design/generated/v0.6.3/long-card-review-catalog.js
+          if git diff --cached --quiet; then
+            echo "Generated v0.6.3 outputs are already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Materialize refreshed v0.6.3 candidate outputs"
+          git pull --rebase origin agent/v063-rules-arbiter-candidate
+          git push origin HEAD:agent/v063-rules-arbiter-candidate
