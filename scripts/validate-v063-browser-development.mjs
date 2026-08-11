@@ -29,9 +29,10 @@ for (const [name, html] of Object.entries(pages)) {
 
 // The repository's internal-link validator resolves development pages as
 // repository files, so candidate navigation must be relative rather than
-// deployment-root `/v0.6.3/...` links.
+// deployment-root version links.
 for (const [name, html] of Object.entries(pages)) {
   assert(!html.includes('href="/v0.6.3/'), `${name} contains a root-relative v0.6.3 internal link`);
+  assert(!html.includes('href="/v0.6.2/'), `${name} contains a root-relative v0.6.2 internal link`);
 }
 for (const marker of [
   'href="../"',
@@ -134,4 +135,4 @@ assert(pages.home.includes('128 playable cards'));
 assert(pages.home.includes('25 Territories inherited from v0.6.2'));
 assert(pages.home.includes('without changing the published v0.6.2 release'));
 
-console.log('v0.6.3 development browser surfaces validated: integrated unpublished candidate data, current rules/setup/victory, repository-safe relative navigation, non-ordered Territory selection, inherited Territory/starter boundaries, explicit Rulebook source boundary, noindex publication boundary, and no stale Rules Arbiter embed.');
+console.log('v0.6.3 development browser surfaces validated: integrated unpublished candidate data, current rules/setup/victory, repository-safe relative navigation to both candidate and published versions, non-ordered Territory selection, inherited Territory/starter boundaries, explicit Rulebook source boundary, noindex publication boundary, and no stale Rules Arbiter embed.');
