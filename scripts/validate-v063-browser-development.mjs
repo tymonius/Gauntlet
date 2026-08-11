@@ -8,6 +8,7 @@ assert.deepEqual(json, sourceJson, 'Browser candidate JSON must exactly equal th
 assert.equal(json.version, 'v0.6.3-candidate');
 assert.equal(json.cards.length, 128);
 assert.equal(json.territories.length, 25);
+assert.equal(json.normalization.canonical_data_integration.published_release, false);
 
 const pages = {
   home: read('v0.6.3/index.html'),
@@ -42,6 +43,7 @@ for (const marker of [
 
 assert(pages.reference.includes('Faction setup → Draw 4 / discard 1 / keep 3 → arrange Territories'));
 assert(pages.reference.includes('separate legal movement sequence'));
+assert(pages.reference.includes('v0.6.3 development candidate'));
 assert(pages.deckbuilder.includes('Choose three; arrange after opening selection'));
 assert(pages.deckbuilder.includes('Selected Territories'));
 assert(pages.deckbuilder.includes('selection order here is not their setup order'));
@@ -55,12 +57,13 @@ assert(!pages.deckbuilder.includes('<ol id="selectedTerritories">'));
 
 const referenceApp = read('v0.6.3/reference/app.js');
 assert(referenceApp.includes('../data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json'));
-assert(referenceApp.includes('v0.6.3-candidate'));
+assert(referenceApp.includes('const VERSION = "v0.6.3-candidate";'));
 assert(referenceApp.includes('final_territory_capture_required!==false'));
 assert(referenceApp.includes('state.data.cards'));
 
 const deckApp = read('v0.6.3/deckbuilder/app.js');
 assert(deckApp.includes('../data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json'));
+assert(deckApp.includes('const V063_VERSION = "v0.6.3-candidate";'));
 assert(deckApp.includes('../../releases/v0.6.2/Gauntlet_v0.6.2_Starter_Decks.json'), 'Deckbuilder must explicitly inherit the v0.6.2 starter lists until their own propagation pass');
 assert(deckApp.includes('Inherited v0.6.2 starter list'));
 assert(deckApp.includes('Inherited strategy note:'));
@@ -85,5 +88,6 @@ for (const text of [pages.rulebook, pages.start, pages.quick, pages.reference, r
 assert(pages.home.includes('Rules Arbiter remains on the published v0.6.2 corpus'));
 assert(pages.home.includes('128 playable cards'));
 assert(pages.home.includes('25 Territories inherited from v0.6.2'));
+assert(pages.home.includes('without changing the published v0.6.2 release'));
 
-console.log('v0.6.3 development browser surfaces validated: integrated candidate data, current rules/setup/victory, non-ordered Territory selection, inherited starter boundary, noindex publication boundary, and no stale Rules Arbiter embed.');
+console.log('v0.6.3 development browser surfaces validated: integrated unpublished candidate data, current rules/setup/victory, non-ordered Territory selection, inherited starter boundary, noindex publication boundary, and no stale Rules Arbiter embed.');
