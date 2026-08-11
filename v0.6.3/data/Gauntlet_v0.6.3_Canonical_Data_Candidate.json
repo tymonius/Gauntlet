@@ -2194,7 +2194,7 @@
         },
         {
           "label": "Asset",
-          "text": "After income on your next turn, choose:\nRepay — Pay Capital equal to the collateral's value +3; return it to your Hand and discard this card.\nDefault — Put both cards in your Graveyard.\nIf this card is Removed, Default."
+          "text": "After income, you may choose:\nRepay — Pay Capital equal to the collateral's value +3; return it to your Hand and discard this card.\nDefault — Put both cards in your Graveyard.\nWhile this remains banked, you may not draw at the start of your turn.\nIf this card is Removed, Default."
         },
         {
           "label": "Gambit/Tactic",
@@ -2209,7 +2209,7 @@
         "class": "approved-rewrite",
         "source": "docs/v063-card-language-overrides/financiers.json"
       },
-      "asset": "After income on your next turn, choose:\nRepay — Pay Capital equal to the collateral's value +3; return it to your Hand and discard this card.\nDefault — Put both cards in your Graveyard.\nIf this card is Removed, Default.",
+      "asset": "After income, you may choose:\nRepay — Pay Capital equal to the collateral's value +3; return it to your Hand and discard this card.\nDefault — Put both cards in your Graveyard.\nWhile this remains banked, you may not draw at the start of your turn.\nIf this card is Removed, Default.",
       "gambit_tactic": "Before dice are rolled, you may bind 1 card from your Hand or Treasury to this card face up as collateral to gain Capital equal to its value; you may then Subsidize. In the Aftermath: Win — return collateral to your Hand. Otherwise — Default.",
       "v063_source": "artifacts/v0.6.3/Gauntlet_v0.6.3_Card_Text_Candidate.json"
     },
@@ -2856,7 +2856,7 @@
     },
     {
       "id": "neutral-reserves",
-      "name": "Reserves",
+      "name": "Second Line",
       "allegiance": "Neutral",
       "cost": 1,
       "trait": null,
@@ -4120,15 +4120,15 @@
     {
       "id": "territory-smuggler-s-pass",
       "number": 21,
-      "name": "Smuggler's Pass",
+      "name": "Smuggler's Run",
       "arena": false,
-      "text": "During Opening or Denouement, as an Action, while occupying and controlling Smuggler's Pass, a player may stash one card from their Hand face down beneath it. The stashed card does not count toward the Hand limit.\nWhile that player occupies and controls Smuggler's Pass, they may play the stashed card for its Action effect or set it as a Gambit as though it were in their Hand, if eligible. It counts as a card played or set from Hand.\nAt the start of the stashing player's turn, if they control Smuggler's Pass, they may return the stashed card to their Hand. If they lose control of Smuggler's Pass, put the stashed card in its owner's Discard Pile. Only one card may be stashed here.",
+      "text": "During Opening or Denouement, as an Action, while occupying and controlling Smuggler's Run, a player may stash one card from their Hand face down beneath it. The stashed card does not count toward the Hand limit.\nWhile that player occupies and controls Smuggler's Run, they may play the stashed card for its Action effect or set it as a Gambit as though it were in their Hand, if eligible. It counts as a card played or set from Hand.\nAt the start of the stashing player's turn, if they control Smuggler's Run, they may return the stashed card to their Hand. If they lose control of Smuggler's Run, put the stashed card in its owner's Discard Pile. Only one card may be stashed here.",
       "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
       "type": "Territory",
       "effects": [
         {
           "label": "Text",
-          "text": "During Opening or Denouement, as an Action, while occupying and controlling Smuggler's Pass, a player may stash one card from their Hand face down beneath it. The stashed card does not count toward the Hand limit.\nWhile that player occupies and controls Smuggler's Pass, they may play the stashed card for its Action effect or set it as a Gambit as though it were in their Hand, if eligible. It counts as a card played or set from Hand.\nAt the start of the stashing player's turn, if they control Smuggler's Pass, they may return the stashed card to their Hand. If they lose control of Smuggler's Pass, put the stashed card in its owner's Discard Pile. Only one card may be stashed here."
+          "text": "During Opening or Denouement, as an Action, while occupying and controlling Smuggler's Run, a player may stash one card from their Hand face down beneath it. The stashed card does not count toward the Hand limit.\nWhile that player occupies and controls Smuggler's Run, they may play the stashed card for its Action effect or set it as a Gambit as though it were in their Hand, if eligible. It counts as a card played or set from Hand.\nAt the start of the stashing player's turn, if they control Smuggler's Run, they may return the stashed card to their Hand. If they lose control of Smuggler's Run, put the stashed card in its owner's Discard Pile. Only one card may be stashed here."
         }
       ],
       "rules_notes": [
@@ -4535,6 +4535,20 @@
       "manifest_destiny_asset_wording_updated": true,
       "finalized_cards_are_not_exempt_from_later_conventions": true
     },
+    "title_renames": [
+      {
+        "stable_id": "territory-smuggler-s-pass",
+        "from": "Smuggler's Pass",
+        "to": "Smuggler's Run",
+        "effective_version": "v0.6.3"
+      },
+      {
+        "stable_id": "neutral-reserves",
+        "from": "Reserves",
+        "to": "Second Line",
+        "effective_version": "v0.6.3"
+      }
+    ],
     "residual_outlier_revisions": {
       "revised_cards": [
         "Shock and Awe",
@@ -4548,6 +4562,7 @@
         "Rearguard"
       ],
       "finalized_cards_after_pass": 21,
+      "margin_loan_persistent_debt": true,
       "sleeper_network_one_card_per_turn_cadence_preserved": true,
       "sleeper_network_dynamic_bound_card_maximum_preserved": true,
       "compact_choice_line_breaks_applied": [
