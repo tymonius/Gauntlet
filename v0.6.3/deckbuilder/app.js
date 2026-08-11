@@ -6,7 +6,7 @@ const $ = id => document.getElementById(id);
 
 init().catch(error => {
   console.error(error);
-  $("sourceStatus").innerHTML = `<strong class="status-bad">Published release load failed.</strong><p>${escapeHtml(error.message)}</p>`;
+  $("sourceStatus").innerHTML = `<strong class="status-bad">Candidate load failed.</strong><p>${escapeHtml(error.message)}</p>`;
 });
 
 async function init() {
@@ -88,7 +88,7 @@ function renderStarterPreview() {
   $("loadStarter").disabled = !deck;
   $("starterPreview").innerHTML = deck
     ? `<p class="eyebrow">Inherited v0.6.2 starter list</p><h3>${escapeHtml(deck.name)}</h3><p>${escapeHtml(deck.summary)}</p><p><strong>Inherited strategy note:</strong> ${escapeHtml(deck.openingPlan ?? "Establish the faction engine early.")}</p><p><strong>Signature cards:</strong> ${(deck.signatureCards ?? []).map(escapeHtml).join(", ")}</p><p><strong>Territories:</strong> ${deck.territories.map(escapeHtml).join(", ")}. Arrange these three after opening selection.</p>`
-    : "No approved starter matches this faction and Leader.";
+    : "No inherited starter matches this faction and Leader.";
 }
 
 function legalCards() {
@@ -138,7 +138,7 @@ function renderTerritories() {
     const selectedIndex = state.territories.indexOf(territory.id);
     const label = document.createElement("label");
     label.className = "choice";
-    label.innerHTML = `<input type="checkbox" value="${territory.id}"><strong>${escapeHtml(territory.name)}${selectedIndex >= 0 ? ` · ${selectedIndex + 1}` : ""}</strong><span class="muted">${escapeHtml(territory.text)}</span>`;
+    label.innerHTML = `<input type="checkbox" value="${territory.id}"><strong>${escapeHtml(territory.name)}</strong><span class="muted">${escapeHtml(territory.text)}</span>`;
     const input = label.querySelector("input");
     input.checked = selectedIndex >= 0;
     input.disabled = selectedIndex < 0 && state.territories.length >= 3;
@@ -163,7 +163,7 @@ function renderSummary() {
   $("territoryCount").textContent = state.territories.length;
   $("validity").textContent = validation.valid ? "Legal" : "Incomplete";
   $("validity").className = validation.valid ? "status-good" : "status-bad";
-  $("validityDetail").textContent = validation.valid ? "Ready to print" : `${validation.messages.length} issue${validation.messages.length === 1 ? "" : "s"}`;
+  $("validityDetail").textContent = validation.valid ? "Candidate valid" : `${validation.messages.length} issue${validation.messages.length === 1 ? "" : "s"}`;
   $("printTitle").textContent = state.deckName.trim() || selectedStarter()?.name || "Untitled Deck";
   $("printIdentity").textContent = `${selectedLeader().name} · ${selectedFaction().name} · ${count} cards · ${value}/60 value`;
 
@@ -195,7 +195,7 @@ function renderSummary() {
     return item;
   }));
   $("validationMessages").innerHTML = validation.valid
-    ? `<p class="status-good"><strong>Legal v0.6.2 Deck.</strong></p>`
+    ? `<p class="status-good"><strong>Legal v0.6.3 candidate Deck.</strong></p>`
     : `<p class="status-bad"><strong>Resolve before play:</strong></p><ul>${validation.messages.map(message => `<li>${escapeHtml(message)}</li>`).join("")}</ul>`;
 }
 
@@ -216,7 +216,7 @@ function loadStarter() {
   state.cards = {};
   for (const item of deck.cards) {
     const card = state.data.cards.find(entry => entry.name === item.name);
-    if (!card) throw new Error(`Starter card missing from effective data: ${item.name}`);
+    if (!card) throw new Error(`Inherited starter card missing from candidate data: ${item.name}`);
     state.cards[card.id] = item.quantity;
   }
   state.territories = deck.territories.map(name => {

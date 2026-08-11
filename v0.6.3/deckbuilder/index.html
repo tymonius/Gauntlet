@@ -27,13 +27,13 @@
   </header>
   <main class="shell">
     <section class="hero no-print">
-      <div><p class="eyebrow">Development Deckbuilder</p><h1>Build from the full pool.</h1><p class="lede">Choose one faction and Leader, load the approved starter, or customize from every legal Neutral and faction card. Basic and Advanced no longer restrict construction.</p></div>
+      <div><p class="eyebrow">Development Deckbuilder</p><h1>Build from the full pool.</h1><p class="lede">Choose one faction and Leader, load an inherited starter list, or customize from every legal Neutral and faction card. Basic and Advanced no longer restrict construction.</p></div>
       <aside id="sourceStatus" class="panel">Loading integrated v0.6.3 candidate…</aside>
     </section>
 
     <section id="app" class="hidden">
       <section class="panel no-print">
-        <div class="section-heading"><div><p class="eyebrow">Setup</p><h2>Choose your side</h2></div><button id="loadStarter" disabled>Load approved starter</button></div>
+        <div class="section-heading"><div><p class="eyebrow">Setup</p><h2>Choose your side</h2></div><button id="loadStarter" disabled>Load inherited starter</button></div>
         <div class="toolbar"><label>Faction<select id="faction"></select></label><label>Leader<select id="leader"></select></label><label>Deck name<input id="deckName" maxlength="80" placeholder="Untitled Deck" /></label></div>
         <div id="starterPreview" class="card"></div>
       </section>
@@ -54,12 +54,12 @@
           </section>
           <section class="panel no-print section">
             <div class="section-heading"><div><p class="eyebrow">Territories</p><h2>Choose three; arrange after opening selection</h2></div><span class="pill">maximum one Arena</span></div>
-            <div id="territories" class="choice-grid"></div>
+            <p class="muted">Choose the three Territory cards that belong to the Deck. Their selection order here is not their setup order; arrange them after opening selection.</p><div id="territories" class="choice-grid"></div>
           </section>
         </div>
         <aside class="sticky">
           <section class="panel">
-            <p class="eyebrow">Deck list</p><h2 id="printTitle">Untitled Deck</h2><p id="printIdentity"></p><div id="selectedCards"></div><div class="section"><h3>Selected Territories</h3><ol id="selectedTerritories"></ol></div><div id="validationMessages" class="section"></div>
+            <p class="eyebrow">Deck list</p><h2 id="printTitle">Untitled Deck</h2><p id="printIdentity"></p><div id="selectedCards"></div><div class="section"><h3>Selected Territories</h3><ul id="selectedTerritories"></ul></div><div id="validationMessages" class="section"></div>
             <div class="actions no-print"><button id="printDeck">Print / PDF</button><button id="exportDeck" class="secondary">Export JSON</button><button id="downloadCanonical" class="secondary">Download canonical data</button><button id="clearDeck" class="secondary">Clear</button></div>
           </section>
         </aside>
