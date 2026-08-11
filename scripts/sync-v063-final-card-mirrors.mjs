@@ -9,6 +9,15 @@ const reportPath = process.env.V063_POOLWIDE_REPORT
 
 const candidate = JSON.parse(readFileSync(candidatePath, 'utf8'));
 const source = JSON.parse(readFileSync(sourcePath, 'utf8'));
+
+// v0.6.3 title rename. Keep the stable Territory ID so saved Decks and
+// structured references continue to resolve across the release boundary.
+renameCandidateTitle("Smuggler's Pass", "Smuggler's Run");
+const renamedSmugglersRun = (candidate.territories ?? []).find((territory) => territory.id === 'territory-smuggler-s-pass');
+if (!renamedSmugglersRun || renamedSmugglersRun.name !== "Smuggler's Run") {
+  throw new Error("Smuggler's Run Territory rename did not resolve on the stable territory-smuggler-s-pass ID.");
+}
+
 const byName = new Map((candidate.cards ?? []).map((card) => [card.name, card]));
 const beforeById = new Map((source.cards ?? []).map((card) => [card.id, card]));
 
@@ -83,6 +92,15 @@ validate();
 
 candidate.normalization = {
   ...(candidate.normalization ?? {}),
+  title_renames: [
+    ...((candidate.normalization ?? {}).title_renames ?? []).filter((entry) => entry?.stable_id !== 'territory-smuggler-s-pass'),
+    {
+      stable_id: 'territory-smuggler-s-pass',
+      from: "Smuggler's Pass",
+      to: "Smuggler's Run",
+      effective_version: 'v0.6.3'
+    }
+  ],
   residual_outlier_revisions: {
     revised_cards: ['Shock and Awe', 'Margin Loan', 'Martyrdom', 'Rearguard', 'Sleeper Network'],
     newly_finalized_cards: ['Martyrdom', 'Rearguard'],
@@ -99,7 +117,28 @@ candidate.normalization = {
 
 writeFileSync(candidatePath, `${JSON.stringify(candidate, null, 2)}\n`);
 writeFileSync(reportPath, buildReport());
-console.log(`Applied final residual-outlier revisions and synchronized ${synchronizedFields} final card compatibility field(s) to effects[].`);
+console.log(`Applied v0.6.3 title renames, final residual-outlier revisions, and synchronized ${synchronizedFields} final card compatibility field(s) to effects[].`);
+
+function renameCandidateTitle(from, to) {
+  replaceStrings(candidate, from, to);
+}
+
+function replaceStrings(value, from, to) {
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      const entry = value[index];
+      if (typeof entry === 'string') value[index] = entry.replaceAll(from, to);
+      else replaceStrings(entry, from, to);
+    }
+    return;
+  }
+
+  if (!value || typeof value !== 'object') return;
+  for (const [key, entry] of Object.entries(value)) {
+    if (typeof entry === 'string') value[key] = entry.replaceAll(from, to);
+    else replaceStrings(entry, from, to);
+  }
+}
 
 function setEffects(cardName, effects) {
   const card = byName.get(cardName);
