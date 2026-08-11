@@ -95,14 +95,15 @@ assert.equal(data.governing_sources.inherited_base, 'releases/v0.6.2/Gauntlet_v0
 assert.equal(data.starter_decks.version, 'v0.6.2-inherited');
 assert.match(data.starter_decks.status, /pending v0.6.3/i);
 
-// Every playable card must be byte-semantically identical to the final card
-// candidate except for the added provenance pointer.
+// Every playable card must remain byte-semantically identical to the final card
+// candidate. Preserve its existing provenance fields and add only a separate
+// pointer to the v0.6.3 integration source.
 const sourceById = new Map(cardsSource.cards.map((card) => [card.id, card]));
 for (const card of data.cards) {
   const sourceCard = sourceById.get(card.id);
   assert(sourceCard, `Integrated candidate contains unknown card ${card.id}`);
-  const { source_candidate: sourceCandidatePointer, ...integratedCard } = card;
-  assert.equal(sourceCandidatePointer, 'artifacts/v0.6.3/Gauntlet_v0.6.3_Card_Text_Candidate.json');
+  const { v063_source: v063Source, ...integratedCard } = card;
+  assert.equal(v063Source, 'artifacts/v0.6.3/Gauntlet_v0.6.3_Card_Text_Candidate.json');
   assert.deepEqual(integratedCard, sourceCard, `Integrated card drift: ${card.name}`);
 }
 assert.deepEqual(data.territories, cardsSource.territories, 'Territory data must remain inherited unchanged at this stage');
@@ -149,4 +150,4 @@ if (process.env.GITHUB_BASE_REF) {
   assert.deepEqual(modifiedV062, [], `v0.6.3 canonical-data work must not modify immutable v0.6.2 release files: ${modifiedV062.join(', ')}`);
 }
 
-console.log('v0.6.3 canonical-data candidate validated: 128 exact cards, 25 inherited Territories, current setup/victory/card rules, and synchronized Complete Card Reference.');
+console.log('v0.6.3 canonical-data candidate validated: 128 exact cards with preserved provenance, 25 inherited Territories, current setup/victory/card rules, and synchronized Complete Card Reference.');
