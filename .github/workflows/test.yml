@@ -25,5 +25,65 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Test
-        run: npm test
+      - name: Validate assets
+        run: npm run assets:validate
+
+      - name: Validate core card rules
+        run: npm run rules:core-cards:validate
+
+      - name: Validate neutral card rules
+        run: npm run rules:neutral-cards:validate
+
+      - name: Validate content integrity
+        run: npm run content:integrity:validate
+
+      - name: Validate card back
+        run: npm run card:back:validate
+
+      - name: Validate card export geometry
+        run: npm run cards:export-geometry:validate
+
+      - name: Validate campaign print
+        run: npm run campaign:print:validate
+
+      - name: Validate artwork
+        run: npm run artwork:validate
+
+      - name: Validate actions
+        run: npm run actions:validate
+
+      - name: Validate territories
+        run: npm run territories:validate
+
+      - name: Validate territory data
+        run: npm run territories:data:validate
+
+      - name: Validate documented mechanics
+        run: npm run docs:mechanics:validate
+
+      - name: Validate factions
+        run: npm run factions:validate
+
+      - name: Validate v0.6.1 rules
+        run: npm run v061:rules:validate
+
+      - name: Sync v0.6.1 rules
+        run: npm run v061:rules:sync
+
+      - name: Validate v0.6.1 state
+        run: npm run v061:state:validate
+
+      - name: Validate rules
+        run: npm run rules:validate
+
+      - name: Validate documentation links
+        run: npm run docs:links:validate
+
+      - name: Smoke-test card reference browser
+        run: npm run card:reference:browser:smoke
+
+      - name: Validate v0.6.1 release
+        run: npm run release:v061:check
+
+      - name: Validate v0.6.2 release
+        run: npm run release:v062:check
