@@ -15,6 +15,7 @@ import {
   placeStartingTokens,
   resolveOpeningSelection,
   retreatFromOwnFinalTerritoryBeyondGauntlet,
+  victoryFromFinalTerritoryCapture,
   victoryFromLastStand,
   type FrontLineState,
 } from './rules';
@@ -100,6 +101,14 @@ describe('v0.6.3 capture and Run the Gauntlet', () => {
     expect(result.capturedTerritory).toBe(3);
     expect(result.state.control).toEqual({ A: 4, B: 2 });
     expect(result.victory).toBeNull();
+  });
+
+  test('final-Territory capture is itself an immediate Run-the-Gauntlet victory route', () => {
+    expect(victoryFromFinalTerritoryCapture('A')).toEqual({
+      winner: 'A',
+      route: 'final_territory_capture',
+      immediate: true,
+    });
   });
 
   test('any legal capture of the opponent final Territory wins immediately', () => {
