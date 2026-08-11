@@ -8,6 +8,7 @@ on:
       - 'scripts/generate-v063-canonical-data-candidate.mjs'
       - 'scripts/generate-v063-complete-card-reference-candidate.mjs'
       - 'scripts/validate-v063-canonical-data-candidate.mjs'
+      - 'scripts/validate-v063-canonical-promotion-boundary.mjs'
       - 'scripts/build-v063-card-normalization.mjs'
       - 'scripts/finalize-v063-card-conventions.mjs'
       - 'scripts/apply-v063-general-card-rules.mjs'
@@ -34,6 +35,7 @@ on:
       - 'scripts/generate-v063-canonical-data-candidate.mjs'
       - 'scripts/generate-v063-complete-card-reference-candidate.mjs'
       - 'scripts/validate-v063-canonical-data-candidate.mjs'
+      - 'scripts/validate-v063-canonical-promotion-boundary.mjs'
       - 'scripts/build-v063-card-normalization.mjs'
       - 'scripts/finalize-v063-card-conventions.mjs'
       - 'scripts/apply-v063-general-card-rules.mjs'
@@ -99,7 +101,9 @@ jobs:
           node scripts/generate-v063-complete-card-reference-candidate.mjs
 
       - name: Validate canonical-data integration
-        run: node scripts/validate-v063-canonical-data-candidate.mjs
+        run: |
+          node scripts/validate-v063-canonical-data-candidate.mjs
+          node scripts/validate-v063-canonical-promotion-boundary.mjs
 
       - name: Upload canonical-data review package
         uses: actions/upload-artifact@v4
