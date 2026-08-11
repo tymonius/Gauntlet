@@ -25,24 +25,24 @@ Canonical artwork paths:
 
 | Component pool | Total | Canonical on `main` | Approved, pending merge | Still needs artwork |
 | --- | ---: | ---: | ---: | ---: |
-| Playable cards | 128 | 60 | 25 | 43 |
+| Playable cards | 128 | 60 | 26 | 42 |
 | Territory cards | 25 | 2 | 0 | 23 |
-| **All tracked cards** | **153** | **62** | **25** | **66** |
+| **All tracked cards** | **153** | **62** | **26** | **65** |
 
 ### Playable cards by faction
 
 | Faction | Canonical on `main` | Approved, pending merge | Still needs artwork |
 | --- | ---: | ---: | ---: |
-| Neutral | 43 | 6 | 1 |
+| Neutral | 43 | 7 | 0 |
 | Military | 2 | 11 | 0 |
 | Diplomats | 1 | 8 | 4 |
 | Financiers | 12 | 0 | 1 |
 | Intelligence | 2 | 0 | 11 |
 | Mystics | 0 | 0 | 13 |
 | Inquisition | 0 | 0 | 13 |
-| **Playable-card total** | **60** | **25** | **43** |
+| **Playable-card total** | **60** | **26** | **42** |
 
-## Neutral — 7
+## Neutral — 7 pending canonical merge
 
 - [x] Contingency Plan
 - [x] Fealty
@@ -50,7 +50,9 @@ Canonical artwork paths:
 - [x] Pathfinders
 - [x] Redemption
 - [x] Second Line
-- [ ] Landslide
+- [x] Landslide
+
+Neutral artwork still needing creation/selection: **0**.
 
 ## Military — 11 pending canonical merge
 
