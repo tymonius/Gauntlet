@@ -12,6 +12,12 @@ const reference = read('Gauntlet_v0.6.3_Reference_Guide_Candidate.md');
 const returning = read('Gauntlet_v0.6.3_Returning_Player_Changes_Candidate.md');
 const all = [rulebook, firstGame, reference, returning];
 
+function assertSequentialTopLevelSections(name, text) {
+  const numbers = [...text.matchAll(/^# (\d+)\. /gm)].map((match) => Number(match[1]));
+  const expected = Array.from({ length: numbers.length }, (_, index) => index + 1);
+  assert.deepEqual(numbers, expected, `${name} top-level numbered sections must be sequential from 1 without duplicates or gaps`);
+}
+
 for (const [name, text] of [
   ['Rulebook', rulebook],
   ['First Game Guide', firstGame],
@@ -22,6 +28,9 @@ for (const [name, text] of [
   assert(!/^(#{1,6} .+)\n\n\1$/m.test(text), `${name} contains a duplicated adjacent heading`);
 }
 
+assertSequentialTopLevelSections('Rulebook', rulebook);
+assertSequentialTopLevelSections('First Game Guide', firstGame);
+
 const requiredRulebook = [
   'Draw four cards, choose one card from those four, and place it face up in your Discard Pile.',
   'After seeing your opening Hand and opening discard, secretly arrange your three Territory Cards',
@@ -31,6 +40,7 @@ const requiredRulebook = [
   'Territory. Assets. Then Gambits.',
   '**Gambit/Tactic:**',
   'inherent Bank Action',
+  'bank one card from Hand using its inherent **Bank** Action if it has an Asset effect',
   'Asset Removal',
   'Reveal-stage interference',
   'Applying and repeating another effect',
@@ -44,6 +54,7 @@ const requiredFirstGame = [
   'Draw four cards, discard one face up, and keep three',
   'There are two normal victory routes',
   'Before you commit cards to a battle, look beyond your Hand.',
+  'bank a card from Hand using its inherent Bank Action if it has an Asset effect',
 ];
 for (const marker of requiredFirstGame) {
   assert(firstGame.includes(marker), `First Game Guide missing v0.6.3 marker: ${marker}`);
@@ -55,6 +66,7 @@ const requiredReference = [
   'separate legal movement sequence',
   '**Gambit/Tactic**',
   'inherent Bank Action',
+  'bank one card from Hand using its inherent **Bank** Action if it has an Asset effect',
 ];
 for (const marker of requiredReference) {
   assert(reference.includes(marker), `Reference Guide missing v0.6.3 marker: ${marker}`);
@@ -94,4 +106,4 @@ assert(!firstGame.includes("DON'T FORGET THE BOARD"), 'First Game Guide improper
 const combined = all.join('\n');
 assert(!/\bActivate:\b/.test(combined), 'Retired Activate heading survives in generated player-facing candidates');
 
-console.log('v0.6.3 player-facing candidate validation passed: setup, victory, Deck terminology, card headings/general procedures, and distinct battle teaching are propagated.');
+console.log('v0.6.3 player-facing candidate validation passed: setup, victory, Deck terminology, Bank Actions, card headings/general procedures, sequential sections, and distinct battle teaching are propagated.');
