@@ -20,6 +20,7 @@ on:
       - "scripts/sync-v063-final-card-mirrors.mjs"
       - "scripts/validate-v063-finalized-tracker.mjs"
       - "scripts/generate-v063-production-card-preview.mjs"
+      - "scripts/validate-v063-card-rendering-conventions.mjs"
       - "releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json"
       - "images/artwork/cards/**"
       - "images/artwork/card-backgrounds/**"
@@ -67,10 +68,27 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
 
+      - name: Validate v0.6.3 rendering conventions
+        run: node scripts/validate-v063-card-rendering-conventions.mjs
+
       - name: Render candidate at production size
         run: npm run preview:v063:cards
 
+      - name: Require zero production fit warnings
+        run: |
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const measurements = JSON.parse(readFileSync('artifacts/v0.6.3/production-render/measurements.json', 'utf8'));
+          const warnings = measurements.filter((entry) => entry.fit !== 'PASS');
+          if (warnings.length) {
+            console.error(`Production fit warnings remain on ${warnings.length} card(s): ${warnings.map((entry) => entry.name).join(', ')}`);
+            process.exit(1);
+          }
+          console.log(`All ${measurements.length} v0.6.3 candidate cards pass normal production fitting.`);
+          NODE
+
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: v063-production-card-preview
           path: artifacts/v0.6.3/production-render/
