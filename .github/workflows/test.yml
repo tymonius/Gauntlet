@@ -11,42 +11,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout PR branch
+      - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
         with:
-          ref: ${{ github.event.pull_request.head.ref || github.ref }}
+          node-version: 22
 
-      - name: Correct print-package source invariants
-        run: |
-          python - <<'PY'
-          from pathlib import Path
+      - name: Install dependencies
+        run: npm install
 
-          old_order = "const heroPlateAssignments = [\n  {\n    asset: 'images/sketches/hero-plates/alchemist-executive-ambassador.png',\n    leaders: ['Alchemist', 'Executive', 'Ambassador'],\n  },\n  {\n    asset: 'images/sketches/hero-plates/ranger-commandant-senator.png',\n    leaders: ['Ranger', 'Commandant', 'Senator'],\n  },\n  {\n    asset: 'images/sketches/hero-plates/witch-hunter-banker-spymaster.png',\n    leaders: ['Witch Hunter', 'Banker', 'Spymaster'],\n  },\n];"
-          new_order = "const heroPlateAssignments = [\n  {\n    asset: 'images/sketches/hero-plates/witch-hunter-banker-spymaster.png',\n    leaders: ['Witch Hunter', 'Banker', 'Spymaster'],\n  },\n  {\n    asset: 'images/sketches/hero-plates/alchemist-executive-ambassador.png',\n    leaders: ['Alchemist', 'Executive', 'Ambassador'],\n  },\n  {\n    asset: 'images/sketches/hero-plates/ranger-commandant-senator.png',\n    leaders: ['Ranger', 'Commandant', 'Senator'],\n  },\n];"
+      - name: Typecheck
+        run: npm run typecheck
 
-          for filename in ['scripts/render-v062-print-package.mjs', 'scripts/validate-v062-print-package.mjs']:
-              path = Path(filename)
-              text = path.read_text()
-              if old_order not in text:
-                  raise SystemExit(f'Expected Leader-plate order not found in {filename}')
-              path.write_text(text.replace(old_order, new_order, 1))
-
-          validator = Path('scripts/validate-v062-print-package.mjs')
-          text = validator.read_text()
-          old_check = "    if (/Action Opportunit(?:y|ies)/i.test(content)) failures.push(`${relativePath} contains retired Action Opportunity terminology.`);"
-          new_check = "    const staleActionOpportunity = /\\bOne normal Action Opportunity\\b/i.test(content)\n      || /without using (?:the |an |another )?Action Opportunit(?:y|ies)/i.test(content)\n      || /without an Action Opportunity/i.test(content)\n      || /(?:uses|using) (?:one|an) Action Opportunity/i.test(content);\n    if (staleActionOpportunity) failures.push(`${relativePath} contains retired Action Opportunity terminology.`);"
-          if old_check not in text:
-              raise SystemExit('Expected retired Action Opportunity check not found')
-          text = text.replace(old_check, new_check, 1)
-          text = text.replace('Alchemist, Executive, and Ambassador on plate 1; Ranger, Commandant, and Senator on plate 2; Witch Hunter, Banker, and Spymaster on plate 3', 'Witch Hunter, Banker, and Spymaster on plate 1; Alchemist, Executive, and Ambassador on plate 2; Ranger, Commandant, and Senator on plate 3')
-          validator.write_text(text)
-          PY
-
-      - name: Commit print-package source corrections
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add scripts/render-v062-print-package.mjs scripts/validate-v062-print-package.mjs
-          git diff --cached --quiet && { echo "No source changes to commit."; exit 0; }
-          git commit -m "Correct v0.6.2 print padding invariants"
-          git push origin HEAD:${{ github.event.pull_request.head.ref }}
+      - name: Test
+        run: npm test
