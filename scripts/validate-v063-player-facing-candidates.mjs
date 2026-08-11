@@ -33,7 +33,7 @@ const requiredRulebook = [
   'inherent Bank Action',
   'Asset Removal',
   'Reveal-stage interference',
-  'Applying or repeating another effect',
+  'Applying and repeating another effect',
 ];
 for (const marker of requiredRulebook) {
   assert(rulebook.includes(marker), `Rulebook missing v0.6.3 marker: ${marker}`);
