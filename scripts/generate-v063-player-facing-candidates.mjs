@@ -3,7 +3,6 @@ import path from 'node:path';
 import process from 'node:process';
 
 const root = process.cwd();
-const outDir = path.join(root, 'artifacts/v0.6.3/player-facing');
 const check = process.argv.includes('--check');
 
 const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'utf8').replace(/\r\n/g, '\n');
@@ -25,7 +24,7 @@ function replaceBetween(text, start, end, replacement) {
   const startIndex = text.indexOf(start);
   const endIndex = text.indexOf(end, startIndex + start.length);
   if (startIndex < 0 || endIndex < 0) throw new Error(`Could not replace section ${start} ... ${end}`);
-  return text.slice(0, startIndex) + replacement.trim() + '\n\n' + text.slice(endIndex);
+  return text.slice(0, startIndex) + replacement.trim() + '\n\n' + text.slice(endIndex + end.length);
 }
 
 function write(relativePath, content) {
@@ -151,7 +150,7 @@ const setupGuide = `# 2. Setup for v0.6.3
 ## Running the Gauntlet
 
 There are two normal victory routes: **capture the Territory at your opponent's end** or **win your opponent's Last Stand**. Either runs the Gauntlet and wins immediately. A separate legal movement sequence can initiate a Last Stand after the opponent is forced beyond their end; prior capture of the final Territory is not required.`;
-firstGame = replaceOnce(firstGame, '\n---\n\n# 2. Shared tableside turn reference', `\n---\n\n${setupGuide}\n\n---\n\n# 3. Shared tableside turn reference`, 'First Game setup insertion');
+firstGame = replaceOnce(firstGame, '\n---\n\n# 3. Shared tableside turn reference', `\n---\n\n${setupGuide}\n\n---\n\n# 3. Shared tableside turn reference`, 'First Game setup insertion');
 firstGame = replaceOnce(
   firstGame,
   '### Onset\n\nResolve effects used during Onset before Gambits are set.',
