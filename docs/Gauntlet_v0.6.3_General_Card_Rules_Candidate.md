@@ -19,7 +19,7 @@ v0.6.3 no longer uses **Battle** as a printed effect heading.
 
 The heading identifies eligible battle-card roles; it does not change the effect's printed timing. An effect applies only when its stated timing is reached. If a Gambit or Tactic effect states no later timing, it applies when that card is revealed in that role.
 
-`Gambit/Tactic` is a compact heading, not a prose rules term. In prose, use **Gambit effect**, **Tactic effect**, or **Gambit or Tactic effect** as applicable.
+In general prose, use **Gambit effect**, **Tactic effect**, or **Gambit or Tactic effect** as applicable. When a card directly refers to its own printed **Gambit/Tactic** heading, it may say **its Gambit/Tactic effect**.
 
 ---
 
@@ -165,7 +165,7 @@ Routine quantitative instructions may use compact shorthand when timing, subject
 
 `+N Tactic` permits N additional Tactics under the shared additional-Tactic rule.
 
-**Reserve is the default Tactic source.** Do not print `from Reserve` merely to restate the default. Print another source only when the effect overrides or narrows the default, such as:
+**Reserve is the default Tactic source.** Do not print `from Reserve` merely to restate the default. Print another source only when it overrides or narrows the default, such as:
 
 - `+1 Tactic from Hand`
 - `+1 Tactic from those cards`
