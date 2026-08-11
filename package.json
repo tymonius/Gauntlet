@@ -32,6 +32,7 @@
     "tts:cards": "node scripts/generate-tts-card-assets.mjs",
     "tts:territories": "node scripts/generate-tts-territory-assets.mjs",
     "tts:build": "npm run tts:cards && npm run tts:territories",
+    "preview:v063:cards": "node scripts/generate-v063-production-card-preview.mjs",
     "media:check": "node scripts/generate-card-media-assets.mjs --check && node scripts/generate-card-media-compositions.mjs --check",
     "media:build": "node scripts/generate-card-media-library.mjs",
     "test:watch": "vitest",
