@@ -37,7 +37,8 @@ async function corpus() {
 describe("v0.6.3 development Rules Arbiter corpus", () => {
   it("reconstructs the candidate Rulebook from the browser review page", () => {
     const markdown = candidateRulebookHtmlToMarkdown(rulebookHtml);
-    expect(markdown).toContain("# Gauntlet Rulebook");
+    expect(markdown).toContain("# GAUNTLET");
+    expect(markdown).toContain("## Official Rulebook");
     expect(markdown).toContain("Draw four cards, choose one card from those four");
     expect(markdown).toContain("DON'T FORGET THE BOARD");
     expect(markdown).toContain("Gambit/Tactic");
