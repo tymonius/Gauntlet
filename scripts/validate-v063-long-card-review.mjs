@@ -22,7 +22,7 @@ const expectedIds = [
 
 const production = JSON.parse(readFileSync(productionCatalogPath, 'utf8'));
 const reviewSource = readFileSync(reviewCatalogPath, 'utf8');
-const review = JSON.parse(reviewSource.replace(/^.*?=\s*/, '').replace(/;\s*$/, ''));
+const review = JSON.parse(reviewSource.slice(reviewSource.indexOf('{'), reviewSource.lastIndexOf('};') + 1));
 
 if (production.gameVersion !== 'v0.6.3') {
   throw new Error(`Production catalog is ${production.gameVersion}, expected v0.6.3.`);
