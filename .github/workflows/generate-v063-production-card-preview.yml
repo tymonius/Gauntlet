@@ -21,6 +21,7 @@ on:
       - "scripts/validate-v063-finalized-tracker.mjs"
       - "scripts/generate-v063-production-card-preview.mjs"
       - "scripts/validate-v063-card-rendering-conventions.mjs"
+      - "scripts/validate-v063-long-card-review.mjs"
       - "releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json"
       - "images/artwork/cards/**"
       - "images/artwork/card-backgrounds/**"
@@ -73,6 +74,9 @@ jobs:
 
       - name: Render candidate at production size
         run: npm run preview:v063:cards
+
+      - name: Validate long-card review catalog
+        run: node scripts/validate-v063-long-card-review.mjs
 
       - name: Require zero production fit warnings
         run: |
