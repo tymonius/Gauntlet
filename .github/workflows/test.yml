@@ -27,29 +27,20 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Repair print HTML idempotence and regenerate canonical outputs
+      - name: Regenerate and synchronize canonical v0.6.2 print outputs
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          path = Path('scripts/build-v062-print-html.mjs')
-          text = path.read_text()
-          original = text
-          text = text.replace('^\\\\s*<link\\\\b', '^[\\\\t ]*<link\\\\b')
-          text = text.replace('[^>]*>\\\\s*\\\\n?`, \'gm\')', '[^>]*>[\\\\t ]*\\\\n?`, \'gm\')')
-          if text == original:
-              raise SystemExit('Expected favicon cleanup regex was not found.')
-          path.write_text(text)
-          PY
           npm run print:v062:html
+          npm run print:v062:sync
           npm run print:v062:html:check
+          npm run print:v062:sync:check
 
-      - name: Commit canonical generator and HTML outputs
+      - name: Commit synchronized print outputs
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add scripts/build-v062-print-html.mjs playtest/player-mat/index.html v0.6.2/print/*.html v0.6.2/print/document-manifest.json
-          git diff --cached --quiet && { echo "No generated changes to commit."; exit 0; }
-          git commit -m "Regenerate canonical v0.6.2 print HTML"
+          git add playtest/player-mat/index.html v0.6.2/print/*.html v0.6.2/print/document-manifest.json releases/v0.6.2/README.md releases/v0.6.2/Gauntlet_v0.6.2_Manifest.json v0.6.2/release-manifest.json v0.6.2/index.html
+          git diff --cached --quiet && { echo "No synchronized changes to commit."; exit 0; }
+          git commit -m "Synchronize v0.6.2 print release outputs"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
 
       - name: Run unit tests
