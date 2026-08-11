@@ -13,16 +13,16 @@ const releaseDir = path.join(root, 'releases/v0.6.2');
 const previewDir = process.env.GAUNTLET_PRINT_PREVIEW_DIR || '/tmp/gauntlet-v062-print-previews';
 const heroPlateAssignments = [
   {
+    asset: 'images/sketches/hero-plates/witch-hunter-banker-spymaster.png',
+    leaders: ['Witch Hunter', 'Banker', 'Spymaster'],
+  },
+  {
     asset: 'images/sketches/hero-plates/alchemist-executive-ambassador.png',
     leaders: ['Alchemist', 'Executive', 'Ambassador'],
   },
   {
     asset: 'images/sketches/hero-plates/ranger-commandant-senator.png',
     leaders: ['Ranger', 'Commandant', 'Senator'],
-  },
-  {
-    asset: 'images/sketches/hero-plates/witch-hunter-banker-spymaster.png',
-    leaders: ['Witch Hunter', 'Banker', 'Spymaster'],
   },
 ];
 const heroPlateRelativePaths = heroPlateAssignments.map(({ asset }) => asset);

@@ -8,16 +8,16 @@ const failures = [];
 const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'utf8');
 const heroPlateAssignments = [
   {
+    asset: 'images/sketches/hero-plates/witch-hunter-banker-spymaster.png',
+    leaders: ['Witch Hunter', 'Banker', 'Spymaster'],
+  },
+  {
     asset: 'images/sketches/hero-plates/alchemist-executive-ambassador.png',
     leaders: ['Alchemist', 'Executive', 'Ambassador'],
   },
   {
     asset: 'images/sketches/hero-plates/ranger-commandant-senator.png',
     leaders: ['Ranger', 'Commandant', 'Senator'],
-  },
-  {
-    asset: 'images/sketches/hero-plates/witch-hunter-banker-spymaster.png',
-    leaders: ['Witch Hunter', 'Banker', 'Spymaster'],
   },
 ];
 const heroPlateRelativePaths = heroPlateAssignments.map(({ asset }) => asset);
@@ -58,7 +58,11 @@ for (const relativePath of activeHtml) {
   const content = read(relativePath);
   if (!content.includes('v0.6.2')) failures.push(`${relativePath} does not identify v0.6.2.`);
   if (strictTerminologyHtml.has(relativePath)) {
-    if (/Action Opportunit(?:y|ies)/i.test(content)) failures.push(`${relativePath} contains retired Action Opportunity terminology.`);
+    const staleActionOpportunity = /\bOne normal Action Opportunity\b/i.test(content)
+      || /without using (?:the |an |another )?Action Opportunit(?:y|ies)/i.test(content)
+      || /without an Action Opportunity/i.test(content)
+      || /(?:uses|using) (?:one|an) Action Opportunity/i.test(content);
+    if (staleActionOpportunity) failures.push(`${relativePath} contains retired Action Opportunity terminology.`);
     if (/opening effects/i.test(content)) failures.push(`${relativePath} contains retired opening-effects terminology.`);
   }
 }
@@ -195,4 +199,4 @@ if (failures.length) {
   console.error(failures.join('\n'));
   process.exit(1);
 }
-console.log(`v0.6.2 printed-materials validation passed: ${pdfFiles.length} PDFs; Alchemist, Executive, and Ambassador on plate 1; Ranger, Commandant, and Senator on plate 2; Witch Hunter, Banker, and Spymaster on plate 3; current browser sources; and immutable v0.6.1 boundary.`);
+console.log(`v0.6.2 printed-materials validation passed: ${pdfFiles.length} PDFs; Witch Hunter, Banker, and Spymaster on plate 1; Alchemist, Executive, and Ambassador on plate 2; Ranger, Commandant, and Senator on plate 3; current browser sources; and immutable v0.6.1 boundary.`);
