@@ -3,6 +3,21 @@ import fs from 'node:fs';
 const indexPath = 'v0.6.3/deckbuilder/index.html';
 const appPath = 'v0.6.3/deckbuilder/app.js';
 const rulebookPath = 'v0.6.3/rulebook/index.html';
+const completePages = [
+  'v0.6.3/index.html',
+  'v0.6.3/rulebook/index.html',
+  'v0.6.3/start/index.html',
+  'v0.6.3/quick-reference/index.html',
+  'v0.6.3/changes/index.html',
+  'v0.6.3/reference/index.html',
+  'v0.6.3/deckbuilder/index.html',
+];
+
+const canonicalFaviconLinks = [
+  ['<link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32">', '<link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />'],
+  ['<link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any">', '<link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />'],
+  ['<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1">', '<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />'],
+];
 
 function replaceAllRequired(text, from, to, label) {
   if (!text.includes(from)) throw new Error(`Missing link-refinement marker: ${label ?? from}`);
@@ -42,6 +57,14 @@ function normalizeGeneratedDocLinks(file, rootPage = false) {
     text = replaceAllRequired(text, from, to, `${file}: ${from}`);
   }
 
+  fs.writeFileSync(file, text.replace(/\s+$/, '') + '\n', 'utf8');
+}
+
+function normalizeFaviconMarkup(file) {
+  let text = fs.readFileSync(file, 'utf8').replace(/\r\n/g, '\n');
+  for (const [nonCanonical, canonical] of canonicalFaviconLinks) {
+    if (text.includes(nonCanonical)) text = text.replaceAll(nonCanonical, canonical);
+  }
   fs.writeFileSync(file, text.replace(/\s+$/, '') + '\n', 'utf8');
 }
 
@@ -92,4 +115,6 @@ for (const file of [
   normalizeGeneratedDocLinks(file, false);
 }
 
-console.log('Refined v0.6.3 development browser surfaces: Deckbuilder setup semantics, Rulebook development-source boundary, and repository-safe relative navigation.');
+for (const file of completePages) normalizeFaviconMarkup(file);
+
+console.log('Refined v0.6.3 development browser surfaces: Deckbuilder setup semantics, Rulebook development-source boundary, repository-safe relative navigation, and canonical favicon markup.');
