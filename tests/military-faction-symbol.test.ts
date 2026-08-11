@@ -14,9 +14,10 @@ const candidates = [
 }));
 
 describe("Military faction-symbol review", () => {
-  it("keeps the production symbol unchanged until a candidate is approved", () => {
-    expect(current).toContain('stroke="#000"');
-    expect(current).toContain('viewBox="0 0 64 64"');
+  it("uses the approved cavalry-saber production symbol", () => {
+    expect(current).toContain('viewBox="0 0 1269 1167"');
+    expect(current).toContain("<path");
+    expect(current).not.toContain('stroke="#000"');
   });
 
   it("provides four solid-silhouette candidates at the shared symbol geometry", () => {

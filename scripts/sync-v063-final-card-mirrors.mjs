@@ -41,6 +41,11 @@ setEffects('Margin Loan', [
   ['Gambit/Tactic', 'Before dice are rolled, you may bind 1 card from your Hand or Treasury to this card face up as collateral to gain Capital equal to its value; you may then Subsidize. In the Aftermath: Win — return collateral to your Hand. Otherwise — Default.']
 ]);
 
+setEffects('Leveraged Buyout', [
+  ['Action', 'Buy one Deed using any cards from your Hand or Treasury as collateral.'],
+  ['Gambit/Tactic', "In the Aftermath, before battle cards are cleared, if you won, you may buy this Territory's Deed using any of your other Gambits, Tactics, or Reserve cards as collateral. Each collateral card contributes its value toward the cost. Action collateral goes to your Graveyard after the purchase; battle collateral goes there when battle cards are cleared. Collateral may pay the entire cost."]
+]);
+
 setEffects('Martyrdom', [
   ['Aftermath', "In the Aftermath before battle cards are cleared, if you lost and this card is in your Hand, you may play it. If you do, put cards remaining in the opponent's Reserve in their Graveyard instead of their Discard Pile. After battle cards are cleared, Conviction = 4; put this card in your Graveyard."]
 ]);
@@ -114,10 +119,11 @@ candidate.normalization = {
     }
   ],
   residual_outlier_revisions: {
-    revised_cards: ['Shock and Awe', 'Margin Loan', 'Martyrdom', 'Rearguard', 'Sleeper Network'],
+    revised_cards: ['Shock and Awe', 'Margin Loan', 'Leveraged Buyout', 'Martyrdom', 'Rearguard', 'Sleeper Network'],
     newly_finalized_cards: ['Martyrdom', 'Rearguard'],
     finalized_cards_after_pass: 21,
     margin_loan_persistent_debt: true,
+    leveraged_buyout_tracker_spacing_synced: true,
     sleeper_network_one_card_per_turn_cadence_preserved: true,
     sleeper_network_dynamic_bound_card_maximum_preserved: true,
     compact_choice_line_breaks_applied: ['Shock and Awe', 'Margin Loan']
