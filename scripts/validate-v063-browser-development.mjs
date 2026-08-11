@@ -44,7 +44,14 @@ assert(pages.reference.includes('Faction setup → Draw 4 / discard 1 / keep 3 �
 assert(pages.reference.includes('separate legal movement sequence'));
 assert(pages.deckbuilder.includes('Choose three; arrange after opening selection'));
 assert(pages.deckbuilder.includes('Selected Territories'));
+assert(pages.deckbuilder.includes('selection order here is not their setup order'));
+assert(pages.deckbuilder.includes('Load inherited starter'));
+assert(pages.deckbuilder.includes('load an inherited starter list'));
+assert(pages.deckbuilder.includes('<ul id="selectedTerritories"></ul>'));
 assert(!pages.deckbuilder.includes('Territories, own end outward'));
+assert(!pages.deckbuilder.includes('Load approved starter'));
+assert(!pages.deckbuilder.includes('load the approved starter'));
+assert(!pages.deckbuilder.includes('<ol id="selectedTerritories">'));
 
 const referenceApp = read('v0.6.3/reference/app.js');
 assert(referenceApp.includes('../data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json'));
@@ -56,9 +63,17 @@ const deckApp = read('v0.6.3/deckbuilder/app.js');
 assert(deckApp.includes('../data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json'));
 assert(deckApp.includes('../../releases/v0.6.2/Gauntlet_v0.6.2_Starter_Decks.json'), 'Deckbuilder must explicitly inherit the v0.6.2 starter lists until their own propagation pass');
 assert(deckApp.includes('Inherited v0.6.2 starter list'));
+assert(deckApp.includes('Inherited strategy note:'));
 assert(deckApp.includes('Arrange these three after opening selection.'));
+assert(deckApp.includes('No inherited starter matches this faction and Leader.'));
+assert(deckApp.includes('Candidate load failed.'));
+assert(deckApp.includes('Candidate valid'));
+assert(deckApp.includes('Legal v0.6.3 candidate Deck.'));
 assert(!deckApp.includes('Approved v0.6.2 starter'));
+assert(!deckApp.includes('No approved starter matches'));
+assert(!deckApp.includes('Legal v0.6.2 Deck.'));
 assert(!deckApp.includes('gauntlet-v062-deckbuilder'));
+assert(!deckApp.includes('${selectedIndex >= 0 ? ` · ${selectedIndex + 1}` : ""}'), 'Territory selection UI must not imply a setup order');
 
 for (const text of [pages.rulebook, pages.start, pages.quick, pages.reference, referenceApp]) {
   assert(!text.includes('Playable Deck'), 'Active v0.6.3 browser rules/reference surface uses retired Playable Deck terminology');
@@ -71,4 +86,4 @@ assert(pages.home.includes('Rules Arbiter remains on the published v0.6.2 corpus
 assert(pages.home.includes('128 playable cards'));
 assert(pages.home.includes('25 Territories inherited from v0.6.2'));
 
-console.log('v0.6.3 development browser surfaces validated: integrated candidate data, current rules/setup/victory, inherited starter boundary, noindex publication boundary, and no stale Rules Arbiter embed.');
+console.log('v0.6.3 development browser surfaces validated: integrated candidate data, current rules/setup/victory, non-ordered Territory selection, inherited starter boundary, noindex publication boundary, and no stale Rules Arbiter embed.');
