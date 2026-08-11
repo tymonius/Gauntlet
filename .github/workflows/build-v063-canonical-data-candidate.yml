@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/build-v063-canonical-data-candidate.yml'
       - 'scripts/generate-v063-canonical-data-candidate.mjs'
+      - 'scripts/finalize-v063-canonical-data-candidate.mjs'
       - 'scripts/generate-v063-complete-card-reference-candidate.mjs'
       - 'scripts/validate-v063-canonical-data-candidate.mjs'
       - 'scripts/validate-v063-canonical-promotion-boundary.mjs'
@@ -33,6 +34,7 @@ on:
     paths:
       - '.github/workflows/build-v063-canonical-data-candidate.yml'
       - 'scripts/generate-v063-canonical-data-candidate.mjs'
+      - 'scripts/finalize-v063-canonical-data-candidate.mjs'
       - 'scripts/generate-v063-complete-card-reference-candidate.mjs'
       - 'scripts/validate-v063-canonical-data-candidate.mjs'
       - 'scripts/validate-v063-canonical-promotion-boundary.mjs'
@@ -98,6 +100,7 @@ jobs:
       - name: Generate integrated canonical data and reference
         run: |
           node scripts/generate-v063-canonical-data-candidate.mjs
+          node scripts/finalize-v063-canonical-data-candidate.mjs
           node scripts/generate-v063-complete-card-reference-candidate.mjs
 
       - name: Validate canonical-data integration
