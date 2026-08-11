@@ -11,11 +11,34 @@ const firstGame = read('Gauntlet_v0.6.3_First_Game_Guide_Candidate.md');
 const reference = read('Gauntlet_v0.6.3_Reference_Guide_Candidate.md');
 const returning = read('Gauntlet_v0.6.3_Returning_Player_Changes_Candidate.md');
 const all = [rulebook, firstGame, reference, returning];
+const cardCandidate = JSON.parse(fs.readFileSync(path.join(root, 'artifacts/v0.6.3/Gauntlet_v0.6.3_Card_Text_Candidate.json'), 'utf8'));
+const cards = new Map(cardCandidate.cards.map((card) => [card.name, card]));
 
 function assertSequentialTopLevelSections(name, text) {
   const numbers = [...text.matchAll(/^# (\d+)\. /gm)].map((match) => Number(match[1]));
   const expected = Array.from({ length: numbers.length }, (_, index) => index + 1);
   assert.deepEqual(numbers, expected, `${name} top-level numbered sections must be sequential from 1 without duplicates or gaps`);
+}
+
+function effectQuote(card) {
+  return card.effects.map(({ label, text }) => {
+    const lines = String(text).split('\n');
+    let output = `> **${label}:** ${lines[0]}`;
+    for (const line of lines.slice(1)) output += line ? `\n> ${line}` : '\n>';
+    return output;
+  }).join('\n>\n');
+}
+
+function headingBody(text, heading) {
+  const escaped = heading.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const match = new RegExp(`^(#{1,6}) ${escaped}$`, 'm').exec(text);
+  assert(match, `Missing Rulebook card heading: ${heading}`);
+  const level = match[1].length;
+  const start = match.index + match[0].length;
+  const next = new RegExp(`^#{1,${level}} .+$`, 'gm');
+  next.lastIndex = start;
+  const nextMatch = next.exec(text);
+  return text.slice(start, nextMatch ? nextMatch.index : text.length);
 }
 
 for (const [name, text] of [
@@ -92,6 +115,46 @@ for (const text of [rulebook, firstGame, reference]) {
   assert(!text.includes('Each player draws three cards.'), 'Obsolete random three-card opening remains');
 }
 
+// Exact card text duplicated in the inherited Rulebook must be generated from
+// the same final candidate as the card faces. These were the 17 migration
+// blocks that still contained pre-#551 wording during the manual audit.
+for (const [heading, cardName] of [
+  ['Military — Invasion', 'Invasion'],
+  ['Diplomats — Détente', 'Détente'],
+  ['Financiers — Compound Interest', 'Compound Interest'],
+  ['Intelligence — Extraordinary Rendition', 'Extraordinary Rendition'],
+  ["Mystics — Nature's Altar", "Nature's Altar"],
+  ['Inquisition — Martyrdom', 'Martyrdom'],
+  ['Black Covenant', 'Black Covenant'],
+  ['Battlefield Promotion', 'Battlefield Promotion'],
+  ['Encampment', 'Encampment'],
+  ['Give Chase', 'Give Chase'],
+  ['Hold the Line', 'Hold the Line'],
+  ['Shock and Awe', 'Shock and Awe'],
+  ['Good Faith', 'Good Faith'],
+  ['Gunboat Diplomacy', 'Gunboat Diplomacy'],
+  ['Safe Conduct', 'Safe Conduct'],
+  ['Demilitarized Zone', 'Demilitarized Zone'],
+  ['Foreclosure', 'Foreclosure'],
+]) {
+  const card = cards.get(cardName);
+  assert(card, `Final v0.6.3 candidate is missing ${cardName}`);
+  assert(
+    headingBody(rulebook, heading).includes(effectQuote(card)),
+    `Rulebook card excerpt for ${cardName} does not exactly match the final v0.6.3 card candidate`
+  );
+}
+
+for (const obsolete of [
+  'This does not change the Rite\'s beginning cost, requirements, or completion condition.',
+  'When you lose a battle while Martyrdom is in your Hand',
+  'Form your Reserve with one fewer card for each earlier battle after the first',
+  'Replace **during opening effects** with **during Onset**.',
+  'Replace Consolidate with:',
+]) {
+  assert(!rulebook.includes(obsolete), `Pre-final card migration prose survives in Rulebook: ${obsolete}`);
+}
+
 // Governance/returning-player prose may name retired terms when explaining the migration.
 assert(returning.includes('`Playable Deck` is retired'), 'Returning-player guide should explicitly explain the retired Playable Deck term');
 assert(returning.includes('old **Battle** and **Activate** headings are retired'), 'Returning-player guide should explain retired card headings');
@@ -106,4 +169,4 @@ assert(!firstGame.includes("DON'T FORGET THE BOARD"), 'First Game Guide improper
 const combined = all.join('\n');
 assert(!/\bActivate:\b/.test(combined), 'Retired Activate heading survives in generated player-facing candidates');
 
-console.log('v0.6.3 player-facing candidate validation passed: setup, victory, Deck terminology, Bank Actions, card headings/general procedures, sequential sections, and distinct battle teaching are propagated.');
+console.log('v0.6.3 player-facing candidate validation passed: setup, victory, Deck terminology, Bank Actions, exact Rulebook card excerpts, card headings/general procedures, sequential sections, and distinct battle teaching are propagated.');
