@@ -25,7 +25,7 @@ For v0.6.3:
 - **Asset** is the sole banked-card effect heading. The former `Activate` heading is retired; optional, triggered, continuous, and Action-timed banked abilities all appear under Asset.
 - Because **Asset** already identifies a banked card, prefer `Asset`, `your Assets`, `opposing Assets`, or `their Assets` over `banked Asset(s)` or `Asset(s) you/they control` unless an accepted card-specific reason requires the longer wording.
 - A card effect usable when the card is committed as either a Gambit or a Tactic has the canonical label **`Gambit/Tactic`**. On the card face, render that label as `Gambit/` on the first line and `Tactic` on the second so the heading column remains narrow.
-- **`Gambit/Tactic` is not a prose effect category.** In sentences, say `Gambit effect`, `Tactic effect`, or `Gambit or Tactic effect` according to the actual scope.
+- In general prose, say `Gambit effect`, `Tactic effect`, or `Gambit or Tactic effect` according to the actual scope. A card directly referring to its own printed dual-role heading may say `its Gambit/Tactic effect`.
 - In standard 1v1 v0.6.3, card text does not repeat `in a battle involving you`; every battle necessarily involves both players.
 - **Bind** is the attachment verb for one card being held by another. Shared rules govern default bound-card cleanup and adjustment when a bound-card limit decreases.
 - Applying or repeating another effect uses one shared procedure for timing legality, control, choices, costs, source-card state, trigger identity, and recursion.
@@ -113,13 +113,13 @@ It:
 - uses `Tactic effect` where only Tactic eligibility or timing matters;
 - uses `Gambit or Tactic effect` where either role genuinely applies;
 - removes the legacy `battle` field from the generated candidate and supplies `gambit_tactic` instead; and
-- fails if a `Battle` effect heading, `Battle effect` prose reference, or prose phrase `Gambit/Tactic effect` survives.
+- fails if a `Battle` effect heading or `Battle effect` prose reference survives this stage.
 
-The slash label is deliberately limited to canonical data and compact card-face typography. Rules prose continues to use ordinary grammatical role names.
+The slash label is canonical for the printed heading. General rules prose uses ordinary grammatical role names; later finalized card text may use `its Gambit/Tactic effect` when directly referring to that same card's printed heading.
 
 ### 8. Exhaustive pool-wide refinement and finalized-text propagation
 
-`scripts/apply-v063-poolwide-card-refinements.mjs` rechecks the complete generated 128-card pool against accepted conventions and applies the currently finalized bespoke text as the last major text layer.
+`scripts/apply-v063-poolwide-card-refinements.mjs` rechecks the complete generated 128-card pool against accepted conventions and applies the earlier finalized bespoke text as the last major text layer before the final forward-convention stage.
 
 It currently:
 
@@ -131,7 +131,7 @@ It currently:
 - centralizes battles ending without a winner and removes redundant cleanup/result notes;
 - removes Rules Notes already supplied by shared replacement, movement, banking, numeric-modifier, and destination rules;
 - removes stale terminology and a stray publication footer found during the complete-pool audit; and
-- mirrors the **13 currently finalized bespoke cards** from the single canonical #405 finalized-text tracker.
+- mirrors the **13 earlier finalized bespoke cards** that were present when this stage was introduced.
 
 The editorial authority for finalized bespoke card text remains the single tracker comment:
 
@@ -146,7 +146,7 @@ The eight semantic stages are followed by additional safeguards because inspecti
 `scripts/apply-v063-final-artifact-audit.mjs` removes residual shared-rule boilerplate and terminology found only after generating the complete candidate. It currently covers, among other things:
 
 - copied-effect source-zone reminders already guaranteed by the shared copied/repeated-effect rule;
-- redundant `banked Asset(s)` wording outside the deliberately preserved finalized Manifest Destiny text;
+- redundant `banked Asset(s)` wording found at this stage;
 - residual Advantage/Disadvantage capitalization in sentence-initial and non-`gain` constructions; and
 - complete-pool validation that every standalone `Advantage` / `Disadvantage` token is capitalized correctly.
 
@@ -160,7 +160,11 @@ The eight semantic stages are followed by additional safeguards because inspecti
 - redundant one-Position-at-a-time movement reminders; and
 - lowercase uses of the defined **Position** term.
 
-It also regenerates the final density ranking from the fully refined card text.
+It also regenerates the density ranking from the fully refined card text at that point in the pipeline.
+
+### Finalized-card forward conventions
+
+`scripts/apply-v063-finalized-forward-conventions.mjs` reapplies later pool-wide conventions to finalized bespoke text, carries the latest approved reopened-card revisions forward, and audits the complete set of cards currently finalized in #405. This is where direct same-card `its Gambit/Tactic effect` self-reference is permitted while broad/general slash-label prose remains rejected.
 
 ### Compatibility-field synchronization
 
@@ -205,8 +209,6 @@ Examples of information that remains explicit when necessary include:
 
 For example, **Rousing Speech** retains `you may draw one card, then discard one card` because the optional compound procedure is clearer than forcing `+1 Card` into that sentence. **Shock and Awe** retains its explicit Breakthrough ordering because that sequence is card-specific. **Sedition** and **Sequestration** retain natural `discard` wording rather than forcing `Remove` onto the card face; the shared rule classifies those forced losses as Removal.
 
-The finalized **Manifest Destiny** Action currently retains `banked Asset` because #405 is authoritative for finalized bespoke text until that card is explicitly reopened. The final artifact audit allows that one deliberate exception and rejects additional occurrences elsewhere.
-
 ## Density sequence
 
 The v0.6.3 card review therefore proceeds in this order:
@@ -219,7 +221,7 @@ The v0.6.3 card review therefore proceeds in this order:
 6. Asset ownership/Removal language;
 7. Gambit/Tactic effect-heading migration;
 8. exhaustive complete-pool convention pass plus finalized-text propagation;
-9. generated-artifact cleanup, integrity validation, compatibility synchronization, and live #405 comparison;
+9. generated-artifact cleanup, integrity validation, finalized-card forward conventions, compatibility synchronization, and live #405 comparison;
 10. recalculate the complete 128-card density ranking;
 11. continue bespoke compression with the remaining genuinely dense cards;
 12. review the rest of the pool for smaller card-specific improvements;
@@ -249,6 +251,7 @@ node scripts/apply-v063-gambit-tactic-headings.mjs
 node scripts/apply-v063-poolwide-card-refinements.mjs
 node scripts/apply-v063-final-artifact-audit.mjs
 node scripts/finalize-v063-poolwide-integrity.mjs
+node scripts/apply-v063-finalized-forward-conventions.mjs
 node scripts/sync-v063-final-card-mirrors.mjs
 node scripts/validate-v063-finalized-tracker.mjs
 ```
@@ -282,9 +285,9 @@ This normalization phase is ready for continued bespoke editing only when:
 - every standalone **Advantage** and **Disadvantage** occurrence is capitalized as a defined term;
 - **Removed** is used only as the defined involuntary Asset-loss event, while natural destination verbs remain available where clearer;
 - `Asset` is the only banked-card effect heading and no `Activate` heading or legacy `activate` field remains;
-- redundant Asset ownership/control and `banked Asset(s)` wording is absent except for explicitly accepted finalized-card exceptions;
+- redundant Asset ownership/control and `banked Asset(s)` wording is absent unless a genuine card-specific requirement remains;
 - no `Battle` effect heading or `Battle effect` prose terminology remains;
-- `Gambit/Tactic` appears only as a canonical/printed heading, never as a prose effect category;
+- general prose does not use `Gambit/Tactic` as a generic effect category; direct same-card reference to `its Gambit/Tactic effect` is permitted;
 - no redundant `in a battle involving you` or variant 1v1 scope wording remains;
 - physical Overlay cards use the settled placement wording;
 - copied/repeated-effect and no-winner cleanup reminders are not restated card by card when the shared rule supplies them;
