@@ -27,32 +27,39 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Regenerate and synchronize canonical v0.6.2 print outputs
+      - name: Align print synchronizer and regenerate canonical outputs
         run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/synchronize-v062-print-release.mjs')
+          text = path.read_text()
+          old = '''  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="0; url=../../v0.6.2/print/player-mat.html">'''
+          new = '''  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
+  <meta http-equiv="refresh" content="0; url=../../v0.6.2/print/player-mat.html">'''
+          if old not in text:
+              raise SystemExit('Expected player-mat redirect template was not found.')
+          path.write_text(text.replace(old, new, 1))
+          PY
           npm run print:v062:html
           npm run print:v062:sync
           npm run print:v062:html:check
           npm run print:v062:sync:check
 
-      - name: Commit synchronized print outputs
+      - name: Commit aligned generator and synchronized outputs
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add playtest/player-mat/index.html v0.6.2/print/*.html v0.6.2/print/document-manifest.json releases/v0.6.2/README.md releases/v0.6.2/Gauntlet_v0.6.2_Manifest.json v0.6.2/release-manifest.json v0.6.2/index.html
+          git add scripts/synchronize-v062-print-release.mjs playtest/player-mat/index.html v0.6.2/print/*.html v0.6.2/print/document-manifest.json releases/v0.6.2/README.md releases/v0.6.2/Gauntlet_v0.6.2_Manifest.json v0.6.2/release-manifest.json v0.6.2/index.html README.md playtest/index.html
           git diff --cached --quiet && { echo "No synchronized changes to commit."; exit 0; }
-          git commit -m "Synchronize v0.6.2 print release outputs"
+          git commit -m "Align v0.6.2 print synchronization outputs"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
 
       - name: Run unit tests
-        run: npx vitest run --reporter=json --outputFile=vitest-results.json
-
-      - name: Upload Vitest diagnostic report
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: vitest-results
-          path: vitest-results.json
-          if-no-files-found: error
+        run: npx vitest run
 
       - name: Validate v0.6.2 shared rules
         run: node scripts/validate-v062-shared-rules.mjs
