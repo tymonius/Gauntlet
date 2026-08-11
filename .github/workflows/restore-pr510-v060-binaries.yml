@@ -1,4 +1,5 @@
 # One-use synchronization helper; removes itself after restoring the files.
+# Re-triggered during final PR cleanup so the legacy binaries exactly match main.
 name: Restore unrelated v0.6.0 binaries for PR 510
 
 on:
@@ -33,6 +34,6 @@ jobs:
             releases/v0.6.0/Gauntlet_v0.6.0_Rulebook_Booklet_Print.pdf
           git rm .github/workflows/restore-pr510-v060-binaries.yml
           git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config user.email "4189822+github-actions[bot]@users.noreply.github.com"
           git commit -m "Restore unrelated v0.6.0 release binaries"
           git push origin HEAD:agent/v062-printed-materials
