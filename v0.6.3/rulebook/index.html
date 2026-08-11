@@ -1,0 +1,1227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8YYYZJGGPE');</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Gauntlet v0.6.3 Rulebook Candidate development review surface.">
+  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1">
+  <title>Gauntlet v0.6.3 Rulebook Candidate</title>
+  <link rel="stylesheet" href="/v0.6.3/styles.css">
+  <style>.release-shell{max-width:1060px;margin:0 auto;padding:2rem 1rem 5rem}.release-nav{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem}.release-nav a{font-weight:700}.dev-banner{margin-bottom:1rem;padding:.75rem 1rem;border:1px solid #9a6b1b;background:#fff1c6;color:#4a3412;font-weight:700}.release-doc{background:rgba(255,255,255,.78);padding:clamp(1rem,3vw,3rem);border:1px solid rgba(80,55,30,.25);box-shadow:0 18px 50px rgba(60,35,20,.12)}.release-doc table{width:100%;border-collapse:collapse;display:block;overflow:auto}.release-doc td{border:1px solid rgba(80,55,30,.25);padding:.45rem .6rem;vertical-align:top}.release-doc blockquote{margin:1rem 0;padding:.2rem 1rem;border-left:4px solid #8f1f25;background:rgba(143,31,37,.06)}.release-actions{display:flex;flex-wrap:wrap;gap:.75rem;margin:1.5rem 0}.release-actions a{display:inline-block;padding:.7rem 1rem;border:1px solid currentColor;text-decoration:none;font-weight:700}</style>
+</head>
+<body><main class="release-shell"><nav class="release-nav" aria-label="v0.6.3 development navigation"><a href="/">Gauntlet home</a><a href="/v0.6.3/">v0.6.3 dev</a><a href="/v0.6.3/start/">Start</a><a href="/v0.6.3/rulebook/">Rulebook</a><a href="/v0.6.3/quick-reference/">Quick reference</a><a href="/v0.6.3/deckbuilder/">Deckbuilder</a><a href="/v0.6.3/reference/">Card reference</a><a href="/v0.6.3/changes/">Changes</a><a href="/v0.6.2/">Published v0.6.2</a></nav><div class="dev-banner">v0.6.3 development candidate · v0.6.2 remains the canonical published playtest edition.</div><article class="release-doc"><h2 id="gauntlet">GAUNTLET</h2>
+<h3 id="official-rulebook">Official Rulebook</h3>
+<p><strong>Version 0.6.3 — Player-Facing Candidate</strong></p>
+<p><strong>Status:</strong> Active next-release candidate; v0.6.2 remains the published playtest edition</p>
+<hr>
+<h2 id="welcome-to-gauntlet">Welcome to Gauntlet</h2>
+<p>Gauntlet is a two-player tactical card-and-territory game. Each player builds a Deck, chooses one of six factions and one of that faction's Leaders, and contributes three Territories to a shared six-Territory battlefield called the <strong>Gauntlet</strong>.</p>
+<p>Players advance toward one another, fight battles, occupy opposing Territories, advance contiguous Front Lines, develop Assets, and pursue faction-specific plans. You run the Gauntlet and win immediately by either capturing the Territory at your opponent's end or winning your opponent's Last Stand.</p>
+<h2 id="how-to-use-this-rulebook">How to Use This Rulebook</h2>
+<ul>
+<li><strong>Part I — Setup and Play Area</strong> covers components, zones, and setup.</li>
+<li><strong>Part II — Shared Game Rules</strong> governs turns, Actions, Movement, battles, Front Lines, and results.</li>
+<li><strong>Part III — Complete Shared Rules</strong> covers construction and technical interactions.</li>
+<li><strong>Part IV — Factions and Components</strong> contains the complete v0.6.2 faction, Proposal, card-revision, and Territory-revision rules.</li>
+</ul>
+<p>The v0.6.3 Complete Card Reference candidate contains the effective text of all 128 playable card titles; Territory text remains inherited from v0.6.2 unless a v0.6.3 source expressly replaces it. The First Game Guide and compact Reference Guide are player aids; this rulebook and specific component text remain authoritative.</p>
+<h2 id="golden-rules">Golden Rules</h2>
+<ul>
+<li>Specific card, Leader, faction, Territory, Proposal, or component text overrides a general rule.</li>
+<li><strong>May</strong> means optional. <strong>Must</strong> means required.</li>
+<li>Follow instructions in the order written.</li>
+<li>Complete as much as possible unless the missing part is a required cost, requirement, or target.</li>
+</ul>
+<hr>
+<h2 id="part-i-setup-and-play-area">Part I — Setup and Play Area</h2>
+<h2 id="1-components">1. Components</h2>
+<h3 id="how-it-works">How it works</h3>
+<p>For a first game, use two prepared or recommended Decks. Each player chooses one faction and Leader, brings one constructed Deck and three Territories, and needs one Player Token and a six-sided die. The two players' three-Territory sets join to form the six-position Gauntlet.</p>
+<h3 id="complete-rules">Complete rules</h3>
+<p>Each player needs:</p>
+<ul>
+<li>one faction;</li>
+<li>one Leader Card from that faction;</li>
+<li>one constructed <strong>Deck</strong> of ordinary playable cards;</li>
+<li>three different Territory Cards;</li>
+<li>any components required by that faction or Leader;</li>
+<li>one <strong>Player Token</strong>; and</li>
+<li>one six-sided die.</li>
+</ul>
+<p>The players may share a die.</p>
+<p>Together, both players' Territory Cards form the <strong>Gauntlet</strong>, a single six-Territory column. The exact construction requirements for a custom Deck appear in Part III. Faction packages and their starting states appear in Part IV.</p>
+<hr>
+<h2 id="2-cards-zones-and-the-play-area">2. Cards, Zones, and the Play Area</h2>
+<h3 id="how-it-works">How it works</h3>
+<p>Keep every group of cards visibly separate. Your Hand is the permanent private set of cards you hold between turns. Your Draw Pile supplies cards; the Discard Pile is recyclable; the Graveyard normally is not. Assets remain face up in your Asset Bank.</p>
+<p>A battle creates three temporary areas: a Gambit set from Hand, a three-card Reserve drawn from the Draw Pile, and a Tactic chosen from that Reserve.</p>
+<h3 id="printed-card-effects">Printed card effects</h3>
+<p>A card may have several printed effects. The way it is used determines which effect applies.</p>
+<ul>
+<li><strong>Action:</strong> play from Hand by taking an Action during Opening or Denouement unless the card names another legal timing.</li>
+<li><strong>Asset:</strong> while banked, apply or use the Asset effect at its stated timing. A card with an Asset effect has an inherent Bank Action unless it prints a special banking procedure.</li>
+<li><strong>Gambit:</strong> set from Hand during a battle.</li>
+<li><strong>Tactic:</strong> choose from Reserve during a battle.</li>
+<li><strong>Gambit/Tactic:</strong> the same printed effect is available when the card is committed as either a Gambit or a Tactic.</li>
+</ul>
+<p>Only the printed effect being used applies unless a rule says otherwise. A Gambit, Tactic, or Gambit/Tactic effect with no later printed timing applies at that role's normal reveal stage.</p>
+<p>Faction cards may contain other headings. Those headings use the procedure stated in the relevant faction rules and do not make a card eligible as a Gambit or Tactic unless it also has a Gambit, Tactic, or Gambit/Tactic effect.</p>
+<h3 id="play-area-and-zones">Play area and zones</h3>
+<h4 id="draw-pile">Draw Pile</h4>
+<p>The face-down pile formed by shuffling the Deck after applicable setup modifications. Draw cards from its top.</p>
+<h4 id="hand">Hand</h4>
+<p>The private cards held by a player. The normal Hand limit is three at end-of-turn Cleanup. Setting the Hand physically aside during a battle does not move those cards to another zone.</p>
+<h4 id="discard-pile">Discard Pile</h4>
+<p>A face-up pile of recyclable cards. When a Draw Pile cannot complete a draw, shuffle the Discard Pile to form a new Draw Pile.</p>
+<h4 id="graveyard">Graveyard</h4>
+<p>A face-up pile outside normal circulation. Cards there are not reshuffled unless an effect moves them.</p>
+<h4 id="asset-bank">Asset Bank</h4>
+<p>The public area containing a player's banked Assets.</p>
+<h4 id="gambit-area">Gambit area</h4>
+<p>The temporary area containing cards set from Hand as Gambits for the current battle. Gambits normally go to their owners' Graveyards during the Aftermath.</p>
+<h4 id="reserve">Reserve</h4>
+<p>A temporary private zone formed during one battle. Each player normally draws three cards to form it. Reserve is separate from Hand, and its owner may inspect and arrange it freely. Cards remaining there normally go to the Discard Pile during the Aftermath.</p>
+<h4 id="tactic-area">Tactic area</h4>
+<p>The temporary area containing cards chosen or added as Tactics for the current battle. Tactics normally go to their owners' Discard Piles during the Aftermath.</p>
+<h4 id="leader-and-faction-area">Leader and faction area</h4>
+<p>Keep the Leader and all faction trackers, references, progress cards, and other public faction components together and visible. Part IV explains each faction's exact arrangement.</p>
+<h4 id="territories-and-player-tokens">Territories and Player Tokens</h4>
+<p>Territory orientation shows control: the player a Territory faces controls it. A Player Token shows the player's position. Occupation and control are related but are not the same; Chapter 9 explains how control changes.</p>
+<h4 id="bound-cards">Bound cards</h4>
+<p>A bound card is outside normal zones.</p>
+<ul>
+<li>A face-up bound card is public.</li>
+<li>A face-down bound card may be inspected only by its owner.</li>
+<li>A bound card cannot be played, moved, or affected except as instructed by the effect to which it is bound.</li>
+<li>When the binding ends, follow that effect's instructions.</li>
+</ul>
+<h4 id="actions-faction-actions-and-faction-abilities">Actions, Faction Actions, and Faction Abilities</h4>
+<p>The active player normally takes one Action during either Opening or Denouement. A Faction Action uses that Action at its printed legal phase. A Faction Ability occurs at its stated timing and does not use an Action unless it expressly says otherwise. Chapter 5 contains the complete Action rules.</p>
+<hr>
+<h2 id="3-setup">3. Setup</h2>
+<h3 id="how-it-works">How it works</h3>
+<p>Prepare faction components, then shuffle the remaining cards in your Deck to form your Draw Pile. Draw four, choose one to discard, and keep the other three as your opening Hand.</p>
+<p>After seeing your opening selection, secretly arrange your three Territories. Form and reveal the six-Territory Gauntlet, place each Player Token on the Territory at that player's own end, and then roll to determine the first player.</p>
+<h3 id="complete-rules">Complete rules</h3>
+<p>Prepare the game in this order:</p>
+<ol>
+<li><strong>Prepare faction components.</strong> Place Leaders, trackers, references, supplemental components, and apply any setup rules that add cards to or remove cards from the Deck.</li>
+<li><strong>Prepare Draw Piles and opening Hands.</strong> Shuffle the remaining cards in your Deck to form your Draw Pile. Draw four cards, choose one card from those four, and place it face up in your Discard Pile. The other three cards form your opening Hand.</li>
+<li><strong>Arrange Territories.</strong> After seeing your opening Hand and opening discard, secretly arrange your three Territory Cards in a line facing you.</li>
+<li><strong>Form the Gauntlet.</strong> Join both Territory lines to create one six-Territory column.</li>
+<li><strong>Reveal Territories.</strong> Reveal all six simultaneously. They remain face up unless an effect says otherwise.</li>
+<li><strong>Place Player Tokens.</strong> Place each Player Token on the Territory at that player's end of the Gauntlet.</li>
+<li><strong>Determine first player.</strong> After both players have chosen their opening discard and arranged their Territories, each player rolls one die. The higher result takes the first turn. Reroll ties.</li>
+</ol>
+<h4 id="starting-territory">Starting Territory</h4>
+<p>Placing a Player Token during setup:</p>
+<ul>
+<li>is not movement;</li>
+<li>does not count as entering the Territory; and</li>
+<li>does not trigger an effect that occurs when the Territory is entered.</li>
+</ul>
+<p>An effect that applies continuously, at the beginning of a turn, at the start of a turn, during Capture, or during another named phase may apply during the first turn normally when its requirements are satisfied.</p>
+<h4 id="opening-selection-and-territory-arrangement">Opening selection and Territory arrangement</h4>
+<p>The discarded card forms the player's Discard Pile before the first turn begins.</p>
+<p>The player chooses the opening discard without knowing who will take the first turn. This procedure is mandatory and does not count as discarding for the cost or effect of another card unless a rule expressly refers to the opening discard.</p>
+<p>Territory arrangement occurs after the player has chosen the opening discard and knows the three-card opening Hand. A player may therefore use the known opening Hand and Discard Pile when deciding the order of their Territories.</p>
+<hr>
+<hr>
+<h2 id="part-ii-shared-game-rules">Part II — Shared Game Rules</h2>
+<h2 id="4-turn-structure">4. Turn Structure</h2>
+<h3 id="how-it-works">How it works</h3>
+<p>Complete every turn in this order:</p>
+<blockquote>
+<p><strong>Capture → Draw → Opening → Movement → Denouement → Cleanup</strong></p>
+</blockquote>
+<p>You normally take one Action per turn. Take it during either your <strong>Opening</strong> or your <strong>Denouement</strong>.</p>
+<p>During Movement, choose to <strong>Advance</strong>, <strong>Hold</strong>, or <strong>Fall Back</strong>. Conduct any battle immediately. After Movement and any resulting battle are complete, proceed to the Denouement.</p>
+<h3 id="complete-rules">Complete rules</h3>
+<h4 id="capture">Capture</h4>
+<p>Resolve the active player's Capture step using the Front Line rules in Chapter 9.</p>
+<p>Apply effects and check victory conditions that occur after Capture before drawing.</p>
+<h4 id="draw">Draw</h4>
+<p>Draw one card using the normal Draw Pile and Discard Pile rules.</p>
+<h4 id="opening">Opening</h4>
+<p>Opening is the Action phase before Movement.</p>
+<p>The active player may take their Action during Opening if the chosen Action is legal during that phase.</p>
+<h4 id="movement">Movement</h4>
+<p>The active player chooses Advance, Hold, or Fall Back. Resolve movement one position at a time and conduct any battle caused by movement immediately.</p>
+<p>When movement begins a battle, that movement sequence ends and all unused movement from that sequence is lost.</p>
+<h4 id="denouement">Denouement</h4>
+<p>Denouement is the Action phase after Movement and any battle caused by it.</p>
+<p>The active player may take their Action during Denouement if they did not take it during Opening and the chosen Action is legal during Denouement.</p>
+<p>A rule or effect may permit an additional Action or permit an Action despite one having already been taken. Follow the Action rules in Chapter 5.</p>
+<h4 id="cleanup">Cleanup</h4>
+<p>Apply end-of-turn effects and discard down to the normal Hand limit. All unused Actions and turn-limited Action permissions expire when the turn ends.</p>
+<p>Pass the shared active-player marker after Cleanup when that component is in use.</p>
+<hr>
+<h2 id="5-actions-faction-actions-and-faction-abilities">5. Actions, Faction Actions, and Faction Abilities</h2>
+<h3 id="how-it-works">How it works</h3>
+<p>Each turn, take one Action during either your Opening or your Denouement.</p>
+<p>An Action may be used to:</p>
+<ul>
+<li>play one card from Hand for its <strong>Action</strong> effect;</li>
+<li>bank one card from Hand using its inherent <strong>Bank</strong> Action if it has an Asset effect;</li>
+<li>take one legal <strong>Faction Action</strong>; or</li>
+<li>discard one of your Assets.</li>
+</ul>
+<p>A <strong>Faction Ability</strong> occurs at its stated timing and does not use your Action unless it expressly says otherwise.</p>
+<h3 id="complete-rules">Complete rules</h3>
+<h4 id="normal-action-limit">Normal Action limit</h4>
+<p>The active player normally takes one Action total during the turn.</p>
+<p>No more than one Action may normally be taken during Opening, and no more than one Action may normally be taken during Denouement.</p>
+<p>The two limits are independent:</p>
+<ol>
+<li>the total number of Actions the player may take that turn; and</li>
+<li>the number of Actions the player may take during a particular phase.</li>
+</ol>
+<h4 id="additional-actions">Additional Actions</h4>
+<p>An effect that says a player may take one additional Action that turn increases the total number of Actions available that turn. It does not change the normal limit of one Action in each phase.</p>
+<p>Unless another effect expressly permits otherwise, a player with two Actions available must take one during Opening and one during Denouement.</p>
+<p>An effect intended to permit more than one Action during the same phase must say so directly. For example:</p>
+<blockquote>
+<p>You may take one additional Action this turn. You may take both Actions during your Denouement.</p>
+</blockquote>
+<p>Permission to take more Actions during a phase does not itself grant an additional Action unless the effect also says that it does.</p>
+<h4 id="directly-permitted-procedures">Directly permitted procedures</h4>
+<p>A rule or effect may directly permit a card play, faction procedure, or other operation at a stated timing outside Opening or Denouement.</p>
+<p>A directly permitted procedure:</p>
+<ul>
+<li>occurs at the stated timing;</li>
+<li>does not count as taking an Action unless the effect expressly says it does;</li>
+<li>does not consume the player's normal Action; and</li>
+<li>does not create another Action phase or Action window.</li>
+</ul>
+<p>State these effects in terms of the procedure the player may perform. Do not create immediate or additional Action Opportunities or Action Windows.</p>
+<h4 id="playing-a-card-for-its-action-effect">Playing a card for its Action effect</h4>
+<p>To play a card for its Action effect:</p>
+<ol>
+<li>take an Action during a phase in which that Action is legal;</li>
+<li>play the card from Hand;</li>
+<li>satisfy all requirements and costs;</li>
+<li>resolve the Action effect; and</li>
+<li>put the card in the Discard Pile unless it becomes an Asset, becomes an Overlay, or its effect gives another destination.</li>
+</ol>
+<h4 id="faction-action">Faction Action</h4>
+<p>A <strong>Faction Action</strong> is a faction-specific option a player may choose when taking an Action.</p>
+<p>Every Faction Action entry states whether it is legal during:</p>
+<ul>
+<li>Opening;</li>
+<li>Denouement; or</li>
+<li>either phase.</li>
+</ul>
+<p>Taking a Faction Action counts as the player's Action for the turn unless a rule expressly permits another Action.</p>
+<h4 id="faction-ability">Faction Ability</h4>
+<p>A <strong>Faction Ability</strong> is a faction-specific effect used or triggered at its stated timing.</p>
+<p>A Faction Ability does not count as taking an Action unless it expressly says otherwise.</p>
+<p>Faction references must group Faction Actions separately from Faction Abilities and print the legal phase beside every Faction Action.</p>
+<h4 id="discarding-an-asset-as-an-action">Discarding an Asset as an Action</h4>
+<p>During Opening or Denouement, a player may take an Action to discard one Asset they control.</p>
+<p>Using an Asset does not take an Action unless the Asset or another rule expressly says otherwise.</p>
+<h4 id="replacing-an-asset">Replacing an Asset</h4>
+<p>When banking an Asset at the Asset limit, the player may discard one Asset they control to make room and bank the new Asset as part of the same effect.</p>
+<p>This replacement is not a separate Action. An effect that prevents an Asset from leaving play also prevents replacing it this way. Any consequence of the replaced Asset leaving play still occurs.</p>
+<h4 id="inquisition-purge-exception">Inquisition Purge exception</h4>
+<p>The shared Action rules support this faction-specific exception:</p>
+<blockquote>
+<p><strong>Purge — Faction Action, Opening or Denouement:</strong> Spend the listed Conviction to perform one Purge. You may take one Action during both your Opening and your Denouement, provided that one of those Actions is Purge.</p>
+</blockquote>
+<p>Purge may be taken as a Faction Action no more than once per turn. It never permits two Actions during the same phase.</p>
+<p>A Purge directly permitted by Final Judgment during the Aftermath is a Faction Ability. It does not count as taking the Purge Faction Action and does not activate or consume the two-phase permission above.</p>
+<hr>
+<h2 id="6-movement-and-position">6. Movement and Position</h2>
+<h3 id="how-it-works">How it works</h3>
+<p>During Movement, choose one:</p>
+<ul>
+<li><strong>Advance:</strong> move one position toward the opponent's end.</li>
+<li><strong>Hold:</strong> remain in your current position.</li>
+<li><strong>Fall Back:</strong> move one position toward your own end.</li>
+</ul>
+<p>Entering the opponent's position creates a pending battle.</p>
+<h3 id="complete-rules">Complete rules</h3>
+<p>A position is any space where a Player Token may be placed under the positioning rules in this rulebook.</p>
+<p>A player cannot voluntarily Fall Back beyond their own end of the Gauntlet. Player Tokens cannot move through or past one another.</p>
+<p>If an effect grants additional movement, resolve it one position at a time unless the effect says otherwise.</p>
+<p>Entering the opponent's position:</p>
+<ol>
+<li>move the attacking token into the contested position;</li>
+<li>establish the attacker, defender, contested position, and the attacker's previous position; and</li>
+<li>create a pending battle.</li>
+</ol>
+<p>The pending-battle and Terms procedure in Chapter 7 occurs before the battle reaches Onset.</p>
+<p>When movement creates a pending battle, the current movement sequence ends and all unused movement in that sequence is lost, even if the pending battle is later prevented by Terms or another effect.</p>
+<p>A player moves again after a battle only when a rule or effect directly permits another movement sequence.</p>
+<hr>
+<h2 id="7-pending-battles-terms-and-onset">7. Pending Battles, Terms, and Onset</h2>
+<h3 id="how-it-works">How it works</h3>
+<p>The pre-battle sequence is:</p>
+<blockquote>
+<p><strong>Pending battle → Terms → Onset → Gambits</strong></p>
+</blockquote>
+<p>Establish the attacker, defender, and contested position before Terms are offered.</p>
+<p>If Terms are accepted, apply the Proposal's Accepted effect. The battle never reaches Onset and does not begin.</p>
+<p>If Terms are refused or none are offered, proceed to Onset. The battle begins during Onset.</p>
+<h3 id="complete-rules">Complete rules</h3>
+<h4 id="pending-battle">Pending battle</h4>
+<p>A pending battle exists after the attacker, defender, contested position, and attacker's previous position have been established but before the battle reaches Onset.</p>
+<p>Rules and effects that occur when a battle would begin resolve during this pending-battle timing unless their text gives another timing.</p>
+<p>A pending battle is not yet a battle. Battle, victory, loss, and Aftermath triggers do not occur unless the battle reaches Onset.</p>
+<h4 id="terms">Terms</h4>
+<p>When a pending battle involves a Diplomat, resolve the Terms procedure, including any applicable mirror priority, before Onset.</p>
+<p>If Terms are accepted:</p>
+<ul>
+<li>apply the Proposal's Accepted effect;</li>
+<li>no battle begins;</li>
+<li>no Onset, Gambit, Reserve, Tactic, battle-result, victory, loss, retreat, or Aftermath trigger occurs; and</li>
+<li>move the players exactly as the Accepted effect instructs.</li>
+</ul>
+<p>Unless a Proposal gives a different positional result, accepted Terms use this baseline:</p>
+<blockquote>
+<p>The attacker withdraws. The defender remains at the contested position.</p>
+</blockquote>
+<p>Mutual Disarmament and other specialized positional Proposals retain their printed outcomes.</p>
+<p>If Terms are refused or no Terms are offered, proceed to Onset.</p>
+<h4 id="onset">Onset</h4>
+<p><strong>Onset</strong> is the formal opening stage of a battle. It is parallel to <strong>Aftermath</strong>, the battle's closing stage.</p>
+<p>During Onset:</p>
+<ol>
+<li>the pending battle becomes an active battle;</li>
+<li>attacker and defender roles become fixed for that battle; and</li>
+<li>resolve all effects that apply during Onset or when the battle begins, in the required order.</li>
+</ol>
+<p>After all Onset effects resolve, proceed to Gambits.</p>
+<p>Use <strong>Onset</strong> as the formal stage name. In ordinary prose, use constructions such as <strong>during Onset</strong> or <strong>at the Onset of the battle</strong>.</p>
+<hr>
+<h2 id="8-battle-sequence-and-outcome">8. Battle Sequence and Outcome</h2>
+<h3 id="battle-sequence">Battle sequence</h3>
+<p>Conduct an active battle in this order:</p>
+<ol>
+<li><strong>Onset</strong></li>
+<li>Set Gambits.</li>
+<li>Set Hands aside and form Reserves.</li>
+<li>Reveal Gambits.</li>
+<li>Choose Tactics.</li>
+<li>Reveal Tactics.</li>
+<li>Determine the Outcome.</li>
+<li>Proceed to the <strong>Aftermath</strong>.</li>
+</ol>
+<p>Terms are not part of this sequence because they resolve before the battle reaches Onset.</p>
+<blockquote>
+<p><strong>DON'T FORGET THE BOARD</strong></p>
+<p>Territory. Assets. Then Gambits.</p>
+</blockquote>
+<p>This is a memory cue, not another battle step or timing window. Review the contested Territory and your Asset Bank before committing battle cards, but use each effect only at its printed legal timing.</p>
+<h3 id="determine-the-outcome">Determine the Outcome</h3>
+<p>Calculate each player's battle total under the ordinary battle rules.</p>
+<p>The higher total wins.</p>
+<h4 id="defensive-edge">Defensive Edge</h4>
+<blockquote>
+<p><strong>Defensive Edge:</strong> When the defender has Defensive Edge, the defender wins tied battle totals.</p>
+</blockquote>
+<p>The defender normally has Defensive Edge when:</p>
+<ul>
+<li>the defender controls the contested Territory; or</li>
+<li>the defender is making a Last Stand.</li>
+</ul>
+<p>An effect may remove Defensive Edge, including an applicable Arena Territory effect. Defensive Edge is conditional; the defender does not have it merely because they are the defender.</p>
+<p>If the tied totals are not resolved by Defensive Edge or another applicable tie-breaking rule, make a Tiebreak Roll.</p>
+<h4 id="tiebreak-roll">Tiebreak Roll</h4>
+<blockquote>
+<p>Each player rolls one die. Do not apply advantage, disadvantage, card effects, numerical modifiers, or the previous battle totals. The higher roll wins. Reroll further ties.</p>
+</blockquote>
+<p>A rule or effect may modify a Tiebreak Roll only if it expressly refers to a <strong>Tiebreak Roll</strong>.</p>
+<p>The Tiebreak Roll is a separate sudden-death procedure. It is not a recalculation or reroll of the original battle totals.</p>
+<hr>
+<h2 id="9-front-line-occupation-and-capture">9. Front Line, Occupation, and Capture</h2>
+<h3 id="how-it-works">How it works</h3>
+<p>Your controlled Territories always form one unbroken line from your own end of the Gauntlet. That line is your <strong>Front Line</strong>.</p>
+<p>Your token may advance beyond your Front Line, but your control advances only from your own end. During Capture, if your token is beyond your Front Line, capture the next opposing Territory immediately beyond that line.</p>
+<h3 id="complete-rules">Complete rules</h3>
+<h4 id="front-line">Front Line</h4>
+<p>A player's <strong>Front Line</strong> is the complete unbroken sequence of Territories they control beginning at their own end of the Gauntlet.</p>
+<p>A player cannot control a Territory while an opponent-controlled Territory lies between it and that player's own end.</p>
+<p>Position and control are separate:</p>
+<ul>
+<li><strong>Position</strong> is where the Player Token is.</li>
+<li><strong>Control</strong> is shown by Territory orientation.</li>
+<li><strong>Occupation</strong> describes a token holding an opposing Territory or position under the occupation rules.</li>
+<li><strong>Front Line</strong> is the player's contiguous controlled line from their own end.</li>
+</ul>
+<p>A token may be several Territories beyond its Front Line without granting control of the intervening or occupied Territories.</p>
+<h4 id="normal-capture">Normal Capture</h4>
+<p>During the Capture step, if the active player's token is beyond their Front Line, identify the next opponent-controlled Territory immediately beyond that Front Line.</p>
+<p>If the token is on or beyond that Territory, capture it by rotating it to face the active player.</p>
+<p>Normal Capture advances the Front Line by no more than one Territory per turn, regardless of how far the token has advanced.</p>
+<p>The Territory captured during the Capture step is not necessarily the Territory containing the active player's token.</p>
+<p>Resolve all capture effects, control changes, Asset-limit changes, Deed interactions, and victory checks using the Territory actually added to the Front Line.</p>
+<h4 id="immediate-capture-effects">Immediate capture effects</h4>
+<p>An effect that captures a Territory outside the normal Capture step cannot create non-contiguous control.</p>
+<p>Unless the effect expressly advances the Front Line more than once, interpret or rewrite it to:</p>
+<blockquote>
+<p>Advance that player's Front Line one Territory.</p>
+</blockquote>
+<p>Card- and faction-specific wording is listed in the Faction and Component Guide.</p>
+<h4 id="final-territory-and-last-stand">Final Territory and Last Stand</h4>
+<p>Capturing the Territory at the opponent's end immediately runs the Gauntlet and wins the game. This applies to any legal capture, including normal Capture and effects that legally advance the Front Line to include that Territory.</p>
+<p>A player may also run the Gauntlet by winning the opponent's Last Stand. After a battle forces the opponent beyond their own end, the attacker may initiate that Last Stand with a <strong>separate legal movement sequence</strong> that Advances beyond the opponent's end. The attacker does not need to control or have captured the final Territory first.</p>
+<p>The movement sequence that created the preceding battle is already over; unused movement from it cannot carry directly into the Last Stand.</p>
+<hr>
+<h2 id="10-withdrawal-and-retreat">10. Withdrawal and Retreat</h2>
+<h3 id="how-it-works">How it works</h3>
+<p>Retreat and withdrawal move a player the same way. The difference is why the player leaves:</p>
+<blockquote>
+<p><strong>A losing player retreats; a player who leaves without losing withdraws.</strong></p>
+</blockquote>
+<p>Fall Back is the ordinary backward Movement choice and is neither retreat nor withdrawal.</p>
+<h3 id="complete-rules">Complete rules</h3>
+<h4 id="shared-positional-procedure">Shared positional procedure</h4>
+<p>Unless an effect says otherwise, when a player retreats or withdraws from a battle:</p>
+<ul>
+<li>an attacker returns to the position from which they entered the contested position; and</li>
+<li>a defender moves one position toward their own end.</li>
+</ul>
+<p>After applying that movement:</p>
+<ul>
+<li>if only the attacker withdrew, the defender remains in the contested position;</li>
+<li>if only the defender withdrew, the attacker remains in the contested position and becomes its occupier if it is an opposing Territory they do not control; and</li>
+<li>if both players withdraw, move the attacker first, then the defender, and neither becomes the occupier because of that withdrawal.</li>
+</ul>
+<p>Specific edge-of-Gauntlet and effect instructions continue to override this general procedure.</p>
+<h4 id="retreat">Retreat</h4>
+<p>A player retreats because they lost a battle.</p>
+<p>The battle has a winner and loser. Apply victory, loss, retreat, Occupation, and other result-dependent effects normally.</p>
+<p>Retreat does not count as ordinary movement or withdrawal for effects unless an effect says otherwise.</p>
+<h4 id="withdrawal">Withdrawal</h4>
+<p>A player withdraws when a pending or active battle ends without determining a winner.</p>
+<p>There is no winner or loser. Victory, loss, and retreat triggers do not occur.</p>
+<p>If withdrawal prevents a pending battle before Onset, no battle or Aftermath occurs.</p>
+<p>If an active battle ends by withdrawal at any time after Onset, carry out the withdrawal and complete the remaining non-result steps of the Aftermath. Clear any committed battle cards using their normal destinations. Result-dependent triggers do not occur because the battle has no winner or loser.</p>
+<p>Withdrawal does not count as Fall Back or ordinary movement for effects unless an effect says otherwise.</p>
+<hr>
+<hr>
+<h2 id="part-iii-complete-shared-rules">Part III — Complete Shared Rules</h2>
+<h2 id="11-constructing-a-deck">11. Constructing a Deck</h2>
+<h3 id="how-it-works">How it works</h3>
+<p>Choose one faction and one of its two Leaders. Build a Deck of at least 30 cards with no more than 60 total card value. Use Neutral cards and cards from your chosen faction. Then choose three different Territories.</p>
+<h3 id="complete-rules">Complete rules</h3>
+<h4 id="choose-a-faction-and-leader">Choose a faction and Leader</h4>
+<p>Choose one faction, then choose one Leader belonging to that faction. Both players may choose the same faction or Leader.</p>
+<p>The Leader Card begins face up and remains available throughout the game.</p>
+<h4 id="build-the-deck">Build the Deck</h4>
+<p>A Deck must contain:</p>
+<ul>
+<li>at least <strong>30 cards</strong>;</li>
+<li>no more than <strong>60 total card value</strong>; and</li>
+<li>only Neutral cards and cards belonging to the selected faction.</li>
+</ul>
+<p>Unless marked <strong>Unique</strong>, a card may appear in any quantity permitted by the available card pool. A Unique card is limited to one copy in the Deck.</p>
+<h4 id="choose-territories">Choose Territories</h4>
+<p>Choose exactly three different Territory Cards.</p>
+<ul>
+<li>No more than one may be an <strong>Arena</strong>.</li>
+<li>Territory Cards are not part of the Deck.</li>
+<li>Territories do not count toward the Deck's 30-card minimum or 60-value maximum.</li>
+<li>Both players may choose the same Territory titles.</li>
+</ul>
+<h4 id="supplemental-components">Supplemental components</h4>
+<p>Prepare all components required by the chosen faction and Leader.</p>
+<p>Unless a rule says otherwise, supplemental components:</p>
+<ul>
+<li>are not part of the Deck;</li>
+<li>are not shuffled into the Draw Pile;</li>
+<li>cannot be drawn, played, discarded, banked, or placed in the Graveyard; and</li>
+<li>do not count toward deck size or card value.</li>
+</ul>
+<hr>
+<h2 id="12-detailed-card-and-timing-rules">12. Detailed Card and Timing Rules</h2>
+<h3 id="how-it-works">How it works</h3>
+<p>Most games can be played from the Learn to Play rules. Use this chapter when cards or faction abilities interact at the same timing, reveal information early, add or replace battle cards, copy effects, or change where battle cards go.</p>
+<h3 id="complete-rules">Complete rules</h3>
+<ul>
+<li><strong>May</strong> indicates an optional effect. <strong>Must</strong> indicates a required effect.</li>
+<li>Follow instructions in the order written unless another rule establishes a different order.</li>
+<li>When a card, Leader, faction, Territory, or supplemental-component rule conflicts with a general rule, follow the specific rule.</li>
+<li>When card text changes where a card goes, only the stated change applies.</li>
+<li>If an instruction cannot be completed in full, complete as much as possible unless the uncompleted instruction is a required cost, requirement, or target.</li>
+<li>An effect applies only at its stated timing. Revealing a card early does not apply a later portion of its effect early.</li>
+<li>An effect cannot be canceled or negated after it has been applied.</li>
+</ul>
+<h3 id="battle-timing-and-card-interaction">Battle timing and card interaction</h3>
+<h4 id="shared-timing-rule">Shared-timing rule</h4>
+<p>When multiple controlled effects would apply at the same time:</p>
+<ol>
+<li>the attacker applies one effect they control;</li>
+<li>the defender applies one effect they control;</li>
+<li>continue alternating until no effects remain at that timing.</li>
+</ol>
+<p>Each player chooses the order of effects they control. Simultaneous reveal does not mean effects are applied simultaneously.</p>
+<h4 id="replacements-and-revisions">Replacements and revisions</h4>
+<p>A replacement takes the same role as the card it replaces.</p>
+<ul>
+<li>A replacement Gambit must be Gambit-eligible.</li>
+<li>A replacement Tactic must be Tactic-eligible.</li>
+<li>Place it in the face state instructed by the replacing effect.</li>
+<li>Replacement does not reopen an earlier timing window.</li>
+<li>Only effects whose timing remains available and that have not yet been applied may be applied.</li>
+</ul>
+<p>When an effect lets a player revise a choice, the revised choice does not create another reveal, response, or replacement opportunity unless stated otherwise.</p>
+<h4 id="reveal-and-information">Reveal and information</h4>
+<p>To reveal a face-down card, turn it face up and leave it face up.</p>
+<p>To reveal a Hand or Reserve, its owner shows the entire zone to the opponent. The cards remain in that zone.</p>
+<h4 id="negation">Negation</h4>
+<p>A negated card has no effect but remains in battle. Unless stated otherwise, a negated Gambit still goes to its owner's Graveyard and a negated Tactic still goes to its owner's Discard Pile.</p>
+<p>An effect cannot be negated after it has been applied.</p>
+<h5 id="gambit-and-tactic-effect-headings">Gambit and Tactic effect headings</h5>
+<p>v0.6.3 no longer uses <strong>Battle</strong> as a printed effect heading.</p>
+<ul>
+<li><strong>Gambit/Tactic</strong> means the same printed effect is available when the card is committed as either a Gambit or a Tactic. On the card face, this heading is stacked as <code>Gambit/</code> over <code>Tactic</code> to preserve the narrow heading column.</li>
+<li><strong>Gambit</strong> means the effect is available only when the card is committed as a Gambit.</li>
+<li><strong>Tactic</strong> means the effect is available only when the card is committed as a Tactic.</li>
+</ul>
+<p>The heading identifies eligible battle-card roles; it does not change the effect's printed timing. An effect applies only when its stated timing is reached. If a Gambit or Tactic effect states no later timing, it applies when that card is revealed in that role.</p>
+<p>In general prose, use <strong>Gambit effect</strong>, <strong>Tactic effect</strong>, or <strong>Gambit or Tactic effect</strong> as applicable. When a card directly refers to its own printed <strong>Gambit/Tactic</strong> heading, it may say <strong>its Gambit/Tactic effect</strong>.</p>
+<hr>
+<h4 id="1-inherent-banking-action-and-asset-text">1. Inherent banking Action and Asset text</h4>
+<p>A card with an <strong>Asset</strong> effect has an inherent banking Action:</p>
+<blockquote>
+<p><strong>Bank:</strong> As an Action, play this card from your Hand and bank it.</p>
+</blockquote>
+<p>This inherent Action does not need to be printed on the card.</p>
+<p><strong>Asset is the only banked-card effect heading in v0.6.3.</strong> Asset text may be continuous, triggered, optional, or expressly usable as an Action while the card is banked. The former <strong>Activate</strong> heading is retired. An Asset ability that says <code>as an Action</code> still uses the applicable Action permission.</p>
+<p>If a card has a printed Action effect that provides a special banking procedure, use that procedure instead. A special banking Action may impose costs, bind cards, draw cards, grant another Action, limit copies, or otherwise change what happens when the card is banked.</p>
+<p>For rules and effects that refer to an Action effect that banks a card, the inherent Bank Action counts as such an effect.</p>
+<p>Cards whose only printed Action was <code>Bank this card.</code> therefore omit that Action section in v0.6.3.</p>
+<hr>
+<h4 id="2-directly-permitted-card-procedures-do-not-spend-another-action">2. Directly permitted card procedures do not spend another Action</h4>
+<p>When a rule or effect directly instructs or permits a player to play, bank, place, reveal, or otherwise use a card at a stated timing, that procedure is part of resolving that rule or effect. It does not spend or require another Action unless expressly stated.</p>
+<p>Cards therefore do not need phrases such as:</p>
+<ul>
+<li><code>without spending an Action</code>;</li>
+<li><code>without spending another Action</code>;</li>
+<li><code>without taking an Action</code>; or</li>
+<li><code>without taking additional Actions</code>.</li>
+</ul>
+<p>An instruction that expressly says <strong>as an Action</strong>, <strong>take an Action</strong>, or otherwise identifies an Action still uses the applicable Action permission.</p>
+<h5 id="battle-scope-in-standard-v0-6-3">Battle scope in standard v0.6.3</h5>
+<p>The standard v0.6.3 game is 1v1, so every battle involves both players. A battle-timed effect on a player's card therefore does not need to say <code>in a battle involving you</code>. The printed timing and other conditions still determine whether the effect can apply.</p>
+<hr>
+<h4 id="3-effect-granted-movement-and-new-movement-sequences">3. Effect-granted movement and new movement sequences</h4>
+<p>When an effect grants movement, apply the normal movement rules unless it says otherwise.</p>
+<ul>
+<li>If the effect modifies a movement sequence already in progress, the granted movement remains part of that sequence.</li>
+<li>If the effect grants movement while no movement sequence is in progress, it begins a new movement sequence.</li>
+<li>Effect-granted movement may create a pending battle and may initiate a legal Last Stand unless expressly prohibited.</li>
+<li>When movement creates a pending battle, that movement sequence ends and unused movement from it is lost normally.</li>
+</ul>
+<p>Cards therefore do not need affirmative text saying that granted movement may start or create a battle. Negative exceptions remain printed.</p>
+<hr>
+<h4 id="4-additional-tactics-use-the-shared-tactic-rules">4. Additional Tactics use the shared Tactic rules</h4>
+<p>When an effect permits an <strong>additional Tactic</strong>:</p>
+<ul>
+<li>it must be eligible for the Tactic role;</li>
+<li>before Tactics are revealed, it is set face down with the other chosen Tactics;</li>
+<li>after Tactics are revealed, it is played face up;</li>
+<li>only timing still available may apply;</li>
+<li>choosing it does not reopen an earlier choice, reveal, or response window; and</li>
+<li>it uses the normal Tactic destination unless an effect gives another destination.</li>
+</ul>
+<p>Unless an effect says otherwise, the source of a Tactic is the player's <strong>Reserve</strong>.</p>
+<p>Multiple applicable <code>+N Reserve</code> and <code>+N Tactic</code> instructions add together unless a rule or effect expressly says otherwise.</p>
+<hr>
+<h4 id="5-sanctions">5. Sanctions</h4>
+<p>A card whose title begins <strong>Sanctions:</strong> is a <strong>Sanction</strong>.</p>
+<p>When a Sanction is played, placed, or banked because an opponent refused its owner's Terms:</p>
+<ul>
+<li>that opponent remains associated with that Sanction for as long as it remains in play; and</li>
+<li>unless the Sanction says otherwise, after that opponent accepts the owner's Terms, put the Sanction in its owner's Discard Pile.</li>
+</ul>
+<p>A Sanction may state additional removal conditions. Cards therefore do not need to repeat identification of the refusing opponent or the default expiration after later acceptance.</p>
+<hr>
+<h4 id="6-asset-removal">6. Asset Removal</h4>
+<p><strong>Remove</strong> is a defined Asset event. An Asset is <strong>Removed</strong> when a rule or effect forces it to leave play.</p>
+<ul>
+<li>Removal applies regardless of the destination or the natural verb used by the rule or effect. An instruction may <code>discard</code> an Asset, put it in a Graveyard, return it to a Hand, or otherwise make it leave play and still cause Removal.</li>
+<li>If a player's Asset limit decreases below the number of Assets they have banked, every Asset they are forced to discard to return within that limit is Removed. A forced choice of which Asset leaves play still counts as Removal.</li>
+<li>Voluntarily discarding, spending, returning, or otherwise using one of your own Assets does <strong>not</strong> count as Removal unless a rule expressly says otherwise.</li>
+<li>An Asset leaving play through its own normal resolution, expiration, or self-removal condition does <strong>not</strong> count as Removal unless a rule expressly says otherwise.</li>
+<li><strong>Remove</strong> does not itself assign a destination. Follow the rule or effect that caused the Removal.</li>
+</ul>
+<p>Cards should still use the clearest natural instruction for the physical result. For example, <code>discard 1 Asset</code> is preferable to forcing the word <code>Remove</code> into the sentence when discard is the actual instruction. Use <strong>Remove/Removed</strong> when another rule or effect cares that involuntary Asset loss occurred.</p>
+<p>Capitalized <strong>Remove/Removed</strong> carries this defined meaning. Lowercase <code>remove</code> may continue to appear in ordinary English with its contextual meaning.</p>
+<h5 id="asset-ownership-language">Asset ownership language</h5>
+<p>When ownership is already clear from the sentence, prefer:</p>
+<ul>
+<li><code>your Asset</code> / <code>your Assets</code>;</li>
+<li><code>opposing Asset</code> / <code>opposing Assets</code>; and</li>
+<li><code>their Asset</code> / <code>their Assets</code>.</li>
+</ul>
+<p>Do not write <code>Asset you control</code>, <code>Assets you control</code>, <code>Asset they control</code>, or equivalent control boilerplate unless a genuine ownership or control ambiguity requires it.</p>
+<h5 id="bound-cards">Bound cards</h5>
+<p><strong>Bind</strong> attaches one card to another for as long as the relevant effect requires.</p>
+<ul>
+<li>Unless an effect gives a different instruction, when a card leaves play, cards bound to it are put in their owners' Discard Piles.</li>
+<li>If a rule or card sets a maximum number of cards that may be bound to a card and that maximum decreases below the number currently bound, immediately choose and discard excess bound cards until the limit is satisfied.</li>
+<li>A card-specific destination or resolution for a bound card overrides these defaults.</li>
+</ul>
+<hr>
+<h4 id="7-reveal-stage-interference">7. Reveal-stage interference</h4>
+<p>A <strong>reveal-stage interference effect</strong> is an effect of a revealed Gambit or Tactic that reveals, negates, returns, discards, replaces, or otherwise prevents another Gambit or Tactic at that same reveal stage from applying normally.</p>
+<p>At each Gambit or Tactic reveal stage:</p>
+<ol>
+<li>resolve reveal-stage interference before ordinary effects at that stage;</li>
+<li>if multiple interference effects remain at the same timing, use the normal shared-timing rule among them; and</li>
+<li>after interference is complete, resolve the remaining ordinary effects normally.</li>
+</ol>
+<p>An effect still cannot negate or cancel a card after that card's effect has applied.</p>
+<p>This does <strong>not</strong> give general priority to every <code>When revealed</code> effect. An effect that merely applies its own result, copies another effect, or replaces its own card remains an ordinary reveal effect unless it interferes with another Gambit or Tactic at that same stage.</p>
+<hr>
+<h4 id="8-compact-card-shorthand">8. Compact card shorthand</h4>
+<p>Routine quantitative instructions may use compact shorthand when timing, subject, source, and eligible set remain unambiguous.</p>
+<h5 id="reserve-and-tactics">Reserve and Tactics</h5>
+<p><code>+N Reserve</code> adds N cards to the player's Reserve at the stated timing. During Reserve formation, it increases the normal Reserve size by N.</p>
+<p><code>−N Reserve</code> reduces that quantity by N. Any applicable minimum remains printed.</p>
+<p><code>+N Tactic</code> permits N additional Tactics under the shared additional-Tactic rule.</p>
+<p><strong>Reserve is the default Tactic source.</strong> Do not print <code>from Reserve</code> merely to restate the default. Print another source only when it overrides or narrows the default, such as:</p>
+<ul>
+<li><code>+1 Tactic from Hand</code></li>
+<li><code>+1 Tactic from those cards</code></li>
+<li><code>+1 Tactic using the stored card</code></li>
+</ul>
+<p>A standard combined effect may therefore read:</p>
+<blockquote>
+<p><code>+1 Reserve, +1 Tactic.</code></p>
+</blockquote>
+<h5 id="cards">Cards</h5>
+<p><code>+N Card</code> / <code>+N Cards</code> means draw N cards from your Draw Pile into your Hand.</p>
+<p>If another player receives the draw, identify that player. If the cards go somewhere other than the Hand, state that destination instead of using this shorthand.</p>
+<p>Optional compound procedures may remain in natural language when shorthand would obscure what is optional.</p>
+<h5 id="actions">Actions</h5>
+<p><code>+N Action</code> grants N additional Actions during the <strong>current phase</strong>. If another phase is intended, state that phase.</p>
+<p>This inherits the same-phase additional-Action rule established for v0.6.2: it expands the number of Actions permitted in that phase rather than reopening a phase that has ended.</p>
+<h5 id="resources">Resources</h5>
+<p><code>+N Capital</code>, <code>+N Influence</code>, <code>+N Command</code>, and <code>+N Conviction</code> mean gain that amount of the named resource.</p>
+<p>Do <strong>not</strong> use negative resource shorthand for costs, payments, losses, or reductions when their rules meaning differs. Continue to write <code>spend</code>, <code>pay</code>, <code>lose</code>, or the applicable instruction.</p>
+<p><code>Resource = N</code> sets that resource to N. Examples include <code>Command = 2</code> and <code>Conviction = 4</code>.</p>
+<h5 id="battle-total">Battle total</h5>
+<p><code>+N Battle Total</code> adds N to your battle total.</p>
+<h5 id="retreat">Retreat</h5>
+<p><code>Retreat +N</code> increases the distance of the retreat identified by that clause by N Positions. It modifies that retreat; it does not create a separate retreat.</p>
+<p>If the affected player is not otherwise clear, identify them.</p>
+<h5 id="advantage-and-disadvantage">Advantage and disadvantage</h5>
+<p>Card faces retain natural instruction wording:</p>
+<ul>
+<li><code>gain advantage</code> = gain <strong>one instance of advantage</strong>;</li>
+<li><code>gain double advantage</code> = gain <strong>two instances of advantage</strong>;</li>
+<li><code>gain disadvantage</code> = gain <strong>one instance of disadvantage</strong>.</li>
+</ul>
+<p>These are additive instructions, not binary statuses.</p>
+<p>Instances from separate cards, Territory effects, faction abilities, and other effects <strong>stack</strong>. No later source replaces an earlier one unless an effect expressly says so. Before rolling battle dice, combine all advantage and disadvantage affecting each player and cancel opposing instances one-for-one.</p>
+<ul>
+<li>If <strong>N advantage</strong> remains, roll <strong>N + 1 dice</strong> and use the highest result.</li>
+<li>If <strong>N disadvantage</strong> remains, roll <strong>N + 1 dice</strong> and use the lowest result.</li>
+<li>If neither remains, roll normally.</li>
+</ul>
+<p>There is no fixed stacking cap unless a rule or effect expressly creates one. Two separate effects that each say <code>gain advantage</code> therefore produce double advantage; double advantage plus one disadvantage leaves one net advantage.</p>
+<p>Effects that ignore or prevent <strong>one disadvantage</strong> affect only one instance unless they say otherwise.</p>
+<p>The words <code>Advantage</code>, <code>Double Advantage</code>, and <code>Disadvantage</code> may still be used as rules terms when discussing the mechanic, but card-facing instructions use the natural <code>gain ...</code> form unless another sentence structure requires equivalent wording.</p>
+<h5 id="front-line">Front Line</h5>
+<p>Use <strong><code>Advance Front Line N</code></strong>, not <code>+N Front Line</code>, to advance the Front Line by N Territories.</p>
+<p>Card-specific qualifications such as <code>if able</code> and replacement of Occupation remain printed when they matter.</p>
+<h5 id="condition-prefixes">Condition prefixes</h5>
+<p>When a condition governs the entire following clause, cards may use concise prefixes such as:</p>
+<ul>
+<li><code>Attacker —</code></li>
+<li><code>Defender —</code></li>
+<li><code>Counterattack —</code></li>
+<li><code>Win —</code></li>
+<li><code>Lose —</code></li>
+</ul>
+<p>The prefix scopes only the clause that follows it. More complex conditions remain in natural language.</p>
+<hr>
+<h4 id="9-rerolls-use-the-new-result">9. Rerolls use the new result</h4>
+<p>When a rule or effect causes a die to be rerolled, the reroll replaces the result it rerolls and the new result is used unless the rule or effect expressly says otherwise.</p>
+<p>Cards therefore do not need to repeat <code>use the new result</code> or <code>you must use the new result</code> after a reroll instruction.</p>
+<hr>
+<h4 id="10-applying-and-repeating-another-effect">10. Applying and repeating another effect</h4>
+<p>When an effect tells you to <strong>apply</strong> another card's effect or <strong>repeat</strong> an effect, resolve that effect as a new application at the current timing.</p>
+<ul>
+<li>The effect must be able to apply at the current timing, with its printed conditions and legal targets satisfied.</li>
+<li>The player instructed to apply or repeat the effect controls that application.</li>
+<li>Make all choices again and pay all costs again for each new application.</li>
+<li>Applying another card's effect does not play, set, choose, or otherwise move the source card unless the instruction expressly says so. The source card remains in its current zone.</li>
+<li>Because the source card was not played, set, or chosen again, triggers that care about those events do not occur merely because its effect was applied or repeated.</li>
+<li>A copied or repeated effect may create one further application if its own printed text instructs it to do so. That further application cannot create another copied or repeated effect in the same chain.</li>
+</ul>
+<p>Cards therefore do not need phrases such as <code>as though you played it</code>, <code>as though you controlled it</code>, repeated instructions to leave the source card in its zone, or card-specific reminders to remake choices and repay costs.</p>
+<hr>
+<h4 id="11-battles-ending-without-a-winner">11. Battles ending without a winner</h4>
+<p>When a rule or effect ends a battle <strong>without a winner</strong>:</p>
+<ul>
+<li>neither player wins or loses that battle; withdrawal is not a loss;</li>
+<li>after the battle-ending instruction resolves, unresolved Gambit or Tactic effects from that battle do not apply unless the ending effect expressly says otherwise;</li>
+<li>effects that already applied are not undone;</li>
+<li>complete any remaining non-result Aftermath procedures that are still applicable;</li>
+<li>clear committed cards and cards remaining in Reserve normally unless the ending effect gives them another destination; and</li>
+<li>apply normal positional consequences, including Occupation when applicable, based on the Player Tokens that remain after any instructed withdrawal.</li>
+</ul>
+<p>An effect conditioned on a player winning or losing does not apply when the battle ends without a winner.</p>
+<p>Cards that end a battle without a winner therefore do not need to restate ordinary cleanup, that withdrawal is not a loss, or that already-applied effects remain applied.</p>
+<hr>
+<h4 id="12-card-text-consequences">12. Card-text consequences</h4>
+<p>The v0.6.3 card-language build may remove or replace:</p>
+<ul>
+<li>a printed <code>Action: Bank this card.</code> when that is the card's entire banking Action;</li>
+<li>the former <code>Activate</code> heading by folding all banked-card abilities into <code>Asset</code>;</li>
+<li>redundant <code>in a battle involving you</code> wording in the standard 1v1 card pool;</li>
+<li>redundant no-Action disclaimers on directly permitted card procedures;</li>
+<li>affirmative statements that effect-granted movement may create a battle;</li>
+<li>repeated additional-Tactic eligibility, face-state, timing, destination, and default-Reserve-source instructions;</li>
+<li>repeated Reserve/Tactic quantity sentences represented by numeric shorthand;</li>
+<li>routine draw, extra-Action, fixed resource-gain, battle-total, retreat, resource-setting, and Front Line sentences represented by the shorthand above;</li>
+<li>repeated <code>use the new result</code> text after rerolls;</li>
+<li>repeated Sanction identification/default-expiration clauses;</li>
+<li>repeated reveal-priority clauses covered by reveal-stage interference;</li>
+<li>copied/repeated-effect reminders covered by the shared application rule;</li>
+<li>battle-ending cleanup/result reminders covered by the shared no-winner rule;</li>
+<li>redundant <code>Asset(s) you control</code> / <code>Asset(s) they control</code> wording where ownership is already clear;</li>
+<li>long forced-Asset-loss descriptions when the defined <strong>Removed</strong> event states the needed trigger more directly; and</li>
+<li><code>place this card as an Overlay</code> on a physical Overlay card in favor of the shorter <code>place this Overlay</code>.</li>
+</ul>
+<p>Advantage/Disadvantage is deliberately <strong>not</strong> reduced to a bare card-facing status label; cards retain <code>gain advantage</code>, <code>gain double advantage</code>, or equivalent natural wording while the shared stacking rule governs how instances combine.</p>
+<p>Card-specific costs, restrictions, nondefault sources, destinations, timing differences, negative exceptions, title-matching rules, unusual movement, and other deviations remain printed.</p>
+<hr>
+<h2 id="13-overlays-and-other-shared-card-rules">13. Overlays and Other Shared Card Rules</h2>
+<h3 id="how-it-works">How it works</h3>
+<p>An Overlay sits on a Territory and temporarily replaces the exposed effect beneath it. Only the top Overlay is active, but covered Overlays remain attached.</p>
+<p>The player who controls the Territory also controls its Overlays. Ownership does not change, so when an Overlay is removed, put it in its owner's Discard Pile unless its text says otherwise.</p>
+<h3 id="complete-rules">Complete rules</h3>
+<p>An Overlay is a persistent card attached to a Territory. It supersedes the printed effect immediately beneath it while exposed.</p>
+<p>Unless an effect says otherwise:</p>
+<ul>
+<li>the top exposed Overlay is active;</li>
+<li>lower Overlays remain attached but dormant;</li>
+<li>a dormant Overlay's effect and expiration timer pause;</li>
+<li>a printed removal condition remains active while dormant;</li>
+<li>when the top Overlay leaves, the next becomes active, or the Territory's effect becomes active if none remain;</li>
+<li>the controller of the underlying Territory controls the Overlay and makes its choices;</li>
+<li>Overlay control changes when Territory control changes;</li>
+<li>Overlay ownership does not change;</li>
+<li>each Overlay faces the same direction as the Territory beneath it and rotates with it;</li>
+<li>an Overlay is not an Asset and does not count toward the Asset limit; and</li>
+<li>when removed, put it in its owner's Discard Pile unless stated otherwise.</li>
+</ul>
+<p>On an Overlay, <strong>you</strong> means its current controller unless the text identifies its owner, the player who placed it, or another player.</p>
+<hr>
+<hr>
+<h2 id="part-iv-factions-and-components">Part IV — Factions and Components</h2>
+<h2 id="14-card-pool-structure">14. Card pool structure</h2>
+<table><tbody>
+<tr><td>Pool</td><td>Count</td><td>Change</td></tr>
+<tr><td>Neutral</td><td>50</td><td>Remove Invasion; add Landslide.</td></tr>
+<tr><td>Military</td><td>13</td><td>Add Invasion.</td></tr>
+<tr><td>Diplomats</td><td>13</td><td>Add Détente.</td></tr>
+<tr><td>Financiers</td><td>13</td><td>Add Compound Interest.</td></tr>
+<tr><td>Intelligence</td><td>13</td><td>Add Extraordinary Rendition.</td></tr>
+<tr><td>Mystics</td><td>13</td><td>Add Nature's Altar.</td></tr>
+<tr><td>Inquisition</td><td>13</td><td>Add Martyrdom.</td></tr>
+</tbody></table>
+<h3 id="accepted-new-card-values">Accepted new-card values</h3>
+<table><tbody>
+<tr><td>Pool</td><td>Card</td><td>Cost</td><td>Restriction</td><td>Modes</td></tr>
+<tr><td>Neutral</td><td>Landslide</td><td>4</td><td>Maximum one Landslide on each Territory</td><td>Action, Gambit/Tactic, Overlay</td></tr>
+<tr><td>Military</td><td>Invasion</td><td>4</td><td>None</td><td>Action, Gambit/Tactic</td></tr>
+<tr><td>Diplomats</td><td>Détente</td><td>3</td><td>Maximum one banked Détente</td><td>Action, Asset</td></tr>
+<tr><td>Financiers</td><td>Compound Interest</td><td>4</td><td>Maximum one banked Compound Interest</td><td>Action, Asset</td></tr>
+<tr><td>Intelligence</td><td>Extraordinary Rendition</td><td>4</td><td>Maximum one banked Extraordinary Rendition</td><td>Action, Asset</td></tr>
+<tr><td>Mystics</td><td>Nature's Altar</td><td>4</td><td>None</td><td>Action, Gambit/Tactic, Overlay</td></tr>
+<tr><td>Inquisition</td><td>Martyrdom</td><td>5</td><td>Unique; maximum one copy per Deck</td><td>Aftermath response from Hand</td></tr>
+</tbody></table>
+<hr>
+<h2 id="15-shared-component-migration-rules">15. Shared component migration rules</h2>
+<h3 id="action-timing">Action timing</h3>
+<ul>
+<li>A card played for an <strong>Action</strong> effect is played during Opening or Denouement unless its text names one of those phases.</li>
+<li>Replace “before movement Action Opportunity” with <strong>Opening</strong>.</li>
+<li>Replace “after movement Action Opportunity” with <strong>Denouement</strong>.</li>
+<li>An additional Action does not itself permit two Actions in one phase.</li>
+<li>A directly permitted procedure outside Opening or Denouement is not an Action unless its text says it is.</li>
+</ul>
+<h3 id="battle-timing">Battle timing</h3>
+<ul>
+<li>Replace battle “opening effects” with <strong>Onset</strong>.</li>
+<li>Terms occur during the pending-battle state before Onset.</li>
+<li>Accepted Terms prevent the battle from beginning.</li>
+<li>A withdrawal after Onset completes the remaining non-result Aftermath steps. Clear any committed battle cards using their normal destinations.</li>
+</ul>
+<h3 id="movement-terminology">Movement terminology</h3>
+<ul>
+<li>Use <strong>Advance</strong>, <strong>Hold</strong>, and <strong>Fall Back</strong> for ordinary Movement choices.</li>
+<li>Use <strong>withdraw</strong> only when a pending or active battle ends without a winner.</li>
+<li>Use <strong>retreat</strong> only after losing a battle.</li>
+</ul>
+<h3 id="front-line-and-immediate-capture">Front Line and immediate Capture</h3>
+<p>Territory control remains contiguous from each player's own end.</p>
+<p>When an inherited effect would capture a specific Territory but that Territory cannot legally join the player's contiguous Front Line, the effect instead advances that player's Front Line by the number of Territories the effect permits, if the player's token is on or beyond each Territory added. It never creates isolated control.</p>
+<p>Component text revised in this document uses <strong>advance your Front Line by one Territory</strong> where that is the actual result.</p>
+<h3 id="defensive-edge-and-arenas">Defensive Edge and Arenas</h3>
+<p><strong>Defensive Edge:</strong> When the defender has Defensive Edge, the defender wins tied battle totals.</p>
+<p>The defender normally has Defensive Edge while defending a Territory they control or making a Last Stand, unless an effect removes it.</p>
+<p>When an Arena removes Defensive Edge and battle totals remain tied, proceed to a Tiebreak Roll. Do not reroll the original modified battle calculation.</p>
+<h3 id="obsolete-territory-visibility-language">Obsolete Territory visibility language</h3>
+<p>All Territories are revealed during setup. Do not use <strong>revealed Territory</strong> as an ordinary eligibility condition. Preserve reveal language only when a real hidden-information state changes.</p>
+<hr>
+<h2 id="16-military">16. Military</h2>
+<h3 id="faction-structure">Faction structure</h3>
+<table><tbody>
+<tr><td>Element</td><td>v0.6.2 rule</td></tr>
+<tr><td>Victory</td><td>Run the Gauntlet.</td></tr>
+<tr><td>Resource</td><td>Command, maximum 2.</td></tr>
+<tr><td>Resource gain</td><td>The first time each turn the Military wins a battle, gain 1 Command.</td></tr>
+<tr><td>Faction Actions</td><td>None.</td></tr>
+<tr><td>Faction Abilities</td><td>Orders at their printed timings.</td></tr>
+<tr><td>Faction pool</td><td>13 Military card titles.</td></tr>
+<tr><td>Unique card</td><td>Shock and Awe, cost 5.</td></tr>
+</tbody></table>
+<p>Military Orders are Faction Abilities. They do not use an Action.</p>
+<h3 id="orders">Orders</h3>
+<blockquote>
+<p><strong>Onward — 1 Command:</strong> During your Movement, before a pending battle is created, move one additional Position. This movement may create a pending battle.</p>
+</blockquote>
+<blockquote>
+<p><strong>Rally — 1 Command:</strong> Before dice are rolled in a battle you initiated, add +1 to your battle total.</p>
+</blockquote>
+<blockquote>
+<p><strong>Rout — 2 Command:</strong> At the end of the Aftermath of a battle you initiated and won, advance one Position. This movement may create a pending battle.</p>
+</blockquote>
+<blockquote>
+<p><strong>Entrench — 1 Command:</strong> Before dice are rolled in a battle you did not initiate, add +1 to your battle total.</p>
+</blockquote>
+<blockquote>
+<p><strong>Repel — 1 Command:</strong> During the Aftermath of a battle you did not initiate and won, after the opponent's normal retreat, they retreat one additional Position, if able.</p>
+</blockquote>
+<blockquote>
+<p><strong>Fortify — 2 Command:</strong> During the Aftermath of a battle you won while occupying an enemy-controlled Territory, advance your Front Line by one Territory, if able.</p>
+</blockquote>
+<h3 id="military-invasion">Military — Invasion</h3>
+<p><strong>Cost:</strong> 4</p>
+<p><strong>Unique:</strong> No</p>
+<blockquote>
+<p><strong>Action:</strong> During your Movement this turn, you may advance up to two additional Positions. This additional movement may only be used to advance.</p>
+<p></p>
+<p><strong>Gambit/Tactic:</strong> Attacker — +1 Reserve, +1 Tactic.</p>
+</blockquote>
+<p>Unused additional movement is lost when a pending battle is created.</p>
+<h4 id="invasion-interaction-rules">Invasion interaction rules</h4>
+<ul>
+<li>Invasion and Onward contribute to the same Movement sequence unless an effect expressly creates a later sequence.</li>
+<li>Each Position is entered separately and its Territory effects resolve normally.</li>
+<li>Creating a pending battle ends the current Movement sequence and loses unused Invasion movement.</li>
+<li>Accepted Terms do not restore lost movement.</li>
+<li>The Gambit/Tactic mode changes Reserve and Tactic limits only for that battle.</li>
+<li>Several active effects may each increase Reserve or Tactic limits unless a specific effect prohibits stacking.</li>
+<li>Give Chase, Rout, Countercharge, and Shock and Awe create or resolve later movement according to their own timings; unused Invasion movement does not carry into them.</li>
+</ul>
+<h3 id="revised-inherited-military-text">Revised inherited Military text</h3>
+<h4 id="battlefield-promotion">Battlefield Promotion</h4>
+<p><strong>Current exact v0.6.3 card text:</strong></p>
+<blockquote>
+<p><strong>Action:</strong> Play only during Denouement if you won a battle this turn. Return one Tactic you chose during that battle from your Discard Pile to your Hand.</p>
+<p></p>
+<p><strong>Gambit/Tactic:</strong> In the Aftermath, if you win, return one other Tactic you chose to your Hand instead of putting it in your Discard Pile.</p>
+</blockquote>
+<h4 id="encampment">Encampment</h4>
+<p><strong>Current exact v0.6.3 card text:</strong></p>
+<blockquote>
+<p><strong>Action:</strong> Place this Overlay on a Territory you occupy and control.</p>
+<p></p>
+<p><strong>Overlay:</strong> At the end of this card's owner's turn, if they occupy and control this Territory, +1 Command. When another player gains control of this Territory, put this card in its owner's Graveyard.</p>
+<p></p>
+<p><strong>Gambit/Tactic:</strong> In the Aftermath, if you won while defending a Territory you control, place this Overlay there.</p>
+</blockquote>
+<h4 id="give-chase">Give Chase</h4>
+<p><strong>Current exact v0.6.3 card text:</strong></p>
+<blockquote>
+<p><strong>Action:</strong> During Denouement, if you won a battle you initiated this turn, advance 1 Position. Then put this card in your Graveyard.</p>
+<p></p>
+<p><strong>Gambit/Tactic:</strong> Following the Aftermath, if you won as the attacker, you may advance 1 Position. Put this card in your Graveyard.</p>
+<p></p>
+<p>If an advance from this card starts a battle, you cannot set a Gambit or use Orders in it. In that battle, −1 Reserve for each battle you already fought this turn beyond the first, to a minimum of 0.</p>
+</blockquote>
+<h4 id="hold-the-line">Hold the Line</h4>
+<p><strong>Current exact v0.6.3 card text:</strong></p>
+<blockquote>
+<p><strong>Asset:</strong> During Onset while defending a Territory you control, you may put this card in your Graveyard to apply its Gambit/Tactic effect after Tactics are revealed.</p>
+<p></p>
+<p><strong>Gambit/Tactic:</strong> If you are defending a Territory you control, after Tactics are revealed, +2 Reserve; +1 Tactic from those cards. If you lose, after you retreat, the attacker captures that Territory. In the Aftermath, put this card in your Graveyard.</p>
+</blockquote>
+<h4 id="shock-and-awe">Shock and Awe</h4>
+<p><strong>Current exact v0.6.3 card text:</strong></p>
+<blockquote>
+<p><strong>Asset:</strong> During Onset, you may put this card in your Graveyard to apply its Gambit/Tactic effect after Tactics are revealed.</p>
+<p></p>
+<p><strong>Gambit/Tactic:</strong> When attacking on an enemy-controlled Territory, after Tactics are revealed: +1 Tactic from Hand. Lose — Retreat +1. Win — Choose one:</p>
+<p>Breakthrough — Opponent: Retreat +1, if able; then you advance one Position.</p>
+<p>Consolidate — Advance Front Line 1, if able; Command = 2.</p>
+<p></p>
+<p>Afterward, you cannot move, advance your Front Line, or use an Order as a result of this victory.</p>
+<p>In the Aftermath, put both cards in your Graveyard.</p>
+</blockquote>
+<h2 id="17-diplomats">17. Diplomats</h2>
+<h3 id="faction-structure">Faction structure</h3>
+<table><tbody>
+<tr><td>Element</td><td>v0.6.2 rule</td></tr>
+<tr><td>Victory</td><td>Run the Gauntlet or complete the Peace Treaty.</td></tr>
+<tr><td>Resource</td><td>Influence, 0–10.</td></tr>
+<tr><td>Starting value</td><td>1 Influence.</td></tr>
+<tr><td>Faction Actions</td><td>None.</td></tr>
+<tr><td>Faction procedure</td><td>Offer Terms during a pending battle before Onset.</td></tr>
+<tr><td>Faction Ability</td><td>Leverage before dice following refused Terms.</td></tr>
+<tr><td>Faction pool</td><td>13 Diplomat card titles.</td></tr>
+</tbody></table>
+<h3 id="influence-and-ratification">Influence and ratification</h3>
+<h4 id="accepted-terms">Accepted Terms</h4>
+<p>When an unratified Proposal is accepted:</p>
+<ol>
+<li>apply its Accepted effect;</li>
+<li>return the Stake;</li>
+<li>ratify the Proposal; and</li>
+<li>gain 1 Influence.</li>
+</ol>
+<p>When an already-ratified Proposal is accepted, return the Stake but gain no default ratification reward.</p>
+<h4 id="refused-terms">Refused Terms</h4>
+<p>When Terms are refused, apply the Refused effect and proceed to Onset unless the effect prevents the battle.</p>
+<ul>
+<li>If the Diplomat wins and the Proposal was unratified, return the Stake, ratify it, and gain 2 Influence.</li>
+<li>If the Diplomat loses, lose the Stake and do not ratify it.</li>
+<li>If the battle ends without a winner, return the Stake and do not ratify it.</li>
+<li>An already-ratified Proposal grants no default reward.</li>
+<li>Proposal-specific text may override these rewards.</li>
+</ul>
+<h3 id="leverage">Leverage</h3>
+<p>Before dice are rolled in a battle following refused Terms, the Diplomat may spend Influence for a battle-total bonus:</p>
+<table><tbody>
+<tr><td>Bonus</td><td>Total Influence cost</td></tr>
+<tr><td>+1</td><td>1</td></tr>
+<tr><td>+2</td><td>3</td></tr>
+<tr><td>+3</td><td>6</td></tr>
+<tr><td>+4</td><td>10</td></tr>
+</tbody></table>
+<p>The progression continues without a fixed maximum. Each additional +1 costs one more Influence than the previous increment. Staked Influence cannot be spent.</p>
+<h3 id="proposal-presentation-rule">Proposal presentation rule</h3>
+<p>Proposal cards are physically presented to the receiving player. Accepted and Refused text therefore uses explicit roles rather than perspective-dependent <strong>you</strong> or <strong>your</strong>.</p>
+<h3 id="proposal-set-exact-v0-6-2-text">Proposal set — exact v0.6.2 text</h3>
+<h4 id="de-escalation">De-escalation</h4>
+<p><strong>Stake:</strong> 0</p>
+<p><strong>Requirement:</strong> None</p>
+<blockquote>
+<p><strong>Accepted:</strong> Both players withdraw. The accepting player draws one card.</p>
+<p></p>
+<p><strong>Refused:</strong> The Diplomat draws one card.</p>
+</blockquote>
+<h4 id="orderly-withdrawal">Orderly Withdrawal</h4>
+<p><strong>Stake:</strong> 0</p>
+<p><strong>Requirement:</strong> The Diplomat must be the attacker.</p>
+<blockquote>
+<p><strong>Accepted:</strong> The Diplomat withdraws. The accepting player remains at the contested Position, then draws one card.</p>
+<p></p>
+<p><strong>Refused:</strong> Add +1 to the Diplomat's battle total.</p>
+</blockquote>
+<h4 id="capitulation">Capitulation</h4>
+<p><strong>Stake:</strong> 0</p>
+<p><strong>Requirement:</strong> The Diplomat must be the defender.</p>
+<blockquote>
+<p><strong>Accepted:</strong> The Diplomat withdraws. The accepting player remains at the contested Position and becomes the occupier when applicable, then draws one card.</p>
+<p></p>
+<p><strong>Refused:</strong> If the Diplomat loses, the Diplomat draws two cards.</p>
+</blockquote>
+<h4 id="open-channels">Open Channels</h4>
+<p><strong>Stake:</strong> 1</p>
+<p><strong>Requirement:</strong> The Diplomat must have a card in Hand.</p>
+<blockquote>
+<p><strong>Accepted:</strong> Both players reveal their Hands, then both players withdraw. The accepting player draws one card.</p>
+<p></p>
+<p><strong>Refused:</strong> The refusing player reveals their Hand. When the Diplomat forms their Reserve, the Diplomat draws one additional card.</p>
+</blockquote>
+<h4 id="mutual-disarmament">Mutual Disarmament</h4>
+<p><strong>Stake:</strong> 1</p>
+<p><strong>Requirement:</strong> Both players must have a card in Hand.</p>
+<blockquote>
+<p><strong>Accepted:</strong> Each player discards one card from Hand. The accepting player draws one card, then both players withdraw.</p>
+<p></p>
+<p><strong>Refused:</strong> The Diplomat may discard one card from Hand. If they do, the Diplomat draws one additional card when forming their Reserve.</p>
+</blockquote>
+<h4 id="prisoner-exchange">Prisoner Exchange</h4>
+<p><strong>Stake:</strong> 1</p>
+<p><strong>Requirement:</strong> Each player must have a card in their Graveyard.</p>
+<blockquote>
+<p><strong>Accepted:</strong> Each player may move one card from their Graveyard to their Discard Pile. Then both players withdraw.</p>
+<p></p>
+<p><strong>Refused:</strong> If the Diplomat loses, the Diplomat may move one card from their Graveyard to their Discard Pile.</p>
+</blockquote>
+<h4 id="rebuilding-pact">Rebuilding Pact</h4>
+<p><strong>Stake:</strong> 1</p>
+<p><strong>Requirement:</strong> The Diplomat must have a card in Hand that can be banked as an Asset.</p>
+<blockquote>
+<p><strong>Accepted:</strong> Each player may bank one eligible card from Hand as an Asset without taking an Action. Then both players withdraw.</p>
+<p></p>
+<p><strong>Refused:</strong> During the Aftermath, the Diplomat may bank one eligible card from Hand as an Asset without taking an Action.</p>
+</blockquote>
+<h4 id="ultimatum">Ultimatum</h4>
+<p><strong>Stake:</strong> 2</p>
+<p><strong>Requirement:</strong> None</p>
+<blockquote>
+<p><strong>Accepted:</strong> The accepting player withdraws. The Diplomat remains at the contested Position and becomes the occupier when applicable.</p>
+<p></p>
+<p><strong>Refused:</strong> Add +1 to the Diplomat's battle total.</p>
+</blockquote>
+<h4 id="diplomatic-recognition">Diplomatic Recognition</h4>
+<p><strong>Stake:</strong> 2</p>
+<p><strong>Requirement:</strong> The Diplomat must be defending a Counterattack while occupying a Territory the opposing player controlled immediately before the Diplomat became its occupier.</p>
+<blockquote>
+<p><strong>Accepted:</strong> The Diplomat advances their Front Line by one Territory, if able. The accepting player withdraws, then draws two cards.</p>
+<p></p>
+<p><strong>Refused:</strong> If the Diplomat wins, advance the Diplomat's Front Line by one Territory during the Aftermath, if able. The Diplomat gains no Influence for imposing this Proposal.</p>
+</blockquote>
+<h3 id="diplomats-d-tente">Diplomats — Détente</h3>
+<p><strong>Cost:</strong> 3</p>
+<p><strong>Card form:</strong> Asset</p>
+<blockquote>
+<p><strong>Action:</strong> Bank this card. You may have only one banked Détente.</p>
+<p></p>
+<p><strong>Asset:</strong> The first time each turn an opponent accepts one of your Proposals that was already ratified when you offered it, +1 Influence.</p>
+</blockquote>
+<p>Détente does not trigger when the accepted Proposal becomes ratified during those Terms.</p>
+<h3 id="revised-inherited-diplomat-cards">Revised inherited Diplomat cards</h3>
+<h4 id="good-faith">Good Faith</h4>
+<p><strong>Current exact v0.6.3 card text:</strong></p>
+<blockquote>
+<p><strong>Asset:</strong> When you offer Terms, before the opponent accepts or refuses, you may discard this card for +1 Card, then reveal one card from your Hand and set it aside.</p>
+<p></p>
+<p><strong>Accepted:</strong> Put that card in your Graveyard, then +1 Influence.</p>
+<p></p>
+<p><strong>Refused:</strong> Return it to your Hand before Gambits are set.</p>
+</blockquote>
+<h4 id="gunboat-diplomacy">Gunboat Diplomacy</h4>
+<p><strong>Current exact v0.6.3 card text:</strong></p>
+<blockquote>
+<p><strong>Terms:</strong> When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand.</p>
+<p></p>
+<p><strong>Accepted:</strong> Put this card in your Discard Pile.</p>
+<p></p>
+<p><strong>Refused:</strong> Set this card face up as an additional Gambit in the resulting battle. It does not count against your Gambit limit.</p>
+<p></p>
+<p><strong>Gambit/Tactic:</strong> +2 Battle Total.</p>
+</blockquote>
+<h4 id="safe-conduct">Safe Conduct</h4>
+<p><strong>Current exact v0.6.3 card text:</strong></p>
+<blockquote>
+<p><strong>Asset:</strong> When you would lose a battle following refused Terms, you may discard this card to withdraw instead. The opponent remains at or takes the contested Position.</p>
+</blockquote>
+<h4 id="demilitarized-zone">Demilitarized Zone</h4>
+<p><strong>Current exact v0.6.3 card text:</strong></p>
+<blockquote>
+<p><strong>Terms:</strong> After your Terms are accepted and the Proposal's Accepted effect applies, you may place this Overlay on the contested Territory. Each player there withdraws. Neither player may enter there this turn.</p>
+<p></p>
+<p><strong>Overlay:</strong> To enter here while unoccupied, discard 1. When this Territory would be captured, discard this Overlay instead. At the start of your turn before Capture, if you are here: Discard 1 or withdraw. After the next battle here, discard this Overlay.</p>
+</blockquote>
+<h2 id="18-financiers">18. Financiers</h2>
+<h3 id="faction-structure">Faction structure</h3>
+<table><tbody>
+<tr><td>Element</td><td>v0.6.2 rule</td></tr>
+<tr><td>Victory</td><td>Run the Gauntlet or achieve Controlling Interest.</td></tr>
+<tr><td>Starting Capital</td><td>2, as a v0.6.2 test revision.</td></tr>
+<tr><td>Capital limit</td><td>Territories controlled plus total Treasury value.</td></tr>
+<tr><td>Faction Actions</td><td>Place a card in Treasury, buy or buy out a Deed, Play the Market, or use Hostile Takeover; each is taken during Denouement.</td></tr>
+<tr><td>Faction pool</td><td>13 Financier card titles.</td></tr>
+</tbody></table>
+<p>Line of Credit retains its existing collateral cap.</p>
+<h3 id="financial-capacity">Financial Capacity</h3>
+<p>After Capture and all effects following Capture, but before Draw, compare Treasury value with the number of Territories the Financier controls.</p>
+<p>If Treasury value is greater, the Financier may take one Action during both Opening and Denouement that turn, provided at least one of those Actions is a Financier Faction Action. A Financier Faction Action is normally legal only during Denouement.</p>
+<p>Financial Capacity does not permit two Actions in one phase. Determine eligibility once at this timing.</p>
+<h3 id="front-line-interactions">Front Line interactions</h3>
+<ul>
+<li>Capital limit counts Territories actually controlled, not token position.</li>
+<li>Income counts Deeds owned, independent of control or position.</li>
+<li>Controlling Interest still requires the Deed to every Territory in the Gauntlet.</li>
+<li>Hostile Takeover and Foreclosure cannot create isolated control.</li>
+</ul>
+<h4 id="hostile-takeover">Hostile Takeover</h4>
+<p>After the qualifying purchase succeeds, advance the Executive's Front Line by one Territory, if able, rather than taking isolated control of the occupied Territory.</p>
+<h4 id="foreclosure">Foreclosure</h4>
+<p><strong>Current exact v0.6.3 card text:</strong></p>
+<blockquote>
+<p><strong>Action:</strong> During Denouement, choose the next opposing Territory immediately beyond your Front Line if its Deed is yours and it is unoccupied. Advance Front Line 1.</p>
+<p></p>
+<p><strong>Gambit/Tactic:</strong> In the Aftermath, if you initiated the battle on a Territory whose Deed you owned when the battle began and you won, advance Front Line 1, if able, instead of becoming the occupier.</p>
+</blockquote>
+<h3 id="financiers-compound-interest">Financiers — Compound Interest</h3>
+<p><strong>Cost:</strong> 4</p>
+<p><strong>Card form:</strong> Asset</p>
+<blockquote>
+<p><strong>Action:</strong> Bank this card. You may have only one banked Compound Interest.</p>
+<p></p>
+<p><strong>Asset:</strong> After your normal Draw, if your Treasury contains at least one card, you may reveal the top card of your Draw Pile. Place it face up in your Treasury or put it in your Discard Pile.</p>
+</blockquote>
+<p>Revealing is optional. Once revealed, the card cannot remain on top of the Draw Pile. Compound Interest has no Gambit/Tactic mode.</p>
+<h3 id="revised-inherited-financier-timing">Revised inherited Financier timing</h3>
+<ul>
+<li>Treasury placement, Deed purchase, Play the Market, and Hostile Takeover are Faction Actions during Denouement.</li>
+<li>Tariffs, Divestment, and Margin Loan each permit one additional Action during the phase in which the card's Action resolves. This explicit card permission overrides the normal one-Action-per-phase limit.</li>
+<li>Resolve the card fully before taking the additional Action. The permission expires when that phase ends.</li>
+</ul>
+<hr>
+<h2 id="19-intelligence">19. Intelligence</h2>
+<h3 id="faction-structure">Faction structure</h3>
+<p>Intelligence retains its existing resource, Mission, Leader, and victory systems. Faction Actions must state their legal phase, and all battle procedures use Onset, Defensive Edge, Tiebreak Roll, Fall Back, withdraw, retreat, and Front Line under the shared v0.6.2 rules.</p>
+<h3 id="intelligence-extraordinary-rendition">Intelligence — Extraordinary Rendition</h3>
+<p><strong>Cost:</strong> 4</p>
+<p><strong>Card form:</strong> Asset with a bound opposing card</p>
+<blockquote>
+<p><strong>Action:</strong> Bank this card. When you do, reveal the opponent's Hand, choose one card there, and bind it face up beneath this card. You may have only one banked Extraordinary Rendition.</p>
+<p></p>
+<p><strong>Asset:</strong> The bound card cannot be played, moved, or affected except by this card. Whenever you discard one or more of your Assets, discard this card before any others, if able.</p>
+</blockquote>
+<p>The first-discard requirement applies whenever you discard one or more Assets, including voluntary discard, required Asset discard, and Asset replacement. Extraordinary Rendition has no Gambit, Tactic, Gambit/Tactic, or Mission effect.</p>
+<hr>
+<h2 id="20-mystics">20. Mystics</h2>
+<h3 id="faction-actions">Faction Actions</h3>
+<ul>
+<li><strong>Begin a Rite — Denouement:</strong> Choose one incomplete Rite you may legally begin and pay its beginning cost.</li>
+<li><strong>Begin the Ritual of Ascendance — Denouement:</strong> After completing all three Rites, bind the required Arcane cards from Hand, Discard Pile, and Graveyard.</li>
+</ul>
+<p>Completing a Rite is a Faction Ability, not a Faction Action.</p>
+<h3 id="guardians-of-the-circle">Guardians of the Circle</h3>
+<blockquote>
+<p><strong>Guardians of the Circle:</strong> The first time on your turn that you lose a battle and that loss would interrupt a begun Rite or your Ritual of Ascendance, you may put one Arcane card from your Hand in your Graveyard whose value is at least the protection value for your current progress. If you do, prevent that interruption.</p>
+</blockquote>
+<table><tbody>
+<tr><td>Protected progress</td><td>Minimum Arcane value</td></tr>
+<tr><td>First Rite</td><td>1</td></tr>
+<tr><td>Second Rite</td><td>2</td></tr>
+<tr><td>Third Rite</td><td>3</td></tr>
+<tr><td>Ritual of Ascendance</td><td>4</td></tr>
+</tbody></table>
+<p>Guardians of the Circle does not preserve a continuing position or control requirement.</p>
+<h3 id="black-covenant">Black Covenant</h3>
+<p><strong>Cost:</strong> 4</p>
+<p><strong>Trait:</strong> Arcane</p>
+<blockquote>
+<p><strong>Tactic:</strong> Gain Advantage. +1 Tactic from Hand. In the Aftermath, put this card and that card in your Graveyard.</p>
+</blockquote>
+<h3 id="mystics-nature-s-altar">Mystics — Nature's Altar</h3>
+<p><strong>Cost:</strong> 4</p>
+<p><strong>Trait:</strong> Arcane</p>
+<p><strong>Card form:</strong> Territory Overlay</p>
+<blockquote>
+<p><strong>Action:</strong> Place this Overlay on your current Territory or an adjacent Territory.</p>
+<p></p>
+<p><strong>Gambit/Tactic:</strong> In the Aftermath, if you win, you may place this Overlay on the contested Territory.</p>
+<p></p>
+<p><strong>Overlay:</strong> During your Opening, while you are here, you may take the Begin a Rite Faction Action. A Rite begun this way may complete this turn if you control this Territory when its completion condition and timing are satisfied.</p>
+</blockquote>
+<p>Nature's Altar creates the only general exception to the rule that a Rite cannot complete on the turn it begins. Rite of Crossing retains its specialized beginning requirement. If the Altar's controller does not control its Territory at completion timing, the same-turn exception does not apply.</p>
+<hr>
+<h2 id="21-inquisition">21. Inquisition</h2>
+<h3 id="purge-faction-action">Purge — Faction Action</h3>
+<blockquote>
+<p><strong>Purge — Opening or Denouement:</strong> Spend one Action and the listed Conviction to perform one Purge. You may take one Action during both Opening and Denouement that turn, provided one of those Actions is Purge.</p>
+</blockquote>
+<ul>
+<li>Purge may occupy either Action phase.</li>
+<li>The other Action must occupy the other phase.</li>
+<li>Purge never permits two Actions in one phase.</li>
+<li>Purge may be taken as a Faction Action no more than once per turn.</li>
+<li>A Purge directly permitted without taking an Action is not the Purge Faction Action.</li>
+</ul>
+<p>The existing Purge costs and effects remain unchanged.</p>
+<h3 id="final-judgment">Final Judgment</h3>
+<blockquote>
+<p><strong>Final Judgment:</strong> Once per turn, during the Aftermath of a battle you won, after battle cards are cleared and effects triggered by those moves are applied, you may immediately Purge without taking an Action. Reduce that Purge's Conviction cost by 1, to a minimum of 1.</p>
+</blockquote>
+<p>Final Judgment is a Faction Ability. It does not consume the once-per-turn Purge Faction Action and does not activate the two-phase permission.</p>
+<h3 id="inquisition-martyrdom">Inquisition — Martyrdom</h3>
+<p><strong>Cost:</strong> 5</p>
+<p><strong>Unique:</strong> Maximum one copy per Deck</p>
+<blockquote>
+<p><strong>Aftermath:</strong> In the Aftermath before battle cards are cleared, if you lost and this card is in your Hand, you may play it. If you do, put cards remaining in the opponent's Reserve in their Graveyard instead of their Discard Pile. After battle cards are cleared, Conviction = 4; put this card in your Graveyard.</p>
+</blockquote>
+<p>Setting Conviction to 4 is one set operation, not four separate gains. Condemnation still governs opposing Tactics, and opposing Gambits still use their normal Graveyard destination.</p>
+<hr>
+<h2 id="22-neutral-landslide">22. Neutral — Landslide</h2>
+<p>Remove Invasion from the Neutral pool and add Landslide at the same value.</p>
+<p><strong>Cost:</strong> 4</p>
+<p><strong>Card form:</strong> Territory Overlay</p>
+<blockquote>
+<p><strong>Action:</strong> Place Landslide as an Overlay on any Territory that does not already have a Landslide.</p>
+<p></p>
+<p><strong>Gambit/Tactic:</strong> During the Aftermath, if you lose and retreat from a Territory, after retreating you may place Landslide as an Overlay on the contested Territory.</p>
+<p></p>
+<p><strong>Overlay:</strong> When a player retreats onto this Territory, they retreat one additional Position, if able. Then put Landslide in its owner's Discard Pile.</p>
+</blockquote>
+<ul>
+<li>Maximum one Landslide may be on each Territory.</li>
+<li>Landslides on consecutive Territories may trigger in sequence.</li>
+<li>Landslide does not trigger from Fall Back or withdrawal.</li>
+<li>If the additional retreat enters another Territory with Landslide, resolve that Landslide separately.</li>
+</ul>
+<hr>
+<h2 id="23-territory-revisions">23. Territory revisions</h2>
+<h3 id="quicksand">Quicksand</h3>
+<p>Replace ordinary backward-movement terminology:</p>
+<blockquote>
+<p>If a player begins their Movement on Quicksand, they cannot voluntarily Fall Back or move more than one Position that turn. Forced displacement is unaffected.</p>
+</blockquote>
+<h3 id="difficult-terrain">Difficult Terrain</h3>
+<p>Replace the final sentence with:</p>
+<blockquote>
+<p>A player who begins their turn there or enters it during their turn cannot play a card for its Action effect during Denouement that turn.</p>
+</blockquote>
+<h3 id="command-tent">Command Tent</h3>
+<blockquote>
+<p>If a player begins their turn occupying and controlling Command Tent, they may take one Action during both Opening and Denouement that turn. If they do, both Actions may be used only to play cards for their Action effects.</p>
+</blockquote>
+<h3 id="smuggler-s-pass">Smuggler's Pass</h3>
+<p>Replace <strong>During an Action Opportunity</strong> with <strong>During Opening or Denouement, as an Action</strong>.</p>
+<h3 id="arenas">Arenas</h3>
+<p>For each Arena, replace its first tie sentence with:</p>
+<blockquote>
+<p>During battles here, Defensive Edge does not apply. If battle totals remain tied, make a Tiebreak Roll.</p>
+</blockquote>
+<p>The remaining Arena effects are unchanged:</p>
+<ul>
+<li><strong>Spoils of War:</strong> winner may return one unchosen Reserve card to Hand during clearing.</li>
+<li><strong>No Quarter:</strong> losing player retreats one additional Position, if able.</li>
+<li><strong>Single Combat:</strong> all banked Assets are inactive during the battle.</li>
+<li><strong>Grand Melee:</strong> each player forms Reserve with one additional card and may choose one additional Tactic.</li>
+</ul>
+<hr>
+<h2 id="24-consolidated-interaction-rules">24. Consolidated interaction rules</h2>
+<p>The following interaction rules apply:</p>
+<ol>
+<li>accepted Terms end the pending battle before Onset;</li>
+<li>refused Terms proceed to Onset unless their effect prevents the battle;</li>
+<li>Détente triggers only from a Proposal already ratified when offered;</li>
+<li>the ordinary accepted reward is 1 Influence and ordinary imposed reward is 2;</li>
+<li>triangular Leverage costs are cumulative;</li>
+<li>Gunboat Diplomacy uses normal role destinations;</li>
+<li>Financial Capacity and Purge grant two-phase permission, not an Action window;</li>
+<li>Tariffs, Divestment, and Margin Loan grant an Action but no same-phase permission;</li>
+<li>Invasion movement ends when a pending battle is created;</li>
+<li>immediate-capture effects advance the Front Line without creating isolated control;</li>
+<li>Defensive Edge covers controlled-Territory defense and Last Stand unless removed;</li>
+<li>Arenas remove Defensive Edge and use a separate Tiebreak Roll;</li>
+<li>Guardians of the Circle requires Arcane value 1, 2, 3, or 4 according to progress;</li>
+<li>Nature's Altar requires token presence at beginning and Territory control at completion timing;</li>
+<li>Extraordinary Rendition is discarded before another Asset whenever possible;</li>
+<li>Landslide triggers only from retreat and may chain across Territories;</li>
+<li>Martyrdom changes remaining-Reserve destinations but does not change the battle result;</li>
+</ol></article></main></body>
+</html>
