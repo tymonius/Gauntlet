@@ -88,7 +88,9 @@ export function candidateRulebookHtmlToMarkdown(html) {
     .replace(/\n{3,}/g, "\n\n")
     .replace(/[ \t]{2,}/g, " ")
     .trim();
-  if (!text.includes("# Gauntlet Rulebook")) throw new Error("Candidate Rulebook HTML did not contain the expected Rulebook heading.");
+  if (!text.includes("# GAUNTLET") || !text.includes("## Official Rulebook")) {
+    throw new Error("Candidate Rulebook HTML did not contain the expected GAUNTLET / Official Rulebook headings.");
+  }
   return text;
 }
 
