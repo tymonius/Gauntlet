@@ -27,6 +27,44 @@ for (const [name, html] of Object.entries(pages)) {
   assert(!html.includes('/rules-assistant/widget.js'), `${name} must not embed the v0.6.2 Rules Arbiter on a v0.6.3 development page`);
 }
 
+// The repository's internal-link validator resolves development pages as
+// repository files, so candidate navigation must be relative rather than
+// deployment-root `/v0.6.3/...` links.
+for (const [name, html] of Object.entries(pages)) {
+  assert(!html.includes('href="/v0.6.3/'), `${name} contains a root-relative v0.6.3 internal link`);
+}
+for (const marker of [
+  'href="../"',
+  'href="./"',
+  'href="start/"',
+  'href="rulebook/"',
+  'href="quick-reference/"',
+  'href="deckbuilder/"',
+  'href="reference/"',
+  'href="changes/"',
+  'href="../v0.6.2/"',
+  'href="data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json"',
+  'href="styles.css"',
+]) {
+  assert(pages.home.includes(marker), `v0.6.3 home is missing relative navigation marker: ${marker}`);
+}
+for (const [name, html] of Object.entries({ rulebook: pages.rulebook, start: pages.start, quick: pages.quick, changes: pages.changes })) {
+  for (const marker of [
+    'href="../../"',
+    'href="../"',
+    'href="../start/"',
+    'href="../rulebook/"',
+    'href="../quick-reference/"',
+    'href="../deckbuilder/"',
+    'href="../reference/"',
+    'href="../changes/"',
+    'href="../../v0.6.2/"',
+    'href="../styles.css"',
+  ]) {
+    assert(html.includes(marker), `${name} is missing relative navigation marker: ${marker}`);
+  }
+}
+
 for (const marker of [
   'Draw four cards, choose one card from those four, and place it face up in your Discard Pile.',
   'After seeing your opening Hand and opening discard, secretly arrange your three Territory Cards',
@@ -96,4 +134,4 @@ assert(pages.home.includes('128 playable cards'));
 assert(pages.home.includes('25 Territories inherited from v0.6.2'));
 assert(pages.home.includes('without changing the published v0.6.2 release'));
 
-console.log('v0.6.3 development browser surfaces validated: integrated unpublished candidate data, current rules/setup/victory, non-ordered Territory selection, inherited Territory/starter boundaries, explicit Rulebook source boundary, noindex publication boundary, and no stale Rules Arbiter embed.');
+console.log('v0.6.3 development browser surfaces validated: integrated unpublished candidate data, current rules/setup/victory, repository-safe relative navigation, non-ordered Territory selection, inherited Territory/starter boundaries, explicit Rulebook source boundary, noindex publication boundary, and no stale Rules Arbiter embed.');
