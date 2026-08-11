@@ -33,13 +33,8 @@ jobs:
           from pathlib import Path
           path = Path('scripts/synchronize-v062-print-release.mjs')
           text = path.read_text()
-          old = '''  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="refresh" content="0; url=../../v0.6.2/print/player-mat.html">'''
-          new = '''  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
-  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
-  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
-  <meta http-equiv="refresh" content="0; url=../../v0.6.2/print/player-mat.html">'''
+          old = '  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <meta http-equiv="refresh" content="0; url=../../v0.6.2/print/player-mat.html">'
+          new = '  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />\n  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />\n  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />\n  <meta http-equiv="refresh" content="0; url=../../v0.6.2/print/player-mat.html">'
           if old not in text:
               raise SystemExit('Expected player-mat redirect template was not found.')
           path.write_text(text.replace(old, new, 1))
