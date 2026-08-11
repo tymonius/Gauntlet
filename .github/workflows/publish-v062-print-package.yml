@@ -69,7 +69,7 @@ jobs:
           echo $! > /tmp/v062-print-server.pid
 
       - name: Build and render printed materials
-        run: npm run print:v062:build
+        run: timeout 45s npm run print:v062:build
 
       - name: Verify reproducibility
         run: npm run print:v062:check
