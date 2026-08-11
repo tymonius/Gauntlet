@@ -75,7 +75,7 @@ describe("TTS Territory assets", () => {
     expect(sharedStyles).toContain("border-top: 0");
     expect(dedicatedSpecimenPage).toContain("same mounted-print frame as a normal card");
     expect(dedicatedSpecimenPage).toContain("open parchment spacing rather than a divider");
-    expect(specimenPage).toContain('class="territory-art"');
+    expect(specimenPage).toMatch(/class="territory-art(?:\s+has-image)?"/);
     expect(dedicatedSpecimenPage).toContain('class="territory-art"');
     expect(specimenPage).toContain("a framed illustration spans the card beneath it");
     expect(specimenPage).toContain("a full-width panel across the bottom");
