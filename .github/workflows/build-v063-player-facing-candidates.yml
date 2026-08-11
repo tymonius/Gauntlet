@@ -1,0 +1,55 @@
+name: Build v0.6.3 player-facing candidates
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-v063-player-facing-candidates.yml'
+      - 'scripts/generate-v063-player-facing-candidates.mjs'
+      - 'scripts/normalize-v063-player-facing-candidates.mjs'
+      - 'scripts/validate-v063-player-facing-candidates.mjs'
+      - 'docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md'
+      - 'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md'
+      - 'releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md'
+      - 'releases/v0.6.2/Gauntlet_v0.6.2_First_Game_Guide.md'
+      - 'releases/v0.6.2/Gauntlet_v0.6.2_Reference_Guide.md'
+  push:
+    branches: [agent/v063-player-facing-candidates]
+    paths:
+      - '.github/workflows/build-v063-player-facing-candidates.yml'
+      - 'scripts/generate-v063-player-facing-candidates.mjs'
+      - 'scripts/normalize-v063-player-facing-candidates.mjs'
+      - 'scripts/validate-v063-player-facing-candidates.mjs'
+      - 'docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md'
+      - 'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Generate player-facing candidates
+        run: |
+          node scripts/generate-v063-player-facing-candidates.mjs
+          node scripts/normalize-v063-player-facing-candidates.mjs
+
+      - name: Validate player-facing propagation
+        run: node scripts/validate-v063-player-facing-candidates.mjs
+
+      - name: Upload review candidates
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-v063-player-facing-candidates
+          path: artifacts/v0.6.3/player-facing/*.md
+          if-no-files-found: error
