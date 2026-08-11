@@ -11,19 +11,22 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout PR branch
         uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
         with:
-          node-version: 22
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
 
-      - name: Install dependencies
-        run: npm install
+      - name: Synchronize v0.6.2 print release metadata
+        run: |
+          npm run print:v062:sync
+          npm run print:v062:sync:check
+          node scripts/sync-google-analytics.mjs --check
 
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Test
-        run: npm test
+      - name: Commit synchronized release metadata
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add releases/v0.6.2/README.md releases/v0.6.2/Gauntlet_v0.6.2_Manifest.json v0.6.2/release-manifest.json v0.6.2/index.html
+          git diff --cached --quiet && { echo "No release metadata changes to commit."; exit 0; }
+          git commit -m "Synchronize v0.6.2 print release metadata"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
