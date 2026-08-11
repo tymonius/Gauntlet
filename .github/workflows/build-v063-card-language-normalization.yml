@@ -142,7 +142,6 @@ jobs:
             'If you discard this card because your Asset limit decreased',
             'Battle effect',
             'Battle effects',
-            'Gambit/Tactic effect',
             'battle involving you',
             'as though you played it',
             'as though you controlled it',
@@ -175,6 +174,13 @@ jobs:
           }
           for (const card of candidate.cards) {
             const effects = new Map((card.effects ?? []).map((effect) => [effect.label, effect.text]));
+            for (const effect of card.effects ?? []) {
+              const slashResidual = effect.text.replaceAll('its Gambit/Tactic effect', '');
+              if (slashResidual.includes('Gambit/Tactic effect')) {
+                console.error(`Improper Gambit/Tactic prose reference on ${card.name} ${effect.label}.`);
+                process.exit(1);
+              }
+            }
             if (Object.hasOwn(card, 'battle') || Object.hasOwn(card, 'activate') || Object.hasOwn(card, 'use')) {
               console.error(`Obsolete compatibility field remains on ${card.name}.`);
               process.exit(1);
