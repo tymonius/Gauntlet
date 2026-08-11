@@ -21,6 +21,9 @@
   const overlayClasses = isOverlayCard
     ? ` overlay-card${card.faction === 'neutral' ? ' overlay-neutral' : ''}`
     : '';
+  const longTitleClass = catalog?.gameVersion === 'v0.6.3' && String(card.name).length > 21
+    ? ' long-title'
+    : '';
   const footerCenter = card.unique
     ? 'Unique'
     : (card.form || (card.complexity !== 'Unspecified' ? card.complexity : ''));
@@ -29,7 +32,7 @@
     : '<span class="pending-label">Artwork pending</span>';
 
   target.innerHTML = `
-    <article class="gauntlet-card${overlayClasses}" data-faction="${escapeAttribute(card.faction)}" data-art-max="1.72" data-art-min="0.62" data-overlay-card="${isOverlayCard}" aria-label="${escapeAttribute(card.name)} card">
+    <article class="gauntlet-card${overlayClasses}${longTitleClass}" data-faction="${escapeAttribute(card.faction)}" data-art-max="1.72" data-art-min="0.62" data-overlay-card="${isOverlayCard}" aria-label="${escapeAttribute(card.name)} card">
       <div class="card-interior">
         ${isOverlayCard ? `
           <aside class="overlay-title-bar" aria-hidden="true">
