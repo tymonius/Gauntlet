@@ -74,6 +74,7 @@ export interface MarginLoanState {
 
 export interface MarginLoanZones {
   hand: string[];
+  treasury: string[];
   discardPile: string[];
   graveyard: string[];
 }
@@ -89,14 +90,17 @@ export function bankMarginLoan(
   zones: MarginLoanZones,
   collateralCard: string,
   collateralValue: number,
+  source: 'hand' | 'treasury' = 'hand',
 ): MarginLoanActionResolution {
   const value = nonnegativeInteger(collateralValue);
-  const index = zones.hand.indexOf(collateralCard);
-  if (index < 0) throw new Error('Margin Loan collateral must be supplied from the modeled Hand.');
+  const sourceZone = source === 'hand' ? zones.hand : zones.treasury;
+  const index = sourceZone.indexOf(collateralCard);
+  if (index < 0) throw new Error(`Margin Loan collateral must be supplied from ${source === 'hand' ? 'Hand' : 'Treasury'}.`);
   return {
     loan: { banked: true, collateral: collateralCard, collateralValue: value },
     zones: {
-      hand: zones.hand.filter((_, cardIndex) => cardIndex !== index),
+      hand: source === 'hand' ? zones.hand.filter((_, cardIndex) => cardIndex !== index) : [...zones.hand],
+      treasury: source === 'treasury' ? zones.treasury.filter((_, cardIndex) => cardIndex !== index) : [...zones.treasury],
       discardPile: [...zones.discardPile],
       graveyard: [...zones.graveyard],
     },
@@ -133,6 +137,7 @@ export function resolveMarginLoanAfterIncome(
     loan: { banked: false, collateral: null, collateralValue: 0 },
     zones: {
       hand: [...cloned.hand, loan.collateral],
+      treasury: cloned.treasury,
       discardPile: [...cloned.discardPile, 'Margin Loan'],
       graveyard: cloned.graveyard,
     },
@@ -180,6 +185,7 @@ function defaultMarginLoan(loan: MarginLoanState, zones: MarginLoanZones): Margi
     loan: { banked: false, collateral: null, collateralValue: 0 },
     zones: {
       hand: zones.hand,
+      treasury: zones.treasury,
       discardPile: zones.discardPile,
       graveyard: [...zones.graveyard, 'Margin Loan', loan.collateral],
     },
@@ -190,6 +196,7 @@ function defaultMarginLoan(loan: MarginLoanState, zones: MarginLoanZones): Margi
 function cloneZones(zones: MarginLoanZones): MarginLoanZones {
   return {
     hand: [...zones.hand],
+    treasury: [...zones.treasury],
     discardPile: [...zones.discardPile],
     graveyard: [...zones.graveyard],
   };
