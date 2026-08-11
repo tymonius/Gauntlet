@@ -2085,12 +2085,12 @@
         },
         {
           "label": "Gambit/Tactic",
-          "text": "In the Aftermath, before battle cards are cleared, if you won, you may buy this Territory's Deed using any of your other Gambits, Tactics, or Reserve cards as collateral.\n\nEach collateral card contributes its value toward the cost. Action collateral goes to your Graveyard after the purchase; battle collateral goes there when battle cards are cleared. Collateral may pay the entire cost."
+          "text": "In the Aftermath, before battle cards are cleared, if you won, you may buy this Territory's Deed using any of your other Gambits, Tactics, or Reserve cards as collateral. Each collateral card contributes its value toward the cost. Action collateral goes to your Graveyard after the purchase; battle collateral goes there when battle cards are cleared. Collateral may pay the entire cost."
         }
       ],
       "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
       "action": "Buy one Deed using any cards from your Hand or Treasury as collateral.",
-      "gambit_tactic": "In the Aftermath, before battle cards are cleared, if you won, you may buy this Territory's Deed using any of your other Gambits, Tactics, or Reserve cards as collateral.\n\nEach collateral card contributes its value toward the cost. Action collateral goes to your Graveyard after the purchase; battle collateral goes there when battle cards are cleared. Collateral may pay the entire cost.",
+      "gambit_tactic": "In the Aftermath, before battle cards are cleared, if you won, you may buy this Territory's Deed using any of your other Gambits, Tactics, or Reserve cards as collateral. Each collateral card contributes its value toward the cost. Action collateral goes to your Graveyard after the purchase; battle collateral goes there when battle cards are cleared. Collateral may pay the entire cost.",
       "v063_source": "artifacts/v0.6.3/Gauntlet_v0.6.3_Card_Text_Candidate.json"
     },
     {
@@ -2415,7 +2415,7 @@
         },
         {
           "label": "Accepted",
-          "text": "If the Proposal is unratified, the opponent chooses one before ratification:\n\n- Ratify it normally.\n- Leave it unratified; +2 Influence. After the accepted Terms conclude, put this card in your Discard Pile, then +1 Card."
+          "text": "If the Proposal is unratified, the opponent chooses one before ratification:\n- Ratify it normally.\n- Leave it unratified; +2 Influence. After the accepted Terms conclude, put this card in your Discard Pile, then +1 Card."
         },
         {
           "label": "Refused",
@@ -2424,7 +2424,7 @@
       ],
       "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
       "terms": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand and set it aside.",
-      "accepted": "If the Proposal is unratified, the opponent chooses one before ratification:\n\n- Ratify it normally.\n- Leave it unratified; +2 Influence. After the accepted Terms conclude, put this card in your Discard Pile, then +1 Card.",
+      "accepted": "If the Proposal is unratified, the opponent chooses one before ratification:\n- Ratify it normally.\n- Leave it unratified; +2 Influence. After the accepted Terms conclude, put this card in your Discard Pile, then +1 Card.",
       "refused": "Put this card in your Discard Pile, then +1 Card before Gambits are set.",
       "v063_language_review": {
         "class": "convention-normalization",
@@ -3595,7 +3595,7 @@
         },
         {
           "label": "Accepted",
-          "text": "The opponent chooses one available option:\n\n- +2 Cards.\n- Bank one eligible card from Hand. Then put this card in your Discard Pile; +1 Card."
+          "text": "The opponent chooses one available option:\n- +2 Cards.\n- Bank one eligible card from Hand. Then put this card in your Discard Pile; +1 Card."
         },
         {
           "label": "Refused",
@@ -3608,7 +3608,7 @@
       ],
       "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
       "terms": "When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand and set it aside.",
-      "accepted": "The opponent chooses one available option:\n\n- +2 Cards.\n- Bank one eligible card from Hand. Then put this card in your Discard Pile; +1 Card.",
+      "accepted": "The opponent chooses one available option:\n- +2 Cards.\n- Bank one eligible card from Hand. Then put this card in your Discard Pile; +1 Card.",
       "refused": "Return this card to your Hand before Gambits are set.",
       "v063_language_review": {
         "class": "convention-normalization",
@@ -4567,11 +4567,16 @@
       "sleeper_network_dynamic_bound_card_maximum_preserved": true,
       "compact_choice_line_breaks_applied": [
         "Shock and Awe",
-        "Margin Loan"
+        "Margin Loan",
+        "Trade Concessions",
+        "Nonbinding Resolution"
+      ],
+      "long_card_blank_line_cleanup_applied": [
+        "Leveraged Buyout"
       ]
     },
     "final_mirror_sync": {
-      "synchronized_fields": 67,
+      "synchronized_fields": 70,
       "source_of_truth": "cards[].effects[]"
     },
     "canonical_data_integration": {
