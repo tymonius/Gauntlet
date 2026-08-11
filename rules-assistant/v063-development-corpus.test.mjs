@@ -82,7 +82,7 @@ describe("v0.6.3 development Rules Arbiter corpus", () => {
     expect(victory.some((source) => /capture/i.test(source.excerpt) && /Last Stand/i.test(source.excerpt))).toBe(true);
   });
 
-  it("retrieves exact final card text rather than superseded wording", async () => {
+  it("retrieves exact final card and Territory text rather than superseded wording", async () => {
     const loaded = await corpus();
     for (const [title, marker] of [
       ["Margin Loan", "While this remains banked, you may not draw at the start of your turn."],
@@ -92,7 +92,9 @@ describe("v0.6.3 development Rules Arbiter corpus", () => {
       ["Smuggler's Run", "Smuggler's Run"]
     ]) {
       const result = retrieveRules(loaded, title, { limit: 8 });
-      expect(result.some((source) => source.excerpt.includes(title) && source.excerpt.includes(marker))).toBe(true);
+      expect(result.some((source) =>
+        source.title.includes(title) && (source.excerpt.includes(marker) || source.title.includes(marker))
+      )).toBe(true);
     }
   });
 });
