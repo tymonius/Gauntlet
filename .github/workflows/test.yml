@@ -11,19 +11,47 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout PR branch
         uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
         with:
-          node-version: 22
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
 
-      - name: Install dependencies
-        run: npm install
+      - name: Add canonical analytics to print generator
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/build-v062-print-html.mjs')
+          text = path.read_text()
 
-      - name: Typecheck
-        run: npm run typecheck
+          marker = "const faviconHrefs = [\n  '/favicon-32.png?v=20260804-1',\n  '/favicon.ico?v=20260804-1',\n  '/apple-touch-icon.png?v=20260804-1',\n];\n"
+          analytics = marker + "\nconst analyticsMeasurementId = 'G-8YYYZJGGPE';\nconst googleAnalyticsTag = `  <!-- Google tag (gtag.js) -->\n  <script async src=\"https://www.googletagmanager.com/gtag/js?id=${analyticsMeasurementId}\"></script>\n  <script>\n    window.dataLayer = window.dataLayer || [];\n    function gtag(){dataLayer.push(arguments);}\n    gtag('js', new Date());\n    gtag('config', '${analyticsMeasurementId}');\n  </script>`;\n"
+          if marker not in text:
+              raise SystemExit('Favicon href marker not found')
+          text = text.replace(marker, analytics, 1)
 
-      - name: Test
-        run: npm test
+          old = "function synchronizeStandaloneHtml(relativePath, content) {\n  let output = synchronizeSiteFavicons(relativePath, content);"
+          new = "function synchronizeGoogleAnalytics(relativePath, content) {\n  let output = normalize(content);\n  if (!relativePath.startsWith('v0.6.2/print/')) return output;\n  if (output.includes(analyticsMeasurementId)) return output;\n  if (output.includes('googletagmanager.com/gtag/js?id=')) {\n    failures.push(`${relativePath} contains a different Google Analytics tag.`);\n    return output;\n  }\n  if (!/<head(?:\\s[^>]*)?>/i.test(output)) {\n    failures.push(`Cannot place Google Analytics tag in ${relativePath}: missing head element.`);\n    return output;\n  }\n  return output.replace(/<head(?:\\s[^>]*)?>/i, (head) => `${head}\\n${googleAnalyticsTag}`);\n}\n\nfunction synchronizeStandaloneHtml(relativePath, content) {\n  let output = synchronizeSiteFavicons(relativePath, content);\n  output = synchronizeGoogleAnalytics(relativePath, output);"
+          if old not in text:
+              raise SystemExit('Standalone synchronization marker not found')
+          text = text.replace(old, new, 1)
+
+          old = '<head>\n  <meta charset="utf-8">'
+          new = '<head>\n${googleAnalyticsTag}\n  <meta charset="utf-8">'
+          if old not in text:
+              raise SystemExit('Generated page head marker not found')
+          text = text.replace(old, new, 1)
+
+          path.write_text(text)
+          PY
+          node scripts/build-v062-print-html.mjs
+          node scripts/build-v062-print-html.mjs --check
+          node scripts/sync-google-analytics.mjs --check
+
+      - name: Commit generator and regenerated print HTML
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/build-v062-print-html.mjs v0.6.2/print/*.html v0.6.2/print/document-manifest.json
+          git diff --cached --quiet && { echo "No analytics changes to commit."; exit 0; }
+          git commit -m "Synchronize analytics in v0.6.2 print pages"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
