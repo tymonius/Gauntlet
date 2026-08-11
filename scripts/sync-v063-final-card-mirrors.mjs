@@ -10,12 +10,18 @@ const reportPath = process.env.V063_POOLWIDE_REPORT
 const candidate = JSON.parse(readFileSync(candidatePath, 'utf8'));
 const source = JSON.parse(readFileSync(sourcePath, 'utf8'));
 
-// v0.6.3 title rename. Keep the stable Territory ID so saved Decks and
-// structured references continue to resolve across the release boundary.
+// v0.6.3 title renames. Keep stable IDs so saved Decks and structured
+// references continue to resolve across the release boundary.
 renameCandidateTitle("Smuggler's Pass", "Smuggler's Run");
 const renamedSmugglersRun = (candidate.territories ?? []).find((territory) => territory.id === 'territory-smuggler-s-pass');
 if (!renamedSmugglersRun || renamedSmugglersRun.name !== "Smuggler's Run") {
   throw new Error("Smuggler's Run Territory rename did not resolve on the stable territory-smuggler-s-pass ID.");
+}
+
+renameCardTitleById('neutral-reserves', 'Reserves', 'Second Line');
+const renamedSecondLine = (candidate.cards ?? []).find((card) => card.id === 'neutral-reserves');
+if (!renamedSecondLine || renamedSecondLine.name !== 'Second Line') {
+  throw new Error('Second Line card rename did not resolve on the stable neutral-reserves ID.');
 }
 
 const byName = new Map((candidate.cards ?? []).map((card) => [card.name, card]));
@@ -31,7 +37,7 @@ setEffects('Shock and Awe', [
 
 setEffects('Margin Loan', [
   ['Action', 'Bank this card; bind 1 card from your Hand or Treasury to it face up as collateral. Gain Capital equal to its value +2. +1 Action.'],
-  ['Asset', "After income on your next turn, choose:\nRepay — Pay Capital equal to the collateral's value +3; return it to your Hand and discard this card.\nDefault — Put both cards in your Graveyard.\nIf this card is Removed, Default."],
+  ['Asset', "After income, you may choose:\nRepay — Pay Capital equal to the collateral's value +3; return it to your Hand and discard this card.\nDefault — Put both cards in your Graveyard.\nWhile this remains banked, you may not draw at the start of your turn.\nIf this card is Removed, Default."],
   ['Gambit/Tactic', 'Before dice are rolled, you may bind 1 card from your Hand or Treasury to this card face up as collateral to gain Capital equal to its value; you may then Subsidize. In the Aftermath: Win — return collateral to your Hand. Otherwise — Default.']
 ]);
 
@@ -93,11 +99,17 @@ validate();
 candidate.normalization = {
   ...(candidate.normalization ?? {}),
   title_renames: [
-    ...((candidate.normalization ?? {}).title_renames ?? []).filter((entry) => entry?.stable_id !== 'territory-smuggler-s-pass'),
+    ...((candidate.normalization ?? {}).title_renames ?? []).filter((entry) => !['territory-smuggler-s-pass', 'neutral-reserves'].includes(entry?.stable_id)),
     {
       stable_id: 'territory-smuggler-s-pass',
       from: "Smuggler's Pass",
       to: "Smuggler's Run",
+      effective_version: 'v0.6.3'
+    },
+    {
+      stable_id: 'neutral-reserves',
+      from: 'Reserves',
+      to: 'Second Line',
       effective_version: 'v0.6.3'
     }
   ],
@@ -105,6 +117,7 @@ candidate.normalization = {
     revised_cards: ['Shock and Awe', 'Margin Loan', 'Martyrdom', 'Rearguard', 'Sleeper Network'],
     newly_finalized_cards: ['Martyrdom', 'Rearguard'],
     finalized_cards_after_pass: 21,
+    margin_loan_persistent_debt: true,
     sleeper_network_one_card_per_turn_cadence_preserved: true,
     sleeper_network_dynamic_bound_card_maximum_preserved: true,
     compact_choice_line_breaks_applied: ['Shock and Awe', 'Margin Loan']
@@ -123,6 +136,14 @@ function renameCandidateTitle(from, to) {
   replaceStrings(candidate, from, to);
 }
 
+function renameCardTitleById(stableId, from, to) {
+  const card = (candidate.cards ?? []).find((entry) => entry.id === stableId);
+  if (!card) throw new Error(`Card not found for title rename: ${stableId}.`);
+  if (card.name !== from) throw new Error(`Expected ${stableId} to be titled ${from}; found ${card.name}.`);
+  card.name = to;
+  replaceExactStrings(candidate.starter_decks, from, to);
+}
+
 function replaceStrings(value, from, to) {
   if (Array.isArray(value)) {
     for (let index = 0; index < value.length; index += 1) {
@@ -137,6 +158,23 @@ function replaceStrings(value, from, to) {
   for (const [key, entry] of Object.entries(value)) {
     if (typeof entry === 'string') value[key] = entry.replaceAll(from, to);
     else replaceStrings(entry, from, to);
+  }
+}
+
+function replaceExactStrings(value, from, to) {
+  if (Array.isArray(value)) {
+    for (let index = 0; index < value.length; index += 1) {
+      const entry = value[index];
+      if (entry === from) value[index] = to;
+      else replaceExactStrings(entry, from, to);
+    }
+    return;
+  }
+
+  if (!value || typeof value !== 'object') return;
+  for (const [key, entry] of Object.entries(value)) {
+    if (entry === from) value[key] = to;
+    else replaceExactStrings(entry, from, to);
   }
 }
 
