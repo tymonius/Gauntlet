@@ -90,6 +90,8 @@ Still needs approved artwork:
 - [ ] Sanctions: Blockade
 - [ ] Sanctions: Censure
 
+Current artwork-workflow note: the first Détente generation was not approved because both rival checkpoints appeared at the same end of the bridge. A corrected prompt now requires the river to be the political boundary, with one rival checkpoint at each end of the bridge and the diplomatic meeting at the midpoint. Generation is pending.
+
 ## Financiers — 1
 
 - [ ] Compound Interest
