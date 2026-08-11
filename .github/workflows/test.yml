@@ -13,6 +13,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
 
       - name: Setup Node
         uses: actions/setup-node@v4
@@ -25,18 +27,30 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Generate canonical v0.6.2 print HTML
-        run: npm run print:v062:html
+      - name: Repair print HTML idempotence and regenerate canonical outputs
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('scripts/build-v062-print-html.mjs')
+          text = path.read_text()
+          original = text
+          text = text.replace('^\\\\s*<link\\\\b', '^[\\\\t ]*<link\\\\b')
+          text = text.replace('[^>]*>\\\\s*\\\\n?`, \'gm\')', '[^>]*>[\\\\t ]*\\\\n?`, \'gm\')')
+          if text == original:
+              raise SystemExit('Expected favicon cleanup regex was not found.')
+          path.write_text(text)
+          PY
+          npm run print:v062:html
+          npm run print:v062:html:check
 
-      - name: Upload canonical v0.6.2 print HTML
-        uses: actions/upload-artifact@v4
-        with:
-          name: canonical-print-html
-          path: |
-            v0.6.2/print/*.html
-            v0.6.2/print/document-manifest.json
-            playtest/player-mat/index.html
-          if-no-files-found: error
+      - name: Commit canonical generator and HTML outputs
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/build-v062-print-html.mjs playtest/player-mat/index.html v0.6.2/print/*.html v0.6.2/print/document-manifest.json
+          git diff --cached --quiet && { echo "No generated changes to commit."; exit 0; }
+          git commit -m "Regenerate canonical v0.6.2 print HTML"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
 
       - name: Run unit tests
         run: npx vitest run --reporter=json --outputFile=vitest-results.json
