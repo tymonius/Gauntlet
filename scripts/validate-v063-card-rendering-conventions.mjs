@@ -43,6 +43,13 @@ if (!source.includes("catalog?.gameVersion === 'v0.6.3'")) {
   throw new Error('Compact-instruction emphasis is not gated to v0.6.3 rendering.');
 }
 
+if (!source.includes("catalog?.gameVersion === 'v0.6.3' && String(card.name).length > 21")) {
+  throw new Error('Long-title treatment is not gated to v0.6.3 rendering at the approved threshold.');
+}
+if (!source.includes("? ' long-title'")) {
+  throw new Error('Renderer does not apply the existing long-title class to qualifying v0.6.3 cards.');
+}
+
 if (!source.includes('Gambit/<br>Tactic')) {
   throw new Error('Gambit/Tactic is not stacked as Gambit/ over Tactic in the renderer.');
 }
@@ -50,4 +57,4 @@ if (!source.includes('aria-label="Gambit or Tactic"')) {
   throw new Error('Stacked Gambit/Tactic heading lacks its prose accessibility label.');
 }
 
-console.log(`Validated ${exactSamples.length} compact-instruction rendering forms plus stacked Gambit/Tactic presentation.`);
+console.log(`Validated ${exactSamples.length} compact-instruction rendering forms, v0.6.3 long-title treatment, and stacked Gambit/Tactic presentation.`);
