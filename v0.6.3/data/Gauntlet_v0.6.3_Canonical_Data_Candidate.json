@@ -4553,6 +4553,7 @@
       "revised_cards": [
         "Shock and Awe",
         "Margin Loan",
+        "Leveraged Buyout",
         "Martyrdom",
         "Rearguard",
         "Sleeper Network"
@@ -4563,6 +4564,7 @@
       ],
       "finalized_cards_after_pass": 21,
       "margin_loan_persistent_debt": true,
+      "leveraged_buyout_tracker_spacing_synced": true,
       "sleeper_network_one_card_per_turn_cadence_preserved": true,
       "sleeper_network_dynamic_bound_card_maximum_preserved": true,
       "compact_choice_line_breaks_applied": [
