@@ -2,6 +2,7 @@ import fs from 'node:fs';
 
 const indexPath = 'v0.6.3/deckbuilder/index.html';
 const appPath = 'v0.6.3/deckbuilder/app.js';
+const rulebookPath = 'v0.6.3/rulebook/index.html';
 
 let index = fs.readFileSync(indexPath, 'utf8').replace(/\r\n/g, '\n');
 index = index
@@ -27,4 +28,17 @@ app = app
   .replace('Starter card missing from effective data:', 'Inherited starter card missing from candidate data:');
 fs.writeFileSync(appPath, app.replace(/\s+$/, '') + '\n', 'utf8');
 
-console.log('Refined v0.6.3 development Deckbuilder: inherited-starter labels, non-ordered Territory selection, and candidate validation language.');
+let rulebook = fs.readFileSync(rulebookPath, 'utf8').replace(/\r\n/g, '\n');
+rulebook = rulebook
+  .replace(
+    '<li><strong>Part IV — Factions and Components</strong> contains the complete v0.6.2 faction, Proposal, card-revision, and Territory-revision rules.</li>',
+    '<li><strong>Part IV — Factions and Components</strong> contains the inherited v0.6.2 faction/component baseline, with duplicated card excerpts synchronized to the final v0.6.3 card candidate.</li>'
+  )
+  .replace(
+    'The First Game Guide and compact Reference Guide are player aids; this rulebook and specific component text remain authoritative.',
+    'The First Game Guide and compact Reference Guide are player aids. During development, the governing v0.6.3 source documents control candidate changes; v0.6.2 remains authoritative for published play.'
+  )
+  .replaceAll('<hr>\n<hr>', '<hr>');
+fs.writeFileSync(rulebookPath, rulebook.replace(/\s+$/, '') + '\n', 'utf8');
+
+console.log('Refined v0.6.3 development browser surfaces: Deckbuilder setup semantics and Rulebook development-source boundary.');
