@@ -2,7 +2,7 @@ name: Build v0.6.3 development browser surfaces
 
 on:
   push:
-    branches: [agent/v063-browser-development-surfaces, agent/v063-rules-arbiter-candidate]
+    branches: [agent/v063-browser-development-surfaces]
     paths:
       - '.github/workflows/build-v063-browser-development.yml'
       - 'scripts/build-v063-browser-development.mjs'
@@ -129,18 +129,19 @@ jobs:
           node scripts/validate-v063-browser-site-conventions.mjs
 
       - name: Commit generated development surfaces
-        if: github.event_name == 'push' && (github.ref_name == 'agent/v063-browser-development-surfaces' || github.ref_name == 'agent/v063-rules-arbiter-candidate')
+        if: (github.event_name == 'push' && github.ref_name == 'agent/v063-browser-development-surfaces') || (github.event_name == 'pull_request' && github.head_ref == 'agent/v063-rules-arbiter-candidate')
         run: |
           git add v0.6.3/
           if git diff --cached --quiet; then
             echo "v0.6.3 development surfaces are already current."
             exit 0
           fi
+          TARGET_BRANCH="${{ github.head_ref || github.ref_name }}"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git commit -m "Materialize v0.6.3 development browser surfaces"
-          git pull --rebase origin "$GITHUB_REF_NAME"
-          git push origin "HEAD:$GITHUB_REF_NAME"
+          git pull --rebase origin "$TARGET_BRANCH"
+          git push origin "HEAD:$TARGET_BRANCH"
 
       - name: Verify tracked generated surfaces on pull request
         if: github.event_name == 'pull_request'
