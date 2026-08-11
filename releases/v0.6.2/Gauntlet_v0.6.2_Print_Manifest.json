@@ -1,17 +1,50 @@
 {
   "version": "v0.6.2",
-  "generated_at": "2026-08-06T07:50:45.284Z",
+  "generated_at": "2026-08-11T04:20:49.217Z",
   "source_package": "releases/v0.6.2/",
   "print_source": "v0.6.2/print/",
   "booklet_padding": {
     "source_pages": 37,
     "padded_pages": 40,
-    "hero_plate_count": 3,
-    "hero_asset": "images/sketches/hero sketch.png",
-    "hero_source_pages": [
+    "leader_plate_count": 3,
+    "leader_assets": [
+      "images/sketches/hero-plates/witch-hunter-banker-spymaster.png",
+      "images/sketches/hero-plates/alchemist-executive-ambassador.png",
+      "images/sketches/hero-plates/ranger-commandant-senator.png"
+    ],
+    "leader_source_pages": [
       38,
       39,
       40
+    ],
+    "leader_plates": [
+      {
+        "source_page": 38,
+        "asset": "images/sketches/hero-plates/witch-hunter-banker-spymaster.png",
+        "leaders": [
+          "Witch Hunter",
+          "Banker",
+          "Spymaster"
+        ]
+      },
+      {
+        "source_page": 39,
+        "asset": "images/sketches/hero-plates/alchemist-executive-ambassador.png",
+        "leaders": [
+          "Alchemist",
+          "Executive",
+          "Ambassador"
+        ]
+      },
+      {
+        "source_page": 40,
+        "asset": "images/sketches/hero-plates/ranger-commandant-senator.png",
+        "leaders": [
+          "Ranger",
+          "Commandant",
+          "Senator"
+        ]
+      }
     ]
   },
   "outputs": [
@@ -169,7 +202,7 @@
           "height": 612
         }
       ],
-      "sha256": "04a1fe6f19a2228c907ac48e60630a58bb8500e9d07c97351d39664f398bef60"
+      "sha256": "2da9f84414707c15bcdd54cff1f6539f081082169176df950271b6e0039dac1d"
     },
     {
       "key": "reference",
@@ -193,7 +226,7 @@
           "height": 792
         }
       ],
-      "sha256": "7523e455baa24e5a9cbeefeb139853a38da599914d9e0e4e23024f48e8d5e2ed"
+      "sha256": "1690f75fd9a484412a884d60f82233630d8ce067c22264db2bd785e85d2bf3b7"
     },
     {
       "key": "first_game",
@@ -237,7 +270,7 @@
           "height": 792
         }
       ],
-      "sha256": "5af35be047037dc3e7680f0b4fcfb9d5d8d258a0d3b0539e1960653d9643c3b1"
+      "sha256": "062a5d2f476b6eeb32e8af8d43b37efdce1ac4108469ac49f3e8e13e22840f5d"
     },
     {
       "key": "faction_guide",
@@ -293,7 +326,7 @@
           "height": 792
         }
       ],
-      "sha256": "9d8668d8ed9be23fdbe3f8aedf7c8812da397d674b8903091edae87cd579571a"
+      "sha256": "bd4e46530d07aca8c65d5d0655215c7abd75fc618064debd5d2b0e02f139a48c"
     },
     {
       "key": "returning_changes",
@@ -329,7 +362,7 @@
           "height": 792
         }
       ],
-      "sha256": "958ad0475599e3fbd47f37abe65a5fe8570421cdd5522f6c4004076a9f3c3d48"
+      "sha256": "7bacd7994e55eb2b746bbd546e3c7ef4f41dfc516a349d241048bd3f572492b2"
     },
     {
       "key": "player_mat",
@@ -341,7 +374,7 @@
           "height": 612
         }
       ],
-      "sha256": "c075d0015971be505ef9eef9e1791e38132f0c4b1b32d675173b9a24b3ecd131"
+      "sha256": "b979ea011c40be2b6762707bd489cca9b1654847006276f96fb447b3d7dacd70"
     },
     {
       "key": "playtest_sheet",
@@ -357,7 +390,7 @@
           "height": 792
         }
       ],
-      "sha256": "281e6bce2006cc694b8fe90dbfee6f46e93a492ae2cd7c93c125de04936cb77c"
+      "sha256": "60924f101a8750f607ff72b3242d0f02c1a6bbea7838d80dcb6a51f4d4f90e99"
     },
     {
       "key": "faction_cards",
@@ -377,7 +410,7 @@
           "height": 612
         }
       ],
-      "sha256": "e11f20c5795705a985d9ac43dd800c2fd078d0d895dbf75af42c3c2aaa6997a3"
+      "sha256": "a13599dad1ee3384b31e6baf3857f4fc01a7ec4b2050ecce4b4c11ab20a25d18"
     },
     {
       "key": "active_marker",
@@ -389,7 +422,7 @@
           "height": 792
         }
       ],
-      "sha256": "02d337cdc62f72315cb45cf6dd6d6a41543e359a16c288c348f5ef9683892755"
+      "sha256": "8e28c7b07c589da121486b26ad78e6f3fb8f567d889e166d722b4662a9b2f024"
     },
     {
       "key": "rulebook_booklet",
@@ -477,7 +510,7 @@
           "height": 612
         }
       ],
-      "sha256": "8d18c3c8d41c9ad199078beeafec05dbf77713cc0d8752a1e530d798bff3ce6d"
+      "sha256": "7013700bd8175ad1449a473e0a61f1f894586e653c021ccd302a2b2ccf83449c"
     },
     {
       "key": "tableside_pack",
@@ -593,12 +626,12 @@
           "height": 792
         }
       ],
-      "sha256": "481172e459f2544baaf74d833b3b4961ddb346b75a6d527f8d0275b9e19312df"
+      "sha256": "b059a554fd9eb0f70073a80ec1fbebe203a5ecef79786b953b0e334e53b1c2b5"
     }
   ],
   "printing": {
     "reader_rulebook": "Half-Letter portrait, actual size",
-    "imposed_booklet": "Letter landscape, duplex, flip on short edge, actual size; hero-art plates fill unavoidable padding pages",
+    "imposed_booklet": "Letter landscape, duplex, flip on short edge, actual size; three distinct faction-Leader plates fill unavoidable padding pages",
     "tableside_materials": "Letter; respect portrait or landscape orientation shown in each file"
   }
 }
