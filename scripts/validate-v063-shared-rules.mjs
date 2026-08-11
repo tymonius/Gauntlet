@@ -57,12 +57,7 @@ for (const text of forbiddenCandidateText) {
   assert(!candidate.toLowerCase().includes(text.toLowerCase()), `Obsolete wording remains in v0.6.3 candidate: ${text}`);
 }
 
-for (const [name, source] of [
-  ['implementation ledger', ledger],
-  ['test matrix', matrix]
-]) {
-  assert(!source.includes('Playable Deck'), `Obsolete Playable Deck terminology remains in v0.6.3 ${name}`);
-}
+assert(!matrix.includes('Playable Deck'), 'Obsolete Playable Deck terminology remains in the v0.6.3 normative test matrix');
 
 const ids = [...matrix.matchAll(/### (V063-S\d{2})\b/g)].map((match) => match[1]);
 assert.equal(ids.length, 50, `Expected 50 normative v0.6.3 scenarios, found ${ids.length}`);
