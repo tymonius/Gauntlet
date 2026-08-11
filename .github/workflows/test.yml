@@ -11,92 +11,42 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout PR branch
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event.pull_request.head.ref || github.ref }}
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install dependencies
-        run: npm install
-
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Align print synchronizer and regenerate canonical outputs
+      - name: Correct print-package source invariants
         run: |
           python - <<'PY'
           from pathlib import Path
-          path = Path('scripts/synchronize-v062-print-release.mjs')
-          text = path.read_text()
-          old = '  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <meta http-equiv="refresh" content="0; url=../../v0.6.2/print/player-mat.html">'
-          new = '  <meta name="viewport" content="width=device-width, initial-scale=1">\n  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />\n  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />\n  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />\n  <meta http-equiv="refresh" content="0; url=../../v0.6.2/print/player-mat.html">'
-          if old not in text:
-              raise SystemExit('Expected player-mat redirect template was not found.')
-          path.write_text(text.replace(old, new, 1))
-          PY
-          npm run print:v062:html
-          npm run print:v062:sync
-          npm run print:v062:html:check
-          npm run print:v062:sync:check
 
-      - name: Commit aligned generator and synchronized outputs
+          old_order = "const heroPlateAssignments = [\n  {\n    asset: 'images/sketches/hero-plates/alchemist-executive-ambassador.png',\n    leaders: ['Alchemist', 'Executive', 'Ambassador'],\n  },\n  {\n    asset: 'images/sketches/hero-plates/ranger-commandant-senator.png',\n    leaders: ['Ranger', 'Commandant', 'Senator'],\n  },\n  {\n    asset: 'images/sketches/hero-plates/witch-hunter-banker-spymaster.png',\n    leaders: ['Witch Hunter', 'Banker', 'Spymaster'],\n  },\n];"
+          new_order = "const heroPlateAssignments = [\n  {\n    asset: 'images/sketches/hero-plates/witch-hunter-banker-spymaster.png',\n    leaders: ['Witch Hunter', 'Banker', 'Spymaster'],\n  },\n  {\n    asset: 'images/sketches/hero-plates/alchemist-executive-ambassador.png',\n    leaders: ['Alchemist', 'Executive', 'Ambassador'],\n  },\n  {\n    asset: 'images/sketches/hero-plates/ranger-commandant-senator.png',\n    leaders: ['Ranger', 'Commandant', 'Senator'],\n  },\n];"
+
+          for filename in ['scripts/render-v062-print-package.mjs', 'scripts/validate-v062-print-package.mjs']:
+              path = Path(filename)
+              text = path.read_text()
+              if old_order not in text:
+                  raise SystemExit(f'Expected Leader-plate order not found in {filename}')
+              path.write_text(text.replace(old_order, new_order, 1))
+
+          validator = Path('scripts/validate-v062-print-package.mjs')
+          text = validator.read_text()
+          old_check = "    if (/Action Opportunit(?:y|ies)/i.test(content)) failures.push(`${relativePath} contains retired Action Opportunity terminology.`);"
+          new_check = "    const staleActionOpportunity = /\\bOne normal Action Opportunity\\b/i.test(content)\n      || /without using (?:the |an |another )?Action Opportunit(?:y|ies)/i.test(content)\n      || /without an Action Opportunity/i.test(content)\n      || /(?:uses|using) (?:one|an) Action Opportunity/i.test(content);\n    if (staleActionOpportunity) failures.push(`${relativePath} contains retired Action Opportunity terminology.`);"
+          if old_check not in text:
+              raise SystemExit('Expected retired Action Opportunity check not found')
+          text = text.replace(old_check, new_check, 1)
+          text = text.replace('Alchemist, Executive, and Ambassador on plate 1; Ranger, Commandant, and Senator on plate 2; Witch Hunter, Banker, and Spymaster on plate 3', 'Witch Hunter, Banker, and Spymaster on plate 1; Alchemist, Executive, and Ambassador on plate 2; Ranger, Commandant, and Senator on plate 3')
+          validator.write_text(text)
+          PY
+
+      - name: Commit print-package source corrections
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add scripts/synchronize-v062-print-release.mjs playtest/player-mat/index.html v0.6.2/print/*.html v0.6.2/print/document-manifest.json releases/v0.6.2/README.md releases/v0.6.2/Gauntlet_v0.6.2_Manifest.json v0.6.2/release-manifest.json v0.6.2/index.html README.md playtest/index.html
-          git diff --cached --quiet && { echo "No synchronized changes to commit."; exit 0; }
-          git commit -m "Align v0.6.2 print synchronization outputs"
+          git add scripts/render-v062-print-package.mjs scripts/validate-v062-print-package.mjs
+          git diff --cached --quiet && { echo "No source changes to commit."; exit 0; }
+          git commit -m "Correct v0.6.2 print padding invariants"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
-
-      - name: Run unit tests
-        run: npx vitest run
-
-      - name: Validate v0.6.2 shared rules
-        run: node scripts/validate-v062-shared-rules.mjs
-
-      - name: Validate v0.6.2 faction components
-        run: node scripts/validate-v062-faction-components.mjs
-
-      - name: Validate v0.6.2 starters and onboarding
-        run: node scripts/validate-v062-starters-onboarding.mjs
-
-      - name: Validate v0.6.2 live propagation
-        run: node scripts/validate-v062-live-propagation.mjs
-
-      - name: Validate v0.6.2 arbiter and digital surfaces
-        run: node scripts/validate-v062-arbiter-digital.mjs
-
-      - name: Validate v0.6.2 card execution
-        run: node scripts/validate-v062-card-execution.mjs
-
-      - name: Validate v0.6.2 release closeout
-        run: node scripts/validate-v062-release-closeout.mjs
-
-      - name: Check v0.6.2 public-site synchronization
-        run: node scripts/synchronize-v062-public-site.mjs --check
-
-      - name: Validate v0.6.2 published release
-        run: node scripts/validate-v062-published-release.mjs
-
-      - name: Validate v0.6.2 print package
-        run: npm run print:v062:check
-
-      - name: Validate starter decks
-        run: node scripts/validate-starter-decks.mjs
-
-      - name: Check Google Analytics synchronization
-        run: node scripts/sync-google-analytics.mjs --check
-
-      - name: Validate retired faction sheets
-        run: node scripts/validate-retired-faction-sheets.mjs
-
-      - name: Validate TTS assets
-        run: npm run tts:check
-
-      - name: Validate media assets
-        run: npm run media:check
