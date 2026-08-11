@@ -25,28 +25,28 @@ Canonical artwork paths:
 
 | Component pool | Total | Canonical on `main` | Approved, pending merge | Still needs artwork |
 | --- | ---: | ---: | ---: | ---: |
-| Playable cards | 128 | 60 | 21 | 47 |
+| Playable cards | 128 | 60 | 22 | 46 |
 | Territory cards | 25 | 2 | 0 | 23 |
-| **All tracked cards** | **153** | **62** | **21** | **70** |
+| **All tracked cards** | **153** | **62** | **22** | **69** |
 
 ### Playable cards by faction
 
 | Faction | Canonical on `main` | Approved, pending merge | Still needs artwork |
 | --- | ---: | ---: | ---: |
-| Neutral | 43 | 2 | 5 |
+| Neutral | 43 | 3 | 4 |
 | Military | 2 | 11 | 0 |
 | Diplomats | 1 | 8 | 4 |
 | Financiers | 12 | 0 | 1 |
 | Intelligence | 2 | 0 | 11 |
 | Mystics | 0 | 0 | 13 |
 | Inquisition | 0 | 0 | 13 |
-| **Playable-card total** | **60** | **21** | **47** |
+| **Playable-card total** | **60** | **22** | **46** |
 
 ## Neutral — 7
 
 - [x] Contingency Plan
 - [x] Fealty
-- [ ] Forced March
+- [x] Forced March
 - [ ] Pathfinders
 - [ ] Redemption
 - [ ] Reserves
