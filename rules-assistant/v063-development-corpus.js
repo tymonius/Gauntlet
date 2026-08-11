@@ -56,6 +56,7 @@ export async function loadDevelopmentV063RulesCorpus({
   corpus.candidate = true;
   corpus.publishedVersion = "v0.6.2";
   corpus.sourceUrls = urls;
+  corpus.data = canonicalData;
   corpus.documents = corpus.documents.map((document) => ({
     ...document,
     sourcePath: document.kind === "rulebook" ? RULEBOOK_SOURCE_PATH : CANONICAL_SOURCE_PATH,
