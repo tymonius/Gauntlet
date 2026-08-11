@@ -20,7 +20,7 @@ const cardDesign = readFileSync("card-design/card-design.js", "utf8");
 const renderSurface = readFileSync("card-design/long-card-render.html", "utf8");
 const renderer = readFileSync("tts/renderer/renderer.js", "utf8");
 const catalogSource = readFileSync("card-design/generated/v0.6.3/long-card-review-catalog.js", "utf8");
-const catalog = JSON.parse(catalogSource.replace(/^.*?=\s*/, "").replace(/;\s*$/, ""));
+const catalog = JSON.parse(catalogSource.slice(catalogSource.indexOf("{"), catalogSource.lastIndexOf("};") + 1));
 
 describe("v0.6.3 long-card render review", () => {
   it("adds the requested review section to the existing card-design page in exact order", () => {
