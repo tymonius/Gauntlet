@@ -118,6 +118,11 @@
   }
 
   function fitForTts(element) {
+    if (new URLSearchParams(window.location.search).get('fit') === 'production') {
+      element.dataset.productionFit = element?.classList.contains('fit-warning') ? 'warning' : 'fit';
+      return;
+    }
+
     if (!element?.classList.contains('fit-warning')) return;
 
     const interior = element.querySelector('.card-interior');
