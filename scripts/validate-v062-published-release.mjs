@@ -148,12 +148,12 @@ assert(corpus.includes('releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md'), 'publishe
 assert(currentContent.includes("CURRENT_RULES_VERSION = 'v0.6.2'"), 'digital default is not v0.6.2');
 
 assert(
-  packageJson.scripts?.['release:v062:build'] === 'node scripts/build-v062-release-runner.mjs && node scripts/synchronize-v062-public-site.mjs',
-  'release build must run the safe package builder and public-site synchronizer',
+  packageJson.scripts?.['release:v062:build'] === 'node scripts/build-v062-release-runner.mjs && node scripts/synchronize-v062-public-site.mjs && node scripts/synchronize-v062-print-release.mjs',
+  'release build must run the safe package builder, public-site synchronizer, and print-release synchronizer',
 );
 assert(
-  packageJson.scripts?.['release:v062:check'] === 'node scripts/build-v062-release-runner.mjs --check && node scripts/synchronize-v062-public-site.mjs --check && node scripts/validate-v062-published-release.mjs',
-  'release check must verify package generation, public-site synchronization, and published output',
+  packageJson.scripts?.['release:v062:check'] === 'npm run release:v062:build && git diff --exit-code -- index.html factions v0.6.2 releases/v0.6.2 rules-assistant/widget.js rules-assistant/worker-entry.js rules-assistant/worker-v062.js rules-assistant/v062-published-corpus.js src/content/current.ts && node scripts/validate-v062-published-release.mjs',
+  'release check must rerun the integrated release build, require zero generated diff, and validate published output',
 );
 assert(String(packageJson.scripts?.test || '').includes('validate-v062-published-release.mjs'), 'main test chain does not run published-release validation');
 
