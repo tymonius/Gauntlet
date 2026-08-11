@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/build-v063-player-facing-candidates.yml'
       - 'scripts/generate-v063-player-facing-candidates.mjs'
+      - 'scripts/sync-v063-rulebook-card-text.mjs'
       - 'scripts/normalize-v063-player-facing-candidates.mjs'
       - 'scripts/validate-v063-player-facing-candidates.mjs'
       - 'scripts/build-v063-card-normalization.mjs'
@@ -35,6 +36,7 @@ on:
     paths:
       - '.github/workflows/build-v063-player-facing-candidates.yml'
       - 'scripts/generate-v063-player-facing-candidates.mjs'
+      - 'scripts/sync-v063-rulebook-card-text.mjs'
       - 'scripts/normalize-v063-player-facing-candidates.mjs'
       - 'scripts/validate-v063-player-facing-candidates.mjs'
       - 'scripts/build-v063-card-normalization.mjs'
@@ -97,6 +99,7 @@ jobs:
       - name: Generate player-facing candidates
         run: |
           node scripts/generate-v063-player-facing-candidates.mjs
+          node scripts/sync-v063-rulebook-card-text.mjs
           node scripts/normalize-v063-player-facing-candidates.mjs
 
       - name: Validate player-facing propagation
