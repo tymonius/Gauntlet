@@ -3,7 +3,7 @@
 **Status:** Active next-release decision and propagation record  
 **Current canonical release:** [Gauntlet v0.6.2](../releases/v0.6.2/README.md)  
 **Release tracker:** [Issue #528](https://github.com/tymonius/Gauntlet/issues/528)  
-**Last updated:** August 7, 2026
+**Last updated:** August 11, 2026
 
 ---
 
@@ -33,16 +33,28 @@ Start-of-turn, beginning-of-turn, and continuous Territory effects may apply nor
 
 ### 2.2 Opening Hand selection
 
-After all non-Playable-Deck cards and required components have been removed or prepared, each player:
+After preparing required faction components and applying any setup rules that add cards to or remove cards from the Deck, each player:
 
-1. shuffles their remaining cards to form their Draw Pile;
+1. shuffles the remaining cards in their Deck to form their Draw Pile;
 2. draws four cards;
 3. chooses one of those cards and places it face up in their Discard Pile; and
 4. keeps the other three as their opening Hand.
 
-Both players choose their opening discard before the first-player roll. The roll therefore cannot inform the discard choice.
-
 This is the standard v0.6.3 opening procedure, not an optional mulligan.
+
+### 2.3 Informed Territory arrangement
+
+After choosing the opening discard and seeing the resulting three-card opening Hand, each player secretly arranges their three Territories.
+
+Territory order therefore may respond to:
+
+- the three cards kept in the opening Hand;
+- the chosen face-up opening discard; and
+- any first-turn interaction between those cards and a starting Territory.
+
+This preserves the information-order principle adopted for testing in issue #487 while superseding that issue's old fourth-card destination. The fourth card is now discarded face up rather than placed beneath the Draw Pile.
+
+The first-player roll occurs only after both players have completed their opening selection and Territory arrangement. Neither the discard choice nor Territory order is informed by initiative.
 
 ---
 
@@ -103,7 +115,7 @@ Do not add a final-Territory exception that removes the Commandant's capture pay
 
 ### 4.2 Territory ordering
 
-Starting on the first controlled Territory makes Territory order matter from the opening turn.
+Starting on the first controlled Territory makes Territory order matter from the opening turn, and arranging Territories after opening selection makes that choice informed rather than blind.
 
 The first Territory may provide a start-of-turn, beginning-of-turn, draw, Action, movement, or continuous benefit immediately. Enter-triggered effects do not trigger from setup placement.
 
@@ -113,9 +125,10 @@ The Territory-ordering decision should remain visible in first-game teaching and
 
 The draw-four-discard-one procedure gives each player one opening selection decision and establishes a face-up Discard Pile before play begins.
 
-Because both discards occur before the first-player roll:
+Because both opening selection and Territory arrangement occur before the first-player roll:
 
 - neither player chooses with known initiative;
+- players may deliberately pair their opening state with their first Territory;
 - effects that can use the Discard Pile on the first turn interact with a deliberately chosen card; and
 - the opening Hand remains three cards.
 
@@ -185,8 +198,9 @@ At minimum, audit:
 - King’s Road;
 - Ruined Storehouse;
 - all beginning-of-turn and start-of-turn Territory effects;
-- all enter-triggered Territory effects; and
-- faction setup rules that add, remove, bind, or reveal cards before the opening draw.
+- all enter-triggered Territory effects;
+- faction setup rules that add, remove, bind, or reveal cards before the opening draw; and
+- starter-Deck guidance that currently assumes a fixed or blind Territory order.
 
 ---
 
@@ -218,7 +232,7 @@ At minimum, audit:
 
 5. **Rules Arbiter and digital layer**
    - v0.6.3 corpus and deterministic rulings;
-   - setup state;
+   - setup state and setup ordering;
    - victory checks;
    - immediate capture;
    - Last Stand access without prior final-Territory control;
@@ -238,7 +252,9 @@ The v0.6.3 implementation is not complete until:
 
 - no active v0.6.3 source places tokens before the Gauntlet during setup;
 - no active v0.6.3 source uses a random three-card opening Hand;
-- the opening discard always occurs before the first-player roll;
+- no active v0.6.3 player-facing source uses `Playable Deck` for the constructed ordinary-card set;
+- opening selection occurs before Territory arrangement;
+- the first-player roll occurs only after both opening selection and Territory arrangement are complete;
 - setup placement is expressly not entering a Territory;
 - both capture of the opponent's final Territory and victory in the opponent's Last Stand are described as running the Gauntlet;
 - immediate-capture effects can legally win on the final Territory;
