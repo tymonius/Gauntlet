@@ -5,7 +5,7 @@
 **Release tracker:** [Issue #528](https://github.com/tymonius/Gauntlet/issues/528)  
 **Implementation ledger:** [Gauntlet v0.6.3 Implementation Ledger](Gauntlet_v0.6.3_Implementation_Ledger.md)
 
-This document governs the adopted v0.6.3 changes to setup, starting position, opening Hand selection, the final Territory, Last Stand access, the normal shared victory condition, and the player-facing battle-start reminder.
+This document governs the adopted v0.6.3 changes to setup, starting position, opening Hand selection, Territory arrangement, the final Territory, Last Stand access, the normal shared victory condition, and the player-facing battle-start reminder.
 
 All v0.6.2 rules not expressly replaced here remain inherited during v0.6.3 development. v0.6.2 remains the sole canonical published playtest release until v0.6.3 is assembled and released.
 
@@ -15,21 +15,21 @@ All v0.6.2 rules not expressly replaced here remain inherited during v0.6.3 deve
 
 ## How it works
 
-Arrange and reveal the six-Territory Gauntlet, prepare faction components, and place each Player Token on the Territory at that player's own end.
+Prepare faction components, then shuffle the remaining cards in your Deck to form your Draw Pile. Draw four, choose one to discard, and keep the other three as your opening Hand.
 
-Shuffle the remaining cards in your Playable Deck. Draw four, choose one to discard, and keep the other three as your opening Hand. After both players have discarded, roll to determine the first player.
+After seeing your opening selection, secretly arrange your three Territories. Form and reveal the six-Territory Gauntlet, place each Player Token on the Territory at that player's own end, and then roll to determine the first player.
 
 ## Complete rules
 
 Prepare the game in this order:
 
-1. **Arrange Territories.** Secretly arrange your three Territory Cards in a line facing you.
-2. **Form the Gauntlet.** Join both Territory lines to create one six-Territory column.
-3. **Reveal Territories.** Reveal all six simultaneously. They remain face up unless an effect says otherwise.
-4. **Prepare faction components.** Place Leaders, trackers, references, supplemental components, and any cards removed from or added to the Playable Deck according to their rules.
-5. **Place Player Tokens.** Place each Player Token on the Territory at that player's end of the Gauntlet.
-6. **Prepare Draw Piles and opening Hands.** Shuffle your remaining cards to form your Draw Pile. Draw four cards, choose one card from those four, and place it face up in your Discard Pile. The other three cards form your opening Hand.
-7. **Determine first player.** After both players have chosen their opening discard, each player rolls one die. The higher result takes the first turn. Reroll ties.
+1. **Prepare faction components.** Place Leaders, trackers, references, supplemental components, and apply any setup rules that add cards to or remove cards from the Deck.
+2. **Prepare Draw Piles and opening Hands.** Shuffle the remaining cards in your Deck to form your Draw Pile. Draw four cards, choose one card from those four, and place it face up in your Discard Pile. The other three cards form your opening Hand.
+3. **Arrange Territories.** After seeing your opening Hand and opening discard, secretly arrange your three Territory Cards in a line facing you.
+4. **Form the Gauntlet.** Join both Territory lines to create one six-Territory column.
+5. **Reveal Territories.** Reveal all six simultaneously. They remain face up unless an effect says otherwise.
+6. **Place Player Tokens.** Place each Player Token on the Territory at that player's end of the Gauntlet.
+7. **Determine first player.** After both players have chosen their opening discard and arranged their Territories, each player rolls one die. The higher result takes the first turn. Reroll ties.
 
 ### Starting Territory
 
@@ -41,11 +41,13 @@ Placing a Player Token during setup:
 
 An effect that applies continuously, at the beginning of a turn, at the start of a turn, during Capture, or during another named phase may apply during the first turn normally when its requirements are satisfied.
 
-### Opening discard
+### Opening selection and Territory arrangement
 
 The discarded card forms the player's Discard Pile before the first turn begins.
 
 The player chooses the opening discard without knowing who will take the first turn. This procedure is mandatory and does not count as discarding for the cost or effect of another card unless a rule expressly refers to the opening discard.
+
+Territory arrangement occurs after the player has chosen the opening discard and knows the three-card opening Hand. A player may therefore use the known opening Hand and Discard Pile when deciding the order of their Territories.
 
 ---
 
@@ -156,11 +158,11 @@ A player begins on the Territory at their own end.
 
 An effect that triggers when the Territory is entered does not trigger during setup. A continuous effect or an effect that applies at the beginning of the player's first turn may apply normally.
 
-## Example E — opening selection
+## Example E — informed Territory arrangement
 
-A player draws four cards during setup, chooses one, and places it face up in the Discard Pile. The remaining three form the opening Hand. Only after both players have made that choice do they roll for first player.
+A player draws four cards during setup, chooses one to place face up in the Discard Pile, and keeps the remaining three as the opening Hand. The player then arranges their Territories with both the opening Hand and opening discard known.
 
-A first-turn effect that can use the Discard Pile may interact with the chosen card under its normal rules.
+Only after both players have completed their opening selection and Territory arrangement do they roll for first player. A first-turn effect that can use the Discard Pile may interact with the chosen card under its normal rules.
 
 ---
 
@@ -168,11 +170,14 @@ A first-turn effect that can use the Discard Pile may interact with the chosen c
 
 ## Setup
 
+- Prepare faction components that affect the Deck.
+- Shuffle the remaining Deck to form the Draw Pile.
+- Draw four, discard one face up, and keep three.
+- After seeing the opening selection, secretly arrange the three Territories.
+- Form and reveal the Gauntlet.
 - Place each Player Token on the Territory at that player's own end.
 - Setup placement is not movement and does not count as entering.
-- Shuffle the remaining Playable Deck.
-- Draw four, discard one face up, and keep three.
-- After both players discard, roll for first player.
+- After both players complete opening selection and Territory arrangement, roll for first player.
 
 ## Run the Gauntlet
 
