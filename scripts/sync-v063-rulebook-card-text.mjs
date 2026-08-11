@@ -98,6 +98,10 @@ for (const cardName of [
 }
 
 rulebook = rulebook
+  .replace(
+    'The first-discard requirement applies to voluntary Asset discard, required Asset loss, and Asset replacement.',
+    'The first-discard requirement applies whenever you discard one or more Assets, including voluntary discard, required Asset discard, and Asset replacement.'
+  )
   .replace('Extraordinary Rendition has no Use, Battle, or Mission mode.', 'Extraordinary Rendition has no Gambit, Tactic, Gambit/Tactic, or Mission effect.')
   .replace(/\s+$/, '') + '\n';
 
