@@ -25,6 +25,19 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Generate canonical v0.6.2 print HTML
+        run: npm run print:v062:html
+
+      - name: Upload canonical v0.6.2 print HTML
+        uses: actions/upload-artifact@v4
+        with:
+          name: canonical-print-html
+          path: |
+            v0.6.2/print/*.html
+            v0.6.2/print/document-manifest.json
+            playtest/player-mat/index.html
+          if-no-files-found: error
+
       - name: Run unit tests
         run: npx vitest run --reporter=json --outputFile=vitest-results.json
 
