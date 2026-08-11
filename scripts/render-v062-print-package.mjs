@@ -79,7 +79,7 @@ try {
   for (const output of outputs) {
     console.log(`[print] ${output.key}: opening ${output.url}`);
     const page = await browser.newPage({ viewport: { width: 1440, height: 1100 }, deviceScaleFactor: 1 });
-    await page.route(/googletagmanager\.com|google-analytics\.com/, (route) => route.abort());
+    await page.route(/googletagmanager\.com|google-analytics\.com/, (route) => route.fulfill({ status: 204, contentType: 'application/javascript', body: '' }));
     const browserErrors = [];
     page.on('pageerror', (error) => browserErrors.push(error.message));
     page.on('console', (message) => {
