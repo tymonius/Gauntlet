@@ -2,7 +2,7 @@ name: Build v0.6.3 development browser surfaces
 
 on:
   push:
-    branches: [agent/v063-browser-development-surfaces]
+    branches: [agent/v063-browser-development-surfaces, agent/v063-rules-arbiter-candidate]
     paths:
       - '.github/workflows/build-v063-browser-development.yml'
       - 'scripts/build-v063-browser-development.mjs'
@@ -129,7 +129,7 @@ jobs:
           node scripts/validate-v063-browser-site-conventions.mjs
 
       - name: Commit generated development surfaces
-        if: github.event_name == 'push' && github.ref_name == 'agent/v063-browser-development-surfaces'
+        if: github.event_name == 'push' && (github.ref_name == 'agent/v063-browser-development-surfaces' || github.ref_name == 'agent/v063-rules-arbiter-candidate')
         run: |
           git add v0.6.3/
           if git diff --cached --quiet; then
