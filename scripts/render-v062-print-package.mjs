@@ -155,7 +155,18 @@ try {
     results.push({ ...output, path: filePath, ...pdfInfo, sha256: sha256(filePath) });
   }
 } finally {
-  await browserServer.kill();
+  try {
+    await Promise.race([
+      browser.close(),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('Browser close timed out.')), 3000)),
+    ]);
+  } catch (error) {
+    console.warn(`[print] browser close fallback: ${error.message}`);
+  }
+  const browserProcess = browserServer.process();
+  if (browserProcess.exitCode === null && !browserProcess.killed) {
+    browserProcess.kill('SIGKILL');
+  }
 }
 
 async function imposeBooklet(readerPath, bookletPath) {
