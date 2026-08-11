@@ -22,6 +22,15 @@ if (activeTerritoryAndStarterText.includes("Smuggler's Pass")) {
   throw new Error("Retired Smuggler's Pass title remains in active v0.6.3 Territory or starter data.");
 }
 
+const secondLine = (candidate.cards ?? []).find((card) => card.id === 'neutral-reserves');
+if (!secondLine) throw new Error('Stable card ID neutral-reserves is missing.');
+if (secondLine.name !== 'Second Line') {
+  throw new Error(`Expected v0.6.3 card title Second Line; found ${secondLine.name}.`);
+}
+if (JSON.stringify(candidate.starter_decks ?? null).includes('"Reserves"')) {
+  throw new Error('Retired Reserves card title remains in active v0.6.3 starter data.');
+}
+
 const response = await fetch(`https://api.github.com/repos/${repository}/issues/comments/${commentId}`, {
   headers: {
     Accept: 'application/vnd.github+json',
@@ -60,7 +69,7 @@ for (const tracked of trackedCards) {
   }
 }
 
-console.log(`Verified Smuggler's Run propagation and ${trackedCards.length} finalized card(s) directly against canonical #405 comment ${commentId}.`);
+console.log(`Verified Smuggler's Run and Second Line propagation and ${trackedCards.length} finalized card(s) directly against canonical #405 comment ${commentId}.`);
 
 function parseTracker(body) {
   const lines = body.replace(/\r/g, '').split('\n');
