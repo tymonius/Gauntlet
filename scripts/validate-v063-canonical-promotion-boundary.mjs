@@ -17,4 +17,15 @@ assert.equal(data.starter_decks.version, 'v0.6.2-inherited', 'Starter Deck lists
 assert.match(data.status, /not published/i);
 assert.equal(data.inherits_from, 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json');
 
-console.log('v0.6.3 canonical-data publication boundary validated: integrated candidate is explicitly not yet a published release.');
+assert.deepEqual(data.card_rules.effect_headings.ordinary_role_headings, ['Action', 'Asset', 'Gambit', 'Tactic', 'Gambit/Tactic']);
+const actualHeadings = [...new Set(data.cards.flatMap((card) => card.effects.map((effect) => effect.label)))];
+assert.deepEqual(data.card_rules.effect_headings.all_present_headings, actualHeadings);
+assert.deepEqual(
+  data.card_rules.effect_headings.special_or_procedural_headings,
+  actualHeadings.filter((label) => !data.card_rules.effect_headings.ordinary_role_headings.includes(label))
+);
+for (const required of ['Terms', 'Accepted', 'Refused', 'Overlay', 'Mission', 'Text', 'Placement', 'Aftermath']) {
+  assert(data.card_rules.effect_headings.special_or_procedural_headings.includes(required), `Missing special/procedural effect heading metadata: ${required}`);
+}
+
+console.log('v0.6.3 canonical-data publication boundary validated: integrated candidate is explicitly not yet a published release and fully enumerates current effect headings.');
