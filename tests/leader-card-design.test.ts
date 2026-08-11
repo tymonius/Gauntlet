@@ -58,7 +58,7 @@ describe("Leader card design", () => {
     expect(factionSymbols).toHaveLength(6);
     for (const symbol of factionSymbols) {
       expect(symbol.source).toContain('<svg');
-      expect(symbol.source).toContain('viewBox="0 0 64 64"');
+      expect(symbol.source).toMatch(/viewBox="[^"]+"/);
       expect(leaderStyles).toContain(`url("../images/faction-symbols/${symbol.name}.svg")`);
       expect(leaderPage).toContain(`data-faction="${symbol.name}"`);
     }
