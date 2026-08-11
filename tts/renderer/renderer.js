@@ -21,7 +21,9 @@
   const overlayClasses = isOverlayCard
     ? ` overlay-card${card.faction === 'neutral' ? ' overlay-neutral' : ''}`
     : '';
-  const longTitleClass = String(card.name).length > 21 ? ' long-title' : '';
+  const longTitleClass = catalog?.gameVersion === 'v0.6.3' && String(card.name).length > 21
+    ? ' long-title'
+    : '';
   const footerCenter = card.unique
     ? 'Unique'
     : (card.form || (card.complexity !== 'Unspecified' ? card.complexity : ''));
