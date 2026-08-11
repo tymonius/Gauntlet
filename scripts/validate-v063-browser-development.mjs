@@ -33,7 +33,12 @@ for (const marker of [
   "DON'T FORGET THE BOARD",
   'Gambit/Tactic',
   'inherent <strong>Bank</strong> Action',
+  'inherited v0.6.2 faction/component baseline, with duplicated card excerpts synchronized to the final v0.6.3 card candidate',
+  'governing v0.6.3 source documents control candidate changes; v0.6.2 remains authoritative for published play',
 ]) assert(pages.rulebook.includes(marker), `Rulebook browser surface missing: ${marker}`);
+assert(!pages.rulebook.includes('<hr>\n<hr>'), 'Rulebook browser surface contains a duplicate adjacent divider');
+assert(!pages.rulebook.includes('contains the complete v0.6.2 faction, Proposal, card-revision, and Territory-revision rules'));
+assert(!pages.rulebook.includes('this rulebook and specific component text remain authoritative'));
 
 for (const marker of [
   'Draw four cards, discard one face up, and keep three',
@@ -90,4 +95,4 @@ assert(pages.home.includes('128 playable cards'));
 assert(pages.home.includes('25 Territories inherited from v0.6.2'));
 assert(pages.home.includes('without changing the published v0.6.2 release'));
 
-console.log('v0.6.3 development browser surfaces validated: integrated unpublished candidate data, current rules/setup/victory, non-ordered Territory selection, inherited starter boundary, noindex publication boundary, and no stale Rules Arbiter embed.');
+console.log('v0.6.3 development browser surfaces validated: integrated unpublished candidate data, current rules/setup/victory, non-ordered Territory selection, inherited starter boundary, explicit Rulebook source boundary, noindex publication boundary, and no stale Rules Arbiter embed.');
