@@ -103,7 +103,8 @@ rulebook = rulebook
     'The first-discard requirement applies whenever you discard one or more Assets, including voluntary discard, required Asset discard, and Asset replacement.'
   )
   .replace('Extraordinary Rendition has no Use, Battle, or Mission mode.', 'Extraordinary Rendition has no Gambit, Tactic, Gambit/Tactic, or Mission effect.')
+  .replaceAll("Smuggler's Pass", "Smuggler's Run")
   .replace(/\s+$/, '') + '\n';
 
 fs.writeFileSync(rulebookPath, rulebook, 'utf8');
-console.log('Synchronized 17 Rulebook card-text blocks to the final v0.6.3 card candidate.');
+console.log("Synchronized 17 Rulebook card-text blocks and the Smuggler's Run Territory rename to the final v0.6.3 candidate.");
