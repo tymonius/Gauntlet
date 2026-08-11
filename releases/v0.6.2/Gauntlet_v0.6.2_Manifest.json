@@ -49,20 +49,7 @@
     "Gauntlet_v0.6.2_Manifest.json",
     "deployment-status.json",
     "../../v0.6.2/",
-    "../../rules-assistant/worker-v062.js",
-    "Gauntlet_v0.6.2_Rulebook.pdf",
-    "Gauntlet_v0.6.2_Rulebook_Booklet.pdf",
-    "Gauntlet_v0.6.2_Reference_Guide.pdf",
-    "Gauntlet_v0.6.2_First_Game_Guide.pdf",
-    "Gauntlet_v0.6.2_Faction_and_Component_Guide.pdf",
-    "Gauntlet_v0.6.2_Returning_Player_Changes.pdf",
-    "Gauntlet_v0.6.2_Player_Mat.pdf",
-    "Gauntlet_v0.6.2_Formal_Playtest_Sheet.pdf",
-    "Gauntlet_v0.6.2_Faction_Teaching_Cards.pdf",
-    "Gauntlet_v0.6.2_Active_Player_Marker.pdf",
-    "Gauntlet_v0.6.2_Tableside_Pack.pdf",
-    "Gauntlet_v0.6.2_Print_Manifest.json",
-    "../../v0.6.2/print/"
+    "../../rules-assistant/worker-v062.js"
   ],
   "validation": {
     "source_audit_complete": true,
@@ -70,11 +57,7 @@
     "propagation_scenarios": 368,
     "closeout_scenarios": 48,
     "automated_checks_required": true,
-    "ready_for_publication": true,
-    "print_package_generated": true,
-    "print_pdf_geometry_validated": true,
-    "print_browser_sources_validated": true,
-    "v061_print_package_unchanged": true
+    "ready_for_publication": true
   },
   "public_links": {
     "project_site": "https://gauntlet.run/",
@@ -83,11 +66,7 @@
     "card_reference": "https://gauntlet.run/v0.6.2/reference/",
     "deckbuilder": "https://gauntlet.run/v0.6.2/deckbuilder/",
     "start": "https://gauntlet.run/v0.6.2/start/",
-    "returning_player_changes": "https://gauntlet.run/v0.6.2/changes/",
-    "printed_materials": "https://gauntlet.run/v0.6.2/print/",
-    "rulebook_pdf": "https://gauntlet.run/releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.pdf",
-    "rulebook_booklet_pdf": "https://gauntlet.run/releases/v0.6.2/Gauntlet_v0.6.2_Rulebook_Booklet.pdf",
-    "tableside_pack_pdf": "https://gauntlet.run/releases/v0.6.2/Gauntlet_v0.6.2_Tableside_Pack.pdf"
+    "returning_player_changes": "https://gauntlet.run/v0.6.2/changes/"
   },
   "unresolved": [
     "Military alternate victory",
