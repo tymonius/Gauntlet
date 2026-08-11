@@ -1,0 +1,32 @@
+name: Validate v0.6.3 card rendering conventions
+
+on:
+  pull_request:
+    paths:
+      - 'tts/renderer/renderer.js'
+      - 'scripts/validate-v063-card-rendering-conventions.mjs'
+      - '.github/workflows/validate-v063-card-rendering-conventions.yml'
+  push:
+    paths:
+      - 'tts/renderer/renderer.js'
+      - 'scripts/validate-v063-card-rendering-conventions.mjs'
+      - '.github/workflows/validate-v063-card-rendering-conventions.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Validate v0.6.3 card rendering conventions
+        run: node scripts/validate-v063-card-rendering-conventions.mjs

@@ -15,6 +15,12 @@ on:
       - 'scripts/apply-v063-advantage-capitalization.mjs'
       - 'scripts/apply-v063-asset-language.mjs'
       - 'scripts/apply-v063-gambit-tactic-headings.mjs'
+      - 'scripts/apply-v063-poolwide-card-refinements.mjs'
+      - 'scripts/apply-v063-final-artifact-audit.mjs'
+      - 'scripts/finalize-v063-poolwide-integrity.mjs'
+      - 'scripts/apply-v063-finalized-forward-conventions.mjs'
+      - 'scripts/sync-v063-final-card-mirrors.mjs'
+      - 'scripts/validate-v063-finalized-tracker.mjs'
       - 'scripts/validate-v063-advantage-stacking.mjs'
       - '.github/workflows/build-v063-card-language-normalization.yml'
       - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
@@ -32,6 +38,12 @@ on:
       - 'scripts/apply-v063-advantage-capitalization.mjs'
       - 'scripts/apply-v063-asset-language.mjs'
       - 'scripts/apply-v063-gambit-tactic-headings.mjs'
+      - 'scripts/apply-v063-poolwide-card-refinements.mjs'
+      - 'scripts/apply-v063-final-artifact-audit.mjs'
+      - 'scripts/finalize-v063-poolwide-integrity.mjs'
+      - 'scripts/apply-v063-finalized-forward-conventions.mjs'
+      - 'scripts/sync-v063-final-card-mirrors.mjs'
+      - 'scripts/validate-v063-finalized-tracker.mjs'
       - 'scripts/validate-v063-advantage-stacking.mjs'
       - '.github/workflows/build-v063-card-language-normalization.yml'
       - 'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json'
@@ -39,6 +51,7 @@ on:
 
 permissions:
   contents: read
+  issues: read
 
 jobs:
   normalize:
@@ -82,11 +95,31 @@ jobs:
       - name: Replace Battle effect headings with Gambit/Tactic
         run: node scripts/apply-v063-gambit-tactic-headings.mjs
 
+      - name: Apply exhaustive pool-wide refinements and finalized card text
+        run: node scripts/apply-v063-poolwide-card-refinements.mjs
+
+      - name: Audit generated artifact for shared-rule redundancies
+        run: node scripts/apply-v063-final-artifact-audit.mjs
+
+      - name: Apply final integrity gate
+        run: node scripts/finalize-v063-poolwide-integrity.mjs
+
+      - name: Apply later conventions to finalized bespoke cards
+        run: node scripts/apply-v063-finalized-forward-conventions.mjs
+
+      - name: Synchronize final compatibility fields
+        run: node scripts/sync-v063-final-card-mirrors.mjs
+
+      - name: Verify canonical #405 finalized tracker
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/validate-v063-finalized-tracker.mjs
+
       - name: Verify final candidate
         run: |
           node --input-type=module <<'NODE'
           import { readFileSync } from 'node:fs';
-          const candidate = JSON.parse(readFileSync('artifacts/v0.6.3/Gauntlet_v0.6.3_Compact_Shorthand_Normalized_Candidate.json', 'utf8'));
+          const candidate = JSON.parse(readFileSync('artifacts/v0.6.3/Gauntlet_v0.6.3_Card_Text_Candidate.json', 'utf8'));
           delete candidate.normalization;
           const text = JSON.stringify(candidate);
           for (const obsolete of [
@@ -109,26 +142,64 @@ jobs:
             'If you discard this card because your Asset limit decreased',
             'Battle effect',
             'Battle effects',
-            'Gambit/Tactic effect'
+            'battle involving you',
+            'as though you played it',
+            'as though you controlled it',
+            'normal destination',
+            'normal role destination',
+            'All rights reserved',
+            'place this card as an Overlay',
+            'place this card from your Hand as an Overlay',
+            'Leave that card in your Graveyard',
+            "Leave that card in the opponent's Graveyard"
           ]) {
             if (text.includes(obsolete)) {
               console.error(`Obsolete, malformed, unnatural, or improperly normalized player-facing text remains: ${obsolete}`);
               process.exit(1);
             }
           }
+          const mappings = {
+            action: 'Action', gambit_tactic: 'Gambit/Tactic', gambit: 'Gambit', tactic: 'Tactic',
+            asset: 'Asset', overlay: 'Overlay', placement: 'Placement', terms: 'Terms', accepted: 'Accepted',
+            refused: 'Refused', mission: 'Mission', aftermath: 'Aftermath', text: 'Text'
+          };
           const labels = candidate.cards.flatMap((card) => (card.effects ?? []).map((effect) => effect.label));
-          if (labels.includes('Battle')) {
-            console.error('Obsolete Battle effect heading remains.');
+          if (labels.includes('Battle') || labels.includes('Activate')) {
+            console.error('Obsolete Battle or Activate effect heading remains.');
             process.exit(1);
           }
           if (labels.filter((label) => label === 'Gambit/Tactic').length !== 106) {
             console.error('Expected exactly 106 Gambit/Tactic effect headings.');
             process.exit(1);
           }
+          for (const card of candidate.cards) {
+            const effects = new Map((card.effects ?? []).map((effect) => [effect.label, effect.text]));
+            for (const effect of card.effects ?? []) {
+              const slashResidual = effect.text.replaceAll('its Gambit/Tactic effect', '');
+              if (slashResidual.includes('Gambit/Tactic effect')) {
+                console.error(`Improper Gambit/Tactic prose reference on ${card.name} ${effect.label}.`);
+                process.exit(1);
+              }
+            }
+            if (Object.hasOwn(card, 'battle') || Object.hasOwn(card, 'activate') || Object.hasOwn(card, 'use')) {
+              console.error(`Obsolete compatibility field remains on ${card.name}.`);
+              process.exit(1);
+            }
+            for (const [field, label] of Object.entries(mappings)) {
+              if (effects.has(label) && card[field] !== effects.get(label)) {
+                console.error(`Stale ${field} compatibility field on ${card.name}.`);
+                process.exit(1);
+              }
+              if (!effects.has(label) && Object.hasOwn(card, field)) {
+                console.error(`Unexpected ${field} compatibility field on ${card.name}.`);
+                process.exit(1);
+              }
+            }
+          }
           NODE
 
-      - name: Print final shared-normalization density summary
-        run: sed -n '1,90p' artifacts/v0.6.3/Gauntlet_v0.6.3_Gambit_Tactic_Heading_Density.md
+      - name: Print final pool-wide density summary
+        run: sed -n '1,100p' artifacts/v0.6.3/Gauntlet_v0.6.3_Poolwide_Refinement_Density.md
 
       - name: Upload normalization candidates and density reports
         uses: actions/upload-artifact@v4
