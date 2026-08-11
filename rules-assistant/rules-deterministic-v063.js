@@ -32,16 +32,16 @@ export function resolveV063DeterministicRuling({ question } = {}) {
       "Setup placement is not movement, does not count as entering the Territory, and does not trigger enter effects. Start-of-turn and continuous effects may still apply normally when their requirements are satisfied.",
       "setup");
   }
-  if ((has(q, "run the gauntlet") || has(q, "win") || has(q, "victory")) && (has(q, "two") || has(q, "ways") || has(q, "route") || has(q, "last stand") || has(q, "final territor"))) {
-    return ruling("Run the Gauntlet", "victory routes",
-      "There are two equal normal ways to run the Gauntlet: capture the Territory at your opponent's end, or win your opponent's Last Stand. Either wins immediately.",
-      "Faction-specific alternate victories remain separate unless their rules say otherwise.",
-      "victory");
-  }
   if (has(q, "final territor") && (has(q, "capture") || has(q, "fortify") || has(q, "immediate")) && (has(q, "win") || has(q, "victory") || has(q, "game"))) {
     return ruling("Final-Territory capture", "immediate victory",
       "Yes. Any legal capture of the Territory at the opponent's end immediately runs the Gauntlet and wins the game.",
       "That includes the normal Capture step and a legal Leader, faction, card, Territory, or other immediate-capture effect. The capture is not delayed merely because it can win.",
+      "victory");
+  }
+  if ((has(q, "run the gauntlet") || has(q, "win") || has(q, "victory")) && (has(q, "two") || has(q, "ways") || has(q, "route") || has(q, "last stand"))) {
+    return ruling("Run the Gauntlet", "victory routes",
+      "There are two equal normal ways to run the Gauntlet: capture the Territory at your opponent's end, or win your opponent's Last Stand. Either wins immediately.",
+      "Faction-specific alternate victories remain separate unless their rules say otherwise.",
       "victory");
   }
   if (has(q, "last stand") && (has(q, "capture") || has(q, "control") || has(q, "movement") || has(q, "advance") || has(q, "immediate"))) {
