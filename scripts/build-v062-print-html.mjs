@@ -102,7 +102,7 @@ function escapeRegex(value) {
 function synchronizeSiteFavicons(relativePath, content) {
   let output = normalize(content);
   for (const href of faviconHrefs) {
-    output = output.replace(new RegExp(`^\\s*<link\\b[^>]*href="${escapeRegex(href)}"[^>]*>\\s*\\n?`, 'gm'), '');
+    output = output.replace(new RegExp(`^[\\t ]*<link\\b[^>]*href="${escapeRegex(href)}"[^>]*>[\\t ]*\\n?`, 'gm'), '');
   }
 
   const viewport = '  <meta name="viewport" content="width=device-width, initial-scale=1">\n';
