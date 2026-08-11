@@ -17,12 +17,12 @@ const beforeById = new Map((source.cards ?? []).map((card) => [card.id, card]));
 // final candidate, density report, mirrors, and live #405 tracker see the same text.
 setEffects('Shock and Awe', [
   ['Asset', 'During Onset, you may put this card in your Graveyard to apply its Gambit/Tactic effect after Tactics are revealed.'],
-  ['Gambit/Tactic', 'When attacking on an enemy-controlled Territory, after Tactics are revealed: +1 Tactic from Hand. Lose — Retreat +1. Win — Choose one:\n\nBreakthrough — Opponent: Retreat +1, if able; then you advance one Position.\n\nConsolidate — Advance Front Line 1, if able; Command = 2.\n\nAfterward, you cannot move, advance your Front Line, or use an Order as a result of this victory.\n\nIn the Aftermath, put both cards in your Graveyard.']
+  ['Gambit/Tactic', 'When attacking on an enemy-controlled Territory, after Tactics are revealed: +1 Tactic from Hand. Lose — Retreat +1. Win — Choose one:\nBreakthrough — Opponent: Retreat +1, if able; then you advance one Position.\nConsolidate — Advance Front Line 1, if able; Command = 2.\n\nAfterward, you cannot move, advance your Front Line, or use an Order as a result of this victory.\nIn the Aftermath, put both cards in your Graveyard.']
 ]);
 
 setEffects('Margin Loan', [
   ['Action', 'Bank this card; bind 1 card from your Hand or Treasury to it face up as collateral. Gain Capital equal to its value +2. +1 Action.'],
-  ['Asset', "After income on your next turn, choose:\n\nRepay — Pay Capital equal to the collateral's value +3; return it to your Hand and discard this card.\n\nDefault — Put both cards in your Graveyard.\n\nIf this card is Removed, Default."],
+  ['Asset', "After income on your next turn, choose:\nRepay — Pay Capital equal to the collateral's value +3; return it to your Hand and discard this card.\nDefault — Put both cards in your Graveyard.\nIf this card is Removed, Default."],
   ['Gambit/Tactic', 'Before dice are rolled, you may bind 1 card from your Hand or Treasury to this card face up as collateral to gain Capital equal to its value; you may then Subsidize. In the Aftermath: Win — return collateral to your Hand. Otherwise — Default.']
 ]);
 
@@ -88,7 +88,8 @@ candidate.normalization = {
     newly_finalized_cards: ['Martyrdom', 'Rearguard'],
     finalized_cards_after_pass: 21,
     sleeper_network_one_card_per_turn_cadence_preserved: true,
-    sleeper_network_dynamic_bound_card_maximum_preserved: true
+    sleeper_network_dynamic_bound_card_maximum_preserved: true,
+    compact_choice_line_breaks_applied: ['Shock and Awe', 'Margin Loan']
   },
   final_mirror_sync: {
     synchronized_fields: synchronizedFields,
