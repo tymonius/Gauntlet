@@ -25,63 +25,32 @@ Canonical artwork paths:
 
 | Component pool | Total | Canonical on `main` | Approved, pending merge | Still needs artwork |
 | --- | ---: | ---: | ---: | ---: |
-| Playable cards | 128 | 60 | 26 | 42 |
+| Playable cards | 128 | 86 | 0 | 42 |
 | Territory cards | 25 | 2 | 0 | 23 |
-| **All tracked cards** | **153** | **62** | **26** | **65** |
+| **All tracked cards** | **153** | **88** | **0** | **65** |
 
 ### Playable cards by faction
 
 | Faction | Canonical on `main` | Approved, pending merge | Still needs artwork |
 | --- | ---: | ---: | ---: |
-| Neutral | 43 | 7 | 0 |
-| Military | 2 | 11 | 0 |
-| Diplomats | 1 | 8 | 4 |
+| Neutral | 50 | 0 | 0 |
+| Military | 13 | 0 | 0 |
+| Diplomats | 9 | 0 | 4 |
 | Financiers | 12 | 0 | 1 |
 | Intelligence | 2 | 0 | 11 |
 | Mystics | 0 | 0 | 13 |
 | Inquisition | 0 | 0 | 13 |
-| **Playable-card total** | **60** | **26** | **42** |
+| **Playable-card total** | **86** | **0** | **42** |
 
-## Neutral — 7 pending canonical merge
+## Neutral — complete
 
-- [x] Contingency Plan
-- [x] Fealty
-- [x] Forced March
-- [x] Pathfinders
-- [x] Redemption
-- [x] Second Line
-- [x] Landslide
+All 50 Neutral cards have canonical artwork on `main`.
 
-Neutral artwork still needing creation/selection: **0**.
+## Military — complete
 
-## Military — 11 pending canonical merge
+All 13 Military cards have canonical artwork on `main`.
 
-- [x] Battlefield Promotion
-- [x] Brothers in Arms
-- [x] Countercharge
-- [x] Encampment
-- [x] Field Command
-- [x] Give Chase
-- [x] Hold the Line
-- [x] Rearguard
-- [x] Reserve Force
-- [x] Unbroken Ranks
-- [x] War Crimes
-
-Military artwork still needing creation/selection: **0**.
-
-## Diplomats — 12 not yet canonical on `main`
-
-Approved, pending canonical merge:
-
-- [x] Clemency
-- [x] Demilitarized Zone
-- [x] Diplomatic Latitude
-- [x] Good Faith
-- [x] Neutral Observers
-- [x] Nonbinding Resolution
-- [x] Safe Conduct
-- [x] Trade Concessions
+## Diplomats — 4
 
 Still needs approved artwork:
 
