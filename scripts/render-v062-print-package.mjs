@@ -27,6 +27,7 @@ const heroPlateAssignments = [
 ];
 const heroPlateRelativePaths = heroPlateAssignments.map(({ asset }) => asset);
 const heroPlatePaths = heroPlateRelativePaths.map((relativePath) => path.join(root, relativePath));
+const heroPlateEmbedPaths = heroPlateRelativePaths.map((_, index) => path.join('/tmp', `gauntlet-v062-leader-plate-${index + 1}.png`));
 fs.mkdirSync(releaseDir, { recursive: true });
 fs.mkdirSync(previewDir, { recursive: true });
 
@@ -154,6 +155,28 @@ try {
     console.log(`[print] ${output.key}: complete (${pdfInfo.pages} pages)`);
     results.push({ ...output, path: filePath, ...pdfInfo, sha256: sha256(filePath) });
   }
+
+  const heroPlatePage = await browser.newPage({ viewport: { width: 1200, height: 1500 }, deviceScaleFactor: 1 });
+  await heroPlatePage.goto(base, { waitUntil: 'load', timeout: 90000 });
+  for (const [index, relativePath] of heroPlateRelativePaths.entries()) {
+    console.log(`[print] Leader plate ${index + 1}: preparing PDF raster`);
+    const dataUrl = await heroPlatePage.evaluate(async ({ url, maxWidth, maxHeight }) => {
+      const image = new Image();
+      image.src = url;
+      await image.decode();
+      const scale = Math.min(maxWidth / image.naturalWidth, maxHeight / image.naturalHeight, 1);
+      const width = Math.max(1, Math.round(image.naturalWidth * scale));
+      const height = Math.max(1, Math.round(image.naturalHeight * scale));
+      const canvas = document.createElement('canvas');
+      canvas.width = width;
+      canvas.height = height;
+      const context = canvas.getContext('2d');
+      context.drawImage(image, 0, 0, width, height);
+      return canvas.toDataURL('image/png');
+    }, { url: `${base}/${relativePath}`, maxWidth: 1104, maxHeight: 1360 });
+    fs.writeFileSync(heroPlateEmbedPaths[index], Buffer.from(dataUrl.split(',', 2)[1], 'base64'));
+  }
+  await heroPlatePage.close();
 } finally {
   console.log('[print] browser teardown: starting');
   try {
@@ -187,15 +210,17 @@ async function imposeBooklet(readerPath, bookletPath) {
   }
 
   const booklet = await PDFDocument.create();
-  const heroPlates = await Promise.all(heroPlatePaths.map(async (heroPlatePath) => {
+  const heroPlates = [];
+  for (const [index, heroPlatePath] of heroPlateEmbedPaths.entries()) {
+    console.log(`[print] booklet: embedding Leader plate ${index + 1}`);
     const image = await booklet.embedPng(fs.readFileSync(heroPlatePath));
     const scale = Math.min(276 / image.width, 340 / image.height);
-    return {
+    heroPlates.push({
       image,
       width: image.width * scale,
       height: image.height * scale,
-    };
-  }));
+    });
+  }
 
   const drawHeroPlate = (destination, sourceIndex, x) => {
     const paddingIndex = sourceIndex - sourceCount;
