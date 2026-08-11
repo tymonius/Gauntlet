@@ -6,6 +6,7 @@ on:
     paths:
       - '.github/workflows/build-v063-browser-development.yml'
       - 'scripts/build-v063-browser-development.mjs'
+      - 'scripts/refine-v063-browser-development.mjs'
       - 'scripts/validate-v063-browser-development.mjs'
       - 'scripts/generate-v063-player-facing-candidates.mjs'
       - 'scripts/sync-v063-rulebook-card-text.mjs'
@@ -41,6 +42,7 @@ on:
     paths:
       - '.github/workflows/build-v063-browser-development.yml'
       - 'scripts/build-v063-browser-development.mjs'
+      - 'scripts/refine-v063-browser-development.mjs'
       - 'scripts/validate-v063-browser-development.mjs'
       - 'scripts/generate-v063-player-facing-candidates.mjs'
       - 'scripts/sync-v063-rulebook-card-text.mjs'
@@ -118,6 +120,7 @@ jobs:
       - name: Build development browser surfaces
         run: |
           node scripts/build-v063-browser-development.mjs
+          node scripts/refine-v063-browser-development.mjs
           node --check v0.6.3/reference/app.js
           node --check v0.6.3/deckbuilder/app.js
           node scripts/validate-v063-browser-development.mjs
