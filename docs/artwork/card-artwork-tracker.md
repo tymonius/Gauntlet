@@ -1,8 +1,14 @@
 # Card Artwork Tracker
 
-This file tracks playable cards and Territory cards that still need canonical artwork.
+This file tracks playable cards and Territory cards that do not yet have canonical artwork merged to `main`.
 
-Current basis: Gauntlet v0.6.2 canonical component pools. An entry should remain here until its approved artwork has been added to the canonical artwork path and merged to `main`. As artwork is completed and uploaded, remove the corresponding entry and update the counts.
+Current basis: Gauntlet v0.6.2 canonical component pools.
+
+Status convention:
+
+- `[ ]` — approved canonical artwork still needs to be created or selected.
+- `[x]` — artwork has been approved in the artwork workflow but has not yet been added to the canonical artwork path and merged to `main`.
+- Remove an entry only after its approved artwork has been added to the canonical artwork path and merged to `main`.
 
 Canonical artwork paths:
 
@@ -17,63 +23,70 @@ Canonical artwork paths:
 
 ## Summary
 
-| Component pool | Total | Illustrated | Still needed |
-| --- | ---: | ---: | ---: |
-| Playable cards | 128 | 60 | 68 |
-| Territory cards | 25 | 2 | 23 |
-| **All tracked cards** | **153** | **62** | **91** |
+| Component pool | Total | Canonical on `main` | Approved, pending merge | Still needs artwork |
+| --- | ---: | ---: | ---: | ---: |
+| Playable cards | 128 | 60 | 25 | 43 |
+| Territory cards | 25 | 2 | 0 | 23 |
+| **All tracked cards** | **153** | **62** | **25** | **66** |
 
 ### Playable cards by faction
 
-| Faction | Still needed |
-| --- | ---: |
-| Neutral | 7 |
-| Military | 11 |
-| Diplomats | 12 |
-| Financiers | 1 |
-| Intelligence | 11 |
-| Mystics | 13 |
-| Inquisition | 13 |
-| **Playable-card total** | **68** |
+| Faction | Canonical on `main` | Approved, pending merge | Still needs artwork |
+| --- | ---: | ---: | ---: |
+| Neutral | 43 | 7 | 0 |
+| Military | 2 | 11 | 0 |
+| Diplomats | 1 | 7 | 5 |
+| Financiers | 12 | 0 | 1 |
+| Intelligence | 2 | 0 | 11 |
+| Mystics | 0 | 0 | 13 |
+| Inquisition | 0 | 0 | 13 |
+| **Playable-card total** | **60** | **25** | **43** |
 
-## Neutral — 7
+## Neutral — 7 pending canonical merge
 
-- [ ] Contingency Plan
-- [ ] Fealty
-- [ ] Forced March
-- [ ] Pathfinders
-- [ ] Redemption
-- [ ] Reserves
-- [ ] Landslide
+- [x] Contingency Plan
+- [x] Fealty
+- [x] Forced March
+- [x] Pathfinders
+- [x] Redemption
+- [x] Reserves
+- [x] Landslide
 
-## Military — 11
+## Military — 11 pending canonical merge
 
-- [ ] Battlefield Promotion
-- [ ] Brothers in Arms
-- [ ] Countercharge
-- [ ] Encampment
-- [ ] Field Command
-- [ ] Give Chase
-- [ ] Hold the Line
-- [ ] Rearguard
-- [ ] Reserve Force
-- [ ] Unbroken Ranks
-- [ ] War Crimes
+- [x] Battlefield Promotion
+- [x] Brothers in Arms
+- [x] Countercharge
+- [x] Encampment
+- [x] Field Command
+- [x] Give Chase
+- [x] Hold the Line
+- [x] Rearguard
+- [x] Reserve Force
+- [x] Unbroken Ranks
+- [x] War Crimes
 
-## Diplomats — 12
+Military artwork still needing creation/selection: **0**.
 
-- [ ] Clemency
-- [ ] Demilitarized Zone
-- [ ] Diplomatic Latitude
+## Diplomats — 12 not yet canonical on `main`
+
+Approved, pending canonical merge:
+
+- [x] Clemency
+- [x] Demilitarized Zone
+- [x] Diplomatic Latitude
+- [x] Good Faith
+- [x] Neutral Observers
+- [x] Safe Conduct
+- [x] Trade Concessions
+
+Still needs approved artwork:
+
 - [ ] Détente
-- [ ] Good Faith
 - [ ] Gunboat Diplomacy
-- [ ] Neutral Observers
 - [ ] Nonbinding Resolution
-- [ ] Safe Conduct
 - [ ] Sanctions: Blockade
 - [ ] Sanctions: Censure
-- [ ] Trade Concessions
 
 ## Financiers — 1
 
