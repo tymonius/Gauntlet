@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8YYYZJGGPE');</script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta name="description" content="Development Rules Arbiter for the unpublished Gauntlet v0.6.3 candidate.">
+  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
+  <title>Gauntlet v0.6.3 Candidate Rules Arbiter</title>
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    .arbiter-shell{max-width:980px;margin:0 auto;padding:2rem 1rem 5rem}.arbiter-nav{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem}.arbiter-nav a{font-weight:700}.candidate-banner{padding:.75rem 1rem;border:1px solid #9a6b1b;background:#fff1c6;color:#4a3412;font-weight:700;margin-bottom:1.5rem}.arbiter-panel{background:rgba(255,255,255,.82);border:1px solid rgba(80,55,30,.25);box-shadow:0 18px 50px rgba(60,35,20,.12);padding:clamp(1rem,3vw,2rem)}.arbiter-form{display:grid;gap:.75rem}.arbiter-form textarea{width:100%;min-height:7rem;padding:.8rem;font:inherit}.arbiter-form button,.question-chip{padding:.65rem .85rem;font:inherit;font-weight:700;cursor:pointer}.question-chips{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0}.arbiter-answer{margin-top:1.5rem}.arbiter-ruling{padding:1rem;border-left:4px solid #8f1f25;background:rgba(143,31,37,.05)}.arbiter-meta,.arbiter-boundary,#arbiterStatus{font-size:.9rem;color:#5c5144}.arbiter-ruling li p{margin:.25rem 0 .8rem}.arbiter-error{padding:1rem;background:#ffe3e3;border:1px solid #a33}.source-boundary{margin:1.5rem 0;padding:1rem;background:rgba(60,55,45,.06)}
+  </style>
+</head>
+<body>
+  <main class="arbiter-shell">
+    <nav class="arbiter-nav" aria-label="v0.6.3 development navigation">
+      <a href="../../">Gauntlet home</a>
+      <a href="../">v0.6.3 dev</a>
+      <a href="../start/">Start</a>
+      <a href="../rulebook/">Rulebook</a>
+      <a href="../quick-reference/">Quick reference</a>
+      <a href="../deckbuilder/">Deckbuilder</a>
+      <a href="../reference/">Card reference</a>
+      <a href="../../v0.6.2/">Published v0.6.2</a>
+    </nav>
+
+    <div class="candidate-banner">Unpublished v0.6.3 development Rules Arbiter · v0.6.2 remains the canonical published playtest edition.</div>
+
+    <section class="arbiter-panel">
+      <p class="eyebrow">Candidate rules review</p>
+      <h1>Ask the v0.6.3 Rules Arbiter</h1>
+      <p>This development Arbiter reads the integrated v0.6.3 candidate Rulebook and canonical data. It is intentionally isolated from the public v0.6.2 Rules Arbiter.</p>
+      <div class="source-boundary"><strong>Development boundary:</strong> answers here describe the current v0.6.3 candidate. They do not change the published v0.6.2 rules until v0.6.3 is released.</div>
+
+      <div class="question-chips" aria-label="Suggested questions">
+        <button class="question-chip" type="button" data-question="When do I arrange my Territories during setup?">Territory arrangement</button>
+        <button class="question-chip" type="button" data-question="Can capturing the opponent's final Territory win immediately?">Final Territory capture</button>
+        <button class="question-chip" type="button" data-question="Can I force a Last Stand before capturing the final Territory?">Last Stand access</button>
+        <button class="question-chip" type="button" data-question="How does the inherent Bank Action work?">Bank Action</button>
+        <button class="question-chip" type="button" data-question="What does Removed mean for an Asset?">Asset Removal</button>
+        <button class="question-chip" type="button" data-question="Can Margin Loan stay banked past my next turn?">Margin Loan</button>
+        <button class="question-chip" type="button" data-question="What happened to Smuggler's Pass and the Reserves card?">v0.6.3 renames</button>
+      </div>
+
+      <form id="arbiterForm" class="arbiter-form">
+        <label for="question"><strong>Rules question</strong></label>
+        <textarea id="question" maxlength="600" placeholder="Ask about setup, cards, battles, victory, or another v0.6.3 candidate rule."></textarea>
+        <button type="submit">Ask the candidate Arbiter</button>
+      </form>
+      <p id="arbiterStatus">Loading candidate source mode…</p>
+      <div id="answer" class="arbiter-answer" aria-live="polite"></div>
+    </section>
+  </main>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

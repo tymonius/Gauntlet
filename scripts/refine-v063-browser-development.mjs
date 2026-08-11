@@ -117,4 +117,9 @@ for (const file of [
 
 for (const file of completePages) normalizeFaviconMarkup(file);
 
-console.log('Refined v0.6.3 development browser surfaces: Deckbuilder setup semantics, Rulebook development-source boundary, repository-safe relative navigation, and canonical favicon markup.');
+// The candidate Rules Arbiter is an additive development surface. Apply its
+// portal refinement after the normal browser regeneration so the standard
+// v0.6.3 browser build cannot erase the Arbiter link.
+await import('./refine-v063-rules-arbiter-portal.mjs');
+
+console.log('Refined v0.6.3 development browser surfaces: Deckbuilder setup semantics, Rulebook development-source boundary, repository-safe relative navigation, canonical favicon markup, and candidate Rules Arbiter portal link.');
