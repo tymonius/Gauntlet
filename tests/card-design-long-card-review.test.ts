@@ -59,5 +59,17 @@ describe("v0.6.3 long-card render review", () => {
     expect((byId.get("financiers-margin-loan") as any).sections.Asset).toContain(
       "Repay — Pay Capital equal to the collateral's value +3; return it to your Hand and discard this card.\nDefault — Put both cards in your Graveyard."
     );
+
+    const tradeConcessions = (byId.get("diplomats-trade-concessions") as any).sections.Accepted;
+    expect(tradeConcessions).toContain("one available option:\n- +2 Cards.\n- Bank one eligible card from Hand.");
+    expect(tradeConcessions).not.toContain("one available option:\n\n-");
+
+    const nonbindingResolution = (byId.get("diplomats-nonbinding-resolution") as any).sections.Accepted;
+    expect(nonbindingResolution).toContain("one before ratification:\n- Ratify it normally.\n- Leave it unratified;");
+    expect(nonbindingResolution).not.toContain("one before ratification:\n\n-");
+
+    const leveragedBuyout = (byId.get("financiers-leveraged-buyout") as any).sections["Gambit/Tactic"];
+    expect(leveragedBuyout).toContain("as collateral. Each collateral card contributes its value toward the cost.");
+    expect(leveragedBuyout).not.toContain("as collateral.\n\nEach collateral card");
   });
 });
