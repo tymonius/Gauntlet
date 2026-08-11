@@ -8,6 +8,7 @@ on:
       - 'scripts/build-v063-browser-development.mjs'
       - 'scripts/refine-v063-browser-development.mjs'
       - 'scripts/validate-v063-browser-development.mjs'
+      - 'scripts/validate-v063-browser-site-conventions.mjs'
       - 'scripts/generate-v063-player-facing-candidates.mjs'
       - 'scripts/sync-v063-rulebook-card-text.mjs'
       - 'scripts/normalize-v063-player-facing-candidates.mjs'
@@ -44,6 +45,7 @@ on:
       - 'scripts/build-v063-browser-development.mjs'
       - 'scripts/refine-v063-browser-development.mjs'
       - 'scripts/validate-v063-browser-development.mjs'
+      - 'scripts/validate-v063-browser-site-conventions.mjs'
       - 'scripts/generate-v063-player-facing-candidates.mjs'
       - 'scripts/sync-v063-rulebook-card-text.mjs'
       - 'scripts/normalize-v063-player-facing-candidates.mjs'
@@ -124,6 +126,7 @@ jobs:
           node --check v0.6.3/reference/app.js
           node --check v0.6.3/deckbuilder/app.js
           node scripts/validate-v063-browser-development.mjs
+          node scripts/validate-v063-browser-site-conventions.mjs
 
       - name: Commit generated development surfaces
         if: github.event_name == 'push' && github.ref_name == 'agent/v063-browser-development-surfaces'
