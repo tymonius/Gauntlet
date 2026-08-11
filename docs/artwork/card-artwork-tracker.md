@@ -2,7 +2,7 @@
 
 This file tracks playable cards and Territory cards that do not yet have canonical artwork merged to `main`.
 
-Current basis: Gauntlet v0.6.2 canonical component pools.
+Current basis: Gauntlet v0.6.2 canonical component pools, with accepted v0.6.3 development renames reflected where applicable.
 
 Status convention:
 
@@ -25,22 +25,22 @@ Canonical artwork paths:
 
 | Component pool | Total | Canonical on `main` | Approved, pending merge | Still needs artwork |
 | --- | ---: | ---: | ---: | ---: |
-| Playable cards | 128 | 60 | 24 | 44 |
+| Playable cards | 128 | 60 | 25 | 43 |
 | Territory cards | 25 | 2 | 0 | 23 |
-| **All tracked cards** | **153** | **62** | **24** | **67** |
+| **All tracked cards** | **153** | **62** | **25** | **66** |
 
 ### Playable cards by faction
 
 | Faction | Canonical on `main` | Approved, pending merge | Still needs artwork |
 | --- | ---: | ---: | ---: |
-| Neutral | 43 | 5 | 2 |
+| Neutral | 43 | 6 | 1 |
 | Military | 2 | 11 | 0 |
 | Diplomats | 1 | 8 | 4 |
 | Financiers | 12 | 0 | 1 |
 | Intelligence | 2 | 0 | 11 |
 | Mystics | 0 | 0 | 13 |
 | Inquisition | 0 | 0 | 13 |
-| **Playable-card total** | **60** | **24** | **44** |
+| **Playable-card total** | **60** | **25** | **43** |
 
 ## Neutral — 7
 
@@ -49,7 +49,7 @@ Canonical artwork paths:
 - [x] Forced March
 - [x] Pathfinders
 - [x] Redemption
-- [ ] Reserves
+- [x] Second Line
 - [ ] Landslide
 
 ## Military — 11 pending canonical merge
