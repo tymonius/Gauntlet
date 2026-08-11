@@ -155,6 +155,7 @@ try {
     results.push({ ...output, path: filePath, ...pdfInfo, sha256: sha256(filePath) });
   }
 } finally {
+  console.log('[print] browser teardown: starting');
   try {
     await Promise.race([
       browser.close(),
@@ -167,6 +168,7 @@ try {
   if (browserProcess.exitCode === null && !browserProcess.killed) {
     browserProcess.kill('SIGKILL');
   }
+  console.log('[print] browser teardown: complete');
 }
 
 async function imposeBooklet(readerPath, bookletPath) {
@@ -248,7 +250,9 @@ async function imposeBooklet(readerPath, bookletPath) {
 
 const reader = results.find((item) => item.key === 'rulebook');
 const bookletPath = path.join(releaseDir, 'Gauntlet_v0.6.2_Rulebook_Booklet.pdf');
+console.log('[print] booklet: imposing');
 const bookletPadding = await imposeBooklet(reader.path, bookletPath);
+console.log('[print] booklet: imposed');
 const bookletInfo = await inspectPdf(bookletPath);
 results.push({
   key: 'rulebook_booklet',
@@ -270,7 +274,9 @@ async function mergePdfs(inputPaths, outputPath) {
 
 const tablesideOrder = ['reference', 'first_game', 'player_mat', 'playtest_sheet', 'faction_cards', 'active_marker', 'returning_changes'];
 const tablesidePath = path.join(releaseDir, 'Gauntlet_v0.6.2_Tableside_Pack.pdf');
+console.log('[print] tableside: merging');
 await mergePdfs(tablesideOrder.map((key) => results.find((item) => item.key === key).path), tablesidePath);
+console.log('[print] tableside: merged');
 const tablesideInfo = await inspectPdf(tablesidePath);
 results.push({ key: 'tableside_pack', file: path.basename(tablesidePath), path: tablesidePath, ...tablesideInfo, sha256: sha256(tablesidePath) });
 
@@ -287,5 +293,6 @@ const manifest = {
     tableside_materials: 'Letter; respect portrait or landscape orientation shown in each file',
   },
 };
+console.log('[print] manifest: writing');
 fs.writeFileSync(path.join(releaseDir, 'Gauntlet_v0.6.2_Print_Manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
 console.log(`Rendered ${results.length} v0.6.2 print outputs.`);
