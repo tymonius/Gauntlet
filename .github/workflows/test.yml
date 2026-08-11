@@ -16,32 +16,39 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.ref || github.ref }}
 
-      - name: Instrument print build stages
+      - name: Optimize Leader-plate embedding
         run: |
           python - <<'PY'
           from pathlib import Path
-          renderer = Path('scripts/render-v062-print-package.mjs')
-          text = renderer.read_text()
-          replacements = [
-            ("} finally {\n  try {", "} finally {\n  console.log('[print] browser teardown: starting');\n  try {"),
-            ("  if (browserProcess.exitCode === null && !browserProcess.killed) {\n    browserProcess.kill('SIGKILL');\n  }\n}\n\nasync function imposeBooklet", "  if (browserProcess.exitCode === null && !browserProcess.killed) {\n    browserProcess.kill('SIGKILL');\n  }\n  console.log('[print] browser teardown: complete');\n}\n\nasync function imposeBooklet"),
-            ("const bookletPath = path.join(releaseDir, 'Gauntlet_v0.6.2_Rulebook_Booklet.pdf');\nconst bookletPadding = await imposeBooklet(reader.path, bookletPath);", "const bookletPath = path.join(releaseDir, 'Gauntlet_v0.6.2_Rulebook_Booklet.pdf');\nconsole.log('[print] booklet: imposing');\nconst bookletPadding = await imposeBooklet(reader.path, bookletPath);\nconsole.log('[print] booklet: imposed');"),
-            ("const tablesidePath = path.join(releaseDir, 'Gauntlet_v0.6.2_Tableside_Pack.pdf');\nawait mergePdfs", "const tablesidePath = path.join(releaseDir, 'Gauntlet_v0.6.2_Tableside_Pack.pdf');\nconsole.log('[print] tableside: merging');\nawait mergePdfs"),
-            ("const tablesideInfo = await inspectPdf(tablesidePath);", "console.log('[print] tableside: merged');\nconst tablesideInfo = await inspectPdf(tablesidePath);"),
-            ("fs.writeFileSync(path.join(releaseDir, 'Gauntlet_v0.6.2_Print_Manifest.json'),", "console.log('[print] manifest: writing');\nfs.writeFileSync(path.join(releaseDir, 'Gauntlet_v0.6.2_Print_Manifest.json'),"),
-          ]
-          for old, new in replacements:
-              if old not in text:
-                  raise SystemExit(f'Expected renderer marker not found: {old[:80]}')
-              text = text.replace(old, new, 1)
-          renderer.write_text(text)
+          path = Path('scripts/render-v062-print-package.mjs')
+          text = path.read_text()
+
+          old = "const heroPlatePaths = heroPlateRelativePaths.map((relativePath) => path.join(root, relativePath));"
+          new = "const heroPlatePaths = heroPlateRelativePaths.map((relativePath) => path.join(root, relativePath));\nconst heroPlateEmbedPaths = heroPlateRelativePaths.map((_, index) => path.join('/tmp', `gauntlet-v062-leader-plate-${index + 1}.png`));"
+          if old not in text:
+              raise SystemExit('Hero plate path declaration not found')
+          text = text.replace(old, new, 1)
+
+          old = "    results.push({ ...output, path: filePath, ...pdfInfo, sha256: sha256(filePath) });\n  }\n} finally {"
+          new = "    results.push({ ...output, path: filePath, ...pdfInfo, sha256: sha256(filePath) });\n  }\n\n  const heroPlatePage = await browser.newPage({ viewport: { width: 1200, height: 1500 }, deviceScaleFactor: 1 });\n  await heroPlatePage.goto(base, { waitUntil: 'load', timeout: 90000 });\n  for (const [index, relativePath] of heroPlateRelativePaths.entries()) {\n    console.log(`[print] Leader plate ${index + 1}: preparing PDF raster`);\n    const dataUrl = await heroPlatePage.evaluate(async ({ url, maxWidth, maxHeight }) => {\n      const image = new Image();\n      image.src = url;\n      await image.decode();\n      const scale = Math.min(maxWidth / image.naturalWidth, maxHeight / image.naturalHeight, 1);\n      const width = Math.max(1, Math.round(image.naturalWidth * scale));\n      const height = Math.max(1, Math.round(image.naturalHeight * scale));\n      const canvas = document.createElement('canvas');\n      canvas.width = width;\n      canvas.height = height;\n      const context = canvas.getContext('2d');\n      context.drawImage(image, 0, 0, width, height);\n      return canvas.toDataURL('image/png');\n    }, { url: `${base}/${relativePath}`, maxWidth: 1104, maxHeight: 1360 });\n    fs.writeFileSync(heroPlateEmbedPaths[index], Buffer.from(dataUrl.split(',', 2)[1], 'base64'));\n  }\n  await heroPlatePage.close();\n} finally {"
+          if old not in text:
+              raise SystemExit('Output-loop terminator not found')
+          text = text.replace(old, new, 1)
+
+          old = "  const booklet = await PDFDocument.create();\n  const heroPlates = await Promise.all(heroPlatePaths.map(async (heroPlatePath) => {\n    const image = await booklet.embedPng(fs.readFileSync(heroPlatePath));\n    const scale = Math.min(276 / image.width, 340 / image.height);\n    return {\n      image,\n      width: image.width * scale,\n      height: image.height * scale,\n    };\n  }));"
+          new = "  const booklet = await PDFDocument.create();\n  const heroPlates = [];\n  for (const [index, heroPlatePath] of heroPlateEmbedPaths.entries()) {\n    console.log(`[print] booklet: embedding Leader plate ${index + 1}`);\n    const image = await booklet.embedPng(fs.readFileSync(heroPlatePath));\n    const scale = Math.min(276 / image.width, 340 / image.height);\n    heroPlates.push({\n      image,\n      width: image.width * scale,\n      height: image.height * scale,\n    });\n  }"
+          if old not in text:
+              raise SystemExit('Hero plate embed block not found')
+          text = text.replace(old, new, 1)
+
+          path.write_text(text)
           PY
 
-      - name: Commit renderer diagnostics
+      - name: Commit Leader-plate embedding optimization
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add scripts/render-v062-print-package.mjs
-          git diff --cached --quiet && { echo "No renderer diagnostic changes to commit."; exit 0; }
-          git commit -m "Instrument v0.6.2 print renderer stages"
+          git diff --cached --quiet && { echo "No renderer optimization to commit."; exit 0; }
+          git commit -m "Optimize v0.6.2 booklet Leader-plate embedding"
           git push origin HEAD:${{ github.event.pull_request.head.ref }}
