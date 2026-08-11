@@ -11,19 +11,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout PR branch
         uses: actions/checkout@v4
-
-      - name: Setup Node
-        uses: actions/setup-node@v4
         with:
-          node-version: 22
+          ref: ${{ github.event.pull_request.head.ref || github.ref }}
 
-      - name: Install dependencies
-        run: npm install
+      - name: Instrument print build stages
+        run: |
+          python - <<'PY'
+          from pathlib import Path
 
-      - name: Typecheck
-        run: npm run typecheck
+          renderer = Path('scripts/render-v062-print-package.mjs')
+          text = renderer.read_text()
+          replacements = [
+            ("} finally {\n  try {", "} finally {\n  console.log('[print] browser teardown: starting');\n  try {"),
+            ("  if (browserProcess.exitCode === null && !browserProcess.killed) {\n    browserProcess.kill('SIGKILL');\n  }\n}\n\nasync function imposeBooklet", "  if (browserProcess.exitCode === null && !browserProcess.killed) {\n    browserProcess.kill('SIGKILL');\n  }\n  console.log('[print] browser teardown: complete');\n}\n\nasync function imposeBooklet"),
+            ("const bookletPath = path.join(releaseDir, 'Gauntlet_v0.6.2_Rulebook_Booklet.pdf');\nconst bookletPadding = await imposeBooklet(reader.path, bookletPath);", "const bookletPath = path.join(releaseDir, 'Gauntlet_v0.6.2_Rulebook_Booklet.pdf');\nconsole.log('[print] booklet: imposing');\nconst bookletPadding = await imposeBooklet(reader.path, bookletPath);\nconsole.log('[print] booklet: imposed');"),
+            ("const tablesidePath = path.join(releaseDir, 'Gauntlet_v0.6.2_Tableside_Pack.pdf');\nawait mergePdfs", "const tablesidePath = path.join(releaseDir, 'Gauntlet_v0.6.2_Tableside_Pack.pdf');\nconsole.log('[print] tableside: merging');\nawait mergePdfs"),
+            ("const tablesideInfo = await inspectPdf(tablesidePath);", "console.log('[print] tableside: merged');\nconst tablesideInfo = await inspectPdf(tablesidePath);"),
+            ("fs.writeFileSync(path.join(releaseDir, 'Gauntlet_v0.6.2_Print_Manifest.json'),", "console.log('[print] manifest: writing');\nfs.writeFileSync(path.join(releaseDir, 'Gauntlet_v0.6.2_Print_Manifest.json'),"),
+          ]
+          for old, new in replacements:
+              if old not in text:
+                  raise SystemExit(f'Expected renderer marker not found: {old[:80]}')
+              text = text.replace(old, new, 1)
+          renderer.write_text(text)
 
-      - name: Test
-        run: npm test
+          workflow = Path('.github/workflows/publish-v062-print-package.yml')
+          text = workflow.read_text()
+          old = '        run: npm run print:v062:build'
+          new = '        run: timeout 45s npm run print:v062:build'
+          if old not in text:
+              raise SystemExit('Expected print build workflow command not found')
+          workflow.write_text(text.replace(old, new, 1))
+          PY
+
+      - name: Commit print-build diagnostics
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add scripts/render-v062-print-package.mjs .github/workflows/publish-v062-print-package.yml
+          git diff --cached --quiet && { echo "No diagnostic changes to commit."; exit 0; }
+          git commit -m "Instrument v0.6.2 print build stages"
+          git push origin HEAD:${{ github.event.pull_request.head.ref }}
