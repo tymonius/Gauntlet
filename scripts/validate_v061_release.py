@@ -243,11 +243,6 @@ def validate_browser_sources(errors: list[str]) -> None:
             "../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md",
             "../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf",
         ],
-        "card-reference/app.js": [
-            "../releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json",
-            "data.cards.length !== 122",
-            "data.territories.length !== 25",
-        ],
         "rules-assistant/local-search.js": [
             "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json",
             "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md",

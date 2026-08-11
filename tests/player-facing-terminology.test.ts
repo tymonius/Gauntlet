@@ -22,6 +22,7 @@ const publicRulesSources = [
   "start/index.html",
   "playtest/onboarding/index.html",
   "playtest/player-mat/index.html",
+  "v0.6.2/print/player-mat.html",
   "factions/inquisition/index.html",
   "factions/intelligence/index.html",
   "factions/financiers/index.html",

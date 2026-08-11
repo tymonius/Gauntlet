@@ -56,6 +56,7 @@ To run the Gauntlet, a player must capture the opponent’s final Territory, adv
 - [What Changed Since v0.6.1](https://gauntlet.run/v0.6.2/changes/) — practical patch notes for returning playtesters.
 - [Rules Arbiter](https://gauntlet.run/#rules-assistant) — asks the published v0.6.2 corpus and labels written rules, clarifications, and provisional rulings distinctly.
 - [Gauntlet v0.6.2 Release Package](https://gauntlet.run/releases/v0.6.2/) — canonical source documents, data, and manifests.
+- [Gauntlet v0.6.2 Printed Materials](https://gauntlet.run/v0.6.2/print/) — Rulebook and booklet PDFs, references, player mat, formal questionnaire, faction teaching cards, active-player marker, and combined tableside pack.
 - [Playtest resources](https://gauntlet.run/playtest/) — tracked sessions, questionnaires, and organizer tools.
 
 Historical Rules Arbiter access remains available at `/api/v061/rules`. The public `/api/rules` and explicit `/api/v062/rules` routes use published v0.6.2 sources.
