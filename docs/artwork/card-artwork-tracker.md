@@ -25,32 +25,32 @@ Canonical artwork paths:
 
 | Component pool | Total | Canonical on `main` | Approved, pending merge | Still needs artwork |
 | --- | ---: | ---: | ---: | ---: |
-| Playable cards | 128 | 60 | 25 | 43 |
+| Playable cards | 128 | 60 | 19 | 49 |
 | Territory cards | 25 | 2 | 0 | 23 |
-| **All tracked cards** | **153** | **62** | **25** | **66** |
+| **All tracked cards** | **153** | **62** | **19** | **72** |
 
 ### Playable cards by faction
 
 | Faction | Canonical on `main` | Approved, pending merge | Still needs artwork |
 | --- | ---: | ---: | ---: |
-| Neutral | 43 | 7 | 0 |
+| Neutral | 43 | 0 | 7 |
 | Military | 2 | 11 | 0 |
-| Diplomats | 1 | 7 | 5 |
+| Diplomats | 1 | 8 | 4 |
 | Financiers | 12 | 0 | 1 |
 | Intelligence | 2 | 0 | 11 |
 | Mystics | 0 | 0 | 13 |
 | Inquisition | 0 | 0 | 13 |
-| **Playable-card total** | **60** | **25** | **43** |
+| **Playable-card total** | **60** | **19** | **49** |
 
-## Neutral — 7 pending canonical merge
+## Neutral — 7
 
-- [x] Contingency Plan
-- [x] Fealty
-- [x] Forced March
-- [x] Pathfinders
-- [x] Redemption
-- [x] Reserves
-- [x] Landslide
+- [ ] Contingency Plan
+- [ ] Fealty
+- [ ] Forced March
+- [ ] Pathfinders
+- [ ] Redemption
+- [ ] Reserves
+- [ ] Landslide
 
 ## Military — 11 pending canonical merge
 
@@ -77,6 +77,7 @@ Approved, pending canonical merge:
 - [x] Diplomatic Latitude
 - [x] Good Faith
 - [x] Neutral Observers
+- [x] Nonbinding Resolution
 - [x] Safe Conduct
 - [x] Trade Concessions
 
@@ -84,7 +85,6 @@ Still needs approved artwork:
 
 - [ ] Détente
 - [ ] Gunboat Diplomacy
-- [ ] Nonbinding Resolution
 - [ ] Sanctions: Blockade
 - [ ] Sanctions: Censure
 
