@@ -29,10 +29,11 @@
   --faction-symbol: url("../images/faction-symbols/intelligence.svg");
 }
 
+.faction-component-card[data-faction="arcane"],
 .faction-component-card[data-faction="mystics"] {
   --component-parchment-tint: rgba(93, 52, 126, 0.13);
   --component-accent-ink: #563073;
-  --faction-symbol: url("../images/faction-symbols/mystics.svg");
+  --faction-symbol: url("../images/faction-symbols/arcane.svg");
 }
 
 .faction-component-card[data-faction="inquisition"] {
