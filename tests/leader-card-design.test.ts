@@ -75,6 +75,16 @@ describe("Leader card design", () => {
     expect(leaderStyles).toContain(".leader-card .card-art img");
   });
 
+  it("uses a darker faction-specific tint for the metadata footer", () => {
+    expect(leaderStyles).toContain("--component-footer-tint: rgba(145, 28, 38, 0.22)");
+    expect(leaderStyles).toContain("--component-footer-tint: rgba(38, 79, 145, 0.20)");
+    expect(leaderStyles).toContain("--component-footer-tint: rgba(34, 112, 68, 0.20)");
+    expect(leaderStyles).toContain("--component-footer-tint: rgba(40, 40, 39, 0.18)");
+    expect(leaderStyles).toContain("--component-footer-tint: rgba(93, 52, 126, 0.20)");
+    expect(leaderStyles).toContain("--component-footer-tint: rgba(166, 122, 39, 0.22)");
+    expect(leaderStyles).toContain("background: var(--component-footer-tint)");
+  });
+
   it("supports named abilities and exact current Military Orders", () => {
     expect(leaderPage).toContain("Onward");
     expect(leaderPage).toContain("before a pending battle is created");
