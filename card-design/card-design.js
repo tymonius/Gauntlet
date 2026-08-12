@@ -7,6 +7,9 @@
   const DEFAULT_MINIMUM_TITLE_SIZE = 8 * CSS_PIXELS_PER_POINT;
   const DEFAULT_MINIMUM_OVERLAY_TITLE_SIZE = 12.1 * CSS_PIXELS_PER_POINT;
   const DEFAULT_MINIMUM_RULE_SCALE = 0.93;
+  const LEGACY_DEFAULT_ART_MAX = 1.72;
+  const DEFAULT_ART_MAX = 1.88;
+  const INSPECTION_MAX_SCALE = 2.4;
   const PARCHMENT_SOURCES = Object.freeze({
     neutral: '../images/artwork/card-backgrounds/neutral-parchment-v2.png',
     military: '../images/artwork/card-backgrounds/military-parchment-v2.png',
@@ -18,6 +21,13 @@
   });
   const parchmentPromises = new Map();
   let resizeTimer;
+  let inspectionDialog;
+  let inspectionStage;
+  let inspectionSource;
+  let inspectionSubject;
+  let inspectionWidth = 0;
+  let inspectionHeight = 0;
+  let inspectionMessageBound = false;
 
   function forceLayout(element) {
     void element.offsetHeight;
@@ -106,6 +116,15 @@
     return Number.isFinite(declared) ? Math.max(declared, DEFAULT_MINIMUM_RULE_SCALE) : DEFAULT_MINIMUM_RULE_SCALE;
   }
 
+  function maximumArtHeight(card) {
+    const declared = Number.parseFloat(card.dataset.artMax);
+    if (!Number.isFinite(declared)) return DEFAULT_ART_MAX * CSS_PIXELS_PER_INCH;
+    const maximum = Math.abs(declared - LEGACY_DEFAULT_ART_MAX) < 0.001
+      ? DEFAULT_ART_MAX
+      : declared;
+    return maximum * CSS_PIXELS_PER_INCH;
+  }
+
   function elementOverflows(element) {
     return Boolean(element)
       && (element.scrollWidth > element.clientWidth + 0.5
@@ -189,7 +208,7 @@
     const titleFits = fitTitle(card);
     fitOverlayTitle(card);
 
-    const maximum = Number(card.dataset.artMax || 1.72) * CSS_PIXELS_PER_INCH;
+    const maximum = maximumArtHeight(card);
     const minimum = Number(card.dataset.artMin || 0.62) * CSS_PIXELS_PER_INCH;
     let height = maximum;
     let ruleScale = 1;
@@ -221,7 +240,7 @@
   }
 
   function fitAllCards() {
-    document.querySelectorAll('.gauntlet-card[data-art-max]').forEach(fitCard);
+    document.querySelectorAll('.gauntlet-card[data-art-max]:not(.card-inspection-clone)').forEach(fitCard);
   }
 
   const LONG_CARD_REVIEW = Object.freeze([
@@ -268,6 +287,177 @@
     territorySection.before(section);
   }
 
+  function inspectionLabel(card) {
+    return card.getAttribute('aria-label')
+      || card.querySelector('.card-title, .territory-title')?.textContent?.trim()
+      || 'Gauntlet card';
+  }
+
+  function makeInspectable(card, activate) {
+    if (!card || card.dataset.inspectionReady === 'true') return;
+    card.dataset.inspectionReady = 'true';
+    card.classList.add('card-inspectable');
+    if (!card.hasAttribute('tabindex')) card.tabIndex = 0;
+    if (!card.hasAttribute('role')) card.setAttribute('role', 'button');
+    card.setAttribute('aria-haspopup', 'dialog');
+    card.title = 'Open enlarged card view';
+
+    card.addEventListener('click', event => {
+      if (event.button !== 0) return;
+      activate(card);
+    });
+    card.addEventListener('keydown', event => {
+      if (event.key !== 'Enter' && event.key !== ' ') return;
+      event.preventDefault();
+      activate(card);
+    });
+  }
+
+  function ensureInspectionDialog() {
+    if (inspectionDialog) return inspectionDialog;
+
+    inspectionDialog = document.createElement('dialog');
+    inspectionDialog.className = 'card-inspection-dialog';
+    inspectionDialog.innerHTML = `
+      <button class="card-inspection-close" type="button" aria-label="Close enlarged card view">×</button>
+      <div class="card-inspection-stage"></div>`;
+    document.body.append(inspectionDialog);
+    inspectionStage = inspectionDialog.querySelector('.card-inspection-stage');
+
+    inspectionDialog.querySelector('.card-inspection-close')?.addEventListener('click', () => inspectionDialog.close());
+    inspectionDialog.addEventListener('click', event => {
+      if (event.target === inspectionDialog) inspectionDialog.close();
+    });
+    inspectionDialog.addEventListener('close', () => {
+      document.body.classList.remove('card-inspection-open');
+      clearInspectionStage();
+      if (inspectionSource instanceof HTMLElement) inspectionSource.focus({ preventScroll: true });
+      inspectionSource = null;
+    });
+    return inspectionDialog;
+  }
+
+  function clearInspectionStage() {
+    inspectionStage?.replaceChildren();
+    inspectionSubject = null;
+    inspectionWidth = 0;
+    inspectionHeight = 0;
+  }
+
+  function layoutInspection() {
+    if (!inspectionStage || !inspectionSubject || !inspectionWidth || !inspectionHeight) return;
+    const horizontalMargin = Math.min(96, window.innerWidth * 0.1);
+    const verticalMargin = Math.min(96, window.innerHeight * 0.1);
+    const availableWidth = Math.max(1, window.innerWidth - horizontalMargin);
+    const availableHeight = Math.max(1, window.innerHeight - verticalMargin);
+    const scale = Math.min(
+      INSPECTION_MAX_SCALE,
+      availableWidth / inspectionWidth,
+      availableHeight / inspectionHeight,
+    );
+
+    inspectionStage.style.width = `${inspectionWidth * scale}px`;
+    inspectionStage.style.height = `${inspectionHeight * scale}px`;
+    inspectionSubject.style.width = `${inspectionWidth}px`;
+    inspectionSubject.style.height = `${inspectionHeight}px`;
+    inspectionSubject.style.transform = `scale(${scale})`;
+  }
+
+  function showInspection(label) {
+    const dialog = ensureInspectionDialog();
+    dialog.setAttribute('aria-label', `Enlarged view of ${label}`);
+    document.body.classList.add('card-inspection-open');
+    if (!dialog.open) dialog.showModal();
+    layoutInspection();
+    dialog.querySelector('.card-inspection-close')?.focus({ preventScroll: true });
+  }
+
+  function openCloneInspection(card) {
+    ensureInspectionDialog();
+    clearInspectionStage();
+    inspectionSource = card;
+
+    const rect = card.getBoundingClientRect();
+    const clone = card.cloneNode(true);
+    clone.classList.remove('card-inspectable');
+    clone.classList.add('card-inspection-clone');
+    clone.removeAttribute('tabindex');
+    clone.removeAttribute('role');
+    clone.removeAttribute('aria-haspopup');
+    clone.removeAttribute('title');
+    delete clone.dataset.inspectionReady;
+    clone.querySelectorAll('[id]').forEach(element => element.removeAttribute('id'));
+
+    inspectionStage.append(clone);
+    inspectionSubject = clone;
+    inspectionWidth = rect.width;
+    inspectionHeight = rect.height;
+    showInspection(inspectionLabel(card));
+  }
+
+  function openFrameInspection(href, label, sourceFrame) {
+    ensureInspectionDialog();
+    clearInspectionStage();
+    inspectionSource = sourceFrame || null;
+
+    const url = new URL(href, window.location.href);
+    if (url.origin !== window.location.origin) return;
+    url.searchParams.set('inspection', '1');
+
+    const frame = document.createElement('iframe');
+    frame.className = 'card-inspection-frame';
+    frame.src = url.href;
+    frame.title = `Enlarged ${label}`;
+    inspectionStage.append(frame);
+    inspectionSubject = frame;
+    inspectionWidth = 2.5 * CSS_PIXELS_PER_INCH;
+    inspectionHeight = 3.5 * CSS_PIXELS_PER_INCH;
+    showInspection(label);
+  }
+
+  function installEmbeddedInspectionBridge() {
+    if (new URLSearchParams(window.location.search).get('inspection') === '1') return;
+    document.querySelectorAll('.gauntlet-card, .territory-card').forEach(card => {
+      makeInspectable(card, selected => {
+        window.parent.postMessage({
+          type: 'gauntlet-card-inspect',
+          href: window.location.href,
+          label: inspectionLabel(selected),
+        }, window.location.origin);
+      });
+    });
+  }
+
+  function handleInspectionMessage(event) {
+    if (event.origin !== window.location.origin || event.data?.type !== 'gauntlet-card-inspect') return;
+    const href = String(event.data.href || '');
+    if (!href) return;
+    const sourceFrame = Array.from(document.querySelectorAll('iframe'))
+      .find(frame => frame.contentWindow === event.source);
+    openFrameInspection(href, String(event.data.label || 'Gauntlet card'), sourceFrame);
+  }
+
+  function installCardInspection() {
+    if (new URLSearchParams(window.location.search).get('inspection') === '1') return;
+
+    if (window.self !== window.top) {
+      installEmbeddedInspectionBridge();
+      return;
+    }
+
+    const inspectionPage = document.querySelector('.card-section, .faction-card-sheet, .territory-specimen-wrap');
+    if (!inspectionPage) return;
+
+    ensureInspectionDialog();
+    document.querySelectorAll('.gauntlet-card:not(.card-inspection-clone), .territory-card:not(.card-inspection-clone)')
+      .forEach(card => makeInspectable(card, openCloneInspection));
+
+    if (!inspectionMessageBound) {
+      window.addEventListener('message', handleInspectionMessage);
+      inspectionMessageBound = true;
+    }
+  }
+
   async function prepareCards() {
     integrateLongCardReview();
 
@@ -288,13 +478,19 @@
     }));
 
     await loadParchments();
-    requestAnimationFrame(() => requestAnimationFrame(fitAllCards));
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      fitAllCards();
+      installCardInspection();
+    }));
   }
 
   window.addEventListener('load', prepareCards);
   window.addEventListener('beforeprint', fitAllCards);
   window.addEventListener('resize', () => {
     window.clearTimeout(resizeTimer);
-    resizeTimer = window.setTimeout(fitAllCards, 120);
+    resizeTimer = window.setTimeout(() => {
+      fitAllCards();
+      layoutInspection();
+    }, 120);
   });
 })();

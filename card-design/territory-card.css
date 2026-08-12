@@ -214,7 +214,7 @@
   min-width: 0;
   padding: 0.025in 0.055in 0.02in;
   border-top: 0.65px solid rgba(61, 48, 36, 0.62);
-  background: rgba(177, 139, 83, 0.16);
+  background: rgba(177, 139, 83, 0.24);
   color: var(--card-muted-ink, #5c4d3e);
   font-family: var(--font-interface);
   font-size: 4.35pt;
