@@ -1,149 +1,37 @@
 # Gauntlet Playtest Session Service
 
-Cloudflare Worker and D1-backed API for v0.6.1 onboarding events and uniquely coded formal game sessions.
+Cloudflare Worker and D1-backed API for formal sessions, game-night onboarding, tracked games, standalone feedback, and Rules Arbiter linkage.
 
-The service now separates two different records:
+**New sessions are created as v0.6.3** and receive **G063** serials. Historical v0.6.1 sessions remain readable with their original stored version and G061 serials.
 
-- an **event session** is the shared game-night invitation, onboarding roster, and organizer dashboard;
-- a **game session** is one particular match between up to two players, opened from one unique table or sheet QR code.
+## Current-release compatibility boundary
 
-Rules Arbiter interactions attach to the game session and the player seat that submitted the question. They never attach to the shared event record.
+The production entry point in `wrangler.toml` is `src/current-release.js`. The established service stack beneath it still contains historical v0.6.1 creation constants because those modules also document and support the original schema behavior. The adapter prevents those legacy defaults from escaping into newly created data:
 
-Standalone coded playtest sheets remain supported. A session created without an event parent behaves as the existing independent formal-session workflow.
+- `/health` reports v0.6.3;
+- new formal/event/table sessions are persisted as v0.6.3;
+- new tracked and standalone-feedback records are persisted as v0.6.3;
+- generated current serials are stored/returned as G063;
+- non-creation requests are delegated without rewriting historical records.
+
+This boundary is validated against `../../config/current-release.json` by the repository-wide release-integrity gate.
 
 ## Data storage
 
-The service uses the existing `gauntlet-rules-assistant` D1 database so formal sessions and Rules Arbiter records can be linked without duplicating the interaction database.
+The service uses the `gauntlet-rules-assistant` D1 database. Existing migrations remain valid; changing the current release does not rewrite historical session rows.
 
-Migrations are applied in sequence:
+## Production checks
 
-```text
-rules-assistant/migrations/0001_rules_interactions.sql
-rules-assistant/migrations/0002_review_export_checkpoints.sql
-rules-assistant/migrations/0003_playtest_sessions.sql
-rules-assistant/migrations/0004_event_game_sessions.sql
-```
+Before using new formal sessions:
 
-Migration 0004 adds:
+1. deploy the Worker from this directory;
+2. confirm `/health` reports `v0.6.3`, database availability, session creation configuration, onboarding support, event-game support, and player attribution support;
+3. create a test session and confirm its stored/returned rules version is v0.6.3 and its serial begins `G063-`;
+4. confirm an old G061 session can still be read without its version changing;
+5. exercise event onboarding, child-game creation, tracked creation, standalone feedback, and Rules Arbiter linkage.
 
-- event-versus-game session classification;
-- child-game relationships;
-- event participant identity-token hashes;
-- two numbered player seats per game;
-- carried faction and Leader selections; and
-- player attribution on Rules Arbiter links and stored interactions.
-
-Apply migrations from this directory:
-
-```bash
-npm install
-npm run db:migrate:local
-npm run db:migrate:remote
-```
-
-The remote migrations change the production database and should be run only after reviewing the SQL.
-
-## Development
-
-```bash
-npm install
-npm run db:migrate:local
-npm run dev
-```
-
-The production Worker name is `gauntlet-playtest-sessions`.
-
-Before creating sessions, set the facilitator-only creation secret:
-
-```bash
-npx wrangler secret put SESSION_ADMIN_TOKEN
-```
-
-The batch generator sends that secret as a bearer token. It is entered for the current browser session only and is never included in a printed QR code or returned by a public endpoint.
-
-## Endpoints
-
-| Method | Endpoint | Purpose |
-|---|---|---|
-| `GET` | `/health` | Service, database, creation, onboarding, event-game, and player-attribution capability check |
-| `POST` | `/api/sessions` | Create a standalone game session or explicit event session; requires `SESSION_ADMIN_TOKEN` |
-| `GET` | `/api/sessions/:token` | Read public session status, type, parent event, players, and counts |
-| `POST` | `/api/sessions/:token/join` | Join onboarding, a standalone session, or one of two child-game player seats |
-| `POST` | `/api/sessions/:token/event` | Record a supported onboarding or game event |
-| `GET` | `/api/sessions/:token/onboarding` | Read the event roster and latest choices; requires the event host key |
-| `POST` | `/api/sessions/:eventToken/games` | Create one to twenty child game sessions; requires the event host key |
-| `GET` | `/api/sessions/:eventToken/games` | Read child-game statuses, seats, and Arbiter counts; requires the event host key |
-| `POST` | `/api/sessions/:eventToken/games/:gameId/close` | Close a child game through the event dashboard; requires the event host key |
-| `GET` | `/api/sessions/:gameToken/event-participants` | Read the completed event roster for the low-friction table identity picker |
-| `POST` | `/api/sessions/:gameToken/arbiter` | Link a Rules Arbiter interaction to the game and asking player |
-| `POST` | `/api/sessions/:token/close` | Close registration or retire a standalone/game code; requires that session's host key |
-
-## Player workflow
-
-### Before game night
-
-Everyone opens the same onboarding URL. The browser:
-
-1. registers the player against the event;
-2. receives a private participant identity token;
-3. stores that token locally; and
-4. records the player's latest faction and Leader choice.
-
-Only the token hash is written to D1. A participant may revise their choice until event registration is closed.
-
-### At the table
-
-The organizer creates and prints one QR card per expected game. Both players scan the same table code.
-
-The table page uses this order:
-
-1. **Recognized browser:** show the saved name, faction, and Leader with one `Join game` button.
-2. **Unrecognized browser:** show the event roster so the player taps their name.
-3. **Late addition:** allow a manual name, faction, and Leader only when the player was not onboarded.
-
-Each child game has exactly two player seats. The same event participant may join a later child game and receives a new game-specific participant ID for that match.
-
-### During play
-
-The session page intercepts successful Rules Arbiter responses and links them with:
-
-- the child game session;
-- the printed sheet or table serial; and
-- the game-specific participant ID for the asking player.
-
-The event record rejects game activity and Rules Arbiter links, preventing questions from multiple simultaneous matches from being combined.
-
-## Organizer workflow
-
-The private onboarding host page now contains two distinct sections:
-
-- **Game-night roster:** each participant's latest faction and Leader choice;
-- **Table sessions:** child game creation, QR rendering, player-seat status, closure, printing, and public-link manifest download.
-
-Public child-game join URLs are returned only when those games are created. The browser keeps them in local storage and can download a public table manifest. Raw child host keys are not needed because the event host key can review and close every child game.
-
-Closing event registration freezes onboarding but does not prevent the host from creating table sessions afterward. This supports collecting choices before the preparation deadline and generating match codes later at the event.
+The production Worker name remains `gauntlet-playtest-sessions`. `SESSION_ADMIN_TOKEN` remains required for facilitator-created sessions, and CORS remains limited by `ALLOWED_ORIGINS`.
 
 ## Security model
 
-- Raw session tokens, host keys, and participant identity tokens are never stored; only SHA-256 hashes are written to D1.
-- Session creation requires a separately configured facilitator secret.
-- Public child-game reads expose status, serial, version, aggregate counts, and occupied player seats.
-- Event roster and child-game administration require the event host key.
-- A saved identity token must match its event participant before one-tap joining.
-- The roster picker requires an explicit player confirmation and is intended for the shared physical event context.
-- Child games accept no more than two player seats.
-- Event records reject game lifecycle events and Rules Arbiter links.
-- Child-game Arbiter links require a participant seated in that game.
-- CORS is limited by `ALLOWED_ORIGINS`.
-- Closed game codes cannot accept future joins or playtest events.
-
-## Production setup
-
-1. Review and apply all four remote migrations in numeric order.
-2. Deploy this directory as a separate Cloudflare Worker project using `wrangler.toml`.
-3. Set `SESSION_ADMIN_TOKEN` with `wrangler secret put` or the Cloudflare dashboard.
-4. Confirm `/health` reports v0.6.1 with `database`, `sessionCreationConfigured`, `onboardingSupported`, `eventGamesSupported`, and `playerAttributionSupported` all true.
-5. Test event onboarding, identity continuity, roster fallback, child-game creation, two-seat limits, player-attributed Arbiter linkage, child closure, and standalone coded sheets.
-6. Deploy the static onboarding and session pages only after the Worker and migration are live.
-7. Generate table QR codes only after the production endpoint passes the above checks.
+Raw session tokens, host keys, and participant identity tokens are not stored. Public reads expose session state and aggregate information; organizer controls require host credentials. Child games accept no more than two player seats, and closed codes reject new playtest activity.
