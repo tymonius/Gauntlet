@@ -11,6 +11,14 @@ const prepared = 'August 11, 2026';
 const faviconLinks = `  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />`;
+const googleAnalytics = `  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-8YYYZJGGPE');
+  </script>`;
 
 const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'utf8').replace(/\r\n/g, '\n');
 const normalize = (value) => String(value).replace(/\r\n/g, '\n').replace(/\s+$/, '') + '\n';
@@ -193,6 +201,7 @@ function documentPage(document, markdown) {
   return `<!doctype html>
 <html lang="en">
 <head>
+${googleAnalytics}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(document.title)}</title>
@@ -216,9 +225,7 @@ for (const document of documents) {
 
 function adaptFixed(relativePath) {
   let content = read(`v0.6.2/print/${relativePath}`).replaceAll('v0.6.2', 'v0.6.3');
-  content = content
-    .replace(/\n\s*<!-- Google tag \(gtag\.js\) -->[\s\S]*?gtag\('config', 'G-8YYYZJGGPE'\);\n\s*<\/script>/, '')
-    .replaceAll('<a class="button secondary" href="index.html">All printed materials</a>', '<span class="version-chip">release candidate - not published</span>');
+  content = content.replaceAll('<a class="button secondary" href="index.html">All printed materials</a>', '<span class="version-chip">release candidate - not published</span>');
 
   if (relativePath === 'player-mat.html') {
     content = content
@@ -250,6 +257,7 @@ expected(`${outputDir}/styles.css`, read('v0.6.2/print/styles.css'));
 const index = `<!doctype html>
 <html lang="en">
 <head>
+${googleAnalytics}
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Gauntlet v0.6.3 Print Candidate</title>
