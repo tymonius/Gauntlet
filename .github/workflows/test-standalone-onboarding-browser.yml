@@ -69,7 +69,8 @@ jobs:
               throw new Error('Start page is not using the polished production interface');
             }
             const startText = await page.locator('body').innerText();
-            if (!startText.includes('canonical v0.6.3') || startText.includes('canonical v0.6.1')) {
+            const startTextLower = startText.toLowerCase();
+            if (!startTextLower.includes('canonical v0.6.3') || startTextLower.includes('canonical v0.6.1')) {
               throw new Error('Start page does not identify the current v0.6.3 edition');
             }
             for (const phrase of [
