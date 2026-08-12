@@ -8,6 +8,11 @@ const failures = [];
 const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'utf8').replace(/\r\n/g, '\n');
 const readJson = (relativePath) => JSON.parse(read(relativePath));
 const assert = (condition, message) => { if (!condition) failures.push(message); };
+const lifecycle = readJson('config/release-lifecycle.json');
+const v063Withdrawn = lifecycle.current_release === 'v0.6.2' &&
+  lifecycle.releases?.['v0.6.3']?.status === 'withdrawn' &&
+  lifecycle.releases?.['v0.6.3']?.artifacts_preserved === true &&
+  lifecycle.releases?.['v0.6.3']?.public_cutover === false;
 
 const required = [
   'README.md', 'Gauntlet_v0.6.3_Rulebook.md', 'Gauntlet_v0.6.3_Reference_Guide.md',
@@ -163,7 +168,15 @@ assert(notes.includes('110 of 128 playable titles'), 'Release notes must record 
 assert(notes.includes('further composition changes require playtest evidence'), 'Release notes must record the post-release playtest gate.');
 assert(notes.includes('Margin Loan'));
 assert(returning.includes('v0.6.2 remains the published playtest edition'));
-assert(!fs.existsSync(path.join(root, 'releases/v0.6.3')), 'Pre-publication assembly must not materialize releases/v0.6.3/.');
+
+const publishedV063Exists = fs.existsSync(path.join(root, 'releases/v0.6.3'));
+assert(
+  !publishedV063Exists || v063Withdrawn,
+  'A v0.6.3 published package may coexist with candidate rebuilding only when the release lifecycle explicitly marks v0.6.3 withdrawn and v0.6.2 current.'
+);
+if (v063Withdrawn) {
+  assert(publishedV063Exists, 'Withdrawn v0.6.3 lifecycle must preserve the published release package for provenance and diagnosis.');
+}
 
 finish();
 
@@ -173,5 +186,5 @@ function finish() {
     for (const failure of failures) console.error(`- ${failure}`);
     process.exit(1);
   }
-  console.log('v0.6.3 source release-candidate validation passed: 128 cards, 25 Territories, 12 finalized competitive 30/60 starter Decks using 110 titles, synchronized player-facing sources, and no public cutover.');
+  console.log(`v0.6.3 source release-candidate validation passed: 128 cards, 25 Territories, 12 finalized competitive 30/60 starter Decks using 110 titles, synchronized player-facing sources, and no public cutover${v063Withdrawn ? '; preserved published package is explicitly withdrawn' : ''}.`);
 }
