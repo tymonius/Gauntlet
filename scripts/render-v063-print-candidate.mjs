@@ -17,7 +17,7 @@ fs.mkdirSync(previewDir, { recursive: true });
 
 const outputs = [
   { key: 'rulebook', url: `${htmlBase}/rulebook.html`, file: 'Gauntlet_v0.6.3_Rulebook.pdf', minimumPages: 20 },
-  { key: 'reference', url: `${htmlBase}/reference-guide.html`, file: 'Gauntlet_v0.6.3_Reference_Guide.pdf', minimumPages: 2 },
+  { key: 'reference', url: `${htmlBase}/reference-guide.html`, file: 'Gauntlet_v0.6.3_Reference_Guide.pdf', exactPages: 4, trimPrintBottomPadding: true },
   { key: 'first_game', url: `${htmlBase}/first-game-guide.html`, file: 'Gauntlet_v0.6.3_First_Game_Guide.pdf', minimumPages: 4 },
   { key: 'faction_guide', url: `${htmlBase}/faction-guide.html`, file: 'Gauntlet_v0.6.3_Faction_and_Component_Guide.pdf', minimumPages: 10 },
   { key: 'returning_changes', url: `${htmlBase}/returning-player-changes.html`, file: 'Gauntlet_v0.6.3_Returning_Player_Changes.pdf', minimumPages: 2 },
@@ -29,9 +29,18 @@ const outputs = [
 
 const strictTerminologyKeys = new Set(['reference', 'first_game', 'player_mat', 'playtest_sheet', 'faction_cards', 'active_marker']);
 const heroPlateAssignments = [
-  { asset: 'images/sketches/hero-plates/witch-hunter-banker-spymaster.png', leaders: ['Witch Hunter', 'Banker', 'Spymaster'] },
-  { asset: 'images/sketches/hero-plates/alchemist-executive-ambassador.png', leaders: ['Alchemist', 'Executive', 'Ambassador'] },
-  { asset: 'images/sketches/hero-plates/ranger-commandant-senator.png', leaders: ['Ranger', 'Commandant', 'Senator'] },
+  {
+    assets: ['images/sketches/witch hunter.png', 'images/sketches/banker.png', 'images/sketches/spymaster.png'],
+    leaders: ['Witch Hunter', 'Banker', 'Spymaster'],
+  },
+  {
+    assets: ['images/sketches/alchemist.png', 'images/sketches/executive.png', 'images/sketches/ambassador.png'],
+    leaders: ['Alchemist', 'Executive', 'Ambassador'],
+  },
+  {
+    assets: ['images/sketches/ranger.png', 'images/sketches/commandant.png', 'images/sketches/senator.png'],
+    leaders: ['Ranger', 'Commandant', 'Senator'],
+  },
 ];
 
 async function inspectPdf(filePath) {
@@ -95,6 +104,10 @@ try {
       throw new Error(`${output.url} contains retired v0.6.3 terminology in an operational aid.`);
     }
 
+    if (output.trimPrintBottomPadding) {
+      await page.addStyleTag({ content: '@media print { .document-shell { padding-bottom: 0 !important; } }' });
+    }
+
     const filePath = path.join(pdfDir, output.file);
     await page.pdf({ path: filePath, printBackground: true, preferCSSPageSize: true, displayHeaderFooter: false });
     await page.screenshot({ path: path.join(previewDir, `${output.key}-browser.png`), fullPage: geometry.fixedPages.length > 0, timeout: 30000 });
@@ -110,7 +123,7 @@ try {
   const readerResult = results.find((item) => item.key === 'rulebook');
   const readerPath = path.join(pdfDir, readerResult.file);
   const bookletPath = path.join(pdfDir, 'Gauntlet_v0.6.3_Rulebook_Booklet.pdf');
-  const bookletPadding = await imposeBooklet(readerPath, bookletPath, browser);
+  const bookletPadding = await imposeBooklet(readerPath, bookletPath);
   const bookletInfo = await inspectPdf(bookletPath);
   results.push({ key: 'rulebook_booklet', file: path.basename(bookletPath), pages: bookletInfo.pages, sizes: bookletInfo.sizes });
 
@@ -149,39 +162,28 @@ try {
   if (browserProcess.exitCode === null && !browserProcess.killed) browserProcess.kill('SIGKILL');
 }
 
-async function imposeBooklet(readerPath, bookletPath, browserConnection) {
+async function imposeBooklet(readerPath, bookletPath) {
   const source = await PDFDocument.load(fs.readFileSync(readerPath));
   const sourceCount = source.getPageCount();
   const total = Math.ceil(sourceCount / 4) * 4;
   const paddingCount = total - sourceCount;
-  if (paddingCount > heroPlateAssignments.length) throw new Error(`Rulebook requires ${paddingCount} padding pages; only ${heroPlateAssignments.length} approved Leader plates are available.`);
+  if (paddingCount > heroPlateAssignments.length) throw new Error(`Rulebook requires ${paddingCount} padding pages; only ${heroPlateAssignments.length} Leader-sketch groups are configured.`);
 
   const booklet = await PDFDocument.create();
   const heroPlates = [];
-  if (paddingCount) {
-    const prepPage = await browserConnection.newPage({ viewport: { width: 1200, height: 1500 }, deviceScaleFactor: 1 });
-    await prepPage.goto(base, { waitUntil: 'load', timeout: 90000 });
-    for (let index = 0; index < paddingCount; index += 1) {
-      const assignment = heroPlateAssignments[index];
-      const dataUrl = await prepPage.evaluate(async ({ url, maxWidth, maxHeight }) => {
-        const image = new Image();
-        image.src = url;
-        await image.decode();
-        const scale = Math.min(maxWidth / image.naturalWidth, maxHeight / image.naturalHeight, 1);
-        const width = Math.max(1, Math.round(image.naturalWidth * scale));
-        const height = Math.max(1, Math.round(image.naturalHeight * scale));
-        const canvas = document.createElement('canvas');
-        canvas.width = width;
-        canvas.height = height;
-        const context = canvas.getContext('2d');
-        context.drawImage(image, 0, 0, width, height);
-        return canvas.toDataURL('image/png');
-      }, { url: `${base}/${assignment.asset}`, maxWidth: 1104, maxHeight: 1360 });
-      const embedded = await booklet.embedPng(Buffer.from(dataUrl.split(',', 2)[1], 'base64'));
-      const scale = Math.min(276 / embedded.width, 340 / embedded.height);
-      heroPlates.push({ image: embedded, width: embedded.width * scale, height: embedded.height * scale, assignment });
+  for (let index = 0; index < paddingCount; index += 1) {
+    const assignment = heroPlateAssignments[index];
+    const portraits = [];
+    for (const asset of assignment.assets) {
+      const assetPath = path.join(root, asset);
+      if (!fs.existsSync(assetPath)) throw new Error(`Missing booklet Leader portrait asset: ${asset}`);
+      const bytes = fs.readFileSync(assetPath);
+      if (bytes.length < 100000) throw new Error(`Booklet Leader portrait asset is unexpectedly small: ${asset} (${bytes.length} bytes).`);
+      const image = await booklet.embedPng(bytes);
+      const scale = Math.min(108 / image.width, 300 / image.height);
+      portraits.push({ image, width: image.width * scale, height: image.height * scale, asset });
     }
-    await prepPage.close();
+    heroPlates.push({ assignment, portraits });
   }
 
   const drawSourcePage = async (destination, sourceIndex, x) => {
@@ -191,15 +193,23 @@ async function imposeBooklet(readerPath, bookletPath, browserConnection) {
       return;
     }
     const paddingIndex = sourceIndex - sourceCount;
-    const hero = heroPlates[paddingIndex];
-    if (!hero) return;
-    destination.drawImage(hero.image, {
-      x: x + ((396 - hero.width) / 2),
-      y: (612 - hero.height) / 2,
-      width: hero.width,
-      height: hero.height,
-      opacity: 0.92,
-    });
+    const plate = heroPlates[paddingIndex];
+    if (!plate) return;
+    const cellWidth = 116;
+    const gap = 4;
+    const totalWidth = (cellWidth * 3) + (gap * 2);
+    const startX = x + ((396 - totalWidth) / 2);
+    for (let index = 0; index < plate.portraits.length; index += 1) {
+      const portrait = plate.portraits[index];
+      const cellX = startX + (index * (cellWidth + gap));
+      destination.drawImage(portrait.image, {
+        x: cellX + ((cellWidth - portrait.width) / 2),
+        y: (612 - portrait.height) / 2,
+        width: portrait.width,
+        height: portrait.height,
+        opacity: 0.9,
+      });
+    }
   };
 
   const drawPair = async (leftIndex, rightIndex) => {
@@ -220,7 +230,7 @@ async function imposeBooklet(readerPath, bookletPath, browserConnection) {
     padding_pages: paddingCount,
     leader_plates: heroPlates.map(({ assignment }, index) => ({
       source_page: sourceCount + index + 1,
-      asset: assignment.asset,
+      assets: assignment.assets,
       leaders: assignment.leaders,
     })),
   };
