@@ -83,6 +83,11 @@ await (async () => {
     await loadScript('/tts/artwork-crop.js');
     await loadScript('/tts/renderer/renderer.js');
     await loadScript('/card-design/card-design.js');
+
+    // Dynamic loading may finish after the document's native load event. Replay
+    // it once in that case so the shared fitting/cropping/inspection lifecycle
+    // runs exactly as it does on the production render surface.
+    if (document.readyState === 'complete') window.dispatchEvent(new Event('load'));
   } catch (error) {
     if (target) target.textContent = error.message;
     document.body.dataset.renderReady = 'error';
