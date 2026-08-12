@@ -48,6 +48,12 @@ for (const name of files) {
       `An Action may:\n\n- play a card for its Action effect;\n- bank a card from Hand using its inherent Bank Action if it has an Asset effect;\n- take a legal Faction Action; or\n- discard one of the player's Assets.`,
       'First Game Action summary'
     );
+    text = replaceRequired(
+      text,
+      '- **Resource:** Capital; begin with 2 for the v0.6.2 test.',
+      '- **Resource:** Capital; begin with 2.',
+      'First Game Financier starting Capital'
+    );
     text = renumberTopLevelSections(text);
   }
 
@@ -63,4 +69,4 @@ for (const name of files) {
   fs.writeFileSync(target, text.replace(/\s+$/, '') + '\n', 'utf8');
 }
 
-console.log('Normalized v0.6.3 player-facing candidate structure, Action summaries, and section numbering.');
+console.log('Normalized v0.6.3 player-facing candidate structure, Action summaries, section numbering, and current Financier starting-Capital wording.');
