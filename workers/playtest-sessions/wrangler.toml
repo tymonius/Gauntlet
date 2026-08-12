@@ -1,5 +1,5 @@
 name = "gauntlet-playtest-sessions"
-main = "src/completeness.js"
+main = "src/current-release.js"
 compatibility_date = "2026-07-29"
 
 [vars]
