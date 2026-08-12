@@ -1,4 +1,4 @@
-(async () => {
+await (async () => {
   const CANONICAL_SOURCE = '/artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json';
   const ART_EXTENSIONS = ['png', 'jpg', 'webp', 'jpeg'];
   const cardId = new URLSearchParams(window.location.search).get('card');
