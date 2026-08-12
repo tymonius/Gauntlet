@@ -60,10 +60,17 @@ const operationalHtml = [
   'faction-teaching-cards.html',
   'active-player-marker.html',
 ];
+const staleVersionPatterns = [
+  /Gauntlet v0\.6\.2 (?:First Game|Reference|Playtest|Faction)/i,
+  /\*\*Version:\*\* v0\.6\.2/i,
+  /for the v0\.6\.2 test/i,
+  /For the v0\.6\.2 release:/i,
+  /Gauntlet_v0\.6\.2_Starter_Decks\.json/,
+];
 for (const file of operationalHtml) {
   const text = read(`${htmlRoot}/${file}`);
   assert(text.includes('v0.6.3'), `${file} does not identify v0.6.3.`);
-  assert(!text.includes('v0.6.2'), `${file} contains stale v0.6.2 player-facing text.`);
+  for (const pattern of staleVersionPatterns) assert(!pattern.test(text), `${file} contains stale v0.6.2 operational text matching ${pattern}.`);
   assert(!/\bPlayable Deck\b/.test(text), `${file} contains retired Playable Deck terminology.`);
   assert(!/\bAction Opportunit(?:y|ies)\b/.test(text), `${file} contains retired Action Opportunity terminology.`);
 }
@@ -77,6 +84,16 @@ for (const token of [
   'Gambit/Tactic',
   'inherent Bank Action',
 ]) assert(rulebook.toLowerCase().includes(token.toLowerCase()), `Rulebook print candidate is missing: ${token}`);
+
+const firstGame = read(`${htmlRoot}/first-game-guide.html`);
+for (const token of [
+  'For the v0.6.3 release candidate:',
+  'Gauntlet_v0.6.3_Starter_Decks.json',
+  'v0.6.2 remains the immutable published playtest release until the publication cutover is completed.',
+  'v0.6.3 development Deckbuilder',
+  '/v0.6.3/start/',
+  'Capital; begin with 2.',
+]) assert(firstGame.includes(token), `First Game print candidate is missing current release-boundary text: ${token}`);
 
 const playerMat = read(`${htmlRoot}/player-mat.html`);
 for (const token of [
