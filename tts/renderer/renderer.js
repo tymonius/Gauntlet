@@ -85,12 +85,14 @@
   }, { once: true });
 
   function renderRuleSection(label, text) {
-    const dualRole = String(label).toLowerCase() === 'gambit/tactic';
+    const normalizedLabel = String(label).toLowerCase();
+    const dualRole = normalizedLabel === 'gambit/tactic';
+    const placement = normalizedLabel === 'placement';
     const heading = dualRole
       ? '<h4 class="dual-role-heading" aria-label="Gambit or Tactic"><span aria-hidden="true">Gambit/<br>Tactic</span></h4>'
       : `<h4>${escapeHtml(label)}</h4>`;
     return `
-      <section class="rule-section${dualRole ? ' dual-role-section' : ''}">
+      <section class="rule-section${dualRole ? ' dual-role-section' : ''}${placement ? ' placement-section' : ''}">
         ${heading}
         <p>${formatText(text)}</p>
       </section>`;
