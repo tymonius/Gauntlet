@@ -210,7 +210,7 @@
    standard label track. Widen its track without changing Overlay, Mission,
    Asset, or any other section column geometry. */
 .rule-section.placement-section {
-  grid-template-columns: 0.50in minmax(0, 1fr);
+  grid-template-columns: 0.57in minmax(0, 1fr);
   column-gap: 0.05in;
 }
 
