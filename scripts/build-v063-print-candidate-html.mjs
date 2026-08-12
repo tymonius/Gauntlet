@@ -38,6 +38,7 @@ function inlineMarkdown(value) {
   output = output.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
   output = output.replace(/\*([^*]+)\*/g, '<em>$1</em>');
   output = output.replace(/\[([^\]]+)]\(([^)]+)\)/g, '<span class="print-link">$1</span>');
+  output = output.replaceAll('[[HARD_BREAK]]', '<br>');
   return output;
 }
 
@@ -50,7 +51,11 @@ function tableCells(line) {
 }
 
 function markdownToHtml(markdown) {
-  const lines = String(markdown).replace(/\r\n/g, '\n').split('\n');
+  const lines = String(markdown)
+    .replace(/\r\n/g, '\n')
+    .replace(/<!--[\s\S]*?-->/g, '')
+    .replace(/ {2,}\n/g, '[[HARD_BREAK]]\n')
+    .split('\n');
   const out = [];
   let list = null;
   let quote = false;
@@ -181,6 +186,7 @@ const documents = [
 
 function documentPage(document, markdown) {
   const body = markdownToHtml(markdown);
+  const bannerSubtitle = document.subtitle.replace(/ - release candidate$/, '');
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -192,7 +198,7 @@ function documentPage(document, markdown) {
 </head>
 <body class="document-page">
   <main class="document-shell ${document.half ? 'half' : ''}">
-    <header class="document-header"><h1>${escapeHtml(document.title)}</h1><p>${escapeHtml(document.subtitle)} · Prepared ${prepared} · Not published</p></header>
+    <header class="document-header"><p style="margin:0"><strong style="color:var(--accent);text-transform:uppercase;letter-spacing:.08em">Gauntlet v0.6.3 release candidate</strong> · ${escapeHtml(bannerSubtitle)} · Prepared ${prepared} · Not published</p></header>
     <article class="document-body">${body}</article>
   </main>
 </body>
