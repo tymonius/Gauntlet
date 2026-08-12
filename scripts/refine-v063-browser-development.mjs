@@ -72,6 +72,7 @@ let index = fs.readFileSync(indexPath, 'utf8').replace(/\r\n/g, '\n');
 index = index
   .replace('load the approved starter, or customize', 'load an inherited starter list, or customize')
   .replace('Load approved starter', 'Load inherited starter')
+  .replace('Choose three; arrange after opening selection', 'Choose three; decide their setup order after opening selection')
   .replace(
     '<div id="territories" class="choice-grid"></div>',
     '<p class="muted">Choose the three Territory cards that belong to the Deck. A loaded starter may recommend their order from your own end toward the opponent, but that order is strategy guidance, not a setup lock. After opening selection, you may keep the recommendation or rearrange the three Territories.</p><div id="territories" class="choice-grid"></div>'
