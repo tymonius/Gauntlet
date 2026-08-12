@@ -25,9 +25,9 @@ Canonical artwork paths:
 
 | Component pool | Total | Canonical on `main` | Approved, pending merge | Still needs artwork |
 | --- | ---: | ---: | ---: | ---: |
-| Playable cards | 128 | 86 | 2 | 40 |
+| Playable cards | 128 | 86 | 3 | 39 |
 | Territory cards | 25 | 2 | 0 | 23 |
-| **All tracked cards** | **153** | **88** | **2** | **63** |
+| **All tracked cards** | **153** | **88** | **3** | **62** |
 
 ### Playable cards by faction
 
@@ -35,12 +35,12 @@ Canonical artwork paths:
 | --- | ---: | ---: | ---: |
 | Neutral | 50 | 0 | 0 |
 | Military | 13 | 0 | 0 |
-| Diplomats | 9 | 2 | 2 |
+| Diplomats | 9 | 3 | 1 |
 | Financiers | 12 | 0 | 1 |
 | Intelligence | 2 | 0 | 11 |
 | Mystics | 0 | 0 | 13 |
 | Inquisition | 0 | 0 | 13 |
-| **Playable-card total** | **86** | **2** | **40** |
+| **Playable-card total** | **86** | **3** | **39** |
 
 ## Neutral — complete
 
@@ -56,10 +56,10 @@ Approved, pending canonical merge:
 
 - [x] Détente
 - [x] Gunboat Diplomacy
+- [x] Sanctions: Blockade
 
 Still needs approved artwork:
 
-- [ ] Sanctions: Blockade
 - [ ] Sanctions: Censure
 
 ## Financiers — 1
