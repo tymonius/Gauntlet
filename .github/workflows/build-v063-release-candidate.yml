@@ -2,7 +2,7 @@ name: Build v0.6.3 source release candidate
 
 on:
   push:
-    branches: [agent/v063-print-package-candidate, agent/v063-finalize-starter-decks]
+    branches: [agent/v063-print-package-candidate]
     paths:
       - '.github/workflows/build-v063-release-candidate.yml'
       - 'scripts/build-v063-release-candidate.mjs'
@@ -21,7 +21,6 @@ on:
       - 'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md'
       - 'docs/Gauntlet_v0.6.3_Starter_Deck_Presentation_Candidate.md'
       - 'docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md'
-      - 'docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md'
       - 'v0.6.3/data/starter-decks-candidate.js'
       - 'v0.6.3/deckbuilder/starter-adapter.js'
       - 'v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json'
@@ -35,7 +34,6 @@ on:
       - 'scripts/validate-v063-starter-guidance.mjs'
       - 'docs/Gauntlet_v0.6.3_Starter_Deck_Presentation_Candidate.md'
       - 'docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md'
-      - 'docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md'
       - 'v0.6.3/data/starter-decks-candidate.js'
       - 'v0.6.3/deckbuilder/starter-adapter.js'
       - 'artifacts/v0.6.3/release-candidate/**'
@@ -127,7 +125,7 @@ jobs:
           fi
 
       - name: Commit materialized source package
-        if: github.event_name == 'push' && (github.ref_name == 'agent/v063-print-package-candidate' || github.ref_name == 'agent/v063-finalize-starter-decks')
+        if: github.event_name == 'push' && github.ref_name == 'agent/v063-print-package-candidate'
         run: |
           git add artifacts/v0.6.3/release-candidate/
           if git diff --cached --quiet; then
@@ -136,7 +134,7 @@ jobs:
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Materialize finalized v0.6.3 starter source package [skip ci]'
+          git commit -m 'Materialize v0.6.3 source release candidate'
           git pull --rebase origin "$GITHUB_REF_NAME"
           git push origin "HEAD:$GITHUB_REF_NAME"
 
