@@ -81,8 +81,8 @@ for (const token of [
 const playerMat = read(`${htmlRoot}/player-mat.html`);
 for (const token of [
   'setup placement is not movement or entering',
-  'Final-Territory capture wins immediately',
-  'prior final-Territory capture is not required',
+  'Capturing the opponent-end Territory wins immediately',
+  'prior capture is not required',
   '1 Action · Opening or Denouement',
 ]) assert(playerMat.includes(token), `Player Mat is missing v0.6.3 reminder: ${token}`);
 
