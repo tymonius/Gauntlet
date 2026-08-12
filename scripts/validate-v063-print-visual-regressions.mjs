@@ -9,6 +9,12 @@ const failures = [];
 const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'utf8').replace(/\r\n/g, '\n');
 const assert = (condition, message) => { if (!condition) failures.push(message); };
 
+const faviconLinks = [
+  '<link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />',
+  '<link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />',
+  '<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />',
+];
+
 const manifest = JSON.parse(read(manifestPath));
 const byKey = new Map((manifest.outputs ?? []).map((item) => [item.key, item]));
 
@@ -40,7 +46,11 @@ for (const [file, title] of longForms) {
   assert(!/<header class="document-header"><h1\b/.test(html), `${file} reintroduced a duplicate wrapper H1.`);
   assert(/<header class="document-header"><p\b/.test(html), `${file} is missing the compact release-candidate banner.`);
   assert(html.includes(title), `${file} is missing its source document title: ${title}`);
+  for (const link of faviconLinks) assert(html.includes(link), `${file} is missing print-candidate favicon metadata: ${link}`);
 }
+
+const indexHtml = read(`${htmlRoot}/index.html`);
+for (const link of faviconLinks) assert(indexHtml.includes(link), `index.html is missing print-candidate favicon metadata: ${link}`);
 
 // The legacy combined hero-plate PNGs are truncated files. The booklet must be
 // composed from the valid individual approved Leader sketches instead.
@@ -81,4 +91,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('v0.6.3 print visual regressions locked: 46-page Rulebook, 24-sheet booklet, 4-page Reference, 22-page Tableside Pack, clean long-form banners, and valid individual-sketch booklet plates.');
+console.log('v0.6.3 print visual regressions locked: 46-page Rulebook, 24-sheet booklet, 4-page Reference, 22-page Tableside Pack, clean long-form banners, favicon metadata, and valid individual-sketch booklet plates.');
