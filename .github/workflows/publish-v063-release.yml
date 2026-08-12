@@ -1,0 +1,141 @@
+name: Publish v0.6.3 release
+
+on:
+  push:
+    branches:
+      - agent/v063-publication-cutover
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-v063-release.yml'
+      - 'scripts/build-v063-published-release.mjs'
+      - 'scripts/refine-v063-published-release.mjs'
+      - 'scripts/validate-v063-published-release.mjs'
+      - 'scripts/validate-v062-historical-release.mjs'
+      - 'artifacts/v0.6.3/closeout/**'
+      - 'artifacts/v0.6.3/release-candidate/**'
+      - 'artifacts/v0.6.3/print-candidate/**'
+      - 'releases/v0.6.3/**'
+      - 'v0.6.3/**'
+      - 'index.html'
+      - 'factions/**'
+      - 'rules-assistant/widget.js'
+      - 'rules-assistant/worker-entry.js'
+      - 'rules-assistant/worker-v063.js'
+      - 'rules-assistant/v063-published-corpus.js'
+      - 'src/content/current.ts'
+      - 'package.json'
+      - 'tests/v062-public-faction-overviews.test.ts'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: v063-publication-${{ github.ref }}-${{ github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  publication:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out validation target
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 50
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Detect publication lifecycle state
+        id: lifecycle
+        run: |
+          if [ -e releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json ]; then
+            echo 'published=true' >> "$GITHUB_OUTPUT"
+            echo 'v0.6.3 publication is already materialized.'
+          else
+            echo 'published=false' >> "$GITHUB_OUTPUT"
+            echo 'v0.6.3 publication is not yet materialized.'
+          fi
+
+      - name: Verify release provenance for current lifecycle state
+        run: |
+          if [ "${{ steps.lifecycle.outputs.published }}" = 'true' ]; then
+            node scripts/validate-v063-published-release.mjs
+          else
+            node scripts/build-v063-cross-surface-closeout.mjs --check
+          fi
+
+      - name: Build atomic v0.6.3 publication
+        if: steps.lifecycle.outputs.published != 'true'
+        run: |
+          node scripts/build-v063-published-release.mjs
+          node scripts/refine-v063-published-release.mjs
+
+      - name: Validate published release and cutover
+        run: |
+          node scripts/validate-v062-historical-release.mjs
+          node scripts/validate-v063-published-release.mjs
+
+      - name: Run full repository validation
+        run: npm test
+
+      - name: Preserve immutable historical release surfaces
+        run: |
+          git fetch origin main --depth=50
+          git diff --name-only origin/main...HEAD -- \
+            'releases/v0.6.1/**' \
+            'releases/v0.6.2/**' \
+            'v0.6.1/**' \
+            'v0.6.2/**' > /tmp/v063-publication-history.txt
+          if [ -s /tmp/v063-publication-history.txt ]; then
+            echo 'v0.6.3 publication must not modify immutable historical release surfaces:'
+            cat /tmp/v063-publication-history.txt
+            exit 1
+          fi
+
+      - name: Commit materialized publication
+        if: github.event_name == 'push' && github.ref_name == 'agent/v063-publication-cutover' && steps.lifecycle.outputs.published != 'true'
+        run: |
+          git add \
+            releases/v0.6.3/ \
+            v0.6.3/ \
+            index.html \
+            factions/ \
+            rules-assistant/widget.js \
+            rules-assistant/worker-entry.js \
+            rules-assistant/worker-v063.js \
+            rules-assistant/v063-published-corpus.js \
+            src/content/current.ts
+
+          if git diff --cached --quiet; then
+            echo 'v0.6.3 publication outputs are already materialized.'
+            exit 0
+          fi
+
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Materialize v0.6.3 publication [skip ci]'
+          git fetch origin "$GITHUB_REF_NAME" --depth=50
+          git rebase "origin/$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+
+      - name: Verify generated publication is committed on pull request
+        if: github.event_name == 'pull_request'
+        run: |
+          git diff --exit-code -- \
+            releases/v0.6.3/ \
+            v0.6.3/ \
+            index.html \
+            factions/ \
+            rules-assistant/widget.js \
+            rules-assistant/worker-entry.js \
+            rules-assistant/worker-v063.js \
+            rules-assistant/v063-published-corpus.js \
+            src/content/current.ts

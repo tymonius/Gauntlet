@@ -11,16 +11,15 @@ const factionPaths = [
   'factions/inquisition/index.html',
 ];
 
-describe('v0.6.2 public faction overviews', () => {
-  test('send players to the published versioned tools', () => {
+describe('current public faction overviews', () => {
+  test('send players to the current published v0.6.3 tools', () => {
     for (const path of factionPaths) {
       const html = read(path);
-      expect(html).toContain('· v0.6.2 faction guide');
-      expect(html).toContain('href="../../v0.6.2/rulebook/"');
-      expect(html).toContain('href="../../v0.6.2/deckbuilder/"');
-      expect(html).toContain('Current playtest edition: v0.6.2.');
-      expect(html).not.toContain('href="../../rulebook/"');
-      expect(html).not.toContain('href="../../deckbuilder/"');
+      expect(html).toContain('· v0.6.3 faction guide');
+      expect(html).toContain('href="../../v0.6.3/rulebook/"');
+      expect(html).toContain('href="../../v0.6.3/deckbuilder/"');
+      expect(html).toContain('Current playtest edition: v0.6.3.');
+      expect(html).not.toContain('Current playtest edition: v0.6.2.');
       expect(html).not.toContain('Unpublished pre-release playtest project.');
     }
   });

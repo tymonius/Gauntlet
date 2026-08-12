@@ -6,12 +6,11 @@
   <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8YYYZJGGPE');</script>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="robots" content="noindex,nofollow">
-  <meta name="description" content="Development Rules Arbiter for the unpublished Gauntlet v0.6.3 candidate.">
+  <meta name="description" content="Rules Arbiter for the published Gauntlet v0.6.3 playtest edition.">
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
-  <title>Gauntlet v0.6.3 Candidate Rules Arbiter</title>
+  <title>Gauntlet v0.6.3 Rules Arbiter</title>
   <link rel="stylesheet" href="../styles.css">
   <style>
     .arbiter-shell{max-width:980px;margin:0 auto;padding:2rem 1rem 5rem}.arbiter-nav{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem}.arbiter-nav a{font-weight:700}.candidate-banner{padding:.75rem 1rem;border:1px solid #9a6b1b;background:#fff1c6;color:#4a3412;font-weight:700;margin-bottom:1.5rem}.arbiter-panel{background:rgba(255,255,255,.82);border:1px solid rgba(80,55,30,.25);box-shadow:0 18px 50px rgba(60,35,20,.12);padding:clamp(1rem,3vw,2rem)}.arbiter-form{display:grid;gap:.75rem}.arbiter-form textarea{width:100%;min-height:7rem;padding:.8rem;font:inherit}.arbiter-form button,.question-chip{padding:.65rem .85rem;font:inherit;font-weight:700;cursor:pointer}.question-chips{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0}.arbiter-answer{margin-top:1.5rem}.arbiter-ruling{padding:1rem;border-left:4px solid #8f1f25;background:rgba(143,31,37,.05)}.arbiter-meta,.arbiter-boundary,#arbiterStatus{font-size:.9rem;color:#5c5144}.arbiter-ruling li p{margin:.25rem 0 .8rem}.arbiter-error{padding:1rem;background:#ffe3e3;border:1px solid #a33}.source-boundary{margin:1.5rem 0;padding:1rem;background:rgba(60,55,45,.06)}
@@ -19,24 +18,24 @@
 </head>
 <body>
   <main class="arbiter-shell">
-    <nav class="arbiter-nav" aria-label="v0.6.3 development navigation">
+    <nav class="arbiter-nav" aria-label="v0.6.3 release navigation">
       <a href="../../">Gauntlet home</a>
-      <a href="../">v0.6.3 dev</a>
+      <a href="../">v0.6.3</a>
       <a href="../start/">Start</a>
       <a href="../rulebook/">Rulebook</a>
       <a href="../quick-reference/">Quick reference</a>
       <a href="../deckbuilder/">Deckbuilder</a>
       <a href="../reference/">Card reference</a>
-      <a href="../../v0.6.2/">Published v0.6.2</a>
+      <a href="../../v0.6.2/">Previous v0.6.2</a>
     </nav>
 
-    <div class="candidate-banner">Unpublished v0.6.3 development Rules Arbiter · v0.6.2 remains the canonical published playtest edition.</div>
+    <div class="candidate-banner">Unpublished v0.6.3elopment Rules Arbiter · v0.6.3 is the canonical published playtest edition.</div>
 
     <section class="arbiter-panel">
-      <p class="eyebrow">Candidate rules review</p>
+      <p class="eyebrow">Published rules reference</p>
       <h1>Ask the v0.6.3 Rules Arbiter</h1>
-      <p>This development Arbiter reads the integrated v0.6.3 candidate Rulebook and canonical data. It is intentionally isolated from the public v0.6.2 Rules Arbiter.</p>
-      <div class="source-boundary"><strong>Development boundary:</strong> answers here describe the current v0.6.3 candidate. They do not change the published v0.6.2 rules until v0.6.3 is released.</div>
+      <p>This Rules Arbiter reads the published v0.6.3 Rulebook and canonical data.</p>
+      <div class="source-boundary"><strong>Canonical source boundary:</strong> answers here describe the published v0.6.3 playtest edition.</div>
 
       <div class="question-chips" aria-label="Suggested questions">
         <button class="question-chip" type="button" data-question="When do I arrange my Territories during setup?">Territory arrangement</button>
@@ -50,10 +49,10 @@
 
       <form id="arbiterForm" class="arbiter-form">
         <label for="question"><strong>Rules question</strong></label>
-        <textarea id="question" maxlength="600" placeholder="Ask about setup, cards, battles, victory, or another v0.6.3 candidate rule."></textarea>
-        <button type="submit">Ask the candidate Arbiter</button>
+        <textarea id="question" maxlength="600" placeholder="Ask about setup, cards, battles, victory, or another v0.6.3 rule."></textarea>
+        <button type="submit">Ask the Rules Arbiter</button>
       </form>
-      <p id="arbiterStatus">Loading candidate source mode…</p>
+      <p id="arbiterStatus">Loading published source mode…</p>
       <div id="answer" class="arbiter-answer" aria-live="polite"></div>
     </section>
   </main>
