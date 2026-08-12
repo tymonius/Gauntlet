@@ -1,0 +1,14 @@
+{
+  "current_release": "v0.6.2",
+  "releases": {
+    "v0.6.2": {
+      "status": "current"
+    },
+    "v0.6.3": {
+      "status": "withdrawn",
+      "artifacts_preserved": true,
+      "public_cutover": false,
+      "reason": "Withdrawn after post-publication release-integrity and canonical Rulebook defects were discovered. Rebuild and full audit required before re-release."
+    }
+  }
+}
