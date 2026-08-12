@@ -15,7 +15,7 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
   <meta name="robots" content="noindex,nofollow" />
-  <meta name="description" content="Internal Gauntlet v0.6.3 visual review catalog for every playable card, every Leader, and every Territory." />
+  <meta name="description" content="Internal Gauntlet v0.6.3 visual review catalog for every playable card, every Leader, every Territory, and supplemental-card design prototypes." />
   <title>Gauntlet Card Review Catalog</title>
   <link rel="preconnect" href="https://use.typekit.net" />
   <link rel="preconnect" href="https://p.typekit.net" crossorigin />
@@ -25,9 +25,11 @@
   <link rel="stylesheet" href="card-design-refinement.css" />
   <link rel="stylesheet" href="faction-specimens.css" />
   <link rel="stylesheet" href="leader-card.css" />
+  <link rel="stylesheet" href="proposal-card.css" />
   <link rel="stylesheet" href="territory-card.css" />
   <link rel="stylesheet" href="card-review.css" />
   <script src="card-review.js" defer></script>
+  <script type="module" src="proposal-card.js"></script>
   <script src="card-design.js" defer></script>
 </head>
 <body class="faction-specimen-page">
@@ -39,6 +41,7 @@
     <nav aria-label="Card review navigation">
       <a href="#playable-cards">Playable cards</a>
       <a href="#leader-cards">Leaders</a>
+      <a href="#proposal-cards">Proposals</a>
       <a href="#territories">Territories</a>
       <button type="button" onclick="window.print()">Print at 100%</button>
     </nav>
@@ -48,10 +51,11 @@
     <section class="intro section-shell screen-only">
       <p class="eyebrow">v0.6.3 · complete visual review</p>
       <h1>Card review catalog</h1>
-      <p class="intro-copy">One review surface for the complete current card system. Every playable card uses the v0.6.3 production renderer; all twelve Leaders use the shared Leader frame; and all twenty-five Territories use the production landscape renderer. Click any card for a larger inspection view, then click its artwork to inspect the original uncropped image.</p>
+      <p class="intro-copy">One review surface for the complete current card system plus supplemental-card design prototypes. Every playable card uses the v0.6.3 production renderer; all twelve Leaders use the shared Leader frame; all twenty-five Territories use the production landscape renderer; and supplemental components can be developed here against the same visual language. Click any card for a larger inspection view, then click its artwork to inspect the original uncropped image.</p>
       <div class="status-row" aria-label="Review catalog status">
         <span><strong data-playable-count>128</strong> playable cards</span>
         <span>12 Leader cards</span>
+        <span>3 Proposal prototypes · both faces</span>
         <span><strong data-territory-count>25</strong> Territory cards</span>
         <span><strong data-arena-count>4</strong> Arenas</span>
         <span>Artwork gaps remain reviewable</span>
@@ -66,6 +70,7 @@
         <a href="#playable-mystics">Mystics</a>
         <a href="#playable-inquisition">Inquisition</a>
         <a href="#leader-cards">Leaders</a>
+        <a href="#proposal-cards">Proposals</a>
         <a href="#territories-standard">Territories</a>
         <a href="#territories-arenas">Arenas</a>
       </nav>
@@ -89,6 +94,15 @@
         <p>The complete twelve-Leader set, grouped by faction. These use the same production Leader grammar established by General and Commandant, with the current faction-specific abilities, resources, victory reminders, portraits, symbols, and metadata tints.</p>
       </div>
       <div id="leaderReviewSections"></div>
+    </section>
+
+    <section id="proposal-cards" class="card-section" aria-labelledby="proposals-title">
+      <div class="section-shell card-section-heading screen-only">
+        <p class="section-label">Supplemental-card prototype</p>
+        <h2 id="proposals-title">Diplomat Proposals / Treaty Articles</h2>
+        <p>Three paired-face prototypes spanning the Proposal set's density range: De-escalation, Open Channels, and Diplomatic Recognition. The unratified face uses the standard Diplomat card grammar with an artwork window; the ratified Treaty Article preserves the full Proposal text and Stake while replacing the artwork with a formal ratification field and wax seal.</p>
+      </div>
+      <div id="proposalReviewSections"></div>
     </section>
 
     <section id="territories" class="card-section territory-specimen-section" aria-labelledby="territory-title">
