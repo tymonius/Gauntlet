@@ -25,9 +25,9 @@ Canonical artwork paths:
 
 | Component pool | Total | Canonical on `main` | Approved, pending merge | Still needs artwork |
 | --- | ---: | ---: | ---: | ---: |
-| Playable cards | 128 | 86 | 4 | 38 |
+| Playable cards | 128 | 86 | 5 | 37 |
 | Territory cards | 25 | 2 | 0 | 23 |
-| **All tracked cards** | **153** | **88** | **4** | **61** |
+| **All tracked cards** | **153** | **88** | **5** | **60** |
 
 ### Playable cards by faction
 
@@ -36,11 +36,11 @@ Canonical artwork paths:
 | Neutral | 50 | 0 | 0 |
 | Military | 13 | 0 | 0 |
 | Diplomats | 9 | 4 | 0 |
-| Financiers | 12 | 0 | 1 |
+| Financiers | 12 | 1 | 0 |
 | Intelligence | 2 | 0 | 11 |
 | Mystics | 0 | 0 | 13 |
 | Inquisition | 0 | 0 | 13 |
-| **Playable-card total** | **86** | **4** | **38** |
+| **Playable-card total** | **86** | **5** | **37** |
 
 ## Neutral — complete
 
@@ -61,9 +61,13 @@ Approved, pending canonical merge:
 
 Diplomat artwork still needing creation/selection: **0**.
 
-## Financiers — 1
+## Financiers — complete, 1 pending canonical merge
 
-- [ ] Compound Interest
+Approved, pending canonical merge:
+
+- [x] Compound Interest
+
+Financier artwork still needing creation/selection: **0**.
 
 ## Intelligence — 11
 
