@@ -72,20 +72,29 @@ let index = fs.readFileSync(indexPath, 'utf8').replace(/\r\n/g, '\n');
 index = index
   .replace('load the approved starter, or customize', 'load an inherited starter list, or customize')
   .replace('Load approved starter', 'Load inherited starter')
+  .replace('Choose three; arrange after opening selection', 'Choose three; decide their setup order after opening selection')
   .replace(
     '<div id="territories" class="choice-grid"></div>',
-    '<p class="muted">Choose the three Territory cards that belong to the Deck. Their selection order here is not their setup order; arrange them after opening selection.</p><div id="territories" class="choice-grid"></div>'
+    '<p class="muted">Choose the three Territory cards that belong to the Deck. A loaded starter may recommend their order from your own end toward the opponent, but that order is strategy guidance, not a setup lock. After opening selection, you may keep the recommendation or rearrange the three Territories.</p><div id="territories" class="choice-grid"></div>'
   )
   .replace('<ol id="selectedTerritories"></ol>', '<ul id="selectedTerritories"></ul>');
 fs.writeFileSync(indexPath, index.replace(/\s+$/, '') + '\n', 'utf8');
 
 let app = fs.readFileSync(appPath, 'utf8').replace(/\r\n/g, '\n');
+if (!app.startsWith('import { migrateV063StarterCatalog }')) {
+  app = `import { migrateV063StarterCatalog } from './starter-adapter.js';\n\n${app}`;
+}
 app = app
   .replace('Published release load failed.', 'Candidate load failed.')
+  .replace('state.starters = starterData.decks ?? [];', 'state.starters = migrateV063StarterCatalog(starterData).decks ?? [];')
   .replace('No approved starter matches this faction and Leader.', 'No inherited starter matches this faction and Leader.')
   .replace(
     '<strong>${escapeHtml(territory.name)}${selectedIndex >= 0 ? ` · ${selectedIndex + 1}` : ""}</strong>',
     '<strong>${escapeHtml(territory.name)}</strong>'
+  )
+  .replace(
+    '<p><strong>Territories:</strong> ${deck.territories.map(escapeHtml).join(", ")}. Arrange these three after opening selection.</p>',
+    '<p><strong>Recommended Territory order (own end → opponent end):</strong> ${(deck.recommendedTerritoryOrder ?? deck.territories).map(escapeHtml).join(" → ")}</p><p><strong>Setup:</strong> After choosing your opening discard, keep this order or rearrange these three Territories to fit your opening Hand and discard. Initiative is not yet known.</p>'
   )
   .replace('validation.valid ? "Ready to print"', 'validation.valid ? "Candidate valid"')
   .replace('Legal v0.6.2 Deck.', 'Legal v0.6.3 candidate Deck.')
@@ -122,4 +131,4 @@ for (const file of completePages) normalizeFaviconMarkup(file);
 // v0.6.3 browser build cannot erase the Arbiter link.
 await import('./refine-v063-rules-arbiter-portal.mjs');
 
-console.log('Refined v0.6.3 development browser surfaces: Deckbuilder setup semantics, Rulebook development-source boundary, repository-safe relative navigation, canonical favicon markup, and candidate Rules Arbiter portal link.');
+console.log('Refined v0.6.3 development browser surfaces: starter title migration and strategic Territory-order guidance, Deckbuilder setup semantics, Rulebook development-source boundary, repository-safe relative navigation, canonical favicon markup, and candidate Rules Arbiter portal link.');
