@@ -1,0 +1,9 @@
+{
+  "version": "v0.6.3-release-candidate",
+  "status": "not-published",
+  "published_version": "v0.6.2",
+  "source_package_ready": true,
+  "print_package_ready": false,
+  "public_cutover_ready": false,
+  "notes": "Source release candidate assembled for validation. Printed-material generation and publication cutover remain separate gates."
+}
