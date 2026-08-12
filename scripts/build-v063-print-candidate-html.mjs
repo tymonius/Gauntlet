@@ -36,7 +36,7 @@ function inlineMarkdown(value) {
   let output = escapeHtml(value);
   output = output.replace(/`([^`]+)`/g, '<code>$1</code>');
   output = output.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  output = output.replace(/\*([^*]+)\*/g, '<em>$1</em>');
+  output = output.replace(/\*([^*]+)\*\*/g, '<em>$1</em>');
   output = output.replace(/\[([^\]]+)]\(([^)]+)\)/g, '<span class="print-link">$1</span>');
   return output;
 }
@@ -213,8 +213,8 @@ function adaptFixed(relativePath) {
   if (relativePath === 'player-mat.html') {
     content = content
       .replace('<div class="zone-heading"><h3>Action Reminder</h3><span>1 Action · two normal Action Opportunities</span></div>', '<div class="zone-heading"><h3>Action Reminder</h3><span>1 Action · Opening or Denouement</span></div>')
-      .replace('Your Front Line is the contiguous Territories you control from your own end. During Capture, add at most the next opposing Territory immediately beyond it when your token is on or beyond that Territory.', 'Start on your own-end Territory; setup placement is not movement or entering. Your Front Line is the contiguous Territories you control from your end. During Capture, add at most the next opposing Territory when your token is on or beyond it.')
-      .replace('After an attacking win, the attacker may become the occupier. Control normally changes only during a later Capture step when contiguous Front Line requirements are met.', 'Capturing the opponent-end Territory wins immediately. A separate legal Advance beyond the opponent\'s end can instead begin a Last Stand once they are beyond the Gauntlet; prior capture is not required.')
+      .replace('Your Front Line is the contiguous Territories you control from your own end. During Capture, add at most the next opposing Territory immediately beyond it when your token is on or beyond that Territory.', 'Start on your own-end Territory; setup placement is not movement or entering. Front Line = contiguous Territories you control from your end. Capture the next opposing Territory when eligible.')
+      .replace('After an attacking win, the attacker may become the occupier. Control normally changes only during a later Capture step when contiguous Front Line requirements are met.', 'Capturing the opponent-end Territory wins immediately. Once the opponent is beyond the Gauntlet, a separate legal Advance beyond their end can start a Last Stand without prior capture.')
       .replace('<strong>gauntlet.run/v0.6.3</strong>', '<strong>v0.6.3 release candidate</strong>');
   }
 
