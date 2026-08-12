@@ -60,6 +60,29 @@ setEffects('Sleeper Network', [
   ['Asset', 'At the end of each later turn, you may bind 1 card from your Hand face down. Maximum: number of Territories you control.\n\nAs an Action, put this card in your Graveyard and reveal its bound cards. Play each bound card you can for its Action effect; discard the rest.\n\nIf this card is Removed, reveal its bound cards; immediately play 1 for its Action effect and discard the rest.']
 ]);
 
+// Approved late v0.6.3 corrections from the starter-exclusion review.
+// Armistice upkeep must occur even when another effect suppresses the normal
+// Draw. Contingency Plan is general insurance against the defined involuntary
+// Asset Removal event and is stronger in battle while behind on Territories.
+replaceEffectText(
+  'Armistice',
+  'Asset',
+  'Neither player can start a battle. After your normal Draw, discard two cards from your Hand or discard this card. You cannot voluntarily discard this card at another time.',
+  'Neither player can start a battle. At the start of your Opening, discard two cards from your Hand or discard this card. You cannot voluntarily discard this card at another time.'
+);
+replaceEffectText(
+  'Contingency Plan',
+  'Asset',
+  'If this card is Removed because your Asset limit decreased, +1 Card.',
+  'If this card is Removed, +1 Card.'
+);
+replaceEffectText(
+  'Contingency Plan',
+  'Gambit/Tactic',
+  'If your opponent controls more Territories than you, +1 Battle Total.',
+  'If your opponent controls more Territories than you, +2 Battle Total.'
+);
+
 // Card-size formatting uses single line breaks for choices/list items and
 // reserves blank lines for genuinely separate paragraphs. Remove inherited
 // paragraph gaps that do not carry semantic structure on the long-card faces.
@@ -145,6 +168,12 @@ candidate.normalization = {
     compact_choice_line_breaks_applied: ['Shock and Awe', 'Margin Loan', 'Trade Concessions', 'Nonbinding Resolution'],
     long_card_blank_line_cleanup_applied: ['Leveraged Buyout']
   },
+  excluded_starter_balance_corrections: {
+    armistice_upkeep_uses_opening_timing: true,
+    contingency_plan_triggers_on_any_removal: true,
+    contingency_plan_battle_total: 2,
+    manifest_destiny_normal_deed_preserved: true
+  },
   final_mirror_sync: {
     synchronized_fields: synchronizedFields,
     source_of_truth: 'cards[].effects[]'
@@ -153,7 +182,7 @@ candidate.normalization = {
 
 writeFileSync(candidatePath, `${JSON.stringify(candidate, null, 2)}\n`);
 writeFileSync(reportPath, buildReport());
-console.log(`Applied v0.6.3 title renames, final residual-outlier revisions, and synchronized ${synchronizedFields} final card compatibility field(s) to effects[].`);
+console.log(`Applied v0.6.3 title renames, final residual-outlier revisions, excluded-starter corrections, and synchronized ${synchronizedFields} final card compatibility field(s) to effects[].`);
 
 function renameCandidateTitle(from, to) {
   replaceStrings(candidate, from, to);
@@ -233,6 +262,25 @@ function validate() {
     for (const obsolete of ['activate', 'battle', 'use']) {
       if (Object.hasOwn(card, obsolete)) throw new Error(`${card.name} retains obsolete field ${obsolete}.`);
     }
+  }
+
+  const armistice = byName.get('Armistice');
+  const contingency = byName.get('Contingency Plan');
+  const manifest = byName.get('Manifest Destiny');
+  if (armistice?.cost !== 4) throw new Error('Armistice cost drifted while correcting upkeep timing.');
+  if (contingency?.cost !== 1) throw new Error('Contingency Plan cost drifted during its correction.');
+  if (manifest?.cost !== 5) throw new Error('Manifest Destiny cost drifted while preserving its Deed interaction.');
+  if (armistice?.asset !== 'Neither player can start a battle. At the start of your Opening, discard two cards from your Hand or discard this card. You cannot voluntarily discard this card at another time.') {
+    throw new Error('Armistice upkeep must occur at the start of Opening even when the normal Draw is suppressed.');
+  }
+  if (contingency?.asset !== 'If this card is Removed, +1 Card.') {
+    throw new Error('Contingency Plan must trigger from any defined Asset Removal.');
+  }
+  if (contingency?.gambit_tactic !== 'If your opponent controls more Territories than you, +2 Battle Total.') {
+    throw new Error('Contingency Plan must grant +2 Battle Total while behind on Territories.');
+  }
+  if (!manifest?.rules_notes?.includes('After entering the Gauntlet, this card is a normal Territory with a normal Deed.')) {
+    throw new Error('Manifest Destiny must retain its normal Deed when it enters the Gauntlet.');
   }
 }
 

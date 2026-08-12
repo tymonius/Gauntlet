@@ -108,6 +108,21 @@ for (const card of data.cards) {
 }
 assert.deepEqual(data.territories, cardsSource.territories, 'Territory data must remain inherited unchanged at this stage');
 
+// Late v0.6.3 balance decisions from the starter-exclusion review are explicit
+// invariants. These do not modify costs or any Financier Deed-purchase rule.
+const cardsByName = new Map(data.cards.map((card) => [card.name, card]));
+const effectText = (card, label) => card.effects.find((effect) => effect.label === label)?.text;
+const armistice = cardsByName.get('Armistice');
+const contingency = cardsByName.get('Contingency Plan');
+const manifest = cardsByName.get('Manifest Destiny');
+assert.equal(armistice?.cost, 4);
+assert.equal(effectText(armistice, 'Asset'), 'Neither player can start a battle. At the start of your Opening, discard two cards from your Hand or discard this card. You cannot voluntarily discard this card at another time.');
+assert.equal(contingency?.cost, 1);
+assert.equal(effectText(contingency, 'Asset'), 'If this card is Removed, +1 Card.');
+assert.equal(effectText(contingency, 'Gambit/Tactic'), 'If your opponent controls more Territories than you, +2 Battle Total.');
+assert.equal(manifest?.cost, 5);
+assert(manifest?.rules_notes?.includes('After entering the Gauntlet, this card is a normal Territory with a normal Deed.'));
+
 // Retired setup/victory language must not survive outside the historical
 // normalization/provenance record.
 const playerState = structuredClone(data);
@@ -130,6 +145,7 @@ for (const card of data.cards) {
     assert(reference.includes(`**${effect.label}:** ${effect.text}`), `Complete Card Reference drift for ${card.name} / ${effect.label}`);
   }
 }
+assert(reference.includes('**Rules:** After entering the Gauntlet, this card is a normal Territory with a normal Deed.'), 'Complete Card Reference must expose Manifest Destiny\'s normal Deed.');
 for (const territory of data.territories) {
   assert(reference.includes(`## ${territory.name}`), `Complete Card Reference missing Territory ${territory.name}`);
   const effects = territory.effects?.length ? territory.effects : [{ label: 'Text', text: territory.text }];
@@ -150,4 +166,4 @@ if (process.env.GITHUB_BASE_REF) {
   assert.deepEqual(modifiedV062, [], `v0.6.3 canonical-data work must not modify immutable v0.6.2 release files: ${modifiedV062.join(', ')}`);
 }
 
-console.log('v0.6.3 canonical-data candidate validated: 128 exact cards with preserved provenance, 25 inherited Territories, current setup/victory/card rules, and synchronized Complete Card Reference.');
+console.log('v0.6.3 canonical-data candidate validated: 128 exact cards with preserved provenance, 25 inherited Territories, current setup/victory/card rules, synchronized Complete Card Reference, and late balance corrections.');

@@ -33,7 +33,7 @@ This reference is generated from the integrated v0.6.3 canonical-data candidate.
 
 **Cost:** 4
 
-**Asset:** Neither player can start a battle. After your normal Draw, discard two cards from your Hand or discard this card. You cannot voluntarily discard this card at another time.
+**Asset:** Neither player can start a battle. At the start of your Opening, discard two cards from your Hand or discard this card. You cannot voluntarily discard this card at another time.
 
 **Gambit/Tactic:** The attacker withdraws. Put every other Gambit and Tactic still in battle in its owner's Discard Pile, then put this card in its owner's Graveyard.
 
@@ -91,9 +91,9 @@ This reference is generated from the integrated v0.6.3 canonical-data candidate.
 
 **Cost:** 1
 
-**Asset:** If this card is Removed because your Asset limit decreased, +1 Card.
+**Asset:** If this card is Removed, +1 Card.
 
-**Gambit/Tactic:** If your opponent controls more Territories than you, +1 Battle Total.
+**Gambit/Tactic:** If your opponent controls more Territories than you, +2 Battle Total.
 
 ### Contraband
 
@@ -226,6 +226,8 @@ This reference is generated from the integrated v0.6.3 canonical-data candidate.
 **Action:** Put all other cards in your Hand and at least one Asset, totaling a minimum of three cards, in your Graveyard. Add this card to your end of the Gauntlet as a blank Territory you control.
 
 **Gambit/Tactic:** In the Aftermath, if you win as the attacker, insert this card into the Gauntlet at your Front Line as a blank Territory you control.
+
+**Rules:** After entering the Gauntlet, this card is a normal Territory with a normal Deed.
 
 ### New Recruits
 

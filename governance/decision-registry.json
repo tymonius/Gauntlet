@@ -78,7 +78,7 @@
       "id": "GNT-DEC-2026-0730-005",
       "title": "Armistice is a persistent Asset with post-draw upkeep",
       "recorded_on": "2026-07-30",
-      "status": "implemented",
+      "status": "superseded",
       "kind": "card",
       "subjects": [
         "neutral-armistice"
@@ -183,6 +183,56 @@
       "summary": "Manifest Destiny is canonical and Unique, but must remain unavailable digitally until its dynamic Territory insertion and cleanup behavior pass the governance merge gate.",
       "evidence": [
         "https://github.com/tymonius/Gauntlet/issues/289"
+      ],
+      "supersedes_decision_ids": [],
+      "supersedes_subjects": []
+    },
+    {
+      "id": "GNT-DEC-2026-0812-001",
+      "title": "Armistice upkeep occurs at the start of Opening",
+      "recorded_on": "2026-08-12",
+      "status": "canonicalized",
+      "kind": "card",
+      "subjects": [
+        "neutral-armistice"
+      ],
+      "summary": "Armistice remains a persistent cost-4 Asset, but its two-card upkeep occurs at the start of its controller's Opening rather than being contingent on a normal Draw occurring. Draw-suppression effects therefore cannot skip the upkeep. Its battle effect and other restrictions are unchanged.",
+      "evidence": [
+        "https://github.com/tymonius/Gauntlet/pull/571"
+      ],
+      "supersedes_decision_ids": [
+        "GNT-DEC-2026-0730-005"
+      ],
+      "supersedes_subjects": []
+    },
+    {
+      "id": "GNT-DEC-2026-0812-002",
+      "title": "Manifest Destiny creates a Territory with a normal Deed",
+      "recorded_on": "2026-08-12",
+      "status": "canonicalized",
+      "kind": "card",
+      "subjects": [
+        "neutral-manifest-destiny"
+      ],
+      "summary": "Whenever Manifest Destiny enters the Gauntlet as a Territory, it is a normal Territory with a normal Deed. Existing Deed purchase costs, cost caps, purchase procedures, income rules, and Controlling Interest rules apply unchanged; Manifest Destiny creates no special Deed-pricing exception.",
+      "evidence": [
+        "https://github.com/tymonius/Gauntlet/pull/571"
+      ],
+      "supersedes_decision_ids": [],
+      "supersedes_subjects": []
+    },
+    {
+      "id": "GNT-DEC-2026-0812-003",
+      "title": "Contingency Plan covers any Removal and grants +2 Battle Total while behind",
+      "recorded_on": "2026-08-12",
+      "status": "canonicalized",
+      "kind": "card",
+      "subjects": [
+        "neutral-contingency-plan"
+      ],
+      "summary": "Contingency Plan remains cost 1. Its Asset effect draws one card whenever Contingency Plan is Removed under the defined involuntary Asset Removal event, regardless of the cause. Its Gambit/Tactic effect grants +2 Battle Total when the opponent controls more Territories.",
+      "evidence": [
+        "https://github.com/tymonius/Gauntlet/pull/571"
       ],
       "supersedes_decision_ids": [],
       "supersedes_subjects": []
