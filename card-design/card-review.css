@@ -1,0 +1,188 @@
+/* Unified internal card review catalog. */
+.card-review-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 1.1rem;
+}
+
+.card-review-nav a {
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--page-rule);
+  color: var(--page-ink);
+  font-family: var(--font-interface);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.045em;
+  text-decoration: none;
+  text-transform: uppercase;
+}
+
+.card-review-nav a:hover,
+.card-review-nav a:focus-visible {
+  border-color: var(--page-ink);
+  background: rgba(255, 255, 255, 0.54);
+}
+
+.review-faction-block {
+  width: min(76rem, calc(100% - 2rem));
+  margin: 0 auto clamp(3rem, 6vw, 5rem);
+}
+
+.review-faction-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.55rem;
+  border-bottom: 1px solid var(--page-rule);
+}
+
+.review-faction-heading h3 {
+  margin: 0;
+  font-family: var(--font-display-web);
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 500;
+}
+
+.review-faction-heading span {
+  color: var(--page-muted);
+  font-family: var(--font-interface);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.full-card-review-grid,
+.leader-review-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 2.5in);
+  justify-content: center;
+  gap: 0.55in 0.42in;
+}
+
+.full-card-review-frame {
+  display: block;
+  width: 2.5in;
+  height: 3.5in;
+  border: 0;
+  border-radius: 0.12in;
+  background: transparent;
+  box-shadow: 0 0.16in 0.36in var(--card-shadow);
+}
+
+.review-card-label,
+.leader-review-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.45rem;
+  min-height: 1.1rem;
+  margin: 0 0 0.48rem;
+  color: var(--page-muted);
+  font-family: var(--font-interface);
+  font-size: 0.6rem;
+}
+
+.review-card-label strong,
+.leader-review-label strong {
+  overflow: hidden;
+  color: var(--page-ink);
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.review-card-label span,
+.leader-review-label span {
+  flex: none;
+  text-align: right;
+}
+
+.review-card-label .art-pending {
+  color: #7e3929;
+  font-weight: 700;
+}
+
+.leader-review-grid .leader-specimen {
+  width: 2.5in;
+}
+
+.leader-review-grid .gauntlet-card {
+  box-shadow: 0 0.16in 0.36in var(--card-shadow);
+}
+
+.review-note {
+  width: min(58rem, calc(100% - 2rem));
+  margin: -1rem auto 3rem;
+  color: var(--page-muted);
+  font-family: var(--font-interface);
+  font-size: 0.78rem;
+  line-height: 1.55;
+  text-align: center;
+}
+
+.territory-specimen-section {
+  padding-top: 0;
+}
+
+.territory-specimen-wrap {
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+  margin-inline: auto;
+  padding: 0 1rem 1.2rem;
+}
+
+.territory-specimen-label {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.8rem;
+  margin: 0 0 0.65rem;
+  color: var(--page-muted);
+  font-family: var(--font-interface);
+  font-size: 0.62rem;
+}
+
+.territory-specimen-label strong {
+  color: var(--page-ink);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+@media screen {
+  .territory-specimen-wrap .territory-card {
+    box-shadow:
+      0 0.16in 0.36in var(--card-shadow),
+      inset 0 0 0 0.015in rgba(255, 255, 255, 0.42);
+  }
+}
+
+@media (max-width: 36rem) {
+  .review-faction-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}
+
+@media print {
+  .review-faction-block {
+    width: auto;
+    margin: 0 0 0.35in;
+  }
+
+  .full-card-review-grid,
+  .leader-review-grid {
+    grid-template-columns: repeat(3, 2.5in);
+    gap: 0.2in;
+  }
+
+  .full-card-review-frame {
+    box-shadow: none;
+  }
+}
