@@ -147,6 +147,8 @@ function previewHtml() {
 <body class="faction-specimen-page">
   <main id="renderTarget" aria-live="polite"></main>
   <script src="/artifacts/v0.6.3/production-render/catalog.js"></script>
+  <script src="/tts/artwork-direction-overrides.js"></script>
+  <script src="/tts/artwork-crop.js"></script>
   <script src="/artifacts/v0.6.3/production-render/renderer-production.js"></script>
   <script src="/card-design/card-design.js"></script>
 </body>
@@ -165,14 +167,7 @@ async function writePreviewSurface(catalog) {
 
   const productionRendererPath = join(ROOT, 'tts', 'renderer', 'renderer.js');
   const rendererSource = await readFile(productionRendererPath, 'utf8');
-  const normalFitOnly = rendererSource.replace(
-    "    fitForTts(element);\n    document.body.dataset.renderReady = 'true';",
-    "    element.dataset.productionFit = element.classList.contains('fit-warning') ? 'warning' : 'fit';\n    document.body.dataset.renderReady = 'true';",
-  );
-  if (normalFitOnly === rendererSource) {
-    throw new Error('Unable to disable TTS emergency fitting for the production preview renderer.');
-  }
-  await writeFile(join(OUTPUT_ROOT, 'renderer-production.js'), normalFitOnly);
+  await writeFile(join(OUTPUT_ROOT, 'renderer-production.js'), rendererSource);
 }
 
 function contentType(path) {
@@ -223,7 +218,7 @@ function pxToPoints(value) {
 async function measureCard(page, card) {
   await page.setViewportSize({ width: 520, height: 700 });
   await page.goto(
-    `${page.__baseUrl}/artifacts/v0.6.3/production-render/renderer.html?card=${encodeURIComponent(card.id)}`,
+    `${page.__baseUrl}/artifacts/v0.6.3/production-render/renderer.html?card=${encodeURIComponent(card.id)}&fit=production`,
     { waitUntil: 'load' },
   );
   await page.waitForSelector('.gauntlet-card');
