@@ -1,3 +1,5 @@
+import { migrateV063StarterCatalog } from './starter-adapter.js';
+
 const V063_VERSION = "v0.6.3-candidate";
 
 const STORAGE_KEY = "gauntlet-v063-candidate-deckbuilder";
@@ -15,7 +17,7 @@ async function init() {
     fetch("../../releases/v0.6.2/Gauntlet_v0.6.2_Starter_Decks.json", { cache: "no-store" }).then(assertJson)
   ]);
   state.data = data;
-  state.starters = starterData.decks ?? [];
+  state.starters = migrateV063StarterCatalog(starterData).decks ?? [];
   restore();
   applyQuerySelection();
   bind();
@@ -87,7 +89,7 @@ function renderStarterPreview() {
   const deck = selectedStarter();
   $("loadStarter").disabled = !deck;
   $("starterPreview").innerHTML = deck
-    ? `<p class="eyebrow">Inherited v0.6.2 starter list</p><h3>${escapeHtml(deck.name)}</h3><p>${escapeHtml(deck.summary)}</p><p><strong>Inherited strategy note:</strong> ${escapeHtml(deck.openingPlan ?? "Establish the faction engine early.")}</p><p><strong>Signature cards:</strong> ${(deck.signatureCards ?? []).map(escapeHtml).join(", ")}</p><p><strong>Territories:</strong> ${deck.territories.map(escapeHtml).join(", ")}. Arrange these three after opening selection.</p>`
+    ? `<p class="eyebrow">Inherited v0.6.2 starter list</p><h3>${escapeHtml(deck.name)}</h3><p>${escapeHtml(deck.summary)}</p><p><strong>Inherited strategy note:</strong> ${escapeHtml(deck.openingPlan ?? "Establish the faction engine early.")}</p><p><strong>Signature cards:</strong> ${(deck.signatureCards ?? []).map(escapeHtml).join(", ")}</p><p><strong>Recommended Territory order (own end → opponent end):</strong> ${(deck.recommendedTerritoryOrder ?? deck.territories).map(escapeHtml).join(" → ")}</p><p><strong>Setup:</strong> After choosing your opening discard, keep this order or rearrange these three Territories to fit your opening Hand and discard. Initiative is not yet known.</p>`
     : "No inherited starter matches this faction and Leader.";
 }
 
