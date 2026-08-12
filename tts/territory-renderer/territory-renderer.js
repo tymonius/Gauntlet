@@ -62,6 +62,11 @@
     ]);
     await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
     fitTerritory(card);
+    window.GauntletArtworkCrop?.apply(
+      card.querySelector('.territory-art img:not([hidden])'),
+      territory.artDirection,
+      { id: territory.id, label: territory.name },
+    );
     document.body.dataset.renderReady = 'true';
   }
 
