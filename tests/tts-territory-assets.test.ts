@@ -77,8 +77,8 @@ describe("TTS Territory assets", () => {
     expect(dedicatedSpecimenPage).toContain("open parchment spacing rather than a divider");
     expect(specimenPage).toMatch(/class="territory-art(?:\s+has-image)?"/);
     expect(dedicatedSpecimenPage).toContain('class="territory-art"');
-    expect(specimenPage).toContain("a framed illustration spans the card beneath it");
-    expect(specimenPage).toContain("a full-width panel across the bottom");
+    expect(specimenPage).toContain('class="territory-effect"');
+    expect(specimenPage).toContain('class="territory-footer"');
   });
 
   it("gives Territory effect text its natural height before clipping", () => {
@@ -90,7 +90,7 @@ describe("TTS Territory assets", () => {
 
   it("implements Territory mockups on the card-design webpages", () => {
     expect(specimenPage).toContain('id="territory-title"');
-    expect(specimenPage).toContain("Territory card mockup");
+    expect(specimenPage).toContain('class="card-section territory-specimen-section"');
     expect(specimenPage).toContain('aria-label="High Ground Territory card-front prototype"');
     expect(dedicatedSpecimenPage).toContain("Gauntlet Territory Card Mockup");
     expect(dedicatedSpecimenPage).toContain('aria-label="High Ground Territory card-front prototype"');
