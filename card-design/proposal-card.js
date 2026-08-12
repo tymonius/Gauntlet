@@ -1,0 +1,84 @@
+const PROPOSAL_SOURCE = '/releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json';
+const PROTOTYPE_IDS = ['de-escalation', 'open-channels', 'diplomatic-recognition'];
+
+const root = document.querySelector('#proposalReviewSections');
+
+function esc(value) {
+  return String(value ?? '').replace(/[&<>'"]/g, character => ({
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    "'": '&#39;',
+    '"': '&quot;',
+  })[character]);
+}
+
+function ruleSection(label, text) {
+  return `<section class="rule-section"><h4>${esc(label)}</h4><p>${esc(text)}</p></section>`;
+}
+
+function supplementalLabel(type) {
+  return `<div class="proposal-type-line"><span class="proposal-faction-emblem" aria-hidden="true"></span><span>${esc(type)}</span></div>`;
+}
+
+function proposalFace(proposal, ratified = false) {
+  const type = ratified ? 'Treaty Article' : 'Proposal';
+  const longTitle = proposal.name.length >= 20 ? ' long-title' : '';
+  const art = ratified
+    ? `<figure class="card-art proposal-ratified-panel" aria-label="Ratified treaty article"><div class="proposal-ratified-word">Ratified</div><div class="proposal-wax-seal" aria-hidden="true"></div></figure>`
+    : `<figure class="card-art proposal-art-pending" aria-label="Artwork pending"><span>Artwork pending</span></figure>`;
+
+  return `<article class="gauntlet-card faction-component-card proposal-card diplomat-card${longTitle}" data-faction="diplomats" data-art-max="1.52" data-art-min="1.04" data-title-min="8.5" aria-label="${esc(proposal.name)} ${esc(type)} card">
+    <div class="card-interior">
+      <header class="card-heading">
+        <h3 class="card-title">${esc(proposal.name)}</h3>
+        ${supplementalLabel(type)}
+        <div class="value-medallion" title="Influence Stake: ${Number(proposal.stake)}" aria-label="Influence Stake ${Number(proposal.stake)}">${Number(proposal.stake)}</div>
+      </header>
+      ${art}
+      <div class="card-rules">
+        ${ruleSection('Requirement', proposal.requirement)}
+        ${ruleSection('Accepted', proposal.accepted)}
+        ${ruleSection('Refused', proposal.refused)}
+      </div>
+      <footer class="card-footer"><span>Diplomats</span><span>${esc(type)}</span><span>v0.6.3</span></footer>
+    </div>
+  </article>`;
+}
+
+function reviewPair(proposal) {
+  return `<section class="proposal-review-pair" id="proposal-${esc(proposal.id)}" aria-labelledby="proposal-${esc(proposal.id)}-title">
+    <div class="review-faction-heading screen-only">
+      <h3 id="proposal-${esc(proposal.id)}-title">${esc(proposal.name)}</h3>
+      <span>Stake ${Number(proposal.stake)} Influence</span>
+    </div>
+    <div class="proposal-face-grid">
+      <div class="proposal-face">
+        <p class="proposal-face-label screen-only"><strong>Proposal</strong><span>Unratified face</span></p>
+        ${proposalFace(proposal, false)}
+      </div>
+      <div class="proposal-face">
+        <p class="proposal-face-label screen-only"><strong>Treaty Article</strong><span>Ratified face</span></p>
+        ${proposalFace(proposal, true)}
+      </div>
+    </div>
+  </section>`;
+}
+
+async function renderProposalPrototypes() {
+  if (!root) return;
+  try {
+    const response = await fetch(PROPOSAL_SOURCE, { cache: 'no-cache' });
+    if (!response.ok) throw new Error(`HTTP ${response.status}`);
+    const canonical = await response.json();
+    const proposals = PROTOTYPE_IDS.map(id => (canonical.proposals || []).find(proposal => proposal.id === id));
+    const missing = PROTOTYPE_IDS.filter((id, index) => !proposals[index]);
+    if (missing.length) throw new Error(`Missing canonical Proposal${missing.length === 1 ? '' : 's'}: ${missing.join(', ')}`);
+    root.innerHTML = `<div class="proposal-review-block">${proposals.map(reviewPair).join('')}</div>`;
+  } catch (error) {
+    root.innerHTML = `<p class="review-note">Unable to load Proposal prototypes: ${esc(error.message)}</p>`;
+    console.error(error);
+  }
+}
+
+await renderProposalPrototypes();
