@@ -19,6 +19,7 @@ on:
       - 'src/v063/**'
       - 'src/content/v063.ts'
       - 'images/faction-symbols/**'
+      - 'card-design/**'
       - 'package.json'
   workflow_dispatch:
 
@@ -35,10 +36,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - name: Check out source branch
+      - name: Check out validation target
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref || github.ref_name }}
           fetch-depth: 0
 
       - name: Use Node.js
