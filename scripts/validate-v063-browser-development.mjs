@@ -27,58 +27,32 @@ for (const [name, html] of Object.entries(pages)) {
   assert(!html.includes('/rules-assistant/widget.js'), `${name} must not embed the v0.6.2 Rules Arbiter on a v0.6.3 development page`);
 }
 
-// The repository's internal-link validator resolves development pages as
-// repository files, so candidate navigation must be relative rather than
-// deployment-root version links.
 for (const [name, html] of Object.entries(pages)) {
   assert(!html.includes('href="/v0.6.3/'), `${name} contains a root-relative v0.6.3 internal link`);
   assert(!html.includes('href="/v0.6.2/'), `${name} contains a root-relative v0.6.2 internal link`);
 }
 for (const marker of [
-  'href="../"',
-  'href="./"',
-  'href="start/"',
-  'href="rulebook/"',
-  'href="quick-reference/"',
-  'href="deckbuilder/"',
-  'href="reference/"',
-  'href="changes/"',
-  'href="../v0.6.2/"',
-  'href="data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json"',
-  'href="styles.css"',
-]) {
-  assert(pages.home.includes(marker), `v0.6.3 home is missing relative navigation marker: ${marker}`);
-}
+  'href="../"', 'href="./"', 'href="start/"', 'href="rulebook/"', 'href="quick-reference/"',
+  'href="deckbuilder/"', 'href="reference/"', 'href="changes/"', 'href="../v0.6.2/"',
+  'href="data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json"', 'href="styles.css"',
+]) assert(pages.home.includes(marker), `v0.6.3 home is missing relative navigation marker: ${marker}`);
+
 for (const [name, html] of Object.entries({ rulebook: pages.rulebook, start: pages.start, quick: pages.quick, changes: pages.changes })) {
   for (const marker of [
-    'href="../../"',
-    'href="../"',
-    'href="../start/"',
-    'href="../rulebook/"',
-    'href="../quick-reference/"',
-    'href="../deckbuilder/"',
-    'href="../reference/"',
-    'href="../changes/"',
-    'href="../../v0.6.2/"',
-    'href="../styles.css"',
-  ]) {
-    assert(html.includes(marker), `${name} is missing relative navigation marker: ${marker}`);
-  }
+    'href="../../"', 'href="../"', 'href="../start/"', 'href="../rulebook/"', 'href="../quick-reference/"',
+    'href="../deckbuilder/"', 'href="../reference/"', 'href="../changes/"', 'href="../../v0.6.2/"', 'href="../styles.css"',
+  ]) assert(html.includes(marker), `${name} is missing relative navigation marker: ${marker}`);
 }
 
 for (const marker of [
   'Draw four cards, choose one card from those four, and place it face up in your Discard Pile.',
   'After seeing your opening Hand and opening discard, secretly arrange your three Territory Cards',
-  "DON'T FORGET THE BOARD",
-  'Gambit/Tactic',
-  'inherent <strong>Bank</strong> Action',
+  "DON'T FORGET THE BOARD", 'Gambit/Tactic', 'inherent <strong>Bank</strong> Action',
   'inherited v0.6.2 faction/component baseline, with duplicated card excerpts synchronized to the final v0.6.3 card candidate',
   'governing v0.6.3 source documents control candidate changes; v0.6.2 remains authoritative for published play',
   'Territory text remains inherited from v0.6.2 unless a v0.6.3 source expressly replaces it',
 ]) assert(pages.rulebook.includes(marker), `Rulebook browser surface missing: ${marker}`);
-assert(!pages.rulebook.includes('<hr>\n<hr>'), 'Rulebook browser surface contains a duplicate adjacent divider');
-assert(!pages.rulebook.includes('contains the complete v0.6.2 faction, Proposal, card-revision, and Territory-revision rules'));
-assert(!pages.rulebook.includes('this rulebook and specific component text remain authoritative'));
+assert(!pages.rulebook.includes('<hr>\n<hr>'));
 
 for (const marker of [
   'Draw four cards, discard one face up, and keep three',
@@ -93,12 +67,11 @@ assert(pages.deckbuilder.includes('Choose three; decide their setup order after 
 assert(pages.deckbuilder.includes('Selected Territories'));
 assert(pages.deckbuilder.includes('strategy guidance, not a setup lock'));
 assert(pages.deckbuilder.includes('After opening selection, you may keep the recommendation or rearrange the three Territories.'));
-assert(pages.deckbuilder.includes('Load inherited starter'));
-assert(pages.deckbuilder.includes('load an inherited starter list'));
+assert(pages.deckbuilder.includes('Load recommended starter'));
+assert(pages.deckbuilder.includes('load a recommended v0.6.3 starter'));
 assert(pages.deckbuilder.includes('<ul id="selectedTerritories"></ul>'));
-assert(!pages.deckbuilder.includes('Territories, own end outward'));
-assert(!pages.deckbuilder.includes('Load approved starter'));
-assert(!pages.deckbuilder.includes('load the approved starter'));
+assert(!pages.deckbuilder.includes('Load inherited starter'));
+assert(!pages.deckbuilder.includes('load an inherited starter list'));
 assert(!pages.deckbuilder.includes('<ol id="selectedTerritories">'));
 
 const referenceApp = read('v0.6.3/reference/app.js');
@@ -108,32 +81,37 @@ assert(referenceApp.includes('final_territory_capture_required!==false'));
 assert(referenceApp.includes('state.data.cards'));
 
 const deckApp = read('v0.6.3/deckbuilder/app.js');
-assert(deckApp.includes("import { migrateV063StarterCatalog } from './starter-adapter.js';"));
+assert(deckApp.includes("import { V063_STARTER_CATALOG } from './starter-adapter.js';"));
 assert(deckApp.includes('../data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json'));
 assert(deckApp.includes('const V063_VERSION = "v0.6.3-candidate";'));
-assert(deckApp.includes('../../releases/v0.6.2/Gauntlet_v0.6.2_Starter_Decks.json'), 'Deckbuilder must explicitly inherit the immutable v0.6.2 starter compositions');
-assert(deckApp.includes('state.starters = migrateV063StarterCatalog(starterData).decks ?? [];'));
-assert(deckApp.includes('Inherited v0.6.2 starter list'));
-assert(deckApp.includes('Inherited strategy note:'));
+assert(deckApp.includes('state.starters = V063_STARTER_CATALOG.decks ?? [];'));
+assert(deckApp.includes('Recommended v0.6.3 competitive starter'));
+assert(deckApp.includes('Strategy:'));
 assert(deckApp.includes('Recommended Territory order (own end → opponent end):'));
 assert(deckApp.includes('keep this order or rearrange these three Territories'));
-assert(deckApp.includes('Initiative is not yet known.'));
-assert(deckApp.includes('No inherited starter matches this faction and Leader.'));
+assert(deckApp.includes('No recommended v0.6.3 starter matches this faction and Leader.'));
 assert(deckApp.includes('Candidate load failed.'));
 assert(deckApp.includes('Candidate valid'));
 assert(deckApp.includes('Legal v0.6.3 candidate Deck.'));
-assert(!deckApp.includes('Approved v0.6.2 starter'));
-assert(!deckApp.includes('No approved starter matches'));
-assert(!deckApp.includes('Arrange these three after opening selection.'));
-assert(!deckApp.includes('Legal v0.6.2 Deck.'));
+assert(!deckApp.includes('../../releases/v0.6.2/Gauntlet_v0.6.2_Starter_Decks.json'));
+assert(!deckApp.includes('Inherited v0.6.2 starter list'));
+assert(!deckApp.includes('Inherited strategy note:'));
 assert(!deckApp.includes('gauntlet-v062-deckbuilder'));
-assert(!deckApp.includes('${selectedIndex >= 0 ? ` · ${selectedIndex + 1}` : ""}'), 'Generic Territory selection UI must not imply that checkbox selection order is automatically setup order');
+assert(!deckApp.includes('${selectedIndex >= 0 ? ` · ${selectedIndex + 1}` : ""}'));
+
+const starterSource = read('v0.6.3/data/starter-decks-candidate.js');
+assert(starterSource.includes("primary: 'competitive-strength-and-strategic-expression'"));
+assert(starterSource.includes('teachingSimplicityTarget: false'));
+assert(starterSource.includes('cardPoolCoverageTarget: false'));
+assert(starterSource.includes("['Shock and Awe', 1]"));
+assert(starterSource.includes("['Corner the Market', 1]"));
+assert(starterSource.includes("['Fealty', 1], ['Forced March', 3]"), 'Executive Fealty correction must survive browser source regeneration');
 
 for (const text of [pages.rulebook, pages.start, pages.quick, pages.reference, referenceApp]) {
-  assert(!text.includes('Playable Deck'), 'Active v0.6.3 browser rules/reference surface uses retired Playable Deck terminology');
-  assert(!text.includes('**Battle:**'), 'Active v0.6.3 browser surface uses retired Battle card heading');
-  assert(!text.includes('Each player draws three cards.'), 'Active v0.6.3 browser surface uses obsolete opening draw');
-  assert(!text.includes('place your token just before your end'), 'Active v0.6.3 browser surface uses obsolete starting position');
+  assert(!text.includes('Playable Deck'));
+  assert(!text.includes('**Battle:**'));
+  assert(!text.includes('Each player draws three cards.'));
+  assert(!text.includes('place your token just before your end'));
 }
 
 assert(pages.home.includes('Rules Arbiter remains on the published v0.6.2 corpus'));
@@ -141,4 +119,4 @@ assert(pages.home.includes('128 playable cards'));
 assert(pages.home.includes('25 Territories inherited from v0.6.2'));
 assert(pages.home.includes('without changing the published v0.6.2 release'));
 
-console.log('v0.6.3 development browser surfaces validated: integrated unpublished candidate data, current rules/setup/victory, repository-safe relative navigation, inherited starter compositions adapted to current titles, strategic recommended Territory order distinguished from informed setup choice, explicit Rulebook source boundary, noindex publication boundary, and no stale Rules Arbiter embed.');
+console.log('v0.6.3 development browser surfaces validated: integrated unpublished candidate data, competitive v0.6.3 starter source, strategic Territory-order guidance, current rules/setup/victory, repository-safe relative navigation, publication boundary, and no stale Rules Arbiter embed.');

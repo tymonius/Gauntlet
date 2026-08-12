@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-8YYYZJGGPE');
+  </script>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gauntlet v0.6.3 Reference Guide</title>
+  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
+  <link rel="stylesheet" href="styles.css">
+  <style>@page{size:Letter portrait;margin:.45in .5in .55in}</style>
+</head>
+<body class="document-page">
+  <main class="document-shell ">
+    <header class="document-header"><p style="margin:0"><strong style="color:var(--accent);text-transform:uppercase;letter-spacing:.08em">Gauntlet v0.6.3 release candidate</strong> · Compact tableside reference · Prepared August 11, 2026 · Not published</p></header>
+    <article class="document-body"><h2 id="gauntlet-v0-6-3-reference-guide">Gauntlet v0.6.3 Reference Guide</h2>
+<p><strong>Status:</strong> Release candidate — not published<br> <strong>Version:</strong> v0.6.3</p>
+<h2 id="setup">Setup</h2>
+<blockquote>
+<p><strong>Faction setup → Draw 4 / discard 1 / keep 3 → arrange Territories → form and reveal Gauntlet → place tokens → roll first player</strong></p>
+</blockquote>
+<ul>
+<li>Shuffle the remaining Deck to form the Draw Pile after faction setup.</li>
+<li>Arrange Territories with the opening Hand and face-up opening discard known.</li>
+<li>Each token starts on the Territory at its player's own end; setup placement is neither movement nor entering.</li>
+<li>Roll for first player only after both players complete opening selection and Territory arrangement.</li>
+</ul>
+<hr>
+<h2 id="run-the-gauntlet">Run the Gauntlet</h2>
+<p>Win immediately by either:</p>
+<ul>
+<li>capturing the Territory at your opponent's end; or</li>
+<li>winning your opponent's Last Stand.</li>
+</ul>
+<p>After forcing the opponent beyond their end, a <strong>separate legal movement sequence</strong> may Advance beyond the Gauntlet and initiate the Last Stand. You do not need to control the final Territory first.</p>
+<hr>
+<h2 id="your-turn">Your Turn</h2>
+<blockquote>
+<p><strong>Capture → Draw → Opening → Movement → Denouement → Cleanup</strong></p>
+</blockquote>
+<h3 id="capture">Capture</h3>
+<p>If your token is beyond your <strong>Front Line</strong>, capture the next opposing Territory immediately beyond that line.</p>
+<ul>
+<li>Your controlled Territories must remain contiguous from your own end.</li>
+<li>Your position may extend beyond your control.</li>
+<li>Normal Capture advances your Front Line by at most one Territory per turn.</li>
+</ul>
+<h3 id="draw">Draw</h3>
+<p>Draw one card.</p>
+<h3 id="opening">Opening</h3>
+<p>You may take your Action now.</p>
+<h3 id="movement">Movement</h3>
+<p>Choose one:</p>
+<ul>
+<li><strong>Advance:</strong> move one position toward the opponent's end.</li>
+<li><strong>Hold:</strong> remain where you are.</li>
+<li><strong>Fall Back:</strong> move one position toward your own end.</li>
+</ul>
+<p>Entering the opponent's position creates a pending battle and ends the current movement sequence.</p>
+<h3 id="denouement">Denouement</h3>
+<p>You may take your Action now if you did not take it during Opening.</p>
+<h3 id="cleanup">Cleanup</h3>
+<p>Resolve end-of-turn effects and discard down to the Hand limit. Pass the active-player marker.</p>
+<hr>
+<h2 id="card-use-reminder">Card use reminder</h2>
+<p>Cards may print <strong>Action</strong>, <strong>Asset</strong>, <strong>Gambit</strong>, <strong>Tactic</strong>, or <strong>Gambit/Tactic</strong> effects. A card with an Asset effect has an inherent Bank Action unless it prints a special banking procedure.</p>
+<h2 id="actions">Actions</h2>
+<p>Each turn, normally take <strong>one Action</strong> during either Opening or Denouement.</p>
+<p>An Action may:</p>
+<ul>
+<li>play one card for its <strong>Action</strong> effect;</li>
+<li>bank one card from Hand using its inherent <strong>Bank</strong> Action if it has an Asset effect;</li>
+<li>take one legal <strong>Faction Action</strong>; or</li>
+<li>discard one of your Assets.</li>
+</ul>
+<p>Normally take no more than one Action during either phase.</p>
+<p>An additional Action does not by itself permit two Actions during the same phase.</p>
+<p>A <strong>Faction Action</strong> lists the phase in which it is legal.</p>
+<p>A <strong>Faction Ability</strong> occurs at its stated timing and does not use an Action unless it says otherwise.</p>
+<hr>
+<h2 id="pending-battle-and-terms">Pending Battle and Terms</h2>
+<blockquote>
+<p><strong>Pending battle → Terms → Onset → Gambits</strong></p>
+</blockquote>
+<p>Before Onset:</p>
+<ol>
+<li>establish the attacker, defender, contested position, and the attacker's previous position;</li>
+<li>resolve the Terms timing if a Diplomat is involved; and</li>
+<li>proceed according to the decision.</li>
+</ol>
+<h3 id="accepted-terms">Accepted Terms</h3>
+<p>Apply the Proposal's Accepted effect. No battle begins.</p>
+<p>Unless the Proposal says otherwise:</p>
+<blockquote>
+<p>The attacker withdraws. The defender remains at the contested position.</p>
+</blockquote>
+<p>No Onset, Gambit, Reserve, Tactic, Outcome, or Aftermath occurs.</p>
+<h3 id="refused-or-no-terms">Refused or no Terms</h3>
+<p>Proceed to <strong>Onset</strong>.</p>
+<hr>
+<h2 id="battle">Battle</h2>
+<blockquote>
+<p><strong>Onset → set Gambits → form Reserves → reveal Gambits → choose Tactics → reveal Tactics → Outcome → Aftermath</strong></p>
+</blockquote>
+<h3 id="onset">Onset</h3>
+<p>Onset begins the battle. Resolve Onset effects before Gambits are set.</p>
+<h3 id="outcome">Outcome</h3>
+<p>The higher battle total wins.</p>
+<h4 id="defensive-edge">Defensive Edge</h4>
+<blockquote>
+<p><strong>Defensive Edge:</strong> When the defender has Defensive Edge, the defender wins tied battle totals.</p>
+</blockquote>
+<p>The defender normally has Defensive Edge when:</p>
+<ul>
+<li>the defender controls the contested Territory; or</li>
+<li>the defender is making a Last Stand.</li>
+</ul>
+<p>An effect may remove Defensive Edge, including an applicable Arena Territory effect.</p>
+<h4 id="tiebreak-roll">Tiebreak Roll</h4>
+<p>If the tie remains unresolved:</p>
+<blockquote>
+<p>Each player rolls one die. Do not apply advantage, disadvantage, card effects, numerical modifiers, or the previous battle totals. Higher roll wins. Reroll further ties.</p>
+</blockquote>
+<p>Only an effect that expressly refers to a <strong>Tiebreak Roll</strong> may modify it.</p>
+<hr>
+<h2 id="retreat-and-withdrawal">Retreat and Withdrawal</h2>
+<blockquote>
+<p><strong>A losing player retreats; a player who leaves without losing withdraws.</strong></p>
+</blockquote>
+<p>Retreat and withdrawal normally move a player the same way:</p>
+<ul>
+<li>attacker: return to the position from which they entered;</li>
+<li>defender: move one position toward their own end;</li>
+<li>only the attacker withdraws: the defender remains in the contested position;</li>
+<li>only the defender withdraws: the attacker remains in the contested position and becomes the occupier when applicable;</li>
+<li>both withdraw: move the attacker first, then the defender; neither becomes the occupier because of the withdrawal.</li>
+</ul>
+<h3 id="retreat">Retreat</h3>
+<ul>
+<li>follows a battle loss;</li>
+<li>the battle has a winner and loser;</li>
+<li>win, loss, retreat, Occupation, and other result effects apply.</li>
+</ul>
+<h3 id="withdrawal">Withdrawal</h3>
+<ul>
+<li>ends or prevents a pending or active battle without a winner;</li>
+<li>win, loss, and retreat effects do not occur;</li>
+<li>before Onset: no battle or Aftermath occurs;</li>
+<li>after Onset: complete the remaining non-result steps of the Aftermath and clear any committed battle cards using their normal destinations.</li>
+</ul>
+<p><strong>Fall Back</strong> is ordinary Movement. It is neither retreat nor withdrawal.</p>
+<hr>
+<h2 id="front-line">Front Line</h2>
+<p>Your <strong>Front Line</strong> is the unbroken sequence of Territories you control from your own end.</p>
+<ul>
+<li>Control cannot skip an opposing Territory.</li>
+<li>Your token may move beyond your Front Line.</li>
+<li>During Capture, add the next opposing Territory immediately beyond your Front Line if your token is on or beyond it.</li>
+<li>The captured Territory may be behind your token.</li>
+<li>Deep Position alone does not capture the final Territory. Last Stand access instead requires a new legal Advance beyond the opponent's end after that opponent is beyond the Gauntlet.</li>
+</ul>
+<hr>
+<h2 id="core-vocabulary">Core Vocabulary</h2>
+<table><thead><tr><th>Term</th><th>Meaning</th></tr></thead><tbody>
+<tr><td>Opening</td><td>Action phase before Movement.</td></tr>
+<tr><td>Denouement</td><td>Action phase after Movement and any resulting battle.</td></tr>
+<tr><td>Faction Action</td><td>Faction-specific option chosen when taking an Action; lists its legal phase.</td></tr>
+<tr><td>Faction Ability</td><td>Faction-specific effect at its own timing; does not use an Action unless stated.</td></tr>
+<tr><td>Fall Back</td><td>Ordinary Movement one position toward your own end.</td></tr>
+<tr><td>Pending battle</td><td>Pre-battle state before Onset.</td></tr>
+<tr><td>Onset</td><td>Opening stage of an active battle.</td></tr>
+<tr><td>Aftermath</td><td>Closing stage of an active battle.</td></tr>
+<tr><td>Defensive Edge</td><td>Conditional benefit that causes the defender to win tied battle totals.</td></tr>
+<tr><td>Tiebreak Roll</td><td>Separate unmodified one-die sudden-death roll.</td></tr>
+<tr><td>Front Line</td><td>Contiguous controlled Territories from your own end.</td></tr>
+<tr><td>Retreat</td><td>Displacement after losing a battle.</td></tr>
+<tr><td>Withdraw</td><td>Leave or prevent a battle without determining a winner.</td></tr>
+</tbody></table></article>
+  </main>
+</body>
+</html>

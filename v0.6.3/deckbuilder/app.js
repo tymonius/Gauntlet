@@ -1,4 +1,4 @@
-import { migrateV063StarterCatalog } from './starter-adapter.js';
+import { V063_STARTER_CATALOG } from './starter-adapter.js';
 
 const V063_VERSION = "v0.6.3-candidate";
 
@@ -12,24 +12,21 @@ init().catch(error => {
 });
 
 async function init() {
-  const [data, starterData] = await Promise.all([
-    fetch("../data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json", { cache: "no-store" }).then(assertJson),
-    fetch("../../releases/v0.6.2/Gauntlet_v0.6.2_Starter_Decks.json", { cache: "no-store" }).then(assertJson)
-  ]);
+  const data = await fetch("../data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json", { cache: "no-store" }).then(assertJson);
   state.data = data;
-  state.starters = migrateV063StarterCatalog(starterData).decks ?? [];
+  state.starters = V063_STARTER_CATALOG.decks ?? [];
   restore();
   applyQuerySelection();
   bind();
   renderFactionOptions();
-  $("sourceStatus").innerHTML = `<strong class="status-good">${data.cards.length} candidate cards loaded.</strong><p>v0.6.3 development · ${data.territories.length} Territories · ${data.proposals.length} Proposals</p>`;
+  $("sourceStatus").innerHTML = `<strong class="status-good">${data.cards.length} candidate cards loaded.</strong><p>v0.6.3 development · ${data.territories.length} Territories · ${data.proposals.length} Proposals · ${state.starters.length} competitive starter Decks</p>`;
   $("app").classList.remove("hidden");
   if (new URLSearchParams(location.search).get("starter") === "1") loadStarter();
   else renderAll();
 }
 
 async function assertJson(response) {
-  if (!response.ok) throw new Error(`Starter catalog returned ${response.status}`);
+  if (!response.ok) throw new Error(`Candidate data returned ${response.status}`);
   return response.json();
 }
 
@@ -89,8 +86,8 @@ function renderStarterPreview() {
   const deck = selectedStarter();
   $("loadStarter").disabled = !deck;
   $("starterPreview").innerHTML = deck
-    ? `<p class="eyebrow">Inherited v0.6.2 starter list</p><h3>${escapeHtml(deck.name)}</h3><p>${escapeHtml(deck.summary)}</p><p><strong>Inherited strategy note:</strong> ${escapeHtml(deck.openingPlan ?? "Establish the faction engine early.")}</p><p><strong>Signature cards:</strong> ${(deck.signatureCards ?? []).map(escapeHtml).join(", ")}</p><p><strong>Recommended Territory order (own end → opponent end):</strong> ${(deck.recommendedTerritoryOrder ?? deck.territories).map(escapeHtml).join(" → ")}</p><p><strong>Setup:</strong> After choosing your opening discard, keep this order or rearrange these three Territories to fit your opening Hand and discard. Initiative is not yet known.</p>`
-    : "No inherited starter matches this faction and Leader.";
+    ? `<p class="eyebrow">Recommended v0.6.3 competitive starter</p><h3>${escapeHtml(deck.name)}</h3><p>${escapeHtml(deck.summary)}</p><p><strong>Strategy:</strong> ${escapeHtml(deck.strategy ?? deck.summary ?? "Express the Leader's strongest plan.")}</p><p><strong>Signature cards:</strong> ${(deck.signatureCards ?? []).map(escapeHtml).join(", ")}</p><p><strong>Recommended Territory order (own end → opponent end):</strong> ${(deck.recommendedTerritoryOrder ?? deck.territories).map(escapeHtml).join(" → ")}</p><p><strong>Setup:</strong> After choosing your opening discard, keep this order or rearrange these three Territories to fit your opening Hand and discard. Initiative is not yet known.</p>`
+    : "No recommended v0.6.3 starter matches this faction and Leader.";
 }
 
 function legalCards() {
@@ -218,7 +215,7 @@ function loadStarter() {
   state.cards = {};
   for (const item of deck.cards) {
     const card = state.data.cards.find(entry => entry.name === item.name);
-    if (!card) throw new Error(`Inherited starter card missing from candidate data: ${item.name}`);
+    if (!card) throw new Error(`v0.6.3 starter card missing from candidate data: ${item.name}`);
     state.cards[card.id] = item.quantity;
   }
   state.territories = deck.territories.map(name => {

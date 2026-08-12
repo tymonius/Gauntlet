@@ -40,7 +40,8 @@
     "returning": "artifacts/v0.6.3/player-facing/Gauntlet_v0.6.3_Returning_Player_Changes_Candidate.md",
     "canonical": "artifacts/v0.6.3/canonical/Gauntlet_v0.6.3_Canonical_Data_Candidate.json",
     "completeReference": "artifacts/v0.6.3/canonical/Gauntlet_v0.6.3_Complete_Card_Reference_Candidate.md",
-    "starters": "releases/v0.6.2/Gauntlet_v0.6.2_Starter_Decks.json"
+    "starters": "v0.6.3/data/starter-decks-candidate.js",
+    "starterAudit": "docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md"
   },
   "development_review_surfaces": [
     "v0.6.3/rulebook/",
@@ -66,6 +67,7 @@
     "rules_arbiter_candidate_integrated": true,
     "digital_candidate_integrated": true,
     "starter_guidance_integrated": true,
+    "competitive_starter_baseline_integrated": true,
     "source_release_candidate_assembled": true,
     "print_package_generated": false,
     "ready_for_publication": false

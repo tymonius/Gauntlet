@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { migrateV063StarterCatalog } from '../v0.6.3/deckbuilder/starter-adapter.js';
+import { V063_STARTER_CATALOG } from '../v0.6.3/data/starter-decks-candidate.js';
 
 const root = process.cwd();
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8').replace(/\r\n/g, '\n');
@@ -8,98 +8,81 @@ const readJson = (relative) => JSON.parse(read(relative));
 const failures = [];
 const assert = (condition, message) => { if (!condition) failures.push(message); };
 
-const inherited = readJson('releases/v0.6.2/Gauntlet_v0.6.2_Starter_Decks.json');
 const canonical = readJson('v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json');
-const adapted = migrateV063StarterCatalog(inherited);
-const app = read('v0.6.3/deckbuilder/app.js');
-const index = read('v0.6.3/deckbuilder/index.html');
-const refiner = read('scripts/refine-v063-browser-development.mjs');
-const source = read('docs/Gauntlet_v0.6.3_Starter_Deck_Presentation_Candidate.md');
+const audit = read('docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md');
+const source = V063_STARTER_CATALOG;
 
-assert(inherited.version === 'v0.6.2', `Expected published starter source v0.6.2, received ${inherited.version}.`);
-assert(adapted.version === 'v0.6.3-candidate-adapter', 'Adapted starter catalog must identify the v0.6.3 candidate adapter.');
-assert((adapted.decks ?? []).length === 12, `Expected 12 adapted starters, found ${(adapted.decks ?? []).length}.`);
+assert(source.version === 'v0.6.3-candidate', `Expected v0.6.3 starter source, received ${source.version}.`);
+assert(source.optimizationPolicy?.primary === 'competitive-strength-and-strategic-expression', 'Starter source must identify competitive strength and strategic expression as the primary optimization target.');
+assert(source.optimizationPolicy?.teachingSimplicityTarget === false, 'Teaching simplicity must not be a starter optimization target.');
+assert(source.optimizationPolicy?.cardPoolCoverageTarget === false, 'Card-pool coverage must not be a starter optimization target.');
+assert((source.decks ?? []).length === 12, `Expected 12 starters, found ${(source.decks ?? []).length}.`);
 assert(canonical.version === 'v0.6.3-candidate', `Expected canonical v0.6.3-candidate, received ${canonical.version}.`);
 
 const cardsByName = new Map(canonical.cards.map((card) => [card.name, card]));
 const territoriesByName = new Map(canonical.territories.map((territory) => [territory.name, territory]));
-const sourceReserves = inherited.decks.flatMap((deck) => deck.cards).filter((item) => item.name === 'Reserves').reduce((sum, item) => sum + item.quantity, 0);
-const sourceSmugglersPass = inherited.decks.flatMap((deck) => deck.territories).filter((name) => name === "Smuggler's Pass").length;
-let adaptedSecondLine = 0;
-let adaptedSmugglersRun = 0;
+const factionsById = new Map(canonical.factions.map((faction) => [faction.id, faction]));
+const seenDeckIds = new Set();
+const usedTitles = new Set();
 
-assert(sourceReserves > 0, 'Published starter source no longer contains the expected Reserves title migration.');
-assert(sourceSmugglersPass > 0, "Published starter source no longer contains the expected Smuggler's Pass title migration.");
-
-for (const deck of adapted.decks ?? []) {
+for (const deck of source.decks ?? []) {
   const label = `${deck.factionId}/${deck.leaderId} (${deck.name})`;
+  assert(!seenDeckIds.has(deck.id), `${label}: duplicate starter id ${deck.id}.`);
+  seenDeckIds.add(deck.id);
+
+  const faction = factionsById.get(deck.factionId);
+  assert(Boolean(faction), `${label}: unknown faction.`);
+  assert((faction?.leaders ?? []).some((leader) => slug(leader.name) === deck.leaderId), `${label}: Leader does not belong to faction.`);
+
   let cardCount = 0;
   let deckValue = 0;
   for (const item of deck.cards ?? []) {
-    assert(item.name !== 'Reserves', `${label}: retired card title Reserves survived adaptation.`);
     const card = cardsByName.get(item.name);
-    assert(Boolean(card), `${label}: adapted card ${JSON.stringify(item.name)} is absent from v0.6.3 canonical data.`);
+    assert(Boolean(card), `${label}: card ${JSON.stringify(item.name)} is absent from v0.6.3 canonical data.`);
+    assert(Number.isInteger(item.quantity) && item.quantity > 0, `${label}: ${item.name} has invalid quantity ${item.quantity}.`);
     if (!card) continue;
-    if (item.name === 'Second Line') adaptedSecondLine += item.quantity;
+    assert(card.allegiance === 'Neutral' || slug(card.allegiance) === deck.factionId, `${label}: ${item.name} has illegal allegiance ${card.allegiance}.`);
+    assert(!(card.unique && item.quantity > 1), `${label}: Unique card ${item.name} appears ${item.quantity} times.`);
     cardCount += item.quantity;
     deckValue += item.quantity * card.cost;
+    usedTitles.add(item.name);
   }
-  assert(cardCount === 30, `${label}: adapted starter has ${cardCount} cards instead of 30.`);
-  assert(deckValue === 60, `${label}: adapted starter has ${deckValue} Deckbuilding Value instead of 60.`);
+  assert(cardCount === 30, `${label}: starter has ${cardCount} cards instead of 30.`);
+  assert(deckValue === 60, `${label}: starter has ${deckValue} Deckbuilding Value instead of 60.`);
+  assert(deck.cardCount === 30, `${label}: stored cardCount must be 30.`);
+  assert(deck.deckbuildingValue === 60, `${label}: stored deckbuildingValue must be 60.`);
 
   assert(Array.isArray(deck.territories) && deck.territories.length === 3, `${label}: must select exactly three Territories.`);
-  assert(JSON.stringify(deck.recommendedTerritoryOrder) === JSON.stringify(deck.territories), `${label}: recommended Territory order must preserve the inherited ordered three-Territory set.`);
+  assert(new Set(deck.territories ?? []).size === 3, `${label}: Territories must be different.`);
+  assert(JSON.stringify(deck.recommendedTerritoryOrder) === JSON.stringify(deck.territories), `${label}: recommended Territory order must match the selected strategic order.`);
   assert(deck.territoryOrderGuidance?.meaning === 'strategy-recommendation', `${label}: Territory order must be marked as strategy guidance.`);
   assert(deck.territoryOrderGuidance?.direction === 'own-end-to-opponent-end', `${label}: recommended order direction must be own end to opponent end.`);
   assert(deck.territoryOrderGuidance?.chosenAfterOpeningSelection === true, `${label}: actual Territory order must be chosen after opening selection.`);
-  assert(deck.territoryOrderGuidance?.mayRearrangeAtSetup === true, `${label}: starter recommendation must remain rearrangeable at setup.`);
+  assert(deck.territoryOrderGuidance?.mayRearrangeAtSetup === true, `${label}: recommendation must remain rearrangeable at setup.`);
   assert(deck.territoryOrderGuidance?.informedByInitiative === false, `${label}: Territory arrangement must remain uninformed by initiative.`);
 
   let arenas = 0;
   for (const name of deck.territories ?? []) {
-    assert(name !== "Smuggler's Pass", `${label}: retired Territory title Smuggler's Pass survived adaptation.`);
     const territory = territoriesByName.get(name);
-    assert(Boolean(territory), `${label}: adapted Territory ${JSON.stringify(name)} is absent from v0.6.3 canonical data.`);
-    if (name === "Smuggler's Run") adaptedSmugglersRun += 1;
+    assert(Boolean(territory), `${label}: Territory ${JSON.stringify(name)} is absent from v0.6.3 canonical data.`);
     if (territory?.arena) arenas += 1;
   }
-  assert(arenas <= 1, `${label}: adapted starter contains ${arenas} Arenas.`);
+  assert(arenas <= 1, `${label}: starter contains ${arenas} Arenas.`);
 }
 
-assert(adaptedSecondLine === sourceReserves, `Second Line migration changed quantity: expected ${sourceReserves}, found ${adaptedSecondLine}.`);
-assert(adaptedSmugglersRun === sourceSmugglersPass, `Smuggler's Run migration changed starter occurrence count: expected ${sourceSmugglersPass}, found ${adaptedSmugglersRun}.`);
-
-for (const marker of [
-  "import { migrateV063StarterCatalog } from './starter-adapter.js';",
-  'state.starters = migrateV063StarterCatalog(starterData).decks ?? [];',
-  'Recommended Territory order (own end → opponent end):',
-  'keep this order or rearrange these three Territories',
-  'Initiative is not yet known.',
-]) assert(app.includes(marker), `v0.6.3 Deckbuilder app is missing starter-guidance marker: ${marker}`);
-
-for (const marker of [
-  'strategy guidance, not a setup lock',
-  'After opening selection, you may keep the recommendation or rearrange the three Territories.',
-]) assert(index.includes(marker), `v0.6.3 Deckbuilder page is missing setup-guidance marker: ${marker}`);
-
-for (const marker of [
-  'migrateV063StarterCatalog',
-  'strategy guidance, not a setup lock',
-  'Recommended Territory order (own end → opponent end):',
-]) assert(refiner.includes(marker), `Browser refiner is missing reproducibility marker: ${marker}`);
-
-for (const marker of [
-  'The order is a **strategy recommendation**, not a mandatory setup instruction.',
-  'the player may keep the starter\'s recommended order or rearrange the three Territories',
-  '**Reserves** becomes **Second Line**.',
-  "**Smuggler's Pass** becomes **Smuggler's Run**.",
-  'The published v0.6.2 starter files remain immutable.',
-]) assert(source.includes(marker), `Starter presentation source is missing adopted marker: ${marker}`);
+assert(usedTitles.size === 109, `Competitive starter baseline should use 109 unique titles; found ${usedTitles.size}.`);
+assert(audit.includes('Fealty remains'), 'Audit must document the Executive Fealty transcription correction.');
+assert(audit.includes('109 of 128 playable titles (85.2%)'), 'Audit must document the adopted pool-level coverage result.');
+assert(audit.includes('Teaching simplicity and card-pool coverage are **not** optimization targets.'), 'Audit must preserve the competitive optimization objective.');
 
 if (failures.length) {
-  console.error('\nv0.6.3 starter guidance validation failed:');
+  console.error('\nv0.6.3 competitive starter validation failed:');
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
 
-console.log(`v0.6.3 starter guidance validation passed: ${adapted.decks.length} starters, ${sourceReserves} Reserves→Second Line copies, ${sourceSmugglersPass} Smuggler's Pass→Smuggler's Run starter occurrences, and strategic Territory-order guidance preserved.`);
+console.log(`v0.6.3 competitive starter validation passed: ${source.decks.length} starters, every Deck 30/60, ${usedTitles.size}/128 unique titles represented, strategic Territory guidance preserved.`);
+
+function slug(value) {
+  return value.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+}

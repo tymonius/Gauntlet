@@ -1,21 +1,33 @@
 # Gauntlet v0.6.3 Starter Deck Presentation Candidate
 
-**Status:** Adopted v0.6.3 starter-presentation rule awaiting release packaging  
-**Baseline compositions:** `releases/v0.6.2/Gauntlet_v0.6.2_Starter_Decks.json`  
+**Status:** Adopted v0.6.3 competitive starter baseline awaiting publication cutover  
+**Composition source:** `v0.6.3/data/starter-decks-candidate.js`  
+**Competitive audit:** `docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md`  
 **Setup authority:** `docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md`
 
-The twelve v0.6.2 recommended starter Deck compositions remain the baseline starter compositions for v0.6.3 unless a later balance decision expressly changes a Deck list. This document governs how those inherited starters are named and presented under the v0.6.3 setup rules.
+The twelve recommended v0.6.3 starter Decks are now independent v0.6.3 compositions. They are optimized to be **strong, capable of winning, and capable of expressing powerful or creative Leader strategies**. Teaching simplicity and card-pool coverage are not optimization targets.
 
-## 1. Current v0.6.3 names
+The published v0.6.2 starter package remains immutable historical release material and is no longer the composition source for v0.6.3 starters.
 
-Starter materials use current v0.6.3 card and Territory names.
+## 1. Competitive baseline
 
-- **Reserves** becomes **Second Line**.
-- **Smuggler's Pass** becomes **Smuggler's Run**.
+Every adopted starter Deck must:
 
-These are title migrations, not substitutions for different cards or Territories. Quantities, Deckbuilding Value, and the selected three-Territory set remain inherited.
+- contain at least 30 cards and remain at or below 60 Deckbuilding Value;
+- use only Neutral cards and cards from its selected faction;
+- respect Unique-copy restrictions;
+- select exactly three different Territories with no more than one Arena; and
+- have its exact construction validated against current v0.6.3 canonical data.
 
-## 2. Recommended Territory order
+The adopted baseline uses exactly **30 cards / 60 Deckbuilding Value** for each of the twelve recommended Decks. The competitive audit records the slot-by-slot rationale and the still-excluded-card review queue.
+
+Starter construction should not be altered merely to make a Deck easier to teach or to increase aggregate card-pool coverage. A change should improve competitive strength, strategic expression, matchup health, or demonstrated play quality.
+
+## 2. Current v0.6.3 names
+
+Starter materials use current v0.6.3 card and Territory names, including **Second Line** and **Smuggler's Run**. Historical v0.6.2 titles remain only in the immutable v0.6.2 release.
+
+## 3. Recommended Territory order
 
 A starter Deck may recommend an order for its three Territories as part of its strategy guidance.
 
@@ -28,9 +40,9 @@ During setup:
 3. the player may keep the starter's recommended order or rearrange the three Territories; and
 4. the first-player roll still occurs only after both players have completed Territory arrangement.
 
-The starter recommendation therefore provides a sound default and communicates intended strategy without overriding the informed Territory-arrangement decision created by v0.6.3.
+The recommendation therefore communicates intended strategy without overriding the informed Territory-arrangement decision created by v0.6.3.
 
-## 3. Browser and printed presentation
+## 4. Browser and printed presentation
 
 When a starter is displayed to a player, prefer language equivalent to:
 
@@ -38,8 +50,10 @@ When a starter is displayed to a player, prefer language equivalent to:
 >
 > **Setup:** After choosing your opening discard, keep this order or rearrange these three Territories to fit your opening Hand and discard. Initiative is not yet known.
 
-A generic Territory selector must not imply that selection order is automatically setup order. It may explain that a loaded starter can carry a recommended strategic order while custom Decks simply choose their three Territories and determine the actual order during setup.
+Player-facing surfaces should describe these as **recommended v0.6.3 starter Decks**, not inherited v0.6.2 lists or simplified teaching Decks.
 
-## 4. Release boundary
+A generic Territory selector must not imply that selection order is automatically setup order.
 
-The published v0.6.2 starter files remain immutable. v0.6.3 development surfaces adapt those compositions forward rather than editing historical release artifacts.
+## 5. Release boundary
+
+The published v0.6.2 starter files remain immutable. v0.6.3 development, release-candidate, print-candidate, and later published v0.6.3 surfaces use the independent competitive starter source above.

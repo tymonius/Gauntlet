@@ -48,6 +48,24 @@ for (const name of files) {
       `An Action may:\n\n- play a card for its Action effect;\n- bank a card from Hand using its inherent Bank Action if it has an Asset effect;\n- take a legal Faction Action; or\n- discard one of the player's Assets.`,
       'First Game Action summary'
     );
+    text = replaceRequired(
+      text,
+      '- **Resource:** Capital; begin with 2 for the v0.6.2 test.',
+      '- **Resource:** Capital; begin with 2.',
+      'First Game Financier starting Capital'
+    );
+    text = replaceRequired(
+      text,
+      'The published Deckbuilder and `/start/` flow use this release\'s canonical data and starter catalog.',
+      'The v0.6.3 development Deckbuilder and `/v0.6.3/start/` flow use the v0.6.3 candidate data and adapted starter catalog.',
+      'First Game starter browser boundary'
+    );
+    text = replaceRequired(
+      text,
+      `For the v0.6.2 release:\n\n1. The Official Rulebook and specific component text govern play.\n2. \`Gauntlet_v0.6.2_Starter_Decks.json\` governs the twelve recommended starter compositions.\n3. This document governs first-game and tableside presentation.\n4. v0.6.1 remains available as an immutable historical release package.`,
+      `For the v0.6.3 release candidate:\n\n1. The v0.6.3 Rulebook candidate and specific component text govern candidate play and review.\n2. \`Gauntlet_v0.6.3_Starter_Decks.json\` governs the twelve recommended starter compositions in the assembled source candidate.\n3. This document governs v0.6.3 first-game and tableside candidate presentation.\n4. v0.6.2 remains the immutable published playtest release until the publication cutover is completed.`,
+      'First Game authority and release boundary'
+    );
     text = renumberTopLevelSections(text);
   }
 
@@ -63,4 +81,4 @@ for (const name of files) {
   fs.writeFileSync(target, text.replace(/\s+$/, '') + '\n', 'utf8');
 }
 
-console.log('Normalized v0.6.3 player-facing candidate structure, Action summaries, and section numbering.');
+console.log('Normalized v0.6.3 player-facing candidate structure, Action summaries, section numbering, current Financier starting-Capital wording, and First Game release boundary.');

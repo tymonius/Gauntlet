@@ -1,18 +1,29 @@
 {
   "version": "v0.6.3-release-candidate",
   "status": "Release candidate — not published",
-  "purpose": "Recommended v0.6.3 first-game Decks using the inherited v0.6.2 compositions, current v0.6.3 names, and informed Territory-arrangement guidance.",
+  "purpose": "Recommended v0.6.3 starter Decks optimized for competitive strength, winning capability, and powerful or creative Leader strategies; teaching simplicity and card-pool coverage are not optimization targets.",
   "construction": {
-    "playableCardCount": 30,
-    "deckbuildingValue": 60,
+    "minimumCards": 30,
+    "maximumDeckbuildingValue": 60,
     "territoryCount": 3,
     "maximumArenas": 1,
-    "maximumRecommendedCopiesPerNonUniqueTitle": 3,
-    "openingHandSize": 3,
-    "earlyReviewCardsSeen": 5,
-    "minimumEarlyPlanCopies": 8,
-    "minimumOpeningAccessProbability": 0.6,
-    "minimumFiveCardAccessProbability": 0.8
+    "uniqueCopyLimit": 1
+  },
+  "optimizationPolicy": {
+    "primary": "competitive-strength-and-strategic-expression",
+    "teachingSimplicityTarget": false,
+    "cardPoolCoverageTarget": false,
+    "status": "theoretical baseline pending matchup testing",
+    "audit": "docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md"
+  },
+  "territoryOrderSemantics": {
+    "meaning": "strategy-recommendation",
+    "direction": "own-end-to-opponent-end",
+    "chosenAfterOpeningSelection": true,
+    "mayRearrangeAtSetup": true,
+    "informedByOpeningHand": true,
+    "informedByOpeningDiscard": true,
+    "informedByInitiative": false
   },
   "decks": [
     {
@@ -21,23 +32,14 @@
       "leaderId": "general",
       "name": "Forward Doctrine",
       "recommendedFirstLeader": true,
-      "summary": "Create repeated attack opportunities, spend Command to extend victories, and turn tempo into Front Line gains.",
-      "openingPlan": "Use Forced March, Advance Guard, or Invasion during Opening to choose the first battle. Preserve Command until Rally, Onward, or Rout changes the position that matters.",
-      "firstGameTip": "Invasion ends as soon as it creates a pending battle, so move one Position at a time. Assimilation is strongest when the contested Territory is the next Territory beyond your Front Line.",
-      "opponentWatch": "The General can create several attack opportunities in one turn. Track Command and expect larger attacker Reserves when Invasion appears.",
+      "summary": "Offensive tempo, repeated attacks, Command conversion, and immediate Front Line progress.",
+      "strategy": "Offensive tempo, repeated attacks, Command conversion, and immediate Front Line progress.",
       "signatureCards": [
+        "Shock and Awe",
         "Invasion",
-        "Field Command",
         "Give Chase",
-        "Assimilation"
+        "Battlefield Promotion"
       ],
-      "openingPlanCards": [
-        "Forced March",
-        "Advance Guard",
-        "Invasion",
-        "Give Chase"
-      ],
-      "openingPlanCopies": 9,
       "territories": [
         "Supply Depot",
         "King's Road",
@@ -45,24 +47,32 @@
       ],
       "cards": [
         {
-          "name": "Unbroken Ranks",
+          "name": "Advance Guard",
           "quantity": 2
         },
         {
-          "name": "Battlefield Promotion",
-          "quantity": 2
-        },
-        {
-          "name": "Encampment",
+          "name": "Assimilation",
           "quantity": 1
         },
         {
-          "name": "Rearguard",
+          "name": "Battlefield Promotion",
+          "quantity": 1
+        },
+        {
+          "name": "Brothers in Arms",
+          "quantity": 1
+        },
+        {
+          "name": "Consolidation",
           "quantity": 1
         },
         {
           "name": "Field Command",
-          "quantity": 2
+          "quantity": 1
+        },
+        {
+          "name": "Forced March",
+          "quantity": 3
         },
         {
           "name": "Give Chase",
@@ -73,11 +83,11 @@
           "quantity": 2
         },
         {
-          "name": "Forced March",
-          "quantity": 3
+          "name": "New Recruits",
+          "quantity": 2
         },
         {
-          "name": "New Recruits",
+          "name": "Pathfinders",
           "quantity": 1
         },
         {
@@ -85,37 +95,36 @@
           "quantity": 2
         },
         {
-          "name": "Supplies",
-          "quantity": 2
-        },
-        {
-          "name": "Advance Guard",
-          "quantity": 2
-        },
-        {
-          "name": "Consolidation",
-          "quantity": 2
-        },
-        {
-          "name": "Disruption",
-          "quantity": 1
-        },
-        {
           "name": "Reinforcements",
           "quantity": 2
         },
         {
-          "name": "Tactical Planning",
+          "name": "Reserve Force",
+          "quantity": 1
+        },
+        {
+          "name": "Resourcefulness",
+          "quantity": 1
+        },
+        {
+          "name": "Second Line",
           "quantity": 2
         },
         {
-          "name": "Assimilation",
+          "name": "Shock and Awe",
           "quantity": 1
+        },
+        {
+          "name": "Supplies",
+          "quantity": 2
+        },
+        {
+          "name": "Unbroken Ranks",
+          "quantity": 2
         }
       ],
       "cardCount": 30,
       "deckbuildingValue": 60,
-      "inheritedFromVersion": "v0.6.2",
       "recommendedTerritoryOrder": [
         "Supply Depot",
         "King's Road",
@@ -137,24 +146,14 @@
       "leaderId": "commandant",
       "name": "Holdfast",
       "recommendedFirstLeader": false,
-      "summary": "Prepare controlled ground, absorb the attack, and turn defensive wins into retreat pressure and delayed capture.",
-      "openingPlan": "Bank or place a defensive card early. Entrenchment, Palisade Wall, Encampment, and Protracted Siege make the opponent fight through prepared positions.",
-      "firstGameTip": "Do not advance merely because you can. A controlled Territory with Defensive Edge, a prepared Asset, and Command available for Entrench or Repel is often your strongest position.",
-      "opponentWatch": "The Commandant rewards attacking into prepared ground. Check banked Assets, Command, Landslide, and Protracted Siege before committing.",
+      "summary": "Make controlled ground brutally difficult to take, convert defensive wins into retreat distance and counterattack pressure, and create prepared retreat traps.",
+      "strategy": "Make controlled ground brutally difficult to take, convert defensive wins into retreat distance and counterattack pressure, and create prepared retreat traps.",
       "signatureCards": [
-        "Hold the Line",
-        "Countercharge",
         "Landslide",
-        "Protracted Siege"
-      ],
-      "openingPlanCards": [
-        "Encampment",
-        "Entrenchment",
-        "Palisade Wall",
+        "Court Martial",
         "Hold the Line",
-        "Protracted Siege"
+        "Resistance"
       ],
-      "openingPlanCopies": 9,
       "territories": [
         "Garrison",
         "Training Grounds",
@@ -162,63 +161,67 @@
       ],
       "cards": [
         {
-          "name": "Unbroken Ranks",
-          "quantity": 2
-        },
-        {
-          "name": "Battlefield Promotion",
-          "quantity": 2
+          "name": "Countercharge",
+          "quantity": 1
         },
         {
           "name": "Encampment",
           "quantity": 2
         },
         {
+          "name": "Field Command",
+          "quantity": 1
+        },
+        {
+          "name": "Hold the Line",
+          "quantity": 1
+        },
+        {
           "name": "Rearguard",
           "quantity": 2
         },
         {
-          "name": "Countercharge",
-          "quantity": 2
+          "name": "Reserve Force",
+          "quantity": 1
         },
         {
-          "name": "Hold the Line",
-          "quantity": 2
-        },
-        {
-          "name": "Forced March",
-          "quantity": 2
-        },
-        {
-          "name": "New Recruits",
-          "quantity": 2
-        },
-        {
-          "name": "Rallying Cry",
+          "name": "Unbroken Ranks",
           "quantity": 3
         },
         {
-          "name": "Supplies",
-          "quantity": 2
+          "name": "Counterintelligence",
+          "quantity": 1
         },
         {
           "name": "Entrenchment",
           "quantity": 2
         },
         {
+          "name": "Fealty",
+          "quantity": 1
+        },
+        {
+          "name": "Foothold",
+          "quantity": 1
+        },
+        {
+          "name": "Fortifications",
+          "quantity": 1
+        },
+        {
+          "name": "Court Martial",
+          "quantity": 1
+        },
+        {
+          "name": "Landslide",
+          "quantity": 1
+        },
+        {
+          "name": "New Recruits",
+          "quantity": 1
+        },
+        {
           "name": "Palisade Wall",
-          "quantity": 2
-        },
-        {
-          "name": "Stand Ground",
-          "quantity": 1
-        },
-        {
-          "name": "Tactical Planning",
-          "quantity": 1
-        },
-        {
-          "name": "Valor",
           "quantity": 1
         },
         {
@@ -226,13 +229,28 @@
           "quantity": 1
         },
         {
-          "name": "Landslide",
+          "name": "Rallying Cry",
+          "quantity": 2
+        },
+        {
+          "name": "Resistance",
           "quantity": 1
+        },
+        {
+          "name": "Second Line",
+          "quantity": 2
+        },
+        {
+          "name": "Stand Ground",
+          "quantity": 1
+        },
+        {
+          "name": "Supplies",
+          "quantity": 2
         }
       ],
       "cardCount": 30,
       "deckbuildingValue": 60,
-      "inheritedFromVersion": "v0.6.2",
       "recommendedTerritoryOrder": [
         "Garrison",
         "Training Grounds",
@@ -254,45 +272,31 @@
       "leaderId": "ambassador",
       "name": "Open Channels",
       "recommendedFirstLeader": true,
-      "summary": "Make attractive Terms, gain cards and Influence from acceptance, and turn ratified Proposals into a repeatable diplomatic engine.",
-      "openingPlan": "Offer low-Stake Proposals first. Trade Concessions, Good Faith, Nonbinding Resolution, and Détente make accepted Terms productive without abandoning ordinary territorial play.",
-      "firstGameTip": "Détente rewards a Proposal only when it was already ratified before you offered it. Use early acceptance to create Treaty Articles, then profit when the opponent accepts them again.",
-      "opponentWatch": "The Ambassador benefits when Terms are accepted and can eventually win through five different ratified Proposals. Read the Proposal before choosing.",
+      "summary": "Make acceptance attractive, ratify five different Proposals quickly, draw from Good Offices, and retain enough combat leverage that refusal is dangerous.",
+      "strategy": "Make acceptance attractive, ratify five different Proposals quickly, draw from Good Offices, and retain enough combat leverage that refusal is dangerous.",
       "signatureCards": [
         "Trade Concessions",
         "Good Faith",
         "Détente",
-        "Diplomatic Latitude"
+        "Sanctions: Censure"
       ],
-      "openingPlanCards": [
-        "Trade Concessions",
-        "Détente",
-        "Good Faith",
-        "Nonbinding Resolution",
-        "Rousing Speech"
-      ],
-      "openingPlanCopies": 9,
       "territories": [
         "Supply Depot",
-        "Refuge",
+        "Command Tent",
         "Arena: Spoils of War"
       ],
       "cards": [
         {
           "name": "Clemency",
-          "quantity": 2
+          "quantity": 3
         },
         {
-          "name": "Neutral Observers",
+          "name": "Contraband",
           "quantity": 1
         },
         {
-          "name": "Safe Conduct",
+          "name": "Counterintelligence",
           "quantity": 1
-        },
-        {
-          "name": "Trade Concessions",
-          "quantity": 2
         },
         {
           "name": "Demilitarized Zone",
@@ -304,14 +308,10 @@
         },
         {
           "name": "Détente",
-          "quantity": 2
-        },
-        {
-          "name": "Good Faith",
           "quantity": 1
         },
         {
-          "name": "Nonbinding Resolution",
+          "name": "Good Faith",
           "quantity": 2
         },
         {
@@ -319,48 +319,63 @@
           "quantity": 1
         },
         {
+          "name": "Neutral Observers",
+          "quantity": 1
+        },
+        {
           "name": "New Recruits",
           "quantity": 2
         },
         {
+          "name": "Nonbinding Resolution",
+          "quantity": 2
+        },
+        {
           "name": "Rallying Cry",
+          "quantity": 2
+        },
+        {
+          "name": "Reinforcements",
+          "quantity": 1
+        },
+        {
+          "name": "Sabotage",
+          "quantity": 1
+        },
+        {
+          "name": "Safe Conduct",
+          "quantity": 1
+        },
+        {
+          "name": "Sanctions: Censure",
           "quantity": 1
         },
         {
           "name": "Second Line",
-          "quantity": 2
+          "quantity": 1
+        },
+        {
+          "name": "Stand Ground",
+          "quantity": 1
         },
         {
           "name": "Supplies",
           "quantity": 2
         },
         {
-          "name": "Reinforcements",
-          "quantity": 2
-        },
-        {
-          "name": "Rousing Speech",
-          "quantity": 2
-        },
-        {
-          "name": "Stand Ground",
-          "quantity": 2
-        },
-        {
           "name": "Tactical Planning",
-          "quantity": 2
+          "quantity": 1
         },
         {
-          "name": "Valor",
-          "quantity": 1
+          "name": "Trade Concessions",
+          "quantity": 3
         }
       ],
       "cardCount": 30,
       "deckbuildingValue": 60,
-      "inheritedFromVersion": "v0.6.2",
       "recommendedTerritoryOrder": [
         "Supply Depot",
-        "Refuge",
+        "Command Tent",
         "Arena: Spoils of War"
       ],
       "territoryOrderGuidance": {
@@ -379,28 +394,18 @@
       "leaderId": "senator",
       "name": "Procedure Endures",
       "recommendedFirstLeader": false,
-      "summary": "Stake Influence aggressively, preserve political capital after setbacks, and constrain the opponent through repeated Terms and Sanctions.",
-      "openingPlan": "Keep cards in Hand to support Political Capital. Safe Conduct and Neutral Observers reduce the risk of refused Terms while Censure and Embargo punish repeated refusal.",
-      "firstGameTip": "The Senator can recover staked Influence by sacrificing cards after a lost battle following refused Terms. Do not empty your Hand before making a high-Stake offer.",
-      "opponentWatch": "The Senator can risk larger Stakes and recover them through Political Capital. Repeated refusal may establish Sanctions that remain until Terms are accepted.",
+      "summary": "Risk substantial Stakes, preserve Influence through Political Capital and Safe Conduct, and make refusal create lasting institutional costs.",
+      "strategy": "Risk substantial Stakes, preserve Influence through Political Capital and Safe Conduct, and make refusal create lasting institutional costs.",
       "signatureCards": [
-        "Safe Conduct",
-        "Sanctions: Censure",
+        "Sanctions: Blockade",
         "Sanctions: Embargo",
-        "Diplomatic Latitude"
-      ],
-      "openingPlanCards": [
         "Safe Conduct",
-        "Neutral Observers",
-        "Sanctions: Censure",
-        "Détente",
-        "Disruption"
+        "Neutral Observers"
       ],
-      "openingPlanCopies": 9,
       "territories": [
         "Garrison",
         "Field Hospital",
-        "Smuggler's Run"
+        "Fortified Pass"
       ],
       "cards": [
         {
@@ -408,15 +413,11 @@
           "quantity": 2
         },
         {
-          "name": "Neutral Observers",
+          "name": "Counterintelligence",
           "quantity": 2
         },
         {
-          "name": "Safe Conduct",
-          "quantity": 2
-        },
-        {
-          "name": "Demilitarized Zone",
+          "name": "Decoys",
           "quantity": 1
         },
         {
@@ -428,7 +429,39 @@
           "quantity": 1
         },
         {
+          "name": "Fealty",
+          "quantity": 1
+        },
+        {
+          "name": "Gunboat Diplomacy",
+          "quantity": 1
+        },
+        {
+          "name": "Neutral Observers",
+          "quantity": 2
+        },
+        {
+          "name": "New Recruits",
+          "quantity": 2
+        },
+        {
           "name": "Nonbinding Resolution",
+          "quantity": 1
+        },
+        {
+          "name": "Rallying Cry",
+          "quantity": 2
+        },
+        {
+          "name": "Sabotage",
+          "quantity": 1
+        },
+        {
+          "name": "Safe Conduct",
+          "quantity": 2
+        },
+        {
+          "name": "Sanctions: Blockade",
           "quantity": 1
         },
         {
@@ -436,20 +469,12 @@
           "quantity": 2
         },
         {
-          "name": "Gunboat Diplomacy",
-          "quantity": 1
-        },
-        {
           "name": "Sanctions: Embargo",
+          "quantity": 2
+        },
+        {
+          "name": "Scouting Report",
           "quantity": 1
-        },
-        {
-          "name": "New Recruits",
-          "quantity": 2
-        },
-        {
-          "name": "Rallying Cry",
-          "quantity": 2
         },
         {
           "name": "Second Line",
@@ -460,29 +485,16 @@
           "quantity": 2
         },
         {
-          "name": "Disruption",
-          "quantity": 2
-        },
-        {
-          "name": "Stand Ground",
-          "quantity": 2
-        },
-        {
           "name": "Tactical Planning",
-          "quantity": 2
-        },
-        {
-          "name": "Valor",
-          "quantity": 2
+          "quantity": 1
         }
       ],
       "cardCount": 30,
       "deckbuildingValue": 60,
-      "inheritedFromVersion": "v0.6.2",
       "recommendedTerritoryOrder": [
         "Garrison",
         "Field Hospital",
-        "Smuggler's Run"
+        "Fortified Pass"
       ],
       "territoryOrderGuidance": {
         "meaning": "strategy-recommendation",
@@ -500,24 +512,14 @@
       "leaderId": "banker",
       "name": "Sound Investment",
       "recommendedFirstLeader": false,
-      "summary": "Build Treasury value, convert cards into flexible financing, and acquire Deeds through a stable two-Action economy.",
-      "openingPlan": "Use Speculation, Liquidation, Capital Gains, or Compound Interest to establish Treasury and Capital. Financial Capacity then supports setup in Opening and a Faction Action in Denouement.",
-      "firstGameTip": "Line of Credit is strongest when a card pays part of a Deed cost without exhausting Capital. Compound Interest can grow Treasury after the normal Draw, but only after Treasury already contains a card.",
-      "opponentWatch": "The Banker turns cards into purchase power and may gain two Action phases through Financial Capacity. Track Treasury value, Capital, and owned Deeds.",
+      "summary": "Build Treasury value, exploit Line of Credit, accelerate Deed purchases, and use Corner the Market to threaten Controlling Interest before ordinary Capital pacing would allow it.",
+      "strategy": "Build Treasury value, exploit Line of Credit, accelerate Deed purchases, and use Corner the Market to threaten Controlling Interest before ordinary Capital pacing would allow it.",
       "signatureCards": [
+        "Corner the Market",
         "Compound Interest",
         "Margin Loan",
-        "Capital Gains",
-        "Liquidation"
+        "Property Dues"
       ],
-      "openingPlanCards": [
-        "Speculation",
-        "Liquidation",
-        "Capital Gains",
-        "Compound Interest",
-        "Margin Loan"
-      ],
-      "openingPlanCopies": 9,
       "territories": [
         "Supply Depot",
         "Ruined Storehouse",
@@ -525,40 +527,48 @@
       ],
       "cards": [
         {
-          "name": "Speculation",
-          "quantity": 2
-        },
-        {
-          "name": "Liquidation",
-          "quantity": 2
-        },
-        {
-          "name": "Underwriting",
-          "quantity": 2
-        },
-        {
           "name": "Capital Gains",
           "quantity": 2
+        },
+        {
+          "name": "Compound Interest",
+          "quantity": 1
+        },
+        {
+          "name": "Corner the Market",
+          "quantity": 1
+        },
+        {
+          "name": "Counterintelligence",
+          "quantity": 1
         },
         {
           "name": "Divestment",
           "quantity": 1
         },
         {
+          "name": "Fealty",
+          "quantity": 1
+        },
+        {
+          "name": "Leveraged Buyout",
+          "quantity": 1
+        },
+        {
+          "name": "Liquidation",
+          "quantity": 3
+        },
+        {
           "name": "Margin Loan",
-          "quantity": 1
-        },
-        {
-          "name": "Tariffs",
-          "quantity": 1
-        },
-        {
-          "name": "Compound Interest",
           "quantity": 2
         },
         {
           "name": "New Recruits",
-          "quantity": 2
+          "quantity": 3
+        },
+        {
+          "name": "Property Dues",
+          "quantity": 1
         },
         {
           "name": "Rallying Cry",
@@ -569,33 +579,28 @@
           "quantity": 2
         },
         {
+          "name": "Speculation",
+          "quantity": 3
+        },
+        {
           "name": "Supplies",
-          "quantity": 2
-        },
-        {
-          "name": "Reinforcements",
-          "quantity": 2
-        },
-        {
-          "name": "Requisition",
-          "quantity": 2
-        },
-        {
-          "name": "Rousing Speech",
-          "quantity": 2
+          "quantity": 3
         },
         {
           "name": "Tactical Planning",
-          "quantity": 2
+          "quantity": 1
         },
         {
-          "name": "Conscription",
+          "name": "Tariffs",
+          "quantity": 1
+        },
+        {
+          "name": "Underwriting",
           "quantity": 1
         }
       ],
       "cardCount": 30,
       "deckbuildingValue": 60,
-      "inheritedFromVersion": "v0.6.2",
       "recommendedTerritoryOrder": [
         "Supply Depot",
         "Ruined Storehouse",
@@ -617,23 +622,14 @@
       "leaderId": "executive",
       "name": "Hostile Expansion",
       "recommendedFirstLeader": true,
-      "summary": "Create offensive movement, win on the next Territory beyond the Front Line, and convert the victory into Deed ownership and control.",
-      "openingPlan": "Use Forced March, Advance Guard, and Speculation to prepare the attack. Save Capital or collateral so Hostile Takeover or Leveraged Buyout can follow the win.",
-      "firstGameTip": "Hostile Takeover is a Denouement Faction Action. Financial Capacity can let you prepare during Opening and still buy the contested Deed after a successful attack.",
-      "opponentWatch": "The Executive can combine movement, battle, and acquisition in one turn. A Deed owned before the battle can also enable Foreclosure.",
+      "summary": "Win on enemy ground, immediately convert Occupation into Deed/control swings, and use finance cards as battle-linked acquisition tools rather than as a passive economy engine.",
+      "strategy": "Win on enemy ground, immediately convert Occupation into Deed/control swings, and use finance cards as battle-linked acquisition tools rather than as a passive economy engine.",
       "signatureCards": [
+        "Corner the Market",
         "Leveraged Buyout",
         "Foreclosure",
-        "Compound Interest",
-        "Advance Guard"
+        "Speculation"
       ],
-      "openingPlanCards": [
-        "Forced March",
-        "Advance Guard",
-        "Speculation",
-        "Leveraged Buyout"
-      ],
-      "openingPlanCopies": 11,
       "territories": [
         "Supply Depot",
         "King's Road",
@@ -641,11 +637,7 @@
       ],
       "cards": [
         {
-          "name": "Speculation",
-          "quantity": 3
-        },
-        {
-          "name": "Liquidation",
+          "name": "Advance Guard",
           "quantity": 2
         },
         {
@@ -653,24 +645,40 @@
           "quantity": 2
         },
         {
-          "name": "Tariffs",
-          "quantity": 1
-        },
-        {
           "name": "Compound Interest",
           "quantity": 1
         },
         {
+          "name": "Corner the Market",
+          "quantity": 1
+        },
+        {
+          "name": "Counterintelligence",
+          "quantity": 1
+        },
+        {
+          "name": "Fealty",
+          "quantity": 1
+        },
+        {
+          "name": "Forced March",
+          "quantity": 3
+        },
+        {
           "name": "Foreclosure",
-          "quantity": 2
+          "quantity": 1
         },
         {
           "name": "Leveraged Buyout",
           "quantity": 2
         },
         {
-          "name": "Forced March",
-          "quantity": 3
+          "name": "Liquidation",
+          "quantity": 2
+        },
+        {
+          "name": "Margin Loan",
+          "quantity": 1
         },
         {
           "name": "New Recruits",
@@ -681,29 +689,32 @@
           "quantity": 2
         },
         {
+          "name": "Reinforcements",
+          "quantity": 1
+        },
+        {
+          "name": "Sabotage",
+          "quantity": 1
+        },
+        {
           "name": "Second Line",
           "quantity": 1
+        },
+        {
+          "name": "Speculation",
+          "quantity": 3
         },
         {
           "name": "Supplies",
           "quantity": 2
         },
         {
-          "name": "Advance Guard",
-          "quantity": 3
-        },
-        {
-          "name": "Consolidation",
-          "quantity": 2
-        },
-        {
-          "name": "Reinforcements",
-          "quantity": 2
+          "name": "Tariffs",
+          "quantity": 1
         }
       ],
       "cardCount": 30,
       "deckbuildingValue": 60,
-      "inheritedFromVersion": "v0.6.2",
       "recommendedTerritoryOrder": [
         "Supply Depot",
         "King's Road",
@@ -725,31 +736,34 @@
       "leaderId": "ranger",
       "name": "Field Operations",
       "recommendedFirstLeader": true,
-      "summary": "Use terrain, reconnaissance, and adaptable Missions to operate safely while preserving Intel for decisive interference.",
-      "openingPlan": "Choose a Mission that matches the current board. Pathfinders, Fog of War, Reconnaissance, and Operational Reassessment keep the route and Mission plan flexible.",
-      "firstGameTip": "Spend Intel on Fieldcraft when a Territory effect would stop the turn, not for a minor convenience. Extraordinary Rendition removes one important card but must be discarded before other Assets when Asset loss occurs.",
-      "opponentWatch": "The Ranger can ignore a Territory effect once per turn by spending Intel and can inspect or interfere with hidden battle commitments.",
+      "summary": "Use Fieldcraft and card effects to operate asymmetrically on hostile terrain, preserve Intel for Surveillance/Interference, and complete field-oriented Missions while dismantling enemy commitments.",
+      "strategy": "Use Fieldcraft and card effects to operate asymmetrically on hostile terrain, preserve Intel for Surveillance/Interference, and complete field-oriented Missions while dismantling enemy commitments.",
       "signatureCards": [
-        "Reconnaissance",
-        "Operational Reassessment",
-        "Extraordinary Rendition",
-        "Intercepted Orders"
-      ],
-      "openingPlanCards": [
         "Pathfinders",
-        "Fog of War",
-        "Reconnaissance",
-        "Operational Reassessment"
+        "Treason",
+        "Spies",
+        "Subversion"
       ],
-      "openingPlanCopies": 10,
       "territories": [
         "Watchtower",
         "Difficult Terrain",
-        "King's Road"
+        "Poisonous Gas"
       ],
       "cards": [
         {
-          "name": "Exfiltration",
+          "name": "Advance Guard",
+          "quantity": 2
+        },
+        {
+          "name": "Assassins",
+          "quantity": 1
+        },
+        {
+          "name": "Contraband",
+          "quantity": 1
+        },
+        {
+          "name": "Counterintelligence",
           "quantity": 1
         },
         {
@@ -757,27 +771,23 @@
           "quantity": 3
         },
         {
+          "name": "Disruption",
+          "quantity": 1
+        },
+        {
+          "name": "Exfiltration",
+          "quantity": 1
+        },
+        {
           "name": "Fog of War",
+          "quantity": 2
+        },
+        {
+          "name": "Forced March",
           "quantity": 3
         },
         {
-          "name": "Deep Cover",
-          "quantity": 1
-        },
-        {
           "name": "Intercepted Orders",
-          "quantity": 1
-        },
-        {
-          "name": "Operational Reassessment",
-          "quantity": 2
-        },
-        {
-          "name": "Reconnaissance",
-          "quantity": 2
-        },
-        {
-          "name": "Extraordinary Rendition",
           "quantity": 1
         },
         {
@@ -785,37 +795,44 @@
           "quantity": 2
         },
         {
+          "name": "Operational Reassessment",
+          "quantity": 1
+        },
+        {
           "name": "Pathfinders",
-          "quantity": 3
+          "quantity": 2
+        },
+        {
+          "name": "Reconnaissance",
+          "quantity": 2
+        },
+        {
+          "name": "Sabotage",
+          "quantity": 1
+        },
+        {
+          "name": "Spies",
+          "quantity": 2
+        },
+        {
+          "name": "Subversion",
+          "quantity": 1
         },
         {
           "name": "Supplies",
           "quantity": 2
         },
         {
-          "name": "Advance Guard",
-          "quantity": 2
-        },
-        {
-          "name": "Foothold",
-          "quantity": 3
-        },
-        {
-          "name": "Tactical Planning",
-          "quantity": 2
-        },
-        {
-          "name": "Valor",
-          "quantity": 2
+          "name": "Treason",
+          "quantity": 1
         }
       ],
       "cardCount": 30,
       "deckbuildingValue": 60,
-      "inheritedFromVersion": "v0.6.2",
       "recommendedTerritoryOrder": [
         "Watchtower",
         "Difficult Terrain",
-        "King's Road"
+        "Poisonous Gas"
       ],
       "territoryOrderGuidance": {
         "meaning": "strategy-recommendation",
@@ -833,31 +850,30 @@
       "leaderId": "spymaster",
       "name": "Mission Network",
       "recommendedFirstLeader": false,
-      "summary": "Complete Missions in sequence, use Mission Control to avoid setup gaps, and build toward a concealed Special Operation.",
-      "openingPlan": "Keep a second eligible Mission available before completing the first. Fog of War, Disinformation, and Operational Reassessment create repeatable Mission evidence.",
-      "firstGameTip": "Mission Control starts a new normal Mission immediately after completion without taking an Action. Sleeper Network rewards planning several future Action effects rather than spending every card at once.",
-      "opponentWatch": "The Spymaster can chain Missions and accelerate Operation Progress. Watch public Progress and Intel even though the active Mission remains hidden.",
+      "summary": "Keep a Mission active, complete Missions in sequence through Mission Control, recover completed Mission cards, and use Sleeper Network for a high-ceiling action burst.",
+      "strategy": "Keep a Mission active, complete Missions in sequence through Mission Control, recover completed Mission cards, and use Sleeper Network for a high-ceiling action burst.",
       "signatureCards": [
-        "Operational Reassessment",
         "Sleeper Network",
-        "Extraordinary Rendition",
-        "Disinformation"
-      ],
-      "openingPlanCards": [
-        "Fog of War",
+        "Contraband",
         "Disinformation",
-        "Operational Reassessment",
-        "Sleeper Network"
+        "Extraordinary Rendition"
       ],
-      "openingPlanCopies": 9,
       "territories": [
         "Supply Depot",
         "Ruined Storehouse",
-        "Smuggler's Run"
+        "Field Hospital"
       ],
       "cards": [
         {
-          "name": "Exfiltration",
+          "name": "Assassins",
+          "quantity": 1
+        },
+        {
+          "name": "Contraband",
+          "quantity": 1
+        },
+        {
+          "name": "Deep Cover",
           "quantity": 1
         },
         {
@@ -865,19 +881,27 @@
           "quantity": 3
         },
         {
+          "name": "Exfiltration",
+          "quantity": 2
+        },
+        {
+          "name": "Extraordinary Rendition",
+          "quantity": 1
+        },
+        {
           "name": "Fog of War",
+          "quantity": 2
+        },
+        {
+          "name": "New Recruits",
           "quantity": 3
         },
         {
-          "name": "Deep Cover",
-          "quantity": 1
-        },
-        {
-          "name": "Intercepted Orders",
-          "quantity": 1
-        },
-        {
           "name": "Operational Reassessment",
+          "quantity": 1
+        },
+        {
+          "name": "Rallying Cry",
           "quantity": 2
         },
         {
@@ -885,19 +909,11 @@
           "quantity": 1
         },
         {
-          "name": "Extraordinary Rendition",
+          "name": "Reinforcements",
           "quantity": 1
         },
         {
-          "name": "Sleeper Network",
-          "quantity": 1
-        },
-        {
-          "name": "New Recruits",
-          "quantity": 3
-        },
-        {
-          "name": "Rallying Cry",
+          "name": "Scouting Report",
           "quantity": 2
         },
         {
@@ -905,29 +921,32 @@
           "quantity": 2
         },
         {
+          "name": "Sleeper Network",
+          "quantity": 1
+        },
+        {
+          "name": "Spies",
+          "quantity": 2
+        },
+        {
+          "name": "Subversion",
+          "quantity": 1
+        },
+        {
           "name": "Supplies",
           "quantity": 2
         },
         {
-          "name": "Stand Ground",
-          "quantity": 2
-        },
-        {
           "name": "Tactical Planning",
-          "quantity": 2
-        },
-        {
-          "name": "Valor",
-          "quantity": 3
+          "quantity": 1
         }
       ],
       "cardCount": 30,
       "deckbuildingValue": 60,
-      "inheritedFromVersion": "v0.6.2",
       "recommendedTerritoryOrder": [
         "Supply Depot",
         "Ruined Storehouse",
-        "Smuggler's Run"
+        "Field Hospital"
       ],
       "territoryOrderGuidance": {
         "meaning": "strategy-recommendation",
@@ -945,55 +964,26 @@
       "leaderId": "alchemist",
       "name": "First Principles",
       "recommendedFirstLeader": false,
-      "summary": "Sacrifice cards deliberately, replace the first qualifying loss through Materia Prima, and convert the Graveyard into a working resource.",
-      "openingPlan": "Use Dark Omens, Fate's Toll, or Rite costs to place a card in the Graveyard while Materia Prima replaces it. Grave Ward, Soul for Soul, and Rend the Veil turn that setup into value.",
-      "firstGameTip": "Plan the first qualifying Hand-to-Graveyard move on your turn before spending cards elsewhere. Nature's Altar can begin a Rite during Opening when its Territory and Rite requirements are satisfied.",
-      "opponentWatch": "The Alchemist gains card flow from deliberate sacrifice and can reuse Graveyard effects. Track completed Rites and cards available for Transmutation.",
+      "summary": "Deliberately move cards from Hand to Graveyard, turn the first sacrifice each turn into replacement card flow, and then reuse the Graveyard as a second tactical hand.",
+      "strategy": "Deliberately move cards from Hand to Graveyard, turn the first sacrifice each turn into replacement card flow, and then reuse the Graveyard as a second tactical hand.",
       "signatureCards": [
-        "Dark Omens",
-        "Rend the Veil",
+        "Necromancy",
         "Black Covenant",
-        "Nature's Altar"
+        "Rend the Veil",
+        "Witchcraft"
       ],
-      "openingPlanCards": [
-        "Dark Omens",
-        "Fate's Toll",
-        "Grave Ward",
-        "Soul for Soul"
-      ],
-      "openingPlanCopies": 10,
       "territories": [
-        "Field Hospital",
+        "Supply Depot",
         "Old Battlefield",
-        "Supply Depot"
+        "Field Hospital"
       ],
       "cards": [
-        {
-          "name": "Dark Omens",
-          "quantity": 3
-        },
         {
           "name": "Accursed Wager",
           "quantity": 1
         },
         {
-          "name": "Fate's Toll",
-          "quantity": 2
-        },
-        {
-          "name": "Grave Ward",
-          "quantity": 3
-        },
-        {
-          "name": "Rend the Veil",
-          "quantity": 2
-        },
-        {
-          "name": "Soul for Soul",
-          "quantity": 2
-        },
-        {
-          "name": "Spirit Hollow",
+          "name": "Arcane Knowledge",
           "quantity": 1
         },
         {
@@ -1001,7 +991,31 @@
           "quantity": 1
         },
         {
-          "name": "Nature's Altar",
+          "name": "Circle of Bones",
+          "quantity": 1
+        },
+        {
+          "name": "Counterintelligence",
+          "quantity": 1
+        },
+        {
+          "name": "Dark Omens",
+          "quantity": 3
+        },
+        {
+          "name": "Fate's Toll",
+          "quantity": 3
+        },
+        {
+          "name": "Fealty",
+          "quantity": 1
+        },
+        {
+          "name": "Grave Ward",
+          "quantity": 2
+        },
+        {
+          "name": "Necromancy",
           "quantity": 1
         },
         {
@@ -1010,36 +1024,47 @@
         },
         {
           "name": "Rallying Cry",
+          "quantity": 2
+        },
+        {
+          "name": "Redemption",
           "quantity": 1
+        },
+        {
+          "name": "Rend the Veil",
+          "quantity": 2
+        },
+        {
+          "name": "Scouting Report",
+          "quantity": 2
         },
         {
           "name": "Second Line",
           "quantity": 2
         },
         {
+          "name": "Soul for Soul",
+          "quantity": 1
+        },
+        {
+          "name": "Spirit Hollow",
+          "quantity": 1
+        },
+        {
           "name": "Supplies",
-          "quantity": 3
+          "quantity": 1
         },
         {
-          "name": "Reinforcements",
-          "quantity": 2
-        },
-        {
-          "name": "Tactical Planning",
-          "quantity": 2
-        },
-        {
-          "name": "Contraband",
-          "quantity": 2
+          "name": "Witchcraft",
+          "quantity": 1
         }
       ],
       "cardCount": 30,
       "deckbuildingValue": 60,
-      "inheritedFromVersion": "v0.6.2",
       "recommendedTerritoryOrder": [
-        "Field Hospital",
+        "Supply Depot",
         "Old Battlefield",
-        "Supply Depot"
+        "Field Hospital"
       ],
       "territoryOrderGuidance": {
         "meaning": "strategy-recommendation",
@@ -1057,60 +1082,46 @@
       "leaderId": "spirit-walker",
       "name": "Unbroken Circle",
       "recommendedFirstLeader": true,
-      "summary": "Begin a Rite from a defensible position, preserve progress through loss, and recover the Arcane cards needed for the Ritual.",
-      "openingPlan": "Establish Grave Ward, Spirit Hollow, Entrenchment, or Nature's Altar before committing to a Rite. Keep an Arcane card whose value meets the current Guardians threshold.",
-      "firstGameTip": "Guardians of the Circle requires value 1, 2, 3, or 4 as progress advances. Nature's Altar permits same-turn Rite completion only when you control its Territory at completion timing.",
-      "opponentWatch": "The Spirit Walker can preserve Rite or Ritual progress after a loss by sacrificing an eligible Arcane card. Pressure Hand size and control of Nature's Altar.",
+      "summary": "Begin and preserve Rites, protect Ritual progress through defensive wins and high-value Arcane sacrifice, then survive long enough to initiate the required winning battle.",
+      "strategy": "Begin and preserve Rites, protect Ritual progress through defensive wins and high-value Arcane sacrifice, then survive long enough to initiate the required winning battle.",
       "signatureCards": [
         "Nature's Altar",
-        "Spirit Hollow",
-        "Rend the Veil",
-        "Paths of Shadow"
-      ],
-      "openingPlanCards": [
-        "Dark Omens",
+        "Circle of Bones",
         "Grave Ward",
-        "Spirit Hollow",
-        "Nature's Altar",
-        "Entrenchment"
+        "Spirit Hollow"
       ],
-      "openingPlanCopies": 11,
       "territories": [
         "Garrison",
         "Field Hospital",
-        "Refuge"
+        "High Ground"
       ],
       "cards": [
+        {
+          "name": "Circle of Bones",
+          "quantity": 1
+        },
+        {
+          "name": "Counterintelligence",
+          "quantity": 1
+        },
         {
           "name": "Dark Omens",
           "quantity": 3
         },
         {
-          "name": "Accursed Wager",
-          "quantity": 2
+          "name": "Entrenchment",
+          "quantity": 1
         },
         {
           "name": "Fate's Toll",
           "quantity": 2
         },
         {
+          "name": "Fealty",
+          "quantity": 1
+        },
+        {
           "name": "Grave Ward",
-          "quantity": 2
-        },
-        {
-          "name": "Paths of Shadow",
-          "quantity": 1
-        },
-        {
-          "name": "Rend the Veil",
-          "quantity": 1
-        },
-        {
-          "name": "Soul for Soul",
-          "quantity": 1
-        },
-        {
-          "name": "Spirit Hollow",
           "quantity": 3
         },
         {
@@ -1118,11 +1129,43 @@
           "quantity": 1
         },
         {
+          "name": "Necromancy",
+          "quantity": 1
+        },
+        {
           "name": "New Recruits",
+          "quantity": 1
+        },
+        {
+          "name": "Paths of Shadow",
+          "quantity": 1
+        },
+        {
+          "name": "Rallying Cry",
           "quantity": 2
         },
         {
+          "name": "Redemption",
+          "quantity": 1
+        },
+        {
+          "name": "Rend the Veil",
+          "quantity": 2
+        },
+        {
+          "name": "Scouting Report",
+          "quantity": 1
+        },
+        {
           "name": "Second Line",
+          "quantity": 2
+        },
+        {
+          "name": "Spirit Hollow",
+          "quantity": 2
+        },
+        {
+          "name": "Stand Ground",
           "quantity": 1
         },
         {
@@ -1130,29 +1173,16 @@
           "quantity": 2
         },
         {
-          "name": "Entrenchment",
-          "quantity": 2
-        },
-        {
-          "name": "Stand Ground",
-          "quantity": 2
-        },
-        {
-          "name": "Tactical Planning",
-          "quantity": 2
-        },
-        {
-          "name": "Valor",
-          "quantity": 3
+          "name": "Witchcraft",
+          "quantity": 1
         }
       ],
       "cardCount": 30,
       "deckbuildingValue": 60,
-      "inheritedFromVersion": "v0.6.2",
       "recommendedTerritoryOrder": [
         "Garrison",
         "Field Hospital",
-        "Refuge"
+        "High Ground"
       ],
       "territoryOrderGuidance": {
         "meaning": "strategy-recommendation",
@@ -1170,27 +1200,17 @@
       "leaderId": "grand-inquisitor",
       "name": "Final Judgment",
       "recommendedFirstLeader": true,
-      "summary": "Win battles, convert the cleared Aftermath into a discounted Purge, and permanently reduce the opponent's recyclable options.",
-      "openingPlan": "Use Accusation, Divine Mercy, and Act of Faith to shape the opponent's Discard Pile and build Conviction. Preserve enough Conviction for Final Judgment after a win.",
-      "firstGameTip": "Final Judgment occurs after battle cards are cleared and does not consume the Purge Faction Action. Martyrdom is a comeback card after a loss, not a way to prevent the loss.",
-      "opponentWatch": "The Grand Inquisitor gains Conviction from opposing Graveyard entries and can Purge again after winning. The Discard Pile is not safe storage.",
+      "summary": "Win battles, turn those wins into discounted Final Judgment Purges, and accelerate opposing-card depletion toward Purification.",
+      "strategy": "Win battles, turn those wins into discounted Final Judgment Purges, and accelerate opposing-card depletion toward Purification.",
       "signatureCards": [
-        "Tyranny",
-        "Martyrdom",
-        "Guilt by Association",
-        "Act of Faith"
+        "Attrition",
+        "Hellfire",
+        "Heresy",
+        "Martyrdom"
       ],
-      "openingPlanCards": [
-        "Accusation",
-        "Divine Mercy",
-        "Act of Faith",
-        "Penance",
-        "Tyranny"
-      ],
-      "openingPlanCopies": 9,
       "territories": [
         "Supply Depot",
-        "Old Battlefield",
+        "Toll Bridge",
         "Arena: No Quarter"
       ],
       "cards": [
@@ -1199,27 +1219,43 @@
           "quantity": 3
         },
         {
-          "name": "Divine Mercy",
-          "quantity": 2
-        },
-        {
-          "name": "Penance",
+          "name": "Act of Faith",
           "quantity": 1
         },
         {
-          "name": "Act of Faith",
-          "quantity": 2
+          "name": "Attrition",
+          "quantity": 1
+        },
+        {
+          "name": "Burning at the Stake",
+          "quantity": 1
+        },
+        {
+          "name": "Counterintelligence",
+          "quantity": 1
+        },
+        {
+          "name": "Divine Mercy",
+          "quantity": 3
         },
         {
           "name": "Excommunication",
-          "quantity": 2
+          "quantity": 1
+        },
+        {
+          "name": "Fealty",
+          "quantity": 1
         },
         {
           "name": "Guilt by Association",
           "quantity": 1
         },
         {
-          "name": "Tyranny",
+          "name": "Hellfire",
+          "quantity": 1
+        },
+        {
+          "name": "Heresy",
           "quantity": 1
         },
         {
@@ -1228,47 +1264,38 @@
         },
         {
           "name": "New Recruits",
-          "quantity": 2
+          "quantity": 3
+        },
+        {
+          "name": "Penance",
+          "quantity": 1
         },
         {
           "name": "Rallying Cry",
-          "quantity": 2
+          "quantity": 3
+        },
+        {
+          "name": "Scouting Report",
+          "quantity": 1
         },
         {
           "name": "Second Line",
-          "quantity": 2
+          "quantity": 3
         },
         {
           "name": "Supplies",
           "quantity": 2
         },
         {
-          "name": "Disruption",
-          "quantity": 2
-        },
-        {
-          "name": "Reinforcements",
-          "quantity": 2
-        },
-        {
-          "name": "Sedition",
-          "quantity": 2
-        },
-        {
-          "name": "Tactical Planning",
-          "quantity": 2
-        },
-        {
-          "name": "Conscription",
+          "name": "Tyranny",
           "quantity": 1
         }
       ],
       "cardCount": 30,
       "deckbuildingValue": 60,
-      "inheritedFromVersion": "v0.6.2",
       "recommendedTerritoryOrder": [
         "Supply Depot",
-        "Old Battlefield",
+        "Toll Bridge",
         "Arena: No Quarter"
       ],
       "territoryOrderGuidance": {
@@ -1287,60 +1314,54 @@
       "leaderId": "witch-hunter",
       "name": "Relentless Pursuit",
       "recommendedFirstLeader": false,
-      "summary": "Defend prepared Territories, punish attacking losses, and spend Conviction to end the opponent's turn and pursue immediately.",
-      "openingPlan": "Build Conviction while establishing Entrenchment, Palisade Wall, No Martyrs, or Scorched Earth. A defensive win can convert directly into Relentless Pursuit.",
-      "firstGameTip": "Keep 2 Conviction available when the opponent attacks. Relentless Pursuit creates no Opening or Denouement before its pending battle, but Terms still occur before Onset.",
-      "opponentWatch": "A failed attack can end your turn and launch an immediate counterattack. No Martyrs also suppresses beneficial effects triggered by your loss or retreat.",
+      "summary": "Make attacks fail, convert the failed attack into Relentless Pursuit, and turn the opponent’s lost turn into immediate positional pressure.",
+      "strategy": "Make attacks fail, convert the failed attack into Relentless Pursuit, and turn the opponent’s lost turn into immediate positional pressure.",
       "signatureCards": [
-        "No Martyrs",
-        "Martyrdom",
-        "Scorched Earth",
-        "Confession"
-      ],
-      "openingPlanCards": [
-        "Entrenchment",
-        "Palisade Wall",
-        "No Martyrs",
         "Confession",
+        "Court Martial",
+        "No Martyrs",
         "Scorched Earth"
       ],
-      "openingPlanCopies": 10,
       "territories": [
         "Garrison",
         "Exposed Flank",
-        "Training Grounds"
+        "High Ground"
       ],
       "cards": [
         {
           "name": "Accusation",
-          "quantity": 2
+          "quantity": 3
         },
         {
           "name": "Confession",
           "quantity": 3
         },
         {
-          "name": "Penance",
+          "name": "Counterintelligence",
           "quantity": 1
         },
         {
-          "name": "Act of Faith",
+          "name": "Court Martial",
           "quantity": 1
         },
         {
-          "name": "Excommunication",
-          "quantity": 1
-        },
-        {
-          "name": "Guilt by Association",
-          "quantity": 1
-        },
-        {
-          "name": "No Martyrs",
+          "name": "Divine Mercy",
           "quantity": 2
         },
         {
-          "name": "Tyranny",
+          "name": "Entrenchment",
+          "quantity": 1
+        },
+        {
+          "name": "Fealty",
+          "quantity": 1
+        },
+        {
+          "name": "Hellfire",
+          "quantity": 1
+        },
+        {
+          "name": "Illegal Occupation",
           "quantity": 1
         },
         {
@@ -1349,6 +1370,18 @@
         },
         {
           "name": "New Recruits",
+          "quantity": 1
+        },
+        {
+          "name": "No Martyrs",
+          "quantity": 2
+        },
+        {
+          "name": "Palisade Wall",
+          "quantity": 1
+        },
+        {
+          "name": "Penance",
           "quantity": 2
         },
         {
@@ -1356,41 +1389,36 @@
           "quantity": 2
         },
         {
-          "name": "Second Line",
-          "quantity": 2
-        },
-        {
-          "name": "Supplies",
-          "quantity": 2
-        },
-        {
-          "name": "Entrenchment",
-          "quantity": 2
-        },
-        {
-          "name": "Palisade Wall",
-          "quantity": 2
+          "name": "Resistance",
+          "quantity": 1
         },
         {
           "name": "Scorched Earth",
           "quantity": 1
         },
         {
-          "name": "Stand Ground",
+          "name": "Scouting Report",
+          "quantity": 1
+        },
+        {
+          "name": "Second Line",
+          "quantity": 1
+        },
+        {
+          "name": "Supplies",
           "quantity": 2
         },
         {
-          "name": "Valor",
-          "quantity": 2
+          "name": "Tyranny",
+          "quantity": 1
         }
       ],
       "cardCount": 30,
       "deckbuildingValue": 60,
-      "inheritedFromVersion": "v0.6.2",
       "recommendedTerritoryOrder": [
         "Garrison",
         "Exposed Flank",
-        "Training Grounds"
+        "High Ground"
       ],
       "territoryOrderGuidance": {
         "meaning": "strategy-recommendation",
@@ -1403,16 +1431,8 @@
       }
     }
   ],
-  "inheritedFromVersion": "v0.6.2",
-  "territoryOrderSemantics": {
-    "meaning": "strategy-recommendation",
-    "direction": "own-end-to-opponent-end",
-    "chosenAfterOpeningSelection": true,
-    "mayRearrangeAtSetup": true,
-    "informedByOpeningHand": true,
-    "informedByOpeningDiscard": true,
-    "informedByInitiative": false
-  },
+  "compositionSource": "v0.6.3/data/starter-decks-candidate.js",
+  "audit": "docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md",
   "publicationBoundary": {
     "publishedVersion": "v0.6.2",
     "publicationCutoverComplete": false

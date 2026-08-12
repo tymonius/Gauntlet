@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 import path from 'node:path';
-import { migrateV063StarterCatalog } from '../v0.6.3/deckbuilder/starter-adapter.js';
+import { V063_STARTER_CATALOG } from '../v0.6.3/data/starter-decks-candidate.js';
 
 const root = process.cwd();
 const dir = 'artifacts/v0.6.3/release-candidate';
@@ -10,22 +10,13 @@ const readJson = (relativePath) => JSON.parse(read(relativePath));
 const assert = (condition, message) => { if (!condition) failures.push(message); };
 
 const required = [
-  'README.md',
-  'Gauntlet_v0.6.3_Rulebook.md',
-  'Gauntlet_v0.6.3_Reference_Guide.md',
-  'Gauntlet_v0.6.3_First_Game_Guide.md',
-  'Gauntlet_v0.6.3_Faction_and_Component_Guide.md',
-  'Gauntlet_v0.6.3_Starter_Decks.json',
-  'Gauntlet_v0.6.3_Complete_Card_Reference.md',
-  'Gauntlet_v0.6.3_Canonical_Data.json',
-  'Gauntlet_v0.6.3_Returning_Player_Changes.md',
-  'Gauntlet_v0.6.3_Release_Notes.md',
-  'Gauntlet_v0.6.3_Manifest.json',
-  'deployment-status.json',
+  'README.md', 'Gauntlet_v0.6.3_Rulebook.md', 'Gauntlet_v0.6.3_Reference_Guide.md',
+  'Gauntlet_v0.6.3_First_Game_Guide.md', 'Gauntlet_v0.6.3_Faction_and_Component_Guide.md',
+  'Gauntlet_v0.6.3_Starter_Decks.json', 'Gauntlet_v0.6.3_Complete_Card_Reference.md',
+  'Gauntlet_v0.6.3_Canonical_Data.json', 'Gauntlet_v0.6.3_Returning_Player_Changes.md',
+  'Gauntlet_v0.6.3_Release_Notes.md', 'Gauntlet_v0.6.3_Manifest.json', 'deployment-status.json',
 ];
-for (const file of required) {
-  assert(fs.existsSync(path.join(root, dir, file)), `Missing v0.6.3 release-candidate output: ${file}`);
-}
+for (const file of required) assert(fs.existsSync(path.join(root, dir, file)), `Missing v0.6.3 release-candidate output: ${file}`);
 if (failures.length) finish();
 
 const rulebook = read(`${dir}/Gauntlet_v0.6.3_Rulebook.md`);
@@ -39,8 +30,6 @@ const readme = read(`${dir}/README.md`);
 const canonical = readJson(`${dir}/Gauntlet_v0.6.3_Canonical_Data.json`);
 const upstreamCanonical = readJson('artifacts/v0.6.3/canonical/Gauntlet_v0.6.3_Canonical_Data_Candidate.json');
 const starters = readJson(`${dir}/Gauntlet_v0.6.3_Starter_Decks.json`);
-const inheritedStarters = readJson('releases/v0.6.2/Gauntlet_v0.6.2_Starter_Decks.json');
-const expectedStarters = migrateV063StarterCatalog(inheritedStarters);
 const manifest = readJson(`${dir}/Gauntlet_v0.6.3_Manifest.json`);
 const deployment = readJson(`${dir}/deployment-status.json`);
 
@@ -61,103 +50,104 @@ for (const [label, text] of Object.entries({ rulebook, reference, firstGame })) 
   assert(!text.includes('Playable Deck'), `${label} contains retired Playable Deck terminology.`);
 }
 for (const token of [
-  '**Version 0.6.3 — Release Candidate**',
-  'Release candidate — not published',
-  'Capturing the Territory at the opponent\'s end immediately runs the Gauntlet and wins the game.',
-  'separate legal movement sequence',
-  'Gambit/Tactic',
-  'inherent Bank Action',
-  '# Part IV — Factions and Components',
+  '**Version 0.6.3 — Release Candidate**', 'Release candidate — not published',
+  "Capturing the Territory at the opponent's end immediately runs the Gauntlet and wins the game.",
+  'separate legal movement sequence', 'Gambit/Tactic', 'inherent Bank Action', '# Part IV — Factions and Components',
 ]) assert(rulebook.includes(token), `Rulebook release candidate is missing: ${token}`);
-
-for (const token of [
-  'Faction setup → Draw 4 / discard 1 / keep 3 → arrange Territories',
-  'separate legal movement sequence',
-  'Gambit/Tactic',
-]) assert(reference.includes(token), `Reference release candidate is missing: ${token}`);
-
-for (const token of [
-  'Draw four cards, discard one face up, and keep three',
-  'secretly arrange your three Territories',
-  'There are two normal victory routes',
-]) assert(firstGame.includes(token), `First Game release candidate is missing: ${token}`);
-
+for (const token of ['Faction setup → Draw 4 / discard 1 / keep 3 → arrange Territories', 'separate legal movement sequence', 'Gambit/Tactic']) {
+  assert(reference.includes(token), `Reference release candidate is missing: ${token}`);
+}
+for (const token of ['Draw four cards, discard one face up, and keep three', 'secretly arrange your three Territories', 'There are two normal victory routes']) {
+  assert(firstGame.includes(token), `First Game release candidate is missing: ${token}`);
+}
 for (const faction of ['Military', 'Diplomats', 'Financiers', 'Intelligence', 'Mystics', 'Inquisition']) {
   assert(factionGuide.includes(faction), `Faction guide is missing ${faction}.`);
 }
-assert(factionGuide.includes('Release candidate — not published'), 'Faction guide must identify the publication boundary.');
-assert(factionGuide.includes('# Part IV — Factions and Components'), 'Faction guide must be extracted from synchronized Rulebook Part IV.');
-
+assert(factionGuide.includes('Release candidate — not published'));
+assert(factionGuide.includes('# Part IV — Factions and Components'));
 for (const title of ['Shock and Awe', 'Margin Loan', 'Second Line', "Smuggler's Run", 'Protracted Siege']) {
   assert(completeReference.includes(title), `Complete reference is missing ${title}.`);
 }
-assert(!completeReference.includes('## Reserves\n'), 'Complete reference still contains the retired Reserves card title.');
-assert(!completeReference.includes("## Smuggler's Pass\n"), 'Complete reference still contains the retired Smuggler\'s Pass Territory title.');
+assert(!completeReference.includes('## Reserves\n'));
+assert(!completeReference.includes("## Smuggler's Pass\n"));
 
 assert(starters.version === 'v0.6.3-release-candidate', `Starter catalog version is ${starters.version}.`);
 assert(starters.status === 'Release candidate — not published', 'Starter catalog must identify the release-candidate boundary.');
 assert(starters.decks?.length === 12, `Expected 12 starter Decks; found ${starters.decks?.length}.`);
-assert(starters.inheritedFromVersion === expectedStarters.inheritedFromVersion, 'Starter inheritance metadata drifted.');
+assert(starters.purpose?.includes('competitive strength'), 'Starter catalog purpose must explicitly identify competitive strength.');
+assert(!starters.purpose?.includes('inherited v0.6.2 compositions'), 'Starter catalog purpose must not describe the independent v0.6.3 Decks as inherited compositions.');
+assert(starters.compositionSource === 'v0.6.3/data/starter-decks-candidate.js', 'Starter catalog must identify the independent v0.6.3 composition source.');
+assert(starters.audit === 'docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md', 'Starter catalog must identify the competitive audit.');
+assert(starters.optimizationPolicy?.primary === 'competitive-strength-and-strategic-expression', 'Starter catalog must preserve the competitive optimization policy.');
+assert(starters.optimizationPolicy?.teachingSimplicityTarget === false, 'Release starters must not be teaching-simplicity optimized.');
+assert(starters.optimizationPolicy?.cardPoolCoverageTarget === false, 'Release starters must not be coverage optimized.');
+
 const cardsByName = new Map(canonical.cards.map((card) => [card.name, card]));
 const territoriesByName = new Map(canonical.territories.map((territory) => [territory.name, territory]));
-let sawSecondLine = false;
-let sawSmugglersRun = false;
+const sourceDecksById = new Map(V063_STARTER_CATALOG.decks.map((deck) => [deck.id, deck]));
+const usedTitles = new Set();
 for (const deck of starters.decks ?? []) {
+  const sourceDeck = sourceDecksById.get(deck.id);
+  assert(Boolean(sourceDeck), `${deck.name}: release Deck has no v0.6.3 source Deck.`);
+  assert(JSON.stringify(deck.cards) === JSON.stringify(sourceDeck?.cards), `${deck.name}: release composition drifted from competitive source.`);
+  assert(JSON.stringify(deck.territories) === JSON.stringify(sourceDeck?.territories), `${deck.name}: release Territories drifted from competitive source.`);
   const count = (deck.cards ?? []).reduce((sum, item) => sum + item.quantity, 0);
   const value = (deck.cards ?? []).reduce((sum, item) => {
     const card = cardsByName.get(item.name);
     assert(Boolean(card), `${deck.name}: unknown v0.6.3 card ${item.name}.`);
-    if (item.name === 'Second Line') sawSecondLine = true;
-    assert(item.name !== 'Reserves', `${deck.name}: retired Reserves title remains in starter Deck.`);
+    if (card?.unique) assert(item.quantity === 1, `${deck.name}: Unique card ${item.name} appears ${item.quantity} times.`);
+    if (card) usedTitles.add(item.name);
     return sum + (card ? item.quantity * card.cost : 0);
   }, 0);
   assert(count === 30, `${deck.name}: expected 30 cards; found ${count}.`);
   assert(value === 60, `${deck.name}: expected Deckbuilding Value 60; found ${value}.`);
   assert((deck.territories ?? []).length === 3, `${deck.name}: expected three Territories.`);
-  assert(JSON.stringify(deck.recommendedTerritoryOrder) === JSON.stringify(deck.territories), `${deck.name}: recommended Territory order does not preserve inherited strategic order.`);
+  assert(new Set(deck.territories ?? []).size === 3, `${deck.name}: Territories must be different.`);
+  assert(JSON.stringify(deck.recommendedTerritoryOrder) === JSON.stringify(deck.territories), `${deck.name}: recommended Territory order drifted.`);
   assert(deck.territoryOrderGuidance?.meaning === 'strategy-recommendation', `${deck.name}: Territory order is not marked as strategy guidance.`);
   assert(deck.territoryOrderGuidance?.mayRearrangeAtSetup === true, `${deck.name}: Territory order is incorrectly locked at setup.`);
   assert(deck.territoryOrderGuidance?.informedByInitiative === false, `${deck.name}: Territory order incorrectly uses initiative.`);
+  let arenas = 0;
   for (const name of deck.territories ?? []) {
-    assert(territoriesByName.has(name), `${deck.name}: unknown v0.6.3 Territory ${name}.`);
-    if (name === "Smuggler's Run") sawSmugglersRun = true;
-    assert(name !== "Smuggler's Pass", `${deck.name}: retired Smuggler's Pass title remains.`);
+    const territory = territoriesByName.get(name);
+    assert(Boolean(territory), `${deck.name}: unknown v0.6.3 Territory ${name}.`);
+    if (territory?.arena) arenas += 1;
   }
+  assert(arenas <= 1, `${deck.name}: more than one Arena.`);
 }
-assert(sawSecondLine, 'Adapted starter package does not exercise the Second Line title migration.');
-assert(sawSmugglersRun, 'Adapted starter package does not exercise the Smuggler\'s Run title migration.');
+assert(usedTitles.size === 109, `Expected competitive starters to represent 109 unique titles; found ${usedTitles.size}.`);
+assert(starters.decks.some((deck) => deck.name === 'Forward Doctrine' && deck.cards.some((item) => item.name === 'Shock and Awe')), 'General starter must include Shock and Awe.');
+assert(starters.decks.some((deck) => deck.name === 'Hostile Expansion' && deck.cards.some((item) => item.name === 'Fealty')), 'Executive starter must retain Fealty after audit transcription correction.');
 
-assert(manifest.version === 'v0.6.3-release-candidate', `Manifest version is ${manifest.version}.`);
-assert(manifest.release_version === 'v0.6.3', 'Manifest release_version must be v0.6.3.');
-assert(manifest.status === 'candidate-not-published', 'Manifest must remain candidate-not-published.');
-assert(manifest.playable_card_designs === 128, 'Manifest card count must be 128.');
-assert(manifest.territories === 25, 'Manifest Territory count must be 25.');
-assert(manifest.starter_decks === 12, 'Manifest starter count must be 12.');
-assert(manifest.publication_boundary?.published_version === 'v0.6.2', 'Manifest must preserve v0.6.2 as published baseline.');
-assert(manifest.publication_boundary?.promotion_target === 'releases/v0.6.3/', 'Manifest promotion target must be releases/v0.6.3/.');
+assert(manifest.version === 'v0.6.3-release-candidate');
+assert(manifest.release_version === 'v0.6.3');
+assert(manifest.status === 'candidate-not-published');
+assert(manifest.playable_card_designs === 128);
+assert(manifest.territories === 25);
+assert(manifest.starter_decks === 12);
+assert(manifest.publication_boundary?.published_version === 'v0.6.2');
+assert(manifest.publication_boundary?.promotion_target === 'releases/v0.6.3/');
 for (const field of ['public_site_cutover', 'rules_arbiter_default_cutover', 'digital_default_cutover', 'published_release_directory_materialized']) {
   assert(manifest.publication_boundary?.[field] === false, `Manifest publication boundary ${field} must be false.`);
 }
-assert(manifest.validation?.source_release_candidate_assembled === true, 'Manifest does not record assembled source candidate.');
-assert(manifest.validation?.print_package_generated === false, 'Print package must remain a later gate.');
-assert(manifest.validation?.ready_for_publication === false, 'Source package alone must not mark v0.6.3 ready for publication.');
+assert(manifest.validation?.source_release_candidate_assembled === true);
+assert(manifest.validation?.competitive_starter_baseline_integrated === true, 'Manifest must record competitive starter integration.');
+assert(manifest.validation?.print_package_generated === false);
+assert(manifest.validation?.ready_for_publication === false);
 for (const file of required) assert(manifest.current_outputs?.includes(file), `Manifest current_outputs omits ${file}.`);
 
-assert(deployment.status === 'not-published', 'Deployment status must remain not-published.');
-assert(deployment.published_version === 'v0.6.2', 'Deployment status must retain v0.6.2 as published version.');
-assert(deployment.source_package_ready === true, 'Deployment status must record source package ready.');
-assert(deployment.print_package_ready === false, 'Deployment status must keep print package unready.');
-assert(deployment.public_cutover_ready === false, 'Deployment status must keep public cutover unready.');
-
-for (const token of [
-  'pre-publication source package',
-  'v0.6.2',
-  'next gate is generation and validation of the v0.6.3 printed-material package',
-]) assert(readme.includes(token), `Release-candidate README is missing: ${token}`);
-assert(notes.includes('does **not** change the public website'), 'Release notes must state the public boundary.');
-assert(notes.includes('Margin Loan'), 'Release notes must include the final Margin Loan behavior change.');
-assert(returning.includes('v0.6.2 remains the published playtest edition'), 'Returning-player handout must preserve the publication boundary.');
-
+assert(deployment.status === 'not-published');
+assert(deployment.published_version === 'v0.6.2');
+assert(deployment.source_package_ready === true);
+assert(deployment.print_package_ready === false);
+assert(deployment.public_cutover_ready === false);
+for (const token of ['pre-publication source package', 'v0.6.2', 'next gate is generation and validation of the v0.6.3 printed-material package']) {
+  assert(readme.includes(token), `Release-candidate README is missing: ${token}`);
+}
+assert(notes.includes('does **not** change the public website'));
+assert(notes.includes('twelve recommended starter Decks are rebuilt as independent v0.6.3 competitive baselines'), 'Release notes must record the competitive starter rebuild.');
+assert(notes.includes('Margin Loan'));
+assert(returning.includes('v0.6.2 remains the published playtest edition'));
 assert(!fs.existsSync(path.join(root, 'releases/v0.6.3')), 'Pre-publication assembly must not materialize releases/v0.6.3/.');
 
 finish();
@@ -168,5 +158,5 @@ function finish() {
     for (const failure of failures) console.error(`- ${failure}`);
     process.exit(1);
   }
-  console.log('v0.6.3 source release-candidate validation passed: 128 cards, 25 Territories, 12 current-name starter Decks, synchronized player-facing sources, and no public cutover.');
+  console.log('v0.6.3 source release-candidate validation passed: 128 cards, 25 Territories, 12 competitive 30/60 starter Decks using 109 titles, synchronized player-facing sources, and no public cutover.');
 }
