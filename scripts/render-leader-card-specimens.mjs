@@ -7,6 +7,7 @@ const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const OUTPUT = join(ROOT, 'card-design', 'generated', 'leaders');
 const CARD_WIDTH = 240;
 const CARD_HEIGHT = 336;
+const EXPECTED_PLAYABLE_CARDS = 128;
 const EXPECTED_LEADERS = [
   'General', 'Commandant', 'Ambassador', 'Senator', 'Banker', 'Executive',
   'Ranger', 'Spymaster', 'Alchemist', 'Spirit Walker', 'Grand Inquisitor', 'Witch Hunter',
@@ -61,6 +62,7 @@ async function main() {
   try {
     await page.goto(`${baseUrl}/card-design/#leader-cards`, { waitUntil: 'load' });
     await page.waitForSelector('.leader-card');
+    await page.waitForFunction(expected => document.querySelectorAll('.full-card-review-frame').length === expected, EXPECTED_PLAYABLE_CARDS);
     await page.waitForFunction(expected => {
       const cards = [...document.querySelectorAll('.leader-card')];
       return cards.length === expected
@@ -132,7 +134,25 @@ async function main() {
       const locator = page.locator('.leader-card').filter({ has: page.locator('.card-title', { hasText: metric.name }) }).first();
       await locator.screenshot({ path: join(OUTPUT, `${slugify(metric.name)}.png`), omitBackground: true });
     }
-    await writeFile(join(OUTPUT, 'metrics.json'), `${JSON.stringify({ fonts, cards: metrics }, null, 2)}\n`);
+
+    const playablePage = await context.newPage();
+    await playablePage.goto(`${baseUrl}/card-design/card-review-render.html?fit=production&card=neutral-rallying-cry`, { waitUntil: 'load' });
+    await playablePage.waitForSelector('.gauntlet-card');
+    await playablePage.waitForFunction(() => document.body.dataset.renderReady === 'true');
+    const playableSmoke = await playablePage.locator('.gauntlet-card').evaluate(card => ({
+      title: card.querySelector('.card-title')?.textContent?.trim(),
+      fitWarning: card.classList.contains('fit-warning'),
+      titleFit: card.dataset.titleFit,
+      productionFit: card.dataset.productionFit,
+      parchmentLoaded: card.dataset.parchmentLoaded,
+    }));
+    if (playableSmoke.title !== 'Rallying Cry' || playableSmoke.fitWarning || playableSmoke.titleFit !== 'true' || playableSmoke.parchmentLoaded !== 'true') {
+      throw new Error(`Canonical playable-card review renderer failed smoke test: ${JSON.stringify(playableSmoke)}.`);
+    }
+    await playablePage.locator('.gauntlet-card').screenshot({ path: join(OUTPUT, 'playable-card-review-smoke.png'), omitBackground: true });
+    await playablePage.close();
+
+    await writeFile(join(OUTPUT, 'metrics.json'), `${JSON.stringify({ fonts, playableCardCount: EXPECTED_PLAYABLE_CARDS, playableSmoke, cards: metrics }, null, 2)}\n`);
   } finally {
     await browser.close();
     await new Promise(resolve => server.close(resolve));
