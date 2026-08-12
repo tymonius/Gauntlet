@@ -7,8 +7,7 @@ const military = readSymbol("military");
 const diplomats = readSymbol("diplomats");
 const inquisition = readSymbol("inquisition");
 const financiers = readSymbol("financiers");
-const arcane = readSymbol("arcane");
-const legacyMystics = readSymbol("mystics");
+const mystics = readSymbol("mystics");
 const notes = readFileSync("images/faction-symbols/README.md", "utf8");
 
 describe("approved faction symbols", () => {
@@ -36,16 +35,20 @@ describe("approved faction symbols", () => {
     expect(financiers).not.toContain("side-profile");
   });
 
-  it("uses the Arcane pentagram seal and keeps the old Mystics filename as an alias", () => {
-    expect(arcane).toContain('viewBox="0 0 64 64"');
-    expect(arcane).toContain('<circle cx="32" cy="32" r="27"');
-    expect(arcane).toContain("L 43.17 47.37");
-    expect(legacyMystics).toBe(arcane);
+  it("uses the approved pentagram seal for Mystics", () => {
+    expect(mystics).toContain('viewBox="0 0 64 64"');
+    expect(mystics).toContain('<circle cx="32" cy="32" r="27"');
+    expect(mystics).toContain("L 43.17 47.37");
   });
 
   it("records Intelligence as pending final artwork rather than treating the temporary eye as approved", () => {
     expect(notes).toContain("Intelligence");
     expect(notes).toContain("still being refined");
     expect(notes).toContain("temporary production asset");
+  });
+
+  it("distinguishes the Mystics faction from the Arcane card type", () => {
+    expect(notes).toContain("**Mystics**");
+    expect(notes).toContain("`Arcane` is a card type, not a faction name.");
   });
 });
