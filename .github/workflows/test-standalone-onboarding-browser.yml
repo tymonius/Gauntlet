@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "start/**"
+      - "v0.6.3/start/**"
       - "deckbuilder/**"
       - "tests/standalone-new-player-onboarding.test.ts"
       - ".github/workflows/test-standalone-onboarding-browser.yml"
@@ -63,6 +64,25 @@ jobs:
             await page.screenshot({ path: `/tmp/standalone-start-${suffix}.png`, fullPage: true });
             if ((await page.locator('input[name="faction"]').count()) !== 6) {
               throw new Error('Standalone onboarding did not render six factions');
+            }
+            if (!(await page.locator('.start-hero').count()) || !(await page.locator('.faction-choice-grid').count()) || !(await page.locator('.intro-grid').count())) {
+              throw new Error('Start page is not using the polished production interface');
+            }
+            const startText = await page.locator('body').innerText();
+            if (!startText.includes('canonical v0.6.3') || startText.includes('canonical v0.6.1')) {
+              throw new Error('Start page does not identify the current v0.6.3 edition');
+            }
+            for (const phrase of [
+              'Draw four cards, discard one face up, and keep three as your opening Hand.',
+              'With that Hand and opening discard known, secretly arrange your three Territories.',
+              'Advance, Hold, or Fall Back',
+              'Defensive Edge',
+              'Tiebreak Roll',
+              "capturing the Territory at your opponent's end",
+              "winning your opponent's Last Stand",
+              'You do not need to capture the final Territory first.'
+            ]) {
+              if (!startText.includes(phrase)) throw new Error(`Start page is missing current v0.6.3 guidance: ${phrase}`);
             }
 
             await page.check('input[name="faction"][value="military"]');
