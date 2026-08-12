@@ -9,7 +9,9 @@
     const frame = image.closest('.card-art, .territory-art');
     if (!frame || frame.clientWidth < 1 || frame.clientHeight < 1) return null;
 
-    const authored = normalizeDirection(direction);
+    const overrideKey = options.id || options.label;
+    const override = overrideKey ? window.GAUNTLET_ART_DIRECTION?.[overrideKey] : null;
+    const authored = normalizeDirection(direction ?? override);
     image.style.objectFit = authored.fit;
     image.style.transform = authored.zoom === 1 ? '' : `scale(${authored.zoom})`;
 
