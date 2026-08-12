@@ -8,6 +8,9 @@ const sourceDir = 'artifacts/v0.6.3/release-candidate';
 const outputDir = 'artifacts/v0.6.3/print-candidate/html';
 const failures = [];
 const prepared = 'August 11, 2026';
+const faviconLinks = `  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />`;
 
 const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'utf8').replace(/\r\n/g, '\n');
 const normalize = (value) => String(value).replace(/\r\n/g, '\n').replace(/\s+$/, '') + '\n';
@@ -193,6 +196,7 @@ function documentPage(document, markdown) {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>${escapeHtml(document.title)}</title>
+${faviconLinks}
   <link rel="stylesheet" href="styles.css">
   <style>@page{size:${document.pageSize};margin:${document.key === 'rulebook' ? '.38in .4in .45in' : '.45in .5in .55in'}}</style>
 </head>
@@ -245,7 +249,13 @@ expected(`${outputDir}/styles.css`, read('v0.6.2/print/styles.css'));
 
 const index = `<!doctype html>
 <html lang="en">
-<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Gauntlet v0.6.3 Print Candidate</title><link rel="stylesheet" href="styles.css"></head>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Gauntlet v0.6.3 Print Candidate</title>
+${faviconLinks}
+  <link rel="stylesheet" href="styles.css">
+</head>
 <body><main class="print-index"><p class="eyebrow">Gauntlet v0.6.3 · release candidate · not published</p><h1>Printed-material candidate</h1><p>This local review surface is generated from the assembled v0.6.3 source release candidate. It is not a public release page.</p><div class="material-grid">
 ${[
   ['Rulebook', 'rulebook.html'], ['Compact Reference', 'reference-guide.html'], ['First Game Guide', 'first-game-guide.html'], ['Faction and Component Guide', 'faction-guide.html'], ['Returning-player Changes', 'returning-player-changes.html'], ['Player Mat', 'player-mat.html'], ['Formal Playtest Sheet', 'playtest-sheet.html'], ['Faction Teaching Cards', 'faction-teaching-cards.html'], ['Active-Player Marker', 'active-player-marker.html'],
