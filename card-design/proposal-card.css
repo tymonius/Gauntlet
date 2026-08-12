@@ -1,0 +1,271 @@
+/* Diplomat Proposal / Treaty Article supplemental-card prototype.
+   This deliberately reuses the ordinary poker-card shell, Diplomat border,
+   Leader-style faction wash, standard value medallion, and standard rule rows. */
+
+.proposal-card {
+  --minimum-rules-scale: 0.82;
+}
+
+.proposal-card .card-interior {
+  --art-height: 1.52in;
+  grid-template-rows: 0.3in var(--art-height) auto 0.18in;
+}
+
+/* Keep the ordinary 0.30in title row. The supplemental classification occupies
+   the small line beneath the title without reducing the artwork/rules footprint. */
+.proposal-card .card-heading {
+  display: grid;
+  grid-template-rows: auto auto;
+  align-content: center;
+  gap: 0.006in;
+  padding: 0.004in 0.39in 0.003in 0.09in;
+}
+
+.proposal-card .card-title {
+  max-width: 100%;
+  font-size: 10.8pt;
+  letter-spacing: 0.025em;
+  line-height: 0.86;
+}
+
+.proposal-card.long-title .card-title {
+  font-size: 9.4pt;
+  letter-spacing: 0.005em;
+}
+
+.proposal-type-line {
+  display: flex;
+  align-items: center;
+  gap: 0.034in;
+  min-width: 0;
+  color: var(--component-accent-ink);
+  font-family: var(--font-interface);
+  font-size: 4.1pt;
+  font-weight: 800;
+  letter-spacing: 0.105em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.proposal-faction-emblem {
+  display: block;
+  width: 0.105in;
+  height: 0.105in;
+  flex: 0 0 0.105in;
+  background: currentColor;
+  -webkit-mask: var(--faction-symbol) center / contain no-repeat;
+  mask: var(--faction-symbol) center / contain no-repeat;
+}
+
+/* The medallion is the Influence Stake, but retains exactly the ordinary card
+   geometry so the component still belongs visibly to the same card family. */
+.proposal-card .value-medallion {
+  color: var(--component-accent-ink);
+}
+
+.proposal-card .card-art {
+  margin-bottom: 0.045in;
+}
+
+.proposal-art-pending {
+  background:
+    radial-gradient(circle at 72% 28%, rgba(222, 230, 241, 0.25), transparent 24%),
+    linear-gradient(135deg, rgba(32, 63, 115, 0.76), rgba(91, 105, 126, 0.38)),
+    #716f69;
+}
+
+.proposal-card .card-rules,
+.proposal-card.dense-card .card-rules {
+  padding: 0.038in 0.075in 0.032in;
+}
+
+/* Requirement is wider than the ordinary Asset/Tactic labels, so Proposal
+   cards get their own consistent label track without touching playable cards. */
+.proposal-card .rule-section,
+.proposal-card .rule-section.placement-section {
+  grid-template-columns: 0.61in minmax(0, 1fr);
+  column-gap: 0.045in;
+}
+
+.proposal-card .rule-section + .rule-section,
+.proposal-card.dense-card .rule-section + .rule-section {
+  margin-top: 0.032in;
+  padding-top: 0.026in;
+}
+
+.proposal-card .rule-section h4,
+.proposal-card.dense-card .rule-section h4 {
+  color: var(--component-accent-ink);
+  font-size: calc(4.75pt * var(--rules-scale));
+  letter-spacing: 0.055em;
+  line-height: 1;
+}
+
+.proposal-card .rule-section p,
+.proposal-card.dense-card .rule-section p {
+  font-size: calc(6.2pt * var(--rules-scale));
+  line-height: 1.075;
+}
+
+.proposal-card .card-footer {
+  min-height: 0.18in;
+  padding: 0.032in 0.055in 0.018in;
+  background: var(--component-footer-tint);
+  line-height: 1.3;
+}
+
+.proposal-card .card-footer span:nth-child(2) {
+  color: var(--component-accent-ink);
+}
+
+/* Ratification deliberately replaces only the art. The Proposal remains fully
+   usable, so Stake, Requirement, Accepted, and Refused text are unchanged. */
+.proposal-ratified-panel {
+  display: grid;
+  isolation: isolate;
+  place-items: center;
+  background:
+    linear-gradient(rgba(38, 79, 145, 0.09), rgba(38, 79, 145, 0.09)),
+    radial-gradient(circle at 50% 36%, rgba(255, 252, 239, 0.94), transparent 42%),
+    var(--card-parchment-light);
+  color: var(--component-accent-ink);
+}
+
+.proposal-ratified-panel::after {
+  z-index: 2;
+  background:
+    linear-gradient(180deg, rgba(38, 79, 145, 0.025), transparent 58%, rgba(38, 79, 145, 0.08)),
+    repeating-linear-gradient(0deg, transparent 0 0.12in, rgba(70, 50, 31, 0.025) 0.121in 0.123in);
+}
+
+.proposal-ratified-word {
+  position: relative;
+  z-index: 3;
+  margin-top: -0.04in;
+  color: #263e69;
+  font-family: var(--font-flavor);
+  font-size: 25pt;
+  font-weight: 400;
+  letter-spacing: 0.035em;
+  line-height: 1;
+  text-align: center;
+  text-shadow: 0 0.01in 0 rgba(255, 255, 255, 0.52);
+  transform: rotate(-0.6deg);
+}
+
+.proposal-ratified-word::before,
+.proposal-ratified-word::after {
+  position: absolute;
+  top: 50%;
+  width: 0.42in;
+  height: 1px;
+  background: rgba(32, 63, 115, 0.48);
+  content: "";
+}
+
+.proposal-ratified-word::before {
+  right: calc(100% + 0.08in);
+}
+
+.proposal-ratified-word::after {
+  left: calc(100% + 0.08in);
+}
+
+.proposal-wax-seal {
+  position: absolute;
+  z-index: 4;
+  right: 0.13in;
+  bottom: 0.10in;
+  width: 0.43in;
+  height: 0.43in;
+  border: 0.012in solid rgba(91, 14, 20, 0.76);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 34% 28%, rgba(255, 191, 168, 0.28), transparent 20%),
+    radial-gradient(circle at 54% 58%, #a3232d 0 54%, #7c1720 72%, #5a1017 100%);
+  box-shadow:
+    0 0.025in 0.045in rgba(61, 28, 23, 0.34),
+    inset 0 0 0 0.025in rgba(76, 10, 16, 0.28),
+    inset 0.015in 0.018in 0.028in rgba(255, 214, 190, 0.15);
+  transform: rotate(-7deg);
+}
+
+.proposal-wax-seal::before {
+  position: absolute;
+  inset: 0.095in;
+  background: rgba(79, 9, 16, 0.72);
+  content: "";
+  -webkit-mask: var(--faction-symbol) center / contain no-repeat;
+  mask: var(--faction-symbol) center / contain no-repeat;
+}
+
+.proposal-wax-seal::after {
+  position: absolute;
+  inset: 0.045in;
+  border: 0.008in double rgba(90, 9, 16, 0.58);
+  border-radius: 50%;
+  content: "";
+}
+
+.proposal-review-block {
+  width: min(76rem, calc(100% - 2rem));
+  margin: 0 auto clamp(3rem, 6vw, 5rem);
+}
+
+.proposal-review-pair {
+  margin-bottom: 0.65in;
+}
+
+.proposal-review-pair:last-child {
+  margin-bottom: 0;
+}
+
+.proposal-face-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 2.5in);
+  justify-content: center;
+  gap: 0.42in;
+}
+
+.proposal-face {
+  width: 2.5in;
+}
+
+.proposal-face-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.45rem;
+  min-height: 1.1rem;
+  margin: 0 0 0.48rem;
+  color: var(--page-muted);
+  font-family: var(--font-interface);
+  font-size: 0.6rem;
+}
+
+.proposal-face-label strong {
+  color: var(--page-ink);
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 38rem) {
+  .proposal-face-grid {
+    justify-content: start;
+    overflow-x: auto;
+    padding-inline: 0.15rem;
+  }
+}
+
+@media print {
+  .proposal-faction-emblem,
+  .proposal-wax-seal::before,
+  .proposal-wax-seal,
+  .proposal-ratified-panel {
+    print-color-adjust: exact;
+  }
+
+  .proposal-review-pair {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
