@@ -7,10 +7,11 @@ on:
     paths:
       - '.github/workflows/build-v063-print-candidate.yml'
       - 'artifacts/v0.6.3/release-candidate/**'
-      - 'images/sketches/hero-plates/**'
+      - 'images/sketches/*.png'
       - 'scripts/build-v063-print-candidate-html.mjs'
       - 'scripts/render-v063-print-candidate.mjs'
       - 'scripts/validate-v063-print-candidate.mjs'
+      - 'scripts/validate-v063-print-visual-regressions.mjs'
       - 'scripts/normalize-v063-player-facing-candidates.mjs'
       - 'v0.6.2/print/**'
       - 'package.json'
@@ -20,10 +21,11 @@ on:
       - '.github/workflows/build-v063-print-candidate.yml'
       - 'artifacts/v0.6.3/print-candidate/**'
       - 'artifacts/v0.6.3/release-candidate/**'
-      - 'images/sketches/hero-plates/**'
+      - 'images/sketches/*.png'
       - 'scripts/build-v063-print-candidate-html.mjs'
       - 'scripts/render-v063-print-candidate.mjs'
       - 'scripts/validate-v063-print-candidate.mjs'
+      - 'scripts/validate-v063-print-visual-regressions.mjs'
       - 'scripts/normalize-v063-player-facing-candidates.mjs'
       - 'package.json'
   workflow_dispatch:
@@ -117,6 +119,7 @@ jobs:
         run: |
           node scripts/build-v063-print-candidate-html.mjs --check
           node scripts/validate-v063-print-candidate.mjs
+          node scripts/validate-v063-print-visual-regressions.mjs
 
       - name: Preserve publication boundary
         run: |
@@ -152,7 +155,6 @@ jobs:
             /tmp/gauntlet-v063-print-previews/**
             /tmp/gauntlet-v063-pdf-renders/**
             artifacts/v0.6.3/print-candidate/**
-            images/sketches/hero-plates/**
           if-no-files-found: error
 
       - name: Commit materialized source and print candidates
