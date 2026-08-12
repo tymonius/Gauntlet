@@ -7,6 +7,11 @@ import { execFileSync } from 'node:child_process';
 const root = process.cwd();
 const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'utf8').replace(/\r\n/g, '\n');
 const readJson = (relativePath) => JSON.parse(read(relativePath));
+const lifecycle = readJson('config/release-lifecycle.json');
+const v063Withdrawn = lifecycle.current_release === 'v0.6.2' &&
+  lifecycle.releases?.['v0.6.3']?.status === 'withdrawn' &&
+  lifecycle.releases?.['v0.6.3']?.artifacts_preserved === true &&
+  lifecycle.releases?.['v0.6.3']?.public_cutover === false;
 
 const componentValidators = [
   'scripts/validate-v063-finalized-tracker.mjs',
@@ -162,18 +167,32 @@ assert(publicWidget.includes('version: "v0.6.2"'), 'Public Rules Arbiter widget 
 assert(publicWorkerEntry.includes('./worker-v062.js'), 'Public Rules Arbiter worker entry is not routed to v0.6.2 before cutover.');
 assert(!publicWorkerEntry.includes('v063'), 'Public Rules Arbiter worker entry routes to v0.6.3 before cutover.');
 
-assert(!fs.existsSync(path.join(root, 'releases/v0.6.3')), 'Closeout must not materialize releases/v0.6.3/.');
+const publishedV063Exists = fs.existsSync(path.join(root, 'releases/v0.6.3'));
+assert(
+  !publishedV063Exists || v063Withdrawn,
+  'Closeout may coexist with releases/v0.6.3/ only when the lifecycle explicitly marks v0.6.3 withdrawn and v0.6.2 current.'
+);
+if (v063Withdrawn) {
+  assert(publishedV063Exists, 'Withdrawn v0.6.3 lifecycle must preserve releases/v0.6.3/ for provenance and diagnosis.');
+}
 
 if (process.env.GITHUB_BASE_REF) {
   const changed = execFileSync('git', ['diff', '--name-only', `origin/${process.env.GITHUB_BASE_REF}...HEAD`], { cwd: root, encoding: 'utf8' })
     .split(/\r?\n/)
     .filter(Boolean);
-  const forbidden = changed.filter((file) =>
+  const protectedV062 = changed.filter((file) =>
     file.startsWith('releases/v0.6.2/') ||
     file.startsWith('v0.6.2/') ||
-    ['index.html', 'rules-assistant/widget.js', 'rules-assistant/worker-entry.js', 'rules-assistant/worker-v062.js', 'rules-assistant/v062-published-corpus.js', 'src/content/current.ts'].includes(file)
+    ['rules-assistant/worker-v062.js', 'rules-assistant/v062-published-corpus.js'].includes(file)
   );
-  assert.deepEqual(forbidden, [], `Closeout crossed the v0.6.2/publication boundary: ${forbidden.join(', ')}`);
+  assert.deepEqual(protectedV062, [], `Closeout changed protected v0.6.2 release/implementation files: ${protectedV062.join(', ')}`);
+
+  if (!v063Withdrawn) {
+    const currentSurfaceChanges = changed.filter((file) =>
+      ['index.html', 'rules-assistant/widget.js', 'rules-assistant/worker-entry.js', 'src/content/current.ts'].includes(file)
+    );
+    assert.deepEqual(currentSurfaceChanges, [], `Closeout crossed the current/publication boundary: ${currentSurfaceChanges.join(', ')}`);
+  }
 }
 
-console.log('v0.6.3 cross-surface closeout passed: 60 scenarios, exact canonical equality across integrated/browser/release data, late card corrections and finalized 110-title starter baseline locked, tracked freshness fingerprints verified, fresh PDFs validated, and every public default still on v0.6.2.');
+console.log(`v0.6.3 cross-surface closeout passed: 60 scenarios, exact canonical equality across integrated/browser/release data, late card corrections and finalized 110-title starter baseline locked, tracked freshness fingerprints verified, fresh PDFs validated, and every public default still on v0.6.2${v063Withdrawn ? '; preserved v0.6.3 package is explicitly withdrawn' : ''}.`);
