@@ -152,6 +152,7 @@ jobs:
             /tmp/gauntlet-v063-print-previews/**
             /tmp/gauntlet-v063-pdf-renders/**
             artifacts/v0.6.3/print-candidate/**
+            images/sketches/hero-plates/**
           if-no-files-found: error
 
       - name: Commit materialized source and print candidates
