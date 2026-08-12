@@ -65,7 +65,7 @@
     window.GauntletArtworkCrop?.apply(
       card.querySelector('.territory-art img:not([hidden])'),
       territory.artDirection,
-      { label: territory.name },
+      { id: territory.id, label: territory.name },
     );
     document.body.dataset.renderReady = 'true';
   }
