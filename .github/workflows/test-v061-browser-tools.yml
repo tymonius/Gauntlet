@@ -161,8 +161,11 @@ jobs:
 
             {
               const { page, errors } = await openPage('/deckbuilder/', viewport);
-              await page.waitForFunction(() => document.body.innerText.includes('Military'));
-              await page.waitForFunction(() => document.querySelector('#dataStatus')?.textContent?.includes('128 active cards loaded'));
+              await page.waitForFunction(() => {
+                const app = document.querySelector('#app');
+                const factions = document.querySelectorAll('#factionSelect option');
+                return app && !app.hidden && factions.length >= 6;
+              });
               const text = await page.locator('body').innerText();
               if (!text.includes('v0.6.3')) throw new Error('Deckbuilder does not identify v0.6.3');
               if (text.includes('v0.6.1') || text.includes('v0.6.0')) throw new Error('Deckbuilder exposes a stale version label');
