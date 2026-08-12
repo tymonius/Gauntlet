@@ -9,13 +9,17 @@ const failures = [];
 const assert = (condition, message) => { if (!condition) failures.push(message); };
 
 const canonical = readJson('v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json');
-const audit = read('docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md');
+const finalization = read('docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md');
 const source = V063_STARTER_CATALOG;
 
 assert(source.version === 'v0.6.3-candidate', `Expected v0.6.3 starter source, received ${source.version}.`);
+assert(source.status === 'Finalized competitive starter Deck set for v0.6.3', 'Starter source must identify the Deck set as finalized for v0.6.3.');
 assert(source.optimizationPolicy?.primary === 'competitive-strength-and-strategic-expression', 'Starter source must identify competitive strength and strategic expression as the primary optimization target.');
 assert(source.optimizationPolicy?.teachingSimplicityTarget === false, 'Teaching simplicity must not be a starter optimization target.');
 assert(source.optimizationPolicy?.cardPoolCoverageTarget === false, 'Card-pool coverage must not be a starter optimization target.');
+assert(source.optimizationPolicy?.status === 'finalized-for-v0.6.3; future changes require playtest evidence', 'Starter source must lock further theory-only changes behind playtest evidence.');
+assert(source.optimizationPolicy?.audit === 'docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md', 'Starter source must point to the finalization record.');
+assert(source.optimizationPolicy?.predecessorAudit === 'docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md', 'Starter source must preserve the second-pass audit as predecessor evidence.');
 assert((source.decks ?? []).length === 12, `Expected 12 starters, found ${(source.decks ?? []).length}.`);
 assert(canonical.version === 'v0.6.3-candidate', `Expected canonical v0.6.3-candidate, received ${canonical.version}.`);
 
@@ -70,18 +74,27 @@ for (const deck of source.decks ?? []) {
   assert(arenas <= 1, `${label}: starter contains ${arenas} Arenas.`);
 }
 
-assert(usedTitles.size === 109, `Competitive starter baseline should use 109 unique titles; found ${usedTitles.size}.`);
-assert(audit.includes('Fealty remains'), 'Audit must document the Executive Fealty transcription correction.');
-assert(audit.includes('109 of 128 playable titles (85.2%)'), 'Audit must document the adopted pool-level coverage result.');
-assert(audit.includes('Teaching simplicity and card-pool coverage are **not** optimization targets.'), 'Audit must preserve the competitive optimization objective.');
+const commandant = source.decks.find((deck) => deck.name === 'Holdfast');
+const witchHunter = source.decks.find((deck) => deck.name === 'Relentless Pursuit');
+const executive = source.decks.find((deck) => deck.name === 'Hostile Expansion');
+const quantity = (deck, cardName) => deck?.cards.find((item) => item.name === cardName)?.quantity ?? 0;
+assert(quantity(commandant, 'Contingency Plan') === 1, 'Commandant final starter must contain exactly one Contingency Plan.');
+assert(quantity(commandant, 'Unbroken Ranks') === 2, 'Commandant final starter must contain exactly two Unbroken Ranks.');
+assert(quantity(witchHunter, 'Contingency Plan') === 1, 'Witch Hunter final starter must contain exactly one Contingency Plan.');
+assert(quantity(witchHunter, 'Scouting Report') === 0, 'Witch Hunter final starter must not contain Scouting Report.');
+assert(quantity(executive, 'Fealty') === 1, 'Executive starter must retain Fealty after the audit transcription correction.');
+assert(usedTitles.size === 110, `Finalized v0.6.3 starters should use 110 unique titles; found ${usedTitles.size}.`);
+assert(finalization.includes('110 of 128 playable titles (85.9%)'), 'Finalization record must document the adopted pool-level coverage result.');
+assert(finalization.includes('No further theory-only starter changes should be made for v0.6.3.'), 'Finalization record must lock further theory-only changes behind playtest evidence.');
+assert(finalization.includes('Teaching simplicity and card-pool coverage are not optimization targets.'), 'Finalization record must preserve the competitive optimization objective.');
 
 if (failures.length) {
-  console.error('\nv0.6.3 competitive starter validation failed:');
+  console.error('\nv0.6.3 finalized starter validation failed:');
   for (const failure of failures) console.error(`- ${failure}`);
   process.exit(1);
 }
 
-console.log(`v0.6.3 competitive starter validation passed: ${source.decks.length} starters, every Deck 30/60, ${usedTitles.size}/128 unique titles represented, strategic Territory guidance preserved.`);
+console.log(`v0.6.3 finalized starter validation passed: ${source.decks.length} starters, every Deck 30/60, ${usedTitles.size}/128 unique titles represented, strategic Territory guidance preserved, future theory-only changes locked behind playtest evidence.`);
 
 function slug(value) {
   return value.toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');

@@ -15,7 +15,7 @@ This directory is the assembled **pre-publication source package** for v0.6.3. I
 - [Release Candidate Notes](Gauntlet_v0.6.3_Release_Notes.md)
 - [Release Candidate Manifest](Gauntlet_v0.6.3_Manifest.json)
 
-The starter Deck file is generated from the independent v0.6.3 competitive starter source and its repository audit, not from the immutable v0.6.2 starter compositions.
+The starter Deck file is generated from the finalized independent v0.6.3 competitive starter source and its repository finalization record, not from the immutable v0.6.2 starter compositions.
 
 ## Publication boundary
 

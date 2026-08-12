@@ -72,15 +72,18 @@ assert(!completeReference.includes('## Reserves\n'));
 assert(!completeReference.includes("## Smuggler's Pass\n"));
 
 assert(starters.version === 'v0.6.3-release-candidate', `Starter catalog version is ${starters.version}.`);
-assert(starters.status === 'Release candidate — not published', 'Starter catalog must identify the release-candidate boundary.');
+assert(starters.status === 'Release candidate — finalized starter Decks; not published', 'Starter catalog must identify both finalization and the release-candidate publication boundary.');
 assert(starters.decks?.length === 12, `Expected 12 starter Decks; found ${starters.decks?.length}.`);
 assert(starters.purpose?.includes('competitive strength'), 'Starter catalog purpose must explicitly identify competitive strength.');
+assert(starters.purpose?.includes('Further composition changes require playtest evidence.'), 'Starter catalog purpose must lock future changes behind playtest evidence.');
 assert(!starters.purpose?.includes('inherited v0.6.2 compositions'), 'Starter catalog purpose must not describe the independent v0.6.3 Decks as inherited compositions.');
 assert(starters.compositionSource === 'v0.6.3/data/starter-decks-candidate.js', 'Starter catalog must identify the independent v0.6.3 composition source.');
-assert(starters.audit === 'docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md', 'Starter catalog must identify the competitive audit.');
+assert(starters.audit === 'docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md', 'Starter catalog must identify the finalization record.');
+assert(starters.predecessorAudit === 'docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md', 'Starter catalog must preserve the second-pass audit as predecessor evidence.');
 assert(starters.optimizationPolicy?.primary === 'competitive-strength-and-strategic-expression', 'Starter catalog must preserve the competitive optimization policy.');
 assert(starters.optimizationPolicy?.teachingSimplicityTarget === false, 'Release starters must not be teaching-simplicity optimized.');
 assert(starters.optimizationPolicy?.cardPoolCoverageTarget === false, 'Release starters must not be coverage optimized.');
+assert(starters.optimizationPolicy?.status === 'finalized-for-v0.6.3; future changes require playtest evidence', 'Release starters must be finalized for v0.6.3 and locked behind playtest evidence.');
 
 const cardsByName = new Map(canonical.cards.map((card) => [card.name, card]));
 const territoriesByName = new Map(canonical.territories.map((territory) => [territory.name, territory]));
@@ -89,8 +92,8 @@ const usedTitles = new Set();
 for (const deck of starters.decks ?? []) {
   const sourceDeck = sourceDecksById.get(deck.id);
   assert(Boolean(sourceDeck), `${deck.name}: release Deck has no v0.6.3 source Deck.`);
-  assert(JSON.stringify(deck.cards) === JSON.stringify(sourceDeck?.cards), `${deck.name}: release composition drifted from competitive source.`);
-  assert(JSON.stringify(deck.territories) === JSON.stringify(sourceDeck?.territories), `${deck.name}: release Territories drifted from competitive source.`);
+  assert(JSON.stringify(deck.cards) === JSON.stringify(sourceDeck?.cards), `${deck.name}: release composition drifted from finalized source.`);
+  assert(JSON.stringify(deck.territories) === JSON.stringify(sourceDeck?.territories), `${deck.name}: release Territories drifted from finalized source.`);
   const count = (deck.cards ?? []).reduce((sum, item) => sum + item.quantity, 0);
   const value = (deck.cards ?? []).reduce((sum, item) => {
     const card = cardsByName.get(item.name);
@@ -115,7 +118,12 @@ for (const deck of starters.decks ?? []) {
   }
   assert(arenas <= 1, `${deck.name}: more than one Arena.`);
 }
-assert(usedTitles.size === 109, `Expected competitive starters to represent 109 unique titles; found ${usedTitles.size}.`);
+const quantity = (deck, cardName) => deck?.cards.find((item) => item.name === cardName)?.quantity ?? 0;
+const commandant = starters.decks.find((deck) => deck.name === 'Holdfast');
+const witchHunter = starters.decks.find((deck) => deck.name === 'Relentless Pursuit');
+assert(usedTitles.size === 110, `Expected finalized starters to represent 110 unique titles; found ${usedTitles.size}.`);
+assert(quantity(commandant, 'Contingency Plan') === 1 && quantity(commandant, 'Unbroken Ranks') === 2, 'Commandant release starter must contain the finalized Contingency Plan / Unbroken Ranks split.');
+assert(quantity(witchHunter, 'Contingency Plan') === 1 && quantity(witchHunter, 'Scouting Report') === 0, 'Witch Hunter release starter must contain the finalized Contingency Plan swap.');
 assert(starters.decks.some((deck) => deck.name === 'Forward Doctrine' && deck.cards.some((item) => item.name === 'Shock and Awe')), 'General starter must include Shock and Awe.');
 assert(starters.decks.some((deck) => deck.name === 'Hostile Expansion' && deck.cards.some((item) => item.name === 'Fealty')), 'Executive starter must retain Fealty after audit transcription correction.');
 
@@ -132,8 +140,12 @@ for (const field of ['public_site_cutover', 'rules_arbiter_default_cutover', 'di
 }
 assert(manifest.validation?.source_release_candidate_assembled === true);
 assert(manifest.validation?.competitive_starter_baseline_integrated === true, 'Manifest must record competitive starter integration.');
+assert(manifest.validation?.starter_decks_finalized_for_v063 === true, 'Manifest must record starter finalization.');
+assert(manifest.validation?.future_starter_changes_require_playtest_evidence === true, 'Manifest must record the playtest-evidence gate for future starter changes.');
 assert(manifest.validation?.print_package_generated === false);
 assert(manifest.validation?.ready_for_publication === false);
+assert(manifest.upstream_sources?.starterAudit === 'docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md');
+assert(manifest.upstream_sources?.starterPredecessorAudit === 'docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md');
 for (const file of required) assert(manifest.current_outputs?.includes(file), `Manifest current_outputs omits ${file}.`);
 
 assert(deployment.status === 'not-published');
@@ -144,8 +156,11 @@ assert(deployment.public_cutover_ready === false);
 for (const token of ['pre-publication source package', 'v0.6.2', 'next gate is generation and validation of the v0.6.3 printed-material package']) {
   assert(readme.includes(token), `Release-candidate README is missing: ${token}`);
 }
+assert(readme.includes('finalized independent v0.6.3 competitive starter source'), 'Release README must describe the finalized starter source.');
 assert(notes.includes('does **not** change the public website'));
-assert(notes.includes('twelve recommended starter Decks are rebuilt as independent v0.6.3 competitive baselines'), 'Release notes must record the competitive starter rebuild.');
+assert(notes.includes('twelve recommended starter Decks are finalized as independent v0.6.3 competitive release baselines'), 'Release notes must record starter finalization.');
+assert(notes.includes('110 of 128 playable titles'), 'Release notes must record finalized starter title representation.');
+assert(notes.includes('further composition changes require playtest evidence'), 'Release notes must record the post-release playtest gate.');
 assert(notes.includes('Margin Loan'));
 assert(returning.includes('v0.6.2 remains the published playtest edition'));
 assert(!fs.existsSync(path.join(root, 'releases/v0.6.3')), 'Pre-publication assembly must not materialize releases/v0.6.3/.');
@@ -158,5 +173,5 @@ function finish() {
     for (const failure of failures) console.error(`- ${failure}`);
     process.exit(1);
   }
-  console.log('v0.6.3 source release-candidate validation passed: 128 cards, 25 Territories, 12 competitive 30/60 starter Decks using 109 titles, synchronized player-facing sources, and no public cutover.');
+  console.log('v0.6.3 source release-candidate validation passed: 128 cards, 25 Territories, 12 finalized competitive 30/60 starter Decks using 110 titles, synchronized player-facing sources, and no public cutover.');
 }
