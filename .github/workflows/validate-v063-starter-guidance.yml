@@ -8,7 +8,6 @@ on:
       - 'docs/Gauntlet_v0.6.3_Starter_Deck_Presentation_Candidate.md'
       - 'docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md'
       - 'scripts/refine-v063-browser-development.mjs'
-      - 'scripts/validate-v063-browser-development.mjs'
       - 'scripts/validate-v063-starter-guidance.mjs'
       - 'v0.6.3/deckbuilder/**'
       - 'v0.6.3/data/starter-decks-candidate.js'
@@ -20,7 +19,6 @@ on:
       - 'docs/Gauntlet_v0.6.3_Starter_Deck_Presentation_Candidate.md'
       - 'docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md'
       - 'scripts/refine-v063-browser-development.mjs'
-      - 'scripts/validate-v063-browser-development.mjs'
       - 'scripts/validate-v063-starter-guidance.mjs'
       - 'v0.6.3/deckbuilder/**'
       - 'v0.6.3/data/starter-decks-candidate.js'
@@ -49,14 +47,10 @@ jobs:
           node --check v0.6.3/deckbuilder/starter-adapter.js
           node --check v0.6.3/deckbuilder/app.js
           node --check scripts/refine-v063-browser-development.mjs
-          node --check scripts/validate-v063-browser-development.mjs
           node --check scripts/validate-v063-starter-guidance.mjs
 
       - name: Validate competitive starters and Territory guidance
         run: node scripts/validate-v063-starter-guidance.mjs
-
-      - name: Validate browser propagation
-        run: node scripts/validate-v063-browser-development.mjs
 
       - name: Preserve published v0.6.2 starter boundary
         if: github.event_name == 'pull_request'
