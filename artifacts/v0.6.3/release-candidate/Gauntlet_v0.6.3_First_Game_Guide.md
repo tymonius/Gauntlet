@@ -307,7 +307,7 @@ Read the Proposal before accepting or refusing. Accepted Terms prevent the battl
 ### Your faction
 
 - **Aim:** Build Capital and Treasury value, buy Deeds, and combine ownership with territorial pressure.
-- **Resource:** Capital; begin with 2 for the v0.6.2 test.
+- **Resource:** Capital; begin with 2.
 - **Faction Actions:** Treasury, Deed purchase, Play the Market, and Hostile Takeover during Denouement.
 - **Faction Ability:** Subsidize before dice; Financial Capacity may permit an Action in both Opening and Denouement.
 - **Additional victory:** Own the Deeds to every Territory through Controlling Interest.
@@ -444,17 +444,17 @@ For each recommended first-game Deck, present:
 
 Do not describe the starter as a reduced card pool. It is a coherent recommended Deck built from the full legal pool.
 
-The published Deckbuilder and `/start/` flow use this release's canonical data and starter catalog.
+The v0.6.3 development Deckbuilder and `/v0.6.3/start/` flow use the v0.6.3 candidate data and adapted starter catalog.
 
 ---
 
 # 13. Authority and release boundary
 
-For the v0.6.2 release:
+For the v0.6.3 release candidate:
 
-1. The Official Rulebook and specific component text govern play.
-2. `Gauntlet_v0.6.2_Starter_Decks.json` governs the twelve recommended starter compositions.
-3. This document governs first-game and tableside presentation.
-4. v0.6.1 remains available as an immutable historical release package.
+1. The v0.6.3 Rulebook candidate and specific component text govern candidate play and review.
+2. `Gauntlet_v0.6.3_Starter_Decks.json` governs the twelve recommended starter compositions in the assembled source candidate.
+3. This document governs v0.6.3 first-game and tableside candidate presentation.
+4. v0.6.2 remains the immutable published playtest release until the publication cutover is completed.
 
 Later layout work may change typography, iconography, dimensions, and illustration, but it may not change the sequences, terminology, faction summaries, or starter compositions without a recorded superseding decision.

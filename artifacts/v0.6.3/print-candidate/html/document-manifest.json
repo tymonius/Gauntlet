@@ -1,0 +1,43 @@
+{
+  "version": "v0.6.3-print-candidate",
+  "status": "candidate-not-published",
+  "generated_from": [
+    {
+      "key": "rulebook",
+      "source": "artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Rulebook.md",
+      "output": "artifacts/v0.6.3/print-candidate/html/rulebook.html",
+      "page_size": "5.5in 8.5in"
+    },
+    {
+      "key": "reference",
+      "source": "artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Reference_Guide.md",
+      "output": "artifacts/v0.6.3/print-candidate/html/reference-guide.html",
+      "page_size": "Letter portrait"
+    },
+    {
+      "key": "first-game",
+      "source": "artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_First_Game_Guide.md",
+      "output": "artifacts/v0.6.3/print-candidate/html/first-game-guide.html",
+      "page_size": "Letter portrait"
+    },
+    {
+      "key": "faction-guide",
+      "source": "artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Faction_and_Component_Guide.md",
+      "output": "artifacts/v0.6.3/print-candidate/html/faction-guide.html",
+      "page_size": "Letter portrait"
+    },
+    {
+      "key": "changes",
+      "source": "artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Returning_Player_Changes.md",
+      "output": "artifacts/v0.6.3/print-candidate/html/returning-player-changes.html",
+      "page_size": "Letter portrait"
+    }
+  ],
+  "adapted_fixed_layout_sources": [
+    "v0.6.2/print/player-mat.html",
+    "v0.6.2/print/playtest-sheet.html",
+    "v0.6.2/print/faction-teaching-cards.html",
+    "v0.6.2/print/active-player-marker.html"
+  ],
+  "publication_cutover_complete": false
+}

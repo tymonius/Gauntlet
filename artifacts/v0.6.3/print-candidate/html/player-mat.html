@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
+  <title>Gauntlet Player Mat — v0.6.3</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>@page{size:Letter landscape;margin:0}.mat-grid{height:7.03in}</style>
+</head>
+<body>
+  <header class="screen-header screen-only">
+    <div><p class="eyebrow">Gauntlet v0.6.3 play aid</p><h1>Player Mat</h1><p>Print one landscape Letter mat per player.</p></div>
+    <div class="screen-actions"><span class="version-chip">release candidate - not published</span><button onclick="window.print()">Print / Save PDF</button></div>
+  </header>
+
+  <main class="page-shell">
+    <section class="page letter-landscape player-mat" aria-label="Gauntlet v0.6.3 player mat">
+      <header class="mat-header">
+        <div><p class="eyebrow">Gauntlet v0.6.3</p><h2>Player Mat</h2></div>
+        <div class="player-fields"><span>Player __________________________________</span><span>Faction __________________</span><span>Leader __________________</span></div>
+        <aside class="turn-banner"><strong>YOUR TURN: Capture - Draw - Opening - Movement - Denouement - Cleanup</strong><span>Take one Action during Opening or Denouement. Pass the active-player marker after Cleanup.</span></aside>
+      </header>
+
+      <div class="mat-grid">
+        <section class="mat-column mat-private" aria-label="Private and persistent card zones">
+          <article class="zone">
+            <div class="zone-heading"><h3>Hand</h3><span>Permanent private cards</span></div>
+            <p>Begin with 3. During Cleanup, discard down to the normal Hand limit.</p>
+            <div class="card-slots"><i class="card-slot"></i><i class="card-slot"></i><i class="card-slot"></i></div>
+          </article>
+          <div class="piles">
+            <article class="zone pile"><h3>Draw Pile</h3><p>Face down</p><i class="card-slot"></i></article>
+            <article class="zone pile"><h3>Discard</h3><p>Recyclable</p><i class="card-slot"></i></article>
+            <article class="zone pile"><h3>Graveyard</h3><p>Normally permanent</p><i class="card-slot"></i></article>
+          </div>
+          <article class="zone bound-zone">
+            <div class="zone-heading"><h3>Bound Cards</h3><span>Outside normal zones</span></div>
+            <p>Tuck each card beneath or beside the effect that binds it. A bound card cannot be played, moved, or affected except by that effect.</p>
+            <div class="card-slots"><i class="card-slot"></i><i class="card-slot"></i></div>
+          </article>
+          <article class="zone">
+            <div class="zone-heading"><h3>Position &amp; Front Line</h3><span>Token location is not control</span></div>
+            <p>Start on your own-end Territory; setup placement is not movement or entering. Front Line = contiguous Territories you control from your end. Capture the next opposing Territory when eligible.</p>
+          </article>
+        </section>
+
+        <section class="mat-column mat-battle" aria-label="Battle staging zones">
+          <div class="battle-banner"><strong>Battle Staging</strong><span>Clear after each active battle</span></div>
+          <article class="zone">
+            <div class="zone-heading"><h3>Pending Battle / Onset</h3><span>Terms occur before Onset</span></div>
+            <p>Establish attacker, defender, contested Position, and attack origin. Accepted Terms prevent the battle. Refused or no Terms proceed to Onset.</p>
+            <div class="movement-key"><div><strong>Fall Back</strong>ordinary Movement</div><div><strong>Retreat</strong>after losing</div><div><strong>Withdraw</strong>leave without a winner</div></div>
+          </article>
+          <div class="commit-row">
+            <article class="zone"><div class="zone-heading"><h3>Gambit</h3><span>From Hand</span></div><p>Normally set up to one face down after Onset.</p><i class="card-slot"></i><p><strong>Aftermath: Graveyard</strong></p></article>
+            <article class="zone"><div class="zone-heading"><h3>Tactic</h3><span>From Reserve</span></div><p>Normally choose up to one after Gambits resolve.</p><i class="card-slot"></i><p><strong>Aftermath: Discard Pile</strong></p></article>
+          </div>
+          <article class="zone">
+            <div class="zone-heading"><h3>Reserve</h3><span>Temporary private zone</span></div>
+            <p>Set Hand physically aside. Normally draw 3 cards here. Unchosen Reserve cards remain separate from Hand and go to the Discard Pile during Aftermath.</p>
+            <div class="card-slots"><i class="card-slot"></i><i class="card-slot"></i><i class="card-slot"></i></div>
+          </article>
+          <div class="battle-sequence" aria-label="Battle sequence">
+            <span><b>1</b>Onset</span><span><b>2</b>Set Gambits</span><span><b>3</b>Form Reserves</span><span><b>4</b>Reveal Gambits</span>
+            <span><b>5</b>Choose Tactics</span><span><b>6</b>Reveal Tactics</span><span><b>7</b>Outcome</span><span><b>8</b>Aftermath</span>
+          </div>
+        </section>
+
+        <section class="mat-column mat-public" aria-label="Public persistent zones">
+          <article class="zone">
+            <div class="zone-heading"><h3>Leader &amp; Faction</h3><span>Public components</span></div>
+            <p>Keep the Leader and faction trackers, references, Proposals, Deeds, Missions, Rites, doctrine, or other public components visible here.</p>
+            <div class="card-slots"><i class="card-slot"></i><i class="card-slot"></i></div>
+          </article>
+          <article class="zone">
+            <div class="zone-heading"><h3>Asset Bank</h3><span>Public persistent cards</span></div>
+            <p>Limit equals Territories you control. When full, discard a controlled Asset to make room unless a rule prevents it from leaving.</p>
+            <div class="card-slots"><i class="card-slot"></i><i class="card-slot"></i><i class="card-slot"></i></div>
+          </article>
+          <article class="zone">
+            <div class="zone-heading"><h3>Action Reminder</h3><span>1 Action · Opening or Denouement</span></div>
+            <p>During Opening or Denouement: play one Action effect, take one legal Faction Action, or discard one Asset. An additional Action does not itself permit two Actions in one phase.</p>
+          </article>
+          <article class="zone">
+            <div class="zone-heading"><h3>Outcome Reminder</h3><span>Resolve ties correctly</span></div>
+            <p>Defensive Edge lets the defender win tied battle totals. If the tie remains, make a separate unmodified Tiebreak Roll; reroll further ties.</p>
+          </article>
+          <article class="zone">
+            <div class="zone-heading"><h3>Occupation &amp; Capture</h3><span>Control changes later</span></div>
+            <p>Capturing the opponent-end Territory wins immediately. Once the opponent is beyond the Gauntlet, a separate legal Advance beyond their end can start a Last Stand without prior capture.</p>
+          </article>
+        </section>
+      </div>
+
+      <footer class="mat-footer"><span><b>Gambit:</b> from Hand; normally Graveyard.</span><span><b>Tactic:</b> from Reserve; normally Discard.</span><span><b>Fall Back ≠ retreat ≠ withdrawal.</b></span><strong>v0.6.3 release candidate</strong></footer>
+    </section>
+  </main>
+</body>
+</html>
