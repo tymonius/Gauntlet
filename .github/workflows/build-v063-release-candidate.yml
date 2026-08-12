@@ -1,0 +1,143 @@
+name: Build v0.6.3 source release candidate
+
+on:
+  push:
+    branches: [agent/v063-release-package-candidate]
+    paths:
+      - '.github/workflows/build-v063-release-candidate.yml'
+      - 'scripts/build-v063-release-candidate.mjs'
+      - 'scripts/validate-v063-release-candidate.mjs'
+      - 'scripts/generate-v063-player-facing-candidates.mjs'
+      - 'scripts/sync-v063-rulebook-card-text.mjs'
+      - 'scripts/normalize-v063-player-facing-candidates.mjs'
+      - 'scripts/validate-v063-player-facing-candidates.mjs'
+      - 'scripts/generate-v063-canonical-data-candidate.mjs'
+      - 'scripts/finalize-v063-canonical-data-candidate.mjs'
+      - 'scripts/generate-v063-complete-card-reference-candidate.mjs'
+      - 'scripts/validate-v063-canonical-data-candidate.mjs'
+      - 'scripts/validate-v063-canonical-promotion-boundary.mjs'
+      - 'scripts/validate-v063-starter-guidance.mjs'
+      - 'docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md'
+      - 'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md'
+      - 'docs/Gauntlet_v0.6.3_Starter_Deck_Presentation_Candidate.md'
+      - 'v0.6.3/deckbuilder/starter-adapter.js'
+      - 'v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json'
+      - 'artifacts/v0.6.3/release-candidate/**'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-v063-release-candidate.yml'
+      - 'scripts/build-v063-release-candidate.mjs'
+      - 'scripts/validate-v063-release-candidate.mjs'
+      - 'artifacts/v0.6.3/release-candidate/**'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: read
+
+concurrency:
+  group: v063-release-candidate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build final v0.6.3 card text
+        run: |
+          node scripts/build-v063-card-normalization.mjs
+          node scripts/finalize-v063-card-conventions.mjs
+          node scripts/apply-v063-general-card-rules.mjs
+          node scripts/apply-v063-numeric-shorthand.mjs
+          node scripts/apply-v063-compact-shorthand.mjs
+          node scripts/apply-v063-natural-advantage-wording.mjs
+          node scripts/apply-v063-advantage-capitalization.mjs
+          node scripts/apply-v063-asset-language.mjs
+          node scripts/validate-v063-advantage-stacking.mjs
+          node scripts/apply-v063-gambit-tactic-headings.mjs
+          node scripts/apply-v063-poolwide-card-refinements.mjs
+          node scripts/apply-v063-final-artifact-audit.mjs
+          node scripts/finalize-v063-poolwide-integrity.mjs
+          node scripts/apply-v063-finalized-forward-conventions.mjs
+          node scripts/sync-v063-final-card-mirrors.mjs
+          node scripts/validate-v063-finalized-tracker.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Build player-facing candidates
+        run: |
+          node scripts/generate-v063-player-facing-candidates.mjs
+          node scripts/sync-v063-rulebook-card-text.mjs
+          node scripts/normalize-v063-player-facing-candidates.mjs
+          node scripts/validate-v063-player-facing-candidates.mjs
+
+      - name: Build integrated canonical candidate
+        run: |
+          node scripts/generate-v063-canonical-data-candidate.mjs
+          node scripts/finalize-v063-canonical-data-candidate.mjs
+          node scripts/generate-v063-complete-card-reference-candidate.mjs
+          node scripts/validate-v063-canonical-data-candidate.mjs
+          node scripts/validate-v063-canonical-promotion-boundary.mjs
+
+      - name: Validate starter presentation inputs
+        run: node scripts/validate-v063-starter-guidance.mjs
+
+      - name: Assemble source release candidate
+        run: |
+          node scripts/build-v063-release-candidate.mjs
+          node scripts/validate-v063-release-candidate.mjs
+
+      - name: Preserve published and public boundaries
+        if: github.event_name == 'pull_request'
+        run: |
+          git diff --name-only origin/${{ github.base_ref }}...HEAD -- \
+            'releases/v0.6.2/**' \
+            'v0.6.2/**' \
+            'index.html' \
+            'rules-assistant/widget.js' \
+            'rules-assistant/worker-entry.js' \
+            'rules-assistant/worker-v062.js' \
+            'rules-assistant/v062-published-corpus.js' \
+            'src/content/current.ts' > /tmp/v063-public-boundary.txt
+          if [ -s /tmp/v063-public-boundary.txt ]; then
+            echo 'The source release-candidate pass must not change published/public defaults:'
+            cat /tmp/v063-public-boundary.txt
+            exit 1
+          fi
+
+      - name: Commit materialized source package
+        if: github.event_name == 'push' && github.ref_name == 'agent/v063-release-package-candidate'
+        run: |
+          git add artifacts/v0.6.3/release-candidate/
+          if git diff --cached --quiet; then
+            echo 'v0.6.3 source release candidate is already current.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Materialize v0.6.3 source release candidate'
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+
+      - name: Verify tracked candidate on pull request
+        if: github.event_name == 'pull_request'
+        run: git diff --exit-code -- artifacts/v0.6.3/release-candidate/
+
+      - name: Upload source release candidate
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-v063-source-release-candidate
+          path: artifacts/v0.6.3/release-candidate/
+          if-no-files-found: error
