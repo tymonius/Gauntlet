@@ -1,0 +1,73 @@
+{
+  "version": "v0.6.3-release-candidate",
+  "release_version": "v0.6.3",
+  "name": "Third Playtest Revision",
+  "status": "candidate-not-published",
+  "prepared_date": "2026-08-11",
+  "previous_version": "v0.6.2",
+  "playable_card_designs": 128,
+  "card_pool_summary_total": 128,
+  "territories": 25,
+  "arenas": 4,
+  "proposals": 9,
+  "factions": 6,
+  "leaders": 12,
+  "starter_decks": 12,
+  "governing_outputs": [
+    "Gauntlet_v0.6.3_Rulebook.md",
+    "Gauntlet_v0.6.3_Faction_and_Component_Guide.md",
+    "Gauntlet_v0.6.3_Complete_Card_Reference.md",
+    "Gauntlet_v0.6.3_Canonical_Data.json"
+  ],
+  "current_outputs": [
+    "README.md",
+    "Gauntlet_v0.6.3_Rulebook.md",
+    "Gauntlet_v0.6.3_Reference_Guide.md",
+    "Gauntlet_v0.6.3_First_Game_Guide.md",
+    "Gauntlet_v0.6.3_Faction_and_Component_Guide.md",
+    "Gauntlet_v0.6.3_Starter_Decks.json",
+    "Gauntlet_v0.6.3_Complete_Card_Reference.md",
+    "Gauntlet_v0.6.3_Canonical_Data.json",
+    "Gauntlet_v0.6.3_Returning_Player_Changes.md",
+    "Gauntlet_v0.6.3_Release_Notes.md",
+    "Gauntlet_v0.6.3_Manifest.json",
+    "deployment-status.json"
+  ],
+  "upstream_sources": {
+    "rulebook": "artifacts/v0.6.3/player-facing/Gauntlet_v0.6.3_Rulebook_Candidate.md",
+    "reference": "artifacts/v0.6.3/player-facing/Gauntlet_v0.6.3_Reference_Guide_Candidate.md",
+    "firstGame": "artifacts/v0.6.3/player-facing/Gauntlet_v0.6.3_First_Game_Guide_Candidate.md",
+    "returning": "artifacts/v0.6.3/player-facing/Gauntlet_v0.6.3_Returning_Player_Changes_Candidate.md",
+    "canonical": "artifacts/v0.6.3/canonical/Gauntlet_v0.6.3_Canonical_Data_Candidate.json",
+    "completeReference": "artifacts/v0.6.3/canonical/Gauntlet_v0.6.3_Complete_Card_Reference_Candidate.md",
+    "starters": "releases/v0.6.2/Gauntlet_v0.6.2_Starter_Decks.json"
+  },
+  "development_review_surfaces": [
+    "v0.6.3/rulebook/",
+    "v0.6.3/start/",
+    "v0.6.3/quick-reference/",
+    "v0.6.3/reference/",
+    "v0.6.3/deckbuilder/",
+    "v0.6.3/rules-arbiter/"
+  ],
+  "publication_boundary": {
+    "published_version": "v0.6.2",
+    "package_directory": "artifacts/v0.6.3/release-candidate",
+    "promotion_target": "releases/v0.6.3/",
+    "public_site_cutover": false,
+    "rules_arbiter_default_cutover": false,
+    "digital_default_cutover": false,
+    "published_release_directory_materialized": false
+  },
+  "validation": {
+    "final_card_text_integrated": true,
+    "player_facing_candidates_integrated": true,
+    "canonical_candidate_integrated": true,
+    "rules_arbiter_candidate_integrated": true,
+    "digital_candidate_integrated": true,
+    "starter_guidance_integrated": true,
+    "source_release_candidate_assembled": true,
+    "print_package_generated": false,
+    "ready_for_publication": false
+  }
+}
