@@ -2,41 +2,48 @@
 
 .faction-component-card {
   --component-parchment-tint: rgba(0, 0, 0, 0);
+  --component-footer-tint: rgba(177, 139, 83, 0.24);
   --component-accent-ink: var(--card-muted-ink);
 }
 
 .faction-component-card[data-faction="military"] {
   --component-parchment-tint: rgba(145, 28, 38, 0.15);
+  --component-footer-tint: rgba(145, 28, 38, 0.22);
   --component-accent-ink: #721b22;
   --faction-symbol: url("../images/faction-symbols/military.svg");
 }
 
 .faction-component-card[data-faction="diplomats"] {
   --component-parchment-tint: rgba(38, 79, 145, 0.13);
+  --component-footer-tint: rgba(38, 79, 145, 0.20);
   --component-accent-ink: #203f73;
   --faction-symbol: url("../images/faction-symbols/diplomats.svg");
 }
 
 .faction-component-card[data-faction="financiers"] {
   --component-parchment-tint: rgba(34, 112, 68, 0.13);
+  --component-footer-tint: rgba(34, 112, 68, 0.20);
   --component-accent-ink: #1d5d39;
   --faction-symbol: url("../images/faction-symbols/financiers.svg");
 }
 
 .faction-component-card[data-faction="intelligence"] {
   --component-parchment-tint: rgba(40, 40, 39, 0.12);
+  --component-footer-tint: rgba(40, 40, 39, 0.18);
   --component-accent-ink: #282827;
   --faction-symbol: url("../images/faction-symbols/intelligence.svg");
 }
 
 .faction-component-card[data-faction="mystics"] {
   --component-parchment-tint: rgba(93, 52, 126, 0.13);
+  --component-footer-tint: rgba(93, 52, 126, 0.20);
   --component-accent-ink: #563073;
   --faction-symbol: url("../images/faction-symbols/mystics.svg");
 }
 
 .faction-component-card[data-faction="inquisition"] {
   --component-parchment-tint: rgba(166, 122, 39, 0.14);
+  --component-footer-tint: rgba(166, 122, 39, 0.22);
   --component-accent-ink: #765616;
   --faction-symbol: url("../images/faction-symbols/inquisition.svg");
 }
@@ -164,6 +171,7 @@
   grid-template-columns: 1fr auto 1fr;
   min-height: 0.18in;
   padding: 0.032in 0.055in 0.018in;
+  background: var(--component-footer-tint);
   line-height: 1.3;
 }
 
