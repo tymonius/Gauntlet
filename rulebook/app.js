@@ -1,7 +1,7 @@
 import { renderMarkdown } from './markdown.js';
 
-const SOURCE_URL = '../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md';
-const PDF_URL = '../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf';
+const SOURCE_URL = '../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md';
+const PDF_URL = '../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.pdf';
 const content = document.querySelector('[data-rulebook-content]');
 const toc = document.querySelector('[data-rulebook-toc]');
 const status = document.querySelector('[data-rulebook-status]');
@@ -284,7 +284,7 @@ async function loadRulebook() {
       0,
       rendered.headings.filter(({ level, id }) => level === 1 && id !== 'gauntlet' && id !== 'official-rulebook').length
     );
-    status.textContent = `Canonical v0.6.1 · ${sectionCount} sections · rendered from the official Markdown source`;
+    status.textContent = `Canonical v0.6.3 · ${sectionCount} sections · rendered from the official Markdown source`;
   } catch (error) {
     console.error(error);
     content.removeAttribute('aria-busy');
