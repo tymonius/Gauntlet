@@ -36,7 +36,7 @@ function inlineMarkdown(value) {
   let output = escapeHtml(value);
   output = output.replace(/`([^`]+)`/g, '<code>$1</code>');
   output = output.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
-  output = output.replace(/\*([^*]+)\*\*/g, '<em>$1</em>');
+  output = output.replace(/\*([^*]+)\*/g, '<em>$1</em>');
   output = output.replace(/\[([^\]]+)]\(([^)]+)\)/g, '<span class="print-link">$1</span>');
   return output;
 }
