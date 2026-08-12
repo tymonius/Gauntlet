@@ -35,8 +35,8 @@
     },
     "tracked_candidate_surfaces": {
       "algorithm": "sha256",
-      "files": 63,
-      "digest": "fae8eb92acb0dc1b13825e98457d3282df21cb27c91e0afdac7e714e950a1e23"
+      "files": 79,
+      "digest": "15d154ae9c36f8bf02a4cb55c9d2bc5e400850caf8a18eca3a5409054fbee8e9"
     },
     "pdf_bytes_intentionally_excluded": true
   },
@@ -60,5 +60,5 @@
     "digital_default_cutover": false
   },
   "next_gate_after_green_closeout": "v0.6.3 publication/cutover",
-  "note": "The aggregate closeout manifest fingerprints tracked source, print-semantic, browser, Rules Arbiter, digital, and faction-symbol surfaces. Raw rendered PDF bytes are excluded because renderer metadata is nondeterministic; the workflow re-renders and validates every PDF from the fingerprinted print semantics on each closeout run."
+  "note": "The aggregate closeout manifest fingerprints tracked source, print-semantic, browser, shared card-design, Rules Arbiter, digital, and faction-symbol surfaces. Raw rendered PDF bytes are excluded because renderer metadata is nondeterministic; the workflow re-renders and validates every PDF from the fingerprinted print semantics on each closeout run."
 }
