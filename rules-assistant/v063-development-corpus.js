@@ -3,13 +3,13 @@ import { buildRulesCorpus } from "./local-search.js";
 export const V063_RULES_VERSION = "v0.6.3-candidate-2026-08-11";
 export const V063_VERSION_LABEL = "Gauntlet v0.6.3 candidate";
 
-const RULEBOOK_SOURCE_PATH = "artifacts/v0.6.3/player-facing/Gauntlet_v0.6.3_Rulebook_Candidate.md";
+const RULEBOOK_SOURCE_PATH = "releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md";
 const CANONICAL_SOURCE_PATH = "artifacts/v0.6.3/canonical/Gauntlet_v0.6.3_Canonical_Data_Candidate.json";
 
 export function defaultDevelopmentV063SourceUrls(origin = "https://gauntlet.run") {
   const base = String(origin || "https://gauntlet.run").replace(/\/$/, "");
   return {
-    rulebookUrl: `${base}/v0.6.3/rulebook/`,
+    rulebookUrl: `${base}/releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md`,
     canonicalDataUrl: `${base}/v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json`,
     referenceUrl: `${base}/v0.6.3/reference/`
   };
@@ -33,22 +33,22 @@ export async function loadDevelopmentV063RulesCorpus({
     fetchImpl(urls.rulebookUrl, { cache: "no-store" }),
     fetchImpl(urls.canonicalDataUrl, { cache: "no-store" })
   ]);
-  if (!rulebookResponse.ok) throw new Error(`v0.6.3 candidate Rulebook returned ${rulebookResponse.status}.`);
+  if (!rulebookResponse.ok) throw new Error(`v0.6.3 candidate Rulebook source returned ${rulebookResponse.status}.`);
   if (!canonicalResponse.ok) throw new Error(`v0.6.3 candidate canonical data returned ${canonicalResponse.status}.`);
 
-  const rulebookHtml = await rulebookResponse.text();
+  const rulebookSource = await rulebookResponse.text();
   const canonicalData = await canonicalResponse.json();
   validateCandidateData(canonicalData);
 
-  const rulebookMarkdown = candidateRulebookHtmlToMarkdown(rulebookHtml);
+  const rulebookMarkdown = candidateRulebookHtmlToMarkdown(rulebookSource);
   const corpus = buildRulesCorpus({
     canonicalData,
     rulebookMarkdown,
     siteOrigin: inferOrigin(urls.rulebookUrl),
     canonicalDataUrl: urls.canonicalDataUrl,
     rulebookUrl: urls.rulebookUrl,
-    rulebookBrowserUrl: urls.rulebookUrl,
-    rulebookPdfUrl: urls.rulebookUrl
+    rulebookBrowserUrl: `${inferOrigin(urls.rulebookUrl)}/rulebook/`,
+    rulebookPdfUrl: `${inferOrigin(urls.rulebookUrl)}/releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.pdf`
   });
 
   corpus.version = V063_RULES_VERSION;
@@ -66,8 +66,17 @@ export async function loadDevelopmentV063RulesCorpus({
   return corpus;
 }
 
-export function candidateRulebookHtmlToMarkdown(html) {
-  const source = String(html || "");
+export function candidateRulebookHtmlToMarkdown(sourceText) {
+  const source = String(sourceText || "");
+  const normalizedSource = source.replace(/^\uFEFF/, "").trim();
+
+  // After v0.6.3 publication, the historical candidate corpus no longer scrapes
+  // the public browser-review route. It uses the immutable published Markdown
+  // source directly while retaining the frozen candidate canonical-data identity.
+  if (normalizedSource.includes("# GAUNTLET") && normalizedSource.includes("## Official Rulebook") && !/<(?:html|article|h[1-6])\b/i.test(normalizedSource)) {
+    return normalizedSource;
+  }
+
   const article = source.match(/<article\b[^>]*class=["'][^"']*\brelease-doc\b[^"']*["'][^>]*>([\s\S]*?)<\/article>/i)?.[1] || source;
   let text = article
     .replace(/<!--[\s\S]*?-->/g, "")
@@ -90,7 +99,7 @@ export function candidateRulebookHtmlToMarkdown(html) {
     .replace(/[ \t]{2,}/g, " ")
     .trim();
   if (!text.includes("# GAUNTLET") || !text.includes("## Official Rulebook")) {
-    throw new Error("Candidate Rulebook HTML did not contain the expected GAUNTLET / Official Rulebook headings.");
+    throw new Error("Candidate Rulebook source did not contain the expected GAUNTLET / Official Rulebook headings.");
   }
   return text;
 }
