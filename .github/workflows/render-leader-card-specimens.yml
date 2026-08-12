@@ -7,15 +7,22 @@ on:
       - "card-design/leaders.html"
       - "card-design/card-review.js"
       - "card-design/card-review.css"
+      - "card-design/card-review-render.html"
+      - "card-design/card-review-render.js"
+      - "card-design/territory-review-render.html"
+      - "card-design/territory-review-render.js"
       - "card-design/leader-card.css"
+      - "card-design/territory-card.css"
       - "card-design/card-design.css"
       - "card-design/card-design-refinement.css"
       - "card-design/card-design.js"
       - "card-design/card-parchment.css"
       - "card-design/faction-specimens.css"
+      - "tts/territory-renderer/**"
       - "design-tokens.css"
       - "images/*.png"
       - "images/faction-symbols/*.svg"
+      - "images/artwork/territories/*"
       - "scripts/render-leader-card-specimens.mjs"
       - ".github/workflows/render-leader-card-specimens.yml"
   workflow_dispatch:
@@ -34,10 +41,10 @@ jobs:
           node-version: 22
       - run: npm install
       - run: npx playwright install --with-deps chromium
-      - name: Render and validate all Leader faces
+      - name: Render and validate card review catalog
         run: node scripts/render-leader-card-specimens.mjs
       - uses: actions/upload-artifact@v4
         with:
-          name: gauntlet-leader-card-specimens
+          name: gauntlet-card-review-specimens
           path: card-design/generated/leaders/
           if-no-files-found: error

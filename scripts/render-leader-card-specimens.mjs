@@ -7,7 +7,10 @@ const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const OUTPUT = join(ROOT, 'card-design', 'generated', 'leaders');
 const CARD_WIDTH = 240;
 const CARD_HEIGHT = 336;
+const TERRITORY_WIDTH = 336;
+const TERRITORY_HEIGHT = 240;
 const EXPECTED_PLAYABLE_CARDS = 128;
+const EXPECTED_TERRITORIES = 25;
 const EXPECTED_LEADERS = [
   'General', 'Commandant', 'Ambassador', 'Senator', 'Banker', 'Executive',
   'Ranger', 'Spymaster', 'Alchemist', 'Spirit Walker', 'Grand Inquisitor', 'Witch Hunter',
@@ -63,6 +66,7 @@ async function main() {
     await page.goto(`${baseUrl}/card-design/#leader-cards`, { waitUntil: 'load' });
     await page.waitForSelector('.leader-card');
     await page.waitForFunction(expected => document.querySelectorAll('.full-card-review-frame').length === expected, EXPECTED_PLAYABLE_CARDS);
+    await page.waitForFunction(expected => document.querySelectorAll('.territory-review-frame').length === expected, EXPECTED_TERRITORIES);
     await page.waitForFunction(expected => {
       const cards = [...document.querySelectorAll('.leader-card')];
       return cards.length === expected
@@ -82,6 +86,14 @@ async function main() {
       rules: document.fonts.check('12px "adobe-caslon-pro"'),
     }));
     if (!fonts.title || !fonts.rules) throw new Error(`Required Leader fonts failed to load: ${JSON.stringify(fonts)}`);
+
+    const territoryFrameMetrics = await page.locator('.territory-review-frame').evaluateAll(frames => frames.map(frame => {
+      const rect = frame.getBoundingClientRect();
+      return { width: rect.width, height: rect.height };
+    }));
+    if (territoryFrameMetrics.some(metric => Math.abs(metric.width - TERRITORY_WIDTH) > 0.25 || Math.abs(metric.height - TERRITORY_HEIGHT) > 0.25)) {
+      throw new Error(`Unexpected Territory review frame geometry: ${JSON.stringify(territoryFrameMetrics)}.`);
+    }
 
     const metrics = await page.locator('.leader-card').evaluateAll(cards => cards.map(card => {
       const interior = card.querySelector('.card-interior');
@@ -152,7 +164,32 @@ async function main() {
     await playablePage.locator('.gauntlet-card').screenshot({ path: join(OUTPUT, 'playable-card-review-smoke.png'), omitBackground: true });
     await playablePage.close();
 
-    await writeFile(join(OUTPUT, 'metrics.json'), `${JSON.stringify({ fonts, playableCardCount: EXPECTED_PLAYABLE_CARDS, playableSmoke, cards: metrics }, null, 2)}\n`);
+    const territoryPage = await context.newPage();
+    await territoryPage.goto(`${baseUrl}/card-design/territory-review-render.html?territory=territory-smuggler-s-pass`, { waitUntil: 'load' });
+    await territoryPage.waitForSelector('.territory-card');
+    await territoryPage.waitForFunction(() => document.body.dataset.renderReady === 'true');
+    const territorySmoke = await territoryPage.locator('.territory-card').evaluate(card => ({
+      title: card.querySelector('.territory-title')?.textContent?.trim(),
+      fitWarning: card.classList.contains('fit-warning'),
+      titleFit: card.dataset.titleFit,
+      effectScale: card.dataset.effectScale,
+      parchmentLoaded: card.dataset.parchmentLoaded,
+      version: card.querySelector('.territory-footer span:last-child')?.textContent?.trim(),
+    }));
+    if (territorySmoke.title !== "Smuggler's Run" || territorySmoke.fitWarning || territorySmoke.titleFit !== 'true' || territorySmoke.parchmentLoaded !== 'true' || territorySmoke.version !== 'v0.6.3') {
+      throw new Error(`Canonical Territory review renderer failed smoke test: ${JSON.stringify(territorySmoke)}.`);
+    }
+    await territoryPage.locator('.territory-card').screenshot({ path: join(OUTPUT, 'territory-review-smoke.png'), omitBackground: true });
+    await territoryPage.close();
+
+    await writeFile(join(OUTPUT, 'metrics.json'), `${JSON.stringify({
+      fonts,
+      playableCardCount: EXPECTED_PLAYABLE_CARDS,
+      territoryCardCount: EXPECTED_TERRITORIES,
+      playableSmoke,
+      territorySmoke,
+      cards: metrics,
+    }, null, 2)}\n`);
   } finally {
     await browser.close();
     await new Promise(resolve => server.close(resolve));
