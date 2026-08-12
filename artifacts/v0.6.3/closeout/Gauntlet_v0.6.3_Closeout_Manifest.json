@@ -1,0 +1,46 @@
+{
+  "version": "v0.6.3-closeout-candidate",
+  "release_version": "v0.6.3",
+  "previous_version": "v0.6.2",
+  "status": "candidate-not-published",
+  "prepared_date": "2026-08-12",
+  "source_package": "artifacts/v0.6.3/release-candidate",
+  "print_package": "artifacts/v0.6.3/print-candidate",
+  "closeout_matrix": "docs/Gauntlet_v0.6.3_Cross_Surface_Closeout_Matrix.md",
+  "counts": {
+    "playable_cards": 128,
+    "territories": 25,
+    "arenas": 4,
+    "proposals": 9,
+    "factions": 6,
+    "leaders": 12,
+    "starter_decks": 12,
+    "print_pdfs": 11
+  },
+  "stage_readiness": {
+    "source_package_ready": true,
+    "print_package_ready": true,
+    "cross_surface_gate": "validated"
+  },
+  "component_gates": [
+    "final-card-text",
+    "player-facing-candidates",
+    "canonical-data-candidate",
+    "browser-development",
+    "competitive-starters",
+    "rules-arbiter-candidate",
+    "digital-rules-candidate",
+    "source-release-candidate",
+    "print-candidate",
+    "print-visual-regressions"
+  ],
+  "publication_boundary": {
+    "published_version": "v0.6.2",
+    "releases_v063_materialized": false,
+    "root_site_cutover": false,
+    "rules_arbiter_default_cutover": false,
+    "digital_default_cutover": false
+  },
+  "next_gate_after_green_closeout": "v0.6.3 publication/cutover",
+  "note": "The source-package deployment-status file is a source-stage snapshot. This aggregate closeout manifest records the validated cross-surface state after the separately merged print candidate, while publication remains a separate gate."
+}
