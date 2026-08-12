@@ -1,7 +1,7 @@
 {
   "version": "v0.6.3-release-candidate",
   "status": "Release candidate — not published",
-  "purpose": "Recommended v0.6.3 first-game Decks using the inherited v0.6.2 compositions, current v0.6.3 names, and informed Territory-arrangement guidance.",
+  "purpose": "Recommended v0.6.3 starter Decks optimized for competitive strength, winning capability, and powerful or creative Leader strategies; teaching simplicity and card-pool coverage are not optimization targets.",
   "construction": {
     "minimumCards": 30,
     "maximumDeckbuildingValue": 60,
@@ -1431,6 +1431,8 @@
       }
     }
   ],
+  "compositionSource": "v0.6.3/data/starter-decks-candidate.js",
+  "audit": "docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md",
   "publicationBoundary": {
     "publishedVersion": "v0.6.2",
     "publicationCutoverComplete": false
