@@ -15,6 +15,8 @@ for (const file of [
   'start/app.js',
   'rulebook/index.html',
   'rulebook/app.js',
+  'rulebook/leader-portraits.js',
+  'rulebook/leader-portraits.css',
   'v0.6.3/start/index.html',
   'v0.6.3/rulebook/index.html',
 ]) assert(fs.existsSync(path.join(root, file)), `missing ${file}`);
@@ -36,12 +38,18 @@ assert(startHandoff.includes('https://gauntlet.run/start/') && startHandoff.incl
 
 const rulebookIndex = read('rulebook/index.html');
 const rulebookApp = read('rulebook/app.js');
+const leaderPortraits = read('rulebook/leader-portraits.js');
 assert(rulebookIndex.includes('rulebook-hero') && rulebookIndex.includes('rulebook-sidebar') && rulebookIndex.includes('rulebook-search'), 'current Rulebook no longer uses the established polished production UI');
 assert(rulebookIndex.includes('Gauntlet v0.6.3 Browser Rulebook') && !rulebookIndex.includes('Gauntlet v0.6.1 Browser Rulebook'), 'current Rulebook shell does not identify v0.6.3');
 assert(rulebookIndex.includes('../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.pdf') && rulebookIndex.includes('../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook_Booklet.pdf'), 'current Rulebook download links are not v0.6.3');
+assert(rulebookIndex.includes('leader-portraits.css') && rulebookIndex.includes('leader-portraits.js'), 'current Rulebook does not load the Leader portrait presentation layer');
 assert(rulebookApp.includes("const SOURCE_URL = '../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md';"), 'polished Rulebook is not rendering the immutable v0.6.3 Markdown source');
 assert(rulebookApp.includes('Canonical v0.6.3'), 'polished Rulebook runtime does not identify v0.6.3');
 assert(!rulebookApp.includes('v0.6.1/Gauntlet_v0.6.1_Rulebook'), 'polished Rulebook runtime retains v0.6.1 source links');
+for (const leader of ['General', 'Commandant', 'Ambassador', 'Senator', 'Banker', 'Executive', 'Ranger', 'Spymaster', 'Alchemist', 'Spirit Walker', 'Grand Inquisitor', 'Witch Hunter']) {
+  assert(leaderPortraits.includes(`['${leader}',`), `Rulebook Leader gallery is missing ${leader}`);
+}
+assert(leaderPortraits.includes("['Military',") && leaderPortraits.includes("['Diplomats',") && leaderPortraits.includes("['Financiers',") && leaderPortraits.includes("['Intelligence',") && leaderPortraits.includes("['Mystics',") && leaderPortraits.includes("['Inquisition',"), 'Rulebook does not define all six faction Leader galleries');
 
 const rulebookHandoff = read('v0.6.3/rulebook/index.html');
 assert(rulebookHandoff.includes('https://gauntlet.run/rulebook/') && rulebookHandoff.includes("location.replace('/rulebook/'"), 'versioned v0.6.3 Rulebook route does not hand off to the polished current page');
