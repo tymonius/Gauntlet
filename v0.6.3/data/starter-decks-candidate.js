@@ -27,7 +27,7 @@ const deck = (factionId, leaderId, name, recommendedFirstLeader, summary, signat
 
 export const V063_STARTER_CATALOG = Object.freeze({
   version: 'v0.6.3-candidate',
-  status: 'Competitive starter-deck candidate for v0.6.3',
+  status: 'Finalized competitive starter Deck set for v0.6.3',
   purpose: 'Recommended v0.6.3 starter Decks optimized to be strong, capable of winning, and capable of expressing powerful or creative Leader strategies. Teaching simplicity and card-pool coverage are not optimization targets.',
   construction: {
     minimumCards: 30,
@@ -40,8 +40,9 @@ export const V063_STARTER_CATALOG = Object.freeze({
     primary: 'competitive-strength-and-strategic-expression',
     teachingSimplicityTarget: false,
     cardPoolCoverageTarget: false,
-    status: 'theoretical baseline pending matchup testing',
-    audit: 'docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md',
+    status: 'finalized-for-v0.6.3; future changes require playtest evidence',
+    audit: 'docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md',
+    predecessorAudit: 'docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md',
   },
   territoryOrderSemantics: { ...territoryOrderGuidance },
   decks: [
@@ -59,7 +60,7 @@ export const V063_STARTER_CATALOG = Object.freeze({
       ['Landslide', 'Court Martial', 'Hold the Line', 'Resistance'],
       ['Garrison', 'Training Grounds', 'High Ground'], [
         ['Countercharge', 1], ['Encampment', 2], ['Field Command', 1], ['Hold the Line', 1], ['Rearguard', 2],
-        ['Reserve Force', 1], ['Unbroken Ranks', 3], ['Counterintelligence', 1], ['Entrenchment', 2], ['Fealty', 1],
+        ['Reserve Force', 1], ['Unbroken Ranks', 2], ['Counterintelligence', 1], ['Contingency Plan', 1], ['Entrenchment', 2], ['Fealty', 1],
         ['Foothold', 1], ['Fortifications', 1], ['Court Martial', 1], ['Landslide', 1], ['New Recruits', 1],
         ['Palisade Wall', 1], ['Protracted Siege', 1], ['Rallying Cry', 2], ['Resistance', 1], ['Second Line', 2],
         ['Stand Ground', 1], ['Supplies', 2],
@@ -150,10 +151,10 @@ export const V063_STARTER_CATALOG = Object.freeze({
       'Make attacks fail, convert the failed attack into Relentless Pursuit, and turn the opponent’s lost turn into immediate positional pressure.',
       ['Confession', 'Court Martial', 'No Martyrs', 'Scorched Earth'],
       ['Garrison', 'Exposed Flank', 'High Ground'], [
-        ['Accusation', 3], ['Confession', 3], ['Counterintelligence', 1], ['Court Martial', 1], ['Divine Mercy', 2],
+        ['Accusation', 3], ['Confession', 3], ['Contingency Plan', 1], ['Counterintelligence', 1], ['Court Martial', 1], ['Divine Mercy', 2],
         ['Entrenchment', 1], ['Fealty', 1], ['Hellfire', 1], ['Illegal Occupation', 1], ['Martyrdom', 1],
         ['New Recruits', 1], ['No Martyrs', 2], ['Palisade Wall', 1], ['Penance', 2], ['Rallying Cry', 2],
-        ['Resistance', 1], ['Scorched Earth', 1], ['Scouting Report', 1], ['Second Line', 1], ['Supplies', 2], ['Tyranny', 1],
+        ['Resistance', 1], ['Scorched Earth', 1], ['Second Line', 1], ['Supplies', 2], ['Tyranny', 1],
       ]),
   ],
 });
