@@ -13,6 +13,7 @@ export interface V063CanonicalCard {
   allegiance: string;
   cost: number;
   effects: V063CanonicalCardEffect[];
+  rules_notes?: string[];
 }
 
 export interface V063CanonicalTerritory {
@@ -103,6 +104,10 @@ function assertV063CanonicalData(value: unknown): asserts value is V063Canonical
   }
 }
 
+function cardEffect(card: V063CanonicalCard | undefined, label: string): string {
+  return card?.effects.find((effect) => effect.label === label)?.text ?? '';
+}
+
 export function loadV063CanonicalContent(): V063CanonicalContentIndex {
   const raw: unknown = canonicalCandidateJson;
   assertV063CanonicalData(raw);
@@ -126,9 +131,24 @@ export function loadV063CanonicalContent(): V063CanonicalContentIndex {
     throw new Error('Stable card ID neutral-reserves must resolve to Second Line in v0.6.3.');
   }
   const marginLoan = cardsById.get('financiers-margin-loan');
-  const marginLoanAsset = marginLoan?.effects.find((effect) => effect.label === 'Asset')?.text ?? '';
+  const marginLoanAsset = cardEffect(marginLoan, 'Asset');
   if (!marginLoanAsset.includes('While this remains banked, you may not draw at the start of your turn.')) {
     throw new Error('Margin Loan must use the persistent v0.6.3 start-of-turn draw restriction.');
+  }
+
+  const armistice = cardsById.get('neutral-armistice');
+  if (armistice?.cost !== 4 || cardEffect(armistice, 'Asset') !== 'Neither player can start a battle. At the start of your Opening, discard two cards from your Hand or discard this card. You cannot voluntarily discard this card at another time.') {
+    throw new Error('Armistice must retain cost 4 and resolve upkeep at the start of Opening.');
+  }
+
+  const contingencyPlan = cardsById.get('neutral-contingency-plan');
+  if (contingencyPlan?.cost !== 1 || cardEffect(contingencyPlan, 'Asset') !== 'If this card is Removed, +1 Card.' || cardEffect(contingencyPlan, 'Gambit/Tactic') !== 'If your opponent controls more Territories than you, +2 Battle Total.') {
+    throw new Error('Contingency Plan must retain cost 1, trigger on any defined Removal, and grant +2 Battle Total while behind on Territories.');
+  }
+
+  const manifestDestiny = cardsById.get('neutral-manifest-destiny');
+  if (manifestDestiny?.cost !== 5 || !manifestDestiny.rules_notes?.includes('After entering the Gauntlet, this card is a normal Territory with a normal Deed.')) {
+    throw new Error('Manifest Destiny must retain cost 5 and become a normal Territory with a normal Deed.');
   }
 
   return {

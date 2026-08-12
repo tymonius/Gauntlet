@@ -44,6 +44,11 @@ for (const allegiance of allegianceOrder) {
       for (const paragraph of paragraphs.slice(1)) lines.push(paragraph);
       lines.push('');
     }
+    if (card.name === 'Manifest Destiny') {
+      const deedRule = (card.rules_notes ?? []).find((note) => note === 'After entering the Gauntlet, this card is a normal Territory with a normal Deed.');
+      if (!deedRule) throw new Error('Manifest Destiny is missing its normal-Territory / normal-Deed rule.');
+      lines.push(`**Rules:** ${deedRule}`, '');
+    }
   }
 }
 

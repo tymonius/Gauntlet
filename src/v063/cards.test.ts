@@ -69,6 +69,31 @@ describe('v0.6.3 centralized card procedures', () => {
   });
 });
 
+describe('late v0.6.3 card corrections', () => {
+  test('Armistice upkeep cannot be skipped by suppressing the normal Draw', () => {
+    const armistice = v063CanonicalContent.cardsById.get('neutral-armistice');
+    expect(armistice?.cost).toBe(4);
+    expect(armistice?.effects.find((effect) => effect.label === 'Asset')?.text).toBe(
+      'Neither player can start a battle. At the start of your Opening, discard two cards from your Hand or discard this card. You cannot voluntarily discard this card at another time.',
+    );
+  });
+
+  test('Contingency Plan covers any defined Removal and gives +2 Battle Total while behind', () => {
+    const contingencyPlan = v063CanonicalContent.cardsById.get('neutral-contingency-plan');
+    expect(contingencyPlan?.cost).toBe(1);
+    expect(contingencyPlan?.effects.find((effect) => effect.label === 'Asset')?.text).toBe('If this card is Removed, +1 Card.');
+    expect(contingencyPlan?.effects.find((effect) => effect.label === 'Gambit/Tactic')?.text).toBe(
+      'If your opponent controls more Territories than you, +2 Battle Total.',
+    );
+  });
+
+  test('Manifest Destiny creates a normal Territory with a normal Deed without special purchase rules', () => {
+    const manifestDestiny = v063CanonicalContent.cardsById.get('neutral-manifest-destiny');
+    expect(manifestDestiny?.cost).toBe(5);
+    expect(manifestDestiny?.rules_notes).toContain('After entering the Gauntlet, this card is a normal Territory with a normal Deed.');
+  });
+});
+
 describe('persistent Margin Loan', () => {
   const zones = (): MarginLoanZones => ({
     hand: ['Collateral', 'Other'],

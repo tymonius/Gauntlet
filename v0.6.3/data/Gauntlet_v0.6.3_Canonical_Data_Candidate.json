@@ -417,7 +417,7 @@
       "effects": [
         {
           "label": "Asset",
-          "text": "Neither player can start a battle. After your normal Draw, discard two cards from your Hand or discard this card. You cannot voluntarily discard this card at another time."
+          "text": "Neither player can start a battle. At the start of your Opening, discard two cards from your Hand or discard this card. You cannot voluntarily discard this card at another time."
         },
         {
           "label": "Gambit/Tactic",
@@ -425,7 +425,7 @@
         }
       ],
       "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
-      "asset": "Neither player can start a battle. After your normal Draw, discard two cards from your Hand or discard this card. You cannot voluntarily discard this card at another time.",
+      "asset": "Neither player can start a battle. At the start of your Opening, discard two cards from your Hand or discard this card. You cannot voluntarily discard this card at another time.",
       "gambit_tactic": "The attacker withdraws. Put every other Gambit and Tactic still in battle in its owner's Discard Pile, then put this card in its owner's Graveyard.",
       "v063_source": "artifacts/v0.6.3/Gauntlet_v0.6.3_Card_Text_Candidate.json"
     },
@@ -872,16 +872,16 @@
       "effects": [
         {
           "label": "Asset",
-          "text": "If this card is Removed because your Asset limit decreased, +1 Card."
+          "text": "If this card is Removed, +1 Card."
         },
         {
           "label": "Gambit/Tactic",
-          "text": "If your opponent controls more Territories than you, +1 Battle Total."
+          "text": "If your opponent controls more Territories than you, +2 Battle Total."
         }
       ],
       "source": "releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md",
-      "asset": "If this card is Removed because your Asset limit decreased, +1 Card.",
-      "gambit_tactic": "If your opponent controls more Territories than you, +1 Battle Total.",
+      "asset": "If this card is Removed, +1 Card.",
+      "gambit_tactic": "If your opponent controls more Territories than you, +2 Battle Total.",
       "v063_source": "artifacts/v0.6.3/Gauntlet_v0.6.3_Card_Text_Candidate.json"
     },
     {
@@ -4577,8 +4577,14 @@
         "Leveraged Buyout"
       ]
     },
+    "excluded_starter_balance_corrections": {
+      "armistice_upkeep_uses_opening_timing": true,
+      "contingency_plan_triggers_on_any_removal": true,
+      "contingency_plan_battle_total": 2,
+      "manifest_destiny_normal_deed_preserved": true
+    },
     "final_mirror_sync": {
-      "synchronized_fields": 70,
+      "synchronized_fields": 72,
       "source_of_truth": "cards[].effects[]"
     },
     "canonical_data_integration": {
