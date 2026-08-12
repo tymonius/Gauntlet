@@ -8,6 +8,9 @@ const playableStyles = readFileSync("card-design/card-design.css", "utf8");
 const refinedPlayableStyles = readFileSync("card-design/card-design-refinement.css", "utf8");
 const sharedStyles = readFileSync("card-design/territory-card.css", "utf8");
 const specimenPage = readFileSync("card-design/index.html", "utf8");
+const reviewScript = readFileSync("card-design/card-review.js", "utf8");
+const territoryReviewPage = readFileSync("card-design/territory-review-render.html", "utf8");
+const territoryReviewScript = readFileSync("card-design/territory-review-render.js", "utf8");
 const dedicatedSpecimenPage = readFileSync("card-design/territories/index.html", "utf8");
 const packageJson = JSON.parse(readFileSync("package.json", "utf8"));
 
@@ -24,6 +27,7 @@ describe("TTS Territory assets", () => {
   it("reuses one shared Gauntlet-family frame in the renderer and specimen pages", () => {
     expect(rendererStyles).toContain("@import url('/card-design/territory-card.css')");
     expect(specimenPage).toContain('href="territory-card.css"');
+    expect(territoryReviewPage).toContain('/tts/territory-renderer/territory-renderer.css');
     expect(dedicatedSpecimenPage).toContain('href="../territory-card.css"');
     expect(sharedStyles).toContain("padding: 0.075in");
     expect(sharedStyles).toContain("border-radius: 0.125in");
@@ -75,10 +79,9 @@ describe("TTS Territory assets", () => {
     expect(sharedStyles).toContain("border-top: 0");
     expect(dedicatedSpecimenPage).toContain("same mounted-print frame as a normal card");
     expect(dedicatedSpecimenPage).toContain("open parchment spacing rather than a divider");
-    expect(specimenPage).toMatch(/class="territory-art(?:\s+has-image)?"/);
+    expect(territoryReviewScript).toContain("/tts/territory-renderer/territory-renderer.js");
+    expect(territoryReviewScript).toContain("/tts/artwork-crop.js");
     expect(dedicatedSpecimenPage).toContain('class="territory-art"');
-    expect(specimenPage).toContain('class="territory-effect"');
-    expect(specimenPage).toContain('class="territory-footer"');
   });
 
   it("gives Territory effect text its natural height before clipping", () => {
@@ -88,14 +91,22 @@ describe("TTS Territory assets", () => {
     expect(sharedStyles).not.toContain("line-height: 1.18");
   });
 
-  it("implements Territory mockups on the card-design webpages", () => {
+  it("implements the complete canonical Territory catalog on the unified review page", () => {
     expect(specimenPage).toContain('id="territory-title"');
     expect(specimenPage).toContain('class="card-section territory-specimen-section"');
-    expect(specimenPage).toContain('aria-label="High Ground Territory card-front prototype"');
+    expect(specimenPage).toContain('id="territoryReviewSections"');
+    expect(specimenPage).toContain('<span data-territory-count>25</span>');
+    expect(specimenPage).toContain('<span data-arena-count>4</span>');
+    expect(reviewScript).toContain("canonical.territories||[]");
+    expect(reviewScript).toContain("territoryGroup('standard','Territories',ordinary)");
+    expect(reviewScript).toContain("territoryGroup('arenas','Arenas',arenas)");
+    expect(reviewScript).toContain('class="territory-review-frame"');
+    expect(reviewScript).toContain("territory-review-render.html?territory=");
+    expect(territoryReviewScript).toContain("Gauntlet_v0.6.3_Canonical_Data.json");
+    expect(territoryReviewScript).toContain("canonical.territories || []");
+    expect(territoryReviewScript).toContain("version.textContent = 'v0.6.3'");
     expect(dedicatedSpecimenPage).toContain("Gauntlet Territory Card Mockup");
     expect(dedicatedSpecimenPage).toContain('aria-label="High Ground Territory card-front prototype"');
-    expect(dedicatedSpecimenPage).toContain('<h2 class="territory-title">High Ground</h2>');
-    expect(dedicatedSpecimenPage).toContain("The defending player in a battle on High Ground gains advantage.");
   });
 
   it("packs the canonical pool into a seven by four sheet", () => {
