@@ -1,0 +1,59 @@
+name: Validate v0.6.3 digital rules candidate
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'src/content/v063.ts'
+      - 'src/v063/**'
+      - 'scripts/validate-v063-digital-candidate.mjs'
+      - 'v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json'
+      - '.github/workflows/validate-v063-digital-candidate.yml'
+  push:
+    branches: [agent/v063-digital-rules-candidate]
+    paths:
+      - 'src/content/v063.ts'
+      - 'src/v063/**'
+      - 'scripts/validate-v063-digital-candidate.mjs'
+      - 'v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json'
+      - '.github/workflows/validate-v063-digital-candidate.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Typecheck candidate
+        run: npm run typecheck
+
+      - name: Run v0.6.3 digital regressions
+        run: npx vitest run src/v063/*.test.ts
+
+      - name: Validate candidate/source agreement
+        run: node scripts/validate-v063-digital-candidate.mjs
+
+      - name: Preserve v0.6.2 digital boundary
+        if: github.event_name == 'pull_request'
+        run: |
+          if git diff --name-only "origin/${{ github.base_ref }}...HEAD" -- src/v062 src/content/v062.ts | grep -q .; then
+            echo 'v0.6.3 digital candidate must not modify published v0.6.2 digital modules.' >&2
+            git diff --name-only "origin/${{ github.base_ref }}...HEAD" -- src/v062 src/content/v062.ts >&2
+            exit 1
+          fi
+          echo 'Published v0.6.2 digital modules remain untouched.'
