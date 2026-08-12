@@ -3,6 +3,10 @@ import { execFileSync } from "node:child_process";
 import fs from "node:fs";
 
 const read = (path) => fs.readFileSync(path, "utf8").replace(/\r\n/g, "\n");
+const lifecycle = JSON.parse(read("config/release-lifecycle.json"));
+const v063Withdrawn = lifecycle.current_release === "v0.6.2" &&
+  lifecycle.releases?.["v0.6.3"]?.status === "withdrawn" &&
+  lifecycle.releases?.["v0.6.3"]?.public_cutover === false;
 
 const publicWidget = read("rules-assistant/widget.js");
 const publicEntry = read("rules-assistant/worker-entry.js");
@@ -73,11 +77,30 @@ assert(home.includes('v0.6.3 development Rules Arbiter'));
 if (process.env.GITHUB_BASE_REF) {
   const changed = execFileSync('git', ['diff', '--name-only', `origin/${process.env.GITHUB_BASE_REF}...HEAD`], { encoding: 'utf8' })
     .split(/\r?\n/).filter(Boolean);
+  const alwaysForbidden = new Set([
+    'rules-assistant/worker-v062.js',
+    'rules-assistant/v062-published-corpus.js',
+  ]);
+  const currentRoutingFiles = new Set([
+    'rules-assistant/widget.js',
+    'rules-assistant/worker-entry.js',
+  ]);
   const forbidden = changed.filter((path) =>
     path.startsWith('v0.6.2/') ||
-    ['rules-assistant/widget.js', 'rules-assistant/worker-entry.js', 'rules-assistant/worker-v062.js', 'rules-assistant/v062-published-corpus.js'].includes(path)
+    alwaysForbidden.has(path) ||
+    (!v063Withdrawn && currentRoutingFiles.has(path))
   );
   assert.deepEqual(forbidden, [], `Candidate Rules Arbiter work must not modify public v0.6.2 Arbiter/release files: ${forbidden.join(', ')}`);
+
+  if (v063Withdrawn) {
+    const changedRouting = changed.filter((path) => currentRoutingFiles.has(path));
+    for (const path of changedRouting) {
+      assert(
+        path === 'rules-assistant/widget.js' || path === 'rules-assistant/worker-entry.js',
+        `Withdrawn-release rollback may only restore the public Arbiter routing files, found ${path}`
+      );
+    }
+  }
 }
 
-console.log('v0.6.3 Rules Arbiter candidate validated: separate corpus/worker/page, 19 deterministic rulings, final PR #560 changes, local fallback, and unchanged public v0.6.2 Arbiter.');
+console.log(`v0.6.3 Rules Arbiter candidate validated: separate corpus/worker/page, 19 deterministic rulings, local fallback, and public v0.6.2 Arbiter${v063Withdrawn ? ' restored under withdrawn-release lifecycle' : ' unchanged'}.`);
