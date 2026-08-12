@@ -117,22 +117,25 @@
 }
 
 .value-medallion {
-  top: 0.01in;
+  top: 0.055in;
   right: 0.055in;
-  width: 0.28in;
-  height: 0.28in;
-  padding: 0 0 0.008in;
+  width: 0.19in;
+  height: 0.19in;
+  padding: 0;
   border-width: 1px;
   background: var(--card-ivory);
   box-shadow: none;
-  font-size: 8.8pt;
+  font-family: var(--font-display-web);
+  font-size: 7.2pt;
+  font-weight: 700;
+  font-variant-numeric: lining-nums tabular-nums;
   line-height: 1;
 }
 
 /* Give the three-part metadata band a stronger tonal separation from the
    rules field while keeping it within the parchment palette. */
 .card-footer {
-  background: rgba(177, 139, 83, 0.24);
+  background: rgba(177, 139, 83, 0.30);
 }
 
 /* Universal mounted-print art window. Clean perimeter rules and restrained
@@ -200,6 +203,14 @@
   display: grid;
   grid-template-columns: 0.43in minmax(0, 1fr);
   align-items: baseline;
+  column-gap: 0.05in;
+}
+
+/* Placement is the only single-line section label long enough to overrun the
+   standard label track. Widen its track without changing Overlay, Mission,
+   Asset, or any other section column geometry. */
+.rule-section.placement-section {
+  grid-template-columns: 0.57in minmax(0, 1fr);
   column-gap: 0.05in;
 }
 
