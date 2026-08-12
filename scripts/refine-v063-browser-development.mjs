@@ -69,6 +69,7 @@ let index = fs.readFileSync(indexPath, 'utf8').replace(/\r\n/g, '\n');
 index = index
   .replace('load the approved starter, or customize', 'load a recommended v0.6.3 starter, or customize')
   .replace('load an inherited starter list, or customize', 'load a recommended v0.6.3 starter, or customize')
+  .replace('Basic and Advanced no longer restrict construction.', 'The recommended starters are competitive baselines, not simplified teaching Decks.')
   .replace('Load approved starter', 'Load recommended starter')
   .replace('Load inherited starter', 'Load recommended starter')
   .replace('Choose three; arrange after opening selection', 'Choose three; decide their setup order after opening selection')
@@ -90,6 +91,8 @@ app = app
     /  const \[data, starterData\] = await Promise\.all\(\[\n    fetch\("\.\.\/data\/Gauntlet_v0\.6\.3_Canonical_Data_Candidate\.json", \{ cache: "no-store" \}\)\.then\(assertJson\),\n    fetch\("\.\.\/\.\.\/releases\/v0\.6\.2\/Gauntlet_v0\.6\.2_Starter_Decks\.json", \{ cache: "no-store" \}\)\.then\(assertJson\)\n  \]\);\n  state\.data = data;\n  state\.starters = (?:migrateV063StarterCatalog\(starterData\)|starterData)\.decks \?\? \[\];/,
     '  const data = await fetch("../data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json", { cache: "no-store" }).then(assertJson);\n  state.data = data;\n  state.starters = V063_STARTER_CATALOG.decks ?? [];'
   )
+  .replace('${data.proposals.length} Proposals</p>', '${data.proposals.length} Proposals · ${state.starters.length} competitive starter Decks</p>')
+  .replace('Starter catalog returned ${response.status}', 'Candidate data returned ${response.status}')
   .replace('No approved starter matches this faction and Leader.', 'No recommended v0.6.3 starter matches this faction and Leader.')
   .replace('No inherited starter matches this faction and Leader.', 'No recommended v0.6.3 starter matches this faction and Leader.')
   .replace('Inherited v0.6.2 starter list', 'Recommended v0.6.3 competitive starter')
