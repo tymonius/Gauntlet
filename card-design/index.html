@@ -15,8 +15,8 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
   <meta name="robots" content="noindex,nofollow" />
-  <meta name="description" content="Internal Gauntlet card-front prototype covering adaptive playable cards, Territory Overlays, and landscape Territory cards." />
-  <title>Gauntlet Card-Front Prototypes</title>
+  <meta name="description" content="Internal Gauntlet v0.6.3 visual review catalog for every playable card, every Leader, and Territory specimens." />
+  <title>Gauntlet Card Review Catalog</title>
   <link rel="preconnect" href="https://use.typekit.net" />
   <link rel="preconnect" href="https://p.typekit.net" crossorigin />
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
@@ -24,76 +24,10 @@
   <link rel="stylesheet" href="card-design.css" />
   <link rel="stylesheet" href="card-design-refinement.css" />
   <link rel="stylesheet" href="faction-specimens.css" />
+  <link rel="stylesheet" href="leader-card.css" />
   <link rel="stylesheet" href="territory-card.css" />
-  <style>
-    @media screen {
-      .card-sheet {
-        grid-template-columns: repeat(4, 2.5in);
-      }
-    }
-
-    @media screen and (min-width: 64rem) {
-      .review-grid {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-      }
-    }
-
-    .overlay-specimen .card-art {
-      display: grid;
-      place-items: center;
-      background:
-        radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.12), transparent 34%),
-        linear-gradient(155deg, #6f675d, #4c463f 62%, #302c28);
-    }
-
-    .overlay-specimen .card-art span {
-      position: relative;
-      right: auto;
-      bottom: auto;
-      z-index: 3;
-      color: rgba(255, 255, 255, 0.88);
-      font-size: 5.2pt;
-      letter-spacing: 0.12em;
-      text-align: center;
-    }
-
-    .territory-specimen-section {
-      padding-top: 0;
-    }
-
-    .territory-specimen-wrap {
-      width: max-content;
-      max-width: calc(100vw - 2rem);
-      margin-inline: auto;
-      padding: 0 1rem 1.2rem;
-    }
-
-    .territory-specimen-label {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 0.8rem;
-      margin: 0 0 0.65rem;
-      color: var(--page-muted);
-      font-family: var(--font-interface);
-      font-size: 0.62rem;
-    }
-
-    .territory-specimen-label strong {
-      color: var(--page-ink);
-      font-size: 0.7rem;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    @media screen {
-      .territory-specimen-wrap .territory-card {
-        box-shadow:
-          0 0.16in 0.36in var(--card-shadow),
-          inset 0 0 0 0.015in rgba(255, 255, 255, 0.42);
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="card-review.css" />
+  <script src="card-review.js" defer></script>
   <script src="card-design.js" defer></script>
 </head>
 <body class="faction-specimen-page">
@@ -102,240 +36,79 @@
       <span class="brand-mark" aria-hidden="true">G</span>
       <span>Gauntlet</span>
     </a>
-    <nav aria-label="Design specimen navigation">
-      <a href="../typography/">Typography</a>
+    <nav aria-label="Card review navigation">
+      <a href="#playable-cards">Playable cards</a>
+      <a href="#leader-cards">Leaders</a>
+      <a href="#territories">Territories</a>
       <button type="button" onclick="window.print()">Print at 100%</button>
     </nav>
   </header>
 
   <main>
     <section class="intro section-shell screen-only">
-      <p class="eyebrow">Card system · adaptive frame study</p>
-      <h1>Card-front prototypes</h1>
-      <p class="intro-copy">This pass compares the adaptive playable-card composition, the Territory Overlay variant, and the landscape Territory frame. All three use the same ivory shell, parchment field, historical display face, rules typography, artwork framing, and footer grammar.</p>
-      <div class="status-row" aria-label="Prototype status">
-        <span>2.5 × 3.5 in playable cards</span>
-        <span>3.5 × 2.5 in Territories</span>
-        <span>Actual-size print test</span>
-        <span>Adaptive art windows</span>
-        <span>Overlay title rail</span>
+      <p class="eyebrow">v0.6.3 · complete visual review</p>
+      <h1>Card review catalog</h1>
+      <p class="intro-copy">One review surface for the complete current card system. Every playable card uses the v0.6.3 production renderer; all twelve Leaders use the shared Leader frame. Click any card for a larger inspection view, then click its artwork to inspect the original uncropped image.</p>
+      <div class="status-row" aria-label="Review catalog status">
+        <span><strong data-playable-count>128</strong> playable cards</span>
+        <span>12 Leader cards</span>
+        <span>Artwork gaps remain reviewable</span>
+        <span>Production geometry</span>
       </div>
+      <nav class="card-review-nav" aria-label="Jump to card group">
+        <a href="#playable-neutral">Neutral</a>
+        <a href="#playable-military">Military</a>
+        <a href="#playable-diplomats">Diplomats</a>
+        <a href="#playable-financiers">Financiers</a>
+        <a href="#playable-intelligence">Intelligence</a>
+        <a href="#playable-mystics">Mystics</a>
+        <a href="#playable-inquisition">Inquisition</a>
+        <a href="#leader-cards">Leaders</a>
+      </nav>
     </section>
 
-    <section class="review-shell screen-only" aria-labelledby="review-title">
-      <div>
-        <p class="section-label">Design basis</p>
-        <h2 id="review-title">What this pass changes</h2>
-      </div>
-      <div class="review-grid">
-        <article>
-          <h3>Adaptive composition</h3>
-          <p>The framed illustration uses the largest approved size that the rules permit. Dense cards reduce art before reducing otherwise readable text.</p>
-        </article>
-        <article>
-          <h3>Rules hierarchy</h3>
-          <p>Action and Battle labels occupy a fixed left column while Adobe Caslon rules align in a wider right column. Territory effects use the same reading face in a full-width panel below the artwork.</p>
-        </article>
-        <article>
-          <h3>Shared identity</h3>
-          <p>Playable cards and Territories share the ivory shell, layered keylines, parchment, title face, artwork frame, and restrained three-part footer.</p>
-        </article>
-        <article>
-          <h3>Overlay identification</h3>
-          <p>Territory Overlays preserve the normal title and repeat it vertically in a widened faction-colored rail for sideways table use.</p>
-        </article>
-      </div>
-    </section>
-
-    <section class="card-section" aria-labelledby="cards-title">
+    <!-- The legacy class intentionally suppresses card-design.js's old twelve-card
+         long-card insertion. This section supersedes it with the full catalog. -->
+    <section id="playable-cards" class="card-section long-card-review-section" aria-labelledby="cards-title">
       <div class="section-shell card-section-heading screen-only">
-        <p class="section-label">Print and compare</p>
-        <h2 id="cards-title">Four playable-card conditions</h2>
-        <p>The same portrait system adapts its illustration height to each card. The first three specimens use finished artwork to test sparse, dense, and reminder layouts; Encampment adds the Territory Overlay rail and its three-section rules structure while its illustration remains pending.</p>
+        <p class="section-label">Complete production set</p>
+        <h2 id="cards-title">All playable cards</h2>
+        <p>All <span data-playable-count>128</span> v0.6.3 playable cards, grouped by allegiance and rendered through the same production path used by the release audit. Cards without committed artwork remain visible so their frame, text fit, and eventual illustration can be reviewed in context.</p>
       </div>
-
-      <div class="card-sheet">
-        <div class="specimen-column">
-          <p class="specimen-label screen-only"><strong>Sparse</strong><span>Comfortable baseline</span></p>
-          <article class="gauntlet-card neutral-card sparse-card" data-art-max="1.72" data-art-min="0.82" aria-label="Rallying Cry neutral card-front prototype">
-            <div class="card-interior">
-              <header class="card-heading">
-                <h3 class="card-title">Rallying Cry</h3>
-                <div class="value-medallion" aria-label="Deckbuilding value 1">1</div>
-              </header>
-              <figure class="card-art art-rally has-image">
-                <img src="../images/artwork/cards/neutral/rallying-cry.png" alt="Rallying Cry card artwork" />
-              </figure>
-              <div class="card-rules">
-                <section class="rule-section">
-                  <h4>Action</h4>
-                  <p>Draw one card.</p>
-                </section>
-                <section class="rule-section">
-                  <h4>Battle</h4>
-                  <p>Add <strong>+1</strong> to your battle total.</p>
-                </section>
-              </div>
-              <footer class="card-footer">
-                <span>N-001</span>
-                <span>Basic</span>
-                <span>v0.6</span>
-              </footer>
-            </div>
-          </article>
-        </div>
-
-        <div class="specimen-column">
-          <p class="specimen-label screen-only"><strong>Dense</strong><span>Maximum ordinary-card pressure</span></p>
-          <article class="gauntlet-card neutral-card dense-card long-title" data-art-max="1.72" data-art-min="0.62" aria-label="Counterintelligence neutral card-front prototype">
-            <div class="card-interior">
-              <header class="card-heading">
-                <h3 class="card-title">Counterintelligence</h3>
-                <div class="value-medallion" aria-label="Deckbuilding value 1">1</div>
-              </header>
-              <figure class="card-art art-counterintelligence has-image">
-                <img src="../images/artwork/cards/neutral/counterintelligence.png" alt="Counterintelligence card artwork" />
-              </figure>
-              <div class="card-rules">
-                <section class="rule-section">
-                  <h4>Action</h4>
-                  <p>Bank this as an <strong>Asset</strong>. Opposing effects cannot look at, reveal, or require you to reveal your hand, Battle Hand, or face-down cards used in battle. This does not prevent the normal battle reveal.</p>
-                </section>
-                <section class="rule-section">
-                  <h4>Battle</h4>
-                  <p>Add <strong>+1</strong> to your battle total. Until the normal reveal, opposing effects cannot look at or reveal your face-down cards used in this battle.</p>
-                </section>
-              </div>
-              <footer class="card-footer">
-                <span>N-014</span>
-                <span>Basic</span>
-                <span>v0.6</span>
-              </footer>
-            </div>
-          </article>
-        </div>
-
-        <div class="specimen-column">
-          <p class="specimen-label screen-only"><strong>Reminder</strong><span>Secondary italic voice</span></p>
-          <article class="gauntlet-card neutral-card reminder-card" data-art-max="1.72" data-art-min="0.72" aria-label="New Recruits neutral card-front prototype">
-            <div class="card-interior">
-              <header class="card-heading">
-                <h3 class="card-title">New Recruits</h3>
-                <div class="value-medallion" aria-label="Deckbuilding value 1">1</div>
-              </header>
-              <figure class="card-art art-recruits has-image">
-                <img src="../images/artwork/reference/reserve/militia-armory-enlistment.png" alt="New Recruits card artwork" />
-              </figure>
-              <div class="card-rules">
-                <section class="rule-section">
-                  <h4>Action</h4>
-                  <p>Discard one other card from your hand, then draw two cards.</p>
-                </section>
-                <section class="rule-section">
-                  <h4>Battle</h4>
-                  <p>Add <strong>+1</strong> to your battle total.</p>
-                </section>
-                <aside class="card-reminder"><strong>Reminder:</strong> You cannot play this for its Action effect if you have no other card to discard.</aside>
-              </div>
-              <footer class="card-footer">
-                <span>N-027</span>
-                <span>Basic</span>
-                <span>v0.6</span>
-              </footer>
-            </div>
-          </article>
-        </div>
-
-        <div class="specimen-column">
-          <p class="specimen-label screen-only"><strong>Overlay</strong><span>Sideways Territory identification</span></p>
-          <article class="gauntlet-card military-card dense-card overlay-card overlay-specimen" data-faction="military" data-art-max="1.72" data-art-min="0.62" data-overlay-card="true" aria-label="Encampment Military Territory Overlay card-front prototype">
-            <div class="card-interior">
-              <aside class="overlay-title-bar" aria-hidden="true">
-                <span class="overlay-title">Encampment</span>
-              </aside>
-              <header class="card-heading">
-                <h3 class="card-title">Encampment</h3>
-                <div class="value-medallion" aria-label="Deckbuilding value 2">2</div>
-              </header>
-              <figure class="card-art">
-                <span>Artwork pending</span>
-              </figure>
-              <div class="card-rules">
-                <section class="rule-section">
-                  <h4>Action</h4>
-                  <p>Place Encampment as an Overlay on a revealed Territory you occupy and control.</p>
-                </section>
-                <section class="rule-section">
-                  <h4>Battle</h4>
-                  <p>During the Aftermath of the battle, if you won while defending a revealed Territory you control, place Encampment on that Territory as an Overlay.</p>
-                </section>
-                <section class="rule-section">
-                  <h4>Overlay</h4>
-                  <p>At the end of Encampment's owner's turn, if they occupy and control this Territory, they gain 1 Command. When another player gains control of this Territory, put Encampment in its owner's Graveyard.</p>
-                </section>
-              </div>
-              <footer class="card-footer">
-                <span>Military</span>
-                <span>Territory Overlay</span>
-                <span>v0.6.1</span>
-              </footer>
-            </div>
-          </article>
-        </div>
-      </div>
+      <div id="playableReviewSections"></div>
     </section>
 
-    <section class="card-section territory-specimen-section" aria-labelledby="territory-title">
+    <section id="leader-cards" class="card-section" aria-labelledby="leaders-title">
+      <div class="section-shell card-section-heading screen-only">
+        <p class="section-label">Faction dashboards</p>
+        <h2 id="leaders-title">All Leader cards</h2>
+        <p>The complete twelve-Leader set, grouped by faction. These use the same production Leader grammar established by General and Commandant, with the current faction-specific abilities, resources, victory reminders, portraits, symbols, and metadata tints.</p>
+      </div>
+      <div id="leaderReviewSections"></div>
+    </section>
+
+    <section id="territories" class="card-section territory-specimen-section" aria-labelledby="territory-title">
       <div class="section-shell card-section-heading screen-only">
         <p class="section-label">Landscape component</p>
-        <h2 id="territory-title">Territory card mockup</h2>
-        <p>The Territory frame is the normal Gauntlet visual system turned landscape: the title remains across the top, a framed illustration spans the card beneath it, the printed effect occupies a full-width panel across the bottom, and the familiar footer closes the card. Dense Territory text reduces artwork height only as much as necessary.</p>
+        <h2 id="territory-title">Territory card specimens</h2>
+        <p>Territories remain a distinct landscape review section rather than being mixed into the deck-card catalog.</p>
       </div>
-
       <div class="territory-specimen-wrap">
         <p class="territory-specimen-label screen-only"><strong>High Ground</strong><span>Landscape sibling · finished artwork</span></p>
         <article class="territory-card" style="--parchment-image: url('../images/artwork/card-backgrounds/neutral-parchment-v2.png');" aria-label="High Ground Territory card-front prototype">
           <div class="territory-interior">
-            <header class="territory-heading">
-              <h3 class="territory-title">High Ground</h3>
-            </header>
+            <header class="territory-heading"><h3 class="territory-title">High Ground</h3></header>
             <div class="territory-body">
               <figure class="territory-art has-image" aria-label="High Ground Territory artwork">
                 <img src="../images/artwork/territories/high-ground.jpg" alt="High Ground Territory artwork" />
               </figure>
-              <section class="territory-effect" aria-label="Territory effect">
-                <p>The defending player in a battle on High Ground gains advantage.</p>
-              </section>
+              <section class="territory-effect" aria-label="Territory effect"><p>The defending player in a battle on High Ground gains advantage.</p></section>
             </div>
-            <footer class="territory-footer">
-              <span>Territory</span>
-              <span>Basic</span>
-              <span>v0.6.1</span>
-            </footer>
+            <footer class="territory-footer"><span>Territory</span><span>Basic</span><span>v0.6.3</span></footer>
           </div>
         </article>
       </div>
     </section>
-
-    <section class="evaluation section-shell screen-only" aria-labelledby="evaluation-title">
-      <div>
-        <p class="section-label">Physical review</p>
-        <h2 id="evaluation-title">What to inspect after printing</h2>
-      </div>
-      <ol>
-        <li>Whether each illustration reaches a satisfying size without forcing the rules below a comfortable reading threshold.</li>
-        <li>Whether the finished paintings integrate naturally with the ivory border, parchment field, and restrained frame.</li>
-        <li>Whether all-caps P22 1722 gives the cards a strong common silhouette without making long titles feel compressed.</li>
-        <li>Whether the Action and Battle columns align cleanly and remain easier to scan than a single full-width rules column.</li>
-        <li>Whether the value medallion feels anchored by its shared alignment with the illustration frame.</li>
-        <li>Whether Encampment remains legible both upright and sideways, and whether the widened Military rail is prominent without overwhelming the ordinary card face.</li>
-        <li>Whether High Ground reads as an unmistakable landscape sibling of the playable cards, with its artwork spanning the card and its short effect using only the space it needs.</li>
-      </ol>
-    </section>
   </main>
-
-  <footer class="page-footer screen-only">
-    <p>Working implementation of the <a href="../docs/Gauntlet_Visual_Design_Language.md">Gauntlet Visual Design Language</a> and <a href="../docs/Gauntlet_Typography_System.md">Typography System</a>.</p>
-  </footer>
 </body>
 </html>
