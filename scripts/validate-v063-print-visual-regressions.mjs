@@ -14,6 +14,7 @@ const faviconLinks = [
   '<link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />',
   '<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />',
 ];
+const analyticsMarker = "gtag('config', 'G-8YYYZJGGPE');";
 
 const manifest = JSON.parse(read(manifestPath));
 const byKey = new Map((manifest.outputs ?? []).map((item) => [item.key, item]));
@@ -51,6 +52,27 @@ for (const [file, title] of longForms) {
 
 const indexHtml = read(`${htmlRoot}/index.html`);
 for (const link of faviconLinks) assert(indexHtml.includes(link), `index.html is missing print-candidate favicon metadata: ${link}`);
+
+// Every complete HTML review page is subject to the repository-wide analytics
+// convention. The fixed-layout pages inherit the published print snippet; the
+// new long-form pages and local index receive the same tag from their generator.
+const completeHtmlPages = [
+  'rulebook.html',
+  'reference-guide.html',
+  'first-game-guide.html',
+  'faction-guide.html',
+  'returning-player-changes.html',
+  'player-mat.html',
+  'playtest-sheet.html',
+  'faction-teaching-cards.html',
+  'active-player-marker.html',
+  'index.html',
+];
+for (const file of completeHtmlPages) {
+  const html = read(`${htmlRoot}/${file}`);
+  assert(html.includes('https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE'), `${file} is missing the Gauntlet Google Analytics loader.`);
+  assert(html.includes(analyticsMarker), `${file} is missing the Gauntlet Google Analytics configuration.`);
+}
 
 // The legacy combined hero-plate PNGs are truncated files. The booklet must be
 // composed from the valid individual approved Leader sketches instead.
@@ -91,4 +113,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('v0.6.3 print visual regressions locked: 46-page Rulebook, 24-sheet booklet, 4-page Reference, 22-page Tableside Pack, clean long-form banners, favicon metadata, and valid individual-sketch booklet plates.');
+console.log('v0.6.3 print visual regressions locked: 46-page Rulebook, 24-sheet booklet, 4-page Reference, 22-page Tableside Pack, clean long-form banners, favicon/analytics metadata, and valid individual-sketch booklet plates.');
