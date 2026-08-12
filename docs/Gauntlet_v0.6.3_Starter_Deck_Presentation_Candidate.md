@@ -1,17 +1,18 @@
 # Gauntlet v0.6.3 Starter Deck Presentation Candidate
 
-**Status:** Adopted v0.6.3 competitive starter baseline awaiting publication cutover  
+**Status:** Finalized v0.6.3 competitive starter Deck set awaiting publication cutover  
 **Composition source:** `v0.6.3/data/starter-decks-candidate.js`  
-**Competitive audit:** `docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md`  
+**Finalization record:** `docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md`  
+**Prior competitive audit:** `docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md`  
 **Setup authority:** `docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md`
 
-The twelve recommended v0.6.3 starter Decks are now independent v0.6.3 compositions. They are optimized to be **strong, capable of winning, and capable of expressing powerful or creative Leader strategies**. Teaching simplicity and card-pool coverage are not optimization targets.
+The twelve recommended v0.6.3 starter Decks are independent v0.6.3 compositions. They are optimized to be **strong, capable of winning, and capable of expressing powerful or creative Leader strategies**. Teaching simplicity and card-pool coverage are not optimization targets.
 
 The published v0.6.2 starter package remains immutable historical release material and is no longer the composition source for v0.6.3 starters.
 
-## 1. Competitive baseline
+## 1. Final competitive release baseline
 
-Every adopted starter Deck must:
+Every finalized starter Deck must:
 
 - contain at least 30 cards and remain at or below 60 Deckbuilding Value;
 - use only Neutral cards and cards from its selected faction;
@@ -19,9 +20,9 @@ Every adopted starter Deck must:
 - select exactly three different Territories with no more than one Arena; and
 - have its exact construction validated against current v0.6.3 canonical data.
 
-The adopted baseline uses exactly **30 cards / 60 Deckbuilding Value** for each of the twelve recommended Decks. The competitive audit records the slot-by-slot rationale and the still-excluded-card review queue.
+The finalized v0.6.3 set uses exactly **30 cards / 60 Deckbuilding Value** for each of the twelve recommended Decks. The second-pass competitive audit records the broad slot-by-slot rebuild; the finalization record documents the post-audit Contingency Plan swaps and the release lock.
 
-Starter construction should not be altered merely to make a Deck easier to teach or to increase aggregate card-pool coverage. A change should improve competitive strength, strategic expression, matchup health, or demonstrated play quality.
+Starter construction should not be altered merely to make a Deck easier to teach or to increase aggregate card-pool coverage. For v0.6.3, the finalized compositions should remain fixed until playtest data demonstrates a concrete reason to change one.
 
 ## 2. Current v0.6.3 names
 
@@ -50,10 +51,12 @@ When a starter is displayed to a player, prefer language equivalent to:
 >
 > **Setup:** After choosing your opening discard, keep this order or rearrange these three Territories to fit your opening Hand and discard. Initiative is not yet known.
 
-Player-facing surfaces should describe these as **recommended v0.6.3 starter Decks**, not inherited v0.6.2 lists or simplified teaching Decks.
+Player-facing surfaces should describe these as **recommended v0.6.3 starter Decks**, not inherited v0.6.2 lists, simplified teaching Decks, or a provisional theory-testing set.
 
 A generic Territory selector must not imply that selection order is automatically setup order.
 
-## 5. Release boundary
+## 5. Release and future-change boundary
 
-The published v0.6.2 starter files remain immutable. v0.6.3 development, release-candidate, print-candidate, and later published v0.6.3 surfaces use the independent competitive starter source above.
+The published v0.6.2 starter files remain immutable. v0.6.3 development, release-candidate, print-candidate, and later published v0.6.3 surfaces use the finalized competitive starter source above.
+
+No further theory-only composition changes belong in the v0.6.3 release. Later starter revisions should be justified by playtest evidence such as dead-card rates, realized card value, matchup performance, alternate-victory timing, or repeated failure to execute the intended Leader strategy.
