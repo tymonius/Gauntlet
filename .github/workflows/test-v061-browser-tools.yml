@@ -86,7 +86,7 @@ jobs:
               }
               for (const phrase of [
                 'Draw four cards, choose one card from those four',
-                'Territory arrangement occurs after the player has chosen the opening discard',
+                'After seeing your opening Hand and opening discard, secretly arrange your three Territory Cards',
                 "capturing the Territory at your opponent's end",
                 'winning your opponent\'s Last Stand'
               ]) {
