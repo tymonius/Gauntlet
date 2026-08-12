@@ -3,7 +3,7 @@ name: Build v0.6.3 print candidate
 
 on:
   push:
-    branches: [agent/v063-print-package-candidate]
+    branches: [agent/v063-print-package-candidate, agent/v063-finalize-starter-decks]
     paths:
       - '.github/workflows/build-v063-print-candidate.yml'
       - 'artifacts/v0.6.3/release-candidate/**'
@@ -158,7 +158,7 @@ jobs:
           if-no-files-found: error
 
       - name: Commit materialized source and print candidates
-        if: github.event_name == 'push' && github.ref_name == 'agent/v063-print-package-candidate'
+        if: github.event_name == 'push' && (github.ref_name == 'agent/v063-print-package-candidate' || github.ref_name == 'agent/v063-finalize-starter-decks')
         run: |
           branch="$GITHUB_REF_NAME"
           git config user.name 'github-actions[bot]'
@@ -168,7 +168,7 @@ jobs:
             echo 'v0.6.3 source and printed-material candidates are already current.'
             exit 0
           fi
-          git commit -m 'Materialize v0.6.3 print candidate [skip ci]'
+          git commit -m 'Materialize finalized v0.6.3 starter Decks [skip ci]'
           git fetch origin "$branch"
           git rebase "origin/$branch"
           git push origin "HEAD:$branch"
