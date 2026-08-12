@@ -5,14 +5,13 @@ import { fileURLToPath } from "node:url";
 import { retrieveRules } from "./local-search.js";
 import {
   candidateRulebookHtmlToMarkdown,
-  defaultDevelopmentV063SourceUrls,
   loadDevelopmentV063RulesCorpus,
   V063_RULES_VERSION
 } from "./v063-development-corpus.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
-const rulebookMarkdown = await fs.readFile(path.join(root, "releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md"), "utf8");
+const rulebookHtml = await fs.readFile(path.join(root, "v0.6.3/rulebook/index.html"), "utf8");
 const canonicalJson = await fs.readFile(path.join(root, "v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json"), "utf8");
 
 function fakeFetch(url) {
@@ -20,15 +19,15 @@ function fakeFetch(url) {
   if (text.includes("Gauntlet_v0.6.3_Canonical_Data_Candidate.json")) {
     return Promise.resolve(new Response(canonicalJson, { status: 200, headers: { "Content-Type": "application/json" } }));
   }
-  if (text.includes("/releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md")) {
-    return Promise.resolve(new Response(rulebookMarkdown, { status: 200, headers: { "Content-Type": "text/markdown" } }));
+  if (text.includes("/v0.6.3/rulebook/")) {
+    return Promise.resolve(new Response(rulebookHtml, { status: 200, headers: { "Content-Type": "text/html" } }));
   }
   return Promise.resolve(new Response("not found", { status: 404 }));
 }
 
 async function corpus() {
   return loadDevelopmentV063RulesCorpus({
-    rulebookUrl: "https://gauntlet.run/releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md",
+    rulebookUrl: "https://gauntlet.run/v0.6.3/rulebook/",
     canonicalDataUrl: "https://gauntlet.run/v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json",
     referenceUrl: "https://gauntlet.run/v0.6.3/reference/",
     fetchImpl: fakeFetch
@@ -36,15 +35,13 @@ async function corpus() {
 }
 
 describe("v0.6.3 development Rules Arbiter corpus", () => {
-  it("uses the immutable published Rulebook source instead of the public browser route", () => {
-    const defaults = defaultDevelopmentV063SourceUrls("https://gauntlet.run/");
-    expect(defaults.rulebookUrl).toBe("https://gauntlet.run/releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md");
-    const markdown = candidateRulebookHtmlToMarkdown(rulebookMarkdown);
+  it("reconstructs the candidate Rulebook from the browser review page", () => {
+    const markdown = candidateRulebookHtmlToMarkdown(rulebookHtml);
     expect(markdown).toContain("# GAUNTLET");
     expect(markdown).toContain("## Official Rulebook");
     expect(markdown).toContain("Draw four cards, choose one card from those four");
+    expect(markdown).toContain("DON'T FORGET THE BOARD");
     expect(markdown).toContain("Gambit/Tactic");
-    expect(markdown).toContain("capturing the Territory at your opponent's end or winning your opponent's Last Stand");
     expect(markdown).not.toContain("The normal way to win is to run the Gauntlet and win the final Last Stand battle");
   });
 

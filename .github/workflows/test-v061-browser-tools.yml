@@ -1,4 +1,4 @@
-name: Test browser tools and current Card Reference
+name: Test legacy browser tools and current Card Reference
 
 on:
   pull_request:
@@ -6,14 +6,12 @@ on:
       - main
     paths:
       - "rulebook/**"
-      - "v0.6.3/rulebook/**"
       - "card-reference/**"
       - "deckbuilder/**"
       - "rules-assistant/**"
       - "playtest/**"
       - "releases/v0.6.1/**"
       - "releases/v0.6.2/**"
-      - "releases/v0.6.3/**"
       - "docs/Gauntlet_v0.6.1_*.md"
       - ".github/workflows/test-v061-browser-tools.yml"
   workflow_dispatch:
@@ -73,24 +71,8 @@ jobs:
               const { page, errors } = await openPage('/rulebook/', viewport);
               await page.waitForSelector('[data-rulebook-content] h1, [data-rulebook-content] h2');
               const text = await page.locator('[data-rulebook-content]').innerText();
-              const status = await page.locator('[data-rulebook-status]').innerText();
-              const shellText = await page.locator('body').innerText();
-              if (!status.includes('Canonical v0.6.3') || shellText.includes('Gauntlet v0.6.1 Browser Rulebook')) {
-                throw new Error(`Browser rulebook did not identify current v0.6.3: ${status}`);
-              }
-              if (!(await page.locator('.rulebook-hero').count()) || !(await page.locator('.rulebook-sidebar').count()) || !(await page.locator('.rulebook-search').count())) {
-                throw new Error('Rulebook is not using the polished production interface');
-              }
               for (const term of ['Gambit', 'Reserve', 'Tactic', 'Aftermath']) {
                 if (!text.includes(term)) throw new Error(`Browser rulebook missing ${term}`);
-              }
-              for (const phrase of [
-                'Draw four cards, choose one card from those four',
-                'After seeing your opening Hand and opening discard, secretly arrange your three Territory Cards',
-                "capturing the Territory at your opponent's end",
-                'winning your opponent\'s Last Stand'
-              ]) {
-                if (!text.includes(phrase)) throw new Error(`Browser rulebook is missing current v0.6.3 rule text: ${phrase}`);
               }
               if (text.includes('Battle Hand') || text.includes('hand commitment')) {
                 throw new Error('Browser rulebook contains obsolete battle terminology');
@@ -133,13 +115,13 @@ jobs:
                 throw new Error('Card reference did not load 25 Territories');
               }
               const status = await page.locator('#dataStatus').innerText();
-              if (!status.includes('v0.6.3')) throw new Error(`Card reference did not identify v0.6.3: ${status}`);
+              if (!status.includes('v0.6.2')) throw new Error(`Card reference did not identify v0.6.2: ${status}`);
 
               for (const cardName of ['Landslide', 'Détente', 'Compound Interest', 'Extraordinary Rendition', "Nature's Altar", 'Martyrdom']) {
                 await page.fill('#searchInput', cardName);
                 await page.waitForFunction(() => document.querySelector('#resultCount')?.textContent === '1');
                 if ((await page.locator('.reference-row-title').first().innerText()) !== cardName) {
-                  throw new Error(`Card reference did not find current v0.6.3 card ${cardName}`);
+                  throw new Error(`Card reference did not find new v0.6.2 card ${cardName}`);
                 }
               }
 
@@ -168,8 +150,8 @@ jobs:
               await result.click();
               await page.waitForFunction(() => document.querySelector('#preview h3')?.textContent === 'Black Covenant');
               const preview = await page.locator('#preview').innerText();
-              if (!preview.includes('Tactic') || !preview.includes('+1 Tactic from Hand.')) {
-                throw new Error(`Black Covenant preview is not synchronized with v0.6.3:\n${preview}`);
+              if (!preview.includes('Tactic') || !preview.includes('additional Tactic')) {
+                throw new Error(`Black Covenant preview is not synchronized with v0.6.2:\n${preview}`);
               }
               await page.screenshot({ path: `/tmp/card-reference-${suffix}.png`, fullPage: true });
               if (errors.length) throw new Error(`Card reference ${suffix} errors:\n${errors.join('\n')}`);
@@ -178,17 +160,10 @@ jobs:
 
             {
               const { page, errors } = await openPage('/deckbuilder/', viewport);
-              await page.waitForFunction(() => {
-                const app = document.querySelector('#app');
-                const factions = document.querySelectorAll('#factionSelect option');
-                return app && !app.hidden && factions.length >= 6;
-              });
+              await page.waitForFunction(() => document.body.innerText.includes('Military'));
               const text = await page.locator('body').innerText();
-              if (!text.includes('v0.6.3')) throw new Error('Deckbuilder does not identify v0.6.3');
-              if (text.includes('v0.6.1') || text.includes('v0.6.0')) throw new Error('Deckbuilder exposes a stale version label');
-              if (!(await page.locator('.builder-grid').count()) || !(await page.locator('.card-preview').count()) || !(await page.locator('.territory-browser').count())) {
-                throw new Error('Deckbuilder is not using the polished production interface');
-              }
+              if (!text.includes('v0.6.1')) throw new Error('Deckbuilder does not identify v0.6.1');
+              if (text.includes('v0.6.0')) throw new Error('Deckbuilder still identifies v0.6.0');
               await page.screenshot({ path: `/tmp/deckbuilder-${suffix}.png`, fullPage: true });
               if (errors.length) throw new Error(`Deckbuilder ${suffix} errors:\n${errors.join('\n')}`);
               await page.close();

@@ -3,22 +3,12 @@ import path from "node:path";
 import process from "node:process";
 
 const root = process.cwd();
+const canonicalPath = path.join(root, "releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json");
 const starterPath = path.join(root, "deckbuilder/starter-decks.json");
-const starterData = JSON.parse(fs.readFileSync(starterPath, "utf8"));
-const version = starterData.version || "v0.6.0";
-const isV063 = version === "v0.6.3";
-const canonicalPath = path.join(
-  root,
-  isV063
-    ? "releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json"
-    : "releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json"
-);
-const canonical = JSON.parse(fs.readFileSync(canonicalPath, "utf8"));
-const decks = starterData.decks || [];
 
-if (isV063 && canonical.version !== "v0.6.3") {
-  throw new Error(`Expected published v0.6.3 canonical data, received ${canonical.version || "unknown"}.`);
-}
+const canonical = JSON.parse(fs.readFileSync(canonicalPath, "utf8"));
+const starterData = JSON.parse(fs.readFileSync(starterPath, "utf8"));
+const decks = starterData.decks || [];
 
 const cardsByName = new Map(canonical.cards.map(card => [card.name, card]));
 const territoriesByName = new Map(canonical.territories.map(territory => [territory.name, territory]));
@@ -51,7 +41,7 @@ for (const deck of decks) {
   }
 
   if (!deck.summary?.trim()) errors.push(`${label}: missing summary.`);
-  if (!isV063 && !deck.firstGameTip?.trim()) errors.push(`${label}: missing first-game tip.`);
+  if (!deck.firstGameTip?.trim()) errors.push(`${label}: missing first-game tip.`);
 
   let cardCount = 0;
   let deckbuildingValue = 0;
@@ -64,8 +54,7 @@ for (const deck of decks) {
       continue;
     }
 
-    const quantity = Number(item.quantity);
-    if (!Number.isInteger(quantity) || quantity < 1) {
+    if (!Number.isInteger(item.quantity) || item.quantity < 1) {
       errors.push(`${label}: ${item.name} has invalid quantity ${item.quantity}.`);
       continue;
     }
@@ -75,13 +64,13 @@ for (const deck of decks) {
 
     const legalAllegiance = card.allegiance === "Neutral" || card.allegiance === faction.name;
     if (!legalAllegiance) errors.push(`${label}: ${item.name} is not legal for ${faction.name}.`);
-    if (card.unique && quantity > 1) errors.push(`${label}: ${item.name} is Unique but has ${quantity} copies.`);
-    if (!isV063 && card.allegiance === "Neutral" && card.complexity !== "Basic") {
+    if (card.unique && item.quantity > 1) errors.push(`${label}: ${item.name} is Unique but has ${item.quantity} copies.`);
+    if (card.allegiance === "Neutral" && card.complexity !== "Basic") {
       errors.push(`${label}: Neutral starter card ${item.name} is ${card.complexity || "unclassified"}, not Basic.`);
     }
 
-    cardCount += quantity;
-    deckbuildingValue += quantity * Number(card.cost);
+    cardCount += item.quantity;
+    deckbuildingValue += item.quantity * card.cost;
   }
 
   if (cardCount !== 30) errors.push(`${label}: ${cardCount} cards instead of 30.`);
@@ -95,7 +84,7 @@ for (const deck of decks) {
   const uniqueTerritories = new Set(territoryNames);
   let arenaCount = 0;
 
-  if (territoryNames.length !== 3) errors.push(`${label}: must contain exactly three Territories.`);
+  if (territoryNames.length !== 3) errors.push(`${label}: must contain exactly three ordered Territories.`);
   if (uniqueTerritories.size !== territoryNames.length) errors.push(`${label}: contains duplicate Territories.`);
 
   for (const name of territoryNames) {
@@ -105,7 +94,7 @@ for (const deck of decks) {
       continue;
     }
     if (territory.arena) arenaCount += 1;
-    if (!isV063 && territory.complexity !== "Basic") {
+    if (territory.complexity !== "Basic") {
       errors.push(`${label}: starter Territory ${name} is ${territory.complexity}, not Basic.`);
     }
   }
@@ -122,23 +111,14 @@ if (decks.length !== expectedLeaderPairs.size) {
   errors.push(`Expected ${expectedLeaderPairs.size} starter Decks, found ${decks.length}.`);
 }
 
-if (isV063) {
-  if (starterData.status !== "published") errors.push(`Expected published v0.6.3 starter status, found ${starterData.status || "missing"}.`);
-  if (decks.length !== 12) errors.push(`Expected 12 published v0.6.3 starter Decks, found ${decks.length}.`);
-}
-
 if (errors.length) {
   console.error("\nRecommended starter Deck validation failed:");
   for (const error of errors) console.error(`- ${error}`);
   process.exit(1);
 }
 
-console.log(`\nValidated ${decks.length} recommended ${version} starter Decks.`);
-if (isV063) {
-  console.log("Each current preset matches published v0.6.3 canonical data, has 30 cards, 60 value, legal allegiance/Unique counts, and three different Territories with no more than one Arena.");
-} else {
-  console.log("Each historical preset has 30 cards, 60 value, Basic Neutral cards, and three Basic Territories.");
-}
+console.log(`\nValidated ${decks.length} recommended v0.6.0 starter Decks.`);
+console.log("Each preset has 30 cards, 60 value, Basic Neutral cards, and three Basic Territories.");
 
 function slugify(value) {
   return value

@@ -1,8 +1,6 @@
 import worker from "./worker-v061.js";
 import candidateWorker from "./worker-v062-candidate.js";
 import publishedWorker from "./worker-v062.js";
-import currentPublishedWorker from "./worker-v063.js";
-import v063CandidateWorker from "./worker-v063-candidate.js";
 import smartWorker from "./smart-worker.js";
 import reliableWorker from "./reliable-worker.js";
 import { ADMIN_PAGE_WITH_INCREMENTAL_EXPORT } from "./admin-incremental-export-page.js";
@@ -70,20 +68,16 @@ export default {
     }
 
     if (
+      url.pathname === "/api/rules" ||
+      url.pathname === "/rules" ||
+      url.pathname === "/api/health" ||
+      url.pathname === "/health" ||
       url.pathname === "/api/v062/rules" ||
       url.pathname === "/v062/rules" ||
       url.pathname === "/api/v062/health" ||
       url.pathname === "/v062/health"
     ) {
       return publishedWorker.fetch(request, env, context);
-    }
-
-    if (["/api/rules","/rules","/api/health","/health","/api/v063/rules","/v063/rules","/api/v063/health","/v063/health"].includes(url.pathname)) return currentPublishedWorker.fetch(request, env, context);
-
-    if (url.pathname.startsWith("/api/v063-candidate/") || url.pathname.startsWith("/v063-candidate/")) {
-      const candidateUrl = new URL(request.url);
-      candidateUrl.pathname = candidateUrl.pathname.replace(/^\/api\/v063-candidate\//,"/api/v063/").replace(/^\/v063-candidate\//,"/v063/");
-      return v063CandidateWorker.fetch(new Request(candidateUrl, request), env, context);
     }
 
     if (url.pathname.startsWith("/api/v062-candidate/") || url.pathname.startsWith("/v062-candidate/")) {

@@ -3,6 +3,41 @@ name: Build v0.6.3 development browser surfaces
 on:
   push:
     branches: [agent/v063-browser-development-surfaces]
+    paths:
+      - '.github/workflows/build-v063-browser-development.yml'
+      - 'scripts/build-v063-browser-development.mjs'
+      - 'scripts/refine-v063-browser-development.mjs'
+      - 'scripts/validate-v063-browser-development.mjs'
+      - 'scripts/validate-v063-browser-site-conventions.mjs'
+      - 'scripts/generate-v063-player-facing-candidates.mjs'
+      - 'scripts/sync-v063-rulebook-card-text.mjs'
+      - 'scripts/normalize-v063-player-facing-candidates.mjs'
+      - 'scripts/validate-v063-player-facing-candidates.mjs'
+      - 'scripts/generate-v063-canonical-data-candidate.mjs'
+      - 'scripts/finalize-v063-canonical-data-candidate.mjs'
+      - 'scripts/generate-v063-complete-card-reference-candidate.mjs'
+      - 'scripts/validate-v063-canonical-data-candidate.mjs'
+      - 'scripts/validate-v063-canonical-promotion-boundary.mjs'
+      - 'scripts/build-v063-card-normalization.mjs'
+      - 'scripts/finalize-v063-card-conventions.mjs'
+      - 'scripts/apply-v063-general-card-rules.mjs'
+      - 'scripts/apply-v063-numeric-shorthand.mjs'
+      - 'scripts/apply-v063-compact-shorthand.mjs'
+      - 'scripts/apply-v063-natural-advantage-wording.mjs'
+      - 'scripts/apply-v063-advantage-capitalization.mjs'
+      - 'scripts/apply-v063-asset-language.mjs'
+      - 'scripts/apply-v063-gambit-tactic-headings.mjs'
+      - 'scripts/apply-v063-poolwide-card-refinements.mjs'
+      - 'scripts/apply-v063-final-artifact-audit.mjs'
+      - 'scripts/finalize-v063-poolwide-integrity.mjs'
+      - 'scripts/apply-v063-finalized-forward-conventions.mjs'
+      - 'scripts/sync-v063-final-card-mirrors.mjs'
+      - 'docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md'
+      - 'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md'
+      - 'releases/v0.6.2/**'
+      - 'v0.6.2/styles.css'
+      - 'v0.6.2/deckbuilder/**'
+      - 'v0.6.3/**'
   pull_request:
     branches: [main]
     paths:
@@ -11,53 +46,109 @@ on:
       - 'scripts/refine-v063-browser-development.mjs'
       - 'scripts/validate-v063-browser-development.mjs'
       - 'scripts/validate-v063-browser-site-conventions.mjs'
-      - 'scripts/validate-v063-published-release.mjs'
-      - 'artifacts/v0.6.3/**'
-      - 'releases/v0.6.3/**'
+      - 'scripts/generate-v063-player-facing-candidates.mjs'
+      - 'scripts/sync-v063-rulebook-card-text.mjs'
+      - 'scripts/normalize-v063-player-facing-candidates.mjs'
+      - 'scripts/validate-v063-player-facing-candidates.mjs'
+      - 'scripts/generate-v063-canonical-data-candidate.mjs'
+      - 'scripts/finalize-v063-canonical-data-candidate.mjs'
+      - 'scripts/generate-v063-complete-card-reference-candidate.mjs'
+      - 'scripts/validate-v063-canonical-data-candidate.mjs'
+      - 'scripts/validate-v063-canonical-promotion-boundary.mjs'
+      - 'docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md'
+      - 'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md'
       - 'v0.6.3/**'
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
+  issues: read
 
 concurrency:
-  group: v063-browser-lifecycle-${{ github.ref }}-${{ github.sha }}
+  group: v063-browser-development-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  validate:
+  build:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out validation target
+      - name: Check out source branch
         uses: actions/checkout@v4
         with:
-          fetch-depth: 50
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
 
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Detect v0.6.3 lifecycle
-        id: lifecycle
+      - name: Build final v0.6.3 card text
         run: |
-          if [ -e releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json ]; then
-            echo 'published=true' >> "$GITHUB_OUTPUT"
-          else
-            echo 'published=false' >> "$GITHUB_OUTPUT"
-          fi
+          node scripts/build-v063-card-normalization.mjs
+          node scripts/finalize-v063-card-conventions.mjs
+          node scripts/apply-v063-general-card-rules.mjs
+          node scripts/apply-v063-numeric-shorthand.mjs
+          node scripts/apply-v063-compact-shorthand.mjs
+          node scripts/apply-v063-natural-advantage-wording.mjs
+          node scripts/apply-v063-advantage-capitalization.mjs
+          node scripts/apply-v063-asset-language.mjs
+          node scripts/validate-v063-advantage-stacking.mjs
+          node scripts/apply-v063-gambit-tactic-headings.mjs
+          node scripts/apply-v063-poolwide-card-refinements.mjs
+          node scripts/apply-v063-final-artifact-audit.mjs
+          node scripts/finalize-v063-poolwide-integrity.mjs
+          node scripts/apply-v063-finalized-forward-conventions.mjs
+          node scripts/sync-v063-final-card-mirrors.mjs
+          node scripts/validate-v063-finalized-tracker.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
 
-      - name: Validate published browser lifecycle
-        if: steps.lifecycle.outputs.published == 'true'
-        run: node scripts/validate-v063-published-release.mjs
-
-      - name: Validate development browser lifecycle
-        if: steps.lifecycle.outputs.published != 'true'
+      - name: Build player-facing candidates
         run: |
+          node scripts/generate-v063-player-facing-candidates.mjs
+          node scripts/sync-v063-rulebook-card-text.mjs
+          node scripts/normalize-v063-player-facing-candidates.mjs
+          node scripts/validate-v063-player-facing-candidates.mjs
+
+      - name: Build integrated canonical data
+        run: |
+          node scripts/generate-v063-canonical-data-candidate.mjs
+          node scripts/finalize-v063-canonical-data-candidate.mjs
+          node scripts/generate-v063-complete-card-reference-candidate.mjs
+          node scripts/validate-v063-canonical-data-candidate.mjs
+          node scripts/validate-v063-canonical-promotion-boundary.mjs
+
+      - name: Build development browser surfaces
+        run: |
+          node scripts/build-v063-browser-development.mjs
+          node scripts/refine-v063-browser-development.mjs
           node --check v0.6.3/reference/app.js
           node --check v0.6.3/deckbuilder/app.js
           node scripts/validate-v063-browser-development.mjs
           node scripts/validate-v063-browser-site-conventions.mjs
+
+      - name: Commit generated development surfaces
+        if: github.event_name == 'push' && github.ref_name == 'agent/v063-browser-development-surfaces'
+        run: |
+          git add v0.6.3/
+          if git diff --cached --quiet; then
+            echo "v0.6.3 development surfaces are already current."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Materialize v0.6.3 development browser surfaces"
+          git pull --rebase origin "$GITHUB_REF_NAME"
+          git push origin "HEAD:$GITHUB_REF_NAME"
+
+      - name: Verify tracked generated surfaces on pull request
+        if: github.event_name == 'pull_request'
+        run: git diff --exit-code -- v0.6.3/
+
+      - name: Upload browser review bundle
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-v063-browser-development
+          path: v0.6.3/
+          if-no-files-found: error
