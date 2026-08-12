@@ -1,5 +1,5 @@
 import { buildLocalFallbackAnswer, retrieveRules } from "./local-search.js";
-import { defaultPublishedV062SourceUrls, loadPublishedV062RulesCorpus } from "./v062-published-corpus.js";
+import { defaultPublishedV063SourceUrls, loadPublishedV063RulesCorpus } from "./v063-published-corpus.js";
 import { presentRulesAnswer } from "./answer-presentation.js";
 
 const configuredApiEndpoint = window.GAUNTLET_RULES_ASSISTANT_ENDPOINT || "https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/rules";
@@ -7,7 +7,7 @@ const CONFIG = {
   apiEndpoint: configuredApiEndpoint,
   feedbackEndpoint: window.GAUNTLET_RULES_FEEDBACK_ENDPOINT || inferFeedbackEndpoint(configuredApiEndpoint),
   assistantName: "Rules Arbiter",
-  version: "v0.6.2",
+  version: "v0.6.3",
   maxQuestionLength: 600,
   localResultLimit: 5,
   ...window.GAUNTLET_RULES_ASSISTANT_CONFIG
@@ -24,8 +24,8 @@ let corpusPromise;
 
 function getCorpus() {
   if (!corpusPromise) {
-    const urls = defaultPublishedV062SourceUrls(window.location.origin);
-    corpusPromise = loadPublishedV062RulesCorpus({ ...urls }).catch((error) => {
+    const urls = defaultPublishedV063SourceUrls(window.location.origin);
+    corpusPromise = loadPublishedV063RulesCorpus({ ...urls }).catch((error) => {
       corpusPromise = null;
       throw error;
     });
@@ -129,7 +129,7 @@ class GauntletRulesAssistant {
     this.elements.messages.innerHTML = "";
     this.appendMessage({
       role: "assistant",
-      answer: "Ask me about the v0.6.2 rulebook, cards, Leaders, faction systems, Territories, Gambits, Tactics, battle timing, or victory conditions. If the written rules leave a genuine gap, I will issue a provisional ruling so play can continue.",
+      answer: "Ask me about the v0.6.3 rulebook, cards, Leaders, faction systems, Territories, Gambits, Tactics, battle timing, or victory conditions. If the written rules leave a genuine gap, I will issue a provisional ruling so play can continue.",
       rulingStatus: "welcome",
       sources: []
     });

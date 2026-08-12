@@ -9,6 +9,7 @@ on:
       - "docs/Gauntlet_v0.6.2_Starter_Decks_Candidate.json"
       - "v0.6.2/**"
       - "releases/v0.6.2/**"
+      - "releases/v0.6.3/**"
       - "factions/**"
       - "rules-assistant/**"
       - "src/content/**"
@@ -16,27 +17,27 @@ on:
       - "scripts/build-v062-release-runner.mjs"
       - "scripts/synchronize-v062-public-site.mjs"
       - "scripts/validate-v062-published-release.mjs"
+      - "scripts/validate-v062-historical-release.mjs"
       - "package.json"
       - "index.html"
       - ".github/workflows/publish-v062-release.yml"
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: publish-v062-${{ github.head_ref || github.ref_name }}
+  group: publish-v062-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
-  publish:
+  validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out release branch
+      - name: Check out validation target
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref || github.ref_name }}
-          fetch-depth: 1
+          fetch-depth: 50
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -46,32 +47,24 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Build synchronized v0.6.2 release
-        run: npm run release:v062:build
-
-      - name: Commit generated release outputs when changed
+      - name: Detect release lifecycle
+        id: lifecycle
         run: |
-          git add \
-            index.html \
-            factions/ \
-            v0.6.2/ \
-            releases/v0.6.2/ \
-            rules-assistant/widget.js \
-            rules-assistant/worker-entry.js \
-            rules-assistant/worker-v062.js \
-            rules-assistant/v062-published-corpus.js \
-            src/content/current.ts
-          if git diff --cached --quiet; then
-            exit 0
+          if [ -e releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json ]; then
+            echo 'v063=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'v063=false' >> "$GITHUB_OUTPUT"
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Materialize and synchronize Gauntlet v0.6.2 release"
-          git pull --rebase origin ${{ github.head_ref || github.ref_name }}
-          git push origin HEAD:${{ github.head_ref || github.ref_name }}
 
-      - name: Verify release outputs are reproducible
-        run: npm run release:v062:check
+      - name: Validate v0.6.2 historical release after v0.6.3 cutover
+        if: steps.lifecycle.outputs.v063 == 'true'
+        run: node scripts/validate-v062-historical-release.mjs
+
+      - name: Validate v0.6.2 as current release before v0.6.3 cutover
+        if: steps.lifecycle.outputs.v063 != 'true'
+        run: |
+          npm run release:v062:build
+          npm run release:v062:check
 
       - name: Typecheck
         run: npm run typecheck
@@ -79,7 +72,7 @@ jobs:
       - name: Run complete repository validation
         run: npm test
 
-      - name: Upload v0.6.2 source package
+      - name: Upload immutable v0.6.2 source package
         uses: actions/upload-artifact@v4
         with:
           name: gauntlet-v062-release-source

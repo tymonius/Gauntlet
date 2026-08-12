@@ -1,32 +1,32 @@
 import { V063_STARTER_CATALOG } from './starter-adapter.js';
 
-const V063_VERSION = "v0.6.3-candidate";
+const V063_VERSION = "v0.6.3";
 
-const STORAGE_KEY = "gauntlet-v063-candidate-deckbuilder";
+const STORAGE_KEY = "gauntlet-v063-deckbuilder";
 const state = { data: null, starters: [], factionId: "military", leaderId: "general", deckName: "", cards: {}, territories: [], search: "", allegiance: "all", cost: "all" };
 const $ = id => document.getElementById(id);
 
 init().catch(error => {
   console.error(error);
-  $("sourceStatus").innerHTML = `<strong class="status-bad">Candidate load failed.</strong><p>${escapeHtml(error.message)}</p>`;
+  $("sourceStatus").innerHTML = `<strong class="status-bad">Canonical load failed.</strong><p>${escapeHtml(error.message)}</p>`;
 });
 
 async function init() {
-  const data = await fetch("../data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json", { cache: "no-store" }).then(assertJson);
+  const data = await fetch("../data/Gauntlet_v0.6.3_Canonical_Data.json", { cache: "no-store" }).then(assertJson);
   state.data = data;
   state.starters = V063_STARTER_CATALOG.decks ?? [];
   restore();
   applyQuerySelection();
   bind();
   renderFactionOptions();
-  $("sourceStatus").innerHTML = `<strong class="status-good">${data.cards.length} candidate cards loaded.</strong><p>v0.6.3 development · ${data.territories.length} Territories · ${data.proposals.length} Proposals · ${state.starters.length} competitive starter Decks</p>`;
+  $("sourceStatus").innerHTML = `<strong class="status-good">${data.cards.length} published cards loaded.</strong><p>v0.6.3 published · ${data.territories.length} Territories · ${data.proposals.length} Proposals · ${state.starters.length} competitive starter Decks</p>`;
   $("app").classList.remove("hidden");
   if (new URLSearchParams(location.search).get("starter") === "1") loadStarter();
   else renderAll();
 }
 
 async function assertJson(response) {
-  if (!response.ok) throw new Error(`Candidate data returned ${response.status}`);
+  if (!response.ok) throw new Error(`Canonical data returned ${response.status}`);
   return response.json();
 }
 
@@ -194,7 +194,7 @@ function renderSummary() {
     return item;
   }));
   $("validationMessages").innerHTML = validation.valid
-    ? `<p class="status-good"><strong>Legal v0.6.3 candidate Deck.</strong></p>`
+    ? `<p class="status-good"><strong>Legal v0.6.3 Deck.</strong></p>`
     : `<p class="status-bad"><strong>Resolve before play:</strong></p><ul>${validation.messages.map(message => `<li>${escapeHtml(message)}</li>`).join("")}</ul>`;
 }
 

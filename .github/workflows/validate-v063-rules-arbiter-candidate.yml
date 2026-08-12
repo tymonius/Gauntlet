@@ -1,62 +1,34 @@
 name: Validate v0.6.3 Rules Arbiter candidate
 
 on:
-  push:
-    branches: [agent/v063-rules-arbiter-candidate]
-    paths:
-      - '.github/workflows/validate-v063-rules-arbiter-candidate.yml'
-      - 'rules-assistant/v063-development-corpus.js'
-      - 'rules-assistant/v063-development-corpus.test.mjs'
-      - 'rules-assistant/rules-deterministic-v063.js'
-      - 'rules-assistant/rules-deterministic-v063.test.mjs'
-      - 'rules-assistant/worker-v063-candidate.js'
-      - 'rules-assistant/worker-entry-v063-candidate.js'
-      - 'rules-assistant/wrangler-v063-candidate.toml'
-      - 'rules-assistant/local-search.js'
-      - 'scripts/refine-v063-rules-arbiter-portal.mjs'
-      - 'scripts/validate-v063-rules-arbiter-candidate.mjs'
-      - 'v0.6.3/rules-arbiter/**'
-      - 'v0.6.3/rulebook/**'
-      - 'v0.6.3/reference/**'
-      - 'v0.6.3/data/**'
-      - 'v0.6.3/index.html'
   pull_request:
     branches: [main]
     paths:
       - '.github/workflows/validate-v063-rules-arbiter-candidate.yml'
-      - 'rules-assistant/v063-development-corpus.js'
-      - 'rules-assistant/v063-development-corpus.test.mjs'
-      - 'rules-assistant/rules-deterministic-v063.js'
-      - 'rules-assistant/rules-deterministic-v063.test.mjs'
-      - 'rules-assistant/worker-v063-candidate.js'
-      - 'rules-assistant/worker-entry-v063-candidate.js'
-      - 'rules-assistant/wrangler-v063-candidate.toml'
-      - 'rules-assistant/local-search.js'
-      - 'scripts/refine-v063-rules-arbiter-portal.mjs'
-      - 'scripts/validate-v063-rules-arbiter-candidate.mjs'
+      - 'rules-assistant/*v063*'
+      - 'rules-assistant/widget.js'
+      - 'rules-assistant/worker-entry.js'
       - 'v0.6.3/rules-arbiter/**'
-      - 'v0.6.3/rulebook/**'
-      - 'v0.6.3/reference/**'
-      - 'v0.6.3/data/**'
-      - 'v0.6.3/index.html'
+      - 'releases/v0.6.3/**'
+      - 'scripts/validate-v063-rules-arbiter-candidate.mjs'
+      - 'scripts/validate-v063-published-release.mjs'
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: v063-rules-arbiter-${{ github.ref }}
+  group: v063-rules-arbiter-lifecycle-${{ github.ref }}-${{ github.sha }}
   cancel-in-progress: true
 
 jobs:
   validate:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out source branch
+      - name: Check out validation target
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref || github.ref_name }}
-          fetch-depth: 0
+          fetch-depth: 50
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -66,36 +38,27 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Materialize candidate portal link
-        run: node scripts/refine-v063-rules-arbiter-portal.mjs
-
-      - name: Validate JavaScript syntax
+      - name: Validate preserved v0.6.3 candidate implementation
         run: |
           node --check rules-assistant/v063-development-corpus.js
           node --check rules-assistant/rules-deterministic-v063.js
           node --check rules-assistant/worker-v063-candidate.js
           node --check rules-assistant/worker-entry-v063-candidate.js
-          node --check v0.6.3/rules-arbiter/app.js
+          npx vitest run rules-assistant/v063-development-corpus.test.mjs rules-assistant/rules-deterministic-v063.test.mjs
 
-      - name: Run candidate Rules Arbiter tests
-        run: npx vitest run rules-assistant/v063-development-corpus.test.mjs rules-assistant/rules-deterministic-v063.test.mjs
-
-      - name: Validate candidate/public boundary
-        run: node scripts/validate-v063-rules-arbiter-candidate.mjs
-
-      - name: Commit generated portal link
-        if: github.event_name == 'push' && github.ref_name == 'agent/v063-rules-arbiter-candidate'
+      - name: Detect v0.6.3 lifecycle
+        id: lifecycle
         run: |
-          git add v0.6.3/index.html
-          if git diff --cached --quiet; then
-            exit 0
+          if [ -e releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json ]; then
+            echo 'published=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'published=false' >> "$GITHUB_OUTPUT"
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Link v0.6.3 candidate Rules Arbiter"
-          git pull --rebase origin "$GITHUB_REF_NAME"
-          git push origin "HEAD:$GITHUB_REF_NAME"
 
-      - name: Verify tracked portal link on pull request
-        if: github.event_name == 'pull_request'
-        run: git diff --exit-code -- v0.6.3/index.html
+      - name: Validate published Rules Arbiter lifecycle
+        if: steps.lifecycle.outputs.published == 'true'
+        run: node scripts/validate-v063-published-release.mjs
+
+      - name: Validate candidate/public boundary before publication
+        if: steps.lifecycle.outputs.published != 'true'
+        run: node scripts/validate-v063-rules-arbiter-candidate.mjs
