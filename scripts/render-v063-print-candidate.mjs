@@ -66,6 +66,7 @@ try {
 
     const geometry = await page.evaluate(() => {
       const bodyText = document.body.innerText;
+      const documentText = document.body.textContent || '';
       return {
         width: document.documentElement.scrollWidth,
         clientWidth: document.documentElement.clientWidth,
@@ -76,7 +77,7 @@ try {
           scrollHeight: item.scrollHeight,
           clientHeight: item.clientHeight,
         })),
-        versionText: bodyText.includes('v0.6.3'),
+        versionText: documentText.includes('v0.6.3'),
         retiredPlayableDeck: /\bPlayable Deck\b/.test(bodyText),
         retiredActionOpportunities: /\bAction Opportunit(?:y|ies)\b/.test(bodyText),
       };
