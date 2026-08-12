@@ -74,7 +74,8 @@
 }
 
 .review-card-label,
-.leader-review-label {
+.leader-review-label,
+.territory-review-label {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -87,7 +88,8 @@
 }
 
 .review-card-label strong,
-.leader-review-label strong {
+.leader-review-label strong,
+.territory-review-label strong {
   overflow: hidden;
   color: var(--page-ink);
   font-size: 0.66rem;
@@ -97,7 +99,8 @@
 }
 
 .review-card-label span,
-.leader-review-label span {
+.leader-review-label span,
+.territory-review-label span {
   flex: none;
   text-align: right;
 }
@@ -129,37 +132,39 @@
   padding-top: 0;
 }
 
-.territory-specimen-wrap {
-  width: max-content;
-  max-width: calc(100vw - 2rem);
-  margin-inline: auto;
-  padding: 0 1rem 1.2rem;
+.territory-review-block {
+  width: min(82rem, calc(100% - 2rem));
 }
 
-.territory-specimen-label {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.8rem;
-  margin: 0 0 0.65rem;
-  color: var(--page-muted);
-  font-family: var(--font-interface);
-  font-size: 0.62rem;
+.territory-review-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 3.5in);
+  justify-content: center;
+  gap: 0.5in 0.42in;
 }
 
-.territory-specimen-label strong {
-  color: var(--page-ink);
-  font-size: 0.7rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+.territory-review-item {
+  width: 3.5in;
 }
 
-@media screen {
-  .territory-specimen-wrap .territory-card {
-    box-shadow:
-      0 0.16in 0.36in var(--card-shadow),
-      inset 0 0 0 0.015in rgba(255, 255, 255, 0.42);
-  }
+.territory-review-frame {
+  display: block;
+  width: 3.5in;
+  height: 2.5in;
+  border: 0;
+  border-radius: 0.12in;
+  background: transparent;
+  box-shadow: 0 0.16in 0.36in var(--card-shadow);
+}
+
+.territory-review-label strong {
+  max-width: 2.7in;
+  letter-spacing: 0.05em;
+}
+
+.territory-inspection-frame {
+  border-radius: 0.12in;
+  box-shadow: 0 0.2in 0.55in rgba(0, 0, 0, 0.42);
 }
 
 @media (max-width: 36rem) {
@@ -167,6 +172,12 @@
     align-items: flex-start;
     flex-direction: column;
     gap: 0.25rem;
+  }
+
+  .territory-review-grid {
+    justify-content: start;
+    overflow-x: auto;
+    padding-inline: 0.15rem;
   }
 }
 
@@ -182,7 +193,13 @@
     gap: 0.2in;
   }
 
-  .full-card-review-frame {
+  .territory-review-grid {
+    grid-template-columns: repeat(2, 3.5in);
+    gap: 0.2in;
+  }
+
+  .full-card-review-frame,
+  .territory-review-frame {
     box-shadow: none;
   }
 }
