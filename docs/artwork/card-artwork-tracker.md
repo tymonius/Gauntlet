@@ -25,9 +25,9 @@ Canonical artwork paths:
 
 | Component pool | Total | Canonical on `main` | Approved, pending merge | Still needs artwork |
 | --- | ---: | ---: | ---: | ---: |
-| Playable cards | 128 | 86 | 0 | 42 |
+| Playable cards | 128 | 86 | 1 | 41 |
 | Territory cards | 25 | 2 | 0 | 23 |
-| **All tracked cards** | **153** | **88** | **0** | **65** |
+| **All tracked cards** | **153** | **88** | **1** | **64** |
 
 ### Playable cards by faction
 
@@ -35,12 +35,12 @@ Canonical artwork paths:
 | --- | ---: | ---: | ---: |
 | Neutral | 50 | 0 | 0 |
 | Military | 13 | 0 | 0 |
-| Diplomats | 9 | 0 | 4 |
+| Diplomats | 9 | 1 | 3 |
 | Financiers | 12 | 0 | 1 |
 | Intelligence | 2 | 0 | 11 |
 | Mystics | 0 | 0 | 13 |
 | Inquisition | 0 | 0 | 13 |
-| **Playable-card total** | **86** | **0** | **42** |
+| **Playable-card total** | **86** | **1** | **41** |
 
 ## Neutral — complete
 
@@ -52,14 +52,15 @@ All 13 Military cards have canonical artwork on `main`.
 
 ## Diplomats — 4
 
+Approved, pending canonical merge:
+
+- [x] Détente
+
 Still needs approved artwork:
 
-- [ ] Détente
 - [ ] Gunboat Diplomacy
 - [ ] Sanctions: Blockade
 - [ ] Sanctions: Censure
-
-Current artwork-workflow note: the first Détente generation was not approved because both rival checkpoints appeared at the same end of the bridge. A corrected prompt now requires the river to be the political boundary, with one rival checkpoint at each end of the bridge and the diplomatic meeting at the midpoint. Generation is pending.
 
 ## Financiers — 1
 
