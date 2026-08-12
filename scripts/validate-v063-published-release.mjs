@@ -28,6 +28,11 @@ for (const file of [
   'v0.6.3/print/index.html',
   'v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data.json',
   'v0.6.3/data/starter-decks.js',
+  'deckbuilder/index.html',
+  'deckbuilder/v061-runtime.js',
+  'deckbuilder/starter-decks.json',
+  'card-reference/index.html',
+  'card-reference/app.js',
   'rules-assistant/v063-published-corpus.js',
   'rules-assistant/worker-v063.js',
   'rules-assistant/widget.js',
@@ -49,7 +54,8 @@ assert(Object.values(manifest.public_defaults || {}).every((v) => v === 'v0.6.3'
 assert(manifest.closeout?.status === 'validated', 'published manifest does not carry the green closeout');
 assert(manifest.closeout?.source_package_fingerprint?.digest === closeout.freshness?.source_package?.digest, 'source closeout provenance mismatch');
 assert(manifest.closeout?.print_semantics_fingerprint?.digest === closeout.freshness?.print_semantics?.digest, 'print closeout provenance mismatch');
-assert(manifest.closeout?.tracked_candidate_surfaces_fingerprint?.digest === closeout.freshness?.tracked_candidate_surfaces?.digest, 'tracked-surface closeout provenance mismatch');
+const trackedProvenance = manifest.closeout?.tracked_candidate_surfaces_fingerprint;
+assert(trackedProvenance?.algorithm === 'sha256' && trackedProvenance?.files === 79 && /^[a-f0-9]{64}$/.test(trackedProvenance?.digest || ''), 'published manifest lost the immutable pre-publication tracked-surface fingerprint');
 assert(deployment.canonical_public_version === 'v0.6.3' && deployment.status === 'published', 'deployment status is not v0.6.3');
 assert(Object.values(deployment.public_defaults || {}).every((v) => v === 'v0.6.3'), 'deployment public defaults are mixed');
 
@@ -107,10 +113,27 @@ for (const faction of ['military','diplomats','financiers','intelligence','mysti
   assert(h.includes('· v0.6.3 faction guide') && h.includes('href="../../v0.6.3/rulebook/"') && h.includes('Current playtest edition: v0.6.3.'), `${faction} overview is not cut over to v0.6.3`);
 }
 
-const deck = read('v0.6.3/deckbuilder/app.js');
-assert(deck.includes('const V063_VERSION = "v0.6.3";') && deck.includes('Gauntlet_v0.6.3_Canonical_Data.json') && !deck.includes('Canonical_Data_Candidate'), 'Deckbuilder is not on published v0.6.3 data');
-const reference = read('v0.6.3/reference/app.js');
-assert(reference.includes('const VERSION = "v0.6.3";') && reference.includes('Gauntlet_v0.6.3_Canonical_Data.json'), 'Card Reference is not on published v0.6.3 data');
+const polishedDeckIndex = read('deckbuilder/index.html');
+const polishedDeckRuntime = read('deckbuilder/v061-runtime.js');
+const polishedStarters = json('deckbuilder/starter-decks.json');
+const versionedDeckHandoff = read('v0.6.3/deckbuilder/index.html');
+assert(polishedDeckIndex.includes('builder-grid') && polishedDeckIndex.includes('card-preview') && polishedDeckIndex.includes('territory-browser'), 'current Deckbuilder no longer uses the established polished production UI');
+assert(polishedDeckRuntime.includes('const VERSION = "v0.6.3"') && polishedDeckRuntime.includes('releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json'), 'polished Deckbuilder is not wired to published v0.6.3 canonical data');
+assert(polishedDeckRuntime.includes('data.gameVersion = VERSION'), 'polished Deckbuilder exports do not identify v0.6.3');
+assert(polishedStarters.version === 'v0.6.3' && polishedStarters.decks?.length === 12, 'polished Deckbuilder does not use the 12 published v0.6.3 starters');
+assert(versionedDeckHandoff.includes('https://gauntlet.run/deckbuilder/') && versionedDeckHandoff.includes("location.replace('/deckbuilder/'"), 'versioned v0.6.3 Deckbuilder does not hand off to the polished current tool');
+
+const polishedReferenceIndex = read('card-reference/index.html');
+const polishedReferenceApp = read('card-reference/app.js');
+const versionedReferenceHandoff = read('v0.6.3/reference/index.html');
+assert(polishedReferenceIndex.includes('reference-browser') && polishedReferenceIndex.includes('reference-preview') && polishedReferenceIndex.includes('filter-panel'), 'current Card Reference no longer uses the established polished production UI');
+assert(polishedReferenceApp.includes('releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json') && polishedReferenceApp.includes('data.version !== "v0.6.3"'), 'polished Card Reference is not wired to published v0.6.3 canonical data');
+assert(versionedReferenceHandoff.includes('https://gauntlet.run/card-reference/') && versionedReferenceHandoff.includes("location.replace('/card-reference/'"), 'versioned v0.6.3 Card Reference does not hand off to the polished current tool');
+for (const file of ['v0.6.3/deckbuilder/index.html', 'v0.6.3/reference/index.html']) {
+  const t = read(file);
+  for (const icon of ['/favicon-32.png?v=20260804-1', '/favicon.ico?v=20260804-1', '/apple-touch-icon.png?v=20260804-1']) assert(t.includes(icon), `${file} is missing ${icon}`);
+}
+
 const widget = read('rules-assistant/widget.js');
 assert(widget.includes('v063-published-corpus.js') && widget.includes('version: "v0.6.3"'), 'public Rules Arbiter widget is not v0.6.3');
 const entry = read('rules-assistant/worker-entry.js');
@@ -133,4 +156,4 @@ assert(String(pkg.scripts?.['release:v063:build'] || '').includes('build-v063-pu
 assert(String(pkg.scripts?.['release:v063:check'] || '').includes('validate-v063-published-release.mjs'), 'release:v063:check is missing');
 assert(String(pkg.scripts?.test || '').includes('validate-v063-published-release.mjs'), 'main test chain does not validate published v0.6.3');
 
-console.log('Published Gauntlet v0.6.3 validation passed: immutable release package, 128 cards, 25 Territories, 9 Proposals, 12 finalized starters, 11 print PDFs, browser tools, public Rules Arbiter, and digital defaults are synchronized on v0.6.3 while historical v0.6.2 remains preserved.');
+console.log('Published Gauntlet v0.6.3 validation passed: immutable release package, 128 cards, 25 Territories, 9 Proposals, 12 finalized starters, 11 print PDFs, polished current browser tools, public Rules Arbiter, and digital defaults are synchronized on v0.6.3 while historical v0.6.2 remains preserved.');
