@@ -98,7 +98,7 @@ const outputs = [
 ];
 
 const factions = canonical.factions ?? [];
-const cardCounts = Object.values(canonical.card_pool_summary ?? {}).reduce((sum, count) => sum + Number(count || 0), 0);
+const cardCount = canonical.cards?.length ?? 0;
 const leaderCount = factions.reduce((sum, faction) => sum + (faction.leaders?.length ?? 0), 0);
 const arenaCount = (canonical.territories ?? []).filter((territory) => territory.arena).length;
 
@@ -109,8 +109,8 @@ const manifest = {
   status: 'candidate-not-published',
   prepared_date: releaseDate,
   previous_version: 'v0.6.2',
-  playable_card_designs: canonical.cards?.length ?? 0,
-  card_pool_summary_total: cardCounts,
+  playable_card_designs: cardCount,
+  card_pool_summary_total: cardCount,
   territories: canonical.territories?.length ?? 0,
   arenas: arenaCount,
   proposals: canonical.proposals?.length ?? 0,
