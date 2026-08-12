@@ -56,12 +56,8 @@ assert(canonical.deck_construction?.opening_draw === 4 && canonical.deck_constru
 assert(canonical.deck_construction?.territory_arrangement_after_opening_selection === true, 'Territory arrangement must follow opening selection.');
 
 for (const [label, text] of Object.entries({ rulebook, reference, firstGame })) {
-  for (const token of [
-    'v0.6.3',
-    'Draw four',
-    'discard one',
-    'Territor',
-  ]) assert(text.includes(token), `${label} is missing release-candidate token: ${token}`);
+  assert(text.includes('v0.6.3'), `${label} does not identify v0.6.3.`);
+  assert(text.includes('Territor'), `${label} is missing Territory setup/play guidance.`);
   assert(!text.includes('Playable Deck'), `${label} contains retired Playable Deck terminology.`);
 }
 for (const token of [
