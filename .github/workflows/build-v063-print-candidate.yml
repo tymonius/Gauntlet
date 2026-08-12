@@ -28,6 +28,7 @@ on:
 
 permissions:
   contents: write
+  issues: read
 
 concurrency:
   group: v063-print-candidate-${{ github.ref }}
@@ -57,7 +58,46 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y poppler-utils
 
-      - name: Verify source release candidate
+      - name: Rebuild final v0.6.3 card text
+        run: |
+          node scripts/build-v063-card-normalization.mjs
+          node scripts/finalize-v063-card-conventions.mjs
+          node scripts/apply-v063-general-card-rules.mjs
+          node scripts/apply-v063-numeric-shorthand.mjs
+          node scripts/apply-v063-compact-shorthand.mjs
+          node scripts/apply-v063-natural-advantage-wording.mjs
+          node scripts/apply-v063-advantage-capitalization.mjs
+          node scripts/apply-v063-asset-language.mjs
+          node scripts/validate-v063-advantage-stacking.mjs
+          node scripts/apply-v063-gambit-tactic-headings.mjs
+          node scripts/apply-v063-poolwide-card-refinements.mjs
+          node scripts/apply-v063-final-artifact-audit.mjs
+          node scripts/finalize-v063-poolwide-integrity.mjs
+          node scripts/apply-v063-finalized-forward-conventions.mjs
+          node scripts/sync-v063-final-card-mirrors.mjs
+          node scripts/validate-v063-finalized-tracker.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Rebuild player-facing v0.6.3 candidates
+        run: |
+          node scripts/generate-v063-player-facing-candidates.mjs
+          node scripts/sync-v063-rulebook-card-text.mjs
+          node scripts/normalize-v063-player-facing-candidates.mjs
+          node scripts/validate-v063-player-facing-candidates.mjs
+
+      - name: Rebuild integrated v0.6.3 canonical candidate
+        run: |
+          node scripts/generate-v063-canonical-data-candidate.mjs
+          node scripts/finalize-v063-canonical-data-candidate.mjs
+          node scripts/generate-v063-complete-card-reference-candidate.mjs
+          node scripts/validate-v063-canonical-data-candidate.mjs
+          node scripts/validate-v063-canonical-promotion-boundary.mjs
+
+      - name: Validate starter presentation inputs
+        run: node scripts/validate-v063-starter-guidance.mjs
+
+      - name: Verify merged source release candidate
         run: |
           node scripts/build-v063-release-candidate.mjs --check
           node scripts/validate-v063-release-candidate.mjs
