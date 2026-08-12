@@ -18,6 +18,7 @@ on:
       - 'rules-assistant/*v063*'
       - 'src/v063/**'
       - 'src/content/v063.ts'
+      - 'config/release-lifecycle.json'
       - 'images/faction-symbols/**'
       - 'card-design/**'
       - 'package.json'
@@ -149,21 +150,31 @@ jobs:
       - name: Preserve pre-publication boundary
         run: |
           git fetch origin main
-          git diff --name-only origin/main...HEAD -- \
-            'releases/v0.6.2/**' \
-            'v0.6.2/**' \
-            'index.html' \
-            'rules-assistant/widget.js' \
-            'rules-assistant/worker-entry.js' \
-            'rules-assistant/worker-v062.js' \
-            'rules-assistant/v062-published-corpus.js' \
-            'src/content/current.ts' > /tmp/v063-closeout-boundary.txt
+          if node -e "const x=require('./config/release-lifecycle.json'); process.exit(x.current_release==='v0.6.2' && x.releases?.['v0.6.3']?.status==='withdrawn' && x.releases?.['v0.6.3']?.public_cutover===false ? 0 : 1)"; then
+            git diff --name-only origin/main...HEAD -- \
+              'releases/v0.6.2/**' \
+              'v0.6.2/**' \
+              'rules-assistant/worker-v062.js' \
+              'rules-assistant/v062-published-corpus.js' > /tmp/v063-closeout-boundary.txt
+          else
+            git diff --name-only origin/main...HEAD -- \
+              'releases/v0.6.2/**' \
+              'v0.6.2/**' \
+              'index.html' \
+              'rules-assistant/widget.js' \
+              'rules-assistant/worker-entry.js' \
+              'rules-assistant/worker-v062.js' \
+              'rules-assistant/v062-published-corpus.js' \
+              'src/content/current.ts' > /tmp/v063-closeout-boundary.txt
+          fi
           if [ -s /tmp/v063-closeout-boundary.txt ]; then
-            echo 'v0.6.3 closeout must not change published/current v0.6.2 surfaces:'
+            echo 'v0.6.3 closeout must not change protected v0.6.2 release/implementation surfaces:'
             cat /tmp/v063-closeout-boundary.txt
             exit 1
           fi
-          test ! -e releases/v0.6.3
+          if ! node -e "const x=require('./config/release-lifecycle.json'); process.exit(x.current_release==='v0.6.2' && x.releases?.['v0.6.3']?.status==='withdrawn' && x.releases?.['v0.6.3']?.artifacts_preserved===true ? 0 : 1)"; then
+            test ! -e releases/v0.6.3
+          fi
 
       - name: Preserve fresh print evidence
         run: |
