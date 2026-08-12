@@ -1,0 +1,24 @@
+{
+  "version": "v0.6.3",
+  "name": "Third Playtest Revision",
+  "status": "published",
+  "publishedDate": "2026-08-12",
+  "previousVersion": "v0.6.2",
+  "serialPrefix": "G063",
+  "releaseDirectory": "releases/v0.6.3",
+  "manifest": "releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json",
+  "canonicalData": "releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json",
+  "rulebookMarkdown": "releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md",
+  "rulebookPdf": "releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.pdf",
+  "starterDecks": "releases/v0.6.3/Gauntlet_v0.6.3_Starter_Decks.json",
+  "public": {
+    "home": "/",
+    "start": "/start/",
+    "rulebook": "/rulebook/",
+    "deckbuilder": "/deckbuilder/",
+    "cardReference": "/card-reference/",
+    "print": "/v0.6.3/print/",
+    "playtest": "/playtest/",
+    "rulesApi": "/api/rules"
+  }
+}
