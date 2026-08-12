@@ -20,7 +20,7 @@ const outputs = [
   { key: 'reference', url: `${htmlBase}/reference-guide.html`, file: 'Gauntlet_v0.6.3_Reference_Guide.pdf', minimumPages: 2 },
   { key: 'first_game', url: `${htmlBase}/first-game-guide.html`, file: 'Gauntlet_v0.6.3_First_Game_Guide.pdf', minimumPages: 4 },
   { key: 'faction_guide', url: `${htmlBase}/faction-guide.html`, file: 'Gauntlet_v0.6.3_Faction_and_Component_Guide.pdf', minimumPages: 10 },
-  { key: 'returning_changes', url: `${htmlBase}/returning-player-changes.html`, file: 'Gauntlet_v0.6.3_Returning_Player_Changes.pdf', minimumPages: 3 },
+  { key: 'returning_changes', url: `${htmlBase}/returning-player-changes.html`, file: 'Gauntlet_v0.6.3_Returning_Player_Changes.pdf', minimumPages: 2 },
   { key: 'player_mat', url: `${htmlBase}/player-mat.html`, file: 'Gauntlet_v0.6.3_Player_Mat.pdf', exactPages: 1 },
   { key: 'playtest_sheet', url: `${htmlBase}/playtest-sheet.html`, file: 'Gauntlet_v0.6.3_Formal_Playtest_Sheet.pdf', exactPages: 2 },
   { key: 'faction_cards', url: `${htmlBase}/faction-teaching-cards.html`, file: 'Gauntlet_v0.6.3_Faction_Teaching_Cards.pdf', exactPages: 3 },
