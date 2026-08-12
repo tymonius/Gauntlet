@@ -12,6 +12,12 @@ const assert = (condition, message) => { if (!condition) failures.push(message);
 const manifest = JSON.parse(read(manifestPath));
 const byKey = new Map((manifest.outputs ?? []).map((item) => [item.key, item]));
 
+// Lock the visually reviewed release-candidate pagination. The Rulebook reader
+// is 46 half-letter pages; imposition pads it to 48 logical pages and therefore
+// produces 24 landscape booklet sheets.
+assert(byKey.get('rulebook')?.pages === 46, `Rulebook must remain exactly 46 reader pages; found ${byKey.get('rulebook')?.pages ?? 'missing'}.`);
+assert(byKey.get('rulebook_booklet')?.pages === 24, `Rulebook booklet must remain exactly 24 imposed sheets; found ${byKey.get('rulebook_booklet')?.pages ?? 'missing'}.`);
+
 // Visual audit found that the compact Reference could gain a completely blank
 // trailing fifth page even while geometry checks remained green.
 assert(byKey.get('reference')?.pages === 4, `Reference Guide must remain exactly 4 pages; found ${byKey.get('reference')?.pages ?? 'missing'}.`);
@@ -75,4 +81,4 @@ if (failures.length) {
   process.exit(1);
 }
 
-console.log('v0.6.3 print visual regressions locked: 4-page Reference, 22-page Tableside Pack, clean long-form banners, and valid individual-sketch booklet plates.');
+console.log('v0.6.3 print visual regressions locked: 46-page Rulebook, 24-sheet booklet, 4-page Reference, 22-page Tableside Pack, clean long-form banners, and valid individual-sketch booklet plates.');
