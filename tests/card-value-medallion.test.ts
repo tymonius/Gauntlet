@@ -8,8 +8,9 @@ describe("card value medallion", () => {
   it("centers the value geometrically and applies the approved optical correction", () => {
     expect(baseCss).toMatch(/\.value-medallion\s*\{[\s\S]*?display:\s*grid;/);
     expect(baseCss).toMatch(/\.value-medallion\s*\{[\s\S]*?place-items:\s*center;/);
-    expect(refinementCss).toMatch(/\.value-medallion\s*\{[\s\S]*?width:\s*0\.34in;/);
-    expect(refinementCss).toMatch(/\.value-medallion\s*\{[\s\S]*?height:\s*0\.34in;/);
-    expect(refinementCss).toMatch(/\.value-medallion\s*\{[\s\S]*?padding-top:\s*0\.036in;/);
+    expect(refinementCss).toMatch(/\.value-medallion\s*\{[\s\S]*?width:\s*0\.28in;/);
+    expect(refinementCss).toMatch(/\.value-medallion\s*\{[\s\S]*?height:\s*0\.28in;/);
+    expect(refinementCss).toMatch(/\.value-medallion\s*\{[\s\S]*?padding:\s*0 0 0\.008in;/);
+    expect(refinementCss).toMatch(/\.value-medallion\s*\{[\s\S]*?font-size:\s*8\.8pt;/);
   });
 });
