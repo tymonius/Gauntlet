@@ -1,43 +1,109 @@
 # Gauntlet Digital Roadmap
 
-**Status:** Active roadmap  
-**Current rules authority:** v0.6.3 — Third Playtest Revision  
-**Canonical package:** [`../releases/v0.6.3/`](../releases/v0.6.3/)
+**Status:** Active post-v0.6.0 roadmap.  
+**Purpose:** Define the path from the current physical-game sources and browser tools to a versioned digital rules implementation.
 
-The digital implementation must reproduce the published tabletop game, not define a parallel ruleset. `src/content/current.ts` is the digital current-version pointer and must agree with `config/current-release.json`.
+The [official v0.6.0 rulebook](../releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md), definitive faction guides, Neutral pool, and Territory pool remain authoritative. Digital behavior must follow those sources and generated canonical data.
 
-## Current architecture principles
+The detailed legacy-to-v0.6 subsystem assessment and acceptance criteria are maintained in the [v0.6 Digital Migration Audit](Gauntlet_v0.6_Digital_Migration_Audit.md).
 
-1. **Canonical data first.** Cards, Territories, Proposals, Leaders, starter Decks, and rules-facing labels come from or are validated against the current immutable release package.
-2. **One production UI lineage.** The polished root Start, Rulebook, Deckbuilder, and Card Reference applications own production UX. Versioned current routes hand off to them rather than maintaining divergent candidate frontends.
-3. **Rules terminology parity.** Digital play uses the same vocabulary as v0.6.3: Advance / Hold / Fall Back, Defensive Edge, Tiebreak Roll, Front Line Capture, Last Stand, and faction-specific systems.
-4. **Historical compatibility is explicit.** Old Workers/data/routes may remain for reproducibility, but they may not silently become current defaults.
-5. **Release integrity is a product invariant.** The digital current pointer, browser tools, Rules Arbiter, and formal playtest infrastructure must all agree with `config/current-release.json`.
+---
 
-## v0.6.3 engine baseline
+## 1. Current layers
 
-The digital rules model must support at minimum:
+### Canonical content
 
-- 30-card / 60-value Deck construction and three Territories;
-- opening draw four / discard one / keep three, then Territory arrangement;
-- contiguous six-position battlefield movement;
-- Advance, Hold, and Fall Back choices;
-- Tactics, Gambits, Assets, Missions, and faction mechanics;
-- Defensive Edge and Tiebreak Roll resolution;
-- contiguous Front Line Capture;
-- independent final-Territory-capture and Last-Stand normal victory routes;
-- six faction additional victories and twelve Leader abilities.
+- `releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json`
+- canonical Markdown rule and card sources
+- generated release manifest
 
-## Near-term work
+This layer defines versioned content and identifiers.
 
-- Keep the browser tools and digital data model synchronized with published v0.6.3.
-- Continue deterministic engine tests for card interactions and faction mechanics.
-- Use formal playtest evidence to identify rules-model gaps before the next release.
-- Avoid adding speculative next-version rules to the current digital baseline until they are accepted into a release candidate.
-- Make future release promotion update `config/current-release.json` atomically with current digital/browser routing.
+### Browser tools
 
-## Release gate
+- `deckbuilder/`
+- `faction-sheets/`
 
-Before a digital rules version becomes current, both its version-specific tests and `npm run test:release-integrity` must pass. The current-release integrity gate is deliberately broader than engine tests: it verifies that the repository and production surfaces agree about which ruleset they are serving.
+These tools build Decks and render physical components. They are production tools, not rules engines.
 
-See [`Gauntlet_Release_Integrity_Standard.md`](Gauntlet_Release_Integrity_Standard.md).
+### Legacy prototype
+
+- `src/`
+- `data/`
+
+These files preserve a pre-v0.6 TypeScript experiment and starter data. They remain useful for architecture and tests but do not implement the canonical faction-era game.
+
+---
+
+## 2. Next supported target
+
+The next engine milestone should support **v0.6.0 explicitly** rather than extending the legacy mixed-version state.
+
+Before adding more interfaces:
+
+1. define a versioned schema generated from canonical data;
+2. map every shared rule to a legal state transition;
+3. model player-specific hidden information;
+4. implement setup, turns, movement, battles, occupation, control, capture, and Last Stand;
+5. represent normal card destinations and Battle Hands exactly;
+6. identify unsupported card effects explicitly; and
+7. save the rules version with every game, Deck, and log.
+
+Do not silently migrate legacy saved data or infer missing faction behavior.
+
+---
+
+## 3. Engine boundaries
+
+The engine should own legal-action generation, state validation, deterministic transitions, random-event requests and recorded results, card-zone changes, timing windows, victory evaluation, and player-specific views.
+
+Interfaces should request legal actions from the engine, display only permitted state, collect choices, avoid reproducing legality independently, and surface manual-resolution or unsupported-effect warnings.
+
+Canonical content generation, engine logic, and interface code should remain separate.
+
+---
+
+## 4. Implementation order
+
+### Phase A — canonical core
+
+- setup and Deck validation;
+- turn sequence and Action Opportunities;
+- movement and occupied-position battles;
+- Battle Hand formation and commitments;
+- Defender's Advantage and the separate Last Stand bonus;
+- retreat, occupation, capture, and running the Gauntlet;
+- Draw Pile, hand, Battle Hand, Discard Pile, Graveyard, and Asset Bank;
+- Assets, Overlays, and Territory orientation.
+
+### Phase B — shared card framework
+
+- effect registry keyed to canonical card IDs;
+- target validation and partial resolution;
+- cancellation and negation;
+- copied and repeated Battle effects;
+- destination overrides;
+- manual-resolution fallback with explicit state annotations.
+
+### Phase C — factions
+
+Implement one complete faction at a time, including both Leaders and supplemental components, in canonical order: Military, Diplomats, Financiers, Intelligence, Mystics, and Inquisition.
+
+A faction is not complete until its additional victory condition, trackers, hidden information, and all twelve cards are supported or explicitly marked manual.
+
+### Phase D — interfaces and telemetry
+
+- guided local interface;
+- save/load;
+- reproducible logs;
+- playtest metrics export;
+- local two-player hot-seat mode;
+- remote play only after deterministic local games are stable.
+
+---
+
+## 5. Validation
+
+Every implementation change should be checked against canonical source text, generated counts, deterministic replay tests, hidden-information boundaries, card-destination invariants, victory-route tests, matched physical-game examples, and [Playtest Targets and Metrics](Gauntlet_Playtest_Targets_and_Metrics.md).
+
+Engine behavior never overrides the physical rules. An implementation mismatch is either a software defect or evidence that the source rule needs clarification.

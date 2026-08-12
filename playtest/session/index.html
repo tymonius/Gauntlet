@@ -8,7 +8,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
   <meta name="referrer" content="no-referrer" />
   <meta name="robots" content="noindex, nofollow" />
-  <meta name="description" content="Join and manage a uniquely coded Gauntlet v0.6.3 formal playtest session." />
+  <meta name="description" content="Join and manage a uniquely coded Gauntlet v0.6.1 formal playtest session." />
   <title>Gauntlet Playtest Session</title>
   <link rel="stylesheet" href="../../site.css" />
   <link rel="stylesheet" href="../../rules-assistant/widget.css" />
@@ -16,27 +16,157 @@
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="../../" aria-label="Gauntlet home"><span class="brand-mark" aria-hidden="true">G</span><span>Gauntlet</span></a>
-    <nav aria-label="Primary navigation"><a href="../../rulebook/">Rules</a><a href="../../card-reference/">Card reference</a><a href="../">Playtest sheet</a></nav>
+    <a class="brand" href="../../" aria-label="Gauntlet home">
+      <span class="brand-mark" aria-hidden="true">G</span>
+      <span>Gauntlet</span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="../../rulebook/">Rules</a>
+      <a href="../../card-reference/">Card reference</a>
+      <a href="../">Playtest sheet</a>
+    </nav>
   </header>
+
   <main class="session-main">
-    <section class="session-hero"><div><p class="eyebrow">Formal v0.6.3 playtest</p><h1>Playtest <span>Session.</span></h1><p>Join the digital record attached to this sheet. Rules Arbiter questions asked here are linked automatically.</p></div><div class="session-badge" aria-live="polite"><span>Sheet serial</span><strong id="sheetSerial">Loading…</strong><small id="sessionStatus">Checking session</small></div></section>
-    <section id="loadingPanel" class="panel state-panel" aria-live="polite"><div class="loading-mark" aria-hidden="true">G</div><div><h2>Opening the session</h2><p>Checking the single-use sheet code and current session status.</p></div></section>
-    <section id="errorPanel" class="panel state-panel error-panel" hidden><div><p class="eyebrow">Session unavailable</p><h2 id="errorTitle">The code could not be opened.</h2><p id="errorMessage"></p></div><a class="button secondary" href="../">Open the printable playtest sheet</a></section>
+    <section class="session-hero">
+      <div>
+        <p class="eyebrow">Formal v0.6.1 playtest</p>
+        <h1>Playtest <span>Session.</span></h1>
+        <p>Join the digital record attached to this sheet. Rules Arbiter questions asked here are linked automatically.</p>
+      </div>
+      <div class="session-badge" aria-live="polite">
+        <span>Sheet serial</span>
+        <strong id="sheetSerial">Loading…</strong>
+        <small id="sessionStatus">Checking session</small>
+      </div>
+    </section>
+
+    <section id="loadingPanel" class="panel state-panel" aria-live="polite">
+      <div class="loading-mark" aria-hidden="true">G</div>
+      <div>
+        <h2>Opening the session</h2>
+        <p>Checking the single-use sheet code and current session status.</p>
+      </div>
+    </section>
+
+    <section id="errorPanel" class="panel state-panel error-panel" hidden>
+      <div>
+        <p class="eyebrow">Session unavailable</p>
+        <h2 id="errorTitle">The code could not be opened.</h2>
+        <p id="errorMessage"></p>
+      </div>
+      <a class="button secondary" href="../">Open the printable playtest sheet</a>
+    </section>
+
     <section id="sessionApp" class="session-grid" hidden>
       <div class="session-column">
-        <section class="panel session-summary"><div class="panel-heading"><div><p class="eyebrow">Live record</p><h2 id="summarySerial">Session</h2></div><span id="statusPill" class="status-pill">Open</span></div><dl><div><dt>Rules version</dt><dd id="rulesVersion">v0.6.3</dd></div><div><dt>Participants</dt><dd id="participantCount">0</dd></div><div><dt>Arbiter questions</dt><dd id="arbiterCount">0</dd></div><div><dt>Created</dt><dd id="createdAt">—</dd></div></dl></section>
-        <section id="joinPanel" class="panel"><div class="panel-heading"><div><p class="eyebrow">Join this sheet</p><h2>Who is participating?</h2></div></div><form id="joinForm" class="form-stack"><label>Name or playtest ID <span class="optional">optional</span><input id="displayName" type="text" maxlength="80" autocomplete="name" placeholder="Player name or anonymous ID" /></label><label>Role<select id="role"><option value="player">Player</option><option value="facilitator">Facilitator</option><option value="observer">Observer</option></select></label><button type="submit">Join session</button><p id="joinStatus" class="form-status" aria-live="polite"></p></form></section>
-        <section id="joinedPanel" class="panel joined-panel" hidden><p class="eyebrow">Connected</p><h2>You are linked to this playtest sheet.</h2><p id="joinedCopy">Questions and feedback submitted through the Rules Arbiter will include this session.</p><button id="openArbiter" type="button">Ask the Rules Arbiter</button></section>
+        <section class="panel session-summary">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Live record</p>
+              <h2 id="summarySerial">Session</h2>
+            </div>
+            <span id="statusPill" class="status-pill">Open</span>
+          </div>
+          <dl>
+            <div><dt>Rules version</dt><dd id="rulesVersion">v0.6.1</dd></div>
+            <div><dt>Participants</dt><dd id="participantCount">0</dd></div>
+            <div><dt>Arbiter questions</dt><dd id="arbiterCount">0</dd></div>
+            <div><dt>Created</dt><dd id="createdAt">—</dd></div>
+          </dl>
+        </section>
+
+        <section id="joinPanel" class="panel">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Join this sheet</p>
+              <h2>Who is participating?</h2>
+            </div>
+          </div>
+          <form id="joinForm" class="form-stack">
+            <label>
+              Name or playtest ID <span class="optional">optional</span>
+              <input id="displayName" type="text" maxlength="80" autocomplete="name" placeholder="Player name or anonymous ID" />
+            </label>
+            <label>
+              Role
+              <select id="role">
+                <option value="player">Player</option>
+                <option value="facilitator">Facilitator</option>
+                <option value="observer">Observer</option>
+              </select>
+            </label>
+            <button type="submit">Join session</button>
+            <p id="joinStatus" class="form-status" aria-live="polite"></p>
+          </form>
+        </section>
+
+        <section id="joinedPanel" class="panel joined-panel" hidden>
+          <p class="eyebrow">Connected</p>
+          <h2>You are linked to this playtest sheet.</h2>
+          <p id="joinedCopy">Questions and feedback submitted through the Rules Arbiter will include this session.</p>
+          <button id="openArbiter" type="button">Ask the Rules Arbiter</button>
+        </section>
       </div>
+
       <div class="session-column">
-        <section class="panel quick-actions"><div class="panel-heading"><div><p class="eyebrow">During play</p><h2>Session actions</h2></div></div><div class="action-grid"><button type="button" data-event="game_started">Game started</button><button type="button" data-event="game_completed">Game completed</button></div><label>Stop reason<select id="stopReason"><option value="external_interruption">External interruption</option><option value="concession">Concession</option><option value="rules_blocker">Rules blocker</option><option value="component_failure">Component / technical failure</option><option value="other">Other</option></select></label><button id="recordStop" type="button" class="secondary full-width">Record stopped game</button><form id="noteForm" class="note-form"><label>Quick session note<textarea id="noteText" rows="3" maxlength="500" placeholder="Record a notable event without proposing a fix."></textarea></label><button type="submit" class="secondary">Save note</button></form><p id="eventStatus" class="form-status" aria-live="polite"></p></section>
-        <section id="hostPanel" class="panel host-panel" hidden><p class="eyebrow">Facilitator controls</p><h2>Close and retire this sheet</h2><p>Closing preserves the session record but prevents future joins and playtest events.</p><button id="closeSession" type="button" class="danger">Close session</button><p id="closeStatus" class="form-status" aria-live="polite"></p></section>
-        <section class="panel privacy-panel"><p class="eyebrow">What is recorded</p><h2>Designed for review, not surveillance.</h2><p>The session stores its sheet serial, rules version, timing events, participant roles, optional names or IDs, linked Rules Arbiter interactions, and optional notes. Raw join and host credentials are not stored.</p></section>
+        <section class="panel quick-actions">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">During play</p>
+              <h2>Session actions</h2>
+            </div>
+          </div>
+          <div class="action-grid">
+            <button type="button" data-event="game_started">Game started</button>
+            <button type="button" data-event="game_completed">Game completed</button>
+          </div>
+          <label>
+            Stop reason
+            <select id="stopReason">
+              <option value="external_interruption">External interruption</option>
+              <option value="concession">Concession</option>
+              <option value="rules_blocker">Rules blocker</option>
+              <option value="component_failure">Component / technical failure</option>
+              <option value="other">Other</option>
+            </select>
+          </label>
+          <button id="recordStop" type="button" class="secondary full-width">Record stopped game</button>
+          <form id="noteForm" class="note-form">
+            <label>
+              Quick session note
+              <textarea id="noteText" rows="3" maxlength="500" placeholder="Record a notable event without proposing a fix."></textarea>
+            </label>
+            <button type="submit" class="secondary">Save note</button>
+          </form>
+          <p id="eventStatus" class="form-status" aria-live="polite"></p>
+        </section>
+
+        <section id="hostPanel" class="panel host-panel" hidden>
+          <p class="eyebrow">Facilitator controls</p>
+          <h2>Close and retire this sheet</h2>
+          <p>Closing preserves the session record but prevents future joins and playtest events. The printed QR code is then retired.</p>
+          <button id="closeSession" type="button" class="danger">Close session</button>
+          <p id="closeStatus" class="form-status" aria-live="polite"></p>
+        </section>
+
+        <section class="panel privacy-panel">
+          <p class="eyebrow">What is recorded</p>
+          <h2>Designed for review, not surveillance.</h2>
+          <p>The session stores its sheet serial, timing events, participant roles, optional names or IDs, linked Rules Arbiter interactions, and optional notes. Raw join and host credentials are not stored.</p>
+        </section>
       </div>
     </section>
   </main>
-  <footer><div><strong>Gauntlet</strong><p>Unpublished pre-release playtest project.</p></div><p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p></footer>
+
+  <footer>
+    <div>
+      <strong>Gauntlet</strong>
+      <p>Unpublished pre-release playtest project.</p>
+    </div>
+    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  </footer>
+
   <script src="privacy.js?v=20260729-1"></script>
   <script src="app.js?v=20260731-4"></script>
   <script type="module" src="../../rules-assistant/widget.js"></script>

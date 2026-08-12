@@ -8,7 +8,7 @@
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
   <meta name="referrer" content="no-referrer" />
   <meta name="robots" content="noindex, nofollow" />
-  <meta name="description" content="Generate uniquely coded Gauntlet v0.6.3 formal playtest sheets and a private host manifest." />
+  <meta name="description" content="Generate uniquely coded Gauntlet v0.6.1 formal playtest sheets and a private host manifest." />
   <title>Gauntlet Coded Sheet Generator</title>
   <link rel="stylesheet" href="../../site.css" />
   <link rel="stylesheet" href="../styles.css" />
@@ -16,8 +16,15 @@
 </head>
 <body>
   <header class="site-header screen-only">
-    <a class="brand" href="../../" aria-label="Gauntlet home"><span class="brand-mark" aria-hidden="true">G</span><span>Gauntlet</span></a>
+    <a class="brand" href="../../" aria-label="Gauntlet home">
+      <span class="brand-mark" aria-hidden="true">G</span>
+      <span>Gauntlet</span>
+    </a>
     <nav aria-label="Primary navigation">
+      <a href="../host/">Host Home</a>
+      <a href="../guide/?role=host">Game-night guide</a>
+      <a href="../host/">Host Home</a>
+      <a href="../guide/?role=host">Game-night guide</a>
       <a href="../host/">Host Home</a>
       <a href="../guide/?role=host">Game-night guide</a>
       <a href="../">Single sheet</a>
@@ -27,27 +34,77 @@
   </header>
 
   <main class="generator-main screen-only">
-    <section class="generator-hero"><div><p class="eyebrow">Formal v0.6.3 playtest administration</p><h1>Coded Sheet <span>Generator.</span></h1><p>Create one live digital session per printed sheet, render its unique QR code, and download the private host manifest needed to close and reconcile those sessions.</p></div></section>
+    <section class="generator-hero">
+      <div>
+        <p class="eyebrow">Formal playtest administration</p>
+        <h1>Coded Sheet <span>Generator.</span></h1>
+        <p>Create one live digital session per printed sheet, render its unique QR code, and download the private host manifest needed to close and reconcile those sessions.</p>
+      </div>
+    </section>
+
     <section class="generator-grid">
       <form id="batchForm" class="generator-panel">
-        <div><p class="eyebrow">New batch</p><h2>Generate formal sheets</h2></div>
-        <label>Number of sheets<input id="sheetCount" type="number" min="1" max="50" value="10" required /></label>
-        <label>Batch label <span>optional</span><input id="batchLabel" type="text" maxlength="80" placeholder="August playtest, Group A, etc." /></label>
-        <label>Facilitator creation key<input id="adminToken" type="password" maxlength="256" autocomplete="off" required /></label>
+        <div>
+          <p class="eyebrow">New batch</p>
+          <h2>Generate formal sheets</h2>
+        </div>
+        <label>
+          Number of sheets
+          <input id="sheetCount" type="number" min="1" max="50" value="10" required />
+        </label>
+        <label>
+          Batch label <span>optional</span>
+          <input id="batchLabel" type="text" maxlength="80" placeholder="July convention test, Group A, etc." />
+        </label>
+        <label>
+          Facilitator creation key
+          <input id="adminToken" type="password" maxlength="256" autocomplete="off" required />
+        </label>
         <button id="generateButton" type="submit">Generate coded sheets</button>
         <p id="generationStatus" class="form-status" aria-live="polite"></p>
       </form>
-      <section class="generator-panel guidance-panel"><div><p class="eyebrow">Before printing</p><h2>Keep the manifest private</h2></div><p>Each generated v0.6.3 session returns a public join URL and a private host key. The QR code contains only the public join URL.</p><ol><li>Generate the batch.</li><li>Download the host manifest immediately.</li><li>Print the rendered sheets.</li><li>Close each session after its playtest.</li></ol></section>
+
+      <section class="generator-panel guidance-panel">
+        <div>
+          <p class="eyebrow">Before printing</p>
+          <h2>Keep the manifest private</h2>
+        </div>
+        <p>Each generated session returns a public join URL and a private host key. The QR code contains only the public join URL. The downloaded manifest contains the host URLs and must remain with the facilitator.</p>
+        <ol>
+          <li>Generate the batch.</li>
+          <li>Download the host manifest immediately.</li>
+          <li>Print the rendered sheets.</li>
+          <li>Close each session after its playtest; the QR code is then retired.</li>
+        </ol>
+      </section>
     </section>
+
     <section id="resultPanel" class="generator-panel result-panel" hidden>
-      <div><p class="eyebrow">Batch ready</p><h2><span id="resultCount">0</span> coded sheets generated</h2><p id="resultSummary"></p></div>
-      <div class="result-actions"><button id="downloadManifest" type="button">Download host manifest</button><button id="printSheets" type="button" class="secondary">Print all sheets</button><button id="clearBatch" type="button" class="secondary">Clear rendered batch</button></div>
+      <div>
+        <p class="eyebrow">Batch ready</p>
+        <h2><span id="resultCount">0</span> coded sheets generated</h2>
+        <p id="resultSummary"></p>
+      </div>
+      <div class="result-actions">
+        <button id="downloadManifest" type="button">Download host manifest</button>
+        <button id="printSheets" type="button" class="secondary">Print all sheets</button>
+        <button id="clearBatch" type="button" class="secondary">Clear rendered batch</button>
+      </div>
       <div id="sessionList" class="session-list"></div>
     </section>
   </main>
+
   <main id="printBatch" class="print-batch" aria-label="Generated coded playtest sheets"></main>
-  <footer class="screen-only"><div><strong>Gauntlet</strong><p>Unpublished pre-release playtest project.</p></div><p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p></footer>
+
+  <footer class="screen-only">
+    <div>
+      <strong>Gauntlet</strong>
+      <p>Unpublished pre-release playtest project.</p>
+    </div>
+    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  </footer>
+
   <script src="qrcode-loader.js?v=20260730-1"></script>
-  <script src="app.js?v=20260812-1"></script>
+  <script src="app.js?v=20260730-2"></script>
 </body>
 </html>
