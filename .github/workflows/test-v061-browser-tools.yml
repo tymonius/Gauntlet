@@ -151,7 +151,7 @@ jobs:
               await result.click();
               await page.waitForFunction(() => document.querySelector('#preview h3')?.textContent === 'Black Covenant');
               const preview = await page.locator('#preview').innerText();
-              if (!preview.includes('Tactic') || !preview.includes('additional Tactic')) {
+              if (!preview.includes('Tactic') || !preview.includes('+1 Tactic from Hand.')) {
                 throw new Error(`Black Covenant preview is not synchronized with v0.6.3:\n${preview}`);
               }
               await page.screenshot({ path: `/tmp/card-reference-${suffix}.png`, fullPage: true });
