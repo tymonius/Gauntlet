@@ -2,7 +2,7 @@ name: Build v0.6.3 source release candidate
 
 on:
   push:
-    branches: [agent/v063-release-package-candidate]
+    branches: [agent/v063-print-package-candidate]
     paths:
       - '.github/workflows/build-v063-release-candidate.yml'
       - 'scripts/build-v063-release-candidate.mjs'
@@ -20,6 +20,8 @@ on:
       - 'docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md'
       - 'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md'
       - 'docs/Gauntlet_v0.6.3_Starter_Deck_Presentation_Candidate.md'
+      - 'docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md'
+      - 'v0.6.3/data/starter-decks-candidate.js'
       - 'v0.6.3/deckbuilder/starter-adapter.js'
       - 'v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json'
       - 'artifacts/v0.6.3/release-candidate/**'
@@ -29,6 +31,11 @@ on:
       - '.github/workflows/build-v063-release-candidate.yml'
       - 'scripts/build-v063-release-candidate.mjs'
       - 'scripts/validate-v063-release-candidate.mjs'
+      - 'scripts/validate-v063-starter-guidance.mjs'
+      - 'docs/Gauntlet_v0.6.3_Starter_Deck_Presentation_Candidate.md'
+      - 'docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md'
+      - 'v0.6.3/data/starter-decks-candidate.js'
+      - 'v0.6.3/deckbuilder/starter-adapter.js'
       - 'artifacts/v0.6.3/release-candidate/**'
   workflow_dispatch:
 
@@ -91,7 +98,7 @@ jobs:
           node scripts/validate-v063-canonical-data-candidate.mjs
           node scripts/validate-v063-canonical-promotion-boundary.mjs
 
-      - name: Validate starter presentation inputs
+      - name: Validate competitive starter inputs
         run: node scripts/validate-v063-starter-guidance.mjs
 
       - name: Assemble source release candidate
@@ -118,7 +125,7 @@ jobs:
           fi
 
       - name: Commit materialized source package
-        if: github.event_name == 'push' && github.ref_name == 'agent/v063-release-package-candidate'
+        if: github.event_name == 'push' && github.ref_name == 'agent/v063-print-package-candidate'
         run: |
           git add artifacts/v0.6.3/release-candidate/
           if git diff --cached --quiet; then
