@@ -29,13 +29,6 @@
   --faction-symbol: url("../images/faction-symbols/intelligence.svg");
 }
 
-.faction-component-card[data-faction="arcane"] {
-  --component-parchment-tint: rgba(93, 52, 126, 0.13);
-  --component-accent-ink: #563073;
-  --faction-symbol: url("../images/faction-symbols/arcane.svg");
-}
-
-/* Legacy prototype slug retained until the remaining old markup is migrated. */
 .faction-component-card[data-faction="mystics"] {
   --component-parchment-tint: rgba(93, 52, 126, 0.13);
   --component-accent-ink: #563073;
