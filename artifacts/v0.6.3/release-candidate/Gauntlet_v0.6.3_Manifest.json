@@ -41,7 +41,8 @@
     "canonical": "artifacts/v0.6.3/canonical/Gauntlet_v0.6.3_Canonical_Data_Candidate.json",
     "completeReference": "artifacts/v0.6.3/canonical/Gauntlet_v0.6.3_Complete_Card_Reference_Candidate.md",
     "starters": "v0.6.3/data/starter-decks-candidate.js",
-    "starterAudit": "docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md"
+    "starterAudit": "docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md",
+    "starterPredecessorAudit": "docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md"
   },
   "development_review_surfaces": [
     "v0.6.3/rulebook/",
@@ -68,6 +69,8 @@
     "digital_candidate_integrated": true,
     "starter_guidance_integrated": true,
     "competitive_starter_baseline_integrated": true,
+    "starter_decks_finalized_for_v063": true,
+    "future_starter_changes_require_playtest_evidence": true,
     "source_release_candidate_assembled": true,
     "print_package_generated": false,
     "ready_for_publication": false

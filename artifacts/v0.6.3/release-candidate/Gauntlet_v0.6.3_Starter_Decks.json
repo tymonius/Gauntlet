@@ -1,7 +1,7 @@
 {
   "version": "v0.6.3-release-candidate",
-  "status": "Release candidate — not published",
-  "purpose": "Recommended v0.6.3 starter Decks optimized for competitive strength, winning capability, and powerful or creative Leader strategies; teaching simplicity and card-pool coverage are not optimization targets.",
+  "status": "Release candidate — finalized starter Decks; not published",
+  "purpose": "Finalized v0.6.3 starter Decks optimized for competitive strength, winning capability, and powerful or creative Leader strategies; teaching simplicity and card-pool coverage are not optimization targets. Further composition changes require playtest evidence.",
   "construction": {
     "minimumCards": 30,
     "maximumDeckbuildingValue": 60,
@@ -13,8 +13,9 @@
     "primary": "competitive-strength-and-strategic-expression",
     "teachingSimplicityTarget": false,
     "cardPoolCoverageTarget": false,
-    "status": "theoretical baseline pending matchup testing",
-    "audit": "docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md"
+    "status": "finalized-for-v0.6.3; future changes require playtest evidence",
+    "audit": "docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md",
+    "predecessorAudit": "docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md"
   },
   "territoryOrderSemantics": {
     "meaning": "strategy-recommendation",
@@ -186,10 +187,14 @@
         },
         {
           "name": "Unbroken Ranks",
-          "quantity": 3
+          "quantity": 2
         },
         {
           "name": "Counterintelligence",
+          "quantity": 1
+        },
+        {
+          "name": "Contingency Plan",
           "quantity": 1
         },
         {
@@ -1337,6 +1342,10 @@
           "quantity": 3
         },
         {
+          "name": "Contingency Plan",
+          "quantity": 1
+        },
+        {
           "name": "Counterintelligence",
           "quantity": 1
         },
@@ -1397,10 +1406,6 @@
           "quantity": 1
         },
         {
-          "name": "Scouting Report",
-          "quantity": 1
-        },
-        {
           "name": "Second Line",
           "quantity": 1
         },
@@ -1432,7 +1437,8 @@
     }
   ],
   "compositionSource": "v0.6.3/data/starter-decks-candidate.js",
-  "audit": "docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md",
+  "audit": "docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md",
+  "predecessorAudit": "docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md",
   "publicationBoundary": {
     "publishedVersion": "v0.6.2",
     "publicationCutoverComplete": false
