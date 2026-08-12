@@ -201,12 +201,8 @@
     {
       "key": "reference",
       "file": "Gauntlet_v0.6.3_Reference_Guide.pdf",
-      "pages": 5,
+      "pages": 4,
       "sizes": [
-        {
-          "width": 612,
-          "height": 792
-        },
         {
           "width": 612,
           "height": 792
@@ -504,12 +500,8 @@
     {
       "key": "tableside_pack",
       "file": "Gauntlet_v0.6.3_Tableside_Pack.pdf",
-      "pages": 23,
+      "pages": 22,
       "sizes": [
-        {
-          "width": 612,
-          "height": 792
-        },
         {
           "width": 612,
           "height": 792
@@ -608,7 +600,11 @@
     "leader_plates": [
       {
         "source_page": 47,
-        "asset": "images/sketches/hero-plates/witch-hunter-banker-spymaster.png",
+        "assets": [
+          "images/sketches/witch hunter.png",
+          "images/sketches/banker.png",
+          "images/sketches/spymaster.png"
+        ],
         "leaders": [
           "Witch Hunter",
           "Banker",
@@ -617,7 +613,11 @@
       },
       {
         "source_page": 48,
-        "asset": "images/sketches/hero-plates/alchemist-executive-ambassador.png",
+        "assets": [
+          "images/sketches/alchemist.png",
+          "images/sketches/executive.png",
+          "images/sketches/ambassador.png"
+        ],
         "leaders": [
           "Alchemist",
           "Executive",
