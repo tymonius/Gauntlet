@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "rulebook/**"
+      - "v0.6.3/rulebook/**"
       - "card-reference/**"
       - "deckbuilder/**"
       - "rules-assistant/**"
@@ -72,8 +73,24 @@ jobs:
               const { page, errors } = await openPage('/rulebook/', viewport);
               await page.waitForSelector('[data-rulebook-content] h1, [data-rulebook-content] h2');
               const text = await page.locator('[data-rulebook-content]').innerText();
+              const status = await page.locator('[data-rulebook-status]').innerText();
+              const shellText = await page.locator('body').innerText();
+              if (!status.includes('Canonical v0.6.3') || shellText.includes('Gauntlet v0.6.1 Browser Rulebook')) {
+                throw new Error(`Browser rulebook did not identify current v0.6.3: ${status}`);
+              }
+              if (!(await page.locator('.rulebook-hero').count()) || !(await page.locator('.rulebook-sidebar').count()) || !(await page.locator('.rulebook-search').count())) {
+                throw new Error('Rulebook is not using the polished production interface');
+              }
               for (const term of ['Gambit', 'Reserve', 'Tactic', 'Aftermath']) {
                 if (!text.includes(term)) throw new Error(`Browser rulebook missing ${term}`);
+              }
+              for (const phrase of [
+                'Draw four cards, choose one card from those four',
+                'After seeing your opening Hand and opening discard, secretly arrange your three Territory Cards',
+                "capturing the Territory at your opponent's end",
+                'winning your opponent\'s Last Stand'
+              ]) {
+                if (!text.includes(phrase)) throw new Error(`Browser rulebook is missing current v0.6.3 rule text: ${phrase}`);
               }
               if (text.includes('Battle Hand') || text.includes('hand commitment')) {
                 throw new Error('Browser rulebook contains obsolete battle terminology');
