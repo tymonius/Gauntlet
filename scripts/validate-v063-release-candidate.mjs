@@ -74,6 +74,10 @@ assert(!completeReference.includes("## Smuggler's Pass\n"));
 assert(starters.version === 'v0.6.3-release-candidate', `Starter catalog version is ${starters.version}.`);
 assert(starters.status === 'Release candidate — not published', 'Starter catalog must identify the release-candidate boundary.');
 assert(starters.decks?.length === 12, `Expected 12 starter Decks; found ${starters.decks?.length}.`);
+assert(starters.purpose?.includes('competitive strength'), 'Starter catalog purpose must explicitly identify competitive strength.');
+assert(!starters.purpose?.includes('inherited v0.6.2 compositions'), 'Starter catalog purpose must not describe the independent v0.6.3 Decks as inherited compositions.');
+assert(starters.compositionSource === 'v0.6.3/data/starter-decks-candidate.js', 'Starter catalog must identify the independent v0.6.3 composition source.');
+assert(starters.audit === 'docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md', 'Starter catalog must identify the competitive audit.');
 assert(starters.optimizationPolicy?.primary === 'competitive-strength-and-strategic-expression', 'Starter catalog must preserve the competitive optimization policy.');
 assert(starters.optimizationPolicy?.teachingSimplicityTarget === false, 'Release starters must not be teaching-simplicity optimized.');
 assert(starters.optimizationPolicy?.cardPoolCoverageTarget === false, 'Release starters must not be coverage optimized.');
@@ -127,6 +131,7 @@ for (const field of ['public_site_cutover', 'rules_arbiter_default_cutover', 'di
   assert(manifest.publication_boundary?.[field] === false, `Manifest publication boundary ${field} must be false.`);
 }
 assert(manifest.validation?.source_release_candidate_assembled === true);
+assert(manifest.validation?.competitive_starter_baseline_integrated === true, 'Manifest must record competitive starter integration.');
 assert(manifest.validation?.print_package_generated === false);
 assert(manifest.validation?.ready_for_publication === false);
 for (const file of required) assert(manifest.current_outputs?.includes(file), `Manifest current_outputs omits ${file}.`);
@@ -140,6 +145,7 @@ for (const token of ['pre-publication source package', 'v0.6.2', 'next gate is g
   assert(readme.includes(token), `Release-candidate README is missing: ${token}`);
 }
 assert(notes.includes('does **not** change the public website'));
+assert(notes.includes('twelve recommended starter Decks are rebuilt as independent v0.6.3 competitive baselines'), 'Release notes must record the competitive starter rebuild.');
 assert(notes.includes('Margin Loan'));
 assert(returning.includes('v0.6.2 remains the published playtest edition'));
 assert(!fs.existsSync(path.join(root, 'releases/v0.6.3')), 'Pre-publication assembly must not materialize releases/v0.6.3/.');
