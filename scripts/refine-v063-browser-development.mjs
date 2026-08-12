@@ -53,10 +53,7 @@ function normalizeGeneratedDocLinks(file, rootPage = false) {
         ['href="/v0.6.3/styles.css"', 'href="../styles.css"'],
       ];
 
-  for (const [from, to] of replacements) {
-    text = replaceAllRequired(text, from, to, `${file}: ${from}`);
-  }
-
+  for (const [from, to] of replacements) text = replaceAllRequired(text, from, to, `${file}: ${from}`);
   fs.writeFileSync(file, text.replace(/\s+$/, '') + '\n', 'utf8');
 }
 
@@ -70,8 +67,10 @@ function normalizeFaviconMarkup(file) {
 
 let index = fs.readFileSync(indexPath, 'utf8').replace(/\r\n/g, '\n');
 index = index
-  .replace('load the approved starter, or customize', 'load an inherited starter list, or customize')
-  .replace('Load approved starter', 'Load inherited starter')
+  .replace('load the approved starter, or customize', 'load a recommended v0.6.3 starter, or customize')
+  .replace('load an inherited starter list, or customize', 'load a recommended v0.6.3 starter, or customize')
+  .replace('Load approved starter', 'Load recommended starter')
+  .replace('Load inherited starter', 'Load recommended starter')
   .replace('Choose three; arrange after opening selection', 'Choose three; decide their setup order after opening selection')
   .replace(
     '<div id="territories" class="choice-grid"></div>',
@@ -81,13 +80,23 @@ index = index
 fs.writeFileSync(indexPath, index.replace(/\s+$/, '') + '\n', 'utf8');
 
 let app = fs.readFileSync(appPath, 'utf8').replace(/\r\n/g, '\n');
-if (!app.startsWith('import { migrateV063StarterCatalog }')) {
-  app = `import { migrateV063StarterCatalog } from './starter-adapter.js';\n\n${app}`;
+if (!app.startsWith("import { V063_STARTER_CATALOG } from './starter-adapter.js';")) {
+  app = app.replace(/^import \{ migrateV063StarterCatalog \} from '\.\/starter-adapter\.js';\n\n/, '');
+  app = `import { V063_STARTER_CATALOG } from './starter-adapter.js';\n\n${app}`;
 }
 app = app
   .replace('Published release load failed.', 'Candidate load failed.')
-  .replace('state.starters = starterData.decks ?? [];', 'state.starters = migrateV063StarterCatalog(starterData).decks ?? [];')
-  .replace('No approved starter matches this faction and Leader.', 'No inherited starter matches this faction and Leader.')
+  .replace(
+    /  const \[data, starterData\] = await Promise\.all\(\[\n    fetch\("\.\.\/data\/Gauntlet_v0\.6\.3_Canonical_Data_Candidate\.json", \{ cache: "no-store" \}\)\.then\(assertJson\),\n    fetch\("\.\.\/\.\.\/releases\/v0\.6\.2\/Gauntlet_v0\.6\.2_Starter_Decks\.json", \{ cache: "no-store" \}\)\.then\(assertJson\)\n  \]\);\n  state\.data = data;\n  state\.starters = (?:migrateV063StarterCatalog\(starterData\)|starterData)\.decks \?\? \[\];/,
+    '  const data = await fetch("../data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json", { cache: "no-store" }).then(assertJson);\n  state.data = data;\n  state.starters = V063_STARTER_CATALOG.decks ?? [];'
+  )
+  .replace('No approved starter matches this faction and Leader.', 'No recommended v0.6.3 starter matches this faction and Leader.')
+  .replace('No inherited starter matches this faction and Leader.', 'No recommended v0.6.3 starter matches this faction and Leader.')
+  .replace('Inherited v0.6.2 starter list', 'Recommended v0.6.3 competitive starter')
+  .replace('Inherited strategy note:', 'Strategy:')
+  .replace('deck.openingPlan ?? "Establish the faction engine early."', 'deck.strategy ?? deck.summary ?? "Express the Leader\'s strongest plan."')
+  .replace('Starter card missing from effective data:', 'v0.6.3 starter card missing from candidate data:')
+  .replace('Inherited starter card missing from candidate data:', 'v0.6.3 starter card missing from candidate data:')
   .replace(
     '<strong>${escapeHtml(territory.name)}${selectedIndex >= 0 ? ` · ${selectedIndex + 1}` : ""}</strong>',
     '<strong>${escapeHtml(territory.name)}</strong>'
@@ -97,8 +106,7 @@ app = app
     '<p><strong>Recommended Territory order (own end → opponent end):</strong> ${(deck.recommendedTerritoryOrder ?? deck.territories).map(escapeHtml).join(" → ")}</p><p><strong>Setup:</strong> After choosing your opening discard, keep this order or rearrange these three Territories to fit your opening Hand and discard. Initiative is not yet known.</p>'
   )
   .replace('validation.valid ? "Ready to print"', 'validation.valid ? "Candidate valid"')
-  .replace('Legal v0.6.2 Deck.', 'Legal v0.6.3 candidate Deck.')
-  .replace('Starter card missing from effective data:', 'Inherited starter card missing from candidate data:');
+  .replace('Legal v0.6.2 Deck.', 'Legal v0.6.3 candidate Deck.');
 fs.writeFileSync(appPath, app.replace(/\s+$/, '') + '\n', 'utf8');
 
 let rulebook = fs.readFileSync(rulebookPath, 'utf8').replace(/\r\n/g, '\n');
@@ -120,15 +128,10 @@ for (const file of [
   'v0.6.3/start/index.html',
   'v0.6.3/quick-reference/index.html',
   'v0.6.3/changes/index.html',
-]) {
-  normalizeGeneratedDocLinks(file, false);
-}
+]) normalizeGeneratedDocLinks(file, false);
 
 for (const file of completePages) normalizeFaviconMarkup(file);
 
-// The candidate Rules Arbiter is an additive development surface. Apply its
-// portal refinement after the normal browser regeneration so the standard
-// v0.6.3 browser build cannot erase the Arbiter link.
 await import('./refine-v063-rules-arbiter-portal.mjs');
 
-console.log('Refined v0.6.3 development browser surfaces: starter title migration and strategic Territory-order guidance, Deckbuilder setup semantics, Rulebook development-source boundary, repository-safe relative navigation, canonical favicon markup, and candidate Rules Arbiter portal link.');
+console.log('Refined v0.6.3 development browser surfaces: competitive v0.6.3 starter source and strategic Territory-order guidance, Deckbuilder setup semantics, Rulebook development-source boundary, repository-safe relative navigation, canonical favicon markup, and candidate Rules Arbiter portal link.');
