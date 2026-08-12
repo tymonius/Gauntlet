@@ -99,6 +99,14 @@
 
   state.deckName = "Untitled v0.6.3 Deck";
 
+  const baseCurrentDeckData = currentDeckData;
+  currentDeckData = function currentV063DeckData() {
+    const data = baseCurrentDeckData();
+    data.gameVersion = VERSION;
+    if (!data.name || data.name === "Untitled v0.6.1 Deck") data.name = "Untitled v0.6.3 Deck";
+    return data;
+  };
+
   const baseRenderLeader = renderLeader;
   renderLeader = function renderV063Leader() {
     const faction = getFaction();
@@ -130,6 +138,15 @@
     document.querySelectorAll('a[href="../rulebook/"]').forEach(link => link.href = "../v0.6.3/rulebook/");
     document.querySelectorAll('a[href="../start/"]').forEach(link => link.href = "../v0.6.3/start/");
     document.querySelectorAll('a[href="../card-reference/"]').forEach(link => link.href = "../card-reference/");
+
+    const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      node.nodeValue = node.nodeValue
+        .replaceAll("v0.6.1", "v0.6.3")
+        .replaceAll("active working text", "published canonical text")
+        .replaceAll("development build", "published build");
+    }
 
     const importButton = document.getElementById("importJsonButton");
     if (importButton) {

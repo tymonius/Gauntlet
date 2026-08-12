@@ -1,4 +1,4 @@
-name: Test legacy browser tools and current Card Reference
+name: Test browser tools and current Card Reference
 
 on:
   pull_request:
@@ -12,6 +12,7 @@ on:
       - "playtest/**"
       - "releases/v0.6.1/**"
       - "releases/v0.6.2/**"
+      - "releases/v0.6.3/**"
       - "docs/Gauntlet_v0.6.1_*.md"
       - ".github/workflows/test-v061-browser-tools.yml"
   workflow_dispatch:
@@ -115,13 +116,13 @@ jobs:
                 throw new Error('Card reference did not load 25 Territories');
               }
               const status = await page.locator('#dataStatus').innerText();
-              if (!status.includes('v0.6.2')) throw new Error(`Card reference did not identify v0.6.2: ${status}`);
+              if (!status.includes('v0.6.3')) throw new Error(`Card reference did not identify v0.6.3: ${status}`);
 
               for (const cardName of ['Landslide', 'Détente', 'Compound Interest', 'Extraordinary Rendition', "Nature's Altar", 'Martyrdom']) {
                 await page.fill('#searchInput', cardName);
                 await page.waitForFunction(() => document.querySelector('#resultCount')?.textContent === '1');
                 if ((await page.locator('.reference-row-title').first().innerText()) !== cardName) {
-                  throw new Error(`Card reference did not find new v0.6.2 card ${cardName}`);
+                  throw new Error(`Card reference did not find current v0.6.3 card ${cardName}`);
                 }
               }
 
@@ -151,7 +152,7 @@ jobs:
               await page.waitForFunction(() => document.querySelector('#preview h3')?.textContent === 'Black Covenant');
               const preview = await page.locator('#preview').innerText();
               if (!preview.includes('Tactic') || !preview.includes('additional Tactic')) {
-                throw new Error(`Black Covenant preview is not synchronized with v0.6.2:\n${preview}`);
+                throw new Error(`Black Covenant preview is not synchronized with v0.6.3:\n${preview}`);
               }
               await page.screenshot({ path: `/tmp/card-reference-${suffix}.png`, fullPage: true });
               if (errors.length) throw new Error(`Card reference ${suffix} errors:\n${errors.join('\n')}`);
@@ -161,9 +162,13 @@ jobs:
             {
               const { page, errors } = await openPage('/deckbuilder/', viewport);
               await page.waitForFunction(() => document.body.innerText.includes('Military'));
+              await page.waitForFunction(() => document.querySelector('#dataStatus')?.textContent?.includes('128 active cards loaded'));
               const text = await page.locator('body').innerText();
-              if (!text.includes('v0.6.1')) throw new Error('Deckbuilder does not identify v0.6.1');
-              if (text.includes('v0.6.0')) throw new Error('Deckbuilder still identifies v0.6.0');
+              if (!text.includes('v0.6.3')) throw new Error('Deckbuilder does not identify v0.6.3');
+              if (text.includes('v0.6.1') || text.includes('v0.6.0')) throw new Error('Deckbuilder exposes a stale version label');
+              if (!(await page.locator('.builder-grid').count()) || !(await page.locator('.card-preview').count()) || !(await page.locator('.territory-browser').count())) {
+                throw new Error('Deckbuilder is not using the polished production interface');
+              }
               await page.screenshot({ path: `/tmp/deckbuilder-${suffix}.png`, fullPage: true });
               if (errors.length) throw new Error(`Deckbuilder ${suffix} errors:\n${errors.join('\n')}`);
               await page.close();
