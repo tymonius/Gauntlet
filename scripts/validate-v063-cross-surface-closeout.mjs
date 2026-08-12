@@ -64,11 +64,24 @@ const smugglersRun = integrated.territories.find((territory) => territory.id ===
 assert.equal(smugglersRun?.name, "Smuggler's Run");
 const marginLoan = integrated.cards.find((card) => card.id === 'financiers-margin-loan');
 assert((marginLoan?.effects ?? []).some((effect) => effect.label === 'Asset' && effect.text.includes('While this remains banked, you may not draw at the start of your turn.')), 'Margin Loan persistent draw restriction drifted.');
+
+const armistice = integrated.cards.find((card) => card.id === 'neutral-armistice');
+assert.equal(armistice?.cost, 4);
+assert.equal(armistice?.effects?.find((effect) => effect.label === 'Asset')?.text, 'Neither player can start a battle. At the start of your Opening, discard two cards from your Hand or discard this card. You cannot voluntarily discard this card at another time.');
+const contingencyPlan = integrated.cards.find((card) => card.id === 'neutral-contingency-plan');
+assert.equal(contingencyPlan?.cost, 1);
+assert.equal(contingencyPlan?.effects?.find((effect) => effect.label === 'Asset')?.text, 'If this card is Removed, +1 Card.');
+assert.equal(contingencyPlan?.effects?.find((effect) => effect.label === 'Gambit/Tactic')?.text, 'If your opponent controls more Territories than you, +2 Battle Total.');
+const manifestDestiny = integrated.cards.find((card) => card.id === 'neutral-manifest-destiny');
+assert.equal(manifestDestiny?.cost, 5);
+assert(manifestDestiny?.rules_notes?.includes('After entering the Gauntlet, this card is a normal Territory with a normal Deed.'), 'Manifest Destiny normal-Deed rule drifted.');
+
 const protractedSiege = integrated.cards.find((card) => card.name === 'Protracted Siege');
 assert(protractedSiege, 'Protracted Siege is missing from the final candidate.');
 
 const sourceManifest = readJson('artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Manifest.json');
 const sourceDeployment = readJson('artifacts/v0.6.3/release-candidate/deployment-status.json');
+const starterCatalog = readJson('artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Starter_Decks.json');
 const printManifest = readJson('artifacts/v0.6.3/print-candidate/Gauntlet_v0.6.3_Print_Manifest.json');
 const closeoutManifest = readJson('artifacts/v0.6.3/closeout/Gauntlet_v0.6.3_Closeout_Manifest.json');
 
@@ -80,8 +93,26 @@ assert.equal(sourceManifest.proposals, 9);
 assert.equal(sourceManifest.factions, 6);
 assert.equal(sourceManifest.leaders, 12);
 assert.equal(sourceManifest.starter_decks, 12);
+assert.equal(sourceManifest.validation?.starter_decks_finalized_for_v063, true);
+assert.equal(sourceManifest.validation?.future_starter_changes_require_playtest_evidence, true);
 assert.equal(sourceDeployment.source_package_ready, true);
 assert.equal(sourceDeployment.published_version, 'v0.6.2');
+
+assert.equal(starterCatalog.decks?.length, 12);
+const canonicalCardsByName = new Map(integrated.cards.map((card) => [card.name, card]));
+const usedTitles = new Set();
+for (const deck of starterCatalog.decks ?? []) {
+  for (const item of deck.cards ?? []) {
+    assert(canonicalCardsByName.has(item.name), `${deck.name}: starter card ${item.name} is not in canonical v0.6.3.`);
+    usedTitles.add(item.name);
+  }
+}
+assert.equal(usedTitles.size, 110, 'Finalized starter Decks must represent the locked 110-title baseline.');
+const starterQuantity = (deckName, cardName) => starterCatalog.decks.find((deck) => deck.name === deckName)?.cards.find((item) => item.name === cardName)?.quantity ?? 0;
+assert.equal(starterQuantity('Holdfast', 'Contingency Plan'), 1);
+assert.equal(starterQuantity('Holdfast', 'Unbroken Ranks'), 2);
+assert.equal(starterQuantity('Relentless Pursuit', 'Contingency Plan'), 1);
+assert.equal(starterQuantity('Relentless Pursuit', 'Scouting Report'), 0);
 
 assert.equal(printManifest.release_version, 'v0.6.3');
 assert.equal(printManifest.status, 'candidate-not-published');
@@ -99,6 +130,12 @@ assert.equal(closeoutManifest.status, 'candidate-not-published');
 assert.equal(closeoutManifest.stage_readiness?.source_package_ready, true);
 assert.equal(closeoutManifest.stage_readiness?.print_package_ready, true);
 assert.equal(closeoutManifest.stage_readiness?.cross_surface_gate, 'validated');
+for (const key of ['source_package', 'print_semantics', 'tracked_candidate_surfaces']) {
+  assert.equal(closeoutManifest.freshness?.[key]?.algorithm, 'sha256', `Closeout freshness ${key} must use SHA-256.`);
+  assert.match(closeoutManifest.freshness?.[key]?.digest ?? '', /^[a-f0-9]{64}$/, `Closeout freshness ${key} is missing a valid digest.`);
+  assert((closeoutManifest.freshness?.[key]?.files ?? 0) > 0, `Closeout freshness ${key} must cover at least one file.`);
+}
+assert.equal(closeoutManifest.freshness?.pdf_bytes_intentionally_excluded, true);
 assert.equal(closeoutManifest.counts?.playable_cards, 128);
 assert.equal(closeoutManifest.counts?.territories, 25);
 assert.equal(closeoutManifest.counts?.starter_decks, 12);
@@ -139,4 +176,4 @@ if (process.env.GITHUB_BASE_REF) {
   assert.deepEqual(forbidden, [], `Closeout crossed the v0.6.2/publication boundary: ${forbidden.join(', ')}`);
 }
 
-console.log('v0.6.3 cross-surface closeout passed: 60 scenarios, exact canonical equality across integrated/browser/release data, all component gates green, source + print packages aligned, and every public default still on v0.6.2.');
+console.log('v0.6.3 cross-surface closeout passed: 60 scenarios, exact canonical equality across integrated/browser/release data, late card corrections and finalized 110-title starter baseline locked, tracked freshness fingerprints verified, fresh PDFs validated, and every public default still on v0.6.2.');

@@ -22,6 +22,24 @@
     "print_package_ready": true,
     "cross_surface_gate": "validated"
   },
+  "freshness": {
+    "source_package": {
+      "algorithm": "sha256",
+      "files": 12,
+      "digest": "4114492c77a70b6e526f2248d9f02b78cde900f9cb550632e3fbe15f8d5b4494"
+    },
+    "print_semantics": {
+      "algorithm": "sha256",
+      "files": 13,
+      "digest": "7d79aec8d4a1bbee5907b406d9491eb186a026551d47127e96a00ac32696f3af"
+    },
+    "tracked_candidate_surfaces": {
+      "algorithm": "sha256",
+      "files": 63,
+      "digest": "fae8eb92acb0dc1b13825e98457d3282df21cb27c91e0afdac7e714e950a1e23"
+    },
+    "pdf_bytes_intentionally_excluded": true
+  },
   "component_gates": [
     "final-card-text",
     "player-facing-candidates",
@@ -42,5 +60,5 @@
     "digital_default_cutover": false
   },
   "next_gate_after_green_closeout": "v0.6.3 publication/cutover",
-  "note": "The source-package deployment-status file is a source-stage snapshot. This aggregate closeout manifest records the validated cross-surface state after the separately merged print candidate, while publication remains a separate gate."
+  "note": "The aggregate closeout manifest fingerprints tracked source, print-semantic, browser, Rules Arbiter, digital, and faction-symbol surfaces. Raw rendered PDF bytes are excluded because renderer metadata is nondeterministic; the workflow re-renders and validates every PDF from the fingerprinted print semantics on each closeout run."
 }

@@ -2,7 +2,9 @@ name: Validate v0.6.3 cross-surface closeout
 
 on:
   push:
-    branches: [agent/v063-cross-surface-closeout]
+    branches:
+      - agent/v063-cross-surface-closeout
+      - agent/v063-final-release-refresh
   pull_request:
     branches: [main]
     paths:
@@ -16,6 +18,7 @@ on:
       - 'rules-assistant/*v063*'
       - 'src/v063/**'
       - 'src/content/v063.ts'
+      - 'images/faction-symbols/**'
       - 'package.json'
   workflow_dispatch:
 
@@ -30,7 +33,7 @@ concurrency:
 jobs:
   closeout:
     runs-on: ubuntu-latest
-    timeout-minutes: 55
+    timeout-minutes: 60
     steps:
       - name: Check out source branch
         uses: actions/checkout@v4
@@ -43,10 +46,13 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install dependencies
+      - name: Install dependencies and PDF tools
         run: |
           npm install
           npm install --no-save pdf-lib
+          npx playwright install --with-deps chromium
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
 
       - name: Rebuild final v0.6.3 card text
         run: |
@@ -95,7 +101,7 @@ jobs:
           node scripts/validate-v063-browser-development.mjs
           node scripts/validate-v063-browser-site-conventions.mjs
 
-      - name: Validate competitive starter baseline
+      - name: Validate finalized competitive starter baseline
         run: node scripts/validate-v063-starter-guidance.mjs
 
       - name: Run v0.6.3 Rules Arbiter candidate regressions
@@ -119,8 +125,14 @@ jobs:
           node scripts/build-v063-release-candidate.mjs --check
           node scripts/validate-v063-release-candidate.mjs
 
-      - name: Validate merged print candidate
+      - name: Serve repository for print rendering
         run: |
+          python -m http.server 8000 >/tmp/v063-closeout-print-server.log 2>&1 &
+          echo $! > /tmp/v063-closeout-print-server.pid
+
+      - name: Rebuild and validate print candidate
+        run: |
+          node scripts/render-v063-print-candidate.mjs
           node scripts/build-v063-print-candidate-html.mjs --check
           node scripts/validate-v063-print-candidate.mjs
           node scripts/validate-v063-print-visual-regressions.mjs
@@ -153,17 +165,48 @@ jobs:
           fi
           test ! -e releases/v0.6.3
 
-      - name: Commit aggregate closeout status
-        if: github.event_name == 'push' && github.ref_name == 'agent/v063-cross-surface-closeout'
+      - name: Preserve fresh print evidence
         run: |
-          git add artifacts/v0.6.3/closeout/
+          mkdir -p /tmp/gauntlet-v063-closeout-pdfs /tmp/gauntlet-v063-closeout-pdf-renders
+          cp artifacts/v0.6.3/print-candidate/pdf/Gauntlet_v0.6.3_*.pdf /tmp/gauntlet-v063-closeout-pdfs/
+          for file in /tmp/gauntlet-v063-closeout-pdfs/Gauntlet_v0.6.3_*.pdf; do
+            stem=$(basename "$file" .pdf)
+            mkdir -p "/tmp/gauntlet-v063-closeout-pdf-renders/$stem"
+            pdftoppm -png -r 125 "$file" "/tmp/gauntlet-v063-closeout-pdf-renders/$stem/page"
+          done
+
+      - name: Commit promotion-relevant refreshed candidates
+        if: github.event_name == 'push' && (github.ref_name == 'agent/v063-cross-surface-closeout' || github.ref_name == 'agent/v063-final-release-refresh')
+        run: |
+          print_semantics_changed=0
+          if ! git diff --quiet -- \
+            artifacts/v0.6.3/print-candidate/html/ \
+            artifacts/v0.6.3/print-candidate/Gauntlet_v0.6.3_Print_Manifest.json; then
+            print_semantics_changed=1
+          fi
+
+          if [ "$print_semantics_changed" -eq 0 ]; then
+            git restore -- artifacts/v0.6.3/print-candidate/pdf/
+          fi
+
+          git add \
+            artifacts/v0.6.3/release-candidate/ \
+            artifacts/v0.6.3/print-candidate/html/ \
+            artifacts/v0.6.3/print-candidate/Gauntlet_v0.6.3_Print_Manifest.json \
+            artifacts/v0.6.3/closeout/ \
+            v0.6.3/
+
+          if [ "$print_semantics_changed" -eq 1 ]; then
+            git add artifacts/v0.6.3/print-candidate/pdf/
+          fi
+
           if git diff --cached --quiet; then
-            echo 'v0.6.3 closeout status is already current.'
+            echo 'v0.6.3 promotion-relevant candidates are already current.'
             exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Materialize v0.6.3 closeout status [skip ci]'
+          git commit -m 'Refresh final v0.6.3 release candidate [skip ci]'
           git fetch origin "$GITHUB_REF_NAME"
           git rebase "origin/$GITHUB_REF_NAME"
           git push origin "HEAD:$GITHUB_REF_NAME"
@@ -171,10 +214,11 @@ jobs:
       - name: Verify regenerated tracked candidates on pull request
         if: github.event_name == 'pull_request'
         run: |
-          git diff --exit-code -- v0.6.3/
           git diff --exit-code -- artifacts/v0.6.3/release-candidate/
-          git diff --exit-code -- artifacts/v0.6.3/print-candidate/
+          git diff --exit-code -- artifacts/v0.6.3/print-candidate/html/
+          git diff --exit-code -- artifacts/v0.6.3/print-candidate/Gauntlet_v0.6.3_Print_Manifest.json
           git diff --exit-code -- artifacts/v0.6.3/closeout/
+          git diff --exit-code -- v0.6.3/
 
       - name: Upload closeout evidence
         uses: actions/upload-artifact@v4
@@ -183,7 +227,9 @@ jobs:
           path: |
             docs/Gauntlet_v0.6.3_Cross_Surface_Closeout_Matrix.md
             artifacts/v0.6.3/closeout/**
-            artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Manifest.json
-            artifacts/v0.6.3/release-candidate/deployment-status.json
+            artifacts/v0.6.3/release-candidate/**
+            artifacts/v0.6.3/print-candidate/html/**
             artifacts/v0.6.3/print-candidate/Gauntlet_v0.6.3_Print_Manifest.json
+            /tmp/gauntlet-v063-closeout-pdfs/**
+            /tmp/gauntlet-v063-closeout-pdf-renders/**
           if-no-files-found: error
