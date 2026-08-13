@@ -4,6 +4,10 @@
   --component-parchment-tint: rgba(0, 0, 0, 0);
   --component-footer-tint: rgba(177, 139, 83, 0.24);
   --component-accent-ink: var(--card-muted-ink);
+  --component-heading-height: 0.50in;
+  --component-subheading-font-size: 6.25pt;
+  --component-subheading-icon-size: 0.18in;
+  --component-subheading-gap: 0.045in;
 }
 
 .faction-component-card[data-faction="military"] {
@@ -65,15 +69,15 @@
 
 .leader-card .card-interior {
   --art-height: 1.86in;
-  grid-template-rows: 0.58in var(--art-height) auto 0.18in;
+  grid-template-rows: var(--component-heading-height) var(--art-height) auto 0.18in;
 }
 
 .leader-card .card-heading {
   display: grid;
   grid-template-rows: auto auto;
   align-content: center;
-  gap: 0.025in;
-  padding: 0.05in 0.09in 0.035in;
+  gap: 0.012in;
+  padding: 0.028in 0.09in 0.022in;
 }
 
 .leader-card .card-title {
@@ -86,14 +90,14 @@
 .leader-faction-line {
   display: flex;
   align-items: center;
-  gap: 0.042in;
+  gap: var(--component-subheading-gap);
   min-width: 0;
   color: var(--component-accent-ink);
   font-family: var(--font-interface);
-  font-size: 4.75pt;
-  font-weight: 750;
-  letter-spacing: 0.105em;
-  line-height: 1.2;
+  font-size: var(--component-subheading-font-size);
+  font-weight: 800;
+  letter-spacing: 0.085em;
+  line-height: 1.08;
   text-transform: uppercase;
 }
 
@@ -101,9 +105,9 @@
    so every symbol inherits the same header color and remains usable in mono. */
 .leader-faction-emblem {
   display: block;
-  width: 0.15in;
-  height: 0.15in;
-  flex: 0 0 0.15in;
+  width: var(--component-subheading-icon-size);
+  height: var(--component-subheading-icon-size);
+  flex: 0 0 var(--component-subheading-icon-size);
   background: currentColor;
   -webkit-mask: var(--faction-symbol) center / contain no-repeat;
   mask: var(--faction-symbol) center / contain no-repeat;
