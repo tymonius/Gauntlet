@@ -61,29 +61,30 @@ async function inspection(browser, options, screenshotPath) {
   const page = await context.newPage();
   try {
     await page.goto(`${BASE}/card-design/`, { waitUntil: 'load' });
-    const source = await page.waitForSelector(
-      `iframe.territory-review-frame[src*="territory=${ID}"]`,
-      { state: 'attached', timeout: 30000 },
-    );
-    const sourceFrame = await source.contentFrame();
-    if (!sourceFrame) throw new Error('Missing Territory source frame');
-    await ready(sourceFrame);
+    const sourceSelector = `iframe.territory-review-frame[src*="territory=${ID}"]`;
+    const source = page.locator(sourceSelector);
+    await source.waitFor({ state: 'attached', timeout: 30000 });
 
-    await sourceFrame.locator('.territory-card').evaluate(card => card.click());
+    // Territory review iframes are intentionally lazy-loaded. Difficult Terrain is
+    // far enough down the catalog that a mobile viewport leaves its iframe on
+    // about:blank until it is scrolled near the viewport. Force the real browser
+    // lifecycle here before asking the embedded card to open its inspection view.
+    await source.scrollIntoViewIfNeeded();
+    const sourceCard = page
+      .frameLocator(sourceSelector)
+      .locator('body[data-render-ready="true"] .territory-card');
+    await sourceCard.waitFor({ state: 'attached', timeout: 30000 });
+    await sourceCard.evaluate(card => card.click());
 
-    const selector = 'iframe.territory-inspection-frame';
-    await page.waitForSelector(selector, { state: 'attached', timeout: 10000 });
-    await page.waitForFunction(
-      sel => {
-        const iframe = document.querySelector(sel);
-        const body = iframe?.contentDocument?.body;
-        return body?.dataset.renderReady === 'true' && Boolean(body.querySelector('.territory-card'));
-      },
-      selector,
-      { timeout: 30000 },
-    );
+    const inspectionSelector = 'iframe.territory-inspection-frame';
+    const inspectionElement = page.locator(inspectionSelector);
+    await inspectionElement.waitFor({ state: 'attached', timeout: 10000 });
+    const inspectionCard = page
+      .frameLocator(inspectionSelector)
+      .locator('body[data-render-ready="true"] .territory-card');
+    await inspectionCard.waitFor({ state: 'attached', timeout: 30000 });
 
-    const iframe = await page.$(selector);
+    const iframe = await inspectionElement.elementHandle();
     const frame = await iframe?.contentFrame();
     if (!frame) throw new Error('Missing rendered Territory inspection frame');
     await frame.evaluate(async () => document.fonts?.ready);
