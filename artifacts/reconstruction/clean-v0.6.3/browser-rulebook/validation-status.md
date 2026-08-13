@@ -1,4 +1,4 @@
-# Clean v0.6.3 Rules Browser — validation status
+# Clean v0.6.3 Browser Rulebook — validation status
 
 - Authority set: `2da05383c10fe3e784c64b26fd2d9837913011cad996966f49a7ae3a92af8ed9`
 - Certified Rulebook SHA-256: `7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643`

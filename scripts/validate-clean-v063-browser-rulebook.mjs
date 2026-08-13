@@ -5,7 +5,7 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 const root = process.cwd();
-const outputDir = 'artifacts/reconstruction/clean-v0.6.3/rules-browser';
+const outputDir = 'artifacts/reconstruction/clean-v0.6.3/browser-rulebook';
 const rulebookPath = 'artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md';
 const certificationPath = 'artifacts/reconstruction/clean-v0.6.3/certification/authority-set.json';
 const downstreamManifestPath = 'artifacts/reconstruction/clean-v0.6.3/downstream/manifest.json';
@@ -30,7 +30,7 @@ const publication = read(`${outputDir}/publication.css`);
 const boundary = read(`${outputDir}/source-boundary.md`);
 
 assert.equal(manifest.schema_version, 1);
-assert.equal(manifest.target, 'clean-v0.6.3-rules-browser');
+assert.equal(manifest.target, 'clean-v0.6.3-browser-rulebook');
 assert.equal(manifest.status, 'downstream_candidate_pending_merge_review');
 assert.equal(manifest.authority_set_id, authoritySetId);
 assert.equal(manifest.certified_rulebook.path, rulebookPath);
@@ -52,7 +52,7 @@ assert.equal(lifecycle.releases?.['v0.6.3']?.public_cutover, false);
 
 assert.equal(manifest.outputs.length, 7);
 for (const output of manifest.outputs) {
-  assert(fs.existsSync(path.join(root, output.path)), `Missing Rules Browser output: ${output.path}`);
+  assert(fs.existsSync(path.join(root, output.path)), `Missing Browser Rulebook output: ${output.path}`);
   assert.equal(hashFile(output.path), output.sha256, `Hash drift: ${output.path}`);
 }
 
@@ -61,7 +61,7 @@ for (const baseline of ['rulebook/app.js', 'rulebook/markdown.js', 'rulebook/sty
   assert.equal(manifest.ui_baseline[baseline].sha256, hashFile(baseline), `Public UI baseline drifted after Browser generation: ${baseline}`);
 }
 assert.equal(publication, read('rulebook/publication.css'), 'Publication CSS should be inherited from the public browser UI baseline.');
-assert(styles.startsWith(read('rulebook/styles.css').trimEnd()), 'Rules Browser base styles drifted from the public UI baseline.');
+assert(styles.startsWith(read('rulebook/styles.css').trimEnd()), 'Browser Rulebook base styles drifted from the public UI baseline.');
 assert(markdown.includes('../../../../images/'), 'Reconstruction Markdown renderer must resolve repository image paths from the reconstruction directory.');
 
 for (const marker of [
@@ -74,27 +74,27 @@ for (const marker of [
   'publication remains locked',
   'Certified clean rules · version 0.6.3 · reconstruction only',
   'Certified Markdown',
+  'Browser Rulebook',
   'Current public rules (v0.6.1)',
   'PDF and Rules Arbiter surfaces are intentionally absent',
   authoritySetId,
-]) assert(index.includes(marker), `Rules Browser HTML missing boundary marker: ${marker}`);
+]) assert(index.includes(marker), `Browser Rulebook HTML missing boundary marker: ${marker}`);
 for (const forbidden of [
   '../rules-assistant/widget.js',
   'data-open-rules-assistant',
   'Reader PDF',
   'Print booklet',
   'Canonical rules · version 0.6.1',
-  'Official Browser Rulebook',
   'Gauntlet_v0.6.1_Rulebook.md',
   'Gauntlet_v0.6.1_Rulebook.pdf',
-]) assert(!index.includes(forbidden), `Rules Browser HTML retained unreconstructed/public dependency: ${forbidden}`);
+]) assert(!index.includes(forbidden), `Browser Rulebook HTML retained unreconstructed/public dependency: ${forbidden}`);
 
 assert(app.includes("const SOURCE_URL = '../rulebook/Gauntlet_v0.6.3_Rulebook.md';"));
 assert(app.includes(`const AUTHORITY_SET_ID = '${authoritySetId}';`));
 assert(app.includes('Clean v0.6.3 reconstruction'));
 assert(app.includes('certified clean-v0.6.3 Markdown source'));
 for (const forbidden of ['PDF_URL', 'data-open-rules-assistant', 'ga-rules-launcher', 'Gauntlet_v0.6.1_Rulebook', 'Canonical v0.6.1']) {
-  assert(!app.includes(forbidden), `Rules Browser app retained stale dependency: ${forbidden}`);
+  assert(!app.includes(forbidden), `Browser Rulebook app retained stale dependency: ${forbidden}`);
 }
 
 for (const marker of [
@@ -142,4 +142,4 @@ for (const heading of ['Part I — Learn to Play', 'Military', 'Diplomats', 'Fin
 assert(rendered.html.includes('Gambit/Tactic'));
 assert(rendered.html.includes('Manifest Destiny'));
 
-console.log(`Clean v0.6.3 Rules Browser validated: certified Rulebook ${rulebookSha256.slice(0, 12)}…, searchable renderer/TOC baseline preserved, reconstruction/publication boundary explicit, no stale Rules Arbiter or PDF dependency.`);
+console.log(`Clean v0.6.3 Browser Rulebook validated: certified Rulebook ${rulebookSha256.slice(0, 12)}…, searchable renderer/TOC baseline preserved, reconstruction/publication boundary explicit, no stale Rules Arbiter or PDF dependency.`);

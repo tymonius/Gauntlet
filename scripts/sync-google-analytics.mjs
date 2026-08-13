@@ -9,7 +9,7 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "playtest/session/index.html",
   "playtest/batch/index.html",
   "playtest/player-mat/index.html",
-  "artifacts/reconstruction/clean-v0.6.3/rules-browser/index.html"
+  "artifacts/reconstruction/clean-v0.6.3/browser-rulebook/index.html"
 ]);
 
 const GOOGLE_TAG = `  <!-- Google tag (gtag.js) -->

@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root = process.cwd();
-const outputDir = 'artifacts/reconstruction/clean-v0.6.3/rules-browser';
+const outputDir = 'artifacts/reconstruction/clean-v0.6.3/browser-rulebook';
 const rulebookPath = 'artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md';
 const certificationPath = 'artifacts/reconstruction/clean-v0.6.3/certification/authority-set.json';
 const downstreamManifestPath = 'artifacts/reconstruction/clean-v0.6.3/downstream/manifest.json';
@@ -89,7 +89,7 @@ const index = `<!doctype html>
   <meta name="robots" content="noindex,nofollow" />
   <meta name="theme-color" content="#8f1f25" />
   <meta name="description" content="Searchable reconstruction browser for the certified clean Gauntlet v0.6.3 Rulebook." />
-  <title>Gauntlet clean v0.6.3 Rules Browser — Reconstruction</title>
+  <title>Gauntlet clean v0.6.3 Browser Rulebook — Reconstruction</title>
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
@@ -106,7 +106,7 @@ const index = `<!doctype html>
   <section class="rulebook-hero">
     <div class="hero-copy">
       <p class="eyebrow">Certified clean rules · version 0.6.3 · reconstruction only</p>
-      <h1>Rules Browser</h1>
+      <h1>Browser Rulebook</h1>
       <p class="hero-lede">The complete certified clean-v0.6.3 Rulebook, rendered from the approved authority source for downstream review.</p>
       <p class="source-status" data-rulebook-status aria-live="polite">Loading the certified clean-v0.6.3 Rulebook…</p>
     </div>
@@ -154,20 +154,20 @@ write(`${outputDir}/markdown.js`, markdown);
 write(`${outputDir}/styles.css`, styles);
 write(`${outputDir}/publication.css`, publicationCss);
 
-const sourceBoundary = `# Clean v0.6.3 Rules Browser — source boundary
+const sourceBoundary = `# Clean v0.6.3 Browser Rulebook — source boundary
 
 This is a downstream reconstruction surface, not release authority and not a public cutover.
 
 - Binding rules source: \`${rulebookPath}\`, certified by authority set \`${authoritySetId}\`.
 - UI/renderer baseline only: the current public v0.6.1 \`rulebook/\` browser implementation. Its rules content, release labels, downloads, and Rules Arbiter integration are not inherited.
-- The merged clean-v0.6.3 canonical-data layer from PR #624 is a prerequisite boundary, pinned by SHA-256 \`${downstreamCanonicalSha256}\`; this Rulebook browser does not reinterpret card data.
+- The merged clean-v0.6.3 canonical-data layer from PR #624 is a prerequisite boundary, pinned by SHA-256 \`${downstreamCanonicalSha256}\`; this Browser Rulebook does not reinterpret card data.
 - Withdrawn v0.6.2/v0.6.3 release documents and the historical \`v0.6.3/rulebook/\` page are not content authority.
 - Rules Arbiter and regenerated PDF/print links are intentionally excluded until those later downstream surfaces are rebuilt.
 - Public lifecycle remains v0.6.1 current; v0.6.3 remains withdrawn; publication remains locked.
 `;
 write(`${outputDir}/source-boundary.md`, sourceBoundary);
 
-const validationStatus = `# Clean v0.6.3 Rules Browser — validation status
+const validationStatus = `# Clean v0.6.3 Browser Rulebook — validation status
 
 - Authority set: \`${authoritySetId}\`
 - Certified Rulebook SHA-256: \`${rulebookSha256}\`
@@ -188,7 +188,7 @@ const outputs = outputFiles.map((name) => {
 });
 const manifest = {
   schema_version: 1,
-  target: 'clean-v0.6.3-rules-browser',
+  target: 'clean-v0.6.3-browser-rulebook',
   status: 'downstream_candidate_pending_merge_review',
   authority_set_id: authoritySetId,
   authority_certification: certificationPath,
@@ -205,4 +205,4 @@ const manifest = {
 };
 write(`${outputDir}/manifest.json`, JSON.stringify(manifest, null, 2));
 
-console.log(`Built clean v0.6.3 Rules Browser reconstruction from certified authority ${authoritySetId.slice(0, 12)}… with ${outputs.length} hash-pinned browser/support outputs.`);
+console.log(`Built clean v0.6.3 Browser Rulebook reconstruction from certified authority ${authoritySetId.slice(0, 12)}… with ${outputs.length} hash-pinned browser/support outputs.`);
