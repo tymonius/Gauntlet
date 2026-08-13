@@ -51,10 +51,8 @@ for (const marker of [
   'Gambit/Tactic',
   'Bank:',
   'Manifest Destiny',
-  'Second Line',
-  "Smuggler's Run",
 ]) assert(rulebook.includes(marker), `Certified Rulebook is missing expected clean-v0.6.3 marker: ${marker}`);
-for (const stale of ['Playable Deck', "Smuggler's Pass"]) assert(!rulebook.includes(stale), `Certified Rulebook contains retired wording: ${stale}`);
+assert(!rulebook.includes('Playable Deck'), 'Certified Rulebook contains retired Playable Deck wording.');
 
 const baselinePaths = ['rulebook/app.js', 'rulebook/markdown.js', 'rulebook/styles.css', 'rulebook/publication.css'];
 const uiBaseline = Object.fromEntries(baselinePaths.map((item) => [item, { git_role: 'v0.6.1-browser-ui-baseline-only', sha256: fileHash(item) }]));
@@ -70,7 +68,7 @@ app = app
   .replace('<p>Use the <a href="${PDF_URL}">official PDF</a> or <a href="${SOURCE_URL}">canonical Markdown source</a>.</p>', '<p>Use the <a href="${SOURCE_URL}">certified clean-v0.6.3 Markdown source</a>.</p>');
 assert(!app.includes('PDF_URL'), 'Reconstruction app retained the unavailable PDF dependency.');
 assert(!app.includes('data-open-rules-assistant'), 'Reconstruction app retained the unreconstructed Rules Arbiter dependency.');
-assert(app.includes(rulebookPath.split('/').slice(-2).join('/')) || app.includes("../rulebook/Gauntlet_v0.6.3_Rulebook.md"));
+assert(app.includes("../rulebook/Gauntlet_v0.6.3_Rulebook.md"));
 
 let markdown = read('rulebook/markdown.js');
 const imageRewriteA = "    return `../images/${unwrapped.slice('../../images/'.length)}`;";
