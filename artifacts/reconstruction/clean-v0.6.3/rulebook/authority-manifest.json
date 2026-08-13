@@ -49,12 +49,18 @@
     "GNT-DEC-2026-0812-002",
     "GNT-DEC-2026-0812-003"
   ],
+  "integration_normalizations": [
+    "deck-means-ordinary-cards-only",
+    "deduplicate-section-boundaries",
+    "preserve-certified-part-iii-heading-depth",
+    "remove-stale-development-version-notes"
+  ],
   "publication_unlocked": false,
   "downstream_unlocked": false,
   "output": {
     "path": "artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md",
-    "sha256": "572fed8fc893f852728474316c5b2887f011ebf2469adf8dff01be796a4f689e",
-    "bytes": 112757,
-    "lines": 2410
+    "sha256": "7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643",
+    "bytes": 112468,
+    "lines": 2379
   }
 }
