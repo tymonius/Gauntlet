@@ -1,0 +1,71 @@
+name: Build clean v0.6.2 Rulebook
+
+on:
+  push:
+    branches:
+      - agent/reconstruct-clean-v062-rulebook
+    paths:
+      - scripts/build-clean-v062-rulebook.mjs
+      - scripts/validate-clean-v062-rulebook.mjs
+      - artifacts/reconstruction/clean-v0.6.2/rulebook/**
+      - artifacts/reconstruction/clean-v0.6.2/faction-guides/**
+      - releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md
+      - docs/Gauntlet_v0.6.2_Shared_Rules_Candidate.md
+      - config/reconstruction-version-plan.json
+      - config/reconstruction-version-resolutions.json
+      - .github/workflows/build-clean-v062-rulebook.yml
+  pull_request:
+    paths:
+      - scripts/build-clean-v062-rulebook.mjs
+      - scripts/validate-clean-v062-rulebook.mjs
+      - artifacts/reconstruction/clean-v0.6.2/rulebook/**
+      - artifacts/reconstruction/clean-v0.6.2/faction-guides/**
+      - releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md
+      - docs/Gauntlet_v0.6.2_Shared_Rules_Candidate.md
+      - config/reconstruction-version-plan.json
+      - config/reconstruction-version-resolutions.json
+      - .github/workflows/build-clean-v062-rulebook.yml
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify reconstruction gate
+        run: node scripts/validate-reconstruction-version-plan.mjs
+
+      - name: Revalidate approved clean v0.6.2 faction authority
+        run: node scripts/validate-clean-v062-faction-authority.mjs
+
+      - name: Build clean v0.6.2 Rulebook
+        run: node scripts/build-clean-v062-rulebook.mjs
+
+      - name: Validate clean v0.6.2 Rulebook
+        run: node scripts/validate-clean-v062-rulebook.mjs
+
+      - name: Commit generated Rulebook candidate
+        if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
+        run: |
+          git add artifacts/reconstruction/clean-v0.6.2/rulebook
+          if git diff --cached --quiet; then
+            echo 'Generated Rulebook authority is already current.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Materialize clean v0.6.2 Rulebook candidate'
+          git push
+
+      - name: Require generated outputs committed on pull requests
+        if: github.event_name == 'pull_request'
+        run: git diff --exit-code -- artifacts/reconstruction/clean-v0.6.2/rulebook
