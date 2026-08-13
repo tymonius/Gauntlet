@@ -27,7 +27,13 @@ const v063 = plan.targets?.['clean-v0.6.3'];
 assert(v062 && v063, 'both clean-v0.6.2 and clean-v0.6.3 targets are required');
 assert(v062.authority_base === 'v0.6.1', 'clean v0.6.2 must derive from v0.6.1 authority');
 assert(v063.authority_base === 'clean-v0.6.2', 'clean v0.6.3 must derive from clean v0.6.2');
-assert(v062.authority_build_unlocked === false && v063.authority_build_unlocked === false, 'authority generation remains locked until this plan is approved on main');
+assert(v062.status === 'authority_build_approved', 'clean v0.6.2 must record approved authority-build status after PR #606');
+assert(v063.status === 'blocked_on_clean_v062', 'clean v0.6.3 must remain blocked on certified clean v0.6.2 authority');
+assert(v062.authority_build_unlocked === true, 'clean v0.6.2 authority build must be unlocked after PR #606 approval');
+assert(v063.authority_build_unlocked === false, 'clean v0.6.3 authority build must remain locked until clean v0.6.2 is certified');
+assert(v062.approval?.pr === 606, 'clean v0.6.2 authority approval must cite PR #606');
+assert(v062.approval?.merged_at === '2026-08-13T07:24:17Z', 'clean v0.6.2 authority approval must record the PR #606 merge time');
+assert(v062.approval?.merge_commit === 'e84e27958c7f6d8d4bd0390bdbac456b40adef1b', 'clean v0.6.2 authority approval must pin the PR #606 merge commit');
 assert(v062.evidence_anchor?.commit === '4436004a11b97704758dd0300f7eef969e6b78f9', 'clean v0.6.2 evidence anchor must be the final pre-v0.6.3 v0.6.2 state');
 assert(v063.evidence_anchor?.commit === 'feb53d48f254355a07d092f6ba68162241d22e9d', 'clean v0.6.3 evidence anchor must remain the preserved post-hotfix evidence state');
 assert(v062.evidence_anchor?.role === 'evidence_only' && v063.evidence_anchor?.role === 'evidence_only', 'withdrawn release anchors are evidence only');
@@ -123,5 +129,5 @@ assert(releases['v0.6.2']?.status === 'withdrawn', 'v0.6.2 must remain withdrawn
 assert(releases['v0.6.3']?.status === 'withdrawn', 'v0.6.3 must remain withdrawn during reconstruction');
 
 if (!process.exitCode) {
-  console.log('Reconstruction version plan validated: clean v0.6.2 and clean v0.6.3 remain separate, source-safe targets.');
+  console.log('Reconstruction version plan validated: clean v0.6.2 authority construction is approved; clean v0.6.3 and publication remain locked.');
 }
