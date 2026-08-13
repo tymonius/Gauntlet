@@ -25,9 +25,9 @@ Canonical artwork paths:
 
 | Component pool | Total | Canonical on `main` | Approved, pending merge | Still needs artwork |
 | --- | ---: | ---: | ---: | ---: |
-| Playable cards | 128 | 86 | 7 | 35 |
+| Playable cards | 128 | 86 | 8 | 34 |
 | Territory cards | 25 | 2 | 0 | 23 |
-| **All tracked cards** | **153** | **88** | **7** | **58** |
+| **All tracked cards** | **153** | **88** | **8** | **57** |
 
 ### Playable cards by faction
 
@@ -37,10 +37,10 @@ Canonical artwork paths:
 | Military | 13 | 0 | 0 |
 | Diplomats | 9 | 4 | 0 |
 | Financiers | 12 | 1 | 0 |
-| Intelligence | 2 | 2 | 9 |
+| Intelligence | 2 | 3 | 8 |
 | Mystics | 0 | 0 | 13 |
 | Inquisition | 0 | 0 | 13 |
-| **Playable-card total** | **86** | **7** | **35** |
+| **Playable-card total** | **86** | **8** | **34** |
 
 ## Neutral — complete
 
@@ -75,10 +75,10 @@ Approved, pending canonical merge:
 
 - [x] Deep Cover
 - [x] Disinformation
+- [x] Exfiltration
 
 Still needs approved artwork:
 
-- [ ] Exfiltration
 - [ ] Extraordinary Rendition
 - [ ] Fog of War
 - [ ] Intercepted Orders
