@@ -1,10 +1,11 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const reviewPage = readFileSync("card-design/index.html", "utf8");
 const proposalRenderer = readFileSync("card-design/proposal-card.js", "utf8");
 const proposalStyles = readFileSync("card-design/proposal-card.css", "utf8");
 const canonical = JSON.parse(readFileSync("releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json", "utf8"));
+const ratifiedSealPath = "images/artwork/supplemental/diplomats/ratified-wax-seal.webp";
 
 const prototypeIds = ["de-escalation", "open-channels", "diplomatic-recognition"];
 
@@ -67,14 +68,25 @@ describe("Diplomat Proposal / Treaty Article prototypes", () => {
     expect(proposalStyles).not.toContain(".gauntlet-card .rule-section {");
   });
 
-  it("turns the artwork field into an explicit ratification treatment using Declaration Blackletter with Declaration Pro fallback", () => {
+  it("uses the approved laurel-wreath wax seal as the central ratification cue", () => {
+    expect(existsSync(ratifiedSealPath)).toBe(true);
     expect(proposalRenderer).toContain("proposal-ratified-word\">Ratified");
-    expect(proposalRenderer).toContain("proposal-wax-seal");
+    expect(proposalRenderer).toContain("RATIFIED_SEAL_SOURCE");
+    expect(proposalRenderer).toContain("/images/artwork/supplemental/diplomats/ratified-wax-seal.webp");
+    expect(proposalRenderer).toContain('<img class="proposal-wax-seal"');
+    expect(proposalStyles).toContain("top: 60%");
+    expect(proposalStyles).toContain("left: 50%");
+    expect(proposalStyles).toContain("width: 0.96in");
+    expect(proposalStyles).toContain("height: 0.96in");
+    expect(proposalStyles).toContain("transform: translate(-50%, -50%) rotate(-1.5deg)");
+    expect(proposalStyles).not.toContain("right: 0.13in");
+    expect(proposalStyles).not.toContain("bottom: 0.10in");
+  });
+
+  it("keeps the Ratified heading in Declaration Blackletter with Declaration Pro fallback", () => {
     expect(proposalStyles).toContain("@import url(https://db.onlinewebfonts.com/c/15a5d188ed241eed33a9ec0360d0bd60?family=P22+Declaration+W01+Blackletter)");
     expect(proposalStyles).toContain('"P22 Declaration W01 Blackletter"');
     expect(proposalStyles).toContain("var(--font-flavor)");
     expect(proposalStyles).not.toContain('font-family: "Gauntlet Declaration Blackletter"');
-    expect(proposalStyles).toContain("#a3232d");
-    expect(proposalStyles).toContain("mask: var(--faction-symbol)");
   });
 });
