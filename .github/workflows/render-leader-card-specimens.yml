@@ -12,6 +12,10 @@ on:
       - "card-design/territory-review-render.html"
       - "card-design/territory-review-render.js"
       - "card-design/leader-card.css"
+      - "card-design/proposal-card.css"
+      - "card-design/proposal-card.js"
+      - "card-design/rite-card.css"
+      - "card-design/rite-card.js"
       - "card-design/territory-card.css"
       - "card-design/card-design.css"
       - "card-design/card-design-refinement.css"
@@ -25,6 +29,7 @@ on:
       - "images/artwork/territories/*"
       - "scripts/render-leader-card-specimens.mjs"
       - "scripts/validate-territory-mobile-render.mjs"
+      - "scripts/validate-rite-card-render.mjs"
       - ".github/workflows/render-leader-card-specimens.yml"
   workflow_dispatch:
 
@@ -46,6 +51,8 @@ jobs:
         run: node scripts/render-leader-card-specimens.mjs
       - name: Validate Territory mobile render stability
         run: node scripts/validate-territory-mobile-render.mjs
+      - name: Validate Mystics Rite card specimens
+        run: node scripts/validate-rite-card-render.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: gauntlet-card-review-specimens

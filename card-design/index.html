@@ -15,7 +15,7 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
   <meta name="robots" content="noindex,nofollow" />
-  <meta name="description" content="Internal Gauntlet v0.6.3 visual review catalog for every playable card, Leader, Territory, and canonical Diplomat Proposal / Treaty Article." />
+  <meta name="description" content="Internal Gauntlet v0.6.3 visual review catalog for every playable card, Leader, Territory, Diplomat Proposal / Treaty Article, and Mystics Rite." />
   <title>Gauntlet Card Review Catalog</title>
   <link rel="preconnect" href="https://use.typekit.net" />
   <link rel="preconnect" href="https://p.typekit.net" crossorigin />
@@ -26,10 +26,12 @@
   <link rel="stylesheet" href="faction-specimens.css" />
   <link rel="stylesheet" href="leader-card.css" />
   <link rel="stylesheet" href="proposal-card.css" />
+  <link rel="stylesheet" href="rite-card.css" />
   <link rel="stylesheet" href="territory-card.css" />
   <link rel="stylesheet" href="card-review.css" />
   <script src="card-review.js" defer></script>
   <script type="module" src="proposal-card.js"></script>
+  <script type="module" src="rite-card.js"></script>
   <script src="card-design.js" defer></script>
 </head>
 <body class="faction-specimen-page">
@@ -42,6 +44,7 @@
       <a href="#playable-cards">Playable cards</a>
       <a href="#leader-cards">Leaders</a>
       <a href="#proposal-cards">Proposals</a>
+      <a href="#rite-cards">Rites</a>
       <a href="#territories">Territories</a>
       <button type="button" onclick="window.print()">Print at 100%</button>
     </nav>
@@ -51,12 +54,13 @@
     <section class="intro section-shell screen-only">
       <p class="eyebrow">v0.6.3 · complete visual review</p>
       <h1>Card review catalog</h1>
-      <p class="intro-copy">One review surface for the complete current card system and supplemental faction components. Every playable card uses the v0.6.3 production renderer; all twelve Leaders use the shared Leader frame; all nine Diplomat Proposals appear alongside their ratified Treaty Article state; all twenty-five Territories use the production landscape renderer; and future supplemental components can be developed here against the same visual language. Click any card for a larger inspection view, then click its artwork to inspect the original uncropped image.</p>
+      <p class="intro-copy">One review surface for the complete current card system and supplemental faction components. Every playable card uses the v0.6.3 production renderer; all twelve Leaders use the shared Leader frame; all nine Diplomat Proposals appear alongside their ratified Treaty Article state; all three Mystics Rites appear beside their completed progression-reference state; all twenty-five Territories use the production landscape renderer; and future supplemental components can be developed here against the same visual language. Click any card for a larger inspection view, then click its artwork to inspect the original uncropped image.</p>
       <div class="status-row" aria-label="Review catalog status">
         <span><strong data-playable-count>128</strong> playable cards</span>
         <span>12 Leader cards</span>
         <span>6 approved faction symbols</span>
         <span><strong data-proposal-count>9</strong> Proposal / Treaty Article pairs</span>
+        <span><strong data-rite-count>3</strong> Rite / completed-Rite pairs</span>
         <span><strong data-territory-count>25</strong> Territory cards</span>
         <span><strong data-arena-count>4</strong> Arenas</span>
         <span>Artwork gaps remain reviewable</span>
@@ -72,6 +76,7 @@
         <a href="#playable-inquisition">Inquisition</a>
         <a href="#leader-cards">Leaders</a>
         <a href="#proposal-cards">Proposals</a>
+        <a href="#rite-cards">Rites</a>
         <a href="#territories-standard">Territories</a>
         <a href="#territories-arenas">Arenas</a>
       </nav>
@@ -104,6 +109,15 @@
         <p>All <span data-proposal-count>9</span> canonical v0.6.3 Proposals, in canonical order, each shown beside its ratified Treaty Article state. The unratified face uses the standard Diplomat card grammar with an artwork window; the ratified Treaty Article preserves the full Proposal text and Influence Stake while replacing the artwork with the formal ratification field and wax seal.</p>
       </div>
       <div id="proposalReviewSections"></div>
+    </section>
+
+    <section id="rite-cards" class="card-section" aria-labelledby="rites-title">
+      <div class="section-shell card-section-heading screen-only">
+        <p class="section-label">Mystics supplemental component set</p>
+        <h2 id="rites-title">Mystics Rites</h2>
+        <p>All <span data-rite-count>3</span> double-sided Rites: Rite of Echoes, Rite of Blood, and Rite of Crossing. Each incomplete face uses the shared faction-component grammar with a Mystics artwork window and Rite instructions. The completed face replaces the illustration with an inked ritual diagram and turns the lower field into a progression reference for Invocation, Transmutation, Convergence, and the Ritual of Ascendance.</p>
+      </div>
+      <div id="riteReviewSections"></div>
     </section>
 
     <section id="territories" class="card-section territory-specimen-section" aria-labelledby="territory-title">
