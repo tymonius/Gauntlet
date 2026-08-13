@@ -63,6 +63,29 @@ jobs:
         with:
           node-version: 22
 
+      - name: Apply reviewed standalone-bank guard correction
+        if: github.event_name == 'push'
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          replacements = {
+              Path('scripts/build-clean-v063-faction-authority.mjs'): (
+                  "invariant(!/> \\*\\*Action:\\*\\* Bank this card\\./.test(text), `${faction.title}: redundant inherent Bank Action survived reconstruction`);",
+                  "invariant(!/> \\*\\*Action:\\*\\* Bank this card\\.$/m.test(text), `${faction.title}: redundant standalone inherent Bank Action survived reconstruction`);",
+              ),
+              Path('scripts/validate-clean-v063-faction-authority.mjs'): (
+                  "if (/> \\*\\*Action:\\*\\* Bank this card\\./.test(text)) fail(`${rel}: explicit inherent Bank Action survives`);",
+                  "if (/> \\*\\*Action:\\*\\* Bank this card\\.$/m.test(text)) fail(`${rel}: exact standalone inherent Bank Action survives`);",
+              ),
+          }
+          for path, (old, new) in replacements.items():
+              text = path.read_text()
+              if old in text:
+                  path.write_text(text.replace(old, new, 1))
+              elif new not in text:
+                  raise SystemExit(f'Expected reviewed guard not found in {path}')
+          PY
+
       - name: Syntax-check reconstruction scripts
         run: |
           node --check scripts/build-clean-v063-faction-authority.mjs
@@ -80,7 +103,7 @@ jobs:
       - name: Commit deterministic generated authority candidates
         if: github.event_name == 'push'
         run: |
-          git add artifacts/reconstruction/clean-v0.6.3
+          git add scripts/build-clean-v063-faction-authority.mjs scripts/validate-clean-v063-faction-authority.mjs artifacts/reconstruction/clean-v0.6.3
           if git diff --cached --quiet; then
             echo 'Generated faction authority candidates are already current.'
             exit 0
