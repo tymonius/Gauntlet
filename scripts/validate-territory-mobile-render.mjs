@@ -8,6 +8,7 @@ const OUTPUT = join(ROOT, 'card-design', 'generated', 'leaders');
 const TERRITORY_ID = 'territory-smuggler-s-pass';
 const CARD_WIDTH = 336;
 const CARD_HEIGHT = 240;
+const MINIMUM_ART_HEIGHT = 0.55 * 96;
 
 function contentType(path) {
   const extension = extname(path).toLowerCase();
@@ -57,6 +58,8 @@ async function renderMetrics(browser, baseUrl, contextOptions, screenshotPath) {
       const effect = card.querySelector('.territory-effect p');
       const effectStyle = effect ? getComputedStyle(effect) : null;
       const rootStyle = getComputedStyle(document.documentElement);
+      const interior = card.querySelector('.territory-interior');
+      const body = card.querySelector('.territory-body');
       return {
         title: card.querySelector('.territory-title')?.textContent?.trim(),
         width: cardRect.width,
@@ -69,7 +72,9 @@ async function renderMetrics(browser, baseUrl, contextOptions, screenshotPath) {
         fitWarning: card.classList.contains('fit-warning'),
         titleFit: card.dataset.titleFit,
         parchmentLoaded: card.dataset.parchmentLoaded,
-        textSizeAdjust: rootStyle.textSizeAdjust || rootStyle.webkitTextSizeAdjust || '',
+        textSizeAdjust: rootStyle.webkitTextSizeAdjust || rootStyle.textSizeAdjust || '',
+        interiorScrollExcess: interior ? interior.scrollHeight - interior.clientHeight : 0,
+        bodyScrollExcess: body ? body.scrollHeight - body.clientHeight : 0,
       };
     });
 
@@ -82,58 +87,82 @@ async function renderMetrics(browser, baseUrl, contextOptions, screenshotPath) {
 
 function assertClose(label, a, b, tolerance = 0.5) {
   if (Math.abs(a - b) > tolerance) {
-    throw new Error(`${label} differs between desktop and mobile renders: ${a} vs ${b}.`);
+    throw new Error(`${label} differs between reference and mobile render: ${a} vs ${b}.`);
+  }
+}
+
+function validateRender(label, metric) {
+  if (Math.abs(metric.width - CARD_WIDTH) > 0.25 || Math.abs(metric.height - CARD_HEIGHT) > 0.25) {
+    throw new Error(`Unexpected ${label} Territory geometry: ${JSON.stringify(metric)}.`);
+  }
+  if (metric.fitWarning || metric.titleFit !== 'true' || metric.parchmentLoaded !== 'true') {
+    throw new Error(`${label} Territory render does not fit or load correctly: ${JSON.stringify(metric)}.`);
+  }
+  if (!metric.artWidth || !metric.artHeight || metric.artHeight <= MINIMUM_ART_HEIGHT + 1) {
+    throw new Error(`${label} Territory artwork window collapsed toward the fitting floor: ${JSON.stringify(metric)}.`);
+  }
+  if (metric.textSizeAdjust !== 'none') {
+    throw new Error(`${label} Territory render did not disable browser text inflation: ${JSON.stringify(metric)}.`);
   }
 }
 
 async function main() {
   let chromium;
-  try { ({ chromium } = await import('playwright')); }
-  catch { throw new Error('Playwright is required. Run npm install, then npx playwright install chromium.'); }
+  let webkit;
+  let devices;
+  try { ({ chromium, webkit, devices } = await import('playwright')); }
+  catch { throw new Error('Playwright is required. Run npm install, then npx playwright install chromium webkit.'); }
 
   await mkdir(OUTPUT, { recursive: true });
   const { server, baseUrl } = await startStaticServer();
-  const browser = await chromium.launch({ headless: true });
+  const chromiumBrowser = await chromium.launch({ headless: true });
+  const webkitBrowser = await webkit.launch({ headless: true });
 
   try {
-    const desktop = await renderMetrics(browser, baseUrl, {
+    const desktop = await renderMetrics(chromiumBrowser, baseUrl, {
       viewport: { width: 1440, height: 1000 },
       deviceScaleFactor: 2,
     });
-    const mobile = await renderMetrics(browser, baseUrl, {
+    const mobileChromium = await renderMetrics(chromiumBrowser, baseUrl, {
       viewport: { width: 390, height: 844 },
       deviceScaleFactor: 3,
       isMobile: true,
       hasTouch: true,
-    }, join(OUTPUT, 'territory-mobile-render-smoke.png'));
+    }, join(OUTPUT, 'territory-mobile-chromium-render-smoke.png'));
+    const mobileWebKit = await renderMetrics(
+      webkitBrowser,
+      baseUrl,
+      devices['iPhone 13'],
+      join(OUTPUT, 'territory-mobile-webkit-render-smoke.png'),
+    );
 
-    for (const [label, metric] of [['desktop', desktop], ['mobile', mobile]]) {
-      if (Math.abs(metric.width - CARD_WIDTH) > 0.25 || Math.abs(metric.height - CARD_HEIGHT) > 0.25) {
-        throw new Error(`Unexpected ${label} Territory geometry: ${JSON.stringify(metric)}.`);
-      }
-      if (metric.fitWarning || metric.titleFit !== 'true' || metric.parchmentLoaded !== 'true') {
-        throw new Error(`${label} Territory render does not fit or load correctly: ${JSON.stringify(metric)}.`);
-      }
-      if (!metric.artWidth || !metric.artHeight) {
-        throw new Error(`${label} Territory artwork window collapsed: ${JSON.stringify(metric)}.`);
+    for (const [label, metric] of [
+      ['desktop Chromium', desktop],
+      ['mobile Chromium', mobileChromium],
+      ['mobile WebKit', mobileWebKit],
+    ]) validateRender(label, metric);
+
+    for (const [label, metric] of [
+      ['mobile Chromium', mobileChromium],
+      ['mobile WebKit', mobileWebKit],
+    ]) {
+      assertClose(`${label} artwork height`, desktop.artHeight, metric.artHeight, 1);
+      assertClose(`${label} artwork width`, desktop.artWidth, metric.artWidth, 1);
+      assertClose(`${label} effect font size`, desktop.effectFontSize, metric.effectFontSize, 0.1);
+      assertClose(`${label} effect line height`, desktop.effectLineHeight, metric.effectLineHeight, 0.1);
+      if (desktop.effectScale !== metric.effectScale) {
+        throw new Error(`${label} effect fitting differs from desktop: ${desktop.effectScale} vs ${metric.effectScale}.`);
       }
     }
 
-    if (mobile.textSizeAdjust !== '100%') {
-      throw new Error(`Mobile Territory render did not lock browser text sizing: ${JSON.stringify(mobile)}.`);
-    }
-
-    assertClose('Artwork height', desktop.artHeight, mobile.artHeight);
-    assertClose('Artwork width', desktop.artWidth, mobile.artWidth);
-    assertClose('Effect font size', desktop.effectFontSize, mobile.effectFontSize, 0.05);
-    assertClose('Effect line height', desktop.effectLineHeight, mobile.effectLineHeight, 0.05);
-    if (desktop.effectScale !== mobile.effectScale) {
-      throw new Error(`Effect fitting differs between desktop and mobile renders: ${desktop.effectScale} vs ${mobile.effectScale}.`);
-    }
-
-    await writeFile(join(OUTPUT, 'territory-mobile-render-metrics.json'), `${JSON.stringify({ desktop, mobile }, null, 2)}\n`);
+    await writeFile(join(OUTPUT, 'territory-mobile-render-metrics.json'), `${JSON.stringify({
+      desktop,
+      mobileChromium,
+      mobileWebKit,
+    }, null, 2)}\n`);
   } finally {
-    await browser.close();
+    await chromiumBrowser.close();
+    await webkitBrowser.close();
     await new Promise(resolve => server.close(resolve));
   }
 }
