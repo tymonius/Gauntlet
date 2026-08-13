@@ -1,0 +1,186 @@
+# Generates, validates, visually rasterizes, and materializes the v0.6.3 printed-material release candidate without publishing it.
+name: Build v0.6.3 print candidate
+
+on:
+  push:
+    branches: [agent/v063-print-package-candidate]
+    paths:
+      - '.github/workflows/build-v063-print-candidate.yml'
+      - 'artifacts/v0.6.3/release-candidate/**'
+      - 'images/sketches/*.png'
+      - 'scripts/build-v063-print-candidate-html.mjs'
+      - 'scripts/render-v063-print-candidate.mjs'
+      - 'scripts/validate-v063-print-candidate.mjs'
+      - 'scripts/validate-v063-print-visual-regressions.mjs'
+      - 'scripts/normalize-v063-player-facing-candidates.mjs'
+      - 'config/release-lifecycle.json'
+      - 'v0.6.2/print/**'
+      - 'package.json'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-v063-print-candidate.yml'
+      - 'artifacts/v0.6.3/print-candidate/**'
+      - 'artifacts/v0.6.3/release-candidate/**'
+      - 'images/sketches/*.png'
+      - 'scripts/build-v063-print-candidate-html.mjs'
+      - 'scripts/render-v063-print-candidate.mjs'
+      - 'scripts/validate-v063-print-candidate.mjs'
+      - 'scripts/validate-v063-print-visual-regressions.mjs'
+      - 'scripts/normalize-v063-player-facing-candidates.mjs'
+      - 'config/release-lifecycle.json'
+      - 'package.json'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: read
+
+concurrency:
+  group: v063-print-candidate-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  render-and-validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - name: Check out source branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 0
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies and PDF tools
+        run: |
+          npm install
+          npm install --no-save pdf-lib
+          npx playwright install --with-deps chromium
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+
+      - name: Rebuild final v0.6.3 card text
+        run: |
+          node scripts/build-v063-card-normalization.mjs
+          node scripts/finalize-v063-card-conventions.mjs
+          node scripts/apply-v063-general-card-rules.mjs
+          node scripts/apply-v063-numeric-shorthand.mjs
+          node scripts/apply-v063-compact-shorthand.mjs
+          node scripts/apply-v063-natural-advantage-wording.mjs
+          node scripts/apply-v063-advantage-capitalization.mjs
+          node scripts/apply-v063-asset-language.mjs
+          node scripts/validate-v063-advantage-stacking.mjs
+          node scripts/apply-v063-gambit-tactic-headings.mjs
+          node scripts/apply-v063-poolwide-card-refinements.mjs
+          node scripts/apply-v063-final-artifact-audit.mjs
+          node scripts/finalize-v063-poolwide-integrity.mjs
+          node scripts/apply-v063-finalized-forward-conventions.mjs
+          node scripts/sync-v063-final-card-mirrors.mjs
+          node scripts/validate-v063-finalized-tracker.mjs
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+
+      - name: Rebuild player-facing v0.6.3 candidates
+        run: |
+          node scripts/generate-v063-player-facing-candidates.mjs
+          node scripts/sync-v063-rulebook-card-text.mjs
+          node scripts/normalize-v063-player-facing-candidates.mjs
+          node scripts/validate-v063-player-facing-candidates.mjs
+
+      - name: Rebuild integrated v0.6.3 canonical candidate
+        run: |
+          node scripts/generate-v063-canonical-data-candidate.mjs
+          node scripts/finalize-v063-canonical-data-candidate.mjs
+          node scripts/generate-v063-complete-card-reference-candidate.mjs
+          node scripts/validate-v063-canonical-data-candidate.mjs
+          node scripts/validate-v063-canonical-promotion-boundary.mjs
+
+      - name: Validate starter presentation inputs
+        run: node scripts/validate-v063-starter-guidance.mjs
+
+      - name: Materialize and verify source release candidate
+        run: |
+          node scripts/build-v063-release-candidate.mjs
+          node scripts/build-v063-release-candidate.mjs --check
+          node scripts/validate-v063-release-candidate.mjs
+
+      - name: Serve repository
+        run: |
+          python -m http.server 8000 >/tmp/v063-print-server.log 2>&1 &
+          echo $! > /tmp/v063-print-server.pid
+
+      - name: Build and render printed-material candidate
+        run: node scripts/render-v063-print-candidate.mjs
+
+      - name: Validate print candidate
+        run: |
+          node scripts/build-v063-print-candidate-html.mjs --check
+          node scripts/validate-v063-print-candidate.mjs
+          node scripts/validate-v063-print-visual-regressions.mjs
+
+      - name: Preserve publication boundary
+        run: |
+          git fetch origin main
+          if node -e "const x=require('./config/release-lifecycle.json'); process.exit(x.current_release==='v0.6.2' && x.releases?.['v0.6.3']?.status==='withdrawn' && x.releases?.['v0.6.3']?.public_cutover===false ? 0 : 1)"; then
+            git diff --name-only origin/main...HEAD -- \
+              'releases/v0.6.2/**' \
+              'v0.6.2/**' \
+              'rules-assistant/worker-v062.js' \
+              'rules-assistant/v062-published-corpus.js' > /tmp/v063-print-boundary.txt
+          else
+            git diff --name-only origin/main...HEAD -- \
+              'releases/v0.6.2/**' \
+              'v0.6.2/**' \
+              'index.html' \
+              'rules-assistant/widget.js' \
+              'rules-assistant/worker-entry.js' \
+              'src/content/current.ts' > /tmp/v063-print-boundary.txt
+          fi
+          if [ -s /tmp/v063-print-boundary.txt ]; then
+            echo 'v0.6.3 print candidate must not change protected v0.6.2 release/implementation surfaces:'
+            cat /tmp/v063-print-boundary.txt
+            exit 1
+          fi
+          if ! node -e "const x=require('./config/release-lifecycle.json'); process.exit(x.current_release==='v0.6.2' && x.releases?.['v0.6.3']?.status==='withdrawn' && x.releases?.['v0.6.3']?.artifacts_preserved===true ? 0 : 1)"; then
+            test ! -e releases/v0.6.3
+          fi
+
+      - name: Rasterize PDFs for visual review
+        run: |
+          mkdir -p /tmp/gauntlet-v063-pdf-renders
+          for file in artifacts/v0.6.3/print-candidate/pdf/Gauntlet_v0.6.3_*.pdf; do
+            stem=$(basename "$file" .pdf)
+            mkdir -p "/tmp/gauntlet-v063-pdf-renders/$stem"
+            pdftoppm -png -r 125 "$file" "/tmp/gauntlet-v063-pdf-renders/$stem/page"
+          done
+
+      - name: Upload print review package
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-v063-print-candidate
+          path: |
+            /tmp/gauntlet-v063-print-previews/**
+            /tmp/gauntlet-v063-pdf-renders/**
+            artifacts/v0.6.3/print-candidate/**
+          if-no-files-found: error
+
+      - name: Commit materialized source and print candidates
+        if: github.event_name == 'push' && github.ref_name == 'agent/v063-print-package-candidate'
+        run: |
+          branch="$GITHUB_REF_NAME"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add artifacts/v0.6.3/release-candidate artifacts/v0.6.3/print-candidate
+          if git diff --cached --quiet; then
+            echo 'v0.6.3 source and printed-material candidates are already current.'
+            exit 0
+          fi
+          git commit -m 'Materialize v0.6.3 print candidate [skip ci]'
+          git fetch origin "$branch"
+          git rebase "origin/$branch"
+          git push origin "HEAD:$branch"

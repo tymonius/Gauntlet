@@ -1,22 +1,11 @@
-import { existsSync } from 'node:fs';
 import { mkdir } from 'node:fs/promises';
 import { chromium } from 'playwright';
 
 const BASE_URL = process.env.RULEBOOK_BASE_URL || 'http://127.0.0.1:8000';
 const OUT = process.env.RULEBOOK_REVIEW_DIR || '/tmp/rulebook-browser-publication';
-const CURRENT_SOURCE = 'releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md';
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
-}
-
-// Historical v0.6.1 publication jobs intentionally use a sparse checkout that
-// does not contain the current v0.6.3 browser source. Those jobs still validate
-// their immutable PDFs and geometry, but the current browser surface is owned by
-// the current-release browser checks rather than by the historical publisher.
-if (!existsSync(CURRENT_SOURCE)) {
-  console.log(`Skipping current browser Rulebook validation because ${CURRENT_SOURCE} is not present in this historical sparse checkout.`);
-  process.exit(0);
 }
 
 async function inspect(page, label) {
@@ -26,9 +15,8 @@ async function inspect(page, label) {
   await page.goto(`${BASE_URL}/rulebook/`, { waitUntil: 'domcontentloaded' });
   await page.waitForFunction(() => {
     const status = document.querySelector('[data-rulebook-status]');
-    return status?.textContent?.startsWith('Canonical v0.6.3');
+    return status?.textContent?.startsWith('Canonical v0.6.1');
   });
-  await page.waitForFunction(() => document.querySelectorAll('[data-rulebook-content] img.leader-portrait').length === 12);
 
   const result = await page.evaluate(() => {
     const html = document.documentElement;
@@ -38,10 +26,10 @@ async function inspect(page, label) {
       title: document.title,
       chapterHeadings: document.querySelectorAll('.chapter-heading').length,
       partHeadings: document.querySelectorAll('.part-heading').length,
-      leaderPortraits: document.querySelectorAll('[data-rulebook-content] img.leader-portrait').length,
-      leaderGalleries: document.querySelectorAll('[data-leader-portrait-gallery]').length,
-      readerLink: links.includes('../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.pdf'),
-      bookletLink: links.includes('../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook_Booklet.pdf'),
+      leaderHeadings: document.querySelectorAll('.leader-heading').length,
+      howBlocks: document.querySelectorAll('.how-it-works-block').length,
+      readerLink: links.includes('../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf'),
+      bookletLink: links.includes('../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf'),
       horizontalOverflow: html.scrollWidth - window.innerWidth,
       heroLoaded: Boolean(heroImage?.complete && heroImage.naturalWidth > 0),
       status: document.querySelector('[data-rulebook-status]')?.textContent || '',
@@ -49,13 +37,13 @@ async function inspect(page, label) {
   });
 
   assert(errors.length === 0, `${label}: browser errors:\n${errors.join('\n')}`);
-  assert(result.title.includes('v0.6.3 Browser Rulebook'), `${label}: unexpected title ${result.title}`);
-  assert(result.chapterHeadings >= 24, `${label}: expected the complete v0.6.3 chapter set; found ${result.chapterHeadings} chapter headings`);
+  assert(result.title.includes('Browser Rulebook'), `${label}: unexpected title ${result.title}`);
+  assert(result.chapterHeadings === 18, `${label}: expected 18 chapter headings; found ${result.chapterHeadings}`);
   assert(result.partHeadings === 4, `${label}: expected 4 Part headings; found ${result.partHeadings}`);
-  assert(result.leaderPortraits === 12, `${label}: expected 12 Leader portraits; found ${result.leaderPortraits}`);
-  assert(result.leaderGalleries === 6, `${label}: expected 6 faction Leader galleries; found ${result.leaderGalleries}`);
-  assert(result.readerLink, `${label}: v0.6.3 reader PDF link is missing`);
-  assert(result.bookletLink, `${label}: v0.6.3 booklet PDF link is missing`);
+  assert(result.leaderHeadings === 12, `${label}: expected 12 Leader headings; found ${result.leaderHeadings}`);
+  assert(result.howBlocks >= 18, `${label}: expected at least 18 How it works blocks; found ${result.howBlocks}`);
+  assert(result.readerLink, `${label}: reader PDF link is missing`);
+  assert(result.bookletLink, `${label}: booklet PDF link is missing`);
   assert(result.horizontalOverflow <= 1, `${label}: horizontal overflow is ${result.horizontalOverflow}px`);
   assert(result.heroLoaded, `${label}: hero sketch did not load`);
 

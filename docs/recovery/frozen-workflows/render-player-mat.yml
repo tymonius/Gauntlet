@@ -1,0 +1,56 @@
+name: Validate current player mat
+
+on:
+  push:
+    branches: [main, agent/v062-printed-materials]
+    paths:
+      - ".github/workflows/render-player-mat.yml"
+      - "playtest/player-mat/index.html"
+      - "v0.6.2/print/player-mat.html"
+  pull_request:
+    branches: [main]
+    paths:
+      - ".github/workflows/render-player-mat.yml"
+      - "playtest/player-mat/index.html"
+      - "v0.6.2/print/player-mat.html"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Validate current player-mat entry point and source
+        run: |
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+
+          const redirectPath = 'playtest/player-mat/index.html';
+          const currentPath = 'v0.6.2/print/player-mat.html';
+
+          for (const file of [redirectPath, currentPath]) {
+            if (!fs.existsSync(file)) throw new Error(`Missing player-mat artifact: ${file}`);
+          }
+
+          const redirect = fs.readFileSync(redirectPath, 'utf8');
+          const current = fs.readFileSync(currentPath, 'utf8');
+
+          for (const marker of ['../../v0.6.2/print/player-mat.html', 'Gauntlet Player Mat — v0.6.2']) {
+            if (!redirect.includes(marker)) throw new Error(`Current player-mat redirect is missing: ${marker}`);
+          }
+
+          for (const marker of ['Gauntlet Player Mat', 'v0.6.2', 'Capture', 'Draw', 'Opening', 'Movement', 'Denouement', 'Cleanup']) {
+            if (!current.includes(marker)) throw new Error(`v0.6.2 player mat is missing: ${marker}`);
+          }
+
+          if (/Action Opportunity/i.test(current)) {
+            throw new Error('v0.6.2 player mat contains retired Action Opportunity terminology.');
+          }
+
+          console.log('Validated the current v0.6.2 player-mat redirect and printable source.');
+          NODE

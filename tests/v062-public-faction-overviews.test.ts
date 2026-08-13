@@ -11,55 +11,33 @@ const factionPaths = [
   'factions/inquisition/index.html',
 ];
 
-describe('current public faction overviews', () => {
-  test('send players to the current published v0.6.3 tools', () => {
+describe('restored v0.6.1 public faction overviews', () => {
+  test('use the v0.6.1 root tools rather than withdrawn-release routes', () => {
     for (const path of factionPaths) {
       const html = read(path);
-      expect(html).toContain('· v0.6.3 faction guide');
-      expect(html).toContain('href="../../v0.6.3/rulebook/"');
-      expect(html).toContain('href="../../v0.6.3/deckbuilder/"');
-      expect(html).toContain('Current playtest edition: v0.6.3.');
+      expect(html).toContain('href="../../rulebook/"');
+      expect(html).toContain('href="../../deckbuilder/"');
+      expect(html).not.toContain('href="../../v0.6.2/rulebook/"');
+      expect(html).not.toContain('href="../../v0.6.2/deckbuilder/"');
       expect(html).not.toContain('Current playtest edition: v0.6.2.');
-      expect(html).not.toContain('Unpublished pre-release playtest project.');
     }
   });
 
-  test('uses the adopted Financier timing and contiguous-control result exactly once', () => {
-    const html = read('factions/financiers/index.html');
-    expect(html.match(/Begin with 2 Capital\./g)).toHaveLength(1);
-    expect(html).toContain('After Capture and its effects, but before Draw');
-    expect(html).toContain('one Action during both Opening and Denouement');
-    expect(html).toContain('A successful purchase advances your Front Line by one Territory, if able; it never creates isolated control.');
-    expect(html).not.toContain('during an Action Opportunity after movement');
-    expect(html).not.toContain('immediately gives you control');
+  test('keeps Military Leader Orders visibly assigned to the correct Leader', () => {
+    const html = read('factions/military/index.html');
+    const general = html.slice(html.indexOf('id="general"'), html.indexOf('id="commandant"'));
+    const commandant = html.slice(html.indexOf('id="commandant"'));
+
+    for (const order of ['Onward', 'Rally', 'Rout']) expect(general).toContain(order);
+    for (const order of ['Entrench', 'Repel', 'Fortify']) expect(commandant).toContain(order);
+    for (const order of ['Entrench', 'Repel', 'Fortify']) expect(general).not.toContain(order);
   });
 
-  test('uses Denouement for Intelligence Missions and adopted Inquisition Action timing', () => {
-    const intelligence = read('factions/intelligence/index.html');
-    expect(intelligence).toContain('later Denouement Faction Action to complete it');
-    expect(intelligence).not.toContain('later Action Opportunity to complete it');
-
-    const inquisition = read('factions/inquisition/index.html');
-    expect(inquisition).toContain('Purge is a Faction Action during Opening or Denouement.');
-    expect(inquisition).toContain('never two Actions in the same phase');
-    expect(inquisition).toContain('no Opening or Denouement is inserted first');
-    expect(inquisition).not.toContain('The first Action spent to Purge each turn grants 1 additional Action');
-    expect(inquisition).not.toContain('no Action Opportunity occurs first');
-  });
-
-  test('states Front Line and Guardians effects without obsolete shorthand', () => {
-    const military = read('factions/military/index.html');
-    expect(military).toContain('Fortify advances your Front Line by one Territory');
-    expect(military).not.toContain('Fortify captures enemy-controlled ground');
-
-    const mystics = read('factions/mystics/index.html');
-    expect(mystics).toContain('value at least 1 for the first Rite, 2 for the second, 3 for the third, or 4 for the Ritual');
-  });
-
-  test('keeps the homepage construction rule at minimum 30 and maximum 60', () => {
+  test('keeps the restored homepage construction wording and v0.6.1 identity', () => {
     const homepage = read('index.html');
-    expect(homepage).toContain('build a Deck of at least 30 cards with no more than 60 total value');
-    expect(homepage).not.toContain('build a 30-card Deck totaling 60 value');
+    expect(homepage).toContain('Current canonical playtest edition · v0.6.1');
+    expect(homepage).toContain('build a deck of at least 30 cards within 60 value');
+    expect(homepage).not.toContain('Current canonical playtest edition · v0.6.2');
   });
 
   test('keeps historical v0.6.1 synchronization away from current faction pages', () => {

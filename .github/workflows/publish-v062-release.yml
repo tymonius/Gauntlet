@@ -5,11 +5,12 @@ on:
     branches:
       - main
     paths:
+      - "config/release-lifecycle.json"
+      - "config/release-locks.json"
       - "docs/Gauntlet_v0.6.2_*.md"
       - "docs/Gauntlet_v0.6.2_Starter_Decks_Candidate.json"
       - "v0.6.2/**"
       - "releases/v0.6.2/**"
-      - "releases/v0.6.3/**"
       - "factions/**"
       - "rules-assistant/**"
       - "src/content/**"
@@ -17,62 +18,90 @@ on:
       - "scripts/build-v062-release-runner.mjs"
       - "scripts/synchronize-v062-public-site.mjs"
       - "scripts/validate-v062-published-release.mjs"
-      - "scripts/validate-v062-historical-release.mjs"
+      - "scripts/validate-release-recovery-state.mjs"
+      - "scripts/release-lifecycle.mjs"
       - "package.json"
       - "index.html"
       - ".github/workflows/publish-v062-release.yml"
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: publish-v062-${{ github.ref }}-${{ github.sha }}
+  group: publish-v062-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
-  validate:
+  publish:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out validation target
+      - name: Check out release branch
         uses: actions/checkout@v4
         with:
-          fetch-depth: 50
+          ref: ${{ github.head_ref || github.ref_name }}
+          fetch-depth: 1
 
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Install dependencies
-        run: npm install
-
-      - name: Detect release lifecycle
+      - name: Read v0.6.2 lifecycle state
         id: lifecycle
         run: |
-          if [ -e releases/v0.6.3/Gauntlet_v0.6.3_Manifest.json ]; then
-            echo 'v063=true' >> "$GITHUB_OUTPUT"
-          else
-            echo 'v063=false' >> "$GITHUB_OUTPUT"
-          fi
+          status=$(node -e "const l=require('./config/release-lifecycle.json'); process.stdout.write(String(l.releases?.['v0.6.2']?.status || 'missing'))")
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          echo "v0.6.2 lifecycle status: $status"
 
-      - name: Validate v0.6.2 historical release after v0.6.3 cutover
-        if: steps.lifecycle.outputs.v063 == 'true'
-        run: node scripts/validate-v062-historical-release.mjs
+      - name: Verify withdrawn v0.6.2 is frozen
+        if: steps.lifecycle.outputs.status == 'withdrawn'
+        run: node scripts/validate-release-recovery-state.mjs
 
-      - name: Validate v0.6.2 as current release before v0.6.3 cutover
-        if: steps.lifecycle.outputs.v063 != 'true'
+      - name: Install dependencies
+        if: steps.lifecycle.outputs.status != 'withdrawn'
+        run: npm install
+
+      - name: Build synchronized v0.6.2 release
+        if: steps.lifecycle.outputs.status != 'withdrawn'
+        run: npm run release:v062:build
+
+      - name: Commit generated release outputs when changed
+        if: steps.lifecycle.outputs.status != 'withdrawn'
         run: |
-          npm run release:v062:build
-          npm run release:v062:check
+          git add \
+            index.html \
+            factions/ \
+            v0.6.2/ \
+            releases/v0.6.2/ \
+            rules-assistant/widget.js \
+            rules-assistant/worker-entry.js \
+            rules-assistant/worker-v062.js \
+            rules-assistant/v062-published-corpus.js \
+            src/content/current.ts
+          if git diff --cached --quiet; then
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Materialize and synchronize Gauntlet v0.6.2 release"
+          git pull --rebase origin ${{ github.head_ref || github.ref_name }}
+          git push origin HEAD:${{ github.head_ref || github.ref_name }}
+
+      - name: Verify release outputs are reproducible
+        if: steps.lifecycle.outputs.status != 'withdrawn'
+        run: npm run release:v062:check
 
       - name: Typecheck
+        if: steps.lifecycle.outputs.status != 'withdrawn'
         run: npm run typecheck
 
       - name: Run complete repository validation
+        if: steps.lifecycle.outputs.status != 'withdrawn'
         run: npm test
 
-      - name: Upload immutable v0.6.2 source package
+      - name: Upload v0.6.2 source package
+        if: steps.lifecycle.outputs.status != 'withdrawn'
         uses: actions/upload-artifact@v4
         with:
           name: gauntlet-v062-release-source

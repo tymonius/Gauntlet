@@ -1,4 +1,4 @@
-const CANONICAL_DATA_SOURCE = "../releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json";
+const CANONICAL_DATA_SOURCE = "../releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json";
 
 const FACTION_LABELS = {
   neutral: "Neutral",
@@ -17,7 +17,7 @@ const state = {
   faction: "all",
   cost: "all",
   selectedId: null,
-  version: "v0.6.3"
+  version: "v0.6.1"
 };
 
 const el = {};
@@ -25,17 +25,18 @@ const el = {};
 document.addEventListener("DOMContentLoaded", init);
 
 async function init() {
-  applyV063Chrome();
   cacheElements();
   bindEvents();
 
   try {
     const response = await fetch(CANONICAL_DATA_SOURCE, { cache: "no-store" });
-    if (!response.ok) throw new Error(`Failed to load ${CANONICAL_DATA_SOURCE}: ${response.status}`);
+    if (!response.ok) {
+      throw new Error(`Failed to load ${CANONICAL_DATA_SOURCE}: ${response.status}`);
+    }
 
     const data = await response.json();
     validateCanonicalData(data);
-    state.version = data.version || "v0.6.3";
+    state.version = data.version || "v0.6.1";
     state.entries = [
       ...(data.cards || []).map(normalizeCard),
       ...(data.territories || []).map(normalizeTerritory)
@@ -54,36 +55,20 @@ async function init() {
     el.dataStatus.textContent = "Canonical source load failed";
     document.body.insertAdjacentHTML(
       "beforeend",
-      `<p class="noscript">Unable to load the canonical v0.6.3 data. Serve the repository through a web server rather than opening this file directly. <a href="${CANONICAL_DATA_SOURCE}">Open the canonical JSON</a>.</p>`
+      `<p class="noscript">Unable to load the canonical v0.6.1 data. Serve the repository through a web server rather than opening this file directly. <a href="${CANONICAL_DATA_SOURCE}">Open the canonical JSON</a>.</p>`
     );
   }
 }
 
-function applyV063Chrome() {
-  document.title = "Gauntlet v0.6.3 Card Reference";
-  const description = document.querySelector('meta[name="description"]');
-  if (description) description.content = "Search and browse every canonical Gauntlet v0.6.3 playable card and Territory.";
-  const eyebrow = document.querySelector(".reference-hero .eyebrow");
-  if (eyebrow) eyebrow.textContent = "Canonical v0.6.3 lookup tool";
-  const title = document.getElementById("reference-title");
-  if (title) title.innerHTML = "Card <span>Reference.</span>";
-  const lede = document.querySelector(".reference-lede");
-  if (lede) lede.textContent = "Search every playable card and Territory without opening the Deckbuilder. Results load from the published canonical v0.6.3 data.";
-  const status = document.getElementById("dataStatus");
-  if (status) status.textContent = "Loading canonical v0.6.3 data…";
-  document.querySelectorAll('a[href="../v0.6.2/rulebook/"]').forEach(link => link.href = "../v0.6.3/rulebook/");
-  document.querySelectorAll('a[href="../v0.6.2/deckbuilder/"]').forEach(link => link.href = "../deckbuilder/");
-  document.querySelectorAll('a[href="../releases/v0.6.2/"]').forEach(link => {
-    link.href = "../releases/v0.6.3/";
-    link.textContent = "v0.6.3 Release";
-  });
-}
-
 function validateCanonicalData(data) {
   if (!data || typeof data !== "object") throw new Error("Canonical data is not an object.");
-  if (data.version !== "v0.6.3") throw new Error(`Expected v0.6.3 data, received ${data.version || "unknown version"}.`);
-  if (!Array.isArray(data.cards) || data.cards.length !== 128) throw new Error(`Expected 128 playable cards, received ${data.cards?.length ?? "none"}.`);
-  if (!Array.isArray(data.territories) || data.territories.length !== 25) throw new Error(`Expected 25 Territories, received ${data.territories?.length ?? "none"}.`);
+  if (data.version !== "v0.6.1") throw new Error(`Expected v0.6.1 data, received ${data.version || "unknown version"}.`);
+  if (!Array.isArray(data.cards) || data.cards.length !== 122) {
+    throw new Error(`Expected 122 playable cards, received ${data.cards?.length ?? "none"}.`);
+  }
+  if (!Array.isArray(data.territories) || data.territories.length !== 25) {
+    throw new Error(`Expected 25 Territories, received ${data.territories?.length ?? "none"}.`);
+  }
 }
 
 function normalizeCard(card) {
@@ -108,9 +93,6 @@ function normalizeCard(card) {
 
 function normalizeTerritory(territory) {
   const arena = Boolean(territory.arena) || String(territory.type).toLowerCase() === "arena";
-  const sections = territory.text
-    ? { Effect: String(territory.text) }
-    : normalizeEffects(territory.effects, "Effect");
   return {
     id: territory.id || `territory-${slugify(territory.name)}`,
     type: "territory",
@@ -119,7 +101,7 @@ function normalizeTerritory(territory) {
     factionLabel: arena ? "Arena" : "Territory",
     arena,
     complexity: territory.complexity || "",
-    sections,
+    sections: normalizeEffects(territory.effects, "Effect"),
     rulesNotes: normalizeNotes(territory.rules_notes),
     source: sourceHref(territory.source)
   };
@@ -159,12 +141,28 @@ function cacheElements() {
 
 function bindEvents() {
   el.filters.addEventListener("submit", event => event.preventDefault());
-  el.searchInput.addEventListener("input", () => { state.query = el.searchInput.value.trim().toLowerCase(); render(); });
-  el.typeFilter.addEventListener("change", () => { state.type = el.typeFilter.value; syncFilterAvailability(); render(); });
-  el.factionFilter.addEventListener("change", () => { state.faction = el.factionFilter.value; render(); });
-  el.costFilter.addEventListener("change", () => { state.cost = el.costFilter.value; render(); });
+  el.searchInput.addEventListener("input", () => {
+    state.query = el.searchInput.value.trim().toLowerCase();
+    render();
+  });
+  el.typeFilter.addEventListener("change", () => {
+    state.type = el.typeFilter.value;
+    syncFilterAvailability();
+    render();
+  });
+  el.factionFilter.addEventListener("change", () => {
+    state.faction = el.factionFilter.value;
+    render();
+  });
+  el.costFilter.addEventListener("change", () => {
+    state.cost = el.costFilter.value;
+    render();
+  });
   el.clearFilters.addEventListener("click", clearFilters);
-  window.addEventListener("hashchange", () => { applyHashSelection(); render(); });
+  window.addEventListener("hashchange", () => {
+    applyHashSelection();
+    render();
+  });
 }
 
 function clearFilters() {
@@ -198,10 +196,19 @@ function filteredEntries() {
     if (state.faction !== "all" && (entry.type !== "card" || entry.faction !== state.faction)) return false;
     if (state.cost !== "all" && (entry.type !== "card" || entry.cost !== Number(state.cost))) return false;
     if (!state.query) return true;
+
     const searchable = [
-      entry.name, entry.factionLabel, entry.complexity || "", entry.trait || "", entry.form || "",
-      entry.uniqueRule || "", ...Object.keys(entry.sections), ...Object.values(entry.sections), ...(entry.rulesNotes || [])
+      entry.name,
+      entry.factionLabel,
+      entry.complexity || "",
+      entry.trait || "",
+      entry.form || "",
+      entry.uniqueRule || "",
+      ...Object.keys(entry.sections),
+      ...Object.values(entry.sections),
+      ...(entry.rulesNotes || [])
     ].join(" ").toLowerCase();
+
     return searchable.includes(state.query);
   });
 }
@@ -260,7 +267,9 @@ function selectEntry(id) {
   const nextHash = `#${encodeURIComponent(id)}`;
   if (window.location.hash !== nextHash) history.replaceState(null, "", nextHash);
   render();
-  if (window.matchMedia("(max-width: 700px)").matches) requestAnimationFrame(() => el.preview.scrollIntoView({ behavior: "smooth", block: "start" }));
+  if (window.matchMedia("(max-width: 700px)").matches) {
+    requestAnimationFrame(() => el.preview.scrollIntoView({ behavior: "smooth", block: "start" }));
+  }
 }
 
 function applyHashSelection() {
@@ -307,12 +316,15 @@ function renderPreview(entry) {
       <a class="button secondary" href="${escapeHtml(entry.source)}">View governing source</a>
       <a class="button secondary" href="${CANONICAL_DATA_SOURCE}">View canonical JSON</a>
     </div>
-    <p class="preview-source">This reference reads the published ${escapeHtml(state.version)} canonical data.</p>
+    <p class="preview-source">This reference reads the generated ${escapeHtml(state.version)} canonical data. That data is regenerated and validated against the governing Markdown sources.</p>
   `;
+
   document.getElementById("copyLink")?.addEventListener("click", copyDirectLink);
 }
 
-function formatMultilineText(value) { return escapeHtml(value).replace(/\n/g, "<br>"); }
+function formatMultilineText(value) {
+  return escapeHtml(value).replace(/\n/g, "<br>");
+}
 
 async function copyDirectLink(event) {
   try {
@@ -333,9 +345,18 @@ function sortEntries(a, b) {
 }
 
 function slugify(value) {
-  return String(value || "").toLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  return String(value || "").toLowerCase()
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
 }
 
 function escapeHtml(value) {
-  return String(value ?? "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }

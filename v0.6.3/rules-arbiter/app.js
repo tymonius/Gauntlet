@@ -1,5 +1,9 @@
 import { buildLocalFallbackAnswer, retrieveRules } from "../../rules-assistant/local-search.js";
-import { defaultPublishedV063SourceUrls, loadPublishedV063RulesCorpus, V063_PUBLISHED_VERSION } from "../../rules-assistant/v063-published-corpus.js";
+import {
+  defaultDevelopmentV063SourceUrls,
+  loadDevelopmentV063RulesCorpus,
+  V063_RULES_VERSION
+} from "../../rules-assistant/v063-development-corpus.js";
 import {
   materializeV063DeterministicSources,
   resolveV063DeterministicRuling
@@ -32,15 +36,15 @@ form.addEventListener("submit", async (event) => {
     renderAnswer(result);
     history = [...history, { role: "user", content: question }, { role: "assistant", content: result.answer }].slice(-6);
   } catch (error) {
-    answer.innerHTML = `<p class="arbiter-error"><strong>Rules Arbiter unavailable.</strong> ${escapeHtml(error.message)}</p>`;
+    answer.innerHTML = `<p class="arbiter-error"><strong>Candidate Arbiter unavailable.</strong> ${escapeHtml(error.message)}</p>`;
   } finally {
     setBusy(false);
   }
 });
 
 status.textContent = endpoint
-  ? "Published worker configured; local published corpus remains the fallback."
-  : "Local published corpus mode.";
+  ? "Candidate worker configured; local candidate corpus remains the fallback."
+  : "Local candidate corpus mode. No unpublished worker endpoint is required.";
 
 async function askLocal(question) {
   const corpus = await getCorpus();
@@ -50,21 +54,21 @@ async function askLocal(question) {
       ...deterministic,
       sources: materializeV063DeterministicSources(corpus, deterministic),
       executionPath: "deterministic-local",
-      version: V063_PUBLISHED_VERSION,
-      candidate: false,
-      publishedVersion: "v0.6.3"
+      version: V063_RULES_VERSION,
+      candidate: true,
+      publishedVersion: "v0.6.2"
     };
   }
   const query = [...history.slice(-2).map((item) => item.content), question].join(" ");
   const retrieval = retrieveRules(corpus, query, { limit: 8, excerptLength: 1000 });
-  const fallback = buildLocalFallbackAnswer(question, retrieval, V063_PUBLISHED_VERSION);
+  const fallback = buildLocalFallbackAnswer(question, retrieval, V063_RULES_VERSION);
   return {
     ...fallback,
     responseType: "source_lookup",
     executionPath: "local-source-lookup",
-    version: V063_PUBLISHED_VERSION,
-    candidate: false,
-    publishedVersion: "v0.6.3"
+    version: V063_RULES_VERSION,
+    candidate: true,
+    publishedVersion: "v0.6.2"
   };
 }
 
@@ -73,24 +77,24 @@ async function askRemote(question) {
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ question, history, rulesVersion: V063_PUBLISHED_VERSION })
+      body: JSON.stringify({ question, history, rulesVersion: V063_RULES_VERSION })
     });
     const payload = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(payload.error || `Rules worker returned ${response.status}.`);
-    if (payload.version !== V063_PUBLISHED_VERSION || payload.candidate !== false) {
-      throw new Error("Configured endpoint did not identify itself as the v0.6.3 Rules Arbiter.");
+    if (!response.ok) throw new Error(payload.error || `Candidate worker returned ${response.status}.`);
+    if (payload.version !== V063_RULES_VERSION || payload.candidate !== true) {
+      throw new Error("Configured endpoint did not identify itself as the v0.6.3 candidate Rules Arbiter.");
     }
     return payload;
   } catch (error) {
-    console.warn("Rules worker unavailable; using local published corpus.", error);
+    console.warn("Candidate worker unavailable; using local candidate corpus.", error);
     return askLocal(question);
   }
 }
 
 async function getCorpus() {
   if (!corpusPromise) {
-    const urls = defaultPublishedV063SourceUrls(window.location.origin);
-    corpusPromise = loadPublishedV063RulesCorpus({ ...urls, fetchImpl: window.fetch.bind(window) });
+    const urls = defaultDevelopmentV063SourceUrls(window.location.origin);
+    corpusPromise = loadDevelopmentV063RulesCorpus({ ...urls, fetchImpl: window.fetch.bind(window) });
   }
   return corpusPromise;
 }
@@ -102,8 +106,8 @@ function renderAnswer(result) {
     <div class="arbiter-ruling">
       <p class="arbiter-meta"><strong>${escapeHtml(label)}</strong> · ${escapeHtml(result.executionPath || "candidate")}</p>
       <p>${escapeHtml(result.answer).replaceAll("\n", "<br>")}</p>
-      ${sources.length ? `<h3>Canonical sources</h3><ol>${sources.map(sourceItem).join("")}</ol>` : ""}
-      <p class="arbiter-boundary">This answer uses the published v0.6.3 canonical rules sources.</p>
+      ${sources.length ? `<h3>Candidate sources</h3><ol>${sources.map(sourceItem).join("")}</ol>` : ""}
+      <p class="arbiter-boundary">This answer uses the unpublished v0.6.3 candidate. Published play remains governed by v0.6.2 until release cutover.</p>
     </div>`;
 }
 

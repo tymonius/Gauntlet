@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en">
 <head>
+  <meta name="robots" content="noindex,nofollow">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
   <script>
@@ -11,16 +12,60 @@
   </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta name="robots" content="noindex,follow" />
+  <meta name="description" content="Build and review a Gauntlet v0.6.3 candidate Deck." />
   <title>Gauntlet v0.6.3 Deckbuilder</title>
-  <link rel="canonical" href="https://gauntlet.run/deckbuilder/" />
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
-  <meta http-equiv="refresh" content="0; url=/deckbuilder/" />
-  <script>location.replace('/deckbuilder/' + location.search + location.hash);</script>
+  <link rel="stylesheet" href="../styles.css" />
 </head>
 <body>
-  <p>The current Gauntlet v0.6.3 Deckbuilder is at <a href="/deckbuilder/">gauntlet.run/deckbuilder/</a>.</p>
+  <div class="release-banner"><strong>v0.6.3</strong> · development candidate · v0.6.2 remains canonical</div>
+  <header class="site-header no-print">
+    <a class="brand" href="../"><span class="brand-mark">G</span><span>Gauntlet</span></a>
+    <nav><a href="../start/">Start</a><a href="./">Deckbuilder</a><a href="../reference/">Reference</a><a href="../../v0.6.2/deckbuilder/">Published v0.6.2 tool</a></nav>
+  </header>
+  <main class="shell">
+    <section class="hero no-print">
+      <div><p class="eyebrow">Development Deckbuilder</p><h1>Build from the full pool.</h1><p class="lede">Choose one faction and Leader, load a recommended v0.6.3 starter, or customize from every legal Neutral and faction card. The recommended starters are competitive baselines, not simplified teaching Decks.</p></div>
+      <aside id="sourceStatus" class="panel">Loading integrated v0.6.3 candidate…</aside>
+    </section>
+
+    <section id="app" class="hidden">
+      <section class="panel no-print">
+        <div class="section-heading"><div><p class="eyebrow">Setup</p><h2>Choose your side</h2></div><button id="loadStarter" disabled>Load recommended starter</button></div>
+        <div class="toolbar"><label>Faction<select id="faction"></select></label><label>Leader<select id="leader"></select></label><label>Deck name<input id="deckName" maxlength="80" placeholder="Untitled Deck" /></label></div>
+        <div id="starterPreview" class="card"></div>
+      </section>
+
+      <section class="section metric-grid">
+        <div class="metric"><span>Cards</span><strong id="cardCount">0</strong><small>minimum 30</small></div>
+        <div class="metric"><span>Value</span><strong id="valueTotal">0</strong><small>maximum 60</small></div>
+        <div class="metric"><span>Territories</span><strong id="territoryCount">0</strong><small>exactly 3</small></div>
+        <div class="metric"><span>Status</span><strong id="validity">Incomplete</strong><small id="validityDetail"></small></div>
+      </section>
+
+      <section class="section split">
+        <div>
+          <section class="panel no-print">
+            <div class="section-heading"><div><p class="eyebrow">Cards</p><h2>Legal Neutral + faction pool</h2></div><span id="availableCount" class="pill"></span></div>
+            <div class="toolbar"><label>Search<input id="search" type="search" placeholder="Title or rules text" /></label><label>Allegiance<select id="allegiance"><option value="all">Neutral + faction</option><option value="neutral">Neutral only</option><option value="faction">Faction only</option></select></label><label>Value<select id="cost"><option value="all">All values</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select></label></div>
+            <div id="availableCards"></div>
+          </section>
+          <section class="panel no-print section">
+            <div class="section-heading"><div><p class="eyebrow">Territories</p><h2>Choose three; decide their setup order after opening selection</h2></div><span class="pill">maximum one Arena</span></div>
+            <p class="muted">Choose the three Territory cards that belong to the Deck. A loaded starter may recommend their order from your own end toward the opponent, but that order is strategy guidance, not a setup lock. After opening selection, you may keep the recommendation or rearrange the three Territories.</p><div id="territories" class="choice-grid"></div>
+          </section>
+        </div>
+        <aside class="sticky">
+          <section class="panel">
+            <p class="eyebrow">Deck list</p><h2 id="printTitle">Untitled Deck</h2><p id="printIdentity"></p><div id="selectedCards"></div><div class="section"><h3>Selected Territories</h3><ul id="selectedTerritories"></ul></div><div id="validationMessages" class="section"></div>
+            <div class="actions no-print"><button id="printDeck">Print / PDF</button><button id="exportDeck" class="secondary">Export JSON</button><button id="downloadCanonical" class="secondary">Download canonical data</button><button id="clearDeck" class="secondary">Clear</button></div>
+          </section>
+        </aside>
+      </section>
+    </section>
+  </main>
+  <script type="module" src="app.js"></script>
 </body>
 </html>

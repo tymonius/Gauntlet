@@ -1,20 +1,20 @@
-name: Test browser tools and current Card Reference
+name: Test restored v0.6.1 browser tools
 
 on:
   pull_request:
     branches:
       - main
     paths:
+      - "config/release-lifecycle.json"
+      - "config/release-locks.json"
       - "rulebook/**"
-      - "v0.6.3/rulebook/**"
       - "card-reference/**"
       - "deckbuilder/**"
+      - "factions/**"
       - "rules-assistant/**"
       - "playtest/**"
       - "releases/v0.6.1/**"
-      - "releases/v0.6.2/**"
-      - "releases/v0.6.3/**"
-      - "docs/Gauntlet_v0.6.1_*.md"
+      - "scripts/validate-release-recovery-state.mjs"
       - ".github/workflows/test-v061-browser-tools.yml"
   workflow_dispatch:
 
@@ -39,6 +39,9 @@ jobs:
         with:
           node-version: 22
 
+      - name: Verify exact recovery locks before browser smoke
+        run: node scripts/validate-release-recovery-state.mjs
+
       - name: Install Playwright
         run: |
           npm install --no-save playwright
@@ -47,7 +50,7 @@ jobs:
       - name: Serve repository
         run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
 
-      - name: Smoke-test browser tools on desktop and mobile
+      - name: Smoke-test restored v0.6.1 browser surfaces
         run: |
           node --input-type=module <<'NODE'
           import { chromium } from 'playwright';
@@ -58,9 +61,7 @@ jobs:
             const page = await browser.newPage({ viewport });
             const errors = [];
             page.on('pageerror', error => errors.push(error.message));
-            page.on('console', message => {
-              if (message.type() === 'error') errors.push(message.text());
-            });
+            page.on('console', message => { if (message.type() === 'error') errors.push(message.text()); });
             const response = await page.goto(`http://127.0.0.1:8000${path}`, { waitUntil: 'networkidle' });
             if (!response?.ok()) throw new Error(`${path} returned ${response?.status()}`);
             return { page, errors };
@@ -73,54 +74,11 @@ jobs:
               const { page, errors } = await openPage('/rulebook/', viewport);
               await page.waitForSelector('[data-rulebook-content] h1, [data-rulebook-content] h2');
               const text = await page.locator('[data-rulebook-content]').innerText();
-              const status = await page.locator('[data-rulebook-status]').innerText();
-              const shellText = await page.locator('body').innerText();
-              if (!status.includes('Canonical v0.6.3') || shellText.includes('Gauntlet v0.6.1 Browser Rulebook')) {
-                throw new Error(`Browser rulebook did not identify current v0.6.3: ${status}`);
-              }
-              if (!(await page.locator('.rulebook-hero').count()) || !(await page.locator('.rulebook-sidebar').count()) || !(await page.locator('.rulebook-search').count())) {
-                throw new Error('Rulebook is not using the polished production interface');
-              }
               for (const term of ['Gambit', 'Reserve', 'Tactic', 'Aftermath']) {
                 if (!text.includes(term)) throw new Error(`Browser rulebook missing ${term}`);
               }
-              for (const phrase of [
-                'Draw four cards, choose one card from those four',
-                'After seeing your opening Hand and opening discard, secretly arrange your three Territory Cards',
-                "capturing the Territory at your opponent's end",
-                'winning your opponent\'s Last Stand'
-              ]) {
-                if (!text.includes(phrase)) throw new Error(`Browser rulebook is missing current v0.6.3 rule text: ${phrase}`);
-              }
-              if (text.includes('Battle Hand') || text.includes('hand commitment')) {
-                throw new Error('Browser rulebook contains obsolete battle terminology');
-              }
-              if (text.includes('GENERATED FACTION CONTENT')) {
-                throw new Error('Browser rulebook exposes an internal synchronization marker');
-              }
-
               const leaderImages = page.locator('[data-rulebook-content] img');
-              const leaderImageCount = await leaderImages.count();
-              if (leaderImageCount !== 12) {
-                throw new Error(`Browser rulebook rendered ${leaderImageCount} Leader images instead of 12`);
-              }
-              for (let index = 0; index < leaderImageCount; index += 1) {
-                const image = leaderImages.nth(index);
-                await image.evaluate(element => { element.loading = 'eager'; });
-                await image.scrollIntoViewIfNeeded();
-              }
-              await page.waitForFunction(() => {
-                const images = [...document.querySelectorAll('[data-rulebook-content] img')];
-                return images.length === 12 && images.every(image => image.complete && image.naturalWidth > 0);
-              });
-
-              const failedImages = await leaderImages.evaluateAll(images => images
-                .filter(image => image.naturalWidth === 0 || image.naturalHeight === 0)
-                .map(image => `${image.alt}: ${image.currentSrc || image.src}`));
-              if (failedImages.length) {
-                throw new Error(`Leader sketches failed to load:\n${failedImages.join('\n')}`);
-              }
-
+              if (await leaderImages.count() !== 12) throw new Error('Browser rulebook did not render 12 Leader images');
               await page.screenshot({ path: `/tmp/rulebook-${suffix}.png`, fullPage: true });
               if (errors.length) throw new Error(`Rulebook ${suffix} errors:\n${errors.join('\n')}`);
               await page.close();
@@ -128,67 +86,23 @@ jobs:
 
             {
               const { page, errors } = await openPage('/card-reference/', viewport);
-              await page.waitForFunction(() => document.querySelector('#cardTotal')?.textContent === '128');
-              if ((await page.locator('#territoryTotal').textContent()) !== '25') {
-                throw new Error('Card reference did not load 25 Territories');
-              }
+              await page.waitForFunction(() => document.querySelector('#cardTotal')?.textContent === '122');
+              if ((await page.locator('#territoryTotal').textContent()) !== '25') throw new Error('Card Reference did not load 25 Territories');
               const status = await page.locator('#dataStatus').innerText();
-              if (!status.includes('v0.6.3')) throw new Error(`Card reference did not identify v0.6.3: ${status}`);
-
-              for (const cardName of ['Landslide', 'Détente', 'Compound Interest', 'Extraordinary Rendition', "Nature's Altar", 'Martyrdom']) {
-                await page.fill('#searchInput', cardName);
-                await page.waitForFunction(() => document.querySelector('#resultCount')?.textContent === '1');
-                if ((await page.locator('.reference-row-title').first().innerText()) !== cardName) {
-                  throw new Error(`Card reference did not find current v0.6.3 card ${cardName}`);
-                }
-              }
-
-              await page.fill('#searchInput', 'Invasion');
-              await page.selectOption('#factionFilter', 'neutral');
-              await page.waitForFunction(() => document.querySelector('#resultCount')?.textContent === '0');
-              await page.selectOption('#factionFilter', 'military');
-              await page.waitForFunction(() => document.querySelector('#resultCount')?.textContent === '1');
-              const invasion = page.locator('.reference-row').first();
-              await invasion.click();
-              await page.waitForFunction(() => document.querySelector('#preview h3')?.textContent === 'Invasion');
-              const invasionPreview = await page.locator('#preview').innerText();
-              if (!invasionPreview.toLowerCase().includes('military card')) {
-                throw new Error(`Invasion is not presented as Military:\n${invasionPreview}`);
-              }
-
-              if (viewport.width < 600) {
-                await page.locator('.mobile-reference-preview-close').click();
-                await page.waitForFunction(() => !document.querySelector('#preview')?.classList.contains('mobile-open'));
-              }
-
+              if (!status.includes('v0.6.1')) throw new Error(`Card Reference did not identify v0.6.1: ${status}`);
               await page.fill('#searchInput', 'Black Covenant');
-              await page.selectOption('#factionFilter', 'all');
               await page.waitForFunction(() => document.querySelector('#resultCount')?.textContent === '1');
-              const result = page.locator('.reference-row').first();
-              await result.click();
-              await page.waitForFunction(() => document.querySelector('#preview h3')?.textContent === 'Black Covenant');
-              const preview = await page.locator('#preview').innerText();
-              if (!preview.includes('Tactic') || !preview.includes('+1 Tactic from Hand.')) {
-                throw new Error(`Black Covenant preview is not synchronized with v0.6.3:\n${preview}`);
-              }
+              if ((await page.locator('.reference-row-title').first().innerText()) !== 'Black Covenant') throw new Error('v0.6.1 Card Reference search failed');
               await page.screenshot({ path: `/tmp/card-reference-${suffix}.png`, fullPage: true });
-              if (errors.length) throw new Error(`Card reference ${suffix} errors:\n${errors.join('\n')}`);
+              if (errors.length) throw new Error(`Card Reference ${suffix} errors:\n${errors.join('\n')}`);
               await page.close();
             }
 
             {
               const { page, errors } = await openPage('/deckbuilder/', viewport);
-              await page.waitForFunction(() => {
-                const app = document.querySelector('#app');
-                const factions = document.querySelectorAll('#factionSelect option');
-                return app && !app.hidden && factions.length >= 6;
-              });
+              await page.waitForFunction(() => document.body.innerText.includes('Military'));
               const text = await page.locator('body').innerText();
-              if (!text.includes('v0.6.3')) throw new Error('Deckbuilder does not identify v0.6.3');
-              if (text.includes('v0.6.1') || text.includes('v0.6.0')) throw new Error('Deckbuilder exposes a stale version label');
-              if (!(await page.locator('.builder-grid').count()) || !(await page.locator('.card-preview').count()) || !(await page.locator('.territory-browser').count())) {
-                throw new Error('Deckbuilder is not using the polished production interface');
-              }
+              if (!text.includes('v0.6.1')) throw new Error('Deckbuilder does not identify v0.6.1');
               await page.screenshot({ path: `/tmp/deckbuilder-${suffix}.png`, fullPage: true });
               if (errors.length) throw new Error(`Deckbuilder ${suffix} errors:\n${errors.join('\n')}`);
               await page.close();
@@ -196,10 +110,18 @@ jobs:
           }
 
           {
+            const { page, errors } = await openPage('/factions/military/', { width: 1200, height: 900 });
+            const general = await page.locator('#general').innerText();
+            const commandant = await page.locator('#commandant').innerText();
+            for (const order of ['Onward', 'Rally', 'Rout']) if (!general.includes(order)) throw new Error(`General missing ${order}`);
+            for (const order of ['Entrench', 'Repel', 'Fortify']) if (!commandant.includes(order)) throw new Error(`Commandant missing ${order}`);
+            if (errors.length) throw new Error(`Military faction errors:\n${errors.join('\n')}`);
+            await page.close();
+          }
+
+          {
             const { page, errors } = await openPage('/playtest/?serial=G061-SMOKE', { width: 900, height: 1200 });
-            if ((await page.locator('#sheet-serial').textContent()) !== 'G061-SMOKE') {
-              throw new Error('Playtest sheet did not apply its serial parameter');
-            }
+            if ((await page.locator('#sheet-serial').textContent()) !== 'G061-SMOKE') throw new Error('Playtest sheet did not apply its serial parameter');
             if (errors.length) throw new Error(`Playtest sheet errors:\n${errors.join('\n')}`);
             await page.close();
           }
@@ -220,6 +142,6 @@ jobs:
       - name: Upload browser screenshots
         uses: actions/upload-artifact@v4
         with:
-          name: gauntlet-browser-smoke
+          name: gauntlet-v061-recovery-browser-smoke
           path: /tmp/*.png
           if-no-files-found: error

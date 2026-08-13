@@ -35,8 +35,8 @@
     },
     "tracked_candidate_surfaces": {
       "algorithm": "sha256",
-      "files": 83,
-      "digest": "ebb4aeccb33bce51af905e93f394af8c39a5d7787e037001f414f57770476dd2"
+      "files": 87,
+      "digest": "bae67e1f23a57094f481f96c643d0fef60cee33167410f15a37ee80c9e6c4d4e"
     },
     "pdf_bytes_intentionally_excluded": true
   },

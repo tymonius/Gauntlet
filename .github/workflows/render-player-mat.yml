@@ -5,14 +5,20 @@ on:
     branches: [main, agent/v062-printed-materials]
     paths:
       - ".github/workflows/render-player-mat.yml"
+      - "config/release-lifecycle.json"
+      - "config/release-locks.json"
       - "playtest/player-mat/index.html"
       - "v0.6.2/print/player-mat.html"
+      - "scripts/validate-release-recovery-state.mjs"
   pull_request:
     branches: [main]
     paths:
       - ".github/workflows/render-player-mat.yml"
+      - "config/release-lifecycle.json"
+      - "config/release-locks.json"
       - "playtest/player-mat/index.html"
       - "v0.6.2/print/player-mat.html"
+      - "scripts/validate-release-recovery-state.mjs"
   workflow_dispatch:
 
 permissions:
@@ -25,32 +31,20 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v4
 
-      - name: Validate current player-mat entry point and source
+      - name: Validate release recovery locks
+        run: node scripts/validate-release-recovery-state.mjs
+
+      - name: Validate restored v0.6.1 player mat
         run: |
           node --input-type=module <<'NODE'
           import fs from 'node:fs';
-
-          const redirectPath = 'playtest/player-mat/index.html';
-          const currentPath = 'v0.6.2/print/player-mat.html';
-
-          for (const file of [redirectPath, currentPath]) {
-            if (!fs.existsSync(file)) throw new Error(`Missing player-mat artifact: ${file}`);
-          }
-
-          const redirect = fs.readFileSync(redirectPath, 'utf8');
+          const currentPath = 'playtest/player-mat/index.html';
           const current = fs.readFileSync(currentPath, 'utf8');
-
-          for (const marker of ['../../v0.6.2/print/player-mat.html', 'Gauntlet Player Mat — v0.6.2']) {
-            if (!redirect.includes(marker)) throw new Error(`Current player-mat redirect is missing: ${marker}`);
+          for (const marker of ['Gauntlet v0.6.1 Player Mat', 'Gauntlet v0.6.1', 'Hand', 'Reserve', 'Gambit', 'Tactic', 'Asset Bank']) {
+            if (!current.includes(marker)) throw new Error(`Restored v0.6.1 player mat is missing: ${marker}`);
           }
-
-          for (const marker of ['Gauntlet Player Mat', 'v0.6.2', 'Capture', 'Draw', 'Opening', 'Movement', 'Denouement', 'Cleanup']) {
-            if (!current.includes(marker)) throw new Error(`v0.6.2 player mat is missing: ${marker}`);
+          if (current.includes('v0.6.2/print/player-mat.html')) {
+            throw new Error('Current player mat still redirects to withdrawn v0.6.2.');
           }
-
-          if (/Action Opportunity/i.test(current)) {
-            throw new Error('v0.6.2 player mat contains retired Action Opportunity terminology.');
-          }
-
-          console.log('Validated the current v0.6.2 player-mat redirect and printable source.');
+          console.log('Validated exact locked v0.6.1 current player mat.');
           NODE

@@ -11,6 +11,11 @@ const failures = [];
 const read = (relativePath) => fs.readFileSync(path.join(root, relativePath), 'utf8').replace(/\r\n/g, '\n');
 const readJson = (relativePath) => JSON.parse(read(relativePath));
 const assert = (condition, message) => { if (!condition) failures.push(message); };
+const lifecycle = readJson('config/release-lifecycle.json');
+const v063Withdrawn = lifecycle.current_release === 'v0.6.2' &&
+  lifecycle.releases?.['v0.6.3']?.status === 'withdrawn' &&
+  lifecycle.releases?.['v0.6.3']?.artifacts_preserved === true &&
+  lifecycle.releases?.['v0.6.3']?.public_cutover === false;
 
 const htmlFiles = [
   'index.html',
@@ -161,13 +166,25 @@ assert(manifest.booklet_padding?.padding_pages === paddedPages - readerPages, 'B
 const tablesideExpected = (manifest.tableside_order ?? []).reduce((sum, key) => sum + (byKey.get(key)?.pages ?? 0), 0);
 assert(byKey.get('tableside_pack')?.pages === tablesideExpected, `Tableside Pack expected ${tablesideExpected} pages; found ${byKey.get('tableside_pack')?.pages}.`);
 
-assert(!fs.existsSync(path.join(root, 'releases/v0.6.3')), 'Print-candidate PR must not materialize releases/v0.6.3/.');
+const publishedV063Exists = fs.existsSync(path.join(root, 'releases/v0.6.3'));
+assert(
+  !publishedV063Exists || v063Withdrawn,
+  'A v0.6.3 published package may coexist with print-candidate rebuilding only when the release lifecycle explicitly marks v0.6.3 withdrawn and v0.6.2 current.'
+);
+if (v063Withdrawn) {
+  assert(publishedV063Exists, 'Withdrawn v0.6.3 lifecycle must preserve the published release package for provenance and diagnosis.');
+}
 
 try {
   const changed = childProcess.execSync('git diff --name-only origin/main...HEAD', { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] });
   const forbiddenPrefixes = ['releases/v0.6.2/', 'v0.6.2/'];
-  const forbiddenExact = ['index.html', 'rules-assistant/widget.js', 'rules-assistant/worker-entry.js', 'src/content/current.ts'];
-  const violations = changed.split(/\r?\n/).filter(Boolean).filter((file) => forbiddenPrefixes.some((prefix) => file.startsWith(prefix)) || forbiddenExact.includes(file));
+  const protectedV062Exact = ['rules-assistant/worker-v062.js', 'rules-assistant/v062-published-corpus.js'];
+  const currentRoutingExact = ['index.html', 'rules-assistant/widget.js', 'rules-assistant/worker-entry.js', 'src/content/current.ts'];
+  const violations = changed.split(/\r?\n/).filter(Boolean).filter((file) =>
+    forbiddenPrefixes.some((prefix) => file.startsWith(prefix)) ||
+    protectedV062Exact.includes(file) ||
+    (!v063Withdrawn && currentRoutingExact.includes(file))
+  );
   if (violations.length) failures.push(`Print-candidate PR crossed the publication boundary:\n${violations.join('\n')}`);
 } catch {
   // CI has origin/main; local or sparse review environments may not.
@@ -198,5 +215,5 @@ function finish() {
     for (const failure of failures) console.error(`- ${failure}`);
     process.exit(1);
   }
-  console.log(`v0.6.3 print-candidate validation passed: ${pdfFiles.length} PDFs, current setup/victory/player-aid semantics, booklet geometry, tableside assembly, and intact v0.6.2 publication boundary.`);
+  console.log(`v0.6.3 print-candidate validation passed: ${pdfFiles.length} PDFs, current setup/victory/player-aid semantics, booklet geometry, tableside assembly, and intact v0.6.2 publication boundary${v063Withdrawn ? '; preserved v0.6.3 package is explicitly withdrawn' : ''}.`);
 }
