@@ -66,6 +66,7 @@ assert(markdown.includes('../../../../images/'), 'Reconstruction Markdown render
 
 for (const marker of [
   '<meta name="robots" content="noindex,nofollow" />',
+  '<link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />',
   'Clean v0.6.3 reconstruction candidate',
   'not the current public release',
   'publication remains locked',
