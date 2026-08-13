@@ -5,7 +5,10 @@
   "authority_issue": 589,
   "baseline_release": "v0.6.1",
   "publication_unlocked": false,
-  "publication_order": ["clean-v0.6.2", "clean-v0.6.3"],
+  "publication_order": [
+    "clean-v0.6.2",
+    "clean-v0.6.3"
+  ],
   "principles": {
     "historical_packages_are_evidence_only": true,
     "clean_v062_derives_from_v061_authority": true,
@@ -15,7 +18,7 @@
   },
   "targets": {
     "clean-v0.6.2": {
-      "status": "authority_build_approved",
+      "status": "authority_certified",
       "approval": {
         "basis": "Manual merge of PR #606 on main",
         "pr": 606,
@@ -48,25 +51,34 @@
         {
           "id": "v062-opening-selection-bottom-deck",
           "disposition": "adopt_for_v062",
-          "evidence": ["https://github.com/tymonius/Gauntlet/issues/487", "https://github.com/tymonius/Gauntlet/issues/470#issuecomment-5180420089"],
+          "evidence": [
+            "https://github.com/tymonius/Gauntlet/issues/487",
+            "https://github.com/tymonius/Gauntlet/issues/470#issuecomment-5180420089"
+          ],
           "rule": "Shuffle the Playable Deck; draw four; choose three as the opening Hand; place the fourth face down beneath the Draw Pile without discarding or triggering anything; then arrange Territories with the opening Hand known."
         },
         {
           "id": "v062-specific-overrides-broad-conflict",
           "disposition": "adopt_for_v062",
-          "evidence": ["https://github.com/tymonius/Gauntlet/issues/470#issuecomment-5181941569"],
+          "evidence": [
+            "https://github.com/tymonius/Gauntlet/issues/470#issuecomment-5181941569"
+          ],
           "rule": "When two rules or effects genuinely conflict, follow the more specific one. If both can apply, use normal timing/order instead; specificity does not undo an effect already applied."
         },
         {
           "id": "v062-additional-action-corrections",
           "disposition": "adopt_for_v062",
-          "evidence": ["https://github.com/tymonius/Gauntlet/pull/511"],
+          "evidence": [
+            "https://github.com/tymonius/Gauntlet/pull/511"
+          ],
           "rule": "Insurrection, Liberation, Reinforcements, Divestment, Margin Loan, and Tariffs receive their verified same-phase additional-Action permissions; this does not create another Action phase or grant movement."
         },
         {
           "id": "v062-starter-catalog",
           "disposition": "adopt_downstream_after_authority",
-          "evidence": ["https://github.com/tymonius/Gauntlet/pull/500"],
+          "evidence": [
+            "https://github.com/tymonius/Gauntlet/pull/500"
+          ],
           "rule": "Use the twelve v0.6.2 Leader-specific first-game starter Decks, not the later v0.6.3 competitive rebuild."
         }
       ],
@@ -90,7 +102,14 @@
         "setup_placement_is_entry": false
       },
       "action_invariants": {
-        "turn_sequence": ["Capture", "Draw", "Opening", "Movement", "Denouement", "Cleanup"],
+        "turn_sequence": [
+          "Capture",
+          "Draw",
+          "Opening",
+          "Movement",
+          "Denouement",
+          "Cleanup"
+        ],
         "normal_actions_per_turn": 1,
         "normal_actions_per_phase_max": 1,
         "faction_action_and_faction_ability_distinct": true,
@@ -98,7 +117,11 @@
         "purge_phase_exception": true
       },
       "battle_invariants": {
-        "prebattle_sequence": ["pending_battle", "terms", "onset"],
+        "prebattle_sequence": [
+          "pending_battle",
+          "terms",
+          "onset"
+        ],
         "accepted_terms_prevent_battle": true,
         "defensive_edge": true,
         "straight_unmodified_tiebreak_roll": true,
@@ -117,10 +140,19 @@
         "second_line_title": false,
         "smugglers_run_title": false
       },
-      "authority_build_unlocked": true
+      "authority_build_unlocked": true,
+      "certification": {
+        "basis": "Manual merge of the clean v0.6.2 authority certification PR on main",
+        "faction_authority_pr": 609,
+        "faction_authority_merge_commit": "ded1206b7bd9a83b4d32ce3f2ef063ee609d8461",
+        "rulebook_authority_pr": 611,
+        "rulebook_authority_merge_commit": "5c8181c9a70af9dfdcd8b91153c80b6b6943e52e",
+        "manifest": "artifacts/reconstruction/clean-v0.6.2/certification/authority-set.json",
+        "authority_set_id": "563ce3a0ac39a0bbba52cc113ae9ffbcaeb3c0985bad4cfa66fe462fb2cacb3b"
+      }
     },
     "clean-v0.6.3": {
-      "status": "blocked_on_clean_v062",
+      "status": "authority_build_approved",
       "authority_base": "clean-v0.6.2",
       "evidence_anchor": {
         "ref": "archive/v063-post-ui-hotfixes",
@@ -201,7 +233,13 @@
         "cards_per_deck": 30,
         "deckbuilding_value": 60
       },
-      "authority_build_unlocked": false
+      "authority_build_unlocked": true,
+      "unlock": {
+        "basis": "certified_clean_v0.6.2_authority",
+        "manifest": "artifacts/reconstruction/clean-v0.6.2/certification/authority-set.json",
+        "authority_set_id": "563ce3a0ac39a0bbba52cc113ae9ffbcaeb3c0985bad4cfa66fe462fb2cacb3b",
+        "publication_unlocked": false
+      }
     }
   }
 }
