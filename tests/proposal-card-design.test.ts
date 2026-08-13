@@ -78,15 +78,36 @@ describe("Diplomat Proposal / Treaty Article prototypes", () => {
     expect(cardRefinementStyles).toContain(".card-art img");
     expect(proposalStyles).toContain(".proposal-ratified-panel > img.proposal-wax-seal");
     expect(proposalStyles).toContain("inset: auto");
-    expect(proposalStyles).toContain("top: 60%");
     expect(proposalStyles).toContain("left: 50%");
-    expect(proposalStyles).toContain("width: 0.96in");
-    expect(proposalStyles).toContain("height: 0.96in");
     expect(proposalStyles).toContain("object-fit: contain");
     expect(proposalStyles).toContain("object-position: center");
     expect(proposalStyles).toContain("transform: translate(-50%, -50%) rotate(-1.5deg)");
     expect(proposalStyles).not.toContain("right: 0.13in");
     expect(proposalStyles).not.toContain("bottom: 0.10in");
+  });
+
+  it("scales the Ratified word and wax seal with the fitted artwork height so they cannot crowd each other on dense Proposals", () => {
+    expect(proposalStyles).toContain("top: 7%");
+    expect(proposalStyles).toContain("font-size: min(27pt, calc(var(--art-height) * 0.23))");
+    expect(proposalStyles).toContain("top: 66%");
+    expect(proposalStyles).toContain("width: min(0.96in, calc(var(--art-height) * 0.62))");
+    expect(proposalStyles).toContain("height: min(0.96in, calc(var(--art-height) * 0.62))");
+    expect(proposalStyles).not.toContain("top: 60%");
+
+    const pxPerInch = 96;
+    const pxPerPoint = pxPerInch / 72;
+    for (const artHeight of [1.52 * pxPerInch, 1.28 * pxPerInch, 1.04 * pxPerInch]) {
+      const wordTop = artHeight * 0.07;
+      const wordSize = Math.min(27 * pxPerPoint, artHeight * 0.23);
+      const wordBottom = wordTop + wordSize;
+      const sealSize = Math.min(0.96 * pxPerInch, artHeight * 0.62);
+      const sealCenter = artHeight * 0.66;
+      const sealTop = sealCenter - sealSize / 2;
+      const sealBottom = sealCenter + sealSize / 2;
+
+      expect(sealTop - wordBottom).toBeGreaterThan(3);
+      expect(sealBottom).toBeLessThanOrEqual(artHeight);
+    }
   });
 
   it("keeps the Ratified heading in Declaration Blackletter with Declaration Pro fallback", () => {

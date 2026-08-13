@@ -152,10 +152,14 @@
     repeating-linear-gradient(0deg, transparent 0 0.12in, rgba(70, 50, 31, 0.025) 0.121in 0.123in);
 }
 
+/* Both ratification elements derive their size from --art-height. This keeps
+   the composition intact when the shared fitting pass shortens the artwork
+   window for a text-heavy Proposal instead of allowing the seal and wordmark
+   to collide at their former fixed physical sizes. */
 .proposal-ratified-word {
   position: absolute;
   z-index: 4;
-  top: 0.09in;
+  top: 7%;
   left: 50%;
   margin: 0;
   color: #263e69;
@@ -163,7 +167,7 @@
     "P22 Declaration W01 Blackletter",
     "P22 Declaration Blackletter",
     var(--font-flavor);
-  font-size: 27pt;
+  font-size: min(27pt, calc(var(--art-height) * 0.23));
   font-style: normal;
   font-weight: 400;
   letter-spacing: 0.015em;
@@ -192,18 +196,17 @@
   left: calc(100% + 0.08in);
 }
 
-/* The generic .card-art img rule is intentionally stronger than a bare class
-   selector and otherwise stretches supplemental art to cover the full window.
-   Override it with equal-or-greater specificity so the approved seal keeps its
-   own dimensions and sits as a single centered ratification mark. */
+/* At the full 1.52in art height this remains almost the full 0.96in approved
+   size. At the 1.04in fitting floor it contracts enough to preserve the gap
+   beneath Ratified and remain wholly inside the mounted-print window. */
 .proposal-ratified-panel > img.proposal-wax-seal {
   position: absolute;
   z-index: 3;
   inset: auto;
-  top: 60%;
+  top: 66%;
   left: 50%;
-  width: 0.96in;
-  height: 0.96in;
+  width: min(0.96in, calc(var(--art-height) * 0.62));
+  height: min(0.96in, calc(var(--art-height) * 0.62));
   max-width: none;
   object-fit: contain;
   object-position: center;
