@@ -11,6 +11,11 @@ const TERRITORY_WIDTH = 336;
 const TERRITORY_HEIGHT = 240;
 const EXPECTED_PLAYABLE_CARDS = 128;
 const EXPECTED_TERRITORIES = 25;
+const EXPECTED_PROPOSALS = [
+  'De-escalation', 'Orderly Withdrawal', 'Capitulation', 'Open Channels',
+  'Mutual Disarmament', 'Prisoner Exchange', 'Rebuilding Pact', 'Ultimatum',
+  'Diplomatic Recognition',
+];
 const EXPECTED_LEADERS = [
   'General', 'Commandant', 'Ambassador', 'Senator', 'Banker', 'Executive',
   'Ranger', 'Spymaster', 'Alchemist', 'Spirit Walker', 'Grand Inquisitor', 'Witch Hunter',
@@ -67,6 +72,15 @@ async function main() {
     await page.waitForSelector('.leader-card');
     await page.waitForFunction(expected => document.querySelectorAll('.full-card-review-frame').length === expected, EXPECTED_PLAYABLE_CARDS);
     await page.waitForFunction(expected => document.querySelectorAll('.territory-review-frame').length === expected, EXPECTED_TERRITORIES);
+    await page.waitForFunction(expected => document.querySelectorAll('.proposal-review-pair').length === expected, EXPECTED_PROPOSALS.length);
+    await page.waitForFunction(expected => {
+      const cards = [...document.querySelectorAll('.proposal-card')];
+      return cards.length === expected * 2
+        && cards.every(card => card.dataset.parchmentLoaded === 'true')
+        && cards.every(card => card.dataset.titleFit === 'true')
+        && cards.every(card => card.querySelector('.card-interior')?.style.getPropertyValue('--art-height'))
+        && [...document.querySelectorAll('.proposal-ratified-panel .proposal-wax-seal')].every(image => image.complete && image.naturalWidth > 0);
+    }, EXPECTED_PROPOSALS.length);
     await page.waitForFunction(expected => {
       const cards = [...document.querySelectorAll('.leader-card')];
       return cards.length === expected
@@ -93,6 +107,42 @@ async function main() {
     }));
     if (territoryFrameMetrics.some(metric => Math.abs(metric.width - TERRITORY_WIDTH) > 0.25 || Math.abs(metric.height - TERRITORY_HEIGHT) > 0.25)) {
       throw new Error(`Unexpected Territory review frame geometry: ${JSON.stringify(territoryFrameMetrics)}.`);
+    }
+
+    const proposalMetrics = await page.locator('.proposal-card').evaluateAll(cards => cards.map(card => {
+      const interior = card.querySelector('.card-interior');
+      const rect = card.getBoundingClientRect();
+      const seal = card.querySelector('.proposal-wax-seal');
+      return {
+        name: card.querySelector('.card-title')?.textContent?.trim(),
+        type: card.querySelector('.card-footer span:nth-child(2)')?.textContent?.trim(),
+        width: rect.width,
+        height: rect.height,
+        artHeight: interior?.style.getPropertyValue('--art-height'),
+        rulesScale: getComputedStyle(card).getPropertyValue('--rules-scale').trim() || '1',
+        fitWarning: card.classList.contains('fit-warning'),
+        titleFit: card.dataset.titleFit,
+        parchmentLoaded: card.dataset.parchmentLoaded,
+        sealNaturalWidth: seal?.naturalWidth || 0,
+      };
+    }));
+    const proposalCount = await page.locator('#proposalReviewSections').getAttribute('data-proposal-count');
+    if (proposalCount !== String(EXPECTED_PROPOSALS.length)) {
+      throw new Error(`Proposal catalog count marker is incorrect: ${proposalCount}.`);
+    }
+    if (proposalMetrics.length !== EXPECTED_PROPOSALS.length * 2) {
+      throw new Error(`Expected ${EXPECTED_PROPOSALS.length * 2} Proposal faces, found ${proposalMetrics.length}.`);
+    }
+    for (const name of EXPECTED_PROPOSALS) {
+      const faces = proposalMetrics.filter(metric => metric.name === name);
+      if (faces.length !== 2 || !faces.some(face => face.type === 'Proposal') || !faces.some(face => face.type === 'Treaty Article')) {
+        throw new Error(`Proposal pair is incomplete for ${name}: ${JSON.stringify(faces)}.`);
+      }
+    }
+    for (const metric of proposalMetrics) {
+      if (Math.abs(metric.width - CARD_WIDTH) > 0.25 || Math.abs(metric.height - CARD_HEIGHT) > 0.25) throw new Error(`Unexpected Proposal dimensions for ${metric.name} ${metric.type}: ${metric.width} × ${metric.height}.`);
+      if (metric.fitWarning || metric.titleFit !== 'true' || metric.parchmentLoaded !== 'true') throw new Error(`Proposal face does not fit or load correctly: ${JSON.stringify(metric)}.`);
+      if (metric.type === 'Treaty Article' && !metric.sealNaturalWidth) throw new Error(`Ratified Proposal seal failed to load: ${JSON.stringify(metric)}.`);
     }
 
     const metrics = await page.locator('.leader-card').evaluateAll(cards => cards.map(card => {
@@ -146,6 +196,7 @@ async function main() {
       const locator = page.locator('.leader-card').filter({ has: page.locator('.card-title', { hasText: metric.name }) }).first();
       await locator.screenshot({ path: join(OUTPUT, `${slugify(metric.name)}.png`), omitBackground: true });
     }
+    await page.locator('#proposal-diplomatic-recognition').screenshot({ path: join(OUTPUT, 'proposal-diplomatic-recognition-pair.png') });
 
     const playablePage = await context.newPage();
     await playablePage.goto(`${baseUrl}/card-design/card-review-render.html?fit=production&card=neutral-rallying-cry`, { waitUntil: 'load' });
@@ -186,8 +237,10 @@ async function main() {
       fonts,
       playableCardCount: EXPECTED_PLAYABLE_CARDS,
       territoryCardCount: EXPECTED_TERRITORIES,
+      proposalCount: EXPECTED_PROPOSALS.length,
       playableSmoke,
       territorySmoke,
+      proposals: proposalMetrics,
       cards: metrics,
     }, null, 2)}\n`);
   } finally {
