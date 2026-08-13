@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "status": "authority_candidate_pending_merge_review",
+  "target": "clean-v0.6.3-rulebook",
+  "authority_base": "certified clean-v0.6.2 Rulebook",
+  "authority_base_set_id": "563ce3a0ac39a0bbba52cc113ae9ffbcaeb3c0985bad4cfa66fe462fb2cacb3b",
+  "authority_base_rulebook_sha256": "cdc3e8f82c1d3803f076f5ee60a84b4d9b932133fd463f8e513482fe01270fb5",
+  "approved_faction_authority_pr": 619,
+  "approved_faction_authority_manifest": "artifacts/reconstruction/clean-v0.6.3/faction-guides/authority-manifest.json",
+  "shared_rule_sources": [
+    "docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md",
+    "docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md",
+    "docs/Gauntlet_v0.6.3_Card_Language_Normalization.md",
+    "config/reconstruction-version-resolutions.json"
+  ],
+  "forbidden_authority_sources": [
+    "releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md",
+    "releases/v0.6.3/Gauntlet_v0.6.3_Faction_and_Component_Guide.md"
+  ],
+  "required_v063_deltas": [
+    "rules-deck-draw-pile-terms",
+    "setup-draw4-discard1-keep3",
+    "setup-informed-territory-arrangement",
+    "setup-first-player-after-arrangement",
+    "setup-start-on-own-end-territory",
+    "victory-final-territory-capture",
+    "victory-independent-last-stand",
+    "victory-run-the-gauntlet-umbrella",
+    "cards-role-headings",
+    "cards-asset-only-banked-heading",
+    "cards-inherent-bank-action",
+    "cards-directly-permitted-procedures",
+    "cards-effect-granted-movement",
+    "cards-additional-tactic-defaults",
+    "cards-sanctions-shared-rule",
+    "cards-asset-removed-event",
+    "cards-bind-defaults",
+    "cards-reveal-interference-priority",
+    "cards-apply-repeat-effects",
+    "cards-no-winner-cleanup",
+    "cards-reroll-new-result-default",
+    "card-protracted-siege-revision",
+    "card-margin-loan-persistent",
+    "identity-second-line",
+    "identity-smugglers-run"
+  ],
+  "recovered_late_decisions": [
+    "GNT-DEC-2026-0812-001",
+    "GNT-DEC-2026-0812-002",
+    "GNT-DEC-2026-0812-003"
+  ],
+  "publication_unlocked": false,
+  "downstream_unlocked": false,
+  "output": {
+    "path": "artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md",
+    "sha256": "572fed8fc893f852728474316c5b2887f011ebf2469adf8dff01be796a4f689e",
+    "bytes": 112757,
+    "lines": 2410
+  }
+}
