@@ -1,0 +1,41 @@
+{
+  "schema_version": 1,
+  "recovery_baseline": "v0.6.1",
+  "historical_evidence": [
+    { "path": "releases/v0.6.1", "git_object": "5d209d784213c3fd663807eb08f4453968656f8c", "kind": "tree", "meaning": "Published v0.6.1 package" },
+    { "path": "releases/v0.6.2", "git_object": "25da1d1302eec2c32d10bb0ccd6c5ede09907bbc", "kind": "tree", "meaning": "Original published v0.6.2 package; withdrawn evidence" },
+    { "path": "releases/v0.6.3", "git_object": "eae8a51b915197bf63d1e21048030b33baed5a45", "kind": "tree", "meaning": "Original published v0.6.3 package; withdrawn evidence" },
+    { "path": "v0.6.2", "git_object": "d6446c8c7384fb2250bef2315d5ac569e4e1b420", "kind": "tree", "meaning": "Preserved versioned v0.6.2 browser package" },
+    { "path": "artifacts/v0.6.3", "git_object": "286db1a267ea91c799f039e8b581d785089fd63c", "kind": "tree", "meaning": "Preserved v0.6.3 candidate/closeout evidence at containment" },
+    { "path": "docs/recovery/frozen-workflows/publish-v062-release.yml", "git_object": "96c342c0c1df21682eeccffc3f1dc0882c285410", "kind": "blob", "meaning": "Pre-containment v0.6.2 source publication workflow" },
+    { "path": "docs/recovery/frozen-workflows/publish-v062-print-package.yml", "git_object": "d2face697cf7b99641159da7b856708ab27ccf59", "kind": "blob", "meaning": "Pre-containment v0.6.2 print publication workflow" },
+    { "path": "docs/recovery/frozen-workflows/render-player-mat.yml", "git_object": "e667302277d046c57c8eca85e575395c3cec0419", "kind": "blob", "meaning": "Pre-containment current-player-mat workflow" },
+    { "path": "docs/recovery/frozen-workflows/test-v061-browser-tools.yml", "git_object": "17f34ef7e316ed1d43bb988615b5386a2763b7fc", "kind": "blob", "meaning": "Pre-containment browser smoke workflow" },
+    { "path": "docs/recovery/frozen-workflows/validate-v063-rules-arbiter-candidate.yml", "git_object": "164f08c19653ebf431af3972a475293e3c273447", "kind": "blob", "meaning": "Pre-containment v0.6.3 Rules Arbiter candidate workflow" },
+    { "path": "docs/recovery/frozen-workflows/build-v063-release-candidate.yml", "git_object": "150b3e71183a094aeb69a92ceaa2a1b8a14ee255", "kind": "blob", "meaning": "Pre-containment v0.6.3 source candidate workflow" },
+    { "path": "docs/recovery/frozen-workflows/build-v063-print-candidate.yml", "git_object": "352eb4ad52281a8cb399ca8d0aa2acbe51cba3c0", "kind": "blob", "meaning": "Pre-containment v0.6.3 print candidate workflow" },
+    { "path": "docs/recovery/frozen-workflows/validate-v063-cross-surface-closeout.yml", "git_object": "799ace1d780f64f04fd27a819ccf1d7eeee7e1ee", "kind": "blob", "meaning": "Pre-containment v0.6.3 cross-surface closeout workflow" }
+  ],
+  "current_v061_surfaces": [
+    { "path": "README.md", "git_object": "874e1b3e507b1c5023d5810258ef5d7070fef1af", "kind": "blob" },
+    { "path": "index.html", "git_object": "98b8d1cae1343032d84b5fe17aecf17137e2caf2", "kind": "blob" },
+    { "path": "card-reference", "git_object": "ddeeda2042fa1ac3cf5a70aa5c8b5f559034c7ee", "kind": "tree" },
+    { "path": "deckbuilder", "git_object": "46a4b168080cfacab1dd20ecb750908a6a68a49d", "kind": "tree" },
+    { "path": "faction-sheets", "git_object": "a7f4b54e76a82de3480b004a12b3da7c9c5841e0", "kind": "tree" },
+    { "path": "factions", "git_object": "a63536584f81868b43c8747d42fb9e19a7420a07", "kind": "tree" },
+    { "path": "playtest", "git_object": "7814514dee0e3993661e5d31085adb0e70cd9172", "kind": "tree" },
+    { "path": "rulebook", "git_object": "abcc3a48548fc87b89ca5da914a6bfb21231d34c", "kind": "tree" },
+    { "path": "start", "git_object": "dfc8d529771f9992f481ac27304ddb152b043793", "kind": "tree" },
+    { "path": "site.css", "git_object": "1786a9aed7c653447caa34563e52bc9950a0efc9", "kind": "blob" },
+    { "path": "newsletter.css", "git_object": "3cea12212618bee54880e58d5ed2d0f5d7662497", "kind": "blob" },
+    { "path": "gameplay-showcase.css", "git_object": "e5ca23e5cf175606b90050c1d1c922e711d16c4a", "kind": "blob" },
+    { "path": "declaration-typography.css", "git_object": "03024f6213bd45467010c47c009fd895b367c1a6", "kind": "blob" },
+    { "path": "design-tokens.css", "git_object": "972f7aa667f8e86f9033141733ece059a296c4eb", "kind": "blob" },
+    { "path": "rules-assistant/widget.js", "git_object": "f29b8fa253202b8f9e962824b74c76cf38949593", "kind": "blob" },
+    { "path": "rules-assistant/widget.css", "git_object": "9a903ff9f540304456757948fcd089a415ee06b4", "kind": "blob" },
+    { "path": "rules-assistant/worker-v061.js", "git_object": "f735b2d9b1b1d010978c6086a12773355b46c1bb", "kind": "blob" },
+    { "path": "rules-assistant/worker.js", "git_object": "c5c1c29729420fb3cc15d5d2f78f5d5e52642094", "kind": "blob" },
+    { "path": "rules-assistant/local-search.js", "git_object": "9f7b7400dc9a63e4d87a2aca42402add11742649", "kind": "blob" },
+    { "path": "rules-assistant/answer-presentation.js", "git_object": "4b8c30b8f499e827ee849f996ff0fb064445ab26", "kind": "blob" }
+  ]
+}

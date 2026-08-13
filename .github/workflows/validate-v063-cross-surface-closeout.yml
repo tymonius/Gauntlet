@@ -9,6 +9,9 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/validate-v063-cross-surface-closeout.yml'
+      - 'config/release-lifecycle.json'
+      - 'config/release-locks.json'
+      - 'scripts/validate-release-recovery-state.mjs'
       - 'docs/Gauntlet_v0.6.3_Cross_Surface_Closeout_Matrix.md'
       - 'scripts/build-v063-cross-surface-closeout.mjs'
       - 'scripts/validate-v063-cross-surface-closeout.mjs'
@@ -18,229 +21,48 @@ on:
       - 'rules-assistant/*v063*'
       - 'src/v063/**'
       - 'src/content/v063.ts'
-      - 'config/release-lifecycle.json'
       - 'images/faction-symbols/**'
       - 'card-design/**'
       - 'package.json'
   workflow_dispatch:
 
 permissions:
-  contents: write
-  issues: read
+  contents: read
 
 concurrency:
   group: v063-cross-surface-closeout-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  closeout:
+  lifecycle:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    outputs:
+      v063_status: ${{ steps.release.outputs.v063_status }}
     steps:
-      - name: Check out validation target
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install dependencies and PDF tools
+      - uses: actions/checkout@v4
+      - id: release
+        name: Read v0.6.3 lifecycle state
         run: |
-          npm install
-          npm install --no-save pdf-lib
-          npx playwright install --with-deps chromium
-          sudo apt-get update
-          sudo apt-get install -y poppler-utils
+          status=$(node -e "const l=require('./config/release-lifecycle.json'); process.stdout.write(String(l.releases?.['v0.6.3']?.status || 'missing'))")
+          echo "v063_status=$status" >> "$GITHUB_OUTPUT"
+          echo "v0.6.3 lifecycle status: $status"
 
-      - name: Rebuild final v0.6.3 card text
+  freeze-withdrawn-evidence:
+    needs: lifecycle
+    if: needs.lifecycle.outputs.v063_status == 'withdrawn'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify withdrawn v0.6.3 cross-surface evidence is immutable
+        run: node scripts/validate-release-recovery-state.mjs
+
+  require-explicit-reactivation:
+    needs: lifecycle
+    if: needs.lifecycle.outputs.v063_status != 'withdrawn'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Refuse implicit reactivation
         run: |
-          node scripts/build-v063-card-normalization.mjs
-          node scripts/finalize-v063-card-conventions.mjs
-          node scripts/apply-v063-general-card-rules.mjs
-          node scripts/apply-v063-numeric-shorthand.mjs
-          node scripts/apply-v063-compact-shorthand.mjs
-          node scripts/apply-v063-natural-advantage-wording.mjs
-          node scripts/apply-v063-advantage-capitalization.mjs
-          node scripts/apply-v063-asset-language.mjs
-          node scripts/validate-v063-advantage-stacking.mjs
-          node scripts/apply-v063-gambit-tactic-headings.mjs
-          node scripts/apply-v063-poolwide-card-refinements.mjs
-          node scripts/apply-v063-final-artifact-audit.mjs
-          node scripts/finalize-v063-poolwide-integrity.mjs
-          node scripts/apply-v063-finalized-forward-conventions.mjs
-          node scripts/sync-v063-final-card-mirrors.mjs
-          node scripts/validate-v063-finalized-tracker.mjs
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-
-      - name: Rebuild player-facing candidates
-        run: |
-          node scripts/generate-v063-player-facing-candidates.mjs
-          node scripts/sync-v063-rulebook-card-text.mjs
-          node scripts/normalize-v063-player-facing-candidates.mjs
-          node scripts/validate-v063-player-facing-candidates.mjs
-
-      - name: Rebuild integrated canonical candidate
-        run: |
-          node scripts/generate-v063-canonical-data-candidate.mjs
-          node scripts/finalize-v063-canonical-data-candidate.mjs
-          node scripts/generate-v063-complete-card-reference-candidate.mjs
-          node scripts/validate-v063-canonical-data-candidate.mjs
-          node scripts/validate-v063-canonical-promotion-boundary.mjs
-
-      - name: Rebuild development browser surfaces
-        run: |
-          node scripts/build-v063-browser-development.mjs
-          node scripts/refine-v063-browser-development.mjs
-          node scripts/refine-v063-rules-arbiter-portal.mjs
-          node --check v0.6.3/reference/app.js
-          node --check v0.6.3/deckbuilder/app.js
-          node --check v0.6.3/rules-arbiter/app.js
-          node scripts/validate-v063-browser-development.mjs
-          node scripts/validate-v063-browser-site-conventions.mjs
-
-      - name: Validate finalized competitive starter baseline
-        run: node scripts/validate-v063-starter-guidance.mjs
-
-      - name: Run v0.6.3 Rules Arbiter candidate regressions
-        run: |
-          node --check rules-assistant/v063-development-corpus.js
-          node --check rules-assistant/rules-deterministic-v063.js
-          node --check rules-assistant/worker-v063-candidate.js
-          node --check rules-assistant/worker-entry-v063-candidate.js
-          npx vitest run rules-assistant/v063-development-corpus.test.mjs rules-assistant/rules-deterministic-v063.test.mjs
-          node scripts/validate-v063-rules-arbiter-candidate.mjs
-
-      - name: Run v0.6.3 digital candidate regressions
-        run: |
-          npm run typecheck
-          npx vitest run src/v063/*.test.ts
-          node scripts/validate-v063-digital-candidate.mjs
-
-      - name: Rebuild source release candidate
-        run: |
-          node scripts/build-v063-release-candidate.mjs
-          node scripts/build-v063-release-candidate.mjs --check
-          node scripts/validate-v063-release-candidate.mjs
-
-      - name: Serve repository for print rendering
-        run: |
-          python -m http.server 8000 >/tmp/v063-closeout-print-server.log 2>&1 &
-          echo $! > /tmp/v063-closeout-print-server.pid
-
-      - name: Rebuild and validate print candidate
-        run: |
-          node scripts/render-v063-print-candidate.mjs
-          node scripts/build-v063-print-candidate-html.mjs --check
-          node scripts/validate-v063-print-candidate.mjs
-          node scripts/validate-v063-print-visual-regressions.mjs
-
-      - name: Build and validate aggregate closeout state
-        run: |
-          node scripts/build-v063-cross-surface-closeout.mjs
-          node scripts/build-v063-cross-surface-closeout.mjs --check
-          node scripts/validate-v063-cross-surface-closeout.mjs
-
-      - name: Run full repository validation
-        run: npm test
-
-      - name: Preserve pre-publication boundary
-        run: |
-          git fetch origin main
-          if node -e "const x=require('./config/release-lifecycle.json'); process.exit(x.current_release==='v0.6.2' && x.releases?.['v0.6.3']?.status==='withdrawn' && x.releases?.['v0.6.3']?.public_cutover===false ? 0 : 1)"; then
-            git diff --name-only origin/main...HEAD -- \
-              'releases/v0.6.2/**' \
-              'v0.6.2/**' \
-              'rules-assistant/worker-v062.js' \
-              'rules-assistant/v062-published-corpus.js' > /tmp/v063-closeout-boundary.txt
-          else
-            git diff --name-only origin/main...HEAD -- \
-              'releases/v0.6.2/**' \
-              'v0.6.2/**' \
-              'index.html' \
-              'rules-assistant/widget.js' \
-              'rules-assistant/worker-entry.js' \
-              'rules-assistant/worker-v062.js' \
-              'rules-assistant/v062-published-corpus.js' \
-              'src/content/current.ts' > /tmp/v063-closeout-boundary.txt
-          fi
-          if [ -s /tmp/v063-closeout-boundary.txt ]; then
-            echo 'v0.6.3 closeout must not change protected v0.6.2 release/implementation surfaces:'
-            cat /tmp/v063-closeout-boundary.txt
-            exit 1
-          fi
-          if ! node -e "const x=require('./config/release-lifecycle.json'); process.exit(x.current_release==='v0.6.2' && x.releases?.['v0.6.3']?.status==='withdrawn' && x.releases?.['v0.6.3']?.artifacts_preserved===true ? 0 : 1)"; then
-            test ! -e releases/v0.6.3
-          fi
-
-      - name: Preserve fresh print evidence
-        run: |
-          mkdir -p /tmp/gauntlet-v063-closeout-pdfs /tmp/gauntlet-v063-closeout-pdf-renders
-          cp artifacts/v0.6.3/print-candidate/pdf/Gauntlet_v0.6.3_*.pdf /tmp/gauntlet-v063-closeout-pdfs/
-          for file in /tmp/gauntlet-v063-closeout-pdfs/Gauntlet_v0.6.3_*.pdf; do
-            stem=$(basename "$file" .pdf)
-            mkdir -p "/tmp/gauntlet-v063-closeout-pdf-renders/$stem"
-            pdftoppm -png -r 125 "$file" "/tmp/gauntlet-v063-closeout-pdf-renders/$stem/page"
-          done
-
-      - name: Commit promotion-relevant refreshed candidates
-        if: github.event_name == 'push' && (github.ref_name == 'agent/v063-cross-surface-closeout' || github.ref_name == 'agent/v063-final-release-refresh')
-        run: |
-          print_semantics_changed=0
-          if ! git diff --quiet -- \
-            artifacts/v0.6.3/print-candidate/html/ \
-            artifacts/v0.6.3/print-candidate/Gauntlet_v0.6.3_Print_Manifest.json; then
-            print_semantics_changed=1
-          fi
-
-          if [ "$print_semantics_changed" -eq 0 ]; then
-            git restore -- artifacts/v0.6.3/print-candidate/pdf/
-          fi
-
-          git add \
-            artifacts/v0.6.3/release-candidate/ \
-            artifacts/v0.6.3/print-candidate/html/ \
-            artifacts/v0.6.3/print-candidate/Gauntlet_v0.6.3_Print_Manifest.json \
-            artifacts/v0.6.3/closeout/ \
-            v0.6.3/
-
-          if [ "$print_semantics_changed" -eq 1 ]; then
-            git add artifacts/v0.6.3/print-candidate/pdf/
-          fi
-
-          if git diff --cached --quiet; then
-            echo 'v0.6.3 promotion-relevant candidates are already current.'
-            exit 0
-          fi
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Refresh final v0.6.3 release candidate [skip ci]'
-          git fetch origin "$GITHUB_REF_NAME"
-          git rebase "origin/$GITHUB_REF_NAME"
-          git push origin "HEAD:$GITHUB_REF_NAME"
-
-      - name: Verify regenerated tracked candidates on pull request
-        if: github.event_name == 'pull_request'
-        run: |
-          git diff --exit-code -- artifacts/v0.6.3/release-candidate/
-          git diff --exit-code -- artifacts/v0.6.3/print-candidate/html/
-          git diff --exit-code -- artifacts/v0.6.3/print-candidate/Gauntlet_v0.6.3_Print_Manifest.json
-          git diff --exit-code -- artifacts/v0.6.3/closeout/
-          git diff --exit-code -- v0.6.3/
-
-      - name: Upload closeout evidence
-        uses: actions/upload-artifact@v4
-        with:
-          name: gauntlet-v063-cross-surface-closeout
-          path: |
-            docs/Gauntlet_v0.6.3_Cross_Surface_Closeout_Matrix.md
-            artifacts/v0.6.3/closeout/**
-            artifacts/v0.6.3/release-candidate/**
-            artifacts/v0.6.3/print-candidate/html/**
-            artifacts/v0.6.3/print-candidate/Gauntlet_v0.6.3_Print_Manifest.json
-            /tmp/gauntlet-v063-closeout-pdfs/**
-            /tmp/gauntlet-v063-closeout-pdf-renders/**
-          if-no-files-found: error
+          echo 'v0.6.3 is no longer marked withdrawn, but the historical closeout generator is intentionally frozen during recovery.'
+          echo 'Restore/rebuild the active closeout workflow explicitly from docs/recovery/frozen-workflows/validate-v063-cross-surface-closeout.yml or the preserved archive ref only after the clean v0.6.3 reconstruction is ready.'
+          exit 1

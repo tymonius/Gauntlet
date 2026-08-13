@@ -5,8 +5,6 @@ on:
     branches: [agent/v063-print-package-candidate]
     paths:
       - '.github/workflows/build-v063-release-candidate.yml'
-      - 'config/release-lifecycle.json'
-      - 'config/release-locks.json'
       - 'scripts/build-v063-release-candidate.mjs'
       - 'scripts/validate-v063-release-candidate.mjs'
       - 'scripts/generate-v063-player-facing-candidates.mjs'
@@ -19,7 +17,7 @@ on:
       - 'scripts/validate-v063-canonical-data-candidate.mjs'
       - 'scripts/validate-v063-canonical-promotion-boundary.mjs'
       - 'scripts/validate-v063-starter-guidance.mjs'
-      - 'scripts/validate-release-recovery-state.mjs'
+      - 'config/release-lifecycle.json'
       - 'docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md'
       - 'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md'
       - 'docs/Gauntlet_v0.6.3_Starter_Deck_Presentation_Candidate.md'
@@ -32,12 +30,10 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/build-v063-release-candidate.yml'
-      - 'config/release-lifecycle.json'
-      - 'config/release-locks.json'
       - 'scripts/build-v063-release-candidate.mjs'
       - 'scripts/validate-v063-release-candidate.mjs'
       - 'scripts/validate-v063-starter-guidance.mjs'
-      - 'scripts/validate-release-recovery-state.mjs'
+      - 'config/release-lifecycle.json'
       - 'docs/Gauntlet_v0.6.3_Starter_Deck_Presentation_Candidate.md'
       - 'docs/Gauntlet_v0.6.3_Strong_Starter_Decks_Second_Pass_Audit.md'
       - 'v0.6.3/data/starter-decks-candidate.js'
@@ -54,30 +50,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lifecycle:
-    runs-on: ubuntu-latest
-    outputs:
-      v063_status: ${{ steps.release.outputs.v063_status }}
-    steps:
-      - uses: actions/checkout@v4
-      - id: release
-        name: Read v0.6.3 lifecycle state
-        run: |
-          status=$(node -e "const l=require('./config/release-lifecycle.json'); process.stdout.write(String(l.releases?.['v0.6.3']?.status || 'missing'))")
-          echo "v063_status=$status" >> "$GITHUB_OUTPUT"
-
-  freeze-withdrawn-evidence:
-    needs: lifecycle
-    if: needs.lifecycle.outputs.v063_status == 'withdrawn'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Verify withdrawn v0.6.3 source evidence is immutable
-        run: node scripts/validate-release-recovery-state.mjs
-
   build:
-    needs: lifecycle
-    if: needs.lifecycle.outputs.v063_status != 'withdrawn'
     runs-on: ubuntu-latest
     steps:
       - name: Check out source branch
@@ -138,17 +111,25 @@ jobs:
       - name: Preserve published and public boundaries
         if: github.event_name == 'pull_request'
         run: |
-          git diff --name-only origin/${{ github.base_ref }}...HEAD -- \
-            'releases/v0.6.2/**' \
-            'v0.6.2/**' \
-            'index.html' \
-            'rules-assistant/widget.js' \
-            'rules-assistant/worker-entry.js' \
-            'rules-assistant/worker-v062.js' \
-            'rules-assistant/v062-published-corpus.js' \
-            'src/content/current.ts' > /tmp/v063-public-boundary.txt
+          if node -e "const x=require('./config/release-lifecycle.json'); process.exit(x.current_release==='v0.6.2' && x.releases?.['v0.6.3']?.status==='withdrawn' && x.releases?.['v0.6.3']?.public_cutover===false ? 0 : 1)"; then
+            git diff --name-only origin/${{ github.base_ref }}...HEAD -- \
+              'releases/v0.6.2/**' \
+              'v0.6.2/**' \
+              'rules-assistant/worker-v062.js' \
+              'rules-assistant/v062-published-corpus.js' > /tmp/v063-public-boundary.txt
+          else
+            git diff --name-only origin/${{ github.base_ref }}...HEAD -- \
+              'releases/v0.6.2/**' \
+              'v0.6.2/**' \
+              'index.html' \
+              'rules-assistant/widget.js' \
+              'rules-assistant/worker-entry.js' \
+              'rules-assistant/worker-v062.js' \
+              'rules-assistant/v062-published-corpus.js' \
+              'src/content/current.ts' > /tmp/v063-public-boundary.txt
+          fi
           if [ -s /tmp/v063-public-boundary.txt ]; then
-            echo 'The source release-candidate pass must not change protected published/current release files:'
+            echo 'The source release-candidate pass must not change protected v0.6.2 release/implementation files:'
             cat /tmp/v063-public-boundary.txt
             exit 1
           fi

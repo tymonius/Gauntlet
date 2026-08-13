@@ -1,5 +1,4 @@
 # Generates, validates, visually rasterizes, and materializes the v0.6.3 printed-material release candidate without publishing it.
-# When v0.6.3 is withdrawn, the active generator is disabled and immutable evidence is verified instead.
 name: Build v0.6.3 print candidate
 
 on:
@@ -14,9 +13,7 @@ on:
       - 'scripts/validate-v063-print-candidate.mjs'
       - 'scripts/validate-v063-print-visual-regressions.mjs'
       - 'scripts/normalize-v063-player-facing-candidates.mjs'
-      - 'scripts/validate-release-recovery-state.mjs'
       - 'config/release-lifecycle.json'
-      - 'config/release-locks.json'
       - 'v0.6.2/print/**'
       - 'package.json'
   pull_request:
@@ -31,9 +28,7 @@ on:
       - 'scripts/validate-v063-print-candidate.mjs'
       - 'scripts/validate-v063-print-visual-regressions.mjs'
       - 'scripts/normalize-v063-player-facing-candidates.mjs'
-      - 'scripts/validate-release-recovery-state.mjs'
       - 'config/release-lifecycle.json'
-      - 'config/release-locks.json'
       - 'package.json'
   workflow_dispatch:
 
@@ -46,30 +41,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lifecycle:
-    runs-on: ubuntu-latest
-    outputs:
-      v063_status: ${{ steps.release.outputs.v063_status }}
-    steps:
-      - uses: actions/checkout@v4
-      - id: release
-        name: Read v0.6.3 lifecycle state
-        run: |
-          status=$(node -e "const l=require('./config/release-lifecycle.json'); process.stdout.write(String(l.releases?.['v0.6.3']?.status || 'missing'))")
-          echo "v063_status=$status" >> "$GITHUB_OUTPUT"
-
-  freeze-withdrawn-evidence:
-    needs: lifecycle
-    if: needs.lifecycle.outputs.v063_status == 'withdrawn'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Verify withdrawn v0.6.3 print evidence is immutable
-        run: node scripts/validate-release-recovery-state.mjs
-
   render-and-validate:
-    needs: lifecycle
-    if: needs.lifecycle.outputs.v063_status != 'withdrawn'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     steps:
@@ -154,17 +126,28 @@ jobs:
       - name: Preserve publication boundary
         run: |
           git fetch origin main
-          git diff --name-only origin/main...HEAD -- \
-            'releases/v0.6.2/**' \
-            'v0.6.2/**' \
-            'index.html' \
-            'rules-assistant/widget.js' \
-            'rules-assistant/worker-entry.js' \
-            'src/content/current.ts' > /tmp/v063-print-boundary.txt
+          if node -e "const x=require('./config/release-lifecycle.json'); process.exit(x.current_release==='v0.6.2' && x.releases?.['v0.6.3']?.status==='withdrawn' && x.releases?.['v0.6.3']?.public_cutover===false ? 0 : 1)"; then
+            git diff --name-only origin/main...HEAD -- \
+              'releases/v0.6.2/**' \
+              'v0.6.2/**' \
+              'rules-assistant/worker-v062.js' \
+              'rules-assistant/v062-published-corpus.js' > /tmp/v063-print-boundary.txt
+          else
+            git diff --name-only origin/main...HEAD -- \
+              'releases/v0.6.2/**' \
+              'v0.6.2/**' \
+              'index.html' \
+              'rules-assistant/widget.js' \
+              'rules-assistant/worker-entry.js' \
+              'src/content/current.ts' > /tmp/v063-print-boundary.txt
+          fi
           if [ -s /tmp/v063-print-boundary.txt ]; then
-            echo 'v0.6.3 print candidate must not change protected published/current release surfaces:'
+            echo 'v0.6.3 print candidate must not change protected v0.6.2 release/implementation surfaces:'
             cat /tmp/v063-print-boundary.txt
             exit 1
+          fi
+          if ! node -e "const x=require('./config/release-lifecycle.json'); process.exit(x.current_release==='v0.6.2' && x.releases?.['v0.6.3']?.status==='withdrawn' && x.releases?.['v0.6.3']?.artifacts_preserved===true ? 0 : 1)"; then
+            test ! -e releases/v0.6.3
           fi
 
       - name: Rasterize PDFs for visual review

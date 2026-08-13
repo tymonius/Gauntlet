@@ -5,8 +5,6 @@ on:
     branches: [agent/v063-rules-arbiter-candidate]
     paths:
       - '.github/workflows/validate-v063-rules-arbiter-candidate.yml'
-      - 'config/release-lifecycle.json'
-      - 'config/release-locks.json'
       - 'rules-assistant/v063-development-corpus.js'
       - 'rules-assistant/v063-development-corpus.test.mjs'
       - 'rules-assistant/rules-deterministic-v063.js'
@@ -17,7 +15,6 @@ on:
       - 'rules-assistant/local-search.js'
       - 'scripts/refine-v063-rules-arbiter-portal.mjs'
       - 'scripts/validate-v063-rules-arbiter-candidate.mjs'
-      - 'scripts/validate-release-recovery-state.mjs'
       - 'v0.6.3/rules-arbiter/**'
       - 'v0.6.3/rulebook/**'
       - 'v0.6.3/reference/**'
@@ -27,8 +24,6 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/validate-v063-rules-arbiter-candidate.yml'
-      - 'config/release-lifecycle.json'
-      - 'config/release-locks.json'
       - 'rules-assistant/v063-development-corpus.js'
       - 'rules-assistant/v063-development-corpus.test.mjs'
       - 'rules-assistant/rules-deterministic-v063.js'
@@ -39,7 +34,6 @@ on:
       - 'rules-assistant/local-search.js'
       - 'scripts/refine-v063-rules-arbiter-portal.mjs'
       - 'scripts/validate-v063-rules-arbiter-candidate.mjs'
-      - 'scripts/validate-release-recovery-state.mjs'
       - 'v0.6.3/rules-arbiter/**'
       - 'v0.6.3/rulebook/**'
       - 'v0.6.3/reference/**'
@@ -55,30 +49,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lifecycle:
-    runs-on: ubuntu-latest
-    outputs:
-      v063_status: ${{ steps.release.outputs.v063_status }}
-    steps:
-      - uses: actions/checkout@v4
-      - id: release
-        name: Read v0.6.3 lifecycle state
-        run: |
-          status=$(node -e "const l=require('./config/release-lifecycle.json'); process.stdout.write(String(l.releases?.['v0.6.3']?.status || 'missing'))")
-          echo "v063_status=$status" >> "$GITHUB_OUTPUT"
-
-  freeze-withdrawn-evidence:
-    needs: lifecycle
-    if: needs.lifecycle.outputs.v063_status == 'withdrawn'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Verify withdrawn v0.6.3 evidence is immutable
-        run: node scripts/validate-release-recovery-state.mjs
-
   validate:
-    needs: lifecycle
-    if: needs.lifecycle.outputs.v063_status != 'withdrawn'
     runs-on: ubuntu-latest
     steps:
       - name: Check out source branch

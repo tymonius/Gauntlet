@@ -40,9 +40,7 @@ describe("standalone new-player onboarding", () => {
   it("offers every canonical faction and Leader starter pair", () => {
     const app = read("start/app.js");
     const catalog = JSON.parse(read("deckbuilder/starter-decks.json"));
-    const available = new Set(
-      catalog.decks.map((deck: { factionId: string; leaderId: string }) => `${deck.factionId}/${deck.leaderId}`)
-    );
+    const available = new Set(catalog.decks.map((deck: { factionId: string; leaderId: string }) => `${deck.factionId}/${deck.leaderId}`));
 
     for (const [faction, leader] of EXPECTED_CHOICES) {
       expect(app).toContain(`${faction}:`);
@@ -74,12 +72,14 @@ describe("standalone new-player onboarding", () => {
     expect(deckbuilder.indexOf("starter-decks.js")).toBeLessThan(deckbuilder.indexOf("starter-handoff.js"));
   });
 
-  it("makes the published v0.6.2 start path the homepage first-time call to action", () => {
+  it("keeps the restored v0.6.1 start path as the homepage first-time call to action", () => {
     const homepage = read("index.html");
-    expect(homepage).toContain('<a href="v0.6.2/start/">Start</a>');
-    expect(homepage).toContain('<a class="button primary" href="v0.6.2/start/">Start playing</a>');
+    expect(homepage).toContain('<a href="start/">Start</a>');
+    expect(homepage).toContain('<a class="button primary" href="start/">Start playing</a>');
+    expect(homepage).toContain("Current canonical playtest edition · v0.6.1");
     expect(homepage).toContain("New-player setup");
     expect(homepage).toContain("Choose your first deck");
+    expect(homepage).not.toContain('href="v0.6.2/start/"');
   });
 
   it("keeps the choice resumable without storing credentials or identity", () => {

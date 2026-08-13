@@ -1,5 +1,4 @@
-# Generates/validates v0.6.2 only while it is an active release lifecycle state.
-# When v0.6.2 is withdrawn, this workflow becomes a read-only evidence-preservation gate.
+# Generates, validates, and materializes the v0.6.2 printed-materials package.
 name: Publish v0.6.2 printed materials
 
 on:
@@ -7,8 +6,6 @@ on:
     branches: [agent/v062-printed-materials]
     paths:
       - ".github/workflows/publish-v062-print-package.yml"
-      - "config/release-lifecycle.json"
-      - "config/release-locks.json"
       - "images/sketches/**"
       - "v0.6.2/print/**"
       - "releases/v0.6.2/*.md"
@@ -17,15 +14,11 @@ on:
       - "scripts/render-v062-print-package.mjs"
       - "scripts/synchronize-v062-print-release.mjs"
       - "scripts/validate-v062-print-package.mjs"
-      - "scripts/validate-release-recovery-state.mjs"
-      - "scripts/release-lifecycle.mjs"
       - "package.json"
   pull_request:
     branches: [main]
     paths:
       - ".github/workflows/publish-v062-print-package.yml"
-      - "config/release-lifecycle.json"
-      - "config/release-locks.json"
       - "images/sketches/**"
       - "v0.6.2/print/**"
       - "releases/v0.6.2/**"
@@ -36,8 +29,6 @@ on:
       - "scripts/render-v062-print-package.mjs"
       - "scripts/synchronize-v062-print-release.mjs"
       - "scripts/validate-v062-print-package.mjs"
-      - "scripts/validate-release-recovery-state.mjs"
-      - "scripts/release-lifecycle.mjs"
       - "package.json"
   workflow_dispatch:
 
@@ -64,19 +55,7 @@ jobs:
         with:
           node-version: 22
 
-      - name: Read v0.6.2 lifecycle state
-        id: lifecycle
-        run: |
-          status=$(node -e "const l=require('./config/release-lifecycle.json'); process.stdout.write(String(l.releases?.['v0.6.2']?.status || 'missing'))")
-          echo "status=$status" >> "$GITHUB_OUTPUT"
-          echo "v0.6.2 lifecycle status: $status"
-
-      - name: Verify withdrawn v0.6.2 print evidence is frozen
-        if: steps.lifecycle.outputs.status == 'withdrawn'
-        run: node scripts/validate-release-recovery-state.mjs
-
       - name: Install dependencies and PDF tools
-        if: steps.lifecycle.outputs.status != 'withdrawn'
         run: |
           npm install
           npm install --no-save pdf-lib
@@ -85,21 +64,17 @@ jobs:
           sudo apt-get install -y poppler-utils
 
       - name: Serve repository
-        if: steps.lifecycle.outputs.status != 'withdrawn'
         run: |
           python -m http.server 8000 >/tmp/v062-print-server.log 2>&1 &
           echo $! > /tmp/v062-print-server.pid
 
       - name: Build and render printed materials
-        if: steps.lifecycle.outputs.status != 'withdrawn'
         run: npm run print:v062:build
 
       - name: Verify reproducibility
-        if: steps.lifecycle.outputs.status != 'withdrawn'
         run: npm run print:v062:check
 
       - name: Rasterize PDFs for visual review
-        if: steps.lifecycle.outputs.status != 'withdrawn'
         run: |
           mkdir -p /tmp/gauntlet-v062-pdf-renders
           for file in releases/v0.6.2/Gauntlet_v0.6.2_*.pdf; do
@@ -109,7 +84,6 @@ jobs:
           done
 
       - name: Upload print review package
-        if: steps.lifecycle.outputs.status != 'withdrawn'
         uses: actions/upload-artifact@v4
         with:
           name: gauntlet-v062-printed-materials
@@ -122,7 +96,7 @@ jobs:
           if-no-files-found: error
 
       - name: Commit generated print package
-        if: steps.lifecycle.outputs.status != 'withdrawn' && github.event_name == 'push' && github.ref_name == 'agent/v062-printed-materials'
+        if: github.event_name == 'push' && github.ref_name == 'agent/v062-printed-materials'
         run: |
           branch="$GITHUB_REF_NAME"
           git config user.name "github-actions[bot]"
