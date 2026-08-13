@@ -1,0 +1,341 @@
+/* Mystics Rite / completed-Rite supplemental-card prototype.
+   Rites intentionally inherit the same production component-card grammar as
+   Leaders and Diplomat Proposals while using a distinctly Mystic completion cue. */
+
+.rite-card {
+  --minimum-rules-scale: 0.82;
+}
+
+.rite-card .card-interior {
+  --art-height: 1.48in;
+  grid-template-rows: var(--component-heading-height, 0.50in) var(--art-height) auto 0.18in;
+}
+
+.rite-card .card-heading {
+  display: grid;
+  grid-template-rows: auto auto;
+  align-content: center;
+  gap: 0.012in;
+  padding: 0.028in 0.09in 0.022in;
+}
+
+.rite-card .card-title {
+  max-width: 100%;
+  font-size: 13.4pt;
+  letter-spacing: 0.035em;
+  line-height: 0.88;
+}
+
+.rite-type-line {
+  display: flex;
+  align-items: center;
+  gap: var(--component-subheading-gap, 0.045in);
+  min-width: 0;
+  color: var(--component-accent-ink);
+  font-family: var(--font-interface);
+  font-size: var(--component-subheading-font-size, 6.25pt);
+  font-weight: 800;
+  letter-spacing: 0.085em;
+  line-height: 1.08;
+  text-transform: uppercase;
+}
+
+.rite-faction-emblem {
+  display: block;
+  width: var(--component-subheading-icon-size, 0.18in);
+  height: var(--component-subheading-icon-size, 0.18in);
+  flex: 0 0 var(--component-subheading-icon-size, 0.18in);
+  background: currentColor;
+  -webkit-mask: var(--faction-symbol) center / contain no-repeat;
+  mask: var(--faction-symbol) center / contain no-repeat;
+}
+
+.rite-card .card-art {
+  margin-bottom: 0.045in;
+}
+
+.rite-art-pending {
+  background:
+    radial-gradient(circle at 72% 28%, rgba(232, 222, 240, 0.22), transparent 24%),
+    linear-gradient(135deg, rgba(86, 48, 115, 0.80), rgba(70, 59, 82, 0.43)),
+    #716b74;
+}
+
+.rite-card .card-rules,
+.rite-card.dense-card .card-rules {
+  padding: 0.036in 0.072in 0.03in;
+}
+
+.rite-card .rule-section,
+.rite-card .rule-section.placement-section {
+  grid-template-columns: 0.52in minmax(0, 1fr);
+  column-gap: 0.042in;
+}
+
+.rite-card .rule-section + .rule-section,
+.rite-card.dense-card .rule-section + .rule-section {
+  margin-top: 0.03in;
+  padding-top: 0.024in;
+}
+
+.rite-card .rule-section h4,
+.rite-card.dense-card .rule-section h4 {
+  color: var(--component-accent-ink);
+  font-size: calc(4.75pt * var(--rules-scale));
+  letter-spacing: 0.055em;
+  line-height: 1;
+}
+
+.rite-card .rule-section p,
+.rite-card.dense-card .rule-section p {
+  font-size: calc(6.05pt * var(--rules-scale));
+  line-height: 1.065;
+}
+
+.rite-card .card-footer {
+  min-height: 0.18in;
+  padding: 0.032in 0.055in 0.018in;
+  background: var(--component-footer-tint);
+  line-height: 1.3;
+}
+
+.rite-card .card-footer span:nth-child(2) {
+  color: var(--component-accent-ink);
+}
+
+/* Completed Rites replace their illustration with a restrained inked ritual
+   diagram. It is intentionally diagrammatic and tactile rather than glowing,
+   metallic, or seal-like, so it cannot be mistaken for Diplomat ratification. */
+.rite-completed-panel {
+  position: relative;
+  display: block;
+  isolation: isolate;
+  overflow: hidden;
+  background:
+    linear-gradient(rgba(93, 52, 126, 0.075), rgba(93, 52, 126, 0.075)),
+    radial-gradient(circle at 50% 48%, rgba(255, 250, 234, 0.9), transparent 48%),
+    var(--card-parchment-light);
+  color: var(--component-accent-ink);
+}
+
+.rite-completed-panel::after {
+  z-index: 1;
+  background:
+    repeating-linear-gradient(8deg, transparent 0 0.115in, rgba(68, 45, 72, 0.018) 0.117in 0.119in),
+    linear-gradient(180deg, rgba(93, 52, 126, 0.025), transparent 58%, rgba(93, 52, 126, 0.075));
+}
+
+.rite-completed-word {
+  position: absolute;
+  z-index: 4;
+  top: 7%;
+  left: 50%;
+  color: #563073;
+  font-family: var(--font-display-historical);
+  font-size: min(17pt, calc(var(--art-height) * 0.18));
+  font-style: italic;
+  font-weight: 400;
+  letter-spacing: 0.035em;
+  line-height: 1;
+  text-shadow: 0 0.01in 0 rgba(255, 255, 255, 0.52);
+  transform: translateX(-50%) rotate(-0.5deg);
+  white-space: nowrap;
+}
+
+.rite-completed-word::before,
+.rite-completed-word::after {
+  position: absolute;
+  top: 52%;
+  width: min(0.28in, calc(var(--art-height) * 0.25));
+  height: 1px;
+  background: rgba(86, 48, 115, 0.43);
+  content: "";
+}
+
+.rite-completed-word::before {
+  right: calc(100% + 0.07in);
+}
+
+.rite-completed-word::after {
+  left: calc(100% + 0.07in);
+}
+
+.rite-ritual-diagram {
+  position: absolute;
+  z-index: 3;
+  top: 64%;
+  left: 50%;
+  width: min(0.72in, calc(var(--art-height) * 0.68));
+  height: min(0.72in, calc(var(--art-height) * 0.68));
+  border: 1.15px solid rgba(86, 48, 115, 0.72);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 0.018in rgba(86, 48, 115, 0.08),
+    0 0.018in 0.028in rgba(50, 34, 57, 0.12);
+  transform: translate(-50%, -50%) rotate(-1.2deg);
+}
+
+.rite-ritual-diagram::before,
+.rite-ritual-diagram::after {
+  position: absolute;
+  border: 1px solid rgba(86, 48, 115, 0.52);
+  border-radius: 50%;
+  content: "";
+}
+
+.rite-ritual-diagram::before {
+  inset: 10%;
+}
+
+.rite-ritual-diagram::after {
+  inset: 30%;
+  border-color: rgba(86, 48, 115, 0.44);
+}
+
+.rite-diagram-axis {
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 12%;
+  width: 76%;
+  height: 1px;
+  background: rgba(86, 48, 115, 0.42);
+  transform-origin: 50% 50%;
+}
+
+.rite-diagram-axis-a {
+  transform: rotate(0deg);
+}
+
+.rite-diagram-axis-b {
+  transform: rotate(60deg);
+}
+
+.rite-diagram-axis-c {
+  transform: rotate(120deg);
+}
+
+.rite-diagram-emblem {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  left: 50%;
+  width: 0.24in;
+  height: 0.24in;
+  background: #563073;
+  -webkit-mask: var(--faction-symbol) center / contain no-repeat;
+  mask: var(--faction-symbol) center / contain no-repeat;
+  transform: translate(-50%, -50%);
+}
+
+/* Completed faces become useful table references rather than dead rules text.
+   The four rows are identical on every completed Rite because progression is
+   based on the number of completed Rites, not which named Rite completed. */
+.completed-rite-card .card-rules {
+  display: grid;
+  align-content: start;
+  gap: 0.026in;
+  padding: 0.032in 0.068in 0.026in;
+}
+
+.rite-unlock-section {
+  display: grid;
+  grid-template-columns: 0.49in minmax(0, 1fr);
+  align-items: baseline;
+  column-gap: 0.04in;
+  min-width: 0;
+}
+
+.rite-unlock-section + .rite-unlock-section {
+  padding-top: 0.018in;
+}
+
+.rite-unlock-section h4 {
+  margin: 0;
+  color: var(--component-accent-ink);
+  font-family: var(--font-interface);
+  font-size: calc(4.45pt * var(--rules-scale));
+  font-weight: 800;
+  letter-spacing: 0.035em;
+  line-height: 1.02;
+  text-transform: uppercase;
+}
+
+.rite-unlock-section p {
+  margin: 0;
+  font-family: "adobe-caslon-pro", Georgia, serif;
+  font-size: calc(5.45pt * var(--rules-scale));
+  line-height: 1.045;
+}
+
+.rite-unlock-section strong {
+  color: var(--component-accent-ink);
+  font-family: var(--font-interface);
+  font-size: calc(4.7pt * var(--rules-scale));
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+.rite-review-block {
+  width: min(76rem, calc(100% - 2rem));
+  margin: 0 auto clamp(3rem, 6vw, 5rem);
+}
+
+.rite-review-pair {
+  margin-bottom: 0.65in;
+}
+
+.rite-review-pair:last-child {
+  margin-bottom: 0;
+}
+
+.rite-face-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 2.5in);
+  justify-content: center;
+  gap: 0.42in;
+}
+
+.rite-face {
+  width: 2.5in;
+}
+
+.rite-face-label {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.45rem;
+  min-height: 1.1rem;
+  margin: 0 0 0.48rem;
+  color: var(--page-muted);
+  font-family: var(--font-interface);
+  font-size: 0.6rem;
+}
+
+.rite-face-label strong {
+  color: var(--page-ink);
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 38rem) {
+  .rite-face-grid {
+    justify-content: start;
+    overflow-x: auto;
+    padding-inline: 0.15rem;
+  }
+}
+
+@media print {
+  .rite-faction-emblem,
+  .rite-diagram-emblem,
+  .rite-completed-panel,
+  .rite-ritual-diagram {
+    print-color-adjust: exact;
+  }
+
+  .rite-review-pair {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
