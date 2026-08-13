@@ -11,6 +11,7 @@ on:
       - agent/reconstruction-version-plan
       - agent/recover-v063-card-interaction-decisions
       - agent/recover-v063-late-decisions
+      - agent/certify-clean-v063-authority
     paths:
       - config/reconstruction-ledger.json
       - config/reconstruction-decision-candidates.json
@@ -22,6 +23,7 @@ on:
       - scripts/validate-release-reconstruction.mjs
       - scripts/validate-reconstruction-decision-candidates.mjs
       - scripts/validate-reconstruction-version-plan.mjs
+      - scripts/validate-reconstruction-version-plan-certified.mjs
       - scripts/validate-v063-recovered-decisions.mjs
       - releases/v0.6.1/**
       - releases/v0.6.2/**
@@ -40,6 +42,7 @@ on:
       - scripts/validate-release-reconstruction.mjs
       - scripts/validate-reconstruction-decision-candidates.mjs
       - scripts/validate-reconstruction-version-plan.mjs
+      - scripts/validate-reconstruction-version-plan-certified.mjs
       - scripts/validate-v063-recovered-decisions.mjs
       - releases/v0.6.1/**
       - releases/v0.6.2/**
@@ -73,7 +76,7 @@ jobs:
         run: node scripts/validate-reconstruction-decision-candidates.mjs
 
       - name: Validate clean v0.6.2 / clean v0.6.3 version boundaries
-        run: node scripts/validate-reconstruction-version-plan.mjs
+        run: node scripts/validate-reconstruction-version-plan-certified.mjs
 
       - name: Validate recovered late clean v0.6.3 decisions
         run: node scripts/validate-v063-recovered-decisions.mjs

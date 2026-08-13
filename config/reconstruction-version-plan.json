@@ -152,7 +152,7 @@
       }
     },
     "clean-v0.6.3": {
-      "status": "authority_build_approved",
+      "status": "authority_certified",
       "authority_base": "clean-v0.6.2",
       "evidence_anchor": {
         "ref": "archive/v063-post-ui-hotfixes",
@@ -228,7 +228,7 @@
       },
       "starter_policy": {
         "candidate_source": "https://github.com/tymonius/Gauntlet/pull/573",
-        "status": "downstream_only_until_clean_v063_authority_exists",
+        "status": "eligible_for_downstream_regeneration_after_clean_v063_certification",
         "deck_count": 12,
         "cards_per_deck": 30,
         "deckbuilding_value": 60
@@ -239,6 +239,18 @@
         "manifest": "artifacts/reconstruction/clean-v0.6.2/certification/authority-set.json",
         "authority_set_id": "563ce3a0ac39a0bbba52cc113ae9ffbcaeb3c0985bad4cfa66fe462fb2cacb3b",
         "publication_unlocked": false
+      },
+      "downstream_regeneration_unlocked": true,
+      "certification": {
+        "basis": "Manual merge of the clean v0.6.3 authority certification PR on main",
+        "faction_authority_pr": 619,
+        "faction_authority_merge_commit": "f550329931a2d868b865870af51724db1e1ad1b2",
+        "rulebook_authority_pr": 621,
+        "rulebook_authority_merge_commit": "f50dfe110f54c85eb59312dae9314fb427c5d36c",
+        "manifest": "artifacts/reconstruction/clean-v0.6.3/certification/authority-set.json",
+        "authority_set_id": "2da05383c10fe3e784c64b26fd2d9837913011cad996966f49a7ae3a92af8ed9",
+        "publication_unlocked": false,
+        "downstream_regeneration_unlocked": true
       }
     }
   }
