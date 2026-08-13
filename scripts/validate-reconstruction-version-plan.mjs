@@ -119,8 +119,8 @@ assert(v063.starter_policy?.status === 'downstream_only_until_clean_v063_authori
 // Lifecycle containment remains a separate hard boundary.
 assert(lifecycle.current_release === 'v0.6.1', 'public current release must remain v0.6.1 during reconstruction');
 const releases = lifecycle.releases ?? {};
-assert(releases['v0.6.2']?.state === 'withdrawn', 'v0.6.2 must remain withdrawn during reconstruction');
-assert(releases['v0.6.3']?.state === 'withdrawn', 'v0.6.3 must remain withdrawn during reconstruction');
+assert(releases['v0.6.2']?.status === 'withdrawn', 'v0.6.2 must remain withdrawn during reconstruction');
+assert(releases['v0.6.3']?.status === 'withdrawn', 'v0.6.3 must remain withdrawn during reconstruction');
 
 if (!process.exitCode) {
   console.log('Reconstruction version plan validated: clean v0.6.2 and clean v0.6.3 remain separate, source-safe targets.');
