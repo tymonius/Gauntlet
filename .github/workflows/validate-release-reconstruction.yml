@@ -7,6 +7,7 @@ on:
       - agent/release-reconstruction-baseline
     paths:
       - config/reconstruction-ledger.json
+      - config/leader-authority-v061.json
       - config/release-lifecycle.json
       - scripts/validate-release-reconstruction.mjs
       - releases/v0.6.1/**
@@ -17,6 +18,7 @@ on:
     branches: [main]
     paths:
       - config/reconstruction-ledger.json
+      - config/leader-authority-v061.json
       - config/release-lifecycle.json
       - scripts/validate-release-reconstruction.mjs
       - releases/v0.6.1/**
