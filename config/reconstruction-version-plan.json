@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "program_issue": 587,
+  "audit_issue": 588,
+  "authority_issue": 589,
+  "baseline_release": "v0.6.1",
+  "publication_unlocked": false,
+  "publication_order": ["clean-v0.6.2", "clean-v0.6.3"],
+  "principles": {
+    "historical_packages_are_evidence_only": true,
+    "clean_v062_derives_from_v061_authority": true,
+    "clean_v063_derives_from_clean_v062": true,
+    "no_cross_version_backport_without_explicit_evidence": true,
+    "preserve_original_as_published_packages": true
+  },
+  "targets": {
+    "clean-v0.6.2": {
+      "status": "planned_pending_human_approval",
+      "authority_base": "v0.6.1",
+      "evidence_anchor": {
+        "ref": "archive/v062-final-current-pre-v063-cutover",
+        "commit": "4436004a11b97704758dd0300f7eef969e6b78f9",
+        "role": "evidence_only"
+      },
+      "forbidden_authority_sources": [
+        "releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md",
+        "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
+      ],
+      "governing_reconstruction_rule": "Synthesize a complete release from the v0.6.1 Rulebook plus all six v0.6.1 faction guides and only verified v0.6.2 decisions/corrections. Preserve the v0.6.1 self-contained document architecture.",
+      "required_shared_rules": [
+        "rules-opening-denouement-phases",
+        "rules-action-economy-rebuild",
+        "rules-onset-term",
+        "rules-pending-battle-terms-onset",
+        "rules-movement-vocabulary",
+        "rules-withdraw-retreat-vocabulary",
+        "rules-front-line-control",
+        "rules-defensive-edge",
+        "rules-tiebreak-roll"
+      ],
+      "version_specific_decisions": [
+        {
+          "id": "v062-opening-selection-bottom-deck",
+          "disposition": "adopt_for_v062",
+          "evidence": ["https://github.com/tymonius/Gauntlet/issues/487", "https://github.com/tymonius/Gauntlet/issues/470#issuecomment-5180420089"],
+          "rule": "Shuffle the Playable Deck; draw four; choose three as the opening Hand; place the fourth face down beneath the Draw Pile without discarding or triggering anything; then arrange Territories with the opening Hand known."
+        },
+        {
+          "id": "v062-specific-overrides-broad-conflict",
+          "disposition": "adopt_for_v062",
+          "evidence": ["https://github.com/tymonius/Gauntlet/issues/470#issuecomment-5181941569"],
+          "rule": "When two rules or effects genuinely conflict, follow the more specific one. If both can apply, use normal timing/order instead; specificity does not undo an effect already applied."
+        },
+        {
+          "id": "v062-additional-action-corrections",
+          "disposition": "adopt_for_v062",
+          "evidence": ["https://github.com/tymonius/Gauntlet/pull/511"],
+          "rule": "Insurrection, Liberation, Reinforcements, Divestment, Margin Loan, and Tariffs receive their verified same-phase additional-Action permissions; this does not create another Action phase or grant movement."
+        },
+        {
+          "id": "v062-starter-catalog",
+          "disposition": "adopt_downstream_after_authority",
+          "evidence": ["https://github.com/tymonius/Gauntlet/pull/500"],
+          "rule": "Use the twelve v0.6.2 Leader-specific first-game starter Decks, not the later v0.6.3 competitive rebuild."
+        }
+      ],
+      "identity_invariants": {
+        "playable_cards": 128,
+        "territories": 25,
+        "factions": 6,
+        "leaders": 12,
+        "neutral_reserves_title": "Reserves",
+        "neutral_reserves_id": "neutral-reserves",
+        "smugglers_title": "Smuggler's Pass",
+        "smugglers_id": "territory-smuggler-s-pass"
+      },
+      "setup_invariants": {
+        "opening_draw": 4,
+        "opening_keep": 3,
+        "fourth_card_destination": "face_down_bottom_of_draw_pile",
+        "opening_discard": false,
+        "territory_arrangement_after_opening_hand_selection": true,
+        "starting_position": "before_own_end_territory",
+        "setup_placement_is_entry": false
+      },
+      "action_invariants": {
+        "turn_sequence": ["Capture", "Draw", "Opening", "Movement", "Denouement", "Cleanup"],
+        "normal_actions_per_turn": 1,
+        "normal_actions_per_phase_max": 1,
+        "faction_action_and_faction_ability_distinct": true,
+        "additional_or_immediate_action_windows": false,
+        "purge_phase_exception": true
+      },
+      "battle_invariants": {
+        "prebattle_sequence": ["pending_battle", "terms", "onset"],
+        "accepted_terms_prevent_battle": true,
+        "defensive_edge": true,
+        "straight_unmodified_tiebreak_roll": true,
+        "front_line_control_contiguous": true
+      },
+      "victory_invariants": {
+        "normal_model": "v0.6.1 cumulative Run-the-Gauntlet model retained",
+        "final_territory_capture_alone_wins": false,
+        "last_stand_is_independent_route": false
+      },
+      "presentation_boundaries": {
+        "deck_draw_pile_v063_cleanup": false,
+        "retire_battle_heading": false,
+        "asset_only_banked_heading": false,
+        "inherent_bank_action": false,
+        "second_line_title": false,
+        "smugglers_run_title": false
+      },
+      "authority_build_unlocked": false
+    },
+    "clean-v0.6.3": {
+      "status": "blocked_on_clean_v062",
+      "authority_base": "clean-v0.6.2",
+      "evidence_anchor": {
+        "ref": "archive/v063-post-ui-hotfixes",
+        "commit": "feb53d48f254355a07d092f6ba68162241d22e9d",
+        "role": "evidence_only"
+      },
+      "forbidden_authority_sources": [
+        "releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md",
+        "releases/v0.6.3/Gauntlet_v0.6.3_Faction_and_Component_Guide.md"
+      ],
+      "governing_reconstruction_rule": "Start from the certified clean v0.6.2 authority and apply only verified v0.6.3 deltas. Do not clean or reuse the withdrawn v0.6.3 Rulebook as a skeleton.",
+      "required_v063_deltas": [
+        "rules-deck-draw-pile-terms",
+        "setup-draw4-discard1-keep3",
+        "setup-informed-territory-arrangement",
+        "setup-first-player-after-arrangement",
+        "setup-start-on-own-end-territory",
+        "victory-final-territory-capture",
+        "victory-last-stand-independent-route",
+        "victory-run-the-gauntlet-umbrella",
+        "cards-role-headings",
+        "cards-asset-only-banked-heading",
+        "cards-inherent-bank-action",
+        "cards-directly-permitted-procedures",
+        "cards-effect-granted-movement",
+        "cards-additional-tactic-defaults",
+        "cards-sanctions-shared-rule",
+        "cards-asset-removed-event",
+        "cards-bind-defaults",
+        "cards-reveal-interference-priority",
+        "cards-apply-repeat-effects",
+        "cards-no-winner-cleanup",
+        "cards-reroll-new-result-default",
+        "card-protracted-siege-revision",
+        "card-margin-loan-persistent",
+        "identity-second-line",
+        "identity-smugglers-run"
+      ],
+      "supersedes_v062": [
+        {
+          "v062_decision": "v062-opening-selection-bottom-deck",
+          "replacement": "setup-draw4-discard1-keep3",
+          "result": "The fourth opening card is discarded face up instead of placed beneath the Draw Pile."
+        }
+      ],
+      "identity_invariants": {
+        "playable_cards": 128,
+        "territories": 25,
+        "factions": 6,
+        "leaders": 12,
+        "neutral_reserves_title": "Second Line",
+        "neutral_reserves_id": "neutral-reserves",
+        "smugglers_title": "Smuggler's Run",
+        "smugglers_id": "territory-smuggler-s-pass"
+      },
+      "setup_invariants": {
+        "opening_draw": 4,
+        "opening_keep": 3,
+        "fourth_card_destination": "face_up_discard_pile",
+        "opening_discard": true,
+        "territory_arrangement_after_opening_hand_selection": true,
+        "first_player_after_territory_arrangement": true,
+        "starting_position": "on_own_end_territory",
+        "setup_placement_is_movement": false,
+        "setup_placement_is_entry": false
+      },
+      "victory_invariants": {
+        "normal_model": "two independent Run-the-Gauntlet routes",
+        "final_territory_capture_alone_wins": true,
+        "last_stand_is_independent_route": true,
+        "last_stand_requires_separate_movement_sequence": true,
+        "final_territory_capture_required_before_last_stand": false
+      },
+      "starter_policy": {
+        "candidate_source": "https://github.com/tymonius/Gauntlet/pull/573",
+        "status": "downstream_only_until_clean_v063_authority_exists",
+        "deck_count": 12,
+        "cards_per_deck": 30,
+        "deckbuilding_value": 60
+      },
+      "authority_build_unlocked": false
+    }
+  }
+}
