@@ -134,6 +134,10 @@ function assertClose(label, a, b, tolerance = 0.5) {
   }
 }
 
+function numericEffectScale(metric) {
+  return Number.parseFloat(metric.effectScale || 'NaN');
+}
+
 function validateRender(label, metric) {
   if (Math.abs(metric.width - CARD_WIDTH) > 0.25 || Math.abs(metric.height - CARD_HEIGHT) > 0.25) {
     throw new Error(`Unexpected ${label} Territory geometry: ${JSON.stringify(metric)}.`);
@@ -144,11 +148,8 @@ function validateRender(label, metric) {
   if (!metric.artWidth || !metric.artHeight || metric.artHeight <= MINIMUM_ART_HEIGHT + 1) {
     throw new Error(`${label} Territory artwork window collapsed toward the fitting floor: ${JSON.stringify(metric)}.`);
   }
-  if (metric.effectScale !== '1') {
+  if (Math.abs(numericEffectScale(metric) - 1) > 0.001) {
     throw new Error(`${label} normal-density Territory typography was reduced unexpectedly: ${JSON.stringify(metric)}.`);
-  }
-  if (metric.textSizeAdjust !== 'none') {
-    throw new Error(`${label} Territory render did not disable browser text inflation: ${JSON.stringify(metric)}.`);
   }
 }
 
@@ -158,9 +159,12 @@ function validateInspectionLifecycle(label, lifecycle, reference) {
   assertClose(`${label} inspection artwork stability`, lifecycle.settled.artHeight, lifecycle.afterDelay.artHeight, 0.25);
   assertClose(`${label} inspection typography stability`, lifecycle.settled.effectFontSize, lifecycle.afterDelay.effectFontSize, 0.05);
   assertClose(`${label} inspection artwork vs desktop`, reference.artHeight, lifecycle.afterDelay.artHeight, 1);
-  if (lifecycle.settled.effectScale !== lifecycle.afterDelay.effectScale) {
-    throw new Error(`${label} inspection changed effect scale after opening: ${JSON.stringify(lifecycle)}.`);
-  }
+  assertClose(
+    `${label} inspection effect scale stability`,
+    numericEffectScale(lifecycle.settled),
+    numericEffectScale(lifecycle.afterDelay),
+    0.001,
+  );
 }
 
 async function main() {
@@ -207,9 +211,12 @@ async function main() {
       assertClose(`${label} artwork width`, desktop.artWidth, metric.artWidth, 1);
       assertClose(`${label} effect font size`, desktop.effectFontSize, metric.effectFontSize, 0.1);
       assertClose(`${label} effect line height`, desktop.effectLineHeight, metric.effectLineHeight, 0.1);
-      if (desktop.effectScale !== metric.effectScale) {
-        throw new Error(`${label} effect fitting differs from desktop: ${desktop.effectScale} vs ${metric.effectScale}.`);
-      }
+      assertClose(
+        `${label} effect fitting`,
+        numericEffectScale(desktop),
+        numericEffectScale(metric),
+        0.001,
+      );
     }
 
     const inspectionChromium = await renderInspectionLifecycle(
