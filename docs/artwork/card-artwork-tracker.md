@@ -25,9 +25,9 @@ Canonical artwork paths:
 
 | Component pool | Total | Canonical on `main` | Approved, pending merge | Still needs artwork |
 | --- | ---: | ---: | ---: | ---: |
-| Playable cards | 128 | 86 | 13 | 29 |
+| Playable cards | 128 | 86 | 14 | 28 |
 | Territory cards | 25 | 2 | 0 | 23 |
-| **All tracked cards** | **153** | **88** | **13** | **52** |
+| **All tracked cards** | **153** | **88** | **14** | **51** |
 
 ### Playable cards by faction
 
@@ -37,10 +37,10 @@ Canonical artwork paths:
 | Military | 13 | 0 | 0 |
 | Diplomats | 9 | 4 | 0 |
 | Financiers | 12 | 1 | 0 |
-| Intelligence | 2 | 8 | 3 |
+| Intelligence | 2 | 9 | 2 |
 | Mystics | 0 | 0 | 13 |
 | Inquisition | 0 | 0 | 13 |
-| **Playable-card total** | **86** | **13** | **29** |
+| **Playable-card total** | **86** | **14** | **28** |
 
 ## Neutral — complete
 
@@ -81,10 +81,10 @@ Approved, pending canonical merge:
 - [x] Intercepted Orders
 - [x] Operational Reassessment
 - [x] Reconnaissance
+- [x] Sleeper Network
 
 Still needs approved artwork:
 
-- [ ] Sleeper Network
 - [ ] Subversion
 - [ ] Treason
 
