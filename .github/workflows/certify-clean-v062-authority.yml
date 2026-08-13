@@ -7,6 +7,7 @@ on:
     paths:
       - scripts/certify-clean-v062-authority.mjs
       - scripts/validate-clean-v062-certification.mjs
+      - scripts/validate-clean-v062-certification-certified.mjs
       - scripts/validate-reconstruction-version-plan.mjs
       - scripts/validate-reconstruction-version-plan-certified.mjs
       - scripts/validate-clean-v062-faction-authority.mjs
@@ -23,6 +24,7 @@ on:
     paths:
       - scripts/certify-clean-v062-authority.mjs
       - scripts/validate-clean-v062-certification.mjs
+      - scripts/validate-clean-v062-certification-certified.mjs
       - scripts/validate-reconstruction-version-plan.mjs
       - scripts/validate-reconstruction-version-plan-certified.mjs
       - scripts/validate-clean-v062-faction-authority.mjs
@@ -69,7 +71,7 @@ jobs:
       - name: Validate certified reconstruction plan
         run: node scripts/validate-reconstruction-version-plan-certified.mjs
       - name: Validate clean v0.6.2 authority certification
-        run: node scripts/validate-clean-v062-certification.mjs
+        run: node scripts/validate-clean-v062-certification-certified.mjs
       - name: Commit generated certification state
         if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
         run: |
