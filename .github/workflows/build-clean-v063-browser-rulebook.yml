@@ -71,6 +71,24 @@ jobs:
       - name: Validate clean v0.6.3 Browser Rulebook
         run: node scripts/validate-clean-v063-browser-rulebook.mjs
 
+      - name: Reject corrupted Browser Rulebook terminology
+        run: |
+          bad_title='Rules'' Browser'
+          bad_slug='rules''-browser'
+          targets=(
+            scripts/build-clean-v063-browser-rulebook.mjs
+            scripts/validate-clean-v063-browser-rulebook.mjs
+            artifacts/reconstruction/clean-v0.6.3/browser-rulebook
+          )
+          if grep -R -n -F "$bad_title" "${targets[@]}"; then
+            echo "Retired Browser Rulebook title corruption remains."
+            exit 1
+          fi
+          if grep -R -n -F "$bad_slug" "${targets[@]}"; then
+            echo "Retired Browser Rulebook slug corruption remains."
+            exit 1
+          fi
+
       - name: Reject whitespace errors
         run: git diff --check
 
