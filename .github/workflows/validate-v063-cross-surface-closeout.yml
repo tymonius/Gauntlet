@@ -40,6 +40,10 @@ jobs:
       v063_status: ${{ steps.release.outputs.v063_status }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /config/release-lifecycle.json
       - id: release
         name: Read v0.6.3 lifecycle state
         run: |
@@ -53,6 +57,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /config/release-lifecycle.json
+            /config/release-locks.json
+            /scripts/release-lifecycle.mjs
+            /scripts/validate-release-recovery-state.mjs
       - name: Verify withdrawn v0.6.3 cross-surface evidence is immutable
         run: node scripts/validate-release-recovery-state.mjs
 
