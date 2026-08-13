@@ -1,15 +1,19 @@
 name: Validate release reconstruction
 
-# This gate validates authority and quarantine state only; it does not approve any pending gameplay change.
+# This gate validates authority/quarantine state and normalized audit recommendations.
+# It does not approve any pending gameplay change.
 on:
   push:
     branches:
       - agent/release-reconstruction-baseline
+      - agent/reconstruction-decision-normalization
     paths:
       - config/reconstruction-ledger.json
+      - config/reconstruction-decision-candidates.json
       - config/leader-authority-v061.json
       - config/release-lifecycle.json
       - scripts/validate-release-reconstruction.mjs
+      - scripts/validate-reconstruction-decision-candidates.mjs
       - releases/v0.6.1/**
       - releases/v0.6.2/**
       - releases/v0.6.3/**
@@ -18,9 +22,11 @@ on:
     branches: [main]
     paths:
       - config/reconstruction-ledger.json
+      - config/reconstruction-decision-candidates.json
       - config/leader-authority-v061.json
       - config/release-lifecycle.json
       - scripts/validate-release-reconstruction.mjs
+      - scripts/validate-reconstruction-decision-candidates.mjs
       - releases/v0.6.1/**
       - releases/v0.6.2/**
       - releases/v0.6.3/**
@@ -48,3 +54,6 @@ jobs:
 
       - name: Validate reconstruction authority, containment, and quarantine ledger
         run: node scripts/validate-release-reconstruction.mjs
+
+      - name: Validate normalized audit recommendations remain non-authoritative
+        run: node scripts/validate-reconstruction-decision-candidates.mjs
