@@ -3,6 +3,7 @@ import fs from 'node:fs';
 const outputPath = 'artifacts/reconstruction/clean-v0.6.2/rulebook/Gauntlet_v0.6.2_Rulebook.md';
 const manifestPath = 'artifacts/reconstruction/clean-v0.6.2/rulebook/authority-manifest.json';
 const planPath = 'config/reconstruction-version-plan.json';
+const certificationPath = 'artifacts/reconstruction/clean-v0.6.2/certification/authority-set.json';
 
 function fail(message) {
   console.error(`clean-v062-rulebook: ${message}`);
@@ -33,7 +34,13 @@ const v062 = plan.targets?.['clean-v0.6.2'];
 const v063 = plan.targets?.['clean-v0.6.3'];
 
 if (!v062?.authority_build_unlocked) fail('clean v0.6.2 authority build is not unlocked');
-if (v063?.authority_build_unlocked) fail('clean v0.6.3 must remain locked');
+if (v063?.authority_build_unlocked) {
+  if (v062?.status !== 'authority_certified') fail('clean v0.6.3 may be unlocked only after clean v0.6.2 certification');
+  if (v063?.status !== 'authority_build_approved') fail('unlocked clean v0.6.3 must have authority_build_approved status');
+  if (!fs.existsSync(certificationPath)) fail('clean v0.6.3 unlock requires the clean v0.6.2 certification manifest');
+  if (v063?.unlock?.manifest !== certificationPath) fail('clean v0.6.3 unlock must pin the clean v0.6.2 certification manifest');
+  if (v063?.unlock?.publication_unlocked !== false) fail('clean v0.6.3 authority unlock may not unlock publication');
+}
 if (plan.publication_unlocked) fail('publication must remain locked');
 if (manifest.status !== 'authority_candidate_pending_human_semantic_approval') fail('unexpected manifest status');
 if (manifest.approved_faction_authority_pr !== 609) fail('Rulebook must consume the PR #609 faction authority set');

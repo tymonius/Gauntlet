@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "target": "clean-v0.6.2",
+  "status": "certified_on_merge",
+  "authority_set_id": "563ce3a0ac39a0bbba52cc113ae9ffbcaeb3c0985bad4cfa66fe462fb2cacb3b",
+  "authority_base": "v0.6.1",
+  "authority_files": [
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.2/rulebook/Gauntlet_v0.6.2_Rulebook.md",
+      "sha256": "cdc3e8f82c1d3803f076f5ee60a84b4d9b932133fd463f8e513482fe01270fb5",
+      "bytes": 95155,
+      "lines": 2101
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.2/faction-guides/military/Gauntlet_v0.6.2_Military_Faction_Guide.md",
+      "sha256": "ac2b800e151d1cbf671e47b9354ffaf396f8decaaa8c5bb28e5fa58de0900ff1",
+      "bytes": 13355,
+      "lines": 267
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.2/faction-guides/diplomat/Gauntlet_v0.6.2_Diplomat_Faction_Guide.md",
+      "sha256": "6f2ab7c23636d1a6f80a80cf9a75797884e85b6d1322e97f8f9a738f686727d1",
+      "bytes": 16217,
+      "lines": 431
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.2/faction-guides/financier/Gauntlet_v0.6.2_Financier_Faction_Guide.md",
+      "sha256": "9a7378b4894bd0ff574ef1482834e5fcd09699562998d1fc4b9900270abf10c7",
+      "bytes": 17468,
+      "lines": 356
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.2/faction-guides/intelligence/Gauntlet_v0.6.2_Intelligence_Faction_Guide.md",
+      "sha256": "25352704a364bffa4899e989addceb489ff6dc65c87f21ea23a7917002f816c2",
+      "bytes": 17867,
+      "lines": 360
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.2/faction-guides/mystics/Gauntlet_v0.6.2_Mystics_Faction_Guide.md",
+      "sha256": "613131bd90cd6c731e6d41e3cfaf3b464783ceaa4665b8a3edd4530abcef47ef",
+      "bytes": 16391,
+      "lines": 369
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.2/faction-guides/inquisition/Gauntlet_v0.6.2_Inquisition_Faction_Guide.md",
+      "sha256": "e5d5613c801a3ce51a4a85ff94b3b6375c881232e1042cd0068c27492f88dea0",
+      "bytes": 14121,
+      "lines": 286
+    }
+  ],
+  "approvals": {
+    "faction_authority_pr": 609,
+    "faction_authority_merge_commit": "ded1206b7bd9a83b4d32ce3f2ef063ee609d8461",
+    "rulebook_authority_pr": 611,
+    "rulebook_authority_merge_commit": "5c8181c9a70af9dfdcd8b91153c80b6b6943e52e",
+    "certification_effect": "Manual merge of the PR introducing this certification record applies the certified state on main."
+  },
+  "semantic_review_records": [
+    "artifacts/reconstruction/clean-v0.6.2/faction-guides/semantic-review.md",
+    "artifacts/reconstruction/clean-v0.6.2/rulebook/semantic-review.md",
+    "artifacts/reconstruction/clean-v0.6.2/certification/semantic-certification.md"
+  ],
+  "forbidden_authority_sources": [
+    "releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md",
+    "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
+  ],
+  "publication_unlocked": false,
+  "clean_v063_authority_build_unlocked_on_merge": true
+}
