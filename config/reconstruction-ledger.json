@@ -268,7 +268,7 @@
       "title": "Starter Deck, Territory-order, and onboarding revisions after v0.6.1",
       "status": "pending",
       "audit_issue": 599,
-      "evidence": ["releases/v0.6.2/starters", "releases/v0.6.3/starters"],
+      "evidence": ["releases/v0.6.2/Gauntlet_v0.6.2_Starter_Decks.json", "releases/v0.6.3/Gauntlet_v0.6.3_Starter_Decks.json"],
       "affected_surfaces": ["starters", "onboarding", "rules", "deckbuilder", "print"]
     }
   ]
