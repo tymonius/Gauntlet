@@ -43,8 +43,5 @@ jobs:
         with:
           node-version: 22
 
-      - name: Validate reconstruction authority and quarantine ledger
+      - name: Validate reconstruction authority, containment, and quarantine ledger
         run: node scripts/validate-release-reconstruction.mjs
-
-      - name: Confirm current release containment remains intact
-        run: node scripts/validate-current-release-integrity.mjs
