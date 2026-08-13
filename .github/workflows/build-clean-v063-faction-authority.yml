@@ -41,7 +41,7 @@ jobs:
   reconstruct:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out reconstruction branch
+      - name: Check out reconstruction target
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'push' && github.ref_name || github.sha }}
@@ -63,69 +63,6 @@ jobs:
         with:
           node-version: 22
 
-      - name: Apply reviewed standalone-bank guard correction
-        if: github.event_name == 'push'
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          replacements = {
-              Path('scripts/build-clean-v063-faction-authority.mjs'): (
-                  "invariant(!/> \\*\\*Action:\\*\\* Bank this card\\./.test(text), `${faction.title}: redundant inherent Bank Action survived reconstruction`);",
-                  "invariant(!/> \\*\\*Action:\\*\\* Bank this card\\.$/m.test(text), `${faction.title}: redundant standalone inherent Bank Action survived reconstruction`);",
-              ),
-              Path('scripts/validate-clean-v063-faction-authority.mjs'): (
-                  "if (/> \\*\\*Action:\\*\\* Bank this card\\./.test(text)) fail(`${rel}: explicit inherent Bank Action survives`);",
-                  "if (/> \\*\\*Action:\\*\\* Bank this card\\.$/m.test(text)) fail(`${rel}: exact standalone inherent Bank Action survives`);",
-              ),
-          }
-          for path, (old, new) in replacements.items():
-              text = path.read_text()
-              if old in text:
-                  path.write_text(text.replace(old, new, 1))
-              elif new not in text:
-                  raise SystemExit(f'Expected reviewed guard not found in {path}')
-          PY
-
-      - name: Audit faction identity transitions
-        run: |
-          python - <<'PY'
-          import json, re
-          from pathlib import Path
-
-          factions = [
-              ('Military', 'Military', 'artifacts/reconstruction/clean-v0.6.2/faction-guides/military/Gauntlet_v0.6.2_Military_Faction_Guide.md'),
-              ('Diplomat', 'Diplomats', 'artifacts/reconstruction/clean-v0.6.2/faction-guides/diplomat/Gauntlet_v0.6.2_Diplomat_Faction_Guide.md'),
-              ('Financier', 'Financiers', 'artifacts/reconstruction/clean-v0.6.2/faction-guides/financier/Gauntlet_v0.6.2_Financier_Faction_Guide.md'),
-              ('Intelligence', 'Intelligence', 'artifacts/reconstruction/clean-v0.6.2/faction-guides/intelligence/Gauntlet_v0.6.2_Intelligence_Faction_Guide.md'),
-              ('Mystics', 'Mystics', 'artifacts/reconstruction/clean-v0.6.2/faction-guides/mystics/Gauntlet_v0.6.2_Mystics_Faction_Guide.md'),
-              ('Inquisition', 'Inquisition', 'artifacts/reconstruction/clean-v0.6.2/faction-guides/inquisition/Gauntlet_v0.6.2_Inquisition_Faction_Guide.md'),
-          ]
-          evidence = json.loads(Path('artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json').read_text())
-          cards = {c['name']: c for c in evidence['cards']}
-          mismatches = []
-          for title, allegiance, source in factions:
-              text = Path(source).read_text()
-              start = re.search(r'^# \d+\. Canonical .* card pool$', text, re.M)
-              quick = re.search(r'^# \d+\. Quick reference$', text[start.end():], re.M)
-              section = text[start.start():start.end()+quick.start()]
-              heads = list(re.finditer(r'^## (.+)$', section, re.M))
-              for i, h in enumerate(heads):
-                  block = section[h.start():(heads[i+1].start() if i+1 < len(heads) else len(section))]
-                  name = h.group(1).strip()
-                  cost = int(re.search(r'^\*\*Cost:\*\* (\d+)', block, re.M).group(1))
-                  trait = (re.search(r'^\*\*Trait:\*\* (.+)$', block, re.M).group(1).strip() if re.search(r'^\*\*Trait:\*\* (.+)$', block, re.M) else None)
-                  form = (re.search(r'^\*\*Card form:\*\* (.+)$', block, re.M).group(1).strip() if re.search(r'^\*\*Card form:\*\* (.+)$', block, re.M) else None)
-                  unique = bool(re.search(r'^\*\*Unique:\*\* ', block, re.M))
-                  c = cards[name]
-                  observed = {'cost': c['cost'], 'trait': c.get('trait'), 'card_form': c.get('card_form'), 'unique': bool(c.get('unique'))}
-                  base = {'cost': cost, 'trait': trait, 'card_form': form, 'unique': unique}
-                  if base != observed:
-                      mismatches.append((title, name, base, observed))
-          print(f'Identity transitions found: {len(mismatches)}')
-          for faction, name, base, observed in mismatches:
-              print(f'{faction}/{name}: {base} -> {observed}')
-          PY
-
       - name: Syntax-check reconstruction scripts
         run: |
           node --check scripts/build-clean-v063-faction-authority.mjs
@@ -143,7 +80,7 @@ jobs:
       - name: Commit deterministic generated authority candidates
         if: github.event_name == 'push'
         run: |
-          git add scripts/build-clean-v063-faction-authority.mjs scripts/validate-clean-v063-faction-authority.mjs artifacts/reconstruction/clean-v0.6.3
+          git add artifacts/reconstruction/clean-v0.6.3
           if git diff --cached --quiet; then
             echo 'Generated faction authority candidates are already current.'
             exit 0
