@@ -6,6 +6,7 @@ on:
       - agent/reconstruct-clean-v062-faction-authority
     paths:
       - scripts/build-clean-v062-faction-authority.mjs
+      - scripts/normalize-clean-v062-faction-authority.mjs
       - scripts/validate-clean-v062-faction-authority.mjs
       - artifacts/reconstruction/clean-v0.6.2/faction-guides/**
       - releases/v0.6.1/faction-guides/**
@@ -18,6 +19,7 @@ on:
   pull_request:
     paths:
       - scripts/build-clean-v062-faction-authority.mjs
+      - scripts/normalize-clean-v062-faction-authority.mjs
       - scripts/validate-clean-v062-faction-authority.mjs
       - artifacts/reconstruction/clean-v0.6.2/faction-guides/**
       - releases/v0.6.1/faction-guides/**
@@ -48,6 +50,9 @@ jobs:
 
       - name: Build clean v0.6.2 faction authorities
         run: node scripts/build-clean-v062-faction-authority.mjs
+
+      - name: Normalize clean v0.6.2 faction authorities
+        run: node scripts/normalize-clean-v062-faction-authority.mjs
 
       - name: Validate clean v0.6.2 faction authorities
         run: node scripts/validate-clean-v062-faction-authority.mjs
