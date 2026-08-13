@@ -24,6 +24,7 @@ on:
       - "images/faction-symbols/*.svg"
       - "images/artwork/territories/*"
       - "scripts/render-leader-card-specimens.mjs"
+      - "scripts/validate-territory-mobile-render.mjs"
       - ".github/workflows/render-leader-card-specimens.yml"
   workflow_dispatch:
 
@@ -43,6 +44,8 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Render and validate card review catalog
         run: node scripts/render-leader-card-specimens.mjs
+      - name: Validate Territory mobile render stability
+        run: node scripts/validate-territory-mobile-render.mjs
       - uses: actions/upload-artifact@v4
         with:
           name: gauntlet-card-review-specimens

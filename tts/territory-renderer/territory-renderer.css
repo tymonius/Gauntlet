@@ -15,6 +15,16 @@
   --arena-crimson: #7e2027;
 }
 
+/* Territory review renders are fixed physical-size production specimens.
+   Mobile browser text inflation must not reinterpret their typography, because
+   the fitter would treat the enlarged text as overflow and sacrifice artwork
+   height to compensate. Keep responsive text sizing on the surrounding site;
+   this lock applies only inside the fixed 3.5in × 2.5in render document. */
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
 html,
 body {
   width: max-content;
