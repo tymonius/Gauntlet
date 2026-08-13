@@ -1,14 +1,20 @@
 {
-  "current_release": "v0.6.2",
+  "current_release": "v0.6.1",
   "releases": {
-    "v0.6.2": {
+    "v0.6.1": {
       "status": "current"
+    },
+    "v0.6.2": {
+      "status": "withdrawn",
+      "artifacts_preserved": true,
+      "public_cutover": false,
+      "reason": "Withdrawn after canonical release-authority and Rulebook completeness defects were discovered. Original published artifacts are preserved unchanged; clean reconstruction and full audit are required before re-release."
     },
     "v0.6.3": {
       "status": "withdrawn",
       "artifacts_preserved": true,
       "public_cutover": false,
-      "reason": "Withdrawn after post-publication release-integrity and canonical Rulebook defects were discovered. Rebuild and full audit required before re-release."
+      "reason": "Withdrawn after post-publication release-integrity defects and inherited canonical Rulebook defects were discovered. Original published artifacts are preserved unchanged; clean reconstruction and full audit are required before re-release."
     }
   }
 }

@@ -1,4 +1,4 @@
-const CANONICAL_DATA_SOURCE = "../releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json";
+const CANONICAL_DATA_SOURCE = "../releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json";
 
 const FACTION_LABELS = {
   neutral: "Neutral",
@@ -17,7 +17,7 @@ const state = {
   faction: "all",
   cost: "all",
   selectedId: null,
-  version: "v0.6.2"
+  version: "v0.6.1"
 };
 
 const el = {};
@@ -36,7 +36,7 @@ async function init() {
 
     const data = await response.json();
     validateCanonicalData(data);
-    state.version = data.version || "v0.6.2";
+    state.version = data.version || "v0.6.1";
     state.entries = [
       ...(data.cards || []).map(normalizeCard),
       ...(data.territories || []).map(normalizeTerritory)
@@ -55,16 +55,16 @@ async function init() {
     el.dataStatus.textContent = "Canonical source load failed";
     document.body.insertAdjacentHTML(
       "beforeend",
-      `<p class="noscript">Unable to load the canonical v0.6.2 data. Serve the repository through a web server rather than opening this file directly. <a href="${CANONICAL_DATA_SOURCE}">Open the canonical JSON</a>.</p>`
+      `<p class="noscript">Unable to load the canonical v0.6.1 data. Serve the repository through a web server rather than opening this file directly. <a href="${CANONICAL_DATA_SOURCE}">Open the canonical JSON</a>.</p>`
     );
   }
 }
 
 function validateCanonicalData(data) {
   if (!data || typeof data !== "object") throw new Error("Canonical data is not an object.");
-  if (data.version !== "v0.6.2") throw new Error(`Expected v0.6.2 data, received ${data.version || "unknown version"}.`);
-  if (!Array.isArray(data.cards) || data.cards.length !== 128) {
-    throw new Error(`Expected 128 playable cards, received ${data.cards?.length ?? "none"}.`);
+  if (data.version !== "v0.6.1") throw new Error(`Expected v0.6.1 data, received ${data.version || "unknown version"}.`);
+  if (!Array.isArray(data.cards) || data.cards.length !== 122) {
+    throw new Error(`Expected 122 playable cards, received ${data.cards?.length ?? "none"}.`);
   }
   if (!Array.isArray(data.territories) || data.territories.length !== 25) {
     throw new Error(`Expected 25 Territories, received ${data.territories?.length ?? "none"}.`);
