@@ -1,0 +1,18 @@
+{
+  "schema_version": 1,
+  "status": "authority_candidate_pending_human_semantic_approval",
+  "target": "clean-v0.6.2",
+  "authority_base": "v0.6.1",
+  "baseline_rulebook": "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md",
+  "shared_rule_evidence": "docs/Gauntlet_v0.6.2_Shared_Rules_Candidate.md",
+  "approved_faction_authority_pr": 609,
+  "faction_authority_root": "artifacts/reconstruction/clean-v0.6.2/faction-guides",
+  "governing_plan": "config/reconstruction-version-plan.json",
+  "forbidden_authority_sources": [
+    "releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md",
+    "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
+  ],
+  "output": "artifacts/reconstruction/clean-v0.6.2/rulebook/Gauntlet_v0.6.2_Rulebook.md",
+  "publication_unlocked": false,
+  "clean_v063_unlocked": false
+}
