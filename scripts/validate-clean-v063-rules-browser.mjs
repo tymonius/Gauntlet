@@ -67,6 +67,8 @@ assert(markdown.includes('../../../../images/'), 'Reconstruction Markdown render
 for (const marker of [
   '<meta name="robots" content="noindex,nofollow" />',
   '<link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />',
+  '<link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />',
+  '<link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />',
   'Clean v0.6.3 reconstruction candidate',
   'not the current public release',
   'publication remains locked',
