@@ -78,15 +78,21 @@ describe("Diplomat Proposal / Treaty Article prototypes", () => {
     expect(cardRefinementStyles).toContain(".card-art img");
     expect(proposalStyles).toContain(".proposal-ratified-panel > img.proposal-wax-seal");
     expect(proposalStyles).toContain("inset: auto");
-    expect(proposalStyles).toContain("top: 60%");
     expect(proposalStyles).toContain("left: 50%");
-    expect(proposalStyles).toContain("width: 0.96in");
-    expect(proposalStyles).toContain("height: 0.96in");
     expect(proposalStyles).toContain("object-fit: contain");
     expect(proposalStyles).toContain("object-position: center");
     expect(proposalStyles).toContain("transform: translate(-50%, -50%) rotate(-1.5deg)");
     expect(proposalStyles).not.toContain("right: 0.13in");
     expect(proposalStyles).not.toContain("bottom: 0.10in");
+  });
+
+  it("scales the Ratified word and wax seal with the fitted artwork height so they cannot crowd each other on dense Proposals", () => {
+    expect(proposalStyles).toContain("top: 7%");
+    expect(proposalStyles).toContain("font-size: min(27pt, calc(var(--art-height) * 0.23))");
+    expect(proposalStyles).toContain("top: 66%");
+    expect(proposalStyles).toContain("width: min(0.96in, calc(var(--art-height) * 0.62))");
+    expect(proposalStyles).toContain("height: min(0.96in, calc(var(--art-height) * 0.62))");
+    expect(proposalStyles).not.toContain("top: 60%");
   });
 
   it("keeps the Ratified heading in Declaration Blackletter with Declaration Pro fallback", () => {
