@@ -1,0 +1,45 @@
+name: Patch reconstruction ledger starter evidence
+
+on:
+  push:
+    branches:
+      - agent/release-reconstruction-baseline
+    paths:
+      - .github/workflows/patch-reconstruction-ledger.yml
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: agent/release-reconstruction-baseline
+
+      - name: Replace conceptual starter directories with exact published evidence files
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('config/reconstruction-ledger.json')
+          text = path.read_text(encoding='utf-8')
+          replacements = {
+              'releases/v0.6.2/starters': 'releases/v0.6.2/Gauntlet_v0.6.2_Starter_Decks.json',
+              'releases/v0.6.3/starters': 'releases/v0.6.3/Gauntlet_v0.6.3_Starter_Decks.json',
+          }
+          for old, new in replacements.items():
+              if text.count(old) != 1:
+                  raise SystemExit(f'Expected exactly one {old!r}, found {text.count(old)}')
+              text = text.replace(old, new)
+          path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit exact evidence correction and remove one-time workflow
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/patch-reconstruction-ledger.yml
+          git add config/reconstruction-ledger.json
+          git commit -m "Use exact published starter evidence paths"
+          git push origin HEAD:agent/release-reconstruction-baseline
