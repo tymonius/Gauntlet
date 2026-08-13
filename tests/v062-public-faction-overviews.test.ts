@@ -17,7 +17,7 @@ describe('restored v0.6.1 public faction overviews', () => {
       const html = read(path);
       expect(html).toContain('href="../../rulebook/"');
       expect(html).toContain('href="../../deckbuilder/"');
-      expect(html).toContain('Unpublished pre-release playtest project.');
+      expect(html).toContain('Unpublished playtest project.');
       expect(html).not.toContain('href="../../v0.6.2/rulebook/"');
       expect(html).not.toContain('href="../../v0.6.2/deckbuilder/"');
       expect(html).not.toContain('Current playtest edition: v0.6.2.');
