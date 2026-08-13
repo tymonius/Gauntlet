@@ -42,8 +42,12 @@ async function startStaticServer() {
 }
 
 async function waitForTerritoryReady(frame) {
-  await frame.waitForSelector('.territory-card');
-  await frame.waitForFunction(() => document.body.dataset.renderReady === 'true');
+  await frame.waitForSelector('.territory-card', { state: 'attached', timeout: 30000 });
+  await frame.waitForFunction(
+    () => Boolean(document.querySelector('.territory-card')) && document.body?.dataset.renderReady === 'true',
+    null,
+    { timeout: 30000 },
+  );
   await frame.evaluate(async () => document.fonts?.ready);
 }
 
