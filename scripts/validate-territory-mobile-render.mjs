@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
 const OUTPUT = join(ROOT, 'card-design', 'generated', 'leaders');
-const TERRITORY_ID = 'territory-smuggler-s-pass';
+const TERRITORY_ID = 'territory-difficult-terrain';
 const CARD_WIDTH = 336;
 const CARD_HEIGHT = 240;
 const MINIMUM_ART_HEIGHT = 0.55 * 96;
@@ -143,6 +143,9 @@ function validateRender(label, metric) {
   }
   if (!metric.artWidth || !metric.artHeight || metric.artHeight <= MINIMUM_ART_HEIGHT + 1) {
     throw new Error(`${label} Territory artwork window collapsed toward the fitting floor: ${JSON.stringify(metric)}.`);
+  }
+  if (metric.effectScale !== '1') {
+    throw new Error(`${label} normal-density Territory typography was reduced unexpectedly: ${JSON.stringify(metric)}.`);
   }
   if (metric.textSizeAdjust !== 'none') {
     throw new Error(`${label} Territory render did not disable browser text inflation: ${JSON.stringify(metric)}.`);
