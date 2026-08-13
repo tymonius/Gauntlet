@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "target": "clean-v0.6.3-downstream",
+  "status": "downstream_candidate_pending_merge_review",
+  "authority_set_id": "2da05383c10fe3e784c64b26fd2d9837913011cad996966f49a7ae3a92af8ed9",
+  "authority_certification": "artifacts/reconstruction/clean-v0.6.3/certification/authority-set.json",
+  "publication_unlocked": false,
+  "public_current_release": "v0.6.1",
+  "baseline": {
+    "path": "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json",
+    "git_blob_sha": "31ee55f3ff2784215863547b167ff1e689343f15",
+    "role": "published_schema_and_stable_structure_baseline_only"
+  },
+  "evidence": {
+    "path": "artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json",
+    "git_blob_sha": "955dfa654cac96a9de820867ab694e83d0fb1d36",
+    "role": "verified_delta_payload_only"
+  },
+  "starter_approval": {
+    "pr": 573,
+    "merge_commit": "e13cd423bacc4c965aad9f8ed622100bef88d48f",
+    "source": "https://github.com/tymonius/Gauntlet/pull/573",
+    "source_file": "v0.6.3/data/starter-decks-candidate.js",
+    "audit": "docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md"
+  },
+  "forbidden_authority_sources": [
+    "releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md",
+    "releases/v0.6.3/Gauntlet_v0.6.3_Faction_and_Component_Guide.md",
+    "releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md",
+    "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md",
+    "releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json"
+  ],
+  "outputs": [
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json",
+      "sha256": "fa42934af929e04628449ac34863a3422cd673d862fc9c1f6772b35edeaac5d8",
+      "bytes": 267361,
+      "lines": 6595
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/downstream/starter-decks.json",
+      "sha256": "a0faa7ca50fd9d99f50188b566b419d00c2385673203ef994e0f20532740d852",
+      "bytes": 36516,
+      "lines": 1449
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/downstream/source-boundary.md",
+      "sha256": "73382fa30c5a1e8df6fb48e053bb5dd33f8ea2d57d6ac2945c59f22def02401e",
+      "bytes": 1264,
+      "lines": 13
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/downstream/validation-status.md",
+      "sha256": "2e7f7bcf7db1ee30a37b0fc6dc02632fb4b910cdee0d0f959a2aaea952460d98",
+      "bytes": 1063,
+      "lines": 18
+    }
+  ],
+  "invariants": {
+    "playable_cards": 128,
+    "neutral_cards": 50,
+    "faction_cards_each": 13,
+    "territories": 25,
+    "factions": 6,
+    "leaders": 12,
+    "starter_decks": 12,
+    "starter_cards_each": 30,
+    "starter_value_each": 60,
+    "starter_unique_titles_used": 110
+  }
+}
