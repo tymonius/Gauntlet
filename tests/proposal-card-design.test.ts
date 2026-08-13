@@ -93,6 +93,21 @@ describe("Diplomat Proposal / Treaty Article prototypes", () => {
     expect(proposalStyles).toContain("width: min(0.96in, calc(var(--art-height) * 0.62))");
     expect(proposalStyles).toContain("height: min(0.96in, calc(var(--art-height) * 0.62))");
     expect(proposalStyles).not.toContain("top: 60%");
+
+    const pxPerInch = 96;
+    const pxPerPoint = pxPerInch / 72;
+    for (const artHeight of [1.52 * pxPerInch, 1.28 * pxPerInch, 1.04 * pxPerInch]) {
+      const wordTop = artHeight * 0.07;
+      const wordSize = Math.min(27 * pxPerPoint, artHeight * 0.23);
+      const wordBottom = wordTop + wordSize;
+      const sealSize = Math.min(0.96 * pxPerInch, artHeight * 0.62);
+      const sealCenter = artHeight * 0.66;
+      const sealTop = sealCenter - sealSize / 2;
+      const sealBottom = sealCenter + sealSize / 2;
+
+      expect(sealTop - wordBottom).toBeGreaterThan(3);
+      expect(sealBottom).toBeLessThanOrEqual(artHeight);
+    }
   });
 
   it("keeps the Ratified heading in Declaration Blackletter with Declaration Pro fallback", () => {
