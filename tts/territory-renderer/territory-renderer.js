@@ -189,18 +189,38 @@
     ));
   }
 
+  /* Only flow content should influence fitting. The Territory parchment is a
+     large, rotated ::before layer inside .territory-interior. WebKit includes
+     transformed decorative descendants in scrollHeight on some mobile layouts,
+     even when overflow is clipped. Using interior/body scrollHeight therefore
+     reports permanent overflow and drives artwork to the 0.55in minimum.
+     Compare the real flow boxes instead so decorative layers cannot affect fit. */
   function cardOverflows(card) {
     const interior = card.querySelector('.territory-interior');
     const body = card.querySelector('.territory-body');
+    const art = card.querySelector('.territory-art');
     const effect = card.querySelector('.territory-effect');
     const footer = card.querySelector('.territory-footer');
-    if (!interior || !body || !effect || !footer) return true;
+    if (!interior || !body || !art || !effect || !footer) return true;
 
     const interiorRect = interior.getBoundingClientRect();
+    const bodyRect = body.getBoundingClientRect();
+    const artRect = art.getBoundingClientRect();
+    const effectRect = effect.getBoundingClientRect();
     const footerRect = footer.getBoundingClientRect();
-    return effect.scrollHeight > effect.clientHeight + 0.5
-      || body.scrollHeight > body.clientHeight + 0.5
-      || interior.scrollHeight > interior.clientHeight + 0.5
+
+    const effectContentOverflows = effect.scrollHeight > effect.clientHeight + 0.5
+      || effect.scrollWidth > effect.clientWidth + 0.5;
+    const bodyContentPastBottom = artRect.bottom > bodyRect.bottom + 0.5
+      || effectRect.bottom > bodyRect.bottom + 0.5;
+    const bodyContentPastSides = artRect.left < bodyRect.left - 0.5
+      || artRect.right > bodyRect.right + 0.5
+      || effectRect.left < bodyRect.left - 0.5
+      || effectRect.right > bodyRect.right + 0.5;
+
+    return effectContentOverflows
+      || bodyContentPastBottom
+      || bodyContentPastSides
       || footerRect.bottom > interiorRect.bottom + 0.5
       || footerOverflows(footer);
   }
