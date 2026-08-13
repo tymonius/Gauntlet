@@ -41,7 +41,24 @@ describe("Diplomat Proposal / Treaty Article prototypes", () => {
     expect(proposalRenderer).toContain("proposal-faction-emblem");
     expect(proposalStyles).toContain("-webkit-mask: var(--faction-symbol)");
     expect(proposalStyles).toContain("background: var(--component-footer-tint)");
-    expect(proposalStyles).toContain("grid-template-rows: 0.3in var(--art-height) auto 0.18in");
+    expect(proposalStyles).toContain("grid-template-rows: 0.58in var(--art-height) auto 0.18in");
+  });
+
+  it("gives the title and component label the same breathing room as Leader cards", () => {
+    expect(proposalStyles).toContain("gap: 0.025in");
+    expect(proposalStyles).toContain("padding: 0.05in 0.46in 0.035in 0.09in");
+    expect(proposalStyles).toContain("font-size: 13.4pt");
+    expect(proposalStyles).toContain("font-size: 4.75pt");
+    expect(proposalStyles).toContain("width: 0.15in");
+    expect(proposalStyles).toContain("height: 0.15in");
+  });
+
+  it("makes Influence Stake more prominent than an ordinary playable-card value", () => {
+    expect(proposalStyles).toContain(".proposal-card .value-medallion");
+    expect(proposalStyles).toContain("top: 0.14in");
+    expect(proposalStyles).toContain("width: 0.28in");
+    expect(proposalStyles).toContain("height: 0.28in");
+    expect(proposalStyles).toContain("font-size: 9.6pt");
   });
 
   it("keeps Requirement, Accepted, and Refused in the ordinary rule-label grammar without changing playable cards", () => {
@@ -50,10 +67,13 @@ describe("Diplomat Proposal / Treaty Article prototypes", () => {
     expect(proposalStyles).not.toContain(".gauntlet-card .rule-section {");
   });
 
-  it("turns the artwork field into an explicit ratification treatment on the reverse", () => {
+  it("turns the artwork field into an explicit ratification treatment using Declaration Blackletter with Declaration Pro fallback", () => {
     expect(proposalRenderer).toContain("proposal-ratified-word\">Ratified");
     expect(proposalRenderer).toContain("proposal-wax-seal");
-    expect(proposalStyles).toContain("font-family: var(--font-flavor)");
+    expect(proposalStyles).toContain("@import url(https://db.onlinewebfonts.com/c/15a5d188ed241eed33a9ec0360d0bd60?family=P22+Declaration+W01+Blackletter)");
+    expect(proposalStyles).toContain('"P22 Declaration W01 Blackletter"');
+    expect(proposalStyles).toContain("var(--font-flavor)");
+    expect(proposalStyles).not.toContain('font-family: "Gauntlet Declaration Blackletter"');
     expect(proposalStyles).toContain("#a3232d");
     expect(proposalStyles).toContain("mask: var(--faction-symbol)");
   });
