@@ -1,6 +1,6 @@
 const PROPOSAL_SOURCE = '/releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json';
 const RATIFIED_SEAL_SOURCE = '/images/artwork/supplemental/diplomats/ratified-wax-seal.webp';
-const PROTOTYPE_IDS = ['de-escalation', 'open-channels', 'diplomatic-recognition'];
+const EXPECTED_PROPOSAL_COUNT = 9;
 
 const root = document.querySelector('#proposalReviewSections');
 
@@ -66,20 +66,39 @@ function reviewPair(proposal) {
   </section>`;
 }
 
-async function renderProposalPrototypes() {
+function updateProposalCounts(count) {
+  document.querySelectorAll('[data-proposal-count]').forEach(node => {
+    node.textContent = String(count);
+  });
+}
+
+function validateCanonicalProposals(proposals) {
+  if (proposals.length !== EXPECTED_PROPOSAL_COUNT) {
+    throw new Error(`Expected ${EXPECTED_PROPOSAL_COUNT} canonical Proposals, found ${proposals.length}`);
+  }
+
+  const requiredFields = ['id', 'name', 'stake', 'requirement', 'accepted', 'refused'];
+  for (const proposal of proposals) {
+    const missing = requiredFields.filter(field => proposal[field] === undefined || proposal[field] === null || proposal[field] === '');
+    if (missing.length) throw new Error(`Proposal ${proposal.id || proposal.name || '(unknown)'} is missing: ${missing.join(', ')}`);
+  }
+}
+
+async function renderProposalCatalog() {
   if (!root) return;
   try {
     const response = await fetch(PROPOSAL_SOURCE, { cache: 'no-cache' });
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const canonical = await response.json();
-    const proposals = PROTOTYPE_IDS.map(id => (canonical.proposals || []).find(proposal => proposal.id === id));
-    const missing = PROTOTYPE_IDS.filter((id, index) => !proposals[index]);
-    if (missing.length) throw new Error(`Missing canonical Proposal${missing.length === 1 ? '' : 's'}: ${missing.join(', ')}`);
+    const proposals = Array.isArray(canonical.proposals) ? canonical.proposals : [];
+    validateCanonicalProposals(proposals);
+    updateProposalCounts(proposals.length);
+    root.dataset.proposalCount = String(proposals.length);
     root.innerHTML = `<div class="proposal-review-block">${proposals.map(reviewPair).join('')}</div>`;
   } catch (error) {
-    root.innerHTML = `<p class="review-note">Unable to load Proposal prototypes: ${esc(error.message)}</p>`;
+    root.innerHTML = `<p class="review-note">Unable to load complete Proposal set: ${esc(error.message)}</p>`;
     console.error(error);
   }
 }
 
-await renderProposalPrototypes();
+await renderProposalCatalog();

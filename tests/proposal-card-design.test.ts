@@ -9,23 +9,37 @@ const cardRefinementStyles = readFileSync("card-design/card-design-refinement.cs
 const canonical = JSON.parse(readFileSync("releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json", "utf8"));
 const ratifiedSealPath = "images/artwork/supplemental/diplomats/ratified-wax-seal.webp";
 
-const prototypeIds = ["de-escalation", "open-channels", "diplomatic-recognition"];
+const proposalIds = [
+  "de-escalation",
+  "orderly-withdrawal",
+  "capitulation",
+  "open-channels",
+  "mutual-disarmament",
+  "prisoner-exchange",
+  "rebuilding-pact",
+  "ultimatum",
+  "diplomatic-recognition",
+];
 
-describe("Diplomat Proposal / Treaty Article prototypes", () => {
-  it("adds the supplemental prototype section to the unified card review page", () => {
+describe("Diplomat Proposal / Treaty Article catalog", () => {
+  it("adds the complete supplemental component section to the unified card review page", () => {
     expect(reviewPage).toContain('id="proposal-cards"');
     expect(reviewPage).toContain('id="proposalReviewSections"');
     expect(reviewPage).toContain('href="#proposal-cards"');
     expect(reviewPage).toContain('href="proposal-card.css"');
     expect(reviewPage).toContain('type="module" src="proposal-card.js"');
+    expect(reviewPage).toContain("<strong data-proposal-count>9</strong> Proposal / Treaty Article pairs");
+    expect(reviewPage).toContain("All <span data-proposal-count>9</span> canonical v0.6.3 Proposals");
   });
 
-  it("reads the approved prototypes from published v0.6.3 canonical data rather than duplicating their rules text", () => {
+  it("renders every published v0.6.3 Proposal directly from canonical data", () => {
+    expect(canonical.proposals).toHaveLength(9);
+    expect(canonical.proposals.map((proposal: { id: string }) => proposal.id)).toEqual(proposalIds);
     expect(proposalRenderer).toContain("/releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json");
-    for (const id of prototypeIds) {
-      expect(canonical.proposals.some((proposal: { id: string }) => proposal.id === id)).toBe(true);
-      expect(proposalRenderer).toContain(`'${id}'`);
-    }
+    expect(proposalRenderer).toContain("const EXPECTED_PROPOSAL_COUNT = 9");
+    expect(proposalRenderer).toContain("Array.isArray(canonical.proposals) ? canonical.proposals : []");
+    expect(proposalRenderer).toContain("proposals.map(reviewPair).join('')");
+    expect(proposalRenderer).not.toContain("PROTOTYPE_IDS");
     expect(proposalRenderer).not.toContain("Both players withdraw. The accepting player draws one card.");
   });
 
@@ -36,6 +50,14 @@ describe("Diplomat Proposal / Treaty Article prototypes", () => {
     expect(proposalRenderer).toContain("ratified ? 'Treaty Article' : 'Proposal'");
     expect(proposalRenderer).toContain("Influence Stake");
     expect(proposalRenderer).toContain("value-medallion");
+  });
+
+  it("guards the catalog against omitted or malformed canonical Proposals", () => {
+    expect(proposalRenderer).toContain("validateCanonicalProposals(proposals)");
+    expect(proposalRenderer).toContain("proposals.length !== EXPECTED_PROPOSAL_COUNT");
+    expect(proposalRenderer).toContain("['id', 'name', 'stake', 'requirement', 'accepted', 'refused']");
+    expect(proposalRenderer).toContain("root.dataset.proposalCount = String(proposals.length)");
+    expect(proposalRenderer).toContain("document.querySelectorAll('[data-proposal-count]')");
   });
 
   it("uses the ordinary card shell with Diplomat border, Leader-style faction tint, and faction symbol classification", () => {
