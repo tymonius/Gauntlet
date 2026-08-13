@@ -7,6 +7,7 @@ const military = readSymbol("military");
 const diplomats = readSymbol("diplomats");
 const inquisition = readSymbol("inquisition");
 const financiers = readSymbol("financiers");
+const intelligence = readSymbol("intelligence");
 const mystics = readSymbol("mystics");
 const notes = readFileSync("images/faction-symbols/README.md", "utf8");
 
@@ -35,16 +36,26 @@ describe("approved faction symbols", () => {
     expect(financiers).not.toContain("side-profile");
   });
 
+  it("uses the approved eye-in-triangle mark for Intelligence", () => {
+    expect(intelligence).toContain('viewBox="0 0 1019.78 840.99"');
+    expect(intelligence.match(/<path/g)).toHaveLength(3);
+    expect(intelligence).toContain("<polygon");
+    expect(intelligence).toContain("M570.5,715.89");
+    expect(intelligence).toContain("M710.05,382.13");
+    expect(intelligence).toContain("M581.62,502.92");
+  });
+
   it("uses the approved pentagram seal for Mystics", () => {
     expect(mystics).toContain('viewBox="0 0 64 64"');
     expect(mystics).toContain('<circle cx="32" cy="32" r="27"');
     expect(mystics).toContain("L 43.17 47.37");
   });
 
-  it("records Intelligence as pending final artwork rather than treating the temporary eye as approved", () => {
-    expect(notes).toContain("Intelligence");
-    expect(notes).toContain("still being refined");
-    expect(notes).toContain("temporary production asset");
+  it("records all six faction marks as approved", () => {
+    expect(notes).toContain("All six faction marks are approved");
+    expect(notes).toContain("**Intelligence** — eye within a triangular/pyramidal frame");
+    expect(notes).not.toContain("still being refined");
+    expect(notes).not.toContain("temporary production asset");
   });
 
   it("distinguishes the Mystics faction from the Arcane card type", () => {
