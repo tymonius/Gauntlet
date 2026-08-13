@@ -159,8 +159,7 @@
   font-family:
     "P22 Declaration W01 Blackletter",
     "P22 Declaration Blackletter",
-    "Old English Text MT",
-    fantasy;
+    var(--font-flavor);
   font-size: 27pt;
   font-style: normal;
   font-weight: 400;
