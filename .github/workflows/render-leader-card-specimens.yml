@@ -46,7 +46,7 @@ jobs:
         with:
           node-version: 22
       - run: npm install
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium webkit
       - name: Render and validate card review catalog
         run: node scripts/render-leader-card-specimens.mjs
       - name: Validate Territory mobile render stability
