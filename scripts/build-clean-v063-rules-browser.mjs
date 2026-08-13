@@ -90,6 +90,7 @@ const index = `<!doctype html>
   <meta name="theme-color" content="#8f1f25" />
   <meta name="description" content="Searchable reconstruction browser for the certified clean Gauntlet v0.6.3 Rulebook." />
   <title>Gauntlet clean v0.6.3 Rules Browser — Reconstruction</title>
+  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="publication.css" />
 </head>
