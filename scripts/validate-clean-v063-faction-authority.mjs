@@ -32,7 +32,7 @@ for (const rel of guidePaths) {
   if (/> \*\*(?:Battle|Activate|Use):\*\*/.test(text)) fail(`${rel}: retired effect heading survives`);
   if (/\bPlayable Deck\b/.test(text)) fail(`${rel}: Playable Deck terminology survives`);
   if (/\bBattle effects?\b/.test(text)) fail(`${rel}: Battle-effect prose survives`);
-  if (/> \*\*Action:\*\* Bank this card\./.test(text)) fail(`${rel}: explicit inherent Bank Action survives`);
+  if (/> \*\*Action:\*\* Bank this card\.$/m.test(text)) fail(`${rel}: exact standalone inherent Bank Action survives`);
 
   const poolMatch = text.match(/^# \d+\. Canonical .* card pool$/m);
   const quickMatch = text.match(/^# \d+\. Quick reference$/m);

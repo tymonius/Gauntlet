@@ -1,0 +1,131 @@
+{
+  "schema_version": 1,
+  "status": "authority_candidate_pending_merge_review",
+  "target": "clean-v0.6.3",
+  "authority_base": "certified clean-v0.6.2 faction authority",
+  "authority_base_set_id": "563ce3a0ac39a0bbba52cc113ae9ffbcaeb3c0985bad4cfa66fe462fb2cacb3b",
+  "publication_unlocked": false,
+  "evidence": {
+    "canonical_data_path": "artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json",
+    "git_blob_sha": "955dfa654cac96a9de820867ab694e83d0fb1d36",
+    "role": "verified_delta_payload_only",
+    "governing_prs": [
+      540,
+      549,
+      550,
+      551,
+      560,
+      571,
+      575,
+      615
+    ]
+  },
+  "forbidden_authority_sources": [
+    "releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md",
+    "releases/v0.6.3/Gauntlet_v0.6.3_Faction_and_Component_Guide.md"
+  ],
+  "required_v063_deltas": [
+    "rules-deck-draw-pile-terms",
+    "setup-draw4-discard1-keep3",
+    "setup-informed-territory-arrangement",
+    "setup-first-player-after-arrangement",
+    "setup-start-on-own-end-territory",
+    "victory-final-territory-capture",
+    "victory-independent-last-stand",
+    "victory-run-the-gauntlet-umbrella",
+    "cards-role-headings",
+    "cards-asset-only-banked-heading",
+    "cards-inherent-bank-action",
+    "cards-directly-permitted-procedures",
+    "cards-effect-granted-movement",
+    "cards-additional-tactic-defaults",
+    "cards-sanctions-shared-rule",
+    "cards-asset-removed-event",
+    "cards-bind-defaults",
+    "cards-reveal-interference-priority",
+    "cards-apply-repeat-effects",
+    "cards-no-winner-cleanup",
+    "cards-reroll-new-result-default",
+    "card-protracted-siege-revision",
+    "card-margin-loan-persistent",
+    "identity-second-line",
+    "identity-smugglers-run"
+  ],
+  "recovered_late_decisions": [
+    "GNT-DEC-2026-0812-001",
+    "GNT-DEC-2026-0812-002",
+    "GNT-DEC-2026-0812-003"
+  ],
+  "targeted_faction_card_review": [
+    "Shock and Awe",
+    "Reserve Force",
+    "Fog of War",
+    "Necromancy",
+    "Sleeper Network",
+    "Give Chase",
+    "Speculation",
+    "Hold the Line",
+    "Intercepted Orders",
+    "Nature's Altar",
+    "Field Command",
+    "Counterworks",
+    "Martyrdom",
+    "Rearguard"
+  ],
+  "guides": [
+    {
+      "faction": "military",
+      "path": "artifacts/reconstruction/clean-v0.6.3/faction-guides/military/Gauntlet_v0.6.3_Military_Faction_Guide.md",
+      "sha256": "23a4260f793ebf5c09d6a62fc2d36d51290ca9ca28c03e3bfe349170eae1c91c",
+      "bytes": 11380,
+      "lines": 239,
+      "authority_base_path": "artifacts/reconstruction/clean-v0.6.2/faction-guides/military/Gauntlet_v0.6.2_Military_Faction_Guide.md",
+      "authority_base_sha256": "ac2b800e151d1cbf671e47b9354ffaf396f8decaaa8c5bb28e5fa58de0900ff1"
+    },
+    {
+      "faction": "diplomat",
+      "path": "artifacts/reconstruction/clean-v0.6.3/faction-guides/diplomat/Gauntlet_v0.6.3_Diplomat_Faction_Guide.md",
+      "sha256": "cb4a4ae235b96b6322b99367e52fa211d608ee83dc5b031f2aeab2f94da6f5fe",
+      "bytes": 15528,
+      "lines": 399,
+      "authority_base_path": "artifacts/reconstruction/clean-v0.6.2/faction-guides/diplomat/Gauntlet_v0.6.2_Diplomat_Faction_Guide.md",
+      "authority_base_sha256": "6f2ab7c23636d1a6f80a80cf9a75797884e85b6d1322e97f8f9a738f686727d1"
+    },
+    {
+      "faction": "financier",
+      "path": "artifacts/reconstruction/clean-v0.6.3/faction-guides/financier/Gauntlet_v0.6.3_Financier_Faction_Guide.md",
+      "sha256": "f5d07550bdc76db7c2ba6c5243e5539dadef1c27986250d6b89f4cdec6700f6b",
+      "bytes": 16711,
+      "lines": 347,
+      "authority_base_path": "artifacts/reconstruction/clean-v0.6.2/faction-guides/financier/Gauntlet_v0.6.2_Financier_Faction_Guide.md",
+      "authority_base_sha256": "9a7378b4894bd0ff574ef1482834e5fcd09699562998d1fc4b9900270abf10c7"
+    },
+    {
+      "faction": "intelligence",
+      "path": "artifacts/reconstruction/clean-v0.6.3/faction-guides/intelligence/Gauntlet_v0.6.3_Intelligence_Faction_Guide.md",
+      "sha256": "103d5bd4a6758ef3127fa71f19694b5ba428216b1d6c28b9db74fdb8e86d2328",
+      "bytes": 16667,
+      "lines": 344,
+      "authority_base_path": "artifacts/reconstruction/clean-v0.6.2/faction-guides/intelligence/Gauntlet_v0.6.2_Intelligence_Faction_Guide.md",
+      "authority_base_sha256": "25352704a364bffa4899e989addceb489ff6dc65c87f21ea23a7917002f816c2"
+    },
+    {
+      "faction": "mystics",
+      "path": "artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md",
+      "sha256": "b47623ba7a7537e0df5326ccd69967dee4bb7016b2a3b5c2a8d05d1c899e5f1a",
+      "bytes": 15278,
+      "lines": 351,
+      "authority_base_path": "artifacts/reconstruction/clean-v0.6.2/faction-guides/mystics/Gauntlet_v0.6.2_Mystics_Faction_Guide.md",
+      "authority_base_sha256": "613131bd90cd6c731e6d41e3cfaf3b464783ceaa4665b8a3edd4530abcef47ef"
+    },
+    {
+      "faction": "inquisition",
+      "path": "artifacts/reconstruction/clean-v0.6.3/faction-guides/inquisition/Gauntlet_v0.6.3_Inquisition_Faction_Guide.md",
+      "sha256": "a489e08ec1daf094e521bc45acc43e119c137fe566cfd8bef2f4d2455e38e3bd",
+      "bytes": 13739,
+      "lines": 272,
+      "authority_base_path": "artifacts/reconstruction/clean-v0.6.2/faction-guides/inquisition/Gauntlet_v0.6.2_Inquisition_Faction_Guide.md",
+      "authority_base_sha256": "e5d5613c801a3ce51a4a85ff94b3b6375c881232e1042cd0068c27492f88dea0"
+    }
+  ]
+}
