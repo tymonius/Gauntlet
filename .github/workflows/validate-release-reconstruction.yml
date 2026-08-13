@@ -1,5 +1,6 @@
 name: Validate release reconstruction
 
+# This gate validates authority and quarantine state only; it does not approve any pending gameplay change.
 on:
   push:
     branches:
