@@ -103,11 +103,12 @@ requireText(text, '**Relentless Pursuit:**', 'Witch Hunter Relentless Pursuit');
 
 // Faction-rule deltas that must survive Rulebook integration.
 requireText(text, 'Begin with 2 Capital', 'v0.6.2 Financier starting Capital');
-requireText(text, 'The total cost for a Leverage bonus of +N is 1 + 2 + ... + N', 'triangular Diplomat Leverage');
+requireText(text, '| +4 | 10 |', 'triangular Diplomat Leverage table');
+requireText(text, 'Each additional +1 costs one more Influence than the previous increment.', 'triangular Diplomat Leverage progression');
 requireText(text, 'during a pending battle before Onset', 'Diplomat Terms boundary');
 requireText(text, 'You may take one Action during both your Opening and your Denouement, provided that one of those Actions is Purge.', 'Inquisition Purge phase permission');
-requireText(text, 'all 13 faction cards are Arcane', 'Mystics 13-card Arcane pool');
-requireText(text, 'five Mission/Special Operation Faction Actions', 'Intelligence Action grouping');
+requireText(text, 'All thirteen Mystics cards have the Arcane trait.', 'Mystics 13-card Arcane pool');
+requireText(text, 'Start, complete, or abort a Mission; start or complete a Special Operation; all are Denouement Actions.', 'Intelligence Action grouping');
 
 // The Rulebook should describe faction engines, not duplicate canonical card-reference chapters.
 forbidText(text, 'Canonical Military card pool', 'embedded Military card catalog');
