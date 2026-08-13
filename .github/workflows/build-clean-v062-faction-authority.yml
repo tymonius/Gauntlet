@@ -46,63 +46,14 @@ jobs:
       - name: Verify reconstruction gate
         run: node scripts/validate-reconstruction-version-plan.mjs
 
-      - name: Repair synthesis ordering after first gate
-        id: ordering-fix
-        if: github.event_name == 'push'
-        run: |
-          python3 - <<'PY'
-          from pathlib import Path
-          p = Path('scripts/build-clean-v062-faction-authority.mjs')
-          s = p.read_text()
-          for line in [
-              "  text = text.replaceAll('Action Opportunity after movement', 'Denouement');\n",
-              "  text = text.replaceAll('after-movement Action Opportunity', 'Denouement');\n",
-              "  text = text.replaceAll('during an Action Opportunity after movement', 'during Denouement, as an Action');\n",
-              "  text = text.replaceAll('During an Action Opportunity after movement', 'During Denouement, as an Action');\n",
-              "  text = text.replaceAll('during an after-movement Action Opportunity', 'during Denouement');\n",
-              "  text = text.replaceAll('during opening effects', 'during Onset');\n",
-              "  text = text.replaceAll('During opening effects', 'During Onset');\n",
-          ]:
-              s = s.replace(line, '')
-
-          marker = "  return text;\n}\n\nfunction military() {"
-          helper = """  return text;\n}\n\nfunction normalizePhaseLanguage(text) {\n  return text\n    .replaceAll('Action Opportunity after movement', 'Denouement')\n    .replaceAll('after-movement Action Opportunity', 'Denouement')\n    .replaceAll('during an Action Opportunity after movement', 'during Denouement, as an Action')\n    .replaceAll('During an Action Opportunity after movement', 'During Denouement, as an Action')\n    .replaceAll('during an after-movement Action Opportunity', 'during Denouement')\n    .replaceAll('during opening effects', 'during Onset')\n    .replaceAll('During opening effects', 'During Onset');\n}\n\nfunction military() {"""
-          if 'function normalizePhaseLanguage(text)' not in s:
-              if marker not in s:
-                  raise SystemExit('common() insertion marker missing')
-              s = s.replace(marker, helper)
-
-          old_recon = "t = replaceOnce(t, '> **Use:** During Onset in a battle you initiated, you may discard this card to reveal the opponent\\'s Hand. You may then withdraw or continue the attack.', '> **Use:** During Onset in a battle you initiated, you may discard this card to reveal the opponent\\'s Hand. You may then withdraw or continue the attack.', 'Reconnaissance already migrated');"
-          new_recon = "t = replaceOnce(t, '> **Use:** During opening effects in a battle you initiated, you may discard this card to reveal the opponent\\'s Hand. You may then withdraw or continue the attack.', '> **Use:** During Onset in a battle you initiated, you may discard this card to reveal the opponent\\'s Hand. You may then withdraw or continue the attack.', 'Reconnaissance');"
-          s = s.replace(old_recon, new_recon)
-
-          for name in ['military', 'diplomat', 'financier', 'intelligence', 'mystics', 'inquisition']:
-              s = s.replace(f"  {name}: {name}(),", f"  {name}: normalizePhaseLanguage({name}()),")
-
-          p.write_text(s)
-          PY
-
-          if git diff --quiet -- scripts/build-clean-v062-faction-authority.mjs; then
-            echo 'changed=false' >> "$GITHUB_OUTPUT"
-          else
-            echo 'changed=true' >> "$GITHUB_OUTPUT"
-            git config user.name 'github-actions[bot]'
-            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-            git add scripts/build-clean-v062-faction-authority.mjs
-            git commit -m 'Apply faction-specific deltas before terminology normalization'
-            git push
-          fi
-
       - name: Build clean v0.6.2 faction authorities
-        if: steps.ordering-fix.outputs.changed != 'true'
         run: node scripts/build-clean-v062-faction-authority.mjs
 
       - name: Validate clean v0.6.2 faction authorities
-        if: steps.ordering-fix.outputs.changed != 'true'
         run: node scripts/validate-clean-v062-faction-authority.mjs
 
       - name: Commit generated authority candidates
-        if: github.event_name == 'push' && github.actor != 'github-actions[bot]' && steps.ordering-fix.outputs.changed != 'true'
+        if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
         run: |
           git add artifacts/reconstruction/clean-v0.6.2/faction-guides
           if git diff --cached --quiet; then
