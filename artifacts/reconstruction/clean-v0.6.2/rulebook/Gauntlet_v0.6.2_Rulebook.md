@@ -54,8 +54,6 @@ Capturing the opponent's final Territory is necessary but does not by itself win
 
 ---
 
----
-
 # Part I — Learn to Play
 
 ---
@@ -225,7 +223,7 @@ During Movement, choose to **Advance**, **Hold**, or **Fall Back**. Conduct any 
 
 ### Capture
 
-Resolve the active player's Capture step using the Front Line rules in Section 6.
+Resolve the active player's Capture step using the Front Line rules in Chapter 8.
 
 Apply effects and check victory conditions that occur after Capture before drawing.
 
@@ -251,7 +249,7 @@ Denouement is the Action phase after Movement and any battle caused by it.
 
 The active player may take their Action during Denouement if they did not take it during Opening and the chosen Action is legal during Denouement.
 
-A rule or effect may permit an additional Action or permit an Action despite one having already been taken. Follow the Action rules in Section 2.
+A rule or effect may permit an additional Action or permit an Action despite one having already been taken. Follow the Action rules in Chapter 5.
 
 ### Cleanup
 
@@ -309,7 +307,7 @@ A directly permitted procedure:
 - occurs at the stated timing;
 - does not count as taking an Action unless the effect expressly says it does;
 - does not consume the player's normal Action; and
-- does not create another Action phase or Action window.
+- does not create another Action phase or Action phase.
 
 State these effects in terms of the procedure the player may perform. Do not create additional Action phases or implicit same-phase Action permissions.
 
@@ -409,7 +407,7 @@ Entering the opponent's position:
 2. establish the attacker, defender, contested position, and the attacker's previous position; and
 3. create a pending battle.
 
-The pending-battle and Terms procedure in Section 4 occurs before the battle reaches Onset.
+The pending-battle and Terms procedure in Chapter 7 occurs before the battle reaches Onset.
 
 When movement creates a pending battle, the current movement sequence ends and all unused movement in that sequence is lost, even if the pending battle is later prevented by Terms or another effect.
 
@@ -722,8 +720,6 @@ Territory-specific effects do not apply in a Last Stand battle unless they expre
 
 ---
 
----
-
 # Part II — Complete Shared Rules
 
 ---
@@ -886,8 +882,6 @@ On an Overlay, **you** means its current controller unless the text identifies i
 
 ---
 
----
-
 # Part III — Factions
 
 ## How Factions Work
@@ -923,13 +917,13 @@ Reference cards summarize procedures but do not replace the Rulebook or the clea
 
 # 13. Military
 
-### How it works
+## How it works
 
 The Military turns battle victories into **Command**, then spends Command on Leader-specific **Orders**. The General uses Orders to attack, reinforce, and pursue. The Commandant uses them to defend, repel, and capture.
 
 Military has no alternate victory condition. It wins by running the Gauntlet.
 
-### Complete rules
+## Complete rules
 
 | Element | Military rule |
 |---|---|
@@ -941,7 +935,7 @@ Military has no alternate victory condition. It wins by running the Gauntlet.
 | Faction pool | 13 Military card titles. |
 | Unique card | Shock and Awe, cost 5; maximum one copy per Playable Deck. |
 
-### Faction Actions
+## Faction Actions
 
 Military has **no Faction Actions**. Orders are Faction Abilities used at their printed timings; they do not use an Action. Playing a Military card for its Action effect still uses the normal Action rules.
 
@@ -1022,13 +1016,13 @@ War Crimes and Shock and Awe may prohibit movement, capture, or Orders resulting
 
 # 14. Diplomats
 
-### How it works
+## How it works
 
 Before a battle begins, a Diplomat may offer **Terms**. The Diplomat stakes Influence and presents a Proposal. The opponent may accept, preventing the battle, or refuse and fight under the Proposal's refusal effect.
 
 Accepted or successfully imposed Proposals become Treaty Articles. Ratify five different Proposals and survive until the start of your next turn to win through the **Peace Treaty**.
 
-### Complete rules
+## Complete rules
 
 | Element | Diplomat rule |
 |---|---|
@@ -1041,7 +1035,7 @@ Accepted or successfully imposed Proposals become Treaty Articles. Ratify five d
 | Proposal set | Nine double-sided Proposal / Treaty Article cards. |
 | Faction pool | 13 Diplomat card titles. |
 
-### Faction Actions
+## Faction Actions
 
 Diplomats have **no Faction Actions**. Offering Terms is a faction procedure during a pending battle before Onset, and Leverage is a Faction Ability used before dice are rolled after refused Terms. Neither takes an Action. Playing a Diplomat card for its Action effect still uses the normal Action rules.
 
@@ -1272,13 +1266,13 @@ Its ongoing effect and relief condition continue to refer to those identified pl
 
 # 15. Financiers
 
-### How it works
+## How it works
 
 Financiers build economic power. They place cards in a **Treasury** to increase their Capital limit, gain and spend **Capital**, and buy **Deeds** connected to Territories.
 
 Deed ownership is independent of token position and Territory control. Own the Deeds to every Territory currently in the Gauntlet to win through **Controlling Interest**.
 
-### Complete rules
+## Complete rules
 
 | Element | Financier rule |
 |---|---|
@@ -1292,9 +1286,9 @@ Deed ownership is independent of token position and Territory control. Own the D
 | Faction pool | 13 Financier card titles. |
 | Unique card | Corner the Market, cost 5; maximum one copy per Playable Deck. |
 
-### Faction Actions
+## Faction Actions
 
-Financiers have the following Faction Actions. Each costs 1 Action and may be used only during an Denouement:
+Financiers have the following Faction Actions. Each costs 1 Action and may be used only during Denouement:
 
 - **Place a card in Treasury:** Place one card from your Hand face up in your Treasury.
 - **Buy or buy out a Deed:** Pay the full current cost to acquire one unowned Deed or buy out one opposing Financier's Deed.
@@ -1323,7 +1317,7 @@ Capital is public and pays for Deeds, Subsidize, and card effects. Your Capital 
 
 At the start of your turn, if the total card value in your Treasury is greater than the number of Territories you control, gain 1 additional Action that turn. At least one Action spent that turn must be spent on a Financier Faction Action.
 
-During an Denouement, you may spend 1 Action to place a card in Treasury, buy a Deed, or Play the Market.
+During Denouement, you may spend 1 Action to place a card in Treasury, buy a Deed, or Play the Market.
 
 ### Complete rules
 
@@ -1481,13 +1475,13 @@ Underwriting and Property Dues may be replaced normally. Replacing Margin Loan b
 
 # 16. Intelligence
 
-### How it works
+## How it works
 
 Intelligence pursues hidden **Missions**, earns **Intel**, and builds **Operation Progress**. Intel lets the faction reveal an opponent's hidden battle choice through **Surveillance** and remove it through **Interference**.
 
 Complete enough Missions to make a **Special Operation** ready, satisfy its hidden requirement, and pay its Intel cost to win.
 
-### Complete rules
+## Complete rules
 
 | Element | Intelligence rule |
 |---|---|
@@ -1500,7 +1494,7 @@ Complete enough Missions to make a **Special Operation** ready, satisfy its hidd
 | Faction pool | 13 Intelligence card titles. |
 | Unique card | Sleeper Network, cost 5; maximum one copy per Playable Deck. |
 
-### Faction Actions
+## Faction Actions
 
 Intelligence has the following Faction Actions. Each costs one Action and is legal only during Denouement:
 
@@ -1586,7 +1580,7 @@ A Special Operation uses the printed Mission requirement but is not a normal Mis
 
 The Special Operation remains ready only while Operation Progress exceeds the number of Territories the opponent controls. If readiness is lost, it immediately fails and goes to the Graveyard.
 
-During an Denouement, if its requirement is satisfied and readiness remains valid, spend 1 Action, reveal it, and pay:
+During Denouement, if its requirement is satisfied and readiness remains valid, spend 1 Action, reveal it, and pay:
 
 > **Territories currently in the Gauntlet − Special Operation card's value**
 
@@ -1673,13 +1667,13 @@ When the controller of Watchtower defends there, the attacker sets their Gambit 
 
 # 17. Mystics
 
-### How it works
+## How it works
 
 Mystics sacrifice, bind, exchange, and recover cards while completing three public **Rites**. The first completed Rite unlocks **Invocation**, the second unlocks **Transmutation**, and the third unlocks **Convergence** and the ability to begin the **Ritual of Ascendance**.
 
 To win through Ritual, bind three cards from three different zones, initiate a battle while they remain bound, and win that battle.
 
-### Complete rules
+## Complete rules
 
 | Element | Mystics rule |
 |---|---|
@@ -1692,7 +1686,7 @@ To win through Ritual, bind three cards from three different zones, initiate a b
 | Faction pool | 13 Mystics card titles. |
 | Unique card | Necromancy, cost 5; maximum one copy per Playable Deck. |
 
-### Faction Actions
+## Faction Actions
 
 Mystics have the following Faction Actions. Each costs one Action and is normally legal only during Denouement:
 
@@ -1793,7 +1787,7 @@ You may take the Begin a Rite Faction Action for Rite of Crossing during Denouem
 
 ### How it works
 
-After completing all three Rites, spend 1 Action during an Denouement to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. This begins the Ritual.
+After completing all three Rites, spend 1 Action during Denouement to bind one Arcane card from your Hand, one from your Discard Pile, and one from your Graveyard. This begins the Ritual.
 
 Initiate a battle while all three remain bound. Convergence adds +1 for each Ritual card. Win that battle to win the game. Lose any battle before completion and the Ritual is interrupted.
 
@@ -1801,7 +1795,7 @@ Initiate a battle while all three remain bound. Convergence adds +1 for each Rit
 
 #### Beginning the Ritual
 
-After completing all three Rites, during an Denouement, spend 1 Action to bind:
+After completing all three Rites, during Denouement, spend 1 Action to bind:
 
 - one Arcane card from your Hand;
 - one Arcane card from your Discard Pile; and
@@ -1871,13 +1865,13 @@ Witchcraft and similar effects follow the shared copied-effect rules. A repeat e
 
 # 18. Inquisition
 
-### How it works
+## How it works
 
 The Inquisition gains **Conviction** when opposing cards are permanently lost after battles. It also sends opposing Tactics to the Graveyard through **Condemnation** and gains additional Conviction when the opponent plays or reveals Arcane cards through **Blasphemy**.
 
 Spend Conviction on **Purges** that remove cards and Assets. The first time on your turn that you spend an Action to Purge, gain 1 additional Action that turn. If the opponent eventually cannot make their normal start-of-turn draw because both their Draw Pile and Discard Pile are empty, win through **Purification**.
 
-### Complete rules
+## Complete rules
 
 | Element | Inquisition rule |
 |---|---|
@@ -1890,7 +1884,7 @@ Spend Conviction on **Purges** that remove cards and Assets. The first time on y
 | Faction pool | 13 Inquisition card titles. |
 | Arcane card | Heresy. |
 
-### Faction Actions
+## Faction Actions
 
 **Purge is the Inquisition's only Faction Action.**
 
@@ -2009,8 +2003,6 @@ Heresy follows the shared copied-effect rule but retains permission for one addi
 ---
 
 <!-- GENERATED CLEAN V0.6.2 FACTION CONTENT END -->
-
----
 
 ---
 
