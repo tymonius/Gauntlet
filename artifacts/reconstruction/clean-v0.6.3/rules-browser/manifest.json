@@ -39,9 +39,9 @@
   "outputs": [
     {
       "path": "artifacts/reconstruction/clean-v0.6.3/rules-browser/index.html",
-      "sha256": "f170948c0cb563face1407222bb6cf71eaf15fd833b771c56e61464bd79f4058",
-      "bytes": 3944,
-      "lines": 64
+      "sha256": "adb864ae5fc1e1cffb63a93b6b355c0171afe0ad3c241eea37706ebe99660509",
+      "bytes": 4033,
+      "lines": 65
     },
     {
       "path": "artifacts/reconstruction/clean-v0.6.3/rules-browser/app.js",
