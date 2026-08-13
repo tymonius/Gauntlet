@@ -1,19 +1,24 @@
 name: Validate release reconstruction
 
-# This gate validates authority/quarantine state and normalized audit recommendations.
-# It does not approve any pending gameplay change.
+# This gate validates authority/quarantine state, normalized audit recommendations,
+# and the separation between clean v0.6.2 and clean v0.6.3 reconstruction targets.
+# It does not publish either target.
 on:
   push:
     branches:
       - agent/release-reconstruction-baseline
       - agent/reconstruction-decision-normalization
+      - agent/reconstruction-version-plan
     paths:
       - config/reconstruction-ledger.json
       - config/reconstruction-decision-candidates.json
+      - config/reconstruction-version-plan.json
+      - config/reconstruction-version-resolutions.json
       - config/leader-authority-v061.json
       - config/release-lifecycle.json
       - scripts/validate-release-reconstruction.mjs
       - scripts/validate-reconstruction-decision-candidates.mjs
+      - scripts/validate-reconstruction-version-plan.mjs
       - releases/v0.6.1/**
       - releases/v0.6.2/**
       - releases/v0.6.3/**
@@ -23,10 +28,13 @@ on:
     paths:
       - config/reconstruction-ledger.json
       - config/reconstruction-decision-candidates.json
+      - config/reconstruction-version-plan.json
+      - config/reconstruction-version-resolutions.json
       - config/leader-authority-v061.json
       - config/release-lifecycle.json
       - scripts/validate-release-reconstruction.mjs
       - scripts/validate-reconstruction-decision-candidates.mjs
+      - scripts/validate-reconstruction-version-plan.mjs
       - releases/v0.6.1/**
       - releases/v0.6.2/**
       - releases/v0.6.3/**
@@ -57,3 +65,6 @@ jobs:
 
       - name: Validate normalized audit recommendations remain non-authoritative
         run: node scripts/validate-reconstruction-decision-candidates.mjs
+
+      - name: Validate clean v0.6.2 / clean v0.6.3 version boundaries
+        run: node scripts/validate-reconstruction-version-plan.mjs
