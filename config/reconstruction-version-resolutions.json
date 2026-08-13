@@ -84,7 +84,7 @@
         "version_disposition": "adopt",
         "evidence": ["https://github.com/tymonius/Gauntlet/pull/571"],
         "rule": "Armistice remains a persistent cost-4 Asset, but its two-card upkeep occurs at the start of its controller's Opening rather than after the normal Draw; Draw-suppression effects therefore cannot skip the upkeep.",
-        "reason": "PR #571 canonicalized this v0.6.3 interaction correction after the normalized reconstruction candidate registry was created. It supersedes the earlier post-Draw Armistice timing and was included in the refreshed final v0.6.3 closeout."
+        "reason": "PR #571 canonicalized this v0.6.3 interaction correction after the normalized reconstruction candidate registry was created. It supersedes the earlier post-Draw Armistice timing and was included in the refreshed final v0.6.3 closeout. The rule text intentionally mirrors the canonical governance wording used by the reconstruction validator."
       },
       {
         "id": "GNT-DEC-2026-0812-002",
