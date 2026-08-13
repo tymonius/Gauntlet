@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "target": "clean-v0.6.3-rules-browser",
+  "status": "downstream_candidate_pending_merge_review",
+  "authority_set_id": "2da05383c10fe3e784c64b26fd2d9837913011cad996966f49a7ae3a92af8ed9",
+  "authority_certification": "artifacts/reconstruction/clean-v0.6.3/certification/authority-set.json",
+  "certified_rulebook": {
+    "path": "artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md",
+    "sha256": "7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643"
+  },
+  "downstream_prerequisite": {
+    "manifest": "artifacts/reconstruction/clean-v0.6.3/downstream/manifest.json",
+    "canonical_data_sha256": "fa42934af929e04628449ac34863a3422cd673d862fc9c1f6772b35edeaac5d8"
+  },
+  "ui_baseline": {
+    "rulebook/app.js": {
+      "git_role": "v0.6.1-browser-ui-baseline-only",
+      "sha256": "efcd26fc3db1d8117ab05368aa67766baad36589fc6464db14d2c3904a3e7d7c"
+    },
+    "rulebook/markdown.js": {
+      "git_role": "v0.6.1-browser-ui-baseline-only",
+      "sha256": "ca9fbb3a3a8d8992749070fcb709252d3c5a999cb3f3723d909da66291c5612c"
+    },
+    "rulebook/styles.css": {
+      "git_role": "v0.6.1-browser-ui-baseline-only",
+      "sha256": "345a7e48a2f945e9bc25b94ec8d7dfdaa38e9de83733c68d5dc9603c173255f5"
+    },
+    "rulebook/publication.css": {
+      "git_role": "v0.6.1-browser-ui-baseline-only",
+      "sha256": "a03d50f64995455db8c62eb06a097a15a5168fac521a06b87262af6bfa8fe54f"
+    }
+  },
+  "historical_v063_browser_role": "ux_evidence_only_not_authority",
+  "historical_v063_browser_path": "v0.6.3/rulebook/index.html",
+  "publication_unlocked": false,
+  "public_current_release": "v0.6.1",
+  "rules_arbiter_integrated": false,
+  "pdf_links_integrated": false,
+  "outputs": [
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/rules-browser/index.html",
+      "sha256": "f170948c0cb563face1407222bb6cf71eaf15fd833b771c56e61464bd79f4058",
+      "bytes": 3944,
+      "lines": 64
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/rules-browser/app.js",
+      "sha256": "e5c426921c6012512058550a56f3efdcac6d5ade6dda8cfa8aff66357391478e",
+      "bytes": 10217,
+      "lines": 298
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/rules-browser/markdown.js",
+      "sha256": "8cfea16f3176ff999e7e5242f7328d6f90391584fa388091285170c4600364ce",
+      "bytes": 6364,
+      "lines": 215
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/rules-browser/styles.css",
+      "sha256": "48488759254c776eec79c39bc381cce3ec9c8200c5370c2556808582ab0531f9",
+      "bytes": 13686,
+      "lines": 519
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/rules-browser/publication.css",
+      "sha256": "a03d50f64995455db8c62eb06a097a15a5168fac521a06b87262af6bfa8fe54f",
+      "bytes": 11366,
+      "lines": 473
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/rules-browser/source-boundary.md",
+      "sha256": "7d518902a3738f0793645a84f56f6139ee8b77117456963c2a08ab1c73ffd93f",
+      "bytes": 1092,
+      "lines": 11
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/rules-browser/validation-status.md",
+      "sha256": "902a06a63c15da2b22b637383b9e678f595a47d2c145afaa38f8349453c8a486",
+      "bytes": 726,
+      "lines": 11
+    }
+  ]
+}
