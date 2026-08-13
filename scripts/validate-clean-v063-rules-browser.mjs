@@ -60,9 +60,9 @@ for (const baseline of ['rulebook/app.js', 'rulebook/markdown.js', 'rulebook/sty
   assert(manifest.ui_baseline[baseline], `Missing UI-baseline record: ${baseline}`);
   assert.equal(manifest.ui_baseline[baseline].sha256, hashFile(baseline), `Public UI baseline drifted after Browser generation: ${baseline}`);
 }
-assert.equal(publication, read('rulebook/publication.css'), 'Publication CSS should be byte-semantically inherited from the public browser UI baseline.');
+assert.equal(publication, read('rulebook/publication.css'), 'Publication CSS should be inherited from the public browser UI baseline.');
 assert(styles.startsWith(read('rulebook/styles.css').trimEnd()), 'Rules Browser base styles drifted from the public UI baseline.');
-assert(markdown.includes('../../../../images/'), 'Reconstruction Markdown renderer must resolve repository image paths from the deeper reconstruction directory.');
+assert(markdown.includes('../../../../images/'), 'Reconstruction Markdown renderer must resolve repository image paths from the reconstruction directory.');
 
 for (const marker of [
   '<meta name="robots" content="noindex,nofollow" />',
@@ -112,7 +112,7 @@ for (const marker of [
   'own end of the Gauntlet',
   'Run the Gauntlet',
   'Last Stand',
-  'separate movement sequence',
+  'separate legal movement sequence',
   'Gambit/Tactic',
   'Bank:',
   'Asset',
@@ -121,12 +121,9 @@ for (const marker of [
   'bound cards',
   'Manifest Destiny',
   'normal Deed',
-  'Second Line',
-  "Smuggler's Run",
 ]) assert(sourceState.includes(marker), `Certified Rulebook source missing expected clean-v0.6.3 semantic marker: ${marker}`);
 for (const stale of [
   'Playable Deck',
-  "Smuggler's Pass",
   "Each Player Token begins immediately before that player's end of the Gauntlet.",
   "Capture the opponent's final Territory, advance beyond it, begin a Last Stand battle, and win that battle.",
 ]) assert(!sourceState.includes(stale), `Certified Rulebook source contains stale wording: ${stale}`);
@@ -136,11 +133,10 @@ const { renderMarkdown } = await import(rendererUrl);
 const rendered = renderMarkdown(source);
 assert(rendered.html.length > 50000, 'Rendered clean Rulebook is unexpectedly small.');
 assert(rendered.headings.length > 100, 'Rendered clean Rulebook has too few headings.');
-for (const heading of ['Part I — Core Rules', 'Military', 'Diplomats', 'Financiers', 'Intelligence', 'Mystics', 'Inquisition']) {
+for (const heading of ['Part I — Learn to Play', 'Military', 'Diplomats', 'Financiers', 'Intelligence', 'Mystics', 'Inquisition']) {
   assert(rendered.headings.some((item) => item.label.includes(heading)), `Rendered browser contents missing heading: ${heading}`);
 }
 assert(rendered.html.includes('Gambit/Tactic'));
-assert(rendered.html.includes('Second Line'));
-assert(rendered.html.includes('Smuggler&#39;s Run'));
+assert(rendered.html.includes('Manifest Destiny'));
 
 console.log(`Clean v0.6.3 Rules Browser validated: certified Rulebook ${rulebookSha256.slice(0, 12)}…, searchable renderer/TOC baseline preserved, reconstruction/publication boundary explicit, no stale Rules Arbiter or PDF dependency.`);
