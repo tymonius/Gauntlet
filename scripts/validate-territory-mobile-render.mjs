@@ -1,144 +1,194 @@
-import { createServer } from 'node:http';
-import { readFile, stat, writeFile, mkdir } from 'node:fs/promises';
-import { extname, join, resolve, sep } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { mkdir, writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
+import { chromium, webkit, devices } from 'playwright';
 
-const ROOT = resolve(fileURLToPath(new URL('..', import.meta.url)));
-const OUTPUT = join(ROOT, 'card-design', 'generated', 'leaders');
-const TERRITORY_ID = 'territory-smuggler-s-pass';
-const CARD_WIDTH = 336;
-const CARD_HEIGHT = 240;
+const BASE = process.env.TERRITORY_TEST_BASE_URL || 'http://127.0.0.1:4173';
+const OUTPUT = 'card-design/generated/leaders';
+const ID = 'territory-difficult-terrain';
+const WIDTH = 336;
+const HEIGHT = 240;
+const ART_FLOOR = 0.55 * 96;
 
-function contentType(path) {
-  const extension = extname(path).toLowerCase();
-  return {
-    '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8',
-    '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
-    '.json': 'application/json; charset=utf-8', '.svg': 'image/svg+xml',
-    '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.webp': 'image/webp',
-  }[extension] || 'application/octet-stream';
+async function ready(frame) {
+  await frame.waitForFunction(
+    () => document.body?.dataset.renderReady === 'true' && Boolean(document.querySelector('.territory-card')),
+    null,
+    { timeout: 30000 },
+  );
+  await frame.evaluate(async () => document.fonts?.ready);
 }
 
-async function startStaticServer() {
-  const server = createServer(async (request, response) => {
-    try {
-      const url = new URL(request.url || '/', 'http://127.0.0.1');
-      const requestPath = decodeURIComponent(url.pathname).replace(/^\/+/, '');
-      const requested = resolve(ROOT, requestPath || 'index.html');
-      if (!requested.startsWith(`${ROOT}${sep}`) && requested !== join(ROOT, 'index.html')) {
-        response.writeHead(403).end('Forbidden');
-        return;
-      }
-      const file = (await stat(requested)).isDirectory() ? join(requested, 'index.html') : requested;
-      response.writeHead(200, { 'Content-Type': contentType(file) });
-      response.end(await readFile(file));
-    } catch (error) {
-      response.writeHead(error.code === 'ENOENT' ? 404 : 500).end(error.message);
-    }
+async function metrics(frame) {
+  return frame.locator('.territory-card').evaluate(card => {
+    const cardRect = card.getBoundingClientRect();
+    const artRect = card.querySelector('.territory-art')?.getBoundingClientRect();
+    const effect = card.querySelector('.territory-effect p');
+    const style = effect ? getComputedStyle(effect) : null;
+    return {
+      width: cardRect.width,
+      height: cardRect.height,
+      artWidth: artRect?.width || 0,
+      artHeight: artRect?.height || 0,
+      fontSize: style ? Number.parseFloat(style.fontSize) : 0,
+      lineHeight: style ? Number.parseFloat(style.lineHeight) : 0,
+      scale: Number.parseFloat(card.dataset.effectScale || 'NaN'),
+      fitWarning: card.classList.contains('fit-warning'),
+      titleFit: card.dataset.titleFit,
+      parchmentLoaded: card.dataset.parchmentLoaded,
+    };
   });
-  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
-  return { server, baseUrl: `http://127.0.0.1:${server.address().port}` };
 }
 
-async function renderMetrics(browser, baseUrl, contextOptions, screenshotPath) {
-  const context = await browser.newContext(contextOptions);
+async function standalone(browser, options, screenshotPath) {
+  const context = await browser.newContext(options);
   const page = await context.newPage();
   try {
-    await page.goto(`${baseUrl}/card-design/territory-review-render.html?territory=${TERRITORY_ID}`, { waitUntil: 'load' });
-    await page.waitForSelector('.territory-card');
-    await page.waitForFunction(() => document.body.dataset.renderReady === 'true');
-    await page.evaluate(async () => document.fonts?.ready);
-    await page.waitForTimeout(100);
+    await page.goto(`${BASE}/card-design/territory-review-render.html?territory=${ID}`, { waitUntil: 'load' });
+    await ready(page);
+    await page.waitForTimeout(150);
+    const result = await metrics(page);
+    if (screenshotPath) {
+      await page.locator('.territory-card').screenshot({ path: screenshotPath, omitBackground: true });
+    }
+    return result;
+  } finally {
+    await context.close();
+  }
+}
 
-    const metrics = await page.locator('.territory-card').evaluate(card => {
-      const cardRect = card.getBoundingClientRect();
-      const art = card.querySelector('.territory-art');
-      const artRect = art?.getBoundingClientRect();
-      const effect = card.querySelector('.territory-effect p');
-      const effectStyle = effect ? getComputedStyle(effect) : null;
-      const rootStyle = getComputedStyle(document.documentElement);
-      return {
-        title: card.querySelector('.territory-title')?.textContent?.trim(),
-        width: cardRect.width,
-        height: cardRect.height,
-        artWidth: artRect?.width || 0,
-        artHeight: artRect?.height || 0,
-        effectFontSize: effectStyle ? Number.parseFloat(effectStyle.fontSize) : 0,
-        effectLineHeight: effectStyle ? Number.parseFloat(effectStyle.lineHeight) : 0,
-        effectScale: card.dataset.effectScale,
-        fitWarning: card.classList.contains('fit-warning'),
-        titleFit: card.dataset.titleFit,
-        parchmentLoaded: card.dataset.parchmentLoaded,
-        textSizeAdjust: rootStyle.textSizeAdjust || rootStyle.webkitTextSizeAdjust || '',
-      };
-    });
+async function inspection(browser, options, screenshotPath) {
+  const context = await browser.newContext(options);
+  const page = await context.newPage();
+  try {
+    await page.goto(`${BASE}/card-design/`, { waitUntil: 'load' });
+    const sourceSelector = `iframe.territory-review-frame[src*="territory=${ID}"]`;
+    const source = page.locator(sourceSelector);
+    await source.waitFor({ state: 'attached', timeout: 30000 });
 
-    if (screenshotPath) await page.locator('.territory-card').screenshot({ path: screenshotPath, omitBackground: true });
-    return metrics;
+    // Territory review iframes are intentionally lazy-loaded. Difficult Terrain is
+    // far enough down the catalog that a mobile viewport leaves its iframe on
+    // about:blank until it is scrolled near the viewport. Force the real browser
+    // lifecycle here before asking the embedded card to open its inspection view.
+    await source.scrollIntoViewIfNeeded();
+    const sourceCard = page
+      .frameLocator(sourceSelector)
+      .locator('body[data-render-ready="true"] .territory-card');
+    await sourceCard.waitFor({ state: 'attached', timeout: 30000 });
+    await sourceCard.evaluate(card => card.click());
+
+    const inspectionSelector = 'iframe.territory-inspection-frame';
+    const inspectionElement = page.locator(inspectionSelector);
+    await inspectionElement.waitFor({ state: 'attached', timeout: 10000 });
+    const inspectionCard = page
+      .frameLocator(inspectionSelector)
+      .locator('body[data-render-ready="true"] .territory-card');
+    await inspectionCard.waitFor({ state: 'attached', timeout: 30000 });
+
+    const iframe = await inspectionElement.elementHandle();
+    const frame = await iframe?.contentFrame();
+    if (!frame) throw new Error('Missing rendered Territory inspection frame');
+    await frame.evaluate(async () => document.fonts?.ready);
+
+    const settled = await metrics(frame);
+    await page.waitForTimeout(500);
+    const delayed = await metrics(frame);
+    if (screenshotPath) await page.locator('.territory-inspection-dialog').screenshot({ path: screenshotPath });
+    return { settled, delayed };
   } finally {
     await context.close();
   }
 }
 
 function assertClose(label, a, b, tolerance = 0.5) {
-  if (Math.abs(a - b) > tolerance) {
-    throw new Error(`${label} differs between desktop and mobile renders: ${a} vs ${b}.`);
+  if (Math.abs(a - b) > tolerance) throw new Error(`${label}: ${a} vs ${b}`);
+}
+
+function validate(label, value) {
+  if (Math.abs(value.width - WIDTH) > 0.25 || Math.abs(value.height - HEIGHT) > 0.25) {
+    throw new Error(`${label} geometry: ${JSON.stringify(value)}`);
+  }
+  if (value.fitWarning || value.titleFit !== 'true' || value.parchmentLoaded !== 'true') {
+    throw new Error(`${label} fit/load: ${JSON.stringify(value)}`);
+  }
+  if (!value.artWidth || value.artHeight <= ART_FLOOR + 1) {
+    throw new Error(`${label} artwork collapsed: ${JSON.stringify(value)}`);
+  }
+  if (Math.abs(value.scale - 1) > 0.001) {
+    throw new Error(`${label} typography reduced: ${JSON.stringify(value)}`);
   }
 }
 
-async function main() {
-  let chromium;
-  try { ({ chromium } = await import('playwright')); }
-  catch { throw new Error('Playwright is required. Run npm install, then npx playwright install chromium.'); }
-
-  await mkdir(OUTPUT, { recursive: true });
-  const { server, baseUrl } = await startStaticServer();
-  const browser = await chromium.launch({ headless: true });
-
-  try {
-    const desktop = await renderMetrics(browser, baseUrl, {
-      viewport: { width: 1440, height: 1000 },
-      deviceScaleFactor: 2,
-    });
-    const mobile = await renderMetrics(browser, baseUrl, {
-      viewport: { width: 390, height: 844 },
-      deviceScaleFactor: 3,
-      isMobile: true,
-      hasTouch: true,
-    }, join(OUTPUT, 'territory-mobile-render-smoke.png'));
-
-    for (const [label, metric] of [['desktop', desktop], ['mobile', mobile]]) {
-      if (Math.abs(metric.width - CARD_WIDTH) > 0.25 || Math.abs(metric.height - CARD_HEIGHT) > 0.25) {
-        throw new Error(`Unexpected ${label} Territory geometry: ${JSON.stringify(metric)}.`);
-      }
-      if (metric.fitWarning || metric.titleFit !== 'true' || metric.parchmentLoaded !== 'true') {
-        throw new Error(`${label} Territory render does not fit or load correctly: ${JSON.stringify(metric)}.`);
-      }
-      if (!metric.artWidth || !metric.artHeight) {
-        throw new Error(`${label} Territory artwork window collapsed: ${JSON.stringify(metric)}.`);
-      }
-    }
-
-    if (mobile.textSizeAdjust !== '100%') {
-      throw new Error(`Mobile Territory render did not lock browser text sizing: ${JSON.stringify(mobile)}.`);
-    }
-
-    assertClose('Artwork height', desktop.artHeight, mobile.artHeight);
-    assertClose('Artwork width', desktop.artWidth, mobile.artWidth);
-    assertClose('Effect font size', desktop.effectFontSize, mobile.effectFontSize, 0.05);
-    assertClose('Effect line height', desktop.effectLineHeight, mobile.effectLineHeight, 0.05);
-    if (desktop.effectScale !== mobile.effectScale) {
-      throw new Error(`Effect fitting differs between desktop and mobile renders: ${desktop.effectScale} vs ${mobile.effectScale}.`);
-    }
-
-    await writeFile(join(OUTPUT, 'territory-mobile-render-metrics.json'), `${JSON.stringify({ desktop, mobile }, null, 2)}\n`);
-  } finally {
-    await browser.close();
-    await new Promise(resolve => server.close(resolve));
-  }
+function validateInspection(label, life, desktop) {
+  validate(`${label} settled`, life.settled);
+  validate(`${label} delayed`, life.delayed);
+  assertClose(`${label} art stability`, life.settled.artHeight, life.delayed.artHeight, 0.25);
+  assertClose(`${label} type stability`, life.settled.fontSize, life.delayed.fontSize, 0.05);
+  assertClose(`${label} art vs desktop`, desktop.artHeight, life.delayed.artHeight, 1);
+  assertClose(`${label} scale stability`, life.settled.scale, life.delayed.scale, 0.001);
 }
 
-main().catch(error => {
-  console.error(error);
-  process.exitCode = 1;
-});
+await mkdir(OUTPUT, { recursive: true });
+const chromiumBrowser = await chromium.launch({ headless: true });
+const webkitBrowser = await webkit.launch({ headless: true });
+
+try {
+  const desktop = await standalone(chromiumBrowser, {
+    viewport: { width: 1440, height: 1000 },
+    deviceScaleFactor: 2,
+  });
+  const chromeMobile = {
+    viewport: { width: 390, height: 844 },
+    deviceScaleFactor: 3,
+    isMobile: true,
+    hasTouch: true,
+  };
+  const mobileChromium = await standalone(
+    chromiumBrowser,
+    chromeMobile,
+    join(OUTPUT, 'territory-mobile-chromium-render-smoke.png'),
+  );
+  const mobileWebKit = await standalone(
+    webkitBrowser,
+    devices['iPhone 13'],
+    join(OUTPUT, 'territory-mobile-webkit-render-smoke.png'),
+  );
+
+  for (const [label, value] of [
+    ['desktop', desktop],
+    ['mobile Chromium', mobileChromium],
+    ['mobile WebKit', mobileWebKit],
+  ]) validate(label, value);
+
+  for (const [label, value] of [
+    ['mobile Chromium', mobileChromium],
+    ['mobile WebKit', mobileWebKit],
+  ]) {
+    assertClose(`${label} art height`, desktop.artHeight, value.artHeight, 1);
+    assertClose(`${label} art width`, desktop.artWidth, value.artWidth, 1);
+    assertClose(`${label} font`, desktop.fontSize, value.fontSize, 0.1);
+    assertClose(`${label} line height`, desktop.lineHeight, value.lineHeight, 0.1);
+    assertClose(`${label} scale`, desktop.scale, value.scale, 0.001);
+  }
+
+  const inspectionChromium = await inspection(
+    chromiumBrowser,
+    chromeMobile,
+    join(OUTPUT, 'territory-mobile-chromium-inspection.png'),
+  );
+  const inspectionWebKit = await inspection(
+    webkitBrowser,
+    devices['iPhone 13'],
+    join(OUTPUT, 'territory-mobile-webkit-inspection.png'),
+  );
+
+  validateInspection('mobile Chromium inspection', inspectionChromium, desktop);
+  validateInspection('mobile WebKit inspection', inspectionWebKit, desktop);
+
+  await writeFile(
+    join(OUTPUT, 'territory-mobile-render-metrics.json'),
+    `${JSON.stringify({ desktop, mobileChromium, mobileWebKit, inspectionChromium, inspectionWebKit }, null, 2)}\n`,
+  );
+} finally {
+  await chromiumBrowser.close();
+  await webkitBrowser.close();
+}

@@ -16,13 +16,12 @@
 }
 
 /* Territory review renders are fixed physical-size production specimens.
-   Mobile browser text inflation must not reinterpret their typography, because
-   the fitter would treat the enlarged text as overflow and sacrifice artwork
-   height to compensate. Keep responsive text sizing on the surrounding site;
-   this lock applies only inside the fixed 3.5in × 2.5in render document. */
+   Disable browser text inflation entirely inside this render document. The
+   surrounding review page remains responsive; only the 3.5in × 2.5in card
+   specimen is locked to its authored print typography. */
 html {
-  -webkit-text-size-adjust: 100%;
-  text-size-adjust: 100%;
+  -webkit-text-size-adjust: none;
+  text-size-adjust: none;
 }
 
 html,

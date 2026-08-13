@@ -15,8 +15,8 @@ describe("Territory effect layout", () => {
   });
 
   it("prevents mobile text inflation from collapsing the fixed-size artwork window", () => {
-    expect(territoryRendererStyles).toContain("-webkit-text-size-adjust: 100%");
-    expect(territoryRendererStyles).toContain("text-size-adjust: 100%");
+    expect(territoryRendererStyles).toContain("-webkit-text-size-adjust: none");
+    expect(territoryRendererStyles).toContain("text-size-adjust: none");
     expect(territoryRendererStyles).toContain("width: 3.5in");
     expect(territoryRendererStyles).toContain("height: 2.5in");
   });
