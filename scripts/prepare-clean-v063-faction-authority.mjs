@@ -14,7 +14,7 @@ const replacements = new Map([
       ],
       [
         'The pinned v0.6.3 canonical-data evidence may supply effect wording only; it cannot add, remove, rename, reprices, retraits, reform, or change unique status for a faction card.',
-        'The pinned v0.6.3 canonical-data evidence may supply effect wording only; it cannot add, remove, rename, reprice, retrait, reform, or change unique status for a faction card except for the explicitly audited Extraordinary Rendition form normalization from `Asset with a bound opposing card` to `Asset`.',
+        'The pinned v0.6.3 canonical-data evidence may supply effect wording only; it cannot add, remove, rename, reprice, retrait, reform, or change unique status for a faction card except for the explicitly audited Extraordinary Rendition form normalization from Asset with a bound opposing card to Asset.',
       ],
     ],
   ],
