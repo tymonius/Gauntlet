@@ -1,0 +1,72 @@
+name: Prepare clean v0.6.3 faction authority
+
+on:
+  push:
+    branches:
+      - agent/clean-v063-faction-authority
+    paths:
+      - scripts/prepare-clean-v063-faction-authority.mjs
+      - .github/workflows/prepare-clean-v063-faction-authority.yml
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: prepare-clean-v063-faction-authority-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out reconstruction branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /scripts/prepare-clean-v063-faction-authority.mjs
+            /scripts/build-clean-v063-faction-authority.mjs
+            /scripts/validate-clean-v063-faction-authority.mjs
+            /config/reconstruction-version-plan.json
+            /config/reconstruction-version-resolutions.json
+            /config/release-lifecycle.json
+            /artifacts/reconstruction/clean-v0.6.2/faction-guides/
+            /artifacts/reconstruction/clean-v0.6.2/certification/authority-set.json
+            /artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json
+            /artifacts/reconstruction/clean-v0.6.3/
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Apply reviewed reconstruction substitutions
+        run: node scripts/prepare-clean-v063-faction-authority.mjs
+
+      - name: Syntax-check reconstruction scripts
+        run: |
+          node --check scripts/build-clean-v063-faction-authority.mjs
+          node --check scripts/validate-clean-v063-faction-authority.mjs
+
+      - name: Build clean v0.6.3 faction authority candidates
+        run: node scripts/build-clean-v063-faction-authority.mjs
+
+      - name: Validate clean v0.6.3 faction authority candidates
+        run: node scripts/validate-clean-v063-faction-authority.mjs
+
+      - name: Reject whitespace errors
+        run: git diff --check
+
+      - name: Commit reviewed sources and deterministic outputs
+        run: |
+          git add scripts/build-clean-v063-faction-authority.mjs scripts/validate-clean-v063-faction-authority.mjs artifacts/reconstruction/clean-v0.6.3
+          if git diff --cached --quiet; then
+            echo 'Reviewed reconstruction sources and outputs are already current.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Generate clean v0.6.3 faction authority candidates'
+          git push origin HEAD:${{ github.ref_name }}
