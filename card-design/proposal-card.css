@@ -1,66 +1,91 @@
 /* Diplomat Proposal / Treaty Article supplemental-card prototype.
    This deliberately reuses the ordinary poker-card shell, Diplomat border,
-   Leader-style faction wash, standard value medallion, and standard rule rows. */
+   Leader-style faction wash, standard rule rows, and production parchment. */
+
+/* Declaration Blackletter is a separate P22 face from Declaration Pro. Prefer
+   the synced/locally licensed face by its known family names; do not alias the
+   ordinary Declaration Pro token into this role. */
+@font-face {
+  font-family: "Gauntlet Declaration Blackletter";
+  src:
+    local("P22 Declaration Blackletter"),
+    local("P22DeclarationBlackletter"),
+    local("Declaration Blackletter");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
 
 .proposal-card {
   --minimum-rules-scale: 0.82;
 }
 
+/* Proposals need the same two-line breathing room as Leaders: title plus a
+   faction-symbol component label. The fitting pass may reduce art height for
+   dense Proposals without compressing this identification band. */
 .proposal-card .card-interior {
   --art-height: 1.52in;
-  grid-template-rows: 0.3in var(--art-height) auto 0.18in;
+  grid-template-rows: 0.58in var(--art-height) auto 0.18in;
 }
 
-/* Keep the ordinary 0.30in title row. The supplemental classification occupies
-   the small line beneath the title without reducing the artwork/rules footprint. */
 .proposal-card .card-heading {
   display: grid;
   grid-template-rows: auto auto;
   align-content: center;
-  gap: 0.006in;
-  padding: 0.004in 0.39in 0.003in 0.09in;
+  gap: 0.025in;
+  padding: 0.05in 0.46in 0.035in 0.09in;
 }
 
 .proposal-card .card-title {
   max-width: 100%;
-  font-size: 10.8pt;
-  letter-spacing: 0.025em;
-  line-height: 0.86;
+  font-size: 13.4pt;
+  letter-spacing: 0.035em;
+  line-height: 0.88;
 }
 
 .proposal-card.long-title .card-title {
-  font-size: 9.4pt;
-  letter-spacing: 0.005em;
+  font-size: 11.2pt;
+  letter-spacing: 0.006em;
 }
 
 .proposal-type-line {
   display: flex;
   align-items: center;
-  gap: 0.034in;
+  gap: 0.042in;
   min-width: 0;
   color: var(--component-accent-ink);
   font-family: var(--font-interface);
-  font-size: 4.1pt;
-  font-weight: 800;
+  font-size: 4.75pt;
+  font-weight: 750;
   letter-spacing: 0.105em;
-  line-height: 1;
+  line-height: 1.2;
   text-transform: uppercase;
 }
 
 .proposal-faction-emblem {
   display: block;
-  width: 0.105in;
-  height: 0.105in;
-  flex: 0 0 0.105in;
+  width: 0.15in;
+  height: 0.15in;
+  flex: 0 0 0.15in;
   background: currentColor;
   -webkit-mask: var(--faction-symbol) center / contain no-repeat;
   mask: var(--faction-symbol) center / contain no-repeat;
 }
 
-/* The medallion is the Influence Stake, but retains exactly the ordinary card
-   geometry so the component still belongs visibly to the same card family. */
+/* Stake is a primary state cue, not a deckbuilding value. Give it more visual
+   authority than the ordinary 0.19in value medallion and center it vertically
+   inside the Leader-height heading band. */
 .proposal-card .value-medallion {
+  top: 0.14in;
+  right: 0.07in;
+  width: 0.28in;
+  height: 0.28in;
+  border-width: 1.15px;
   color: var(--component-accent-ink);
+  font-size: 9.6pt;
+  box-shadow:
+    0 0.012in 0.026in rgba(50, 35, 22, 0.12),
+    inset 0 0 0 0.018in rgba(38, 79, 145, 0.10);
 }
 
 .proposal-card .card-art {
@@ -143,10 +168,16 @@
   z-index: 3;
   margin-top: -0.04in;
   color: #263e69;
-  font-family: var(--font-flavor);
-  font-size: 25pt;
+  font-family:
+    "Gauntlet Declaration Blackletter",
+    "P22 Declaration Blackletter",
+    "P22DeclarationBlackletter",
+    "Old English Text MT",
+    fantasy;
+  font-size: 27pt;
+  font-style: normal;
   font-weight: 400;
-  letter-spacing: 0.035em;
+  letter-spacing: 0.015em;
   line-height: 1;
   text-align: center;
   text-shadow: 0 0.01in 0 rgba(255, 255, 255, 0.52);
