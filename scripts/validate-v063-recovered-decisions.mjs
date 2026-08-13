@@ -27,7 +27,7 @@ const expected = [
   {
     id: 'GNT-DEC-2026-0812-001',
     subject: 'neutral-armistice',
-    ruleSnippets: ["start of its controller's Opening", 'draw suppression cannot skip the upkeep'],
+    ruleSnippets: ["start of its controller's Opening", 'Draw-suppression effects therefore cannot skip the upkeep'],
     summarySnippets: ["start of its controller's Opening", 'Draw-suppression effects therefore cannot skip the upkeep'],
   },
   {
