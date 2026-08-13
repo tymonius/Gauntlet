@@ -72,6 +72,19 @@
     "Martyrdom",
     "Rearguard"
   ],
+  "approved_identity_transitions": [
+    {
+      "card": "Extraordinary Rendition",
+      "field": "card_form",
+      "from": "Asset with a bound opposing card",
+      "to": "Asset",
+      "classification": "convention-normalization",
+      "evidence": "docs/v063-card-language-overrides/intelligence.json"
+    }
+  ],
+  "integrated_faction_shared_rules": [
+    "diplomat-sanctions-default-expiration"
+  ],
   "guides": [
     {
       "faction": "military",
@@ -85,8 +98,8 @@
     {
       "faction": "diplomat",
       "path": "artifacts/reconstruction/clean-v0.6.3/faction-guides/diplomat/Gauntlet_v0.6.3_Diplomat_Faction_Guide.md",
-      "sha256": "cb4a4ae235b96b6322b99367e52fa211d608ee83dc5b031f2aeab2f94da6f5fe",
-      "bytes": 15528,
+      "sha256": "99788e5aead16a06e8fc026929e3b362930ebba91a55d40881890a85ae8d4412",
+      "bytes": 15845,
       "lines": 399,
       "authority_base_path": "artifacts/reconstruction/clean-v0.6.2/faction-guides/diplomat/Gauntlet_v0.6.2_Diplomat_Faction_Guide.md",
       "authority_base_sha256": "6f2ab7c23636d1a6f80a80cf9a75797884e85b6d1322e97f8f9a738f686727d1"

@@ -53,6 +53,17 @@ if (manifest.evidence?.git_blob_sha !== '955dfa654cac96a9de820867ab694e83d0fb1d3
 if (manifest.publication_unlocked !== false) fail('faction authority candidate must not unlock publication');
 if ((manifest.guides ?? []).length !== 6) fail('authority manifest must contain six guides');
 if ((manifest.recovered_late_decisions ?? []).length !== 3) fail('authority manifest must retain the three recovered PR #571 decisions');
+const identityTransitions = manifest.approved_identity_transitions ?? [];
+if (identityTransitions.length !== 1 || identityTransitions[0]?.card !== 'Extraordinary Rendition' || identityTransitions[0]?.field !== 'card_form' || identityTransitions[0]?.from !== 'Asset with a bound opposing card' || identityTransitions[0]?.to !== 'Asset') fail('authority manifest must pin exactly the approved Extraordinary Rendition form normalization');
+if (JSON.stringify(manifest.integrated_faction_shared_rules ?? []) !== JSON.stringify(['diplomat-sanctions-default-expiration'])) fail('authority manifest must record the Diplomat Sanctions shared-rule integration');
+const diplomatGuide = outputs['artifacts/reconstruction/clean-v0.6.3/faction-guides/diplomat/Gauntlet_v0.6.3_Diplomat_Faction_Guide.md'];
+for (const requiredSanctionsText of [
+  'that opponent remains associated with that Sanction for as long as it remains in play',
+  "unless the Sanction says otherwise, after that opponent accepts the owner's Terms, put the Sanction in its owner's Discard Pile",
+  'A Sanction may state additional removal conditions',
+]) {
+  if (!diplomatGuide?.includes(requiredSanctionsText)) fail(`Diplomat guide missing adopted Sanctions shared rule: ${requiredSanctionsText}`);
+}
 
 if (failed) process.exit(1);
 console.log('Clean v0.6.3 faction authority validated: six deterministic guides derive from certified clean v0.6.2 authority, finalized card-text evidence is pinned, and publication remains locked.');

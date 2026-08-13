@@ -5,7 +5,7 @@
 - All six source guides are hash-checked against clean v0.6.2 authority set 563ce3a0ac39a0bbba52cc113ae9ffbcaeb3c0985bad4cfa66fe462fb2cacb3b.
 - Faction card title, count, cost, trait, card form, unique status, and ordering remain anchored to those certified guides.
 - The pinned v0.6.3 canonical-data evidence may supply effect wording only; it cannot add, remove, rename, reprice, retrait, reform, or change unique status for a faction card except for the explicitly audited Extraordinary Rendition form normalization from Asset with a bound opposing card to Asset.
-- Retired v0.6.2 card-face conventions are rejected: Battle/Activate/Use effect headings, explicit inherent Bank Actions, and Playable Deck terminology.
+- Retired v0.6.2 card-face conventions are rejected: Battle/Activate/Use effect headings, exact standalone inherent Bank Actions, and Playable Deck terminology. Special banking Actions that carry additional rules meaning remain printed.
 
 ## Targeted v0.6.3 faction-card review
 

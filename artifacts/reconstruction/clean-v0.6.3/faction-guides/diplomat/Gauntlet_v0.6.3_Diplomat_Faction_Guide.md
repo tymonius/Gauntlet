@@ -241,14 +241,14 @@ Diplomatic Latitude may offer two eligible Proposals with the same Stake. Stake 
 
 ## Sanctions
 
-**Sanctions** is a shared title series, not a separate card type.
+**Sanctions** is a shared title series, not a separate card type. A card whose title begins **Sanctions:** is a **Sanction**.
 
-Each Sanction identifies:
+When a Sanction is played, placed, or banked because an opponent refused its owner's Terms:
 
-- the opponent whose refusal allowed it to enter play; and
-- its owner.
+- that opponent remains associated with that Sanction for as long as it remains in play; and
+- unless the Sanction says otherwise, after that opponent accepts the owner's Terms, put the Sanction in its owner's Discard Pile.
 
-Its ongoing effect and relief condition continue to refer to those identified players even if an Overlay changes control with its Territory.
+A Sanction may state additional removal conditions. Cards therefore do not need to repeat identification of the refusing opponent or the default expiration after later acceptance.
 
 # 7. Canonical Diplomat card pool
 
