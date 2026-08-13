@@ -10,6 +10,7 @@ on:
       - agent/reconstruction-decision-normalization
       - agent/reconstruction-version-plan
       - agent/recover-v063-card-interaction-decisions
+      - agent/recover-v063-late-decisions
     paths:
       - config/reconstruction-ledger.json
       - config/reconstruction-decision-candidates.json
