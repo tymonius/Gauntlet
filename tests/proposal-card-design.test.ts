@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 const reviewPage = readFileSync("card-design/index.html", "utf8");
 const proposalRenderer = readFileSync("card-design/proposal-card.js", "utf8");
 const proposalStyles = readFileSync("card-design/proposal-card.css", "utf8");
+const leaderStyles = readFileSync("card-design/leader-card.css", "utf8");
 const cardRefinementStyles = readFileSync("card-design/card-design-refinement.css", "utf8");
 const canonical = JSON.parse(readFileSync("releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json", "utf8"));
 const ratifiedSealPath = "images/artwork/supplemental/diplomats/ratified-wax-seal.webp";
@@ -43,21 +44,26 @@ describe("Diplomat Proposal / Treaty Article prototypes", () => {
     expect(proposalRenderer).toContain("proposal-faction-emblem");
     expect(proposalStyles).toContain("-webkit-mask: var(--faction-symbol)");
     expect(proposalStyles).toContain("background: var(--component-footer-tint)");
-    expect(proposalStyles).toContain("grid-template-rows: 0.58in var(--art-height) auto 0.18in");
+    expect(proposalStyles).toContain("grid-template-rows: var(--component-heading-height, 0.50in) var(--art-height) auto 0.18in");
   });
 
-  it("gives the title and component label the same breathing room as Leader cards", () => {
-    expect(proposalStyles).toContain("gap: 0.025in");
-    expect(proposalStyles).toContain("padding: 0.05in 0.46in 0.035in 0.09in");
+  it("shares the shorter, more legible two-line component header with Leader cards", () => {
+    expect(leaderStyles).toContain("--component-heading-height: 0.50in");
+    expect(leaderStyles).toContain("--component-subheading-font-size: 6.25pt");
+    expect(leaderStyles).toContain("--component-subheading-icon-size: 0.18in");
+    expect(leaderStyles).toContain("--component-subheading-gap: 0.045in");
+    expect(proposalStyles).toContain("gap: 0.012in");
+    expect(proposalStyles).toContain("padding: 0.028in 0.46in 0.022in 0.09in");
     expect(proposalStyles).toContain("font-size: 13.4pt");
-    expect(proposalStyles).toContain("font-size: 4.75pt");
-    expect(proposalStyles).toContain("width: 0.15in");
-    expect(proposalStyles).toContain("height: 0.15in");
+    expect(proposalStyles).toContain("font-size: var(--component-subheading-font-size, 6.25pt)");
+    expect(proposalStyles).toContain("width: var(--component-subheading-icon-size, 0.18in)");
+    expect(proposalStyles).toContain("height: var(--component-subheading-icon-size, 0.18in)");
+    expect(proposalStyles).toContain("letter-spacing: 0.085em");
   });
 
-  it("makes Influence Stake more prominent than an ordinary playable-card value", () => {
+  it("makes Influence Stake more prominent than an ordinary playable-card value and recenters it in the shorter header", () => {
     expect(proposalStyles).toContain(".proposal-card .value-medallion");
-    expect(proposalStyles).toContain("top: 0.14in");
+    expect(proposalStyles).toContain("top: 0.11in");
     expect(proposalStyles).toContain("width: 0.28in");
     expect(proposalStyles).toContain("height: 0.28in");
     expect(proposalStyles).toContain("font-size: 9.6pt");
