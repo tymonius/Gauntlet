@@ -1,0 +1,50 @@
+name: Validate release reconstruction
+
+on:
+  push:
+    branches:
+      - agent/release-reconstruction-baseline
+    paths:
+      - config/reconstruction-ledger.json
+      - config/release-lifecycle.json
+      - scripts/validate-release-reconstruction.mjs
+      - releases/v0.6.1/**
+      - releases/v0.6.2/**
+      - releases/v0.6.3/**
+      - .github/workflows/validate-release-reconstruction.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - config/reconstruction-ledger.json
+      - config/release-lifecycle.json
+      - scripts/validate-release-reconstruction.mjs
+      - releases/v0.6.1/**
+      - releases/v0.6.2/**
+      - releases/v0.6.3/**
+      - .github/workflows/validate-release-reconstruction.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-reconstruction-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  semantic-baseline:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out reconstruction target
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate reconstruction authority and quarantine ledger
+        run: node scripts/validate-release-reconstruction.mjs
+
+      - name: Confirm current release containment remains intact
+        run: node scripts/validate-current-release-integrity.mjs
