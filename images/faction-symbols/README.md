@@ -7,8 +7,8 @@ Current production directions:
 - **Inquisition** — stylized flame (`inquisition.svg`)
 - **Mystics** — pentagram seal (`mystics.svg`)
 - **Financiers** — coin stamped with a solid six-pointed star (`financiers.svg`)
-- **Intelligence** — eye-in-triangle direction is still being refined; `intelligence.svg` remains the temporary production asset until the final mark is supplied
+- **Intelligence** — eye within a triangular/pyramidal frame (`intelligence.svg`)
 
-All production marks are monochrome SVGs intended for use as CSS masks so faction color is supplied by the consuming component.
+All six faction marks are approved monochrome SVGs intended for use as CSS masks so faction color is supplied by the consuming component.
 
 `Arcane` is a card type, not a faction name.
