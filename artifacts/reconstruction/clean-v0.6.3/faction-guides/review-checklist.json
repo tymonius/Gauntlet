@@ -1,0 +1,43 @@
+{
+  "schema_version": 1,
+  "target": "clean-v0.6.3-faction-authority",
+  "publication_unlocked": false,
+  "checks": [
+    {
+      "id": "certified-v062-base",
+      "status": "pass"
+    },
+    {
+      "id": "v063-authority-build-unlocked",
+      "status": "pass"
+    },
+    {
+      "id": "required-v063-deltas-present",
+      "status": "pass"
+    },
+    {
+      "id": "late-pr571-decisions-recovered",
+      "status": "pass"
+    },
+    {
+      "id": "historical-v063-publication-withdrawn",
+      "status": "pass"
+    },
+    {
+      "id": "candidate-evidence-blob-pinned",
+      "status": "pass"
+    },
+    {
+      "id": "six-faction-card-identity-boundaries-preserved",
+      "status": "pass"
+    },
+    {
+      "id": "retired-card-heading-language-absent",
+      "status": "pass"
+    },
+    {
+      "id": "downstream-surfaces-still-blocked",
+      "status": "pass"
+    }
+  ]
+}
