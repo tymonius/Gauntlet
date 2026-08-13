@@ -38,9 +38,22 @@ describe("Leader card design", () => {
     expect([...leaderCatalog.matchAll(/name:'(?:General|Commandant|Ambassador|Senator|Banker|Executive|Ranger|Spymaster|Alchemist|Spirit Walker|Grand Inquisitor|Witch Hunter)'/g)]).toHaveLength(12);
     expect(leaderCatalog).toContain('class="gauntlet-card faction-component-card leader-card');
     expect(leaderCatalog).toContain('class="card-art has-image"');
-    expect(leaderStyles).toContain("grid-template-rows: 0.58in var(--art-height) auto 0.18in");
+    expect(leaderStyles).toContain("grid-template-rows: var(--component-heading-height) var(--art-height) auto 0.18in");
     expect(leaderStyles).toContain("--art-height: 1.86in");
     expect(refinementStyles).toContain("0 0 0 0.007in rgba(231, 212, 176, 0.78)");
+  });
+
+  it("uses a shorter component header with a substantially more legible faction subheading", () => {
+    expect(leaderStyles).toContain("--component-heading-height: 0.50in");
+    expect(leaderStyles).toContain("--component-subheading-font-size: 6.25pt");
+    expect(leaderStyles).toContain("--component-subheading-icon-size: 0.18in");
+    expect(leaderStyles).toContain("--component-subheading-gap: 0.045in");
+    expect(leaderStyles).toContain("gap: 0.012in");
+    expect(leaderStyles).toContain("padding: 0.028in 0.09in 0.022in");
+    expect(leaderStyles).toContain("font-size: var(--component-subheading-font-size)");
+    expect(leaderStyles).toContain("width: var(--component-subheading-icon-size)");
+    expect(leaderStyles).toContain("height: var(--component-subheading-icon-size)");
+    expect(leaderStyles).toContain("letter-spacing: 0.085em");
   });
 
   it("removes playable-card value and generic Leader labels from the body", () => {
