@@ -57,8 +57,17 @@ requireText(text, '**Capture → Draw → Opening → Movement → Denouement �
 requireText(text, 'A **Faction Action** is a faction-specific option a player may choose when taking an Action.', 'Faction Action definition');
 requireText(text, 'A **Faction Ability** is a faction-specific effect used or triggered at its stated timing.', 'Faction Ability definition');
 requireText(text, 'Purge — Faction Action, Opening or Denouement', 'Inquisition two-phase Purge exception');
-forbidText(text, 'Action Opportunity', 'v0.6.1 Action Opportunity terminology');
-forbidText(text, 'Action Window', 'retired Action Window terminology');
+for (const retired of ['Action Opportunity', 'Action Window', 'Action window']) {
+  forbidText(text, retired, `retired ${retired} terminology`);
+}
+
+// Integrated cross-references must point to the Rulebook chapters, not the standalone shared-candidate section numbers.
+requireText(text, 'Resolve the active player\'s Capture step using the Front Line rules in Chapter 8.', 'Capture → Front Line chapter reference');
+requireText(text, 'Follow the Action rules in Chapter 5.', 'turn → Action chapter reference');
+requireText(text, 'The pending-battle and Terms procedure in Chapter 7 occurs before the battle reaches Onset.', 'movement → battle chapter reference');
+forbidText(text, 'using the Front Line rules in Section 6.', 'standalone shared-candidate Front Line reference');
+forbidText(text, 'Follow the Action rules in Section 2.', 'standalone shared-candidate Action reference');
+forbidText(text, 'The pending-battle and Terms procedure in Section 4', 'standalone shared-candidate battle reference');
 
 // Movement, battle, and control model.
 requireText(text, '**Fall Back:** move one position toward your own end.', 'Fall Back movement choice');
@@ -83,6 +92,14 @@ const chapterHeadings = [
   '# 13. Military', '# 14. Diplomats', '# 15. Financiers', '# 16. Intelligence', '# 17. Mystics', '# 18. Inquisition',
 ];
 for (const heading of chapterHeadings) requireText(text, heading);
+for (const chapter of chapterHeadings) {
+  const start = text.indexOf(chapter);
+  const next = text.indexOf('\n# ', start + chapter.length);
+  const segment = text.slice(start, next > start ? next : text.length);
+  requireText(segment, '## How it works', `${chapter} overview teaching heading`);
+  requireText(segment, '## Complete rules', `${chapter} overview complete-rules heading`);
+  requireText(segment, '## Faction Actions', `${chapter} faction-actions heading`);
+}
 const leaders = [
   '### General', '### Commandant', '### Ambassador', '### Senator', '### Banker', '### Executive',
   '### Ranger', '### Spymaster', '### Alchemist', '### Spirit Walker', '### Grand Inquisitor', '### Witch Hunter',
@@ -126,5 +143,5 @@ forbidText(text, '**Deck** is the complete selected game package', 'v0.6.3 Deck/
 if (text.split('\n').length < 1100) fail('Rulebook is unexpectedly short for a self-contained authority candidate');
 
 if (!process.exitCode) {
-  console.log('Clean v0.6.2 Rulebook validated: setup, shared rules, cumulative victory, six faction engines, 12 Leader mappings, and cross-version boundaries are intact.');
+  console.log('Clean v0.6.2 Rulebook validated: setup, shared rules, integrated references, cumulative victory, six faction engines, 12 Leader mappings, and cross-version boundaries are intact.');
 }
