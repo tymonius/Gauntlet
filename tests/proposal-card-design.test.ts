@@ -67,12 +67,12 @@ describe("Diplomat Proposal / Treaty Article prototypes", () => {
     expect(proposalStyles).not.toContain(".gauntlet-card .rule-section {");
   });
 
-  it("turns the artwork field into an explicit ratification treatment using Declaration Blackletter", () => {
+  it("turns the artwork field into an explicit ratification treatment using Declaration Blackletter with Declaration Pro fallback", () => {
     expect(proposalRenderer).toContain("proposal-ratified-word\">Ratified");
     expect(proposalRenderer).toContain("proposal-wax-seal");
     expect(proposalStyles).toContain("@import url(https://db.onlinewebfonts.com/c/15a5d188ed241eed33a9ec0360d0bd60?family=P22+Declaration+W01+Blackletter)");
     expect(proposalStyles).toContain('"P22 Declaration W01 Blackletter"');
-    expect(proposalStyles).not.toContain("font-family: var(--font-flavor)");
+    expect(proposalStyles).toContain("var(--font-flavor)");
     expect(proposalStyles).not.toContain('font-family: "Gauntlet Declaration Blackletter"');
     expect(proposalStyles).toContain("#a3232d");
     expect(proposalStyles).toContain("mask: var(--faction-symbol)");
