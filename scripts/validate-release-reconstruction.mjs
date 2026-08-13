@@ -10,13 +10,32 @@ const fail = (message) => {
 const assert = (condition, message) => {
   if (!condition) fail(message);
 };
+const normalizeAuthorityText = (value) => String(value || "")
+  .replace(/^>\s?/gm, "")
+  .replace(/\*\*/g, "")
+  .replace(/\s+/g, " ")
+  .trim();
+
+function extractLeaderSection(guide, leaderName) {
+  const marker = `\n## ${leaderName}\n`;
+  const start = guide.indexOf(marker);
+  assert(start >= 0, `${leaderName} section is missing from its faction guide`);
+  const contentStart = start + marker.length;
+  const nextH2 = guide.indexOf("\n## ", contentStart);
+  const nextH1 = guide.indexOf("\n# ", contentStart);
+  const ends = [nextH2, nextH1].filter((index) => index >= 0);
+  const end = ends.length ? Math.min(...ends) : guide.length;
+  return guide.slice(start, end);
+}
 
 const ledgerPath = "config/reconstruction-ledger.json";
+const leaderAuthorityPath = "config/leader-authority-v061.json";
 const lifecyclePath = "config/release-lifecycle.json";
 const canonicalPath = "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json";
 const rulebookPath = "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md";
 
 const ledger = readJson(ledgerPath);
+const leaderAuthority = readJson(leaderAuthorityPath);
 const lifecycle = readJson(lifecyclePath);
 const canonical = readJson(canonicalPath);
 const rulebook = readText(rulebookPath);
@@ -58,25 +77,71 @@ for (const faction of canonical.factions) {
 assert(rulebook.includes("# Part III — Factions"), "v0.6.1 baseline Rulebook must retain a dedicated Factions part");
 assert(rulebook.includes("their Leaders, components, procedures, and alternate victories"), "baseline Rulebook must describe faction material as complete procedures, not migration notes");
 
-const generalStart = rulebook.indexOf("\n## General\n");
-const commandantStart = rulebook.indexOf("\n## Commandant\n", generalStart + 1);
-const diplomatsStart = rulebook.indexOf("\n# Diplomats", commandantStart + 1);
-assert(generalStart >= 0, "General section missing from v0.6.1 Rulebook");
-assert(commandantStart > generalStart, "Commandant section missing or not separated from General");
-const generalSection = rulebook.slice(generalStart, commandantStart);
-const commandantSection = rulebook.slice(commandantStart, diplomatsStart > commandantStart ? diplomatsStart : rulebook.length);
+assert(leaderAuthority.schema_version === 1, "unsupported Leader authority schema");
+assert(leaderAuthority.release === "v0.6.1", "Leader authority map must describe v0.6.1");
+assert(Array.isArray(leaderAuthority.factions), "Leader authority map is missing factions");
+assert(leaderAuthority.factions.length === ledger.semantic_invariants.faction_count, "Leader authority map must cover all six factions");
 
-for (const [leader, orders] of Object.entries(ledger.semantic_invariants.military_leader_ownership)) {
-  const section = leader === "General" ? generalSection : commandantSection;
-  for (const order of orders) {
-    assert(section.includes(`**${order} —`), `${order} is not explicitly owned by ${leader} in the v0.6.1 authority`);
+let mappedLeaderCount = 0;
+let mappedAbilityCount = 0;
+const mappedLeaderNames = new Set();
+for (const authorityFaction of leaderAuthority.factions) {
+  assert(typeof authorityFaction.source === "string" && authorityFaction.source.length > 0, `${authorityFaction.faction} authority is missing its source`);
+  assert(ledger.baseline_sources.includes(authorityFaction.source), `${authorityFaction.faction} Leader authority source is not a declared baseline source`);
+  assert(fs.existsSync(path.join(ROOT, authorityFaction.source)), `${authorityFaction.faction} Leader authority source does not exist`);
+
+  const canonicalFaction = canonical.factions.find((faction) => faction.source === authorityFaction.source);
+  assert(canonicalFaction, `${authorityFaction.faction} Leader authority does not map to a canonical v0.6.1 faction`);
+  assert(Array.isArray(authorityFaction.leaders) && authorityFaction.leaders.length === 2, `${authorityFaction.faction} Leader authority must contain exactly two Leaders`);
+
+  const guide = readText(authorityFaction.source);
+  const factionSections = new Map();
+  for (const leader of authorityFaction.leaders) {
+    mappedLeaderCount += 1;
+    assert(typeof leader.name === "string" && leader.name.length > 0, `${authorityFaction.faction} has a nameless Leader authority`);
+    assert(!mappedLeaderNames.has(leader.name), `duplicate Leader authority: ${leader.name}`);
+    mappedLeaderNames.add(leader.name);
+    assert(canonicalFaction.leaders.some((candidate) => candidate.name === leader.name), `${leader.name} is not listed under ${canonicalFaction.name} in canonical v0.6.1 data`);
+    assert(Array.isArray(leader.abilities) && leader.abilities.length > 0, `${leader.name} has no encoded Leader abilities`);
+
+    const section = extractLeaderSection(guide, leader.name);
+    factionSections.set(leader.name, section);
+    const normalizedSection = normalizeAuthorityText(section);
+    for (const ability of leader.abilities) {
+      mappedAbilityCount += 1;
+      assert(typeof ability.name === "string" && ability.name.length > 0, `${leader.name} has an unnamed ability`);
+      assert(typeof ability.kind === "string" && ability.kind.length > 0, `${leader.name} / ${ability.name} is missing its ability kind`);
+      assert(typeof ability.baseline_text === "string" && ability.baseline_text.length > 0, `${leader.name} / ${ability.name} is missing baseline text`);
+      assert(normalizedSection.includes(normalizeAuthorityText(ability.baseline_text)), `${leader.name} / ${ability.name} baseline text is not present in the correct v0.6.1 Leader section`);
+    }
+  }
+
+  for (const owner of authorityFaction.leaders) {
+    for (const ability of owner.abilities) {
+      for (const other of authorityFaction.leaders) {
+        if (other.name === owner.name) continue;
+        const otherSection = normalizeAuthorityText(factionSections.get(other.name));
+        assert(!otherSection.includes(normalizeAuthorityText(ability.baseline_text)), `${owner.name} / ${ability.name} is duplicated into ${other.name}'s Leader section`);
+      }
+    }
   }
 }
-for (const order of ledger.semantic_invariants.military_leader_ownership.General) {
-  assert(!commandantSection.includes(`**${order} —`), `${order} is incorrectly duplicated into Commandant authority`);
+
+assert(mappedLeaderCount === ledger.semantic_invariants.leader_count, `Leader authority map covers ${mappedLeaderCount} Leaders instead of ${ledger.semantic_invariants.leader_count}`);
+assert(mappedLeaderNames.size === leaderCount, "Leader authority map does not uniquely cover every canonical Leader");
+for (const faction of canonical.factions) {
+  for (const leader of faction.leaders) {
+    assert(mappedLeaderNames.has(leader.name), `canonical Leader is missing from authority map: ${leader.name}`);
+  }
 }
-for (const order of ledger.semantic_invariants.military_leader_ownership.Commandant) {
-  assert(!generalSection.includes(`**${order} —`), `${order} is incorrectly duplicated into General authority`);
+
+const militaryAuthority = leaderAuthority.factions.find((faction) => faction.faction === "Military");
+assert(militaryAuthority, "Military is missing from the Leader authority map");
+for (const [leaderName, orders] of Object.entries(ledger.semantic_invariants.military_leader_ownership)) {
+  const leader = militaryAuthority.leaders.find((candidate) => candidate.name === leaderName);
+  assert(leader, `${leaderName} is missing from the Military Leader authority map`);
+  const actual = leader.abilities.map((ability) => ability.name);
+  assert(actual.length === orders.length && orders.every((order) => actual.includes(order)), `${leaderName} Order ownership does not match the reconstruction invariant`);
 }
 
 assert(Array.isArray(ledger.decision_statuses), "decision status enum is missing");
@@ -117,6 +182,6 @@ assert(ledger.semantic_invariants.migration_material_may_not_be_core_rules === t
 assert(ledger.semantic_invariants.downstream_generation_requires_approved_authority === true, "downstream generation gate must remain enabled");
 
 console.log(`[release-reconstruction] baseline ${ledger.baseline_release} verified`);
-console.log(`[release-reconstruction] ${canonical.factions.length} factions / ${leaderCount} Leaders verified`);
+console.log(`[release-reconstruction] ${canonical.factions.length} factions / ${leaderCount} Leaders / ${mappedAbilityCount} Leader abilities verified`);
 console.log(`[release-reconstruction] ${ledger.changes.length} post-baseline change groups quarantined or decision-tracked`);
 console.log("[release-reconstruction] publication remains locked");
