@@ -8,20 +8,20 @@
   --minimum-rules-scale: 0.82;
 }
 
-/* Proposals need the same two-line breathing room as Leaders: title plus a
-   faction-symbol component label. The fitting pass may reduce art height for
-   dense Proposals without compressing this identification band. */
+/* Proposals share the compact two-line component header with Leaders: title
+   above a readable faction-symbol component label. The fitting pass may reduce
+   art height for dense Proposals without compressing this identification band. */
 .proposal-card .card-interior {
   --art-height: 1.52in;
-  grid-template-rows: 0.58in var(--art-height) auto 0.18in;
+  grid-template-rows: var(--component-heading-height, 0.50in) var(--art-height) auto 0.18in;
 }
 
 .proposal-card .card-heading {
   display: grid;
   grid-template-rows: auto auto;
   align-content: center;
-  gap: 0.025in;
-  padding: 0.05in 0.46in 0.035in 0.09in;
+  gap: 0.012in;
+  padding: 0.028in 0.46in 0.022in 0.09in;
 }
 
 .proposal-card .card-title {
@@ -39,22 +39,22 @@
 .proposal-type-line {
   display: flex;
   align-items: center;
-  gap: 0.042in;
+  gap: var(--component-subheading-gap, 0.045in);
   min-width: 0;
   color: var(--component-accent-ink);
   font-family: var(--font-interface);
-  font-size: 4.75pt;
-  font-weight: 750;
-  letter-spacing: 0.105em;
-  line-height: 1.2;
+  font-size: var(--component-subheading-font-size, 6.25pt);
+  font-weight: 800;
+  letter-spacing: 0.085em;
+  line-height: 1.08;
   text-transform: uppercase;
 }
 
 .proposal-faction-emblem {
   display: block;
-  width: 0.15in;
-  height: 0.15in;
-  flex: 0 0 0.15in;
+  width: var(--component-subheading-icon-size, 0.18in);
+  height: var(--component-subheading-icon-size, 0.18in);
+  flex: 0 0 var(--component-subheading-icon-size, 0.18in);
   background: currentColor;
   -webkit-mask: var(--faction-symbol) center / contain no-repeat;
   mask: var(--faction-symbol) center / contain no-repeat;
@@ -62,9 +62,9 @@
 
 /* Stake is a primary state cue, not a deckbuilding value. Give it more visual
    authority than the ordinary 0.19in value medallion and center it vertically
-   inside the Leader-height heading band. */
+   inside the compact component heading band. */
 .proposal-card .value-medallion {
-  top: 0.14in;
+  top: 0.11in;
   right: 0.07in;
   width: 0.28in;
   height: 0.28in;
