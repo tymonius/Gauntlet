@@ -41,45 +41,88 @@ async function startStaticServer() {
   return { server, baseUrl: `http://127.0.0.1:${server.address().port}` };
 }
 
+async function waitForTerritoryReady(frame) {
+  await frame.waitForSelector('.territory-card');
+  await frame.waitForFunction(() => document.body.dataset.renderReady === 'true');
+  await frame.evaluate(async () => document.fonts?.ready);
+}
+
+async function territoryMetrics(frame) {
+  return frame.locator('.territory-card').evaluate(card => {
+    const cardRect = card.getBoundingClientRect();
+    const art = card.querySelector('.territory-art');
+    const artRect = art?.getBoundingClientRect();
+    const effect = card.querySelector('.territory-effect p');
+    const effectStyle = effect ? getComputedStyle(effect) : null;
+    const rootStyle = getComputedStyle(document.documentElement);
+    const interior = card.querySelector('.territory-interior');
+    const body = card.querySelector('.territory-body');
+    return {
+      title: card.querySelector('.territory-title')?.textContent?.trim(),
+      width: cardRect.width,
+      height: cardRect.height,
+      artWidth: artRect?.width || 0,
+      artHeight: artRect?.height || 0,
+      effectFontSize: effectStyle ? Number.parseFloat(effectStyle.fontSize) : 0,
+      effectLineHeight: effectStyle ? Number.parseFloat(effectStyle.lineHeight) : 0,
+      effectScale: card.dataset.effectScale,
+      fitWarning: card.classList.contains('fit-warning'),
+      titleFit: card.dataset.titleFit,
+      parchmentLoaded: card.dataset.parchmentLoaded,
+      textSizeAdjust: rootStyle.webkitTextSizeAdjust || rootStyle.textSizeAdjust || '',
+      interiorScrollExcess: interior ? interior.scrollHeight - interior.clientHeight : 0,
+      bodyScrollExcess: body ? body.scrollHeight - body.clientHeight : 0,
+    };
+  });
+}
+
 async function renderMetrics(browser, baseUrl, contextOptions, screenshotPath) {
   const context = await browser.newContext(contextOptions);
   const page = await context.newPage();
   try {
     await page.goto(`${baseUrl}/card-design/territory-review-render.html?territory=${TERRITORY_ID}`, { waitUntil: 'load' });
-    await page.waitForSelector('.territory-card');
-    await page.waitForFunction(() => document.body.dataset.renderReady === 'true');
-    await page.evaluate(async () => document.fonts?.ready);
-    await page.waitForTimeout(100);
-
-    const metrics = await page.locator('.territory-card').evaluate(card => {
-      const cardRect = card.getBoundingClientRect();
-      const art = card.querySelector('.territory-art');
-      const artRect = art?.getBoundingClientRect();
-      const effect = card.querySelector('.territory-effect p');
-      const effectStyle = effect ? getComputedStyle(effect) : null;
-      const rootStyle = getComputedStyle(document.documentElement);
-      const interior = card.querySelector('.territory-interior');
-      const body = card.querySelector('.territory-body');
-      return {
-        title: card.querySelector('.territory-title')?.textContent?.trim(),
-        width: cardRect.width,
-        height: cardRect.height,
-        artWidth: artRect?.width || 0,
-        artHeight: artRect?.height || 0,
-        effectFontSize: effectStyle ? Number.parseFloat(effectStyle.fontSize) : 0,
-        effectLineHeight: effectStyle ? Number.parseFloat(effectStyle.lineHeight) : 0,
-        effectScale: card.dataset.effectScale,
-        fitWarning: card.classList.contains('fit-warning'),
-        titleFit: card.dataset.titleFit,
-        parchmentLoaded: card.dataset.parchmentLoaded,
-        textSizeAdjust: rootStyle.webkitTextSizeAdjust || rootStyle.textSizeAdjust || '',
-        interiorScrollExcess: interior ? interior.scrollHeight - interior.clientHeight : 0,
-        bodyScrollExcess: body ? body.scrollHeight - body.clientHeight : 0,
-      };
-    });
-
+    await waitForTerritoryReady(page);
+    await page.waitForTimeout(150);
+    const metrics = await territoryMetrics(page);
     if (screenshotPath) await page.locator('.territory-card').screenshot({ path: screenshotPath, omitBackground: true });
     return metrics;
+  } finally {
+    await context.close();
+  }
+}
+
+async function renderInspectionLifecycle(browser, baseUrl, contextOptions, screenshotPath) {
+  const context = await browser.newContext(contextOptions);
+  const page = await context.newPage();
+  try {
+    await page.goto(`${baseUrl}/card-design/`, { waitUntil: 'load' });
+    const sourceSelector = `iframe.territory-review-frame[src*="territory=${TERRITORY_ID}"]`;
+    const sourceElement = await page.waitForSelector(sourceSelector, { state: 'attached', timeout: 30000 });
+    const sourceFrame = await sourceElement.contentFrame();
+    if (!sourceFrame) throw new Error('Territory review iframe did not expose a content frame.');
+    await waitForTerritoryReady(sourceFrame);
+
+    await sourceFrame.locator('.territory-card').click();
+
+    const inspectionElement = await page.waitForSelector(
+      'iframe.territory-inspection-frame',
+      { state: 'attached', timeout: 10000 },
+    );
+    const inspectionFrame = await inspectionElement.contentFrame();
+    if (!inspectionFrame) throw new Error('Territory inspection iframe did not expose a content frame.');
+    await waitForTerritoryReady(inspectionFrame);
+
+    const settled = await territoryMetrics(inspectionFrame);
+    await page.waitForTimeout(500);
+    const afterDelay = await territoryMetrics(inspectionFrame);
+
+    if (screenshotPath) {
+      await page.locator('.territory-inspection-dialog').screenshot({
+        path: screenshotPath,
+        omitBackground: false,
+      });
+    }
+    return { settled, afterDelay };
   } finally {
     await context.close();
   }
@@ -103,6 +146,17 @@ function validateRender(label, metric) {
   }
   if (metric.textSizeAdjust !== 'none') {
     throw new Error(`${label} Territory render did not disable browser text inflation: ${JSON.stringify(metric)}.`);
+  }
+}
+
+function validateInspectionLifecycle(label, lifecycle, reference) {
+  validateRender(`${label} inspection after renderReady`, lifecycle.settled);
+  validateRender(`${label} inspection after settling`, lifecycle.afterDelay);
+  assertClose(`${label} inspection artwork stability`, lifecycle.settled.artHeight, lifecycle.afterDelay.artHeight, 0.25);
+  assertClose(`${label} inspection typography stability`, lifecycle.settled.effectFontSize, lifecycle.afterDelay.effectFontSize, 0.05);
+  assertClose(`${label} inspection artwork vs desktop`, reference.artHeight, lifecycle.afterDelay.artHeight, 1);
+  if (lifecycle.settled.effectScale !== lifecycle.afterDelay.effectScale) {
+    throw new Error(`${label} inspection changed effect scale after opening: ${JSON.stringify(lifecycle)}.`);
   }
 }
 
@@ -155,10 +209,33 @@ async function main() {
       }
     }
 
+    const inspectionChromium = await renderInspectionLifecycle(
+      chromiumBrowser,
+      baseUrl,
+      {
+        viewport: { width: 390, height: 844 },
+        deviceScaleFactor: 3,
+        isMobile: true,
+        hasTouch: true,
+      },
+      join(OUTPUT, 'territory-mobile-chromium-inspection.png'),
+    );
+    const inspectionWebKit = await renderInspectionLifecycle(
+      webkitBrowser,
+      baseUrl,
+      devices['iPhone 13'],
+      join(OUTPUT, 'territory-mobile-webkit-inspection.png'),
+    );
+
+    validateInspectionLifecycle('mobile Chromium', inspectionChromium, desktop);
+    validateInspectionLifecycle('mobile WebKit', inspectionWebKit, desktop);
+
     await writeFile(join(OUTPUT, 'territory-mobile-render-metrics.json'), `${JSON.stringify({
       desktop,
       mobileChromium,
       mobileWebKit,
+      inspectionChromium,
+      inspectionWebKit,
     }, null, 2)}\n`);
   } finally {
     await chromiumBrowser.close();
