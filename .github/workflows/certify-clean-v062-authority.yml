@@ -58,8 +58,14 @@ jobs:
           else
             echo "Authority set is already in certified-state form; component integrity will be checked by the certification validator."
           fi
-      - name: Build clean v0.6.2 certification state
-        run: node scripts/certify-clean-v062-authority.mjs
+      - name: Build clean v0.6.2 certification state only before first certification
+        run: |
+          STATUS=$(node -p "JSON.parse(require('fs').readFileSync('config/reconstruction-version-plan.json','utf8')).targets['clean-v0.6.2'].status")
+          if [ "$STATUS" = "authority_build_approved" ]; then
+            node scripts/certify-clean-v062-authority.mjs
+          else
+            echo 'clean v0.6.2 is already certified; preserve the newer reconstruction state and validate the existing certification.'
+          fi
       - name: Validate certified reconstruction plan
         run: node scripts/validate-reconstruction-version-plan-certified.mjs
       - name: Validate clean v0.6.2 authority certification
