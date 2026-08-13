@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "target": "clean-v0.6.2",
+  "status": "candidate_pending_merge_review",
+  "checks": {
+    "six_self_contained_guides": true,
+    "all_twelve_v061_leader_ownership_mappings_preserved": true,
+    "approved_v062_faction_deltas_applied": true,
+    "seven_card_pool_expansion_represented_in_faction_guides": true,
+    "withdrawn_v062_documents_not_used_as_authority_skeletons": true,
+    "v063_only_setup_victory_card_language_and_title_changes_excluded": true,
+    "publication_unlocked": false
+  }
+}
