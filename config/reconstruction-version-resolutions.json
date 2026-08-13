@@ -77,6 +77,32 @@
         "reason": "v0.6.3 deliberately changes the fourth opening card from face-down bottom-of-Draw-Pile placement to a face-up opening discard."
       }
     ],
+    "additional_recovered_decisions": [
+      {
+        "id": "GNT-DEC-2026-0812-001",
+        "subject": "neutral-armistice",
+        "version_disposition": "adopt",
+        "evidence": ["https://github.com/tymonius/Gauntlet/pull/571"],
+        "rule": "Armistice remains a persistent cost-4 Asset, but its two-card upkeep occurs at the start of its controller's Opening rather than after the normal Draw; draw suppression cannot skip the upkeep.",
+        "reason": "PR #571 canonicalized this v0.6.3 interaction correction after the normalized reconstruction candidate registry was created. It supersedes the earlier post-Draw Armistice timing and was included in the refreshed final v0.6.3 closeout."
+      },
+      {
+        "id": "GNT-DEC-2026-0812-002",
+        "subject": "neutral-manifest-destiny",
+        "version_disposition": "adopt",
+        "evidence": ["https://github.com/tymonius/Gauntlet/pull/571"],
+        "rule": "Whenever Manifest Destiny enters the Gauntlet as a Territory, it is a normal Territory with a normal Deed; existing Deed purchase costs, caps, procedures, income rules, and Controlling Interest rules apply unchanged.",
+        "reason": "PR #571 made the already-intended Deed treatment explicit and regression-guarded for v0.6.3 after the normalized reconstruction candidate registry was created."
+      },
+      {
+        "id": "GNT-DEC-2026-0812-003",
+        "subject": "neutral-contingency-plan",
+        "version_disposition": "adopt",
+        "evidence": ["https://github.com/tymonius/Gauntlet/pull/571"],
+        "rule": "Contingency Plan draws one card whenever it is Removed under the defined involuntary Asset Removal event, regardless of cause, and its Gambit/Tactic effect grants +2 Battle Total while the opponent controls more Territories.",
+        "reason": "PR #571 canonicalized both the general Removal trigger and the +2 Battle Total correction for v0.6.3 after the normalized reconstruction candidate registry was created."
+      }
+    ],
     "downstream_only_until_authority_exists": [
       {
         "candidate_id": "starters-v063-final-compositions",
