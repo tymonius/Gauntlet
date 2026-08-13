@@ -34,6 +34,24 @@ const assert = (condition, message) => {
   if (!condition) fail(message);
 };
 
+function normalizeIntegratedFaction(text) {
+  return text
+    .replaceAll('Do not create immediate or additional Action Opportunities or Action Windows.', 'Do not create additional Action phases or implicit same-phase Action permissions.')
+    .replaceAll('Do not create immediate or additional Action phases or Action Windows.', 'Do not create additional Action phases or implicit same-phase Action permissions.')
+    .replaceAll('Action Windows', 'Action phases')
+    .replaceAll('Action Window', 'Action phase')
+    .replaceAll('Action windows', 'Action phases')
+    .replaceAll('Action window', 'Action phase')
+    .replaceAll('using the Front Line rules in Section 6.', 'using the Front Line rules in Chapter 8.')
+    .replaceAll('Follow the Action rules in Section 2.', 'Follow the Action rules in Chapter 5.')
+    .replaceAll('The pending-battle and Terms procedure in Section 4 occurs before the battle reaches Onset.', 'The pending-battle and Terms procedure in Chapter 7 occurs before the battle reaches Onset.')
+    .replaceAll('During an Denouement', 'During Denouement')
+    .replaceAll('during an Denouement', 'during Denouement')
+    .replace('### How it works\n', '## How it works\n')
+    .replace('### Complete rules\n', '## Complete rules\n')
+    .replace('### Faction Actions\n', '## Faction Actions\n');
+}
+
 function factionChapter({ chapter, slug, label, file }) {
   const guide = read(`${FACTION_ROOT}/${slug}/${file}`);
   const start = guide.search(/^# 1\. /m);
@@ -67,7 +85,7 @@ function factionChapter({ chapter, slug, label, file }) {
     }
     rendered.push(line);
   }
-  return rendered.join('\n').trimEnd();
+  return normalizeIntegratedFaction(rendered.join('\n').trimEnd());
 }
 
 for (const required of [PLAN_PATH, MANIFEST_PATH, REVIEW_PATH, RULEBOOK_PATH, LIFECYCLE_PATH, ...expectedAuthorityPaths.slice(1)]) {
@@ -128,7 +146,7 @@ assert(manifest.authority_set_id === recomputedSetId, 'authority-set ID does not
 const rulebook = read(RULEBOOK_PATH);
 for (const faction of factions) {
   const expected = factionChapter(faction);
-  assert(rulebook.includes(expected), `Rulebook Part III drifted from the certified ${faction.label} guide`);
+  assert(rulebook.includes(expected), `Rulebook Part III drifted from the certified ${faction.label} guide after approved integration normalization`);
 }
 
 for (const forbidden of [

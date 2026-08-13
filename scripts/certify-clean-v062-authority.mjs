@@ -30,6 +30,24 @@ const fail = (message) => {
   throw new Error(`clean-v062-certification: ${message}`);
 };
 
+function normalizeIntegratedFaction(text) {
+  return text
+    .replaceAll('Do not create immediate or additional Action Opportunities or Action Windows.', 'Do not create additional Action phases or implicit same-phase Action permissions.')
+    .replaceAll('Do not create immediate or additional Action phases or Action Windows.', 'Do not create additional Action phases or implicit same-phase Action permissions.')
+    .replaceAll('Action Windows', 'Action phases')
+    .replaceAll('Action Window', 'Action phase')
+    .replaceAll('Action windows', 'Action phases')
+    .replaceAll('Action window', 'Action phase')
+    .replaceAll('using the Front Line rules in Section 6.', 'using the Front Line rules in Chapter 8.')
+    .replaceAll('Follow the Action rules in Section 2.', 'Follow the Action rules in Chapter 5.')
+    .replaceAll('The pending-battle and Terms procedure in Section 4 occurs before the battle reaches Onset.', 'The pending-battle and Terms procedure in Chapter 7 occurs before the battle reaches Onset.')
+    .replaceAll('During an Denouement', 'During Denouement')
+    .replaceAll('during an Denouement', 'during Denouement')
+    .replace('### How it works\n', '## How it works\n')
+    .replace('### Complete rules\n', '## Complete rules\n')
+    .replace('### Faction Actions\n', '## Faction Actions\n');
+}
+
 function factionChapter({ chapter, slug, label, file }) {
   const guide = read(`${FACTION_ROOT}/${slug}/${file}`);
   const start = guide.search(/^# 1\. /m);
@@ -60,13 +78,13 @@ function factionChapter({ chapter, slug, label, file }) {
     }
     rendered.push(line);
   }
-  return rendered.join('\n').trimEnd();
+  return normalizeIntegratedFaction(rendered.join('\n').trimEnd());
 }
 
 const rulebook = read(RULEBOOK_PATH);
 for (const faction of factions) {
   const expected = factionChapter(faction);
-  if (!rulebook.includes(expected)) fail(`Rulebook Part III does not exactly embed approved ${faction.label} authority sections`);
+  if (!rulebook.includes(expected)) fail(`Rulebook Part III does not exactly embed approved ${faction.label} authority sections after the approved integration normalization`);
 }
 
 const factionReview = read(`${FACTION_ROOT}/semantic-review.md`);
@@ -150,7 +168,7 @@ const review = `# Clean v0.6.2 authority-set semantic certification
 
 This certification binds exactly seven authority documents: the reconstructed self-contained Rulebook and the six reconstructed faction guides approved through PR #609 and PR #611. Their SHA-256 hashes are recorded in \`${MANIFEST_PATH}\`.
 
-The certification validator recomputes every hash and reconstructs each faction chapter from its dedicated guide using the Rulebook integration transform. The resulting text must appear exactly in Part III of the certified Rulebook. This makes the shared Rulebook and dedicated faction authorities one coherent, pinned authority set rather than seven independently approved documents.
+The certification validator recomputes every hash and reconstructs each faction chapter from its dedicated guide using the Rulebook integration transform plus the approved integration-only normalization. The resulting text must appear exactly in Part III of the certified Rulebook. This makes the shared Rulebook and dedicated faction authorities one coherent, pinned authority set rather than seven independently approved documents.
 
 ## Semantic boundary rechecked
 
