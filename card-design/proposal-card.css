@@ -134,9 +134,10 @@
 /* Ratification deliberately replaces only the art. The Proposal remains fully
    usable, so Stake, Requirement, Accepted, and Refused text are unchanged. */
 .proposal-ratified-panel {
-  display: grid;
+  position: relative;
+  display: block;
   isolation: isolate;
-  place-items: center;
+  overflow: hidden;
   background:
     linear-gradient(rgba(38, 79, 145, 0.09), rgba(38, 79, 145, 0.09)),
     radial-gradient(circle at 50% 36%, rgba(255, 252, 239, 0.94), transparent 42%),
@@ -152,9 +153,11 @@
 }
 
 .proposal-ratified-word {
-  position: relative;
-  z-index: 3;
-  margin-top: -0.04in;
+  position: absolute;
+  z-index: 4;
+  top: 0.09in;
+  left: 50%;
+  margin: 0;
   color: #263e69;
   font-family:
     "P22 Declaration W01 Blackletter",
@@ -167,14 +170,15 @@
   line-height: 1;
   text-align: center;
   text-shadow: 0 0.01in 0 rgba(255, 255, 255, 0.52);
-  transform: rotate(-0.6deg);
+  transform: translateX(-50%) rotate(-0.6deg);
+  white-space: nowrap;
 }
 
 .proposal-ratified-word::before,
 .proposal-ratified-word::after {
   position: absolute;
   top: 50%;
-  width: 0.42in;
+  width: 0.32in;
   height: 1px;
   background: rgba(32, 63, 115, 0.48);
   content: "";
@@ -188,40 +192,21 @@
   left: calc(100% + 0.08in);
 }
 
+/* The wax seal is now the focal state cue: the approved shared asset is more
+   than twice the former corner treatment's diameter and centered in the field. */
 .proposal-wax-seal {
   position: absolute;
-  z-index: 4;
-  right: 0.13in;
-  bottom: 0.10in;
-  width: 0.43in;
-  height: 0.43in;
-  border: 0.012in solid rgba(91, 14, 20, 0.76);
-  border-radius: 50%;
-  background:
-    radial-gradient(circle at 34% 28%, rgba(255, 191, 168, 0.28), transparent 20%),
-    radial-gradient(circle at 54% 58%, #a3232d 0 54%, #7c1720 72%, #5a1017 100%);
-  box-shadow:
-    0 0.025in 0.045in rgba(61, 28, 23, 0.34),
-    inset 0 0 0 0.025in rgba(76, 10, 16, 0.28),
-    inset 0.015in 0.018in 0.028in rgba(255, 214, 190, 0.15);
-  transform: rotate(-7deg);
-}
-
-.proposal-wax-seal::before {
-  position: absolute;
-  inset: 0.095in;
-  background: rgba(79, 9, 16, 0.72);
-  content: "";
-  -webkit-mask: var(--faction-symbol) center / contain no-repeat;
-  mask: var(--faction-symbol) center / contain no-repeat;
-}
-
-.proposal-wax-seal::after {
-  position: absolute;
-  inset: 0.045in;
-  border: 0.008in double rgba(90, 9, 16, 0.58);
-  border-radius: 50%;
-  content: "";
+  z-index: 3;
+  top: 60%;
+  left: 50%;
+  width: 0.96in;
+  height: 0.96in;
+  max-width: none;
+  object-fit: contain;
+  filter: drop-shadow(0 0.032in 0.032in rgba(61, 28, 23, 0.32));
+  transform: translate(-50%, -50%) rotate(-1.5deg);
+  pointer-events: none;
+  user-select: none;
 }
 
 .proposal-review-block {
@@ -275,7 +260,6 @@
 
 @media print {
   .proposal-faction-emblem,
-  .proposal-wax-seal::before,
   .proposal-wax-seal,
   .proposal-ratified-panel {
     print-color-adjust: exact;
