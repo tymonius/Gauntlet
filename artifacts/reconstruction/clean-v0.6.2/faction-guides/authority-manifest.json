@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "status": "authority_candidate_pending_semantic_review",
+  "target": "clean-v0.6.2",
+  "authority_base": "v0.6.1",
+  "approval_pr": 606,
+  "build_unlock_pr": 607,
+  "forbidden_authority_sources": [
+    "releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md",
+    "releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md"
+  ],
+  "evidence_sources": [
+    "docs/Gauntlet_v0.6.2_Shared_Rules_Candidate.md",
+    "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md",
+    "docs/Gauntlet_v0.6.2_Faction_Component_Compatibility_Audit.md",
+    "https://github.com/tymonius/Gauntlet/pull/511",
+    "config/reconstruction-version-plan.json",
+    "config/reconstruction-version-resolutions.json"
+  ],
+  "guides": [
+    "military",
+    "diplomat",
+    "financier",
+    "intelligence",
+    "mystics",
+    "inquisition"
+  ]
+}
