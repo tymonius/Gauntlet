@@ -1,0 +1,92 @@
+name: Build clean v0.6.3 Browser Rulebook
+
+on:
+  push:
+    branches:
+      - 'agent/rebuild-clean-v063-*'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-clean-v063-browser-rulebook.yml'
+      - 'scripts/build-clean-v063-browser-rulebook.mjs'
+      - 'scripts/validate-clean-v063-browser-rulebook.mjs'
+      - 'artifacts/reconstruction/clean-v0.6.3/browser-rulebook/**'
+      - 'artifacts/reconstruction/clean-v0.6.3/rulebook/**'
+      - 'artifacts/reconstruction/clean-v0.6.3/certification/**'
+      - 'artifacts/reconstruction/clean-v0.6.3/downstream/**'
+      - 'config/release-lifecycle.json'
+      - 'rulebook/app.js'
+      - 'rulebook/markdown.js'
+      - 'rulebook/styles.css'
+      - 'rulebook/publication.css'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: clean-v063-browser-rulebook-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  reconstruct:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Browser Rulebook reconstruction inputs
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.github/workflows/build-clean-v063-browser-rulebook.yml
+            /scripts/build-clean-v063-browser-rulebook.mjs
+            /scripts/validate-clean-v063-browser-rulebook.mjs
+            /config/release-lifecycle.json
+            /artifacts/reconstruction/clean-v0.6.3/certification/
+            /artifacts/reconstruction/clean-v0.6.3/rulebook/
+            /artifacts/reconstruction/clean-v0.6.3/downstream/
+            /artifacts/reconstruction/clean-v0.6.3/browser-rulebook/
+            /rulebook/app.js
+            /rulebook/markdown.js
+            /rulebook/styles.css
+            /rulebook/publication.css
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Syntax-check Browser Rulebook scripts
+        run: |
+          node --check scripts/build-clean-v063-browser-rulebook.mjs
+          node --check scripts/validate-clean-v063-browser-rulebook.mjs
+
+      - name: Build clean v0.6.3 Browser Rulebook
+        run: node scripts/build-clean-v063-browser-rulebook.mjs
+
+      - name: Syntax-check generated Browser Rulebook JavaScript
+        run: |
+          node --check artifacts/reconstruction/clean-v0.6.3/browser-rulebook/app.js
+          node --check artifacts/reconstruction/clean-v0.6.3/browser-rulebook/markdown.js
+
+      - name: Validate clean v0.6.3 Browser Rulebook
+        run: node scripts/validate-clean-v063-browser-rulebook.mjs
+
+      - name: Reject whitespace errors
+        run: git diff --check
+
+      - name: Commit deterministic Browser Rulebook reconstruction
+        if: github.event_name == 'push'
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add artifacts/reconstruction/clean-v0.6.3/browser-rulebook
+          if git diff --cached --quiet; then
+            echo 'Browser Rulebook reconstruction already materialized.'
+          else
+            git commit -m 'Materialize clean v0.6.3 Browser Rulebook'
+            git push
+          fi
+
+      - name: Require committed Browser Rulebook outputs on pull requests
+        if: github.event_name == 'pull_request'
+        run: git diff --exit-code -- artifacts/reconstruction/clean-v0.6.3/browser-rulebook
