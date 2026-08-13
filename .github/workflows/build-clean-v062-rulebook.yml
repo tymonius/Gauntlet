@@ -6,6 +6,7 @@ on:
       - agent/reconstruct-clean-v062-rulebook
     paths:
       - scripts/build-clean-v062-rulebook.mjs
+      - scripts/normalize-clean-v062-rulebook.mjs
       - scripts/validate-clean-v062-rulebook.mjs
       - artifacts/reconstruction/clean-v0.6.2/rulebook/**
       - artifacts/reconstruction/clean-v0.6.2/faction-guides/**
@@ -17,6 +18,7 @@ on:
   pull_request:
     paths:
       - scripts/build-clean-v062-rulebook.mjs
+      - scripts/normalize-clean-v062-rulebook.mjs
       - scripts/validate-clean-v062-rulebook.mjs
       - artifacts/reconstruction/clean-v0.6.2/rulebook/**
       - artifacts/reconstruction/clean-v0.6.2/faction-guides/**
@@ -49,6 +51,9 @@ jobs:
 
       - name: Build clean v0.6.2 Rulebook
         run: node scripts/build-clean-v062-rulebook.mjs
+
+      - name: Normalize clean v0.6.2 Rulebook
+        run: node scripts/normalize-clean-v062-rulebook.mjs
 
       - name: Validate clean v0.6.2 Rulebook
         run: node scripts/validate-clean-v062-rulebook.mjs
