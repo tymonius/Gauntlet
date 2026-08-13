@@ -15,7 +15,13 @@
   },
   "targets": {
     "clean-v0.6.2": {
-      "status": "planned_pending_human_approval",
+      "status": "authority_build_approved",
+      "approval": {
+        "basis": "Manual merge of PR #606 on main",
+        "pr": 606,
+        "merged_at": "2026-08-13T07:24:17Z",
+        "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b"
+      },
       "authority_base": "v0.6.1",
       "evidence_anchor": {
         "ref": "archive/v062-final-current-pre-v063-cutover",
@@ -111,7 +117,7 @@
         "second_line_title": false,
         "smugglers_run_title": false
       },
-      "authority_build_unlocked": false
+      "authority_build_unlocked": true
     },
     "clean-v0.6.3": {
       "status": "blocked_on_clean_v062",
