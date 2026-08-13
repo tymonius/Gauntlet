@@ -35,15 +35,19 @@ function common(text, faction) {
   if (!oldNotice.test(text)) throw new Error(`${faction} source notice missing`);
   text = text.replace(oldNotice, `> **Clean v0.6.2 ${faction} faction authority candidate.** Reconstructed from the definitive v0.6.1 faction guide plus only the version-scoped v0.6.2 decisions approved by PR #606/#607. Shared rules are governed by the clean v0.6.2 Rulebook candidate. The withdrawn v0.6.2 Rulebook and combined faction guide are evidence only.`);
   text = text.replaceAll("Defender's Advantage", 'Defensive Edge');
-  text = text.replaceAll('Action Opportunity after movement', 'Denouement');
-  text = text.replaceAll('after-movement Action Opportunity', 'Denouement');
-  text = text.replaceAll('during an Action Opportunity after movement', 'during Denouement, as an Action');
-  text = text.replaceAll('During an Action Opportunity after movement', 'During Denouement, as an Action');
-  text = text.replaceAll('during an after-movement Action Opportunity', 'during Denouement');
-  text = text.replaceAll('during opening effects', 'during Onset');
-  text = text.replaceAll('During opening effects', 'During Onset');
   text = text.replaceAll('Gauntlet v0.6.1 © 2026 Tymon Scott.', 'Gauntlet v0.6.2 reconstruction candidate © 2026 Tymon Scott.');
   return text;
+}
+
+function normalizePhaseLanguage(text) {
+  return text
+    .replaceAll('Action Opportunity after movement', 'Denouement')
+    .replaceAll('after-movement Action Opportunity', 'Denouement')
+    .replaceAll('during an Action Opportunity after movement', 'during Denouement, as an Action')
+    .replaceAll('During an Action Opportunity after movement', 'During Denouement, as an Action')
+    .replaceAll('during an after-movement Action Opportunity', 'during Denouement')
+    .replaceAll('during opening effects', 'during Onset')
+    .replaceAll('During opening effects', 'During Onset');
 }
 
 function military() {
@@ -131,7 +135,7 @@ function intelligence() {
   t = t.replaceAll('Fieldcraft does not alter Territory control, Occupation, capture, Defensive Edge, Last Stand bonuses, or limits calculated from Territories.', 'Fieldcraft does not alter Territory control, Occupation, Capture, Defensive Edge, Last Stand bonuses, or limits calculated from Territories.');
   t = replaceOnce(t, 'When Counterintelligence prevents an opposing effect from revealing a Hand, Reserve, face-down battle card, or Territory, it prevents the entire opposing revealing effect, not only the information portion. Rules-mandated reveals are unaffected.', 'Counterintelligence prevents an opposing effect from revealing a Hand, Reserve, or face-down battle card. It prevents the entire opposing revealing effect, not only the information portion. Rules-mandated reveals are unaffected.', 'Intelligence Counterintelligence');
   t = t.replaceAll('Place Fog of War as an Overlay on a revealed Territory.', 'Place Fog of War as an Overlay on a Territory.');
-  t = replaceOnce(t, '> **Use:** During Onset in a battle you initiated, you may discard this card to reveal the opponent\'s Hand. You may then withdraw or continue the attack.', '> **Use:** During Onset in a battle you initiated, you may discard this card to reveal the opponent\'s Hand. You may then withdraw or continue the attack.', 'Reconnaissance already migrated');
+  t = replaceOnce(t, '> **Use:** During opening effects in a battle you initiated, you may discard this card to reveal the opponent\'s Hand. You may then withdraw or continue the attack.', '> **Use:** During Onset in a battle you initiated, you may discard this card to reveal the opponent\'s Hand. You may then withdraw or continue the attack.', 'Reconnaissance');
   t = replaceOnce(t, '> **Use:** During an Action Opportunity, spend 1 Action to put this card in your Graveyard and reveal its bound cards. Play each whose Action effect can apply now, one at a time and in any order, without spending additional Actions. Discard the rest.', '> **Use:** During Opening or Denouement, as an Action, put this card in your Graveyard and reveal its bound cards. Play each whose Action effect can apply now, one at a time and in any order, without taking additional Actions. Discard the rest.', 'Sleeper Network use');
   const rendition = `## Extraordinary Rendition\n\n**Cost:** 4  \n**Card form:** Asset with a bound opposing card\n\n> **Action:** Bank this card. When you do, reveal the opponent's Hand, choose one card there, and bind it face up beneath Extraordinary Rendition. You may have only one banked Extraordinary Rendition.\n>\n> **Asset:** The bound card cannot be played, moved, or affected except by Extraordinary Rendition. Whenever you discard one or more Assets you control, discard Extraordinary Rendition before any others, if able. When Extraordinary Rendition leaves play, put the bound card in its owner's Discard Pile.\n\nThe first-discard requirement applies to voluntary Asset discard, required Asset loss, and Asset replacement. Extraordinary Rendition has no Use, Battle, or Mission mode.`;
   t = insertBefore(t, '# 8. Quick reference', rendition, 'Extraordinary Rendition insertion');
@@ -180,11 +184,11 @@ function inquisition() {
 }
 
 const outputs = {
-  military: military(),
-  diplomat: diplomat(),
-  financier: financier(),
-  intelligence: intelligence(),
-  mystics: mystics(),
+  military: normalizePhaseLanguage(military()),
+  diplomat: normalizePhaseLanguage(diplomat()),
+  financier: normalizePhaseLanguage(financier()),
+  intelligence: normalizePhaseLanguage(intelligence()),
+  mystics: normalizePhaseLanguage(mystics()),
   inquisition: inquisition()
 };
 
