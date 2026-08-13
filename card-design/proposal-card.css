@@ -192,17 +192,21 @@
   left: calc(100% + 0.08in);
 }
 
-/* The wax seal is now the focal state cue: the approved shared asset is more
-   than twice the former corner treatment's diameter and centered in the field. */
-.proposal-wax-seal {
+/* The generic .card-art img rule is intentionally stronger than a bare class
+   selector and otherwise stretches supplemental art to cover the full window.
+   Override it with equal-or-greater specificity so the approved seal keeps its
+   own dimensions and sits as a single centered ratification mark. */
+.proposal-ratified-panel > img.proposal-wax-seal {
   position: absolute;
   z-index: 3;
+  inset: auto;
   top: 60%;
   left: 50%;
   width: 0.96in;
   height: 0.96in;
   max-width: none;
   object-fit: contain;
+  object-position: center;
   filter: drop-shadow(0 0.032in 0.032in rgba(61, 28, 23, 0.32));
   transform: translate(-50%, -50%) rotate(-1.5deg);
   pointer-events: none;
@@ -260,7 +264,7 @@
 
 @media print {
   .proposal-faction-emblem,
-  .proposal-wax-seal,
+  .proposal-ratified-panel > img.proposal-wax-seal,
   .proposal-ratified-panel {
     print-color-adjust: exact;
   }
