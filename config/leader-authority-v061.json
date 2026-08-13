@@ -1,0 +1,198 @@
+{
+  "schema_version": 1,
+  "release": "v0.6.1",
+  "factions": [
+    {
+      "faction": "Military",
+      "source": "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
+      "leaders": [
+        {
+          "name": "General",
+          "abilities": [
+            {
+              "name": "Onward",
+              "kind": "Order",
+              "cost": "1 Command",
+              "baseline_text": "Onward — 1 Command: During your Movement step, before a battle begins, move one additional position. This movement may start a battle."
+            },
+            {
+              "name": "Rally",
+              "kind": "Order",
+              "cost": "1 Command",
+              "baseline_text": "Rally — 1 Command: Before dice are rolled in a battle you initiated, add +1 to your battle total."
+            },
+            {
+              "name": "Rout",
+              "kind": "Order",
+              "cost": "2 Command",
+              "baseline_text": "Rout — 2 Command: At the end of the Aftermath of a battle you initiated and won, advance one position. This movement may start another battle."
+            }
+          ]
+        },
+        {
+          "name": "Commandant",
+          "abilities": [
+            {
+              "name": "Entrench",
+              "kind": "Order",
+              "cost": "1 Command",
+              "baseline_text": "Entrench — 1 Command: Before dice are rolled in a battle you did not initiate, add +1 to your battle total."
+            },
+            {
+              "name": "Repel",
+              "kind": "Order",
+              "cost": "1 Command",
+              "baseline_text": "Repel — 1 Command: During the Aftermath of a battle you did not initiate and won, after the opponent's normal retreat, they retreat one additional position, if able."
+            },
+            {
+              "name": "Fortify",
+              "kind": "Order",
+              "cost": "2 Command",
+              "baseline_text": "Fortify — 2 Command: During the Aftermath of a battle you won while occupying an enemy-controlled Territory, capture that Territory."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "faction": "Diplomats",
+      "source": "releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
+      "leaders": [
+        {
+          "name": "Ambassador",
+          "abilities": [
+            {
+              "name": "Cordiality",
+              "kind": "Leader ability",
+              "cost": null,
+              "baseline_text": "Cordiality: Once per turn, after the opponent accepts your Terms, draw one card."
+            }
+          ]
+        },
+        {
+          "name": "Senator",
+          "abilities": [
+            {
+              "name": "Political Capital",
+              "kind": "Leader ability",
+              "cost": null,
+              "baseline_text": "Political Capital: Once per turn, when you would lose staked Influence after losing a battle following refused Terms, you may put up to that many cards from your Hand in your Graveyard. Recover 1 staked Influence for each card put there; lose the rest."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "faction": "Financiers",
+      "source": "releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
+      "leaders": [
+        {
+          "name": "Banker",
+          "abilities": [
+            {
+              "name": "Line of Credit",
+              "kind": "Leader ability",
+              "cost": "Collateral plus remaining Capital for the Deed purchase",
+              "baseline_text": "Line of Credit: The first time on your turn that you would buy or buy out a Deed, you may use one card from your Hand or Treasury as collateral."
+            }
+          ]
+        },
+        {
+          "name": "Executive",
+          "abilities": [
+            {
+              "name": "Hostile Takeover",
+              "kind": "Leader-specific Faction Action",
+              "cost": "1 Action plus the Deed purchase cost",
+              "baseline_text": "Hostile Takeover: During an Action Opportunity after movement, if you won a battle as the attacker this turn and are now the occupier of that enemy Territory, you may spend 1 Action to buy or buy out its Deed. Treat yourself as the occupier, but not the controller, for the cost calculation. If the purchase succeeds, immediately take control of that Territory."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "faction": "Intelligence",
+      "source": "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
+      "leaders": [
+        {
+          "name": "Ranger",
+          "abilities": [
+            {
+              "name": "Fieldcraft",
+              "kind": "Faction Ability",
+              "cost": "1 Intel",
+              "baseline_text": "Fieldcraft: Once per turn, when a printed Territory effect would affect you, your movement, or a battle involving you, you may spend 1 Intel to ignore that Territory effect until the end of the turn."
+            }
+          ]
+        },
+        {
+          "name": "Spymaster",
+          "abilities": [
+            {
+              "name": "Mission Control",
+              "kind": "Faction Ability",
+              "cost": null,
+              "baseline_text": "Mission Control: Once per turn, after completing a normal Mission, you may immediately start another eligible Mission from your Hand without spending an Action. It cannot complete that turn. Mission Control cannot start a Special Operation."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "faction": "Mystics",
+      "source": "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
+      "leaders": [
+        {
+          "name": "Alchemist",
+          "abilities": [
+            {
+              "name": "Materia Prima",
+              "kind": "Faction Ability",
+              "cost": null,
+              "baseline_text": "Materia Prima: The first time on your turn that you put a card from your Hand in your Graveyard as part of a Rite, Transmutation, or an Arcane card effect, draw one card. If this occurs during a battle, draw after the Aftermath of the battle."
+            }
+          ]
+        },
+        {
+          "name": "Spirit Walker",
+          "abilities": [
+            {
+              "name": "Guardians of the Circle",
+              "kind": "Faction Ability",
+              "cost": "One qualifying Arcane card from Hand",
+              "baseline_text": "Guardians of the Circle: The first time on your turn that you lose a battle and that loss would interrupt a begun Rite or your Ritual of Ascendance, you may put one Arcane card from your Hand in your Graveyard whose value is at least 1 plus the number of Rites you have completed. If you do, prevent that interruption."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "faction": "Inquisition",
+      "source": "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
+      "leaders": [
+        {
+          "name": "Grand Inquisitor",
+          "abilities": [
+            {
+              "name": "Final Judgment",
+              "kind": "Faction Ability",
+              "cost": "Purge Conviction cost reduced by 1, minimum 1",
+              "baseline_text": "Final Judgment: Once per turn, during the Aftermath of a battle you won, after the battle cards have been cleared and effects triggered by those moves have been applied, you may immediately Purge without spending an Action. Reduce that Purge's Conviction cost by 1, to a minimum of 1."
+            }
+          ]
+        },
+        {
+          "name": "Witch Hunter",
+          "abilities": [
+            {
+              "name": "Relentless Pursuit",
+              "kind": "Faction Ability",
+              "cost": "2 Conviction",
+              "baseline_text": "Relentless Pursuit: Once per turn, at the end of the Aftermath of a battle an opponent initiated against you and lost, you may spend 2 Conviction. End their turn, then move one position toward their end of the Gauntlet. This movement may start a battle; you are the attacker. No Action Opportunity occurs before that battle."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
