@@ -1,6 +1,6 @@
 # Card Artwork Tracker
 
-This file tracks playable cards and Territory cards that do not yet have canonical artwork merged to `main`.
+This file tracks playable cards, Territory cards, and supplemental card illustrations that do not yet have canonical artwork merged to `main`.
 
 Current basis: Gauntlet v0.6.2 canonical component pools, with accepted v0.6.3 development renames reflected where applicable.
 
@@ -15,6 +15,7 @@ Canonical artwork paths:
 - Neutral: `images/artwork/cards/neutral/`
 - Military: `images/artwork/cards/military/`
 - Diplomats: `images/artwork/cards/diplomats/`
+- Diplomat Proposal fronts: `images/artwork/cards/diplomats/`
 - Financiers: `images/artwork/cards/financiers/`
 - Intelligence: `images/artwork/cards/intelligence/`
 - Mystics: `images/artwork/cards/mystics/`
@@ -27,7 +28,8 @@ Canonical artwork paths:
 | --- | ---: | ---: | ---: | ---: |
 | Playable cards | 128 | 86 | 7 | 35 |
 | Territory cards | 25 | 2 | 0 | 23 |
-| **All tracked cards** | **153** | **88** | **7** | **58** |
+| Diplomat Proposal fronts | 9 | 0 | 0 | 9 |
+| **All tracked card illustrations** | **162** | **88** | **7** | **67** |
 
 ### Playable cards by faction
 
@@ -60,6 +62,22 @@ Approved, pending canonical merge:
 - [x] Sanctions: Censure
 
 Diplomat artwork still needing creation/selection: **0**.
+
+## Diplomat Proposals — 9 supplemental illustrations
+
+Each Proposal needs one unique front illustration. The Treaty Article reverse uses the shared Ratified parchment, Declaration Blackletter, and wax-seal treatment and is **not** counted as a separate illustration requirement for each Proposal.
+
+Still needs approved artwork:
+
+- [ ] De-escalation
+- [ ] Open Channels
+- [ ] Diplomatic Recognition
+- [ ] Mutual Defense
+- [ ] Trade Agreement
+- [ ] Non-Aggression Pact
+- [ ] Joint Deployment
+- [ ] Cultural Exchange
+- [ ] Security Guarantee
 
 ## Financiers — complete, 1 pending canonical merge
 
