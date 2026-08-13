@@ -8,6 +8,7 @@ on:
       - scripts/build-clean-v062-rulebook.mjs
       - scripts/normalize-clean-v062-rulebook.mjs
       - scripts/validate-clean-v062-rulebook.mjs
+      - scripts/validate-clean-v062-rulebook-certified.mjs
       - scripts/validate-reconstruction-version-plan.mjs
       - scripts/validate-reconstruction-version-plan-certified.mjs
       - artifacts/reconstruction/clean-v0.6.2/rulebook/**
@@ -22,6 +23,7 @@ on:
       - scripts/build-clean-v062-rulebook.mjs
       - scripts/normalize-clean-v062-rulebook.mjs
       - scripts/validate-clean-v062-rulebook.mjs
+      - scripts/validate-clean-v062-rulebook-certified.mjs
       - scripts/validate-reconstruction-version-plan.mjs
       - scripts/validate-reconstruction-version-plan-certified.mjs
       - artifacts/reconstruction/clean-v0.6.2/rulebook/**
@@ -54,7 +56,7 @@ jobs:
       - name: Normalize clean v0.6.2 Rulebook
         run: node scripts/normalize-clean-v062-rulebook.mjs
       - name: Validate clean v0.6.2 Rulebook
-        run: node scripts/validate-clean-v062-rulebook.mjs
+        run: node scripts/validate-clean-v062-rulebook-certified.mjs
       - name: Commit generated Rulebook candidate
         if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
         run: |
