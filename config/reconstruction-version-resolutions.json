@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "approval_mechanism": "Manual merge of the PR introducing this record approves these version-scoped dispositions for reconstruction authority work only. Publication remains separately locked.",
+  "publication_unlocked": false,
+  "clean-v0.6.2": {
+    "candidate_resolutions": [
+      {
+        "candidate_id": "rules-action-economy-rebuild",
+        "registry_recommendation": "defer",
+        "version_disposition": "adopt",
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/466#issuecomment-5171380473",
+          "https://github.com/tymonius/Gauntlet/issues/466#issuecomment-5171741858",
+          "https://github.com/tymonius/Gauntlet/pull/511"
+        ],
+        "reason": "The original issue explicitly accepted the two-phase Action/Faction Action/Faction Ability model for v0.6.2; PR #511 later corrected six same-phase Action effects within that model."
+      },
+      {
+        "candidate_id": "rules-pending-battle-terms-onset",
+        "registry_recommendation": "defer",
+        "version_disposition": "adopt",
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/457",
+          "https://github.com/tymonius/Gauntlet/issues/470#issuecomment-5180529817"
+        ],
+        "reason": "Issue #457 explicitly adopted the distinct pre-battle Terms window; the final v0.6.2 terminology lock names the following battle stage Onset."
+      },
+      {
+        "candidate_id": "faction-inquisition-purge-phase-model",
+        "registry_recommendation": "defer",
+        "version_disposition": "adopt",
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/466#issuecomment-5171229601",
+          "https://github.com/tymonius/Gauntlet/issues/466#issuecomment-5171380473",
+          "https://github.com/tymonius/Gauntlet/pull/496"
+        ],
+        "reason": "The Purge phase exception was explicitly defined as part of the accepted v0.6.2 Action model."
+      },
+      {
+        "candidate_id": "setup-v062-bottom-deck-opening",
+        "registry_recommendation": "reject",
+        "version_disposition": "adopt",
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/487",
+          "https://github.com/tymonius/Gauntlet/issues/470#issuecomment-5180420089"
+        ],
+        "reason": "This was explicitly adopted as the v0.6.2 test revision. Its later supersession applies to clean v0.6.3, not retroactively to clean v0.6.2."
+      }
+    ],
+    "additional_recovered_decisions": [
+      {
+        "id": "v062-specific-overrides-broad-conflict",
+        "version_disposition": "adopt",
+        "evidence": ["https://github.com/tymonius/Gauntlet/issues/470#issuecomment-5181941569"],
+        "reason": "This explicit v0.6.2 Golden Rule was omitted from the initial 49-record normalization and must not be lost during reconstruction."
+      },
+      {
+        "id": "v062-active-player-marker",
+        "version_disposition": "preserve_downstream",
+        "evidence": ["https://github.com/tymonius/Gauntlet/issues/470#issuecomment-5175328069"],
+        "reason": "Adopted v0.6.2 physical/onboarding component; it is not rules authority but belongs in later regenerated aids."
+      },
+      {
+        "id": "v062-starters-pr500",
+        "version_disposition": "preserve_downstream",
+        "evidence": ["https://github.com/tymonius/Gauntlet/pull/500"],
+        "reason": "These are the v0.6.2 Leader-specific first-game starter Decks and must remain distinct from the later v0.6.3 competitive catalog."
+      }
+    ]
+  },
+  "clean-v0.6.3": {
+    "supersessions": [
+      {
+        "earlier_decision": "setup-v062-bottom-deck-opening",
+        "version_disposition": "supersede",
+        "replacement": "setup-draw4-discard1-keep3",
+        "reason": "v0.6.3 deliberately changes the fourth opening card from face-down bottom-of-Draw-Pile placement to a face-up opening discard."
+      }
+    ],
+    "downstream_only_until_authority_exists": [
+      {
+        "candidate_id": "starters-v063-final-compositions",
+        "source": "https://github.com/tymonius/Gauntlet/pull/573",
+        "reason": "Validate the final competitive compositions only after clean v0.6.3 canonical rules/card identities exist."
+      }
+    ]
+  }
+}
