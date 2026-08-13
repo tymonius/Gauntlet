@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "program_issue": 587,
+  "audit_issue": 588,
+  "baseline_release": "v0.6.1",
+  "target_release": null,
+  "publication_unlocked": false,
+  "baseline_sources": [
+    "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md",
+    "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json",
+    "releases/v0.6.1/Gauntlet_v0.6.1_Manifest.json",
+    "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
+    "releases/v0.6.1/faction-guides/diplomats/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
+    "releases/v0.6.1/faction-guides/financiers/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
+    "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
+    "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md",
+    "releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md"
+  ],
+  "withdrawn_evidence_releases": ["v0.6.2", "v0.6.3"],
+  "decision_statuses": ["pending", "adopt", "revise", "reject"],
+  "required_decision_evidence": [
+    "design_evidence",
+    "baseline_interaction_review",
+    "affected_surfaces",
+    "semantic_assertions",
+    "human_review"
+  ],
+  "semantic_invariants": {
+    "faction_count": 6,
+    "leader_count": 12,
+    "military_leader_ownership": {
+      "General": ["Onward", "Rally", "Rout"],
+      "Commandant": ["Entrench", "Repel", "Fortify"]
+    },
+    "source_authority_must_be_self_contained": true,
+    "migration_material_may_not_be_core_rules": true,
+    "downstream_generation_requires_approved_authority": true
+  },
+  "changes": [
+    {
+      "id": "v062-card-pool-expansion",
+      "source_release": "v0.6.2",
+      "title": "Expand playable card pool from 122 to 128",
+      "status": "pending",
+      "audit_issue": 593,
+      "evidence": ["releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json"],
+      "affected_surfaces": ["cards", "canonical-data", "starters", "deckbuilder", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v062-new-card-identities",
+      "source_release": "v0.6.2",
+      "title": "Landslide, Invasion, Détente, Compound Interest, Extraordinary Rendition, Nature's Altar, and Martyrdom",
+      "status": "pending",
+      "audit_issue": 593,
+      "evidence": ["releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json"],
+      "affected_surfaces": ["cards", "factions", "starters", "canonical-data", "deckbuilder", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v062-opening-denouement",
+      "source_release": "v0.6.2",
+      "title": "Opening and Denouement terminology/timing",
+      "status": "pending",
+      "audit_issue": 594,
+      "evidence": ["releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md"],
+      "affected_surfaces": ["rules", "cards", "factions", "territories", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v062-onset",
+      "source_release": "v0.6.2",
+      "title": "Onset timing term",
+      "status": "pending",
+      "audit_issue": 594,
+      "evidence": ["releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md"],
+      "affected_surfaces": ["rules", "cards", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v062-movement-terms",
+      "source_release": "v0.6.2",
+      "title": "Advance / Hold / Fall Back movement vocabulary",
+      "status": "pending",
+      "audit_issue": 594,
+      "evidence": ["releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md"],
+      "affected_surfaces": ["rules", "cards", "leaders", "territories", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v062-withdraw-retreat-distinction",
+      "source_release": "v0.6.2",
+      "title": "Withdraw versus retreat terminology",
+      "status": "pending",
+      "audit_issue": 594,
+      "evidence": ["releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md"],
+      "affected_surfaces": ["rules", "cards", "leaders", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v062-front-line-capture",
+      "source_release": "v0.6.2",
+      "title": "Front Line capture model",
+      "status": "pending",
+      "audit_issue": 594,
+      "evidence": ["releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md"],
+      "affected_surfaces": ["rules", "territories", "leaders", "cards", "victory", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v062-defensive-edge-tiebreak-roll",
+      "source_release": "v0.6.2",
+      "title": "Defensive Edge and Tiebreak Roll battle-tie model",
+      "status": "pending",
+      "audit_issue": 594,
+      "evidence": ["releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md"],
+      "affected_surfaces": ["rules", "cards", "leaders", "territories", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "post-v061-faction-leader-revisions",
+      "source_release": "v0.6.2-v0.6.3",
+      "title": "All faction and Leader revisions after v0.6.1",
+      "status": "pending",
+      "audit_issue": 597,
+      "evidence": ["releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md", "releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md"],
+      "affected_surfaces": ["rules", "factions", "leaders", "cards", "starters", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v063-opening-selection",
+      "source_release": "v0.6.3",
+      "title": "Draw 4 / discard 1 / keep 3 opening selection",
+      "status": "pending",
+      "audit_issue": 595,
+      "evidence": ["https://github.com/tymonius/Gauntlet/issues/528"],
+      "affected_surfaces": ["rules", "setup", "starters", "onboarding", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v063-informed-territory-arrangement",
+      "source_release": "v0.6.3",
+      "title": "Territory arrangement after opening selection",
+      "status": "pending",
+      "audit_issue": 595,
+      "evidence": ["https://github.com/tymonius/Gauntlet/issues/528"],
+      "affected_surfaces": ["rules", "setup", "territories", "starters", "onboarding", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v063-starting-position",
+      "source_release": "v0.6.3",
+      "title": "Start on own end Territory rather than before the Gauntlet",
+      "status": "pending",
+      "audit_issue": 595,
+      "evidence": ["https://github.com/tymonius/Gauntlet/issues/528"],
+      "affected_surfaces": ["rules", "setup", "territories", "cards", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v063-independent-normal-victory-routes",
+      "source_release": "v0.6.3",
+      "title": "Final-Territory capture and Last Stand as independent Run-the-Gauntlet victories",
+      "status": "pending",
+      "audit_issue": 595,
+      "evidence": ["https://github.com/tymonius/Gauntlet/issues/528"],
+      "affected_surfaces": ["rules", "victory", "leaders", "cards", "territories", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v063-deck-draw-pile-terminology",
+      "source_release": "v0.6.3",
+      "title": "Deck and Draw Pile terminology cleanup",
+      "status": "pending",
+      "audit_issue": 594,
+      "evidence": ["https://github.com/tymonius/Gauntlet/issues/528", "https://github.com/tymonius/Gauntlet/issues/539"],
+      "affected_surfaces": ["rules", "cards", "starters", "deckbuilder", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v063-inherent-bank-action",
+      "source_release": "v0.6.3",
+      "title": "Inherent Bank Action for Asset/Activate cards",
+      "status": "pending",
+      "audit_issue": 596,
+      "evidence": ["https://github.com/tymonius/Gauntlet/issues/528", "https://github.com/tymonius/Gauntlet/pull/540"],
+      "affected_surfaces": ["rules", "cards", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v063-direct-card-procedures",
+      "source_release": "v0.6.3",
+      "title": "Directly permitted card procedures do not spend another Action",
+      "status": "pending",
+      "audit_issue": 596,
+      "evidence": ["https://github.com/tymonius/Gauntlet/issues/528", "https://github.com/tymonius/Gauntlet/pull/540"],
+      "affected_surfaces": ["rules", "cards", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v063-effect-granted-movement",
+      "source_release": "v0.6.3",
+      "title": "Effect-granted movement starts a movement sequence by default",
+      "status": "pending",
+      "audit_issue": 596,
+      "evidence": ["https://github.com/tymonius/Gauntlet/issues/528", "https://github.com/tymonius/Gauntlet/pull/540"],
+      "affected_surfaces": ["rules", "cards", "leaders", "victory", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v063-additional-tactic-rule",
+      "source_release": "v0.6.3",
+      "title": "Shared additional-Tactic rule with Reserve default source",
+      "status": "pending",
+      "audit_issue": 596,
+      "evidence": ["https://github.com/tymonius/Gauntlet/issues/528", "https://github.com/tymonius/Gauntlet/pull/540"],
+      "affected_surfaces": ["rules", "cards", "factions", "leaders", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v063-sanctions-expiry",
+      "source_release": "v0.6.3",
+      "title": "Default Sanctions expiry after later Terms acceptance",
+      "status": "pending",
+      "audit_issue": 596,
+      "evidence": ["https://github.com/tymonius/Gauntlet/issues/528", "https://github.com/tymonius/Gauntlet/pull/540"],
+      "affected_surfaces": ["rules", "cards", "diplomats", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v063-reveal-stage-interference",
+      "source_release": "v0.6.3",
+      "title": "Reveal-stage interference timing priority",
+      "status": "pending",
+      "audit_issue": 596,
+      "evidence": ["https://github.com/tymonius/Gauntlet/issues/528", "https://github.com/tymonius/Gauntlet/pull/540"],
+      "affected_surfaces": ["rules", "cards", "intelligence", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v063-card-shorthand",
+      "source_release": "v0.6.3",
+      "title": "Numeric and compact card shorthand conventions",
+      "status": "pending",
+      "audit_issue": 596,
+      "evidence": ["https://github.com/tymonius/Gauntlet/issues/528", "https://github.com/tymonius/Gauntlet/pull/540"],
+      "affected_surfaces": ["rules", "cards", "card-reference", "deckbuilder", "rules-arbiter", "print"]
+    },
+    {
+      "id": "v063-card-text-review-405",
+      "source_release": "v0.6.3",
+      "title": "All card-text revisions tracked by issue #405",
+      "status": "pending",
+      "audit_issue": 596,
+      "evidence": ["https://github.com/tymonius/Gauntlet/issues/405"],
+      "affected_surfaces": ["cards", "canonical-data", "card-reference", "deckbuilder", "rules-arbiter", "digital", "starters", "print"]
+    },
+    {
+      "id": "v063-protracted-siege",
+      "source_release": "v0.6.3",
+      "title": "Protracted Siege mechanics revision",
+      "status": "pending",
+      "audit_issue": 596,
+      "evidence": ["https://github.com/tymonius/Gauntlet/issues/405", "https://github.com/tymonius/Gauntlet/issues/528"],
+      "affected_surfaces": ["cards", "rules", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v063-margin-loan",
+      "source_release": "v0.6.3",
+      "title": "Persistent Margin Loan draw restriction",
+      "status": "pending",
+      "audit_issue": 596,
+      "evidence": ["https://github.com/tymonius/Gauntlet/issues/405", "https://github.com/tymonius/Gauntlet/issues/528"],
+      "affected_surfaces": ["cards", "financiers", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "v063-territory-identity-migrations",
+      "source_release": "v0.6.3",
+      "title": "Second Line and Smuggler's Run stable-identity migrations",
+      "status": "pending",
+      "audit_issue": 598,
+      "evidence": ["releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json"],
+      "affected_surfaces": ["territories", "canonical-data", "starters", "deckbuilder", "rules-arbiter", "digital", "print"]
+    },
+    {
+      "id": "post-v061-starter-onboarding",
+      "source_release": "v0.6.2-v0.6.3",
+      "title": "Starter Deck, Territory-order, and onboarding revisions after v0.6.1",
+      "status": "pending",
+      "audit_issue": 599,
+      "evidence": ["releases/v0.6.2/starters", "releases/v0.6.3/starters"],
+      "affected_surfaces": ["starters", "onboarding", "rules", "deckbuilder", "print"]
+    }
+  ]
+}
