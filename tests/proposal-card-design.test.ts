@@ -4,6 +4,7 @@ import { describe, expect, it } from "vitest";
 const reviewPage = readFileSync("card-design/index.html", "utf8");
 const proposalRenderer = readFileSync("card-design/proposal-card.js", "utf8");
 const proposalStyles = readFileSync("card-design/proposal-card.css", "utf8");
+const cardRefinementStyles = readFileSync("card-design/card-design-refinement.css", "utf8");
 const canonical = JSON.parse(readFileSync("releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json", "utf8"));
 const ratifiedSealPath = "images/artwork/supplemental/diplomats/ratified-wax-seal.webp";
 
@@ -74,10 +75,15 @@ describe("Diplomat Proposal / Treaty Article prototypes", () => {
     expect(proposalRenderer).toContain("RATIFIED_SEAL_SOURCE");
     expect(proposalRenderer).toContain("/images/artwork/supplemental/diplomats/ratified-wax-seal.webp");
     expect(proposalRenderer).toContain('<img class="proposal-wax-seal"');
+    expect(cardRefinementStyles).toContain(".card-art img");
+    expect(proposalStyles).toContain(".proposal-ratified-panel > img.proposal-wax-seal");
+    expect(proposalStyles).toContain("inset: auto");
     expect(proposalStyles).toContain("top: 60%");
     expect(proposalStyles).toContain("left: 50%");
     expect(proposalStyles).toContain("width: 0.96in");
     expect(proposalStyles).toContain("height: 0.96in");
+    expect(proposalStyles).toContain("object-fit: contain");
+    expect(proposalStyles).toContain("object-position: center");
     expect(proposalStyles).toContain("transform: translate(-50%, -50%) rotate(-1.5deg)");
     expect(proposalStyles).not.toContain("right: 0.13in");
     expect(proposalStyles).not.toContain("bottom: 0.10in");
