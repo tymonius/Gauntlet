@@ -1,30 +1,36 @@
 name: Validate v0.6.3 cross-surface closeout
 
 on:
-  push:
-    branches:
-      - agent/v063-cross-surface-closeout
-      - agent/v063-final-release-refresh
   pull_request:
     branches: [main]
     paths:
       - '.github/workflows/validate-v063-cross-surface-closeout.yml'
-      - '.github/workflows/publish-clean-v063.yml'
-      - 'config/release-lifecycle.json'
-      - 'config/release-locks.json'
-      - 'scripts/validate-release-recovery-state.mjs'
-      - 'scripts/validate-clean-v063-publication.mjs'
+      - 'scripts/validate-current-public-contract.mjs'
       - 'releases/v0.6.3-reconstructed/**'
+      - 'index.html'
+      - 'start/**'
       - 'rulebook/**'
       - 'card-reference/**'
       - 'factions/**'
-      - 'start/**'
       - 'deckbuilder/**'
       - 'rules-arbiter/**'
-      - 'rules-assistant/worker-entry.js'
-      - 'rules-assistant/worker-v063.js'
-      - 'rules-assistant/v063-public-corpus.js'
-      - 'src/content/current.ts'
+      - 'design-tokens.css'
+      - 'images/faction-symbols/**'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/validate-v063-cross-surface-closeout.yml'
+      - 'scripts/validate-current-public-contract.mjs'
+      - 'releases/v0.6.3-reconstructed/**'
+      - 'index.html'
+      - 'start/**'
+      - 'rulebook/**'
+      - 'card-reference/**'
+      - 'factions/**'
+      - 'deckbuilder/**'
+      - 'rules-arbiter/**'
+      - 'design-tokens.css'
+      - 'images/faction-symbols/**'
   workflow_dispatch:
 
 permissions:
@@ -35,70 +41,20 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  lifecycle:
+  validate-current-public-contract:
     runs-on: ubuntu-latest
-    outputs:
-      v063_status: ${{ steps.release.outputs.v063_status }}
-      current_release: ${{ steps.release.outputs.current_release }}
+    timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
-        with:
-          sparse-checkout-cone-mode: false
-          sparse-checkout: |
-            /config/release-lifecycle.json
-      - id: release
-        name: Read v0.6.3 lifecycle state
-        run: |
-          status=$(node -e "const l=require('./config/release-lifecycle.json'); process.stdout.write(String(l.releases?.['v0.6.3']?.status || 'missing'))")
-          current=$(node -e "const l=require('./config/release-lifecycle.json'); process.stdout.write(String(l.current_release || 'missing'))")
-          echo "v063_status=$status" >> "$GITHUB_OUTPUT"
-          echo "current_release=$current" >> "$GITHUB_OUTPUT"
-          echo "v0.6.3 lifecycle status: $status; current release: $current"
+      - name: Check out current publication
+        uses: actions/checkout@v4
 
-  freeze-withdrawn-evidence:
-    needs: lifecycle
-    if: needs.lifecycle.outputs.v063_status == 'withdrawn' && needs.lifecycle.outputs.current_release != 'v0.6.3'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          sparse-checkout-cone-mode: false
-          sparse-checkout: |
-            /config/release-lifecycle.json
-            /config/release-locks.json
-            /scripts/release-lifecycle.mjs
-            /scripts/validate-release-recovery-state.mjs
-      - name: Verify withdrawn v0.6.3 cross-surface evidence is immutable
-        run: node scripts/validate-release-recovery-state.mjs
-
-  validate-current-v063:
-    needs: lifecycle
-    if: needs.lifecycle.outputs.v063_status == 'current' && needs.lifecycle.outputs.current_release == 'v0.6.3'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-      - uses: actions/setup-node@v4
+      - name: Use Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Install validation dependencies
-        run: |
-          npm install --package-lock=false
-          npm install --no-save --package-lock=false pdf-lib
-      - name: Verify historical recovery locks
-        run: node scripts/validate-release-recovery-state.mjs
-      - name: Validate current clean v0.6.3 publication
-        run: node scripts/validate-clean-v063-publication.mjs
 
-  reject-invalid-transition:
-    needs: lifecycle
-    if: >-
-      !((needs.lifecycle.outputs.v063_status == 'withdrawn' && needs.lifecycle.outputs.current_release != 'v0.6.3') ||
-      (needs.lifecycle.outputs.v063_status == 'current' && needs.lifecycle.outputs.current_release == 'v0.6.3'))
-    runs-on: ubuntu-latest
-    steps:
-      - name: Reject invalid v0.6.3 lifecycle transition
-        run: |
-          echo "Invalid lifecycle combination: v0.6.3 status=${{ needs.lifecycle.outputs.v063_status }}, current=${{ needs.lifecycle.outputs.current_release }}"
-          exit 1
+      - name: Install contract dependency
+        run: npm install --no-save --package-lock=false pdf-lib
+
+      - name: Validate current player-facing publication contract
+        run: node scripts/validate-current-public-contract.mjs
