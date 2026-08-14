@@ -40,11 +40,11 @@ import build_rulebook  # noqa: E402
 import build_complete_rulebook  # noqa: E402
 
 
-def replace_required(source: str, old: str, new: str, label: str) -> str:
+def replace_required(source: str, old: str, new: str, label: str, expected: int = 1) -> str:
     count = source.count(old)
-    if count != 1:
+    if count != expected:
         raise RuntimeError(
-            f"Expected exactly one {label} marker while adapting the approved "
+            f"Expected exactly {expected} {label} marker(s) while adapting the approved "
             f"Rulebook production output; found {count}."
         )
     return source.replace(old, new)
@@ -222,6 +222,7 @@ def main() -> None:
         "Gauntlet v0.6.1 Official Rulebook",
         "Gauntlet v0.6.3 Official Rulebook",
         "document title",
+        expected=2,
     )
     html = html.replace("GAUNTLET V0.6.1", "GAUNTLET V0.6.3")
     html = html.replace("Gauntlet v0.6.1 · First Playtest Revision", "Gauntlet v0.6.3")
