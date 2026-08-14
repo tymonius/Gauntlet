@@ -41,8 +41,12 @@ import build_complete_rulebook  # noqa: E402
 
 
 def replace_required(source: str, old: str, new: str, label: str) -> str:
-    if old not in source:
-        raise RuntimeError(f"Could not find expected {label} marker while adapting the approved Rulebook production output.")
+    count = source.count(old)
+    if count != 1:
+        raise RuntimeError(
+            f"Expected exactly one {label} marker while adapting the approved "
+            f"Rulebook production output; found {count}."
+        )
     return source.replace(old, new)
 
 
@@ -124,6 +128,74 @@ def build_presentation_source(source: str) -> str:
     return transformed
 
 
+def adapt_glossary_pagination(paginator: str) -> str:
+    """Let the approved Glossary component continue when current content grows."""
+
+    old = r'''function buildGlossary(section) {
+  const page = createPage({ className: 'glossary-page', label: 'GLOSSARY', runningLeft: 'Part IV · Reference', runningRight: 'Glossary', anchor: section.heading.title });
+  const flow = flowOf(page);
+  flow.innerHTML = `<p class="eyebrow">Game terms</p><h2 class="page-title"${sourceAttr(section.heading)}>Glossary</h2><div class="glossary-grid"></div>`;
+  const grid = flow.querySelector('.glossary-grid');
+  for (const token of section.tokens) {
+    if (token.kind !== 'paragraph') { consumed.add(token.id); continue; }
+    const host = document.createElement('div'); host.innerHTML = token.html;
+    const strong = host.querySelector('strong');
+    const term = strong?.textContent?.replace(/:$/, '') || '';
+    if (strong) strong.remove();
+    const entry = document.createElement('div'); entry.className = 'glossary-entry'; entry.dataset.sourceId = token.id;
+    entry.innerHTML = `<strong>${escapeHtml(term)}</strong>${host.innerHTML.replace(/^\s*:\s*/, '')}`;
+    grid.append(entry);
+  }
+}'''
+
+    new = r'''function buildGlossary(section) {
+  const createGlossaryPage = (continuation = false) => {
+    const page = createPage({
+      className: continuation ? 'glossary-page continuation-page' : 'glossary-page',
+      label: 'GLOSSARY',
+      runningLeft: 'Part IV · Reference',
+      runningRight: 'Glossary',
+      anchor: continuation ? null : section.heading.title,
+    });
+    const flow = flowOf(page);
+    if (continuation) {
+      flow.innerHTML = '<div class="continuation-label">Glossary · continued</div><div class="glossary-grid"></div>';
+    } else {
+      flow.innerHTML = `<p class="eyebrow">Game terms</p><h2 class="page-title"${sourceAttr(section.heading)}>Glossary</h2><div class="glossary-grid"></div>`;
+    }
+    return page;
+  };
+
+  let page = createGlossaryPage(false);
+  let flow = flowOf(page);
+  let grid = flow.querySelector('.glossary-grid');
+
+  for (const token of section.tokens) {
+    if (token.kind !== 'paragraph') { consumed.add(token.id); continue; }
+    const host = document.createElement('div'); host.innerHTML = token.html;
+    const strong = host.querySelector('strong');
+    const term = strong?.textContent?.replace(/:$/, '') || '';
+    if (strong) strong.remove();
+    const entry = document.createElement('div'); entry.className = 'glossary-entry'; entry.dataset.sourceId = token.id;
+    entry.innerHTML = `<strong>${escapeHtml(term)}</strong>${host.innerHTML.replace(/^\s*:\s*/, '')}`;
+    grid.append(entry);
+
+    if (overflows(flow)) {
+      entry.remove();
+      page = createGlossaryPage(true);
+      flow = flowOf(page);
+      grid = flow.querySelector('.glossary-grid');
+      grid.append(entry);
+      if (overflows(flow)) {
+        throw new Error(`Glossary entry cannot fit on an otherwise empty continuation page: ${term || token.id}`);
+      }
+    }
+  }
+}'''
+
+    return replace_required(paginator, old, new, "approved single-page Glossary function")
+
+
 def main() -> None:
     if not CURRENT_RULEBOOK.is_file():
         raise RuntimeError(f"Missing current Rulebook source: {CURRENT_RULEBOOK}")
@@ -152,6 +224,7 @@ def main() -> None:
         "document title",
     )
     html = html.replace("GAUNTLET V0.6.1", "GAUNTLET V0.6.3")
+    html = html.replace("Gauntlet v0.6.1 · First Playtest Revision", "Gauntlet v0.6.3")
     HTML.write_text(html, encoding="utf-8")
 
     paginator = RUNTIME_PAGINATOR.read_text(encoding="utf-8")
@@ -161,11 +234,14 @@ def main() -> None:
         "GAUNTLET V0.6.3",
         "folio version",
     )
+    paginator = paginator.replace("Gauntlet v0.6.1", "Gauntlet v0.6.3")
+    paginator = adapt_glossary_pagination(paginator)
     RUNTIME_PAGINATOR.write_text(paginator, encoding="utf-8")
 
     print(
         f"adapted approved Rulebook production system to {CURRENT_RULEBOOK.relative_to(ROOT)} "
-        "with 12 presentation-only Leader sketches and the approved Leader-page hierarchy"
+        "with 12 presentation-only Leader sketches, approved Leader-page hierarchy, "
+        "and content-aware Glossary continuation"
     )
 
 
