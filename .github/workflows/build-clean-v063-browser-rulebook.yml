@@ -1,130 +1,63 @@
-name: Refresh clean v0.6.3 Browser Rulebook provenance
+name: Build clean v0.6.3 Browser Rulebook
 
 on:
-  push:
-    branches:
-      - 'agent/rebuild-clean-v063-rules-browser'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-clean-v063-browser-rulebook.yml'
+      - 'scripts/build-clean-v063-browser-rulebook.mjs'
+      - 'scripts/validate-clean-v063-browser-rulebook.mjs'
+      - 'artifacts/reconstruction/clean-v0.6.3/browser-rulebook/**'
+      - 'artifacts/reconstruction/clean-v0.6.3/complete-authority/**'
+      - 'artifacts/reconstruction/clean-v0.6.3/rulebook/**'
+      - 'artifacts/reconstruction/clean-v0.6.3/downstream/**'
+      - 'config/release-lifecycle.json'
+      - 'rulebook/app.js'
+      - 'rulebook/markdown.js'
+      - 'rulebook/styles.css'
+      - 'rulebook/publication.css'
+  workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
-  group: refresh-clean-v063-browser-rulebook-${{ github.ref }}
+  group: clean-v063-browser-rulebook-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  refresh:
+  reconstruct:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out Browser Rulebook branch
+      - name: Check out Browser Rulebook reconstruction inputs
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-
-      - name: Bring merged authority repair into the branch
-        shell: bash
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git fetch origin main
-          git merge --no-edit origin/main
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.github/workflows/build-clean-v063-browser-rulebook.yml
+            /scripts/build-clean-v063-browser-rulebook.mjs
+            /scripts/validate-clean-v063-browser-rulebook.mjs
+            /config/release-lifecycle.json
+            /artifacts/reconstruction/clean-v0.6.3/complete-authority/
+            /artifacts/reconstruction/clean-v0.6.3/rulebook/
+            /artifacts/reconstruction/clean-v0.6.3/downstream/
+            /artifacts/reconstruction/clean-v0.6.3/browser-rulebook/
+            /rulebook/app.js
+            /rulebook/markdown.js
+            /rulebook/styles.css
+            /rulebook/publication.css
 
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Refresh complete-authority provenance
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-
-          OLD_ID = '2da05383c10fe3e784c64b26fd2d9837913011cad996966f49a7ae3a92af8ed9'
-          NEW_ID = '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49'
-          OLD_HASH = 'fa42934af929e04628449ac34863a3422cd673d862fc9c1f6772b35edeaac5d8'
-          NEW_HASH = '641c813366a8bcb52f9cb505ada640994d416024deed1f71a6ec59fb24ed2c4c'
-          OLD_CERT = 'artifacts/reconstruction/clean-v0.6.3/certification/authority-set.json'
-          NEW_CERT = 'artifacts/reconstruction/clean-v0.6.3/complete-authority/authority-set.json'
-
-          def update(path_name):
-              path = Path(path_name)
-              text = path.read_text()
-              text = text.replace(OLD_CERT, NEW_CERT)
-              text = text.replace(OLD_ID, NEW_ID)
-              text = text.replace(OLD_HASH, NEW_HASH)
-              return path, text
-
-          path, text = update('scripts/build-clean-v063-browser-rulebook.mjs')
-          old = "assert.equal(certification.status, 'certified_on_merge');\n"
-          new = "assert.equal(certification.target, 'clean-v0.6.3-complete');\nassert.equal(certification.status, 'certified_on_manual_merge');\n"
-          if old in text:
-              text = text.replace(old, new, 1)
-          elif new not in text:
-              raise SystemExit('Builder complete-authority status assertion not found')
-          text = text.replace("assert.equal(certification.downstream_regeneration_unlocked_on_merge, true);\n", '')
-          old_boundary = "- Binding rules source: \\`${rulebookPath}\\`, certified by authority set \\`${authoritySetId}\\`.\n- UI/renderer baseline only: the current public v0.6.1 \\`rulebook/\\` browser implementation. Its rules content, release labels, downloads, and Rules Arbiter integration are not inherited.\n- The merged clean-v0.6.3 canonical-data layer from PR #624 is a prerequisite boundary, pinned by SHA-256 \\`${downstreamCanonicalSha256}\\`; this Browser Rulebook does not reinterpret card data."
-          new_boundary = "- Binding rules source: \\`${rulebookPath}\\`, bound by complete authority set \\`${authoritySetId}\\`.\n- Complete authority provenance: \\`${certificationPath}\\` binds this Rulebook and the clean machine-readable authority set; Browser Rulebook rules content still comes only from the Rulebook Markdown.\n- UI/renderer baseline only: the current public v0.6.1 \\`rulebook/\\` browser implementation. Its rules content, release labels, downloads, and Rules Arbiter integration are not inherited.\n- Clean downstream canonical-data prerequisite: \\`${downstreamManifestPath}\\`, pinned by SHA-256 \\`${downstreamCanonicalSha256}\\`; this Browser Rulebook does not reinterpret card data."
-          if old_boundary in text:
-              text = text.replace(old_boundary, new_boundary, 1)
-          elif new_boundary not in text:
-              raise SystemExit('Builder source-boundary provenance block not found')
-          text = text.replace('- Authority set: \\`${authoritySetId}\\`', '- Complete authority set: \\`${authoritySetId}\\`')
-          path.write_text(text)
-
-          path, text = update('scripts/validate-clean-v063-browser-rulebook.mjs')
-          old = "assert.equal(certification.status, 'certified_on_merge');\n"
-          new = "assert.equal(certification.target, 'clean-v0.6.3-complete');\nassert.equal(certification.status, 'certified_on_manual_merge');\n"
-          if old in text:
-              text = text.replace(old, new, 1)
-          elif new not in text:
-              raise SystemExit('Validator complete-authority status assertion not found')
-          anchor = "assert.equal(manifest.authority_set_id, authoritySetId);\n"
-          addition = "assert.equal(manifest.authority_certification, certificationPath);\n"
-          if addition not in text:
-              if anchor not in text:
-                  raise SystemExit('Validator manifest authority anchor missing')
-              text = text.replace(anchor, anchor + addition, 1)
-          anchor = "assert.equal(certification.authority_set_id, authoritySetId);\n"
-          addition = "const certifiedRulebook = certification.authority_files.find((item) => item.path === rulebookPath);\nassert(certifiedRulebook, 'Complete authority set does not bind the certified Rulebook.');\nassert.equal(certifiedRulebook.sha256, rulebookSha256);\n"
-          if addition not in text:
-              if anchor not in text:
-                  raise SystemExit('Validator certification anchor missing')
-              text = text.replace(anchor, anchor + addition, 1)
-          anchor = "assert.equal(downstream.authority_set_id, authoritySetId);\n"
-          addition = "assert.equal(downstream.authority_certification, certificationPath);\n"
-          if addition not in text:
-              if anchor not in text:
-                  raise SystemExit('Validator downstream authority anchor missing')
-              text = text.replace(anchor, anchor + addition, 1)
-          marker = "  'Binding rules source',\n"
-          if "  'Complete authority provenance',\n" not in text:
-              if marker not in text:
-                  raise SystemExit('Validator boundary marker anchor missing')
-              text = text.replace(marker, marker + "  'Complete authority provenance',\n", 1)
-          stale_block_anchor = "const sourceState = source.replace(/<!--[\\s\\S]*?-->/g, '');\n"
-          stale_block = f"""const supersededAuthoritySetId = '{OLD_ID}';
-          const supersededDownstreamHash = '{OLD_HASH}';
-          const provenanceOutputs = [index, app, boundary, read(outputDir + '/validation-status.md'), JSON.stringify(manifest)];
-          for (const output of provenanceOutputs) {{
-            assert(!output.includes(supersededAuthoritySetId), 'Browser Rulebook output retained the superseded authority-set ID.');
-            assert(!output.includes(supersededDownstreamHash), 'Browser Rulebook output retained the superseded downstream canonical hash.');
-          }}
-
-          """
-          if "const supersededAuthoritySetId" not in text:
-              if stale_block_anchor not in text:
-                  raise SystemExit('Validator semantic-source anchor missing')
-              text = text.replace(stale_block_anchor, stale_block + stale_block_anchor, 1)
-          path.write_text(text)
-          PY
-
       - name: Syntax-check Browser Rulebook scripts
         run: |
           node --check scripts/build-clean-v063-browser-rulebook.mjs
           node --check scripts/validate-clean-v063-browser-rulebook.mjs
 
-      - name: Rebuild Browser Rulebook from merged complete authority
+      - name: Rebuild clean v0.6.3 Browser Rulebook
         run: node scripts/build-clean-v063-browser-rulebook.mjs
 
       - name: Syntax-check generated Browser Rulebook JavaScript
@@ -132,7 +65,7 @@ jobs:
           node --check artifacts/reconstruction/clean-v0.6.3/browser-rulebook/app.js
           node --check artifacts/reconstruction/clean-v0.6.3/browser-rulebook/markdown.js
 
-      - name: Validate refreshed Browser Rulebook
+      - name: Validate clean v0.6.3 Browser Rulebook
         run: node scripts/validate-clean-v063-browser-rulebook.mjs
 
       - name: Reject corrupted Browser Rulebook terminology
@@ -144,18 +77,17 @@ jobs:
             scripts/validate-clean-v063-browser-rulebook.mjs
             artifacts/reconstruction/clean-v0.6.3/browser-rulebook
           )
-          if grep -R -n -F "$bad_title" "${targets[@]}"; then exit 1; fi
-          if grep -R -n -F "$bad_slug" "${targets[@]}"; then exit 1; fi
+          if grep -R -n -F "$bad_title" "${targets[@]}"; then
+            echo "Retired Browser Rulebook title corruption remains."
+            exit 1
+          fi
+          if grep -R -n -F "$bad_slug" "${targets[@]}"; then
+            echo "Retired Browser Rulebook slug corruption remains."
+            exit 1
+          fi
 
       - name: Reject whitespace errors
         run: git diff --check
 
-      - name: Commit refreshed deterministic Browser Rulebook
-        shell: bash
-        run: |
-          git add scripts/build-clean-v063-browser-rulebook.mjs scripts/validate-clean-v063-browser-rulebook.mjs
-          git add artifacts/reconstruction/clean-v0.6.3/browser-rulebook
-          if ! git diff --cached --quiet; then
-            git commit -m 'Refresh Browser Rulebook authority provenance'
-          fi
-          git push origin HEAD:${GITHUB_REF_NAME}
+      - name: Require committed deterministic Browser Rulebook outputs
+        run: git diff --exit-code -- artifacts/reconstruction/clean-v0.6.3/browser-rulebook
