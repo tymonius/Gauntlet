@@ -97,7 +97,7 @@ jobs:
               raise SystemExit('Corrected Territory proof block not found')
 
           old_boundary = 'The complete 25-Territory authority is independently checked against the regenerated v0.6.2 state. The only v0.6.3 Territory mutation admitted by this layer is the approved stable-ID title migration from **Smuggler\'s Pass** to **Smuggler\'s Run**.'
-          new_boundary = 'The complete 25-Territory authority is independently checked against the regenerated v0.6.2 state after applying only two historically evidenced v0.6.3 Territory transformations: the Asset ownership-language normalization encoded in `scripts/apply-v063-asset-language.mjs` (affecting Disrupted Supply Lines) and the stable-ID title migration from **Smuggler\'s Pass** to **Smuggler\'s Run**.'
+          new_boundary = 'The complete 25-Territory authority is independently checked against the regenerated v0.6.2 state after applying only two historically evidenced v0.6.3 Territory transformations: the Asset ownership-language normalization encoded in scripts/apply-v063-asset-language.mjs (affecting Disrupted Supply Lines) and the stable-ID title migration from **Smuggler\'s Pass** to **Smuggler\'s Run**.'
           if old_boundary in text:
               text = text.replace(old_boundary, new_boundary, 1)
           elif new_boundary not in text:
