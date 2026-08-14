@@ -19,6 +19,7 @@ const manifestPath = `${outDir}/Gauntlet_v0.6.3_Rulebook_Booklet_Manifest.json`;
 const cleanRulebookSha256 = '7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643';
 const publishedRulebookSha256 = '62bf0bc51c69818d0cffbd3906af01bf13abaf4fea2dd59e8678f239a68e265a';
 const authoritySetId = '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49';
+const publicationDate = new Date('2026-08-14T00:00:00.000Z');
 const halfWidth = 396;
 const halfHeight = 612;
 const sheetWidth = 792;
@@ -44,6 +45,15 @@ const escapeHtml = (value) => String(value)
   .replaceAll('<', '&lt;')
   .replaceAll('>', '&gt;')
   .replaceAll('"', '&quot;');
+const stabilizeMetadata = (pdf, title, subject) => {
+  pdf.setTitle(title);
+  pdf.setSubject(subject);
+  pdf.setAuthor('Tymon Scott');
+  pdf.setCreator('Gauntlet clean v0.6.3 booklet renderer');
+  pdf.setProducer('Gauntlet clean v0.6.3 booklet renderer');
+  pdf.setCreationDate(publicationDate);
+  pdf.setModificationDate(publicationDate);
+};
 
 const cleanRulebook = read(cleanRulebookPath);
 assert.equal(hash(cleanRulebook), cleanRulebookSha256, 'Certified clean Rulebook hash drifted.');
@@ -168,8 +178,7 @@ for (const asset of selectedPaddingAssets) {
     height,
   });
 }
-reading.setTitle('Gauntlet v0.6.3 Official Rulebook - Booklet Reading Order');
-reading.setSubject('Half-letter reading order; includes signature artwork padding when required');
+stabilizeMetadata(reading, 'Gauntlet v0.6.3 Official Rulebook - Booklet Reading Order', 'Half-letter reading order; includes signature artwork padding when required');
 const readingBytes = await reading.save();
 write(readingPdfPath, readingBytes);
 
@@ -190,8 +199,7 @@ for (let sheet = 0; sheet < logicalPages / 4; sheet += 1) {
     impositionPairs.push([leftIndex + 1, rightIndex + 1]);
   }
 }
-imposed.setTitle('Gauntlet v0.6.3 Official Rulebook - Printable Booklet');
-imposed.setSubject('Letter landscape; duplex short-edge; fold and saddle stitch');
+stabilizeMetadata(imposed, 'Gauntlet v0.6.3 Official Rulebook - Printable Booklet', 'Letter landscape; duplex short-edge; fold and saddle stitch');
 const imposedBytes = await imposed.save();
 write(imposedPdfPath, imposedBytes);
 
