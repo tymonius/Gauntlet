@@ -49,7 +49,8 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteRenderer).toContain("UNLOCKS.map(unlockSection).join('')");
     expect(riteRenderer).toContain("completed-rite-card");
     expect(riteStyles).toContain(".rite-unlock-section");
-    expect(riteStyles).toContain("grid-template-columns: 0.49in minmax(0, 1fr)");
+    expect(riteStyles).toContain("grid-template-columns: 0.36in minmax(0, 1fr)");
+    expect(riteStyles).toContain("column-gap: 0.022in");
   });
 
   it("uses the approved shared Mystics completion artwork rather than the Diplomat wax-seal treatment", () => {
