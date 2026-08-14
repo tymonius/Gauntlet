@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
+  <meta name="description" content="Search the certified clean Gauntlet v0.6.3 reconstruction card and Territory authority. Reconstruction only; v0.6.1 remains public." />
+  <title>Gauntlet v0.6.3 Card Reference — Clean Reconstruction</title>
+  <link rel="stylesheet" href="site.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="faction-colors.css" />
+  <link rel="stylesheet" href="mobile-card-preview.css" />
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="../../../../" aria-label="Gauntlet current public home">
+      <span class="brand-mark" aria-hidden="true">G</span>
+      <span>Gauntlet</span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="../browser-rulebook/">Clean Rulebook</a>
+      <a href="../../../../card-reference/">Current Card Reference</a>
+      <a href="../../../../rulebook/">Current Rules</a>
+      <a href="https://github.com/tymonius/Gauntlet">Repository</a>
+    </nav>
+  </header>
+
+  <main class="reference-main">
+    <section class="reference-hero" aria-labelledby="reference-title">
+      <div>
+        <p class="eyebrow">Clean v0.6.3 reconstruction candidate</p>
+        <h1 id="reference-title">Card <span>Reference.</span></h1>
+        <p class="reference-lede">Search all 128 playable cards and 25 Territories from the certified clean v0.6.3 structured authority. This reconstruction is not the current public release; v0.6.1 remains public and publication remains locked.</p>
+      </div>
+      <div class="source-status" aria-live="polite">
+        <span>Source status</span>
+        <strong id="dataStatus">Loading certified clean v0.6.3 authority…</strong>
+      </div>
+    </section>
+
+    <section id="app" class="reference-app" hidden>
+      <form class="filter-panel" id="filters" role="search">
+        <div class="filter-heading">
+          <div>
+            <p class="eyebrow">Find a card</p>
+            <h2>Filters</h2>
+          </div>
+          <button id="clearFilters" class="text-button" type="button">Clear</button>
+        </div>
+
+        <label class="search-field">
+          Search
+          <input id="searchInput" type="search" placeholder="Gambit, Tactic, Aftermath, trait, or keyword" autocomplete="off" />
+        </label>
+
+        <label>
+          Reference type
+          <select id="typeFilter">
+            <option value="all">Playable cards + Territories</option>
+            <option value="card">Playable cards only</option>
+            <option value="territory">Territories only</option>
+          </select>
+        </label>
+
+        <label>
+          Faction
+          <select id="factionFilter">
+            <option value="all">All factions</option>
+            <option value="neutral">Neutral</option>
+            <option value="military">Military</option>
+            <option value="diplomats">Diplomats</option>
+            <option value="financiers">Financiers</option>
+            <option value="intelligence">Intelligence</option>
+            <option value="mystics">Mystics</option>
+            <option value="inquisition">Inquisition</option>
+          </select>
+        </label>
+
+        <label>
+          Cost
+          <select id="costFilter">
+            <option value="all">All costs</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+          </select>
+        </label>
+
+        <div class="reference-metrics" aria-label="Reference totals">
+          <div><strong id="cardTotal">0</strong><span>Playable cards</span></div>
+          <div><strong id="territoryTotal">0</strong><span>Territories</span></div>
+        </div>
+      </form>
+
+      <section class="browser-panel" aria-label="Card reference results">
+        <div class="browser-heading">
+          <div>
+            <p class="eyebrow">Certified clean results</p>
+            <h2><span id="resultCount">0</span> matches</h2>
+          </div>
+          <p id="resultSummary" class="result-summary"></p>
+        </div>
+
+        <div class="reference-browser">
+          <div id="resultList" class="reference-list" role="listbox" aria-label="Reference results"></div>
+          <article id="preview" class="reference-preview empty-state" aria-live="polite">Select a result to view its certified clean text.</article>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <strong>Gauntlet</strong>
+      <p>Unpublished reconstruction candidate. Current public release: v0.6.1.</p>
+    </div>
+    <div class="footer-links">
+      <a href="../browser-rulebook/">Clean Browser Rulebook</a>
+      <a href="../../../../card-reference/">Current v0.6.1 Card Reference</a>
+      <a href="../../../../releases/v0.6.1/">v0.6.1 Release</a>
+      <a href="https://github.com/tymonius/Gauntlet">GitHub</a>
+    </div>
+    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  </footer>
+
+  <noscript>
+    <p class="noscript">JavaScript is required to load and search the certified clean card authority.</p>
+  </noscript>
+  <script src="app.js" defer></script>
+  <script src="mobile-card-preview.js" defer></script>
+</body>
+</html>

@@ -176,36 +176,53 @@ assert(publicEntry.includes('import worker from "./worker-v061.js";'), "current 
 assert(!publicEntry.includes("clean-v063"), "current public entry must not route to reconstruction worker");
 
 const changed = changedFiles();
-const allowedPrefixes = [
-  `${ROOT}/`,
-  "scripts/validate-clean-v063-rules-arbiter.mjs",
-  "scripts/sync-google-analytics.mjs",
-  ".github/workflows/build-clean-v063-rules-arbiter.yml"
-];
-const unexpected = changed.filter((path) => !allowedPrefixes.some((allowed) =>
-  allowed.endsWith("/") ? path.startsWith(allowed) : path === allowed
-));
-assert.deepEqual(unexpected, [], `Clean Rules Arbiter diff escaped reconstruction boundary: ${unexpected.join(", ")}`);
+const arbiterSurfaceChanged = changed.some((path) => path.startsWith(`${ROOT}/`));
 
-const requiredChanged = [
-  `${ROOT}/index.html`,
-  `${ROOT}/styles.css`,
-  `${ROOT}/app.js`,
-  `${ROOT}/corpus.js`,
-  `${ROOT}/worker.js`,
-  `${ROOT}/manifest.json`,
-  `${ROOT}/source-boundary.md`,
-  `${ROOT}/validation-status.md`,
-  `${ROOT}/wrangler.toml`,
-  "scripts/validate-clean-v063-rules-arbiter.mjs",
-  "scripts/sync-google-analytics.mjs",
-  ".github/workflows/build-clean-v063-rules-arbiter.yml"
-];
-for (const path of requiredChanged) {
-  assert(changed.includes(path), `Expected clean Rules Arbiter file missing from diff: ${path}`);
+if (arbiterSurfaceChanged) {
+  const allowedPrefixes = [
+    `${ROOT}/`,
+    "scripts/validate-clean-v063-rules-arbiter.mjs",
+    "scripts/sync-google-analytics.mjs",
+    ".github/workflows/build-clean-v063-rules-arbiter.yml"
+  ];
+  const unexpected = changed.filter((path) => !allowedPrefixes.some((allowed) =>
+    allowed.endsWith("/") ? path.startsWith(allowed) : path === allowed
+  ));
+  assert.deepEqual(unexpected, [], `Clean Rules Arbiter diff escaped reconstruction boundary: ${unexpected.join(", ")}`);
+
+  const requiredChanged = [
+    `${ROOT}/index.html`,
+    `${ROOT}/styles.css`,
+    `${ROOT}/app.js`,
+    `${ROOT}/corpus.js`,
+    `${ROOT}/worker.js`,
+    `${ROOT}/manifest.json`,
+    `${ROOT}/source-boundary.md`,
+    `${ROOT}/validation-status.md`,
+    `${ROOT}/wrangler.toml`,
+    "scripts/validate-clean-v063-rules-arbiter.mjs",
+    "scripts/sync-google-analytics.mjs",
+    ".github/workflows/build-clean-v063-rules-arbiter.yml"
+  ];
+  for (const path of requiredChanged) {
+    assert(changed.includes(path), `Expected clean Rules Arbiter file missing from diff: ${path}`);
+  }
+} else {
+  const forbiddenArbiterChanges = changed.filter((path) =>
+    path.startsWith("rules-assistant/") || path === ".github/workflows/build-clean-v063-rules-arbiter.yml"
+  );
+  assert.deepEqual(
+    forbiddenArbiterChanges,
+    [],
+    `Dependency-triggered clean Rules Arbiter validation must not modify public or workflow Arbiter files: ${forbiddenArbiterChanges.join(", ")}`
+  );
 }
 
-console.log(`Clean v0.6.3 Rules Arbiter validated: ${changed.length}-file isolated reconstruction, repaired authority/canonical hashes pinned, zero deterministic v0.6.3 rulings, noindex analytics exclusion explicit, public v0.6.1 routing unchanged.`);
+console.log(
+  arbiterSurfaceChanged
+    ? `Clean v0.6.3 Rules Arbiter validated: ${changed.length}-file isolated reconstruction, repaired authority/canonical hashes pinned, zero deterministic v0.6.3 rulings, noindex analytics exclusion explicit, public v0.6.1 routing unchanged.`
+    : `Clean v0.6.3 Rules Arbiter dependency validation passed: shared dependency changed, existing clean surface remains valid, public v0.6.1 routing unchanged.`
+);
 
 function changedFiles() {
   try {

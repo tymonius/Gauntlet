@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "target": "clean-v0.6.3-card-reference",
+  "status": "downstream_candidate_pending_merge_review",
+  "authority_set_id": "64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49",
+  "authority_certification": "artifacts/reconstruction/clean-v0.6.3/complete-authority/authority-set.json",
+  "canonical_structured_data": {
+    "path": "artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json",
+    "sha256": "9b79203f38d99d79202ccd834f8794a345513503505f1910b71665973dbb7851"
+  },
+  "ui_baseline": {
+    "role": "public_v0.6.1_renderer_only_not_content_authority",
+    "files": [
+      "site.css",
+      "card-reference/index.html",
+      "card-reference/app.js",
+      "card-reference/styles.css",
+      "card-reference/faction-colors.css",
+      "card-reference/mobile-card-preview.css",
+      "card-reference/mobile-card-preview.js"
+    ]
+  },
+  "outputs": [
+    "artifacts/reconstruction/clean-v0.6.3/card-reference/index.html",
+    "artifacts/reconstruction/clean-v0.6.3/card-reference/app.js",
+    "artifacts/reconstruction/clean-v0.6.3/card-reference/site.css",
+    "artifacts/reconstruction/clean-v0.6.3/card-reference/styles.css",
+    "artifacts/reconstruction/clean-v0.6.3/card-reference/faction-colors.css",
+    "artifacts/reconstruction/clean-v0.6.3/card-reference/mobile-card-preview.css",
+    "artifacts/reconstruction/clean-v0.6.3/card-reference/mobile-card-preview.js",
+    "artifacts/reconstruction/clean-v0.6.3/card-reference/source-boundary.md",
+    "artifacts/reconstruction/clean-v0.6.3/card-reference/validation-status.md"
+  ],
+  "playable_cards": 128,
+  "territories": 25,
+  "factions": 6,
+  "public_card_reference_modified": false,
+  "publication_unlocked": false,
+  "public_current_release": "v0.6.1"
+}

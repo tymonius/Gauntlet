@@ -1,0 +1,81 @@
+name: Build clean v0.6.3 Card Reference
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-clean-v063-card-reference.yml'
+      - 'scripts/build-clean-v063-card-reference.mjs'
+      - 'scripts/validate-clean-v063-card-reference.mjs'
+      - 'scripts/validate-clean-v063-rules-arbiter.mjs'
+      - 'scripts/sync-google-analytics.mjs'
+      - 'artifacts/reconstruction/clean-v0.6.3/card-reference/**'
+      - 'artifacts/reconstruction/clean-v0.6.3/complete-authority/**'
+      - 'config/release-lifecycle.json'
+      - 'config/reconstruction-version-plan.json'
+      - 'src/content/current.ts'
+      - 'card-reference/**'
+      - 'site.css'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: clean-v063-card-reference-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  reconstruct:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out Card Reference reconstruction inputs
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.github/workflows/build-clean-v063-card-reference.yml
+            /scripts/build-clean-v063-card-reference.mjs
+            /scripts/validate-clean-v063-card-reference.mjs
+            /scripts/validate-clean-v063-rules-arbiter.mjs
+            /scripts/sync-google-analytics.mjs
+            /config/release-lifecycle.json
+            /config/reconstruction-version-plan.json
+            /src/content/current.ts
+            /artifacts/reconstruction/clean-v0.6.3/complete-authority/
+            /artifacts/reconstruction/clean-v0.6.3/card-reference/
+            /card-reference/
+            /site.css
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Syntax-check Card Reference scripts
+        run: |
+          node --check scripts/build-clean-v063-card-reference.mjs
+          node --check scripts/validate-clean-v063-card-reference.mjs
+          node --check scripts/validate-clean-v063-rules-arbiter.mjs
+          node --check scripts/sync-google-analytics.mjs
+
+      - name: Rebuild clean v0.6.3 Card Reference metadata and UI baseline assets
+        run: node scripts/build-clean-v063-card-reference.mjs
+
+      - name: Syntax-check reconstruction JavaScript
+        run: |
+          node --check artifacts/reconstruction/clean-v0.6.3/card-reference/app.js
+          node --check artifacts/reconstruction/clean-v0.6.3/card-reference/mobile-card-preview.js
+
+      - name: Validate clean v0.6.3 Card Reference
+        run: node scripts/validate-clean-v063-card-reference.mjs
+
+      - name: Validate analytics isolation
+        run: node scripts/sync-google-analytics.mjs --check
+
+      - name: Reject whitespace errors
+        run: git diff --check
+
+      - name: Require committed deterministic Card Reference outputs
+        run: git diff --exit-code -- artifacts/reconstruction/clean-v0.6.3/card-reference
