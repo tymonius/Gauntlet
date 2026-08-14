@@ -9,21 +9,22 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/validate-v063-cross-surface-closeout.yml'
+      - '.github/workflows/publish-clean-v063.yml'
       - 'config/release-lifecycle.json'
       - 'config/release-locks.json'
       - 'scripts/validate-release-recovery-state.mjs'
-      - 'docs/Gauntlet_v0.6.3_Cross_Surface_Closeout_Matrix.md'
-      - 'scripts/build-v063-cross-surface-closeout.mjs'
-      - 'scripts/validate-v063-cross-surface-closeout.mjs'
-      - 'scripts/**v063**'
-      - 'artifacts/v0.6.3/**'
-      - 'v0.6.3/**'
-      - 'rules-assistant/*v063*'
-      - 'src/v063/**'
-      - 'src/content/v063.ts'
-      - 'images/faction-symbols/**'
-      - 'card-design/**'
-      - 'package.json'
+      - 'scripts/validate-clean-v063-publication.mjs'
+      - 'releases/v0.6.3-reconstructed/**'
+      - 'rulebook/**'
+      - 'card-reference/**'
+      - 'factions/**'
+      - 'start/**'
+      - 'deckbuilder/**'
+      - 'rules-arbiter/**'
+      - 'rules-assistant/worker-entry.js'
+      - 'rules-assistant/worker-v063.js'
+      - 'rules-assistant/v063-public-corpus.js'
+      - 'src/content/current.ts'
   workflow_dispatch:
 
 permissions:
@@ -38,6 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       v063_status: ${{ steps.release.outputs.v063_status }}
+      current_release: ${{ steps.release.outputs.current_release }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -48,12 +50,14 @@ jobs:
         name: Read v0.6.3 lifecycle state
         run: |
           status=$(node -e "const l=require('./config/release-lifecycle.json'); process.stdout.write(String(l.releases?.['v0.6.3']?.status || 'missing'))")
+          current=$(node -e "const l=require('./config/release-lifecycle.json'); process.stdout.write(String(l.current_release || 'missing'))")
           echo "v063_status=$status" >> "$GITHUB_OUTPUT"
-          echo "v0.6.3 lifecycle status: $status"
+          echo "current_release=$current" >> "$GITHUB_OUTPUT"
+          echo "v0.6.3 lifecycle status: $status; current release: $current"
 
   freeze-withdrawn-evidence:
     needs: lifecycle
-    if: needs.lifecycle.outputs.v063_status == 'withdrawn'
+    if: needs.lifecycle.outputs.v063_status == 'withdrawn' && needs.lifecycle.outputs.current_release != 'v0.6.3'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -67,13 +71,34 @@ jobs:
       - name: Verify withdrawn v0.6.3 cross-surface evidence is immutable
         run: node scripts/validate-release-recovery-state.mjs
 
-  require-explicit-reactivation:
+  validate-current-v063:
     needs: lifecycle
-    if: needs.lifecycle.outputs.v063_status != 'withdrawn'
+    if: needs.lifecycle.outputs.v063_status == 'current' && needs.lifecycle.outputs.current_release == 'v0.6.3'
     runs-on: ubuntu-latest
     steps:
-      - name: Refuse implicit reactivation
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install validation dependencies
         run: |
-          echo 'v0.6.3 is no longer marked withdrawn, but the historical closeout generator is intentionally frozen during recovery.'
-          echo 'Restore/rebuild the active closeout workflow explicitly from docs/recovery/frozen-workflows/validate-v063-cross-surface-closeout.yml or the preserved archive ref only after the clean v0.6.3 reconstruction is ready.'
+          npm install --package-lock=false
+          npm install --no-save --package-lock=false pdf-lib
+      - name: Verify historical recovery locks
+        run: node scripts/validate-release-recovery-state.mjs
+      - name: Validate current clean v0.6.3 publication
+        run: node scripts/validate-clean-v063-publication.mjs
+
+  reject-invalid-transition:
+    needs: lifecycle
+    if: >-
+      !((needs.lifecycle.outputs.v063_status == 'withdrawn' && needs.lifecycle.outputs.current_release != 'v0.6.3') ||
+      (needs.lifecycle.outputs.v063_status == 'current' && needs.lifecycle.outputs.current_release == 'v0.6.3'))
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reject invalid v0.6.3 lifecycle transition
+        run: |
+          echo "Invalid lifecycle combination: v0.6.3 status=${{ needs.lifecycle.outputs.v063_status }}, current=${{ needs.lifecycle.outputs.current_release }}"
           exit 1
