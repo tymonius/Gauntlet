@@ -1,0 +1,62 @@
+name: Build clean v0.6.3 complete authority
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/build-clean-v063-complete-authority.yml'
+      - 'scripts/materialize-v063-finalized-tracker-snapshot.mjs'
+      - 'scripts/build-clean-v063-complete-authority.mjs'
+      - 'scripts/validate-clean-v063-complete-authority.mjs'
+      - 'config/reconstruction-decision-candidates.json'
+      - 'config/reconstruction-version-plan.json'
+      - 'config/reconstruction-version-resolutions.json'
+      - 'config/release-lifecycle.json'
+      - 'v0.6.2/data/canonical-data.js'
+      - 'docs/Gauntlet_v0.6.2_Shared_Rules_Candidate.md'
+      - 'docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md'
+      - 'docs/Gauntlet_v0.6.2_Faction_Component_Compatibility_Audit.md'
+      - 'docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md'
+      - 'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md'
+      - 'docs/v063-card-language-overrides/**'
+      - 'scripts/*v063*'
+      - 'artifacts/reconstruction/clean-v0.6.3/**'
+      - 'artifacts/reconstruction/evidence/v0.6.3/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: read
+
+jobs:
+  complete-authority:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Materialize one-time frozen #405 evidence when absent
+        if: ${{ hashFiles('artifacts/reconstruction/evidence/v0.6.3/issue-405-finalized-card-tracker.md') == '' }}
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: node scripts/materialize-v063-finalized-tracker-snapshot.mjs
+
+      - name: Rebuild complete authority from source lineage
+        run: node scripts/build-clean-v063-complete-authority.mjs --write
+
+      - name: Validate complete authority and zero gameplay drift
+        run: node scripts/validate-clean-v063-complete-authority.mjs
+
+      - name: Upload complete authority package
+        uses: actions/upload-artifact@v4
+        with:
+          name: clean-v063-complete-authority
+          path: |
+            artifacts/reconstruction/clean-v0.6.3/complete-authority/
+            artifacts/reconstruction/evidence/v0.6.3/issue-405-finalized-card-tracker.md
+            artifacts/reconstruction/evidence/v0.6.3/issue-405-finalized-card-tracker.json
+          if-no-files-found: error
