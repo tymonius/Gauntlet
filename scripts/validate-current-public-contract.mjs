@@ -158,6 +158,26 @@ for (const token of usedFontTokens) {
   assert(definedFontTokens.has(token), `Start Playing references undefined typography token ${token}.`);
 }
 
+const startDisplaySelectors = [
+  '.start-hero h1',
+  '.section-heading h2',
+  '.overview-feature h3,.intro-overview h3',
+  '.faction-choice strong',
+  '.leader-choice strong',
+  '.selected-choice h3',
+  '.intro-card h3',
+  '.print-action-card h3',
+];
+for (const selector of startDisplaySelectors) {
+  const start = startStyles.indexOf(`${selector}{`);
+  assert(start >= 0, `Start Playing is missing its explicit ${selector} typography rule.`);
+  const end = startStyles.indexOf('}', start);
+  const rule = startStyles.slice(start, end + 1);
+  assert(rule.includes('font-family:var(--font-display-web)'), `${selector} must use the Georgia web-display role.`);
+  assert(rule.includes('font-weight:400'), `${selector} must use regular weight, not bold Georgia.`);
+}
+assert(!startStyles.includes('font-family:var(--font-display-historical)'), 'Start Playing must not substitute the historical P22 display face for the Georgia web-display role.');
+
 const localReferences = new Set();
 for (const [route, html] of pages) {
   for (const ref of htmlRefs(html)) {
@@ -174,4 +194,4 @@ for (const normalized of localReferences) {
   }
 }
 
-console.log(`Current public contract passed${remoteBase ? ` against ${remoteBase}` : ' against the repository'}: ${currentVersion}, booklet integrity, resolvable player links, canonical faction symbols, and defined typography tokens.`);
+console.log(`Current public contract passed${remoteBase ? ` against ${remoteBase}` : ' against the repository'}: ${currentVersion}, booklet integrity, resolvable player links, canonical faction symbols, defined typography tokens, and regular Georgia Start display typography.`);
