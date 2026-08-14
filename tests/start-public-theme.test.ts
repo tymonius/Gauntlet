@@ -31,7 +31,10 @@ describe("public Start page theme", () => {
     ];
 
     for (const selector of displaySelectors) {
-      const rule = css.match(new RegExp(`${selector.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&")}\\{[^}]+\\}`))?.[0] ?? "";
+      const start = css.indexOf(`${selector}{`);
+      expect(start, `${selector} should have an explicit CSS rule`).toBeGreaterThanOrEqual(0);
+      const end = css.indexOf("}", start);
+      const rule = css.slice(start, end + 1);
       expect(rule).toContain("font-family:var(--font-display-web)");
       expect(rule).toContain("font-weight:400");
     }
