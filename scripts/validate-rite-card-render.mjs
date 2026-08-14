@@ -9,6 +9,8 @@ const CARD_WIDTH = 240;
 const CARD_HEIGHT = 336;
 const EXPECTED_RITES = ['Rite of Echoes', 'Rite of Blood', 'Rite of Crossing'];
 const COMPLETED_RITE_ART_PATH = '/images/artwork/supplemental/mystics/rite-completed.webp';
+const COMPLETED_RITE_ART_WIDTH = 1448;
+const COMPLETED_RITE_ART_HEIGHT = 1086;
 
 function contentType(path) {
   const extension = extname(path).toLowerCase();
@@ -116,6 +118,9 @@ async function main() {
         if (expected.some(name => !metric.abilityNames.includes(name))) throw new Error(`Completed Rite reference is incomplete: ${JSON.stringify(metric)}.`);
         if (metric.completedImageWidth <= 0 || metric.completedImageHeight <= 0 || metric.completedImageNaturalWidth <= 0 || metric.completedImageNaturalHeight <= 0) {
           throw new Error(`Completed Rite artwork did not render: ${JSON.stringify(metric)}.`);
+        }
+        if (metric.completedImageNaturalWidth !== COMPLETED_RITE_ART_WIDTH || metric.completedImageNaturalHeight !== COMPLETED_RITE_ART_HEIGHT) {
+          throw new Error(`Completed Rite artwork was downsampled: ${JSON.stringify(metric)}.`);
         }
         if (metric.completedImagePath !== COMPLETED_RITE_ART_PATH) {
           throw new Error(`Completed Rite uses the wrong artwork: ${JSON.stringify(metric)}.`);
