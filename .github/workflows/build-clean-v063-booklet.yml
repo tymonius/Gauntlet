@@ -7,7 +7,6 @@ on:
       - 'scripts/render-clean-v063-booklet.mjs'
       - 'scripts/validate-clean-v063-booklet.mjs'
       - 'scripts/materialize-clean-v063-booklet.mjs'
-      - 'scripts/apply-v063-public-ui-cleanup.mjs'
       - 'artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md'
       - 'releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md'
       - 'rulebook/markdown.js'
@@ -33,24 +32,17 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install build dependencies
+      - name: Install booklet build dependencies
         run: |
           npm install
           npm install --no-save --package-lock=false pdf-lib
           npx playwright install --with-deps chromium
 
-      - name: Check booklet scripts
+      - name: Build, validate, and materialize booklet
         run: |
           node --check scripts/render-clean-v063-booklet.mjs
           node --check scripts/validate-clean-v063-booklet.mjs
           node --check scripts/materialize-clean-v063-booklet.mjs
-          node --check scripts/apply-v063-public-ui-cleanup.mjs
-
-      - name: Apply this PR's public UI cleanup
-        run: node scripts/apply-v063-public-ui-cleanup.mjs
-
-      - name: Build and validate booklet
-        run: |
           node scripts/render-clean-v063-booklet.mjs
           node scripts/validate-clean-v063-booklet.mjs
           node scripts/materialize-clean-v063-booklet.mjs
@@ -63,7 +55,7 @@ jobs:
           path: artifacts/reconstruction/clean-v0.6.3/booklet/generated/**
           if-no-files-found: error
 
-      - name: Materialize reviewed changes on this PR
+      - name: Commit reviewed booklet binary and manifest
         if: github.event_name == 'pull_request' && github.head_ref == 'fix/v063-clean-rulebook-booklet'
         run: |
           set -euo pipefail
@@ -71,22 +63,10 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add \
             releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook_Booklet.pdf \
-            releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Manifest.json \
-            index.html \
-            start/index.html \
-            start/styles.css \
-            factions/index.html \
-            factions/homepage.css \
-            factions/factions.css \
-            factions/military/index.html \
-            factions/diplomats/index.html \
-            factions/financiers/index.html \
-            factions/intelligence/index.html \
-            factions/mystics/index.html \
-            factions/inquisition/index.html
+            releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Manifest.json
           if git diff --cached --quiet; then
-            echo 'Reviewed booklet and UI changes are already materialized.'
+            echo 'Reviewed booklet is already materialized.'
           else
-            git commit -m 'Materialize v0.6.3 booklet and public UI cleanup'
+            git commit -m 'Materialize v0.6.3 rulebook booklet'
             git push origin HEAD:${{ github.head_ref }}
           fi
