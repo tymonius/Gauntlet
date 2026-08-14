@@ -10,19 +10,19 @@ const targetRoot = 'artifacts/reconstruction/clean-v0.6.3/downstream';
 const canonicalPath = `${targetRoot}/canonical-data.json`;
 const starterPath = `${targetRoot}/starter-decks.json`;
 const manifestPath = `${targetRoot}/manifest.json`;
-const certificationPath = 'artifacts/reconstruction/clean-v0.6.3/certification/authority-set.json';
+const certificationPath = 'artifacts/reconstruction/clean-v0.6.3/complete-authority/authority-set.json';
 const lifecyclePath = 'config/release-lifecycle.json';
 const planPath = 'config/reconstruction-version-plan.json';
 const auditPath = 'docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md';
-const authoritySetId = '2da05383c10fe3e784c64b26fd2d9837913011cad996966f49a7ae3a92af8ed9';
-const evidencePath = 'artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json';
-const evidenceBlob = '955dfa654cac96a9de820867ab694e83d0fb1d36';
+const authoritySetId = '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49';
+const structuredAuthorityPath = 'artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json';
 const forbiddenInOutputs = [
   'releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md',
   'releases/v0.6.3/Gauntlet_v0.6.3_Faction_and_Component_Guide.md',
   'releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md',
   'releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md',
   'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json',
+  'artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json',
 ];
 
 const read = (rel) => fs.readFileSync(path.join(root, rel), 'utf8').replace(/\r\n/g, '\n');
@@ -49,9 +49,9 @@ assert.equal(canonical.version, 'clean-v0.6.3-downstream');
 assert.match(canonical.status, /not published/i);
 assert.equal(canonical.publication_unlocked, false);
 assert.equal(canonical.authority_set_id, authoritySetId);
-assert.equal(canonical.evidence_payload?.path, evidencePath);
-assert.equal(canonical.evidence_payload?.git_blob_sha, evidenceBlob);
-assert.equal(canonical.evidence_payload?.role, 'verified_delta_payload_only');
+assert.equal(canonical.structured_authority?.path, structuredAuthorityPath);
+assert.equal(canonical.structured_authority?.sha256, sha256(read(structuredAuthorityPath)));
+assert.equal(canonical.structured_authority?.role, 'complete_machine_readable_authority');
 assert.equal(canonical.cards.length, 128);
 assert.equal(canonical.territories.length, 25);
 assert.equal(canonical.factions.length, 6);
@@ -137,7 +137,8 @@ assert.equal(manifest.authority_set_id, authoritySetId);
 assert.equal(manifest.publication_unlocked, false);
 assert.equal(manifest.public_current_release, 'v0.6.1');
 assert.equal(manifest.starter_approval?.pr, 573);
-assert.equal(manifest.evidence?.role, 'verified_delta_payload_only');
+assert.equal(manifest.structured_authority?.path, structuredAuthorityPath);
+assert.equal(manifest.structured_authority?.role, 'complete_machine_readable_authority');
 for (const entry of manifest.outputs) {
   const text = read(entry.path);
   assert.equal(sha256(text), entry.sha256, `Manifest SHA drifted: ${entry.path}`);
@@ -152,6 +153,8 @@ for (const forbidden of forbiddenInOutputs) {
   assert(!starterText.includes(forbidden), `Forbidden withdrawn authority reference in starter output: ${forbidden}`);
 }
 
+assert.equal(certification.target, 'clean-v0.6.3-complete');
+assert.equal(certification.status, 'certified_on_manual_merge');
 assert.equal(certification.authority_set_id, authoritySetId);
 assert.equal(plan.publication_unlocked, false);
 assert.equal(plan.targets?.['clean-v0.6.3']?.status, 'authority_certified');
