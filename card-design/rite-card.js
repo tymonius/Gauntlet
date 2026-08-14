@@ -1,4 +1,5 @@
 const RITE_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md';
+const COMPLETED_RITE_ART_SOURCE = '/images/artwork/supplemental/mystics/rite-completed.webp';
 
 const RITES = Object.freeze([
   {
@@ -77,14 +78,8 @@ function incompleteArtwork(rite) {
 }
 
 function completedArtwork(rite) {
-  return `<figure class="card-art rite-completed-panel" aria-label="Completed ${esc(rite.name)}">
-    <div class="rite-completed-word">Completed</div>
-    <div class="rite-ritual-diagram" aria-hidden="true">
-      <span class="rite-diagram-axis rite-diagram-axis-a"></span>
-      <span class="rite-diagram-axis rite-diagram-axis-b"></span>
-      <span class="rite-diagram-axis rite-diagram-axis-c"></span>
-      <span class="rite-diagram-emblem"></span>
-    </div>
+  return `<figure class="card-art rite-completed-panel has-image" aria-label="Completed ${esc(rite.name)}">
+    <img src="${COMPLETED_RITE_ART_SOURCE}" alt="Parchment marked Completed in deep purple ink with blood, beeswax, and ash traces" />
   </figure>`;
 }
 
