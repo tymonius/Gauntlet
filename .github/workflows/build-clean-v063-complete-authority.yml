@@ -46,7 +46,27 @@ jobs:
         run: node scripts/materialize-v063-finalized-tracker-snapshot.mjs
 
       - name: Rebuild complete authority from source lineage
-        run: node scripts/build-clean-v063-complete-authority.mjs --write
+        id: rebuild
+        shell: bash
+        run: |
+          set +e
+          node scripts/build-clean-v063-complete-authority.mjs --write > provenance-build.log 2>&1
+          status=$?
+          cat provenance-build.log
+          echo "status=$status" >> "$GITHUB_OUTPUT"
+          exit 0
+
+      - name: Upload regeneration diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clean-v063-provenance-diagnostics
+          path: provenance-build.log
+          if-no-files-found: error
+
+      - name: Stop after regeneration failure
+        if: ${{ steps.rebuild.outputs.status != '0' }}
+        run: exit 1
 
       - name: Validate complete authority and zero gameplay drift
         run: node scripts/validate-clean-v063-complete-authority.mjs
