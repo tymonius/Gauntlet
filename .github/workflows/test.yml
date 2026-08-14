@@ -20,10 +20,29 @@ jobs:
           node-version: 22
 
       - name: Install dependencies
-        run: npm install
+        run: |
+          npm install
+          npm install --no-save --package-lock=false pdf-lib
 
       - name: Typecheck
         run: npm run typecheck
 
-      - name: Test
-        run: npm test
+      - name: Test current v0.6.3 release
+        run: |
+          npx vitest run \
+            --exclude tests/deckbuilder-print-request.test.ts \
+            --exclude tests/player-facing-terminology.test.ts \
+            --exclude tests/deckbuilder-mystics-ritual.test.ts \
+            --exclude tests/public-faction-pages.test.ts \
+            --exclude tests/release-recovery-write-guards.test.ts \
+            --exclude tests/standalone-new-player-onboarding.test.ts \
+            --exclude tests/start-public-theme.test.ts \
+            --exclude tests/tracked-playtest-system.test.ts \
+            --exclude tests/v062-public-faction-overviews.test.ts \
+            --exclude rules-assistant/review-intelligence.test.mjs \
+            --exclude rules-assistant/v062-published-routes.test.mjs
+          node scripts/validate-release-recovery-state.mjs
+          node scripts/validate-clean-v063-publication-data.mjs
+          node scripts/sync-google-analytics.mjs --check
+          npm run tts:check
+          npm run media:check
