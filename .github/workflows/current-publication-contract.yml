@@ -1,0 +1,27 @@
+name: Validate current publication contract
+
+on:
+  workflow_call:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  current-publication-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout current publication
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install contract dependency
+        run: npm install --no-save --package-lock=false pdf-lib
+
+      - name: Validate current player-facing publication contract
+        run: node scripts/validate-current-public-contract.mjs
