@@ -1,33 +1,9 @@
+import { resolveFirstArtwork, slugify } from './card-artwork-resolver.js';
+
 await (async () => {
   const CANONICAL_SOURCE = '/artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json';
-  const ART_EXTENSIONS = ['png', 'jpg', 'webp', 'jpeg'];
   const cardId = new URLSearchParams(window.location.search).get('card');
   const target = document.getElementById('renderTarget');
-
-  function slugify(value) {
-    return String(value ?? '')
-      .toLowerCase()
-      .normalize('NFKD')
-      .replace(/[\u0300-\u036f]/g, '')
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/^-|-$/g, '');
-  }
-
-  function unicodeSlugify(value) {
-    return String(value ?? '')
-      .toLowerCase()
-      .normalize('NFC')
-      .replace(/[^\p{Letter}\p{Number}]+/gu, '-')
-      .replace(/^-|-$/g, '');
-  }
-
-  function artworkStems(card, faction) {
-    const id = String(card?.id ?? '').toLowerCase();
-    const factionPrefix = `${faction}-`;
-    const idStem = id.startsWith(factionPrefix) ? id.slice(factionPrefix.length) : slugify(id);
-    const stems = [idStem, slugify(card?.name), unicodeSlugify(card?.name)].filter(Boolean);
-    return [...new Set(stems)].map(stem => `/images/artwork/cards/${faction}/${stem}`);
-  }
 
   function sectionsFromEffects(effects) {
     const sections = {};
@@ -49,16 +25,6 @@ await (async () => {
     });
   }
 
-  async function resolveArtwork(card, faction) {
-    for (const stem of artworkStems(card, faction)) {
-      for (const extension of ART_EXTENSIONS) {
-        const src = `${stem}.${extension}`;
-        if (await imageExists(src)) return src.replace(/^\//, '');
-      }
-    }
-    return null;
-  }
-
   function loadScript(src) {
     return new Promise((resolve, reject) => {
       const script = document.createElement('script');
@@ -77,7 +43,7 @@ await (async () => {
     const card = (canonical.cards || []).find(item => item.id === cardId);
     if (!card) throw new Error(`Unknown card: ${cardId}`);
     const faction = slugify(card.allegiance);
-    const artwork = await resolveArtwork(card, faction);
+    const artwork = await resolveFirstArtwork(card, faction, imageExists);
     const preview = {
       id: card.id,
       kind: 'playable',
