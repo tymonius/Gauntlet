@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 const html = readFileSync("start/index.html", "utf8");
 const css = readFileSync("start/styles.css", "utf8");
+const siteCss = readFileSync("site.css", "utf8");
 const app = readFileSync("start/app.js", "utf8");
 
 function cssRule(selector: string) {
@@ -26,16 +27,19 @@ describe("public Start page theme", () => {
     expect(css).toContain(".journey span{background:var(--crimson-dark)");
   });
 
-  it("preserves the v0.6.1 Georgia and Inter Start treatment", () => {
-    expect(cssRule(".start-hero h1")).toContain("font-family:var(--font-display,Georgia,serif)");
-    expect(cssRule(".section-heading h2")).toContain("font-family:var(--font-display,Georgia,serif)");
-    expect(cssRule(".faction-choice strong")).toContain("font-family:var(--font-display,Georgia,serif)");
-    expect(cssRule(".leader-choice strong")).toContain("font-family:var(--font-display,Georgia,serif)");
-    expect(cssRule(".start-hero .hero-lede")).toContain("font-family:var(--serif)");
+  it("uses the sitewide v0.6.2-derived typography hierarchy", () => {
+    expect(siteCss).toContain("--reading: var(--font-reading)");
+    expect(siteCss).toContain("font-family: var(--reading)");
+    expect(siteCss).toContain("font-family: var(--historical)");
+    expect(siteCss).toContain("font-family: var(--sans)");
 
-    expect(css).not.toContain("var(--font-reading)");
-    expect(css).not.toContain("var(--font-interface)");
-    expect(css).not.toContain("var(--font-display-historical)");
+    expect(cssRule(".start-hero h1")).toContain("font-family:var(--font-display-web)");
+    expect(cssRule(".section-heading h2")).toContain("font-family:var(--font-display-web)");
+    expect(cssRule(".faction-choice strong")).toContain("font-family:var(--font-display-web)");
+    expect(cssRule(".start-hero .hero-lede")).toContain("font-family:var(--font-reading)");
+    expect(cssRule(".leader-choice strong")).toContain("font-family:var(--font-display-historical)");
+    expect(cssRule("fieldset legend")).toContain("font-family:var(--font-interface)");
+    expect(cssRule(".starter-preview .starter-meta span")).toContain("font-family:var(--font-interface)");
   });
 
   it("renders faction symbols in faction color and all twelve approved leader portraits", () => {
