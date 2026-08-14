@@ -46,5 +46,14 @@ const readyCorrected = `    () => document.documentElement.dataset.paginationRea
 replaceOnce('heading validation correction', headingOriginal, headingCorrected);
 replaceOnce('postprocess readiness correction', readyOriginal, readyCorrected);
 
+// The approved renderer's body-font probe selected the first paragraph on the
+// document, which is a deliberate P22 Declaration decorative overline. Probe an
+// actual reading paragraph so the current wrapper can enforce Caslon correctly.
+replaceOnce(
+  'reading-font probe',
+  "      bodyFamily: getComputedStyle(document.querySelector('.production-flow p, .body-copy')).fontFamily,",
+  "      bodyFamily: getComputedStyle(document.querySelector('.production-flow p:not(.flavor-overline), .body-copy')).fontFamily,",
+);
+
 await writeFile(runtimePath, source, 'utf8');
 await import(`${runtimePath.href}?run=${Date.now()}`);
