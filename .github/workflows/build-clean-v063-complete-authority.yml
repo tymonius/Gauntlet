@@ -50,6 +50,8 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
+          import re
+
           for name in [
               'scripts/build-clean-v063-complete-authority.mjs',
               'scripts/validate-clean-v063-complete-authority.mjs',
@@ -66,15 +68,19 @@ jobs:
 
           path = Path('scripts/build-clean-v063-complete-authority.mjs')
           text = path.read_text()
-          old = '''  const expectedTerritories = stripProvenance(
-            replaceStrings(structuredClone(v062.territories), "Smuggler's Pass", "Smuggler's Run"),
-          );
-          assert.deepEqual(
-            generatedGameplay.territories,
-            expectedTerritories,
-            'Territory authority contains a v0.6.3 mutation other than the approved Smuggler title migration.',
-          );'''
-          new = '''  let expectedTerritories = structuredClone(v062.territories);
+          marker = "'Territory authority contains a v0.6.3 mutation other than the approved Smuggler title migration.'"
+          if marker in text:
+              pattern = re.compile(
+                  r'  const expectedTerritories = stripProvenance\(\n'
+                  r'    replaceStrings\(structuredClone\(v062\.territories\), "Smuggler\'s Pass", "Smuggler\'s Run"\),\n'
+                  r'  \);\n'
+                  r'  assert\.deepEqual\(\n'
+                  r'    generatedGameplay\.territories,\n'
+                  r'    expectedTerritories,\n'
+                  r"    'Territory authority contains a v0\.6\.3 mutation other than the approved Smuggler title migration\.',\n"
+                  r'  \);'
+              )
+              replacement = '''  let expectedTerritories = structuredClone(v062.territories);
           expectedTerritories = replaceStrings(expectedTerritories, 'only one banked Asset they control can be active', 'only 1 of their Assets can be active');
           expectedTerritories = replaceStrings(expectedTerritories, 'all their other banked Assets are inactive', 'their other Assets are inactive');
           expectedTerritories = replaceStrings(expectedTerritories, "Smuggler's Pass", "Smuggler's Run");
@@ -84,10 +90,18 @@ jobs:
             expectedTerritories,
             'Territory authority contains a v0.6.3 mutation outside the approved Asset-language normalization or Smuggler title migration.',
           );'''
-          if old in text:
-              text = text.replace(old, new, 1)
-          elif new not in text:
-              raise SystemExit('Expected Territory proof block not found')
+              text, count = pattern.subn(replacement, text, count=1)
+              if count != 1:
+                  raise SystemExit('Expected Territory proof block not found')
+          elif 'outside the approved Asset-language normalization or Smuggler title migration' not in text:
+              raise SystemExit('Corrected Territory proof block not found')
+
+          old_boundary = 'The complete 25-Territory authority is independently checked against the regenerated v0.6.2 state. The only v0.6.3 Territory mutation admitted by this layer is the approved stable-ID title migration from **Smuggler\'s Pass** to **Smuggler\'s Run**.'
+          new_boundary = 'The complete 25-Territory authority is independently checked against the regenerated v0.6.2 state after applying only two historically evidenced v0.6.3 Territory transformations: the Asset ownership-language normalization encoded in `scripts/apply-v063-asset-language.mjs` (affecting Disrupted Supply Lines) and the stable-ID title migration from **Smuggler\'s Pass** to **Smuggler\'s Run**.'
+          if old_boundary in text:
+              text = text.replace(old_boundary, new_boundary, 1)
+          elif new_boundary not in text:
+              raise SystemExit('Expected Territory source-boundary sentence not found')
           path.write_text(text)
           PY
 
