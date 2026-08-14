@@ -1,0 +1,36 @@
+name: Reconstruct Rite artwork
+
+on:
+  push:
+    branches:
+      - "tune/mystics-rite-unlock-columns"
+    paths:
+      - ".tmp/rite-art/**"
+
+permissions:
+  contents: write
+
+jobs:
+  reconstruct:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: tune/mystics-rite-unlock-columns
+      - name: Reconstruct approved Rite artwork
+        run: |
+          cat .tmp/rite-art/part0.b64 .tmp/rite-art/part1.b64 .tmp/rite-art/part2.b64 .tmp/rite-art/part3.b64 \
+            | base64 --decode > images/artwork/supplemental/mystics/rite-completed.webp
+          echo "54279d757ebcbbbac7f9ebb9786b56e4d37f4260340d6217800049de3b7c3a67  images/artwork/supplemental/mystics/rite-completed.webp" \
+            | sha256sum --check --strict
+      - name: Commit reconstructed binary
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add images/artwork/supplemental/mystics/rite-completed.webp
+          if git diff --cached --quiet; then
+            echo "Artwork already matches reconstructed source."
+            exit 0
+          fi
+          git commit -m "Restore full-resolution Mystics Rite artwork"
+          git push origin HEAD:tune/mystics-rite-unlock-columns
