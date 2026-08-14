@@ -6,7 +6,6 @@ on:
       - '.github/workflows/build-clean-v063-booklet.yml'
       - 'scripts/render-clean-v063-booklet.mjs'
       - 'scripts/validate-clean-v063-booklet.mjs'
-      - 'scripts/materialize-clean-v063-booklet.mjs'
       - 'artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md'
       - 'releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md'
       - 'rulebook/markdown.js'
@@ -14,18 +13,28 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   build-booklet:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 15
     steps:
-      - name: Check out PR head
+      - name: Check out booklet inputs only
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /package.json
+            /package-lock.json
+            /scripts/render-clean-v063-booklet.mjs
+            /scripts/validate-clean-v063-booklet.mjs
+            /rulebook/markdown.js
+            /artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md
+            /releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md
+            /images/sketches/hero-sketches/
 
       - name: Use Node.js
         uses: actions/setup-node@v4
@@ -38,15 +47,24 @@ jobs:
           npm install --no-save --package-lock=false pdf-lib
           npx playwright install --with-deps chromium
 
-      - name: Build, validate, and materialize booklet
+      - name: Build and validate booklet
         run: |
+          set -euo pipefail
           node --check scripts/render-clean-v063-booklet.mjs
           node --check scripts/validate-clean-v063-booklet.mjs
-          node --check scripts/materialize-clean-v063-booklet.mjs
           node scripts/render-clean-v063-booklet.mjs
           node scripts/validate-clean-v063-booklet.mjs
-          node scripts/materialize-clean-v063-booklet.mjs
-          git diff --check
+
+      - name: Verify same-input booklet reproducibility
+        run: |
+          set -euo pipefail
+          out='artifacts/reconstruction/clean-v0.6.3/booklet/generated'
+          cp "$out/Gauntlet_v0.6.3_Rulebook_Booklet_Reading_Order.pdf" /tmp/reading-first.pdf
+          cp "$out/Gauntlet_v0.6.3_Rulebook_Booklet.pdf" /tmp/booklet-first.pdf
+          node scripts/render-clean-v063-booklet.mjs
+          node scripts/validate-clean-v063-booklet.mjs
+          cmp /tmp/reading-first.pdf "$out/Gauntlet_v0.6.3_Rulebook_Booklet_Reading_Order.pdf"
+          cmp /tmp/booklet-first.pdf "$out/Gauntlet_v0.6.3_Rulebook_Booklet.pdf"
 
       - name: Upload booklet review artifact
         uses: actions/upload-artifact@v4
@@ -54,19 +72,3 @@ jobs:
           name: gauntlet-clean-v063-rulebook-booklet
           path: artifacts/reconstruction/clean-v0.6.3/booklet/generated/**
           if-no-files-found: error
-
-      - name: Commit reviewed booklet binary and manifest
-        if: github.event_name == 'pull_request' && github.head_ref == 'fix/v063-clean-rulebook-booklet'
-        run: |
-          set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add \
-            releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook_Booklet.pdf \
-            releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Manifest.json
-          if git diff --cached --quiet; then
-            echo 'Reviewed booklet is already materialized.'
-          else
-            git commit -m 'Materialize v0.6.3 rulebook booklet'
-            git push origin HEAD:${{ github.head_ref }}
-          fi
