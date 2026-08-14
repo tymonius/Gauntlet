@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "source_issue": 405,
+  "source_comment_id": 5221286097,
+  "source_url": "https://github.com/tymonius/Gauntlet/issues/405#issuecomment-5221286097",
+  "created_at": "2026-08-07T19:37:53Z",
+  "updated_at": "2026-08-11T14:01:53Z",
+  "captured_from_repository": "tymonius/Gauntlet",
+  "snapshot_path": "artifacts/reconstruction/evidence/v0.6.3/issue-405-finalized-card-tracker.md",
+  "snapshot_sha256": "03301736a77d9b0b40bc86290a6fe428f556303d183da858c7791fc1f70b36c5",
+  "role": "Immutable reconstruction evidence. Final authority validation is offline and does not reread the live comment."
+}

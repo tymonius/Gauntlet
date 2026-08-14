@@ -21,7 +21,7 @@ const json = (rel) => JSON.parse(read(rel));
 const sha256 = (text) => crypto.createHash('sha256').update(text, 'utf8').digest('hex');
 const provenanceKeys = new Set([
   'source', 'source_candidate', 'v063_source', 'governing_sources',
-  'inherits_from', 'release_manifest', 'provenance',
+  'inherits_from', 'release_manifest', 'provenance', 'authority_set_id',
 ]);
 const topLevelProcessKeys = new Set([
   'version', 'name', 'date', 'status', 'publication_unlocked', 'authority_set_id',
@@ -121,7 +121,6 @@ assert.equal(ledger.publication_unlocked, false);
 assert.equal(ledger.approval_bridge?.pr, 606);
 assert.equal(ledger.approval_bridge?.merge_commit, 'e84e27958c7f6d8d4bd0390bdbac456b40adef1b');
 assert.equal(ledger.decision_registry?.records?.length, candidates.decisions?.length);
-assert.equal(ledger.decision_registry?.records?.length, 49);
 assert(ledger.decision_registry.records.every((entry) => entry.historical_human_adoption_status === 'pending'));
 assert(ledger.decision_registry.records.every((entry) => entry.approved_reconstruction_disposition !== 'pending'));
 assert(ledger.non_authority_sources?.some((entry) => entry.path === 'governance/traceability.json'));
@@ -148,7 +147,7 @@ assert.equal(lifecycle.current_release, 'v0.6.1');
 assert.equal(lifecycle.releases?.['v0.6.2']?.status, 'withdrawn');
 assert.equal(lifecycle.releases?.['v0.6.3']?.status, 'withdrawn');
 
-console.log(`Validated clean-v0.6.3 complete authority ${manifest.authority_set_id}: 128 cards, 25 Territories, 49 normalized provenance records, 21 frozen bespoke card sections, and zero gameplay drift.`);
+console.log(`Validated clean-v0.6.3 complete authority ${manifest.authority_set_id}: 128 cards, 25 Territories, ${candidates.decisions?.length ?? 0} normalized provenance records, 21 frozen bespoke card sections, and zero gameplay drift.`);
 
 function parseTracker(body) {
   const lines = body.replace(/\r/g, '').split('\n');

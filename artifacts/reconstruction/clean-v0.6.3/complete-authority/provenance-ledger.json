@@ -1,0 +1,2581 @@
+{
+  "schema_version": 1,
+  "target": "clean-v0.6.3-complete-authority",
+  "status": "provenance_reconstructed_for_certification",
+  "publication_unlocked": false,
+  "public_current_release": "v0.6.1",
+  "approval_bridge": {
+    "pr": 606,
+    "merged_at": "2026-08-13T07:24:17Z",
+    "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+    "source": "https://github.com/tymonius/Gauntlet/pull/606",
+    "mechanism": "Manual merge of the PR introducing this record approves these version-scoped dispositions for reconstruction authority work only. Publication remains separately locked."
+  },
+  "baseline": {
+    "path": "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json",
+    "role": "immutable_published_v061_authority_and_structural_base",
+    "sha256": "764b99565bf633757c0a9fb1feca5b61313ccf32c1292bff3ec3ab9204f9dbe9"
+  },
+  "decision_registry": {
+    "historical_candidates": "config/reconstruction-decision-candidates.json",
+    "version_resolutions": "config/reconstruction-version-resolutions.json",
+    "version_plan": "config/reconstruction-version-plan.json",
+    "records": [
+      {
+        "id": "rules-opening-denouement-phases",
+        "audit_issue": 594,
+        "category": "shared-rules",
+        "summary": "Use Opening and Denouement as the named pre- and post-Movement Action phases.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/466",
+          "https://github.com/tymonius/Gauntlet/pull/493"
+        ],
+        "semantic_assertions": [
+          "Turn order contains Opening before Movement and Denouement after Movement.",
+          "Phase names alone do not grant additional Actions."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "factions",
+          "territories",
+          "onboarding",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "rules-action-economy-rebuild",
+        "audit_issue": 594,
+        "category": "shared-rules",
+        "summary": "Normalize the complete Action/Faction Action/Faction Ability economy separately from the phase-name migration.",
+        "historical_registry_recommendation": "defer",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": {
+          "candidate_id": "rules-action-economy-rebuild",
+          "registry_recommendation": "defer",
+          "version_disposition": "adopt",
+          "evidence": [
+            "https://github.com/tymonius/Gauntlet/issues/466#issuecomment-5171380473",
+            "https://github.com/tymonius/Gauntlet/issues/466#issuecomment-5171741858",
+            "https://github.com/tymonius/Gauntlet/pull/511"
+          ],
+          "reason": "The original issue explicitly accepted the two-phase Action/Faction Action/Faction Ability model for v0.6.2; PR #511 later corrected six same-phase Action effects within that model."
+        },
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/466",
+          "https://github.com/tymonius/Gauntlet/pull/511"
+        ],
+        "semantic_assertions": [
+          "Exactly two named Action phases exist.",
+          "Normal turn Action count and per-phase Action capacity remain distinct permissions.",
+          "Directly permitted procedures do not manufacture extra Action phases."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "factions",
+          "leaders",
+          "territories",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "rules-onset-term",
+        "audit_issue": 594,
+        "category": "shared-rules",
+        "summary": "Use Onset as the formal battle-opening stage.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/470",
+          "https://github.com/tymonius/Gauntlet/pull/493"
+        ],
+        "semantic_assertions": [
+          "Onset is distinct from the turn Opening phase.",
+          "Cards formerly tied to battle opening effects migrate to Onset only when their timing is semantically identical."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "factions",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "rules-pending-battle-terms-onset",
+        "audit_issue": 594,
+        "category": "shared-rules",
+        "summary": "Treat pending battle, Terms, and Onset as separate procedural states and review the exact boundary independently.",
+        "historical_registry_recommendation": "defer",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": {
+          "candidate_id": "rules-pending-battle-terms-onset",
+          "registry_recommendation": "defer",
+          "version_disposition": "adopt",
+          "evidence": [
+            "https://github.com/tymonius/Gauntlet/issues/457",
+            "https://github.com/tymonius/Gauntlet/issues/470#issuecomment-5180529817"
+          ],
+          "reason": "Issue #457 explicitly adopted the distinct pre-battle Terms window; the final v0.6.2 terminology lock names the following battle stage Onset."
+        },
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/457",
+          "https://github.com/tymonius/Gauntlet/pull/493"
+        ],
+        "semantic_assertions": [
+          "Accepted Terms before Onset prevent the battle from beginning.",
+          "A pre-Onset withdrawal has no battle result or Aftermath.",
+          "Post-Onset withdrawal follows the separately approved no-winner cleanup rule."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "diplomats",
+          "cards",
+          "leaders",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "rules-movement-vocabulary",
+        "audit_issue": 594,
+        "category": "shared-rules",
+        "summary": "Use Advance, Hold, and Fall Back for ordinary Movement.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/473",
+          "https://github.com/tymonius/Gauntlet/issues/470"
+        ],
+        "semantic_assertions": [
+          "Fall Back is ordinary voluntary backward Movement.",
+          "Withdraw is not used for ordinary Movement.",
+          "Retreat remains displacement after losing a battle."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "leaders",
+          "territories",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "rules-withdraw-retreat-vocabulary",
+        "audit_issue": 594,
+        "category": "shared-rules",
+        "summary": "Reserve withdraw for ending/preventing battle without a winner and retreat for displacement after losing.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/473"
+        ],
+        "semantic_assertions": [
+          "Withdrawal does not count as a loss.",
+          "Retreat follows a battle loss and preserves win/loss consequences."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "leaders",
+          "diplomats",
+          "territories",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "rules-front-line-control",
+        "audit_issue": 594,
+        "category": "shared-rules",
+        "summary": "Control remains contiguous from each player's own end through a Front Line even when token position advances farther.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/460",
+          "https://github.com/tymonius/Gauntlet/pull/493"
+        ],
+        "semantic_assertions": [
+          "Normal Capture cannot create isolated control.",
+          "Token position may be beyond the Front Line.",
+          "All immediate-capture/control effects must be reviewed for Front Line legality."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "victory",
+          "cards",
+          "leaders",
+          "factions",
+          "territories",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "rules-defensive-edge",
+        "audit_issue": 594,
+        "category": "shared-rules",
+        "summary": "Rename Defender's Advantage to Defensive Edge while preserving its conditional tied-total benefit.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/452",
+          "https://github.com/tymonius/Gauntlet/pull/493"
+        ],
+        "semantic_assertions": [
+          "Defensive Edge is not an Advantage instance.",
+          "It normally applies when defending a controlled Territory or making a Last Stand unless removed."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "leaders",
+          "territories",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "rules-tiebreak-roll",
+        "audit_issue": 594,
+        "category": "shared-rules",
+        "summary": "Resolve otherwise-unresolved tied battle totals with a separate unmodified Tiebreak Roll.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/476",
+          "https://github.com/tymonius/Gauntlet/pull/493"
+        ],
+        "semantic_assertions": [
+          "One die each; higher roll wins.",
+          "No Advantage, Disadvantage, card effects, numerical modifiers, or previous battle totals apply unless an effect expressly names the Tiebreak Roll.",
+          "Further ties reroll the Tiebreak Roll."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "territories",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "rules-deck-draw-pile-terms",
+        "audit_issue": 594,
+        "category": "shared-rules",
+        "summary": "Use Deck for the constructed ordinary-card set and Draw Pile for the shuffled in-play pile.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/539",
+          "https://github.com/tymonius/Gauntlet/pull/540"
+        ],
+        "semantic_assertions": [
+          "Deck and Draw Pile are not synonyms.",
+          "Leader and Territory components are not part of the Deck term."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "starters",
+          "deckbuilder",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "setup-v062-bottom-deck-opening",
+        "audit_issue": 595,
+        "category": "setup-victory",
+        "summary": "Reject the superseded v0.6.2 draw-four/keep-three/bottom-deck-fourth-card test procedure.",
+        "historical_registry_recommendation": "reject",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": {
+          "candidate_id": "setup-v062-bottom-deck-opening",
+          "registry_recommendation": "reject",
+          "version_disposition": "adopt",
+          "evidence": [
+            "https://github.com/tymonius/Gauntlet/issues/487",
+            "https://github.com/tymonius/Gauntlet/issues/470#issuecomment-5180420089"
+          ],
+          "reason": "This was explicitly adopted as the v0.6.2 test revision. Its later supersession applies to clean v0.6.3, not retroactively to clean v0.6.2."
+        },
+        "explicit_v063_supersession": {
+          "earlier_decision": "setup-v062-bottom-deck-opening",
+          "version_disposition": "supersede",
+          "replacement": "setup-draw4-discard1-keep3",
+          "reason": "v0.6.3 deliberately changes the fourth opening card from face-down bottom-of-Draw-Pile placement to a face-up opening discard."
+        },
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/487"
+        ],
+        "semantic_assertions": [
+          "No reconstructed setup sends the fourth opening card face down beneath the Draw Pile."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "setup",
+          "onboarding",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "setup-draw4-discard1-keep3",
+        "audit_issue": 595,
+        "category": "setup-victory",
+        "summary": "Draw four, discard one face up, and keep three before Territory arrangement.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/528",
+          "https://github.com/tymonius/Gauntlet/pull/529"
+        ],
+        "semantic_assertions": [
+          "Opening discard is mandatory and face up.",
+          "Opening discard does not itself pay a discard cost or trigger a card-discard effect unless expressly referenced.",
+          "The kept opening Hand contains three cards."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "setup",
+          "starters",
+          "onboarding",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "setup-informed-territory-arrangement",
+        "audit_issue": 595,
+        "category": "setup-victory",
+        "summary": "Arrange Territories after opening Hand selection with the opening Hand and discard known.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/487",
+          "https://github.com/tymonius/Gauntlet/issues/528"
+        ],
+        "semantic_assertions": [
+          "Players know their opening Hand and face-up opening discard before Territory arrangement.",
+          "Starter recommended order is not a setup lock."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "setup",
+          "territories",
+          "starters",
+          "onboarding",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "setup-first-player-after-arrangement",
+        "audit_issue": 595,
+        "category": "setup-victory",
+        "summary": "Determine first player only after opening selection and Territory arrangement.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/528",
+          "https://github.com/tymonius/Gauntlet/pull/529"
+        ],
+        "semantic_assertions": [
+          "First-player information is unavailable during opening selection and Territory arrangement."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "setup",
+          "onboarding",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "setup-start-on-own-end-territory",
+        "audit_issue": 595,
+        "category": "setup-victory",
+        "summary": "Place each Player Token on the Territory at that player's own end during setup.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/528",
+          "https://github.com/tymonius/Gauntlet/pull/529"
+        ],
+        "semantic_assertions": [
+          "Setup placement is not movement.",
+          "Setup placement is not entering a Territory.",
+          "Entry triggers do not fire from setup placement."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "setup",
+          "territories",
+          "cards",
+          "starters",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "victory-final-territory-capture",
+        "audit_issue": 595,
+        "category": "setup-victory",
+        "summary": "Legal capture of the Territory at the opponent's end immediately wins by running the Gauntlet.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/528",
+          "https://github.com/tymonius/Gauntlet/pull/529"
+        ],
+        "semantic_assertions": [
+          "Any legal capture mechanism can produce this victory.",
+          "Front Line legality still governs capture.",
+          "No later Last Stand is required after final-Territory capture victory."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "victory",
+          "cards",
+          "leaders",
+          "factions",
+          "territories",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "victory-independent-last-stand",
+        "audit_issue": 595,
+        "category": "setup-victory",
+        "summary": "Winning the opponent's Last Stand is an independent normal Run-the-Gauntlet victory route.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/528",
+          "https://github.com/tymonius/Gauntlet/pull/529"
+        ],
+        "semantic_assertions": [
+          "Final-Territory control or capture is not required before Last Stand.",
+          "A separate legal movement sequence is required to Advance beyond the opponent's end.",
+          "Unused movement from the preceding battle sequence cannot carry into Last Stand."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "victory",
+          "cards",
+          "leaders",
+          "factions",
+          "territories",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "victory-run-the-gauntlet-umbrella",
+        "audit_issue": 595,
+        "category": "setup-victory",
+        "summary": "Run the Gauntlet means winning by final-Territory capture or Last Stand victory.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/528"
+        ],
+        "semantic_assertions": [
+          "Faction alternate victories are not Run-the-Gauntlet routes unless expressly stated."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "victory",
+          "factions",
+          "onboarding",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "cards-role-headings",
+        "audit_issue": 596,
+        "category": "card-rules",
+        "summary": "Retire printed Battle as an eligibility heading; use Gambit/Tactic, Gambit, or Tactic according to semantic role eligibility.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/551"
+        ],
+        "semantic_assertions": [
+          "Structured data retains explicit role eligibility independent of display heading.",
+          "A heading with no later timing resolves at the normal reveal timing for that role."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "canonical-data",
+          "card-reference",
+          "deckbuilder",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "cards-asset-only-banked-heading",
+        "audit_issue": 596,
+        "category": "card-rules",
+        "summary": "Use Asset as the sole banked-card effect heading and retire Activate.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/551"
+        ],
+        "semantic_assertions": [
+          "Retiring Activate does not make optional Asset abilities free Actions."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "canonical-data",
+          "card-reference",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "cards-inherent-bank-action",
+        "audit_issue": 596,
+        "category": "card-rules",
+        "summary": "A card with an ordinary Asset effect has an inherent Action to play it from Hand and bank it.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/540",
+          "https://github.com/tymonius/Gauntlet/pull/551"
+        ],
+        "semantic_assertions": [
+          "A printed special banking Action overrides the ordinary Bank procedure.",
+          "Conditional-banking cards such as Sanctions do not gain the ordinary inherent Bank Action solely because they may later be banked."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "cards-directly-permitted-procedures",
+        "audit_issue": 596,
+        "category": "card-rules",
+        "summary": "A directly permitted card procedure occurs as part of the permitting effect and does not spend another Action unless expressly stated.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/466",
+          "https://github.com/tymonius/Gauntlet/pull/551"
+        ],
+        "semantic_assertions": [
+          "Direct permission does not create another Action phase.",
+          "An instruction expressly identifying an Action still uses Action permission."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "factions",
+          "leaders",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "cards-effect-granted-movement",
+        "audit_issue": 596,
+        "category": "card-rules",
+        "summary": "Effect-granted movement joins an active movement sequence or starts a new movement sequence when none is active.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/540",
+          "https://github.com/tymonius/Gauntlet/pull/551"
+        ],
+        "semantic_assertions": [
+          "Normal movement rules apply unless an effect says otherwise.",
+          "Effect-granted movement may create a pending battle or legal Last Stand unless prohibited.",
+          "A created pending battle ends that movement sequence and loses unused movement."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "leaders",
+          "victory",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "cards-additional-tactic-defaults",
+        "audit_issue": 596,
+        "category": "card-rules",
+        "summary": "Centralize additional-Tactic eligibility, reveal state, timing, cleanup, Reserve default source, and stacking.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/540",
+          "https://github.com/tymonius/Gauntlet/pull/551"
+        ],
+        "semantic_assertions": [
+          "Before reveal an additional Tactic is set face down; after reveal it is played face up.",
+          "Reserve is the default source unless another source is named.",
+          "Multiple Reserve/Tactic modifiers stack unless expressly prohibited.",
+          "Earlier choice/reveal windows do not reopen."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "factions",
+          "leaders",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "cards-sanctions-shared-rule",
+        "audit_issue": 596,
+        "category": "card-rules",
+        "summary": "Centralize the refusing-opponent association and default later-acceptance expiry of Sanctions cards.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/540",
+          "https://github.com/tymonius/Gauntlet/pull/551"
+        ],
+        "semantic_assertions": [
+          "Card-specific additional expiry conditions remain printed.",
+          "Sanctions conditional banking remains separate from ordinary Asset banking."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "diplomats",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "cards-asset-removed-event",
+        "audit_issue": 596,
+        "category": "card-rules",
+        "summary": "Define Removed as involuntary Asset loss caused by a rule/effect, independent of destination.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/551"
+        ],
+        "semantic_assertions": [
+          "Forced loss from an Asset-limit decrease counts as Removed.",
+          "Voluntary spend/discard/return/use does not count unless stated.",
+          "Normal self-expiration does not count unless stated.",
+          "Removed does not assign a destination."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "factions",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "cards-bind-defaults",
+        "audit_issue": 596,
+        "category": "card-rules",
+        "summary": "Use Discard Pile as the fallback destination for bound cards when a host leaves play and discard excess bound cards when a maximum decreases.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/551"
+        ],
+        "semantic_assertions": [
+          "Card/faction-specific bound-card destinations override the fallback.",
+          "Every inherited binding system is audited before removing explicit exception text."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "factions",
+          "mystics",
+          "financiers",
+          "intelligence",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "cards-reveal-interference-priority",
+        "audit_issue": 596,
+        "category": "card-rules",
+        "summary": "Resolve same-stage reveal interference before ordinary effects at that reveal stage.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/540",
+          "https://github.com/tymonius/Gauntlet/pull/551"
+        ],
+        "semantic_assertions": [
+          "Interference must reveal, negate, return, discard, replace, or prevent another same-stage battle card.",
+          "A card cannot be negated after its effect has applied.",
+          "Competing interference uses the normal shared-timing rule."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "intelligence",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "cards-apply-repeat-effects",
+        "audit_issue": 596,
+        "category": "card-rules",
+        "summary": "Centralize semantics for applying or repeating another card effect.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/551"
+        ],
+        "semantic_assertions": [
+          "Copied/repeated effect must be legal at current timing.",
+          "Choices and costs are made again.",
+          "Source card stays in place unless expressly moved.",
+          "Play/set/choose triggers do not fire solely from copied application.",
+          "Recursion cannot continue indefinitely."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "mystics",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "cards-no-winner-cleanup",
+        "audit_issue": 596,
+        "category": "card-rules",
+        "summary": "Centralize cleanup and result semantics for battles that end without a winner.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/551"
+        ],
+        "semantic_assertions": [
+          "Neither player wins or loses.",
+          "Unresolved battle effects do not apply unless stated.",
+          "Already-applied effects are not undone.",
+          "Applicable non-result Aftermath and card clearing still occur after Onset.",
+          "Position/Occupation follows where tokens remain."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "diplomats",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "cards-reroll-new-result-default",
+        "audit_issue": 596,
+        "category": "card-rules",
+        "summary": "A reroll replaces the result rerolled unless an effect expressly says otherwise.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/540"
+        ],
+        "semantic_assertions": [
+          "Any card intentionally allowing the old result must carry an explicit exception."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "cards",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "cards-compact-shorthand",
+        "audit_issue": 596,
+        "category": "card-rules",
+        "summary": "Allow compact numeric/condition shorthand only after semantic rules are authoritative and machine data retains full meaning.",
+        "historical_registry_recommendation": "adopt_selectively",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt_selectively",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/540",
+          "https://github.com/tymonius/Gauntlet/pull/551"
+        ],
+        "semantic_assertions": [
+          "Structured data retains subject, timing, source, quantity, role, destination, and exceptions.",
+          "+N Action means the specifically approved current-phase permission only where that permission is actually granted."
+        ],
+        "affected_surfaces": [
+          "cards",
+          "canonical-data",
+          "card-reference",
+          "deckbuilder",
+          "rules-arbiter",
+          "print"
+        ]
+      },
+      {
+        "id": "cards-1v1-editorial-conventions",
+        "audit_issue": 596,
+        "category": "card-rules",
+        "summary": "Remove redundant 1v1 scope and self-reference where it does not erase role or timing semantics.",
+        "historical_registry_recommendation": "adopt_selectively",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt_selectively",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/551"
+        ],
+        "semantic_assertions": [
+          "Attacker, defender, and Counterattack conditions are never removed merely because the current game is 1v1."
+        ],
+        "affected_surfaces": [
+          "cards",
+          "card-reference",
+          "rules-arbiter",
+          "print"
+        ]
+      },
+      {
+        "id": "card-protracted-siege-revision",
+        "audit_issue": 596,
+        "category": "card-mechanics",
+        "summary": "Use the finalized Protracted Siege Asset/Gambit-Tactic/Overlay capture-prevention model.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/405#issuecomment-5221286097",
+          "https://github.com/tymonius/Gauntlet/pull/551"
+        ],
+        "semantic_assertions": [
+          "Asset mode sacrifices the Asset to prevent one capture of a Territory you control.",
+          "Battle role places the Overlay after a defensive loss.",
+          "Overlay prevents the next capture event once and expires, or expires if the opposing token leaves first.",
+          "It never creates noncontiguous control or permanently freezes the Front Line."
+        ],
+        "affected_surfaces": [
+          "cards",
+          "rules",
+          "canonical-data",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "card-margin-loan-persistent",
+        "audit_issue": 596,
+        "category": "card-mechanics",
+        "summary": "Use persistent banked Margin Loan with optional Repay/Default after income and suppressed normal start-of-turn Draw while outstanding.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/405#issuecomment-5221286097",
+          "https://github.com/tymonius/Gauntlet/pull/560",
+          "https://github.com/tymonius/Gauntlet/pull/511"
+        ],
+        "semantic_assertions": [
+          "Repay/Default is optional after income while banked.",
+          "Normal start-of-turn Draw is suppressed while the loan remains banked.",
+          "Removed causes Default.",
+          "The additional Action uses the specifically approved same-phase permission.",
+          "Suppressed Draw must not accidentally satisfy an unrelated empty-Draw victory rule."
+        ],
+        "affected_surfaces": [
+          "cards",
+          "financiers",
+          "rules",
+          "canonical-data",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "cards-405-umbrella-disposition",
+        "audit_issue": 596,
+        "category": "card-rules",
+        "summary": "Reject blanket adoption of all #405 finalized text as one gameplay decision; retain it as per-card evidence and editorial source.",
+        "historical_registry_recommendation": "reject",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "reject",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/405#issuecomment-5221286097"
+        ],
+        "semantic_assertions": [
+          "Mechanics-sensitive cards receive separate decisions.",
+          "Pure editorial text flows only from approved shared conventions after authority reconstruction."
+        ],
+        "affected_surfaces": [
+          "cards",
+          "canonical-data",
+          "card-reference",
+          "deckbuilder",
+          "rules-arbiter",
+          "digital",
+          "starters",
+          "print"
+        ]
+      },
+      {
+        "id": "pool-expand-to-128",
+        "audit_issue": 593,
+        "category": "card-pool",
+        "summary": "Use 50 Neutral cards and 13 cards in each of the six faction pools, for 128 playable titles.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/481",
+          "https://github.com/tymonius/Gauntlet/pull/496"
+        ],
+        "semantic_assertions": [
+          "Neutral count is 50.",
+          "Each faction count is 13.",
+          "Total playable-title count is 128."
+        ],
+        "affected_surfaces": [
+          "cards",
+          "factions",
+          "canonical-data",
+          "starters",
+          "deckbuilder",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "pool-landslide",
+        "audit_issue": 593,
+        "category": "card-pool",
+        "summary": "Add Neutral Landslide at cost 4 with Action/Gambit-Tactic/Overlay retreat-chain behavior and one-per-Territory limit.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/481",
+          "https://github.com/tymonius/Gauntlet/pull/496"
+        ],
+        "semantic_assertions": [
+          "Landslide triggers from retreat only.",
+          "Consecutive Landslides may chain.",
+          "No Territory may host more than one Landslide."
+        ],
+        "affected_surfaces": [
+          "cards",
+          "canonical-data",
+          "deckbuilder",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "pool-invasion-military",
+        "audit_issue": 593,
+        "category": "card-pool",
+        "summary": "Move Invasion from Neutral to Military, retain cost 4/non-Unique identity, and migrate its modes to the reconstructed movement/battle rules.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/481",
+          "https://github.com/tymonius/Gauntlet/pull/496"
+        ],
+        "semantic_assertions": [
+          "Invasion is Military, not Neutral.",
+          "Unused added movement is lost when a pending battle is created.",
+          "Invasion and Onward use the same movement sequence unless another effect creates a later one."
+        ],
+        "affected_surfaces": [
+          "cards",
+          "military",
+          "starters",
+          "canonical-data",
+          "deckbuilder",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "pool-detente",
+        "audit_issue": 593,
+        "category": "card-pool",
+        "summary": "Add Diplomat Détente at cost 3 as a one-banked-copy Asset rewarding the first accepted already-ratified Proposal each turn.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/481",
+          "https://github.com/tymonius/Gauntlet/pull/496"
+        ],
+        "semantic_assertions": [
+          "Does not trigger when a Proposal becomes newly ratified during those Terms.",
+          "Maximum one banked Détente."
+        ],
+        "affected_surfaces": [
+          "cards",
+          "diplomats",
+          "starters",
+          "canonical-data",
+          "deckbuilder",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "pool-compound-interest",
+        "audit_issue": 593,
+        "category": "card-pool",
+        "summary": "Add Financier Compound Interest at cost 4 as a one-banked-copy Asset that may route the top post-Draw card to Treasury or Discard Pile when Treasury is nonempty.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/481",
+          "https://github.com/tymonius/Gauntlet/pull/496"
+        ],
+        "semantic_assertions": [
+          "Reveal is optional.",
+          "Once revealed the card must enter Treasury or Discard Pile.",
+          "Maximum one banked Compound Interest."
+        ],
+        "affected_surfaces": [
+          "cards",
+          "financiers",
+          "starters",
+          "canonical-data",
+          "deckbuilder",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "pool-extraordinary-rendition",
+        "audit_issue": 593,
+        "category": "card-pool",
+        "summary": "Add Intelligence Extraordinary Rendition at cost 4 as a one-banked-copy Asset binding one revealed opposing Hand card.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/481",
+          "https://github.com/tymonius/Gauntlet/pull/496"
+        ],
+        "semantic_assertions": [
+          "Bound card cannot be played/moved/affected except by Rendition.",
+          "When Rendition leaves play the bound card goes to its owner's Discard Pile.",
+          "Maximum one banked Rendition."
+        ],
+        "affected_surfaces": [
+          "cards",
+          "intelligence",
+          "starters",
+          "canonical-data",
+          "deckbuilder",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "pool-natures-altar",
+        "audit_issue": 593,
+        "category": "card-pool",
+        "summary": "Add Arcane Nature's Altar at cost 4 as a Territory Overlay enabling Begin a Rite during Opening and conditional same-turn completion.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/481",
+          "https://github.com/tymonius/Gauntlet/pull/496"
+        ],
+        "semantic_assertions": [
+          "Player Token must be on the Altar Territory to begin through the Altar.",
+          "A same-turn completion requires control of the Altar Territory at completion timing.",
+          "Other Rite requirements remain intact."
+        ],
+        "affected_surfaces": [
+          "cards",
+          "mystics",
+          "starters",
+          "canonical-data",
+          "deckbuilder",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "pool-martyrdom",
+        "audit_issue": 593,
+        "category": "card-pool",
+        "summary": "Add Unique Inquisition Martyrdom at cost 5 as an Aftermath response from Hand after losing.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/481",
+          "https://github.com/tymonius/Gauntlet/pull/496"
+        ],
+        "semantic_assertions": [
+          "The Inquisition still loses and retreats normally.",
+          "Cards remaining in the opponent's Reserve go to Graveyard instead of Discard Pile.",
+          "After battle cards clear, Conviction is set to 4.",
+          "No Martyrs suppresses Martyrdom in the applicable mirror interaction."
+        ],
+        "affected_surfaces": [
+          "cards",
+          "inquisition",
+          "starters",
+          "canonical-data",
+          "deckbuilder",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "faction-military-leader-ownership",
+        "audit_issue": 597,
+        "category": "factions-leaders",
+        "summary": "Preserve General ownership of Onward/Rally/Rout and Commandant ownership of Entrench/Repel/Fortify; Military has no Faction Actions or adopted alternate victory.",
+        "historical_registry_recommendation": "preserve",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "preserve",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md"
+        ],
+        "semantic_assertions": [
+          "Orders remain Leader-specific.",
+          "Military has no adopted alternate victory.",
+          "Orders do not consume Actions."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "military",
+          "leaders",
+          "starters",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "leader-commandant-fortify-front-line",
+        "audit_issue": 597,
+        "category": "factions-leaders",
+        "summary": "Revise Fortify so a qualifying Commandant win advances the Front Line by one Territory, if able, rather than creating isolated control.",
+        "historical_registry_recommendation": "revise",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "revise",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/496"
+        ],
+        "semantic_assertions": [
+          "Fortify remains Commandant-only and costs 2 Command.",
+          "Fortify cannot create isolated control."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "military",
+          "leaders",
+          "cards",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "faction-diplomat-influence-economy",
+        "audit_issue": 597,
+        "category": "factions-leaders",
+        "summary": "Adopt revised Influence rewards for newly accepted/imposed Treaty Articles while retaining failed-Terms Stake loss and starting Influence 1.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/455",
+          "https://github.com/tymonius/Gauntlet/pull/496"
+        ],
+        "semantic_assertions": [
+          "Accepted newly ratified Proposal returns Stake and gains 1 Influence.",
+          "Refused then newly imposed Proposal after a Diplomat win returns Stake and gains 2 Influence.",
+          "Failed Terms lose Stake and do not ratify.",
+          "Already-ratified Proposals grant no default ratification reward."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "diplomats",
+          "proposals",
+          "leaders",
+          "cards",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "faction-diplomat-leverage-curve",
+        "audit_issue": 597,
+        "category": "factions-leaders",
+        "summary": "Use the triangular Leverage cost progression 1/3/6/10/... for +1/+2/+3/+4/... battle total after refused Terms.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/496"
+        ],
+        "semantic_assertions": [
+          "Each additional +1 costs one more Influence than the prior increment.",
+          "Staked Influence cannot be spent on Leverage."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "diplomats",
+          "leaders",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "faction-diplomat-proposal-perspective",
+        "audit_issue": 597,
+        "category": "factions-leaders",
+        "summary": "Use explicit Diplomat/accepting-player/refusing-player roles on Proposal cards because the card is presented to the receiving player.",
+        "historical_registry_recommendation": "adopt_selectively",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt_selectively",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/496"
+        ],
+        "semantic_assertions": [
+          "Proposal perspective changes do not alter mechanical destinations or rewards."
+        ],
+        "affected_surfaces": [
+          "proposals",
+          "rules",
+          "diplomats",
+          "card-reference",
+          "rules-arbiter",
+          "print"
+        ]
+      },
+      {
+        "id": "faction-financier-starting-capital-2",
+        "audit_issue": 597,
+        "category": "factions-leaders",
+        "summary": "Begin Financiers with 2 Capital as a retained playtest balance revision.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/453",
+          "https://github.com/tymonius/Gauntlet/pull/496"
+        ],
+        "semantic_assertions": [
+          "Starting Capital is 2.",
+          "Line of Credit collateral cap remains unchanged unless separately decided."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "financiers",
+          "starters",
+          "onboarding",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "leader-executive-hostile-takeover-front-line",
+        "audit_issue": 597,
+        "category": "factions-leaders",
+        "summary": "Revise Hostile Takeover so a qualifying purchase advances the Executive's Front Line by one Territory, if able, instead of creating isolated control.",
+        "historical_registry_recommendation": "revise",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "revise",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/496"
+        ],
+        "semantic_assertions": [
+          "Hostile Takeover remains Executive-only.",
+          "Purchase/buyout and price calculation remain intact.",
+          "It cannot create isolated control."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "financiers",
+          "leaders",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "faction-intelligence-full-restatement",
+        "audit_issue": 597,
+        "category": "factions-leaders",
+        "summary": "Carry the complete v0.6.1 Intelligence engine forward explicitly rather than using retains-existing shorthand.",
+        "historical_registry_recommendation": "preserve",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "preserve",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md"
+        ],
+        "semantic_assertions": [
+          "All five Mission/Special Operation procedures are fully stated.",
+          "Ranger Fieldcraft and Spymaster Mission Control remain distinct Leader abilities.",
+          "Direct 2-Intel Interference of face-up commitments remains supported."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "intelligence",
+          "leaders",
+          "cards",
+          "starters",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "faction-mystics-baseline-progression",
+        "audit_issue": 597,
+        "category": "factions-leaders",
+        "summary": "Preserve the complete v0.6.1 Rite/Ritual progression and both Leader abilities as the Mystics authority base.",
+        "historical_registry_recommendation": "preserve",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "preserve",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "releases/v0.6.1/faction-guides/mystics/Gauntlet_v0.6.1_Mystics_Faction_Guide.md"
+        ],
+        "semantic_assertions": [
+          "Guardians of the Circle 1/2/3/4 protection is recognized as the existing v0.6.1 formula, not a new mechanics change.",
+          "Materia Prima remains Alchemist-only and Guardians remains Spirit Walker-only."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "mystics",
+          "leaders",
+          "cards",
+          "starters",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "faction-inquisition-purge-phase-model",
+        "audit_issue": 597,
+        "category": "factions-leaders",
+        "summary": "Use the phase-compatible Purge formulation only if the broader Opening/Denouement Action economy is adopted.",
+        "historical_registry_recommendation": "defer",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": {
+          "candidate_id": "faction-inquisition-purge-phase-model",
+          "registry_recommendation": "defer",
+          "version_disposition": "adopt",
+          "evidence": [
+            "https://github.com/tymonius/Gauntlet/issues/466#issuecomment-5171229601",
+            "https://github.com/tymonius/Gauntlet/issues/466#issuecomment-5171380473",
+            "https://github.com/tymonius/Gauntlet/pull/496"
+          ],
+          "reason": "The Purge phase exception was explicitly defined as part of the accepted v0.6.2 Action model."
+        },
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/466",
+          "https://github.com/tymonius/Gauntlet/pull/496"
+        ],
+        "semantic_assertions": [
+          "Purge can be the Action in Opening or Denouement.",
+          "If Purge enables two phase Actions, they remain split across the two phases.",
+          "Final Judgment Purge does not consume the Purge Faction Action or activate this permission."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "inquisition",
+          "leaders",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "leaders-preserve-noncontrol-abilities",
+        "audit_issue": 597,
+        "category": "factions-leaders",
+        "summary": "Preserve Cordiality, Political Capital, Line of Credit, Fieldcraft, Mission Control, Materia Prima, Guardians of the Circle, Final Judgment, Relentless Pursuit, Onward, Rally, Rout, Entrench, and Repel mechanically, applying only approved compatibility wording.",
+        "historical_registry_recommendation": "preserve",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "preserve",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "config/leader-authority-v061.json",
+          "https://github.com/tymonius/Gauntlet/issues/597#issuecomment-5276146685"
+        ],
+        "semantic_assertions": [
+          "Each ability remains under exactly one correct Leader.",
+          "Relentless Pursuit compatibility wording creates no inserted Opening/Denouement before its follow-up battle.",
+          "Final Judgment remains a directly permitted Purge after a qualifying win."
+        ],
+        "affected_surfaces": [
+          "rules",
+          "factions",
+          "leaders",
+          "starters",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "territories-preserve-25",
+        "audit_issue": 598,
+        "category": "territories-identities",
+        "summary": "Preserve the 25-Territory pool and persistent stable identities.",
+        "historical_registry_recommendation": "preserve",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "preserve",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json",
+          "https://github.com/tymonius/Gauntlet/pull/557"
+        ],
+        "semantic_assertions": [
+          "Territory count remains 25.",
+          "Stable IDs are not regenerated from current titles."
+        ],
+        "affected_surfaces": [
+          "territories",
+          "canonical-data",
+          "starters",
+          "deckbuilder",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "territories-shared-rule-compatibility",
+        "audit_issue": 598,
+        "category": "territories-identities",
+        "summary": "Apply only shared-rule compatibility wording to Quicksand, Difficult Terrain, Command Tent, Smuggler's Run, and Arenas.",
+        "historical_registry_recommendation": "revise",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "revise",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/496",
+          "https://github.com/tymonius/Gauntlet/issues/598#issuecomment-5276221057"
+        ],
+        "semantic_assertions": [
+          "Quicksand uses Fall Back for ordinary backward Movement and does not block battle withdrawal.",
+          "Difficult Terrain restricts playing a card for its Action effect during Denouement, not all Denouement procedures.",
+          "Command Tent splits its two card Actions across Opening and Denouement.",
+          "Arenas remove Defensive Edge and use the separate Tiebreak Roll."
+        ],
+        "affected_surfaces": [
+          "territories",
+          "rules",
+          "cards",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "identity-smugglers-run",
+        "audit_issue": 598,
+        "category": "territories-identities",
+        "summary": "Rename Smuggler's Pass to Smuggler's Run while preserving stable ID territory-smuggler-s-pass.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/560"
+        ],
+        "semantic_assertions": [
+          "Stable ID remains territory-smuggler-s-pass.",
+          "Current self-reference uses Smuggler's Run.",
+          "Historical alias may remain only for migration/search."
+        ],
+        "affected_surfaces": [
+          "territories",
+          "canonical-data",
+          "starters",
+          "deckbuilder",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "identity-second-line",
+        "audit_issue": 598,
+        "category": "territories-identities",
+        "summary": "Rename Neutral Reserves to Second Line while preserving stable ID neutral-reserves.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/560"
+        ],
+        "semantic_assertions": [
+          "Stable ID remains neutral-reserves.",
+          "Only exact card-title references migrate; the rules term Reserve is not globally replaced."
+        ],
+        "affected_surfaces": [
+          "cards",
+          "canonical-data",
+          "starters",
+          "deckbuilder",
+          "rules-arbiter",
+          "digital",
+          "print"
+        ]
+      },
+      {
+        "id": "identity-stable-id-policy",
+        "audit_issue": 598,
+        "category": "territories-identities",
+        "summary": "Treat stable IDs as persistent game identities that survive ordinary player-facing title changes.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/560"
+        ],
+        "semantic_assertions": [
+          "Validators reject ID regeneration from renamed titles.",
+          "Current generated text uses current title while migration aliases may support historical lookup."
+        ],
+        "affected_surfaces": [
+          "canonical-data",
+          "starters",
+          "deckbuilder",
+          "rules-arbiter",
+          "digital",
+          "analytics"
+        ]
+      },
+      {
+        "id": "starters-12-leader-specific",
+        "audit_issue": 599,
+        "category": "starters-onboarding",
+        "summary": "Maintain one recommended competitive starter Deck for each of the 12 Leaders.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/573",
+          "config/leader-authority-v061.json"
+        ],
+        "semantic_assertions": [
+          "Each starter resolves to exactly one faction and one Leader.",
+          "Starter validation uses that Leader's actual ability set."
+        ],
+        "affected_surfaces": [
+          "starters",
+          "deckbuilder",
+          "onboarding",
+          "print"
+        ]
+      },
+      {
+        "id": "starters-v063-final-compositions",
+        "audit_issue": 599,
+        "category": "starters-onboarding",
+        "summary": "Use the final PR #573 compositions as the downstream candidate baseline only after every included card/rule survives reconstruction.",
+        "historical_registry_recommendation": "defer",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "defer",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/573",
+          "docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md"
+        ],
+        "semantic_assertions": [
+          "Each final starter must validate at 30 cards / 60 Deckbuilding Value against reconstructed canonical data.",
+          "No rejected identity may be silently substituted.",
+          "Coverage percentage is not an optimization target."
+        ],
+        "affected_surfaces": [
+          "starters",
+          "deckbuilder",
+          "onboarding",
+          "print"
+        ]
+      },
+      {
+        "id": "starters-playtest-evidence-gate",
+        "audit_issue": 599,
+        "category": "starters-onboarding",
+        "summary": "After the reconstructed starter baseline is established, further composition changes require playtest evidence rather than theory-only churn.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/573"
+        ],
+        "semantic_assertions": [
+          "Excluded starter titles are not a balance blacklist.",
+          "Future substitutions cite observed gameplay evidence."
+        ],
+        "affected_surfaces": [
+          "starters",
+          "playtesting",
+          "deckbuilder"
+        ]
+      },
+      {
+        "id": "starters-territory-order-metadata",
+        "audit_issue": 599,
+        "category": "starters-onboarding",
+        "summary": "Represent starter Territory order as strategy guidance, not mandatory setup order.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/564"
+        ],
+        "semantic_assertions": [
+          "selected_territories, recommended_territory_order, and actual_setup_order remain distinct concepts.",
+          "Initiative is unknown when actual setup order is chosen."
+        ],
+        "affected_surfaces": [
+          "starters",
+          "deckbuilder",
+          "onboarding",
+          "print"
+        ]
+      },
+      {
+        "id": "starters-id-first-resolution",
+        "audit_issue": 599,
+        "category": "starters-onboarding",
+        "summary": "Resolve starter identities by stable ID and render current player-facing titles.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/564",
+          "https://github.com/tymonius/Gauntlet/pull/560"
+        ],
+        "semantic_assertions": [
+          "neutral-reserves resolves to Second Line.",
+          "territory-smuggler-s-pass resolves to Smuggler's Run."
+        ],
+        "affected_surfaces": [
+          "starters",
+          "canonical-data",
+          "deckbuilder",
+          "onboarding",
+          "print"
+        ]
+      },
+      {
+        "id": "onboarding-regenerate-from-authority",
+        "audit_issue": 599,
+        "category": "starters-onboarding",
+        "summary": "Regenerate onboarding from the reconstructed v0.6.1-based authority rather than using v0.6.3 generated documents as source authority.",
+        "historical_registry_recommendation": "adopt",
+        "historical_human_adoption_status": "pending",
+        "approved_reconstruction_disposition": "adopt",
+        "approval_bridge": {
+          "pr": 606,
+          "merge_commit": "e84e27958c7f6d8d4bd0390bdbac456b40adef1b",
+          "effect": "Manual merge approved the version-scoped reconstruction dispositions for authority construction only."
+        },
+        "explicit_v062_resolution": null,
+        "explicit_v063_supersession": null,
+        "evidence": [
+          "releases/v0.6.1/Gauntlet_v0.6.1_First_Game_Guide.md",
+          "https://github.com/tymonius/Gauntlet/pull/556"
+        ],
+        "semantic_assertions": [
+          "Starter/onboarding material never supplies missing rules authority.",
+          "Competitive starter composition and first-game teaching presentation remain separate layers."
+        ],
+        "affected_surfaces": [
+          "onboarding",
+          "starters",
+          "browser",
+          "print"
+        ]
+      }
+    ],
+    "additional_recovered_decisions": [
+      {
+        "id": "v062-specific-overrides-broad-conflict",
+        "version_disposition": "adopt",
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/470#issuecomment-5181941569"
+        ],
+        "reason": "This explicit v0.6.2 Golden Rule was omitted from the initial 49-record normalization and must not be lost during reconstruction."
+      },
+      {
+        "id": "v062-active-player-marker",
+        "version_disposition": "preserve_downstream",
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/issues/470#issuecomment-5175328069"
+        ],
+        "reason": "Adopted v0.6.2 physical/onboarding component; it is not rules authority but belongs in later regenerated aids."
+      },
+      {
+        "id": "v062-starters-pr500",
+        "version_disposition": "preserve_downstream",
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/500"
+        ],
+        "reason": "These are the v0.6.2 Leader-specific first-game starter Decks and must remain distinct from the later v0.6.3 competitive catalog."
+      },
+      {
+        "id": "GNT-DEC-2026-0812-001",
+        "subject": "neutral-armistice",
+        "version_disposition": "adopt",
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/571"
+        ],
+        "rule": "Armistice remains a persistent cost-4 Asset, but its two-card upkeep occurs at the start of its controller's Opening rather than after the normal Draw; Draw-suppression effects therefore cannot skip the upkeep.",
+        "reason": "PR #571 canonicalized this v0.6.3 interaction correction after the normalized reconstruction candidate registry was created. It supersedes the earlier post-Draw Armistice timing and was included in the refreshed final v0.6.3 closeout. The rule text intentionally mirrors the canonical governance wording used by the reconstruction validator."
+      },
+      {
+        "id": "GNT-DEC-2026-0812-002",
+        "subject": "neutral-manifest-destiny",
+        "version_disposition": "adopt",
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/571"
+        ],
+        "rule": "Whenever Manifest Destiny enters the Gauntlet as a Territory, it is a normal Territory with a normal Deed; existing Deed purchase costs, caps, procedures, income rules, and Controlling Interest rules apply unchanged.",
+        "reason": "PR #571 made the already-intended Deed treatment explicit and regression-guarded for v0.6.3 after the normalized reconstruction candidate registry was created."
+      },
+      {
+        "id": "GNT-DEC-2026-0812-003",
+        "subject": "neutral-contingency-plan",
+        "version_disposition": "adopt",
+        "evidence": [
+          "https://github.com/tymonius/Gauntlet/pull/571"
+        ],
+        "rule": "Contingency Plan draws one card whenever it is Removed under the defined involuntary Asset Removal event, regardless of cause, and its Gambit/Tactic effect grants +2 Battle Total while the opponent controls more Territories.",
+        "reason": "PR #571 canonicalized both the general Removal trigger and the +2 Battle Total correction for v0.6.3 after the normalized reconstruction candidate registry was created."
+      }
+    ]
+  },
+  "required_clean_v063_delta_ids": [
+    "rules-deck-draw-pile-terms",
+    "setup-draw4-discard1-keep3",
+    "setup-informed-territory-arrangement",
+    "setup-first-player-after-arrangement",
+    "setup-start-on-own-end-territory",
+    "victory-final-territory-capture",
+    "victory-independent-last-stand",
+    "victory-run-the-gauntlet-umbrella",
+    "cards-role-headings",
+    "cards-asset-only-banked-heading",
+    "cards-inherent-bank-action",
+    "cards-directly-permitted-procedures",
+    "cards-effect-granted-movement",
+    "cards-additional-tactic-defaults",
+    "cards-sanctions-shared-rule",
+    "cards-asset-removed-event",
+    "cards-bind-defaults",
+    "cards-reveal-interference-priority",
+    "cards-apply-repeat-effects",
+    "cards-no-winner-cleanup",
+    "cards-reroll-new-result-default",
+    "card-protracted-siege-revision",
+    "card-margin-loan-persistent",
+    "identity-second-line",
+    "identity-smugglers-run"
+  ],
+  "source_pipeline": [
+    {
+      "stage": "v0.6.2-effective-data",
+      "implementation": "v0.6.2/data/canonical-data.js#buildV062CanonicalData",
+      "evidence": [
+        "https://github.com/tymonius/Gauntlet/pull/502"
+      ],
+      "rule": "Regenerate the v0.6.2 effective state from immutable v0.6.1 authority; do not read the withdrawn published v0.6.2 canonical JSON."
+    },
+    {
+      "stage": "v0.6.3-card-language-and-general-rules",
+      "workflow": ".github/workflows/build-v063-card-language-normalization.yml",
+      "evidence": [
+        "https://github.com/tymonius/Gauntlet/pull/540",
+        "https://github.com/tymonius/Gauntlet/pull/549",
+        "https://github.com/tymonius/Gauntlet/pull/550",
+        "https://github.com/tymonius/Gauntlet/pull/551"
+      ]
+    },
+    {
+      "stage": "v0.6.3-final-card-and-identity-supersessions",
+      "implementation": "scripts/sync-v063-final-card-mirrors.mjs",
+      "evidence": [
+        "https://github.com/tymonius/Gauntlet/pull/560",
+        "https://github.com/tymonius/Gauntlet/pull/571"
+      ]
+    },
+    {
+      "stage": "v0.6.3-canonical-rule-integration",
+      "implementation": "scripts/generate-v063-canonical-data-candidate.mjs",
+      "evidence": [
+        "https://github.com/tymonius/Gauntlet/pull/529",
+        "https://github.com/tymonius/Gauntlet/pull/555",
+        "https://github.com/tymonius/Gauntlet/pull/557"
+      ]
+    },
+    {
+      "stage": "clean-v0.6.3-human-authority",
+      "evidence": [
+        "https://github.com/tymonius/Gauntlet/pull/619",
+        "https://github.com/tymonius/Gauntlet/pull/621",
+        "https://github.com/tymonius/Gauntlet/pull/623"
+      ]
+    }
+  ],
+  "implementation_files": [
+    {
+      "path": "v0.6.2/data/canonical-data.js",
+      "sha256": "e94d829a39f5ff0791d9d23265e1d88428ff06b0a8558a0f69c5d82ad2a57576",
+      "bytes": 29551,
+      "lines": 393
+    },
+    {
+      "path": "docs/Gauntlet_v0.6.2_Shared_Rules_Candidate.md",
+      "sha256": "d0f3ee8a9e8220bfe3a46d7db3d85272d23bfdb5cf84d62340e6627af8226b3f",
+      "bytes": 20951,
+      "lines": 531
+    },
+    {
+      "path": "docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md",
+      "sha256": "42846253eae07635f23f7daaae7191867921f79335cf39288ff597ca1252f818",
+      "bytes": 26239,
+      "lines": 590
+    },
+    {
+      "path": "docs/Gauntlet_v0.6.2_Faction_Component_Compatibility_Audit.md",
+      "sha256": "1f009faf4c9b53a936c63019e1c7a2e790a28785c9484766f9a00c1fdffb57c8",
+      "bytes": 10334,
+      "lines": 236
+    },
+    {
+      "path": "docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md",
+      "sha256": "ae0e74ba8196e7f15189db2353f6870844b8d663a428f1b2a977fbb537be254e",
+      "bytes": 12047,
+      "lines": 215
+    },
+    {
+      "path": "docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md",
+      "sha256": "e7f283137046ba9a23e5ae1a6d9befe7a0f2fef59bd8e061399712cc57465835",
+      "bytes": 17784,
+      "lines": 316
+    },
+    {
+      "path": "scripts/build-v063-card-normalization.mjs",
+      "sha256": "09290f7f09e24ed3ae9f113dd2db90d7d5eba7965d5ad149b92cb0e7534d108b",
+      "bytes": 12725,
+      "lines": 288
+    },
+    {
+      "path": "scripts/finalize-v063-card-conventions.mjs",
+      "sha256": "35d816052008f20cf9eb0a0a8416c829c327bee32aeffb10e5cd065fd5917215",
+      "bytes": 10760,
+      "lines": 224
+    },
+    {
+      "path": "scripts/apply-v063-general-card-rules.mjs",
+      "sha256": "29511e48daab8ea3b27cdc021f116138660d75693e9c089d458c99de0553a5de",
+      "bytes": 14382,
+      "lines": 269
+    },
+    {
+      "path": "scripts/apply-v063-numeric-shorthand.mjs",
+      "sha256": "f5106877acfc074e63aa7e0c3140c185bcf8fa31a98d9d4ea6b0f741b862d5dd",
+      "bytes": 11942,
+      "lines": 210
+    },
+    {
+      "path": "scripts/apply-v063-compact-shorthand.mjs",
+      "sha256": "30b7b8ee42e1c9ecd293ef6d331eef1d409f274dda4b730079a4693608ea256a",
+      "bytes": 18593,
+      "lines": 301
+    },
+    {
+      "path": "scripts/apply-v063-natural-advantage-wording.mjs",
+      "sha256": "1202631ba32c646d64605e16d361a3314e799b6c01591e3d66d1fa7aa8eb2844",
+      "bytes": 8368,
+      "lines": 154
+    },
+    {
+      "path": "scripts/apply-v063-advantage-capitalization.mjs",
+      "sha256": "02e3049b453c4f70b65e527370f4900801526332bd14dfc4d22b32cfa08762e0",
+      "bytes": 2898,
+      "lines": 62
+    },
+    {
+      "path": "scripts/apply-v063-asset-language.mjs",
+      "sha256": "6a0286e0687689b42612b3c27e6c66b66359c44dec0b0e7f60b91b2a9f1de2a0",
+      "bytes": 11222,
+      "lines": 217
+    },
+    {
+      "path": "scripts/apply-v063-gambit-tactic-headings.mjs",
+      "sha256": "4544862571be45cf856ced53cb351330a55f4e0844a3b78e16fcc1f6a5db6ae8",
+      "bytes": 9261,
+      "lines": 207
+    },
+    {
+      "path": "scripts/apply-v063-poolwide-card-refinements.mjs",
+      "sha256": "23f46211a545fee494d694977b30c2fd19f254b08141d48b6c64561f877c274c",
+      "bytes": 21957,
+      "lines": 422
+    },
+    {
+      "path": "scripts/apply-v063-final-artifact-audit.mjs",
+      "sha256": "76c24a3d2f2a4a54141c3dfa8f8a2fa2a7f4d4d52148495cb6e624e1bfb1653f",
+      "bytes": 10677,
+      "lines": 217
+    },
+    {
+      "path": "scripts/finalize-v063-poolwide-integrity.mjs",
+      "sha256": "185c3adfc32830d18042201e19c53c5db32ec665dac407aaeef9bbefb16eb100",
+      "bytes": 13619,
+      "lines": 253
+    },
+    {
+      "path": "scripts/apply-v063-finalized-forward-conventions.mjs",
+      "sha256": "0c034c60796cb83fc11e6e8d0e07753f43a4002f651eceb8be0f0de916f1775b",
+      "bytes": 13061,
+      "lines": 245
+    },
+    {
+      "path": "scripts/sync-v063-final-card-mirrors.mjs",
+      "sha256": "1ce99ccc893939477838d4056c19b43748ec788fa96a04ce5547a5f47b3746d5",
+      "bytes": 16556,
+      "lines": 345
+    },
+    {
+      "path": "scripts/generate-v063-canonical-data-candidate.mjs",
+      "sha256": "52bae26d26ad71ada9e19924d1bca17bf6222412a507116dc6b10ac50ca6768a",
+      "bytes": 9661,
+      "lines": 212
+    },
+    {
+      "path": "scripts/finalize-v063-canonical-data-candidate.mjs",
+      "sha256": "6c7f0aad2c709594784bcc3e703888c2bb538d7c0b4f1187378fc7c1a1dd8efd",
+      "bytes": 1132,
+      "lines": 22
+    },
+    {
+      "path": "docs/v063-card-language-overrides/diplomats.json",
+      "sha256": "2b1e1906ae9c9b5e58493f08c86b166f643c7d42dea260feabfb97ee3f262ca0",
+      "bytes": 6226,
+      "lines": 19
+    },
+    {
+      "path": "docs/v063-card-language-overrides/financiers.json",
+      "sha256": "6c98922cd7c43f63c82c40d9baeec3fb03fa716c539991e9d79a7161aa55505d",
+      "bytes": 4395,
+      "lines": 15
+    },
+    {
+      "path": "docs/v063-card-language-overrides/inquisition.json",
+      "sha256": "e6a085ea6b586042311472a91778a299c2062604e1a7e005b25d6ccbb56db5eb",
+      "bytes": 2742,
+      "lines": 10
+    },
+    {
+      "path": "docs/v063-card-language-overrides/intelligence.json",
+      "sha256": "4538eceb507755cbbfad95a79d1afda84a1d3106079e4df84f31efe5699caf28",
+      "bytes": 7840,
+      "lines": 18
+    },
+    {
+      "path": "docs/v063-card-language-overrides/military.json",
+      "sha256": "d511daa28d2f1b813ef74746a729f7b4ef1cf74f3248de5e3783d45e8a138eb4",
+      "bytes": 6581,
+      "lines": 18
+    },
+    {
+      "path": "docs/v063-card-language-overrides/mystics.json",
+      "sha256": "9668c4926131cad117812ef1a107b79cfc98ca4fa14d2a8600af94f42e82e65f",
+      "bytes": 5174,
+      "lines": 14
+    },
+    {
+      "path": "docs/v063-card-language-overrides/neutral.json",
+      "sha256": "d1233360d60f6afc642fe9ddba5ff77e4e1c2cf10a2d8f9a6ee12356cefcca5b",
+      "bytes": 12250,
+      "lines": 32
+    },
+    {
+      "path": "docs/v063-card-language-overrides/review.json",
+      "sha256": "9c893815255f76c5375f3b41639704563da521df801a5ccaa32789069538f912",
+      "bytes": 1916,
+      "lines": 17
+    }
+  ],
+  "frozen_editorial_evidence": {
+    "issue": 405,
+    "comment_id": 5221286097,
+    "source": "https://github.com/tymonius/Gauntlet/issues/405#issuecomment-5221286097",
+    "source_created_at": "2026-08-07T19:37:53Z",
+    "source_updated_at": "2026-08-11T14:01:53Z",
+    "snapshot": "artifacts/reconstruction/evidence/v0.6.3/issue-405-finalized-card-tracker.md",
+    "snapshot_sha256": "03301736a77d9b0b40bc86290a6fe428f556303d183da858c7791fc1f70b36c5",
+    "role": "immutable_snapshot_of_21_finalized_bespoke_card_sections"
+  },
+  "non_authority_sources": [
+    {
+      "path": "governance/traceability.json",
+      "role": "historical_governance_evidence_only",
+      "reason": "Contains stale version metadata and superseded expected fields; excluded from clean-v0.6.3 certification."
+    },
+    {
+      "path": "artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json",
+      "role": "historical_comparison_evidence_only",
+      "reason": "Not read as a content source by the complete-authority builder."
+    },
+    {
+      "path": "releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json",
+      "role": "withdrawn_historical_evidence_only",
+      "reason": "Physically hidden while the v0.6.3 transformation pipeline runs so accidental reads fail."
+    }
+  ]
+}
