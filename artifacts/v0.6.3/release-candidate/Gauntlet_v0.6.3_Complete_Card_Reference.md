@@ -1,10 +1,10 @@
 # Gauntlet v0.6.3 Complete Card Reference — Release Candidate
 
-**Status:** Generated next-release candidate; not yet published  
+**Status:** Release candidate — not published  
 **Cards:** 128  
 **Territories:** 25
 
-This reference is generated from the integrated v0.6.3 canonical-data candidate. Exact playable-card text comes from the final v0.6.3 card-text build; Territory text is inherited from published v0.6.2 unless a later v0.6.3 source expressly replaces it.
+This reference is generated from the integrated v0.6.3 canonical-data candidate. Exact playable-card text comes from the final v0.6.3 card-text build; Territory text is inherited from published v0.6.2 unless a v0.6.3 source expressly replaces it.
 
 ---
 
@@ -57,7 +57,7 @@ This reference is generated from the integrated v0.6.3 canonical-data candidate.
 
 **Cost:** 4
 
-**Placement:** The first enemy-controlled Territory ahead of you without an Overlay.
+**Action:** Place this Overlay on the first enemy-controlled Territory ahead of you without an Overlay.
 
 **Overlay:** This Territory's printed effect is inactive. When you attack here: Win — turn this Overlay into Ruins. Lose — put it in your Graveyard. If you capture this Territory without a battle, turn this Overlay into Ruins.
 
@@ -559,7 +559,7 @@ In the Aftermath, put both cards in your Graveyard.
 **Cost:** 3
 **Card form:** Territory Overlay
 
-**Terms:** After your Terms are accepted and the Proposal's Accepted effect applies, you may place this Overlay on the contested Territory. Each player there withdraws. Neither player may enter there this turn.
+**Reaction:** After your Terms are accepted and the Proposal's Accepted effect applies, you may place this Overlay on the contested Territory. Each player there withdraws. Neither player may enter there this turn.
 
 **Overlay:** To enter here while unoccupied, discard 1. When this Territory would be captured, discard this Overlay instead. At the start of your turn before Capture, if you are here: Discard 1 or withdraw. After the next battle here, discard this Overlay.
 
@@ -578,9 +578,9 @@ In the Aftermath, put both cards in your Graveyard.
 
 **Terms:** When you offer Terms, you may reveal this card from your Hand and offer two eligible Proposals with the same Stake instead of one. Stake that amount once.
 
-**Accepted:** The opponent chooses which Proposal is accepted.
+Accepted — The opponent chooses which Proposal is accepted.
 
-**Refused:** Choose one Proposal before applying its Refused effect. Only it may be imposed. The other Proposal does not take effect or become ratified. After the Terms conclude, put this card in your Discard Pile.
+Refused — Choose one Proposal before applying its Refused effect. Only it may be imposed. The other Proposal does not take effect or become ratified. After the Terms conclude, put this card in your Discard Pile.
 
 ### Good Faith
 
@@ -589,9 +589,9 @@ In the Aftermath, put both cards in your Graveyard.
 
 **Asset:** When you offer Terms, before the opponent accepts or refuses, you may discard this card for +1 Card, then reveal one card from your Hand and set it aside.
 
-**Accepted:** Put that card in your Graveyard, then +1 Influence.
+Accepted — Put that card in your Graveyard, then +1 Influence.
 
-**Refused:** Return it to your Hand before Gambits are set.
+Refused — Return it to your Hand before Gambits are set.
 
 ### Gunboat Diplomacy
 
@@ -599,9 +599,9 @@ In the Aftermath, put both cards in your Graveyard.
 
 **Terms:** When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand.
 
-**Accepted:** Put this card in your Discard Pile.
+Accepted — Put this card in your Discard Pile.
 
-**Refused:** Set this card face up as an additional Gambit in the resulting battle. It does not count against your Gambit limit.
+Refused — Set this card face up as an additional Gambit in the resulting battle. It does not count against your Gambit limit.
 
 **Gambit/Tactic:** +2 Battle Total.
 
@@ -618,11 +618,11 @@ In the Aftermath, put both cards in your Graveyard.
 
 **Terms:** When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand and set it aside.
 
-**Accepted:** If the Proposal is unratified, the opponent chooses one before ratification:
+Accepted — If the Proposal is unratified, the opponent chooses one before ratification:
 - Ratify it normally.
 - Leave it unratified; +2 Influence. After the accepted Terms conclude, put this card in your Discard Pile, then +1 Card.
 
-**Refused:** Put this card in your Discard Pile, then +1 Card before Gambits are set.
+Refused — Put this card in your Discard Pile, then +1 Card before Gambits are set.
 
 ### Safe Conduct
 
@@ -636,25 +636,27 @@ In the Aftermath, put both cards in your Graveyard.
 **Cost:** 5
 **Card form:** Territory Overlay
 
-**Text:** In the Aftermath following an opponent's refusal of your Terms, you may place this Overlay on a Territory that opponent controls.
-The first time each turn that opponent enters or leaves this Territory, they choose one: discard one card; or +1 Influence.
-Put this card in its owner's Discard Pile if that opponent loses control of this Territory.
+**Sanctions:** Instead of playing this immediately, in the Aftermath following that refusal, you may place this Overlay on a Territory that opponent controls.
+
+**Overlay:** The first time each turn that opponent enters or leaves this Territory, they choose one: discard one card; or +1 Influence. Put this card in its owner's Discard Pile if that opponent loses control of this Territory.
 
 ### Sanctions: Censure
 
 **Cost:** 3
 **Card form:** Asset
 
-**Text:** After an opponent refuses your Terms, you may bank this card from your Hand.
-While banked, the first time each turn that opponent plays a card for its Action effect, they choose one: discard one card; or +1 Card.
+**Sanctions:** Bank this card.
+
+**Asset:** The first time each turn that opponent plays a card for its Action effect, they choose one: discard one card; or +1 Card.
 
 ### Sanctions: Embargo
 
 **Cost:** 4
 **Card form:** Asset
 
-**Text:** After an opponent refuses your Terms, you may bank this card from your Hand.
-While banked, that opponent's Asset limit is reduced by 1, to a minimum of 0.
+**Sanctions:** Bank this card.
+
+**Asset:** That opponent's Asset limit is reduced by 1, to a minimum of 0.
 
 ### Trade Concessions
 
@@ -662,11 +664,11 @@ While banked, that opponent's Asset limit is reduced by 1, to a minimum of 0.
 
 **Terms:** When you offer Terms, before the opponent accepts or refuses, you may reveal this card from your Hand and set it aside.
 
-**Accepted:** The opponent chooses one available option:
+Accepted — The opponent chooses one available option:
 - +2 Cards.
 - Bank one eligible card from Hand. Then put this card in your Discard Pile; +1 Card.
 
-**Refused:** Return this card to your Hand before Gambits are set.
+Refused — Return this card to your Hand before Gambits are set.
 
 **Gambit/Tactic:** Opponent: +1 Card. +2 Battle Total.
 
@@ -841,7 +843,7 @@ If this card is Removed, Default.
 **Cost:** 2
 **Card form:** Territory Overlay
 
-**Placement:** Any Territory.
+**Action:** Place this Overlay on any Territory.
 
 **Overlay:** In the next battle here, this Territory's controller sets their Gambit and chooses their Tactics after the opponent. Discard this Overlay after that battle.
 
@@ -1132,7 +1134,7 @@ Choose up to three non-Necromancy cards in your Graveyard. Put all cards in your
 **Cost:** 5
 **Unique:** Maximum one copy per Deck
 
-**Aftermath:** In the Aftermath before battle cards are cleared, if you lost and this card is in your Hand, you may play it. If you do, put cards remaining in the opponent's Reserve in their Graveyard instead of their Discard Pile. After battle cards are cleared, Conviction = 4; put this card in your Graveyard.
+**Reaction:** In the Aftermath before battle cards are cleared, if you lost and this card is in your Hand, you may play it. If you do, put cards remaining in the opponent's Reserve in their Graveyard instead of their Discard Pile. After battle cards are cleared, Conviction = 4; put this card in your Graveyard.
 
 ### No Martyrs
 
