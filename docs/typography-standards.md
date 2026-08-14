@@ -10,7 +10,7 @@ The standard applies across current public web surfaces. Layouts and component d
 | --- | --- | --- |
 | Structural display | Georgia — `--font-display-web` | Major page, document, section, chapter, card, and panel headings; structural hierarchy. |
 | Reading / editorial | Adobe Caslon Pro — `--font-reading` | Normal public-site prose, rules text, explanatory and teaching copy, lists, blockquotes, descriptions, and other sustained reading. |
-| Heritage display | P22 1722 Pro — `--font-display-historical` | Gauntlet wordmark, principal historical/document-title treatments, part labels, Leader headings/names where presented as display text, and similarly deliberate heritage display. |
+| Heritage display | P22 1722 Pro — `--font-display-historical` | Gauntlet wordmark, principal historical/document-title treatments, part labels, Leader headings/names where presented as display text, card-title display, and similarly deliberate heritage display. |
 | Interface | Inter — `--font-interface` | Navigation, search, form controls, buttons, compact labels, metadata, status text, utility text, chapter numbers, anchors, and other operational UI. |
 | Flavor accent | P22 Declaration Pro — `--font-flavor` | Rare decorative accents only. It is not a normal structural, reading, or interface face. |
 
@@ -18,7 +18,7 @@ Fallbacks in `design-tokens.css` are resilience stacks, not alternate role assig
 
 ## Inter is deliberately scarce
 
-Inter is **not** the default website or body typeface. It should be reserved for text that is genuinely interface-like or utilitarian.
+Inter is **not** the default website or body typeface. It should be minimized and reserved for text that is genuinely interface-like or utilitarian.
 
 Appropriate Inter uses include:
 
@@ -63,7 +63,7 @@ The same HTML element can serve different roles on different surfaces. Choose th
 - A paragraph or description intended to be read belongs in the **reading/editorial** role.
 - Navigation, controls, status, metadata, compact labels, and utility text belong in the **interface** role.
 - A major section or panel heading belongs in the **structural display** role.
-- A deliberately historical title, wordmark, part label, or Leader-name treatment may belong in the **heritage display** role.
+- A deliberately historical title, wordmark, part label, Leader-name treatment, or card-title treatment may belong in the **heritage display** role.
 - Decorative flavor should remain scarce enough that it reads as an accent.
 
 Do not use P22 1722 Pro simply because something is large, Caslon simply because something is serif text, or Inter simply because something is clickable.
@@ -73,9 +73,9 @@ Do not use P22 1722 Pro simply because something is large, Caslon simply because
 For current public web surfaces, the default hierarchy is therefore:
 
 - **Georgia** establishes structure.
-- **Caslon** carries the reading experience.
+- **Caslon** carries the reading experience and should account for most ordinary prose.
 - **P22 1722** supplies deliberate heritage/display moments.
-- **Inter** handles the interface around the content.
+- **Inter** handles the interface around the content and should remain visually scarce.
 - **Declaration** appears only as an intentional accent.
 
 Different surfaces should remain visually distinct through layout, spacing, density, imagery, color, and interaction—not by inventing separate body-font systems.
