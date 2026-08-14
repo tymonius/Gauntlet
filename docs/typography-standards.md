@@ -6,10 +6,10 @@ Gauntlet has several typefaces available, but they are not a mandate to remap ev
 
 | Typeface | Typical use |
 | --- | --- |
-| Georgia | Primary public-site and browser-document serif. |
+| Georgia | Primary public-site serif and structural Browser Rulebook title face. |
 | Inter | Interface text and ordinary public-site copy. |
-| P22 1722 Pro | Available historical display face for deliberately styled uses such as card-title or specimen work. |
-| Adobe Caslon Pro | Available editorial/print serif when a surface intentionally calls for it. |
+| P22 1722 Pro | Historical display face, including the Browser Rulebook wordmark, part labels, and Leader headings. |
+| Adobe Caslon Pro | Editorial reading face used for Browser Rulebook prose. |
 | P22 Declaration Pro | Rare decorative accent face. |
 
 Fallbacks in `design-tokens.css` are resilience stacks, not instructions to substitute one face for another.
@@ -23,16 +23,18 @@ The v0.6.1 Start Playing surface established a simple Georgia/Inter treatment th
 
 Do not migrate Start prose to Caslon or option names to Inter merely to satisfy a generalized role taxonomy. Changes to this established hierarchy should be intentional visual design changes.
 
-## Browser Rulebook
+## Browser Rulebook baseline
 
-The v0.6.1 Browser Rulebook historically added a special publication layer that mixed Georgia, Adobe Caslon Pro, P22 1722 Pro, and Inter. That historical implementation is useful provenance, but it is not a requirement for the current browser Rulebook.
+The final-current v0.6.2 Browser Rulebook is the preferred browser typography implementation. Preserve its established four-face hierarchy unless a redesign is explicitly requested:
 
-The current browser treatment is intentionally simpler:
+- **Georgia** for structural Rulebook titles and headings.
+- **Adobe Caslon Pro** for the hero lede, rules prose, lists, and blockquotes.
+- **P22 1722 Pro** for the Gauntlet wordmark, Rulebook title treatment, part labels, TOC part labels, and Leader headings.
+- **Inter** for navigation, search, buttons, metadata, chapter numbers, how-it-works labels, complete-rules labels, anchors, and other interface machinery.
 
-- Georgia for the document itself: headings, body rules text, part labels, Leader headings, and other book-like content.
-- Inter for navigation, search, buttons, metadata, chapter numbers, and other interface elements.
+This is an intentional publication hierarchy, not accidental legacy drift. Do not flatten it to Georgia-only or remap it from generalized design-token roles.
 
-This simplification applies to the browser Rulebook. It does not redefine typography for printed cards, production PDFs, specimens, or other deliberately styled artifacts.
+P22 Declaration Pro remains available as a decorative accent face but is not part of the ordinary v0.6.2 Browser Rulebook hierarchy.
 
 ## Implementation rule
 
