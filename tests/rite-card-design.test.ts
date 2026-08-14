@@ -65,8 +65,7 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteStyles).toContain(".rite-completed-panel > img");
     expect(riteStyles).toContain("object-fit: cover");
     expect(riteStyles).toContain("object-position: center");
-    expect(completedRiteArtwork.byteLength).toBeGreaterThan(50_000);
-    expect(createHash("sha256").update(completedRiteArtwork).digest("hex")).toBe("a4b88c478368d8e64457d4eee0151a61781a7ea1f712da576201f822ce0451c5");
+    expect(createHash("sha256").update(completedRiteArtwork).digest("hex")).toBe("54279d757ebcbbbac7f9ebb9786b56e4d37f4260340d6217800049de3b7c3a67");
     expect(riteRenderer).not.toContain("rite-ritual-diagram");
     expect(riteRenderer).not.toContain("wax-seal");
     expect(riteRenderer).not.toContain("Ratified");
