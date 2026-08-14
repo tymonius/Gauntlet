@@ -12,8 +12,8 @@ function cssRule(selector: string) {
 }
 
 describe("public Start page theme", () => {
-  it("loads a cache-busted public-theme stylesheet", () => {
-    expect(html).toContain('styles.css?v=20260814-1');
+  it("loads the public-theme stylesheet", () => {
+    expect(html).toContain('styles.css?v=20260731-2');
   });
 
   it("uses the main-site parchment and crimson visual language", () => {
