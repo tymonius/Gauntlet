@@ -1,37 +1,19 @@
-name: Build clean v0.6.3 complete authority
+name: Migrate clean v0.6.3 downstream provenance
 
 on:
   pull_request:
     paths:
       - '.github/workflows/build-clean-v063-complete-authority.yml'
-      - 'scripts/materialize-v063-finalized-tracker-snapshot.mjs'
-      - 'scripts/build-clean-v063-complete-authority.mjs'
-      - 'scripts/validate-clean-v063-complete-authority.mjs'
-      - 'config/reconstruction-decision-candidates.json'
-      - 'config/reconstruction-version-plan.json'
-      - 'config/reconstruction-version-resolutions.json'
-      - 'config/release-lifecycle.json'
-      - 'v0.6.2/data/canonical-data.js'
-      - 'docs/Gauntlet_v0.6.2_Shared_Rules_Candidate.md'
-      - 'docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md'
-      - 'docs/Gauntlet_v0.6.2_Faction_Component_Compatibility_Audit.md'
-      - 'docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md'
-      - 'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md'
-      - 'docs/v063-card-language-overrides/**'
-      - 'scripts/*v063*'
-      - 'artifacts/reconstruction/clean-v0.6.3/**'
-      - 'artifacts/reconstruction/evidence/v0.6.3/**'
   workflow_dispatch:
 
 permissions:
   contents: write
-  issues: read
 
 jobs:
-  complete-authority:
+  migrate-downstream:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out PR branch for one-time authority persistence
+      - name: Check out PR branch for one-time downstream migration
         uses: actions/checkout@v4
         with:
           ref: ${{ github.head_ref }}
@@ -41,119 +23,179 @@ jobs:
         with:
           node-version: '22'
 
-      - name: Materialize one-time frozen #405 evidence when absent
-        if: ${{ hashFiles('artifacts/reconstruction/evidence/v0.6.3/issue-405-finalized-card-tracker.md') == '' }}
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-        run: node scripts/materialize-v063-finalized-tracker-snapshot.mjs
+      - name: Validate persisted complete authority first
+        run: node scripts/validate-clean-v063-complete-authority.mjs
 
-      - name: Apply provenance-proof normalizations
+      - name: Preserve pre-cutover downstream payload
+        run: |
+          cp artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json /tmp/old-clean-v063-canonical.json
+          cp artifacts/reconstruction/clean-v0.6.3/downstream/starter-decks.json /tmp/old-clean-v063-starters.json
+
+      - name: Cut downstream builder and validator over to complete authority
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
           import re
 
-          for name in [
-              'scripts/build-clean-v063-complete-authority.mjs',
-              'scripts/validate-clean-v063-complete-authority.mjs',
-          ]:
-              path = Path(name)
-              text = path.read_text()
-              old = "  'inherits_from', 'release_manifest', 'provenance',\n"
-              new = "  'inherits_from', 'release_manifest', 'provenance', 'authority_set_id',\n"
-              if old in text:
-                  text = text.replace(old, new, 1)
-              elif new not in text:
-                  raise SystemExit(f'Expected provenance-key declaration not found in {name}')
-              path.write_text(text)
+          OLD_ID = '2da05383c10fe3e784c64b26fd2d9837913011cad996966f49a7ae3a92af8ed9'
+          NEW_ID = '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49'
+          OLD_CANDIDATE = 'artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json'
+          COMPLETE_MANIFEST = 'artifacts/reconstruction/clean-v0.6.3/complete-authority/authority-set.json'
+          COMPLETE_CANONICAL = 'artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json'
 
-          path = Path('scripts/build-clean-v063-complete-authority.mjs')
+          def must_replace(text, old, new, label):
+              if old not in text:
+                  raise SystemExit(f'Missing expected {label}')
+              return text.replace(old, new, 1)
+
+          # Builder.
+          path = Path('scripts/build-clean-v063-downstream-data.mjs')
           text = path.read_text()
-          marker = "'Territory authority contains a v0.6.3 mutation other than the approved Smuggler title migration.'"
-          if marker in text:
-              pattern = re.compile(
-                  r'  const expectedTerritories = stripProvenance\(\n'
-                  r'    replaceStrings\(structuredClone\(v062\.territories\), "Smuggler\'s Pass", "Smuggler\'s Run"\),\n'
-                  r'  \);\n'
-                  r'  assert\.deepEqual\(\n'
-                  r'    generatedGameplay\.territories,\n'
-                  r'    expectedTerritories,\n'
-                  r"    'Territory authority contains a v0\.6\.3 mutation other than the approved Smuggler title migration\.',\n"
-                  r'  \);'
-              )
-              replacement = '''  let expectedTerritories = structuredClone(v062.territories);
-          expectedTerritories = replaceStrings(expectedTerritories, 'only one banked Asset they control can be active', 'only 1 of their Assets can be active');
-          expectedTerritories = replaceStrings(expectedTerritories, 'all their other banked Assets are inactive', 'their other Assets are inactive');
-          expectedTerritories = replaceStrings(expectedTerritories, "Smuggler's Pass", "Smuggler's Run");
-          expectedTerritories = stripProvenance(expectedTerritories);
-          assert.deepEqual(
-            generatedGameplay.territories,
-            expectedTerritories,
-            'Territory authority contains a v0.6.3 mutation outside the approved Asset-language normalization or Smuggler title migration.',
-          );'''
-              text, count = pattern.subn(replacement, text, count=1)
-              if count != 1:
-                  raise SystemExit('Expected Territory proof block not found')
-          elif 'outside the approved Asset-language normalization or Smuggler title migration' not in text:
-              raise SystemExit('Corrected Territory proof block not found')
+          text = must_replace(text,
+              "const certificationPath = 'artifacts/reconstruction/clean-v0.6.3/certification/authority-set.json';",
+              f"const certificationPath = '{COMPLETE_MANIFEST}';", 'builder certification path')
+          text = must_replace(text,
+              f"const evidencePath = '{OLD_CANDIDATE}';",
+              f"const structuredAuthorityPath = '{COMPLETE_CANONICAL}';", 'builder structured authority path')
+          text = must_replace(text,
+              f"const authoritySetId = '{OLD_ID}';",
+              f"const authoritySetId = '{NEW_ID}';\nconst parentHumanAuthoritySetId = '{OLD_ID}';", 'builder authority IDs')
+          text = must_replace(text,
+              "const evidenceBlob = '955dfa654cac96a9de820867ab694e83d0fb1d36';\n", '', 'builder old evidence blob')
+          text = must_replace(text,
+              "  'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json',\n];",
+              f"  'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json',\n  '{OLD_CANDIDATE}',\n];", 'builder forbidden candidate')
+          text = must_replace(text,
+              "  const evidenceText = read(evidencePath);\n  const baseline = JSON.parse(baselineText);\n  const evidence = JSON.parse(evidenceText);",
+              "  const structuredAuthorityText = read(structuredAuthorityPath);\n  const baseline = JSON.parse(baselineText);\n  const structuredAuthority = JSON.parse(structuredAuthorityText);\n  const evidence = structuredAuthority.gameplay;", 'builder structured authority read')
+          text = must_replace(text, "  assert.equal(certification.target, 'clean-v0.6.3');",
+              "  assert.equal(certification.target, 'clean-v0.6.3-complete');", 'builder complete target')
+          text = must_replace(text, "  assert.equal(certification.status, 'certified_on_merge');",
+              "  assert.equal(certification.status, 'certified_on_manual_merge');", 'builder complete status')
+          text = must_replace(text, "  assert.equal(certification.downstream_regeneration_unlocked_on_merge, true);\n", '', 'builder obsolete unlock')
+          text = must_replace(text, "  assert.equal(target?.certification?.authority_set_id, authoritySetId);",
+              "  assert.equal(target?.certification?.authority_set_id, parentHumanAuthoritySetId);", 'builder parent human authority ID')
+          text = must_replace(text, "  assert.equal(gitBlobSha(evidenceText), evidenceBlob, 'Pinned finalized v0.6.3 evidence blob drifted.');\n", '', 'builder evidence blob gate')
+          text = must_replace(text,
+              "  assert.equal(evidence.version, 'v0.6.3-candidate');\n  assert.equal(evidence.cards?.length, 128);\n  assert.equal(evidence.territories?.length, 25);",
+              "  assert.equal(structuredAuthority.target, 'clean-v0.6.3-canonical-structured-authority');\n  assert.equal(structuredAuthority.status, 'complete_authority_candidate');\n  assert.equal(structuredAuthority.publication_unlocked, false);\n  assert.equal(evidence.cards?.length, 128);\n  assert.equal(evidence.territories?.length, 25);", 'builder structured authority shape')
+          text = must_replace(text,
+              "  const certifiedFiles = new Map((certification.authority_files ?? []).map((entry) => [entry.path, entry]));\n  for (const entry of certification.authority_files ?? []) {",
+              "  const certifiedFiles = new Map((certification.authority_files ?? []).map((entry) => [entry.path, entry]));\n  const structuredAuthorityEntry = certifiedFiles.get(structuredAuthorityPath);\n  assert(structuredAuthorityEntry, 'Complete authority manifest does not bind the canonical structured authority.');\n  assert.equal(sha256(structuredAuthorityText), structuredAuthorityEntry.sha256, 'Canonical structured authority drifted from its complete authority manifest.');\n  for (const entry of certification.authority_files ?? []) {", 'builder structured manifest binding')
+          text = must_replace(text, "    target: 'clean-v0.6.3',", "    target: 'clean-v0.6.3-complete',", 'builder emitted target')
+          text = must_replace(text,
+              "  data.evidence_payload = { path: evidencePath, git_blob_sha: evidenceBlob, role: 'verified_delta_payload_only' };",
+              "  data.structured_authority = { path: structuredAuthorityPath, sha256: sha256(read(structuredAuthorityPath)), role: 'complete_machine_readable_authority' };", 'builder structured provenance')
+          text = must_replace(text, "    verified_delta_payload: evidencePath,", "    structured_authority: structuredAuthorityPath,", 'builder governing structured authority')
+          text = text.replace('evidence_payload: evidencePath', 'structured_authority: structuredAuthorityPath')
+          text = must_replace(text,
+              "    finalized_v063_candidate_used_as_authority: false,\n    finalized_v063_candidate_role: 'verified_delta_payload_only',",
+              "    complete_structured_authority_used_as_content_source: true,\n    historical_v063_candidate_used_as_content_source: false,", 'builder normalization boundary')
 
-          old_boundary = 'The complete 25-Territory authority is independently checked against the regenerated v0.6.2 state. The only v0.6.3 Territory mutation admitted by this layer is the approved stable-ID title migration from **Smuggler\'s Pass** to **Smuggler\'s Run**.'
-          new_boundary = 'The complete 25-Territory authority is independently checked against the regenerated v0.6.2 state after applying only two historically evidenced v0.6.3 Territory transformations: the Asset ownership-language normalization encoded in scripts/apply-v063-asset-language.mjs (affecting Disrupted Supply Lines) and the stable-ID title migration from **Smuggler\'s Pass** to **Smuggler\'s Run**.'
-          if old_boundary in text:
-              text = text.replace(old_boundary, new_boundary, 1)
-          elif new_boundary not in text:
-              raise SystemExit('Expected Territory source-boundary sentence not found')
+          boundary = """  const boundaryText = `# Clean v0.6.3 downstream source boundary\n\n**Status:** reconstruction candidate; not published  \n**Complete authority set:** \\`${authoritySetId}\\`\n\nThe complete clean v0.6.3 authority manifest at \\`${certificationPath}\\` is the binding downstream source. Its machine-readable gameplay payload comes from \\`${structuredAuthorityPath}\\`, which was independently regenerated from v0.6.1 through the historical v0.6.2/v0.6.3 transformation pipeline and certified with zero gameplay drift.\n\nThe certified Rulebook and six faction guides remain the human-readable authority within that complete set. The published v0.6.1 canonical data is retained only as a pinned structural-baseline check; it is not used to fill missing clean-v0.6.3 gameplay content. The withdrawn v0.6.3 release-candidate canonical file is forbidden as a downstream content source or emitted provenance dependency.\n\nThe twelve starter compositions come from PR #573 (merge \\`${starterApproval.merge_commit}\\`) and are accepted only after legality is revalidated against the complete 128-card / 25-Territory authority.\n\nPublication remains separately locked; v0.6.1 remains current/public.\n`;"""
+          text, count = re.subn(r"  const boundaryText = `# Clean v0\.6\.3 downstream source boundary.*?`;\n  const statusText =", boundary + "\n  const statusText =", text, count=1, flags=re.S)
+          if count != 1:
+              raise SystemExit('Missing builder source-boundary template')
 
-          old_count = "  assert.equal(records.length, 49, 'Expected the complete 49-record reconstruction audit registry.');"
-          new_count = "  assert.equal(records.length, candidates.decisions?.length ?? 0, 'Provenance ledger must cover the complete reconstruction audit registry.');"
-          if old_count in text:
-              text = text.replace(old_count, new_count, 1)
-          elif new_count not in text:
-              raise SystemExit('Expected dynamic provenance-ledger count assertion not found')
+          status = """`# Clean v0.6.3 downstream validation status\n\n**Status:** candidate ready for merge review  \n**Publication:** locked  \n**Authority set:** \\`${authoritySetId}\\`\n\nValidated by the deterministic build/validation gate:\n\n- exact complete-authority manifest and every bound authority-file hash;\n- machine-readable gameplay source from the complete canonical structured authority, not the withdrawn v0.6.3 candidate;\n- 128 playable cards: 50 Neutral plus 13 for each of six factions;\n- all 78 faction-card identities, costs, forms, Unique status, and printed effects against their certified faction guides;\n- 25 Territories, Second Line, and Smuggler's Run identity invariants;\n- recovered Armistice, Manifest Destiny, and Contingency Plan decisions;\n- Extraordinary Rendition form normalization and Détente special Bank Action;\n- twelve PR #573 starter Decks, each exactly 30 cards / 60 Deckbuilding Value, legal for its Leader/faction, with legal Territory selections and 110 represented playable titles; and\n- no publication/current-release cutover.\n`"""
+          text, count = re.subn(r"`# Clean v0\.6\.3 downstream validation status.*?`", status, text, count=1, flags=re.S)
+          if count != 1:
+              raise SystemExit('Missing builder validation-status template')
+
+          text = must_replace(text,
+              "    evidence: { path: evidencePath, git_blob_sha: evidenceBlob, role: 'verified_delta_payload_only' },",
+              "    structured_authority: { path: structuredAuthorityPath, sha256: sha256(read(structuredAuthorityPath)), role: 'complete_machine_readable_authority' },", 'builder manifest structured source')
+          if 'evidencePath' in text or 'evidenceBlob' in text:
+              raise SystemExit('Old evidence variables survived downstream builder cutover')
           path.write_text(text)
 
-          path = Path('scripts/validate-clean-v063-complete-authority.mjs')
+          # Validator.
+          path = Path('scripts/validate-clean-v063-downstream-data.mjs')
           text = path.read_text()
-          text = text.replace("assert.equal(ledger.decision_registry?.records?.length, 49);\n", '', 1)
-          old_log = 'console.log(`Validated clean-v0.6.3 complete authority ${manifest.authority_set_id}: 128 cards, 25 Territories, 49 normalized provenance records, 21 frozen bespoke card sections, and zero gameplay drift.`);'
-          new_log = 'console.log(`Validated clean-v0.6.3 complete authority ${manifest.authority_set_id}: 128 cards, 25 Territories, ${candidates.decisions?.length ?? 0} normalized provenance records, 21 frozen bespoke card sections, and zero gameplay drift.`);'
-          if old_log in text:
-              text = text.replace(old_log, new_log, 1)
-          elif new_log not in text:
-              raise SystemExit('Expected dynamic validator summary not found')
+          text = must_replace(text,
+              "const certificationPath = 'artifacts/reconstruction/clean-v0.6.3/certification/authority-set.json';",
+              f"const certificationPath = '{COMPLETE_MANIFEST}';", 'validator certification path')
+          text = must_replace(text, f"const authoritySetId = '{OLD_ID}';", f"const authoritySetId = '{NEW_ID}';", 'validator authority ID')
+          text = must_replace(text, f"const evidencePath = '{OLD_CANDIDATE}';\n", f"const structuredAuthorityPath = '{COMPLETE_CANONICAL}';\n", 'validator structured path')
+          text = must_replace(text, "const evidenceBlob = '955dfa654cac96a9de820867ab694e83d0fb1d36';\n", '', 'validator old blob')
+          text = must_replace(text,
+              "  'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json',\n];",
+              f"  'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json',\n  '{OLD_CANDIDATE}',\n];", 'validator forbidden candidate')
+          text = must_replace(text,
+              "assert.equal(canonical.evidence_payload?.path, evidencePath);\nassert.equal(canonical.evidence_payload?.git_blob_sha, evidenceBlob);\nassert.equal(canonical.evidence_payload?.role, 'verified_delta_payload_only');",
+              "assert.equal(canonical.structured_authority?.path, structuredAuthorityPath);\nassert.equal(canonical.structured_authority?.sha256, sha256(read(structuredAuthorityPath)));\nassert.equal(canonical.structured_authority?.role, 'complete_machine_readable_authority');", 'validator canonical structured provenance')
+          text = must_replace(text, "assert.equal(manifest.evidence?.role, 'verified_delta_payload_only');",
+              "assert.equal(manifest.structured_authority?.path, structuredAuthorityPath);\nassert.equal(manifest.structured_authority?.role, 'complete_machine_readable_authority');", 'validator manifest structured provenance')
+          text = must_replace(text, "assert.equal(certification.authority_set_id, authoritySetId);",
+              "assert.equal(certification.target, 'clean-v0.6.3-complete');\nassert.equal(certification.status, 'certified_on_manual_merge');\nassert.equal(certification.authority_set_id, authoritySetId);", 'validator complete authority manifest')
+          if 'evidencePath' in text or 'evidenceBlob' in text:
+              raise SystemExit('Old evidence variables survived downstream validator cutover')
           path.write_text(text)
           PY
 
-      - name: Rebuild complete authority from source lineage
-        run: node scripts/build-clean-v063-complete-authority.mjs --write
+      - name: Syntax-check cutover scripts
+        run: |
+          node --check scripts/build-clean-v063-downstream-data.mjs
+          node --check scripts/validate-clean-v063-downstream-data.mjs
 
-      - name: Validate complete authority and zero gameplay drift
-        run: node scripts/validate-clean-v063-complete-authority.mjs
+      - name: Rebuild downstream from complete authority
+        run: node scripts/build-clean-v063-downstream-data.mjs
 
-      - name: Upload complete authority package
-        uses: actions/upload-artifact@v4
-        with:
-          name: clean-v063-complete-authority
-          path: |
-            artifacts/reconstruction/clean-v0.6.3/complete-authority/
-            artifacts/reconstruction/evidence/v0.6.3/issue-405-finalized-card-tracker.md
-            artifacts/reconstruction/evidence/v0.6.3/issue-405-finalized-card-tracker.json
-          if-no-files-found: error
+      - name: Validate cutover downstream
+        run: node scripts/validate-clean-v063-downstream-data.mjs
 
-      - name: Commit certified authority package to PR branch
-        if: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository }}
+      - name: Prove gameplay and starter compositions did not change
         shell: bash
         run: |
-          git add scripts/build-clean-v063-complete-authority.mjs scripts/validate-clean-v063-complete-authority.mjs
-          git add artifacts/reconstruction/clean-v0.6.3/complete-authority
-          git add artifacts/reconstruction/evidence/v0.6.3/issue-405-finalized-card-tracker.md
-          git add artifacts/reconstruction/evidence/v0.6.3/issue-405-finalized-card-tracker.json
+          python - <<'PY'
+          import json
+
+          with open('/tmp/old-clean-v063-canonical.json') as f:
+              old = json.load(f)
+          with open('artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json') as f:
+              new = json.load(f)
+          with open('/tmp/old-clean-v063-starters.json') as f:
+              old_starters = json.load(f)
+          with open('artifacts/reconstruction/clean-v0.6.3/downstream/starter-decks.json') as f:
+              new_starters = json.load(f)
+
+          provenance = {'source','source_candidate','v063_source','governing_sources','inherits_from','release_manifest','provenance','authority_set_id'}
+          process = {'version','name','date','status','publication_unlocked','authority_set_id','authority','structural_baseline','evidence_payload','structured_authority','governing_sources','starter_decks','normalization','release_manifest','inherits_from'}
+
+          def strip(value):
+              if isinstance(value, list): return [strip(v) for v in value]
+              if not isinstance(value, dict): return value
+              return {k: strip(v) for k,v in value.items() if k not in provenance}
+
+          def gameplay(value):
+              value = strip(value)
+              for key in process: value.pop(key, None)
+              return value
+
+          if gameplay(old) != gameplay(new):
+              raise SystemExit('Gameplay payload changed during downstream provenance cutover')
+          if old_starters.get('decks') != new_starters.get('decks'):
+              raise SystemExit('Starter compositions changed during downstream provenance cutover')
+          if old.get('starter_decks', {}).get('decks') != new.get('starter_decks', {}).get('decks'):
+              raise SystemExit('Embedded starter compositions changed during downstream provenance cutover')
+          print('Downstream cutover preserves the complete gameplay payload and all 12 starter compositions.')
+          PY
+
+      - name: Reject withdrawn candidate from new downstream outputs
+        run: |
+          ! grep -R -F 'artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json' artifacts/reconstruction/clean-v0.6.3/downstream
+
+      - name: Commit downstream provenance cutover to PR branch
+        shell: bash
+        run: |
+          git add scripts/build-clean-v063-downstream-data.mjs scripts/validate-clean-v063-downstream-data.mjs
+          git add artifacts/reconstruction/clean-v0.6.3/downstream
           if git diff --cached --quiet; then
-            echo 'Authority package already committed.'
+            echo 'Downstream provenance is already cut over.'
             exit 0
           fi
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Certify source-regenerated clean v0.6.3 authority'
+          git commit -m 'Cut clean v0.6.3 downstream over to complete authority'
           git push origin HEAD:${{ github.head_ref }}
