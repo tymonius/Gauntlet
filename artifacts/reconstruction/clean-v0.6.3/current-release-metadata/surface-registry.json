@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "target": "clean-v0.6.3-surface-registry",
+  "release_version": "v0.6.3",
+  "authority_set_id": "64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49",
+  "surfaces": [
+    {
+      "id": "complete-authority",
+      "issue_590_role": "approved source authority",
+      "manifest": "artifacts/reconstruction/clean-v0.6.3/complete-authority/authority-set.json",
+      "expected_target": "clean-v0.6.3-complete",
+      "expected_status": "certified_on_manual_merge",
+      "authority_field": "authority_set_id"
+    },
+    {
+      "id": "canonical-data-and-starters",
+      "issue_590_role": "canonical data and starters",
+      "manifest": "artifacts/reconstruction/clean-v0.6.3/downstream/manifest.json",
+      "expected_target": "clean-v0.6.3-downstream",
+      "expected_status": "downstream_candidate_pending_merge_review",
+      "authority_field": "authority_set_id"
+    },
+    {
+      "id": "browser-rulebook",
+      "issue_590_role": "Rulebook",
+      "manifest": "artifacts/reconstruction/clean-v0.6.3/browser-rulebook/manifest.json",
+      "expected_target": "clean-v0.6.3-browser-rulebook",
+      "expected_status": "downstream_candidate_pending_merge_review",
+      "authority_field": "authority_set_id"
+    },
+    {
+      "id": "card-reference",
+      "issue_590_role": "card/reference text",
+      "manifest": "artifacts/reconstruction/clean-v0.6.3/card-reference/manifest.json",
+      "expected_target": "clean-v0.6.3-card-reference",
+      "expected_status": "downstream_candidate_pending_merge_review",
+      "authority_field": "authority_set_id"
+    },
+    {
+      "id": "faction-pages",
+      "issue_590_role": "faction pages",
+      "manifest": "artifacts/reconstruction/clean-v0.6.3/faction-pages/manifest.json",
+      "expected_target": "clean-v0.6.3-faction-pages",
+      "expected_status": "downstream_candidate_pending_merge_review",
+      "authority_field": "authority_set_id"
+    },
+    {
+      "id": "start",
+      "issue_590_role": "Start",
+      "manifest": "artifacts/reconstruction/clean-v0.6.3/start/manifest.json",
+      "expected_target": "clean-v0.6.3-start",
+      "expected_status": "downstream_candidate_pending_merge_review",
+      "authority_field": "authority_set_id"
+    },
+    {
+      "id": "deckbuilder",
+      "issue_590_role": "Deckbuilder",
+      "manifest": "artifacts/reconstruction/clean-v0.6.3/deckbuilder/manifest.json",
+      "expected_target": "clean-v0.6.3-deckbuilder",
+      "expected_status": "downstream_candidate_pending_merge_review",
+      "authority_field": "authority_set_id"
+    },
+    {
+      "id": "rules-arbiter",
+      "issue_590_role": "Rules Arbiter",
+      "manifest": "artifacts/reconstruction/clean-v0.6.3/rules-arbiter/manifest.json",
+      "expected_target": "clean-v0.6.3-rules-arbiter",
+      "expected_status": "downstream_candidate_pending_merge_review",
+      "authority_field": "authority_set_id"
+    },
+    {
+      "id": "digital-rules",
+      "issue_590_role": "digital rules",
+      "manifest": "artifacts/reconstruction/clean-v0.6.3/digital/manifest.json",
+      "expected_target": "clean-v0.6.3-digital",
+      "expected_status": "candidate_until_manual_merge",
+      "authority_field": "complete_authority_set_id"
+    },
+    {
+      "id": "print-export",
+      "issue_590_role": "print/export artifacts",
+      "manifest": "artifacts/reconstruction/clean-v0.6.3/print-export/manifest.json",
+      "expected_target": "clean-v0.6.3-print-export",
+      "expected_status": "downstream_candidate_pending_merge_review",
+      "authority_field": "authority_set_id"
+    }
+  ],
+  "surface_count": 10,
+  "exact_cross_surface_authority_parity_required": true,
+  "publication_unlocked": false,
+  "public_current_release": "v0.6.1"
+}
