@@ -108,3 +108,52 @@ body{background:radial-gradient(circle at 10% 5%,rgba(143,31,37,.1),transparent 
   -webkit-mask:var(--faction-symbol) center/68% 68% no-repeat;
   mask:var(--faction-symbol) center/68% 68% no-repeat;
 }
+
+/* Faction and Leader visuals: use the canonical homepage colors and portrait assets. */
+.faction-choice.military{--choice-faction:#9e262c}
+.faction-choice.diplomats{--choice-faction:#264f91}
+.faction-choice.financiers{--choice-faction:#227044}
+.faction-choice.intelligence{--choice-faction:#282827}
+.faction-choice.mystics{--choice-faction:#5d347e}
+.faction-choice.inquisition{--choice-faction:#a67a27}
+.faction-choice .choice-mark{color:var(--choice-faction,var(--start-ink))}
+
+.selected-choice::before{
+  content:"";
+  display:none;
+  width:100%;
+  max-width:190px;
+  aspect-ratio:1;
+  align-self:start;
+  justify-self:start;
+  background-color:#e9e1d4;
+  background-position:center 18%;
+  background-size:cover;
+  background-repeat:no-repeat;
+  border:1px solid var(--start-line);
+  box-shadow:0 10px 24px rgba(54,42,25,.11);
+}
+.choice-section:has(input[name="leader"]:checked) .selected-choice::before{display:block}
+.choice-section:has(input[name="leader"][value="general"]:checked) .selected-choice::before{background-image:url("../images/general.png")}
+.choice-section:has(input[name="leader"][value="commandant"]:checked) .selected-choice::before{background-image:url("../images/commandant.png")}
+.choice-section:has(input[name="leader"][value="ambassador"]:checked) .selected-choice::before{background-image:url("../images/ambassador.png")}
+.choice-section:has(input[name="leader"][value="senator"]:checked) .selected-choice::before{background-image:url("../images/senator.png")}
+.choice-section:has(input[name="leader"][value="banker"]:checked) .selected-choice::before{background-image:url("../images/banker.png")}
+.choice-section:has(input[name="leader"][value="executive"]:checked) .selected-choice::before{background-image:url("../images/executive.png")}
+.choice-section:has(input[name="leader"][value="ranger"]:checked) .selected-choice::before{background-image:url("../images/ranger.png")}
+.choice-section:has(input[name="leader"][value="spymaster"]:checked) .selected-choice::before{background-image:url("../images/spymaster.png")}
+.choice-section:has(input[name="leader"][value="alchemist"]:checked) .selected-choice::before{background-image:url("../images/alchemist.png")}
+.choice-section:has(input[name="leader"][value="spirit-walker"]:checked) .selected-choice::before{background-image:url("../images/spirit walker.png")}
+.choice-section:has(input[name="leader"][value="grand-inquisitor"]:checked) .selected-choice::before{background-image:url("../images/grand inquisitor.png")}
+.choice-section:has(input[name="leader"][value="witch-hunter"]:checked) .selected-choice::before{background-image:url("../images/witch hunter.png")}
+@media(min-width:901px){
+  .choice-section:has(input[name="leader"]:checked) .selected-choice{grid-template-columns:minmax(160px,.38fr) minmax(0,1fr) minmax(300px,.85fr)}
+}
+@media(min-width:621px) and (max-width:900px){
+  .choice-section:has(input[name="leader"]:checked) .selected-choice{grid-template-columns:190px minmax(0,1fr)}
+  .choice-section:has(input[name="leader"]:checked) .starter-preview{grid-column:1/-1}
+}
+@media(max-width:620px){
+  .choice-section:has(input[name="leader"]:checked) .selected-choice{grid-template-columns:1fr}
+  .selected-choice::before{max-width:220px}
+}
