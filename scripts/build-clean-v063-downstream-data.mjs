@@ -12,18 +12,18 @@ const starterPath = `${targetRoot}/starter-decks.json`;
 const boundaryPath = `${targetRoot}/source-boundary.md`;
 const statusPath = `${targetRoot}/validation-status.md`;
 const manifestPath = `${targetRoot}/manifest.json`;
-const certificationPath = 'artifacts/reconstruction/clean-v0.6.3/certification/authority-set.json';
+const certificationPath = 'artifacts/reconstruction/clean-v0.6.3/complete-authority/authority-set.json';
 const planPath = 'config/reconstruction-version-plan.json';
 const resolutionsPath = 'config/reconstruction-version-resolutions.json';
 const lifecyclePath = 'config/release-lifecycle.json';
 const baselinePath = 'releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json';
-const evidencePath = 'artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json';
+const structuredAuthorityPath = 'artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json';
 const starterSourcePath = 'v0.6.3/data/starter-decks-candidate.js';
 const starterAuditPath = 'docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md';
 
-const authoritySetId = '2da05383c10fe3e784c64b26fd2d9837913011cad996966f49a7ae3a92af8ed9';
+const authoritySetId = '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49';
+const parentHumanAuthoritySetId = '2da05383c10fe3e784c64b26fd2d9837913011cad996966f49a7ae3a92af8ed9';
 const baselineBlob = '31ee55f3ff2784215863547b167ff1e689343f15';
-const evidenceBlob = '955dfa654cac96a9de820867ab694e83d0fb1d36';
 const starterApproval = {
   pr: 573,
   merge_commit: 'e13cd423bacc4c965aad9f8ed622100bef88d48f',
@@ -45,6 +45,7 @@ const forbiddenAuthority = [
   'releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md',
   'releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md',
   'releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json',
+  'artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json',
 ];
 const provenanceKeys = new Set(['source', 'source_candidate', 'v063_source', 'governing_sources', 'inherits_from', 'release_manifest']);
 
@@ -91,21 +92,21 @@ function verifyAuthorityInputs() {
   const resolutions = readJson(resolutionsPath);
   const lifecycle = readJson(lifecyclePath);
   const baselineText = read(baselinePath);
-  const evidenceText = read(evidencePath);
+  const structuredAuthorityText = read(structuredAuthorityPath);
   const baseline = JSON.parse(baselineText);
-  const evidence = JSON.parse(evidenceText);
+  const structuredAuthority = JSON.parse(structuredAuthorityText);
+  const evidence = structuredAuthority.gameplay;
 
-  assert.equal(certification.target, 'clean-v0.6.3');
-  assert.equal(certification.status, 'certified_on_merge');
+  assert.equal(certification.target, 'clean-v0.6.3-complete');
+  assert.equal(certification.status, 'certified_on_manual_merge');
   assert.equal(certification.authority_set_id, authoritySetId);
   assert.equal(certification.publication_unlocked, false);
-  assert.equal(certification.downstream_regeneration_unlocked_on_merge, true);
 
   const target = plan.targets?.['clean-v0.6.3'];
   assert.equal(plan.publication_unlocked, false);
   assert.equal(target?.status, 'authority_certified');
   assert.equal(target?.downstream_regeneration_unlocked, true);
-  assert.equal(target?.certification?.authority_set_id, authoritySetId);
+  assert.equal(target?.certification?.authority_set_id, parentHumanAuthoritySetId);
   assert.equal(target?.certification?.publication_unlocked, false);
   assert.equal(target?.starter_policy?.candidate_source, starterApproval.source);
   assert.equal(target?.starter_policy?.status, 'eligible_for_downstream_regeneration_after_clean_v063_certification');
@@ -118,17 +119,21 @@ function verifyAuthorityInputs() {
   assert.equal(lifecycle.releases?.['v0.6.3']?.status, 'withdrawn');
 
   assert.equal(gitBlobSha(baselineText), baselineBlob, 'Published v0.6.1 canonical baseline blob drifted.');
-  assert.equal(gitBlobSha(evidenceText), evidenceBlob, 'Pinned finalized v0.6.3 evidence blob drifted.');
   assert.equal(baseline.version, 'v0.6.1');
   assert.match(baseline.status, /Published playtest edition/);
   assert.equal(baseline.cards?.length, 122, 'Published v0.6.1 structural baseline card count drifted.');
   assert.equal(baseline.territories?.length, 25, 'Published v0.6.1 structural baseline Territory count drifted.');
   assert.equal(baseline.factions?.length, 6, 'Published v0.6.1 structural baseline faction count drifted.');
-  assert.equal(evidence.version, 'v0.6.3-candidate');
+  assert.equal(structuredAuthority.target, 'clean-v0.6.3-canonical-structured-authority');
+  assert.equal(structuredAuthority.status, 'complete_authority_candidate');
+  assert.equal(structuredAuthority.publication_unlocked, false);
   assert.equal(evidence.cards?.length, 128);
   assert.equal(evidence.territories?.length, 25);
 
   const certifiedFiles = new Map((certification.authority_files ?? []).map((entry) => [entry.path, entry]));
+  const structuredAuthorityEntry = certifiedFiles.get(structuredAuthorityPath);
+  assert(structuredAuthorityEntry, 'Complete authority manifest does not bind the canonical structured authority.');
+  assert.equal(sha256(structuredAuthorityText), structuredAuthorityEntry.sha256, 'Canonical structured authority drifted from its complete authority manifest.');
   for (const entry of certification.authority_files ?? []) {
     assert.equal(sha256(read(entry.path)), entry.sha256, `Certified authority file drifted: ${entry.path}`);
   }
@@ -282,14 +287,14 @@ function buildCanonical({ certification, evidence }, starters) {
   data.publication_unlocked = false;
   data.authority_set_id = authoritySetId;
   data.authority = {
-    target: 'clean-v0.6.3',
+    target: 'clean-v0.6.3-complete',
     certification_manifest: certificationPath,
     authority_set_id: authoritySetId,
     rulebook: certification.authority_files[0].path,
     faction_guides: factionDefs.map(([, , guide]) => guide),
   };
   data.structural_baseline = { path: baselinePath, git_blob_sha: baselineBlob, role: 'published schema and stable-structure baseline only' };
-  data.evidence_payload = { path: evidencePath, git_blob_sha: evidenceBlob, role: 'verified_delta_payload_only' };
+  data.structured_authority = { path: structuredAuthorityPath, sha256: sha256(read(structuredAuthorityPath)), role: 'complete_machine_readable_authority' };
   data.governing_sources = {
     authority_certification: certificationPath,
     rulebook: certification.authority_files[0].path,
@@ -297,19 +302,19 @@ function buildCanonical({ certification, evidence }, starters) {
     reconstruction_plan: planPath,
     recovered_decisions: resolutionsPath,
     published_structural_baseline: baselinePath,
-    verified_delta_payload: evidencePath,
+    structured_authority: structuredAuthorityPath,
     starter_approval: starterApproval.source,
   };
   data.factions = data.factions.map((faction) => ({ ...faction, source: guideByFactionId.get(faction.id), authority_set_id: authoritySetId }));
   data.cards = data.cards.map((card) => ({
     ...card,
     provenance: card.allegiance === 'Neutral'
-      ? { authority_basis: [certificationPath, planPath, resolutionsPath, baselinePath], evidence_payload: evidencePath }
-      : { authority: guideByAllegiance.get(card.allegiance), evidence_payload: evidencePath },
+      ? { authority_basis: [certificationPath, planPath, resolutionsPath, baselinePath], structured_authority: structuredAuthorityPath }
+      : { authority: guideByAllegiance.get(card.allegiance), structured_authority: structuredAuthorityPath },
   }));
   data.territories = data.territories.map((territory) => ({
     ...territory,
-    provenance: { authority_basis: [certificationPath, planPath, baselinePath], evidence_payload: evidencePath },
+    provenance: { authority_basis: [certificationPath, planPath, baselinePath], structured_authority: structuredAuthorityPath },
   }));
   data.starter_decks = starters;
   data.normalization = {
@@ -317,8 +322,8 @@ function buildCanonical({ certification, evidence }, starters) {
     certified_authority_set: authoritySetId,
     published_release: false,
     historical_v062_v063_packages_used_as_authority: false,
-    finalized_v063_candidate_used_as_authority: false,
-    finalized_v063_candidate_role: 'verified_delta_payload_only',
+    complete_structured_authority_used_as_content_source: true,
+    historical_v063_candidate_used_as_content_source: false,
   };
   return data;
 }
@@ -336,8 +341,37 @@ export function buildOutputs({ write = false } = {}) {
     assert(!starterText.includes(forbidden), `Forbidden historical authority source leaked into clean starter data: ${forbidden}`);
   }
 
-  const boundaryText = `# Clean v0.6.3 downstream source boundary\n\n**Status:** reconstruction candidate; not published  \n**Certified authority set:** \`${authoritySetId}\`\n\nThe Rulebook and six faction guides certified in \`${certificationPath}\` are the binding clean v0.6.3 authority. The published v0.6.1 canonical data is used only as the stable schema and structure baseline where the seven authority documents do not enumerate the complete neutral-card and Territory catalogs.\n\nThe finalized v0.6.3 canonical-data file at \`${evidencePath}\` is pinned to Git blob \`${evidenceBlob}\` and is consumed only as a verified delta payload. Its historical provenance fields are stripped and replaced with the clean authority boundary before any downstream artifact is emitted. Withdrawn v0.6.2/v0.6.3 release documents are forbidden as authority.\n\nThe twelve starter compositions come from PR #573 (merge \`${starterApproval.merge_commit}\`) and are accepted only after legality is revalidated against this rebuilt clean card/Territory pool.\n\nPublication remains separately locked; v0.6.1 remains current/public.\n`;
-  const statusText = `# Clean v0.6.3 downstream validation status\n\n**Status:** candidate ready for merge review  \n**Publication:** locked  \n**Authority set:** \`${authoritySetId}\`\n\nValidated by the deterministic build/validation gate:\n\n- exact certification manifest and all seven certified authority-file hashes;\n- 128 playable cards: 50 Neutral plus 13 for each of six factions;\n- all 78 faction-card identities, costs, forms, Unique status, and printed effects against their certified faction guides;\n- 25 Territories, Second Line, and Smuggler's Run identity invariants;\n- recovered Armistice, Manifest Destiny, and Contingency Plan decisions;\n- Extraordinary Rendition form normalization and Détente special Bank Action;\n- pinned v0.6.1 structural baseline and pinned finalized v0.6.3 evidence payload roles;\n- twelve PR #573 starter Decks, each exactly 30 cards / 60 Deckbuilding Value, legal for its Leader/faction, with legal Territory selections and 110 represented playable titles; and\n- no publication/current-release cutover.\n`;
+  const boundaryText = `# Clean v0.6.3 downstream source boundary
+
+**Status:** reconstruction candidate; not published  
+**Complete authority set:** ${authoritySetId}
+
+The complete clean v0.6.3 authority manifest at ${certificationPath} is the binding downstream source. Its machine-readable gameplay payload comes from ${structuredAuthorityPath}, which was independently regenerated from v0.6.1 through the historical v0.6.2/v0.6.3 transformation pipeline and certified with zero gameplay drift.
+
+The certified Rulebook and six faction guides remain the human-readable authority within that complete set. The published v0.6.1 canonical data is retained only as a pinned structural-baseline check; it is not used to fill missing clean-v0.6.3 gameplay content. The withdrawn v0.6.3 release-candidate canonical file is forbidden as a downstream content source or emitted provenance dependency.
+
+The twelve starter compositions come from PR #573 (merge ${starterApproval.merge_commit}) and are accepted only after legality is revalidated against the complete 128-card / 25-Territory authority.
+
+Publication remains separately locked; v0.6.1 remains current/public.
+`;
+  const statusText = `# Clean v0.6.3 downstream validation status
+
+**Status:** candidate ready for merge review  
+**Publication:** locked  
+**Authority set:** ${authoritySetId}
+
+Validated by the deterministic build/validation gate:
+
+- exact complete-authority manifest and every bound authority-file hash;
+- machine-readable gameplay source from the complete canonical structured authority, not the withdrawn v0.6.3 candidate;
+- 128 playable cards: 50 Neutral plus 13 for each of six factions;
+- all 78 faction-card identities, costs, forms, Unique status, and printed effects against their certified faction guides;
+- 25 Territories, Second Line, and Smuggler's Run identity invariants;
+- recovered Armistice, Manifest Destiny, and Contingency Plan decisions;
+- Extraordinary Rendition form normalization and Détente special Bank Action;
+- twelve PR #573 starter Decks, each exactly 30 cards / 60 Deckbuilding Value, legal for its Leader/faction, with legal Territory selections and 110 represented playable titles; and
+- no publication/current-release cutover.
+`;
   const outputFiles = [[canonicalPath, canonicalText], [starterPath, starterText], [boundaryPath, boundaryText], [statusPath, statusText]];
   const manifest = {
     schema_version: 1,
@@ -348,7 +382,7 @@ export function buildOutputs({ write = false } = {}) {
     publication_unlocked: false,
     public_current_release: 'v0.6.1',
     baseline: { path: baselinePath, git_blob_sha: baselineBlob, role: 'published_schema_and_stable_structure_baseline_only' },
-    evidence: { path: evidencePath, git_blob_sha: evidenceBlob, role: 'verified_delta_payload_only' },
+    structured_authority: { path: structuredAuthorityPath, sha256: sha256(read(structuredAuthorityPath)), role: 'complete_machine_readable_authority' },
     starter_approval: { ...starterApproval, source_file: starterSourcePath, audit: starterAuditPath },
     forbidden_authority_sources: forbiddenAuthority,
     outputs: outputFiles.map(([file, text]) => ({ path: file, sha256: sha256(text), bytes: Buffer.byteLength(text, 'utf8'), lines: text.split('\n').length })),

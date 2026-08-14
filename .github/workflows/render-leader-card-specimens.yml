@@ -46,11 +46,21 @@ jobs:
         with:
           node-version: 22
       - run: npm install
-      - run: npx playwright install --with-deps chromium
+      - run: npx playwright install --with-deps chromium webkit
       - name: Render and validate card review catalog
         run: node scripts/render-leader-card-specimens.mjs
       - name: Validate Territory mobile render stability
-        run: node scripts/validate-territory-mobile-render.mjs
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/gauntlet-territory-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          for attempt in {1..50}; do
+            if curl -fsS http://127.0.0.1:4173/card-design/ > /dev/null; then
+              break
+            fi
+            sleep 0.1
+          done
+          TERRITORY_TEST_BASE_URL=http://127.0.0.1:4173 node scripts/validate-territory-mobile-render.mjs
       - name: Validate Mystics Rite card specimens
         run: node scripts/validate-rite-card-render.mjs
       - uses: actions/upload-artifact@v4

@@ -1,0 +1,102 @@
+{
+  "schema_version": 1,
+  "target": "clean-v0.6.3-complete",
+  "status": "certified_on_manual_merge",
+  "authority_set_id": "64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49",
+  "supersedes_authority_set_id": "2da05383c10fe3e784c64b26fd2d9837913011cad996966f49a7ae3a92af8ed9",
+  "authority_files": [
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md",
+      "sha256": "7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643",
+      "bytes": 112468,
+      "lines": 2380
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/faction-guides/military/Gauntlet_v0.6.3_Military_Faction_Guide.md",
+      "sha256": "23a4260f793ebf5c09d6a62fc2d36d51290ca9ca28c03e3bfe349170eae1c91c",
+      "bytes": 11380,
+      "lines": 239
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/faction-guides/diplomat/Gauntlet_v0.6.3_Diplomat_Faction_Guide.md",
+      "sha256": "99788e5aead16a06e8fc026929e3b362930ebba91a55d40881890a85ae8d4412",
+      "bytes": 15845,
+      "lines": 399
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/faction-guides/financier/Gauntlet_v0.6.3_Financier_Faction_Guide.md",
+      "sha256": "f5d07550bdc76db7c2ba6c5243e5539dadef1c27986250d6b89f4cdec6700f6b",
+      "bytes": 16711,
+      "lines": 347
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/faction-guides/intelligence/Gauntlet_v0.6.3_Intelligence_Faction_Guide.md",
+      "sha256": "103d5bd4a6758ef3127fa71f19694b5ba428216b1d6c28b9db74fdb8e86d2328",
+      "bytes": 16667,
+      "lines": 344
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md",
+      "sha256": "b47623ba7a7537e0df5326ccd69967dee4bb7016b2a3b5c2a8d05d1c899e5f1a",
+      "bytes": 15278,
+      "lines": 351
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/faction-guides/inquisition/Gauntlet_v0.6.3_Inquisition_Faction_Guide.md",
+      "sha256": "a489e08ec1daf094e521bc45acc43e119c137fe566cfd8bef2f4d2455e38e3bd",
+      "bytes": 13739,
+      "lines": 272
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json",
+      "sha256": "9b79203f38d99d79202ccd834f8794a345513503505f1910b71665973dbb7851",
+      "bytes": 180008,
+      "lines": 4125
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/complete-authority/cards.json",
+      "sha256": "e695efe17e31ca1748750edba915793a5397c41447054176ed743d95d8258de0",
+      "bytes": 136409,
+      "lines": 3184
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/complete-authority/territories.json",
+      "sha256": "87895cde0505dbd58a7dfae3ccb05c7fef64e87b1bf8b47faea115a0918ebf55",
+      "bytes": 16466,
+      "lines": 363
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/complete-authority/provenance-ledger.json",
+      "sha256": "48275cd1808c3c842987cb3fdef6297a6ccf18b4cbff8f5598708403fb73470e",
+      "bytes": 104658,
+      "lines": 2582
+    }
+  ],
+  "evidence_files": [
+    {
+      "path": "artifacts/reconstruction/evidence/v0.6.3/issue-405-finalized-card-tracker.md",
+      "sha256": "03301736a77d9b0b40bc86290a6fe428f556303d183da858c7791fc1f70b36c5",
+      "bytes": 10418,
+      "lines": 164
+    },
+    {
+      "path": "artifacts/reconstruction/evidence/v0.6.3/issue-405-finalized-card-tracker.json",
+      "sha256": "d4b449d112b53d85598577e2d0e690d1f2537d1454435370fd99d992e11e7752",
+      "bytes": 618,
+      "lines": 13
+    }
+  ],
+  "equality_target": {
+    "path": "artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json",
+    "sha256": "641c813366a8bcb52f9cb505ada640994d416024deed1f71a6ec59fb24ed2c4c",
+    "role": "comparison_only_not_authority",
+    "result": "full_gameplay_payload_semantically_identical"
+  },
+  "source_guards": {
+    "withdrawn_v062_canonical_hidden_during_pipeline": true,
+    "old_v063_release_candidate_used_as_content_source": false,
+    "stale_governance_traceability_used_as_authority": false
+  },
+  "publication_unlocked": false,
+  "public_current_release": "v0.6.1"
+}
