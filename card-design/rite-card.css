@@ -103,129 +103,25 @@
   color: var(--component-accent-ink);
 }
 
-/* Completed Rites replace their illustration with a restrained inked ritual
-   diagram. It is intentionally diagrammatic and tactile rather than glowing,
-   metallic, or seal-like, so it cannot be mistaken for Diplomat ratification. */
+/* Completed Rites share the approved ritual-document artwork. The wordmark,
+   blood, beeswax, and ash are baked into the source image so all three Rites
+   use exactly the same completion cue. */
 .rite-completed-panel {
   position: relative;
   display: block;
-  isolation: isolate;
   overflow: hidden;
-  background:
-    linear-gradient(rgba(93, 52, 126, 0.075), rgba(93, 52, 126, 0.075)),
-    radial-gradient(circle at 50% 48%, rgba(255, 250, 234, 0.9), transparent 48%),
-    var(--card-parchment-light);
-  color: var(--component-accent-ink);
+  background: var(--card-parchment-light);
 }
 
-.rite-completed-panel::after {
-  z-index: 1;
-  background:
-    repeating-linear-gradient(8deg, transparent 0 0.115in, rgba(68, 45, 72, 0.018) 0.117in 0.119in),
-    linear-gradient(180deg, rgba(93, 52, 126, 0.025), transparent 58%, rgba(93, 52, 126, 0.075));
-}
-
-.rite-completed-word {
-  position: absolute;
-  z-index: 4;
-  top: 7%;
-  left: 50%;
-  color: #563073;
-  font-family: var(--font-display-historical);
-  font-size: min(17pt, calc(var(--art-height) * 0.18));
-  font-style: italic;
-  font-weight: 400;
-  letter-spacing: 0.035em;
-  line-height: 1;
-  text-shadow: 0 0.01in 0 rgba(255, 255, 255, 0.52);
-  transform: translateX(-50%) rotate(-0.5deg);
-  white-space: nowrap;
-}
-
-.rite-completed-word::before,
-.rite-completed-word::after {
-  position: absolute;
-  top: 52%;
-  width: min(0.28in, calc(var(--art-height) * 0.25));
-  height: 1px;
-  background: rgba(86, 48, 115, 0.43);
-  content: "";
-}
-
-.rite-completed-word::before {
-  right: calc(100% + 0.07in);
-}
-
-.rite-completed-word::after {
-  left: calc(100% + 0.07in);
-}
-
-.rite-ritual-diagram {
-  position: absolute;
-  z-index: 3;
-  top: 64%;
-  left: 50%;
-  width: min(0.72in, calc(var(--art-height) * 0.68));
-  height: min(0.72in, calc(var(--art-height) * 0.68));
-  border: 1.15px solid rgba(86, 48, 115, 0.72);
-  border-radius: 50%;
-  box-shadow:
-    0 0 0 0.018in rgba(86, 48, 115, 0.08),
-    0 0.018in 0.028in rgba(50, 34, 57, 0.12);
-  transform: translate(-50%, -50%) rotate(-1.2deg);
-}
-
-.rite-ritual-diagram::before,
-.rite-ritual-diagram::after {
-  position: absolute;
-  border: 1px solid rgba(86, 48, 115, 0.52);
-  border-radius: 50%;
-  content: "";
-}
-
-.rite-ritual-diagram::before {
-  inset: 10%;
-}
-
-.rite-ritual-diagram::after {
-  inset: 30%;
-  border-color: rgba(86, 48, 115, 0.44);
-}
-
-.rite-diagram-axis {
-  position: absolute;
-  z-index: 1;
-  top: 50%;
-  left: 12%;
-  width: 76%;
-  height: 1px;
-  background: rgba(86, 48, 115, 0.42);
-  transform-origin: 50% 50%;
-}
-
-.rite-diagram-axis-a {
-  transform: rotate(0deg);
-}
-
-.rite-diagram-axis-b {
-  transform: rotate(60deg);
-}
-
-.rite-diagram-axis-c {
-  transform: rotate(120deg);
-}
-
-.rite-diagram-emblem {
-  position: absolute;
-  z-index: 3;
-  top: 50%;
-  left: 50%;
-  width: 0.24in;
-  height: 0.24in;
-  background: #563073;
-  -webkit-mask: var(--faction-symbol) center / contain no-repeat;
-  mask: var(--faction-symbol) center / contain no-repeat;
-  transform: translate(-50%, -50%);
+.rite-completed-panel > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+  user-select: none;
 }
 
 /* Completed faces become useful table references rather than dead rules text.
@@ -328,9 +224,8 @@
 
 @media print {
   .rite-faction-emblem,
-  .rite-diagram-emblem,
   .rite-completed-panel,
-  .rite-ritual-diagram {
+  .rite-completed-panel > img {
     print-color-adjust: exact;
   }
 
