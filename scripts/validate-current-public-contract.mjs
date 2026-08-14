@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 import { PDFDocument } from 'pdf-lib';
 
 const root = process.cwd();
@@ -14,13 +15,33 @@ function publicPath(value) {
   return `/${String(value).replace(/^\/+/, '')}`;
 }
 
+function gitEntry(relative) {
+  if (remoteBase || !relative) return null;
+  try {
+    const output = execFileSync('git', ['ls-tree', 'HEAD', '--', relative.replaceAll('\\', '/')], {
+      cwd: root,
+      encoding: 'utf8',
+      stdio: ['ignore', 'pipe', 'ignore'],
+    }).trim();
+    if (!output) return null;
+    const first = output.split('\n', 1)[0];
+    const match = first.match(/^\d+\s+(blob|tree)\s+[0-9a-f]+\t/);
+    return match?.[1] || null;
+  } catch {
+    return null;
+  }
+}
+
+function repositoryPathExists(relative) {
+  return fs.existsSync(path.join(root, relative)) || Boolean(gitEntry(relative));
+}
+
 function localPath(urlPath) {
   const clean = decodeURIComponent(urlPath.split(/[?#]/, 1)[0]).replace(/^\//, '');
   if (!clean) return 'index.html';
   const candidate = path.join(root, clean);
-  if (urlPath.endsWith('/') || (fs.existsSync(candidate) && fs.statSync(candidate).isDirectory())) {
-    return path.join(clean, 'index.html');
-  }
+  const directory = (fs.existsSync(candidate) && fs.statSync(candidate).isDirectory()) || gitEntry(clean) === 'tree';
+  if (urlPath.endsWith('/') || directory) return path.join(clean, 'index.html');
   return clean;
 }
 
@@ -33,8 +54,9 @@ function remoteUrl(urlPath) {
 async function getBytes(urlPath) {
   if (!remoteBase) {
     const relative = localPath(urlPath);
-    assert(fs.existsSync(path.join(root, relative)), `Missing public resource ${urlPath} -> ${relative}`);
-    return fs.readFileSync(path.join(root, relative));
+    const target = path.join(root, relative);
+    assert(fs.existsSync(target), `Required contract input was not checked out: ${urlPath} -> ${relative}`);
+    return fs.readFileSync(target);
   }
   const response = await fetch(remoteUrl(urlPath), { redirect: 'follow', cache: 'no-store' });
   assert(response.ok, `${urlPath} returned HTTP ${response.status}`);
@@ -70,9 +92,7 @@ const releaseRoot = publicPath(currentRelease.current_reconstructed_package_path
 assert(releaseRoot, `${currentVersion} does not define its current package path.`);
 const normalizedReleaseRoot = releaseRoot.endsWith('/') ? releaseRoot : `${releaseRoot}/`;
 const historicalRootValue = currentRelease.historical_package_path;
-const historicalRoot = historicalRootValue
-  ? `${publicPath(historicalRootValue).replace(/\/+$/, '')}/`
-  : null;
+const historicalRoot = historicalRootValue ? `${publicPath(historicalRootValue).replace(/\/+$/, '')}/` : null;
 const manifestPath = `${normalizedReleaseRoot}Gauntlet_${currentVersion}_Manifest.json`;
 
 const manifest = JSON.parse(await getText(manifestPath));
@@ -95,11 +115,7 @@ const bookletPdf = await PDFDocument.load(bookletBytes);
 assert.equal(bookletPdf.getPageCount(), bookletEntry.pages, 'Published booklet page count does not match the manifest.');
 
 const routeValues = Object.values(manifest.public_routes ?? {}).filter((route) => typeof route === 'string');
-const corePages = [
-  '/',
-  ...routeValues,
-  ...factions.map((slug) => `/factions/${slug}/`),
-];
+const corePages = ['/', ...routeValues, ...factions.map((slug) => `/factions/${slug}/`)];
 const uniqueCorePages = [...new Set(corePages)];
 const pages = new Map();
 for (const route of uniqueCorePages) {
@@ -154,7 +170,7 @@ for (const normalized of localReferences) {
     await getBytes(normalized);
   } else {
     const relative = localPath(normalized);
-    assert(fs.existsSync(path.join(root, relative)), `Public reference ${normalized} resolves to missing ${relative}`);
+    assert(repositoryPathExists(relative), `Public reference ${normalized} resolves to missing ${relative}`);
   }
 }
 
