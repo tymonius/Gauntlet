@@ -51,7 +51,8 @@ describe("Mystics Rite card prototypes", () => {
   });
 
   it("uses the approved shared Mystics completion artwork rather than the Diplomat wax-seal treatment", () => {
-    expect(riteRenderer).toContain("/images/artwork/supplemental/mystics/rite-completed.webp");
+    expect(riteRenderer).toContain("../images/artwork/supplemental/mystics/rite-completed.webp");
+    expect(riteRenderer).not.toContain("const COMPLETED_RITE_ART_SOURCE = '/images/");
     expect(riteRenderer).toContain('class="card-art rite-completed-panel has-image"');
     expect(riteRenderer).toContain('<img src="${COMPLETED_RITE_ART_SOURCE}"');
     expect(riteStyles).toContain(".rite-completed-panel > img");
