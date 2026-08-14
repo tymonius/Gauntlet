@@ -9,69 +9,88 @@
     gtag('js', new Date());
     gtag('config', 'G-8YYYZJGGPE');
   </script>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="theme-color" content="#8f1f25" />
-  <meta name="description" content="Read the six canonical Gauntlet v0.6.3 faction guides." />
-  <title>Gauntlet v0.6.3 Factions</title>
-  <link rel="canonical" href="https://gauntlet.run/factions/" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
-  <link rel="stylesheet" href="../rulebook/styles.css" />
-  <link rel="stylesheet" href="styles.css" />
+  <meta name="description" content="Compare all six Gauntlet factions, their play styles, signature mechanics, victory conditions, and Leaders.">
+  <title>Factions — Gauntlet</title>
+  <link rel="stylesheet" href="../site.css">
+  <link rel="stylesheet" href="factions.css">
+  <link rel="stylesheet" href="../rules-assistant/widget.css">
 </head>
-<body>
-  <div class="current release-banner">Gauntlet v0.6.3 · current canonical playtest edition.</div>
-  <header class="rulebook-header">
-    <a class="brand" href="../" aria-label="Return to the Gauntlet home page"><span class="brand-mark" aria-hidden="true">G</span><span>Gauntlet</span></a>
-    <div class="header-actions">
-      <a href="../rulebook/">Rulebook</a>
-      <a href="../card-reference/">Card Reference</a>
-      <a href="../factions/">Current public factions (v0.6.1)</a>
-    </div>
+<body class="factions-hub">
+  <header class="site-header">
+    <a class="brand" href="../" aria-label="Gauntlet home"><span class="brand-mark" aria-hidden="true">G</span><span>Gauntlet</span></a>
+    <nav aria-label="Primary navigation"><a href="../#game">Game</a><a href="../rulebook/">Rules</a><a href="../#factions">Factions</a><a href="../deckbuilder/">Deckbuilder</a><a href="https://github.com/tymonius/Gauntlet">Repository</a></nav>
   </header>
-
-  <main class="faction-index">
-    <section class="faction-index-hero">
-      <p class="eyebrow">Certified clean faction authority · version 0.6.3 · current release only</p>
-      <h1>Faction Guides</h1>
-      <p>Six searchable current release pages, each rendered directly from the faction guide bound into the certified complete clean-v0.6.3 authority set. The pages add navigation and presentation only; the guide Markdown remains the gameplay source.</p>
+  <main>
+    <section class="factions-intro">
+      <p class="eyebrow">Six institutions · twelve Leaders</p>
+      <h1>Choose how <span>you wield power.</span></h1>
+      <p class="faction-lede">Every Gauntlet faction contests the same Territory column and can run the Gauntlet. Five add a second route to victory, and all six reshape the decisions that happen before, during, and after battle.</p>
     </section>
-
-    <section class="faction-index-grid" aria-label="faction guides">
-      <a class="faction-index-card" data-faction="military" href="military/">
-        <div><h2>Military</h2><p>Open the certified clean-v0.6.3 Military faction guide.</p></div>
-        <span class="leaders">General · Commandant</span>
+    <section class="faction-hub-grid" aria-label="Gauntlet factions">
+      <a class="faction-hub-card faction-military" href="military/">
+        <span class="hub-symbol" aria-hidden="true">⚔</span>
+        <p class="hub-kicker">Command · maximum 2</p>
+        <h2>Military</h2>
+        <p>Military turns battlefield victories into Command, then spends that Command on Orders that extend movement, strengthen attacks or defenses, drive enemies back, and secure captured ground.</p>
+        <small>General · Commandant</small>
+        <strong>Explore Military →</strong>
       </a>
-      <a class="faction-index-card" data-faction="diplomats" href="diplomats/">
-        <div><h2>Diplomats</h2><p>Open the certified clean-v0.6.3 Diplomat faction guide.</p></div>
-        <span class="leaders">Ambassador · Senator</span>
+      <a class="faction-hub-card faction-diplomats" href="diplomats/">
+        <span class="hub-symbol" aria-hidden="true">§</span>
+        <p class="hub-kicker">Influence · 0–10</p>
+        <h2>Diplomats</h2>
+        <p>Diplomats use Influence and Terms to turn an impending battle into a negotiation. The opponent may accept a settlement—or refuse and fight after the Diplomat has shaped the consequences.</p>
+        <small>Ambassador · Senator</small>
+        <strong>Explore Diplomats →</strong>
       </a>
-      <a class="faction-index-card" data-faction="financiers" href="financiers/">
-        <div><h2>Financiers</h2><p>Open the certified clean-v0.6.3 Financier faction guide.</p></div>
-        <span class="leaders">Banker · Executive</span>
+      <a class="faction-hub-card faction-financiers" href="financiers/">
+        <span class="hub-symbol" aria-hidden="true">◆</span>
+        <p class="hub-kicker">Capital · dynamic limit</p>
+        <h2>Financiers</h2>
+        <p>Financiers convert cards and Territory control into Capital, Capital into Deeds, and Deeds into recurring income—or ownership of the entire Gauntlet.</p>
+        <small>Banker · Executive</small>
+        <strong>Explore Financiers →</strong>
       </a>
-      <a class="faction-index-card" data-faction="intelligence" href="intelligence/">
-        <div><h2>Intelligence</h2><p>Open the certified clean-v0.6.3 Intelligence faction guide.</p></div>
-        <span class="leaders">Ranger · Spymaster</span>
+      <a class="faction-hub-card faction-intelligence" href="intelligence/">
+        <span class="hub-symbol" aria-hidden="true">◉</span>
+        <p class="hub-kicker">Intel and Operation Progress</p>
+        <h2>Intelligence</h2>
+        <p>Intelligence pursues hidden Missions, accumulates Intel, studies opposing battle choices, and turns operational progress into a secret route to victory.</p>
+        <small>Ranger · Spymaster</small>
+        <strong>Explore Intelligence →</strong>
       </a>
-      <a class="faction-index-card" data-faction="mystics" href="mystics/">
-        <div><h2>Mystics</h2><p>Open the certified clean-v0.6.3 Mystics faction guide.</p></div>
-        <span class="leaders">Alchemist · Spirit Walker</span>
+      <a class="faction-hub-card faction-mystics" href="mystics/">
+        <span class="hub-symbol" aria-hidden="true">✦</span>
+        <p class="hub-kicker">Three Rites · no tracked resource</p>
+        <h2>Mystics</h2>
+        <p>Mystics bind, sacrifice, exchange, and recover cards while completing three public Rites that unlock increasingly powerful ways to use the Graveyard and the cards in hand.</p>
+        <small>Alchemist · Spirit Walker</small>
+        <strong>Explore Mystics →</strong>
       </a>
-      <a class="faction-index-card" data-faction="inquisition" href="inquisition/">
-        <div><h2>Inquisition</h2><p>Open the certified clean-v0.6.3 Inquisition faction guide.</p></div>
-        <span class="leaders">Grand Inquisitor · Witch Hunter</span>
+      <a class="faction-hub-card faction-inquisition" href="inquisition/">
+        <span class="hub-symbol" aria-hidden="true">✠</span>
+        <p class="hub-kicker">Conviction · maximum 4</p>
+        <h2>Inquisition</h2>
+        <p>The Inquisition sends opposing battle cards permanently to the Graveyard, gains Conviction from those losses, and spends it to suppress Assets, hands, and Discard Piles.</p>
+        <small>Grand Inquisitor · Witch Hunter</small>
+        <strong>Explore Inquisition →</strong>
       </a>
     </section>
-
-    <p class="faction-index-note">Authority set <code>64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49</code>. v0.6.1 remains the current release; these current release pages do not change publication state.</p>
+    <section class="section hub-note">
+      <div><p class="eyebrow">Shared world</p><h2>Institutions, not nations.</h2></div>
+      <p>The factions represent methods of power within a broadly shared early-modern civilization: force, diplomacy, finance, intelligence, ritual practice, and institutional judgment. Their rivalries can represent armies, courts, orders, guilds, expeditions, offices, or coalitions competing over contested ground.</p>
+    </section>
   </main>
-
   <footer>
-    <p><strong>Gauntlet clean v0.6.3</strong> · Faction-page current release · publication locked.</p>
-    <p>Current canonical playtest release: v0.6.3. Copyright © 2026 Tymon Scott. All rights reserved.</p>
+    <div><strong>Gauntlet</strong><p>Unpublished pre-release playtest project.</p></div>
+    <div class="footer-links"><a href="../rulebook/">Browser Rulebook</a><a href="../deckbuilder/">Deckbuilder</a><a href="https://github.com/tymonius/Gauntlet">GitHub</a></div>
+    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
   </footer>
+  <script type="module" src="../rules-assistant/widget.js"></script>
 </body>
 </html>
