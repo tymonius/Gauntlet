@@ -42,6 +42,7 @@ jobs:
           analytics=false
           tts=false
           media=false
+          renderer=false
 
           while IFS= read -r file; do
             case "$file" in
@@ -78,6 +79,11 @@ jobs:
                 media=true
                 ;;
             esac
+            case "$file" in
+              tts/renderer/renderer.js|scripts/validate-v063-card-rendering-conventions.mjs)
+                renderer=true
+                ;;
+            esac
           done < /tmp/changed-files.txt
 
           echo "code=$code" >> "$GITHUB_OUTPUT"
@@ -86,6 +92,7 @@ jobs:
           echo "analytics=$analytics" >> "$GITHUB_OUTPUT"
           echo "tts=$tts" >> "$GITHUB_OUTPUT"
           echo "media=$media" >> "$GITHUB_OUTPUT"
+          echo "renderer=$renderer" >> "$GITHUB_OUTPUT"
 
       - name: Setup Node
         if: >-
@@ -93,7 +100,8 @@ jobs:
           steps.scope.outputs.types == 'true' ||
           steps.scope.outputs.analytics == 'true' ||
           steps.scope.outputs.tts == 'true' ||
-          steps.scope.outputs.media == 'true'
+          steps.scope.outputs.media == 'true' ||
+          steps.scope.outputs.renderer == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -104,7 +112,8 @@ jobs:
           steps.scope.outputs.types == 'true' ||
           steps.scope.outputs.analytics == 'true' ||
           steps.scope.outputs.tts == 'true' ||
-          steps.scope.outputs.media == 'true'
+          steps.scope.outputs.media == 'true' ||
+          steps.scope.outputs.renderer == 'true'
         run: npm install
 
       - name: Typecheck changed TypeScript surface
@@ -139,6 +148,10 @@ jobs:
         if: steps.scope.outputs.tts == 'true'
         run: npm run tts:check
 
+      - name: Verify card renderer conventions when renderer changes
+        if: steps.scope.outputs.renderer == 'true'
+        run: node scripts/validate-v063-card-rendering-conventions.mjs
+
       - name: Verify media assets only when media inputs change
         if: steps.scope.outputs.media == 'true'
         run: npm run media:check
@@ -149,5 +162,6 @@ jobs:
           steps.scope.outputs.types != 'true' &&
           steps.scope.outputs.analytics != 'true' &&
           steps.scope.outputs.tts != 'true' &&
-          steps.scope.outputs.media != 'true'
+          steps.scope.outputs.media != 'true' &&
+          steps.scope.outputs.renderer != 'true'
         run: echo 'No code-owned regression checks are relevant to this change.'
