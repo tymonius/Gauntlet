@@ -1,0 +1,220 @@
+name: Verify current v0.6.3 live publication
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify-current-v063-live-publication.yml'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify-current-v063-live-publication.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+
+concurrency:
+  group: verify-current-v063-live-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  preview:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out current release
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install validation dependencies
+        run: |
+          npm install --package-lock=false
+          npm install --no-save --package-lock=false pdf-lib
+
+      - name: Verify current v0.6.3 lifecycle and evidence locks
+        run: node scripts/validate-release-recovery-state.mjs
+
+      - name: Validate published clean v0.6.3 package data
+        run: node scripts/validate-clean-v063-publication-data.mjs
+
+      - name: Verify analytics synchronization
+        run: node scripts/sync-google-analytics.mjs --check
+
+      - name: Typecheck current digital pointer
+        run: npm run typecheck
+
+  live:
+    if: >-
+      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+      github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      GH_TOKEN: ${{ github.token }}
+      EXPECTED_SHA: ${{ github.sha }}
+      GITHUB_REPOSITORY_NAME: ${{ github.repository }}
+    steps:
+      - name: Check out current release
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install validation and Worker tooling
+        run: |
+          npm install --package-lock=false
+          npm install --no-save --package-lock=false pdf-lib wrangler@4
+
+      - name: Verify production deployment secrets
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not configured"; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "CLOUDFLARE_ACCOUNT_ID is not configured"; exit 1; }
+
+      - name: Verify current v0.6.3 lifecycle and evidence locks
+        run: node scripts/validate-release-recovery-state.mjs
+
+      - name: Validate published clean v0.6.3 package data
+        run: node scripts/validate-clean-v063-publication-data.mjs
+
+      - name: Verify analytics synchronization
+        run: node scripts/sync-google-analytics.mjs --check
+
+      - name: Typecheck current digital pointer
+        run: npm run typecheck
+
+      - name: Deploy current Rules Arbiter Worker
+        run: npx wrangler deploy --config rules-assistant/wrangler.toml
+
+      - name: Verify Worker propagation, exact Pages build, and live v0.6.3 routes
+        run: |
+          node --input-type=module <<'NODE'
+          const repo = process.env.GITHUB_REPOSITORY_NAME;
+          const token = process.env.GH_TOKEN;
+          const expectedSha = process.env.EXPECTED_SHA;
+          const authoritySetId = '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49';
+          if (!repo || !token || !expectedSha) throw new Error('Repository, token, and expected SHA are required.');
+
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          const bust = (url) => `${url}${url.includes('?') ? '&' : '?'}publication=${encodeURIComponent(expectedSha)}`;
+
+          async function fetchResponse(url, options = {}) {
+            const response = await fetch(url, options);
+            const text = await response.text();
+            if (!response.ok) throw new Error(`${options.method || 'GET'} ${url} -> ${response.status} ${text}`);
+            return text;
+          }
+
+          async function waitJson(url, predicate, label, attempts = 40, delayMs = 3000) {
+            let last = '';
+            for (let attempt = 1; attempt <= attempts; attempt += 1) {
+              try {
+                const text = await fetchResponse(bust(url));
+                last = text;
+                const value = JSON.parse(text);
+                if (predicate(value)) {
+                  console.log(`${label} verified on attempt ${attempt}.`);
+                  return value;
+                }
+                console.log(`${label} not propagated yet on attempt ${attempt}: ${text}`);
+              } catch (error) {
+                last = String(error);
+                console.log(`${label} attempt ${attempt} failed: ${last}`);
+              }
+              if (attempt < attempts) await sleep(delayMs);
+            }
+            throw new Error(`${label} did not reach the expected state: ${last}`);
+          }
+
+          async function waitText(url, predicate, label, attempts = 40, delayMs = 5000) {
+            let last = '';
+            for (let attempt = 1; attempt <= attempts; attempt += 1) {
+              try {
+                const text = await fetchResponse(bust(url));
+                last = text.slice(0, 500);
+                if (predicate(text)) {
+                  console.log(`${label} verified on attempt ${attempt}.`);
+                  return text;
+                }
+                console.log(`${label} is still stale on attempt ${attempt}.`);
+              } catch (error) {
+                last = String(error);
+                console.log(`${label} attempt ${attempt} failed: ${last}`);
+              }
+              if (attempt < attempts) await sleep(delayMs);
+            }
+            throw new Error(`${label} did not reach the expected state: ${last}`);
+          }
+
+          const workerBase = 'https://gauntlet-rules-assistant.tymon-scott.workers.dev';
+          await waitJson(
+            `${workerBase}/api/health`,
+            (health) => health?.ok === true && health.version === 'v0.6.3' && health.published === true && health.reconstruction === false && health.currentPublicRelease === 'v0.6.3',
+            'Current Rules Arbiter'
+          );
+          await waitJson(
+            `${workerBase}/api/v061/health`,
+            (health) => health?.ok === true && health.version === 'v0.6.1',
+            'Historical v0.6.1 Rules Arbiter'
+          );
+
+          const githubHeaders = {
+            Accept: 'application/vnd.github+json',
+            Authorization: `Bearer ${token}`,
+            'X-GitHub-Api-Version': '2022-11-28',
+            'User-Agent': 'gauntlet-v063-live-closeout',
+          };
+          await fetchResponse(`https://api.github.com/repos/${repo}/pages/builds`, { method: 'POST', headers: githubHeaders });
+          console.log(`Requested GitHub Pages build for ${expectedSha}.`);
+
+          let built = false;
+          for (let attempt = 1; attempt <= 60; attempt += 1) {
+            const latest = JSON.parse(await fetchResponse(`https://api.github.com/repos/${repo}/pages/builds/latest`, { headers: githubHeaders }));
+            console.log(`Pages build attempt ${attempt}: status=${latest.status || ''} commit=${latest.commit || ''}`);
+            if (latest.commit === expectedSha && latest.status === 'built') {
+              built = true;
+              break;
+            }
+            if (latest.commit === expectedSha && latest.status === 'errored') {
+              throw new Error(`Pages build errored: ${JSON.stringify(latest)}`);
+            }
+            await sleep(5000);
+          }
+          if (!built) throw new Error(`GitHub Pages did not report ${expectedSha} built within the verification window.`);
+
+          const checks = [
+            ['https://gauntlet.run/', (text) => text.includes('Current canonical playtest edition · v0.6.3') && text.includes('<dt>128</dt><dd>Playable cards</dd>'), 'Homepage'],
+            ['https://gauntlet.run/rulebook/', (text) => /Gauntlet v0\.6\.3 Browser Rulebook/.test(text), 'Browser Rulebook'],
+            ['https://gauntlet.run/card-reference/', (text) => /Gauntlet v0\.6\.3 Card Reference/.test(text), 'Card Reference'],
+            ['https://gauntlet.run/factions/', (text) => /Gauntlet v0\.6\.3 Factions/.test(text), 'Faction index'],
+            ['https://gauntlet.run/start/', (text) => /Start Playing Gauntlet v0\.6\.3/.test(text), 'Start'],
+            ['https://gauntlet.run/deckbuilder/', (text) => /Gauntlet v0\.6\.3 Deckbuilder/.test(text), 'Deckbuilder'],
+            ['https://gauntlet.run/rules-arbiter/', (text) => /Gauntlet v0\.6\.3 Rules Arbiter/.test(text), 'Rules Arbiter'],
+            ...['military', 'diplomats', 'financiers', 'intelligence', 'mystics', 'inquisition'].map((route) => [
+              `https://gauntlet.run/factions/${route}/`,
+              (text) => text.includes('v0.6.3') && !/reconstruction only|reconstruction candidate|not the current public release/i.test(text),
+              `Faction route ${route}`
+            ]),
+          ];
+          await Promise.all(checks.map(([url, predicate, label]) => waitText(url, predicate, label)));
+
+          await waitJson(
+            'https://gauntlet.run/releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Manifest.json',
+            (manifest) => manifest?.release_version === 'v0.6.3' && manifest.authority_set_id === authoritySetId,
+            'Reconstructed release manifest',
+            40,
+            5000
+          );
+
+          console.log(`Live clean v0.6.3 publication verified at Pages commit ${expectedSha}; current and historical Rules Arbiter routes are healthy.`);
+          NODE
