@@ -1,41 +1,39 @@
-# Gauntlet Typography Standards
+# Gauntlet Typography Guidance
 
-These are role assignments, not interchangeable serif options. A fallback appearing in a font stack does not change the role of that token.
+Gauntlet has several typefaces available, but they are not a mandate to remap every surface into abstract typography roles. Established public surfaces should keep their proven treatment unless a redesign is intentional and visually reviewed.
 
-## Canonical roles
+## Shared typefaces
 
-| Role | Typeface/token | Intended use |
-| --- | --- | --- |
-| Structural web display | Georgia — `--font-display-web` | Public website `h1`/`h2`/`h3` structure and other large structural web headings. |
-| Historical display | P22 1722 Pro — `--font-display-historical` | Card titles, the Gauntlet wordmark, and selected historically styled display text. P22 1722 Pro is used at its actual 400 weight; do not synthesize bold. |
-| Reading/editorial | Adobe Caslon Pro — `--font-reading` | Rules, editorial prose, learning text, and other sustained reading. Normal prose uses 400; stronger Caslon weights and italics are reserved for hierarchy/emphasis such as subheads, strong emphasis, reminders, notes, examples, captions, and asides. |
-| Flavor/accent | P22 Declaration Pro — `--font-flavor` | Rare decorative flavor: short accent words, title accents, and selected overlines. It is not a structural heading, reading, or interface face. |
-| Interface | Inter — `--font-interface` | Navigation, controls, labels, metadata, utility text, filters, status text, and choice UI. Interface weights may vary for hierarchy. |
+| Typeface | Typical use |
+| --- | --- |
+| Georgia | Primary public-site and browser-document serif. |
+| Inter | Interface text and ordinary public-site copy. |
+| P22 1722 Pro | Available historical display face for deliberately styled uses such as card-title or specimen work. |
+| Adobe Caslon Pro | Available editorial/print serif when a surface intentionally calls for it. |
+| P22 Declaration Pro | Rare decorative accent face. |
 
-## Structural website headings
+Fallbacks in `design-tokens.css` are resilience stacks, not instructions to substitute one face for another.
 
-Georgia remains the structural website-heading face. Do not replace ordinary website headings with P22 1722 Pro or Declaration merely because those faces are more historical.
+## Start Playing baseline
 
-Do not allow browser-default heading/`strong` behavior to turn structural Georgia into unintended bold Georgia. Set the intended heading weight explicitly. The current large public-web heading treatment uses `font-weight: 500`, which preserves the regular Georgia appearance rather than making bold Georgia the default display face.
+The v0.6.1 Start Playing surface established a simple Georgia/Inter treatment that should be preserved:
 
-## Historical and decorative faces
+- Georgia for the large structural headings, faction names, Leader names, selected-choice headings, and hero lede.
+- Inter for ordinary explanatory copy, controls, labels, metadata, and the rest of the interface.
 
-P22 1722 Pro and P22 Declaration Pro are intentionally scarce. Their scarcity is part of the hierarchy:
+Do not migrate Start prose to Caslon or option names to Inter merely to satisfy a generalized role taxonomy. Changes to this established hierarchy should be intentional visual design changes.
 
-- P22 1722 Pro identifies card-title/historical-display/wordmark roles.
-- Declaration provides decorative flavor and accent, not ordinary structure.
-- A heading should remain structurally clear without relying on Declaration text.
+## Browser Rulebook
 
-## Reading versus interface text
+The v0.6.1 Browser Rulebook historically added a special publication layer that mixed Georgia, Adobe Caslon Pro, P22 1722 Pro, and Inter. That historical implementation is useful provenance, but it is not a requirement for the current browser Rulebook.
 
-Use Caslon when the user is reading prose to learn rules, understand the game, or follow editorial explanation. Use Inter when the user is operating the interface: choosing, filtering, navigating, reading labels or metadata, or responding to status/UI feedback.
+The current browser treatment is intentionally simpler:
 
-A component can therefore contain more than one typography role. For example, a chooser section may have a Georgia structural heading, Inter option labels and controls, and Caslon explanatory prose.
+- Georgia for the document itself: headings, body rules text, part labels, Leader headings, and other book-like content.
+- Inter for navigation, search, buttons, metadata, chapter numbers, and other interface elements.
 
-## Fallbacks are not roles
-
-The canonical stacks in `design-tokens.css` include fallbacks for resilience. In particular, Georgia appears as a fallback for P22 1722 Pro, Adobe Caslon Pro, and P22 Declaration Pro. That does **not** mean those tokens are alternate ways to request Georgia. Use the token for the semantic role you intend.
+This simplification applies to the browser Rulebook. It does not redefine typography for printed cards, production PDFs, specimens, or other deliberately styled artifacts.
 
 ## Implementation rule
 
-Prefer these shared role tokens over page-local aliases for new work and migrations. Legacy pages may still contain local `--serif` / `--sans` definitions; those are implementation debt, not a competing typography standard.
+Before changing typography on an established public surface, compare against the last known-good rendered treatment or its CSS rather than inferring intent from token names. Shared tokens are resources; the rendered hierarchy of the surface is the authority for maintenance unless a redesign is explicitly intended.
