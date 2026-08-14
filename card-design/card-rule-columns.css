@@ -1,0 +1,54 @@
+/* Shared content-aware label/body column policy for portrait card rules.
+   Fixed label tracks waste horizontal space on cards whose headings are short,
+   while long headings can starve the rules body. Modern Grid subgrid lets each
+   card size one shared heading track from the headings it actually contains.
+   The body therefore remains aligned from row to row, but different cards no
+   longer reserve the same arbitrary amount of horizontal space.
+
+   Existing component-specific fixed tracks remain in their stylesheets as a
+   fallback for browsers without subgrid support. The caps below are deliberately
+   generous until the section-heading vocabulary is standardized. */
+
+@supports (grid-template-columns: subgrid) {
+  .gauntlet-card {
+    --rule-label-max: 0.68in;
+    --rule-column-gap: 0.03in;
+  }
+
+  .proposal-card,
+  .rite-card {
+    --rule-label-max: 0.72in;
+  }
+
+  .leader-card {
+    --rule-label-max: 0.78in;
+  }
+
+  /* Count labels on the completed Rite reference are intentionally compact. */
+  .completed-rite-card {
+    --rule-label-max: 0.48in;
+    --rule-column-gap: 0.024in;
+  }
+
+  /* Overlay cards have less horizontal room after the side rail. */
+  .overlay-card {
+    --rule-label-max: 0.60in;
+  }
+
+  .gauntlet-card .card-rules:has(> :is(.rule-section, .leader-rule-section, .rite-unlock-section)) {
+    display: grid;
+    grid-template-columns: fit-content(var(--rule-label-max)) minmax(0, 1fr);
+    column-gap: var(--rule-column-gap) !important;
+  }
+
+  :where(.rule-section, .leader-rule-section, .rite-unlock-section) {
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid !important;
+    column-gap: inherit !important;
+  }
+
+  /* Reminders are full-width prose and should not enter either shared track. */
+  .gauntlet-card .card-rules > .card-reminder {
+    grid-column: 1 / -1;
+  }
+}

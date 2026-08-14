@@ -2,6 +2,8 @@
    card-design.js preloads each PNG original and assigns its URL directly to
    --parchment-image without decoding, conversion, or raster processing. */
 
+@import url("card-rule-columns.css");
+
 .gauntlet-card {
   --parchment-image: none;
 }

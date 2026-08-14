@@ -21,6 +21,7 @@ on:
       - "card-design/card-design-refinement.css"
       - "card-design/card-design.js"
       - "card-design/card-parchment.css"
+      - "card-design/card-rule-columns.css"
       - "card-design/faction-specimens.css"
       - "tts/territory-renderer/**"
       - "design-tokens.css"

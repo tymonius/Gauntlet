@@ -136,9 +136,9 @@
 
 .rite-unlock-section {
   display: grid;
-  grid-template-columns: 0.49in minmax(0, 1fr);
+  grid-template-columns: 0.36in minmax(0, 1fr);
   align-items: baseline;
-  column-gap: 0.04in;
+  column-gap: 0.022in;
   min-width: 0;
 }
 
