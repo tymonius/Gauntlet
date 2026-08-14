@@ -1,21 +1,9 @@
 name: Build clean v0.6.3 Browser Rulebook
 
+# Reconstruction certification is complete. Keep the historical builder available for
+# deliberate forensic/manual runs, but do not regenerate certified reconstruction
+# artifacts in response to current player-facing Rulebook maintenance.
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - '.github/workflows/build-clean-v063-browser-rulebook.yml'
-      - 'scripts/build-clean-v063-browser-rulebook.mjs'
-      - 'scripts/validate-clean-v063-browser-rulebook.mjs'
-      - 'artifacts/reconstruction/clean-v0.6.3/browser-rulebook/**'
-      - 'artifacts/reconstruction/clean-v0.6.3/complete-authority/**'
-      - 'artifacts/reconstruction/clean-v0.6.3/rulebook/**'
-      - 'artifacts/reconstruction/clean-v0.6.3/downstream/**'
-      - 'config/release-lifecycle.json'
-      - 'rulebook/app.js'
-      - 'rulebook/markdown.js'
-      - 'rulebook/styles.css'
-      - 'rulebook/publication.css'
   workflow_dispatch:
 
 permissions:

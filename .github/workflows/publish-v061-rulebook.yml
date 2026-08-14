@@ -1,5 +1,8 @@
 name: Publish v0.6.1 Rulebook package
 
+# v0.6.1 is historical. Preserve its dedicated publication-branch and manual
+# workflows, but do not run this write-capable historical publisher on current
+# v0.6.3 pull requests that happen to touch the Browser Rulebook.
 on:
   push:
     branches: [publication/v061-rulebook-publication]
@@ -9,21 +12,6 @@ on:
       - "rulebook-production/**"
       - "rulebook-design/**"
       - "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md"
-      - "images/sketches/**"
-      - "package.json"
-      - "package-lock.json"
-  pull_request:
-    branches: [main]
-    paths:
-      - ".github/workflows/publish-v061-rulebook.yml"
-      - "rulebook/**"
-      - "rulebook-production/**"
-      - "rulebook-design/**"
-      - "releases/v0.6.1/README.md"
-      - "releases/v0.6.1/Gauntlet_v0.6.1_Manifest.json"
-      - "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md"
-      - "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf"
-      - "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf"
       - "images/sketches/**"
       - "package.json"
       - "package-lock.json"

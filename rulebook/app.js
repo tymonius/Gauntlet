@@ -3,7 +3,7 @@ import { renderMarkdown } from './markdown.js';
 const SOURCE_URL = '/artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md';
 const SOURCE_SHA256 = '7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643';
 const PUBLISHED_SOURCE_URL = '../releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md';
-const AUTHORITY_SET_ID = '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49';
+const PDF_URL = '../releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.pdf';
 const content = document.querySelector('[data-rulebook-content]');
 const toc = document.querySelector('[data-rulebook-toc]');
 const status = document.querySelector('[data-rulebook-status]');
@@ -239,6 +239,10 @@ function highlightSearch(query) {
 
 function initializeControls() {
   document.querySelector('[data-print-rulebook]')?.addEventListener('click', () => window.print());
+  document.querySelector('[data-open-rules-assistant]')?.addEventListener('click', () => {
+    document.querySelector('.ga-rules-launcher')?.click();
+  });
+
   searchForm?.addEventListener('submit', (event) => {
     event.preventDefault();
     highlightSearch(searchInput?.value || '');
@@ -296,14 +300,14 @@ async function loadRulebook() {
       0,
       rendered.headings.filter(({ level, id }) => level === 1 && id !== 'gauntlet' && id !== 'official-rulebook').length
     );
-    status.textContent = `v0.6.3 · ${sectionCount} sections · authority ${AUTHORITY_SET_ID.slice(0, 8)}… · verified canonical source`;
+    status.textContent = `Canonical v0.6.3 · ${sectionCount} sections · rules loaded`;
   } catch (error) {
     console.error(error);
     content.removeAttribute('aria-busy');
     content.innerHTML = `
       <section class="load-error" role="alert">
         <h1>The browser rulebook could not be loaded.</h1>
-        <p>Use the <a href="${PUBLISHED_SOURCE_URL}">published v0.6.3 Rulebook source</a>.</p>
+        <p>Use the <a href="${PDF_URL}">reader PDF</a> or <a href="${PUBLISHED_SOURCE_URL}">canonical Markdown source</a>.</p>
       </section>
     `;
     status.textContent = 'Rulebook unavailable';
