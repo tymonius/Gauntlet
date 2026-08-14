@@ -50,14 +50,14 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteStyles).toContain("grid-template-columns: 0.49in minmax(0, 1fr)");
   });
 
-  it("uses an inked Mystic ritual diagram rather than the Diplomat wax-seal treatment", () => {
-    expect(riteRenderer).toContain("rite-completed-word\">Completed");
-    expect(riteRenderer).toContain("rite-ritual-diagram");
-    expect(riteRenderer).toContain("rite-diagram-emblem");
-    expect(riteStyles).toContain("border-radius: 50%");
-    expect(riteStyles).toContain(".rite-diagram-axis-b");
-    expect(riteStyles).toContain("transform: rotate(60deg)");
-    expect(riteStyles).toContain("-webkit-mask: var(--faction-symbol)");
+  it("uses the approved shared Mystics completion artwork rather than the Diplomat wax-seal treatment", () => {
+    expect(riteRenderer).toContain("/images/artwork/supplemental/mystics/rite-completed.webp");
+    expect(riteRenderer).toContain('class="card-art rite-completed-panel has-image"');
+    expect(riteRenderer).toContain('<img src="${COMPLETED_RITE_ART_SOURCE}"');
+    expect(riteStyles).toContain(".rite-completed-panel > img");
+    expect(riteStyles).toContain("object-fit: cover");
+    expect(riteStyles).toContain("object-position: center");
+    expect(riteRenderer).not.toContain("rite-ritual-diagram");
     expect(riteRenderer).not.toContain("wax-seal");
     expect(riteRenderer).not.toContain("Ratified");
   });
