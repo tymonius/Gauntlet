@@ -1,5 +1,9 @@
+import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 import dispatcher from './worker-entry.js';
+
+const lifecycle = JSON.parse(readFileSync(new URL('../config/release-lifecycle.json', import.meta.url), 'utf8'));
+const currentVersion = String(lifecycle.current_release || '');
 
 async function health(path) {
   const response = await dispatcher.fetch(new Request(`https://gauntlet.run${path}`), {}, {});
@@ -7,13 +11,15 @@ async function health(path) {
   return response.json();
 }
 
-describe('Rules Arbiter release routing during recovery', () => {
-  test('pins the unversioned public health route to v0.6.1', async () => {
+describe('Rules Arbiter current and historical release routing', () => {
+  test('routes the unversioned public health endpoint to the lifecycle current release', async () => {
+    expect(currentVersion).not.toBe('');
     const payload = await health('/api/health');
-    expect(payload.version).toBe('v0.6.1');
+    expect(payload.version).toBe(currentVersion);
+    expect(payload.currentPublicRelease).toBe(currentVersion);
   });
 
-  test('preserves explicit withdrawn v0.6.2 and candidate routes without making either the public default', async () => {
+  test('preserves explicit historical v0.6.1, withdrawn v0.6.2, and candidate routes without making them the public default', async () => {
     const publishedV062 = await health('/api/v062/health');
     expect(publishedV062.version).toBe('v0.6.2');
     expect(publishedV062.candidate).toBe(false);
