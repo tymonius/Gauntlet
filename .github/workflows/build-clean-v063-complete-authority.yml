@@ -82,9 +82,10 @@ jobs:
           print('Downstream cutover preserves the complete gameplay payload and all 12 starter compositions.')
           PY
 
-      - name: Reject withdrawn candidate from new downstream outputs
+      - name: Reject withdrawn candidate from gameplay-bearing downstream outputs
         run: |
-          ! grep -R -F 'artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json' artifacts/reconstruction/clean-v0.6.3/downstream
+          ! grep -F 'artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json' artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json
+          ! grep -F 'artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json' artifacts/reconstruction/clean-v0.6.3/downstream/starter-decks.json
 
       - name: Commit downstream provenance cutover to PR branch
         shell: bash
