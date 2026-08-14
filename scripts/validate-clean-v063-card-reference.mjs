@@ -138,31 +138,53 @@ const analyticsExclusion = `${outputDir}/index.html`;
 assert(analytics.includes(`"${analyticsExclusion}"`), 'Analytics synchronization does not exclude the noindex Card Reference reconstruction page.');
 assert(!index.includes('gtag('), 'Noindex Card Reference reconstruction must not load production analytics.');
 
-const expectedDiff = [
-  '.github/workflows/build-clean-v063-card-reference.yml',
-  `${outputDir}/app.js`,
-  `${outputDir}/faction-colors.css`,
-  `${outputDir}/index.html`,
-  `${outputDir}/manifest.json`,
-  `${outputDir}/mobile-card-preview.css`,
-  `${outputDir}/mobile-card-preview.js`,
-  `${outputDir}/site.css`,
-  `${outputDir}/source-boundary.md`,
-  `${outputDir}/styles.css`,
-  `${outputDir}/validation-status.md`,
-  'scripts/build-clean-v063-card-reference.mjs',
-  'scripts/sync-google-analytics.mjs',
-  'scripts/validate-clean-v063-card-reference.mjs',
-  'scripts/validate-clean-v063-rules-arbiter.mjs',
-].sort();
+const changed = changedFiles();
+const cardReferenceSurfaceChanged = changed.some((file) => file.startsWith(`${outputDir}/`));
 
-try {
-  const changed = execFileSync('git', ['diff', '--name-only', 'HEAD^1', 'HEAD'], { encoding: 'utf8' })
-    .trim().split('\n').filter(Boolean).sort();
+if (cardReferenceSurfaceChanged) {
+  const expectedDiff = [
+    '.github/workflows/build-clean-v063-card-reference.yml',
+    `${outputDir}/app.js`,
+    `${outputDir}/faction-colors.css`,
+    `${outputDir}/index.html`,
+    `${outputDir}/manifest.json`,
+    `${outputDir}/mobile-card-preview.css`,
+    `${outputDir}/mobile-card-preview.js`,
+    `${outputDir}/site.css`,
+    `${outputDir}/source-boundary.md`,
+    `${outputDir}/styles.css`,
+    `${outputDir}/validation-status.md`,
+    'scripts/build-clean-v063-card-reference.mjs',
+    'scripts/sync-google-analytics.mjs',
+    'scripts/validate-clean-v063-card-reference.mjs',
+    'scripts/validate-clean-v063-rules-arbiter.mjs',
+  ].sort();
   assert.deepEqual(changed, expectedDiff, `Card Reference reconstruction diff escaped the 15-file boundary.\n${changed.join('\n')}`);
-} catch (error) {
-  if (error instanceof assert.AssertionError) throw error;
-  console.warn('Diff-boundary check skipped because HEAD^1 is unavailable in this checkout.');
+} else {
+  const forbiddenCardReferenceChanges = changed.filter((file) =>
+    file.startsWith('card-reference/') ||
+    file === '.github/workflows/build-clean-v063-card-reference.yml' ||
+    file === 'scripts/build-clean-v063-card-reference.mjs'
+  );
+  assert.deepEqual(
+    forbiddenCardReferenceChanges,
+    [],
+    `Dependency-triggered Card Reference validation must not modify public or reconstruction-build Card Reference files: ${forbiddenCardReferenceChanges.join(', ')}`
+  );
 }
 
-console.log(`Clean v0.6.3 Card Reference validated: ${canonical.gameplay.cards.length} cards, ${canonical.gameplay.territories.length} Territories, six factions, certified authority ${authoritySetId.slice(0, 12)}…, noindex analytics exclusion explicit, public v0.6.1 route untouched.`);
+console.log(
+  cardReferenceSurfaceChanged
+    ? `Clean v0.6.3 Card Reference validated: ${canonical.gameplay.cards.length} cards, ${canonical.gameplay.territories.length} Territories, six factions, certified authority ${authoritySetId.slice(0, 12)}…, noindex analytics exclusion explicit, public v0.6.1 route untouched.`
+    : `Clean v0.6.3 Card Reference dependency validation passed: shared dependency changed, existing clean surface remains valid, public v0.6.1 route untouched.`
+);
+
+function changedFiles() {
+  try {
+    return execFileSync('git', ['diff', '--name-only', 'HEAD^1', 'HEAD'], { encoding: 'utf8' })
+      .trim().split('\n').filter(Boolean).sort();
+  } catch (error) {
+    console.warn('Diff-boundary check skipped because HEAD^1 is unavailable in this checkout.', error);
+    return [];
+  }
+}

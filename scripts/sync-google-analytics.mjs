@@ -11,7 +11,14 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "playtest/player-mat/index.html",
   "artifacts/reconstruction/clean-v0.6.3/browser-rulebook/index.html",
   "artifacts/reconstruction/clean-v0.6.3/rules-arbiter/index.html",
-  "artifacts/reconstruction/clean-v0.6.3/card-reference/index.html"
+  "artifacts/reconstruction/clean-v0.6.3/card-reference/index.html",
+  "artifacts/reconstruction/clean-v0.6.3/faction-pages/index.html",
+  "artifacts/reconstruction/clean-v0.6.3/faction-pages/military/index.html",
+  "artifacts/reconstruction/clean-v0.6.3/faction-pages/diplomats/index.html",
+  "artifacts/reconstruction/clean-v0.6.3/faction-pages/financiers/index.html",
+  "artifacts/reconstruction/clean-v0.6.3/faction-pages/intelligence/index.html",
+  "artifacts/reconstruction/clean-v0.6.3/faction-pages/mystics/index.html",
+  "artifacts/reconstruction/clean-v0.6.3/faction-pages/inquisition/index.html"
 ]);
 
 const GOOGLE_TAG = `  <!-- Google tag (gtag.js) -->
