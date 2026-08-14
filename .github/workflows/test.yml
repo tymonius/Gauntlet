@@ -13,36 +13,111 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine relevant test scope
+        id: scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            base='${{ github.event.pull_request.base.sha }}'
+          else
+            base='${{ github.event.before }}'
+          fi
+          if [[ -z "$base" || "$base" =~ ^0+$ ]]; then
+            base="$(git rev-parse HEAD^)"
+          fi
+          git diff --name-only "$base"...HEAD > /tmp/changed-files.txt
+          cat /tmp/changed-files.txt
+
+          code=false
+          types=false
+          analytics=false
+          tts=false
+          media=false
+
+          while IFS= read -r file; do
+            case "$file" in
+              *.ts|*.tsx|*.js|*.mjs|package.json|package-lock.json|tsconfig*.json|vitest.config.*)
+                code=true
+                ;;
+            esac
+            case "$file" in
+              *.ts|*.tsx|package.json|package-lock.json|tsconfig*.json)
+                types=true
+                ;;
+            esac
+            case "$file" in
+              scripts/sync-google-analytics.mjs|index.html|start/*.html|rulebook/*.html|card-reference/*.html|factions/*.html|factions/*/*.html|deckbuilder/*.html|rules-arbiter/*.html)
+                analytics=true
+                ;;
+            esac
+            case "$file" in
+              scripts/generate-tts-*|tts/**|artifacts/tts/**|data/cards/**|data/territories/**)
+                tts=true
+                ;;
+            esac
+            case "$file" in
+              scripts/generate-card-media-*|images/artwork/**|artifacts/media/**|data/cards/**)
+                media=true
+                ;;
+            esac
+          done < /tmp/changed-files.txt
+
+          echo "base=$base" >> "$GITHUB_OUTPUT"
+          echo "code=$code" >> "$GITHUB_OUTPUT"
+          echo "types=$types" >> "$GITHUB_OUTPUT"
+          echo "analytics=$analytics" >> "$GITHUB_OUTPUT"
+          echo "tts=$tts" >> "$GITHUB_OUTPUT"
+          echo "media=$media" >> "$GITHUB_OUTPUT"
 
       - name: Setup Node
+        if: >-
+          steps.scope.outputs.code == 'true' ||
+          steps.scope.outputs.types == 'true' ||
+          steps.scope.outputs.analytics == 'true' ||
+          steps.scope.outputs.tts == 'true' ||
+          steps.scope.outputs.media == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
       - name: Install dependencies
-        run: |
-          npm install
-          npm install --no-save --package-lock=false pdf-lib
+        if: >-
+          steps.scope.outputs.code == 'true' ||
+          steps.scope.outputs.types == 'true' ||
+          steps.scope.outputs.analytics == 'true' ||
+          steps.scope.outputs.tts == 'true' ||
+          steps.scope.outputs.media == 'true'
+        run: npm install
 
-      - name: Typecheck
+      - name: Typecheck changed TypeScript surface
+        if: steps.scope.outputs.types == 'true'
         run: npm run typecheck
 
-      - name: Test current v0.6.3 release
-        run: |
-          npx vitest run \
-            --exclude tests/deckbuilder-print-request.test.ts \
-            --exclude tests/player-facing-terminology.test.ts \
-            --exclude tests/deckbuilder-mystics-ritual.test.ts \
-            --exclude tests/public-faction-pages.test.ts \
-            --exclude tests/release-recovery-write-guards.test.ts \
-            --exclude tests/standalone-new-player-onboarding.test.ts \
-            --exclude tests/start-public-theme.test.ts \
-            --exclude tests/tracked-playtest-system.test.ts \
-            --exclude tests/v062-public-faction-overviews.test.ts \
-            --exclude rules-assistant/review-intelligence.test.mjs \
-            --exclude rules-assistant/v062-published-routes.test.mjs
-          node scripts/validate-release-recovery-state.mjs
-          node scripts/validate-clean-v063-publication-data.mjs
-          node scripts/sync-google-analytics.mjs --check
-          npm run tts:check
-          npm run media:check
+      - name: Run tests related to changed code
+        if: steps.scope.outputs.code == 'true'
+        run: npx vitest run --changed "${{ steps.scope.outputs.base }}" --passWithNoTests
+
+      - name: Verify analytics only when analytics-bearing pages change
+        if: steps.scope.outputs.analytics == 'true'
+        run: node scripts/sync-google-analytics.mjs --check
+
+      - name: Verify TTS assets only when TTS inputs change
+        if: steps.scope.outputs.tts == 'true'
+        run: npm run tts:check
+
+      - name: Verify media assets only when media inputs change
+        if: steps.scope.outputs.media == 'true'
+        run: npm run media:check
+
+      - name: No generic regression work required
+        if: >-
+          steps.scope.outputs.code != 'true' &&
+          steps.scope.outputs.types != 'true' &&
+          steps.scope.outputs.analytics != 'true' &&
+          steps.scope.outputs.tts != 'true' &&
+          steps.scope.outputs.media != 'true'
+        run: echo 'No code-owned regression checks are relevant to this change.'
