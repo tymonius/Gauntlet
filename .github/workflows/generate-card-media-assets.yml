@@ -1,20 +1,6 @@
 name: Generate card media assets
 
 on:
-  pull_request:
-    paths:
-      - "releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json"
-      - "images/artwork/cards/**"
-      - "images/artwork/card-backgrounds/**"
-      - "card-design/**"
-      - "scripts/generate-tts-card-assets.mjs"
-      - "scripts/generate-card-media-assets.mjs"
-      - "scripts/generate-card-media-compositions.mjs"
-      - "scripts/generate-card-media-library.mjs"
-      - "tts/renderer/**"
-      - "media/**"
-      - "package.json"
-      - ".github/workflows/generate-card-media-assets.yml"
   workflow_dispatch:
     inputs:
       profile:
@@ -66,24 +52,21 @@ jobs:
       - name: Generate card media library
         shell: bash
         run: |
-          profile="all"
+          profile="${{ inputs.profile }}"
           strict=""
-          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            profile="${{ inputs.profile }}"
-            if [[ "${{ inputs.strict_artwork }}" == "true" ]]; then
-              strict="--strict-art"
-            fi
+          if [[ "${{ inputs.strict_artwork }}" == "true" ]]; then
+            strict="--strict-art"
           fi
           npm run media:build -- --profile="$profile" $strict
       - uses: actions/upload-artifact@v4
         with:
-          name: gauntlet-v062-card-media-${{ github.event_name == 'workflow_dispatch' && inputs.profile || 'all' }}
+          name: gauntlet-v062-card-media-${{ inputs.profile }}
           path: media/generated/v0.6.2/
           if-no-files-found: error
       - name: Upload card composition preview
         uses: actions/upload-artifact@v4
         with:
-          name: gauntlet-v062-card-compositions-${{ github.event_name == 'workflow_dispatch' && inputs.profile || 'all' }}
+          name: gauntlet-v062-card-compositions-${{ inputs.profile }}
           path: |
             media/generated/v0.6.2/compositions/
             media/generated/v0.6.2/compositions-manifest.json
