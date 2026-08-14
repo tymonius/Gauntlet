@@ -27,6 +27,7 @@ on:
       - "images/*.png"
       - "images/faction-symbols/*.svg"
       - "images/artwork/territories/*"
+      - "images/artwork/supplemental/**"
       - "scripts/render-leader-card-specimens.mjs"
       - "scripts/validate-territory-mobile-render.mjs"
       - "scripts/validate-rite-card-render.mjs"
