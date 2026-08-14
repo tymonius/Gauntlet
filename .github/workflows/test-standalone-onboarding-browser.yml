@@ -2,115 +2,49 @@ name: Test standalone new-player onboarding
 
 on:
   pull_request:
-    branches:
-      - main
+    branches: [main]
     paths:
-      - "start/**"
-      - "deckbuilder/**"
-      - "tests/standalone-new-player-onboarding.test.ts"
-      - ".github/workflows/test-standalone-onboarding-browser.yml"
+      - 'index.html'
+      - 'start/index.html'
+      - 'start/app.js'
+      - 'deckbuilder/index.html'
+      - 'deckbuilder/starter-handoff.js'
+      - 'deckbuilder/starter-decks.js'
+      - 'deckbuilder/starter-decks.json'
+      - 'tests/standalone-new-player-onboarding.test.ts'
+      - '.github/workflows/test-standalone-onboarding-browser.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'index.html'
+      - 'start/index.html'
+      - 'start/app.js'
+      - 'deckbuilder/index.html'
+      - 'deckbuilder/starter-handoff.js'
+      - 'deckbuilder/starter-decks.js'
+      - 'deckbuilder/starter-decks.json'
+      - 'tests/standalone-new-player-onboarding.test.ts'
+      - '.github/workflows/test-standalone-onboarding-browser.yml'
   workflow_dispatch:
 
 permissions:
   contents: read
 
-concurrency:
-  group: test-standalone-onboarding-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  journey:
+  onboarding-contract:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
-      - name: Checkout source branch
+      - name: Checkout
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref || github.ref_name }}
 
       - name: Set up Node
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Install Playwright
-        run: |
-          npm install --no-save playwright
-          npx playwright install --with-deps chromium
+      - name: Install test dependency
+        run: npm install
 
-      - name: Serve repository
-        run: python3 -m http.server 8000 >/tmp/gauntlet-http.log 2>&1 &
-
-      - name: Exercise onboarding and guided starter printing
-        run: |
-          node --input-type=module <<'NODE'
-          import { chromium } from 'playwright';
-
-          const browser = await chromium.launch({ headless: true });
-
-          for (const viewport of [{ width: 1440, height: 1000 }, { width: 390, height: 844 }]) {
-            const suffix = viewport.width < 600 ? 'mobile' : 'desktop';
-            const page = await browser.newPage({ viewport });
-            const errors = [];
-            page.on('pageerror', error => errors.push(error.message));
-            page.on('console', message => {
-              if (message.type() === 'error') errors.push(message.text());
-            });
-
-            const response = await page.goto('http://127.0.0.1:8000/start/', { waitUntil: 'networkidle' });
-            if (!response?.ok()) throw new Error(`/start/ returned ${response?.status()}`);
-
-            await page.waitForSelector('input[name="faction"][value="military"]');
-            await page.screenshot({ path: `/tmp/standalone-start-${suffix}.png`, fullPage: true });
-            if ((await page.locator('input[name="faction"]').count()) !== 6) {
-              throw new Error('Standalone onboarding did not render six factions');
-            }
-
-            await page.check('input[name="faction"][value="military"]');
-            await page.waitForSelector('input[name="leader"][value="general"]');
-            await page.check('input[name="leader"][value="general"]');
-            await page.waitForFunction(() => document.querySelector('#starterPreview h4')?.textContent === 'Forward Doctrine');
-            await page.check('#introConfirmed');
-
-            if (await page.locator('#openStarterDeck').isDisabled()) {
-              throw new Error('Standalone onboarding did not enable the guided Deckbuilder handoff');
-            }
-
-            await Promise.all([
-              page.waitForURL(/\/deckbuilder\/\?[^#]*starter=1/),
-              page.click('#openStarterDeck')
-            ]);
-
-            await page.waitForSelector('#starterHandoffPanel.is-ready', { timeout: 20000 });
-            await page.waitForFunction(() => document.querySelector('#cardCount')?.textContent === '30');
-            if ((await page.locator('#territoryMetricCount').textContent()) !== '3') {
-              throw new Error('Guided starter handoff did not load three Territories');
-            }
-            if ((await page.locator('#validityText').textContent()) !== 'Valid') {
-              throw new Error(`Guided starter Deck is not valid: ${await page.locator('#validityText').textContent()}`);
-            }
-            if (await page.locator('#printDeckButton').isDisabled()) {
-              throw new Error('Deckbuilder print button remained disabled');
-            }
-
-            const handoffText = await page.locator('#starterHandoffPanel').innerText();
-            if (!handoffText.includes('General') || !handoffText.includes('Forward Doctrine')) {
-              throw new Error(`Guided starter handoff loaded the wrong preset:\n${handoffText}`);
-            }
-            if (await page.locator('#starterHandoffPrint').isDisabled()) {
-              throw new Error('Guided starter print button remained disabled');
-            }
-
-            await page.screenshot({ path: `/tmp/standalone-onboarding-${suffix}.png`, fullPage: true });
-            if (errors.length) throw new Error(`Standalone onboarding ${suffix} errors:\n${errors.join('\n')}`);
-            await page.close();
-          }
-
-          await browser.close();
-          NODE
-
-      - name: Upload browser screenshots
-        uses: actions/upload-artifact@v4
-        with:
-          name: standalone-onboarding-browser-smoke
-          path: /tmp/standalone-*.png
-          if-no-files-found: error
+      - name: Verify onboarding handoff contract
+        run: npx vitest run tests/standalone-new-player-onboarding.test.ts
