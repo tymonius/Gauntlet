@@ -1,0 +1,28 @@
+/* Convert horizontal rules-text savings into artwork height.
+
+   The shared fitter still writes --art-height as the minimum artwork height
+   required for a card to fit. The flexible 1fr ceiling then gives every pixel
+   of otherwise-unused vertical space to the artwork track instead of letting
+   the auto-sized rules track stretch into blank space.
+
+   !important is intentional here: this shared policy is imported before the
+   card-type styles that declare their four grid tracks, and it must replace
+   those fixed artwork tracks consistently across all portrait card families. */
+
+.card-interior {
+  grid-template-rows: 0.3in minmax(var(--art-height), 1fr) auto 0.16in !important;
+}
+
+:is(.leader-card, .proposal-card, .rite-card) .card-interior {
+  grid-template-rows:
+    var(--component-heading-height, 0.50in)
+    minmax(var(--art-height), 1fr)
+    auto
+    0.18in !important;
+}
+
+/* The TTS emergency fallback explicitly suppresses artwork. Do not allow the
+   flexible track to grow back after the renderer has chosen text-only mode. */
+.tts-text-only .card-interior {
+  grid-template-rows: 0.3in 0 auto 0.16in !important;
+}

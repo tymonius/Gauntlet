@@ -3,6 +3,7 @@
    --parchment-image without decoding, conversion, or raster processing. */
 
 @import url("card-rule-columns.css");
+@import url("card-adaptive-height.css");
 
 .gauntlet-card {
   --parchment-image: none;
