@@ -18,7 +18,7 @@ describe("shared portrait-card rule columns", () => {
     }
     expect(ruleColumnStyles).toContain("--rule-label-max: 0.68in");
     expect(ruleColumnStyles).toContain("--rule-label-max: 0.72in");
-    expect(ruleColumnStyles).toContain("--rule-label-max: 0.78in");
+    expect(ruleColumnStyles).toContain("--rule-label-max: 0.63in");
     expect(ruleColumnStyles).toContain("--rule-label-max: 0.48in");
     expect(ruleColumnStyles).toContain("--rule-label-max: 0.60in");
     expect(ruleColumnStyles).toContain("grid-column: 1 / -1");
