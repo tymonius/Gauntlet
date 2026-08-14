@@ -1,0 +1,178 @@
+name: PR Quality Gate
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  scope:
+    name: Classify changed surfaces
+    runs-on: ubuntu-latest
+    outputs:
+      publication: ${{ steps.scope.outputs.publication }}
+      onboarding: ${{ steps.scope.outputs.onboarding }}
+      booklet: ${{ steps.scope.outputs.booklet }}
+      ci_inventory: ${{ steps.scope.outputs.ci_inventory }}
+    steps:
+      - name: Determine relevant contracts without checkout
+        id: scope
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let names;
+            if (context.eventName === 'workflow_dispatch') {
+              names = ['__manual_all__'];
+            } else {
+              const files = await github.paginate(github.rest.pulls.listFiles, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number,
+                per_page: 100,
+              });
+              names = files.map((file) => file.filename);
+            }
+
+            const manual = names.includes('__manual_all__');
+            const exact = (file) => names.includes(file);
+            const under = (prefix) => names.some((file) => file.startsWith(prefix));
+            const any = (...values) => manual || values.some(Boolean);
+
+            const publication = any(
+              exact('config/release-lifecycle.json'),
+              exact('scripts/validate-current-public-contract.mjs'),
+              exact('.github/workflows/current-publication-contract.yml'),
+              under('releases/v0.6.3-reconstructed/'),
+              exact('index.html'),
+              under('start/'),
+              under('rulebook/'),
+              under('card-reference/'),
+              under('factions/'),
+              under('deckbuilder/'),
+              under('rules-arbiter/'),
+              exact('design-tokens.css'),
+              under('images/faction-symbols/')
+            );
+
+            const onboarding = any(
+              exact('.github/workflows/test-standalone-onboarding-browser.yml'),
+              exact('tests/standalone-new-player-onboarding.test.ts'),
+              exact('index.html'),
+              exact('start/index.html'),
+              exact('start/app.js'),
+              exact('deckbuilder/index.html'),
+              exact('deckbuilder/starter-handoff.js'),
+              exact('deckbuilder/starter-decks.js'),
+              exact('deckbuilder/starter-decks.json')
+            );
+
+            const booklet = any(
+              exact('.github/workflows/build-clean-v063-booklet.yml'),
+              exact('scripts/render-clean-v063-booklet.mjs'),
+              exact('scripts/validate-clean-v063-booklet.mjs'),
+              exact('scripts/materialize-clean-v063-booklet.mjs'),
+              exact('artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md'),
+              exact('releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md'),
+              exact('releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook_Booklet.pdf'),
+              exact('releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Manifest.json'),
+              exact('rulebook/markdown.js'),
+              under('images/sketches/hero-sketches/')
+            );
+
+            const ciInventory = any(
+              under('.github/workflows/'),
+              exact('scripts/audit-ci-workflows.mjs'),
+              exact('docs/ci-quality-system.md')
+            );
+
+            core.setOutput('publication', String(publication));
+            core.setOutput('onboarding', String(onboarding));
+            core.setOutput('booklet', String(booklet));
+            core.setOutput('ci_inventory', String(ciInventory));
+            core.summary
+              .addHeading('PR contract routing')
+              .addTable([
+                [{data: 'Contract', header: true}, {data: 'Run?', header: true}],
+                ['Current publication', String(publication)],
+                ['Onboarding handoff', String(onboarding)],
+                ['Rulebook booklet', String(booklet)],
+                ['CI inventory', String(ciInventory)],
+              ])
+              .write();
+
+  current_publication:
+    name: Current publication contract
+    needs: scope
+    if: needs.scope.outputs.publication == 'true'
+    uses: ./.github/workflows/current-publication-contract.yml
+
+  onboarding:
+    name: Onboarding contract
+    needs: scope
+    if: needs.scope.outputs.onboarding == 'true'
+    uses: ./.github/workflows/test-standalone-onboarding-browser.yml
+
+  booklet:
+    name: Rulebook booklet contract
+    needs: scope
+    if: needs.scope.outputs.booklet == 'true'
+    uses: ./.github/workflows/build-clean-v063-booklet.yml
+
+  ci_inventory:
+    name: CI inventory report
+    needs: scope
+    if: needs.scope.outputs.ci_inventory == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout workflow definitions
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /.github/workflows/
+            /scripts/audit-ci-workflows.mjs
+
+      - name: Inventory workflow triggers
+        run: node scripts/audit-ci-workflows.mjs
+
+      - name: Upload CI inventory
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-workflow-inventory
+          path: artifacts/ci/workflow-audit.json
+          if-no-files-found: error
+
+  gate:
+    name: Gate
+    if: always()
+    needs: [scope, current_publication, onboarding, booklet, ci_inventory]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require every routed contract to pass or be irrelevant
+        env:
+          SCOPE: ${{ needs.scope.result }}
+          PUBLICATION: ${{ needs.current_publication.result }}
+          ONBOARDING: ${{ needs.onboarding.result }}
+          BOOKLET: ${{ needs.booklet.result }}
+          CI_INVENTORY: ${{ needs.ci_inventory.result }}
+        run: |
+          set -euo pipefail
+          for entry in \
+            "scope:$SCOPE" \
+            "publication:$PUBLICATION" \
+            "onboarding:$ONBOARDING" \
+            "booklet:$BOOKLET" \
+            "ci-inventory:$CI_INVENTORY"; do
+            name="${entry%%:*}"
+            result="${entry#*:}"
+            case "$result" in
+              success|skipped) ;;
+              *) echo "$name contract result: $result" >&2; exit 1 ;;
+            esac
+          done
+          echo 'All relevant PR contracts passed.'
