@@ -1,0 +1,362 @@
+{
+  "schema_version": 1,
+  "target": "clean-v0.6.3-territory-authority",
+  "status": "complete_authority_candidate",
+  "publication_unlocked": false,
+  "count": 25,
+  "territories": [
+    {
+      "id": "territory-quicksand",
+      "number": 1,
+      "name": "Quicksand",
+      "arena": false,
+      "text": "If a player begins their Movement on Quicksand, they cannot voluntarily Fall Back or move more than one Position that turn. Forced displacement is unaffected.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "If a player begins their Movement on Quicksand, they cannot voluntarily Fall Back or move more than one Position that turn. Forced displacement is unaffected."
+        }
+      ]
+    },
+    {
+      "id": "territory-poisonous-gas",
+      "number": 2,
+      "name": "Poisonous Gas",
+      "arena": false,
+      "text": "During a battle on Poisonous Gas, each player may set a Gambit or choose a Tactic, but not both. A player cannot have more than one Gambit or Tactic in that battle.\nA Tactic chosen during that battle goes to its owner's Graveyard during the Aftermath of the battle instead of their Discard Pile. If a player chooses no Tactic, they put one unchosen card from their initial Reserve in their Graveyard during the Aftermath, if able.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "During a battle on Poisonous Gas, each player may set a Gambit or choose a Tactic, but not both. A player cannot have more than one Gambit or Tactic in that battle.\nA Tactic chosen during that battle goes to its owner's Graveyard during the Aftermath of the battle instead of their Discard Pile. If a player chooses no Tactic, they put one unchosen card from their initial Reserve in their Graveyard during the Aftermath, if able."
+        }
+      ]
+    },
+    {
+      "id": "territory-difficult-terrain",
+      "number": 3,
+      "name": "Difficult Terrain",
+      "arena": false,
+      "text": "When a player enters Difficult Terrain, their movement ends. A player who begins their turn there or enters it during their turn cannot play a card for its Action effect during Denouement that turn.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "When a player enters Difficult Terrain, their movement ends. A player who begins their turn there or enters it during their turn cannot play a card for its Action effect during Denouement that turn."
+        }
+      ]
+    },
+    {
+      "id": "territory-garrison",
+      "number": 4,
+      "name": "Garrison",
+      "arena": false,
+      "text": "When Garrison's controller defends it, they draw one additional card when forming their initial Reserve.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "When Garrison's controller defends it, they draw one additional card when forming their initial Reserve."
+        }
+      ]
+    },
+    {
+      "id": "territory-disrupted-supply-lines",
+      "number": 5,
+      "name": "Disrupted Supply Lines",
+      "arena": false,
+      "text": "While a player occupies Disrupted Supply Lines, only 1 of their Assets can be active. They choose which one remains active; their other Assets are inactive until they leave.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "While a player occupies Disrupted Supply Lines, only 1 of their Assets can be active. They choose which one remains active; their other Assets are inactive until they leave."
+        }
+      ]
+    },
+    {
+      "id": "territory-ruined-storehouse",
+      "number": 6,
+      "name": "Ruined Storehouse",
+      "arena": false,
+      "text": "Once during their Draw step, a player occupying Ruined Storehouse may draw the top card of their Discard Pile instead of drawing from their Draw Pile.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "Once during their Draw step, a player occupying Ruined Storehouse may draw the top card of their Discard Pile instead of drawing from their Draw Pile."
+        }
+      ]
+    },
+    {
+      "id": "territory-field-hospital",
+      "number": 7,
+      "name": "Field Hospital",
+      "arena": false,
+      "text": "During the Aftermath of a battle on Field Hospital, when the battle cards are cleared, its controller may put one card they controlled in that battle that would enter their Graveyard in their Discard Pile instead.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "During the Aftermath of a battle on Field Hospital, when the battle cards are cleared, its controller may put one card they controlled in that battle that would enter their Graveyard in their Discard Pile instead."
+        }
+      ]
+    },
+    {
+      "id": "territory-exposed-flank",
+      "number": 8,
+      "name": "Exposed Flank",
+      "arena": false,
+      "text": "When Exposed Flank's controller counterattacks an opponent occupying it, that opponent cannot set a Gambit.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "When Exposed Flank's controller counterattacks an opponent occupying it, that opponent cannot set a Gambit."
+        }
+      ]
+    },
+    {
+      "id": "territory-high-ground",
+      "number": 9,
+      "name": "High Ground",
+      "arena": false,
+      "text": "The defending player in a battle on High Ground gains advantage.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "The defending player in a battle on High Ground gains advantage."
+        }
+      ]
+    },
+    {
+      "id": "territory-fortified-pass",
+      "number": 10,
+      "name": "Fortified Pass",
+      "arena": false,
+      "text": "When Fortified Pass's controller defends it, the attacking player's banked Assets are inactive during that battle.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "When Fortified Pass's controller defends it, the attacking player's banked Assets are inactive during that battle."
+        }
+      ]
+    },
+    {
+      "id": "territory-insurgency",
+      "number": 11,
+      "name": "Insurgency",
+      "arena": false,
+      "text": "While an opponent occupies Insurgency without controlling it, their banked Assets are inactive.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "While an opponent occupies Insurgency without controlling it, their banked Assets are inactive."
+        }
+      ]
+    },
+    {
+      "id": "territory-watchtower",
+      "number": 12,
+      "name": "Watchtower",
+      "arena": false,
+      "text": "When Watchtower's controller defends it, the attacker sets their Gambit face up or passes. The defender then sets their Gambit normally or passes.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "When Watchtower's controller defends it, the attacker sets their Gambit face up or passes. The defender then sets their Gambit normally or passes."
+        }
+      ]
+    },
+    {
+      "id": "territory-supply-depot",
+      "number": 13,
+      "name": "Supply Depot",
+      "arena": false,
+      "text": "During the Draw step, a player occupying and controlling Supply Depot draws one additional card as part of their normal draw.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "During the Draw step, a player occupying and controlling Supply Depot draws one additional card as part of their normal draw."
+        }
+      ]
+    },
+    {
+      "id": "territory-old-battlefield",
+      "number": 14,
+      "name": "Old Battlefield",
+      "arena": false,
+      "text": "During the Aftermath of a battle on Old Battlefield, when cards remaining in Reserve move to the Discard Pile, its controller may put one unchosen card from their Reserve in their Graveyard instead.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "During the Aftermath of a battle on Old Battlefield, when cards remaining in Reserve move to the Discard Pile, its controller may put one unchosen card from their Reserve in their Graveyard instead."
+        }
+      ]
+    },
+    {
+      "id": "territory-refuge",
+      "number": 15,
+      "name": "Refuge",
+      "arena": false,
+      "text": "After a player voluntarily Falls Back onto Refuge, they draw one card.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "After a player voluntarily Falls Back onto Refuge, they draw one card."
+        }
+      ]
+    },
+    {
+      "id": "territory-command-tent",
+      "number": 16,
+      "name": "Command Tent",
+      "arena": false,
+      "text": "If a player begins their turn occupying and controlling Command Tent, they may take one Action during both Opening and Denouement that turn. If they do, both Actions may be used only to play cards for their Action effects.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "If a player begins their turn occupying and controlling Command Tent, they may take one Action during both Opening and Denouement that turn. If they do, both Actions may be used only to play cards for their Action effects."
+        }
+      ]
+    },
+    {
+      "id": "territory-monastery",
+      "number": 17,
+      "name": "Monastery",
+      "arena": false,
+      "text": "While Monastery's controller occupies it, cards cannot leave either player's Graveyard. During battles on Monastery, cards with the Arcane trait have no effect.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "While Monastery's controller occupies it, cards cannot leave either player's Graveyard. During battles on Monastery, cards with the Arcane trait have no effect."
+        }
+      ]
+    },
+    {
+      "id": "territory-training-grounds",
+      "number": 18,
+      "name": "Training Grounds",
+      "arena": false,
+      "text": "When Training Grounds's controller defends it, after forming their initial Reserve but before choosing Tactics, they may discard that entire Reserve and draw the same number of replacement cards. Those cards become their Reserve.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "When Training Grounds's controller defends it, after forming their initial Reserve but before choosing Tactics, they may discard that entire Reserve and draw the same number of replacement cards. Those cards become their Reserve."
+        }
+      ]
+    },
+    {
+      "id": "territory-king-s-road",
+      "number": 19,
+      "name": "King's Road",
+      "arena": false,
+      "text": "A player who begins their turn on King's Road gains one additional position of movement during that turn's Movement step.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "A player who begins their turn on King's Road gains one additional position of movement during that turn's Movement step."
+        }
+      ]
+    },
+    {
+      "id": "territory-toll-bridge",
+      "number": 20,
+      "name": "Toll Bridge",
+      "arena": false,
+      "text": "To voluntarily advance from Toll Bridge, a player must discard one card from their Hand. If they cannot, they cannot advance from it.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "To voluntarily advance from Toll Bridge, a player must discard one card from their Hand. If they cannot, they cannot advance from it."
+        }
+      ]
+    },
+    {
+      "id": "territory-smuggler-s-pass",
+      "number": 21,
+      "name": "Smuggler's Run",
+      "arena": false,
+      "text": "During Opening or Denouement, as an Action, while occupying and controlling Smuggler's Run, a player may stash one card from their Hand face down beneath it. The stashed card does not count toward the Hand limit.\nWhile that player occupies and controls Smuggler's Run, they may play the stashed card for its Action effect or set it as a Gambit as though it were in their Hand, if eligible. It counts as a card played or set from Hand.\nAt the start of the stashing player's turn, if they control Smuggler's Run, they may return the stashed card to their Hand. If they lose control of Smuggler's Run, put the stashed card in its owner's Discard Pile. Only one card may be stashed here.",
+      "type": "Territory",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "During Opening or Denouement, as an Action, while occupying and controlling Smuggler's Run, a player may stash one card from their Hand face down beneath it. The stashed card does not count toward the Hand limit.\nWhile that player occupies and controls Smuggler's Run, they may play the stashed card for its Action effect or set it as a Gambit as though it were in their Hand, if eligible. It counts as a card played or set from Hand.\nAt the start of the stashing player's turn, if they control Smuggler's Run, they may return the stashed card to their Hand. If they lose control of Smuggler's Run, put the stashed card in its owner's Discard Pile. Only one card may be stashed here."
+        }
+      ],
+      "rules_notes": [
+        "Arenas are Territories. A Deck may include no more than one Arena among its three selected Territories."
+      ]
+    },
+    {
+      "id": "territory-arena-spoils-of-war",
+      "number": 22,
+      "name": "Arena: Spoils of War",
+      "arena": true,
+      "text": "During battles on Spoils of War, Defensive Edge does not apply. If battle totals remain tied, make a Tiebreak Roll.\nDuring the Aftermath of the battle, when cards remaining in Reserve move to the Discard Pile, the winner may put one unchosen card from their Reserve in their Hand instead.",
+      "type": "Arena",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "During battles on Spoils of War, Defensive Edge does not apply. If battle totals remain tied, make a Tiebreak Roll.\nDuring the Aftermath of the battle, when cards remaining in Reserve move to the Discard Pile, the winner may put one unchosen card from their Reserve in their Hand instead."
+        }
+      ]
+    },
+    {
+      "id": "territory-arena-no-quarter",
+      "number": 23,
+      "name": "Arena: No Quarter",
+      "arena": true,
+      "text": "During battles on No Quarter, Defensive Edge does not apply. If battle totals remain tied, make a Tiebreak Roll. The losing player retreats one additional position, if able.",
+      "type": "Arena",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "During battles on No Quarter, Defensive Edge does not apply. If battle totals remain tied, make a Tiebreak Roll. The losing player retreats one additional position, if able."
+        }
+      ]
+    },
+    {
+      "id": "territory-arena-single-combat",
+      "number": 24,
+      "name": "Arena: Single Combat",
+      "arena": true,
+      "text": "During battles on Single Combat, Defensive Edge does not apply. If battle totals remain tied, make a Tiebreak Roll. All banked Assets are inactive during the battle.",
+      "type": "Arena",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "During battles on Single Combat, Defensive Edge does not apply. If battle totals remain tied, make a Tiebreak Roll. All banked Assets are inactive during the battle."
+        }
+      ]
+    },
+    {
+      "id": "territory-arena-grand-melee",
+      "number": 25,
+      "name": "Arena: Grand Melee",
+      "arena": true,
+      "text": "During battles on Grand Melee, Defensive Edge does not apply. If battle totals remain tied, make a Tiebreak Roll. Each player draws one additional card when forming their initial Reserve and may choose one additional Tactic from it.",
+      "type": "Arena",
+      "effects": [
+        {
+          "label": "Text",
+          "text": "During battles on Grand Melee, Defensive Edge does not apply. If battle totals remain tied, make a Tiebreak Roll. Each player draws one additional card when forming their initial Reserve and may choose one additional Tactic from it."
+        }
+      ]
+    }
+  ]
+}
