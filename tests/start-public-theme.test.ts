@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 
 const html = readFileSync("start/index.html", "utf8");
 const css = readFileSync("start/styles.css", "utf8");
+const app = readFileSync("start/app.js", "utf8");
 
 function cssRule(selector: string) {
   const start = css.indexOf(`${selector}{`);
@@ -25,19 +26,22 @@ describe("public Start page theme", () => {
     expect(css).toContain(".journey span{background:var(--crimson-dark)");
   });
 
-  it("assigns typography by established project role", () => {
-    expect(cssRule(".start-hero h1")).toContain("font-family:var(--font-display-web)");
-    expect(cssRule(".section-heading h2")).toContain("font-family:var(--font-display-web)");
-    expect(cssRule(".start-hero h1")).toContain("font-weight:500");
+  it("preserves the v0.6.1 Georgia and Inter Start treatment", () => {
+    expect(cssRule(".start-hero h1")).toContain("font-family:var(--font-display,Georgia,serif)");
+    expect(cssRule(".section-heading h2")).toContain("font-family:var(--font-display,Georgia,serif)");
+    expect(cssRule(".faction-choice strong")).toContain("font-family:var(--font-display,Georgia,serif)");
+    expect(cssRule(".leader-choice strong")).toContain("font-family:var(--font-display,Georgia,serif)");
+    expect(cssRule(".start-hero .hero-lede")).toContain("font-family:var(--serif)");
 
-    expect(cssRule(".faction-choice strong")).toContain("font-family:var(--font-interface)");
-    expect(cssRule(".leader-choice strong")).toContain("font-family:var(--font-interface)");
+    expect(css).not.toContain("var(--font-reading)");
+    expect(css).not.toContain("var(--font-interface)");
+    expect(css).not.toContain("var(--font-display-historical)");
+  });
 
-    expect(cssRule(".start-hero .hero-lede")).toContain("font-family:var(--font-reading)");
-    expect(cssRule(".intro-card p,.intro-card li")).toContain("font-family:var(--font-reading)");
-
-    expect(cssRule(".brand>span:last-child")).toContain("font-family:var(--font-display-historical)");
-    expect(cssRule(".brand>span:last-child")).toContain("font-weight:400");
+  it("renders faction symbols in faction color and all twelve approved leader portraits", () => {
+    expect(cssRule(".choice-mark.faction-symbol-asset")).toContain("color:var(--faction)");
+    expect((app.match(/portrait:\s*"\/images\//g) || []).length).toBe(12);
+    expect(app).toContain('portrait.className = "leader-portrait"');
   });
 
   it("keeps black and gold reserved from the rendered public hero", () => {
