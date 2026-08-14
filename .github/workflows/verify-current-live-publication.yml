@@ -1,12 +1,13 @@
-name: Verify current v0.6.3 live publication
+name: Verify current live publication
 
 on:
   push:
     branches: [main]
     paths:
-      - '.github/workflows/verify-current-v063-live-publication.yml'
+      - '.github/workflows/verify-current-live-publication.yml'
+      - 'config/release-lifecycle.json'
       - 'scripts/validate-current-public-contract.mjs'
-      - 'releases/v0.6.3-reconstructed/**'
+      - 'releases/**'
       - 'index.html'
       - 'start/**'
       - 'rulebook/**'
@@ -16,10 +17,7 @@ on:
       - 'rules-arbiter/**'
       - 'design-tokens.css'
       - 'images/faction-symbols/**'
-      - 'rules-assistant/worker-entry.js'
-      - 'rules-assistant/worker-v063.js'
-      - 'rules-assistant/v063-public-corpus.js'
-      - 'rules-assistant/wrangler.toml'
+      - 'rules-assistant/**'
   workflow_dispatch:
 
 permissions:
@@ -27,7 +25,7 @@ permissions:
   pages: write
 
 concurrency:
-  group: verify-current-v063-live-${{ github.ref }}
+  group: verify-current-live-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -52,6 +50,13 @@ jobs:
         with:
           node-version: 22
 
+      - name: Read current release identity
+        id: release
+        run: |
+          current=$(node -e "const l=require('./config/release-lifecycle.json'); process.stdout.write(String(l.current_release || ''))")
+          test -n "$current"
+          echo "version=$current" >> "$GITHUB_OUTPUT"
+
       - name: Determine whether Rules Arbiter deployment changed
         id: scope
         shell: bash
@@ -61,14 +66,13 @@ jobs:
             worker=true
           else
             worker=false
-            git diff --name-only HEAD^ HEAD | while IFS= read -r file; do
+            while IFS= read -r file; do
               case "$file" in
-                rules-assistant/worker-entry.js|rules-assistant/worker-v063.js|rules-assistant/v063-public-corpus.js|rules-assistant/wrangler.toml)
-                  echo 'worker=true' > /tmp/worker-scope
+                rules-assistant/worker-entry.js|rules-assistant/worker-v*.js|rules-assistant/v*-public-corpus.js|rules-assistant/smart-worker.js|rules-assistant/reliable-worker.js|rules-assistant/admin-*.js|rules-assistant/review-*.js|rules-assistant/wrangler.toml)
+                  worker=true
                   ;;
               esac
-            done
-            if [[ -f /tmp/worker-scope ]]; then worker=true; fi
+            done < <(git diff --name-only HEAD^ HEAD)
           fi
           echo "worker=$worker" >> "$GITHUB_OUTPUT"
 
@@ -89,15 +93,18 @@ jobs:
         if: steps.scope.outputs.worker == 'true'
         run: npx wrangler deploy --config rules-assistant/wrangler.toml
 
-      - name: Wait for current and historical Rules Arbiter health
+      - name: Wait for current Rules Arbiter health
+        env:
+          CURRENT_RELEASE: ${{ steps.release.outputs.version }}
         run: |
           node --input-type=module <<'NODE'
           const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          const expected = process.env.CURRENT_RELEASE;
           async function wait(url, predicate, label) {
             let last = '';
             for (let attempt = 1; attempt <= 30; attempt += 1) {
               try {
-                const response = await fetch(url);
+                const response = await fetch(url, { cache: 'no-store' });
                 last = await response.text();
                 if (response.ok && predicate(JSON.parse(last))) {
                   console.log(`${label} verified on attempt ${attempt}.`);
@@ -111,8 +118,16 @@ jobs:
             throw new Error(`${label} did not become healthy: ${last}`);
           }
           const base = 'https://gauntlet-rules-assistant.tymon-scott.workers.dev';
-          await wait(`${base}/api/health`, (v) => v?.ok === true && v.version === 'v0.6.3' && v.currentPublicRelease === 'v0.6.3', 'Current Rules Arbiter');
-          await wait(`${base}/api/v061/health`, (v) => v?.ok === true && v.version === 'v0.6.1', 'Historical v0.6.1 Rules Arbiter');
+          await wait(
+            `${base}/api/health`,
+            (value) => value?.ok === true && value.version === expected && value.currentPublicRelease === expected,
+            `Current Rules Arbiter (${expected})`
+          );
+          await wait(
+            `${base}/api/v061/health`,
+            (value) => value?.ok === true && value.version === 'v0.6.1',
+            'Historical v0.6.1 Rules Arbiter compatibility route'
+          );
           NODE
 
       - name: Request and verify exact GitHub Pages build
@@ -144,12 +159,12 @@ jobs:
           throw new Error(`GitHub Pages did not report ${expectedSha} built within the verification window.`);
           NODE
 
-      - name: Verify the deployed site against the same current-publication contract
+      - name: Verify deployed site against the current-publication contract
         shell: bash
         run: |
           set -euo pipefail
           for attempt in $(seq 1 30); do
-            if GAUNTLET_PUBLIC_BASE_URL=https://gauntlet.run node scripts/validate-current-public-contract.mjs; then
+            if GAUNTLET_PUBLIC_BASE_URL=https://gauntlet.run GAUNTLET_CONTRACT_BUST="$EXPECTED_SHA" node scripts/validate-current-public-contract.mjs; then
               echo "Live public contract verified on attempt $attempt."
               exit 0
             fi

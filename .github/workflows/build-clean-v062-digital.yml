@@ -1,19 +1,6 @@
 name: Build clean v0.6.2 digital base
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - '.github/workflows/build-clean-v062-digital.yml'
-      - 'scripts/validate-clean-v062-digital.mjs'
-      - 'src/reconstruction/clean-v062/**'
-      - 'artifacts/reconstruction/clean-v0.6.2/digital/**'
-      - 'artifacts/reconstruction/clean-v0.6.2/certification/**'
-      - 'artifacts/reconstruction/clean-v0.6.2/rulebook/**'
-      - 'artifacts/reconstruction/clean-v0.6.2/faction-guides/**'
-      - 'config/release-lifecycle.json'
-      - 'config/reconstruction-version-plan.json'
-      - 'src/content/current.ts'
   workflow_dispatch:
 
 permissions:

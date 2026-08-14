@@ -1,61 +1,12 @@
 name: Validate release reconstruction
 
-# This gate validates authority/quarantine state, normalized audit recommendations,
-# and the separation between clean v0.6.2 and clean v0.6.3 reconstruction targets.
-# It does not publish either target.
+# Historical reconstruction audit. This remains available for forensic review,
+# but it is not a current-product pull-request gate.
 on:
-  push:
-    branches:
-      - agent/release-reconstruction-baseline
-      - agent/reconstruction-decision-normalization
-      - agent/reconstruction-version-plan
-      - agent/recover-v063-card-interaction-decisions
-      - agent/recover-v063-late-decisions
-      - agent/certify-clean-v063-authority
-    paths:
-      - config/reconstruction-ledger.json
-      - config/reconstruction-decision-candidates.json
-      - config/reconstruction-version-plan.json
-      - config/reconstruction-version-resolutions.json
-      - config/leader-authority-v061.json
-      - config/release-lifecycle.json
-      - governance/decision-registry.json
-      - scripts/validate-release-reconstruction.mjs
-      - scripts/validate-reconstruction-decision-candidates.mjs
-      - scripts/validate-reconstruction-version-plan.mjs
-      - scripts/validate-reconstruction-version-plan-certified.mjs
-      - scripts/validate-v063-recovered-decisions.mjs
-      - releases/v0.6.1/**
-      - releases/v0.6.2/**
-      - releases/v0.6.3/**
-      - .github/workflows/validate-release-reconstruction.yml
-  pull_request:
-    branches: [main]
-    paths:
-      - config/reconstruction-ledger.json
-      - config/reconstruction-decision-candidates.json
-      - config/reconstruction-version-plan.json
-      - config/reconstruction-version-resolutions.json
-      - config/leader-authority-v061.json
-      - config/release-lifecycle.json
-      - governance/decision-registry.json
-      - scripts/validate-release-reconstruction.mjs
-      - scripts/validate-reconstruction-decision-candidates.mjs
-      - scripts/validate-reconstruction-version-plan.mjs
-      - scripts/validate-reconstruction-version-plan-certified.mjs
-      - scripts/validate-v063-recovered-decisions.mjs
-      - releases/v0.6.1/**
-      - releases/v0.6.2/**
-      - releases/v0.6.3/**
-      - .github/workflows/validate-release-reconstruction.yml
   workflow_dispatch:
 
 permissions:
   contents: read
-
-concurrency:
-  group: release-reconstruction-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   semantic-baseline:

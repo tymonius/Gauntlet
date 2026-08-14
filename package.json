@@ -6,7 +6,9 @@
   "scripts": {
     "governance:check": "python .github/scripts/validate-governance.py && python .github/scripts/validate-conversation-audit.py && python .github/scripts/validate-live-tail.py",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run && node scripts/validate-v062-shared-rules.mjs && node scripts/validate-v062-faction-components.mjs && node scripts/validate-v062-starters-onboarding.mjs && node scripts/validate-v062-live-propagation.mjs && node scripts/validate-v062-arbiter-digital.mjs && node scripts/validate-v062-card-execution.mjs && node scripts/validate-v062-release-closeout.mjs && node scripts/synchronize-v062-public-site.mjs --check && node scripts/validate-v062-published-release.mjs && npm run print:v062:check && node scripts/validate-starter-decks.mjs && node scripts/sync-google-analytics.mjs --check && node scripts/validate-retired-faction-sheets.mjs && npm run tts:check && npm run media:check",
+    "test": "vitest run",
+    "test:full": "npm run typecheck && npm run test && npm run test:current-contract && npm run test:deckbuilder && npm run analytics:check",
+    "test:current-contract": "node scripts/validate-current-public-contract.mjs",
     "test:v062-shared-rules": "node scripts/validate-v062-shared-rules.mjs",
     "test:v062-faction-components": "node scripts/validate-v062-faction-components.mjs",
     "test:v062-starters-onboarding": "node scripts/validate-v062-starters-onboarding.mjs",

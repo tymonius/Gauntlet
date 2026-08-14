@@ -6,105 +6,103 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Determine relevant test scope before checkout
+        id: scope
+        uses: actions/github-script@v7
+        with:
+          script: |
+            let names = [];
+            let uncertain = false;
+
+            if (context.eventName === 'pull_request') {
+              const files = await github.paginate(github.rest.pulls.listFiles, {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: context.issue.number,
+                per_page: 100,
+              });
+              names = files.map((file) => file.filename);
+            } else {
+              const before = context.payload.before;
+              if (!before || /^0+$/.test(before)) {
+                uncertain = true;
+              } else {
+                const comparison = await github.rest.repos.compareCommits({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  base: before,
+                  head: context.sha,
+                });
+                names = (comparison.data.files || []).map((file) => file.filename);
+                if ((comparison.data.files || []).length >= 300) uncertain = true;
+              }
+            }
+
+            const exact = (value) => names.includes(value);
+            const under = (prefix) => names.some((file) => file.startsWith(prefix));
+            const matches = (pattern) => names.some((file) => pattern.test(file));
+
+            const testPattern = /(?:^|\/)[^/]+\.(?:test|spec)\.(?:ts|tsx|js|mjs)$/;
+            const sourcePattern = /\.(?:ts|tsx|js|mjs)$/;
+            const changedTests = names.filter((file) => testPattern.test(file));
+            const relatedSources = names.filter((file) => sourcePattern.test(file) && !testPattern.test(file));
+
+            const fullTests = uncertain || exact('package.json') || exact('package-lock.json') || exact('vitest.config.ts') || exact('vitest.config.js') || exact('vitest.config.mjs') || exact('.github/workflows/test.yml');
+            const code = fullTests || changedTests.length > 0 || relatedSources.length > 0;
+            const types = uncertain || exact('package.json') || exact('package-lock.json') || matches(/\.(?:ts|tsx)$/) || matches(/(?:^|\/)tsconfig[^/]*\.json$/);
+            const analytics = uncertain || exact('scripts/sync-google-analytics.mjs') || exact('index.html') || matches(/^(?:start|rulebook|card-reference|deckbuilder|rules-arbiter)\/[^/]*\.html$/) || matches(/^factions\/(?:[^/]+\/)?[^/]*\.html$/);
+            const tts = uncertain || matches(/^scripts\/generate-tts-/) || under('tts/') || under('artifacts/tts/') || under('data/cards/') || under('data/territories/');
+            const media = uncertain || matches(/^scripts\/generate-card-media-/) || under('images/artwork/') || under('artifacts/media/') || under('data/cards/');
+            const renderer = uncertain || exact('tts/renderer/renderer.js') || exact('scripts/validate-v063-card-rendering-conventions.mjs');
+            const relevant = code || types || analytics || tts || media || renderer;
+
+            core.setOutput('relevant', String(relevant));
+            core.setOutput('code', String(code));
+            core.setOutput('types', String(types));
+            core.setOutput('full_tests', String(fullTests));
+            core.setOutput('analytics', String(analytics));
+            core.setOutput('tts', String(tts));
+            core.setOutput('media', String(media));
+            core.setOutput('renderer', String(renderer));
+            core.setOutput('changed_tests', JSON.stringify(changedTests));
+            core.setOutput('related_sources', JSON.stringify(relatedSources));
+            core.summary
+              .addHeading('Test routing')
+              .addTable([
+                [{data: 'Check', header: true}, {data: 'Run?', header: true}],
+                ['Vitest', String(code)],
+                ['Full Vitest suite', String(fullTests)],
+                ['TypeScript', String(types)],
+                ['Analytics', String(analytics)],
+                ['TTS', String(tts)],
+                ['Card renderer', String(renderer)],
+                ['Media', String(media)],
+              ])
+              .write();
+
       - name: Checkout
+        if: steps.scope.outputs.relevant == 'true'
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - name: Determine relevant test scope
-        id: scope
-        shell: bash
-        run: |
-          set -euo pipefail
-          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
-            base='${{ github.event.pull_request.base.sha }}'
-          else
-            base='${{ github.event.before }}'
-          fi
-          if [[ -z "$base" || "$base" =~ ^0+$ ]]; then
-            base="$(git rev-parse HEAD^)"
-          else
-            git fetch --no-tags --depth=1 origin "$base"
-          fi
-          git diff --name-only "$base" HEAD > /tmp/changed-files.txt
-          cat /tmp/changed-files.txt
-
-          : > /tmp/changed-test-files.txt
-          : > /tmp/related-source-files.txt
-          code=false
-          types=false
-          full_tests=false
-          analytics=false
-          tts=false
-          media=false
-
-          while IFS= read -r file; do
-            case "$file" in
-              *.test.ts|*.test.tsx|*.test.js|*.test.mjs|*.spec.ts|*.spec.tsx|*.spec.js|*.spec.mjs)
-                code=true
-                printf '%s\n' "$file" >> /tmp/changed-test-files.txt
-                ;;
-              *.ts|*.tsx|*.js|*.mjs)
-                code=true
-                printf '%s\n' "$file" >> /tmp/related-source-files.txt
-                ;;
-              package.json|package-lock.json|vitest.config.*)
-                code=true
-                full_tests=true
-                ;;
-            esac
-            case "$file" in
-              *.ts|*.tsx|package.json|package-lock.json|tsconfig*.json)
-                types=true
-                ;;
-            esac
-            case "$file" in
-              scripts/sync-google-analytics.mjs|index.html|start/*.html|rulebook/*.html|card-reference/*.html|factions/*.html|factions/*/*.html|deckbuilder/*.html|rules-arbiter/*.html)
-                analytics=true
-                ;;
-            esac
-            case "$file" in
-              scripts/generate-tts-*|tts/**|artifacts/tts/**|data/cards/**|data/territories/**)
-                tts=true
-                ;;
-            esac
-            case "$file" in
-              scripts/generate-card-media-*|images/artwork/**|artifacts/media/**|data/cards/**)
-                media=true
-                ;;
-            esac
-          done < /tmp/changed-files.txt
-
-          echo "code=$code" >> "$GITHUB_OUTPUT"
-          echo "types=$types" >> "$GITHUB_OUTPUT"
-          echo "full_tests=$full_tests" >> "$GITHUB_OUTPUT"
-          echo "analytics=$analytics" >> "$GITHUB_OUTPUT"
-          echo "tts=$tts" >> "$GITHUB_OUTPUT"
-          echo "media=$media" >> "$GITHUB_OUTPUT"
-
       - name: Setup Node
-        if: >-
-          steps.scope.outputs.code == 'true' ||
-          steps.scope.outputs.types == 'true' ||
-          steps.scope.outputs.analytics == 'true' ||
-          steps.scope.outputs.tts == 'true' ||
-          steps.scope.outputs.media == 'true'
+        if: steps.scope.outputs.relevant == 'true'
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
       - name: Install dependencies
-        if: >-
-          steps.scope.outputs.code == 'true' ||
-          steps.scope.outputs.types == 'true' ||
-          steps.scope.outputs.analytics == 'true' ||
-          steps.scope.outputs.tts == 'true' ||
-          steps.scope.outputs.media == 'true'
+        if: steps.scope.outputs.relevant == 'true'
         run: npm install
 
       - name: Typecheck changed TypeScript surface
@@ -114,6 +112,9 @@ jobs:
       - name: Run scoped code tests
         if: steps.scope.outputs.code == 'true'
         shell: bash
+        env:
+          CHANGED_TESTS: ${{ steps.scope.outputs.changed_tests }}
+          RELATED_SOURCES: ${{ steps.scope.outputs.related_sources }}
         run: |
           set -euo pipefail
           if [[ "${{ steps.scope.outputs.full_tests }}" == "true" ]]; then
@@ -121,14 +122,14 @@ jobs:
             exit 0
           fi
 
-          if [[ -s /tmp/changed-test-files.txt ]]; then
-            mapfile -t changed_tests < /tmp/changed-test-files.txt
+          mapfile -t changed_tests < <(node -e "for (const file of JSON.parse(process.env.CHANGED_TESTS || '[]')) console.log(file)")
+          if (( ${#changed_tests[@]} )); then
             npx vitest run "${changed_tests[@]}"
           fi
 
-          if [[ -s /tmp/related-source-files.txt ]]; then
-            mapfile -t changed_sources < /tmp/related-source-files.txt
-            npx vitest related --run --passWithNoTests "${changed_sources[@]}"
+          mapfile -t related_sources < <(node -e "for (const file of JSON.parse(process.env.RELATED_SOURCES || '[]')) console.log(file)")
+          if (( ${#related_sources[@]} )); then
+            npx vitest related --run --passWithNoTests "${related_sources[@]}"
           fi
 
       - name: Verify analytics only when analytics-bearing pages change
@@ -139,15 +140,14 @@ jobs:
         if: steps.scope.outputs.tts == 'true'
         run: npm run tts:check
 
+      - name: Verify card renderer conventions when renderer changes
+        if: steps.scope.outputs.renderer == 'true'
+        run: node scripts/validate-v063-card-rendering-conventions.mjs
+
       - name: Verify media assets only when media inputs change
         if: steps.scope.outputs.media == 'true'
         run: npm run media:check
 
-      - name: No generic regression work required
-        if: >-
-          steps.scope.outputs.code != 'true' &&
-          steps.scope.outputs.types != 'true' &&
-          steps.scope.outputs.analytics != 'true' &&
-          steps.scope.outputs.tts != 'true' &&
-          steps.scope.outputs.media != 'true'
-        run: echo 'No code-owned regression checks are relevant to this change.'
+      - name: No repository test work required
+        if: steps.scope.outputs.relevant != 'true'
+        run: echo 'No repository-owned regression checks are relevant to this change.'

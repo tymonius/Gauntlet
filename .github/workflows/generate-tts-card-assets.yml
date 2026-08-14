@@ -1,17 +1,6 @@
 name: Generate TTS card assets
 
 on:
-  pull_request:
-    paths:
-      - "releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json"
-      - "images/artwork/cards/**"
-      - "images/artwork/card-backgrounds/**"
-      - "card-design/**"
-      - "scripts/generate-tts-card-assets.mjs"
-      - "scripts/generate-tts-territory-assets.mjs"
-      - "tts/**"
-      - "package.json"
-      - ".github/workflows/generate-tts-card-assets.yml"
   workflow_dispatch:
     inputs:
       strict_artwork:
@@ -48,7 +37,7 @@ jobs:
       - run: npm install
       - run: npx playwright install --with-deps chromium
       - name: Generate playable card sheets
-        run: npm run tts:cards -- ${{ github.event_name == 'workflow_dispatch' && inputs.strict_artwork && '--strict-art' || '' }}
+        run: npm run tts:cards -- ${{ inputs.strict_artwork && '--strict-art' || '' }}
       - name: Generate Territory sheet
         run: npm run tts:territories
       - uses: actions/upload-artifact@v4
