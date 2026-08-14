@@ -131,8 +131,28 @@ jobs:
             --exclude rules-assistant/review-intelligence.test.mjs \
             --exclude rules-assistant/v062-published-routes.test.mjs
 
-      - name: Reject whitespace errors
-        run: git diff --check
+      - name: Verify staged publication whitespace
+        run: |
+          git add -A -- \
+            config/release-lifecycle.json \
+            src/content/current.ts \
+            index.html \
+            rulebook \
+            card-reference \
+            factions \
+            start \
+            deckbuilder \
+            rules-arbiter \
+            releases/v0.6.3-reconstructed \
+            rules-assistant/worker-entry.js \
+            rules-assistant/worker-v063.js \
+            rules-assistant/v063-public-corpus.js \
+            rules-assistant/widget.js
+          # Certified faction-guide Markdown intentionally preserves two-space hard line breaks and is source-parity validated separately.
+          git diff --cached --check -- \
+            . \
+            ':(exclude,glob)releases/v0.6.3-reconstructed/faction-guides/**/*.md'
+          git reset
 
       - name: Upload publication review bundle
         uses: actions/upload-artifact@v4
@@ -254,7 +274,10 @@ jobs:
             rules-assistant/worker-v063.js \
             rules-assistant/v063-public-corpus.js \
             rules-assistant/widget.js
-          git diff --cached --check
+          # Certified faction-guide Markdown intentionally preserves two-space hard line breaks and is source-parity validated separately.
+          git diff --cached --check -- \
+            . \
+            ':(exclude,glob)releases/v0.6.3-reconstructed/faction-guides/**/*.md'
           if git diff --cached --quiet; then
             echo 'Publication materialization produced no changes.'
             exit 1
