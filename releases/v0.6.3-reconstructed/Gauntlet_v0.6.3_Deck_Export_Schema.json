@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "version": "v0.6.3-deck-export",
+  "authority_set_id": "64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49",
+  "canonical_data_sha256": "641c813366a8bcb52f9cb505ada640994d416024deed1f71a6ec59fb24ed2c4c",
+  "starter_decks_sha256": "4c0ebe201584fc709623e37bb31630394294830dbe7b0f75ba43ae61bce33d64",
+  "construction": {
+    "minimum_cards": 30,
+    "maximum_deckbuilding_value": 60,
+    "territories_per_player": 3,
+    "maximum_arenas": 1,
+    "factions_per_deck": 1,
+    "leaders_per_deck": 1,
+    "unique_copy_limit": 1
+  },
+  "fields": {
+    "factionId": "canonical faction id",
+    "leaderId": "slugified canonical Leader name",
+    "cards": [
+      {
+        "id": "canonical card id",
+        "quantity": "positive integer"
+      }
+    ],
+    "territoryIds": [
+      "three canonical Territory ids in own-end-to-opponent-end order"
+    ]
+  },
+  "publication_unlocked": true,
+  "current_public_release": "v0.6.3"
+}

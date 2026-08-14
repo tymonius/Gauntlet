@@ -11,101 +11,64 @@
   </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#8f1f25" />
+  <meta name="description" content="Search and read the current canonical Gauntlet v0.6.3 Rulebook." />
+  <title>Gauntlet v0.6.3 Browser Rulebook</title>
+  <link rel="canonical" href="https://gauntlet.run/rulebook/" />
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
-  <meta name="theme-color" content="#8f1f25" />
-  <meta name="description" content="Read the complete canonical Gauntlet v0.6.1 rulebook in a searchable, responsive browser format." />
-  <title>Gauntlet v0.6.1 Browser Rulebook</title>
-  <link rel="preconnect" href="https://use.typekit.net" />
-  <link rel="preconnect" href="https://p.typekit.net" crossorigin />
   <link rel="stylesheet" href="styles.css" />
   <link rel="stylesheet" href="publication.css" />
-  <link rel="stylesheet" href="../rules-assistant/widget.css" />
 </head>
 <body>
+  <div class="reconstruction-banner">Gauntlet v0.6.3 · current canonical playtest edition.</div>
   <header class="rulebook-header">
-    <a class="brand" href="../" aria-label="Return to the Gauntlet home page">
-      <span class="brand-mark" aria-hidden="true">G</span>
-      <span>Gauntlet</span>
-    </a>
-    <div class="header-actions">
-      <a href="../deckbuilder/">Deckbuilder</a>
-      <a href="../">Home</a>
-    </div>
+    <a class="brand" href="../" aria-label="Return to the Gauntlet home page"><span class="brand-mark" aria-hidden="true">G</span><span>Gauntlet</span></a>
+    <div class="header-actions"><a href="../">Home</a><a href="../rules-arbiter/">Rules Arbiter</a><a href="../releases/v0.6.3-reconstructed/">Release package</a></div>
   </header>
 
   <section class="rulebook-hero">
     <div class="hero-copy">
-      <p class="eyebrow">Canonical rules · version 0.6.1</p>
-      <h1>Official Browser Rulebook</h1>
-      <p class="hero-lede">The complete shared rules and faction systems, rendered directly from the canonical release source for comfortable reading at the table or on the go.</p>
-      <p class="source-status" data-rulebook-status aria-live="polite">Loading the canonical rulebook…</p>
+      <p class="eyebrow">Current canonical rules · version 0.6.3</p>
+      <h1>Browser Rulebook</h1>
+      <p class="hero-lede">The complete canonical v0.6.3 Rulebook, rendered from the certified clean authority source.</p>
+      <p class="source-status" data-rulebook-status aria-live="polite">Loading the certified clean-v0.6.3 Rulebook…</p>
     </div>
-    <div class="hero-art" aria-hidden="true">
-      <img src="../images/sketches/hero sketch.png" alt="" decoding="async" />
-    </div>
+    <div class="hero-art" aria-hidden="true"><img src="../../../../images/sketches/hero sketch.png" alt="" decoding="async" /></div>
     <div class="hero-actions" aria-label="Rulebook actions">
-      <button type="button" data-open-rules-assistant>Ask the Rules Arbiter</button>
-      <a href="../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf">Reader PDF</a>
-      <a href="../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf">Print booklet</a>
+      <a href="../releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md">Certified Markdown</a>
       <button type="button" data-print-rulebook>Print browser view</button>
     </div>
   </section>
 
-  <button class="toc-toggle" type="button" aria-expanded="false" aria-controls="rulebook-sidebar" data-toc-toggle>
-    Contents and search
-  </button>
+  <button class="toc-toggle" type="button" aria-expanded="false" aria-controls="rulebook-sidebar" data-toc-toggle>Contents and search</button>
 
   <main class="rulebook-shell">
     <aside id="rulebook-sidebar" class="rulebook-sidebar" data-rulebook-sidebar>
       <form class="rulebook-search" role="search" data-rulebook-search>
         <label for="rulebook-search-input">Search this rulebook</label>
-        <div>
-          <input id="rulebook-search-input" type="search" placeholder="Gambit, Tactic, Assets, Last Stand…" autocomplete="off" />
-          <button type="submit">Search</button>
-        </div>
+        <div><input id="rulebook-search-input" type="search" placeholder="Gambit, Tactic, Assets, Last Stand…" autocomplete="off" /><button type="submit">Search</button></div>
         <p class="search-status" data-search-status aria-live="polite"></p>
       </form>
-
-      <nav class="rulebook-toc" aria-label="Rulebook contents" data-rulebook-toc>
-        <span class="toc-loading">Loading contents…</span>
-      </nav>
-
+      <nav class="rulebook-toc" aria-label="Rulebook contents" data-rulebook-toc><span class="toc-loading">Loading contents…</span></nav>
       <div class="source-links">
-        <strong>Canonical source and downloads</strong>
-        <a href="../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md">Markdown</a>
-        <a href="../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf">Reader PDF</a>
-        <a href="../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf">Booklet PDF</a>
+        <strong>Canonical source</strong>
+        <a href="../releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md">Certified clean-v0.6.3 Markdown</a>
+        <span class="reconstruction-note">This browser view verifies the certified source before rendering.</span>
       </div>
     </aside>
-
     <article class="rulebook-content" data-rulebook-content aria-busy="true">
-      <div class="loading-card" role="status">
-        <span class="loading-mark" aria-hidden="true">G</span>
-        <div>
-          <strong>Opening the rulebook</strong>
-          <p>Loading the canonical v0.6.1 Markdown source.</p>
-        </div>
-      </div>
+      <div class="loading-card" role="status"><span class="loading-mark" aria-hidden="true">G</span><div><strong>Opening the Rulebook</strong><p>Loading the certified clean-v0.6.3 Markdown source.</p></div></div>
     </article>
   </main>
 
   <footer>
-    <p><strong>Gauntlet v0.6.1</strong> · Unpublished pre-release playtest project.</p>
-    <p>Copyright © 2026 Tymon Scott. All rights reserved.</p>
+    <p><strong>Gauntlet v0.6.3</strong> · Current canonical playtest edition · authority <code>64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49</code>.</p>
+    <p>Current canonical playtest release: v0.6.3. Copyright © 2026 Tymon Scott. All rights reserved.</p>
   </footer>
 
-  <noscript>
-    <div class="noscript">
-      JavaScript is required for the browser-rendered rulebook. Read the
-      <a href="../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf">official reader PDF</a>,
-      the <a href="../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf">imposed booklet PDF</a>,
-      or the <a href="../releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md">canonical Markdown source</a>.
-    </div>
-  </noscript>
-
-  <script type="module" src="../rules-assistant/widget.js"></script>
+  <noscript><div class="noscript">JavaScript is required for the browser-rendered Rulebook. Read the <a href="../releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md">certified clean-v0.6.3 Markdown source</a>.</div></noscript>
   <script type="module" src="app.js"></script>
 </body>
 </html>

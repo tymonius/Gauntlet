@@ -1,315 +1,135 @@
-(() => {
-  const STORAGE_KEY = "gauntlet_standalone_onboarding_v1";
-  const FACTIONS = Object.freeze({
-    military: {
-      name: "Military",
-      summary: "Turn battlefield victories into Command, then spend it on movement, pressure, defense, and control.",
-      leaders: [
-        { id: "general", name: "General", summary: "Attack, build momentum, and press one victory into the next." },
-        { id: "commandant", name: "Commandant", summary: "Absorb attacks, counterattack, and turn defense into control." }
-      ]
-    },
-    diplomats: {
-      name: "Diplomats",
-      summary: "Use Influence, Terms, Proposals, concessions, and legitimacy to reshape the conflict.",
-      leaders: [
-        { id: "ambassador", name: "Ambassador", summary: "Make attractive offers and gain value when the opponent accepts." },
-        { id: "senator", name: "Senator", summary: "Risk political capital, endure setbacks, and win the long negotiation." }
-      ]
-    },
-    financiers: {
-      name: "Financiers",
-      summary: "Convert Capital, Treasury cards, Financial Capacity, Deeds, leverage, and ownership into strategic power.",
-      leaders: [
-        { id: "banker", name: "Banker", summary: "Finance purchases flexibly and turn cards into collateral." },
-        { id: "executive", name: "Executive", summary: "Occupy enemy ground and convert battlefield gains into ownership." }
-      ]
-    },
-    intelligence: {
-      name: "Intelligence",
-      summary: "Gather Intel, complete Missions, inspect hidden commitments, and disrupt enemy plans.",
-      leaders: [
-        { id: "ranger", name: "Ranger", summary: "Master terrain, fieldcraft, and adaptable operations." },
-        { id: "spymaster", name: "Spymaster", summary: "Chain Missions together and coordinate a faster covert campaign." }
-      ]
-    },
-    mystics: {
-      name: "Mystics",
-      summary: "Perform Rites, invoke the Arcane, transform cards, and build toward ritual power.",
-      leaders: [
-        { id: "alchemist", name: "Alchemist", summary: "Transmute cards deliberately and construct powerful combinations." },
-        { id: "spirit-walker", name: "Spirit Walker", summary: "Protect begun Rites and the Ritual by sacrificing Arcane cards of sufficient value." }
-      ]
-    },
-    inquisition: {
-      name: "Inquisition",
-      summary: "Build Conviction through condemnation, denial, Graveyard pressure, and Purge.",
-      leaders: [
-        { id: "grand-inquisitor", name: "Grand Inquisitor", summary: "Judge opposing cards and turn battle wins into efficient Purges." },
-        { id: "witch-hunter", name: "Witch Hunter", summary: "Punish failed attacks, pursue retreating enemies, and suppress resources." }
-      ]
-    }
+import { renderMarkdown } from '../rulebook/markdown.js';
+
+const AUTHORITY_SET_ID = '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49';
+const RULEBOOK_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md';
+const RULEBOOK_SHA256 = '7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643';
+const STARTERS_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/downstream/starter-decks.json';
+const STARTERS_SHA256 = '4c0ebe201584fc709623e37bb31630394294830dbe7b0f75ba43ae61bce33d64';
+
+const FACTIONS = [
+  ['military', 'Military', '⚔'], ['diplomats', 'Diplomats', '§'], ['financiers', 'Financiers', '◆'],
+  ['intelligence', 'Intelligence', '◉'], ['mystics', 'Mystics', '✦'], ['inquisition', 'Inquisition', '✠'],
+];
+
+const state = { decks: [], factionId: '', leaderId: '' };
+const learningContent = document.querySelector('[data-learning-content]');
+const sourceStatus = document.querySelector('[data-source-status]');
+const factionChoices = document.querySelector('[data-faction-choices]');
+const leaderFieldset = document.querySelector('[data-leader-fieldset]');
+const leaderPrompt = document.querySelector('[data-leader-prompt]');
+const leaderChoices = document.querySelector('[data-leader-choices]');
+const starterPreview = document.querySelector('[data-starter-preview]');
+const cleanDeckbuilder = document.querySelector('[data-clean-deckbuilder]');
+
+function bytesToHex(buffer) { return [...new Uint8Array(buffer)].map((byte) => byte.toString(16).padStart(2, '0')).join(''); }
+async function fetchVerified(url, expectedSha256) {
+  const response = await fetch(url, { cache: 'no-store' });
+  if (!response.ok) throw new Error(`${url} returned ${response.status}.`);
+  const bytes = await response.arrayBuffer();
+  const actualHash = bytesToHex(await crypto.subtle.digest('SHA-256', bytes));
+  if (actualHash !== expectedSha256) throw new Error(`Source hash mismatch for ${url}: expected ${expectedSha256}, received ${actualHash}.`);
+  return new TextDecoder().decode(bytes);
+}
+function extractTopLevel(source, heading) {
+  const marker = `# ${heading}`;
+  const start = source.indexOf(marker);
+  if (start < 0) throw new Error(`Certified Rulebook is missing heading: ${heading}`);
+  const next = source.indexOf('\n# ', start + marker.length);
+  return source.slice(start, next < 0 ? source.length : next).trim();
+}
+function extractPartOneHowItWorks(source) {
+  const partStart = source.indexOf('# Part I — Learn to Play');
+  const partEnd = source.indexOf('# Part II', partStart + 1);
+  if (partStart < 0 || partEnd < 0) throw new Error('Certified Rulebook Part I boundary is missing.');
+  const part = source.slice(partStart, partEnd);
+  const chapterMatches = [...part.matchAll(/^# (\d+\.\s+[^\n]+)$/gm)];
+  const excerpts = [];
+  chapterMatches.forEach((match, index) => {
+    const title = match[1].trim();
+    const bodyStart = match.index + match[0].length;
+    const bodyEnd = chapterMatches[index + 1]?.index ?? part.length;
+    const body = part.slice(bodyStart, bodyEnd);
+    const howMarker = '## How it works';
+    const howStart = body.indexOf(howMarker);
+    if (howStart < 0) return;
+    const afterHeading = howStart + howMarker.length;
+    const nextSecondLevel = body.indexOf('\n## ', afterHeading);
+    excerpts.push(`# ${title}\n\n${body.slice(afterHeading, nextSecondLevel < 0 ? body.length : nextSecondLevel).trim()}`);
   });
+  if (excerpts.length < 8) throw new Error(`Expected at least eight Part I How it works excerpts; found ${excerpts.length}.`);
+  return excerpts;
+}
+function buildLearningSource(source) { return [extractTopLevel(source, 'Welcome to Gauntlet'), extractTopLevel(source, 'Game at a Glance'), extractTopLevel(source, 'How to Win'), ...extractPartOneHowItWorks(source)].join('\n\n---\n\n'); }
+function humanizeId(value) { return String(value).split('-').map((part) => part ? part[0].toUpperCase() + part.slice(1) : '').join(' '); }
+function escapeHtml(value) { return String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;'); }
+function factionLabel(id) { return FACTIONS.find(([factionId]) => factionId === id)?.[1] || humanizeId(id); }
+function selectedDeck() { return state.decks.find((item) => item.factionId === state.factionId && item.leaderId === state.leaderId) || null; }
 
-  const state = {
-    factionId: "",
-    leaderId: "",
-    introConfirmed: false,
-    starterDecks: [],
-    starterLoadError: null
-  };
-
-  const el = {};
-  document.addEventListener("DOMContentLoaded", init);
-
-  async function init() {
-    for (const id of [
-      "leaderFieldset", "leaderPrompt", "leaderChoices", "selectedHeading", "selectedSummary",
-      "starterPreview", "printForm", "printSelectionHeading", "printSelectionCopy", "introConfirmed",
-      "openStarterDeck", "printStatus"
-    ]) el[id] = document.getElementById(id);
-
-    document.querySelectorAll('input[name="faction"]').forEach(input => {
-      input.addEventListener("change", () => selectFaction(input.value));
-    });
-    el.introConfirmed.addEventListener("change", () => {
-      state.introConfirmed = el.introConfirmed.checked;
-      saveState();
-      syncPrintAction();
-    });
-    el.printForm.addEventListener("submit", openGuidedDeckbuilder);
-    installTrackedPlaytestAction();
-
-    restoreState();
-    renderChoice();
-    await loadStarterDecks();
-    renderChoice();
+function syncDeckbuilderLink(deck = selectedDeck()) {
+  const url = new URL('../deckbuilder/', window.location.href);
+  if (deck) {
+    url.searchParams.set('faction', deck.factionId);
+    url.searchParams.set('leader', deck.leaderId);
+    url.searchParams.set('starter', '1');
+    url.searchParams.set('source', 'start');
   }
+  cleanDeckbuilder.href = url.href;
+}
 
-  function installTrackedPlaytestAction() {
-    if (!el.openStarterDeck || document.getElementById("startTrackedPlaytest")) return;
-    const panel = document.createElement("div");
-    panel.className = "tracked-playtest-start";
-    panel.style.cssText = "margin-top:1rem;padding-top:1rem;border-top:1px solid var(--start-line)";
-    panel.innerHTML = `
-      <p style="margin:.1rem 0 .75rem;line-height:1.5"><strong>Ready to play?</strong><br><span style="color:#59625f">Create one tracked game, let your opponent scan one code, and submit both players' feedback digitally.</span></p>
-      <button id="startTrackedPlaytest" class="button secondary" type="button" disabled>Start a tracked playtest</button>`;
-    el.openStarterDeck.after(panel);
-    el.startTrackedPlaytest = document.getElementById("startTrackedPlaytest");
-    el.startTrackedPlaytest.addEventListener("click", openTrackedPlaytest);
+function renderFactionChoices() {
+  factionChoices.replaceChildren();
+  for (const [id, label, symbol] of FACTIONS) {
+    if (!state.decks.some((deck) => deck.factionId === id)) continue;
+    const article = document.createElement('article');
+    article.className = `faction-choice ${id}`;
+    const inputId = `start-faction-${id}`;
+    article.innerHTML = `<label for="${inputId}"><input id="${inputId}" type="radio" name="faction" value="${id}" /><span class="choice-mark" aria-hidden="true">${symbol}</span><strong>${label}</strong><small>Two approved starter Leaders</small></label><a href="../faction-pages/${id}/">Open certified faction page →</a>`;
+    article.querySelector('input').addEventListener('change', () => { state.factionId = id; state.leaderId = ''; renderLeaderChoices(); renderStarter(); });
+    factionChoices.append(article);
   }
-
-  function selectFaction(factionId, preferredLeader = "") {
-    const faction = FACTIONS[factionId];
-    state.factionId = faction ? factionId : "";
-    state.leaderId = faction?.leaders.some(leader => leader.id === preferredLeader)
-      ? preferredLeader
-      : "";
-    renderChoice();
-    saveState();
-    document.getElementById("leaderFieldset")?.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+function renderLeaderChoices() {
+  leaderChoices.replaceChildren();
+  const decks = state.decks.filter((deck) => deck.factionId === state.factionId);
+  leaderFieldset.disabled = decks.length === 0;
+  leaderPrompt.textContent = decks.length ? `Choose one of the two ${factionLabel(state.factionId)} starter Leaders.` : 'Choose a faction first.';
+  for (const deck of decks) {
+    const label = document.createElement('label');
+    label.className = 'leader-choice';
+    const leader = humanizeId(deck.leaderId);
+    label.innerHTML = `<input type="radio" name="leader" value="${escapeHtml(deck.leaderId)}" /><span><strong>${escapeHtml(leader)}</strong><small>${escapeHtml(deck.name)}</small></span>`;
+    label.querySelector('input').addEventListener('change', () => { state.leaderId = deck.leaderId; renderStarter(); });
+    leaderChoices.append(label);
   }
-
-  function renderChoice() {
-    const faction = FACTIONS[state.factionId];
-    document.querySelectorAll('input[name="faction"]').forEach(input => {
-      input.checked = input.value === state.factionId;
-    });
-
-    if (!faction) {
-      el.leaderFieldset.disabled = true;
-      el.leaderPrompt.textContent = "Choose a faction first.";
-      el.leaderChoices.replaceChildren();
-      el.selectedHeading.textContent = "Choose a faction and leader.";
-      el.selectedSummary.textContent = "Your recommended first-game deck will appear here.";
-      renderStarterPreview(null);
-      syncPrintAction();
-      return;
-    }
-
-    el.leaderFieldset.disabled = false;
-    el.leaderPrompt.textContent = `Choose how you want to lead ${faction.name}.`;
-    el.leaderChoices.replaceChildren();
-
-    faction.leaders.forEach(leader => {
-      const label = document.createElement("label");
-      label.className = "leader-choice";
-      const input = document.createElement("input");
-      input.type = "radio";
-      input.name = "leader";
-      input.value = leader.id;
-      input.checked = state.leaderId === leader.id;
-      input.addEventListener("change", () => {
-        state.leaderId = leader.id;
-        saveState();
-        renderChoice();
-      });
-
-      const copy = document.createElement("span");
-      const name = document.createElement("strong");
-      name.textContent = leader.name;
-      const summary = document.createElement("small");
-      summary.textContent = leader.summary;
-      copy.append(name, summary);
-      label.append(input, copy);
-      el.leaderChoices.append(label);
-    });
-
-    const leader = selectedLeader();
-    el.selectedHeading.textContent = leader
-      ? `${leader.name} of the ${faction.name}`
-      : `${faction.name} selected — choose a leader.`;
-    el.selectedSummary.textContent = leader
-      ? `${faction.summary} ${leader.summary}`
-      : faction.summary;
-    renderStarterPreview(selectedStarterDeck());
-    syncPrintAction();
+}
+function renderStarter() {
+  const deck = selectedDeck();
+  syncDeckbuilderLink(deck);
+  if (!deck) { starterPreview.innerHTML = '<p>Choose a faction and Leader to inspect the matching starter Deck.</p>'; return; }
+  const cards = deck.cards.map((card) => `<li><span>${escapeHtml(card.name)}</span><strong>×${Number(card.quantity)}</strong></li>`).join('');
+  const signatures = (deck.signatureCards || []).map((card) => `<li>${escapeHtml(card)}</li>`).join('');
+  const territories = (deck.recommendedTerritoryOrder || deck.territories || []).map(escapeHtml).join(' → ');
+  starterPreview.innerHTML = `<div class="starter-heading"><div><p class="eyebrow">${escapeHtml(factionLabel(deck.factionId))} · ${escapeHtml(humanizeId(deck.leaderId))}</p><h3>${escapeHtml(deck.name)}</h3></div><div class="starter-meta"><span>${Number(deck.cardCount)} cards</span><span>${Number(deck.deckbuildingValue)}/60 value</span></div></div><p class="starter-summary">${escapeHtml(deck.summary)}</p><div class="starter-detail-grid"><div><h4>Recommended Territory order</h4><p>${territories}</p><small>Strategy recommendation from own end toward opponent end; arrangement occurs after opening selection and may be changed at setup.</small></div><div><h4>Signature cards</h4><ul>${signatures}</ul></div></div><h4>Complete 30-card list</h4><ul class="starter-card-list">${cards}</ul>`;
+}
+async function initialize() {
+  try {
+    const [rulebookSource, starterSource] = await Promise.all([fetchVerified(RULEBOOK_SOURCE, RULEBOOK_SHA256), fetchVerified(STARTERS_SOURCE, STARTERS_SHA256)]);
+    const starters = JSON.parse(starterSource);
+    if (starters.version !== 'clean-v0.6.3-downstream') throw new Error(`Unexpected starter version: ${starters.version}`);
+    if (!Array.isArray(starters.decks) || starters.decks.length !== 12) throw new Error('v0.6.3 requires exactly 12 approved starter Decks.');
+    if (!starters.decks.every((deck) => deck.cardCount === 30 && deck.deckbuildingValue === 60)) throw new Error('Every clean starter Deck must remain 30 cards / 60 value.');
+    state.decks = starters.decks;
+    const rendered = renderMarkdown(buildLearningSource(rulebookSource));
+    learningContent.innerHTML = rendered.html;
+    learningContent.setAttribute('aria-busy', 'false');
+    renderFactionChoices(); renderLeaderChoices(); renderStarter();
+    sourceStatus.textContent = `Verified v0.6.3 authority ${AUTHORITY_SET_ID.slice(0, 12)}… · certified Rulebook and 12 approved starter Decks loaded.`;
+  } catch (error) {
+    console.error(error);
+    learningContent.setAttribute('aria-busy', 'false');
+    learningContent.innerHTML = `<div class="source-error"><strong>Certified Start sources could not be verified.</strong><p>${escapeHtml(error.message)}</p></div>`;
+    sourceStatus.textContent = 'Source verification failed. Do not use this reconstruction for play.';
+    syncDeckbuilderLink(null);
   }
-
-  async function loadStarterDecks() {
-    try {
-      const response = await fetch("../deckbuilder/starter-decks.json", { cache: "no-store" });
-      if (!response.ok) throw new Error(`Starter deck library returned ${response.status}.`);
-      const data = await response.json();
-      state.starterDecks = Array.isArray(data.decks) ? data.decks : [];
-      state.starterLoadError = null;
-    } catch (error) {
-      console.error(error);
-      state.starterLoadError = error;
-    }
-  }
-
-  function selectedLeader() {
-    const faction = FACTIONS[state.factionId];
-    return faction?.leaders.find(leader => leader.id === state.leaderId) || null;
-  }
-
-  function selectedStarterDeck() {
-    return state.starterDecks.find(deck =>
-      deck.factionId === state.factionId && deck.leaderId === state.leaderId
-    ) || null;
-  }
-
-  function renderStarterPreview(deck) {
-    if (state.starterLoadError) {
-      el.starterPreview.className = "starter-preview empty-state";
-      el.starterPreview.textContent = "The starter deck preview could not be loaded. You can still continue to the Deckbuilder after choosing a leader.";
-      return;
-    }
-    if (!state.starterDecks.length) {
-      el.starterPreview.className = "starter-preview empty-state";
-      el.starterPreview.textContent = "Loading the starter deck library…";
-      return;
-    }
-    if (!deck) {
-      el.starterPreview.className = "starter-preview empty-state";
-      el.starterPreview.textContent = state.leaderId
-        ? "No matching starter deck was found."
-        : "Choose a leader to preview the matching recommended deck.";
-      return;
-    }
-
-    el.starterPreview.className = "starter-preview";
-    el.starterPreview.innerHTML = `
-      <p class="eyebrow">Recommended first-game deck</p>
-      <h4>${escapeHtml(deck.name)}</h4>
-      <div class="starter-meta"><span>${Number(deck.cardCount) || 30} cards</span><span>${Number(deck.deckbuildingValue) || 60}/60 value</span></div>
-      <p>${escapeHtml(deck.summary)}</p>
-      <p><strong>Territories, from your end outward:</strong> ${deck.territories.map(escapeHtml).join(" → ")}</p>
-      <p><strong>First-game tip:</strong> ${escapeHtml(deck.firstGameTip)}</p>`;
-  }
-
-  function syncPrintAction() {
-    const faction = FACTIONS[state.factionId];
-    const leader = selectedLeader();
-    const deck = selectedStarterDeck();
-    const complete = Boolean(faction && leader && state.introConfirmed);
-
-    el.introConfirmed.checked = state.introConfirmed;
-    el.openStarterDeck.disabled = !complete;
-    if (el.startTrackedPlaytest) el.startTrackedPlaytest.disabled = !complete;
-    el.printSelectionHeading.textContent = faction && leader
-      ? `${leader.name} of the ${faction.name}`
-      : "Choose a faction and leader first.";
-    el.printSelectionCopy.textContent = faction && leader
-      ? deck
-        ? `${deck.name} will load automatically in the Deckbuilder. Your choice is saved in this browser.`
-        : "The matching starter deck will load automatically in the Deckbuilder. Your choice is saved in this browser."
-      : "Your selection is saved in this browser as you work.";
-  }
-
-  function openGuidedDeckbuilder(event) {
-    event.preventDefault();
-    const faction = FACTIONS[state.factionId];
-    const leader = selectedLeader();
-    if (!faction || !leader) {
-      setStatus("Choose a faction and leader before continuing.", "error");
-      document.getElementById("choose")?.scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
-    if (!el.introConfirmed.checked) {
-      setStatus("Confirm that you read the First Game Introduction.", "error");
-      el.introConfirmed.focus();
-      return;
-    }
-
-    saveState();
-    const url = new URL("../deckbuilder/", window.location.href);
-    url.searchParams.set("faction", state.factionId);
-    url.searchParams.set("leader", state.leaderId);
-    url.searchParams.set("starter", "1");
-    url.searchParams.set("source", "start");
-    window.location.assign(url.href);
-  }
-
-  function openTrackedPlaytest() {
-    const faction = FACTIONS[state.factionId];
-    const leader = selectedLeader();
-    if (!faction || !leader || !state.introConfirmed) {
-      setStatus("Choose a faction and Leader and confirm the First Game Introduction before tracking a game.", "error");
-      return;
-    }
-    saveState();
-    window.location.assign(new URL("../playtest/tracked/", window.location.href).href);
-  }
-
-  function restoreState() {
-    try {
-      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
-      if (!saved || typeof saved !== "object") return;
-      if (FACTIONS[saved.factionId]) state.factionId = saved.factionId;
-      const faction = FACTIONS[state.factionId];
-      if (faction?.leaders.some(leader => leader.id === saved.leaderId)) state.leaderId = saved.leaderId;
-      state.introConfirmed = saved.introConfirmed === true;
-    } catch {
-      // A damaged local preference should not block onboarding.
-    }
-  }
-
-  function saveState() {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        factionId: state.factionId,
-        leaderId: state.leaderId,
-        introConfirmed: state.introConfirmed,
-        updatedAt: new Date().toISOString()
-      }));
-    } catch {
-      // The flow remains usable when browser storage is unavailable.
-    }
-  }
-
-  function setStatus(message, kind = "") {
-    el.printStatus.textContent = message;
-    el.printStatus.className = `form-status${kind ? ` ${kind}` : ""}`;
-  }
-
-  function escapeHtml(value) {
-    return String(value ?? "")
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-  }
-})();
+}
+initialize();

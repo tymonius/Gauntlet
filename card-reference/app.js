@@ -1,4 +1,6 @@
-const CANONICAL_DATA_SOURCE = "../releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json";
+const CANONICAL_DATA_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json';
+const AUTHORITY_SET_ID = "64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49";
+const EXPECTED_TARGET = "clean-v0.6.3-canonical-structured-authority";
 
 const FACTION_LABELS = {
   neutral: "Neutral",
@@ -17,7 +19,7 @@ const state = {
   faction: "all",
   cost: "all",
   selectedId: null,
-  version: "v0.6.1"
+  version: "v0.6.3"
 };
 
 const el = {};
@@ -35,11 +37,10 @@ async function init() {
     }
 
     const data = await response.json();
-    validateCanonicalData(data);
-    state.version = data.version || "v0.6.1";
+    const gameplay = validateCanonicalData(data);
     state.entries = [
-      ...(data.cards || []).map(normalizeCard),
-      ...(data.territories || []).map(normalizeTerritory)
+      ...gameplay.cards.map(normalizeCard),
+      ...gameplay.territories.map(normalizeTerritory)
     ].sort(sortEntries);
     applyHashSelection();
 
@@ -47,28 +48,44 @@ async function init() {
     const territoryCount = state.entries.filter(entry => entry.type === "territory").length;
     el.cardTotal.textContent = cardCount;
     el.territoryTotal.textContent = territoryCount;
-    el.dataStatus.textContent = `${state.version} validated · ${cardCount} playable cards + ${territoryCount} Territories loaded`;
+    el.dataStatus.textContent = `${state.version} · ${cardCount} playable cards + ${territoryCount} Territories loaded · current canonical data`;
     el.app.hidden = false;
     render();
   } catch (error) {
     console.error(error);
-    el.dataStatus.textContent = "Canonical source load failed";
+    el.dataStatus.textContent = "Canonical v0.6.3 authority load failed";
     document.body.insertAdjacentHTML(
       "beforeend",
-      `<p class="noscript">Unable to load the canonical v0.6.1 data. Serve the repository through a web server rather than opening this file directly. <a href="${CANONICAL_DATA_SOURCE}">Open the canonical JSON</a>.</p>`
+      `<p class="noscript">Unable to load the canonical v0.6.3 structured authority. Serve the repository through a web server rather than opening this file directly. <a href="${CANONICAL_DATA_SOURCE}">Open the clean canonical authority</a>.</p>`
     );
   }
 }
 
 function validateCanonicalData(data) {
-  if (!data || typeof data !== "object") throw new Error("Canonical data is not an object.");
-  if (data.version !== "v0.6.1") throw new Error(`Expected v0.6.1 data, received ${data.version || "unknown version"}.`);
-  if (!Array.isArray(data.cards) || data.cards.length !== 122) {
-    throw new Error(`Expected 122 playable cards, received ${data.cards?.length ?? "none"}.`);
+  if (!data || typeof data !== "object") throw new Error("Canonical authority is not an object.");
+  if (data.target !== EXPECTED_TARGET) {
+    throw new Error(`Expected ${EXPECTED_TARGET}, received ${data.target || "unknown target"}.`);
   }
-  if (!Array.isArray(data.territories) || data.territories.length !== 25) {
-    throw new Error(`Expected 25 Territories, received ${data.territories?.length ?? "none"}.`);
+  if (data.publication_unlocked !== false) throw new Error("Reconstruction authority unexpectedly reports publication unlocked.");
+
+  const gameplay = data.gameplay;
+  if (!gameplay || typeof gameplay !== "object") throw new Error("Canonical authority has no gameplay payload.");
+  if (!Array.isArray(gameplay.cards) || gameplay.cards.length !== 128) {
+    throw new Error(`Expected 128 playable cards, received ${gameplay.cards?.length ?? "none"}.`);
   }
+  if (!Array.isArray(gameplay.territories) || gameplay.territories.length !== 25) {
+    throw new Error(`Expected 25 Territories, received ${gameplay.territories?.length ?? "none"}.`);
+  }
+  if (!Array.isArray(gameplay.factions) || gameplay.factions.length !== 6) {
+    throw new Error(`Expected 6 factions, received ${gameplay.factions?.length ?? "none"}.`);
+  }
+
+  const secondLine = gameplay.cards.find(card => card.id === "neutral-reserves");
+  if (secondLine?.name !== "Second Line") throw new Error("Stable card identity neutral-reserves is not Second Line.");
+  const smugglersRun = gameplay.territories.find(territory => territory.id === "territory-smuggler-s-pass");
+  if (smugglersRun?.name !== "Smuggler's Run") throw new Error("Stable Territory identity territory-smuggler-s-pass is not Smuggler's Run.");
+
+  return gameplay;
 }
 
 function normalizeCard(card) {
@@ -80,14 +97,13 @@ function normalizeCard(card) {
     faction,
     factionLabel: card.allegiance || FACTION_LABELS[faction] || faction,
     cost: Number(card.cost),
-    complexity: card.complexity || "",
     trait: card.trait || "",
     form: card.card_form || "",
     unique: Boolean(card.unique),
     uniqueRule: card.unique_rule || "",
     sections: normalizeEffects(card.effects),
     rulesNotes: normalizeNotes(card.rules_notes),
-    source: sourceHref(card.source)
+    source: CANONICAL_DATA_SOURCE
   };
 }
 
@@ -100,10 +116,9 @@ function normalizeTerritory(territory) {
     faction: "territory",
     factionLabel: arena ? "Arena" : "Territory",
     arena,
-    complexity: territory.complexity || "",
     sections: normalizeEffects(territory.effects, "Effect"),
     rulesNotes: normalizeNotes(territory.rules_notes),
-    source: sourceHref(territory.source)
+    source: CANONICAL_DATA_SOURCE
   };
 }
 
@@ -122,13 +137,6 @@ function normalizeEffects(effects, unlabeledName = "Text") {
 function normalizeNotes(notes) {
   if (!Array.isArray(notes)) return [];
   return notes.map(note => String(note || "").trim()).filter(Boolean);
-}
-
-function sourceHref(source) {
-  const value = String(source || CANONICAL_DATA_SOURCE).trim();
-  if (/^(?:https?:|\/)/i.test(value)) return value;
-  if (value.startsWith("../")) return value;
-  return `../${value.replace(/^\.\//, "")}`;
 }
 
 function cacheElements() {
@@ -200,7 +208,6 @@ function filteredEntries() {
     const searchable = [
       entry.name,
       entry.factionLabel,
-      entry.complexity || "",
       entry.trait || "",
       entry.form || "",
       entry.uniqueRule || "",
@@ -259,7 +266,7 @@ function buildResultSummary() {
   if (state.type !== "all") parts.push(state.type === "card" ? "playable cards only" : "Territories only");
   if (state.faction !== "all") parts.push(FACTION_LABELS[state.faction] || state.faction);
   if (state.cost !== "all") parts.push(`cost ${state.cost}`);
-  return parts.length ? parts.join(" · ") : `All canonical ${state.version} playable cards and Territories.`;
+  return parts.length ? parts.join(" · ") : `All certified clean ${state.version} playable cards and Territories.`;
 }
 
 function selectEntry(id) {
@@ -282,7 +289,7 @@ function renderPreview(entry) {
   if (!entry) {
     el.preview.className = "reference-preview empty-state";
     delete el.preview.dataset.faction;
-    el.preview.textContent = "Select a result to view its canonical text.";
+    el.preview.textContent = "Select a result to view its certified clean text.";
     return;
   }
 
@@ -294,7 +301,6 @@ function renderPreview(entry) {
     <div class="preview-meta">
       ${entry.type === "card" ? `<span class="pill">Cost ${entry.cost}</span>` : `<span class="pill">${entry.arena ? "Arena" : "Territory"}</span>`}
       <span class="pill">${escapeHtml(entry.factionLabel)}</span>
-      ${entry.complexity ? `<span class="pill">${escapeHtml(entry.complexity)}</span>` : ""}
       ${entry.form ? `<span class="pill">${escapeHtml(entry.form)}</span>` : ""}
       ${entry.trait ? `<span class="pill">${escapeHtml(entry.trait)} trait</span>` : ""}
       ${entry.unique ? '<span class="pill">Unique</span>' : ""}
@@ -313,10 +319,10 @@ function renderPreview(entry) {
     ` : ""}
     <div class="preview-actions">
       <button id="copyLink" class="button secondary" type="button">Copy direct link</button>
-      <a class="button secondary" href="${escapeHtml(entry.source)}">View governing source</a>
-      <a class="button secondary" href="${CANONICAL_DATA_SOURCE}">View canonical JSON</a>
+      <a class="button secondary" href="${CANONICAL_DATA_SOURCE}">View clean canonical authority</a>
+      <a class="button secondary" href="../browser-rulebook/">Open clean Browser Rulebook</a>
     </div>
-    <p class="preview-source">This reference reads the generated ${escapeHtml(state.version)} canonical data. That data is regenerated and validated against the governing Markdown sources.</p>
+    <p class="preview-source">This reconstruction reads the certified clean ${escapeHtml(state.version)} structured authority. It is not the current public release; publication remains locked. Authority set ${AUTHORITY_SET_ID.slice(0, 12)}…</p>
   `;
 
   document.getElementById("copyLink")?.addEventListener("click", copyDirectLink);

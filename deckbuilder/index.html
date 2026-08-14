@@ -11,340 +11,109 @@
   </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#8f1f25" />
+  <meta name="description" content="Build and validate a legal Gauntlet v0.6.3 Deck from the certified 128-card pool." />
+  <title>Gauntlet v0.6.3 Deckbuilder</title>
+  <link rel="canonical" href="https://gauntlet.run/deckbuilder/" />
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
-  <meta
-    name="description"
-    content="Build, validate, save, and print a canonical Gauntlet v0.6.1 deck."
-  />
-  <title>Gauntlet v0.6.1 Deckbuilder</title>
-  <link rel="preconnect" href="https://use.typekit.net" />
-  <link rel="preconnect" href="https://p.typekit.net" crossorigin />
-  <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
   <link rel="stylesheet" href="styles.css" />
-  <link rel="stylesheet" href="territories.css" />
-  <link rel="stylesheet" href="print-options.css" />
-  <link rel="stylesheet" href="starter-decks.css" />
-  <link rel="stylesheet" href="starter-handoff.css?v=20260731-1" />
-  <link rel="stylesheet" href="print-request.css?v=20260731-1" />
-  <link rel="stylesheet" href="mobile-card-preview.css?v=20260729-1" />
 </head>
 <body>
-  <header class="global-header">
-    <a class="brand" href="../" aria-label="Gauntlet home">
-      <span class="brand-mark" aria-hidden="true">G</span>
-      <span>Gauntlet</span>
-    </a>
+  <div class="reconstruction-banner">Gauntlet v0.6.3 · current canonical playtest edition.</div>
+  <header class="site-header">
+    <a class="brand" href="../" aria-label="Gauntlet home"><span class="brand-mark" aria-hidden="true">G</span><span>Gauntlet</span></a>
     <nav aria-label="Primary navigation">
       <a href="../start/">Start</a>
-      <a href="../">Game</a>
-      <a href="../rulebook/">Rules</a>
-      <a href="../#factions">Factions</a>
-      <a href="./" aria-current="page">Deckbuilder</a>
-      <a href="../card-reference/">Card reference</a>
+      <a href="../rulebook/">Rulebook</a>
+      <a href="../factions/">factions</a>
+      <a href="../card-reference/">Card Reference</a>
+      <a href="../deckbuilder/">Release package</a>
     </nav>
   </header>
 
-  <section class="tool-hero" aria-labelledby="tool-title">
-    <div>
-      <p class="eyebrow">Playtest tool · canonical v0.6.1</p>
-      <h1 id="tool-title">Build your deck.</h1>
-      <p class="lede">
-        Choose a faction and leader, begin with a ready-to-play starter deck,
-        then customize only what you need.
-      </p>
-    </div>
-    <p class="source-status" aria-live="polite">
-      <span class="status-dot" aria-hidden="true"></span>
-      <span id="dataStatus">Loading canonical sources…</span>
-    </p>
-  </section>
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Current canonical data · version 0.6.3</p>
+        <h1>Build from the <span>approved card pool.</span></h1>
+        <p class="lede">Choose one faction and Leader, construct a legal Deck, arrange three Territories, or load one of the twelve approved competitive starter Decks. Every card, cost, rule line, and Territory is read from the clean downstream canonical dataset after SHA-256 verification.</p>
+      </div>
+      <aside class="authority-card">
+        <p class="eyebrow">Source verification</p>
+        <strong data-source-status>Verifying canonical data and approved starters…</strong>
+        <p>Authority set <code>64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49</code></p>
+      </aside>
+    </section>
 
-  <main id="app" class="app-shell" hidden>
-    <section class="panel setup-panel">
-      <div class="section-kicker"><span>01</span> Choose your side</div>
-      <div class="panel-heading setup-heading">
-        <div>
-          <h2>Start with a faction and leader.</h2>
-          <p class="muted">
-            Every leader has a complete recommended first-game deck. Load it,
-            print it as-is, or use it as a starting point.
-          </p>
+    <section class="builder-shell" aria-label="Deck construction workspace">
+      <aside class="controls-panel">
+        <div class="panel-heading"><p class="eyebrow">1 · Identity</p><h2>Faction & Leader</h2></div>
+        <label>Faction<select data-faction-select disabled><option>Loading…</option></select></label>
+        <label>Leader<select data-leader-select disabled><option>Choose a faction first</option></select></label>
+        <div class="starter-box">
+          <div><p class="eyebrow">Approved starter</p><strong data-starter-name>Choose a Leader</strong></div>
+          <button class="button secondary" type="button" data-load-starter disabled>Load approved starter</button>
+          <p data-starter-summary>Each Leader has one finalized competitive starter Deck.</p>
         </div>
-        <button id="starterDeckButton" type="button" disabled>Load starter deck</button>
-      </div>
 
-      <div class="setup-grid">
-        <label>
-          Faction
-          <select id="factionSelect"></select>
-        </label>
-        <label>
-          Leader
-          <select id="leaderSelect"></select>
-        </label>
-        <label>
-          Deck name <span class="optional-label">Optional</span>
-          <input id="deckName" type="text" maxlength="80" placeholder="Untitled deck" />
-        </label>
-      </div>
+        <div class="panel-heading compact"><p class="eyebrow">2 · Validation</p><h2>Current package</h2></div>
+        <dl class="metrics">
+          <div><dt data-card-count>0</dt><dd>cards · minimum 30</dd></div>
+          <div><dt data-deck-value>0</dt><dd>value · maximum 60</dd></div>
+          <div><dt data-territory-count>0</dt><dd>Territories · exactly 3</dd></div>
+          <div><dt data-arena-count>0</dt><dd>Arenas · maximum 1</dd></div>
+        </dl>
+        <div class="validation-box" data-validation-status aria-live="polite">Choose a faction and Leader to begin.</div>
+        <button class="button tertiary" type="button" data-clear-deck>Clear current package</button>
+      </aside>
 
-      <div class="setup-previews">
-        <article id="leaderPreview" class="leader-preview empty-state">
-          Choose a faction to inspect its leaders.
-        </article>
-        <article id="starterDeckPreview" class="starter-deck-preview empty-state">
-          Loading recommended starter deck…
-        </article>
-      </div>
-    </section>
-
-    <section class="dashboard" aria-label="Deck summary">
-      <article class="metric-card">
-        <span>Main deck</span>
-        <strong><span id="cardCount">0</span> / 30+</strong>
-      </article>
-      <article class="metric-card">
-        <span>Value</span>
-        <strong><span id="pointTotal">0</span> / 60</strong>
-      </article>
-      <article class="metric-card">
-        <span>Faction cards</span>
-        <strong id="factionCardCount">0</strong>
-      </article>
-      <article class="metric-card">
-        <span>Territories</span>
-        <strong><span id="territoryMetricCount">0</span> / 3</strong>
-      </article>
-      <article id="validityCard" class="metric-card validation-card">
-        <span>Deck status</span>
-        <strong id="validityText">Incomplete</strong>
-      </article>
-    </section>
-
-    <section class="workflow-heading">
-      <div class="section-kicker"><span>02</span> Build the deck</div>
-      <h2>Choose cards and territories.</h2>
-      <p>
-        Add neutral cards and cards from your faction. The deck summary updates
-        immediately as you work.
-      </p>
-    </section>
-
-    <section class="builder-grid">
-      <div class="builder-column">
-        <section class="panel">
-          <div class="panel-heading">
-            <div>
-              <h2>Available cards</h2>
-              <p class="muted">Neutral cards plus cards from the selected faction.</p>
+      <div class="workspace">
+        <section class="workspace-section" aria-labelledby="cards-heading">
+          <div class="workspace-heading">
+            <div><p class="eyebrow">3 · Playable cards</p><h2 id="cards-heading">Legal card pool</h2></div>
+            <div class="filters">
+              <label>Search<input type="search" data-card-search placeholder="Card name or effect" /></label>
+              <label>Allegiance<select data-card-filter><option value="all">All legal</option><option value="neutral">Neutral</option><option value="faction">Faction</option></select></label>
             </div>
-            <span id="availableCount" class="pill">0</span>
           </div>
-          <div class="filters">
-            <label>
-              Search
-              <input id="cardSearch" type="search" placeholder="Name or card text" />
-            </label>
-            <label>
-              Allegiance
-              <select id="allegianceFilter">
-                <option value="all">Neutral + faction</option>
-                <option value="neutral">Neutral only</option>
-                <option value="faction">Faction only</option>
-              </select>
-            </label>
-            <label>
-              Value
-              <select id="costFilter">
-                <option value="all">All values</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
-                <option value="5">5</option>
-              </select>
-            </label>
-          </div>
-          <div class="card-browser">
-            <div id="availableCards" class="compact-card-list"></div>
-            <aside id="cardPreview" class="card-preview empty-state">
-              Select a card to read its canonical text.
-            </aside>
-          </div>
+          <p class="workspace-note">Only Neutral cards and cards from the selected faction are shown. Unique cards may appear no more than once.</p>
+          <div class="card-grid" data-card-pool><p class="empty-state">Choose a faction to open its legal card pool.</p></div>
         </section>
 
-        <section class="panel territories-panel">
-          <div class="panel-heading">
-            <div>
-              <h2>Territories</h2>
-              <p class="muted">
-                Choose exactly three different territories, with no more than one Arena.
-              </p>
-            </div>
-            <div class="panel-tools">
-              <span id="territoryAvailableCount" class="pill">0</span>
-              <button id="clearTerritoriesButton" type="button" class="text-button danger">
-                Clear
-              </button>
-            </div>
+        <section class="workspace-section current-section" aria-labelledby="current-heading">
+          <div class="workspace-heading"><div><p class="eyebrow">4 · Current Deck</p><h2 id="current-heading">Selected cards</h2></div></div>
+          <div class="current-deck" data-current-deck><p class="empty-state">No cards selected.</p></div>
+        </section>
+
+        <section class="workspace-section" aria-labelledby="territories-heading">
+          <div class="workspace-heading">
+            <div><p class="eyebrow">5 · Battlefield</p><h2 id="territories-heading">Choose three Territories</h2></div>
+            <label class="territory-search">Search<input type="search" data-territory-search placeholder="Territory name or effect" /></label>
           </div>
-          <div class="territory-filters">
-            <label>
-              Search territories
-              <input id="territorySearch" type="search" placeholder="Name or effect text" />
-            </label>
-            <label>
-              Category
-              <select id="territoryCategory">
-                <option value="all">All territories</option>
-                <option value="standard">Standard only</option>
-                <option value="arena">Arenas only</option>
-              </select>
-            </label>
-          </div>
-          <div class="territory-browser">
-            <div id="territoryList" class="compact-territory-list empty-state">
-              Loading territories…
-            </div>
-            <aside id="territoryPreview" class="territory-preview empty-state">
-              Select a territory to read its canonical text.
-            </aside>
+          <p class="workspace-note">Choose exactly three different Territories. No more than one may be an Arena. Order is shown from your own end toward the opponent's end and may be rearranged at setup after opening selection.</p>
+          <div class="territory-grid" data-territory-pool><p class="empty-state">Verifying Territories…</p></div>
+          <ol class="territory-order" data-territory-order><li>No Territories selected.</li></ol>
+        </section>
+
+        <section class="workspace-section boundary-section" aria-labelledby="boundary-heading">
+          <div><p class="eyebrow">Downstream boundary</p><h2 id="boundary-heading">Build here; print/export is in the release package.</h2></div>
+          <p>This Deckbuilder validates Deck construction against the certified v0.6.3 card and Territory data. The release package provides the certified Rulebook, faction guides, card reference, starter catalog, and JSON exports; unsupported withdrawn print modules are not revived.</p>
+          <div class="boundary-actions">
+            <a class="button secondary" href="../start/">Back to clean Start</a>
+            <a class="text-link" href="../releases/v0.6.3-reconstructed/">Release package →</a>
           </div>
         </section>
       </div>
-
-      <div class="builder-column current-deck-column">
-        <section class="panel current-deck-panel">
-          <div class="panel-heading">
-            <div>
-              <h2>Current deck</h2>
-              <p class="muted">
-                Playable cards count toward deck size and value. Leader and supplemental
-                cards do not.
-              </p>
-            </div>
-            <button id="clearDeckButton" type="button" class="text-button danger">
-              Clear cards
-            </button>
-          </div>
-          <div class="deck-section-divider">Playable cards</div>
-          <div id="deckCards" class="deck-list empty-state">No cards added yet.</div>
-          <div class="deck-section-divider">Territories</div>
-          <div id="deckTerritories" class="deck-list empty-state">
-            No territories selected yet.
-          </div>
-        </section>
-      </div>
-    </section>
-
-    <section class="panel management-panel">
-      <div class="section-kicker"><span>03</span> Check, save, and print</div>
-      <div class="management-grid">
-        <section>
-          <h3>Validation</h3>
-          <p class="muted">Resolve any remaining requirements before printing.</p>
-          <ul id="validationList" class="validation-list"></ul>
-        </section>
-
-        <section>
-          <h3>Saved decks</h3>
-          <p class="muted">Saved decks stay in this browser unless you export them.</p>
-          <select id="savedDeckSelect" aria-label="Saved decks"></select>
-          <div class="button-row">
-            <button id="saveDeckButton" type="button">Save</button>
-            <button id="loadDeckButton" type="button" class="secondary">Load</button>
-            <button id="deleteDeckButton" type="button" class="secondary danger">Delete</button>
-          </div>
-        </section>
-
-        <section>
-          <h3>Print or share</h3>
-          <p class="muted">Print a complete package or copy a plain-text deck list.</p>
-          <div class="button-row">
-            <button id="printDeckButton" type="button" disabled>Print / PDF</button>
-            <button id="copyDeckButton" type="button" class="secondary">Copy list</button>
-          </div>
-          <label class="print-option">
-            <input id="printCardBacks" type="checkbox" />
-            <span>Include card backs for duplex printing</span>
-          </label>
-        </section>
-      </div>
-
-      <details class="advanced-tools">
-        <summary>Advanced transfer and bulk printing</summary>
-        <div class="advanced-tools-grid">
-          <section>
-            <h3>Export or import deck data</h3>
-            <div class="button-row">
-              <button id="exportJsonButton" type="button" class="secondary">Export JSON</button>
-            </div>
-            <textarea
-              id="importJson"
-              rows="4"
-              placeholder="Paste an exported v0.6.1 deck JSON here"
-            ></textarea>
-            <button id="importJsonButton" type="button" class="secondary full-width">
-              Import JSON
-            </button>
-          </section>
-          <section>
-            <h3>Playtest library</h3>
-            <p class="muted">
-              Print every recommended deck for a full playtest set.
-            </p>
-            <button
-              id="printAllStarterDecksButton"
-              type="button"
-              class="secondary"
-              disabled
-            >
-              Print all 12 starter decks
-            </button>
-          </section>
-        </div>
-      </details>
     </section>
   </main>
 
   <footer>
-    <a class="brand footer-brand" href="../" aria-label="Gauntlet home">
-      <span class="brand-mark" aria-hidden="true">G</span>
-      <span>Gauntlet</span>
-    </a>
-    <div class="footer-links">
-      <a href="../rulebook/">Rules</a>
-      <a href="../card-reference/">Card reference</a>
-      <a href="../releases/v0.6.1/">v0.6.1 release</a>
-      <a href="https://github.com/tymonius/Gauntlet">GitHub</a>
-    </div>
-    <p>Unpublished playtest project · Copyright © 2026 Tymon Scott.</p>
+    <div><strong>Gauntlet clean v0.6.3 Deckbuilder</strong><p>current canonical playtest edition · canonical construction data verified at runtime.</p></div>
+    <p>Current canonical playtest release: v0.6.3. Copyright © 2026 Tymon Scott. All rights reserved.</p>
   </footer>
-
-  <script src="app.js?v=20260729-1" defer></script>
-  <script src="v061-runtime.js?v=20260729-1" defer></script>
-  <script src="mobile-card-preview.js?v=20260729-1" defer></script>
-  <script src="completed-factions.js?v=20260729-1" defer></script>
-  <script src="territories.js?v=20260729-1" defer></script>
-  <script src="supplemental-data.js?v=20260722-1" defer></script>
-  <script src="completed-supplementals.js?v=20260723-1" defer></script>
-  <script src="v061-supplementals.js?v=20260730-1" defer></script>
-  <script src="leader-portrait-sources.js?v=20260723-1" defer></script>
-  <script src="faction-components.js?v=20260802-1" defer></script>
-  <script src="print.js?v=20260718-3" defer></script>
-  <script src="print-intelligence-portraits.js?v=20260723-2" defer></script>
-  <script src="print-reference-placement.js?v=20260722-1" defer></script>
-  <script src="print-duplex-sheet-pairing.js?v=20260729-1" defer></script>
-  <script src="print-duplex.js?v=20260720-2" defer></script>
-  <script src="print-intelligence-trackers.js?v=20260722-1" defer></script>
-  <script src="print-capital-ledger.js?v=20260722-1" defer></script>
-  <script src="print-card-back-orientation.js?v=20260722-1" defer></script>
-  <script src="starter-decks.js?v=20260731-2" defer></script>
-  <script src="starter-handoff.js?v=20260731-1" defer></script>
-  <script src="print-request.js?v=20260731-2" defer></script>
-  <script src="print-all-starters.js?v=20260723-2" defer></script>
-  <script src="print-window-portrait-fixes.js?v=20260723-1" defer></script>
+  <noscript><p class="noscript">JavaScript is required to verify and use the clean Deckbuilder.</p></noscript>
+  <script type="module" src="app.js"></script>
 </body>
 </html>

@@ -1,9 +1,5 @@
-import {
-  buildLocalFallbackAnswer,
-  defaultSourceUrls,
-  loadRulesCorpus,
-  retrieveRules
-} from "./local-search.js";
+import { buildLocalFallbackAnswer, retrieveRules } from "./local-search.js";
+import { defaultV063SourceUrls, loadV063RulesCorpus } from "./v063-public-corpus.js";
 import { presentRulesAnswer } from "./answer-presentation.js";
 
 const configuredApiEndpoint = window.GAUNTLET_RULES_ASSISTANT_ENDPOINT || "https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/rules";
@@ -11,7 +7,7 @@ const CONFIG = {
   apiEndpoint: configuredApiEndpoint,
   feedbackEndpoint: window.GAUNTLET_RULES_FEEDBACK_ENDPOINT || inferFeedbackEndpoint(configuredApiEndpoint),
   assistantName: "Rules Arbiter",
-  version: "v0.6.1",
+  version: "v0.6.3",
   maxQuestionLength: 600,
   localResultLimit: 5,
   ...window.GAUNTLET_RULES_ASSISTANT_CONFIG
@@ -28,8 +24,8 @@ let corpusPromise;
 
 function getCorpus() {
   if (!corpusPromise) {
-    const urls = defaultSourceUrls(window.location.origin);
-    corpusPromise = loadRulesCorpus({ ...urls }).catch((error) => {
+    const urls = defaultV063SourceUrls(window.location.origin);
+    corpusPromise = loadV063RulesCorpus({ ...urls }).catch((error) => {
       corpusPromise = null;
       throw error;
     });
@@ -133,7 +129,7 @@ class GauntletRulesAssistant {
     this.elements.messages.innerHTML = "";
     this.appendMessage({
       role: "assistant",
-      answer: "Ask me about the v0.6.1 rulebook, cards, Leaders, faction systems, Territories, Gambits, Tactics, battle timing, or victory conditions. If the written rules leave a genuine gap, I will issue a provisional ruling so play can continue.",
+      answer: "Ask me about the v0.6.3 rulebook, cards, Leaders, faction systems, Territories, Gambits, Tactics, battle timing, or victory conditions. If the written rules leave a genuine gap, I will issue a provisional ruling so play can continue.",
       rulingStatus: "welcome",
       sources: []
     });

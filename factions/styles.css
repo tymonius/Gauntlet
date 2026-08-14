@@ -1,0 +1,181 @@
+body[data-faction="military"] { --crimson: #8f1f25; --crimson-dark: #5f1418; }
+body[data-faction="diplomats"] { --crimson: #244b8f; --crimson-dark: #18325f; }
+body[data-faction="financiers"] { --crimson: #276744; --crimson-dark: #19442d; }
+body[data-faction="intelligence"] { --crimson: #3a3d42; --crimson-dark: #24272b; }
+body[data-faction="mystics"] { --crimson: #603d78; --crimson-dark: #402950; }
+body[data-faction="inquisition"] { --crimson: #9a6e21; --crimson-dark: #684b17; }
+
+.faction-page-shell .rulebook-hero {
+  grid-template-columns: minmax(0, 1fr) auto;
+}
+
+.faction-page-shell .hero-copy h1 {
+  color: var(--crimson-dark);
+}
+
+.faction-page-shell .rulebook-content > .source-title {
+  margin-top: 0;
+  padding: 18px 22px;
+  border: 1px solid var(--line);
+  border-left: 5px solid var(--crimson);
+  background: rgba(255, 250, 240, 0.72);
+  color: var(--muted);
+  font: 700 0.86rem/1.4 var(--sans);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.faction-page-shell .rulebook-content .chapter-heading {
+  border-top-color: color-mix(in srgb, var(--crimson) 42%, transparent);
+}
+
+.faction-page-shell .rulebook-content blockquote.authority-note {
+  border-left-color: var(--bronze);
+  background: rgba(163, 115, 56, 0.08);
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.faction-page-shell .source-links .authority-id {
+  display: block;
+  margin-top: 8px;
+  overflow-wrap: anywhere;
+  color: var(--muted);
+  font: 0.72rem/1.45 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+.faction-index {
+  width: min(1180px, calc(100% - 40px));
+  margin: 0 auto;
+  padding: 64px 0 96px;
+  position: relative;
+  z-index: 1;
+}
+
+.faction-index-hero {
+  max-width: 840px;
+  margin-bottom: 46px;
+}
+
+.faction-index-hero h1 {
+  margin: 0 0 18px;
+  font: 500 clamp(3rem, 7vw, 6rem)/0.94 var(--serif);
+  letter-spacing: -0.045em;
+}
+
+.faction-index-hero p:not(.eyebrow) {
+  max-width: 760px;
+  margin: 0;
+  color: #413b34;
+  font: 1.13rem/1.65 var(--serif);
+}
+
+.faction-index-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.faction-index-card {
+  --faction-accent: var(--crimson);
+  min-height: 190px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  border: 1px solid var(--line);
+  border-top: 5px solid var(--faction-accent);
+  border-radius: 3px;
+  background: rgba(255, 250, 240, 0.82);
+  box-shadow: 0 15px 45px rgba(41, 30, 16, 0.08);
+  color: var(--ink);
+  text-decoration: none;
+  transition: transform 140ms ease, box-shadow 140ms ease;
+}
+
+.faction-index-card:hover,
+.faction-index-card:focus-visible {
+  transform: translateY(-3px);
+  box-shadow: 0 20px 55px rgba(41, 30, 16, 0.14);
+}
+
+.faction-index-card[data-faction="military"] { --faction-accent: #8f1f25; }
+.faction-index-card[data-faction="diplomats"] { --faction-accent: #244b8f; }
+.faction-index-card[data-faction="financiers"] { --faction-accent: #276744; }
+.faction-index-card[data-faction="intelligence"] { --faction-accent: #3a3d42; }
+.faction-index-card[data-faction="mystics"] { --faction-accent: #603d78; }
+.faction-index-card[data-faction="inquisition"] { --faction-accent: #9a6e21; }
+
+.faction-index-card h2 {
+  margin: 0 0 8px;
+  font: 600 1.8rem/1.05 var(--serif);
+}
+
+.faction-index-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.faction-index-card .leaders {
+  color: var(--faction-accent);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.faction-index-note {
+  margin-top: 28px;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  background: rgba(255, 250, 240, 0.68);
+  color: var(--muted);
+  line-height: 1.55;
+}
+
+.error-card {
+  padding: 28px;
+  border: 1px solid #9d3d3d;
+  background: #fff2ed;
+}
+
+mark[data-faction-match] {
+  padding: 0 0.08em;
+  background: #ffe38a;
+  color: inherit;
+}
+
+@media (max-width: 900px) {
+  .faction-index-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 620px) {
+  .faction-page-shell .rulebook-hero { grid-template-columns: 1fr; }
+  .faction-index-grid { grid-template-columns: 1fr; }
+  .faction-index { width: min(100% - 24px, 1180px); padding-top: 42px; }
+}
+
+@media print {
+  .reconstruction-banner,
+  .rulebook-header,
+  .rulebook-hero,
+  .toc-toggle,
+  .rulebook-sidebar,
+  footer { display: none !important; }
+
+  .rulebook-shell {
+    display: block !important;
+    width: 100% !important;
+    margin: 0 !important;
+  }
+
+  .rulebook-content {
+    max-width: none !important;
+    padding: 0 !important;
+    border: 0 !important;
+    box-shadow: none !important;
+    background: white !important;
+  }
+}

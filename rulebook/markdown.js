@@ -16,10 +16,10 @@ function normalizeUrl(url) {
     : trimmed;
 
   if (unwrapped.startsWith('../../images/')) {
-    return `../images/${unwrapped.slice('../../images/'.length)}`;
+    return `../../../../images/${unwrapped.slice('../../images/'.length)}`;
   }
   if (unwrapped.startsWith('images/')) {
-    return `../${unwrapped}`;
+    return `../../../../${unwrapped}`;
   }
   return unwrapped;
 }

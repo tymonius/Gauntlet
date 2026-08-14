@@ -1,4 +1,5 @@
-import worker from "./worker-v061.js";
+import v061Worker from "./worker-v061.js";
+import worker from "./worker-v063.js";
 import candidateWorker from "./worker-v062-candidate.js";
 import publishedWorker from "./worker-v062.js";
 import smartWorker from "./smart-worker.js";
@@ -48,6 +49,16 @@ function rewriteVersionedPath(request) {
   return new Request(versionedUrl, request);
 }
 
+async function requestedRulesVersion(request) {
+  if (request.method !== "POST") return "";
+  try {
+    const payload = await request.clone().json();
+    return String(payload?.rulesVersion || "").trim();
+  } catch {
+    return "";
+  }
+}
+
 function rewriteCandidatePath(request) {
   const candidateUrl = new URL(request.url);
   candidateUrl.pathname = candidateUrl.pathname
@@ -64,14 +75,16 @@ export default {
       url.pathname === "/api/v061/rules" || url.pathname === "/v061/rules" ||
       url.pathname === "/api/v061/health" || url.pathname === "/v061/health"
     ) {
-      return worker.fetch(rewriteVersionedPath(request), env, context);
+      return v061Worker.fetch(rewriteVersionedPath(request), env, context);
     }
 
-    // The unversioned public Rules Arbiter is deliberately pinned to the recovery baseline.
-    if (
-      url.pathname === "/api/rules" || url.pathname === "/rules" ||
-      url.pathname === "/api/health" || url.pathname === "/health"
-    ) {
+    // The unversioned public Rules Arbiter follows the current canonical release.
+    if (url.pathname === "/api/health" || url.pathname === "/health") return worker.fetch(request, env, context);
+
+    // Keep explicitly versioned v0.6.1 browser clients functional across the Pages/Worker cutover window.
+    if (url.pathname === "/api/rules" || url.pathname === "/rules") {
+      const requestedVersion = await requestedRulesVersion(request);
+      if (requestedVersion === "v0.6.1") return v061Worker.fetch(request, env, context);
       return worker.fetch(request, env, context);
     }
 
@@ -102,7 +115,7 @@ export default {
     }
 
     if (request.method === "GET" && ["/admin", "/admin/"].includes(url.pathname)) {
-      const response = await worker.fetch(request, env, context);
+      const response = await v061Worker.fetch(request, env, context);
       const origin = siteOrigin(env);
       const headers = new Headers(response.headers);
       headers.set("Content-Security-Policy", allowSiteImages(headers.get("Content-Security-Policy"), origin));
