@@ -12,8 +12,30 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Checkout current publication
+      - name: Checkout only publication contract inputs
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          filter: blob:none
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /package.json
+            /package-lock.json
+            /config/release-lifecycle.json
+            /scripts/validate-current-public-contract.mjs
+            /index.html
+            /start/index.html
+            /start/styles.css
+            /rulebook/index.html
+            /card-reference/index.html
+            /factions/index.html
+            /factions/*/index.html
+            /deckbuilder/index.html
+            /rules-arbiter/index.html
+            /design-tokens.css
+            /images/faction-symbols/*.svg
+            /releases/*/Gauntlet_*_Manifest.json
+            /releases/*/Gauntlet_*_Rulebook_Booklet.pdf
 
       - name: Set up Node
         uses: actions/setup-node@v4
