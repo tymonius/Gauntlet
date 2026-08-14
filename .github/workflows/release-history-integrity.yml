@@ -1,0 +1,57 @@
+name: Release history integrity
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/release-history-integrity.yml'
+      - 'config/release-lifecycle.json'
+      - 'config/release-locks.json'
+      - 'scripts/release-lifecycle.mjs'
+      - 'scripts/validate-release-recovery-state.mjs'
+      - 'releases/v0.6.1/**'
+      - 'releases/v0.6.2/**'
+      - 'releases/v0.6.3/**'
+      - 'v0.6.2/**'
+      - 'artifacts/v0.6.3/**'
+      - 'scripts/build-v062-release.mjs'
+      - 'scripts/*pre-recovery*'
+      - 'docs/recovery/frozen-workflows/**'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/release-history-integrity.yml'
+      - 'config/release-lifecycle.json'
+      - 'config/release-locks.json'
+      - 'scripts/release-lifecycle.mjs'
+      - 'scripts/validate-release-recovery-state.mjs'
+      - 'releases/v0.6.1/**'
+      - 'releases/v0.6.2/**'
+      - 'releases/v0.6.3/**'
+      - 'v0.6.2/**'
+      - 'artifacts/v0.6.3/**'
+      - 'scripts/build-v062-release.mjs'
+      - 'scripts/*pre-recovery*'
+      - 'docs/recovery/frozen-workflows/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify-locked-history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out locked evidence
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify only immutable release-history contracts
+        run: node scripts/validate-release-recovery-state.mjs

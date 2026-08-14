@@ -60,3 +60,10 @@ a.faction-card:focus-visible {
     margin-top: 4px;
   }
 }
+
+/* Asset-backed public faction symbols. */
+.faction-symbol.faction-symbol-asset{
+  background:currentColor;
+  -webkit-mask:var(--faction-symbol) center/72% 72% no-repeat;
+  mask:var(--faction-symbol) center/72% 72% no-repeat;
+}

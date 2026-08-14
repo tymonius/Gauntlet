@@ -1,45 +1,25 @@
 name: Publish v0.6.2 release package
 
+# v0.6.2 is withdrawn. Keep this workflow available only for an intentional
+# historical recovery operation; current-player changes must never invoke it.
 on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - "config/release-lifecycle.json"
-      - "config/release-locks.json"
-      - "docs/Gauntlet_v0.6.2_*.md"
-      - "docs/Gauntlet_v0.6.2_Starter_Decks_Candidate.json"
-      - "v0.6.2/**"
-      - "releases/v0.6.2/**"
-      - "factions/**"
-      - "rules-assistant/**"
-      - "src/content/**"
-      - "scripts/build-v062-release.mjs"
-      - "scripts/build-v062-release-runner.mjs"
-      - "scripts/synchronize-v062-public-site.mjs"
-      - "scripts/validate-v062-published-release.mjs"
-      - "scripts/validate-release-recovery-state.mjs"
-      - "scripts/release-lifecycle.mjs"
-      - "package.json"
-      - "index.html"
-      - ".github/workflows/publish-v062-release.yml"
   workflow_dispatch:
 
 permissions:
   contents: write
 
 concurrency:
-  group: publish-v062-${{ github.head_ref || github.ref_name }}
+  group: publish-v062-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
-  publish:
+  historical-recovery-only:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out release branch
+      - name: Check out requested branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.head_ref || github.ref_name }}
+          ref: ${{ github.ref_name }}
           fetch-depth: 1
 
       - name: Set up Node
@@ -47,65 +27,14 @@ jobs:
         with:
           node-version: 22
 
-      - name: Read v0.6.2 lifecycle state
-        id: lifecycle
+      - name: Refuse publication while v0.6.2 remains withdrawn
         run: |
           status=$(node -e "const l=require('./config/release-lifecycle.json'); process.stdout.write(String(l.releases?.['v0.6.2']?.status || 'missing'))")
-          echo "status=$status" >> "$GITHUB_OUTPUT"
           echo "v0.6.2 lifecycle status: $status"
-
-      - name: Verify withdrawn v0.6.2 is frozen
-        if: steps.lifecycle.outputs.status == 'withdrawn'
-        run: node scripts/validate-release-recovery-state.mjs
-
-      - name: Install dependencies
-        if: steps.lifecycle.outputs.status != 'withdrawn'
-        run: npm install
-
-      - name: Build synchronized v0.6.2 release
-        if: steps.lifecycle.outputs.status != 'withdrawn'
-        run: npm run release:v062:build
-
-      - name: Commit generated release outputs when changed
-        if: steps.lifecycle.outputs.status != 'withdrawn'
-        run: |
-          git add \
-            index.html \
-            factions/ \
-            v0.6.2/ \
-            releases/v0.6.2/ \
-            rules-assistant/widget.js \
-            rules-assistant/worker-entry.js \
-            rules-assistant/worker-v062.js \
-            rules-assistant/v062-published-corpus.js \
-            src/content/current.ts
-          if git diff --cached --quiet; then
+          if [[ "$status" == "withdrawn" ]]; then
+            node scripts/validate-release-recovery-state.mjs
+            echo 'v0.6.2 is withdrawn; historical evidence is intact and no publication was attempted.'
             exit 0
           fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "Materialize and synchronize Gauntlet v0.6.2 release"
-          git pull --rebase origin ${{ github.head_ref || github.ref_name }}
-          git push origin HEAD:${{ github.head_ref || github.ref_name }}
-
-      - name: Verify release outputs are reproducible
-        if: steps.lifecycle.outputs.status != 'withdrawn'
-        run: npm run release:v062:check
-
-      - name: Typecheck
-        if: steps.lifecycle.outputs.status != 'withdrawn'
-        run: npm run typecheck
-
-      - name: Run complete repository validation
-        if: steps.lifecycle.outputs.status != 'withdrawn'
-        run: npm test
-
-      - name: Upload v0.6.2 source package
-        if: steps.lifecycle.outputs.status != 'withdrawn'
-        uses: actions/upload-artifact@v4
-        with:
-          name: gauntlet-v062-release-source
-          path: |
-            releases/v0.6.2/
-            v0.6.2/release-manifest.json
-          if-no-files-found: error
+          echo 'v0.6.2 is no longer withdrawn. A deliberate release-lifecycle change requires a dedicated publication plan rather than reusing this historical workflow.' >&2
+          exit 1

@@ -27,7 +27,7 @@
     "factions": 6,
     "leaders": 12,
     "starter_decks": 12,
-    "print_pdfs": 9,
+    "print_pdfs": 10,
     "json_exports": 3
   },
   "public_defaults": {
@@ -56,6 +56,13 @@
       "pages": 85,
       "sha256": "936f37e45595b11e277ebcfe4d27197205a01dcb1499d7d4af62a962e55ddf5a",
       "bytes": 298301
+    },
+    {
+      "key": "rulebook-booklet",
+      "path": "Gauntlet_v0.6.3_Rulebook_Booklet.pdf",
+      "pages": 32,
+      "sha256": "c121f42d8f718383f648d572dbecd550c231966ade6b11f8eb6102a0be7db134",
+      "bytes": 3579304
     },
     {
       "key": "military",
@@ -179,6 +186,11 @@
       "path": "Gauntlet_v0.6.3_Rulebook.pdf",
       "sha256": "936f37e45595b11e277ebcfe4d27197205a01dcb1499d7d4af62a962e55ddf5a",
       "bytes": 298301
+    },
+    {
+      "path": "Gauntlet_v0.6.3_Rulebook_Booklet.pdf",
+      "sha256": "c121f42d8f718383f648d572dbecd550c231966ade6b11f8eb6102a0be7db134",
+      "bytes": 3579304
     },
     {
       "path": "Gauntlet_v0.6.3_Starter_Deck_Catalog.md",
