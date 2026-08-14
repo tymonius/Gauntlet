@@ -1,0 +1,174 @@
+name: Verify current live publication
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify-current-live-publication.yml'
+      - 'config/release-lifecycle.json'
+      - 'scripts/validate-current-public-contract.mjs'
+      - 'releases/**'
+      - 'index.html'
+      - 'start/**'
+      - 'rulebook/**'
+      - 'card-reference/**'
+      - 'factions/**'
+      - 'deckbuilder/**'
+      - 'rules-arbiter/**'
+      - 'design-tokens.css'
+      - 'images/faction-symbols/**'
+      - 'rules-assistant/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+
+concurrency:
+  group: verify-current-live-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    environment: production
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+      GH_TOKEN: ${{ github.token }}
+      EXPECTED_SHA: ${{ github.sha }}
+      GITHUB_REPOSITORY_NAME: ${{ github.repository }}
+    steps:
+      - name: Check out deployed publication source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Read current release identity
+        id: release
+        run: |
+          current=$(node -e "const l=require('./config/release-lifecycle.json'); process.stdout.write(String(l.current_release || ''))")
+          test -n "$current"
+          echo "version=$current" >> "$GITHUB_OUTPUT"
+
+      - name: Determine whether Rules Arbiter deployment changed
+        id: scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            worker=true
+          else
+            worker=false
+            while IFS= read -r file; do
+              case "$file" in
+                rules-assistant/worker-entry.js|rules-assistant/worker-v*.js|rules-assistant/v*-public-corpus.js|rules-assistant/smart-worker.js|rules-assistant/reliable-worker.js|rules-assistant/admin-*.js|rules-assistant/review-*.js|rules-assistant/wrangler.toml)
+                  worker=true
+                  ;;
+              esac
+            done < <(git diff --name-only HEAD^ HEAD)
+          fi
+          echo "worker=$worker" >> "$GITHUB_OUTPUT"
+
+      - name: Install verification dependency
+        run: npm install --no-save --package-lock=false pdf-lib
+
+      - name: Install Worker tooling
+        if: steps.scope.outputs.worker == 'true'
+        run: npm install --no-save --package-lock=false wrangler@4
+
+      - name: Verify Worker deployment secrets
+        if: steps.scope.outputs.worker == 'true'
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not configured"; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "CLOUDFLARE_ACCOUNT_ID is not configured"; exit 1; }
+
+      - name: Deploy current Rules Arbiter Worker only when its inputs changed
+        if: steps.scope.outputs.worker == 'true'
+        run: npx wrangler deploy --config rules-assistant/wrangler.toml
+
+      - name: Wait for current Rules Arbiter health
+        env:
+          CURRENT_RELEASE: ${{ steps.release.outputs.version }}
+        run: |
+          node --input-type=module <<'NODE'
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          const expected = process.env.CURRENT_RELEASE;
+          async function wait(url, predicate, label) {
+            let last = '';
+            for (let attempt = 1; attempt <= 30; attempt += 1) {
+              try {
+                const response = await fetch(url, { cache: 'no-store' });
+                last = await response.text();
+                if (response.ok && predicate(JSON.parse(last))) {
+                  console.log(`${label} verified on attempt ${attempt}.`);
+                  return;
+                }
+              } catch (error) {
+                last = String(error);
+              }
+              if (attempt < 30) await sleep(3000);
+            }
+            throw new Error(`${label} did not become healthy: ${last}`);
+          }
+          const base = 'https://gauntlet-rules-assistant.tymon-scott.workers.dev';
+          await wait(
+            `${base}/api/health`,
+            (value) => value?.ok === true && value.version === expected && value.currentPublicRelease === expected,
+            `Current Rules Arbiter (${expected})`
+          );
+          await wait(
+            `${base}/api/v061/health`,
+            (value) => value?.ok === true && value.version === 'v0.6.1',
+            'Historical v0.6.1 Rules Arbiter compatibility route'
+          );
+          NODE
+
+      - name: Request and verify exact GitHub Pages build
+        run: |
+          node --input-type=module <<'NODE'
+          const repo = process.env.GITHUB_REPOSITORY_NAME;
+          const token = process.env.GH_TOKEN;
+          const expectedSha = process.env.EXPECTED_SHA;
+          const headers = {
+            Accept: 'application/vnd.github+json',
+            Authorization: `Bearer ${token}`,
+            'X-GitHub-Api-Version': '2022-11-28',
+            'User-Agent': 'gauntlet-current-public-contract',
+          };
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          async function github(url, options = {}) {
+            const response = await fetch(url, { ...options, headers });
+            const text = await response.text();
+            if (!response.ok) throw new Error(`${options.method || 'GET'} ${url} -> ${response.status} ${text}`);
+            return text ? JSON.parse(text) : null;
+          }
+          await github(`https://api.github.com/repos/${repo}/pages/builds`, { method: 'POST' });
+          for (let attempt = 1; attempt <= 60; attempt += 1) {
+            const latest = await github(`https://api.github.com/repos/${repo}/pages/builds/latest`);
+            console.log(`Pages attempt ${attempt}: status=${latest.status || ''} commit=${latest.commit || ''}`);
+            if (latest.commit === expectedSha && latest.status === 'built') process.exit(0);
+            if (attempt < 60) await sleep(5000);
+          }
+          throw new Error(`GitHub Pages did not report ${expectedSha} built within the verification window.`);
+          NODE
+
+      - name: Verify deployed site against the current-publication contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 30); do
+            if GAUNTLET_PUBLIC_BASE_URL=https://gauntlet.run GAUNTLET_CONTRACT_BUST="$EXPECTED_SHA" node scripts/validate-current-public-contract.mjs; then
+              echo "Live public contract verified on attempt $attempt."
+              exit 0
+            fi
+            if [[ "$attempt" -lt 30 ]]; then sleep 5; fi
+          done
+          echo 'Live public contract did not converge after Pages reported the expected commit.' >&2
+          exit 1
