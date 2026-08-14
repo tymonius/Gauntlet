@@ -240,3 +240,16 @@
 .faction-diplomats img[alt="Senator leader artwork"] { content: url("../images/senator.png"); }
 .faction-intelligence img[alt="Ranger leader artwork"] { content: url("../images/ranger.png"); }
 .faction-intelligence img[alt="Spymaster leader artwork"] { content: url("../images/spymaster.png"); }
+
+/* Asset-backed public faction symbols. */
+.hub-symbol.faction-symbol-asset,
+.faction-eyebrow-symbol.faction-symbol-asset{
+  display:inline-block;
+  flex:0 0 auto;
+  background:currentColor;
+  -webkit-mask:var(--faction-symbol) center/contain no-repeat;
+  mask:var(--faction-symbol) center/contain no-repeat;
+}
+.hub-symbol.faction-symbol-asset{width:3.2rem;height:3.2rem;}
+.faction-eyebrow{display:flex;align-items:center;gap:.55rem;}
+.faction-eyebrow-symbol.faction-symbol-asset{width:1.35rem;height:1.35rem;}
