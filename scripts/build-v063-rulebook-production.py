@@ -234,6 +234,7 @@ def main() -> None:
         "GAUNTLET V0.6.1",
         "GAUNTLET V0.6.3",
         "folio version",
+        expected=3,
     )
     paginator = paginator.replace("Gauntlet v0.6.1", "Gauntlet v0.6.3")
     paginator = adapt_glossary_pagination(paginator)
