@@ -115,7 +115,18 @@ const bookletPdf = await PDFDocument.load(bookletBytes);
 assert.equal(bookletPdf.getPageCount(), bookletEntry.pages, 'Published booklet page count does not match the manifest.');
 
 const routeValues = Object.values(manifest.public_routes ?? {}).filter((route) => typeof route === 'string');
-const corePages = ['/', ...routeValues, ...factions.map((slug) => `/factions/${slug}/`)];
+const releaseLandingRoute = `/${currentVersion}/`;
+const changelogRoute = '/changelog/';
+const withdrawnVersionRoutes = Object.entries(lifecycle.releases ?? {})
+  .filter(([, release]) => release?.status === 'withdrawn')
+  .flatMap(([version]) => [`/${version}/`, `/releases/${version}/`]);
+const corePages = [
+  '/',
+  releaseLandingRoute,
+  changelogRoute,
+  ...routeValues,
+  ...factions.map((slug) => `/factions/${slug}/`),
+];
 const uniqueCorePages = [...new Set(corePages)];
 const pages = new Map();
 for (const route of uniqueCorePages) {
@@ -123,6 +134,16 @@ for (const route of uniqueCorePages) {
   pages.set(route, html);
   if (historicalRoot) {
     assert(!html.includes(historicalRoot), `${route} links to historical/withdrawn package ${historicalRoot}.`);
+  }
+
+  const normalizedRefs = htmlRefs(html)
+    .map((ref) => normalizeRef(route, ref))
+    .filter(Boolean);
+  for (const withdrawnRoute of withdrawnVersionRoutes) {
+    assert(
+      !normalizedRefs.some((ref) => ref === withdrawnRoute || ref.startsWith(withdrawnRoute)),
+      `${route} links to withdrawn release route ${withdrawnRoute}.`,
+    );
   }
 }
 
@@ -174,4 +195,4 @@ for (const normalized of localReferences) {
   }
 }
 
-console.log(`Current public contract passed${remoteBase ? ` against ${remoteBase}` : ' against the repository'}: ${currentVersion}, booklet integrity, resolvable player links, canonical faction symbols, and defined typography tokens.`);
+console.log(`Current public contract passed${remoteBase ? ` against ${remoteBase}` : ' against the repository'}: ${currentVersion}, release landing/changelog, booklet integrity, resolvable player links, canonical faction symbols, withdrawn-route isolation, and defined typography tokens.`);
