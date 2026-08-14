@@ -7,7 +7,7 @@
 
    Existing component-specific fixed tracks remain in their stylesheets as a
    fallback for browsers without subgrid support. The caps below are deliberately
-   generous until the section-heading vocabulary is standardized. */
+   conservative until the section-heading vocabulary is standardized. */
 
 @supports (grid-template-columns: subgrid) {
   .gauntlet-card {
@@ -20,8 +20,13 @@
     --rule-label-max: 0.72in;
   }
 
+  /* Leaders previously had a 0.78in cap, which let long headings such as the
+     Financiers' labels reserve too much blank horizontal space. Keep the same
+     content-aware behavior, but use the ordinary portrait-card ceiling so long
+     headings wrap before they starve the prose column. */
   .leader-card {
-    --rule-label-max: 0.78in;
+    --rule-label-max: 0.68in;
+    --rule-column-gap: 0.026in;
   }
 
   /* Count labels on the completed Rite reference are intentionally compact. */
