@@ -8,6 +8,7 @@ const OUTPUT = join(ROOT, 'card-design', 'generated', 'leaders');
 const CARD_WIDTH = 240;
 const CARD_HEIGHT = 336;
 const EXPECTED_RITES = ['Rite of Echoes', 'Rite of Blood', 'Rite of Crossing'];
+const COMPLETED_RITE_ART_PATH = '/images/artwork/supplemental/mystics/rite-completed.webp';
 
 function contentType(path) {
   const extension = extname(path).toLowerCase();
@@ -59,6 +60,9 @@ async function main() {
       && card.dataset.titleFit === 'true'
       && card.querySelector('.card-interior')?.style.getPropertyValue('--art-height')
     )));
+    await page.waitForFunction(() => [...document.querySelectorAll('.completed-rite-card .rite-completed-panel > img')].every(image => (
+      image.complete && image.naturalWidth > 0 && image.naturalHeight > 0
+    )));
     await page.evaluate(async () => document.fonts?.ready);
     await page.waitForTimeout(150);
 
@@ -67,7 +71,8 @@ async function main() {
       const art = card.querySelector('.card-art')?.getBoundingClientRect();
       const completed = card.classList.contains('completed-rite-card');
       const abilityNames = [...card.querySelectorAll('.rite-unlock-section strong')].map(node => node.textContent?.trim());
-      const diagram = card.querySelector('.rite-ritual-diagram');
+      const completedImage = card.querySelector('.rite-completed-panel > img');
+      const completedImageRect = completedImage?.getBoundingClientRect();
       return {
         name: card.querySelector('.card-title')?.textContent?.trim(),
         type: card.querySelector('.card-footer span:nth-child(2)')?.textContent?.trim(),
@@ -81,7 +86,11 @@ async function main() {
         rulesScale: Number.parseFloat(getComputedStyle(card).getPropertyValue('--rules-scale')) || 1,
         completed,
         abilityNames,
-        diagramWidth: diagram?.getBoundingClientRect().width || 0,
+        completedImageWidth: completedImageRect?.width || 0,
+        completedImageHeight: completedImageRect?.height || 0,
+        completedImageNaturalWidth: completedImage?.naturalWidth || 0,
+        completedImageNaturalHeight: completedImage?.naturalHeight || 0,
+        completedImagePath: completedImage ? new URL(completedImage.currentSrc || completedImage.src).pathname : '',
       };
     }));
 
@@ -105,7 +114,12 @@ async function main() {
       if (metric.completed) {
         const expected = ['Invocation', 'Transmutation', 'Convergence', 'Ritual of Ascendance'];
         if (expected.some(name => !metric.abilityNames.includes(name))) throw new Error(`Completed Rite reference is incomplete: ${JSON.stringify(metric)}.`);
-        if (metric.diagramWidth <= 0) throw new Error(`Completed Rite diagram did not render: ${JSON.stringify(metric)}.`);
+        if (metric.completedImageWidth <= 0 || metric.completedImageHeight <= 0 || metric.completedImageNaturalWidth <= 0 || metric.completedImageNaturalHeight <= 0) {
+          throw new Error(`Completed Rite artwork did not render: ${JSON.stringify(metric)}.`);
+        }
+        if (metric.completedImagePath !== COMPLETED_RITE_ART_PATH) {
+          throw new Error(`Completed Rite uses the wrong artwork: ${JSON.stringify(metric)}.`);
+        }
       }
     }
 
