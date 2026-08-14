@@ -3,17 +3,164 @@
 <head>
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-8YYYZJGGPE"></script>
-  <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-8YYYZJGGPE');</script>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="robots" content="noindex,nofollow">
-  <meta name="description" content="Development review portal for the next Gauntlet playtest revision.">
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-8YYYZJGGPE');
+  </script>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Gauntlet v0.6.3, the current canonical public playtest release." />
+  <link rel="canonical" href="https://gauntlet.run/v0.6.3/" />
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
-  <title>Gauntlet v0.6.3 — Development Candidate</title>
-  <link rel="stylesheet" href="styles.css">
-  <style>.release-shell{max-width:1060px;margin:0 auto;padding:2rem 1rem 5rem}.release-nav{display:flex;gap:1rem;flex-wrap:wrap;margin-bottom:2rem}.release-nav a{font-weight:700}.dev-banner{margin-bottom:1rem;padding:.75rem 1rem;border:1px solid #9a6b1b;background:#fff1c6;color:#4a3412;font-weight:700}.release-doc{background:rgba(255,255,255,.78);padding:clamp(1rem,3vw,3rem);border:1px solid rgba(80,55,30,.25);box-shadow:0 18px 50px rgba(60,35,20,.12)}.release-doc table{width:100%;border-collapse:collapse;display:block;overflow:auto}.release-doc td{border:1px solid rgba(80,55,30,.25);padding:.45rem .6rem;vertical-align:top}.release-doc blockquote{margin:1rem 0;padding:.2rem 1rem;border-left:4px solid #8f1f25;background:rgba(143,31,37,.06)}.release-actions{display:flex;flex-wrap:wrap;gap:.75rem;margin:1.5rem 0}.release-actions a{display:inline-block;padding:.7rem 1rem;border:1px solid currentColor;text-decoration:none;font-weight:700}</style>
+  <meta name="theme-color" content="#8f1f25" />
+  <title>Gauntlet v0.6.3 — Current Playtest Release</title>
+  <link rel="preconnect" href="https://use.typekit.net" />
+  <link rel="preconnect" href="https://p.typekit.net" crossorigin />
+  <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
+  <link rel="stylesheet" href="/site.css" />
+  <link rel="stylesheet" href="/release-surface.css" />
 </head>
-<body><main class="release-shell"><nav class="release-nav" aria-label="v0.6.3 development navigation"><a href="../">Gauntlet home</a><a href="./">v0.6.3 dev</a><a href="start/">Start</a><a href="rulebook/">Rulebook</a><a href="quick-reference/">Quick reference</a><a href="deckbuilder/">Deckbuilder</a><a href="reference/">Card reference</a><a href="rules-arbiter/">Candidate Rules Arbiter</a><a href="changes/">Changes</a><a href="../v0.6.2/">Published v0.6.2</a></nav><div class="dev-banner">v0.6.3 development candidate · v0.6.2 remains the canonical published playtest edition.</div><article class="release-doc"><p class="eyebrow">Next-release development surface</p><h1>Gauntlet v0.6.3 candidate</h1><p>This portal materializes the integrated v0.6.3 rules and card-data candidates for browser review without changing the published v0.6.2 release.</p><div class="release-actions"><a href="start/">First Game guide</a><a href="rulebook/">Rulebook candidate</a><a href="deckbuilder/">Deckbuilder candidate</a><a href="reference/">Card reference</a><a href="rules-arbiter/">Candidate Rules Arbiter</a><a href="changes/">Returning-player changes</a></div><h2>Candidate state</h2><ul><li>128 playable cards with final v0.6.3 text.</li><li>25 Territories inherited from v0.6.2 at this stage.</li><li>Opening selection precedes informed Territory arrangement and initiative.</li><li>Final-Territory capture and Last Stand victory are equal ways to run the Gauntlet.</li><li>The public Rules Arbiter remains on the published v0.6.2 corpus. A separate <a href="rules-arbiter/">v0.6.3 development Rules Arbiter</a> is available for candidate review.</li></ul><p><a href="data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json">Open integrated candidate JSON</a></p></article></main></body>
+<body class="release-page">
+  <header class="site-header">
+    <a class="brand" href="/" aria-label="Gauntlet home">
+      <span class="brand-mark" aria-hidden="true">G</span>
+      <span>Gauntlet</span>
+    </a>
+    <nav aria-label="Primary navigation">
+      <a href="/start/">Start</a>
+      <a href="/rulebook/">Rules</a>
+      <a href="/factions/">Factions</a>
+      <a href="/deckbuilder/">Deckbuilder</a>
+      <a href="/card-reference/">Card Reference</a>
+      <a href="/rules-arbiter/">Rules Arbiter</a>
+      <a href="/changelog/">Changelog</a>
+    </nav>
+  </header>
+
+  <main class="release-main">
+    <section class="release-hero" aria-labelledby="release-title">
+      <div>
+        <p class="eyebrow">Current canonical playtest release</p>
+        <h1 id="release-title">Gauntlet v0.6.3</h1>
+        <p class="release-lede">The current public playtest edition of Gauntlet: six factions, twelve Leaders, 128 playable cards, 25 Territories, and the complete rules and print package for play.</p>
+        <div class="release-actions">
+          <a class="button primary" href="/start/">Start playing</a>
+          <a class="button secondary" href="/rulebook/">Read the rules</a>
+          <a class="button secondary" href="/changelog/#v0-6-3">What changed</a>
+        </div>
+      </div>
+      <dl class="release-status" aria-label="Release status">
+        <div><dt>Status</dt><dd>Current</dd></div>
+        <div><dt>Published</dt><dd>August 14, 2026</dd></div>
+        <div><dt>Playable cards</dt><dd>128</dd></div>
+        <div><dt>Starter decks</dt><dd>12</dd></div>
+      </dl>
+    </section>
+
+    <section class="release-section" aria-labelledby="play-title">
+      <div class="release-section-heading">
+        <p class="eyebrow">Play this release</p>
+        <h2 id="play-title">Everything points to the current game.</h2>
+        <p>Use the browser tools for normal play and learning. They all use the current v0.6.3 rules and card data.</p>
+      </div>
+      <div class="release-grid">
+        <article class="release-card">
+          <span>New players</span>
+          <h3>Start Playing</h3>
+          <p>Learn the game flow, choose a faction and Leader, and load a recommended starter deck.</p>
+          <a href="/start/">Choose your first deck →</a>
+        </article>
+        <article class="release-card">
+          <span>Rules</span>
+          <h3>Browser Rulebook</h3>
+          <p>Read and search the complete v0.6.3 rules, with the Rules Arbiter available for exact questions.</p>
+          <a href="/rulebook/">Read the rulebook →</a>
+        </article>
+        <article class="release-card">
+          <span>Build and print</span>
+          <h3>Deckbuilder</h3>
+          <p>Load a starter or build a legal deck, then create the printable package for play.</p>
+          <a href="/deckbuilder/">Open the Deckbuilder →</a>
+        </article>
+        <article class="release-card">
+          <span>Quick lookup</span>
+          <h3>Card Reference</h3>
+          <p>Search all current cards and Territories without opening the Deckbuilder.</p>
+          <a href="/card-reference/">Browse the cards →</a>
+        </article>
+        <article class="release-card">
+          <span>Faction guides</span>
+          <h3>Choose an institution</h3>
+          <p>Compare all six factions, their Leaders, signature systems, and victory routes.</p>
+          <a href="/factions/">Explore the factions →</a>
+        </article>
+        <article class="release-card">
+          <span>Returning players</span>
+          <h3>v0.6.3 Changelog</h3>
+          <p>Review the rules and card-language changes that materially affect table play.</p>
+          <a href="/changelog/#v0-6-3">See what changed →</a>
+        </article>
+      </div>
+    </section>
+
+    <section class="release-section" aria-labelledby="print-title">
+      <div class="release-section-heading">
+        <p class="eyebrow">Release files</p>
+        <h2 id="print-title">Print and reference files.</h2>
+        <p>The browser tools are the normal entry point. These are the current v0.6.3 release artifacts for printing, offline reference, and structured data.</p>
+      </div>
+      <div class="release-files">
+        <section class="release-file-group" aria-labelledby="player-files-title">
+          <h3 id="player-files-title">Player files</h3>
+          <ul>
+            <li><a href="/releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook_Booklet.pdf">Printable Rulebook booklet</a></li>
+            <li><a href="/releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Card_and_Territory_Reference.pdf">Card and Territory Reference PDF</a></li>
+            <li><a href="/releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Starter_Deck_Catalog.pdf">Starter Deck Catalog PDF</a></li>
+            <li><a href="/releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Military_Faction_Guide.pdf">Military Faction Guide PDF</a></li>
+            <li><a href="/releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Diplomats_Faction_Guide.pdf">Diplomats Faction Guide PDF</a></li>
+            <li><a href="/releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Financiers_Faction_Guide.pdf">Financiers Faction Guide PDF</a></li>
+            <li><a href="/releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Intelligence_Faction_Guide.pdf">Intelligence Faction Guide PDF</a></li>
+            <li><a href="/releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Mystics_Faction_Guide.pdf">Mystics Faction Guide PDF</a></li>
+            <li><a href="/releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Inquisition_Faction_Guide.pdf">Inquisition Faction Guide PDF</a></li>
+          </ul>
+        </section>
+        <section class="release-file-group" aria-labelledby="data-files-title">
+          <h3 id="data-files-title">Structured release data</h3>
+          <ul>
+            <li><a href="/releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Canonical_Data.json">Canonical Data JSON</a></li>
+            <li><a href="/releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Starter_Decks.json">Approved Starter Decks JSON</a></li>
+            <li><a href="/releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Deck_Export_Schema.json">Deck Export Schema JSON</a></li>
+            <li><a href="/releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Manifest.json">Release Manifest</a></li>
+          </ul>
+        </section>
+      </div>
+      <details class="release-provenance">
+        <summary>Release provenance</summary>
+        <div>
+          <p>v0.6.3 was published from the certified reconstruction authority set after the earlier v0.6.3 publication was withdrawn and audited. The preserved withdrawn package is historical evidence; the files linked above are the current package.</p>
+          <p>Authority set: <code>64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49</code></p>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <strong>Gauntlet</strong>
+      <p>Unpublished playtest project.</p>
+    </div>
+    <div class="footer-links">
+      <a href="/start/">Start Playing</a>
+      <a href="/rulebook/">Rulebook</a>
+      <a href="/card-reference/">Card Reference</a>
+      <a href="/changelog/">Changelog</a>
+      <a href="https://github.com/tymonius/Gauntlet">GitHub</a>
+    </div>
+    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  </footer>
+</body>
 </html>
