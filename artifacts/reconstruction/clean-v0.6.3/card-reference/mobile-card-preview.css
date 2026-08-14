@@ -1,0 +1,118 @@
+@media (max-width: 700px) {
+  body.mobile-reference-preview-open {
+    overflow: hidden;
+  }
+
+  /*
+   * site.css gives main a z-index, which creates a stacking context beneath the
+   * body-level backdrop. Release that stacking context while the sheet is open
+   * so the fixed preview can sit above the backdrop and receive touch input.
+   */
+  body.mobile-reference-preview-open .reference-main {
+    z-index: auto;
+  }
+
+  .reference-row {
+    min-height: 4.25rem;
+  }
+
+  .reference-preview {
+    position: fixed;
+    z-index: 1001;
+    top: auto;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-height: calc(100vh - 1rem);
+    max-height: min(82dvh, 46rem);
+    min-height: 0;
+    margin: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-gutter: stable;
+    isolation: isolate;
+    border: 1px solid var(--line);
+    border-right: 0;
+    border-bottom: 0;
+    border-left: 0;
+    border-radius: 18px 18px 0 0;
+    padding: 1.25rem 1.25rem calc(1.5rem + env(safe-area-inset-bottom));
+    background: #f7f1e5;
+    box-shadow: 0 -18px 44px rgba(36, 27, 22, 0.24);
+    transform: translateY(calc(100% + 1rem));
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    transition: transform 180ms ease, opacity 180ms ease, visibility 0s linear 180ms;
+  }
+
+  .reference-preview.mobile-open {
+    transform: translateY(0);
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    transition: transform 180ms ease, opacity 180ms ease;
+  }
+
+  .mobile-reference-preview-close {
+    position: sticky;
+    z-index: 2;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    min-width: 2.75rem;
+    margin: 0 0 -2.75rem auto;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: #fffaf0;
+    color: var(--ink);
+    padding: 0;
+    box-shadow: 0 4px 14px rgba(36, 27, 22, 0.14);
+    font-size: 1.6rem;
+    font-weight: 500;
+    line-height: 1;
+  }
+
+  .mobile-reference-preview-close:hover {
+    background: #f8eee1;
+  }
+
+  .mobile-reference-preview-backdrop {
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    background: rgba(24, 18, 14, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 180ms ease, visibility 0s linear 180ms;
+  }
+
+  .mobile-reference-preview-backdrop.mobile-open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 180ms ease;
+  }
+}
+
+@media (min-width: 701px) {
+  .mobile-reference-preview-close,
+  .mobile-reference-preview-backdrop {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reference-preview,
+  .mobile-reference-preview-backdrop {
+    transition: none !important;
+  }
+}
