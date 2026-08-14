@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "target": "clean-v0.6.3-faction-pages",
+  "status": "downstream_candidate_pending_merge_review",
+  "authority_set_id": "64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49",
+  "authority_certification": "artifacts/reconstruction/clean-v0.6.3/complete-authority/authority-set.json",
+  "faction_authority_manifest": "artifacts/reconstruction/clean-v0.6.3/faction-guides/authority-manifest.json",
+  "runtime_semantics": "verbatim_certified_markdown_after_raw_byte_sha256_verification",
+  "renderer_baseline": {
+    "markdown": {
+      "path": "artifacts/reconstruction/clean-v0.6.3/browser-rulebook/markdown.js",
+      "sha256": "8cfea16f3176ff999e7e5242f7328d6f90391584fa388091285170c4600364ce",
+      "role": "clean_browser_renderer_only_not_content_authority"
+    },
+    "styles": {
+      "path": "artifacts/reconstruction/clean-v0.6.3/browser-rulebook/styles.css",
+      "sha256": "48488759254c776eec79c39bc381cce3ec9c8200c5370c2556808582ab0531f9",
+      "role": "clean_browser_ui_only_not_content_authority"
+    },
+    "publication": {
+      "path": "artifacts/reconstruction/clean-v0.6.3/browser-rulebook/publication.css",
+      "sha256": "a03d50f64995455db8c62eb06a097a15a5168fac521a06b87262af6bfa8fe54f",
+      "role": "clean_browser_ui_only_not_content_authority"
+    }
+  },
+  "guides": [
+    {
+      "route": "military",
+      "label": "Military",
+      "source_path": "artifacts/reconstruction/clean-v0.6.3/faction-guides/military/Gauntlet_v0.6.3_Military_Faction_Guide.md",
+      "sha256": "23a4260f793ebf5c09d6a62fc2d36d51290ca9ca28c03e3bfe349170eae1c91c"
+    },
+    {
+      "route": "diplomats",
+      "label": "Diplomats",
+      "source_path": "artifacts/reconstruction/clean-v0.6.3/faction-guides/diplomat/Gauntlet_v0.6.3_Diplomat_Faction_Guide.md",
+      "sha256": "99788e5aead16a06e8fc026929e3b362930ebba91a55d40881890a85ae8d4412"
+    },
+    {
+      "route": "financiers",
+      "label": "Financiers",
+      "source_path": "artifacts/reconstruction/clean-v0.6.3/faction-guides/financier/Gauntlet_v0.6.3_Financier_Faction_Guide.md",
+      "sha256": "f5d07550bdc76db7c2ba6c5243e5539dadef1c27986250d6b89f4cdec6700f6b"
+    },
+    {
+      "route": "intelligence",
+      "label": "Intelligence",
+      "source_path": "artifacts/reconstruction/clean-v0.6.3/faction-guides/intelligence/Gauntlet_v0.6.3_Intelligence_Faction_Guide.md",
+      "sha256": "103d5bd4a6758ef3127fa71f19694b5ba428216b1d6c28b9db74fdb8e86d2328"
+    },
+    {
+      "route": "mystics",
+      "label": "Mystics",
+      "source_path": "artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md",
+      "sha256": "b47623ba7a7537e0df5326ccd69967dee4bb7016b2a3b5c2a8d05d1c899e5f1a"
+    },
+    {
+      "route": "inquisition",
+      "label": "Inquisition",
+      "source_path": "artifacts/reconstruction/clean-v0.6.3/faction-guides/inquisition/Gauntlet_v0.6.3_Inquisition_Faction_Guide.md",
+      "sha256": "a489e08ec1daf094e521bc45acc43e119c137fe566cfd8bef2f4d2455e38e3bd"
+    }
+  ],
+  "outputs": [
+    "artifacts/reconstruction/clean-v0.6.3/faction-pages/index.html",
+    "artifacts/reconstruction/clean-v0.6.3/faction-pages/app.js",
+    "artifacts/reconstruction/clean-v0.6.3/faction-pages/styles.css",
+    "artifacts/reconstruction/clean-v0.6.3/faction-pages/military/index.html",
+    "artifacts/reconstruction/clean-v0.6.3/faction-pages/diplomats/index.html",
+    "artifacts/reconstruction/clean-v0.6.3/faction-pages/financiers/index.html",
+    "artifacts/reconstruction/clean-v0.6.3/faction-pages/intelligence/index.html",
+    "artifacts/reconstruction/clean-v0.6.3/faction-pages/mystics/index.html",
+    "artifacts/reconstruction/clean-v0.6.3/faction-pages/inquisition/index.html",
+    "artifacts/reconstruction/clean-v0.6.3/faction-pages/manifest.json",
+    "artifacts/reconstruction/clean-v0.6.3/faction-pages/source-boundary.md",
+    "artifacts/reconstruction/clean-v0.6.3/faction-pages/validation-status.md"
+  ],
+  "public_faction_pages_modified": false,
+  "publication_unlocked": false,
+  "public_current_release": "v0.6.1"
+}
