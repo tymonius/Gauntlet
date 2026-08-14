@@ -14,6 +14,8 @@ The standard applies across current public web surfaces. Layouts and component d
 | Interface | Inter — `--font-interface` | Navigation, search, form controls, buttons, compact labels, metadata, status text, utility text, chapter numbers, anchors, and other operational UI. |
 | Flavor accent | P22 Declaration Pro — `--font-flavor` | Rare decorative accents only. It is not a normal structural, reading, or interface face. |
 
+These are the authoritative sitewide roles. They are not merely descriptive of the Rulebook; the Rulebook is the reference implementation from which the standard is derived.
+
 Fallbacks in `design-tokens.css` are resilience stacks, not alternate role assignments. Georgia appearing as a fallback for Caslon or P22 does not make those faces interchangeable.
 
 ## Inter is deliberately scarce
