@@ -1,0 +1,48 @@
+name: Build clean v0.6.3 Start
+
+on:
+  pull_request:
+    paths:
+      - 'artifacts/reconstruction/clean-v0.6.3/start/**'
+      - 'artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md'
+      - 'artifacts/reconstruction/clean-v0.6.3/downstream/starter-decks.json'
+      - 'artifacts/reconstruction/clean-v0.6.3/downstream/manifest.json'
+      - 'artifacts/reconstruction/clean-v0.6.3/complete-authority/authority-set.json'
+      - 'artifacts/reconstruction/clean-v0.6.3/browser-rulebook/markdown.js'
+      - 'site.css'
+      - 'start/styles.css'
+      - 'config/release-lifecycle.json'
+      - 'config/reconstruction-version-plan.json'
+      - 'src/content/current.ts'
+      - 'scripts/sync-google-analytics.mjs'
+      - 'scripts/validate-clean-v063-start.mjs'
+      - 'scripts/validate-clean-v063-faction-pages.mjs'
+      - '.github/workflows/build-clean-v063-start.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out clean Start inputs
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Syntax-check Start scripts
+        run: |
+          node --check artifacts/reconstruction/clean-v0.6.3/start/app.js
+          node --check scripts/validate-clean-v063-start.mjs
+          node --check scripts/validate-clean-v063-faction-pages.mjs
+          node --check scripts/sync-google-analytics.mjs
+      - name: Validate clean v0.6.3 Start
+        run: node scripts/validate-clean-v063-start.mjs
+      - name: Validate analytics isolation
+        run: node scripts/sync-google-analytics.mjs --check
+      - name: Reject whitespace errors
+        run: git diff --check HEAD^1 HEAD

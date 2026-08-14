@@ -18,7 +18,8 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "artifacts/reconstruction/clean-v0.6.3/faction-pages/financiers/index.html",
   "artifacts/reconstruction/clean-v0.6.3/faction-pages/intelligence/index.html",
   "artifacts/reconstruction/clean-v0.6.3/faction-pages/mystics/index.html",
-  "artifacts/reconstruction/clean-v0.6.3/faction-pages/inquisition/index.html"
+  "artifacts/reconstruction/clean-v0.6.3/faction-pages/inquisition/index.html",
+  "artifacts/reconstruction/clean-v0.6.3/start/index.html"
 ]);
 
 const GOOGLE_TAG = `  <!-- Google tag (gtag.js) -->
