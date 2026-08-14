@@ -1,0 +1,50 @@
+name: Apply v0.6.3 heading standardization
+
+on:
+  push:
+    branches:
+      - fix/v063-card-heading-standardization
+    paths:
+      - scripts/apply-v063-heading-standardization.mjs
+      - scripts/finalize-v063-canonical-data-candidate.mjs
+      - .github/workflows/apply-v063-heading-standardization.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout branch
+        uses: actions/checkout@v4
+        with:
+          ref: fix/v063-card-heading-standardization
+          fetch-depth: 0
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Apply heading standardization
+        run: node scripts/apply-v063-heading-standardization.mjs
+
+      - name: Commit generated changes
+        shell: bash
+        run: |
+          if git diff --quiet; then
+            echo "No generated changes to commit."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md \
+            artifacts/v0.6.3/canonical/Gauntlet_v0.6.3_Canonical_Data_Candidate.json \
+            artifacts/v0.6.3/canonical/Gauntlet_v0.6.3_Complete_Card_Reference_Candidate.md \
+            artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json \
+            artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Complete_Card_Reference.md \
+            artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Rulebook.md
+          git commit -m "Apply v0.6.3 card heading standardization"
+          git push origin HEAD:fix/v063-card-heading-standardization
