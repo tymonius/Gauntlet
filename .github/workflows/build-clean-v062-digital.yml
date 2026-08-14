@@ -1,0 +1,53 @@
+name: Build clean v0.6.2 digital base
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-clean-v062-digital.yml'
+      - 'scripts/validate-clean-v062-digital.mjs'
+      - 'src/reconstruction/clean-v062/**'
+      - 'artifacts/reconstruction/clean-v0.6.2/digital/**'
+      - 'artifacts/reconstruction/clean-v0.6.2/certification/**'
+      - 'artifacts/reconstruction/clean-v0.6.2/rulebook/**'
+      - 'artifacts/reconstruction/clean-v0.6.2/faction-guides/**'
+      - 'config/release-lifecycle.json'
+      - 'config/reconstruction-version-plan.json'
+      - 'src/content/current.ts'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: clean-v062-digital-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Typecheck repository
+        run: npm run typecheck
+
+      - name: Run focused clean v0.6.2 digital regressions
+        run: npx vitest run src/reconstruction/clean-v062/rules.test.ts src/reconstruction/clean-v062/cards.test.ts src/reconstruction/clean-v062/factions.test.ts
+
+      - name: Validate clean v0.6.2 digital provenance
+        run: node scripts/validate-clean-v062-digital.mjs
+
+      - name: Reject whitespace errors
+        run: git diff --check HEAD^1 HEAD
