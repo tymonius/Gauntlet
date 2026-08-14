@@ -18,6 +18,27 @@ describe("public Start page theme", () => {
     expect(css).toContain(".journey span{background:var(--crimson-dark)");
   });
 
+  it("keeps the intended regular Georgia web-display role", () => {
+    const displaySelectors = [
+      ".start-hero h1",
+      ".section-heading h2",
+      ".overview-feature h3,.intro-overview h3",
+      ".faction-choice strong",
+      ".leader-choice strong",
+      ".selected-choice h3",
+      ".intro-card h3",
+      ".print-action-card h3",
+    ];
+
+    for (const selector of displaySelectors) {
+      const rule = css.match(new RegExp(`${selector.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&")}\\{[^}]+\\}`))?.[0] ?? "";
+      expect(rule).toContain("font-family:var(--font-display-web)");
+      expect(rule).toContain("font-weight:400");
+    }
+
+    expect(css).not.toContain("font-family:var(--font-display-historical)");
+  });
+
   it("keeps black and gold reserved from the rendered public hero", () => {
     const publicTheme = css.slice(css.indexOf("/* Public Start page theme"));
     expect(publicTheme).not.toContain("#221f1b");
