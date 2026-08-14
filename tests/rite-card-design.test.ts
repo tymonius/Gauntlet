@@ -87,8 +87,8 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteRenderer).not.toContain("Ratified");
   });
 
-  it("allows the completed reference face to trade artwork height for readable ability text", () => {
-    expect(riteRenderer).toContain("const artMax = completed ? '1.06' : '1.48'");
+  it("uses reclaimed completed-Rite space for artwork while retaining a finite cap", () => {
+    expect(riteRenderer).toContain("const artMax = completed ? '1.24' : '1.48'");
     expect(riteRenderer).toContain("const artMin = completed ? '0.78' : '0.92'");
     expect(riteStyles).toContain("font-size: calc(5.45pt * var(--rules-scale))");
     expect(riteStyles).toContain("--minimum-rules-scale: 0.82");
