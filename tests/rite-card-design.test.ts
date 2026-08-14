@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const reviewPage = readFileSync("card-design/index.html", "utf8");
@@ -10,6 +10,11 @@ const ruleColumnStyles = readFileSync("card-design/card-rule-columns.css", "utf8
 const completedRiteArtwork = readFileSync("images/artwork/supplemental/mystics/rite-completed.webp");
 
 const riteNames = ["Rite of Echoes", "Rite of Blood", "Rite of Crossing"];
+const riteArtworkPaths = [
+  "images/artwork/cards/mystics/rites-and-rituals/rite-of-echoes.png",
+  "images/artwork/cards/mystics/rites-and-rituals/rite-of-blood.png",
+  "images/artwork/cards/mystics/rites-and-rituals/rite-of-crossing.png",
+];
 
 describe("Mystics Rite card prototypes", () => {
   it("adds all three double-sided Rites to the unified card-review page", () => {
@@ -42,6 +47,17 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteRenderer).toContain("ruleSection('Interrupted', rite.interrupted)");
     expect(riteRenderer).toContain("RITE_SOURCE");
     expect(riteRenderer).toContain("clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md");
+  });
+
+  it("uses the uploaded artwork on all three incomplete Rite faces", () => {
+    for (const path of riteArtworkPaths) expect(existsSync(path)).toBe(true);
+    expect(riteRenderer).toContain("const RITE_ART_ROOT = '../images/artwork/cards/mystics/rites-and-rituals'");
+    expect(riteRenderer).toContain("artwork: `${RITE_ART_ROOT}/rite-of-echoes.png`");
+    expect(riteRenderer).toContain("artwork: `${RITE_ART_ROOT}/rite-of-blood.png`");
+    expect(riteRenderer).toContain("artwork: `${RITE_ART_ROOT}/rite-of-crossing.png`");
+    expect(riteRenderer).toContain('class="card-art has-image" aria-label="Artwork for ${esc(rite.name)}"');
+    expect(riteRenderer).toContain('<img src="${esc(rite.artwork)}"');
+    expect(riteRenderer).not.toContain("Artwork pending");
   });
 
   it("turns every completed face into the same count-based progression reference", () => {
