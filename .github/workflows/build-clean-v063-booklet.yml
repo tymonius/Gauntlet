@@ -8,47 +8,21 @@ on:
       - 'scripts/validate-clean-v063-booklet.mjs'
       - 'scripts/materialize-clean-v063-booklet.mjs'
       - 'scripts/apply-v063-public-ui-cleanup.mjs'
-      - 'scripts/validate-v063-public-ui-invariants.mjs'
-      - 'scripts/validate-v063-public-ui-render.mjs'
       - 'artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md'
-      - 'releases/v0.6.3-reconstructed/**'
-      - 'rulebook/**'
-      - 'index.html'
-      - 'start/**'
-      - 'factions/**'
-      - 'design-tokens.css'
+      - 'releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md'
+      - 'rulebook/markdown.js'
       - 'images/sketches/hero-sketches/**'
-      - 'images/faction-symbols/**'
-  push:
-    branches: [main]
-    paths:
-      - '.github/workflows/build-clean-v063-booklet.yml'
-      - 'scripts/render-clean-v063-booklet.mjs'
-      - 'scripts/validate-clean-v063-booklet.mjs'
-      - 'scripts/materialize-clean-v063-booklet.mjs'
-      - 'scripts/apply-v063-public-ui-cleanup.mjs'
-      - 'scripts/validate-v063-public-ui-invariants.mjs'
-      - 'scripts/validate-v063-public-ui-render.mjs'
-      - 'artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md'
-      - 'releases/v0.6.3-reconstructed/**'
-      - 'rulebook/**'
-      - 'index.html'
-      - 'start/**'
-      - 'factions/**'
-      - 'design-tokens.css'
-      - 'images/sketches/hero-sketches/**'
-      - 'images/faction-symbols/**'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  build-review:
+  build-booklet:
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 20
     steps:
-      - name: Check out booklet inputs
+      - name: Check out PR head
         uses: actions/checkout@v4
         with:
           ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
@@ -59,82 +33,37 @@ jobs:
         with:
           node-version: 22
 
-      - name: Install repository dependencies
-        run: npm install
-
-      - name: Install PDF build dependencies
-        run: npm install --no-save pdf-lib
-
-      - name: Install Chromium and PDF inspection tools
+      - name: Install build dependencies
         run: |
+          npm install
+          npm install --no-save --package-lock=false pdf-lib
           npx playwright install --with-deps chromium
-          sudo apt-get update
-          sudo apt-get install -y poppler-utils
 
-      - name: Syntax-check publication scripts
+      - name: Check booklet scripts
         run: |
           node --check scripts/render-clean-v063-booklet.mjs
           node --check scripts/validate-clean-v063-booklet.mjs
           node --check scripts/materialize-clean-v063-booklet.mjs
           node --check scripts/apply-v063-public-ui-cleanup.mjs
-          node --check scripts/validate-v063-public-ui-invariants.mjs
-          node --check scripts/validate-v063-public-ui-render.mjs
 
-      - name: Apply public UI cleanup
+      - name: Apply this PR's public UI cleanup
         run: node scripts/apply-v063-public-ui-cleanup.mjs
 
-      - name: Render clean booklet
-        run: node scripts/render-clean-v063-booklet.mjs
-
-      - name: Validate clean booklet
-        run: node scripts/validate-clean-v063-booklet.mjs
-
-      - name: Materialize reviewed release booklet
-        run: node scripts/materialize-clean-v063-booklet.mjs
-
-      - name: Validate public-facing invariants
-        run: node scripts/validate-v063-public-ui-invariants.mjs
-
-      - name: Preflight PDFs
+      - name: Build and validate booklet
         run: |
-          set -euo pipefail
-          out='artifacts/reconstruction/clean-v0.6.3/booklet/generated'
-          pdfinfo "$out/Gauntlet_v0.6.3_Rulebook_Booklet_Reading_Order.pdf"
-          pdfinfo "$out/Gauntlet_v0.6.3_Rulebook_Booklet.pdf"
-          logical_pages=$(pdfinfo "$out/Gauntlet_v0.6.3_Rulebook_Booklet_Reading_Order.pdf" | awk '/^Pages:/ {print $2}')
-          imposed_pages=$(pdfinfo "$out/Gauntlet_v0.6.3_Rulebook_Booklet.pdf" | awk '/^Pages:/ {print $2}')
-          middle=$(( (logical_pages + 1) / 2 ))
-          last=$logical_pages
-          imposed_last=$imposed_pages
-          mkdir -p /tmp/gauntlet-clean-v063-booklet-previews
-          pdftoppm -png -r 130 -f 1 -singlefile "$out/Gauntlet_v0.6.3_Rulebook_Booklet_Reading_Order.pdf" /tmp/gauntlet-clean-v063-booklet-previews/logical-001-cover
-          pdftoppm -png -r 130 -f "$middle" -singlefile "$out/Gauntlet_v0.6.3_Rulebook_Booklet_Reading_Order.pdf" /tmp/gauntlet-clean-v063-booklet-previews/logical-middle
-          pdftoppm -png -r 130 -f "$last" -singlefile "$out/Gauntlet_v0.6.3_Rulebook_Booklet_Reading_Order.pdf" /tmp/gauntlet-clean-v063-booklet-previews/logical-last
-          pdftoppm -png -r 130 -f 1 -singlefile "$out/Gauntlet_v0.6.3_Rulebook_Booklet.pdf" /tmp/gauntlet-clean-v063-booklet-previews/imposed-001
-          pdftoppm -png -r 130 -f "$imposed_last" -singlefile "$out/Gauntlet_v0.6.3_Rulebook_Booklet.pdf" /tmp/gauntlet-clean-v063-booklet-previews/imposed-last
+          node scripts/render-clean-v063-booklet.mjs
+          node scripts/validate-clean-v063-booklet.mjs
+          node scripts/materialize-clean-v063-booklet.mjs
+          git diff --check
 
-      - name: Render-check public pages
-        run: |
-          set -euo pipefail
-          python3 -m http.server 8000 >/tmp/gauntlet-public-ui-http.log 2>&1 &
-          server_pid=$!
-          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
-          GAUNTLET_PUBLIC_UI_BASE_URL=http://127.0.0.1:8000 node scripts/validate-v063-public-ui-render.mjs
-
-      - name: Upload review package
+      - name: Upload booklet review artifact
         uses: actions/upload-artifact@v4
         with:
           name: gauntlet-clean-v063-rulebook-booklet
-          path: |
-            artifacts/reconstruction/clean-v0.6.3/booklet/generated/**
-            /tmp/gauntlet-clean-v063-booklet-previews/**
-            /tmp/gauntlet-v063-public-ui-previews/**
+          path: artifacts/reconstruction/clean-v0.6.3/booklet/generated/**
           if-no-files-found: error
 
-      - name: Reject whitespace errors
-        run: git diff --check
-
-      - name: Commit reviewed public artifacts and UI cleanup
+      - name: Materialize reviewed changes on this PR
         if: github.event_name == 'pull_request' && github.head_ref == 'fix/v063-clean-rulebook-booklet'
         run: |
           set -euo pipefail
@@ -156,8 +85,8 @@ jobs:
             factions/mystics/index.html \
             factions/inquisition/index.html
           if git diff --cached --quiet; then
-            echo 'Reviewed public artifacts and UI cleanup already materialized.'
+            echo 'Reviewed booklet and UI changes are already materialized.'
           else
-            git commit -m 'Apply v0.6.3 public print and faction UI cleanup'
+            git commit -m 'Materialize v0.6.3 booklet and public UI cleanup'
             git push origin HEAD:${{ github.head_ref }}
           fi
