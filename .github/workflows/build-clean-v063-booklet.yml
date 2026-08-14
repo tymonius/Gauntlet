@@ -1,0 +1,92 @@
+name: Build clean v0.6.3 rulebook booklet
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/build-clean-v063-booklet.yml'
+      - 'scripts/render-clean-v063-booklet.mjs'
+      - 'scripts/validate-clean-v063-booklet.mjs'
+      - 'artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md'
+      - 'releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md'
+      - 'rulebook/markdown.js'
+      - 'images/sketches/hero-sketches/**'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-clean-v063-booklet.yml'
+      - 'scripts/render-clean-v063-booklet.mjs'
+      - 'scripts/validate-clean-v063-booklet.mjs'
+      - 'artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md'
+      - 'releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md'
+      - 'rulebook/markdown.js'
+      - 'images/sketches/hero-sketches/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out booklet inputs
+        uses: actions/checkout@v4
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install repository dependencies
+        run: npm install
+
+      - name: Install PDF build dependencies
+        run: npm install --no-save pdf-lib
+
+      - name: Install Chromium and PDF inspection tools
+        run: |
+          npx playwright install --with-deps chromium
+          sudo apt-get update
+          sudo apt-get install -y poppler-utils
+
+      - name: Syntax-check booklet scripts
+        run: |
+          node --check scripts/render-clean-v063-booklet.mjs
+          node --check scripts/validate-clean-v063-booklet.mjs
+
+      - name: Render clean booklet
+        run: node scripts/render-clean-v063-booklet.mjs
+
+      - name: Validate clean booklet
+        run: node scripts/validate-clean-v063-booklet.mjs
+
+      - name: Preflight PDFs
+        run: |
+          set -euo pipefail
+          out='artifacts/reconstruction/clean-v0.6.3/booklet/generated'
+          pdfinfo "$out/Gauntlet_v0.6.3_Rulebook_Booklet_Reading_Order.pdf"
+          pdfinfo "$out/Gauntlet_v0.6.3_Rulebook_Booklet.pdf"
+          logical_pages=$(pdfinfo "$out/Gauntlet_v0.6.3_Rulebook_Booklet_Reading_Order.pdf" | awk '/^Pages:/ {print $2}')
+          imposed_pages=$(pdfinfo "$out/Gauntlet_v0.6.3_Rulebook_Booklet.pdf" | awk '/^Pages:/ {print $2}')
+          middle=$(( (logical_pages + 1) / 2 ))
+          last=$logical_pages
+          imposed_last=$imposed_pages
+          mkdir -p /tmp/gauntlet-clean-v063-booklet-previews
+          pdftoppm -png -r 130 -f 1 -singlefile "$out/Gauntlet_v0.6.3_Rulebook_Booklet_Reading_Order.pdf" /tmp/gauntlet-clean-v063-booklet-previews/logical-001-cover
+          pdftoppm -png -r 130 -f "$middle" -singlefile "$out/Gauntlet_v0.6.3_Rulebook_Booklet_Reading_Order.pdf" /tmp/gauntlet-clean-v063-booklet-previews/logical-middle
+          pdftoppm -png -r 130 -f "$last" -singlefile "$out/Gauntlet_v0.6.3_Rulebook_Booklet_Reading_Order.pdf" /tmp/gauntlet-clean-v063-booklet-previews/logical-last
+          pdftoppm -png -r 130 -f 1 -singlefile "$out/Gauntlet_v0.6.3_Rulebook_Booklet.pdf" /tmp/gauntlet-clean-v063-booklet-previews/imposed-001
+          pdftoppm -png -r 130 -f "$imposed_last" -singlefile "$out/Gauntlet_v0.6.3_Rulebook_Booklet.pdf" /tmp/gauntlet-clean-v063-booklet-previews/imposed-last
+
+      - name: Upload booklet review package
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-clean-v063-rulebook-booklet
+          path: |
+            artifacts/reconstruction/clean-v0.6.3/booklet/generated/**
+            /tmp/gauntlet-clean-v063-booklet-previews/**
+          if-no-files-found: error
+
+      - name: Reject whitespace errors
+        run: git diff --check
