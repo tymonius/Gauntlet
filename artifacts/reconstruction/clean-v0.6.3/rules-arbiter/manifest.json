@@ -1,0 +1,54 @@
+{
+  "schema_version": 1,
+  "target": "clean-v0.6.3-rules-arbiter",
+  "status": "downstream_candidate_pending_merge_review",
+  "authority_set_id": "64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49",
+  "authority_certification": "artifacts/reconstruction/clean-v0.6.3/complete-authority/authority-set.json",
+  "certified_rulebook": {
+    "path": "artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md",
+    "sha256": "7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643"
+  },
+  "downstream_prerequisite": {
+    "manifest": "artifacts/reconstruction/clean-v0.6.3/downstream/manifest.json",
+    "canonical_data_path": "artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json",
+    "canonical_data_sha256": "641c813366a8bcb52f9cb505ada640994d416024deed1f71a6ec59fb24ed2c4c"
+  },
+  "operational_baseline": {
+    "path": "rules-assistant/worker-v061.js",
+    "role": "current-public-arbiter-behavior-baseline-only",
+    "adjudication_guide": "rules-assistant/Rules_Arbiter_Adjudication_Guide.md"
+  },
+  "historical_v063_arbiter_role": "ux_and_deployment_evidence_only_not_authority",
+  "forbidden_semantic_inputs": [
+    "rules-assistant/v063-development-corpus.js",
+    "rules-assistant/rules-deterministic-v063.js",
+    "rules-assistant/worker-v063-candidate.js",
+    "v0.6.3/rules-arbiter/"
+  ],
+  "semantic_policy": {
+    "deterministic_v063_rulings": 0,
+    "gameplay_specific_worker_prompt_rules": false,
+    "answers_derive_from_bound_clean_sources": true
+  },
+  "operational_policy": {
+    "four_ruling_classes": true,
+    "provisional_rulings": true,
+    "session_ruling_continuity_when_db_configured": true,
+    "interaction_logging_when_db_configured": true,
+    "formal_playtest_linking": false,
+    "isolated_worker_name": "gauntlet-rules-arbiter-clean-v063-reconstruction"
+  },
+  "publication_unlocked": false,
+  "public_current_release": "v0.6.1",
+  "public_worker_route_modified": false,
+  "outputs": [
+    "artifacts/reconstruction/clean-v0.6.3/rules-arbiter/index.html",
+    "artifacts/reconstruction/clean-v0.6.3/rules-arbiter/styles.css",
+    "artifacts/reconstruction/clean-v0.6.3/rules-arbiter/app.js",
+    "artifacts/reconstruction/clean-v0.6.3/rules-arbiter/corpus.js",
+    "artifacts/reconstruction/clean-v0.6.3/rules-arbiter/worker.js",
+    "artifacts/reconstruction/clean-v0.6.3/rules-arbiter/source-boundary.md",
+    "artifacts/reconstruction/clean-v0.6.3/rules-arbiter/validation-status.md",
+    "artifacts/reconstruction/clean-v0.6.3/rules-arbiter/wrangler.toml"
+  ]
+}
