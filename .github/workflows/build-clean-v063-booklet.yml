@@ -21,6 +21,7 @@ jobs:
             /package.json
             /package-lock.json
             /scripts/build-v063-rulebook-production.py
+            /scripts/run-v063-rulebook-renderer.mjs
             /scripts/render-clean-v063-booklet.mjs
             /scripts/validate-clean-v063-booklet.mjs
             /rulebook-design/
@@ -45,6 +46,7 @@ jobs:
         run: |
           set -euo pipefail
           python -m py_compile scripts/build-v063-rulebook-production.py
+          node --check scripts/run-v063-rulebook-renderer.mjs
           node --check scripts/render-clean-v063-booklet.mjs
           node --check scripts/validate-clean-v063-booklet.mjs
           node scripts/render-clean-v063-booklet.mjs
