@@ -1,34 +1,15 @@
 name: Build clean v0.6.3 downstream data
 
 on:
-  push:
-    branches:
-      - agent/rebuild-clean-v063-downstream-data
-    paths:
-      - scripts/build-clean-v063-downstream-data.mjs
-      - scripts/validate-clean-v063-downstream-data.mjs
-      - artifacts/reconstruction/clean-v0.6.3/certification/**
-      - artifacts/reconstruction/clean-v0.6.3/faction-guides/**
-      - artifacts/reconstruction/clean-v0.6.3/rulebook/**
-      - artifacts/reconstruction/clean-v0.6.3/downstream/**
-      - artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json
-      - releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json
-      - v0.6.3/data/starter-decks-candidate.js
-      - docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md
-      - config/reconstruction-version-plan.json
-      - config/reconstruction-version-resolutions.json
-      - config/release-lifecycle.json
-      - .github/workflows/build-clean-v063-downstream-data.yml
   pull_request:
     branches: [main]
     paths:
       - scripts/build-clean-v063-downstream-data.mjs
       - scripts/validate-clean-v063-downstream-data.mjs
-      - artifacts/reconstruction/clean-v0.6.3/certification/**
+      - artifacts/reconstruction/clean-v0.6.3/complete-authority/**
       - artifacts/reconstruction/clean-v0.6.3/faction-guides/**
       - artifacts/reconstruction/clean-v0.6.3/rulebook/**
       - artifacts/reconstruction/clean-v0.6.3/downstream/**
-      - artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json
       - releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json
       - v0.6.3/data/starter-decks-candidate.js
       - docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md
@@ -39,7 +20,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
 
 concurrency:
   group: clean-v063-downstream-data-${{ github.workflow }}-${{ github.ref }}
@@ -60,11 +41,10 @@ jobs:
             /config/reconstruction-version-plan.json
             /config/reconstruction-version-resolutions.json
             /config/release-lifecycle.json
-            /artifacts/reconstruction/clean-v0.6.3/certification/
+            /artifacts/reconstruction/clean-v0.6.3/complete-authority/
             /artifacts/reconstruction/clean-v0.6.3/faction-guides/
             /artifacts/reconstruction/clean-v0.6.3/rulebook/
             /artifacts/reconstruction/clean-v0.6.3/downstream/
-            /artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json
             /releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json
             /v0.6.3/data/starter-decks-candidate.js
             /docs/Gauntlet_v0.6.3_Starter_Deck_Finalization.md
@@ -85,22 +65,13 @@ jobs:
       - name: Validate clean v0.6.3 downstream data
         run: node scripts/validate-clean-v063-downstream-data.mjs
 
-      - name: Reject whitespace errors
-        run: git diff --check
-
-      - name: Commit deterministic downstream reconstruction
-        if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
+      - name: Reject withdrawn candidate from gameplay-bearing outputs
         run: |
-          git add artifacts/reconstruction/clean-v0.6.3/downstream
-          if git diff --cached --quiet; then
-            echo 'Generated downstream reconstruction is already current.'
-            exit 0
-          fi
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Materialize clean v0.6.3 downstream data'
-          git push origin HEAD:${{ github.ref_name }}
+          ! grep -F 'artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json' artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json
+          ! grep -F 'artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json' artifacts/reconstruction/clean-v0.6.3/downstream/starter-decks.json
 
-      - name: Require committed outputs on pull requests
-        if: github.event_name == 'pull_request'
+      - name: Reject whitespace errors
+        run: git diff --check -- artifacts/reconstruction/clean-v0.6.3/downstream
+
+      - name: Require committed deterministic outputs
         run: git diff --exit-code -- artifacts/reconstruction/clean-v0.6.3/downstream
