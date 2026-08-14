@@ -1,0 +1,86 @@
+{
+  "schema_version": 1,
+  "target": "clean-v0.6.3-publication-verification",
+  "release_version": "v0.6.3",
+  "status": "published_and_live_verified",
+  "authority_set_id": "64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49",
+  "publication_date": "2026-08-14",
+  "verified_at": "2026-08-14T14:21:58Z",
+  "publication_chain": {
+    "authorization_pr": 641,
+    "retry_prs": [645, 646],
+    "atomic_materialization_commit": "72af3ff51fdb8a220b5159cb6ec39a4a337a86b9",
+    "ci_phase_transition_pr": 647,
+    "live_verification_pr": 648,
+    "initial_live_verification_commit": "e54e6aa76e673e8adea711d11e2452fbfa7097eb",
+    "live_verification_run_id": 31808351910,
+    "successful_live_job_id": 94793703001
+  },
+  "github_pages": {
+    "initial_verified_commit": "e54e6aa76e673e8adea711d11e2452fbfa7097eb",
+    "verified_build_id": 1151157745,
+    "verified_workflow_run_id": 31808746671,
+    "build_status": "built",
+    "deployment_status": "success"
+  },
+  "rules_arbiter": {
+    "worker_name": "gauntlet-rules-assistant",
+    "verified_version_id": "f7b39769-36b8-4e88-bddd-ce8c4a62e2fd",
+    "current_route": {
+      "path": "/api/health",
+      "version": "v0.6.3",
+      "published": true,
+      "reconstruction": false,
+      "current_public_release": "v0.6.3",
+      "verified": true
+    },
+    "historical_route": {
+      "path": "/api/v061/health",
+      "version": "v0.6.1",
+      "verified": true
+    }
+  },
+  "live_surfaces": {
+    "gauntlet_run_routes_verified": [
+      "/",
+      "/rulebook/",
+      "/card-reference/",
+      "/factions/",
+      "/factions/military/",
+      "/factions/diplomats/",
+      "/factions/financiers/",
+      "/factions/intelligence/",
+      "/factions/mystics/",
+      "/factions/inquisition/",
+      "/start/",
+      "/deckbuilder/",
+      "/rules-arbiter/"
+    ],
+    "release_manifest_verified": true,
+    "release_manifest_path": "/releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Manifest.json",
+    "all_checks_passed": true
+  },
+  "release_integrity": {
+    "playable_cards": 128,
+    "territories": 25,
+    "factions": 6,
+    "leaders": 12,
+    "starter_decks": 12,
+    "print_pdfs": 9,
+    "json_exports": 3,
+    "historical_withdrawn_package_preserved": true,
+    "historical_withdrawn_package_path": "releases/v0.6.3/",
+    "current_reconstructed_package_path": "releases/v0.6.3-reconstructed/"
+  },
+  "preserved_evidence": {
+    "prepublication_candidate": "artifacts/reconstruction/clean-v0.6.3/current-release-metadata/release-candidate.json",
+    "cutover_time_release_manifest": "releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Manifest.json",
+    "note": "The prepublication candidate and cutover-time release manifest retain their phase-specific pending fields as historical evidence. This attestation records the later successful post-merge live verification instead of rewriting those snapshots."
+  },
+  "governance": {
+    "issue_590_acceptance_gates_satisfied": true,
+    "issue_591_acceptance_gates_satisfied": true,
+    "issues_ready_to_close_after_this_attestation_merges": [590, 591],
+    "parent_issue": 587
+  }
+}

@@ -5,10 +5,12 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/verify-current-v063-live-publication.yml'
+      - 'publication/v0.6.3/verification.json'
   push:
     branches: [main]
     paths:
       - '.github/workflows/verify-current-v063-live-publication.yml'
+      - 'publication/v0.6.3/verification.json'
   workflow_dispatch:
 
 permissions:
@@ -42,6 +44,9 @@ jobs:
 
       - name: Validate published clean v0.6.3 package data
         run: node scripts/validate-clean-v063-publication-data.mjs
+
+      - name: Verify publication closeout attestation
+        run: npx vitest run tests/reconstruction-publication-closeout.test.ts
 
       - name: Verify analytics synchronization
         run: node scripts/sync-google-analytics.mjs --check
@@ -86,6 +91,9 @@ jobs:
 
       - name: Validate published clean v0.6.3 package data
         run: node scripts/validate-clean-v063-publication-data.mjs
+
+      - name: Verify publication closeout attestation
+        run: npx vitest run tests/reconstruction-publication-closeout.test.ts
 
       - name: Verify analytics synchronization
         run: node scripts/sync-google-analytics.mjs --check
@@ -186,7 +194,7 @@ jobs:
               break;
             }
             if (latest.commit === expectedSha && latest.status === 'errored') {
-              throw new Error(`Pages build errored: ${JSON.stringify(latest)}`);
+              console.log('An errored same-SHA Pages build may precede the explicitly requested replacement build; continuing to poll.');
             }
             await sleep(5000);
           }
@@ -212,6 +220,13 @@ jobs:
             'https://gauntlet.run/releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Manifest.json',
             (manifest) => manifest?.release_version === 'v0.6.3' && manifest.authority_set_id === authoritySetId,
             'Reconstructed release manifest',
+            40,
+            5000
+          );
+          await waitJson(
+            'https://gauntlet.run/publication/v0.6.3/verification.json',
+            (attestation) => attestation?.release_version === 'v0.6.3' && attestation.authority_set_id === authoritySetId && attestation.status === 'published_and_live_verified',
+            'Publication verification attestation',
             40,
             5000
           );
