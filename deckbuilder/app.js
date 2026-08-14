@@ -1,394 +1,729 @@
-const AUTHORITY_SET_ID = '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49';
-const CANONICAL_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json';
-const CANONICAL_SHA256 = '641c813366a8bcb52f9cb505ada640994d416024deed1f71a6ec59fb24ed2c4c';
-const STARTERS_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/downstream/starter-decks.json';
-const STARTERS_SHA256 = '4c0ebe201584fc709623e37bb31630394294830dbe7b0f75ba43ae61bce33d64';
+const SOURCES = {
+  neutral: {
+    label: "Neutral",
+    path: "../docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md"
+  },
+  military: {
+    label: "Military",
+    path: "../releases/v0.6.1/faction-guides/military/Gauntlet_v0.6.1_Military_Faction_Guide.md",
+    start: "# 6. Canonical Military card pool",
+    end: "# 7. Card-pool summary"
+  },
+  diplomats: {
+    label: "Diplomats",
+    path: "../releases/v0.6.1/faction-guides/diplomat/Gauntlet_v0.6.1_Diplomat_Faction_Guide.md",
+    start: "# 6. Canonical card pool",
+    end: "# 7. Card-pool summary"
+  },
+  inquisition: {
+    label: "Inquisition",
+    path: "../releases/v0.6.1/faction-guides/inquisition/Gauntlet_v0.6.1_Inquisition_Faction_Guide.md",
+    start: "# 6. Canonical Inquisition card pool",
+    end: "# 7. Quick reference",
+    headingLevel: 2
+  },
+  financiers: {
+    label: "Financiers",
+    path: "../releases/v0.6.1/faction-guides/financier/Gauntlet_v0.6.1_Financier_Faction_Guide.md",
+    start: "# 6. Canonical Financier card pool",
+    end: "# 7. Quick reference",
+    headingLevel: 2
+  },
+  intelligence: {
+    label: "Intelligence",
+    path: "../releases/v0.6.1/faction-guides/intelligence/Gauntlet_v0.6.1_Intelligence_Faction_Guide.md",
+    start: "# 6. Canonical Intelligence card pool",
+    end: "# 7. Card-pool summary"
+  }
+};
+
+const FACTIONS = [
+  {
+    id: "military",
+    name: "Military",
+    status: "ready",
+    identity: "Conquest, battlefield momentum, and Orders.",
+    resource: "Command (maximum 2)",
+    victory: "Run the Gauntlet.",
+    leaders: [
+      {
+        id: "general",
+        name: "General",
+        tagline: "Forward. Again.",
+        role: "Attack · Forward pressure · Tempo",
+        rules: [
+          ["Command", "The first time each turn you win a battle, gain 1 Command, up to 2."],
+          ["Onward — 1 Command", "Move one additional space this turn. This movement may initiate a battle."],
+          ["Rally — 1 Command", "Before dice in a battle you initiated, add +1 to your battle total."],
+          ["Rout — 2 Command", "After winning a battle you initiated, move one position toward the opponent's end. This may initiate another battle."]
+        ]
+      },
+      {
+        id: "commandant",
+        name: "Commandant",
+        tagline: "We hold. They break.",
+        role: "Defense · Counterattack · Control",
+        rules: [
+          ["Command", "The first time each turn you win a battle, gain 1 Command, up to 2."],
+          ["Entrench — 1 Command", "Before dice in a battle you did not initiate, add +1 to your battle total."],
+          ["Repel — 1 Command", "After winning a battle you did not initiate, the defeated opponent retreats one additional space, if able."],
+          ["Fortify — 2 Command", "After winning while occupying enemy Territory, capture it immediately."]
+        ]
+      }
+    ]
+  },
+  {
+    id: "diplomats",
+    name: "Diplomats",
+    status: "ready",
+    identity: "Terms, Influence, concessions, and political legitimacy.",
+    resource: "Influence (0–10)",
+    victory: "Peace Treaty: begin your turn with five different ratified Proposals.",
+    leaders: [
+      {
+        id: "ambassador",
+        name: "Ambassador",
+        tagline: "Words first. War last.",
+        role: "Acceptance · Card flow · Voluntary agreement",
+        rules: [
+          ["Setup", "Set Influence to 1 and place the nine Proposals Proposal-side up."],
+          ["Leverage", "Before dice following refused Terms, spend any available Influence for +1 battle total each."],
+          ["Cordiality", "Once per turn, after the opponent accepts your Terms, draw one card."],
+          ["Peace Treaty", "At the start of your turn, after captures, five different ratified Proposals win the game."]
+        ]
+      },
+      {
+        id: "senator",
+        name: "Senator",
+        tagline: "Procedure endures.",
+        role: "Stakes · Resilience · Political capital",
+        rules: [
+          ["Setup", "Set Influence to 1 and place the nine Proposals Proposal-side up."],
+          ["Leverage", "Before dice following refused Terms, spend any available Influence for +1 battle total each."],
+          ["Political Capital", "Once per turn, when you would lose staked Influence after losing the battle, send cards from hand to your Graveyard to recover 1 staked Influence per card."],
+          ["Peace Treaty", "At the start of your turn, after captures, five different ratified Proposals win the game."]
+        ]
+      }
+    ]
+  },
+  {
+    id: "inquisition",
+    name: "Inquisition",
+    status: "ready",
+    identity: "Conviction, condemnation, Purge, and Purification.",
+    resource: "Conviction (maximum 4)",
+    victory: "Purification: the opponent begins a turn unable to draw from deck or discard.",
+    leaders: [
+      {
+        id: "grand-inquisitor",
+        name: "Grand Inquisitor",
+        tagline: "We judge. We purge.",
+        role: "Judgment · Purge · Resource destruction",
+        rules: [
+          ["Conviction", "The first time each turn opposing cards enter the Graveyard after a battle involving you, gain 1 Conviction, up to 4."],
+          ["Condemnation", "Opposing Tactics go to the Graveyard during the Aftermath instead of the Discard Pile."],
+          ["Final Judgment", "Once per turn during the Aftermath of a battle you won, after battle cards are cleared, Purge without spending an Action and reduce its Conviction cost by 1, minimum 1."],
+          ["Purification", "At the start of the opponent's turn, after their normal draw attempt, if no card can be drawn from deck or discard, you win."]
+        ]
+      },
+      {
+        id: "witch-hunter",
+        name: "Witch Hunter",
+        tagline: "You ran. I followed.",
+        role: "Defense · Pursuit · Exposure",
+        rules: [
+          ["Conviction", "The first time each turn opposing cards enter the Graveyard after a battle involving you, gain 1 Conviction, up to 4."],
+          ["Condemnation", "Opposing Tactics go to the Graveyard during the Aftermath instead of the Discard Pile."],
+          ["Relentless Pursuit", "Once per turn after an opponent loses a battle they initiated against you, spend 2 Conviction to end their turn, then move one position toward their end; resolve any resulting battle immediately."],
+          ["Purification", "At the start of the opponent's turn, after their normal draw attempt, if no card can be drawn from deck or discard, you win."]
+        ]
+      }
+    ]
+  },
+  {
+    id: "mystics",
+    name: "Mystics",
+    status: "developing",
+    identity: "Rites, sacrifice, transformation, and Ritual victory.",
+    resource: "In development",
+    victory: "Ritual victory — in development.",
+    leaders: [{ id: "alchemist", name: "Alchemist" }, { id: "spirit-walker", name: "Spirit Walker" }]
+  },
+  {
+    id: "financiers",
+    name: "Financiers",
+    status: "ready",
+    identity: "Capital, Treasury, Deeds, leverage, income, and Controlling Interest.",
+    resource: "Capital (dynamic limit)",
+    victory: "Controlling Interest: own the Deeds to every Territory in the Gauntlet.",
+    leaders: [
+      {
+        id: "banker",
+        name: "Banker",
+        tagline: "Credit closes the distance.",
+        role: "Collateral · Purchase timing · Flexible financing",
+        rules: [
+          ["Capital limit", "Territories you control plus the total card value in your Treasury."],
+          ["Financial Capacity", "After the Capture step, if Treasury value exceeds Territories controlled, gain 1 additional Action that turn; if both Actions are spent, one must be spent on a Financier Faction Action."],
+          ["Treasury", "During an Action Opportunity after movement, spend 1 Action to place one card from Hand face up in Treasury."],
+          ["Line of Credit", "The first Deed purchase or buyout each turn may use one hand or Treasury card as collateral, contributing its value up to half the cost before being discarded."],
+          ["Controlling Interest", "Immediately win when you own the Deeds to every Territory currently in the Gauntlet."]
+        ]
+      },
+      {
+        id: "executive",
+        name: "Executive",
+        tagline: "Take the ground. Close the deal.",
+        role: "Offense · Occupation · Immediate control",
+        rules: [
+          ["Capital limit", "Territories you control plus the total card value in your Treasury."],
+          ["Financial Capacity", "After the Capture step, if Treasury value exceeds Territories controlled, gain 1 additional Action that turn; if both Actions are spent, one must be spent on a Financier Faction Action."],
+          ["Treasury", "During an Action Opportunity after movement, spend 1 Action to place one card from Hand face up in Treasury."],
+          ["Hostile Takeover", "During an Action Opportunity after movement, after winning as the attacker and becoming the occupier of that enemy Territory, spend 1 Action to buy or buy out its Deed; success immediately gives you control."],
+          ["Controlling Interest", "Immediately win when you own the Deeds to every Territory currently in the Gauntlet."]
+        ]
+      }
+    ]
+  },
+  {
+    id: "intelligence",
+    name: "Intelligence",
+    status: "ready",
+    identity: "Intel, Missions, Surveillance, Interference, and Special Operation.",
+    resource: "Intel and Operation Progress (begin at 0)",
+    victory: "Run the Gauntlet or complete a Special Operation.",
+    leaders: [
+      {
+        id: "ranger",
+        name: "Ranger",
+        tagline: "Know the land before the battle begins.",
+        role: "Terrain · Reconnaissance · Hostile ground",
+        rules: [
+          ["Missions", "Complete normal Missions to gain 1 Operation Progress and Intel equal to the Mission card's value."],
+          ["Surveillance", "Once during the Gambit stage and once during the Tactic stage each battle, spend 1 Intel per opposing face-down card revealed."],
+          ["Fieldcraft", "Once per turn, spend 1 Intel to ignore a revealed Territory effect affecting you, your movement, or a battle involving you until end of turn."],
+          ["Special Operation", "When Progress exceeds opposing controlled Territories, start an eligible Mission card as the Special Operation; satisfy it later and pay the final Intel cost to win."]
+        ]
+      },
+      {
+        id: "spymaster",
+        name: "Spymaster",
+        tagline: "Information never rests. Momentum is the weapon.",
+        role: "Mission tempo · Network command · Coordination",
+        rules: [
+          ["Missions", "Complete normal Missions to gain 1 Operation Progress and Intel equal to the Mission card's value."],
+          ["Surveillance", "Once during the Gambit stage and once during the Tactic stage each battle, spend 1 Intel per opposing face-down card revealed."],
+          ["Mission Control", "Once per turn after completing a normal Mission, immediately start another eligible Mission from Hand without spending an Action. It cannot complete that turn or be the Special Operation."],
+          ["Special Operation", "When Progress exceeds opposing controlled Territories, start an eligible Mission card as the Special Operation; satisfy it later and pay the final Intel cost to win."]
+        ]
+      }
+    ]
+  }
+];
+
+const STORAGE_KEY = "gauntlet-v0.6.1-decks";
 
 const state = {
-  canonical: null,
-  starters: [],
-  factionId: '',
-  leaderId: '',
-  quantities: new Map(),
-  territoryIds: [],
+  cards: [],
+  deckName: "",
+  factionId: "military",
+  leaderId: "general",
+  deck: {},
+  search: "",
+  cost: "all",
+  allegiance: "all",
+  selectedCardId: null
 };
 
-const el = {
-  sourceStatus: document.querySelector('[data-source-status]'),
-  factionSelect: document.querySelector('[data-faction-select]'),
-  leaderSelect: document.querySelector('[data-leader-select]'),
-  starterName: document.querySelector('[data-starter-name]'),
-  starterSummary: document.querySelector('[data-starter-summary]'),
-  loadStarter: document.querySelector('[data-load-starter]'),
-  cardCount: document.querySelector('[data-card-count]'),
-  deckValue: document.querySelector('[data-deck-value]'),
-  territoryCount: document.querySelector('[data-territory-count]'),
-  arenaCount: document.querySelector('[data-arena-count]'),
-  validationStatus: document.querySelector('[data-validation-status]'),
-  clearDeck: document.querySelector('[data-clear-deck]'),
-  cardSearch: document.querySelector('[data-card-search]'),
-  cardFilter: document.querySelector('[data-card-filter]'),
-  cardPool: document.querySelector('[data-card-pool]'),
-  currentDeck: document.querySelector('[data-current-deck]'),
-  territorySearch: document.querySelector('[data-territory-search]'),
-  territoryPool: document.querySelector('[data-territory-pool]'),
-  territoryOrder: document.querySelector('[data-territory-order]'),
-};
+const el = {};
 
-function bytesToHex(buffer) {
-  return [...new Uint8Array(buffer)].map((byte) => byte.toString(16).padStart(2, '0')).join('');
-}
+document.addEventListener("DOMContentLoaded", init);
 
-async function fetchVerified(url, expectedSha256) {
-  const response = await fetch(url, { cache: 'no-store' });
-  if (!response.ok) throw new Error(`${url} returned ${response.status}.`);
-  const bytes = await response.arrayBuffer();
-  const actualHash = bytesToHex(await crypto.subtle.digest('SHA-256', bytes));
-  if (actualHash !== expectedSha256) throw new Error(`Source hash mismatch for ${url}.`);
-  return new TextDecoder().decode(bytes);
-}
+async function init() {
+  cacheElements();
+  bindEvents();
+  renderFactionOptions();
 
-function escapeHtml(value) {
-  return String(value ?? '')
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#39;');
-}
-
-function slugify(value) {
-  return String(value ?? '').toLowerCase().normalize('NFKD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-}
-
-function construction() {
-  return state.canonical?.deck_construction || {};
-}
-
-function selectedFaction() {
-  return state.canonical?.factions?.find((faction) => faction.id === state.factionId) || null;
-}
-
-function selectedStarter() {
-  return state.starters.find((deck) => deck.factionId === state.factionId && deck.leaderId === state.leaderId) || null;
-}
-
-function cardById(id) {
-  return state.canonical?.cards?.find((card) => card.id === id) || null;
-}
-
-function territoryId(territory) {
-  return territory.id || slugify(territory.name);
-}
-
-function territories() {
-  return Array.isArray(state.canonical?.territories) ? state.canonical.territories : [];
-}
-
-function territoryType(territory) {
-  const explicit = territory.type || territory.kind || territory.classification || '';
-  return territory.arena === true || String(explicit).toLowerCase().includes('arena') || String(territory.name).startsWith('Arena:') ? 'Arena' : 'Standard';
-}
-
-function territoryText(territory) {
-  if (typeof territory.text === 'string') return territory.text;
-  if (typeof territory.effect === 'string') return territory.effect;
-  if (Array.isArray(territory.effects)) return territory.effects.map((effect) => typeof effect === 'string' ? effect : [effect.label, effect.text].filter(Boolean).join(': ')).join(' ');
-  return '';
-}
-
-function legalCards() {
-  const faction = selectedFaction();
-  if (!faction) return [];
-  return state.canonical.cards.filter((card) => card.allegiance === 'Neutral' || card.allegiance === faction.name);
-}
-
-function cardQuantity(id) {
-  return state.quantities.get(id) || 0;
-}
-
-function setCardQuantity(id, nextQuantity) {
-  const card = cardById(id);
-  if (!card) return;
-  let quantity = Math.max(0, Math.floor(Number(nextQuantity) || 0));
-  if (card.unique) quantity = Math.min(quantity, 1);
-  if (quantity) state.quantities.set(id, quantity);
-  else state.quantities.delete(id);
-  renderCardPool();
-  renderCurrentDeck();
-  renderMetrics();
-}
-
-function totals() {
-  let cards = 0;
-  let value = 0;
-  for (const [id, quantity] of state.quantities.entries()) {
-    const card = cardById(id);
-    if (!card) continue;
-    cards += quantity;
-    value += quantity * Number(card.cost || 0);
+  try {
+    const pools = await Promise.all(Object.entries(SOURCES).map(loadSource));
+    state.cards = pools.flat().sort((a, b) => a.name.localeCompare(b.name));
+    el.dataStatus.textContent = `${state.cards.length} active cards loaded`;
+    el.app.hidden = false;
+    renderAll();
+  } catch (error) {
+    console.error(error);
+    el.dataStatus.textContent = "Source load failed";
+    document.body.insertAdjacentHTML("beforeend", `<p class="warning-panel panel">Unable to load the active v0.6 Markdown sources. Serve the repository through a web server rather than opening this file directly.</p>`);
   }
-  const selectedTerritories = territories().filter((territory) => state.territoryIds.includes(territoryId(territory)));
-  const arenas = selectedTerritories.filter((territory) => territoryType(territory) === 'Arena').length;
-  return { cards, value, selectedTerritories, arenas };
 }
 
-function validation() {
-  const limits = construction();
-  const total = totals();
-  const problems = [];
-  if (!selectedFaction()) problems.push('Choose one faction.');
-  if (!state.leaderId) problems.push('Choose one Leader.');
-  if (total.cards < Number(limits.minimum_cards || 30)) problems.push(`Deck needs at least ${Number(limits.minimum_cards || 30)} cards.`);
-  if (total.value > Number(limits.maximum_deckbuilding_value || 60)) problems.push(`Deck value exceeds ${Number(limits.maximum_deckbuilding_value || 60)}.`);
-  if (total.selectedTerritories.length !== Number(limits.territories_per_player || 3)) problems.push(`Choose exactly ${Number(limits.territories_per_player || 3)} Territories.`);
-  if (total.arenas > Number(limits.maximum_arenas || 1)) problems.push(`Choose no more than ${Number(limits.maximum_arenas || 1)} Arena.`);
-  const faction = selectedFaction();
-  for (const [id, quantity] of state.quantities.entries()) {
-    const card = cardById(id);
-    if (!card) problems.push(`Unknown card id ${id}.`);
-    else if (card.allegiance !== 'Neutral' && card.allegiance !== faction?.name) problems.push(`${card.name} is not legal for ${faction?.name || 'this faction'}.`);
-    else if (card.unique && quantity > 1) problems.push(`${card.name} is Unique and may appear only once.`);
-  }
-  return problems;
-}
-
-function renderFactionSelect() {
-  const factions = state.canonical.factions || [];
-  el.factionSelect.innerHTML = '<option value="">Choose a faction</option>' + factions.map((faction) => `<option value="${escapeHtml(faction.id)}">${escapeHtml(faction.name)}</option>`).join('');
-  el.factionSelect.disabled = false;
-  el.factionSelect.value = state.factionId;
-}
-
-function renderLeaderSelect() {
-  const faction = selectedFaction();
-  if (!faction) {
-    el.leaderSelect.innerHTML = '<option value="">Choose a faction first</option>';
-    el.leaderSelect.disabled = true;
-    return;
-  }
-  el.leaderSelect.innerHTML = '<option value="">Choose a Leader</option>' + faction.leaders.map((leader) => `<option value="${escapeHtml(slugify(leader.name))}">${escapeHtml(leader.name)}</option>`).join('');
-  el.leaderSelect.disabled = false;
-  el.leaderSelect.value = state.leaderId;
-}
-
-function renderStarterControl() {
-  const starter = selectedStarter();
-  el.loadStarter.disabled = !starter;
-  if (!starter) {
-    el.starterName.textContent = state.leaderId ? 'No approved starter found' : 'Choose a Leader';
-    el.starterSummary.textContent = 'Each Leader has one finalized competitive starter Deck.';
-    return;
-  }
-  el.starterName.textContent = starter.name;
-  el.starterSummary.textContent = starter.summary;
-}
-
-function effectHtml(card) {
-  const effects = Array.isArray(card.effects) ? card.effects : [];
-  return effects.map((effect) => `<div class="effect-line"><strong>${escapeHtml(effect.label)}:</strong> ${escapeHtml(effect.text)}</div>`).join('');
-}
-
-function renderCardPool() {
-  if (!selectedFaction()) {
-    el.cardPool.innerHTML = '<p class="empty-state">Choose a faction to open its legal card pool.</p>';
-    return;
-  }
-  const query = el.cardSearch.value.trim().toLowerCase();
-  const filter = el.cardFilter.value;
-  const faction = selectedFaction();
-  const cards = legalCards().filter((card) => {
-    if (filter === 'neutral' && card.allegiance !== 'Neutral') return false;
-    if (filter === 'faction' && card.allegiance !== faction.name) return false;
-    if (!query) return true;
-    const haystack = [card.name, card.allegiance, card.trait, ...(card.effects || []).flatMap((effect) => [effect.label, effect.text])].join(' ').toLowerCase();
-    return haystack.includes(query);
-  }).sort((a, b) => Number(a.cost) - Number(b.cost) || a.name.localeCompare(b.name));
-  if (!cards.length) {
-    el.cardPool.innerHTML = '<p class="empty-state">No legal cards match this filter.</p>';
-    return;
-  }
-  el.cardPool.innerHTML = cards.map((card) => {
-    const quantity = cardQuantity(card.id);
-    return `<article class="card-entry" data-card-id="${escapeHtml(card.id)}"><div><h3>${escapeHtml(card.name)}</h3><div class="card-meta"><span>${escapeHtml(card.allegiance)}</span><span>Value ${Number(card.cost)}</span>${card.trait ? `<span>${escapeHtml(card.trait)}</span>` : ''}${card.unique ? '<span class="unique-note">Unique</span>' : ''}</div><div class="card-text">${effectHtml(card)}</div></div><div class="qty-control"><button type="button" data-dec aria-label="Remove ${escapeHtml(card.name)}">−</button><span>${quantity}</span><button type="button" data-inc aria-label="Add ${escapeHtml(card.name)}">+</button></div></article>`;
-  }).join('');
-  el.cardPool.querySelectorAll('[data-card-id]').forEach((entry) => {
-    const id = entry.dataset.cardId;
-    entry.querySelector('[data-dec]').addEventListener('click', () => setCardQuantity(id, cardQuantity(id) - 1));
-    entry.querySelector('[data-inc]').addEventListener('click', () => setCardQuantity(id, cardQuantity(id) + 1));
-  });
-}
-
-function renderCurrentDeck() {
-  const rows = [...state.quantities.entries()].map(([id, quantity]) => ({ card: cardById(id), quantity })).filter((entry) => entry.card).sort((a, b) => a.card.name.localeCompare(b.card.name));
-  if (!rows.length) {
-    el.currentDeck.innerHTML = '<p class="empty-state">No cards selected.</p>';
-    return;
-  }
-  el.currentDeck.innerHTML = rows.map(({ card, quantity }) => `<div class="deck-row" data-current-id="${escapeHtml(card.id)}"><div><strong>${escapeHtml(card.name)}</strong><br><span>${escapeHtml(card.allegiance)} · value ${Number(card.cost)} each</span></div><span>${quantity * Number(card.cost)} value</span><div class="qty-control"><button type="button" data-dec>−</button><span>${quantity}</span><button type="button" data-inc>+</button></div></div>`).join('');
-  el.currentDeck.querySelectorAll('[data-current-id]').forEach((row) => {
-    const id = row.dataset.currentId;
-    row.querySelector('[data-dec]').addEventListener('click', () => setCardQuantity(id, cardQuantity(id) - 1));
-    row.querySelector('[data-inc]').addEventListener('click', () => setCardQuantity(id, cardQuantity(id) + 1));
-  });
-}
-
-function renderTerritories() {
-  const all = territories();
-  const query = el.territorySearch.value.trim().toLowerCase();
-  const visible = all.filter((territory) => [territory.name, territoryType(territory), territoryText(territory)].join(' ').toLowerCase().includes(query));
-  if (!all.length) {
-    el.territoryPool.innerHTML = '<p class="empty-state">The verified canonical dataset did not expose a Territory collection. Do not use this reconstruction.</p>';
-    return;
-  }
-  el.territoryPool.innerHTML = visible.map((territory) => {
-    const id = territoryId(territory);
-    const selected = state.territoryIds.includes(id);
-    return `<article class="territory-card${selected ? ' selected' : ''}" data-territory-id="${escapeHtml(id)}"><label><input type="checkbox" ${selected ? 'checked' : ''}/><span><h3>${escapeHtml(territory.name)}</h3><p>${escapeHtml(territoryText(territory))}</p><span class="type">${territoryType(territory)}</span></span></label></article>`;
-  }).join('') || '<p class="empty-state">No Territories match this search.</p>';
-  el.territoryPool.querySelectorAll('[data-territory-id]').forEach((entry) => {
-    entry.querySelector('input').addEventListener('change', (event) => toggleTerritory(entry.dataset.territoryId, event.target.checked));
-  });
-  renderTerritoryOrder();
-}
-
-function toggleTerritory(id, checked) {
-  if (checked && !state.territoryIds.includes(id)) {
-    if (state.territoryIds.length >= Number(construction().territories_per_player || 3)) {
-      renderTerritories();
-      return;
-    }
-    const territory = territories().find((item) => territoryId(item) === id);
-    if (territoryType(territory) === 'Arena' && totals().arenas >= Number(construction().maximum_arenas || 1)) {
-      renderTerritories();
-      return;
-    }
-    state.territoryIds.push(id);
-  } else if (!checked) {
-    state.territoryIds = state.territoryIds.filter((item) => item !== id);
-  }
-  renderTerritories();
-  renderMetrics();
-}
-
-function renderTerritoryOrder() {
-  const selected = state.territoryIds.map((id) => territories().find((territory) => territoryId(territory) === id)).filter(Boolean);
-  el.territoryOrder.innerHTML = selected.length ? selected.map((territory, index) => `<li><strong>${index + 1}.</strong> ${escapeHtml(territory.name)}</li>`).join('') : '<li>No Territories selected.</li>';
-}
-
-function renderMetrics() {
-  const total = totals();
-  el.cardCount.textContent = total.cards;
-  el.deckValue.textContent = total.value;
-  el.territoryCount.textContent = total.selectedTerritories.length;
-  el.arenaCount.textContent = total.arenas;
-  const problems = validation();
-  el.validationStatus.className = `validation-box ${problems.length ? 'invalid' : 'valid'}`;
-  el.validationStatus.innerHTML = problems.length ? `<strong>Not yet legal.</strong><br>${problems.map(escapeHtml).join('<br>')}` : '<strong>Legal clean-v0.6.3 construction.</strong><br>This package satisfies the certified construction constraints.';
-}
-
-function clearPackage() {
-  state.quantities.clear();
-  state.territoryIds = [];
-  renderCardPool();
-  renderCurrentDeck();
-  renderTerritories();
-  renderMetrics();
-}
-
-function loadStarter(starter = selectedStarter()) {
-  if (!starter) return;
-  const byName = new Map(state.canonical.cards.map((card) => [card.name, card]));
-  const territoryByName = new Map(territories().map((territory) => [territory.name, territory]));
-  const quantities = new Map();
-  for (const item of starter.cards) {
-    const card = byName.get(item.name);
-    if (!card) throw new Error(`Approved starter references missing card: ${item.name}`);
-    quantities.set(card.id, Number(item.quantity));
-  }
-  const orderedNames = starter.recommendedTerritoryOrder || starter.territories || [];
-  const territoryIds = orderedNames.map((name) => {
-    const territory = territoryByName.get(name);
-    if (!territory) throw new Error(`Approved starter references missing Territory: ${name}`);
-    return territoryId(territory);
-  });
-  state.quantities = quantities;
-  state.territoryIds = territoryIds;
-  renderCardPool();
-  renderCurrentDeck();
-  renderTerritories();
-  renderMetrics();
-}
-
-function applyQuerySelection() {
-  const params = new URLSearchParams(window.location.search);
-  const factionId = params.get('faction') || '';
-  const leaderId = params.get('leader') || '';
-  if (state.canonical.factions.some((faction) => faction.id === factionId)) state.factionId = factionId;
-  renderFactionSelect();
-  renderLeaderSelect();
-  if (selectedFaction()?.leaders.some((leader) => slugify(leader.name) === leaderId)) state.leaderId = leaderId;
-  renderLeaderSelect();
-  renderStarterControl();
-  if (params.get('starter') === '1' && selectedStarter()) loadStarter();
+function cacheElements() {
+  for (const id of [
+    "app", "dataStatus", "deckName", "factionSelect", "leaderSelect", "leaderPreview",
+    "cardCount", "pointTotal", "factionCardCount", "validityCard", "validityText",
+    "validationList", "savedDeckSelect", "saveDeckButton", "loadDeckButton", "deleteDeckButton",
+    "copyDeckButton", "exportJsonButton", "importJson", "importJsonButton", "cardSearch",
+    "allegianceFilter", "costFilter", "availableCount", "availableCards", "cardPreview",
+    "clearDeckButton", "deckCards"
+  ]) el[id] = document.getElementById(id);
 }
 
 function bindEvents() {
-  el.factionSelect.addEventListener('change', () => {
-    state.factionId = el.factionSelect.value;
-    state.leaderId = '';
-    clearPackage();
-    renderLeaderSelect();
-    renderStarterControl();
-    renderCardPool();
-    renderMetrics();
+  el.deckName.addEventListener("input", () => { state.deckName = el.deckName.value; });
+  el.factionSelect.addEventListener("change", changeFaction);
+  el.leaderSelect.addEventListener("change", () => { state.leaderId = el.leaderSelect.value; renderLeader(); validateAndRender(); });
+  el.cardSearch.addEventListener("input", () => { state.search = el.cardSearch.value.trim().toLowerCase(); renderAvailable(); });
+  el.costFilter.addEventListener("change", () => { state.cost = el.costFilter.value; renderAvailable(); });
+  el.allegianceFilter.addEventListener("change", () => { state.allegiance = el.allegianceFilter.value; renderAvailable(); });
+  el.clearDeckButton.addEventListener("click", () => {
+    if (Object.keys(state.deck).length && !confirm("Remove every card from this deck?")) return;
+    state.deck = {};
+    renderAll();
   });
-  el.leaderSelect.addEventListener('change', () => {
-    state.leaderId = el.leaderSelect.value;
-    renderStarterControl();
-    renderMetrics();
-  });
-  el.loadStarter.addEventListener('click', () => loadStarter());
-  el.clearDeck.addEventListener('click', clearPackage);
-  el.cardSearch.addEventListener('input', renderCardPool);
-  el.cardFilter.addEventListener('change', renderCardPool);
-  el.territorySearch.addEventListener('input', renderTerritories);
+  el.saveDeckButton.addEventListener("click", saveDeck);
+  el.loadDeckButton.addEventListener("click", loadDeck);
+  el.deleteDeckButton.addEventListener("click", deleteDeck);
+  el.copyDeckButton.addEventListener("click", copyDeckList);
+  el.exportJsonButton.addEventListener("click", exportDeckJson);
+  el.importJsonButton.addEventListener("click", importDeckJson);
 }
 
-async function initialize() {
+async function loadSource([faction, source]) {
+  const response = await fetch(source.path, { cache: "no-store" });
+  if (!response.ok) throw new Error(`Failed to load ${source.path}: ${response.status}`);
+  const markdown = await response.text();
+  return parseCardPool(markdown, faction, source);
+}
+
+function parseCardPool(markdown, faction, source) {
+  let section = markdown.replace(/\r/g, "");
+  if (source.start) {
+    const start = section.indexOf(source.start);
+    if (start >= 0) section = section.slice(start + source.start.length);
+  }
+  if (source.end) {
+    const end = section.indexOf(source.end);
+    if (end >= 0) section = section.slice(0, end);
+  }
+
+  const headingLevel = source.headingLevel || 2;
+  const headings = [...section.matchAll(new RegExp(`^#{${headingLevel}}\\s+(.+)$`, "gm"))];
+  const cards = [];
+
+  headings.forEach((match, index) => {
+    const name = match[1].trim();
+    const start = match.index + match[0].length;
+    const end = index + 1 < headings.length ? headings[index + 1].index : section.length;
+    const block = section.slice(start, end);
+    const costMatch = block.match(/\*\*Cost:\*\*\s*(\d+)/i);
+    if (!costMatch) return;
+
+    const complexity = block.match(/\*\*Complexity:\*\*\s*([^\n]+)/i)?.[1].replace(/\s+$/g, "").trim() || "Unspecified";
+    const trait = block.match(/\*\*Trait:\*\*\s*([^\n]+)/i)?.[1].replace(/\s+$/g, "").trim() || "";
+    const form = block.match(/\*\*Card form:\*\*\s*([^\n]+)/i)?.[1].replace(/\s+$/g, "").trim() || "";
+    const unique = /\*\*Unique:\*\*/i.test(block);
+    const sections = parseQuotedSections(block);
+
+    cards.push({
+      id: `${faction}-${slugify(name)}`,
+      name,
+      faction,
+      factionLabel: source.label,
+      cost: Number(costMatch[1]),
+      complexity,
+      trait,
+      form,
+      unique,
+      sections,
+      source: source.path
+    });
+  });
+
+  return cards;
+}
+
+function parseQuotedSections(block) {
+  const result = {};
+  let current = "Text";
+
+  for (const rawLine of block.split("\n")) {
+    if (!rawLine.trim().startsWith(">")) continue;
+    let line = rawLine.trim().replace(/^>\s?/, "").trim();
+    if (!line) continue;
+
+    const label = line.match(/^\*\*([^*]+):\*\*\s*(.*)$/);
+    if (label) {
+      current = label[1].trim();
+      line = label[2].trim();
+      if (!result[current]) result[current] = [];
+      if (line) result[current].push(cleanInlineMarkdown(line));
+      continue;
+    }
+
+    if (!result[current]) result[current] = [];
+    result[current].push(cleanInlineMarkdown(line));
+  }
+
+  return Object.fromEntries(Object.entries(result).map(([key, lines]) => [key, lines.join("\n")]));
+}
+
+function cleanInlineMarkdown(text) {
+  return text
+    .replace(/^[-*]\s+/, "• ")
+    .replace(/\*\*(.*?)\*\*/g, "$1")
+    .replace(/\*(.*?)\*/g, "$1")
+    .replace(/`(.*?)`/g, "$1")
+    .trim();
+}
+
+function renderAll() {
+  el.deckName.value = state.deckName;
+  el.factionSelect.value = state.factionId;
+  renderLeaderOptions();
+  renderLeader();
+  renderAvailable();
+  renderDeck();
+  renderSavedDecks();
+  validateAndRender();
+}
+
+function renderFactionOptions() {
+  el.factionSelect.innerHTML = FACTIONS.map(faction => {
+    const suffix = faction.status === "ready" ? "" : " — in development";
+    return `<option value="${faction.id}" ${faction.status !== "ready" ? "disabled" : ""}>${escapeHtml(faction.name + suffix)}</option>`;
+  }).join("");
+  el.factionSelect.value = state.factionId;
+}
+
+function renderLeaderOptions() {
+  const faction = getFaction();
+  el.leaderSelect.innerHTML = faction.leaders.map(leader => `<option value="${leader.id}">${escapeHtml(leader.name)}</option>`).join("");
+  if (!faction.leaders.some(leader => leader.id === state.leaderId)) state.leaderId = faction.leaders[0]?.id || "";
+  el.leaderSelect.value = state.leaderId;
+}
+
+function renderLeader() {
+  const faction = getFaction();
+  const leader = faction.leaders.find(item => item.id === state.leaderId);
+  if (!leader || !leader.rules) {
+    el.leaderPreview.className = "leader-preview empty-state";
+    el.leaderPreview.textContent = "Leader package is still in development.";
+    return;
+  }
+
+  el.leaderPreview.className = "leader-preview";
+  el.leaderPreview.innerHTML = `
+    <h3>${escapeHtml(leader.name)} <span class="mini-pill">${escapeHtml(faction.name)}</span></h3>
+    <p class="leader-tagline">${escapeHtml(leader.tagline)}</p>
+    <p><strong>${escapeHtml(leader.role)}</strong></p>
+    <p>${escapeHtml(faction.identity)} <strong>Resource:</strong> ${escapeHtml(faction.resource)} <strong>Victory:</strong> ${escapeHtml(faction.victory)}</p>
+    <div class="leader-rules">${leader.rules.map(([name, text]) => `<div class="leader-rule"><strong>${escapeHtml(name)}:</strong> ${escapeHtml(text)}</div>`).join("")}</div>
+  `;
+}
+
+function changeFaction() {
+  const nextFaction = el.factionSelect.value;
+  if (nextFaction === state.factionId) return;
+
+  const removed = Object.keys(state.deck).filter(cardId => {
+    const card = getCard(cardId);
+    return card && card.faction !== "neutral" && card.faction !== nextFaction;
+  });
+
+  if (removed.length && !confirm(`Changing faction will remove ${removed.length} card title${removed.length === 1 ? "" : "s"} from the current faction. Continue?`)) {
+    el.factionSelect.value = state.factionId;
+    return;
+  }
+
+  removed.forEach(cardId => delete state.deck[cardId]);
+  state.factionId = nextFaction;
+  state.leaderId = getFaction().leaders[0]?.id || "";
+  state.selectedCardId = null;
+  renderAll();
+}
+
+function availableCards() {
+  if (!getFaction() || getFaction().status !== "ready") return [];
+  return state.cards
+    .filter(card => card.faction === "neutral" || card.faction === state.factionId)
+    .filter(card => state.allegiance === "all" || (state.allegiance === "neutral" ? card.faction === "neutral" : card.faction === state.factionId))
+    .filter(card => state.cost === "all" || card.cost === Number(state.cost))
+    .filter(card => {
+      if (!state.search) return true;
+      return `${card.name} ${card.factionLabel} ${card.complexity} ${card.trait} ${Object.values(card.sections).join(" ")}`.toLowerCase().includes(state.search);
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function renderAvailable() {
+  const cards = availableCards();
+  el.availableCount.textContent = cards.length;
+  el.availableCards.innerHTML = "";
+
+  if (!cards.length) {
+    el.availableCards.className = "compact-card-list empty-state";
+    el.availableCards.textContent = "No cards match the current filters.";
+    renderCardPreview(null);
+    return;
+  }
+
+  el.availableCards.className = "compact-card-list";
+  if (!cards.some(card => card.id === state.selectedCardId)) state.selectedCardId = cards[0].id;
+
+  cards.forEach(card => {
+    const row = document.createElement("article");
+    row.className = `compact-card-row${card.id === state.selectedCardId ? " selected" : ""}`;
+    const qty = state.deck[card.id] || 0;
+    row.innerHTML = `
+      <div>
+        <div class="compact-card-title"><strong>${escapeHtml(card.name)}</strong><span class="mini-pill">${card.cost}</span></div>
+        <div class="compact-card-meta"><span class="mini-pill">${escapeHtml(card.factionLabel)}</span><span class="mini-pill">${escapeHtml(card.complexity)}</span>${qty ? `<span class="mini-pill">${qty} in deck</span>` : ""}</div>
+      </div>
+      <button type="button">Add</button>
+    `;
+    row.addEventListener("click", event => {
+      if (event.target.tagName !== "BUTTON") {
+        state.selectedCardId = card.id;
+        renderAvailable();
+        return;
+      }
+      addCard(card.id);
+    });
+    el.availableCards.append(row);
+  });
+
+  renderCardPreview(getCard(state.selectedCardId));
+}
+
+function renderCardPreview(card) {
+  if (!card) {
+    el.cardPreview.className = "card-preview empty-state";
+    el.cardPreview.textContent = "Select a card to view its active working text.";
+    return;
+  }
+
+  el.cardPreview.className = "card-preview";
+  el.cardPreview.innerHTML = `
+    <h3>${escapeHtml(card.name)}</h3>
+    <div class="card-preview-meta">
+      <span class="mini-pill">Cost ${card.cost}</span>
+      <span class="mini-pill">${escapeHtml(card.factionLabel)}</span>
+      <span class="mini-pill">${escapeHtml(card.complexity)}</span>
+      ${card.form ? `<span class="mini-pill">${escapeHtml(card.form)}</span>` : ""}
+      ${card.trait ? `<span class="mini-pill">${escapeHtml(card.trait)} trait</span>` : ""}
+      ${card.unique ? `<span class="mini-pill">Unique</span>` : ""}
+    </div>
+    ${Object.entries(card.sections).map(([label, text]) => `<section class="card-text-section"><div class="card-text-label">${escapeHtml(label)}</div><p>${escapeHtml(text)}</p></section>`).join("")}
+    <div class="button-row"><button id="previewAddButton" type="button">Add to deck</button></div>
+  `;
+  document.getElementById("previewAddButton").addEventListener("click", () => addCard(card.id));
+}
+
+function addCard(cardId) {
+  const card = getCard(cardId);
+  if (!card) return;
+  if (card.unique && (state.deck[cardId] || 0) >= 1) return;
+  state.deck[cardId] = (state.deck[cardId] || 0) + 1;
+  renderAll();
+}
+
+function removeCard(cardId) {
+  const qty = state.deck[cardId] || 0;
+  if (qty <= 1) delete state.deck[cardId];
+  else state.deck[cardId] = qty - 1;
+  renderAll();
+}
+
+function removeAll(cardId) {
+  delete state.deck[cardId];
+  renderAll();
+}
+
+function deckEntries() {
+  return Object.entries(state.deck)
+    .filter(([, qty]) => qty > 0)
+    .map(([id, qty]) => ({ card: getCard(id), qty }))
+    .filter(entry => entry.card)
+    .sort((a, b) => a.card.name.localeCompare(b.card.name));
+}
+
+function renderDeck() {
+  const entries = deckEntries();
+  if (!entries.length) {
+    el.deckCards.className = "deck-list empty-state";
+    el.deckCards.textContent = "No cards added yet.";
+    return;
+  }
+
+  el.deckCards.className = "deck-list";
+  el.deckCards.innerHTML = "";
+  entries.forEach(({ card, qty }) => {
+    const row = document.createElement("article");
+    row.className = "deck-row";
+    row.innerHTML = `
+      <div>
+        <div class="deck-title"><strong>${escapeHtml(card.name)}</strong><span class="mini-pill">${escapeHtml(card.factionLabel)}</span></div>
+        <div class="deck-stats"><span class="mini-pill">${qty}×</span><span class="mini-pill">${card.cost} each</span><span class="mini-pill">${qty * card.cost} value</span>${card.unique ? `<span class="mini-pill">Unique</span>` : ""}</div>
+      </div>
+      <div class="deck-actions">
+        <button type="button" class="secondary" data-action="minus">−</button>
+        <button type="button" data-action="plus">+</button>
+        <button type="button" class="secondary danger" data-action="remove">×</button>
+      </div>
+    `;
+    row.querySelector('[data-action="minus"]').addEventListener("click", () => removeCard(card.id));
+    row.querySelector('[data-action="plus"]').addEventListener("click", () => addCard(card.id));
+    row.querySelector('[data-action="remove"]').addEventListener("click", () => removeAll(card.id));
+    el.deckCards.append(row);
+  });
+}
+
+function validateDeck() {
+  const entries = deckEntries();
+  const cardCount = entries.reduce((sum, entry) => sum + entry.qty, 0);
+  const pointTotal = entries.reduce((sum, entry) => sum + entry.qty * entry.card.cost, 0);
+  const factionCardCount = entries.filter(entry => entry.card.faction === state.factionId).reduce((sum, entry) => sum + entry.qty, 0);
+  const errors = [];
+  const warnings = ["Territory selection is not yet included in this development build."];
+
+  if (!state.factionId) errors.push("Choose a faction.");
+  if (!state.leaderId) errors.push("Choose a leader.");
+  if (cardCount < 30) errors.push(`Add at least ${30 - cardCount} more playable card${30 - cardCount === 1 ? "" : "s"}.`);
+  if (pointTotal > 60) errors.push(`Remove ${pointTotal - 60} value.`);
+
+  entries.forEach(({ card, qty }) => {
+    if (card.unique && qty > 1) errors.push(`${card.name} is Unique: maximum one copy.`);
+    if (card.faction !== "neutral" && card.faction !== state.factionId) errors.push(`${card.name} is not legal for ${getFaction().name}.`);
+  });
+
+  return { cardCount, pointTotal, factionCardCount, errors, warnings, valid: errors.length === 0 };
+}
+
+function validateAndRender() {
+  const result = validateDeck();
+  el.cardCount.textContent = result.cardCount;
+  el.pointTotal.textContent = result.pointTotal;
+  el.factionCardCount.textContent = result.factionCardCount;
+  el.validityText.textContent = result.valid ? "Card-valid" : "Incomplete";
+  el.validityCard.classList.toggle("valid", result.valid);
+  el.validityCard.classList.toggle("invalid", !result.valid);
+
+  el.validationList.innerHTML = [
+    ...(result.errors.length ? result.errors.map(message => `<li>${escapeHtml(message)}</li>`) : ["<li class=\"ok\">Playable-card count and value are valid.</li>"]),
+    ...result.warnings.map(message => `<li class=\"warning\">${escapeHtml(message)}</li>`)
+  ].join("");
+}
+
+function currentDeckData() {
+  return {
+    schema: "gauntlet-v0.6.1-deck",
+    schemaVersion: 1,
+    gameVersion: "v0.6.1",
+    name: state.deckName.trim() || "Untitled v0.6.1 Deck",
+    factionId: state.factionId,
+    leaderId: state.leaderId,
+    cards: deckEntries().map(({ card, qty }) => ({ id: card.id, name: card.name, faction: card.faction, qty }))
+  };
+}
+
+function saveDeck() {
+  const data = currentDeckData();
+  const saved = readSavedDecks();
+  const key = data.name.toLowerCase();
+  saved[key] = data;
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+  renderSavedDecks();
+  el.savedDeckSelect.value = key;
+}
+
+function loadDeck() {
+  const key = el.savedDeckSelect.value;
+  const data = readSavedDecks()[key];
+  if (data) applyDeckData(data);
+}
+
+function deleteDeck() {
+  const key = el.savedDeckSelect.value;
+  if (!key) return;
+  const saved = readSavedDecks();
+  delete saved[key];
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+  renderSavedDecks();
+}
+
+function renderSavedDecks() {
+  const saved = readSavedDecks();
+  const entries = Object.entries(saved).sort((a, b) => a[1].name.localeCompare(b[1].name));
+  el.savedDeckSelect.innerHTML = entries.length
+    ? entries.map(([key, deck]) => `<option value="${escapeHtml(key)}">${escapeHtml(deck.name)}</option>`).join("")
+    : '<option value="">No saved v0.6 decks</option>';
+  el.loadDeckButton.disabled = !entries.length;
+  el.deleteDeckButton.disabled = !entries.length;
+}
+
+function readSavedDecks() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}"); }
+  catch { return {}; }
+}
+
+function applyDeckData(data) {
+  if (data.schema !== "gauntlet-v0.6.1-deck") throw new Error("This is not a v0.6 development deck export.");
+  const faction = FACTIONS.find(item => item.id === data.factionId && item.status === "ready");
+  if (!faction) throw new Error("The exported faction is not currently available.");
+
+  state.deckName = data.name || "";
+  state.factionId = faction.id;
+  state.leaderId = faction.leaders.some(leader => leader.id === data.leaderId) ? data.leaderId : faction.leaders[0].id;
+  state.deck = {};
+
+  for (const item of data.cards || []) {
+    const card = getCard(item.id) || state.cards.find(candidate => candidate.name === item.name && candidate.faction === item.faction);
+    if (!card || (card.faction !== "neutral" && card.faction !== state.factionId)) continue;
+    state.deck[card.id] = Number(item.qty) || 0;
+  }
+
+  renderAll();
+}
+
+async function copyDeckList() {
+  const data = currentDeckData();
+  const faction = getFaction();
+  const leader = faction.leaders.find(item => item.id === state.leaderId);
+  const validation = validateDeck();
+  const lines = [
+    data.name,
+    `${faction.name} — ${leader?.name || "No leader"}`,
+    `${validation.cardCount} cards · ${validation.pointTotal}/60 value`,
+    "",
+    ...deckEntries().map(({ card, qty }) => `${qty}x ${card.name} (${card.cost}) [${card.factionLabel}]`),
+    "",
+    "Territories: pending v0.6 integration"
+  ];
+  await navigator.clipboard.writeText(lines.join("\n"));
+}
+
+function exportDeckJson() {
+  const data = JSON.stringify(currentDeckData(), null, 2);
+  const blob = new Blob([data], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = `${slugify(currentDeckData().name)}.json`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function importDeckJson() {
   try {
-    const [canonicalSource, starterSource] = await Promise.all([
-      fetchVerified(CANONICAL_SOURCE, CANONICAL_SHA256),
-      fetchVerified(STARTERS_SOURCE, STARTERS_SHA256),
-    ]);
-    const canonical = JSON.parse(canonicalSource);
-    const starters = JSON.parse(starterSource);
-    if (canonical.version !== 'clean-v0.6.3-downstream') throw new Error(`Unexpected canonical version: ${canonical.version}`);
-    if (canonical.authority_set_id !== AUTHORITY_SET_ID) throw new Error('Canonical authority-set ID mismatch.');
-    if (!Array.isArray(canonical.cards) || canonical.cards.length !== 128) throw new Error('Clean Deckbuilder requires exactly 128 playable cards.');
-    if (!Array.isArray(canonical.factions) || canonical.factions.length !== 6) throw new Error('Clean Deckbuilder requires exactly six factions.');
-    if (!Array.isArray(canonical.territories) || canonical.territories.length !== 25) throw new Error('Clean Deckbuilder requires exactly 25 Territories.');
-    if (starters.version !== 'clean-v0.6.3-downstream' || !Array.isArray(starters.decks) || starters.decks.length !== 12) throw new Error('Clean Deckbuilder requires exactly 12 approved starter Decks.');
-    if (!starters.decks.every((deck) => deck.cardCount === 30 && deck.deckbuildingValue === 60)) throw new Error('Approved starter Deck invariant failed.');
-    state.canonical = canonical;
-    state.starters = starters.decks;
-    bindEvents();
-    renderFactionSelect();
-    renderLeaderSelect();
-    renderStarterControl();
-    renderCardPool();
-    renderCurrentDeck();
-    renderTerritories();
-    renderMetrics();
-    applyQuerySelection();
-    el.sourceStatus.textContent = `Verified canonical data ${CANONICAL_SHA256.slice(0, 12)}… and 12 approved starters · authority ${AUTHORITY_SET_ID.slice(0, 12)}….`;
+    const data = JSON.parse(el.importJson.value);
+    applyDeckData(data);
+    el.importJson.value = "";
   } catch (error) {
-    console.error(error);
-    el.sourceStatus.textContent = `Source verification failed: ${error.message}`;
-    el.sourceStatus.closest('.authority-card')?.classList.add('source-error');
-    el.cardPool.innerHTML = '<p class="empty-state">Certified Deckbuilder inputs could not be verified. Do not use this reconstruction.</p>';
-    el.territoryPool.innerHTML = '<p class="empty-state">Certified Deckbuilder inputs could not be verified.</p>';
+    alert(error.message || "Unable to import that deck.");
   }
 }
 
-initialize();
+function getFaction() { return FACTIONS.find(faction => faction.id === state.factionId); }
+function getCard(id) { return state.cards.find(card => card.id === id); }
+function slugify(value) { return value.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""); }
+function escapeHtml(value) { return String(value ?? "").replace(/[&<>'"]/g, character => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" })[character]); }
