@@ -105,7 +105,7 @@ jobs:
           stale_block_anchor = "const sourceState = source.replace(/<!--[\\s\\S]*?-->/g, '');\n"
           stale_block = f"""const supersededAuthoritySetId = '{OLD_ID}';
           const supersededDownstreamHash = '{OLD_HASH}';
-          const provenanceOutputs = [index, app, boundary, read(`${{outputDir}}/validation-status.md`), JSON.stringify(manifest)];
+          const provenanceOutputs = [index, app, boundary, read(outputDir + '/validation-status.md'), JSON.stringify(manifest)];
           for (const output of provenanceOutputs) {{
             assert(!output.includes(supersededAuthoritySetId), 'Browser Rulebook output retained the superseded authority-set ID.');
             assert(!output.includes(supersededDownstreamHash), 'Browser Rulebook output retained the superseded downstream canonical hash.');
