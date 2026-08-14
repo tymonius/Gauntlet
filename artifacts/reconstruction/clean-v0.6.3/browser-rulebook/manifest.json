@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "target": "clean-v0.6.3-browser-rulebook",
+  "status": "downstream_candidate_pending_merge_review",
+  "authority_set_id": "64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49",
+  "authority_certification": "artifacts/reconstruction/clean-v0.6.3/complete-authority/authority-set.json",
+  "certified_rulebook": {
+    "path": "artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md",
+    "sha256": "7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643"
+  },
+  "downstream_prerequisite": {
+    "manifest": "artifacts/reconstruction/clean-v0.6.3/downstream/manifest.json",
+    "canonical_data_sha256": "641c813366a8bcb52f9cb505ada640994d416024deed1f71a6ec59fb24ed2c4c"
+  },
+  "ui_baseline": {
+    "rulebook/app.js": {
+      "git_role": "v0.6.1-browser-ui-baseline-only",
+      "sha256": "efcd26fc3db1d8117ab05368aa67766baad36589fc6464db14d2c3904a3e7d7c"
+    },
+    "rulebook/markdown.js": {
+      "git_role": "v0.6.1-browser-ui-baseline-only",
+      "sha256": "ca9fbb3a3a8d8992749070fcb709252d3c5a999cb3f3723d909da66291c5612c"
+    },
+    "rulebook/styles.css": {
+      "git_role": "v0.6.1-browser-ui-baseline-only",
+      "sha256": "345a7e48a2f945e9bc25b94ec8d7dfdaa38e9de83733c68d5dc9603c173255f5"
+    },
+    "rulebook/publication.css": {
+      "git_role": "v0.6.1-browser-ui-baseline-only",
+      "sha256": "a03d50f64995455db8c62eb06a097a15a5168fac521a06b87262af6bfa8fe54f"
+    }
+  },
+  "historical_v063_browser_role": "ux_evidence_only_not_authority",
+  "historical_v063_browser_path": "v0.6.3/rulebook/index.html",
+  "publication_unlocked": false,
+  "public_current_release": "v0.6.1",
+  "rules_arbiter_integrated": false,
+  "pdf_links_integrated": false,
+  "outputs": [
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/browser-rulebook/index.html",
+      "sha256": "985e060d9e665a696e2b5cf3b87eb98ddfd21c6f3013bd319189441dc3ea341f",
+      "bytes": 4202,
+      "lines": 67
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/browser-rulebook/app.js",
+      "sha256": "972a38de2c10ef66b46d7a14c559b13289334847af88662c0475c92b61e490d9",
+      "bytes": 10217,
+      "lines": 298
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/browser-rulebook/markdown.js",
+      "sha256": "8cfea16f3176ff999e7e5242f7328d6f90391584fa388091285170c4600364ce",
+      "bytes": 6364,
+      "lines": 215
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/browser-rulebook/styles.css",
+      "sha256": "48488759254c776eec79c39bc381cce3ec9c8200c5370c2556808582ab0531f9",
+      "bytes": 13686,
+      "lines": 519
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/browser-rulebook/publication.css",
+      "sha256": "a03d50f64995455db8c62eb06a097a15a5168fac521a06b87262af6bfa8fe54f",
+      "bytes": 11366,
+      "lines": 473
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/browser-rulebook/source-boundary.md",
+      "sha256": "177e1d1d61cfb55e94929a234350afa821a83479858575cd96c3f6589b3fe66d",
+      "bytes": 1379,
+      "lines": 12
+    },
+    {
+      "path": "artifacts/reconstruction/clean-v0.6.3/browser-rulebook/validation-status.md",
+      "sha256": "518806738d8753fa084f4b41be7ada79885bb40b9587f8ad1d08ae516f2514b4",
+      "bytes": 738,
+      "lines": 11
+    }
+  ]
+}
