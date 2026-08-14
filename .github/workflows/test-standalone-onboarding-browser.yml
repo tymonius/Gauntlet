@@ -1,30 +1,7 @@
-name: Test standalone new-player onboarding
+name: Validate onboarding contract
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'index.html'
-      - 'start/index.html'
-      - 'start/app.js'
-      - 'deckbuilder/index.html'
-      - 'deckbuilder/starter-handoff.js'
-      - 'deckbuilder/starter-decks.js'
-      - 'deckbuilder/starter-decks.json'
-      - 'tests/standalone-new-player-onboarding.test.ts'
-      - '.github/workflows/test-standalone-onboarding-browser.yml'
-  push:
-    branches: [main]
-    paths:
-      - 'index.html'
-      - 'start/index.html'
-      - 'start/app.js'
-      - 'deckbuilder/index.html'
-      - 'deckbuilder/starter-handoff.js'
-      - 'deckbuilder/starter-decks.js'
-      - 'deckbuilder/starter-decks.json'
-      - 'tests/standalone-new-player-onboarding.test.ts'
-      - '.github/workflows/test-standalone-onboarding-browser.yml'
+  workflow_call:
   workflow_dispatch:
 
 permissions:
@@ -35,8 +12,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
-      - name: Checkout
+      - name: Checkout onboarding surface
         uses: actions/checkout@v4
+        with:
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            /package.json
+            /package-lock.json
+            /vitest.config.ts
+            /tests/standalone-new-player-onboarding.test.ts
+            /index.html
+            /start/
+            /deckbuilder/
 
       - name: Set up Node
         uses: actions/setup-node@v4
