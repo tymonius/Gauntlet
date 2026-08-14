@@ -1,11 +1,12 @@
 import { buildLocalFallbackAnswer, retrieveRules } from "../rules-assistant/local-search.js";
 import {
-  V063_RULES_VERSION as CLEAN_V063_RULES_VERSION,
-  V063_VERSION_LABEL as CLEAN_V063_VERSION_LABEL,
-  defaultV063SourceUrls as defaultCleanV063SourceUrls,
-  loadV063RulesCorpus as loadCleanV063RulesCorpus
+  V063_RULES_VERSION as RULES_VERSION,
+  V063_VERSION_LABEL as VERSION_LABEL,
+  defaultV063SourceUrls,
+  loadV063RulesCorpus
 } from "../rules-assistant/v063-public-corpus.js";
 
+const CURRENT_PUBLIC_RELEASE = "v0.6.3";
 const endpoint = String(window.GAUNTLET_RULES_ASSISTANT_ENDPOINT || "https://gauntlet-rules-assistant.tymon-scott.workers.dev/api/rules").trim();
 const form = document.getElementById("arbiterForm");
 const input = document.getElementById("question");
@@ -52,23 +53,23 @@ form.addEventListener("submit", async (event) => {
 });
 
 status.textContent = endpoint
-  ? "Production Rules Arbiter configured; canonical local source lookup remains the fallback."
-  : "Canonical local source-lookup fallback mode.";
+  ? "Connected to the current v0.6.3 Rules Arbiter; local Rulebook lookup is available as a fallback."
+  : "Current v0.6.3 local Rulebook lookup mode.";
 
 async function askLocal(question) {
   const corpus = await getCorpus();
   const query = contextualQuery(question, history);
   const retrieval = retrieveRules(corpus, query, { limit: 8, excerptLength: 1100 });
-  const fallback = buildLocalFallbackAnswer(question, retrieval, CLEAN_V063_RULES_VERSION);
+  const fallback = buildLocalFallbackAnswer(question, retrieval, RULES_VERSION);
   return {
     ...fallback,
     responseType: "source_lookup",
-    executionPath: "local-source-lookup",
-    version: CLEAN_V063_RULES_VERSION,
-    versionLabel: CLEAN_V063_VERSION_LABEL,
+    executionPath: "local source lookup",
+    version: RULES_VERSION,
+    versionLabel: VERSION_LABEL,
     reconstruction: false,
     published: true,
-    currentPublicRelease: "v0.6.3"
+    currentPublicRelease: CURRENT_PUBLIC_RELEASE
   };
 }
 
@@ -81,27 +82,32 @@ async function askRemote(question) {
         question,
         history,
         sessionId,
-        rulesVersion: CLEAN_V063_RULES_VERSION
+        rulesVersion: RULES_VERSION
       })
     });
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
-      throw new Error(payload.error || `Reconstruction worker returned ${response.status}.`);
+      throw new Error(payload.error || `Rules Arbiter returned ${response.status}.`);
     }
-    if (payload.version !== CLEAN_V063_RULES_VERSION || payload.reconstruction !== true) {
-      throw new Error("Configured endpoint did not identify itself as the v0.6.3 Rules Arbiter.");
+    if (
+      payload.version !== RULES_VERSION ||
+      payload.published !== true ||
+      payload.reconstruction !== false ||
+      payload.currentPublicRelease !== CURRENT_PUBLIC_RELEASE
+    ) {
+      throw new Error("Configured endpoint did not identify itself as the current v0.6.3 Rules Arbiter.");
     }
     return payload;
   } catch (error) {
-    console.warn("Production worker unavailable; using canonical local source lookup.", error);
+    console.warn("Production Rules Arbiter unavailable; using local Rulebook lookup.", error);
     return askLocal(question);
   }
 }
 
 async function getCorpus() {
   if (!corpusPromise) {
-    const urls = defaultCleanV063SourceUrls(window.location.origin);
-    corpusPromise = loadCleanV063RulesCorpus({
+    const urls = defaultV063SourceUrls(window.location.origin);
+    corpusPromise = loadV063RulesCorpus({
       ...urls,
       fetchImpl: window.fetch.bind(window)
     });
@@ -119,17 +125,17 @@ function renderAnswer(result) {
   const label = rulingLabel(result.rulingStatus);
   answer.innerHTML = `
     <div class="arbiter-ruling">
-      <p class="arbiter-meta"><strong>${escapeHtml(label)}</strong> · ${escapeHtml(result.executionPath || "reconstruction")}</p>
+      <p class="arbiter-meta"><strong>${escapeHtml(label)}</strong> · ${escapeHtml(result.executionPath || "rules lookup")}</p>
       <p>${escapeHtml(result.answer).replaceAll("\n", "<br>")}</p>
-      ${sources.length ? `<h3>Clean sources</h3><ol>${sources.map(sourceItem).join("")}</ol>` : ""}
-      <p class="arbiter-boundary">This answer uses the certified v0.6.3 authority.</p>
+      ${sources.length ? `<h3>Sources</h3><ol>${sources.map(sourceItem).join("")}</ol>` : ""}
+      <p class="arbiter-boundary">Current ${escapeHtml(result.versionLabel || VERSION_LABEL)} rules sources.</p>
     </div>`;
 }
 
 function sourceItem(source) {
-  const href = source.sourceUrl || "../browser-rulebook/";
+  const href = source.sourceUrl || "../rulebook/";
   const excerpt = source.excerpt || source.body || "";
-  return `<li><a href="${escapeHtml(href)}">${escapeHtml(source.title || "Clean source")}</a>${excerpt ? `<p>${escapeHtml(excerpt)}</p>` : ""}</li>`;
+  return `<li><a href="${escapeHtml(href)}">${escapeHtml(source.title || "Rulebook source")}</a>${excerpt ? `<p>${escapeHtml(excerpt)}</p>` : ""}</li>`;
 }
 
 function rulingLabel(value) {
@@ -148,7 +154,7 @@ function setBusy(busy) {
 }
 
 function getSessionId() {
-  const key = "gauntlet-clean-v063-arbiter-session";
+  const key = "gauntlet-v063-arbiter-session";
   try {
     const existing = localStorage.getItem(key);
     if (/^[a-zA-Z0-9_-]{8,80}$/.test(existing || "")) return existing;

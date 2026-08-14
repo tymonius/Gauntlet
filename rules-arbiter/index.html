@@ -12,7 +12,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="theme-color" content="#8f1f25" />
-  <meta name="description" content="Ask gameplay questions against the current canonical Gauntlet v0.6.3 authority." />
+  <meta name="description" content="Ask gameplay questions against the current Gauntlet v0.6.3 rules." />
   <title>Gauntlet v0.6.3 Rules Arbiter</title>
   <link rel="canonical" href="https://gauntlet.run/rules-arbiter/" />
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
@@ -21,25 +21,28 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="reconstruction-banner">Gauntlet v0.6.3 · current canonical playtest edition.</div>
   <header class="arbiter-header">
-    <a class="brand" href="../" aria-label="Return to Gauntlet home"><span aria-hidden="true">G</span><strong>Gauntlet</strong></a>
-    <nav aria-label="Rules navigation">
-      <a href="../rulebook/">Clean Browser Rulebook</a>
-      <a href="../rulebook/">Home</a>
-      <a href="../">Home</a>
+    <a class="brand" href="../" aria-label="Gauntlet home"><span aria-hidden="true">G</span><strong>Gauntlet</strong></a>
+    <nav aria-label="Primary navigation">
+      <a href="../start/">Start</a>
+      <a href="../#game">Game</a>
+      <a href="../rulebook/">Rules</a>
+      <a href="../factions/">Factions</a>
+      <a href="../deckbuilder/">Deckbuilder</a>
+      <a href="../card-reference/">Card Reference</a>
+      <a href="../rules-arbiter/" aria-current="page">Rules Arbiter</a>
     </nav>
   </header>
 
   <main class="arbiter-shell">
     <section class="arbiter-panel">
-      <p class="eyebrow">Certified clean authority · downstream review only</p>
+      <p class="eyebrow">Rules support · v0.6.3</p>
       <h1>Rules Arbiter</h1>
-      <p class="lede">Ask gameplay questions against the repaired clean-v0.6.3 Rulebook and canonical data. This surface is isolated from the current public v0.6.1 Rules Arbiter.</p>
+      <p class="lede">Ask about setup, cards, battles, faction systems, Territories, or victory conditions. Answers include the relevant current Rulebook sources so you can verify the ruling at the table.</p>
 
       <div class="source-boundary">
-        <strong>Authority boundary:</strong>
-        answers may use only the repaired complete authority set and clean downstream canonical data. Withdrawn v0.6.2/v0.6.3 rules artifacts and the old v0.6.3 candidate Arbiter are not rules sources.
+        <strong>At the table:</strong>
+        the Arbiter distinguishes explicit rules from interpretations and provisional rulings when the written rules do not fully resolve a situation.
       </div>
 
       <div class="question-chips" aria-label="Suggested questions">
@@ -55,22 +58,22 @@
         <button type="submit">Ask the Rules Arbiter</button>
       </form>
 
-      <p id="arbiterStatus" class="arbiter-status">Loading clean source mode…</p>
+      <p id="arbiterStatus" class="arbiter-status">Connecting to the current Rules Arbiter…</p>
       <div id="answer" class="arbiter-answer" aria-live="polite"></div>
     </section>
 
     <aside class="authority-card">
-      <h2>Bound sources</h2>
-      <p><strong>Complete authority set</strong><br /><code>64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49</code></p>
-      <p><a href="../rulebook/Gauntlet_v0.6.3_Rulebook.md">Certified clean Rulebook Markdown</a></p>
-      <p><a href="../downstream/canonical-data.json">Clean canonical data</a></p>
-      <p><a href="../rulebook/">Clean Browser Rulebook</a></p>
-      <p class="small">There are no deterministic v0.6.3 rulings in this reconstruction. Game-specific answers come from the bound clean sources.</p>
+      <h2>Rules resources</h2>
+      <p><a href="../rulebook/">Browser Rulebook</a></p>
+      <p><a href="../card-reference/">Card Reference</a></p>
+      <p><a href="../deckbuilder/">Deckbuilder</a></p>
+      <p class="small">Answers include source passages. If the network service is unavailable, this page falls back to local Rulebook lookup.</p>
     </aside>
   </main>
 
   <footer>
-    <p><strong>Gauntlet clean v0.6.3</strong> · Rules Arbiter reconstruction · current release remains v0.6.1.</p>
+    <p><strong>Gauntlet v0.6.3</strong> · Current canonical playtest edition.</p>
+    <p>Copyright © 2026 Tymon Scott. All rights reserved.</p>
   </footer>
 
   <script type="module" src="app.js"></script>
