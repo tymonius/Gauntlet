@@ -35,7 +35,8 @@ jobs:
       - name: Check out booklet inputs
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.ref || github.ref_name }}
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 1
 
       - name: Use Node.js
         uses: actions/setup-node@v4
