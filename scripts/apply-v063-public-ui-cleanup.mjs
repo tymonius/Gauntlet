@@ -29,7 +29,10 @@ function ensureBlock(text, marker, block) {
   return text.includes(marker) ? text : `${text.replace(/\s+$/, '')}\n\n${block.trim()}\n`;
 }
 
-// Homepage faction cards.
+function factionSymbol(slug) {
+  return `/images/faction-symbols/${slug}.svg`;
+}
+
 {
   const relative = 'index.html';
   let text = read(relative);
@@ -37,14 +40,13 @@ function ensureBlock(text, marker, block) {
     text = replaceOnce(
       text,
       `<span class="faction-symbol" aria-hidden="true">${unicode}</span>`,
-      `<span class="faction-symbol faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('images/faction-symbols/${slug}.svg')"></span>`,
+      `<span class="faction-symbol faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('${factionSymbol(slug)}')"></span>`,
       `homepage ${name} faction symbol`,
     );
   }
   write(relative, text);
 }
 
-// Start Playing faction chooser plus typography cleanup.
 {
   const relative = 'start/index.html';
   let text = read(relative);
@@ -52,7 +54,7 @@ function ensureBlock(text, marker, block) {
     text = replaceOnce(
       text,
       `<span class="choice-mark" aria-hidden="true">${unicode}</span><strong>${name}</strong>`,
-      `<span class="choice-mark faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('../images/faction-symbols/${slug}.svg')"></span><strong>${name}</strong>`,
+      `<span class="choice-mark faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('${factionSymbol(slug)}')"></span><strong>${name}</strong>`,
       `Start Playing ${name} faction symbol`,
     );
   }
@@ -78,7 +80,6 @@ function ensureBlock(text, marker, block) {
   write(stylesPath, styles);
 }
 
-// Public Factions hub.
 {
   const relative = 'factions/index.html';
   let text = read(relative);
@@ -86,27 +87,25 @@ function ensureBlock(text, marker, block) {
     text = replaceOnce(
       text,
       `<span class="hub-symbol" aria-hidden="true">${unicode}</span>`,
-      `<span class="hub-symbol faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('../images/faction-symbols/${slug}.svg')"></span>`,
+      `<span class="hub-symbol faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('${factionSymbol(slug)}')"></span>`,
       `Factions hub ${name} faction symbol`,
     );
   }
   write(relative, text);
 }
 
-// Individual faction-guide hero labels.
 for (const [slug, name, unicode] of factions) {
   const relative = `factions/${slug}/index.html`;
   let text = read(relative);
   text = replaceOnce(
     text,
     `<p class="eyebrow">${unicode} ${name} · faction guide</p>`,
-    `<p class="eyebrow faction-eyebrow"><span class="faction-eyebrow-symbol faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('../../images/faction-symbols/${slug}.svg')"></span>${name} · faction guide</p>`,
+    `<p class="eyebrow faction-eyebrow"><span class="faction-eyebrow-symbol faction-symbol-asset" aria-hidden="true" style="--faction-symbol:url('${factionSymbol(slug)}')"></span>${name} · faction guide</p>`,
     `${name} faction-guide hero symbol`,
   );
   write(relative, text);
 }
 
-// Shared visual treatment for asset-backed symbols.
 {
   const relative = 'factions/homepage.css';
   let text = read(relative);
