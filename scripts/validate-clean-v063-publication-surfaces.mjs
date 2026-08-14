@@ -93,6 +93,8 @@ try {
     '.github/workflows/validate-v063-cross-surface-closeout.yml',
     '.github/workflows/test-v061-browser-tools.yml',
     '.github/workflows/build-clean-v063-complete-authority.yml',
+    '.github/workflows/build-clean-v063-browser-rulebook.yml',
+    '.github/workflows/publish-v061-rulebook.yml',
     'scripts/publication-utils.mjs',
     'scripts/build-clean-v063-publication.mjs',
     'scripts/build-clean-v063-publication-core-web.mjs',
@@ -106,6 +108,7 @@ try {
     'scripts/validate-clean-v063-publication-surfaces.mjs',
     'scripts/verify-clean-v063-live-publication.mjs',
     'tests/standalone-new-player-onboarding.test.ts',
+    'tests/current-rulebook-player-experience.test.ts',
     'config/release-lifecycle.json','src/content/current.ts','index.html',
     'rules-assistant/worker-entry.js','rules-assistant/worker-v063.js','rules-assistant/v063-public-corpus.js','rules-assistant/widget.js',
   ]);
