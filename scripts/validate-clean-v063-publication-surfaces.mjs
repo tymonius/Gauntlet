@@ -23,8 +23,26 @@ assert(home.includes('rules-arbiter/'));
 assert(!home.includes('releases/v0.6.1/'));
 assert(!/Current canonical playtest edition · v0\.6\.1/.test(home));
 
-assert.deepEqual(fs.readdirSync(path.join(root, 'deckbuilder')).sort(), ['app.js','index.html','styles.css']);
-for (const stale of ['print-all-starters.js','print-duplex.js','completed-factions.js','completed-supplementals.js']) assert(!fs.existsSync(path.join(root, `deckbuilder/${stale}`)));
+const requiredDeckbuilderFiles = [
+  'index.html','app.js','styles.css','territories.css','territories.js',
+  'starter-decks.css','starter-decks.js','starter-decks.json','starter-handoff.css','starter-handoff.js',
+  'mobile-card-preview.css','mobile-card-preview.js','faction-components.js','leader-portrait-sources.js',
+  'print.js','print-options.css','print-request.css','print-request.js','print-duplex.js','print-all-starters.js',
+  'completed-factions.js','completed-supplementals.js','supplemental-data.js','v061-supplementals.js','v061-runtime.js',
+];
+for (const file of requiredDeckbuilderFiles) {
+  assert(fs.existsSync(path.join(root, 'deckbuilder', file)), `Restored Deckbuilder capability file is missing: ${file}`);
+}
+const deckbuilderIndex = read('deckbuilder/index.html');
+for (const feature of [
+  'starter-decks.js','starter-handoff.js','mobile-card-preview.js','faction-components.js',
+  'print.js','print-request.js','print-duplex.js','print-all-starters.js','v061-runtime.js',
+]) assert(deckbuilderIndex.includes(feature), `Restored Deckbuilder does not load required feature: ${feature}`);
+assert(deckbuilderIndex.includes('id="saveDeckButton"'), 'Restored Deckbuilder lost browser save/load controls.');
+assert(deckbuilderIndex.includes('id="exportJsonButton"'), 'Restored Deckbuilder lost JSON export/import controls.');
+assert(deckbuilderIndex.includes('id="printDeckButton"'), 'Restored Deckbuilder lost Print / PDF.');
+assert(deckbuilderIndex.includes('id="cardPreview"'), 'Restored Deckbuilder lost card previews.');
+assert(deckbuilderIndex.includes('id="territoryPreview"'), 'Restored Deckbuilder lost Territory previews.');
 
 const pointer = read('src/content/current.ts');
 assert(pointer.includes("../reconstruction/clean-v063/content"));
@@ -73,6 +91,8 @@ try {
   const allowedFiles = new Set([
     '.github/workflows/publish-clean-v063.yml',
     '.github/workflows/validate-v063-cross-surface-closeout.yml',
+    '.github/workflows/test-v061-browser-tools.yml',
+    '.github/workflows/build-clean-v063-complete-authority.yml',
     'scripts/publication-utils.mjs',
     'scripts/build-clean-v063-publication.mjs',
     'scripts/build-clean-v063-publication-core-web.mjs',
@@ -85,6 +105,7 @@ try {
     'scripts/validate-clean-v063-publication-data.mjs',
     'scripts/validate-clean-v063-publication-surfaces.mjs',
     'scripts/verify-clean-v063-live-publication.mjs',
+    'tests/standalone-new-player-onboarding.test.ts',
     'config/release-lifecycle.json','src/content/current.ts','index.html',
     'rules-assistant/worker-entry.js','rules-assistant/worker-v063.js','rules-assistant/v063-public-corpus.js','rules-assistant/widget.js',
   ]);
@@ -103,4 +124,4 @@ try {
   if (error instanceof assert.AssertionError) throw error;
   console.warn('Publication diff firewall skipped because origin/main is unavailable.');
 }
-console.log('Validated current/public browser surfaces, clean digital pointer, Rules Arbiter cutover compatibility, and publication diff firewall.');
+console.log('Validated current/public browser surfaces, restored Deckbuilder capabilities, clean digital pointer, Rules Arbiter cutover compatibility, and publication diff firewall.');
