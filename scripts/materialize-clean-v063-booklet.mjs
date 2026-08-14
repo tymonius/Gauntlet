@@ -1,0 +1,69 @@
+import assert from 'node:assert/strict';
+import crypto from 'node:crypto';
+import fs from 'node:fs';
+import path from 'node:path';
+
+const root = process.cwd();
+const generatedDir = 'artifacts/reconstruction/clean-v0.6.3/booklet/generated';
+const generatedManifestPath = `${generatedDir}/Gauntlet_v0.6.3_Rulebook_Booklet_Manifest.json`;
+const generatedPdfPath = `${generatedDir}/Gauntlet_v0.6.3_Rulebook_Booklet.pdf`;
+const releaseDir = 'releases/v0.6.3-reconstructed';
+const releasePdfName = 'Gauntlet_v0.6.3_Rulebook_Booklet.pdf';
+const releasePdfPath = `${releaseDir}/${releasePdfName}`;
+const releaseManifestPath = `${releaseDir}/Gauntlet_v0.6.3_Manifest.json`;
+const rulebookIndexPath = 'rulebook/index.html';
+const hash = (data) => crypto.createHash('sha256').update(data).digest('hex');
+const readJson = (relative) => JSON.parse(fs.readFileSync(path.join(root, relative), 'utf8'));
+
+const generated = readJson(generatedManifestPath);
+assert.equal(generated.target, 'gauntlet-v0.6.3-rulebook-booklet');
+assert.equal(generated.authority_set_id, '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49');
+assert.equal(generated.source.publication_transform_verified_exact, true);
+assert.equal(generated.counts.content_pages, 64, 'Reviewed booklet content page count changed.');
+assert.equal(generated.counts.padding_pages, 0, 'Reviewed booklet unexpectedly gained signature padding.');
+assert.equal(generated.counts.logical_pages, 64);
+assert.equal(generated.counts.imposed_sides, 32);
+assert.equal(generated.counts.physical_sheets, 16);
+assert.equal(generated.imposition.duplex_flip, 'short-edge');
+assert.deepEqual(generated.artwork.padding, []);
+assert.equal(generated.artwork.cover.path, 'images/sketches/hero-sketches/hero sketch.png');
+
+const printable = generated.outputs.find((item) => item.role === 'printable-booklet');
+assert(printable, 'Generated booklet manifest lacks printable-booklet output.');
+const pdfBytes = fs.readFileSync(path.join(root, generatedPdfPath));
+assert.equal(hash(pdfBytes), printable.sha256);
+assert.equal(pdfBytes.length, printable.bytes);
+assert.equal(printable.pages, 32);
+fs.copyFileSync(path.join(root, generatedPdfPath), path.join(root, releasePdfPath));
+
+const manifest = readJson(releaseManifestPath);
+assert.equal(manifest.release_version, 'v0.6.3');
+assert.equal(manifest.authority_set_id, generated.authority_set_id);
+manifest.counts.print_pdfs = 10;
+manifest.pdf_outputs = manifest.pdf_outputs.filter((item) => item.key !== 'rulebook-booklet');
+const rulebookIndex = manifest.pdf_outputs.findIndex((item) => item.key === 'rulebook');
+assert(rulebookIndex >= 0);
+manifest.pdf_outputs.splice(rulebookIndex + 1, 0, {
+  key: 'rulebook-booklet',
+  path: releasePdfName,
+  pages: printable.pages,
+  sha256: printable.sha256,
+  bytes: printable.bytes,
+});
+manifest.payload_files = manifest.payload_files.filter((item) => item.path !== releasePdfName);
+const readerIndex = manifest.payload_files.findIndex((item) => item.path === 'Gauntlet_v0.6.3_Rulebook.pdf');
+assert(readerIndex >= 0);
+manifest.payload_files.splice(readerIndex + 1, 0, {
+  path: releasePdfName,
+  sha256: printable.sha256,
+  bytes: printable.bytes,
+});
+fs.writeFileSync(path.join(root, releaseManifestPath), `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
+
+const rulebookIndexHtml = fs.readFileSync(path.join(root, rulebookIndexPath), 'utf8');
+assert(rulebookIndexHtml.includes(`../${releasePdfPath}`), 'Browser Rulebook does not link the printable booklet.');
+assert(!rulebookIndexHtml.includes('>Reader PDF<'), 'Browser Rulebook still exposes Reader PDF as a competing print/download action.');
+assert(!rulebookIndexHtml.includes('>Markdown<'), 'Browser Rulebook still exposes Markdown as a competing download action.');
+assert(!rulebookIndexHtml.includes('data-print-rulebook'), 'Browser Rulebook still exposes browser printing as a competing print action.');
+
+console.log(`Materialized reviewed v0.6.3 booklet: ${printable.pages} imposed sides, ${generated.counts.physical_sheets} physical sheets, SHA-256 ${printable.sha256}.`);
