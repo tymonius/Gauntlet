@@ -7,6 +7,7 @@ on:
     paths:
       - scripts/apply-v063-heading-standardization.mjs
       - scripts/finalize-v063-canonical-data-candidate.mjs
+      - scripts/generate-v063-complete-card-reference-candidate.mjs
       - .github/workflows/apply-v063-heading-standardization.yml
 
 permissions:
@@ -41,8 +42,6 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md \
-            artifacts/v0.6.3/canonical/Gauntlet_v0.6.3_Canonical_Data_Candidate.json \
-            artifacts/v0.6.3/canonical/Gauntlet_v0.6.3_Complete_Card_Reference_Candidate.md \
             artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json \
             artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Complete_Card_Reference.md \
             artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Rulebook.md
