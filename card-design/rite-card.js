@@ -55,12 +55,12 @@ const UNLOCKS = Object.freeze([
 const root = document.querySelector('#riteReviewSections');
 
 function esc(value) {
-  return String(value ?? '').replace(/[&<>'"]/g, character => ({
+  return String(value ?? '').replace(/[&<>'\"]/g, character => ({
     '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;',
     "'": '&#39;',
-    '"': '&quot;',
+    '\"': '&quot;',
   })[character]);
 }
 
@@ -95,7 +95,10 @@ function riteFace(rite, completed = false) {
     ? UNLOCKS.map(unlockSection).join('')
     : `${ruleSection('Begin', rite.begin)}${ruleSection('Complete', rite.complete)}${ruleSection('Interrupted', rite.interrupted)}`;
   const art = completed ? completedArtwork(rite) : incompleteArtwork(rite);
-  const artMax = completed ? '1.06' : '1.48';
+  // Completed faces have enough room after the dynamic rule-column pass to use
+  // a taller illustration. Keep a finite cap, but let the shared fitter shrink
+  // from that cap so otherwise-empty spacer height becomes artwork instead.
+  const artMax = completed ? '1.24' : '1.48';
   const artMin = completed ? '0.78' : '0.92';
   const dense = completed || rite.id === 'crossing' || rite.id === 'echoes' ? ' dense-card' : '';
 
