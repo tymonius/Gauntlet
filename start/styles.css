@@ -5,7 +5,7 @@ main{width:min(1180px,calc(100% - 40px));margin:0 auto 6rem}
 .start-hero{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(290px,.7fr);gap:3.5rem;align-items:end;padding:5rem 3rem;background:#221f1b;color:#fffaf1;border-left:8px solid var(--start-gold);box-shadow:var(--start-shadow)}
 .start-hero h1{max-width:820px;margin:.25rem 0 1.25rem;font-family:var(--font-display-web);font-size:clamp(4rem,8vw,7.6rem);line-height:.82;letter-spacing:-.055em}
 .start-hero h1 span{display:block;color:#d6b35f;font-style:italic;font-weight:400}
-.start-hero .hero-lede{max-width:760px;font-size:1.2rem;line-height:1.65;color:#e9dfd0}
+.start-hero .hero-lede{max-width:760px;font-family:var(--font-reading);font-size:1.2rem;line-height:1.65;color:#e9dfd0}
 .hero-actions{display:flex;flex-wrap:wrap;gap:.75rem;margin-top:1.7rem}
 .start-hero .button.secondary{border-color:#8f8477;color:#fffaf1;background:transparent}
 .journey{display:grid;gap:.65rem;list-style:none;margin:0;padding:0}
