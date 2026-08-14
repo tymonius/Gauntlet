@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "target": "clean-v0.6.2-digital-base",
+  "status": "reconstruction_candidate",
+  "authority_set_id": "563ce3a0ac39a0bbba52cc113ae9ffbcaeb3c0985bad4cfa66fe462fb2cacb3b",
+  "authority_base": "v0.6.1",
+  "certified_authority_manifest": "artifacts/reconstruction/clean-v0.6.2/certification/authority-set.json",
+  "certified_authority_files": {
+    "rulebook": {
+      "path": "artifacts/reconstruction/clean-v0.6.2/rulebook/Gauntlet_v0.6.2_Rulebook.md",
+      "sha256": "cdc3e8f82c1d3803f076f5ee60a84b4d9b932133fd463f8e513482fe01270fb5"
+    },
+    "military": {
+      "path": "artifacts/reconstruction/clean-v0.6.2/faction-guides/military/Gauntlet_v0.6.2_Military_Faction_Guide.md",
+      "sha256": "ac2b800e151d1cbf671e47b9354ffaf396f8decaaa8c5bb28e5fa58de0900ff1"
+    },
+    "diplomat": {
+      "path": "artifacts/reconstruction/clean-v0.6.2/faction-guides/diplomat/Gauntlet_v0.6.2_Diplomat_Faction_Guide.md",
+      "sha256": "6f2ab7c23636d1a6f80a80cf9a75797884e85b6d1322e97f8f9a738f686727d1"
+    },
+    "financier": {
+      "path": "artifacts/reconstruction/clean-v0.6.2/faction-guides/financier/Gauntlet_v0.6.2_Financier_Faction_Guide.md",
+      "sha256": "9a7378b4894bd0ff574ef1482834e5fcd09699562998d1fc4b9900270abf10c7"
+    },
+    "intelligence": {
+      "path": "artifacts/reconstruction/clean-v0.6.2/faction-guides/intelligence/Gauntlet_v0.6.2_Intelligence_Faction_Guide.md",
+      "sha256": "25352704a364bffa4899e989addceb489ff6dc65c87f21ea23a7917002f816c2"
+    },
+    "mystics": {
+      "path": "artifacts/reconstruction/clean-v0.6.2/faction-guides/mystics/Gauntlet_v0.6.2_Mystics_Faction_Guide.md",
+      "sha256": "613131bd90cd6c731e6d41e3cfaf3b464783ceaa4665b8a3edd4530abcef47ef"
+    },
+    "inquisition": {
+      "path": "artifacts/reconstruction/clean-v0.6.2/faction-guides/inquisition/Gauntlet_v0.6.2_Inquisition_Faction_Guide.md",
+      "sha256": "e5d5613c801a3ce51a4a85ff94b3b6375c881232e1042cd0068c27492f88dea0"
+    }
+  },
+  "supplemental_decision_evidence": [
+    {
+      "kind": "accepted_design_decision",
+      "issue": 481,
+      "url": "https://github.com/tymonius/Gauntlet/issues/481",
+      "scope": "Neutral Landslide exact v0.6.2 cost, modes, placement restriction, retreat trigger, chain behavior and destination; used because the seven-file certified authority set contains no separate Neutral card guide."
+    }
+  ],
+  "implementation": {
+    "rules": "src/reconstruction/clean-v062/rules.ts",
+    "cards": "src/reconstruction/clean-v062/cards.ts",
+    "factions": "src/reconstruction/clean-v062/factions.ts"
+  },
+  "semantic_scope": {
+    "shared_rules": [
+      "six-phase turn",
+      "Action phase and per-phase limits",
+      "Movement sequence termination on pending battle",
+      "contiguous Front Line control",
+      "normal Capture transfer",
+      "pending battle, Terms and Onset",
+      "Defensive Edge and Tiebreak Roll",
+      "retreat and withdrawal including beyond-Gauntlet positions",
+      "cumulative v0.6.2 Run the Gauntlet and Last Stand"
+    ],
+    "cards": [
+      "Invasion",
+      "Landslide",
+      "Détente",
+      "Compound Interest",
+      "Extraordinary Rendition",
+      "Nature's Altar",
+      "Martyrdom"
+    ],
+    "faction_procedures": [
+      "Financier Action timing and Financial Capacity",
+      "Intelligence Denouement Faction Action timing",
+      "Mystics Rite and Ritual Action timing",
+      "Guardians of the Circle scaling",
+      "Inquisition Purge two-phase permission",
+      "Final Judgment separate no-Action Purge"
+    ]
+  },
+  "historical_candidate_findings": [
+    "src/v062/rules.ts assumed a neutral gap during Front Line capture and did not transfer the captured Territory from the opponent's control.",
+    "src/v062/rules.ts clamped retreat at the Territory column edge and therefore could not represent required retreat beyond the Gauntlet.",
+    "src/v062/rules.ts could not represent a Last Stand contested Position beyond the Territory column.",
+    "src/v062/cards.ts collapsed Martyrdom's before-clear play timing, Reserve destination replacement, post-clear Conviction reset and Martyrdom Graveyard move into one immediate mutation."
+  ],
+  "forbidden_semantic_inputs": [
+    "src/v062/",
+    "src/content/v062.ts",
+    "releases/v0.6.2/",
+    "v0.6.2/data/",
+    "src/v063/",
+    "src/content/v063.ts"
+  ],
+  "content_adapter_included": false,
+  "content_adapter_reason": "No clean v0.6.2 canonical structured-data artifact exists. This base therefore implements only authority-backed executable behavior and does not import withdrawn v0.6.2 structured data.",
+  "public_current_release": "v0.6.1",
+  "current_digital_pointer_modified": false,
+  "publication_unlocked": false
+}
