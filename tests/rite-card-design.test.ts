@@ -6,6 +6,7 @@ const reviewPage = readFileSync("card-design/index.html", "utf8");
 const riteRenderer = readFileSync("card-design/rite-card.js", "utf8");
 const riteStyles = readFileSync("card-design/rite-card.css", "utf8");
 const leaderStyles = readFileSync("card-design/leader-card.css", "utf8");
+const ruleColumnStyles = readFileSync("card-design/card-rule-columns.css", "utf8");
 const completedRiteArtwork = readFileSync("images/artwork/supplemental/mystics/rite-completed.webp");
 
 const riteNames = ["Rite of Echoes", "Rite of Blood", "Rite of Crossing"];
@@ -49,8 +50,11 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteRenderer).toContain("UNLOCKS.map(unlockSection).join('')");
     expect(riteRenderer).toContain("completed-rite-card");
     expect(riteStyles).toContain(".rite-unlock-section");
-    expect(riteStyles).toContain("grid-template-columns: 0.36in minmax(0, 1fr)");
-    expect(riteStyles).toContain("column-gap: 0.022in");
+    expect(ruleColumnStyles).toContain("grid-template-columns: fit-content(var(--rule-label-max)) minmax(0, 1fr)");
+    expect(ruleColumnStyles).toContain("grid-template-columns: subgrid !important");
+    expect(ruleColumnStyles).toContain(".completed-rite-card");
+    expect(ruleColumnStyles).toContain("--rule-label-max: 0.48in");
+    expect(ruleColumnStyles).toContain("--rule-column-gap: 0.024in");
   });
 
   it("uses the approved shared Mystics completion artwork rather than the Diplomat wax-seal treatment", () => {
@@ -61,7 +65,8 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteStyles).toContain(".rite-completed-panel > img");
     expect(riteStyles).toContain("object-fit: cover");
     expect(riteStyles).toContain("object-position: center");
-    expect(createHash("sha256").update(completedRiteArtwork).digest("hex")).toBe("1b5fa6a22d60d0afd09919f23c2f164fbf3679dd371e418424ab5e1796019604");
+    expect(completedRiteArtwork.byteLength).toBeGreaterThan(50_000);
+    expect(createHash("sha256").update(completedRiteArtwork).digest("hex")).toBe("a4b88c478368d8e64457d4eee0151a61781a7ea1f712da576201f822ce0451c5");
     expect(riteRenderer).not.toContain("rite-ritual-diagram");
     expect(riteRenderer).not.toContain("wax-seal");
     expect(riteRenderer).not.toContain("Ratified");
