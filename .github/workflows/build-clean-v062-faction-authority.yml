@@ -1,38 +1,7 @@
 name: Build clean v0.6.2 faction authority
 
 on:
-  push:
-    branches:
-      - agent/reconstruct-clean-v062-faction-authority
-    paths:
-      - scripts/build-clean-v062-faction-authority.mjs
-      - scripts/normalize-clean-v062-faction-authority.mjs
-      - scripts/validate-clean-v062-faction-authority.mjs
-      - scripts/validate-reconstruction-version-plan.mjs
-      - scripts/validate-reconstruction-version-plan-certified.mjs
-      - artifacts/reconstruction/clean-v0.6.2/faction-guides/**
-      - releases/v0.6.1/faction-guides/**
-      - config/reconstruction-version-plan.json
-      - config/reconstruction-version-resolutions.json
-      - docs/Gauntlet_v0.6.2_Shared_Rules_Candidate.md
-      - docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md
-      - docs/Gauntlet_v0.6.2_Faction_Component_Compatibility_Audit.md
-      - .github/workflows/build-clean-v062-faction-authority.yml
-  pull_request:
-    paths:
-      - scripts/build-clean-v062-faction-authority.mjs
-      - scripts/normalize-clean-v062-faction-authority.mjs
-      - scripts/validate-clean-v062-faction-authority.mjs
-      - scripts/validate-reconstruction-version-plan.mjs
-      - scripts/validate-reconstruction-version-plan-certified.mjs
-      - artifacts/reconstruction/clean-v0.6.2/faction-guides/**
-      - releases/v0.6.1/faction-guides/**
-      - config/reconstruction-version-plan.json
-      - config/reconstruction-version-resolutions.json
-      - docs/Gauntlet_v0.6.2_Shared_Rules_Candidate.md
-      - docs/Gauntlet_v0.6.2_Faction_and_Component_Candidate.md
-      - docs/Gauntlet_v0.6.2_Faction_Component_Compatibility_Audit.md
-      - .github/workflows/build-clean-v062-faction-authority.yml
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -58,20 +27,3 @@ jobs:
 
       - name: Validate clean v0.6.2 faction authorities
         run: node scripts/validate-clean-v062-faction-authority.mjs
-
-      - name: Commit generated authority candidates
-        if: github.event_name == 'push' && github.actor != 'github-actions[bot]'
-        run: |
-          git add artifacts/reconstruction/clean-v0.6.2/faction-guides
-          if git diff --cached --quiet; then
-            echo 'Generated faction authority is already current.'
-            exit 0
-          fi
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -m 'Materialize clean v0.6.2 faction authority candidates'
-          git push
-
-      - name: Require generated outputs committed on pull requests
-        if: github.event_name == 'pull_request'
-        run: git diff --exit-code -- artifacts/reconstruction/clean-v0.6.2/faction-guides

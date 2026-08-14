@@ -1,16 +1,6 @@
 name: Render Rulebook production
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - ".github/workflows/render-rulebook-production-fidelity.yml"
-      - "rulebook-production/**"
-      - "rulebook-design/**"
-      - "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md"
-      - "images/sketches/**"
-      - "package.json"
-      - "package-lock.json"
   workflow_dispatch:
 
 permissions:

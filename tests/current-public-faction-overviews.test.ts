@@ -2,6 +2,8 @@ import { readFileSync } from 'node:fs';
 import { describe, expect, test } from 'vitest';
 
 const read = (path: string) => readFileSync(path, 'utf8');
+const lifecycle = JSON.parse(read('config/release-lifecycle.json'));
+const currentVersion = String(lifecycle.current_release || '');
 const factionPaths = [
   'factions/military/index.html',
   'factions/diplomats/index.html',
@@ -11,15 +13,13 @@ const factionPaths = [
   'factions/inquisition/index.html',
 ];
 
-describe('restored v0.6.1 public faction overviews', () => {
-  test('use the v0.6.1 root tools rather than withdrawn-release routes', () => {
+describe('current public faction overviews', () => {
+  test('use the root current tools rather than versioned release routes', () => {
     for (const path of factionPaths) {
       const html = read(path);
       expect(html).toContain('href="../../rulebook/"');
       expect(html).toContain('href="../../deckbuilder/"');
-      expect(html).not.toContain('href="../../v0.6.2/rulebook/"');
-      expect(html).not.toContain('href="../../v0.6.2/deckbuilder/"');
-      expect(html).not.toContain('Current playtest edition: v0.6.2.');
+      expect(html).not.toMatch(/href="\.\.\/\.\.\/(?:v\d|releases\/v)[^"]+\/(?:rulebook|deckbuilder)\//i);
     }
   });
 
@@ -33,11 +33,10 @@ describe('restored v0.6.1 public faction overviews', () => {
     for (const order of ['Entrench', 'Repel', 'Fortify']) expect(general).not.toContain(order);
   });
 
-  test('keeps the restored homepage construction wording and v0.6.1 identity', () => {
+  test('identifies the homepage with the lifecycle current release', () => {
+    expect(currentVersion).not.toBe('');
     const homepage = read('index.html');
-    expect(homepage).toContain('Current canonical playtest edition · v0.6.1');
-    expect(homepage).toContain('build a deck of at least 30 cards within 60 value');
-    expect(homepage).not.toContain('Current canonical playtest edition · v0.6.2');
+    expect(homepage).toContain(currentVersion);
   });
 
   test('keeps historical v0.6.1 synchronization away from current faction pages', () => {

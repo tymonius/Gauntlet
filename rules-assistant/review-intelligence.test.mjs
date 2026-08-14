@@ -24,9 +24,12 @@ test("audit import is version-aware and never automatically promotes precedent",
   expect(worker).not.toContain("INSERT INTO rules_clarifications");
 });
 
-test("production entry routes review intelligence without replacing detail editing", () => {
+test("production entry preserves review, admin, and normal answer routes", () => {
   expect(entry).toContain('url.pathname === "/api/admin/review-audits"');
   expect(entry).toContain('request.method === "GET" && url.pathname === "/api/admin/interactions"');
-  expect(entry).toContain("const response = await worker.fetch(request, env, context)");
+  expect(entry).toContain("return handleReviewIntelligence(request, env)");
+  expect(entry).toContain('request.method === "GET" && ["/admin", "/admin/"].includes(url.pathname)');
+  expect(entry).toContain("new Response(addSiteFaviconLinks(ADMIN_PAGE, origin)");
   expect(entry).toContain("return smartWorker.fetch(request, env, context)");
+  expect(entry).toContain("return reliableWorker.fetch(request, env, context)");
 });
