@@ -31,8 +31,10 @@ jobs:
   complete-authority:
     runs-on: ubuntu-latest
     steps:
-      - name: Check out repository
+      - name: Check out PR branch for one-time authority persistence
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
 
       - name: Use Node.js
         uses: actions/setup-node@v4
