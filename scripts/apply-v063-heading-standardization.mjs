@@ -2,8 +2,6 @@ import fs from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
 const generalRulesPath = 'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md';
-const canonicalPath = 'artifacts/v0.6.3/canonical/Gauntlet_v0.6.3_Canonical_Data_Candidate.json';
-const canonicalReferencePath = 'artifacts/v0.6.3/canonical/Gauntlet_v0.6.3_Complete_Card_Reference_Candidate.md';
 const releaseCanonicalPath = 'artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json';
 const releaseReferencePath = 'artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Complete_Card_Reference.md';
 const releaseRulebookPath = 'artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Rulebook.md';
@@ -47,13 +45,9 @@ A Sanction may state additional removal conditions. Cards therefore do not need 
 patchSection(generalRulesPath, oldSanctionsSection, newSanctionsSection);
 patchRulebook();
 
-execFileSync(process.execPath, ['scripts/finalize-v063-canonical-data-candidate.mjs'], { stdio: 'inherit' });
-execFileSync(process.execPath, ['scripts/generate-v063-complete-card-reference-candidate.mjs'], { stdio: 'inherit' });
-
-fs.copyFileSync(canonicalPath, releaseCanonicalPath);
-const reference = fs.readFileSync(canonicalReferencePath, 'utf8')
-  .replace(/^# Gauntlet v0\.6\.3 Complete Card Reference Candidate/m, '# Gauntlet v0.6.3 Complete Card Reference — Release Candidate');
-fs.writeFileSync(releaseReferencePath, reference, 'utf8');
+const env = { ...process.env, V063_CANONICAL_DATA: releaseCanonicalPath, V063_CARD_REFERENCE: releaseReferencePath };
+execFileSync(process.execPath, ['scripts/finalize-v063-canonical-data-candidate.mjs'], { stdio: 'inherit', env });
+execFileSync(process.execPath, ['scripts/generate-v063-complete-card-reference-candidate.mjs'], { stdio: 'inherit', env });
 
 console.log('Applied v0.6.3 standard-card heading vocabulary to rules, canonical data, and release-candidate card reference.');
 
