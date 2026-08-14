@@ -16,7 +16,10 @@ const factions = [
 ];
 
 function replaceOnce(text, from, to, label) {
-  assert(text.includes(from), `Missing expected ${label}.`);
+  if (!text.includes(from)) {
+    assert(text.includes(to), `Missing both legacy and replacement forms for ${label}.`);
+    return text;
+  }
   const updated = text.replace(from, to);
   assert(!updated.includes(from), `Replacement for ${label} did not apply cleanly.`);
   return updated;
@@ -61,8 +64,9 @@ function ensureBlock(text, marker, block) {
     styles = `@import url("../design-tokens.css");\n${styles}`;
   }
   const legacyDisplay = 'font-family:var(--font-display,Georgia,serif);';
-  assert(styles.includes(legacyDisplay), 'Start Playing no longer contains the expected legacy Georgia display declaration.');
-  styles = styles.replaceAll(legacyDisplay, 'font-family:var(--font-display-historical);font-weight:400;');
+  const historicalDisplay = 'font-family:var(--font-display-historical);font-weight:400;';
+  if (styles.includes(legacyDisplay)) styles = styles.replaceAll(legacyDisplay, historicalDisplay);
+  else assert(styles.includes(historicalDisplay), 'Start Playing lacks both legacy and corrected display typography declarations.');
   styles = ensureBlock(styles, '/* Faction-symbol assets: public Start chooser. */', `
 /* Faction-symbol assets: public Start chooser. */
 .choice-mark.faction-symbol-asset{
