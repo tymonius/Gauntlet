@@ -7,11 +7,11 @@ import { pathToFileURL } from 'node:url';
 const root = process.cwd();
 const outputDir = 'artifacts/reconstruction/clean-v0.6.3/browser-rulebook';
 const rulebookPath = 'artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md';
-const certificationPath = 'artifacts/reconstruction/clean-v0.6.3/certification/authority-set.json';
+const certificationPath = 'artifacts/reconstruction/clean-v0.6.3/complete-authority/authority-set.json';
 const downstreamManifestPath = 'artifacts/reconstruction/clean-v0.6.3/downstream/manifest.json';
-const authoritySetId = '2da05383c10fe3e784c64b26fd2d9837913011cad996966f49a7ae3a92af8ed9';
+const authoritySetId = '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49';
 const rulebookSha256 = '7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643';
-const downstreamCanonicalSha256 = 'fa42934af929e04628449ac34863a3422cd673d862fc9c1f6772b35edeaac5d8';
+const downstreamCanonicalSha256 = '641c813366a8bcb52f9cb505ada640994d416024deed1f71a6ec59fb24ed2c4c';
 
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8').replace(/\r\n/g, '\n');
 const readJson = (relative) => JSON.parse(read(relative));
@@ -33,6 +33,7 @@ assert.equal(manifest.schema_version, 1);
 assert.equal(manifest.target, 'clean-v0.6.3-browser-rulebook');
 assert.equal(manifest.status, 'downstream_candidate_pending_merge_review');
 assert.equal(manifest.authority_set_id, authoritySetId);
+assert.equal(manifest.authority_certification, certificationPath);
 assert.equal(manifest.certified_rulebook.path, rulebookPath);
 assert.equal(manifest.certified_rulebook.sha256, rulebookSha256);
 assert.equal(manifest.downstream_prerequisite.canonical_data_sha256, downstreamCanonicalSha256);
@@ -41,10 +42,15 @@ assert.equal(manifest.public_current_release, 'v0.6.1');
 assert.equal(manifest.rules_arbiter_integrated, false);
 assert.equal(manifest.pdf_links_integrated, false);
 assert.equal(manifest.historical_v063_browser_role, 'ux_evidence_only_not_authority');
-assert.equal(certification.status, 'certified_on_merge');
+assert.equal(certification.target, 'clean-v0.6.3-complete');
+assert.equal(certification.status, 'certified_on_manual_merge');
 assert.equal(certification.authority_set_id, authoritySetId);
+const certifiedRulebook = certification.authority_files.find((item) => item.path === rulebookPath);
+assert(certifiedRulebook, 'Complete authority set does not bind the certified Rulebook.');
+assert.equal(certifiedRulebook.sha256, rulebookSha256);
 assert.equal(hashFile(rulebookPath), rulebookSha256);
 assert.equal(downstream.authority_set_id, authoritySetId);
+assert.equal(downstream.authority_certification, certificationPath);
 assert(downstream.outputs.some((item) => item.path.endsWith('/canonical-data.json') && item.sha256 === downstreamCanonicalSha256));
 assert.equal(lifecycle.current_release, 'v0.6.1');
 assert.equal(lifecycle.releases?.['v0.6.3']?.status, 'withdrawn');
@@ -99,12 +105,21 @@ for (const forbidden of ['PDF_URL', 'data-open-rules-assistant', 'ga-rules-launc
 
 for (const marker of [
   'Binding rules source',
+  'Complete authority provenance',
   rulebookPath,
   authoritySetId,
   'UI/renderer baseline only',
   'not content authority',
   'Public lifecycle remains v0.6.1 current',
 ]) assert(boundary.includes(marker), `Source-boundary record missing: ${marker}`);
+
+const supersededAuthoritySetId = '2da05383c10fe3e784c64b26fd2d9837913011cad996966f49a7ae3a92af8ed9';
+const supersededDownstreamHash = 'fa42934af929e04628449ac34863a3422cd673d862fc9c1f6772b35edeaac5d8';
+const provenanceOutputs = [index, app, boundary, read(outputDir + '/validation-status.md'), JSON.stringify(manifest)];
+for (const output of provenanceOutputs) {
+  assert(!output.includes(supersededAuthoritySetId), 'Browser Rulebook output retained the superseded authority-set ID.');
+  assert(!output.includes(supersededDownstreamHash), 'Browser Rulebook output retained the superseded downstream canonical hash.');
+}
 
 const sourceState = source.replace(/<!--[\s\S]*?-->/g, '');
 for (const marker of [

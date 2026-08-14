@@ -1,7 +1,7 @@
 import { renderMarkdown } from './markdown.js';
 
 const SOURCE_URL = '../rulebook/Gauntlet_v0.6.3_Rulebook.md';
-const AUTHORITY_SET_ID = '2da05383c10fe3e784c64b26fd2d9837913011cad996966f49a7ae3a92af8ed9';
+const AUTHORITY_SET_ID = '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49';
 const content = document.querySelector('[data-rulebook-content]');
 const toc = document.querySelector('[data-rulebook-toc]');
 const status = document.querySelector('[data-rulebook-status]');

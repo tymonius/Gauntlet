@@ -6,12 +6,12 @@ import path from 'node:path';
 const root = process.cwd();
 const outputDir = 'artifacts/reconstruction/clean-v0.6.3/browser-rulebook';
 const rulebookPath = 'artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md';
-const certificationPath = 'artifacts/reconstruction/clean-v0.6.3/certification/authority-set.json';
+const certificationPath = 'artifacts/reconstruction/clean-v0.6.3/complete-authority/authority-set.json';
 const downstreamManifestPath = 'artifacts/reconstruction/clean-v0.6.3/downstream/manifest.json';
 const lifecyclePath = 'config/release-lifecycle.json';
-const authoritySetId = '2da05383c10fe3e784c64b26fd2d9837913011cad996966f49a7ae3a92af8ed9';
+const authoritySetId = '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49';
 const rulebookSha256 = '7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643';
-const downstreamCanonicalSha256 = 'fa42934af929e04628449ac34863a3422cd673d862fc9c1f6772b35edeaac5d8';
+const downstreamCanonicalSha256 = '641c813366a8bcb52f9cb505ada640994d416024deed1f71a6ec59fb24ed2c4c';
 
 const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8').replace(/\r\n/g, '\n');
 const readJson = (relative) => JSON.parse(read(relative));
@@ -28,10 +28,10 @@ const downstream = readJson(downstreamManifestPath);
 const lifecycle = readJson(lifecyclePath);
 const rulebook = read(rulebookPath);
 
-assert.equal(certification.status, 'certified_on_merge');
+assert.equal(certification.target, 'clean-v0.6.3-complete');
+assert.equal(certification.status, 'certified_on_manual_merge');
 assert.equal(certification.authority_set_id, authoritySetId);
 assert.equal(certification.publication_unlocked, false);
-assert.equal(certification.downstream_regeneration_unlocked_on_merge, true);
 const certifiedRulebook = certification.authority_files.find((item) => item.path === rulebookPath);
 assert(certifiedRulebook, 'Certified Rulebook is absent from the clean v0.6.3 authority set.');
 assert.equal(certifiedRulebook.sha256, rulebookSha256);
@@ -158,9 +158,10 @@ const sourceBoundary = `# Clean v0.6.3 Browser Rulebook — source boundary
 
 This is a downstream reconstruction surface, not release authority and not a public cutover.
 
-- Binding rules source: \`${rulebookPath}\`, certified by authority set \`${authoritySetId}\`.
+- Binding rules source: \`${rulebookPath}\`, bound by complete authority set \`${authoritySetId}\`.
+- Complete authority provenance: \`${certificationPath}\` binds this Rulebook and the clean machine-readable authority set; Browser Rulebook rules content still comes only from the Rulebook Markdown.
 - UI/renderer baseline only: the current public v0.6.1 \`rulebook/\` browser implementation. Its rules content, release labels, downloads, and Rules Arbiter integration are not inherited.
-- The merged clean-v0.6.3 canonical-data layer from PR #624 is a prerequisite boundary, pinned by SHA-256 \`${downstreamCanonicalSha256}\`; this Browser Rulebook does not reinterpret card data.
+- Clean downstream canonical-data prerequisite: \`${downstreamManifestPath}\`, pinned by SHA-256 \`${downstreamCanonicalSha256}\`; this Browser Rulebook does not reinterpret card data.
 - Withdrawn v0.6.2/v0.6.3 release documents and the historical \`v0.6.3/rulebook/\` page are not content authority.
 - Rules Arbiter and regenerated PDF/print links are intentionally excluded until those later downstream surfaces are rebuilt.
 - Public lifecycle remains v0.6.1 current; v0.6.3 remains withdrawn; publication remains locked.
@@ -169,7 +170,7 @@ write(`${outputDir}/source-boundary.md`, sourceBoundary);
 
 const validationStatus = `# Clean v0.6.3 Browser Rulebook — validation status
 
-- Authority set: \`${authoritySetId}\`
+- Complete authority set: \`${authoritySetId}\`
 - Certified Rulebook SHA-256: \`${rulebookSha256}\`
 - Clean downstream canonical-data prerequisite SHA-256: \`${downstreamCanonicalSha256}\`
 - Searchable browser uses the certified Rulebook directly rather than a copied or withdrawn v0.6.3 document.
