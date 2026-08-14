@@ -1,5 +1,5 @@
 const RITE_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md';
-const COMPLETED_RITE_ART_SOURCE = '/images/artwork/supplemental/mystics/rite-completed.webp';
+const COMPLETED_RITE_ART_SOURCE = '../images/artwork/supplemental/mystics/rite-completed.webp';
 
 const RITES = Object.freeze([
   {
