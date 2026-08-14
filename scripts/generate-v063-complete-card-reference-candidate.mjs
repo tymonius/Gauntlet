@@ -2,18 +2,19 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 const root = process.cwd();
-const inputPath = path.join(root, 'artifacts/v0.6.3/canonical/Gauntlet_v0.6.3_Canonical_Data_Candidate.json');
-const outputPath = path.join(root, 'artifacts/v0.6.3/canonical/Gauntlet_v0.6.3_Complete_Card_Reference_Candidate.md');
+const inputPath = path.join(root, process.env.V063_CANONICAL_DATA ?? 'artifacts/v0.6.3/canonical/Gauntlet_v0.6.3_Canonical_Data_Candidate.json');
+const outputPath = path.join(root, process.env.V063_CARD_REFERENCE ?? 'artifacts/v0.6.3/canonical/Gauntlet_v0.6.3_Complete_Card_Reference_Candidate.md');
+const releaseOutput = outputPath.includes('/release-candidate/') || outputPath.includes('\\release-candidate\\');
 const data = JSON.parse(fs.readFileSync(inputPath, 'utf8'));
 
 const lines = [
-  '# Gauntlet v0.6.3 Complete Card Reference Candidate',
+  releaseOutput ? '# Gauntlet v0.6.3 Complete Card Reference — Release Candidate' : '# Gauntlet v0.6.3 Complete Card Reference Candidate',
   '',
-  '**Status:** Generated next-release candidate; not yet published  ',
+  releaseOutput ? '**Status:** Release candidate — not published  ' : '**Status:** Generated next-release candidate; not yet published  ',
   `**Cards:** ${data.cards.length}  `,
   `**Territories:** ${data.territories.length}`,
   '',
-  'This reference is generated from the integrated v0.6.3 canonical-data candidate. Exact playable-card text comes from the final v0.6.3 card-text build; Territory text is inherited from published v0.6.2 unless a later v0.6.3 source expressly replaces it.',
+  'This reference is generated from the integrated v0.6.3 canonical-data candidate. Exact playable-card text comes from the final v0.6.3 card-text build; Territory text is inherited from published v0.6.2 unless a v0.6.3 source expressly replaces it.',
   '',
   '---',
   '',
