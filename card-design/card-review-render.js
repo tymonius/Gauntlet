@@ -5,7 +5,28 @@ await (async () => {
   const target = document.getElementById('renderTarget');
 
   function slugify(value) {
-    return String(value ?? '').toLowerCase().normalize('NFKD').replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+    return String(value ?? '')
+      .toLowerCase()
+      .normalize('NFKD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-|-$/g, '');
+  }
+
+  function unicodeSlugify(value) {
+    return String(value ?? '')
+      .toLowerCase()
+      .normalize('NFC')
+      .replace(/[^\p{Letter}\p{Number}]+/gu, '-')
+      .replace(/^-|-$/g, '');
+  }
+
+  function artworkStems(card, faction) {
+    const id = String(card?.id ?? '').toLowerCase();
+    const factionPrefix = `${faction}-`;
+    const idStem = id.startsWith(factionPrefix) ? id.slice(factionPrefix.length) : slugify(id);
+    const stems = [idStem, slugify(card?.name), unicodeSlugify(card?.name)].filter(Boolean);
+    return [...new Set(stems)].map(stem => `/images/artwork/cards/${faction}/${stem}`);
   }
 
   function sectionsFromEffects(effects) {
@@ -29,10 +50,11 @@ await (async () => {
   }
 
   async function resolveArtwork(card, faction) {
-    const stem = `/images/artwork/cards/${faction}/${slugify(card.name)}`;
-    for (const extension of ART_EXTENSIONS) {
-      const src = `${stem}.${extension}`;
-      if (await imageExists(src)) return src.replace(/^\//, '');
+    for (const stem of artworkStems(card, faction)) {
+      for (const extension of ART_EXTENSIONS) {
+        const src = `${stem}.${extension}`;
+        if (await imageExists(src)) return src.replace(/^\//, '');
+      }
     }
     return null;
   }
