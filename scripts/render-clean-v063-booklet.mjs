@@ -85,7 +85,7 @@ const server = spawn('python', ['-m', 'http.server', '8000'], {
 try {
   await waitForServer('http://127.0.0.1:8000/rulebook-production/full-rulebook.html');
   run('node', ['rulebook-production/render_fidelity_gate.mjs']);
-  run('node', ['rulebook-production/run_rulebook_renderer.mjs']);
+  run('node', ['scripts/run-v063-rulebook-renderer.mjs']);
 } finally {
   server.kill('SIGTERM');
 }
@@ -138,6 +138,7 @@ const manifest = {
     approved_design_pr: approvedDesignPr,
     production_pr: productionPr,
     adapter: 'scripts/build-v063-rulebook-production.py',
+    renderer_adapter: 'scripts/run-v063-rulebook-renderer.mjs',
     approved_design_sources: [
       'rulebook-design/build_proofs.py',
       'rulebook-design/proof.css',
