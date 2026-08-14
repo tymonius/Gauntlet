@@ -10,8 +10,10 @@ Validation requires:
 - exact Rulebook-derived beginner passages rather than inherited teaching prose;
 - 12 approved starter Decks, each 30 cards / 60 value;
 - six faction IDs and twelve Leader IDs;
+- a clean Deckbuilder query handoff that passes only selected faction/Leader identity and starter intent;
+- independent Deckbuilder source verification after handoff;
 - noindex/no production analytics;
-- no clean Deckbuilder or print/export claim before those surfaces are reconstructed; and
+- no print/export claim before that surface is reconstructed; and
 - unchanged v0.6.1 public/current pointers.
 
-Merging this candidate reconstructs Start only. It does not publish v0.6.3.
+The Deckbuilder is now integrated into Start. Print/export remains locked. This does not publish v0.6.3.

@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "target": "clean-v0.6.3-deckbuilder",
+  "status": "downstream_candidate_pending_merge_review",
+  "authority_set_id": "64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49",
+  "authority_certification": "artifacts/reconstruction/clean-v0.6.3/complete-authority/authority-set.json",
+  "canonical_data": {
+    "path": "artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json",
+    "sha256": "641c813366a8bcb52f9cb505ada640994d416024deed1f71a6ec59fb24ed2c4c",
+    "runtime_role": "binding_card_territory_faction_and_construction_source"
+  },
+  "approved_starters": {
+    "path": "artifacts/reconstruction/clean-v0.6.3/downstream/starter-decks.json",
+    "sha256": "4c0ebe201584fc709623e37bb31630394294830dbe7b0f75ba43ae61bce33d64",
+    "count": 12,
+    "runtime_role": "binding_starter_preset_source"
+  },
+  "runtime_semantics": "verified_clean_canonical_data_plus_verified_approved_starter_records",
+  "construction_scope": [
+    "faction_and_leader_selection",
+    "neutral_plus_selected_faction_card_legality",
+    "card_quantities_and_unique_enforcement",
+    "minimum_30_cards",
+    "maximum_60_deckbuilding_value",
+    "exactly_3_territories",
+    "maximum_1_arena",
+    "approved_starter_loading",
+    "start_query_handoff"
+  ],
+  "print_export_integrated": false,
+  "public_deckbuilder_modified": false,
+  "clean_start_integrated": true,
+  "publication_unlocked": false,
+  "public_current_release": "v0.6.1",
+  "outputs": [
+    "artifacts/reconstruction/clean-v0.6.3/deckbuilder/index.html",
+    "artifacts/reconstruction/clean-v0.6.3/deckbuilder/app.js",
+    "artifacts/reconstruction/clean-v0.6.3/deckbuilder/styles.css",
+    "artifacts/reconstruction/clean-v0.6.3/deckbuilder/source-boundary.md",
+    "artifacts/reconstruction/clean-v0.6.3/deckbuilder/validation-status.md"
+  ]
+}

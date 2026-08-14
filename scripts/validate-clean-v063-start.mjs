@@ -70,11 +70,10 @@ assert.equal(manifest.approved_starters.count, 12);
 assert.equal(manifest.renderer_baseline.path, browserRendererPath);
 assert.equal(manifest.renderer_baseline.sha256, rendererSha256);
 assert.equal(manifest.public_start_modified, false);
-assert.equal(manifest.clean_deckbuilder_integrated, false);
+assert.equal(manifest.clean_deckbuilder_integrated, true);
 assert.equal(manifest.clean_print_export_integrated, false);
 assert.equal(manifest.publication_unlocked, false);
 assert.equal(manifest.public_current_release, 'v0.6.1');
-
 assert.equal(read(`${outputDir}/site.css`), read('site.css'), 'Start site.css UI baseline drifted.');
 assert.equal(read(`${outputDir}/styles.css`), read('start/styles.css'), 'Start styles.css UI baseline drifted.');
 
@@ -85,7 +84,6 @@ function extractTopLevel(source, heading) {
   const next = source.indexOf('\n# ', start + marker.length);
   return source.slice(start, next < 0 ? source.length : next).trim();
 }
-
 function extractPartOneHowItWorks(source) {
   const partStart = source.indexOf('# Part I — Learn to Play');
   const partEnd = source.indexOf('# Part II', partStart + 1);
@@ -93,7 +91,6 @@ function extractPartOneHowItWorks(source) {
   const part = source.slice(partStart, partEnd);
   const chapterMatches = [...part.matchAll(/^# (\d+\.\s+[^\n]+)$/gm)];
   const excerpts = [];
-
   chapterMatches.forEach((match, index) => {
     const bodyStart = match.index + match[0].length;
     const bodyEnd = chapterMatches[index + 1]?.index ?? part.length;
@@ -107,32 +104,13 @@ function extractPartOneHowItWorks(source) {
   });
   return excerpts;
 }
-
 const partOneExcerpts = extractPartOneHowItWorks(rulebook);
-const learningSource = [
-  extractTopLevel(rulebook, 'Welcome to Gauntlet'),
-  extractTopLevel(rulebook, 'Game at a Glance'),
-  extractTopLevel(rulebook, 'How to Win'),
-  ...partOneExcerpts,
-].join('\n\n---\n\n');
-
+const learningSource = [extractTopLevel(rulebook, 'Welcome to Gauntlet'), extractTopLevel(rulebook, 'Game at a Glance'), extractTopLevel(rulebook, 'How to Win'), ...partOneExcerpts].join('\n\n---\n\n');
 assert(partOneExcerpts.length >= 8, `Expected at least eight Part I How it works excerpts; found ${partOneExcerpts.length}.`);
-for (const marker of [
-  'Draw four',
-  'opening Hand',
-  "player's own end",
-  'Capture → Draw → Opening → Movement → Denouement → Cleanup',
-  'Advance',
-  'Hold',
-  'Fall Back',
-  'Gambit',
-  'Reserve',
-  'Tactic',
-  'capture the Territory at your opponent',
-  'Last Stand',
-]) assert(learningSource.includes(marker), `Start learning source missing certified marker: ${marker}`);
-
-const rendererUrl = `${pathToFileURL(path.join(root, browserRendererPath)).href}?start-validation=2`;
+for (const marker of ['Draw four','opening Hand',"player's own end",'Capture → Draw → Opening → Movement → Denouement → Cleanup','Advance','Hold','Fall Back','Gambit','Reserve','Tactic','capture the Territory at your opponent','Last Stand']) {
+  assert(learningSource.includes(marker), `Start learning source missing certified marker: ${marker}`);
+}
+const rendererUrl = `${pathToFileURL(path.join(root, browserRendererPath)).href}?start-validation=3`;
 const { renderMarkdown } = await import(rendererUrl);
 const rendered = renderMarkdown(learningSource);
 assert(rendered.html.length > 3000, 'Rendered Start learning material is unexpectedly small.');
@@ -145,15 +123,15 @@ for (const marker of [
   'publication remains locked',
   'First-game rules, directly from authority.',
   'twelve approved competitive starter Decks',
-  'Deckbuilder and print are next.',
+  'Deckbuilder is rebuilt. Print/export remains next.',
+  'Open clean Deckbuilder',
   'Current public Start (v0.6.1)',
   'Current public Deckbuilder (v0.6.1)',
   authoritySetId,
 ]) assert(index.includes(marker), `Start HTML missing reconstruction marker: ${marker}`);
-for (const forbidden of ['googletagmanager.com', 'G-8YYYZJGGPE', 'playtest/tracked', '../deckbuilder/?', 'v0.6.3/start/index.html']) {
+for (const forbidden of ['googletagmanager.com', 'G-8YYYZJGGPE', 'playtest/tracked', 'v0.6.3/start/index.html']) {
   assert(!index.includes(forbidden), `Start HTML retained forbidden dependency: ${forbidden}`);
 }
-
 for (const marker of [
   "import { renderMarkdown } from '../browser-rulebook/markdown.js';",
   `const AUTHORITY_SET_ID = '${authoritySetId}';`,
@@ -165,30 +143,25 @@ for (const marker of [
   'chapterMatches',
   'starters.decks.length !== 12',
   'deck.cardCount === 30 && deck.deckbuildingValue === 60',
-]) assert(app.includes(marker), `Start runtime missing clean-source guard: ${marker}`);
-for (const forbidden of [
-  'v0.6.3/start/',
-  'releases/v0.6.3/',
-  'artifacts/v0.6.3/release-candidate',
-  '../deckbuilder/starter-decks.json',
-  'gauntlet_standalone_onboarding_v1',
-]) assert(!app.includes(forbidden), `Start runtime retained historical/public content dependency: ${forbidden}`);
-
+  "const cleanDeckbuilder = document.querySelector('[data-clean-deckbuilder]');",
+  "new URL('../deckbuilder/', window.location.href)",
+  "url.searchParams.set('faction', deck.factionId)",
+  "url.searchParams.set('leader', deck.leaderId)",
+  "url.searchParams.set('starter', '1')",
+  "url.searchParams.set('source', 'start')",
+]) assert(app.includes(marker), `Start runtime missing clean-source/handoff guard: ${marker}`);
+for (const forbidden of ['v0.6.3/start/', 'releases/v0.6.3/', 'artifacts/v0.6.3/release-candidate', '../deckbuilder/starter-decks.json', 'gauntlet_standalone_onboarding_v1']) {
+  assert(!app.includes(forbidden), `Start runtime retained historical/public content dependency: ${forbidden}`);
+}
 for (const marker of [
-  'Binding sources',
-  rulebookPath,
-  rulebookSha256,
-  startersPath,
-  startersSha256,
-  authoritySetId,
-  'raw bytes',
-  'does not synthesize, summarize, normalize, or replace gameplay prose',
-  'UX evidence only',
-  'clean Deckbuilder and print/export handoff are intentionally absent',
+  'Binding sources', rulebookPath, rulebookSha256, startersPath, startersSha256, authoritySetId, 'raw bytes',
+  'does not synthesize, summarize, normalize, or replace gameplay prose', 'UX evidence only',
+  'The clean Start handoff now targets `artifacts/reconstruction/clean-v0.6.3/deckbuilder/`',
+  'Clean Deckbuilder integration is present; print/export handoff remains intentionally absent',
   'v0.6.1 remains current/public',
 ]) assert(boundary.includes(marker), `Start source boundary missing: ${marker}`);
 assert(validationStatus.includes('Status before merge: **candidate**.'));
-
+assert(validationStatus.includes('The Deckbuilder is now integrated into Start. Print/export remains locked.'));
 for (const output of manifest.outputs) assert(fs.existsSync(path.join(root, output)), `Missing Start output: ${output}`);
 assert(analytics.includes(`"${outputDir}/index.html"`), 'Analytics synchronization does not exclude noindex Start reconstruction.');
 assert(!index.includes('gtag('), 'Noindex Start reconstruction must not load production analytics.');
@@ -200,25 +173,27 @@ assert.equal(plan.publication_unlocked, false);
 assert(currentPointer.includes("export * from './v061';"));
 assert(currentPointer.includes("CURRENT_RULES_VERSION = 'v0.6.1'"));
 
-const expectedDiff = [
+const originalFullDiff = [
   '.github/workflows/build-clean-v063-start.yml',
-  `${outputDir}/app.js`,
-  `${outputDir}/index.html`,
-  `${outputDir}/manifest.json`,
-  `${outputDir}/reconstruction.css`,
-  `${outputDir}/site.css`,
-  `${outputDir}/source-boundary.md`,
-  `${outputDir}/styles.css`,
-  `${outputDir}/validation-status.md`,
-  'scripts/sync-google-analytics.mjs',
-  'scripts/validate-clean-v063-faction-pages.mjs',
-  'scripts/validate-clean-v063-start.mjs',
+  `${outputDir}/app.js`, `${outputDir}/index.html`, `${outputDir}/manifest.json`, `${outputDir}/reconstruction.css`, `${outputDir}/site.css`, `${outputDir}/source-boundary.md`, `${outputDir}/styles.css`, `${outputDir}/validation-status.md`,
+  'scripts/sync-google-analytics.mjs', 'scripts/validate-clean-v063-faction-pages.mjs', 'scripts/validate-clean-v063-start.mjs',
+].sort();
+const integrationStartFiles = [
+  `${outputDir}/app.js`, `${outputDir}/index.html`, `${outputDir}/manifest.json`, `${outputDir}/source-boundary.md`, `${outputDir}/validation-status.md`,
 ].sort();
 
 try {
-  const changed = execFileSync('git', ['diff', '--name-only', 'HEAD^1', 'HEAD'], { encoding: 'utf8' })
-    .trim().split('\n').filter(Boolean).sort();
-  assert.deepEqual(changed, expectedDiff, `Start reconstruction diff escaped the 12-file boundary.\n${changed.join('\n')}`);
+  const changed = execFileSync('git', ['diff', '--name-only', 'HEAD^1', 'HEAD'], { encoding: 'utf8' }).trim().split('\n').filter(Boolean).sort();
+  const changedStartFiles = changed.filter((file) => file.startsWith(`${outputDir}/`)).sort();
+  const fullStartRebuild = changed.includes('.github/workflows/build-clean-v063-start.yml') || changed.includes(`${outputDir}/site.css`) || changed.includes(`${outputDir}/styles.css`) || changed.includes(`${outputDir}/reconstruction.css`);
+  if (fullStartRebuild) {
+    assert.deepEqual(changed, originalFullDiff, `Full Start reconstruction diff escaped the original 12-file boundary.\n${changed.join('\n')}`);
+  } else if (changedStartFiles.length) {
+    assert.deepEqual(changedStartFiles, integrationStartFiles, `Start integration changed an unexpected Start artifact.\n${changedStartFiles.join('\n')}`);
+    assert(changed.includes('scripts/validate-clean-v063-start.mjs'), 'Start integration must update its validator in the same commit.');
+  } else {
+    assert(!changed.includes('.github/workflows/build-clean-v063-start.yml'), 'Shared-dependency run must not modify the Start workflow.');
+  }
   assert(!changed.some((file) => file.startsWith('start/')), 'Public v0.6.1 Start changed.');
   assert(!changed.some((file) => file.startsWith('deckbuilder/')), 'Public v0.6.1 Deckbuilder changed.');
   assert(!changed.includes('src/content/current.ts'), 'Current release pointer changed.');
@@ -228,4 +203,4 @@ try {
   console.warn('Diff-boundary check skipped because HEAD^1 is unavailable in this checkout.');
 }
 
-console.log(`Clean v0.6.3 Start validated: ${partOneExcerpts.length} certified Part I teaching excerpts, Rulebook ${rulebookSha256.slice(0, 12)}…, 12 approved starters, noindex isolation, Deckbuilder/print handoff still locked.`);
+console.log(`Clean v0.6.3 Start validated: ${partOneExcerpts.length} certified Part I teaching excerpts, Rulebook/starter hashes pinned, clean Deckbuilder handoff integrated, print/export still locked.`);

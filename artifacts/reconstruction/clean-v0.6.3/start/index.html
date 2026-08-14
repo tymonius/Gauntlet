@@ -22,6 +22,7 @@
       <a href="../browser-rulebook/">Clean Rulebook</a>
       <a href="../faction-pages/">Clean factions</a>
       <a href="../card-reference/">Clean Card Reference</a>
+      <a href="../deckbuilder/">Clean Deckbuilder</a>
       <a href="../../../../start/">Current public Start (v0.6.1)</a>
     </nav>
   </header>
@@ -31,7 +32,7 @@
       <div>
         <p class="eyebrow">Certified clean rules · version 0.6.3 · reconstruction only</p>
         <h1 id="start-title">Start with the <span>approved sources.</span></h1>
-        <p class="hero-lede">This reconstruction teaches from the certified Rulebook itself, then lets you inspect one of the twelve approved competitive starter Decks. It does not substitute inherited teaching prose for rules authority.</p>
+        <p class="hero-lede">This reconstruction teaches from the certified Rulebook itself, then lets you inspect one of the twelve approved competitive starter Decks and carry that exact faction/Leader choice into the reconstructed clean Deckbuilder.</p>
         <div class="hero-actions">
           <a class="button primary" href="#learn">Read the first-game rules</a>
           <a class="button secondary" href="#choose">Choose a starter</a>
@@ -42,7 +43,7 @@
         <li><span>1</span><strong>Learn</strong><small>Read exact beginner-facing excerpts from the certified Rulebook.</small></li>
         <li><span>2</span><strong>Choose</strong><small>Select a faction and one of its two approved starter Leaders.</small></li>
         <li><span>3</span><strong>Inspect</strong><small>Review the exact approved starter list and Territory recommendation.</small></li>
-        <li><span>4</span><strong>Continue later</strong><small>Deckbuilder and print handoff remain locked until reconstructed.</small></li>
+        <li><span>4</span><strong>Build</strong><small>Carry the selected starter into the clean Deckbuilder for construction and validation.</small></li>
       </ol>
     </section>
 
@@ -51,9 +52,7 @@
         <div><p class="eyebrow">Step 1 · Learn</p><h2 id="learn-title">First-game rules, directly from authority.</h2></div>
         <p>The text below is extracted from the certified clean-v0.6.3 Rulebook after raw-byte SHA-256 verification. The introductory sections and every Part I “How it works” passage are rendered without gameplay paraphrase.</p>
       </div>
-      <article class="source-article" data-learning-content aria-busy="true">
-        <p class="loading-source">Opening the certified Rulebook…</p>
-      </article>
+      <article class="source-article" data-learning-content aria-busy="true"><p class="loading-source">Opening the certified Rulebook…</p></article>
     </section>
 
     <section id="choose" class="section choice-section" aria-labelledby="choose-title">
@@ -61,15 +60,8 @@
         <div><p class="eyebrow">Step 2 · Choose</p><h2 id="choose-title">Choose a faction and Leader.</h2></div>
         <p>The available choices come from the twelve starter Deck records already validated against the certified clean-v0.6.3 card and Territory pool.</p>
       </div>
-      <fieldset class="faction-fieldset">
-        <legend>Choose a faction</legend>
-        <div class="faction-choice-grid" data-faction-choices></div>
-      </fieldset>
-      <fieldset class="leader-fieldset" data-leader-fieldset disabled>
-        <legend>Choose a Leader</legend>
-        <p data-leader-prompt>Choose a faction first.</p>
-        <div class="leader-choices" data-leader-choices></div>
-      </fieldset>
+      <fieldset class="faction-fieldset"><legend>Choose a faction</legend><div class="faction-choice-grid" data-faction-choices></div></fieldset>
+      <fieldset class="leader-fieldset" data-leader-fieldset disabled><legend>Choose a Leader</legend><p data-leader-prompt>Choose a faction first.</p><div class="leader-choices" data-leader-choices></div></fieldset>
     </section>
 
     <section id="starter" class="section print-section" aria-labelledby="starter-title">
@@ -77,20 +69,18 @@
         <div><p class="eyebrow">Step 3 · Inspect</p><h2 id="starter-title">Your approved starter Deck.</h2></div>
         <p>Strategy text, card quantities, and Territory order are displayed from the approved clean downstream starter record, not copied from the public v0.6.1 Deckbuilder.</p>
       </div>
-      <div class="starter-source-panel" data-starter-preview>
-        <p>Choose a faction and Leader to inspect the matching starter Deck.</p>
-      </div>
+      <div class="starter-source-panel" data-starter-preview><p>Choose a faction and Leader to inspect the matching starter Deck.</p></div>
     </section>
 
     <section class="section reconstruction-next" aria-labelledby="next-title">
       <div>
-        <p class="eyebrow">Step 4 · Downstream boundary</p>
-        <h2 id="next-title">Deckbuilder and print are next.</h2>
-        <p>The clean v0.6.3 Deckbuilder and print/export package have not yet been reconstructed, so this Start surface does not route a clean-v0.6.3 selection into either one.</p>
+        <p class="eyebrow">Step 4 · Continue</p>
+        <h2 id="next-title">Deckbuilder is rebuilt. Print/export remains next.</h2>
+        <p>The clean v0.6.3 Deckbuilder now accepts this exact faction and Leader selection and loads the approved starter for construction and validation. Printable packages, card backs, supplemental-component sheets, and export artifacts remain locked for the next reconstruction slice.</p>
       </div>
       <div class="next-actions">
-        <a class="button primary" href="../browser-rulebook/">Open clean Rulebook</a>
-        <a class="button secondary" href="../faction-pages/">Open clean faction pages</a>
+        <a class="button primary" data-clean-deckbuilder href="../deckbuilder/">Open clean Deckbuilder</a>
+        <a class="button secondary" href="../browser-rulebook/">Open clean Rulebook</a>
         <a class="text-link" href="../../../../deckbuilder/">Current public Deckbuilder (v0.6.1) →</a>
       </div>
     </section>

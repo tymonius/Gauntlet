@@ -19,7 +19,8 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "artifacts/reconstruction/clean-v0.6.3/faction-pages/intelligence/index.html",
   "artifacts/reconstruction/clean-v0.6.3/faction-pages/mystics/index.html",
   "artifacts/reconstruction/clean-v0.6.3/faction-pages/inquisition/index.html",
-  "artifacts/reconstruction/clean-v0.6.3/start/index.html"
+  "artifacts/reconstruction/clean-v0.6.3/start/index.html",
+  "artifacts/reconstruction/clean-v0.6.3/deckbuilder/index.html"
 ]);
 
 const GOOGLE_TAG = `  <!-- Google tag (gtag.js) -->
@@ -34,62 +35,39 @@ const GOOGLE_TAG = `  <!-- Google tag (gtag.js) -->
 async function findHtmlFiles(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
   const files = [];
-
   for (const entry of entries) {
     if (entry.isDirectory() && SKIP_DIRECTORIES.has(entry.name)) continue;
     const entryPath = path.join(directory, entry.name);
-
-    if (entry.isDirectory()) {
-      files.push(...await findHtmlFiles(entryPath));
-    } else if (entry.isFile() && entry.name.toLowerCase().endsWith(".html")) {
-      files.push(entryPath);
-    }
+    if (entry.isDirectory()) files.push(...await findHtmlFiles(entryPath));
+    else if (entry.isFile() && entry.name.toLowerCase().endsWith(".html")) files.push(entryPath);
   }
-
   return files;
 }
-
-function normalizedRelativePath(filePath) {
-  return path.relative(ROOT, filePath).split(path.sep).join("/");
-}
+function normalizedRelativePath(filePath) { return path.relative(ROOT, filePath).split(path.sep).join("/"); }
 
 const htmlFiles = await findHtmlFiles(ROOT);
-const eligibleFiles = htmlFiles.filter(
-  (filePath) => !ANALYTICS_EXCLUDED_FILES.has(normalizedRelativePath(filePath))
-);
+const eligibleFiles = htmlFiles.filter((filePath) => !ANALYTICS_EXCLUDED_FILES.has(normalizedRelativePath(filePath)));
 const missing = [];
 let updated = 0;
-
 for (const filePath of eligibleFiles) {
   const source = await readFile(filePath, "utf8");
-
   if (source.includes(MEASUREMENT_ID)) continue;
-
-  if (source.includes("googletagmanager.com/gtag/js?id=")) {
-    throw new Error(`${normalizedRelativePath(filePath)} already contains a different Google tag.`);
-  }
-
+  if (source.includes("googletagmanager.com/gtag/js?id=")) throw new Error(`${normalizedRelativePath(filePath)} already contains a different Google tag.`);
   if (!/<head(?:\s[^>]*)?>/i.test(source)) continue;
-
   const relativePath = normalizedRelativePath(filePath);
   missing.push(relativePath);
-
   if (!CHECK_ONLY) {
     const next = source.replace(/<head(?:\s[^>]*)?>/i, (head) => `${head}\n${GOOGLE_TAG}`);
     await writeFile(filePath, next, "utf8");
     updated += 1;
   }
 }
-
 if (CHECK_ONLY && missing.length) {
   console.error(`Google Analytics tag ${MEASUREMENT_ID} is missing from:`);
   for (const file of missing) console.error(`- ${file}`);
   process.exitCode = 1;
 } else if (CHECK_ONLY) {
-  console.log(
-    `Google Analytics tag ${MEASUREMENT_ID} is present in all ${eligibleFiles.length} eligible HTML files; ` +
-    `${ANALYTICS_EXCLUDED_FILES.size} private or print-only pages are intentionally excluded.`
-  );
+  console.log(`Google Analytics tag ${MEASUREMENT_ID} is present in all ${eligibleFiles.length} eligible HTML files; ${ANALYTICS_EXCLUDED_FILES.size} private or print-only pages are intentionally excluded.`);
 } else {
   console.log(`Added Google Analytics tag ${MEASUREMENT_ID} to ${updated} HTML files.`);
 }

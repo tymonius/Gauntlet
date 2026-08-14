@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <meta name="theme-color" content="#8f1f25" />
+  <meta name="description" content="Clean Gauntlet v0.6.3 Deckbuilder reconstruction bound to certified canonical data and approved starter Decks." />
+  <title>Gauntlet clean v0.6.3 Deckbuilder — Reconstruction</title>
+  <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
+  <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="reconstruction-banner">Clean v0.6.3 reconstruction candidate · not the current public release · publication remains locked.</div>
+  <header class="site-header">
+    <a class="brand" href="../../../../" aria-label="Gauntlet home"><span class="brand-mark" aria-hidden="true">G</span><span>Gauntlet</span></a>
+    <nav aria-label="Reconstruction navigation">
+      <a href="../start/">Clean Start</a>
+      <a href="../browser-rulebook/">Clean Rulebook</a>
+      <a href="../faction-pages/">Clean factions</a>
+      <a href="../card-reference/">Clean Card Reference</a>
+      <a href="../../../../deckbuilder/">Current public Deckbuilder (v0.6.1)</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Certified clean data · version 0.6.3 · reconstruction only</p>
+        <h1>Build from the <span>approved card pool.</span></h1>
+        <p class="lede">Choose one faction and Leader, construct a legal Deck, arrange three Territories, or load one of the twelve approved competitive starter Decks. Every card, cost, rule line, and Territory is read from the clean downstream canonical dataset after SHA-256 verification.</p>
+      </div>
+      <aside class="authority-card">
+        <p class="eyebrow">Source verification</p>
+        <strong data-source-status>Verifying canonical data and approved starters…</strong>
+        <p>Authority set <code>64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49</code></p>
+      </aside>
+    </section>
+
+    <section class="builder-shell" aria-label="Deck construction workspace">
+      <aside class="controls-panel">
+        <div class="panel-heading"><p class="eyebrow">1 · Identity</p><h2>Faction & Leader</h2></div>
+        <label>Faction<select data-faction-select disabled><option>Loading…</option></select></label>
+        <label>Leader<select data-leader-select disabled><option>Choose a faction first</option></select></label>
+        <div class="starter-box">
+          <div><p class="eyebrow">Approved starter</p><strong data-starter-name>Choose a Leader</strong></div>
+          <button class="button secondary" type="button" data-load-starter disabled>Load approved starter</button>
+          <p data-starter-summary>Each Leader has one finalized competitive starter Deck.</p>
+        </div>
+
+        <div class="panel-heading compact"><p class="eyebrow">2 · Validation</p><h2>Current package</h2></div>
+        <dl class="metrics">
+          <div><dt data-card-count>0</dt><dd>cards · minimum 30</dd></div>
+          <div><dt data-deck-value>0</dt><dd>value · maximum 60</dd></div>
+          <div><dt data-territory-count>0</dt><dd>Territories · exactly 3</dd></div>
+          <div><dt data-arena-count>0</dt><dd>Arenas · maximum 1</dd></div>
+        </dl>
+        <div class="validation-box" data-validation-status aria-live="polite">Choose a faction and Leader to begin.</div>
+        <button class="button tertiary" type="button" data-clear-deck>Clear current package</button>
+      </aside>
+
+      <div class="workspace">
+        <section class="workspace-section" aria-labelledby="cards-heading">
+          <div class="workspace-heading">
+            <div><p class="eyebrow">3 · Playable cards</p><h2 id="cards-heading">Legal card pool</h2></div>
+            <div class="filters">
+              <label>Search<input type="search" data-card-search placeholder="Card name or effect" /></label>
+              <label>Allegiance<select data-card-filter><option value="all">All legal</option><option value="neutral">Neutral</option><option value="faction">Faction</option></select></label>
+            </div>
+          </div>
+          <p class="workspace-note">Only Neutral cards and cards from the selected faction are shown. Unique cards may appear no more than once.</p>
+          <div class="card-grid" data-card-pool><p class="empty-state">Choose a faction to open its legal card pool.</p></div>
+        </section>
+
+        <section class="workspace-section current-section" aria-labelledby="current-heading">
+          <div class="workspace-heading"><div><p class="eyebrow">4 · Current Deck</p><h2 id="current-heading">Selected cards</h2></div></div>
+          <div class="current-deck" data-current-deck><p class="empty-state">No cards selected.</p></div>
+        </section>
+
+        <section class="workspace-section" aria-labelledby="territories-heading">
+          <div class="workspace-heading">
+            <div><p class="eyebrow">5 · Battlefield</p><h2 id="territories-heading">Choose three Territories</h2></div>
+            <label class="territory-search">Search<input type="search" data-territory-search placeholder="Territory name or effect" /></label>
+          </div>
+          <p class="workspace-note">Choose exactly three different Territories. No more than one may be an Arena. Order is shown from your own end toward the opponent's end and may be rearranged at setup after opening selection.</p>
+          <div class="territory-grid" data-territory-pool><p class="empty-state">Verifying Territories…</p></div>
+          <ol class="territory-order" data-territory-order><li>No Territories selected.</li></ol>
+        </section>
+
+        <section class="workspace-section boundary-section" aria-labelledby="boundary-heading">
+          <div><p class="eyebrow">Downstream boundary</p><h2 id="boundary-heading">Construction is rebuilt. Print/export is not.</h2></div>
+          <p>This surface intentionally stops at a validated Deck and Territory package. Printable card faces, backs, Leader/faction components, duplex pairing, and release export artifacts remain locked for the next reconstruction slice.</p>
+          <div class="boundary-actions">
+            <a class="button secondary" href="../start/">Back to clean Start</a>
+            <a class="text-link" href="../../../../deckbuilder/">Current public Deckbuilder (v0.6.1) →</a>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div><strong>Gauntlet clean v0.6.3 Deckbuilder</strong><p>Reconstruction candidate · canonical construction data verified at runtime.</p></div>
+    <p>Current public playtest release remains v0.6.1. Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  </footer>
+  <noscript><p class="noscript">JavaScript is required to verify and use the clean Deckbuilder.</p></noscript>
+  <script type="module" src="app.js"></script>
+</body>
+</html>
