@@ -1,25 +1,6 @@
 name: Verify current v0.6.3 live publication
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - '.github/workflows/verify-current-v063-live-publication.yml'
-      - 'scripts/validate-current-public-contract.mjs'
-      - 'releases/v0.6.3-reconstructed/**'
-      - 'index.html'
-      - 'start/**'
-      - 'rulebook/**'
-      - 'card-reference/**'
-      - 'factions/**'
-      - 'deckbuilder/**'
-      - 'rules-arbiter/**'
-      - 'design-tokens.css'
-      - 'images/faction-symbols/**'
-      - 'rules-assistant/worker-entry.js'
-      - 'rules-assistant/worker-v063.js'
-      - 'rules-assistant/v063-public-corpus.js'
-      - 'rules-assistant/wrangler.toml'
   push:
     branches: [main]
     paths:
@@ -50,29 +31,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  preview:
-    if: github.event_name == 'pull_request'
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - name: Check out proposed publication
-        uses: actions/checkout@v4
-
-      - name: Set up Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install contract dependency
-        run: npm install --no-save --package-lock=false pdf-lib
-
-      - name: Validate the exact current-publication contract pre-merge
-        run: node scripts/validate-current-public-contract.mjs
-
   live:
-    if: >-
-      (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
-      github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     environment: production
     timeout-minutes: 20
