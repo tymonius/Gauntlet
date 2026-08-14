@@ -1,8 +1,10 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const html = readFileSync("start/index.html", "utf8");
 const css = readFileSync("start/styles.css", "utf8");
+const siteCss = readFileSync("site.css", "utf8");
+const app = readFileSync("start/app.js", "utf8");
 
 function cssRule(selector: string) {
   const start = css.indexOf(`${selector}{`);
@@ -25,19 +27,30 @@ describe("public Start page theme", () => {
     expect(css).toContain(".journey span{background:var(--crimson-dark)");
   });
 
-  it("assigns typography by established project role", () => {
+  it("uses the sitewide v0.6.2-derived typography hierarchy", () => {
+    expect(siteCss).toContain("--reading: var(--font-reading)");
+    expect(siteCss).toContain("font-family: var(--reading)");
+    expect(siteCss).toContain("font-family: var(--historical)");
+    expect(siteCss).toContain("font-family: var(--sans)");
+
     expect(cssRule(".start-hero h1")).toContain("font-family:var(--font-display-web)");
     expect(cssRule(".section-heading h2")).toContain("font-family:var(--font-display-web)");
-    expect(cssRule(".start-hero h1")).toContain("font-weight:500");
-
-    expect(cssRule(".faction-choice strong")).toContain("font-family:var(--font-interface)");
-    expect(cssRule(".leader-choice strong")).toContain("font-family:var(--font-interface)");
-
+    expect(cssRule(".faction-choice strong")).toContain("font-family:var(--font-display-web)");
     expect(cssRule(".start-hero .hero-lede")).toContain("font-family:var(--font-reading)");
-    expect(cssRule(".intro-card p,.intro-card li")).toContain("font-family:var(--font-reading)");
+    expect(cssRule(".leader-choice strong")).toContain("font-family:var(--font-display-historical)");
+    expect(cssRule("fieldset legend")).toContain("font-family:var(--font-interface)");
+    expect(cssRule(".starter-preview .starter-meta span")).toContain("font-family:var(--font-interface)");
+  });
 
-    expect(cssRule(".brand>span:last-child")).toContain("font-family:var(--font-display-historical)");
-    expect(cssRule(".brand>span:last-child")).toContain("font-weight:400");
+  it("renders faction symbols in faction color and all twelve approved leader portraits", () => {
+    expect(cssRule(".choice-mark.faction-symbol-asset")).toContain("color:var(--faction)");
+
+    const portraitUrls = [...app.matchAll(/portrait:\s*"(\/images\/[^"]+)"/g)].map(match => match[1]);
+    expect(portraitUrls).toHaveLength(12);
+    for (const url of portraitUrls) {
+      expect(existsSync(decodeURIComponent(url.replace(/^\//, ""))), `${url} should resolve to a checked-in portrait`).toBe(true);
+    }
+    expect(app).toContain('portrait.className = "leader-portrait"');
   });
 
   it("keeps black and gold reserved from the rendered public hero", () => {
