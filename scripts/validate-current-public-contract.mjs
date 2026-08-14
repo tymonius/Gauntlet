@@ -23,7 +23,7 @@ const corePages = [
 ];
 
 function localPath(urlPath) {
-  const clean = urlPath.split(/[?#]/, 1)[0].replace(/^\//, '');
+  const clean = decodeURIComponent(urlPath.split(/[?#]/, 1)[0]).replace(/^\//, '');
   if (!clean) return 'index.html';
   const candidate = path.join(root, clean);
   if (urlPath.endsWith('/') || (fs.existsSync(candidate) && fs.statSync(candidate).isDirectory())) {
