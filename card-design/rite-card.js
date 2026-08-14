@@ -1,10 +1,12 @@
 const RITE_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md';
+const RITE_ART_ROOT = '../images/artwork/cards/mystics/rites-and-rituals';
 const COMPLETED_RITE_ART_SOURCE = '../images/artwork/supplemental/mystics/rite-completed.webp';
 
 const RITES = Object.freeze([
   {
     id: 'echoes',
     name: 'Rite of Echoes',
+    artwork: `${RITE_ART_ROOT}/rite-of-echoes.png`,
     begin: 'Bind one chosen card from your Graveyard face up beneath this Rite. Then bind one card from your Hand face down beneath it whose title matches at least one other card in your Deck.',
     complete: "On a later turn, complete this Rite after the Gambit, Tactic, or Gambit or Tactic effect of another card with the bound Hand card's title is applied during a battle.",
     interrupted: 'If you lose a battle before completion, put both bound cards in your Graveyard and reset the Rite.',
@@ -12,6 +14,7 @@ const RITES = Object.freeze([
   {
     id: 'blood',
     name: 'Rite of Blood',
+    artwork: `${RITE_ART_ROOT}/rite-of-blood.png`,
     begin: 'Put one card from your Hand in your Graveyard.',
     complete: 'On a later turn, complete this Rite when you win a battle without setting a Gambit or choosing a Tactic. Using Transmutation, an Asset, Overlay, Territory, Leader ability, or card from another source does not by itself prevent completion.',
     interrupted: 'If you lose a battle before completion, reset the Rite.',
@@ -19,6 +22,7 @@ const RITES = Object.freeze([
   {
     id: 'crossing',
     name: 'Rite of Crossing',
+    artwork: `${RITE_ART_ROOT}/rite-of-crossing.png`,
     begin: 'You may take the Begin a Rite Faction Action for Rite of Crossing during Denouement only after winning a battle that turn that made you the occupier of a Territory the opponent controlled immediately before that battle. Put one Arcane card from your Hand in your Graveyard. If you have none, reveal your Hand and move one Arcane card from your Discard Pile to your Graveyard instead.',
     complete: 'At the start of your next turn, after the Capture step, complete this Rite if you are still the occupier or now control that Territory. Otherwise, the Rite is interrupted and resets.',
     interrupted: '',
@@ -74,7 +78,9 @@ function unlockSection(unlock) {
 }
 
 function incompleteArtwork(rite) {
-  return `<figure class="card-art rite-art-pending" aria-label="Artwork pending for ${esc(rite.name)}"><span>Artwork pending</span></figure>`;
+  return `<figure class="card-art has-image" aria-label="Artwork for ${esc(rite.name)}">
+    <img src="${esc(rite.artwork)}" alt="Artwork for ${esc(rite.name)}" />
+  </figure>`;
 }
 
 function completedArtwork(rite) {
