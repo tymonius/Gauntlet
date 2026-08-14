@@ -14,7 +14,7 @@
   <link rel="icon" type="image/png" href="/favicon-32.png?v=20260804-1" sizes="32x32" />
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
-  <meta name="description" content="Search all 128 canonical Gauntlet v0.6.3 cards and 25 Territories." />
+  <meta name="description" content="Search all 128 Gauntlet v0.6.3 playable cards and 25 Territories." />
   <title>Gauntlet v0.6.3 Card Reference</title>
   <link rel="canonical" href="https://gauntlet.run/card-reference/" />
   <link rel="stylesheet" href="site.css" />
@@ -24,28 +24,31 @@
 </head>
 <body>
   <header class="site-header">
-    <a class="brand" href="../" aria-label="Gauntlet current public home">
+    <a class="brand" href="../" aria-label="Gauntlet home">
       <span class="brand-mark" aria-hidden="true">G</span>
       <span>Gauntlet</span>
     </a>
     <nav aria-label="Primary navigation">
-      <a href="../browser-rulebook/">Clean Rulebook</a>
-      <a href="../card-reference/">Current Card Reference</a>
-      <a href="../rulebook/">Current Rules</a>
-      <a href="https://github.com/tymonius/Gauntlet">Repository</a>
+      <a href="../start/">Start</a>
+      <a href="../#game">Game</a>
+      <a href="../rulebook/">Rules</a>
+      <a href="../factions/">Factions</a>
+      <a href="../deckbuilder/">Deckbuilder</a>
+      <a href="../card-reference/" aria-current="page">Card Reference</a>
+      <a href="../rules-arbiter/">Rules Arbiter</a>
     </nav>
   </header>
 
   <main class="reference-main">
     <section class="reference-hero" aria-labelledby="reference-title">
       <div>
-        <p class="eyebrow">Clean v0.6.3 current canonical playtest edition</p>
+        <p class="eyebrow">Quick rules lookup · v0.6.3</p>
         <h1 id="reference-title">Card <span>Reference.</span></h1>
-        <p class="reference-lede">Search all 128 playable cards and 25 Territories from the certified Gauntlet v0.6.3</p>
+        <p class="reference-lede">Search all 128 playable cards and 25 Territories in the current Gauntlet playtest edition.</p>
       </div>
       <div class="source-status" aria-live="polite">
-        <span>Source status</span>
-        <strong id="dataStatus">Loading certified clean v0.6.3 authority…</strong>
+        <span>Reference status</span>
+        <strong id="dataStatus">Loading v0.6.3 card data…</strong>
       </div>
     </section>
 
@@ -108,7 +111,7 @@
       <section class="browser-panel" aria-label="Card reference results">
         <div class="browser-heading">
           <div>
-            <p class="eyebrow">Certified clean results</p>
+            <p class="eyebrow">Current reference</p>
             <h2><span id="resultCount">0</span> matches</h2>
           </div>
           <p id="resultSummary" class="result-summary"></p>
@@ -116,7 +119,7 @@
 
         <div class="reference-browser">
           <div id="resultList" class="reference-list" role="listbox" aria-label="Reference results"></div>
-          <article id="preview" class="reference-preview empty-state" aria-live="polite">Select a result to view its certified clean text.</article>
+          <article id="preview" class="reference-preview empty-state" aria-live="polite">Select a result to view its rules text.</article>
         </div>
       </section>
     </section>
@@ -125,19 +128,20 @@
   <footer>
     <div>
       <strong>Gauntlet</strong>
-      <p>Unpublished current canonical playtest edition. Current public release: v0.6.1.</p>
+      <p>Current canonical playtest edition · v0.6.3.</p>
     </div>
     <div class="footer-links">
-      <a href="../browser-rulebook/">Clean Browser Rulebook</a>
-      <a href="../card-reference/">Current v0.6.1 Card Reference</a>
-      <a href="../releases/v0.6.1/">v0.6.1 Release</a>
+      <a href="../rulebook/">Browser Rulebook</a>
+      <a href="../deckbuilder/">Deckbuilder</a>
+      <a href="../rules-arbiter/">Rules Arbiter</a>
+      <a href="../releases/v0.6.3-reconstructed/">v0.6.3 Release</a>
       <a href="https://github.com/tymonius/Gauntlet">GitHub</a>
     </div>
     <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
   </footer>
 
   <noscript>
-    <p class="noscript">JavaScript is required to load and search the certified clean card authority.</p>
+    <p class="noscript">JavaScript is required to load and search the current card reference.</p>
   </noscript>
   <script src="app.js" defer></script>
   <script src="mobile-card-preview.js" defer></script>

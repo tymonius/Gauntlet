@@ -1,5 +1,6 @@
 const CANONICAL_DATA_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/complete-authority/canonical-structured-data.json';
-const AUTHORITY_SET_ID = "64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49";
+const PUBLIC_DATA_EXPORT = '../releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Canonical_Data.json';
+const RULEBOOK_URL = '../rulebook/';
 const EXPECTED_TARGET = "clean-v0.6.3-canonical-structured-authority";
 
 const FACTION_LABELS = {
@@ -33,7 +34,7 @@ async function init() {
   try {
     const response = await fetch(CANONICAL_DATA_SOURCE, { cache: "no-store" });
     if (!response.ok) {
-      throw new Error(`Failed to load ${CANONICAL_DATA_SOURCE}: ${response.status}`);
+      throw new Error(`Failed to load current card data: ${response.status}`);
     }
 
     const data = await response.json();
@@ -48,28 +49,28 @@ async function init() {
     const territoryCount = state.entries.filter(entry => entry.type === "territory").length;
     el.cardTotal.textContent = cardCount;
     el.territoryTotal.textContent = territoryCount;
-    el.dataStatus.textContent = `${state.version} · ${cardCount} playable cards + ${territoryCount} Territories loaded · current canonical data`;
+    el.dataStatus.textContent = `${state.version} · ${cardCount} playable cards + ${territoryCount} Territories loaded`;
     el.app.hidden = false;
     render();
   } catch (error) {
     console.error(error);
-    el.dataStatus.textContent = "Canonical v0.6.3 authority load failed";
+    el.dataStatus.textContent = "Card Reference data unavailable";
     document.body.insertAdjacentHTML(
       "beforeend",
-      `<p class="noscript">Unable to load the canonical v0.6.3 structured authority. Serve the repository through a web server rather than opening this file directly. <a href="${CANONICAL_DATA_SOURCE}">Open the clean canonical authority</a>.</p>`
+      `<p class="noscript">Unable to load the current v0.6.3 card data. Serve the repository through a web server rather than opening this file directly. <a href="${PUBLIC_DATA_EXPORT}">Open the v0.6.3 data export</a>.</p>`
     );
   }
 }
 
 function validateCanonicalData(data) {
-  if (!data || typeof data !== "object") throw new Error("Canonical authority is not an object.");
+  if (!data || typeof data !== "object") throw new Error("Canonical data is not an object.");
   if (data.target !== EXPECTED_TARGET) {
     throw new Error(`Expected ${EXPECTED_TARGET}, received ${data.target || "unknown target"}.`);
   }
-  if (data.publication_unlocked !== false) throw new Error("Reconstruction authority unexpectedly reports publication unlocked.");
+  if (data.publication_unlocked !== false) throw new Error("Canonical reconstruction input unexpectedly reports publication unlocked.");
 
   const gameplay = data.gameplay;
-  if (!gameplay || typeof gameplay !== "object") throw new Error("Canonical authority has no gameplay payload.");
+  if (!gameplay || typeof gameplay !== "object") throw new Error("Canonical data has no gameplay payload.");
   if (!Array.isArray(gameplay.cards) || gameplay.cards.length !== 128) {
     throw new Error(`Expected 128 playable cards, received ${gameplay.cards?.length ?? "none"}.`);
   }
@@ -266,7 +267,7 @@ function buildResultSummary() {
   if (state.type !== "all") parts.push(state.type === "card" ? "playable cards only" : "Territories only");
   if (state.faction !== "all") parts.push(FACTION_LABELS[state.faction] || state.faction);
   if (state.cost !== "all") parts.push(`cost ${state.cost}`);
-  return parts.length ? parts.join(" · ") : `All certified clean ${state.version} playable cards and Territories.`;
+  return parts.length ? parts.join(" · ") : `All ${state.version} playable cards and Territories.`;
 }
 
 function selectEntry(id) {
@@ -289,7 +290,7 @@ function renderPreview(entry) {
   if (!entry) {
     el.preview.className = "reference-preview empty-state";
     delete el.preview.dataset.faction;
-    el.preview.textContent = "Select a result to view its certified clean text.";
+    el.preview.textContent = "Select a result to view its rules text.";
     return;
   }
 
@@ -319,10 +320,10 @@ function renderPreview(entry) {
     ` : ""}
     <div class="preview-actions">
       <button id="copyLink" class="button secondary" type="button">Copy direct link</button>
-      <a class="button secondary" href="${CANONICAL_DATA_SOURCE}">View clean canonical authority</a>
-      <a class="button secondary" href="../browser-rulebook/">Open clean Browser Rulebook</a>
+      <a class="button secondary" href="${RULEBOOK_URL}">Open Browser Rulebook</a>
+      <a class="button secondary" href="../deckbuilder/">Open Deckbuilder</a>
     </div>
-    <p class="preview-source">This reconstruction reads the certified clean ${escapeHtml(state.version)} structured authority. It is not the current public release; publication remains locked. Authority set ${AUTHORITY_SET_ID.slice(0, 12)}…</p>
+    <p class="preview-source">Current ${escapeHtml(state.version)} card and Territory text.</p>
   `;
 
   document.getElementById("copyLink")?.addEventListener("click", copyDirectLink);

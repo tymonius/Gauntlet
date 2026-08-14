@@ -1,21 +1,9 @@
 name: Build clean v0.6.3 Card Reference
 
+# Reconstruction certification is complete. Keep the historical Card Reference builder
+# available for deliberate forensic/manual runs, but do not regenerate certified
+# reconstruction artifacts in response to current player-facing maintenance.
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - '.github/workflows/build-clean-v063-card-reference.yml'
-      - 'scripts/build-clean-v063-card-reference.mjs'
-      - 'scripts/validate-clean-v063-card-reference.mjs'
-      - 'scripts/validate-clean-v063-rules-arbiter.mjs'
-      - 'scripts/sync-google-analytics.mjs'
-      - 'artifacts/reconstruction/clean-v0.6.3/card-reference/**'
-      - 'artifacts/reconstruction/clean-v0.6.3/complete-authority/**'
-      - 'config/release-lifecycle.json'
-      - 'config/reconstruction-version-plan.json'
-      - 'src/content/current.ts'
-      - 'card-reference/**'
-      - 'site.css'
   workflow_dispatch:
 
 permissions:

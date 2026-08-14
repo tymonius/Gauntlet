@@ -22,6 +22,7 @@ assert(home.includes('releases/v0.6.3-reconstructed/'));
 assert(home.includes('rules-arbiter/'));
 assert(!home.includes('releases/v0.6.1/'));
 assert(!/Current canonical playtest edition · v0\.6\.1/.test(home));
+assert(!home.includes('Download the certified Rulebook'));
 
 const requiredDeckbuilderFiles = [
   'index.html','app.js','styles.css','territories.css','territories.js',
@@ -43,6 +44,28 @@ assert(deckbuilderIndex.includes('id="exportJsonButton"'), 'Restored Deckbuilder
 assert(deckbuilderIndex.includes('id="printDeckButton"'), 'Restored Deckbuilder lost Print / PDF.');
 assert(deckbuilderIndex.includes('id="cardPreview"'), 'Restored Deckbuilder lost card previews.');
 assert(deckbuilderIndex.includes('id="territoryPreview"'), 'Restored Deckbuilder lost Territory previews.');
+
+const cardReferenceIndex = read('card-reference/index.html');
+const cardReferenceApp = read('card-reference/app.js');
+assert(cardReferenceIndex.includes('Quick rules lookup · v0.6.3'));
+assert(cardReferenceIndex.includes('128 playable cards and 25 Territories'));
+assert(!cardReferenceIndex.includes('../browser-rulebook/'));
+assert(!/certified clean|current public release:\s*v0\.6\.1/i.test(cardReferenceIndex));
+assert(cardReferenceApp.includes("const RULEBOOK_URL = '../rulebook/';"));
+assert(!cardReferenceApp.includes('../browser-rulebook/'));
+assert(!cardReferenceApp.includes('publication remains locked'));
+assert(!cardReferenceApp.includes('Authority set'));
+
+const arbiterIndex = read('rules-arbiter/index.html');
+const arbiterApp = read('rules-arbiter/app.js');
+assert(arbiterIndex.includes('Rules support · v0.6.3'));
+assert(!/downstream review only|current release remains v0\.6\.1|authority set/i.test(arbiterIndex));
+assert(arbiterApp.includes('payload.published !== true'));
+assert(arbiterApp.includes('payload.reconstruction !== false'));
+assert(arbiterApp.includes('payload.currentPublicRelease !== CURRENT_PUBLIC_RELEASE'));
+assert(arbiterApp.includes('return askLocal(question);'));
+assert(!arbiterApp.includes('Reconstruction worker returned'));
+assert(!arbiterApp.includes('../browser-rulebook/'));
 
 const pointer = read('src/content/current.ts');
 assert(pointer.includes("../reconstruction/clean-v063/content"));
@@ -94,6 +117,7 @@ try {
     '.github/workflows/test-v061-browser-tools.yml',
     '.github/workflows/build-clean-v063-complete-authority.yml',
     '.github/workflows/build-clean-v063-browser-rulebook.yml',
+    '.github/workflows/build-clean-v063-card-reference.yml',
     '.github/workflows/publish-v061-rulebook.yml',
     'scripts/publication-utils.mjs',
     'scripts/build-clean-v063-publication.mjs',
@@ -105,10 +129,11 @@ try {
     'scripts/render-clean-v063-publication.mjs',
     'scripts/validate-clean-v063-publication.mjs',
     'scripts/validate-clean-v063-publication-data.mjs',
-    'scripts/validate-clean-v063-publication-surfaces.mjs',
+     'scripts/validate-clean-v063-publication-surfaces.mjs',
     'scripts/verify-clean-v063-live-publication.mjs',
     'tests/standalone-new-player-onboarding.test.ts',
     'tests/current-rulebook-player-experience.test.ts',
+    'tests/current-player-site-integrity.test.ts',
     'config/release-lifecycle.json','src/content/current.ts','index.html',
     'rules-assistant/worker-entry.js','rules-assistant/worker-v063.js','rules-assistant/v063-public-corpus.js','rules-assistant/widget.js',
   ]);
@@ -127,4 +152,4 @@ try {
   if (error instanceof assert.AssertionError) throw error;
   console.warn('Publication diff firewall skipped because origin/main is unavailable.');
 }
-console.log('Validated current/public browser surfaces, restored Deckbuilder capabilities, clean digital pointer, Rules Arbiter cutover compatibility, and publication diff firewall.');
+console.log('Validated current/public browser surfaces, restored player tools, clean digital pointer, Rules Arbiter cutover compatibility, and publication diff firewall.');
