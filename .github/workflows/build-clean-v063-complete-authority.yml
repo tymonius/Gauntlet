@@ -102,6 +102,24 @@ jobs:
               text = text.replace(old_boundary, new_boundary, 1)
           elif new_boundary not in text:
               raise SystemExit('Expected Territory source-boundary sentence not found')
+
+          old_count = "  assert.equal(records.length, 49, 'Expected the complete 49-record reconstruction audit registry.');"
+          new_count = "  assert.equal(records.length, candidates.decisions?.length ?? 0, 'Provenance ledger must cover the complete reconstruction audit registry.');"
+          if old_count in text:
+              text = text.replace(old_count, new_count, 1)
+          elif new_count not in text:
+              raise SystemExit('Expected dynamic provenance-ledger count assertion not found')
+          path.write_text(text)
+
+          path = Path('scripts/validate-clean-v063-complete-authority.mjs')
+          text = path.read_text()
+          text = text.replace("assert.equal(ledger.decision_registry?.records?.length, 49);\n", '', 1)
+          old_log = 'console.log(`Validated clean-v0.6.3 complete authority ${manifest.authority_set_id}: 128 cards, 25 Territories, 49 normalized provenance records, 21 frozen bespoke card sections, and zero gameplay drift.`);'
+          new_log = 'console.log(`Validated clean-v0.6.3 complete authority ${manifest.authority_set_id}: 128 cards, 25 Territories, ${candidates.decisions?.length ?? 0} normalized provenance records, 21 frozen bespoke card sections, and zero gameplay drift.`);'
+          if old_log in text:
+              text = text.replace(old_log, new_log, 1)
+          elif new_log not in text:
+              raise SystemExit('Expected dynamic validator summary not found')
           path.write_text(text)
           PY
 
