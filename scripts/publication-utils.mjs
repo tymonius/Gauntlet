@@ -2,6 +2,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 
+// Publication retry after #644 synchronized the approved Mystics Rite completion artwork regression.
+
 export const root = process.cwd();
 export const check = process.argv.includes('--check');
 export const failures = [];
