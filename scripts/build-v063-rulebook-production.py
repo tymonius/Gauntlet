@@ -105,13 +105,13 @@ def build_presentation_source(source: str) -> str:
     if source.endswith("\n"):
         transformed += "\n"
 
-    # Prove the transform changed only heading depth/wrapper lines and inserted
-    # the twelve approved image references. All non-structural source lines must
-    # remain byte-for-byte identical and in the same order.
+    # Prove the transform changed only heading depth/wrapper lines, presentation
+    # whitespace, and the twelve approved image references. Every nonblank rules
+    # line must otherwise remain byte-for-byte identical and in the same order.
     def semantic_lines(value: str) -> list[str]:
         result: list[str] = []
         for line in value.splitlines():
-            if line == "## Leaders":
+            if not line.strip() or line == "## Leaders":
                 continue
             if re.match(r"^!\[[^]]+\]\(<images/sketches/[^>]+\.png>\)$", line):
                 continue
@@ -165,12 +165,8 @@ def main() -> None:
 
     print(
         f"adapted approved Rulebook production system to {CURRENT_RULEBOOK.relative_to(ROOT)} "
-        f"with {leader_count_message()}"
+        "with 12 presentation-only Leader sketches and the approved Leader-page hierarchy"
     )
-
-
-def leader_count_message() -> str:
-    return "12 presentation-only Leader sketches and the approved Leader-page hierarchy"
 
 
 if __name__ == "__main__":
