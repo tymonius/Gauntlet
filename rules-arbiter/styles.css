@@ -1,3 +1,6 @@
+@import url("https://use.typekit.net/vgm6nwi.css");
+@import url("../design-tokens.css");
+
 :root {
   --ink: #181614;
   --muted: #665f55;
@@ -9,15 +12,17 @@
   --crimson-dark: #5f1418;
   --bronze: #a37338;
   --shadow: 0 24px 70px rgba(41, 30, 16, 0.14);
-  --serif: Georgia, "Times New Roman", serif;
-  --sans: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --serif: var(--font-display-web);
+  --reading: var(--font-reading);
+  --historical: var(--font-display-historical);
+  --sans: var(--font-interface);
 }
 
 * { box-sizing: border-box; }
 body {
   margin: 0;
   color: var(--ink);
-  font-family: var(--sans);
+  font-family: var(--reading);
   line-height: 1.55;
   background:
     radial-gradient(circle at 8% 2%, rgba(143, 31, 37, 0.09), transparent 27rem),
@@ -27,7 +32,7 @@ body {
 }
 
 a { color: inherit; }
-button, textarea { font: inherit; }
+button, textarea { font-family: var(--sans); }
 
 .arbiter-header,
 .arbiter-shell,
@@ -44,7 +49,7 @@ footer {
   align-items: center;
   border-bottom: 1px solid var(--line);
 }
-.arbiter-header nav { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; }
+.arbiter-header nav { display: flex; gap: 20px; flex-wrap: wrap; align-items: center; font-family: var(--sans); }
 .arbiter-header nav a {
   color: var(--muted);
   font-size: 0.88rem;
@@ -60,8 +65,8 @@ footer {
   gap: 12px;
   align-items: center;
   color: var(--ink);
-  font: 700 1.4rem/1 var(--serif);
-  letter-spacing: 0.03em;
+  font: 400 1.4rem/1 var(--historical);
+  letter-spacing: 0;
   text-decoration: none;
 }
 .brand span {
@@ -73,7 +78,9 @@ footer {
   color: var(--paper);
   background: var(--crimson-dark);
   box-shadow: inset 0 0 0 3px rgba(255,255,255,.08);
+  font-family: var(--serif);
 }
+.brand strong { font: inherit; }
 
 .arbiter-shell {
   display: grid;
@@ -96,12 +103,13 @@ footer {
 .eyebrow {
   margin: 0 0 14px;
   color: var(--crimson);
+  font-family: var(--sans);
   font-size: .76rem;
   font-weight: 850;
   letter-spacing: .16em;
   text-transform: uppercase;
 }
-.lede { max-width: 760px; color: #413b34; font: 1.16rem/1.65 var(--serif); }
+.lede { max-width: 760px; color: #413b34; font: 1.16rem/1.65 var(--reading); }
 .source-boundary {
   margin: 1.4rem 0;
   padding: 1rem 1.1rem;
@@ -116,6 +124,7 @@ footer {
   border: 1px solid #9e8165;
   color: var(--crimson-dark);
   background: #fff;
+  font-family: var(--sans);
   font-weight: 750;
   cursor: pointer;
 }
@@ -127,12 +136,13 @@ footer {
   padding: .9rem;
   border: 1px solid #a8957d;
   background: #fff;
+  font-family: var(--sans);
 }
 .arbiter-form button { color: #fff8ea; background: var(--crimson-dark); border-color: var(--crimson-dark); }
 .arbiter-status,
 .small,
 .arbiter-meta,
-.arbiter-boundary { color: var(--muted); font-size: .9rem; }
+.arbiter-boundary { color: var(--muted); font-family: var(--sans); font-size: .9rem; }
 .arbiter-ruling {
   margin-top: 1.4rem;
   padding: 1rem 1.1rem;
@@ -154,6 +164,7 @@ footer {
   gap: 24px;
   border-top: 1px solid var(--line);
   color: var(--muted);
+  font-family: var(--sans);
   font-size: .82rem;
 }
 footer p { margin: 0; }
@@ -177,8 +188,4 @@ footer strong { color: var(--ink); }
   .arbiter-panel,
   .authority-card { padding: 24px; }
   footer { flex-direction: column; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { scroll-behavior: auto !important; transition: none !important; }
 }
