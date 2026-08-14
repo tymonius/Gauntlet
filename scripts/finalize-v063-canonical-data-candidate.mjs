@@ -1,6 +1,6 @@
 import fs from 'node:fs';
 
-const path = 'artifacts/v0.6.3/canonical/Gauntlet_v0.6.3_Canonical_Data_Candidate.json';
+const path = process.env.V063_CANONICAL_DATA ?? 'artifacts/v0.6.3/canonical/Gauntlet_v0.6.3_Canonical_Data_Candidate.json';
 const data = JSON.parse(fs.readFileSync(path, 'utf8'));
 
 const coreRoleHeadings = ['Action', 'Asset', 'Gambit', 'Tactic', 'Gambit/Tactic'];
@@ -36,18 +36,11 @@ data.normalization = {
 };
 
 fs.writeFileSync(path, JSON.stringify(data, null, 2) + '\n', 'utf8');
-console.log(`Finalized canonical effect headings: ${presentHeadings.join(', ')}.`);
+console.log(`Finalized canonical effect headings in ${path}: ${presentHeadings.join(', ')}.`);
 
 function standardizeCardHeadings() {
-  replaceEffects('neutral-bombardment', [
-    ['Action', 'Place this Overlay on the first enemy-controlled Territory ahead of you without an Overlay.'],
-    ...effectsExcept('neutral-bombardment', ['Placement']),
-  ]);
-
-  replaceEffects('intelligence-fog-of-war', [
-    ['Action', 'Place this Overlay on any Territory.'],
-    ...effectsExcept('intelligence-fog-of-war', ['Placement']),
-  ]);
+  replacePlacementWithAction('neutral-bombardment', 'Place this Overlay on the first enemy-controlled Territory ahead of you without an Overlay.');
+  replacePlacementWithAction('intelligence-fog-of-war', 'Place this Overlay on any Territory.');
 
   replaceEffects('diplomats-sanctions-blockade', [
     ['Sanctions', "Instead of playing this immediately, in the Aftermath following that refusal, you may place this Overlay on a Territory that opponent controls."],
@@ -103,11 +96,16 @@ function cardById(id) {
   return card;
 }
 
-function effectsExcept(id, excludedLabels) {
-  const excluded = new Set(excludedLabels);
-  return cardById(id).effects
-    .filter((effect) => !excluded.has(effect.label))
-    .map((effect) => [effect.label, effect.text]);
+function replacePlacementWithAction(id, text) {
+  const card = cardById(id);
+  const placement = card.effects.find((effect) => effect.label === 'Placement');
+  if (!placement) {
+    const action = card.effects.find((effect) => effect.label === 'Action');
+    if (!action || action.text !== text) throw new Error(`Expected Placement or standardized Action effect on ${id}`);
+    return;
+  }
+  placement.label = 'Action';
+  placement.text = text;
 }
 
 function replaceEffects(id, entries) {
@@ -116,6 +114,7 @@ function replaceEffects(id, entries) {
 
 function relabel(id, from, to) {
   const card = cardById(id);
+  if (card.effects.some((entry) => entry.label === to)) return;
   const effect = card.effects.find((entry) => entry.label === from);
   if (!effect) throw new Error(`Effect ${from} not found on ${id}`);
   effect.label = to;
@@ -124,11 +123,11 @@ function relabel(id, from, to) {
 function mergeOutcomeBranches(id, hostLabel) {
   const card = cardById(id);
   const host = card.effects.find((effect) => effect.label === hostLabel);
+  if (!host) throw new Error(`Effect ${hostLabel} not found on ${id}`);
   const accepted = card.effects.find((effect) => effect.label === 'Accepted');
   const refused = card.effects.find((effect) => effect.label === 'Refused');
-  if (!host || !accepted || !refused) {
-    throw new Error(`Expected ${hostLabel}/Accepted/Refused effects on ${id}`);
-  }
+  if (!accepted && !refused && host.text.includes('Accepted —') && host.text.includes('Refused —')) return;
+  if (!accepted || !refused) throw new Error(`Expected Accepted/Refused effects on ${id}`);
   host.text = `${host.text}\n\nAccepted — ${accepted.text}\n\nRefused — ${refused.text}`;
   card.effects = card.effects.filter((effect) => effect !== accepted && effect !== refused);
 }
