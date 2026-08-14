@@ -1,4 +1,4 @@
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const html = readFileSync("start/index.html", "utf8");
@@ -40,7 +40,12 @@ describe("public Start page theme", () => {
 
   it("renders faction symbols in faction color and all twelve approved leader portraits", () => {
     expect(cssRule(".choice-mark.faction-symbol-asset")).toContain("color:var(--faction)");
-    expect((app.match(/portrait:\s*"\/images\//g) || []).length).toBe(12);
+
+    const portraitUrls = [...app.matchAll(/portrait:\s*"(\/images\/[^"]+)"/g)].map(match => match[1]);
+    expect(portraitUrls).toHaveLength(12);
+    for (const url of portraitUrls) {
+      expect(existsSync(decodeURIComponent(url.replace(/^\//, ""))), `${url} should resolve to a checked-in portrait`).toBe(true);
+    }
     expect(app).toContain('portrait.className = "leader-portrait"');
   });
 
