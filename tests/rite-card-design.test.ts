@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
@@ -5,6 +6,7 @@ const reviewPage = readFileSync("card-design/index.html", "utf8");
 const riteRenderer = readFileSync("card-design/rite-card.js", "utf8");
 const riteStyles = readFileSync("card-design/rite-card.css", "utf8");
 const leaderStyles = readFileSync("card-design/leader-card.css", "utf8");
+const completedRiteArtwork = readFileSync("images/artwork/supplemental/mystics/rite-completed.webp");
 
 const riteNames = ["Rite of Echoes", "Rite of Blood", "Rite of Crossing"];
 
@@ -58,6 +60,7 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteStyles).toContain(".rite-completed-panel > img");
     expect(riteStyles).toContain("object-fit: cover");
     expect(riteStyles).toContain("object-position: center");
+    expect(createHash("sha256").update(completedRiteArtwork).digest("hex")).toBe("1b5fa6a22d60d0afd09919f23c2f164fbf3679dd371e418424ab5e1796019604");
     expect(riteRenderer).not.toContain("rite-ritual-diagram");
     expect(riteRenderer).not.toContain("wax-seal");
     expect(riteRenderer).not.toContain("Ratified");
