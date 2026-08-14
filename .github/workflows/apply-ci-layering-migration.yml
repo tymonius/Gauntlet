@@ -10,15 +10,19 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: apply-ci-layering-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
 jobs:
   migrate:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - name: Checkout PR head
+      - name: Checkout latest PR branch
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.pull_request.head.sha }}
+          ref: ${{ github.head_ref }}
           fetch-depth: 1
 
       - name: Retire automatic legacy/candidate triggers
