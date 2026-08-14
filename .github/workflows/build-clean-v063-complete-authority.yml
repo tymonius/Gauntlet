@@ -45,7 +45,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: node scripts/materialize-v063-finalized-tracker-snapshot.mjs
 
-      - name: Normalize authority-set IDs as provenance metadata
+      - name: Apply provenance-proof normalizations
         shell: bash
         run: |
           python - <<'PY'
@@ -60,9 +60,35 @@ jobs:
               new = "  'inherits_from', 'release_manifest', 'provenance', 'authority_set_id',\n"
               if old in text:
                   text = text.replace(old, new, 1)
-                  path.write_text(text)
               elif new not in text:
                   raise SystemExit(f'Expected provenance-key declaration not found in {name}')
+              path.write_text(text)
+
+          path = Path('scripts/build-clean-v063-complete-authority.mjs')
+          text = path.read_text()
+          old = '''  const expectedTerritories = stripProvenance(
+            replaceStrings(structuredClone(v062.territories), "Smuggler's Pass", "Smuggler's Run"),
+          );
+          assert.deepEqual(
+            generatedGameplay.territories,
+            expectedTerritories,
+            'Territory authority contains a v0.6.3 mutation other than the approved Smuggler title migration.',
+          );'''
+          new = '''  let expectedTerritories = structuredClone(v062.territories);
+          expectedTerritories = replaceStrings(expectedTerritories, 'only one banked Asset they control can be active', 'only 1 of their Assets can be active');
+          expectedTerritories = replaceStrings(expectedTerritories, 'all their other banked Assets are inactive', 'their other Assets are inactive');
+          expectedTerritories = replaceStrings(expectedTerritories, "Smuggler's Pass", "Smuggler's Run");
+          expectedTerritories = stripProvenance(expectedTerritories);
+          assert.deepEqual(
+            generatedGameplay.territories,
+            expectedTerritories,
+            'Territory authority contains a v0.6.3 mutation outside the approved Asset-language normalization or Smuggler title migration.',
+          );'''
+          if old in text:
+              text = text.replace(old, new, 1)
+          elif new not in text:
+              raise SystemExit('Expected Territory proof block not found')
+          path.write_text(text)
           PY
 
       - name: Rebuild complete authority from source lineage
