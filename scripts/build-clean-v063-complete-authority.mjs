@@ -68,7 +68,7 @@ const provenanceKeys = new Set([
 ]);
 const topLevelProcessKeys = new Set([
   'version', 'name', 'date', 'status', 'publication_unlocked', 'authority_set_id',
-  'authority', 'structural_baseline', 'evidence_payload', 'governing_sources',
+  'authority', 'structural_baseline', 'evidence_payload', 'structured_authority', 'governing_sources',
   'starter_decks', 'normalization', 'release_manifest', 'inherits_from',
 ]);
 
@@ -319,15 +319,15 @@ export function buildOutputs({ writeOutputs = write } = {}) {
   );
 
   let expectedTerritories = structuredClone(v062.territories);
-expectedTerritories = replaceStrings(expectedTerritories, 'only one banked Asset they control can be active', 'only 1 of their Assets can be active');
-expectedTerritories = replaceStrings(expectedTerritories, 'all their other banked Assets are inactive', 'their other Assets are inactive');
-expectedTerritories = replaceStrings(expectedTerritories, "Smuggler's Pass", "Smuggler's Run");
-expectedTerritories = stripProvenance(expectedTerritories);
-assert.deepEqual(
-  generatedGameplay.territories,
-  expectedTerritories,
-  'Territory authority contains a v0.6.3 mutation outside the approved Asset-language normalization or Smuggler title migration.',
-);
+  expectedTerritories = replaceStrings(expectedTerritories, 'only one banked Asset they control can be active', 'only 1 of their Assets can be active');
+  expectedTerritories = replaceStrings(expectedTerritories, 'all their other banked Assets are inactive', 'their other Assets are inactive');
+  expectedTerritories = replaceStrings(expectedTerritories, "Smuggler's Pass", "Smuggler's Run");
+  expectedTerritories = stripProvenance(expectedTerritories);
+  assert.deepEqual(
+    generatedGameplay.territories,
+    expectedTerritories,
+    'Territory authority contains a v0.6.3 mutation outside the approved Asset-language normalization or Smuggler title migration.',
+  );
 
   const counts = generatedGameplay.cards.reduce((map, card) => {
     map[card.allegiance] = (map[card.allegiance] ?? 0) + 1;

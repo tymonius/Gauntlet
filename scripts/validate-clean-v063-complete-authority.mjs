@@ -25,7 +25,7 @@ const provenanceKeys = new Set([
 ]);
 const topLevelProcessKeys = new Set([
   'version', 'name', 'date', 'status', 'publication_unlocked', 'authority_set_id',
-  'authority', 'structural_baseline', 'evidence_payload', 'governing_sources',
+  'authority', 'structural_baseline', 'evidence_payload', 'structured_authority', 'governing_sources',
   'starter_decks', 'normalization', 'release_manifest', 'inherits_from',
 ]);
 

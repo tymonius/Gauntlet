@@ -88,7 +88,7 @@
   ],
   "equality_target": {
     "path": "artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json",
-    "sha256": "fa42934af929e04628449ac34863a3422cd673d862fc9c1f6772b35edeaac5d8",
+    "sha256": "641c813366a8bcb52f9cb505ada640994d416024deed1f71a6ec59fb24ed2c4c",
     "role": "comparison_only_not_authority",
     "result": "full_gameplay_payload_semantically_identical"
   },
