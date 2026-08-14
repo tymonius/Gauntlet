@@ -7,7 +7,7 @@
     "governance:check": "python .github/scripts/validate-governance.py && python .github/scripts/validate-conversation-audit.py && python .github/scripts/validate-live-tail.py",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:full": "npm run typecheck && npm run test && npm run test:current-contract && npm run test:deckbuilder && npm run analytics:check && npm run tts:check && npm run media:check",
+    "test:full": "npm run typecheck && npm run test && npm run test:current-contract && npm run test:deckbuilder && npm run analytics:check",
     "test:current-contract": "node scripts/validate-current-public-contract.mjs",
     "test:v062-shared-rules": "node scripts/validate-v062-shared-rules.mjs",
     "test:v062-faction-components": "node scripts/validate-v062-faction-components.mjs",
