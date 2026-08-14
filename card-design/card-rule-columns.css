@@ -1,0 +1,36 @@
+/* Shared content-aware label/body column policy for portrait card rules.
+   Fixed label tracks waste horizontal space on short labels and can starve the
+   body on longer labels. Each row now sizes its label track to the rendered
+   heading, up to a card-type safety cap, while keeping a small consistent gap.
+   The caps remain deliberately generous until heading terminology is
+   standardized across the card set. */
+
+:where(.rule-section, .leader-rule-section, .rite-unlock-section) {
+  --rule-label-max: 0.68in;
+  --rule-column-gap: 0.03in;
+  grid-template-columns: fit-content(var(--rule-label-max)) minmax(0, 1fr) !important;
+  column-gap: var(--rule-column-gap) !important;
+}
+
+/* Longer supplemental-card labels get room to remain on one line where
+   practical, but the track still grows only as wide as the actual heading. */
+.proposal-card .rule-section,
+.rite-card .rule-section {
+  --rule-label-max: 0.72in;
+}
+
+.leader-rule-section {
+  --rule-label-max: 0.78in;
+}
+
+/* Completed-Rite count labels are intentionally short; keep their gap compact
+   so the progression-reference body receives the recovered width. */
+.rite-unlock-section {
+  --rule-label-max: 0.48in;
+  --rule-column-gap: 0.024in;
+}
+
+/* Overlay cards have less horizontal room after the side rail. */
+.overlay-card .rule-section {
+  --rule-label-max: 0.60in;
+}
