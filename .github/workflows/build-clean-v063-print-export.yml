@@ -1,0 +1,97 @@
+name: Build clean v0.6.3 print/export
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/build-clean-v063-print-export.yml'
+      - 'artifacts/reconstruction/clean-v0.6.3/print-export/**'
+      - 'scripts/build-clean-v063-print-export.mjs'
+      - 'scripts/render-clean-v063-print-export.mjs'
+      - 'scripts/validate-clean-v063-print-export.mjs'
+      - 'artifacts/reconstruction/clean-v0.6.3/complete-authority/authority-set.json'
+      - 'artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md'
+      - 'artifacts/reconstruction/clean-v0.6.3/faction-guides/**'
+      - 'artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json'
+      - 'artifacts/reconstruction/clean-v0.6.3/downstream/starter-decks.json'
+      - 'artifacts/reconstruction/clean-v0.6.3/downstream/manifest.json'
+      - 'artifacts/reconstruction/clean-v0.6.3/browser-rulebook/markdown.js'
+      - 'config/release-lifecycle.json'
+      - 'config/reconstruction-version-plan.json'
+      - 'src/content/current.ts'
+      - 'package.json'
+      - 'package-lock.json'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/build-clean-v063-print-export.yml'
+      - 'artifacts/reconstruction/clean-v0.6.3/print-export/**'
+      - 'scripts/build-clean-v063-print-export.mjs'
+      - 'scripts/render-clean-v063-print-export.mjs'
+      - 'scripts/validate-clean-v063-print-export.mjs'
+      - 'artifacts/reconstruction/clean-v0.6.3/complete-authority/authority-set.json'
+      - 'artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md'
+      - 'artifacts/reconstruction/clean-v0.6.3/faction-guides/**'
+      - 'artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json'
+      - 'artifacts/reconstruction/clean-v0.6.3/downstream/starter-decks.json'
+      - 'artifacts/reconstruction/clean-v0.6.3/downstream/manifest.json'
+      - 'artifacts/reconstruction/clean-v0.6.3/browser-rulebook/markdown.js'
+      - 'config/release-lifecycle.json'
+      - 'config/reconstruction-version-plan.json'
+      - 'src/content/current.ts'
+      - 'package.json'
+      - 'package-lock.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Check out clean print/export inputs
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install repository dependencies
+        run: npm install
+
+      - name: Install PDF renderer dependency
+        run: npm install --no-save pdf-lib
+
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: Syntax-check print/export scripts
+        run: |
+          node --check scripts/build-clean-v063-print-export.mjs
+          node --check scripts/render-clean-v063-print-export.mjs
+          node --check scripts/validate-clean-v063-print-export.mjs
+
+      - name: Build clean print/export sources
+        run: node scripts/build-clean-v063-print-export.mjs
+
+      - name: Render clean print/export PDFs
+        run: node scripts/render-clean-v063-print-export.mjs
+
+      - name: Validate clean v0.6.3 print/export package
+        run: node scripts/validate-clean-v063-print-export.mjs
+
+      - name: Upload clean print/export review package
+        uses: actions/upload-artifact@v4
+        with:
+          name: gauntlet-clean-v063-print-export
+          path: |
+            artifacts/reconstruction/clean-v0.6.3/print-export/generated/**
+            /tmp/gauntlet-clean-v063-print-export-previews/**
+          if-no-files-found: error
+
+      - name: Reject whitespace errors
+        run: git diff --check HEAD^1 HEAD
