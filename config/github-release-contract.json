@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "policy": {
+    "published_release_requires_git_tag": true,
+    "published_release_requires_github_release": true,
+    "release_tags_are_immutable": true
+  },
+  "current_release": {
+    "tag": "v0.6.3",
+    "title": "Gauntlet v0.6.3 — Third Playtest Revision",
+    "status": "current",
+    "prerelease": true,
+    "target_strategy": "verified_main_push",
+    "notes_file": "docs/releases/github/v0.6.3.md",
+    "live_verification_script": "scripts/verify-clean-v063-live-publication.mjs",
+    "assets": [
+      "releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.pdf",
+      "releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook_Booklet.pdf",
+      "releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Card_and_Territory_Reference.pdf",
+      "releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Starter_Deck_Catalog.pdf",
+      "releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Canonical_Data.json",
+      "releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Starter_Decks.json"
+    ]
+  },
+  "historical_releases": [
+    {
+      "tag": "v0.6.0",
+      "title": "Gauntlet v0.6.0 — Faction Framework Release",
+      "status": "historical",
+      "prerelease": true,
+      "target": "e3d03c68c182c4ea61947019485b4b09f7ca07b9",
+      "publish_if_missing": false
+    },
+    {
+      "tag": "v0.6.1",
+      "title": "Gauntlet v0.6.1 — First Playtest Revision",
+      "status": "historical",
+      "prerelease": true,
+      "target": "ce5b70f28daa49ea21870d8ab4d55afb832b9d3b",
+      "original_publication_date": "2026-07-30",
+      "publish_if_missing": true,
+      "notes_at_target": "releases/v0.6.1/Gauntlet_v0.6.1_Release_Notes.md",
+      "backfill_notice": "Historical GitHub Release record backfilled on August 15, 2026. v0.6.1 was originally published on July 30, 2026; the tag points to its original publication merge commit. The release pipeline completed publication but accidentally omitted Git tag and GitHub Release creation."
+    },
+    {
+      "tag": "v0.6.2",
+      "title": "Gauntlet v0.6.2 — Second Playtest Revision (Withdrawn)",
+      "status": "withdrawn",
+      "prerelease": true,
+      "target": "9bf5a7f14c1f152b69bdb39d6c209a3f15f46612",
+      "original_publication_date": "2026-08-05",
+      "publish_if_missing": true,
+      "notes_at_target": "releases/v0.6.2/Gauntlet_v0.6.2_Release_Notes.md",
+      "backfill_notice": "Withdrawn historical GitHub Release record backfilled on August 15, 2026. v0.6.2 was originally published on August 5, 2026 at this publication merge commit, but was later withdrawn after release-authority and Rulebook-completeness defects were discovered. It is preserved for historical reproducibility and should not be used as the current playtest edition."
+    }
+  ]
+}
