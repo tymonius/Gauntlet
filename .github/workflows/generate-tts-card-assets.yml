@@ -6,12 +6,14 @@ on:
       - '.github/workflows/generate-tts-card-assets.yml'
       - 'package.json'
       - 'package-lock.json'
-      - 'scripts/generate-v063-tts-card-assets.mjs'
-      - 'scripts/generate-v063-tts-territory-assets.mjs'
-      - 'scripts/tts-v063-catalog.mjs'
+      - 'config/release-lifecycle.json'
+      - 'config/github-release-contract.json'
+      - 'scripts/generate-tts-card-assets.mjs'
+      - 'scripts/generate-tts-territory-assets.mjs'
+      - 'scripts/tts-current-catalog.mjs'
       - 'tts/**'
       - 'card-design/**'
-      - 'releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json'
+      - 'releases/**'
       - 'images/Gauntlet.svg'
       - 'images/faction-symbols/**'
       - 'images/artwork/cards/**'
@@ -41,12 +43,14 @@ jobs:
             package.json
             package-lock.json
             design-tokens.css
-            scripts/generate-v063-tts-card-assets.mjs
-            scripts/generate-v063-tts-territory-assets.mjs
-            scripts/tts-v063-catalog.mjs
+            config/release-lifecycle.json
+            config/github-release-contract.json
+            scripts/generate-tts-card-assets.mjs
+            scripts/generate-tts-territory-assets.mjs
+            scripts/tts-current-catalog.mjs
             tts
             card-design
-            releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json
+            releases
             images/Gauntlet.svg
             images/faction-symbols
             images/artwork/cards
@@ -61,10 +65,10 @@ jobs:
         run: npm run tts:check
       - name: Generate playable card sheets and production backs
         run: npm run tts:cards -- ${{ github.event_name == 'workflow_dispatch' && inputs.strict_artwork && '--strict-art' || '' }}
-      - name: Generate Territory sheet
+      - name: Generate Territory sheets
         run: npm run tts:territories
       - uses: actions/upload-artifact@v4
         with:
-          name: gauntlet-v063-tts-card-assets
-          path: tts/generated/v0.6.3/
+          name: gauntlet-current-tts-card-assets
+          path: tts/generated/
           if-no-files-found: error
