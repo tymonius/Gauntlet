@@ -65,8 +65,14 @@ async function main() {
       const wordmarkStyle = getComputedStyle(wordmark);
       const pattern = element.querySelector('.gauntlet-card-back__pattern');
       const patternStyle = getComputedStyle(pattern);
+      const firstRow = element.querySelector('.gauntlet-card-back__pattern-row');
+      const firstRowStyle = firstRow ? getComputedStyle(firstRow) : null;
       const symbols = [...element.querySelectorAll('.gauntlet-card-back__symbol')];
       const firstSymbolStyle = symbols[0] ? getComputedStyle(symbols[0]) : null;
+      const firstColumnTrack = firstRowStyle
+        ? Number.parseFloat(firstRowStyle.gridTemplateColumns.split(' ')[0])
+        : Number.NaN;
+      const symbolWidth = firstSymbolStyle ? Number.parseFloat(firstSymbolStyle.width) : Number.NaN;
       return {
         width: rect.width,
         height: rect.height,
@@ -78,6 +84,7 @@ async function main() {
           return (style.maskImage || style.webkitMaskImage) !== 'none';
         }),
         symbolBackground: firstSymbolStyle?.backgroundColor || '',
+        symbolCellGap: firstColumnTrack - symbolWidth,
         patternTransform: patternStyle.transform,
         wordmarkWidth: wordmarkRect.width,
         wordmarkHeight: wordmarkRect.height,
@@ -91,19 +98,22 @@ async function main() {
     if (Math.abs(metrics.width - 240) > 0.25 || Math.abs(metrics.height - 336) > 0.25) {
       throw new Error(`Unexpected card-back geometry: ${metrics.width} × ${metrics.height}.`);
     }
-    if (Math.abs(metrics.frameInset - 36) > 0.25) {
-      throw new Error(`Card-back frame inset is ${metrics.frameInset}px; expected 36px (3/8in).`);
+    if (Math.abs(metrics.frameInset - 24) > 0.25) {
+      throw new Error(`Card-back frame inset is ${metrics.frameInset}px; expected 24px (1/4in).`);
     }
     if (metrics.frameRadius !== '12px') {
       throw new Error(`Card-back gold frame does not match the 1/8in card corner radius: ${JSON.stringify(metrics)}.`);
     }
-    if (metrics.symbolCount !== 266 || !metrics.symbolsMasked || metrics.wordmarkMask === 'none') {
+    if (metrics.symbolCount !== 667 || !metrics.symbolsMasked || metrics.wordmarkMask === 'none') {
       throw new Error(`Card-back assets failed to render: ${JSON.stringify(metrics)}.`);
     }
     if (metrics.patternTransform === 'none') {
       throw new Error(`Card-back tiling field is not rotated as a single background: ${JSON.stringify(metrics)}.`);
     }
-    if (metrics.symbolBackground !== 'rgba(0, 0, 0, 0.24)' || metrics.fieldBackground !== 'rgb(32, 33, 36)') {
+    if (!Number.isFinite(metrics.symbolCellGap) || metrics.symbolCellGap > 3) {
+      throw new Error(`Card-back faction symbols are not packed tightly enough: ${JSON.stringify(metrics)}.`);
+    }
+    if (metrics.symbolBackground !== 'rgba(0, 0, 0, 0.42)' || metrics.fieldBackground !== 'rgb(32, 33, 36)') {
       throw new Error(`Card-back pattern contrast is not dark-on-charcoal: ${JSON.stringify(metrics)}.`);
     }
     if (metrics.wordmarkHeight < 230 || metrics.wordmarkWidth > 66 || metrics.wordmarkHeight <= metrics.wordmarkWidth || metrics.wordmarkFrameClearance < 12) {
