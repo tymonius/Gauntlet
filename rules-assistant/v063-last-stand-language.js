@@ -1,3 +1,5 @@
+import { applyV063PlayerFacingRulebookCorrections } from '../rulebook/player-facing/corrections.js';
+
 // PR #171 established that the defender makes a Last Stand; the resulting
 // contest is a Last Stand battle. Players win or lose the battle, not the
 // Last Stand. Keep this transform explicit and idempotent so certified source
@@ -76,7 +78,7 @@ export function normalizeV063LastStandText(value) {
   for (const [from, to] of V063_LAST_STAND_REPLACEMENTS) {
     text = replaceLiteral(text, from, to);
   }
-  return text;
+  return applyV063PlayerFacingRulebookCorrections(text);
 }
 
 export function normalizeV063LastStandValue(value) {
