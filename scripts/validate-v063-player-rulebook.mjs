@@ -113,8 +113,23 @@ if (verifyIndex < 0 || applyIndex < 0 || verifyIndex >= applyIndex) {
 if (!read('scripts/publication-utils.mjs').includes('replacePlayerFacingChapter11(normalized)')) {
   fail('Semantic Rulebook publication does not apply the reviewed Chapter 11 replacement.');
 }
-if (!read('rules-assistant/v063-last-stand-language.js').includes("applyV063PlayerFacingRulebookCorrections")) {
+if (!read('rules-assistant/v063-last-stand-language.js').includes('applyV063PlayerFacingRulebookCorrections')) {
   fail('Browser and Rules Arbiter normalization do not share the player-facing Rulebook correction source.');
+}
+
+const bookletWorkflow = read('.github/workflows/build-clean-v063-booklet.yml');
+if (!bookletWorkflow.includes('/rulebook/player-facing/corrections.js')) {
+  fail('Rulebook booklet sparse checkout does not include the shared player-facing corrections source.');
+}
+const qualityGate = read('.github/workflows/pr-quality-gate.yml');
+for (const requiredRoute of [
+  "under('rulebook/player-facing/')",
+  "exact('rules-assistant/v063-last-stand-language.js')",
+  "exact('scripts/publication-utils.mjs')",
+]) {
+  if (!qualityGate.includes(requiredRoute)) {
+    fail(`PR quality gate does not route player-facing Rulebook input through the booklet contract: ${requiredRoute}`);
+  }
 }
 
 const financierPage = read('factions/financiers/index.html');
@@ -131,4 +146,4 @@ if (failures) {
   process.exit(1);
 }
 
-console.log('Validated certified Rulebook integrity, reviewed Chapter 11, and full player-facing readthrough corrections.');
+console.log('Validated certified Rulebook integrity, reviewed Chapter 11, full player-facing readthrough corrections, and booklet routing.');
