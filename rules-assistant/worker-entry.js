@@ -78,7 +78,10 @@ export function addDeveloperToolChrome(html, origin = DEFAULT_SITE_ORIGIN) {
 
   const footer = `<footer class="developer-site-footer">
     <div>
-      <strong>Gauntlet</strong>
+      <a class="brand footer-brand" href="${origin}/" aria-label="Gauntlet home">
+        <span class="brand-mark" aria-hidden="true">G</span>
+        <span>Gauntlet</span>
+      </a>
       <p>Unpublished pre-release playtest project.</p>
     </div>
     <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
