@@ -87,6 +87,7 @@ const SUBJECT_PRESENTATIONS = [
 export function presentRulesAnswer(message = {}) {
   const raw = clean(message.answer);
   if (!raw) return { answer: "", details: "" };
+  if (message.rulingStatus === "welcome") return { answer: raw, details: "" };
 
   const subject = clean(message.subject);
   const topic = clean(message.topic);
@@ -134,7 +135,7 @@ function presentInterference(raw, topic) {
 }
 
 function splitLongAnswer(raw, rulingStatus = "") {
-  const sentences = raw.match(/[^.!?]+[.!?]+(?:[”'\"])?|[^.!?]+$/g)?.map(clean).filter(Boolean) || [raw];
+  const sentences = splitSentences(raw);
   if (sentences.length <= 2 && raw.length <= MAX_PRIMARY_LENGTH) {
     return { answer: raw, details: "" };
   }
@@ -156,6 +157,15 @@ function splitLongAnswer(raw, rulingStatus = "") {
 
   const remaining = sentences.filter((sentence) => !primary.includes(sentence)).join(" ");
   return { answer: primary.join(" "), details: remaining };
+}
+
+function splitSentences(raw) {
+  const placeholder = "\uE000";
+  const protectedNumericPeriods = raw.replace(/(\d)\.(?=\d)/g, `$1${placeholder}`);
+  const sentences = protectedNumericPeriods.match(/[^.!?]+[.!?]+(?:[”'\"])?|[^.!?]+$/g) || [protectedNumericPeriods];
+  return sentences
+    .map((sentence) => clean(sentence.replaceAll(placeholder, ".")))
+    .filter(Boolean);
 }
 
 function clean(value) {
