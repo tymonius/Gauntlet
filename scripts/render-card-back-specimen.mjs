@@ -68,8 +68,8 @@ async function main() {
       const patternWindowStyle = getComputedStyle(patternWindow);
       const pattern = element.querySelector('.gauntlet-card-back__pattern');
       const patternStyle = getComputedStyle(pattern);
-      const firstRow = element.querySelector('.gauntlet-card-back__pattern-row');
-      const firstRowStyle = firstRow ? getComputedStyle(firstRow) : null;
+      const rows = [...element.querySelectorAll('.gauntlet-card-back__pattern-row')];
+      const firstRowStyle = rows[0] ? getComputedStyle(rows[0]) : null;
       const symbols = [...element.querySelectorAll('.gauntlet-card-back__symbol')];
       const firstSymbolStyle = symbols[0] ? getComputedStyle(symbols[0]) : null;
       const firstColumnTrack = firstRowStyle
@@ -82,7 +82,12 @@ async function main() {
         frameInset: frameRect.left - rect.left,
         frameRadius: getComputedStyle(frame).borderRadius,
         patternWindowInset: patternWindowRect.left - rect.left,
+        patternWindowWidth: patternWindowRect.width,
+        patternWindowHeight: patternWindowRect.height,
         patternWindowOverflow: patternWindowStyle.overflow,
+        patternWidth: Number.parseFloat(patternStyle.width),
+        patternHeight: Number.parseFloat(patternStyle.height),
+        patternRowTransforms: rows.slice(0, 4).map(row => getComputedStyle(row).transform),
         symbolCount: symbols.length,
         symbolsMasked: symbols.every(symbol => {
           const style = getComputedStyle(symbol);
@@ -112,11 +117,18 @@ async function main() {
     if (Math.abs(metrics.patternWindowInset - 8.2) > 0.25 || metrics.patternWindowOverflow !== 'hidden' || metrics.background !== 'rgb(40, 40, 39)') {
       throw new Error(`Card-back faction-color border is not opaque around the tiled field: ${JSON.stringify(metrics)}.`);
     }
-    if (metrics.symbolCount !== 667 || !metrics.symbolsMasked || metrics.wordmarkMask === 'none') {
+    if (metrics.symbolCount !== 1296 || !metrics.symbolsMasked || metrics.wordmarkMask === 'none') {
       throw new Error(`Card-back assets failed to render: ${JSON.stringify(metrics)}.`);
     }
     if (metrics.patternTransform === 'none') {
       throw new Error(`Card-back tiling field is not rotated as a single background: ${JSON.stringify(metrics)}.`);
+    }
+    const patternWindowDiagonal = Math.hypot(metrics.patternWindowWidth, metrics.patternWindowHeight);
+    if (Math.min(metrics.patternWidth, metrics.patternHeight) <= patternWindowDiagonal) {
+      throw new Error(`Card-back tiling surface does not overscan the clipped field enough to cover every rotated corner: ${JSON.stringify(metrics)}.`);
+    }
+    if (new Set(metrics.patternRowTransforms).size < 4) {
+      throw new Error(`Card-back tiling still resolves into simple aligned rows instead of the four-phase interlocked lattice: ${JSON.stringify(metrics)}.`);
     }
     if (!Number.isFinite(metrics.symbolCellGap) || metrics.symbolCellGap > 3) {
       throw new Error(`Card-back faction symbols are not packed tightly enough: ${JSON.stringify(metrics)}.`);
