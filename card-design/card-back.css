@@ -2,9 +2,13 @@
   --card-back-charcoal: #202124;
   --card-back-pattern: rgba(0, 0, 0, 0.42);
   --card-back-gold: var(--developer-gold-soft, #d7b783);
+  --card-back-wordmark: #fff9f1;
   --card-back-border: #282827;
   --card-back-border-outline: #111111;
   --card-back-border-rule: rgba(255, 255, 250, 0.34);
+  --card-back-frame-weight: 0.75pt;
+  --card-back-bleed: 0.125in;
+  --card-back-surface-opacity: 0.055;
 }
 
 .card-back-review-section {
@@ -35,6 +39,7 @@
   -webkit-print-color-adjust: exact;
 }
 
+/* Match the production Intelligence front's outer frame geometry exactly. */
 .gauntlet-card-back::before {
   position: absolute;
   z-index: 4;
@@ -65,8 +70,22 @@
   pointer-events: none;
 }
 
+/* Very low-amplitude deterministic grain keeps the charcoal from reading as a
+   mathematically flat screen fill without becoming visible grunge. */
+.gauntlet-card-back__pattern-window::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='3' seed='17' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.82'/%3E%3C/svg%3E");
+  background-size: 0.8in 0.8in;
+  content: "";
+  mix-blend-mode: soft-light;
+  opacity: var(--card-back-surface-opacity);
+}
+
 .gauntlet-card-back__pattern {
   position: absolute;
+  z-index: 0;
   top: 50%;
   left: 50%;
   width: 5.4in;
@@ -134,7 +153,7 @@
   position: absolute;
   z-index: 2;
   inset: calc(0.25in - 1px);
-  border: 1px solid var(--card-back-gold);
+  border: var(--card-back-frame-weight) solid var(--card-back-gold);
   border-radius: 0.125in;
   pointer-events: none;
 }
@@ -147,9 +166,25 @@
   width: 2.45in;
   aspect-ratio: 1871.79 / 493.58;
   transform: translate(-50%, -50%) rotate(90deg);
-  background: #fff;
+  background: var(--card-back-wordmark);
   -webkit-mask: url("../images/Gauntlet.svg") center / contain no-repeat;
   mask: url("../images/Gauntlet.svg") center / contain no-repeat;
+}
+
+/* Production proof helper: 1/8in of solid charcoal extends beyond every trim
+   edge so normal cutting variation cannot expose paper/white at the card edge. */
+.gauntlet-card-back-bleed-proof {
+  box-sizing: border-box;
+  display: grid;
+  width: calc(2.5in + (2 * var(--card-back-bleed)));
+  height: calc(3.5in + (2 * var(--card-back-bleed)));
+  padding: var(--card-back-bleed);
+  place-items: center;
+  background: var(--card-back-border);
+}
+
+.gauntlet-card-back-bleed-proof .gauntlet-card-back {
+  box-shadow: none;
 }
 
 @media print {
