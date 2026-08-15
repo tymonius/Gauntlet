@@ -73,7 +73,7 @@ describe('PR #171 Last Stand terminology', () => {
 
   it('composes the broader player-facing Rulebook corrections in the public prose normalizer', () => {
     const legacy = [
-      'Rules and player-facing text may distinguish the **capture route** from the **Last Stand battle route**, but both are running the Gauntlet.',
+      'Both routes are the normal shared victory condition. Rules and player-facing text may distinguish the **capture route** from the **Last Stand battle route**, but both are running the Gauntlet.',
       'During an Denouement, you may spend 1 Action.',
       '**Asset is the only banked-card effect heading in v0.6.3.**',
     ].join('\n');
