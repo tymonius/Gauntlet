@@ -134,6 +134,8 @@ def adapt_glossary_pagination(paginator: str) -> str:
 
 
 def adapt_hero_plate_pool(paginator: str) -> str:
+    """Use each unused hero sketch once; extra signature filler stays visually quiet."""
+
     old = """  const heroSources = ['../images/sketches/hero sketch.png'];
   const source = heroSources[heroPlateIndex % heroSources.length];
   heroPlateIndex += 1;"""
@@ -141,16 +143,20 @@ def adapt_hero_plate_pool(paginator: str) -> str:
     '../images/sketches/hero-sketches/hero sketch 2.png',
     '../images/sketches/hero-sketches/hero sketch 3.png',
     '../images/sketches/hero-sketches/hero sketch 4.png',
-    '../images/sketches/hero sketch.png',
   ];
-  if (heroPlateIndex >= heroSources.length) throw new Error('More than four hero filler plates were required.');
-  const source = heroSources[heroPlateIndex];
-  heroPlateIndex += 1;"""
+  const source = heroPlateIndex < heroSources.length ? heroSources[heroPlateIndex] : null;
+  heroPlateIndex += 1;
+  if (!source) {
+    page.classList.remove('hero-plate-page');
+    page.classList.add('signature-blank-page');
+    page.querySelector('.production-flow').outerHTML = '<div class=\"signature-blank\" aria-hidden=\"true\"></div>';
+    return page;
+  }"""
     return replace_required(paginator, old, new, "single repeated hero-plate source")
 
 
 def adapt_signature_padding(paginator: str) -> str:
-    """Place signature filler at the highest natural hierarchy that preserves designed spreads."""
+    """Choose the smallest legal filler count, then maximize natural hierarchy."""
 
     old = "    while ((pages.length + 2) % 4 !== 0) intentionalBlank('Booklet pagination');"
     new = r'''    const paddingNeeded = (4 - ((pages.length + 2) % 4)) % 4;
@@ -191,27 +197,36 @@ def adapt_signature_padding(paginator: str) -> str:
       .map(candidate => ({ ...candidate, index: pages.indexOf(candidate.page) }))
       .filter(candidate => candidate.index >= 0)
       .sort((a, b) => a.tier - b.tier || a.index - b.index);
+    const groups = [0, 1, 2, 3].map(tier => candidates.filter(candidate => candidate.tier === tier));
 
-    const protectedRectoPages = pages.filter(page =>
-      page.classList.contains('part-opener') || page.classList.contains('faction-opener')
-    );
-
-    const choose = (items, count, start = 0, prefix = [], output = []) => {
-      if (prefix.length === count) { output.push([...prefix]); return output; }
+    function* choose(items, count, start = 0, prefix = []) {
+      if (prefix.length === count) { yield [...prefix]; return; }
       for (let index = start; index <= items.length - (count - prefix.length); index += 1) {
         prefix.push(items[index]);
-        choose(items, count, index + 1, prefix, output);
+        yield* choose(items, count, index + 1, prefix);
         prefix.pop();
       }
-      return output;
-    };
+    }
+    function* tierCountPlans(total, tier = 0, prefix = []) {
+      if (tier === groups.length - 1) {
+        if (total <= groups[tier].length) yield [...prefix, total];
+        return;
+      }
+      const maximum = Math.min(groups[tier].length, total);
+      for (let count = maximum; count >= 0; count -= 1) {
+        yield* tierCountPlans(total - count, tier + 1, [...prefix, count]);
+      }
+    }
+    function* selectionsForCounts(counts, tier = 0, prefix = []) {
+      if (tier === groups.length) { yield prefix; return; }
+      for (const subset of choose(groups[tier], counts[tier])) {
+        yield* selectionsForCounts(counts, tier + 1, [...prefix, ...subset]);
+      }
+    }
     const virtualPageNumber = (page, selection) => {
       const baseIndex = pages.indexOf(page);
       return baseIndex + 1 + selection.filter(candidate => candidate.index <= baseIndex).length;
     };
-    const preservesRectoOpeners = selection => protectedRectoPages.every(page =>
-      virtualPageNumber(page, selection) % 2 === 1
-    );
     const preservesLeaderSpreads = selection => expectedLeaderPairs.every(([leftName, rightName]) => {
       const leftPage = leaderPageByName.get(leftName);
       const rightPage = leaderPageByName.get(rightName);
@@ -220,32 +235,32 @@ def adapt_signature_padding(paginator: str) -> str:
       const right = virtualPageNumber(rightPage, selection);
       return left % 2 === 0 && right === left + 1;
     });
-    const hierarchyScore = selection => {
-      const counts = [0, 0, 0, 0];
-      selection.forEach(candidate => { counts[candidate.tier] += 1; });
+    const dispersion = selection => {
       const ordered = [...selection].sort((a, b) => a.index - b.index);
-      const dispersion = ordered.length < 2
+      return ordered.length < 2
         ? 0
         : Math.min(...ordered.slice(1).map((candidate, index) => candidate.index - ordered[index].index));
-      return [...counts, dispersion];
-    };
-    const betterScore = (left, right) => {
-      if (!right) return true;
-      for (let index = 0; index < left.length; index += 1) {
-        if (left[index] !== right[index]) return left[index] > right[index];
-      }
-      return false;
     };
 
     let chosen = null;
-    let chosenScore = null;
-    for (const selection of choose(candidates, paddingNeeded)) {
-      if (!preservesRectoOpeners(selection) || !preservesLeaderSpreads(selection)) continue;
-      const score = hierarchyScore(selection);
-      if (chosen === null || betterScore(score, chosenScore)) {
-        chosen = selection;
-        chosenScore = score;
+    for (let fillerCount = paddingNeeded; fillerCount <= candidates.length; fillerCount += 4) {
+      for (const counts of tierCountPlans(fillerCount)) {
+        let bestForHierarchy = null;
+        let bestDispersion = -1;
+        for (const selection of selectionsForCounts(counts)) {
+          if (!preservesLeaderSpreads(selection)) continue;
+          const candidateDispersion = dispersion(selection);
+          if (bestForHierarchy === null || candidateDispersion > bestDispersion) {
+            bestForHierarchy = selection;
+            bestDispersion = candidateDispersion;
+          }
+        }
+        if (bestForHierarchy !== null) {
+          chosen = bestForHierarchy;
+          break;
+        }
       }
+      if (chosen !== null) break;
     }
 
     if (chosen === null) {
@@ -253,18 +268,27 @@ def adapt_signature_padding(paginator: str) -> str:
         left, pages.indexOf(leaderPageByName.get(left)) + 1,
         right, pages.indexOf(leaderPageByName.get(right)) + 1,
       ]);
-      const rectos = protectedRectoPages.map(page => [page.dataset.anchor || page.className, pages.indexOf(page) + 1]);
       const available = candidates.map(candidate => [candidate.label, candidate.tier, candidate.index + 1]);
-      throw new Error(`No ${paddingNeeded}-plate natural-boundary plan preserves recto openers and Leader spreads. Leaders=${JSON.stringify(leaders)} Rectos=${JSON.stringify(rectos)} Candidates=${JSON.stringify(available)}`);
+      throw new Error(`No natural-boundary filler plan preserves Leader spreads from base padding ${paddingNeeded}. Leaders=${JSON.stringify(leaders)} Candidates=${JSON.stringify(available)}`);
+    }
+
+    // Create filler pages in hierarchy order so the three approved unused hero
+    // sketches land at the strongest selected boundaries; any additional pages
+    // needed for a full signature remain quiet intentional blanks.
+    const plateByCandidate = new Map();
+    const artOrder = [...chosen].sort((a, b) => a.tier - b.tier || a.index - b.index);
+    for (const candidate of artOrder) {
+      const plate = intentionalBlank('');
+      const appended = pages.pop();
+      if (appended !== plate) throw new Error('Filler-page creation lost page order.');
+      plateByCandidate.set(candidate, plate);
     }
 
     // Insert from the end toward the front so the original candidate indices
     // stay valid while the selected layout plan is applied.
     chosen.sort((a, b) => b.index - a.index);
     for (const candidate of chosen) {
-      const plate = intentionalBlank('');
-      const appended = pages.pop();
-      if (appended !== plate) throw new Error('Hero plate insertion lost page order.');
+      const plate = plateByCandidate.get(candidate);
       plate.dataset.heroPlateFor = candidate.label;
       plate.dataset.heroPlateTier = String(candidate.tier);
       plate.dataset.heroPlateKind = candidate.kind;
@@ -294,7 +318,7 @@ def main() -> None:
     paginator = adapt_hero_plate_pool(paginator)
     paginator = adapt_signature_padding(paginator)
     RUNTIME_PAGINATOR.write_text(paginator, encoding="utf-8")
-    print("adapted approved Rulebook production to v0.6.3 with wording-neutral presentation transforms, hierarchical filler planning, and unique hero filler art")
+    print("adapted approved Rulebook production to v0.6.3 with wording-neutral presentation transforms, minimum-count hierarchical filler planning, and unique hero filler art")
 
 
 if __name__ == "__main__":
