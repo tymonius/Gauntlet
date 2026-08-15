@@ -23,3 +23,18 @@
 .rules-index-group h3{margin:0 0 4px;font-family:var(--display-alt);font-size:11.5pt;line-height:1}
 .rules-index-row{display:grid;grid-template-columns:1fr auto;gap:8px;padding:2px 0;border-top:1px solid color-mix(in srgb,var(--line) 75%,transparent);font-size:6.6pt;line-height:1.2}
 .rules-index-row .page-ref{font-family:var(--ui);font-size:5.9pt;font-weight:800}
+
+/* The base production Glossary uses a two-column grid. With the expanded
+   v0.6.3 term set, grid rows inherit the taller entry in each pair and waste
+   enough vertical space to create a nearly empty continuation page. Preserve
+   the approved two-column treatment and type sizes, but let entries flow and
+   balance independently so their actual heights determine pagination. */
+.glossary-page .glossary-grid{
+  display:block;
+  columns:2;
+  column-gap:14px;
+}
+.glossary-page .glossary-entry{
+  break-inside:avoid;
+  margin:0 0 7px;
+}
