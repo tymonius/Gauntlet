@@ -90,16 +90,30 @@ Multiple applicable `+N Reserve` and `+N Tactic` instructions add together unles
 
 ---
 
-## 5. Sanctions
+## 5. Terms, Reactions, and Sanctions
+
+### Terms effects
+
+A **Terms** effect is used at the point printed on the card while its owner is offering Terms. Using a Terms effect does not spend or require an Action unless the card expressly says otherwise.
+
+Outcome words such as **Accepted —** and **Refused —** may appear inside a Terms effect to divide its resolution. They are not separate standard-card effect headings.
+
+### Reactions
+
+A **Reaction** is played from Hand when its printed trigger occurs. Playing a Reaction does not spend or require an Action unless the card expressly says otherwise. Resolve the Reaction at the timing printed on the card.
+
+### Sanctions
 
 A card whose title begins **Sanctions:** is a **Sanction**.
+
+Immediately after an opponent refuses your Terms, you may play a Sanction from your Hand at no cost unless that Sanction says otherwise. The Sanction's printed text determines whether it is banked, placed as an Overlay, or resolves in another way. A Sanction may also override this default timing or procedure.
 
 When a Sanction is played, placed, or banked because an opponent refused its owner's Terms:
 
 - that opponent remains associated with that Sanction for as long as it remains in play; and
 - unless the Sanction says otherwise, after that opponent accepts the owner's Terms, put the Sanction in its owner's Discard Pile.
 
-A Sanction may state additional removal conditions. Cards therefore do not need to repeat identification of the refusing opponent or the default expiration after later acceptance.
+A Sanction may state additional removal conditions. Cards therefore do not need to repeat the refusal trigger, identification of the refusing opponent, no-cost play, or the default expiration after later acceptance.
 
 ---
 

@@ -5,48 +5,48 @@
       name: "Military",
       summary: "Turn battlefield victories into Command, then spend it on movement, pressure, defense, and control.",
       leaders: [
-        { id: "general", name: "General", summary: "Attack, build momentum, and press one victory into the next." },
-        { id: "commandant", name: "Commandant", summary: "Absorb attacks, counterattack, and turn defense into control." }
+        { id: "general", name: "General", portrait: "/images/general.png", summary: "Attack, build momentum, and press one victory into the next." },
+        { id: "commandant", name: "Commandant", portrait: "/images/commandant.png", summary: "Absorb attacks, counterattack, and turn defense into control." }
       ]
     },
     diplomats: {
       name: "Diplomats",
       summary: "Use Influence, Terms, Proposals, concessions, and legitimacy to reshape the conflict.",
       leaders: [
-        { id: "ambassador", name: "Ambassador", summary: "Make attractive offers and gain value when the opponent accepts." },
-        { id: "senator", name: "Senator", summary: "Risk political capital, endure setbacks, and win the long negotiation." }
+        { id: "ambassador", name: "Ambassador", portrait: "/images/ambassador.png", summary: "Make attractive offers and gain value when the opponent accepts." },
+        { id: "senator", name: "Senator", portrait: "/images/senator.png", summary: "Risk political capital, endure setbacks, and win the long negotiation." }
       ]
     },
     financiers: {
       name: "Financiers",
       summary: "Convert Capital, Treasury cards, Financial Capacity, Deeds, leverage, and ownership into strategic power.",
       leaders: [
-        { id: "banker", name: "Banker", summary: "Finance purchases flexibly and turn cards into collateral." },
-        { id: "executive", name: "Executive", summary: "Occupy enemy ground and convert battlefield gains into ownership." }
+        { id: "banker", name: "Banker", portrait: "/images/banker.png", summary: "Finance purchases flexibly and turn cards into collateral." },
+        { id: "executive", name: "Executive", portrait: "/images/executive.png", summary: "Occupy enemy ground and convert battlefield gains into ownership." }
       ]
     },
     intelligence: {
       name: "Intelligence",
       summary: "Gather Intel, complete Missions, inspect hidden commitments, and disrupt enemy plans.",
       leaders: [
-        { id: "ranger", name: "Ranger", summary: "Master terrain, fieldcraft, and adaptable operations." },
-        { id: "spymaster", name: "Spymaster", summary: "Chain Missions together and coordinate a faster covert campaign." }
+        { id: "ranger", name: "Ranger", portrait: "/images/ranger.png", summary: "Master terrain, fieldcraft, and adaptable operations." },
+        { id: "spymaster", name: "Spymaster", portrait: "/images/spymaster.png", summary: "Chain Missions together and coordinate a faster covert campaign." }
       ]
     },
     mystics: {
       name: "Mystics",
       summary: "Perform Rites, invoke the Arcane, transform cards, and build toward ritual power.",
       leaders: [
-        { id: "alchemist", name: "Alchemist", summary: "Transmute cards deliberately and construct powerful combinations." },
-        { id: "spirit-walker", name: "Spirit Walker", summary: "Protect begun Rites and the Ritual by sacrificing Arcane cards of sufficient value." }
+        { id: "alchemist", name: "Alchemist", portrait: "/images/alchemist.png", summary: "Transmute cards deliberately and construct powerful combinations." },
+        { id: "spirit-walker", name: "Spirit Walker", portrait: "/images/spirit%20walker.png", summary: "Protect begun Rites and the Ritual by sacrificing Arcane cards of sufficient value." }
       ]
     },
     inquisition: {
       name: "Inquisition",
       summary: "Build Conviction through condemnation, denial, Graveyard pressure, and Purge.",
       leaders: [
-        { id: "grand-inquisitor", name: "Grand Inquisitor", summary: "Judge opposing cards and turn battle wins into efficient Purges." },
-        { id: "witch-hunter", name: "Witch Hunter", summary: "Punish failed attacks, pursue retreating enemies, and suppress resources." }
+        { id: "grand-inquisitor", name: "Grand Inquisitor", portrait: "/images/grand%20inquisitor.png", summary: "Judge opposing cards and turn battle wins into efficient Purges." },
+        { id: "witch-hunter", name: "Witch Hunter", portrait: "/images/witch%20hunter.png", summary: "Punish failed attacks, pursue retreating enemies, and suppress resources." }
       ]
     }
   });
@@ -145,13 +145,21 @@
         renderChoice();
       });
 
+      const portrait = document.createElement("img");
+      portrait.className = "leader-portrait";
+      portrait.src = leader.portrait;
+      portrait.alt = "";
+      portrait.loading = "lazy";
+      portrait.decoding = "async";
+
       const copy = document.createElement("span");
+      copy.className = "leader-copy";
       const name = document.createElement("strong");
       name.textContent = leader.name;
       const summary = document.createElement("small");
       summary.textContent = leader.summary;
       copy.append(name, summary);
-      label.append(input, copy);
+      label.append(input, portrait, copy);
       el.leaderChoices.append(label);
     });
 
@@ -168,10 +176,18 @@
 
   async function loadStarterDecks() {
     try {
-      const response = await fetch("../deckbuilder/starter-decks.json", { cache: "no-store" });
-      if (!response.ok) throw new Error(`Starter deck library returned ${response.status}.`);
-      const data = await response.json();
-      state.starterDecks = Array.isArray(data.decks) ? data.decks : [];
+      const [deckResponse, tipResponse] = await Promise.all([
+        fetch("../deckbuilder/starter-decks.json", { cache: "no-store" }),
+        fetch("../deckbuilder/starter-first-game-tips.json", { cache: "no-store" })
+      ]);
+      if (!deckResponse.ok) throw new Error(`Starter deck library returned ${deckResponse.status}.`);
+      if (!tipResponse.ok) throw new Error(`Starter tip library returned ${tipResponse.status}.`);
+      const [data, tipData] = await Promise.all([deckResponse.json(), tipResponse.json()]);
+      const tips = tipData?.tips && typeof tipData.tips === "object" ? tipData.tips : {};
+      state.starterDecks = (Array.isArray(data.decks) ? data.decks : []).map(deck => ({
+        ...deck,
+        firstGameTip: deck.firstGameTip || tips[deck.id] || ""
+      }));
       state.starterLoadError = null;
     } catch (error) {
       console.error(error);

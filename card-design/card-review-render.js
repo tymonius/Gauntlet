@@ -1,7 +1,8 @@
 import { resolveFirstArtwork, slugify } from './card-artwork-resolver.js';
+import { normalizeV063CardForPresentation } from './v063-card-heading-normalizer.js';
 
 await (async () => {
-  const CANONICAL_SOURCE = '/artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json';
+  const CANONICAL_SOURCE = '/artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json';
   const cardId = new URLSearchParams(window.location.search).get('card');
   const target = document.getElementById('renderTarget');
 
@@ -40,8 +41,9 @@ await (async () => {
     const response = await fetch(CANONICAL_SOURCE, { cache: 'no-cache' });
     if (!response.ok) throw new Error(`Unable to load canonical cards (HTTP ${response.status}).`);
     const canonical = await response.json();
-    const card = (canonical.cards || []).find(item => item.id === cardId);
-    if (!card) throw new Error(`Unknown card: ${cardId}`);
+    const sourceCard = (canonical.cards || []).find(item => item.id === cardId);
+    if (!sourceCard) throw new Error(`Unknown card: ${cardId}`);
+    const card = normalizeV063CardForPresentation(sourceCard);
     const faction = slugify(card.allegiance);
     const artwork = await resolveFirstArtwork(card, faction, imageExists);
     const preview = {

@@ -14,7 +14,7 @@
 .faction-page .eyebrow, .factions-hub .eyebrow { color: var(--faction); }
 .faction-page .button.primary { background: var(--faction-dark); border-color: var(--faction-dark); }
 .faction-page .button.secondary { color: var(--faction-dark); border-color: var(--faction-dark); }
-.faction-page .text-link { color: var(--faction-dark); font-weight: 800; text-decoration: none; }
+.faction-page .text-link { color: var(--faction-dark); font-family: var(--font-interface); font-weight: 800; text-decoration: none; }
 
 .faction-hero, .factions-intro {
   width: min(1180px, calc(100% - 40px));
@@ -37,7 +37,7 @@
 .faction-lede {
   max-width: 720px;
   color: #3f3a34;
-  font-family: var(--serif);
+  font-family: var(--font-reading);
   font-size: clamp(1.15rem, 2vw, 1.48rem);
   line-height: 1.58;
 }
@@ -48,8 +48,8 @@
   gap: 12px;
 }
 .faction-facts div { padding: 16px 0; border-top: 1px solid var(--line); }
-.faction-facts dt { color: var(--faction); font-size: .72rem; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
-.faction-facts dd { margin: 8px 0 0; font-family: var(--serif); font-weight: 700; line-height: 1.35; }
+.faction-facts dt { color: var(--faction); font-family: var(--font-interface); font-size: .72rem; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+.faction-facts dd { margin: 8px 0 0; font-family: var(--font-display-web); font-weight: 700; line-height: 1.35; }
 
 .hero-leaders {
   display: grid;
@@ -79,7 +79,7 @@
   background: linear-gradient(145deg, var(--faction-soft), rgba(255,255,255,.18));
 }
 .hero-leader-art img { width: 100%; height: 100%; object-fit: contain; object-position: center bottom; }
-.hero-leader > span { display: block; padding: 14px 4px 4px; font-family: var(--serif); font-size: 1.25rem; font-weight: 800; }
+.hero-leader > span { display: block; padding: 14px 4px 4px; font-family: var(--font-display-historical); font-size: 1.25rem; font-weight: 400; }
 
 .play-grid, .mechanics-grid, .victory-grid {
   display: grid;
@@ -95,7 +95,7 @@
 .play-grid article { border-top: 4px solid var(--faction); }
 .play-grid h3, .mechanics-grid h3, .victory-grid h3 { margin: 0 0 12px; font-size: 1.45rem; }
 .play-grid p, .mechanics-grid p, .victory-grid p { margin-bottom: 0; color: var(--muted); line-height: 1.65; }
-.mechanics-grid article > span { color: var(--faction); font-family: var(--serif); font-style: italic; }
+.mechanics-grid article > span { color: var(--faction); font-family: var(--font-display-web); font-style: italic; }
 .mechanics-grid h3 { margin-top: 48px; }
 
 .player-fit {
@@ -132,12 +132,12 @@
 .leader-profile-art { min-height: 500px; display: grid; place-items: center; background: linear-gradient(145deg, var(--faction-soft), rgba(255,255,255,.22)); }
 .leader-profile-art img { width: 100%; height: 100%; max-height: 600px; object-fit: contain; object-position: center bottom; }
 .leader-profile-copy { padding: 52px; align-self: center; }
-.leader-kicker { color: var(--faction); font-size: .75rem; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
-.leader-profile h3 { margin: 8px 0 10px; font-size: clamp(2.7rem,5vw,4.8rem); line-height: .95; }
-.leader-motto { color: var(--faction-dark); font-family: var(--serif); font-size: 1.25rem; font-style: italic; }
+.leader-kicker { color: var(--faction); font-family: var(--font-interface); font-size: .75rem; font-weight: 850; letter-spacing: .1em; text-transform: uppercase; }
+.leader-profile h3 { margin: 8px 0 10px; font-family: var(--font-display-historical); font-size: clamp(2.7rem,5vw,4.8rem); font-weight: 400; line-height: .95; }
+.leader-motto { color: var(--faction-dark); font-family: var(--font-reading); font-size: 1.25rem; font-style: italic; }
 .leader-profile-copy > p:not(.leader-kicker):not(.leader-motto) { color: var(--muted); font-size: 1.02rem; line-height: 1.7; }
 .ability-summary { margin-top: 28px; padding: 22px; border-left: 4px solid var(--faction); background: var(--faction-soft); }
-.ability-summary strong { color: var(--faction-dark); font-size: .73rem; letter-spacing: .1em; text-transform: uppercase; }
+.ability-summary strong { color: var(--faction-dark); font-family: var(--font-interface); font-size: .73rem; letter-spacing: .1em; text-transform: uppercase; }
 .ability-summary p { margin: 8px 0 0; line-height: 1.6; }
 
 .identity-panel {
@@ -161,7 +161,7 @@
   align-items: center;
 }
 .faction-next h2 { margin: 0; font-size: clamp(2.4rem,5vw,4.4rem); }
-.next-links { max-width: 560px; display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; justify-content: flex-end; }
+.next-links { max-width: 560px; display: flex; flex-wrap: wrap; gap: 12px 18px; align-items: center; justify-content: flex-end; font-family: var(--font-interface); }
 
 .factions-intro { padding: 100px 0 70px; max-width: 900px; margin-left: max(20px, calc((100% - 1180px)/2)); }
 .faction-hub-grid {
@@ -195,11 +195,11 @@
 
 .faction-hub-card:hover { transform: translateY(-5px); box-shadow: 0 22px 55px rgba(55,38,18,.14); }
 .faction-hub-card .hub-symbol { color: var(--faction); font-size: 2rem; }
-.faction-hub-card .hub-kicker { margin: 42px 0 8px; color: var(--faction); font-size: .72rem; font-weight: 850; letter-spacing: .11em; text-transform: uppercase; }
+.faction-hub-card .hub-kicker { margin: 42px 0 8px; color: var(--faction); font-family: var(--font-interface); font-size: .72rem; font-weight: 850; letter-spacing: .11em; text-transform: uppercase; }
 .faction-hub-card h2 { margin: 0 0 14px; font-size: 2.1rem; }
 .faction-hub-card > p:not(.hub-kicker) { color: var(--muted); line-height: 1.58; }
-.faction-hub-card small { color: var(--faction); font-weight: 800; }
-.faction-hub-card strong { margin-top: auto; padding-top: 28px; color: var(--faction); }
+.faction-hub-card small { color: var(--faction); font-family: var(--font-display-historical); font-weight: 400; }
+.faction-hub-card strong { margin-top: auto; padding-top: 28px; color: var(--faction); font-family: var(--font-interface); }
 .hub-note { display: grid; grid-template-columns: .8fr 1.2fr; gap: 70px; }
 .hub-note h2 { margin: 0; font-size: clamp(2.5rem,5vw,4.6rem); }
 .hub-note > p { color: var(--muted); font-size: 1.08rem; line-height: 1.75; }

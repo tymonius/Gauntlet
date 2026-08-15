@@ -49,6 +49,23 @@ describe("standalone new-player onboarding", () => {
     }
   });
 
+  it("provides a non-empty first-game tip for every recommended starter Deck", () => {
+    const app = read("start/app.js");
+    const deckbuilderStarter = read("deckbuilder/starter-decks.js");
+    const catalog = JSON.parse(read("deckbuilder/starter-decks.json"));
+    const tipCatalog = JSON.parse(read("deckbuilder/starter-first-game-tips.json"));
+    const tips = tipCatalog.tips || {};
+
+    expect(app).toContain("starter-first-game-tips.json");
+    expect(deckbuilderStarter).toContain('const STARTER_TIP_SOURCE = "starter-first-game-tips.json"');
+    expect(Object.keys(tips)).toHaveLength(EXPECTED_CHOICES.length);
+
+    for (const deck of catalog.decks) {
+      expect(typeof tips[deck.id]).toBe("string");
+      expect(tips[deck.id].trim().length).toBeGreaterThan(0);
+    }
+  });
+
   it("hands the exact choice to guided Deckbuilder print mode", () => {
     const app = read("start/app.js");
     const handoff = read("deckbuilder/starter-handoff.js");
