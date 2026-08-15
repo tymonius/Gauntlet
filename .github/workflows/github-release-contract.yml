@@ -19,7 +19,7 @@ on:
 
 concurrency:
   group: github-release-contract-${{ github.ref }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   validate:
