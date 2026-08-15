@@ -67,46 +67,22 @@
 }
 
 /* The source cover sketch remains opaque. Multiply rendering removes most of
-   its light field; the mask feathers the outer field. The taller official
-   wordmark makes the sketch height-limited, which moves the source paper's
-   vertical edges inward, so add paper-colored side feathers over those edges
-   rather than changing the approved sketch scale or cover composition. */
+   its light field. The official wordmark makes the image edge more noticeable,
+   so feather only the outer 5% on the left and right; this dissolves the source
+   paper boundary without fading the figures or changing the approved scale. */
 .front-cover .cover-art {
-  position: relative;
   isolation: isolate;
   background: var(--paper);
-  --cover-art-paper: var(--paper);
 }
 .color-edition .front-cover .cover-art {
   background: #fbf7ee;
-  --cover-art-paper: #fbf7ee;
-}
-.front-cover .cover-art::before,
-.front-cover .cover-art::after {
-  content: "";
-  position: absolute;
-  z-index: 2;
-  top: 1px;
-  bottom: 1px;
-  width: 24%;
-  pointer-events: none;
-}
-.front-cover .cover-art::before {
-  left: 0;
-  background: linear-gradient(to right, var(--cover-art-paper) 0 54%, transparent 100%);
-}
-.front-cover .cover-art::after {
-  right: 0;
-  background: linear-gradient(to left, var(--cover-art-paper) 0 54%, transparent 100%);
 }
 .front-cover .cover-art img {
-  position: relative;
-  z-index: 1;
   filter: grayscale(1) contrast(1.32) brightness(1.12) !important;
   mix-blend-mode: multiply !important;
   opacity: .94;
-  -webkit-mask-image: radial-gradient(ellipse 88% 92% at 50% 51%, #000 0 67%, rgba(0,0,0,.96) 73%, rgba(0,0,0,.68) 83%, transparent 100%);
-  mask-image: radial-gradient(ellipse 88% 92% at 50% 51%, #000 0 67%, rgba(0,0,0,.96) 73%, rgba(0,0,0,.68) 83%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
 }
 
 /* Pages required solely to bring the imposed booklet to a multiple of four are
