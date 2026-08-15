@@ -60,9 +60,9 @@
     {
       "key": "rulebook-booklet",
       "path": "Gauntlet_v0.6.3_Rulebook_Booklet.pdf",
-      "pages": 32,
-      "sha256": "c121f42d8f718383f648d572dbecd550c231966ade6b11f8eb6102a0be7db134",
-      "bytes": 3579304
+      "pages": 48,
+      "sha256": "82f6230011efb7324425c0a988a9eac86d3d4e4c69b4510f4f54c676036e6310",
+      "bytes": 28868638
     },
     {
       "key": "military",
@@ -189,8 +189,8 @@
     },
     {
       "path": "Gauntlet_v0.6.3_Rulebook_Booklet.pdf",
-      "sha256": "c121f42d8f718383f648d572dbecd550c231966ade6b11f8eb6102a0be7db134",
-      "bytes": 3579304
+      "sha256": "82f6230011efb7324425c0a988a9eac86d3d4e4c69b4510f4f54c676036e6310",
+      "bytes": 28868638
     },
     {
       "path": "Gauntlet_v0.6.3_Starter_Deck_Catalog.md",
@@ -242,5 +242,18 @@
       "sha256": "4c9bcd5b60a3f069dc139616e3ab8c8221189d3857f69f7a181059b1e864162b",
       "bytes": 3596
     }
-  ]
+  ],
+  "rulebook_booklet_provenance": {
+    "player_facing_rulebook_sha256": "a536e93fc18556268ceb21b0d41da74d88f8978f1fcc4afb4128b5f1ab798314",
+    "certified_rulebook_sha256": "7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643",
+    "published_rulebook_sha256": "9bbde08376daea4558581ef598a07b0d3a8fc21666809890d846114229bc44c2",
+    "player_facing_chapter_11_sha256": "35ecc609fa8cb5557a3dabd701cd17da9c2318db4ce3f17bfafc70be1c5d3671",
+    "approved_design_pr": 357,
+    "production_pr": 434,
+    "logical_pages": 96,
+    "imposed_sides": 48,
+    "physical_sheets": 24,
+    "padding_pages": 7,
+    "duplex_flip": "short-edge"
+  }
 }
