@@ -47,6 +47,8 @@ jobs:
           node --check scripts/run-v063-rulebook-renderer.mjs
           node --check scripts/render-clean-v063-booklet.mjs
           node --check scripts/validate-clean-v063-booklet.mjs
+          node --check scripts/validate-v063-rulebook-wordmark.mjs
+          node scripts/validate-v063-rulebook-wordmark.mjs
           node scripts/render-clean-v063-booklet.mjs
           node scripts/validate-clean-v063-booklet.mjs
 
@@ -63,6 +65,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           node scripts/commit-generated-files.mjs \
-            "Publish approved v0.6.3 Rulebook booklet" -- \
+            "Publish approved v0.6.3 Rulebook booklet with official wordmark" -- \
             releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook_Booklet.pdf \
             releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Manifest.json
