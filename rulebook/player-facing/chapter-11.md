@@ -96,7 +96,7 @@ A card with an **Asset** effect has this inherent banking Action:
 
 This Action is available even when it is not printed on the card.
 
-**Asset** is the heading for a banked-card effect. Asset text may be continuous, triggered, optional, or expressly usable as an Action while the card is banked. An Asset ability that says **as an Action** uses the applicable Action permission.
+**Asset** is the only effect heading that denotes a banked-card effect. Asset text may be continuous, triggered, optional, or expressly usable as an Action while the card is banked. An Asset ability that says **as an Action** uses the applicable Action permission.
 
 If a card has a printed Action effect that gives a special banking procedure, use that procedure instead of the inherent Bank Action. The special procedure may impose costs, bind cards, draw cards, grant another Action, limit copies, or otherwise change what happens when the card is banked.
 
