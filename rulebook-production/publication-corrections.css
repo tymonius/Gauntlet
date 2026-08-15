@@ -67,8 +67,9 @@
 }
 
 /* The source cover sketch remains opaque. Multiply rendering removes most of
-   its light field; a broad feathered mask prevents the residual paper rectangle
-   and edge texture from reading as a separate image panel. */
+   its light field. The official wordmark makes the image edge more noticeable,
+   so feather only the outer 5% on the left and right; this dissolves the source
+   paper boundary without fading the figures or changing the approved scale. */
 .front-cover .cover-art {
   isolation: isolate;
   background: var(--paper);
@@ -80,8 +81,8 @@
   filter: grayscale(1) contrast(1.32) brightness(1.12) !important;
   mix-blend-mode: multiply !important;
   opacity: .94;
-  -webkit-mask-image: radial-gradient(ellipse 88% 92% at 50% 51%, #000 0 67%, rgba(0,0,0,.96) 73%, rgba(0,0,0,.68) 83%, transparent 100%);
-  mask-image: radial-gradient(ellipse 88% 92% at 50% 51%, #000 0 67%, rgba(0,0,0,.96) 73%, rgba(0,0,0,.68) 83%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%);
 }
 
 /* Pages required solely to bring the imposed booklet to a multiple of four are

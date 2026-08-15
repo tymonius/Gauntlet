@@ -61,8 +61,8 @@
       "key": "rulebook-booklet",
       "path": "Gauntlet_v0.6.3_Rulebook_Booklet.pdf",
       "pages": 48,
-      "sha256": "8faee6834a488e7ddc17cfb6b3e6a8bd739e72a38a83f0200e0f6c87f868651d",
-      "bytes": 28912659
+      "sha256": "3a9152f92f8e3a7b5029ac9179c41d10c703ed51b07e5e9608568bdde1359041",
+      "bytes": 28912452
     },
     {
       "key": "military",
@@ -189,8 +189,8 @@
     },
     {
       "path": "Gauntlet_v0.6.3_Rulebook_Booklet.pdf",
-      "sha256": "8faee6834a488e7ddc17cfb6b3e6a8bd739e72a38a83f0200e0f6c87f868651d",
-      "bytes": 28912659
+      "sha256": "3a9152f92f8e3a7b5029ac9179c41d10c703ed51b07e5e9608568bdde1359041",
+      "bytes": 28912452
     },
     {
       "path": "Gauntlet_v0.6.3_Starter_Deck_Catalog.md",
