@@ -41,6 +41,12 @@ describe('durable current-release TTS pipeline', () => {
     expect(catalogSource).toContain('Release metadata disagrees');
   });
 
+  it('treats an artifact internal build label as provenance rather than the public release selector', () => {
+    expect(catalogSource).toContain('canonicalDataVersion: canonical.version || null');
+    expect(catalogSource).not.toContain('canonical.version !== release.version');
+    expect(catalogSource).not.toContain('Canonical data version is');
+  });
+
   it('contains no release-number literals in the supported TTS pipeline', () => {
     expect(supportedPipelineText).not.toMatch(/v0\.6\.[0-9]+/);
     expect(packageJson.scripts['tts:check']).toBe('node scripts/generate-tts-card-assets.mjs --check && node scripts/generate-tts-territory-assets.mjs --check');
