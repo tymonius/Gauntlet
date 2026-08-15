@@ -37,10 +37,10 @@ describe("public Start page theme", () => {
     expect(cssRule(".start-hero h1")).toContain("font-weight:400");
     expect(cssRule(".section-heading h2")).toContain("font-family:var(--font-display-web)");
     expect(cssRule(".section-heading h2")).toContain("font-weight:400");
-    expect(cssRule(".overview-feature h3,.intro-overview h3")).toContain("font-weight:400");
-    expect(cssRule(".intro-card h3")).toContain("font-weight:400");
-    expect(cssRule(".print-action-card h3")).toContain("font-weight:400");
 
+    expect(cssRule(".overview-feature h3,.intro-overview h3")).toContain("font-family:var(--font-display-historical)");
+    expect(cssRule(".intro-card h3")).toContain("font-family:var(--font-display-historical)");
+    expect(cssRule(".print-action-card h3")).toContain("font-family:var(--font-display-historical)");
     expect(cssRule(".journey strong")).toContain("font-family:var(--font-display-historical)");
     expect(cssRule(".faction-choice strong")).toContain("font-family:var(--font-display-historical)");
     expect(cssRule(".leader-choice strong")).toContain("font-family:var(--font-display-historical)");
@@ -60,7 +60,7 @@ describe("public Start page theme", () => {
     }
 
     expect(cssRule(".leader-portrait")).toContain("display:none");
-    expect(cssRule(".selected-choice::before")).toContain("aspect-ratio:4/7");
+    expect(cssRule(".selected-choice::before")).toContain("aspect-ratio:4/5");
     expect(cssRule(".selected-choice::before")).toContain("background-size:contain");
     expect(cssRule(".selected-choice::before")).toContain("background-position:center");
     expect(css).toContain('input[name="leader"][value="grand-inquisitor"]:checked');
@@ -73,6 +73,8 @@ describe("public Start page theme", () => {
     expect(css).toContain("--selected-faction-color:#282827");
     expect(css).toContain("--selected-faction-color:#5d347e");
     expect(css).toContain("--selected-faction-color:#a67a27");
+    expect(cssRule(".selected-choice::after")).toContain("left:33%");
+    expect(cssRule(".selected-choice::after")).toContain("transform:translateX(-50%)");
     expect(cssRule(".selected-choice::after")).toContain("background:var(--selected-faction-color,transparent)");
     expect(cssRule(".selected-choice::after")).toContain("mask:var(--selected-faction-symbol) center/contain no-repeat");
     expect(css).toContain('.choice-section:has(input[name="faction"]:checked) .selected-choice::after{opacity:.085}');
