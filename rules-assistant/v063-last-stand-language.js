@@ -25,7 +25,7 @@ export const V063_LAST_STAND_REPLACEMENTS = Object.freeze([
   ["wins their Last Stand", "forces them to make a Last Stand and wins the resulting battle"],
   ["Forcing and Winning a Last Stand", "Forcing the Opponent to Make a Last Stand"],
   ["Winning a Last Stand", "Winning a Last Stand Battle"],
-  ["Control of that Territory is not required to initiate a Last Stand.", "Control of that Territory is not required before the opponent can be forced to make a Last Stand."],
+  ["Control of that Territory is not required to initiate a Last Stand.", "Control of that Territory is not required to force the opponent to make a Last Stand."],
   ["The final Territory does not need to be controlled or already captured before that Last Stand can be initiated.", "The final Territory does not need to be controlled or already captured before the opponent can be forced to make a Last Stand."],
   ["initiates the opponent's Last Stand", "forces the opponent to make a Last Stand"],
   ["initiate the opponent's Last Stand", "force the opponent to make a Last Stand"],
