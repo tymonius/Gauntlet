@@ -8,6 +8,12 @@
 /*
  * Declaration is a flavor face, not an interface or reading face.
  * Georgia remains the structural heading font.
+ *
+ * The homepage hero is an approved designed exception to the normal
+ * Georgia-roman + Georgia-italic companion pattern: "Run the" remains
+ * Georgia while "Gauntlet." deliberately uses Declaration Pro. Preserve
+ * this and other reviewed Declaration pairings rather than normalizing them
+ * to the general italic-companion rule.
  */
 html,
 body {
