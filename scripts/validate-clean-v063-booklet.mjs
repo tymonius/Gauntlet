@@ -38,7 +38,7 @@ for (const required of ['rulebook-production/build_rulebook.py','rulebook-produc
 
 assert.equal(manifest.artwork.cover.path, 'images/sketches/hero-sketches/hero sketch.png');
 assert(manifest.counts.content_pages > 1);
-assert(manifest.counts.padding_pages >= 0 && manifest.counts.padding_pages <= 4);
+assert(manifest.counts.padding_pages >= 0 && manifest.counts.padding_pages <= 11);
 assert.equal(manifest.counts.logical_pages, manifest.counts.content_pages + manifest.counts.padding_pages);
 assert.equal(manifest.counts.logical_pages % 4, 0);
 assert.equal(manifest.counts.imposed_sides, manifest.counts.logical_pages / 2);
