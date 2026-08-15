@@ -58,15 +58,15 @@ Territory arrangement occurs after the player has chosen the opening discard and
 There are two normal ways to run the Gauntlet:
 
 - capture the Territory at your opponent's end; or
-- force the opponent into a Last Stand and win it.
+- force the opponent to make a Last Stand and win the resulting battle.
 
 Either result wins the game immediately.
 
 ## Complete rules
 
-> **Run the Gauntlet:** A player runs the Gauntlet and wins immediately when that player either captures the Territory at the opponent's end of the Gauntlet or wins the opponent's Last Stand.
+> **Run the Gauntlet:** A player runs the Gauntlet and wins immediately when that player either captures the Territory at the opponent's end of the Gauntlet or forces the opponent to make a Last Stand and wins the resulting battle.
 
-Both routes are the normal shared victory condition. Rules and player-facing text may distinguish the **capture route** from the **Last Stand route**, but both are running the Gauntlet.
+Both routes are the normal shared victory condition. Rules and player-facing text may distinguish the **capture route** from the **Last Stand battle route**, but both are running the Gauntlet.
 
 Faction-specific alternate victories remain separate victory conditions unless their rules expressly describe them otherwise.
 
@@ -99,11 +99,11 @@ If multiple consequences occur from the same capture, resolve the capture and it
 
 ---
 
-# 4. Forcing and Winning a Last Stand
+# 4. Forcing the Opponent to Make a Last Stand
 
 ## How it works
 
-After you win on the opponent's final Territory and force the opponent beyond the Gauntlet, an effect that gives you another movement sequence may let you Advance beyond the Gauntlet and force a Last Stand immediately.
+After you win on the opponent's final Territory and force the opponent beyond the Gauntlet, an effect that gives you another movement sequence may let you Advance beyond the Gauntlet and force the opponent to make a Last Stand immediately.
 
 You do not need to control the final Territory first. You do need a separate legal Advance after the battle that forced the opponent beyond the Gauntlet.
 
@@ -113,22 +113,22 @@ When a player loses a battle while positioned on the Territory at their own end 
 
 The winner is occupying that Territory while it remains controlled by the opponent.
 
-A player initiates the opponent's Last Stand when all of the following are true:
+A player forces the opponent to make a Last Stand when all of the following are true:
 
 1. the opponent is positioned beyond their own end of the Gauntlet;
 2. the advancing player is positioned on the Territory at the opponent's end;
 3. a rule or effect grants the advancing player a new legal movement sequence; and
 4. during that sequence, the advancing player Advances beyond the opponent's end of the Gauntlet.
 
-The advancing player does not need to control or have captured the final Territory before initiating the Last Stand.
+The advancing player does not need to control or have captured the final Territory before forcing the opponent to make a Last Stand.
 
-The movement sequence that caused the preceding battle ended when that battle was created. Unused movement from that sequence cannot carry the attacker directly into the Last Stand. The attacker must receive another movement sequence from a rule or effect.
+The movement sequence that caused the preceding battle ended when that battle was created. Unused movement from that sequence cannot carry the attacker directly into a Last Stand battle. The attacker must receive another movement sequence from a rule or effect.
 
-Conduct the Last Stand under the inherited Last Stand battle rules. The defender normally has Defensive Edge while making a Last Stand unless an effect removes it.
+Conduct the resulting battle under the inherited Last Stand battle rules. The defender normally has Defensive Edge while making a Last Stand unless an effect removes it.
 
-If the attacker wins the Last Stand, the attacker immediately runs the Gauntlet and wins the game.
+If the attacker wins this battle, the attacker immediately runs the Gauntlet and wins the game.
 
-If the attacker does not initiate a Last Stand, the attacker may remain on the opposing final Territory. The opponent may Counterattack or use any other legal response. If the attacker later captures the final Territory, the attacker wins through the capture route.
+If the attacker does not force the opponent to make a Last Stand, the attacker may remain on the opposing final Territory. The opponent may Counterattack or use any other legal response. If the attacker later captures the final Territory, the attacker wins through the capture route.
 
 ---
 
@@ -146,11 +146,11 @@ The Commandant wins while occupying the opponent's final Territory and legally u
 
 The ability is not delayed until the next Capture step and does not lose its capture effect because it reaches the final Territory.
 
-## Example C — immediate Last Stand route
+## Example C — immediate Last Stand battle route
 
 The General wins a battle on the opponent's final Territory and forces the opponent beyond the Gauntlet. That battle ends the movement sequence that created it.
 
-A General Order then directly permits another movement sequence. During that sequence, the General Advances beyond the opponent's end and initiates the opponent's Last Stand even though the final Territory still faces the opponent. If the General wins the Last Stand, the General immediately runs the Gauntlet and wins.
+A General Order then directly permits another movement sequence. During that sequence, the General Advances beyond the opponent's end and forces the opponent to make a Last Stand even though the final Territory still faces the opponent. If the General wins this battle, the General immediately runs the Gauntlet and wins.
 
 ## Example D — setup placement and Territory effects
 
@@ -184,11 +184,11 @@ Only after both players have completed their opening selection and Territory arr
 You run the Gauntlet and win immediately when you either:
 
 - capture the Territory at your opponent's end; or
-- win your opponent's Last Stand.
+- force your opponent to make a Last Stand and win the resulting battle.
 
 Any legal immediate capture of the final Territory can win.
 
-After forcing the opponent beyond the Gauntlet, you may initiate a Last Stand with a separate legal Advance beyond their end. You do not need to control the final Territory first.
+After forcing the opponent beyond the Gauntlet, you may force the opponent to make a Last Stand with a separate legal Advance beyond their end. You do not need to control the final Territory first.
 
 ---
 

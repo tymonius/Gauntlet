@@ -10,7 +10,7 @@
 
 Gauntlet is a two-player tactical card-and-territory game. Each player builds a Deck, chooses one of six factions and one of that faction's Leaders, and contributes three Territories to a shared six-Territory battlefield called the **Gauntlet**.
 
-Players advance toward one another, fight battles, occupy and capture opposing Territories, develop Assets, and pursue faction-specific plans. The normal shared victory is to **run the Gauntlet** by either capturing the Territory at the opponent's end or winning that opponent's Last Stand.
+Players advance toward one another, fight battles, occupy and capture opposing Territories, develop Assets, and pursue faction-specific plans. The normal shared victory is to **run the Gauntlet** by either capturing the Territory at the opponent's end or forcing that opponent to make a Last Stand and winning the resulting battle.
 
 # How to Use This Rulebook
 
@@ -36,7 +36,7 @@ Winning an attack does not normally capture a Territory immediately. Your contro
 The normal shared victory is to **run the Gauntlet**. You win immediately when you either:
 
 1. capture the Territory at your opponent's end of the Gauntlet; or
-2. win your opponent's Last Stand.
+2. force your opponent to make a Last Stand and win the resulting battle.
 
 These are independent routes. A Last Stand does not require control of the final Territory first, but it does require a separate legal movement sequence after the battle that forced the opponent beyond the Gauntlet.
 
@@ -667,7 +667,7 @@ Unless the effect expressly advances the Front Line more than once, interpret or
 
 ### Final Territory and Last Stand
 
-Capturing the Territory at the opponent's end immediately runs the Gauntlet and wins. Control of that Territory is not required to initiate a Last Stand. After the opponent is forced beyond their end, an attacker on the final Territory may initiate a Last Stand only through a **new legal movement sequence** that Advances beyond the Gauntlet. Unused movement from the sequence that created the preceding battle cannot carry into the Last Stand.
+Capturing the Territory at the opponent's end immediately runs the Gauntlet and wins. Control of that Territory is not required to force the opponent to make a Last Stand. After the opponent is forced beyond their end, an attacker on the final Territory may force the opponent to make a Last Stand only through a **new legal movement sequence** that Advances beyond the Gauntlet. Unused movement from the sequence that created the preceding battle cannot carry into a Last Stand battle.
 
 ### Occupation
 
@@ -686,15 +686,15 @@ A **Counterattack** is a battle initiated by the controller of a Territory again
 There are two normal ways to run the Gauntlet:
 
 - capture the Territory at your opponent's end; or
-- force the opponent into a Last Stand and win it.
+- force the opponent to make a Last Stand and win the resulting battle.
 
 Either result wins the game immediately.
 
 ## Complete rules
 
-> **Run the Gauntlet:** A player runs the Gauntlet and wins immediately when that player either captures the Territory at the opponent's end of the Gauntlet or wins the opponent's Last Stand.
+> **Run the Gauntlet:** A player runs the Gauntlet and wins immediately when that player either captures the Territory at the opponent's end of the Gauntlet or forces the opponent to make a Last Stand and wins the resulting battle.
 
-Both routes are the normal shared victory condition. Rules and player-facing text may distinguish the **capture route** from the **Last Stand route**, but both are running the Gauntlet.
+Both routes are the normal shared victory condition. Rules and player-facing text may distinguish the **capture route** from the **Last Stand battle route**, but both are running the Gauntlet.
 
 Faction-specific alternate victories remain separate victory conditions unless their rules expressly describe them otherwise.
 
@@ -723,11 +723,11 @@ A capture effect is not suspended, delayed, or treated differently merely becaus
 
 If multiple consequences occur from the same capture, resolve the capture and its required control, orientation, Front Line, and immediate capture consequences. The player then wins before proceeding to a later phase or voluntary procedure unless a specific simultaneous-resolution rule requires another order.
 
-## Forcing and Winning a Last Stand
+## Forcing the Opponent to Make a Last Stand
 
 ### How it works
 
-After you win on the opponent's final Territory and force the opponent beyond the Gauntlet, an effect that gives you another movement sequence may let you Advance beyond the Gauntlet and force a Last Stand immediately.
+After you win on the opponent's final Territory and force the opponent beyond the Gauntlet, an effect that gives you another movement sequence may let you Advance beyond the Gauntlet and force the opponent to make a Last Stand immediately.
 
 You do not need to control the final Territory first. You do need a separate legal Advance after the battle that forced the opponent beyond the Gauntlet.
 
@@ -737,22 +737,22 @@ When a player loses a battle while positioned on the Territory at their own end 
 
 The winner is occupying that Territory while it remains controlled by the opponent.
 
-A player initiates the opponent's Last Stand when all of the following are true:
+A player forces the opponent to make a Last Stand when all of the following are true:
 
 1. the opponent is positioned beyond their own end of the Gauntlet;
 2. the advancing player is positioned on the Territory at the opponent's end;
 3. a rule or effect grants the advancing player a new legal movement sequence; and
 4. during that sequence, the advancing player Advances beyond the opponent's end of the Gauntlet.
 
-The advancing player does not need to control or have captured the final Territory before initiating the Last Stand.
+The advancing player does not need to control or have captured the final Territory before forcing the opponent to make a Last Stand.
 
-The movement sequence that caused the preceding battle ended when that battle was created. Unused movement from that sequence cannot carry the attacker directly into the Last Stand. The attacker must receive another movement sequence from a rule or effect.
+The movement sequence that caused the preceding battle ended when that battle was created. Unused movement from that sequence cannot carry the attacker directly into a Last Stand battle. The attacker must receive another movement sequence from a rule or effect.
 
-Conduct the Last Stand under the inherited Last Stand battle rules. The defender normally has Defensive Edge while making a Last Stand unless an effect removes it.
+Conduct the resulting battle under the inherited Last Stand battle rules. The defender normally has Defensive Edge while making a Last Stand unless an effect removes it.
 
-If the attacker wins the Last Stand, the attacker immediately runs the Gauntlet and wins the game.
+If the attacker wins this battle, the attacker immediately runs the Gauntlet and wins the game.
 
-If the attacker does not initiate a Last Stand, the attacker may remain on the opposing final Territory. The opponent may Counterattack or use any other legal response. If the attacker later captures the final Territory, the attacker wins through the capture route.
+If the attacker does not force the opponent to make a Last Stand, the attacker may remain on the opposing final Territory. The opponent may Counterattack or use any other legal response. If the attacker later captures the final Territory, the attacker wins through the capture route.
 
 # Part II — Complete Shared Rules
 
@@ -913,7 +913,7 @@ When an effect grants movement, apply the normal movement rules unless it says o
 
 - If the effect modifies a movement sequence already in progress, the granted movement remains part of that sequence.
 - If the effect grants movement while no movement sequence is in progress, it begins a new movement sequence.
-- Effect-granted movement may create a pending battle and may initiate a legal Last Stand unless expressly prohibited.
+- Effect-granted movement may create a pending battle and may force the opponent to make a Last Stand unless expressly prohibited.
 - When movement creates a pending battle, that movement sequence ends and unused movement from it is lost normally.
 
 Cards therefore do not need affirmative text saying that granted movement may start or create a battle. Negative exceptions remain printed.
@@ -1921,7 +1921,7 @@ At each choice stage:
 
 > **Fieldcraft:** Once per turn, when a printed Territory effect would affect you, your movement, or a battle involving you, you may spend 1 Intel to ignore that Territory effect until the end of the turn.
 
-Fieldcraft does not alter Territory control, Occupation, Capture, Defensive Edge, Last Stand bonuses, or limits calculated from Territories.
+Fieldcraft does not alter Territory control, Occupation, Capture, Defensive Edge, Last Stand battle bonuses, or limits calculated from Territories.
 
 ### Spymaster
 
@@ -2344,7 +2344,7 @@ Heresy follows the shared copied-effect rule but retains permission for one addi
 
 **Gambit:** An optional battle card set from Hand. It normally goes to the Graveyard during the Aftermath.
 
-**Last Stand:** A battle beyond the opponent's end. It is an independent Run-the-Gauntlet route and requires a separate legal movement sequence, not prior capture or control of the final Territory.
+**Last Stand:** A final stand the defender makes beyond their end of the Gauntlet. The resulting contest is a Last Stand battle. It is an independent Run-the-Gauntlet battle route and requires a separate legal movement sequence, not prior capture or control of the final Territory.
 
 **Occupation:** The state in which a player's token is on an opposing Territory that player does not control.
 

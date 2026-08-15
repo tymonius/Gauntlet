@@ -67,7 +67,7 @@ The first-player roll occurs only after both players have completed their openin
 A player runs the Gauntlet and wins immediately by either:
 
 1. capturing the Territory at the opponent's end of the Gauntlet; or
-2. winning the opponent's Last Stand.
+2. forcing the opponent to make a Last Stand and winning the resulting battle.
 
 Neither route is a secondary or lesser form of the normal victory. Both are running the Gauntlet.
 
@@ -86,19 +86,19 @@ This applies to every legal capture procedure, including:
 
 Do not create a victory-only exception that delays or suppresses an immediate-capture ability. If a particular ability proves too strong under this rule, balance that ability directly rather than making capture inconsistent at the final Territory.
 
-### 3.3 Last Stand route
+### 3.3 Last Stand battle route
 
 When a player wins a battle on the Territory at the opponent's end and forces that opponent beyond the Gauntlet, the winner remains on the opposing final Territory unless another effect moves them.
 
-A player may initiate the opponent's Last Stand by using a **separate legal movement sequence** to Advance beyond the opponent's end of the Gauntlet while that opponent is beyond the Gauntlet.
+A player may force the opponent to make a Last Stand by using a **separate legal movement sequence** to Advance beyond the opponent's end of the Gauntlet while that opponent is beyond the Gauntlet.
 
 The final Territory does not need to be controlled or already captured before that Last Stand can be initiated. Token position, the opponent's beyond-the-Gauntlet position, and the new legal Advance are sufficient.
 
 The battle that first forced the opponent beyond the Gauntlet still ends the movement sequence that created it. The attacker therefore needs an effect or rule that directly permits another movement sequence before they can immediately force a Last Stand.
 
-If the attacker does not initiate a Last Stand, they may remain on the opposing final Territory. The opponent receives the normal opportunity to Counterattack or otherwise dislodge them. If the attacker later captures that final Territory, the capture route wins immediately.
+If the attacker does not force the opponent to make a Last Stand, they may remain on the opposing final Territory. The opponent receives the normal opportunity to Counterattack or otherwise dislodge them. If the attacker later captures that final Territory, the capture route wins immediately.
 
-All other Last Stand rules—including defender status, Defensive Edge, battle procedure, destinations, and the result of losing the Last Stand—remain inherited from v0.6.2 unless expressly revised elsewhere in v0.6.3.
+All other Last Stand rules—including defender status, Defensive Edge, battle procedure, destinations, and the result of losing this battle—remain inherited from v0.6.2 unless expressly revised elsewhere in v0.6.3.
 
 ---
 

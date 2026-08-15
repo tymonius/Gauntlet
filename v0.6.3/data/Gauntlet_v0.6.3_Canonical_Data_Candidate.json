@@ -22,12 +22,12 @@
     "gauntlet": "Six Territory Cards arranged in one column.",
     "starting_position": "Each Player Token begins on the Territory at that player's own end of the Gauntlet. Setup placement is not movement and does not count as entering.",
     "capture": "During Capture, if your token is on or beyond the next opposing Territory immediately beyond your Front Line, add that Territory to your Front Line. Normal Capture advances the Front Line by at most one Territory per turn. Capturing the Territory at the opponent's end immediately runs the Gauntlet and wins.",
-    "victory": "Run the Gauntlet and win immediately by either capturing the Territory at the opponent's end or winning the opponent's Last Stand.",
+    "victory": "Run the Gauntlet and win immediately by either capturing the Territory at the opponent's end or forcing the opponent to make a Last Stand and winning the resulting battle.",
     "last_stand": {
       "defensive_edge": true,
       "defender_bonus": 1,
       "text": "The defender normally has Defensive Edge and separately adds +1 to their battle total.",
-      "access": "After the opponent is forced beyond their own end, an attacker on the opponent's final Territory may initiate the Last Stand by using a separate legal movement sequence to Advance beyond that end.",
+      "access": "After the opponent is forced beyond their own end, an attacker on the opponent's final Territory may force the opponent to make a Last Stand by using a separate legal movement sequence to Advance beyond that end.",
       "final_territory_control_required": false,
       "final_territory_capture_required": false,
       "separate_movement_sequence_required": true
