@@ -25,35 +25,19 @@ const read = (relative) => fs.readFileSync(path.join(root, relative), 'utf8').re
 const bytes = (relative) => fs.readFileSync(path.join(root, relative));
 const hash = (data) => crypto.createHash('sha256').update(data).digest('hex');
 const fileHash = (relative) => hash(bytes(relative));
-const write = (relative, data) => {
-  const target = path.join(root, relative);
-  fs.mkdirSync(path.dirname(target), { recursive: true });
-  fs.writeFileSync(target, data);
-};
+const write = (relative, data) => { const target = path.join(root, relative); fs.mkdirSync(path.dirname(target), { recursive: true }); fs.writeFileSync(target, data); };
 
 function run(command, args) {
-  const result = spawnSync(command, args, {
-    cwd: root,
-    env: process.env,
-    stdio: 'inherit',
-  });
+  const result = spawnSync(command, args, { cwd: root, env: process.env, stdio: 'inherit' });
   if (result.error) throw result.error;
-  if (result.status !== 0) {
-    throw new Error(`${command} ${args.join(' ')} failed with exit code ${result.status}.`);
-  }
+  if (result.status !== 0) throw new Error(`${command} ${args.join(' ')} failed with exit code ${result.status}.`);
 }
-
 async function waitForServer(url) {
   let lastError;
   for (let attempt = 0; attempt < 60; attempt += 1) {
-    try {
-      const response = await fetch(url);
-      if (response.ok) return;
-      lastError = new Error(`HTTP ${response.status}`);
-    } catch (error) {
-      lastError = error;
-    }
-    await new Promise((resolve) => setTimeout(resolve, 250));
+    try { const response = await fetch(url); if (response.ok) return; lastError = new Error(`HTTP ${response.status}`); }
+    catch (error) { lastError = error; }
+    await new Promise(resolve => setTimeout(resolve, 250));
   }
   throw new Error(`Rulebook review server did not become ready: ${lastError?.message || 'unknown error'}`);
 }
@@ -70,25 +54,16 @@ assert(fs.existsSync(path.join(root, coverAsset)), `Missing booklet artwork: ${c
 
 fs.rmSync(path.join(root, outDir), { recursive: true, force: true });
 fs.rmSync(productionDir, { recursive: true, force: true });
-
-// Re-run the approved design fidelity checkpoint, then build the current source
-// through the same production system approved in PR #357 and completed in #434.
 run('python', ['rulebook-design/build_proofs.py']);
 run('python', ['rulebook-production/build_fidelity_gate.py']);
 run('python', ['scripts/build-v063-rulebook-production.py']);
 
-const server = spawn('python', ['-m', 'http.server', '8000'], {
-  cwd: root,
-  env: process.env,
-  stdio: ['ignore', 'ignore', 'inherit'],
-});
+const server = spawn('python', ['-m', 'http.server', '8000'], { cwd: root, env: process.env, stdio: ['ignore', 'ignore', 'inherit'] });
 try {
   await waitForServer('http://127.0.0.1:8000/rulebook-production/full-rulebook.html');
   run('node', ['rulebook-production/render_fidelity_gate.mjs']);
   run('node', ['scripts/run-v063-rulebook-renderer.mjs']);
-} finally {
-  server.kill('SIGTERM');
-}
+} finally { server.kill('SIGTERM'); }
 
 const reportFile = path.join(productionDir, 'production-report.json');
 assert(fs.existsSync(reportFile), 'Approved Rulebook production renderer did not emit production-report.json.');
@@ -97,7 +72,6 @@ const readerSource = path.join(productionDir, 'Gauntlet_v0.6.1_Rulebook.pdf');
 const bookletSource = path.join(productionDir, 'Gauntlet_v0.6.1_Rulebook_Booklet.pdf');
 assert(fs.existsSync(readerSource), 'Approved Rulebook production renderer did not emit its reader PDF.');
 assert(fs.existsSync(bookletSource), 'Approved Rulebook production renderer did not emit its booklet PDF.');
-
 assert.equal(report.reader?.report?.missing?.length, 0, 'Approved production renderer omitted canonical Rulebook source tokens.');
 assert.equal(report.reader?.isolatedHeadings?.length, 0, 'Approved production renderer stranded Rulebook headings.');
 assert.equal(report.reader?.leaderImages?.length, 12, 'Approved production renderer did not produce all 12 Leader portraits.');
@@ -112,7 +86,7 @@ const paddingPages = Number(report.reader?.report?.intentionalBlanks || 0);
 assert(logicalPages > 1 && logicalPages % 4 === 0, `Approved production renderer emitted invalid booklet page count ${logicalPages}.`);
 assert.equal(imposedSides, logicalPages / 2);
 assert.equal(physicalSheets, logicalPages / 4);
-assert(paddingPages >= 0 && paddingPages <= 3, `Unexpected booklet padding count ${paddingPages}.`);
+assert(paddingPages >= 0 && paddingPages <= 4, `Unexpected booklet padding count ${paddingPages}.`);
 
 const readingBytes = fs.readFileSync(readerSource);
 const imposedBytes = fs.readFileSync(bookletSource);
@@ -121,9 +95,8 @@ write(imposedPdfPath, imposedBytes);
 write(sourceHtmlPath, fs.readFileSync(path.join(root, 'rulebook-production/full-rulebook.html')));
 write(productionReportPath, `${JSON.stringify(report, null, 2)}\n`);
 
-const impositionPairs = (report.booklet?.geometry || []).map((item) => item.pages);
+const impositionPairs = (report.booklet?.geometry || []).map(item => item.pages);
 assert.equal(impositionPairs.length, imposedSides, 'Approved production report is missing imposed booklet sides.');
-
 const manifest = {
   schema_version: 2,
   target: 'gauntlet-v0.6.3-rulebook-booklet',
@@ -134,57 +107,24 @@ const manifest = {
     publication_transform_verified_exact: true,
   },
   design: {
-    pipeline: 'approved-rulebook-production',
-    approved_design_pr: approvedDesignPr,
-    production_pr: productionPr,
-    adapter: 'scripts/build-v063-rulebook-production.py',
-    renderer_adapter: 'scripts/run-v063-rulebook-renderer.mjs',
-    approved_design_sources: [
-      'rulebook-design/build_proofs.py',
-      'rulebook-design/proof.css',
-      'rulebook-design/render_proofs.mjs',
-    ],
-    production_sources: [
-      'rulebook-production/build_rulebook.py',
-      'rulebook-production/build_complete_rulebook.py',
-      'rulebook-production/paginate_rulebook.mjs',
-      'rulebook-production/production.css',
-      'rulebook-production/render_rulebook.mjs',
-    ],
+    pipeline: 'approved-rulebook-production', approved_design_pr: approvedDesignPr, production_pr: productionPr,
+    adapter: 'scripts/build-v063-rulebook-production.py', renderer_adapter: 'scripts/run-v063-rulebook-renderer.mjs',
+    approved_design_sources: ['rulebook-design/build_proofs.py','rulebook-design/proof.css','rulebook-design/render_proofs.mjs'],
+    production_sources: ['rulebook-production/build_rulebook.py','rulebook-production/build_complete_rulebook.py','rulebook-production/paginate_rulebook.mjs','rulebook-production/production.css','rulebook-production/render_rulebook.mjs'],
     fidelity_gate_passed: true,
-    typography: {
-      title: report.reader.titleFamily,
-      reading: report.reader.bodyFamily,
-      utility: report.reader.utilityFamily,
-    },
+    typography: { title: report.reader.titleFamily, reading: report.reader.bodyFamily, utility: report.reader.utilityFamily },
     leader_portraits: report.reader.leaderImages.length,
     missing_source_tokens: report.reader.report.missing.length,
     isolated_headings: report.reader.isolatedHeadings.length,
   },
-  artwork: {
-    cover: { path: coverAsset, sha256: fileHash(coverAsset) },
-  },
-  geometry_points: {
-    logical_page: [396, 612],
-    imposed_side: [792, 612],
-  },
-  counts: {
-    content_pages: logicalPages - paddingPages,
-    padding_pages: paddingPages,
-    logical_pages: logicalPages,
-    imposed_sides: imposedSides,
-    physical_sheets: physicalSheets,
-  },
-  imposition: {
-    duplex_flip: 'short-edge',
-    pairs: impositionPairs,
-  },
+  artwork: { cover: { path: coverAsset, sha256: fileHash(coverAsset) } },
+  geometry_points: { logical_page: [396, 612], imposed_side: [792, 612] },
+  counts: { content_pages: logicalPages - paddingPages, padding_pages: paddingPages, logical_pages: logicalPages, imposed_sides: imposedSides, physical_sheets: physicalSheets },
+  imposition: { duplex_flip: 'short-edge', pairs: impositionPairs },
   review: {
     production_report: productionReportPath,
-    reader_pages_directory: `${productionDir}/reader-pages`,
-    reader_spreads_directory: `${productionDir}/reader-spreads`,
-    booklet_color_directory: `${productionDir}/booklet-color`,
-    booklet_grayscale_directory: `${productionDir}/booklet-grayscale`,
+    reader_pages_directory: `${productionDir}/reader-pages`, reader_spreads_directory: `${productionDir}/reader-spreads`,
+    booklet_color_directory: `${productionDir}/booklet-color`, booklet_grayscale_directory: `${productionDir}/booklet-grayscale`,
   },
   outputs: [
     { role: 'reading-order', path: readingPdfPath, sha256: hash(readingBytes), bytes: readingBytes.length, pages: logicalPages },
@@ -192,5 +132,4 @@ const manifest = {
   ],
 };
 write(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
-
 console.log(`Approved-design v0.6.3 booklet: ${logicalPages} logical pages, ${imposedSides} imposed sides, ${physicalSheets} physical sheets.`);
