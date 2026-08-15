@@ -3,7 +3,7 @@
 .starter-handoff-panel::after{content:"";position:absolute;z-index:0;left:36%;bottom:-11rem;width:min(42vw,520px);aspect-ratio:1;transform:translateX(-50%);background:var(--starter-faction-color,#8f1f25);-webkit-mask:var(--starter-faction-symbol) center/contain no-repeat;mask:var(--starter-faction-symbol) center/contain no-repeat;opacity:.085;pointer-events:none}
 .starter-handoff-copy h2{margin:.15rem 0 .65rem;font-family:var(--font-display,Georgia,serif);font-size:clamp(2rem,4vw,3.4rem);line-height:1}
 .starter-handoff-copy>p{max-width:760px;line-height:1.55}
-.starter-handoff-copy .is-success{color:#236946;font-weight:800}.starter-handoff-copy .is-error{color:#9b2228;font-weight:800}
+.starter-handoff-copy .is-success{color:var(--starter-faction-color,#236946);font-weight:800}.starter-handoff-copy .is-error{color:#9b2228;font-weight:800}
 .starter-handoff-actions{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.15rem}
 .starter-handoff-actions .button-like{display:inline-flex;align-items:center;justify-content:center;padding:.75rem 1rem;border:1px solid #8f1f25;text-decoration:none;font-weight:800;color:#8f1f25;background:#fff}
 .starter-handoff-checklist{padding:1rem 1.1rem;background:#24211d;color:#fff8ed}
