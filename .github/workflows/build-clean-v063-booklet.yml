@@ -27,6 +27,7 @@ jobs:
             /scripts/publication-utils.mjs
             /rules-assistant/v063-last-stand-language.js
             /rulebook/player-facing/chapter-11.md
+            /rulebook/player-facing/corrections.js
             /rulebook-design/
             /rulebook-production/
             /releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md
