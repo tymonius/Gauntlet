@@ -61,6 +61,19 @@
     #716b74;
 }
 
+.ritual-art-pending {
+  display: grid;
+  place-items: center;
+}
+
+.ritual-art-pending span {
+  position: static;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 5pt;
+  letter-spacing: 0.12em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.42);
+}
+
 .rite-card .card-rules,
 .rite-card.dense-card .card-rules {
   padding: 0.036in 0.072in 0.03in;
@@ -90,6 +103,32 @@
 .rite-card.dense-card .rule-section p {
   font-size: calc(6.05pt * var(--rules-scale));
   line-height: 1.065;
+}
+
+.ritual-card {
+  --minimum-rules-scale: 0.82;
+}
+
+.ritual-card .card-title {
+  letter-spacing: 0.018em;
+}
+
+.ritual-card .rule-section,
+.ritual-card .rule-section.placement-section {
+  grid-template-columns: 0.60in minmax(0, 1fr);
+  column-gap: 0.035in;
+}
+
+.ritual-card .rule-section p,
+.ritual-card.dense-card .rule-section p {
+  font-size: calc(5.72pt * var(--rules-scale));
+  line-height: 1.05;
+}
+
+.ritual-card .rule-section + .rule-section,
+.ritual-card.dense-card .rule-section + .rule-section {
+  margin-top: 0.022in;
+  padding-top: 0.018in;
 }
 
 .rite-card .card-footer {
@@ -191,6 +230,10 @@
   grid-template-columns: repeat(2, 2.5in);
   justify-content: center;
   gap: 0.42in;
+}
+
+.ritual-face-grid {
+  grid-template-columns: 2.5in;
 }
 
 .rite-face {
