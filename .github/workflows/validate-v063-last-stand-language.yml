@@ -1,4 +1,4 @@
-name: Validate v0.6.3 Last Stand language
+name: Validate v0.6.3 player rules language
 
 on:
   pull_request:
@@ -45,12 +45,14 @@ jobs:
           sparse-checkout: |
             .github/workflows/validate-v063-last-stand-language.yml
             scripts/validate-v063-last-stand-language.mjs
+            scripts/validate-v063-player-rulebook.mjs
             scripts/build-clean-v063-publication-arbiter-web.mjs
             scripts/build-clean-v063-publication-core-web.mjs
             scripts/build-clean-v063-publication-release.mjs
             scripts/generate-v063-canonical-data-candidate.mjs
             scripts/publication-utils.mjs
             rulebook/app.js
+            rulebook/player-facing/chapter-11.md
             rules-assistant/rules-deterministic-v063.js
             rules-assistant/v063-last-stand-language.js
             rules-assistant/v063-public-corpus.js
@@ -72,3 +74,5 @@ jobs:
           node-version: 22
       - name: Validate PR #171 terminology contract
         run: node scripts/validate-v063-last-stand-language.mjs
+      - name: Validate player-facing Rulebook layer
+        run: node scripts/validate-v063-player-rulebook.mjs
