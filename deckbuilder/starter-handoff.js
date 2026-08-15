@@ -1,15 +1,20 @@
 (() => {
   const params = new URLSearchParams(window.location.search);
-  if (params.get("starter") !== "1") return;
-
   const factionId = String(params.get("faction") || "").trim();
   const leaderId = String(params.get("leader") || "").trim();
   const faction = FACTIONS.find(item => item.id === factionId && item.status === "ready");
-  const leader = faction?.leaders.find(item => item.id === leaderId);
+  const requestedLeader = faction?.leaders.find(item => item.id === leaderId);
+
+  if (faction) {
+    state.factionId = faction.id;
+    state.leaderId = requestedLeader?.id || faction.leaders[0]?.id || "";
+  }
+
+  if (params.get("starter") !== "1") return;
+
+  const leader = requestedLeader;
   if (!faction || !leader) return;
 
-  state.factionId = faction.id;
-  state.leaderId = leader.id;
   state.deckName = "";
   state.deck = {};
   state.territories = [];
