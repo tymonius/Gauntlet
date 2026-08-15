@@ -25,6 +25,8 @@ export const V063_LAST_STAND_REPLACEMENTS = Object.freeze([
   ["wins their Last Stand", "forces them to make a Last Stand and wins the resulting battle"],
   ["Forcing and Winning a Last Stand", "Forcing the Opponent to Make a Last Stand"],
   ["Winning a Last Stand", "Winning a Last Stand Battle"],
+  ["Control of that Territory is not required to initiate a Last Stand.", "Control of that Territory is not required before the opponent can be forced to make a Last Stand."],
+  ["The final Territory does not need to be controlled or already captured before that Last Stand can be initiated.", "The final Territory does not need to be controlled or already captured before the opponent can be forced to make a Last Stand."],
   ["initiates the opponent's Last Stand", "forces the opponent to make a Last Stand"],
   ["initiate the opponent's Last Stand", "force the opponent to make a Last Stand"],
   ["initiating the opponent's Last Stand", "forcing the opponent to make a Last Stand"],
@@ -89,6 +91,7 @@ export function normalizeV063LastStandValue(value) {
 const RETIRED_PATTERNS = Object.freeze([
   ['winning/losing a Last Stand instead of its battle', /\b(?:win|wins|winning|lose|loses|losing)\s+(?:(?:your|their|that|the)\s+)?(?:opponent(?:['’]s)?\s+)?Last Stand\b/gi],
   ['initiating a Last Stand instead of forcing the defender to make one', /\binitiat(?:e|es|ed|ing)\b[^\n.!?]{0,48}\bLast Stand\b/gi],
+  ['passively initiating a Last Stand instead of the defender making one', /\bLast Stand\b[^\n.!?]{0,48}\binitiat(?:e|es|ed|ing)\b/gi],
   ['forcing the defender into a Last Stand', /\bforc(?:e|es|ed|ing)\s+(?:the\s+)?opponent\s+into\s+a\s+Last Stand\b/gi],
   ['conducting the Last Stand as though it were the battle', /\bconduct\s+the\s+Last Stand\b/gi],
   ['defining Last Stand itself as a battle', /\*\*Last Stand:\*\*\s+A battle\b/gi],
