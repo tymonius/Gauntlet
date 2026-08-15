@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { normalizeV063LastStandText, normalizeV063LastStandValue } from '../rules-assistant/v063-last-stand-language.js';
 
 // Publication retry after #644 synchronized the approved Mystics Rite completion artwork regression.
 
@@ -16,6 +17,7 @@ export const CLEAN = 'artifacts/reconstruction/clean-v0.6.3';
 export const RULEBOOK_SOURCE = `${CLEAN}/rulebook/Gauntlet_v0.6.3_Rulebook.md`;
 export const CANONICAL_SOURCE = `${CLEAN}/downstream/canonical-data.json`;
 export const STARTERS_SOURCE = `${CLEAN}/downstream/starter-decks.json`;
+export const PLAYER_CHAPTER_11 = 'rulebook/player-facing/chapter-11.md';
 export const factionGuides = [
   ['Military', 'military', 'military', 'Gauntlet_v0.6.3_Military_Faction_Guide.md'],
   ['Diplomats', 'diplomats', 'diplomat', 'Gauntlet_v0.6.3_Diplomat_Faction_Guide.md'],
@@ -77,9 +79,34 @@ export function currentize(html, title, description, canonicalUrl) {
     .replace(/publication remains locked/g, 'publication verified from the certified authority');
   return withCanonical(out, canonicalUrl);
 }
+export function replacePlayerFacingChapter11(source, chapter11 = read(PLAYER_CHAPTER_11)) {
+  const startMarker = '# 11. Detailed Card and Timing Rules';
+  const endMarker = '# 12. Overlays and Other Shared Card Rules';
+  const start = source.indexOf(startMarker);
+  const end = source.indexOf(endMarker);
+  const replacement = String(chapter11).trim();
+  if (start < 0 || end < 0 || end <= start) throw new Error('Rulebook Chapter 11 boundaries could not be located.');
+  if (!replacement.startsWith(startMarker) || replacement.includes(`\n${endMarker}`)) {
+    throw new Error('Player-facing Chapter 11 override has invalid boundaries.');
+  }
+  return `${source.slice(0, start)}${replacement}\n\n${source.slice(end)}`;
+}
+export function applyPlayerFacingRulebookCorrections(source) {
+  const internalSanctionGuidance = 'A Sanction may state additional removal conditions. Cards therefore do not need to repeat identification of the refusing opponent or the default expiration after later acceptance.';
+  const playerSanctionRule = 'Additional printed removal conditions also apply unless the Sanction says otherwise.';
+  const count = source.split(internalSanctionGuidance).length - 1;
+  if (count !== 1) throw new Error(`Expected exactly one remaining internal Sanction guidance paragraph after Chapter 11 replacement; found ${count}.`);
+  return source.replace(internalSanctionGuidance, playerSanctionRule);
+}
 export function publicAuthorityNote(source) {
-  return source.replace('**Version 0.6.3 — Clean Reconstruction Candidate**', '**Version 0.6.3**')
+  const normalized = normalizeV063LastStandText(source)
+    .replace('**Version 0.6.3 — Clean Reconstruction Candidate**', '**Version 0.6.3**')
     .replace(/^> \*\*Authority candidate, not current\/public rules\.\*\*[^\n]*\n\n/m, '');
+  return applyPlayerFacingRulebookCorrections(replacePlayerFacingChapter11(normalized));
+}
+export function publicCanonicalData(source) {
+  const value = typeof source === 'string' ? JSON.parse(source) : source;
+  return normalizeV063LastStandValue(value);
 }
 export function publicFactionGuide(source) { return source.replace(/^> \*\*Clean v0\.6\.3[^\n]*\n\n/m, ''); }
 export function publicGeneratedReference(source, kind) {

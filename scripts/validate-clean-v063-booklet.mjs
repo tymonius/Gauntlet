@@ -15,8 +15,12 @@ assert.equal(manifest.target, 'gauntlet-v0.6.3-rulebook-booklet');
 assert.equal(manifest.schema_version, 2);
 assert.equal(manifest.authority_set_id, '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49');
 assert.equal(manifest.source.publication_transform_verified_exact, true);
+assert.equal(manifest.source.player_facing_editorial_layer_applied_after_verification, true);
 assert.equal(manifest.source.certified_rulebook.sha256, '7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643');
-assert.equal(manifest.source.published_rulebook.sha256, '62bf0bc51c69818d0cffbd3906af01bf13abaf4fea2dd59e8678f239a68e265a');
+assert.equal(manifest.source.published_rulebook.sha256, '9bbde08376daea4558581ef598a07b0d3a8fc21666809890d846114229bc44c2');
+assert.equal(manifest.source.player_facing_chapter_11.path, 'rulebook/player-facing/chapter-11.md');
+assert.equal(manifest.source.player_facing_chapter_11.sha256, hash(read(manifest.source.player_facing_chapter_11.path)));
+assert.match(manifest.source.player_facing_rulebook_sha256, /^[0-9a-f]{64}$/);
 
 assert.equal(manifest.design.pipeline, 'approved-rulebook-production');
 assert.equal(manifest.design.approved_design_pr, 357);
@@ -78,9 +82,13 @@ const sourceHtml = read(`${generatedDir}/Gauntlet_v0.6.3_Rulebook_Booklet_Source
 for (const marker of ['Gauntlet v0.6.3 Official Rulebook','Version 0.6.3','rulebook-design/proof-runtime.css','production.css','pagination-reserve.css','chapter-compaction.css','supplemental-reference.css','publication-corrections.css','approved-cover','approved-back-cover']) {
   assert(sourceHtml.includes(marker), `Approved-design booklet source HTML missing ${marker}.`);
 }
-assert(!sourceHtml.includes('Clean Reconstruction Candidate'));
-assert(!sourceHtml.includes('Authority candidate, not current/public rules'));
+for (const forbidden of ['Clean Reconstruction Candidate','Authority candidate, not current/public rules','Inherited interaction rules','Adopted v0.6.3 card procedures','v0.6.3 no longer uses','Cards therefore do not need','Do not print <code>from Reserve</code>']) {
+  assert(!sourceHtml.includes(forbidden), `Approved-design booklet still contains internal player-inappropriate language: ${forbidden}`);
+}
+assert(sourceHtml.includes('Simultaneous effects and choices'), 'Approved-design booklet is missing self-contained Chapter 11 timing rules.');
+assert(sourceHtml.includes('Assets, banking, and bound cards'), 'Approved-design booklet is missing integrated Chapter 11 Asset rules.');
+assert(sourceHtml.includes('Battles ending without a winner'), 'Approved-design booklet is missing integrated Chapter 11 no-winner rules.');
 assert(!sourceHtml.includes('<article class="rulebook">'), 'Booklet has regressed to the discarded generic inline renderer.');
 assert(!sourceHtml.includes('body { font-family: Georgia, "Times New Roman", serif; font-size: 9.25pt;'), 'Booklet has regressed to the discarded generic Georgia-body stylesheet.');
 
-console.log(`Validated approved-design v0.6.3 booklet: ${manifest.counts.logical_pages} logical pages, ${manifest.counts.physical_sheets} sheets, ${manifest.counts.padding_pages} padding page(s).`);
+console.log(`Validated approved-design v0.6.3 booklet with player-facing Chapter 11: ${manifest.counts.logical_pages} logical pages, ${manifest.counts.physical_sheets} sheets, ${manifest.counts.padding_pages} padding page(s).`);

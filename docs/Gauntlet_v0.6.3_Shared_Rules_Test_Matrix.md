@@ -113,9 +113,9 @@ These scenarios govern the v0.6.3 setup and Run the Gauntlet revisions. Later st
 **Given:** A player captures the Territory at the opponent's end.  
 **Then:** That player has run the Gauntlet and wins immediately.
 
-### V063-S19 — Last Stand route is running the Gauntlet
+### V063-S19 — Last Stand battle route is running the Gauntlet
 
-**Given:** A player wins the opponent's Last Stand.  
+**Given:** A player forces the opponent to make a Last Stand and wins the resulting battle.  
 **Then:** That player has run the Gauntlet and wins immediately.
 
 ### V063-S20 — Both are normal shared victory routes
@@ -195,14 +195,14 @@ These scenarios govern the v0.6.3 setup and Run the Gauntlet revisions. Later st
 ### V063-S33 — Prior control not required
 
 **Given:** The opponent is beyond the Gauntlet and the attacker is on the opponent-controlled final Territory.  
-**Then:** The attacker may initiate a Last Stand through a new legal Advance without first capturing or controlling that Territory.
+**Then:** The attacker may force the opponent to make a Last Stand through a new legal Advance without first capturing or controlling that Territory.
 
 ### V063-S34 — Separate movement sequence required
 
 **Given:** The attacker has just won the battle that forced the opponent beyond the Gauntlet.  
-**Then:** The movement sequence that created that battle is over. The attacker cannot use leftover movement from it to initiate the Last Stand.
+**Then:** The movement sequence that created that battle is over. The attacker cannot use leftover movement from it to force the opponent to make a Last Stand.
 
-### V063-S35 — Follow-up movement can initiate Last Stand
+### V063-S35 — Follow-up movement can force the opponent to make a Last Stand
 
 **Given:** After forcing the opponent beyond the Gauntlet, a rule or effect grants the attacker another movement sequence.  
 **When:** The attacker Advances beyond the opponent's end.  
@@ -211,7 +211,7 @@ These scenarios govern the v0.6.3 setup and Run the Gauntlet revisions. Later st
 ### V063-S36 — General payoff remains intact
 
 **Given:** A General Order or other legal follow-up movement effect grants another movement sequence after the opponent is forced beyond the Gauntlet.  
-**Then:** The General may use that sequence to initiate an immediate Last Stand.
+**Then:** The General may use that sequence to immediately force the opponent to make a Last Stand.
 
 ### V063-S37 — Merely standing on the final Territory is not a Last Stand
 
@@ -231,7 +231,7 @@ These scenarios govern the v0.6.3 setup and Run the Gauntlet revisions. Later st
 
 ### V063-S40 — Last Stand victory is immediate
 
-**Given:** The attacker wins the opponent's Last Stand.  
+**Given:** The attacker forces the opponent to make a Last Stand and wins the resulting battle.  
 **Then:** The attacker immediately runs the Gauntlet and wins without also needing to capture the final Territory.
 
 ### V063-S41 — Last Stand Defensive Edge remains inherited
@@ -241,7 +241,7 @@ These scenarios govern the v0.6.3 setup and Run the Gauntlet revisions. Later st
 
 ### V063-S42 — Last Stand loss uses inherited result
 
-**Given:** The attacker loses the opponent's Last Stand.  
+**Given:** The attacker loses the resulting Last Stand battle.  
 **Then:** Resolve the inherited v0.6.2 Last Stand loss, retreat, and destination rules. The v0.6.3 victory revision does not silently replace them.
 
 ---
@@ -266,7 +266,7 @@ No active v0.6.3 source may determine first player before both opening selection
 
 ### V063-S47 — No final-control prerequisite for Last Stand
 
-No active v0.6.3 source may require the attacker to control or capture the opponent's final Territory before a new legal Advance can initiate the Last Stand.
+No active v0.6.3 source may require the attacker to control or capture the opponent's final Territory before a new legal Advance can force the opponent to make a Last Stand.
 
 ### V063-S48 — No Last-Stand-only definition of running the Gauntlet
 

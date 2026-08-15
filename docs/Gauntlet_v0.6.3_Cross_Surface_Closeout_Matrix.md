@@ -24,7 +24,7 @@ This matrix governs the last comparison pass between the merged v0.6.3 source ca
 | CS-014 | Setup | Starting Position | Player Tokens begin on the Territories at their own ends. |
 | CS-015 | Setup | Placement semantics | Setup placement is neither movement nor entering a Territory. |
 | CS-016 | Victory | Final Territory | Capturing the opponent-end Territory wins immediately. |
-| CS-017 | Victory | Last Stand | Winning the opponent's Last Stand is the second normal Run-the-Gauntlet route. |
+| CS-017 | Victory | Last Stand | Forcing the opponent to make a Last Stand and winning the resulting battle is the second normal Run-the-Gauntlet route. |
 | CS-018 | Victory | Separate movement | Last Stand access requires a separate legal movement sequence rather than prior final-Territory capture/control. |
 | CS-019 | Terminology | Deck | Player-facing v0.6.3 uses `Deck` / `Draw Pile`, not `Playable Deck`. |
 | CS-020 | Terminology | Battle card roles | Dual-role battle text uses `Gambit/Tactic`; retired `Battle`/`Activate` headings do not return. |

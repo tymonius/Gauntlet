@@ -101,12 +101,14 @@
 
 /* Withdrawal and Retreat is a dense nested section within Battles. Target the
    chapter semantically rather than by page number so front-matter or rules edits
-   cannot invalidate the keep. The approved 9pt body size is unchanged. */
+   cannot invalidate the keep. The approved 9pt body size is unchanged. The
+   tighter rhythm also keeps the final Withdrawal clarification with the section
+   instead of stranding it alone on an otherwise empty continuation page. */
 .continuation-page[data-context-title="Battles"] .production-flow {
-  line-height: 1.24;
+  line-height: 1.20;
 }
 .continuation-page[data-context-title="Battles"] .production-flow p {
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 .continuation-page[data-context-title="Battles"] .production-flow h2 {
   margin: 9px 0 4px;

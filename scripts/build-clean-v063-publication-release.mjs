@@ -29,7 +29,7 @@ syncText('config/release-lifecycle.json', JSON.stringify(lifecycle, null, 2));
 let home = read('index.html')
   .replace('Current canonical playtest edition · v0.6.1', 'Current canonical playtest edition · v0.6.3')
   .replace('<div><dt>122</dt><dd>Playable cards</dd></div>', '<div><dt>128</dt><dd>Playable cards</dd></div>')
-  .replace('Capture the opponent\'s final territory, advance beyond the column, and win the final battle.', 'Run the Gauntlet by capturing the Territory at the opponent\'s end or by winning the opponent\'s Last Stand.')
+  .replace('Capture the opponent\'s final territory, advance beyond the column, and win the final battle.', 'Run the Gauntlet by capturing the Territory at the opponent\'s end or by forcing the opponent to make a Last Stand and winning the resulting battle.')
   .replace('from the canonical v0.6.1 sources.', 'from the canonical v0.6.3 sources.')
   .replace('complete v0.6.1 rules', 'complete v0.6.3 rules')
   .replace('<h3>v0.6.1 Deckbuilder</h3>', '<h3>v0.6.3 Deckbuilder</h3>')

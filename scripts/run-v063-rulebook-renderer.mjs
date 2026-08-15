@@ -50,6 +50,80 @@ replaceOnce(
   if (!paginationReady) throw new Error(mode + ' Rulebook pagination did not complete within 120 seconds.');`,
 );
 replaceOnce(
+  'reader spread review capture',
+  `async function renderReaderSpreads(page, count) {
+  await page.evaluate(() => {
+    document.querySelector('#reader-spread-review')?.remove();
+    const review = document.createElement('div');
+    review.id = 'reader-spread-review';
+    review.style.cssText = 'position:absolute;left:-20000px;top:0;width:11in;';
+    document.body.append(review);
+  });
+
+  const pairs = [];
+  pairs.push([1]);
+  for (let left = 2; left < count; left += 2) pairs.push([left, left + 1]);
+  pairs.push([count]);
+
+  for (const [spreadIndex, pair] of pairs.entries()) {
+    await page.evaluate(pageNumbers => {
+      const review = document.querySelector('#reader-spread-review');
+      review.replaceChildren();
+      const sheet = document.createElement('section');
+      sheet.className = pageNumbers.length === 1 ? 'reader-cover' : 'spread-sheet';
+      const sourcePages = [...document.querySelectorAll('#reader-root > .page')];
+      for (const pageNumber of pageNumbers) sheet.append(sourcePages[pageNumber - 1].cloneNode(true));
+      review.append(sheet);
+    }, pair);
+    await page.locator('#reader-spread-review > *').screenshot({
+      path: join(OUT, 'reader-spreads', \`spread-\${pad(spreadIndex + 1)}-pages-\${pair.join('-')}.png\`),
+    });
+  }
+  await page.evaluate(() => document.querySelector('#reader-spread-review')?.remove());
+}`,
+  `async function renderReaderSpreads(page, count) {
+  await page.evaluate(() => {
+    document.querySelector('#reader-spread-review')?.remove();
+    const readerRoot = document.querySelector('#reader-root');
+    readerRoot.dataset.preSpreadReviewVisibility = readerRoot.style.visibility || '';
+    readerRoot.style.visibility = 'hidden';
+    const review = document.createElement('div');
+    review.id = 'reader-spread-review';
+    review.style.cssText = 'position:fixed;left:0;top:0;width:11in;height:8.5in;z-index:2147483647;background:#d4d1ca;overflow:hidden;';
+    document.body.append(review);
+  });
+
+  const pairs = [];
+  pairs.push([1]);
+  for (let left = 2; left < count; left += 2) pairs.push([left, left + 1]);
+  pairs.push([count]);
+
+  for (const [spreadIndex, pair] of pairs.entries()) {
+    await page.evaluate((payload) => {
+      const { pageNumbers, finalPage } = payload;
+      const review = document.querySelector('#reader-spread-review');
+      review.replaceChildren();
+      const sheet = document.createElement('section');
+      sheet.className = pageNumbers.length === 1 ? 'reader-cover' : 'spread-sheet';
+      sheet.style.position = 'relative';
+      const sourcePages = [...document.querySelectorAll('#reader-root > .page')];
+      for (const pageNumber of pageNumbers) sheet.append(sourcePages[pageNumber - 1].cloneNode(true));
+      if (pageNumbers.length === 1 && pageNumbers[0] === finalPage) sheet.classList.add('reader-back-cover');
+      review.append(sheet);
+    }, { pageNumbers: pair, finalPage: count });
+    await page.locator('#reader-spread-review > *').screenshot({
+      path: join(OUT, 'reader-spreads', \`spread-\${pad(spreadIndex + 1)}-pages-\${pair.join('-')}.png\`),
+    });
+  }
+  await page.evaluate(() => {
+    document.querySelector('#reader-spread-review')?.remove();
+    const readerRoot = document.querySelector('#reader-root');
+    readerRoot.style.visibility = readerRoot.dataset.preSpreadReviewVisibility || '';
+    delete readerRoot.dataset.preSpreadReviewVisibility;
+  });
+}`,
+);
+replaceOnce(
   'reading-font probe',
   "      bodyFamily: getComputedStyle(document.querySelector('.production-flow p, .body-copy')).fontFamily,",
   "      bodyFamily: getComputedStyle(document.querySelector('.production-flow p:not(.flavor-overline), .body-copy')).fontFamily,",

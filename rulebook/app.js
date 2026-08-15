@@ -1,7 +1,9 @@
 import { renderMarkdown } from './markdown.js';
+import { normalizeV063LastStandText } from '../rules-assistant/v063-last-stand-language.js';
 
 const SOURCE_URL = '/artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md';
 const SOURCE_SHA256 = '7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643';
+const CHAPTER_11_URL = './player-facing/chapter-11.md';
 const PUBLISHED_SOURCE_URL = '../releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md';
 const PDF_URL = '../releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.pdf';
 const content = document.querySelector('[data-rulebook-content]');
@@ -271,22 +273,47 @@ async function sha256(bytes) {
   return [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, '0')).join('');
 }
 
-function publicRulebookSource(source) {
-  return source
+function replacePlayerFacingChapter11(source, chapter11) {
+  const startMarker = '# 11. Detailed Card and Timing Rules';
+  const endMarker = '# 12. Overlays and Other Shared Card Rules';
+  const start = source.indexOf(startMarker);
+  const end = source.indexOf(endMarker);
+  const replacement = chapter11.trim();
+
+  if (start < 0 || end < 0 || end <= start) {
+    throw new Error('Rulebook Chapter 11 boundaries could not be located.');
+  }
+  if (!replacement.startsWith(startMarker) || replacement.includes(`\n${endMarker}`)) {
+    throw new Error('Player-facing Chapter 11 override has invalid boundaries.');
+  }
+
+  return `${source.slice(0, start)}${replacement}\n\n${source.slice(end)}`;
+}
+
+function publicRulebookSource(source, chapter11) {
+  const normalized = normalizeV063LastStandText(source)
     .replace('**Version 0.6.3 — Clean Reconstruction Candidate**', '**Version 0.6.3**')
     .replace(/^> \*\*Authority candidate, not current\/public rules\.\*\*[^\n]*\n\n/m, '');
+  return replacePlayerFacingChapter11(normalized, chapter11);
 }
 
 async function loadRulebook() {
   initializeControls();
 
   try {
-    const response = await fetch(SOURCE_URL, { cache: 'no-store' });
+    const [response, chapter11Response] = await Promise.all([
+      fetch(SOURCE_URL, { cache: 'no-store' }),
+      fetch(CHAPTER_11_URL, { cache: 'no-store' }),
+    ]);
     if (!response.ok) throw new Error(`Rulebook source returned ${response.status}`);
+    if (!chapter11Response.ok) throw new Error(`Player-facing Chapter 11 returned ${chapter11Response.status}`);
+
     const bytes = await response.arrayBuffer();
     const actualHash = await sha256(bytes);
     if (actualHash !== SOURCE_SHA256) throw new Error(`Rulebook source hash mismatch: ${actualHash}`);
-    const markdown = publicRulebookSource(new TextDecoder().decode(bytes));
+
+    const chapter11 = await chapter11Response.text();
+    const markdown = publicRulebookSource(new TextDecoder().decode(bytes), chapter11);
     const rendered = renderMarkdown(markdown);
 
     content.innerHTML = rendered.html;

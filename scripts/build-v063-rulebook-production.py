@@ -10,6 +10,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 PRODUCTION = ROOT / "rulebook-production"
 CURRENT_RULEBOOK = ROOT / "releases" / "v0.6.3-reconstructed" / "Gauntlet_v0.6.3_Rulebook.md"
+PLAYER_RULEBOOK_INPUT = PRODUCTION / ".v063-player-facing-input.md"
+PLAYER_CHAPTER_11 = ROOT / "rulebook" / "player-facing" / "chapter-11.md"
 PRODUCTION_SOURCE = PRODUCTION / ".v063-production-source.md"
 HTML = PRODUCTION / "full-rulebook.html"
 RUNTIME_PAGINATOR = PRODUCTION / ".paginate_rulebook_runtime.mjs"
@@ -29,6 +31,30 @@ def replace_required(source: str, old: str, new: str, label: str, expected: int 
     if count != expected:
         raise RuntimeError(f"Expected exactly {expected} {label} marker(s); found {count}.")
     return source.replace(old, new)
+
+
+def assert_reviewed_chapter_11(source: str, label: str) -> None:
+    """Require the production input to contain the exact reviewed player-facing Chapter 11."""
+
+    start_marker = "# 11. Detailed Card and Timing Rules"
+    end_marker = "# 12. Overlays and Other Shared Card Rules"
+    start = source.find(start_marker)
+    end = source.find(end_marker, start + len(start_marker))
+    if start < 0 or end <= start:
+        raise RuntimeError(f"{label} is missing the Chapter 11 publication boundary.")
+    expected = PLAYER_CHAPTER_11.read_text(encoding="utf-8").replace("\r\n", "\n").strip()
+    actual = source[start:end].replace("\r\n", "\n").strip()
+    if actual != expected:
+        raise RuntimeError(f"{label} does not contain the exact reviewed player-facing Chapter 11.")
+    for forbidden in (
+        "## Inherited interaction rules",
+        "## Adopted v0.6.3 card procedures",
+        "v0.6.3 no longer uses",
+        "Cards therefore do not need",
+        "Do not print `from Reserve`",
+    ):
+        if forbidden in actual:
+            raise RuntimeError(f"{label} Chapter 11 still contains internal language: {forbidden}")
 
 
 def build_presentation_source(source: str) -> str:
@@ -299,8 +325,13 @@ def adapt_signature_padding(paginator: str) -> str:
 
 
 def main() -> None:
-    current_source = CURRENT_RULEBOOK.read_text(encoding="utf-8")
+    source_path = PLAYER_RULEBOOK_INPUT if PLAYER_RULEBOOK_INPUT.is_file() else CURRENT_RULEBOOK
+    current_source = source_path.read_text(encoding="utf-8")
+    if source_path == PLAYER_RULEBOOK_INPUT:
+        assert_reviewed_chapter_11(current_source, "Transient player-facing Rulebook input")
     production_source = build_presentation_source(current_source)
+    if source_path == PLAYER_RULEBOOK_INPUT:
+        assert_reviewed_chapter_11(production_source, "Approved-production Rulebook source")
     PRODUCTION_SOURCE.write_text(production_source, encoding="utf-8")
     build_rulebook.RULEBOOK = PRODUCTION_SOURCE
     build_complete_rulebook.main()
@@ -318,7 +349,7 @@ def main() -> None:
     paginator = adapt_hero_plate_pool(paginator)
     paginator = adapt_signature_padding(paginator)
     RUNTIME_PAGINATOR.write_text(paginator, encoding="utf-8")
-    print("adapted approved Rulebook production to v0.6.3 with wording-neutral presentation transforms, minimum-count hierarchical filler planning, and unique hero filler art")
+    print(f"adapted approved Rulebook production to v0.6.3 from {source_path.relative_to(ROOT)} with wording-neutral presentation transforms, minimum-count hierarchical filler planning, and unique hero filler art")
 
 
 if __name__ == "__main__":
