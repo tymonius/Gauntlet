@@ -54,10 +54,17 @@ const publishedRulebook = read(publishedRulebookPath);
 assert.equal(hash(publishedRulebook), publishedRulebookSha256, 'Published v0.6.3 Rulebook hash drifted.');
 assert.equal(derivedPublished, publishedRulebook, 'Published Rulebook is no longer the exact Last Stand publication transform of certified clean authority.');
 assert(fs.existsSync(path.join(root, playerChapter11Path)), `Missing reviewed player-facing Chapter 11 source: ${playerChapter11Path}`);
+const playerChapter11 = read(playerChapter11Path).trim();
 const playerRulebook = publicAuthorityNote(cleanRulebook);
-assert(playerRulebook.includes('# 11. Detailed Card and Timing Rules'), 'Player-facing Rulebook lost Chapter 11.');
+const chapter11StartMarker = '# 11. Detailed Card and Timing Rules';
+const chapter12StartMarker = '# 12. Overlays and Other Shared Card Rules';
+const chapter11Start = playerRulebook.indexOf(chapter11StartMarker);
+const chapter12Start = playerRulebook.indexOf(chapter12StartMarker, chapter11Start + chapter11StartMarker.length);
+assert(chapter11Start >= 0 && chapter12Start > chapter11Start, 'Player-facing Rulebook lost the Chapter 11 publication boundary.');
+const renderedChapter11 = playerRulebook.slice(chapter11Start, chapter12Start).trim();
+assert.equal(renderedChapter11, playerChapter11, 'Rendered Rulebook Chapter 11 is not the exact reviewed player-facing Chapter 11 source.');
 for (const forbidden of ['## Inherited interaction rules', '## Adopted v0.6.3 card procedures', 'v0.6.3 no longer uses', 'Cards therefore do not need', 'Do not print `from Reserve`']) {
-  assert(!playerRulebook.includes(forbidden), `Player-facing Rulebook still contains internal Chapter 11 language: ${forbidden}`);
+  assert(!renderedChapter11.includes(forbidden), `Player-facing Rulebook Chapter 11 still contains internal language: ${forbidden}`);
 }
 assert(fs.existsSync(path.join(root, coverAsset)), `Missing booklet artwork: ${coverAsset}`);
 
