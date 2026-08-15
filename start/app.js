@@ -176,10 +176,18 @@
 
   async function loadStarterDecks() {
     try {
-      const response = await fetch("../deckbuilder/starter-decks.json", { cache: "no-store" });
-      if (!response.ok) throw new Error(`Starter deck library returned ${response.status}.`);
-      const data = await response.json();
-      state.starterDecks = Array.isArray(data.decks) ? data.decks : [];
+      const [deckResponse, tipResponse] = await Promise.all([
+        fetch("../deckbuilder/starter-decks.json", { cache: "no-store" }),
+        fetch("../deckbuilder/starter-first-game-tips.json", { cache: "no-store" })
+      ]);
+      if (!deckResponse.ok) throw new Error(`Starter deck library returned ${deckResponse.status}.`);
+      if (!tipResponse.ok) throw new Error(`Starter tip library returned ${tipResponse.status}.`);
+      const [data, tipData] = await Promise.all([deckResponse.json(), tipResponse.json()]);
+      const tips = tipData?.tips && typeof tipData.tips === "object" ? tipData.tips : {};
+      state.starterDecks = (Array.isArray(data.decks) ? data.decks : []).map(deck => ({
+        ...deck,
+        firstGameTip: deck.firstGameTip || tips[deck.id] || ""
+      }));
       state.starterLoadError = null;
     } catch (error) {
       console.error(error);

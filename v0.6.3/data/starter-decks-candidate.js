@@ -8,7 +8,7 @@ const territoryOrderGuidance = Object.freeze({
   informedByInitiative: false,
 });
 
-const deck = (factionId, leaderId, name, recommendedFirstLeader, summary, signatureCards, territories, cards) => ({
+const deck = (factionId, leaderId, name, recommendedFirstLeader, summary, firstGameTip, signatureCards, territories, cards) => ({
   id: `${factionId}-${leaderId}-${slug(name)}`,
   factionId,
   leaderId,
@@ -16,6 +16,7 @@ const deck = (factionId, leaderId, name, recommendedFirstLeader, summary, signat
   recommendedFirstLeader,
   summary,
   strategy: summary,
+  firstGameTip,
   signatureCards,
   territories,
   cards: cards.map(([cardName, quantity]) => ({ name: cardName, quantity })),
@@ -48,6 +49,7 @@ export const V063_STARTER_CATALOG = Object.freeze({
   decks: [
     deck('military', 'general', 'Forward Doctrine', true,
       'Offensive tempo, repeated attacks, Command conversion, and immediate Front Line progress.',
+      'Use Forced March and Advance Guard to choose the battles that matter. Save Command for Rally when a battle is close or Rout when a second attack can turn one win into immediate Front Line progress.',
       ['Shock and Awe', 'Invasion', 'Give Chase', 'Battlefield Promotion'],
       ['Supply Depot', "King's Road", 'Arena: No Quarter'], [
         ['Advance Guard', 2], ['Assimilation', 1], ['Battlefield Promotion', 1], ['Brothers in Arms', 1],
@@ -57,6 +59,7 @@ export const V063_STARTER_CATALOG = Object.freeze({
       ]),
     deck('military', 'commandant', 'Holdfast', false,
       'Make controlled ground brutally difficult to take, convert defensive wins into retreat distance and counterattack pressure, and create prepared retreat traps.',
+      'Do not rush every advance. Make the opponent attack prepared ground, then combine Entrench or Repel with Landslide and Court Martial retreat pressure so one defensive win opens a counterattack.',
       ['Landslide', 'Court Martial', 'Hold the Line', 'Resistance'],
       ['Garrison', 'Training Grounds', 'High Ground'], [
         ['Countercharge', 1], ['Encampment', 2], ['Field Command', 1], ['Hold the Line', 1], ['Rearguard', 2],
@@ -67,6 +70,7 @@ export const V063_STARTER_CATALOG = Object.freeze({
       ]),
     deck('diplomats', 'ambassador', 'Open Channels', true,
       'Make acceptance attractive, ratify five different Proposals quickly, draw from Good Offices, and retain enough combat leverage that refusal is dangerous.',
+      'Lead with low-Stake, easy-to-accept Proposals and keep varying the Proposal you offer. Accepted Terms advance the five-Proposal Peace Treaty and your card flow; make refusals costly with battle pressure and Sanctions.',
       ['Trade Concessions', 'Good Faith', 'Détente', 'Sanctions: Censure'],
       ['Supply Depot', 'Command Tent', 'Arena: Spoils of War'], [
         ['Clemency', 3], ['Contraband', 1], ['Counterintelligence', 1], ['Demilitarized Zone', 1], ['Diplomatic Latitude', 1],
@@ -77,6 +81,7 @@ export const V063_STARTER_CATALOG = Object.freeze({
       ]),
     deck('diplomats', 'senator', 'Procedure Endures', false,
       'Risk substantial Stakes, preserve Influence through Political Capital and Safe Conduct, and make refusal create lasting institutional costs.',
+      'Risk larger Stakes when the payoff matters, but keep cards available for Political Capital and Safe Conduct. Establish Sanctions early enough that repeated refusals become progressively worse for the opponent.',
       ['Sanctions: Blockade', 'Sanctions: Embargo', 'Safe Conduct', 'Neutral Observers'],
       ['Garrison', 'Field Hospital', 'Fortified Pass'], [
         ['Clemency', 2], ['Counterintelligence', 2], ['Decoys', 1], ['Diplomatic Latitude', 1], ['Détente', 1],
@@ -86,6 +91,7 @@ export const V063_STARTER_CATALOG = Object.freeze({
       ]),
     deck('financiers', 'banker', 'Sound Investment', false,
       'Build Treasury value, exploit Line of Credit, accelerate Deed purchases, and use Corner the Market to threaten Controlling Interest before ordinary Capital pacing would allow it.',
+      'Put cards you can afford to delay into Treasury, then use Line of Credit and Liquidation to buy Deeds ahead of normal Capital pacing. Preserve enough Capital to protect the engine; Corner the Market is your closing threat.',
       ['Corner the Market', 'Compound Interest', 'Margin Loan', 'Property Dues'],
       ['Supply Depot', 'Ruined Storehouse', 'Arena: Spoils of War'], [
         ['Capital Gains', 2], ['Compound Interest', 1], ['Corner the Market', 1], ['Counterintelligence', 1], ['Divestment', 1],
@@ -95,6 +101,7 @@ export const V063_STARTER_CATALOG = Object.freeze({
       ]),
     deck('financiers', 'executive', 'Hostile Expansion', true,
       'Win on enemy ground, immediately convert Occupation into Deed/control swings, and use finance cards as battle-linked acquisition tools rather than as a passive economy engine.',
+      'Plan turns so movement, battle, and acquisition happen together. Keep enough Capital or collateral for Hostile Takeover after a successful attack, then use the new Deed and control swing to set up Corner the Market.',
       ['Corner the Market', 'Leveraged Buyout', 'Foreclosure', 'Speculation'],
       ['Supply Depot', "King's Road", 'Arena: No Quarter'], [
         ['Advance Guard', 2], ['Capital Gains', 2], ['Compound Interest', 1], ['Corner the Market', 1], ['Counterintelligence', 1],
@@ -104,6 +111,7 @@ export const V063_STARTER_CATALOG = Object.freeze({
       ]),
     deck('intelligence', 'ranger', 'Field Operations', true,
       'Use Fieldcraft and card effects to operate asymmetrically on hostile terrain, preserve Intel for Surveillance/Interference, and complete field-oriented Missions while dismantling enemy commitments.',
+      'Use Pathfinders before spending Intel just to bypass hostile Territory text. Save Fieldcraft, Surveillance, and Interference for effects or hidden commitments that would actually stop a Mission or decisive attack.',
       ['Pathfinders', 'Treason', 'Spies', 'Subversion'],
       ['Watchtower', 'Difficult Terrain', 'Poisonous Gas'], [
         ['Advance Guard', 2], ['Assassins', 1], ['Contraband', 1], ['Counterintelligence', 1], ['Disinformation', 3],
@@ -113,6 +121,7 @@ export const V063_STARTER_CATALOG = Object.freeze({
       ]),
     deck('intelligence', 'spymaster', 'Mission Network', false,
       'Keep a Mission active, complete Missions in sequence through Mission Control, recover completed Mission cards, and use Sleeper Network for a high-ceiling action burst.',
+      'Keep a second eligible Mission in Hand before completing the first so Mission Control keeps the chain moving. Use Contraband and Ruined Storehouse to recover completed Missions, and save Sleeper Network for a turn with several useful Actions lined up.',
       ['Sleeper Network', 'Contraband', 'Disinformation', 'Extraordinary Rendition'],
       ['Supply Depot', 'Ruined Storehouse', 'Field Hospital'], [
         ['Assassins', 1], ['Contraband', 1], ['Deep Cover', 1], ['Disinformation', 3], ['Exfiltration', 2],
@@ -122,6 +131,7 @@ export const V063_STARTER_CATALOG = Object.freeze({
       ]),
     deck('mystics', 'alchemist', 'First Principles', false,
       'Deliberately move cards from Hand to Graveyard, turn the first sacrifice each turn into replacement card flow, and then reuse the Graveyard as a second tactical hand.',
+      'Plan your first Hand-to-Graveyard sacrifice each turn so it replaces itself, then treat the Graveyard as a second hand with Rend the Veil, Necromancy, and Witchcraft. Do not sacrifice key pieces before you have a way to reuse them.',
       ['Necromancy', 'Black Covenant', 'Rend the Veil', 'Witchcraft'],
       ['Supply Depot', 'Old Battlefield', 'Field Hospital'], [
         ['Accursed Wager', 1], ['Arcane Knowledge', 1], ['Black Covenant', 1], ['Circle of Bones', 1], ['Counterintelligence', 1],
@@ -131,6 +141,7 @@ export const V063_STARTER_CATALOG = Object.freeze({
       ]),
     deck('mystics', 'spirit-walker', 'Unbroken Circle', true,
       'Begin and preserve Rites, protect Ritual progress through defensive wins and high-value Arcane sacrifice, then survive long enough to initiate the required winning battle.',
+      'Begin a Rite only when you can protect its requirement. Keep a valuable Arcane card available for a protective sacrifice, use Nature\'s Altar to shorten vulnerable setup, and prioritize preserving Ritual progress over unnecessary advances.',
       ["Nature's Altar", 'Circle of Bones', 'Grave Ward', 'Spirit Hollow'],
       ['Garrison', 'Field Hospital', 'High Ground'], [
         ['Circle of Bones', 1], ['Counterintelligence', 1], ['Dark Omens', 3], ['Entrenchment', 1], ["Fate's Toll", 2],
@@ -140,6 +151,7 @@ export const V063_STARTER_CATALOG = Object.freeze({
       ]),
     deck('inquisition', 'grand-inquisitor', 'Final Judgment', true,
       'Win battles, turn those wins into discounted Final Judgment Purges, and accelerate opposing-card depletion toward Purification.',
+      'Build Conviction before committing to a major Purge. After a battle win, use Final Judgment\'s discounted Purge immediately; Attrition can make that same win dump the opponent\'s Reserve into the Graveyard.',
       ['Attrition', 'Hellfire', 'Heresy', 'Martyrdom'],
       ['Supply Depot', 'Toll Bridge', 'Arena: No Quarter'], [
         ['Accusation', 3], ['Act of Faith', 1], ['Attrition', 1], ['Burning at the Stake', 1], ['Counterintelligence', 1],
@@ -149,6 +161,7 @@ export const V063_STARTER_CATALOG = Object.freeze({
       ]),
     deck('inquisition', 'witch-hunter', 'Relentless Pursuit', false,
       'Make attacks fail, convert the failed attack into Relentless Pursuit, and turn the opponent’s lost turn into immediate positional pressure.',
+      'Keep 2 Conviction available when the opponent attacks. Use Confession, Court Martial, or Contingency Plan to force the defensive win, then turn their ended turn into immediate forward pressure with Relentless Pursuit.',
       ['Confession', 'Court Martial', 'No Martyrs', 'Scorched Earth'],
       ['Garrison', 'Exposed Flank', 'High Ground'], [
         ['Accusation', 3], ['Confession', 3], ['Contingency Plan', 1], ['Counterintelligence', 1], ['Court Martial', 1], ['Divine Mercy', 2],
