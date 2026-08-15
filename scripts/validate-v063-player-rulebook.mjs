@@ -72,6 +72,9 @@ const applyIndex = app.indexOf('const markdown = publicRulebookSource');
 if (verifyIndex < 0 || applyIndex < 0 || verifyIndex >= applyIndex) {
   fail('Browser Rulebook must verify the certified source hash before applying the player-facing Rulebook layer.');
 }
+if (!read('scripts/publication-utils.mjs').includes('replacePlayerFacingChapter11(normalized)')) {
+  fail('Semantic Rulebook publication does not apply the reviewed Chapter 11 replacement.');
+}
 
 if (failures) {
   console.error(`Player-facing v0.6.3 Rulebook validation failed with ${failures} issue(s).`);
