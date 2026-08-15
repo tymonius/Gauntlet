@@ -17,6 +17,7 @@ export const CLEAN = 'artifacts/reconstruction/clean-v0.6.3';
 export const RULEBOOK_SOURCE = `${CLEAN}/rulebook/Gauntlet_v0.6.3_Rulebook.md`;
 export const CANONICAL_SOURCE = `${CLEAN}/downstream/canonical-data.json`;
 export const STARTERS_SOURCE = `${CLEAN}/downstream/starter-decks.json`;
+export const PLAYER_CHAPTER_11 = 'rulebook/player-facing/chapter-11.md';
 export const factionGuides = [
   ['Military', 'military', 'military', 'Gauntlet_v0.6.3_Military_Faction_Guide.md'],
   ['Diplomats', 'diplomats', 'diplomat', 'Gauntlet_v0.6.3_Diplomat_Faction_Guide.md'],
@@ -78,10 +79,23 @@ export function currentize(html, title, description, canonicalUrl) {
     .replace(/publication remains locked/g, 'publication verified from the certified authority');
   return withCanonical(out, canonicalUrl);
 }
+export function replacePlayerFacingChapter11(source, chapter11 = read(PLAYER_CHAPTER_11)) {
+  const startMarker = '# 11. Detailed Card and Timing Rules';
+  const endMarker = '# 12. Overlays and Other Shared Card Rules';
+  const start = source.indexOf(startMarker);
+  const end = source.indexOf(endMarker);
+  const replacement = String(chapter11).trim();
+  if (start < 0 || end < 0 || end <= start) throw new Error('Rulebook Chapter 11 boundaries could not be located.');
+  if (!replacement.startsWith(startMarker) || replacement.includes(`\n${endMarker}`)) {
+    throw new Error('Player-facing Chapter 11 override has invalid boundaries.');
+  }
+  return `${source.slice(0, start)}${replacement}\n\n${source.slice(end)}`;
+}
 export function publicAuthorityNote(source) {
-  return normalizeV063LastStandText(source)
+  const normalized = normalizeV063LastStandText(source)
     .replace('**Version 0.6.3 — Clean Reconstruction Candidate**', '**Version 0.6.3**')
     .replace(/^> \*\*Authority candidate, not current\/public rules\.\*\*[^\n]*\n\n/m, '');
+  return replacePlayerFacingChapter11(normalized);
 }
 export function publicCanonicalData(source) {
   const value = typeof source === 'string' ? JSON.parse(source) : source;
