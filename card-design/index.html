@@ -15,7 +15,7 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
   <meta name="robots" content="noindex,nofollow" />
-  <meta name="description" content="Internal Gauntlet v0.6.3 visual review catalog for every playable card, Leader, Territory, Diplomat Proposal / Treaty Article, and Mystics Rite." />
+  <meta name="description" content="Internal Gauntlet v0.6.3 visual review catalog for the universal card back, every playable card, Leader, Territory, Diplomat Proposal / Treaty Article, and Mystics Rite." />
   <title>Gauntlet Card Review Catalog</title>
   <link rel="preconnect" href="https://use.typekit.net" />
   <link rel="preconnect" href="https://p.typekit.net" crossorigin />
@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="../developer-tools.css?v=20260815-2" />
   <link rel="stylesheet" href="card-design.css" />
   <link rel="stylesheet" href="card-design-refinement.css" />
+  <link rel="stylesheet" href="card-back.css" />
   <link rel="stylesheet" href="faction-specimens.css" />
   <link rel="stylesheet" href="leader-card.css" />
   <link rel="stylesheet" href="proposal-card.css" />
@@ -41,6 +42,7 @@
   <script src="card-review.js" defer></script>
   <script type="module" src="proposal-card.js"></script>
   <script type="module" src="rite-card.js"></script>
+  <script type="module" src="card-back.js"></script>
   <script src="card-design.js" defer></script>
 </head>
 <body class="faction-specimen-page developer-catalog-page">
@@ -67,7 +69,7 @@
       <div class="catalog-hero-copy">
         <p class="eyebrow">Canonical v0.6.3 · developer review surface</p>
         <h1 id="catalog-title">Card review <span>catalog.</span></h1>
-        <p class="intro-copy">Inspect the complete production card system in one place: playable cards, Leaders, Diplomat Proposals and Treaty Articles, Mystics Rites, Territories, and Arenas. Production renderers and geometry stay intact while this surrounding workspace provides the review and inspection tools.</p>
+        <p class="intro-copy">Inspect the complete production card system in one place: the universal card back, playable cards, Leaders, Diplomat Proposals and Treaty Articles, Mystics Rites, Territories, and Arenas. Production renderers and geometry stay intact while this surrounding workspace provides the review and inspection tools.</p>
       </div>
       <aside class="catalog-overview" aria-label="Catalog snapshot">
         <p class="catalog-overview-label">Catalog snapshot</p>
@@ -85,6 +87,7 @@
       <div class="catalog-jumpbar-inner">
         <span class="catalog-jump-label">Catalog</span>
         <nav class="catalog-primary-nav" aria-label="Catalog sections">
+          <a href="#card-back">Back</a>
           <a href="#playable-cards">Playable</a>
           <a href="#leader-cards">Leaders</a>
           <a href="#proposal-cards">Proposals</a>
@@ -104,6 +107,21 @@
         </nav>
       </div>
     </div>
+
+    <section id="card-back" class="card-section card-back-review-section" aria-labelledby="card-back-title">
+      <div class="section-shell card-section-heading screen-only">
+        <div>
+          <p class="section-label">Universal production back</p>
+          <h2 id="card-back-title">Playable card back</h2>
+        </div>
+        <p>One faction-neutral back for the playable-card deck: dark charcoal, a low-contrast repeat of all six faction symbols, the approved Gauntlet wordmark in white, and a single pale-gold line inset three-eighths of an inch from the edge.</p>
+      </div>
+      <div class="section-shell card-back-review-shell">
+        <figure class="card-back-specimen">
+          <div data-gauntlet-card-back></div>
+        </figure>
+      </div>
+    </section>
 
     <!-- The legacy class intentionally suppresses card-design.js's old twelve-card
          long-card insertion. This section supersedes it with the full catalog. -->
