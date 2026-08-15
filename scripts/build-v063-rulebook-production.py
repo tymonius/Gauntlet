@@ -245,18 +245,31 @@ def adapt_hero_plate_pool(paginator: str) -> str:
 
 
 def adapt_leader_spreads(paginator: str) -> str:
-    """Insert a hero plate when necessary so each faction's Leaders face one another."""
+    """Correct Leader-page parity only at natural faction boundaries."""
 
-    old = """  if (before.length) paginateTokens(before, context);
+    old_opener = """  buildFactionOpener(section, number, faction, howHeading, howTokens, completeHeading, tableToken);"""
+    new_opener = """  const factionOpenerPage = buildFactionOpener(section, number, faction, howHeading, howTokens, completeHeading, tableToken);"""
+    paginator = replace_required(paginator, old_opener, new_opener, "faction opener page capture")
+
+    old_leaders = """  if (before.length) paginateTokens(before, context);
   segments.forEach(segment => buildLeaderPage(faction, segment));"""
-    new = """  if (before.length) paginateTokens(before, context);
-  if ((pages.length + 1) % 2 !== 0) intentionalBlank(`${faction} Leader spread`);
+    new_leaders = """  if (before.length) paginateTokens(before, context);
+  if ((pages.length + 1) % 2 !== 0) {
+    const openerIndex = pages.indexOf(factionOpenerPage);
+    if (openerIndex < 0) throw new Error(`Cannot place ${faction} parity plate before its faction opener.`);
+    const plate = intentionalBlank(`${faction} Leader spread`);
+    const appended = pages.pop();
+    if (appended !== plate) throw new Error('Faction parity plate insertion lost page order.');
+    plate.dataset.heroPlateFor = `${faction} faction boundary`;
+    pages.splice(openerIndex, 0, plate);
+    factionOpenerPage.before(plate);
+  }
   segments.forEach(segment => buildLeaderPage(faction, segment));"""
-    return replace_required(paginator, old, new, "Leader-pair pagination block")
+    return replace_required(paginator, old_leaders, new_leaders, "Leader-pair pagination block")
 
 
 def adapt_signature_padding(paginator: str) -> str:
-    """Place any residual signature padding after all faction Leader spreads."""
+    """Place residual signature padding only at natural Part/reference boundaries."""
 
     old = "    while ((pages.length + 2) % 4 !== 0) intentionalBlank('Booklet pagination');"
     new = r'''    const paddingNeeded = (4 - ((pages.length + 2) % 4)) % 4;
@@ -276,6 +289,7 @@ def adapt_signature_padding(paginator: str) -> str:
       if (appended !== plate) throw new Error('Hero plate insertion lost page order.');
       plate.dataset.heroPlateFor = boundary;
       pages.splice(boundaryIndex, 0, plate);
+      boundaryPage.before(plate);
     }'''
     return replace_required(paginator, old, new, "end-loaded booklet padding loop")
 
@@ -328,7 +342,8 @@ def main() -> None:
     print(
         f"adapted approved Rulebook production system to {CURRENT_RULEBOOK.relative_to(ROOT)} "
         "with shared player-facing editorial normalization, 12 presentation-only Leader sketches, "
-        "facing Leader-pair pagination, content-aware Glossary continuation, and three unique hero filler plates"
+        "facing Leader-pair pagination corrected only at faction boundaries, content-aware Glossary continuation, "
+        "and three unique hero filler plates"
     )
 
 
