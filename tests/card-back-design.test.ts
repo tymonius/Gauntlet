@@ -22,7 +22,7 @@ describe("universal playable-card back", () => {
     expect(css).toContain("--card-back-border-outline: #111111;");
     expect(css).toContain("--card-back-border-rule: rgba(255, 255, 250, 0.34);");
     expect(css).toContain("inset: 0.075in;");
-    expect(css).toContain("inset: calc(0.375in - 1px);");
+    expect(css).toContain("inset: calc(0.25in - 1px);");
     expect(css).toContain("--card-back-gold: var(--developer-gold-soft, #d7b783);");
     expect(css).toContain("border-radius: 0.125in;");
   });
@@ -35,7 +35,7 @@ describe("universal playable-card back", () => {
     expect(css).toContain("aspect-ratio: 1871.79 / 493.58;");
   });
 
-  it("rotates one dense tiling field while keeping the faction symbols themselves untransformed and darker than the field", () => {
+  it("rotates one tightly packed tiling field while keeping the faction symbols themselves untransformed and darker than the field", () => {
     for (const faction of [
       "military",
       "diplomats",
@@ -47,14 +47,14 @@ describe("universal playable-card back", () => {
       expect(renderer).toContain(`'${faction}'`);
       expect(css).toContain(`../images/faction-symbols/${faction}.svg`);
     }
-    expect(renderer).toContain("const PATTERN_ROWS = 19;");
-    expect(renderer).toContain("const PATTERN_COLUMNS = 14;");
+    expect(renderer).toContain("const PATTERN_ROWS = 29;");
+    expect(renderer).toContain("const PATTERN_COLUMNS = 23;");
     expect(css).toContain("inset: -0.55in;");
-    expect(css).toContain("grid-template-rows: repeat(19, 1fr);");
-    expect(css).toContain("grid-template-columns: repeat(14, 1fr);");
+    expect(css).toContain("grid-template-rows: repeat(29, 1fr);");
+    expect(css).toContain("grid-template-columns: repeat(23, 1fr);");
     expect(css).toContain("transform: rotate(-12deg);");
     expect(css).toContain("width: 0.135in;");
-    expect(css).toContain("--card-back-pattern: rgba(0, 0, 0, 0.24);");
+    expect(css).toContain("--card-back-pattern: rgba(0, 0, 0, 0.42);");
     expect(css).not.toMatch(/\.gauntlet-card-back__symbol\s*\{[^}]*rotate\(/s);
   });
 });
