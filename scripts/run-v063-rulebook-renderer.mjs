@@ -39,20 +39,7 @@ replaceOnce(
   );`,
   `  let paginationReady = false;
   for (let attempt = 0; attempt < 480; attempt += 1) {
-    if (errors.length) {
-      const diagnostic = await page.evaluate(() => ({
-        leaders: [...document.querySelectorAll('#reader-root > .leader-page')].map((item, index) => ({
-          leader: item.querySelector('.leader-name')?.textContent?.trim() || '',
-          currentPage: [...document.querySelectorAll('#reader-root > .page')].indexOf(item) + 1,
-        })),
-        boundaries: [...document.querySelectorAll('#reader-root > .page[data-anchor]')].map(item => ({
-          anchor: item.dataset.anchor || '',
-          currentPage: [...document.querySelectorAll('#reader-root > .page')].indexOf(item) + 1,
-          classes: item.className,
-        })),
-      }));
-      throw new Error(mode + ' Rulebook browser errors before pagination completed:\n' + errors.join('\n') + '\nPre-filler diagnostics: ' + JSON.stringify(diagnostic));
-    }
+    if (errors.length) throw new Error(mode + ' Rulebook browser errors before pagination completed: ' + errors.join(' | '));
     paginationReady = await page.evaluate(() =>
       document.documentElement.dataset.paginationReady === 'true' &&
       document.documentElement.dataset.postprocessReady === 'true'
@@ -73,8 +60,17 @@ replaceOnce(
   `      utilityFamily: getComputedStyle(document.querySelector('.running-head')).fontFamily,
       interLoaded: document.fonts.check('400 12px Inter') && document.fonts.check('700 12px Inter'),
       leaderPages: [...document.querySelectorAll('#reader-root > .leader-page')].map(page => ({ leader: page.querySelector('.leader-name')?.textContent?.trim() || '', pageNumber: Number(page.dataset.page) })),
+      rectoOpeners: [...document.querySelectorAll('#reader-root > .part-opener, #reader-root > .faction-opener')].map(page => ({ anchor: page.dataset.anchor || '', pageNumber: Number(page.dataset.page), classes: page.className })),
       heroPlateSources: [...document.querySelectorAll('#reader-root > .intentional-blank .hero-plate img')].map(image => image.getAttribute('src')),
-      heroPlatePlacements: [...document.querySelectorAll('#reader-root > .intentional-blank')].map(page => ({ label: page.dataset.heroPlateFor || '', pageNumber: Number(page.dataset.page), nextClass: page.nextElementSibling?.className || '', nextPageNumber: Number(page.nextElementSibling?.dataset.page || 0) })),`,
+      heroPlatePlacements: [...document.querySelectorAll('#reader-root > .intentional-blank')].map(page => ({
+        label: page.dataset.heroPlateFor || '',
+        tier: Number(page.dataset.heroPlateTier || -1),
+        kind: page.dataset.heroPlateKind || '',
+        pageNumber: Number(page.dataset.page),
+        nextClass: page.nextElementSibling?.className || '',
+        nextLeader: page.nextElementSibling?.querySelector('.leader-name')?.textContent?.trim() || '',
+        nextPageNumber: Number(page.nextElementSibling?.dataset.page || 0),
+      })),`,
 );
 replaceOnce(
   'utility font assertion',
@@ -84,10 +80,15 @@ replaceOnce(
   `  if (!result.utilityFamily.includes('Inter')) throw new Error(\`Approved utility typography was not retained: \${result.utilityFamily}\`);
   if (!result.interLoaded) throw new Error('Inter is named in the approved utility stack but is not actually loaded.');
 
+  for (const opener of result.rectoOpeners) {
+    if (opener.pageNumber % 2 !== 1) throw new Error(\`Designed recto opener moved to verso: \${JSON.stringify(opener)}.\`);
+  }
+
   const expectedLeaderPairs = [
     ['General', 'Commandant'], ['Ambassador', 'Senator'], ['Banker', 'Executive'],
     ['Ranger', 'Spymaster'], ['Alchemist', 'Spirit Walker'], ['Grand Inquisitor', 'Witch Hunter'],
   ];
+  const firstLeaders = new Set(expectedLeaderPairs.map(([leftLeader]) => leftLeader));
   if (result.leaderPages.length !== 12) throw new Error(\`Expected 12 dedicated Leader pages; found \${result.leaderPages.length}.\`);
   const leaderPageByName = new Map(result.leaderPages.map(item => [item.leader, item.pageNumber]));
   for (const [leftLeader, rightLeader] of expectedLeaderPairs) {
@@ -106,10 +107,13 @@ replaceOnce(
     throw new Error(\`Expected unique approved hero filler art; found \${JSON.stringify(actualHeroPlates)} across \${report.intentionalBlanks} filler pages.\`);
   }
 
-  const naturalBoundaryClasses = ['part-opener', 'chapter-page', 'faction-opener', 'quick-reference-page', 'glossary-page'];
+  const naturalBoundaryClasses = ['part-opener', 'chapter-page', 'faction-opener', 'quick-reference-page', 'glossary-page', 'leader-page'];
   for (const placement of result.heroPlatePlacements) {
     if (!naturalBoundaryClasses.some(className => placement.nextClass.split(/\\s+/).includes(className))) {
       throw new Error(\`Hero filler plate interrupts a content section: \${JSON.stringify(placement)}.\`);
+    }
+    if (placement.nextClass.split(/\\s+/).includes('leader-page') && !firstLeaders.has(placement.nextLeader)) {
+      throw new Error(\`Hero filler plate may only precede the first page of a Leader pair: \${JSON.stringify(placement)}.\`);
     }
   }`,
 );
