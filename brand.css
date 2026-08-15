@@ -50,11 +50,11 @@
 .rulebook-content > h1:first-child {
   width: min(100%, 560px);
   aspect-ratio: var(--gauntlet-wordmark-ratio);
-  margin: 0 0 26px;
+  margin: 0 auto 26px;
   padding: 0;
   border: 0;
   background-image: var(--gauntlet-wordmark-images);
-  background-position: left center;
+  background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
   color: transparent;
