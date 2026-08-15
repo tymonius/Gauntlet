@@ -181,9 +181,6 @@ export async function buildCatalog() {
   const release = await resolveCurrentTtsRelease();
   const canonical = await readJson(release.canonicalDataSource);
 
-  if (canonical.version && canonical.version !== release.version) {
-    throw new Error(`Canonical data version is ${canonical.version}; release metadata says ${release.version}.`);
-  }
   if (!Array.isArray(canonical.cards) || !Array.isArray(canonical.territories)) {
     throw new Error(`Canonical data is missing cards or territories: ${release.canonicalDataSource}.`);
   }
@@ -224,6 +221,7 @@ export async function buildCatalog() {
       lifecycleSource: release.lifecycleSource,
       githubReleaseContractSource: release.githubReleaseContractSource,
       canonicalDataSource: release.canonicalDataSource,
+      canonicalDataVersion: canonical.version || null,
       starterDecksSource: release.starterDecksSource,
       releasePackageRoot: release.releasePackageRoot,
     },
@@ -248,6 +246,7 @@ export async function writeCatalog(catalog) {
   await writeFile(join(CURRENT_ALIAS_ROOT, 'release.json'), jsonText({
     gameVersion: release.version,
     canonicalDataSource: release.canonicalDataSource,
+    canonicalDataVersion: catalog.release.canonicalDataVersion,
     versionedOutput: relative(ROOT, release.outputRoot).split(sep).join('/'),
   }));
 
