@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn, spawnSync } from 'node:child_process';
 import { publicAuthorityNote } from './publication-utils.mjs';
-import { normalizeV063LastStandText } from '../rules-assistant/v063-last-stand-language.js';
+import { normalizeV063LastStandOnlyText } from '../rules-assistant/v063-last-stand-language.js';
 
 const root = process.cwd();
 const cleanRulebookPath = 'artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md';
@@ -48,7 +48,7 @@ async function waitForServer(url) {
 
 const cleanRulebook = read(cleanRulebookPath);
 assert.equal(hash(cleanRulebook), cleanRulebookSha256, 'Certified clean Rulebook hash drifted.');
-const derivedPublished = normalizeV063LastStandText(cleanRulebook)
+const derivedPublished = normalizeV063LastStandOnlyText(cleanRulebook)
   .replace('**Version 0.6.3 — Clean Reconstruction Candidate**', '**Version 0.6.3**')
   .replace(/^> \*\*Authority candidate, not current\/public rules\.\*\*[^\n]*\n\n/m, '');
 const publishedRulebook = read(publishedRulebookPath);
