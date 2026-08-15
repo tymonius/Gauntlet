@@ -2,18 +2,12 @@ name: Publish current Rulebook booklet
 
 on:
   workflow_dispatch:
-  # Bootstrap the wordmark publication on this feature branch. This branch
-  # trigger is removed after the generated booklet is committed.
-  push:
-    branches:
-      - design/rulebook-official-wordmark
 
 permissions:
   contents: write
 
 jobs:
   publish-booklet:
-    if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
