@@ -176,8 +176,8 @@
 .gauntlet-card-back-bleed-proof {
   box-sizing: border-box;
   display: grid;
-  width: calc(2.5in + (2 * var(--card-back-bleed)));
-  height: calc(3.5in + (2 * var(--card-back-bleed)));
+  width: calc(2.5in + var(--card-back-bleed) + var(--card-back-bleed));
+  height: calc(3.5in + var(--card-back-bleed) + var(--card-back-bleed));
   padding: var(--card-back-bleed);
   place-items: center;
   background: var(--card-back-border);
