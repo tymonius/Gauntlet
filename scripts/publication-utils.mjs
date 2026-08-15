@@ -91,11 +91,18 @@ export function replacePlayerFacingChapter11(source, chapter11 = read(PLAYER_CHA
   }
   return `${source.slice(0, start)}${replacement}\n\n${source.slice(end)}`;
 }
+export function applyPlayerFacingRulebookCorrections(source) {
+  const internalSanctionGuidance = 'A Sanction may state additional removal conditions. Cards therefore do not need to repeat identification of the refusing opponent or the default expiration after later acceptance.';
+  const playerSanctionRule = 'A Sanction may state additional removal conditions. Apply those conditions together with the default removal rule above unless the Sanction says otherwise.';
+  const count = source.split(internalSanctionGuidance).length - 1;
+  if (count !== 1) throw new Error(`Expected exactly one remaining internal Sanction guidance paragraph after Chapter 11 replacement; found ${count}.`);
+  return source.replace(internalSanctionGuidance, playerSanctionRule);
+}
 export function publicAuthorityNote(source) {
   const normalized = normalizeV063LastStandText(source)
     .replace('**Version 0.6.3 — Clean Reconstruction Candidate**', '**Version 0.6.3**')
     .replace(/^> \*\*Authority candidate, not current\/public rules\.\*\*[^\n]*\n\n/m, '');
-  return replacePlayerFacingChapter11(normalized);
+  return applyPlayerFacingRulebookCorrections(replacePlayerFacingChapter11(normalized));
 }
 export function publicCanonicalData(source) {
   const value = typeof source === 'string' ? JSON.parse(source) : source;
