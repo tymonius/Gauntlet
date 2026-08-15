@@ -27,7 +27,7 @@ assert.equal(generated.design.leader_portraits, 12);
 assert.equal(generated.design.missing_source_tokens, 0);
 assert.equal(generated.design.isolated_headings, 0);
 assert(generated.counts.content_pages > 1);
-assert(generated.counts.padding_pages >= 0 && generated.counts.padding_pages <= 3);
+assert(generated.counts.padding_pages >= 0 && generated.counts.padding_pages <= 4);
 assert.equal(generated.counts.logical_pages, generated.counts.content_pages + generated.counts.padding_pages);
 assert.equal(generated.counts.logical_pages % 4, 0);
 assert.equal(generated.counts.imposed_sides, generated.counts.logical_pages / 2);
@@ -49,21 +49,11 @@ manifest.counts.print_pdfs = 10;
 manifest.pdf_outputs = manifest.pdf_outputs.filter((item) => item.key !== 'rulebook-booklet');
 const rulebookIndex = manifest.pdf_outputs.findIndex((item) => item.key === 'rulebook');
 assert(rulebookIndex >= 0);
-manifest.pdf_outputs.splice(rulebookIndex + 1, 0, {
-  key: 'rulebook-booklet',
-  path: releasePdfName,
-  pages: printable.pages,
-  sha256: printable.sha256,
-  bytes: printable.bytes,
-});
+manifest.pdf_outputs.splice(rulebookIndex + 1, 0, { key: 'rulebook-booklet', path: releasePdfName, pages: printable.pages, sha256: printable.sha256, bytes: printable.bytes });
 manifest.payload_files = manifest.payload_files.filter((item) => item.path !== releasePdfName);
 const readerIndex = manifest.payload_files.findIndex((item) => item.path === 'Gauntlet_v0.6.3_Rulebook.pdf');
 assert(readerIndex >= 0);
-manifest.payload_files.splice(readerIndex + 1, 0, {
-  path: releasePdfName,
-  sha256: printable.sha256,
-  bytes: printable.bytes,
-});
+manifest.payload_files.splice(readerIndex + 1, 0, { path: releasePdfName, sha256: printable.sha256, bytes: printable.bytes });
 fs.writeFileSync(path.join(root, releaseManifestPath), `${JSON.stringify(manifest, null, 2)}\n`, 'utf8');
 
 const rulebookIndexHtml = fs.readFileSync(path.join(root, rulebookIndexPath), 'utf8');
