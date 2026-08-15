@@ -22,13 +22,15 @@ describe("universal playable-card back", () => {
     expect(css).toContain("--card-back-gold: var(--developer-gold-soft, #d7b783);");
   });
 
-  it("uses the approved Gauntlet vector as a white landscape wordmark", () => {
+  it("uses the approved Gauntlet vector as a large clockwise-rotated white wordmark", () => {
     expect(css).toContain('mask: url("../images/Gauntlet.svg") center / contain no-repeat;');
     expect(css).toContain("background: #fff;");
+    expect(css).toContain("width: 2.72in;");
+    expect(css).toContain("transform: translate(-50%, -50%) rotate(90deg);");
     expect(css).toContain("aspect-ratio: 1871.79 / 493.58;");
   });
 
-  it("builds the background repeat from all six production faction symbols", () => {
+  it("densely repeats all six production faction symbols across the full card", () => {
     for (const faction of [
       "military",
       "diplomats",
@@ -40,6 +42,12 @@ describe("universal playable-card back", () => {
       expect(renderer).toContain(`'${faction}'`);
       expect(css).toContain(`../images/faction-symbols/${faction}.svg`);
     }
+    expect(renderer).toContain("const PATTERN_ROWS = 19;");
+    expect(renderer).toContain("const PATTERN_COLUMNS = 14;");
+    expect(css).toContain("inset: -0.07in;");
+    expect(css).toContain("grid-template-rows: repeat(19, 1fr);");
+    expect(css).toContain("grid-template-columns: repeat(14, 1fr);");
+    expect(css).toContain("width: 0.135in;");
     expect(css).toContain("--card-back-pattern: rgba(255, 255, 255, 0.065);");
   });
 });
