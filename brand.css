@@ -34,6 +34,22 @@
   display: none !important;
 }
 
+/* Older footer implementations use a plain Gauntlet label instead of the shared brand link. Keep their existing copy and layout, but render that label with the canonical vector wordmark so every current surface has the same footer identity. */
+footer > div:first-child > strong:first-child {
+  display: block;
+  width: 240px;
+  max-width: 100%;
+  aspect-ratio: var(--gauntlet-wordmark-ratio);
+  overflow: hidden;
+  background-image: var(--gauntlet-wordmark-images);
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  color: transparent !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
+}
+
 /* Keep the global site chrome visually identical even on tools whose content areas use different maximum widths. */
 :is(.site-header, .global-header, .rulebook-header, .arbiter-header) {
   width: min(1180px, calc(100% - 40px)) !important;
@@ -96,7 +112,8 @@
 }
 
 @media (max-width: 620px) {
-  .brand::before {
+  .brand::before,
+  footer > div:first-child > strong:first-child {
     width: 180px;
   }
 
