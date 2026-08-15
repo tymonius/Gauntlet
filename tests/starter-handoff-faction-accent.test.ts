@@ -14,6 +14,12 @@ describe("starter handoff faction accent", () => {
     expect(css).toContain("overflow:hidden");
   });
 
+  it("uses the imported faction color for the panel border, including ready state", () => {
+    expect(css).toContain("border-top:6px solid var(--starter-faction-color,#8f1f25)");
+    expect(css).toContain(".starter-handoff-panel.is-ready{border-top-color:var(--starter-faction-color,#8f1f25)}");
+    expect(css).not.toContain(".starter-handoff-panel.is-ready{border-top-color:#2b7551}");
+  });
+
   it("binds the panel accent to the imported faction", () => {
     for (const faction of ["military", "diplomats", "financiers", "intelligence", "mystics", "inquisition"]) {
       expect(script).toContain(`${faction}:`);
