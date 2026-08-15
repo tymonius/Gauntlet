@@ -3,11 +3,14 @@
 
 This is intentionally a thin source/version adapter. The certified v0.6.3
 Markdown remains authoritative; this script restores only the presentation
-structure that the approved PR #357 / PR #434 production system expects.
+structure that the approved PR #357 / PR #434 production system expects and
+applies the shared player-facing editorial normalization used by the Browser
+Rulebook.
 """
 
 from __future__ import annotations
 
+import json
 import re
 import sys
 from pathlib import Path
@@ -15,6 +18,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 PRODUCTION = ROOT / "rulebook-production"
 CURRENT_RULEBOOK = ROOT / "releases" / "v0.6.3-reconstructed" / "Gauntlet_v0.6.3_Rulebook.md"
+PLAYER_FACING_REWRITES = ROOT / "rulebook" / "player-facing-rewrites.json"
 PRODUCTION_SOURCE = PRODUCTION / ".v063-production-source.md"
 HTML = PRODUCTION / "full-rulebook.html"
 RUNTIME_PAGINATOR = PRODUCTION / ".paginate_rulebook_runtime.mjs"
@@ -50,14 +54,46 @@ def replace_required(source: str, old: str, new: str, label: str, expected: int 
     return source.replace(old, new)
 
 
+def apply_player_facing_rewrites(source: str) -> str:
+    """Apply the same strict editorial normalization used by the Browser Rulebook."""
+
+    if not PLAYER_FACING_REWRITES.is_file():
+        raise RuntimeError(f"Missing player-facing rewrite contract: {PLAYER_FACING_REWRITES}")
+    rewrites = json.loads(PLAYER_FACING_REWRITES.read_text(encoding="utf-8"))
+    if not isinstance(rewrites, list) or not rewrites:
+        raise RuntimeError("Player-facing Rulebook rewrite contract is empty or invalid.")
+
+    result = source
+    for rewrite in rewrites:
+        if not isinstance(rewrite, dict):
+            raise RuntimeError("Player-facing Rulebook rewrite entry is malformed.")
+        label = rewrite.get("label")
+        old = rewrite.get("old")
+        new = rewrite.get("new")
+        expected = rewrite.get("expected", 1)
+        if not isinstance(label, str) or not isinstance(old, str) or not isinstance(new, str) or not isinstance(expected, int):
+            raise RuntimeError("Player-facing Rulebook rewrite entry is malformed.")
+        result = replace_required(result, old, new, label, expected=expected)
+
+    chapter_start = result.find("# 11. Detailed Card and Timing Rules")
+    chapter_end = result.find("# 12. Overlays and Other Shared Card Rules", chapter_start)
+    if chapter_start < 0 or chapter_end < 0:
+        raise RuntimeError("Could not isolate player-facing Chapter 11.")
+    chapter = result[chapter_start:chapter_end]
+    for phrase in ("v0.6.3", "Cards therefore do not need", "Cards should", "Do not print", "The former "):
+        if phrase in chapter:
+            raise RuntimeError(f"Player-facing Chapter 11 still contains internal/editorial language: {phrase}")
+    return result
+
+
 def build_presentation_source(source: str) -> str:
     """Restore old production-only Leader hierarchy/art references.
 
-    v0.6.3 moved Leader names from H2 to H3 beneath a shared H2 "Leaders"
-    wrapper and removed sketch Markdown from rules authority. PR #434's approved
-    paginator deliberately recognizes H2 Leader sections with image tokens.
-    Convert only that structural/presentation layer in a transient source file;
-    no rules prose is rewritten.
+    The input has already passed the shared player-facing normalization. v0.6.3
+    moved Leader names from H2 to H3 beneath a shared H2 "Leaders" wrapper and
+    removed sketch Markdown from rules authority. PR #434's approved paginator
+    deliberately recognizes H2 Leader sections with image tokens. Convert only
+    that structural/presentation layer in a transient source file.
     """
 
     output: list[str] = []
@@ -93,8 +129,6 @@ def build_presentation_source(source: str) -> str:
             if heading_level <= 2:
                 in_leader = False
             elif heading_level >= 4:
-                # The v0.6.3 Leader nesting is one level deeper because of the
-                # removed "Leaders" wrapper. Restore the production hierarchy.
                 output.append(f"{'#' * (heading_level - 1)} {heading_title}")
                 continue
 
@@ -109,9 +143,6 @@ def build_presentation_source(source: str) -> str:
     if source.endswith("\n"):
         transformed += "\n"
 
-    # Prove the transform changed only heading depth/wrapper lines, presentation
-    # whitespace, and the twelve approved image references. Every nonblank rules
-    # line must otherwise remain byte-for-byte identical and in the same order.
     def semantic_lines(value: str) -> list[str]:
         result: list[str] = []
         for line in value.splitlines():
@@ -123,7 +154,7 @@ def build_presentation_source(source: str) -> str:
         return result
 
     if semantic_lines(source) != semantic_lines(transformed):
-        raise RuntimeError("v0.6.3 production-source transform changed rules text instead of presentation structure only.")
+        raise RuntimeError("v0.6.3 production-source transform changed player-facing rules text instead of presentation structure only.")
 
     return transformed
 
@@ -196,17 +227,53 @@ def adapt_glossary_pagination(paginator: str) -> str:
     return replace_required(paginator, old, new, "approved single-page Glossary function")
 
 
+def adapt_signature_padding(paginator: str) -> str:
+    """Distribute required signature padding at Part boundaries with unused hero art."""
+
+    old = "    while ((pages.length + 2) % 4 !== 0) intentionalBlank('Booklet pagination');"
+    new = r'''    const paddingNeeded = (4 - ((pages.length + 2) % 4)) % 4;
+    const paddingPlans = {
+      0: [],
+      1: [
+        ['Part IV — Reference', '../images/sketches/hero-sketches/hero sketch 4.png'],
+      ],
+      2: [
+        ['Part II — Complete Shared Rules', '../images/sketches/hero-sketches/hero sketch 2.png'],
+        ['Part III — Factions', '../images/sketches/hero-sketches/hero sketch 3.png'],
+      ],
+      3: [
+        ['Part II — Complete Shared Rules', '../images/sketches/hero-sketches/hero sketch 2.png'],
+        ['Part III — Factions', '../images/sketches/hero-sketches/hero sketch 3.png'],
+        ['Part IV — Reference', '../images/sketches/hero-sketches/hero sketch 4.png'],
+      ],
+    };
+    for (const [boundary, source] of paddingPlans[paddingNeeded]) {
+      const boundaryPage = anchors.get(boundary);
+      if (!boundaryPage) throw new Error(`Cannot place signature hero plate before ${boundary}.`);
+      const boundaryIndex = pages.indexOf(boundaryPage);
+      if (boundaryIndex < 0) throw new Error(`Signature boundary page is not in reading order: ${boundary}.`);
+      const plate = intentionalBlank('');
+      const appended = pages.pop();
+      if (appended !== plate) throw new Error('Hero plate insertion lost page order.');
+      const image = plate.querySelector('.hero-plate img');
+      if (!image) throw new Error('Hero plate image slot is missing.');
+      image.src = source;
+      image.alt = '';
+      plate.dataset.heroPlateFor = boundary;
+      pages.splice(boundaryIndex, 0, plate);
+    }'''
+    return replace_required(paginator, old, new, "end-loaded booklet padding loop")
+
+
 def main() -> None:
     if not CURRENT_RULEBOOK.is_file():
         raise RuntimeError(f"Missing current Rulebook source: {CURRENT_RULEBOOK}")
 
     current_source = CURRENT_RULEBOOK.read_text(encoding="utf-8")
-    production_source = build_presentation_source(current_source)
+    player_facing_source = apply_player_facing_rewrites(current_source)
+    production_source = build_presentation_source(player_facing_source)
     PRODUCTION_SOURCE.write_text(production_source, encoding="utf-8")
 
-    # Point the existing approved builder at the transient presentation source.
-    # The source text itself remains the exact certified/published v0.6.3 file;
-    # only Leader heading depth and approved sketch references are adapted.
     build_rulebook.RULEBOOK = PRODUCTION_SOURCE
     build_complete_rulebook.main()
 
@@ -238,12 +305,13 @@ def main() -> None:
     )
     paginator = paginator.replace("Gauntlet v0.6.1", "Gauntlet v0.6.3")
     paginator = adapt_glossary_pagination(paginator)
+    paginator = adapt_signature_padding(paginator)
     RUNTIME_PAGINATOR.write_text(paginator, encoding="utf-8")
 
     print(
         f"adapted approved Rulebook production system to {CURRENT_RULEBOOK.relative_to(ROOT)} "
-        "with 12 presentation-only Leader sketches, approved Leader-page hierarchy, "
-        "and content-aware Glossary continuation"
+        "with shared player-facing editorial normalization, 12 presentation-only Leader sketches, "
+        "approved Leader-page hierarchy, content-aware Glossary continuation, and distributed signature hero plates"
     )
 
 
