@@ -1,0 +1,41 @@
+const FACTIONS = Object.freeze([
+  'military',
+  'diplomats',
+  'financiers',
+  'intelligence',
+  'mystics',
+  'inquisition',
+]);
+
+const ROW_OFFSETS = Object.freeze([0, 3, 1, 4, 2, 5, 0]);
+
+function patternMarkup() {
+  return ROW_OFFSETS.map((offset) => {
+    const symbols = FACTIONS.map((_, index) => FACTIONS[(index + offset) % FACTIONS.length]);
+    return `<div class="gauntlet-card-back__pattern-row">${symbols
+      .map((faction) => `<span class="gauntlet-card-back__symbol ${faction}"></span>`)
+      .join('')}</div>`;
+  }).join('');
+}
+
+export function renderCardBack(element) {
+  if (!(element instanceof HTMLElement)) return;
+  element.classList.add('gauntlet-card-back');
+  element.setAttribute('role', 'img');
+  element.setAttribute('aria-label', 'Universal Gauntlet playable-card back');
+  element.innerHTML = `
+    <div class="gauntlet-card-back__pattern" aria-hidden="true">${patternMarkup()}</div>
+    <div class="gauntlet-card-back__frame" aria-hidden="true"></div>
+    <div class="gauntlet-card-back__wordmark" aria-hidden="true"></div>
+  `;
+}
+
+function initializeCardBackSpecimens() {
+  document.querySelectorAll('[data-gauntlet-card-back]').forEach(renderCardBack);
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeCardBackSpecimens, { once: true });
+} else {
+  initializeCardBackSpecimens();
+}
