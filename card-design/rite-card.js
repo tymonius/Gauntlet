@@ -29,6 +29,15 @@ const RITES = Object.freeze([
   },
 ]);
 
+const RITUAL = Object.freeze({
+  id: 'ascendance',
+  name: 'Ritual of Ascendance',
+  begin: 'After completing all three Rites, during Denouement, spend 1 Action to bind one Arcane card from your Hand, one Arcane card from your Discard Pile, and one Arcane card from your Graveyard. This begins the Ritual.',
+  convergence: 'While the Ritual is underway, during a battle you initiated, add +1 to your battle total for each card bound to the Ritual.',
+  complete: 'Initiate a battle while all three Ritual cards remain bound. If you win that battle, complete the Ritual and immediately win the game.',
+  interrupted: 'If you lose any battle before Ritual completion, the Ritual is interrupted. Put all three Ritual-bound cards in your Graveyard. Withdrawal neither completes nor interrupts the Ritual.',
+});
+
 const UNLOCKS = Object.freeze([
   {
     count: '1 Rite',
@@ -55,17 +64,17 @@ const UNLOCKS = Object.freeze([
 const root = document.querySelector('#riteReviewSections');
 
 function esc(value) {
-  return String(value ?? '').replace(/[&<>'"]/g, character => ({
+  return String(value ?? '').replace(/[&<>'\"]/g, character => ({
     '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;',
     "'": '&#39;',
-    '"': '&quot;',
+    '\"': '&quot;',
   })[character]);
 }
 
-function riteTypeLabel() {
-  return '<div class="rite-type-line"><span class="rite-faction-emblem" aria-hidden="true"></span><span>Rite</span></div>';
+function riteTypeLabel(label = 'Rite') {
+  return `<div class="rite-type-line"><span class="rite-faction-emblem" aria-hidden="true"></span><span>${esc(label)}</span></div>`;
 }
 
 function ruleSection(label, text) {
@@ -86,6 +95,12 @@ function incompleteArtwork(rite) {
 function completedArtwork(rite) {
   return `<figure class="card-art rite-completed-panel has-image" aria-label="Completed ${esc(rite.name)}">
     <img src="${COMPLETED_RITE_ART_SOURCE}" alt="Parchment marked Completed in deep purple ink with blood, beeswax, and ash traces" />
+  </figure>`;
+}
+
+function ritualArtwork() {
+  return `<figure class="card-art rite-art-pending ritual-art-pending" aria-label="Artwork pending for ${esc(RITUAL.name)}">
+    <span>Artwork pending</span>
   </figure>`;
 }
 
@@ -115,6 +130,27 @@ function riteFace(rite, completed = false) {
   </article>`;
 }
 
+function ritualFace() {
+  const rules = [
+    ruleSection('Begin', RITUAL.begin),
+    ruleSection('Convergence', RITUAL.convergence),
+    ruleSection('Complete', RITUAL.complete),
+    ruleSection('Interrupted', RITUAL.interrupted),
+  ].join('');
+
+  return `<article class="gauntlet-card faction-component-card rite-card ritual-card mystic-card dense-card" data-faction="mystics" data-art-max="1.16" data-art-min="0.64" data-title-min="8.5" data-card-back="standard" aria-label="${esc(RITUAL.name)} Ritual card" data-rite-source="${RITE_SOURCE}">
+    <div class="card-interior">
+      <header class="card-heading">
+        <h3 class="card-title">${esc(RITUAL.name)}</h3>
+        ${riteTypeLabel('Ritual')}
+      </header>
+      ${ritualArtwork()}
+      <div class="card-rules">${rules}</div>
+      <footer class="card-footer"><span>Mystics</span><span>Ritual</span><span>v0.6.3</span></footer>
+    </div>
+  </article>`;
+}
+
 function reviewPair(rite) {
   return `<section class="rite-review-pair" id="rite-${esc(rite.id)}" aria-labelledby="rite-${esc(rite.id)}-title">
     <div class="review-faction-heading screen-only">
@@ -134,13 +170,32 @@ function reviewPair(rite) {
   </section>`;
 }
 
+function ritualReview() {
+  return `<section class="rite-review-pair ritual-review" id="ritual-ascendance" aria-labelledby="ritual-ascendance-title" data-standard-card-back="true">
+    <div class="review-faction-heading screen-only">
+      <h3 id="ritual-ascendance-title">${esc(RITUAL.name)}</h3>
+      <span>Single-sided Ritual · standard card back</span>
+    </div>
+    <div class="rite-face-grid ritual-face-grid">
+      <div class="rite-face">
+        <p class="rite-face-label screen-only"><strong>Ritual</strong><span>Victory card</span></p>
+        ${ritualFace()}
+      </div>
+    </div>
+  </section>`;
+}
+
 function renderRites() {
   if (!root) return;
   root.dataset.riteCount = String(RITES.length);
+  root.dataset.ritualCount = '1';
   document.querySelectorAll('[data-rite-count]').forEach(node => {
     node.textContent = String(RITES.length);
   });
-  root.innerHTML = `<div class="rite-review-block">${RITES.map(reviewPair).join('')}</div>`;
+  document.querySelectorAll('[data-ritual-count]').forEach(node => {
+    node.textContent = '1';
+  });
+  root.innerHTML = `<div class="rite-review-block">${RITES.map(reviewPair).join('')}${ritualReview()}</div>`;
 }
 
 renderRites();
