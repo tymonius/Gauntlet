@@ -150,33 +150,58 @@ def adapt_hero_plate_pool(paginator: str) -> str:
 
 
 def adapt_signature_padding(paginator: str) -> str:
+    """Place signature filler at the highest natural hierarchy that preserves designed spreads."""
+
     old = "    while ((pages.length + 2) % 4 !== 0) intentionalBlank('Booklet pagination');"
     new = r'''    const paddingNeeded = (4 - ((pages.length + 2) % 4)) % 4;
+    const expectedLeaderPairs = [
+      ['General', 'Commandant'], ['Ambassador', 'Senator'], ['Banker', 'Executive'],
+      ['Ranger', 'Spymaster'], ['Alchemist', 'Spirit Walker'], ['Grand Inquisitor', 'Witch Hunter'],
+    ];
+    const leaderPageByName = new Map(
+      pages.filter(page => page.classList.contains('leader-page'))
+        .map(page => [page.querySelector('.leader-name')?.textContent?.trim() || '', page])
+    );
+
     const candidateByPage = new Map();
-    const addCandidate = (anchor, tier) => {
-      const page = anchors.get(anchor);
+    const addCandidatePage = (page, label, tier, kind) => {
       if (!page) return;
       const existing = candidateByPage.get(page);
-      if (!existing || tier < existing.tier) candidateByPage.set(page, { anchor, page, tier });
+      if (!existing || tier < existing.tier) candidateByPage.set(page, { page, label, tier, kind });
     };
-    Object.keys(metadata.parts).filter(title => title !== 'Part I — Learn to Play').forEach(title => addCandidate(title, 0));
-    metadata.chapters.filter(chapter => chapter.number !== null).forEach(chapter => addCandidate(chapter.heading, 1));
-    ['Quick Turn Reference', 'Glossary'].forEach(title => addCandidate(title, 2));
+    const addAnchorCandidate = (anchor, tier, kind) => addCandidatePage(anchors.get(anchor), anchor, tier, kind);
+
+    // Editorial hierarchy for discretionary filler:
+    // 0. Between Parts.
+    // 1. Between numbered chapters (including faction chapters).
+    // 2. Between a faction's shared rules and its two-page Leader profile spread.
+    // 3. Between major reference sections.
+    Object.keys(metadata.parts)
+      .filter(title => title !== 'Part I — Learn to Play')
+      .forEach(title => addAnchorCandidate(title, 0, 'part'));
+    metadata.chapters
+      .filter(chapter => chapter.number !== null)
+      .forEach(chapter => addAnchorCandidate(chapter.heading, 1, 'chapter'));
+    expectedLeaderPairs.forEach(([leftLeader, rightLeader]) => {
+      addCandidatePage(leaderPageByName.get(leftLeader), `${leftLeader} / ${rightLeader} Leader spread`, 2, 'leader-spread');
+    });
+    ['Quick Turn Reference', 'Glossary'].forEach(title => addAnchorCandidate(title, 3, 'reference'));
 
     const candidates = [...candidateByPage.values()]
       .map(candidate => ({ ...candidate, index: pages.indexOf(candidate.page) }))
       .filter(candidate => candidate.index >= 0)
       .sort((a, b) => a.tier - b.tier || a.index - b.index);
-    const expectedLeaderPairs = [
-      ['General', 'Commandant'], ['Ambassador', 'Senator'], ['Banker', 'Executive'],
-      ['Ranger', 'Spymaster'], ['Alchemist', 'Spirit Walker'], ['Grand Inquisitor', 'Witch Hunter'],
-    ];
-    const leaderPageByName = new Map(pages.filter(page => page.classList.contains('leader-page')).map(page => [page.querySelector('.leader-name')?.textContent?.trim() || '', page]));
+
+    const protectedRectoPages = pages.filter(page =>
+      page.classList.contains('part-opener') || page.classList.contains('faction-opener')
+    );
 
     const choose = (items, count, start = 0, prefix = [], output = []) => {
       if (prefix.length === count) { output.push([...prefix]); return output; }
       for (let index = start; index <= items.length - (count - prefix.length); index += 1) {
-        prefix.push(items[index]); choose(items, count, index + 1, prefix, output); prefix.pop();
+        prefix.push(items[index]);
+        choose(items, count, index + 1, prefix, output);
+        prefix.pop();
       }
       return output;
     };
@@ -184,21 +209,27 @@ def adapt_signature_padding(paginator: str) -> str:
       const baseIndex = pages.indexOf(page);
       return baseIndex + 1 + selection.filter(candidate => candidate.index <= baseIndex).length;
     };
+    const preservesRectoOpeners = selection => protectedRectoPages.every(page =>
+      virtualPageNumber(page, selection) % 2 === 1
+    );
     const preservesLeaderSpreads = selection => expectedLeaderPairs.every(([leftName, rightName]) => {
-      const leftPage = leaderPageByName.get(leftName), rightPage = leaderPageByName.get(rightName);
+      const leftPage = leaderPageByName.get(leftName);
+      const rightPage = leaderPageByName.get(rightName);
       if (!leftPage || !rightPage) return false;
-      const left = virtualPageNumber(leftPage, selection), right = virtualPageNumber(rightPage, selection);
+      const left = virtualPageNumber(leftPage, selection);
+      const right = virtualPageNumber(rightPage, selection);
       return left % 2 === 0 && right === left + 1;
     });
-    const score = selection => {
-      const counts = [0, 0, 0];
+    const hierarchyScore = selection => {
+      const counts = [0, 0, 0, 0];
       selection.forEach(candidate => { counts[candidate.tier] += 1; });
-      const rectoStarts = selection.filter(candidate => virtualPageNumber(candidate.page, selection) % 2 === 1).length;
       const ordered = [...selection].sort((a, b) => a.index - b.index);
-      const dispersion = ordered.length < 2 ? 0 : Math.min(...ordered.slice(1).map((candidate, index) => candidate.index - ordered[index].index));
-      return [counts[0], counts[1], rectoStarts, dispersion];
+      const dispersion = ordered.length < 2
+        ? 0
+        : Math.min(...ordered.slice(1).map((candidate, index) => candidate.index - ordered[index].index));
+      return [...counts, dispersion];
     };
-    const better = (left, right) => {
+    const betterScore = (left, right) => {
       if (!right) return true;
       for (let index = 0; index < left.length; index += 1) {
         if (left[index] !== right[index]) return left[index] > right[index];
@@ -208,25 +239,35 @@ def adapt_signature_padding(paginator: str) -> str:
 
     let chosen = null;
     let chosenScore = null;
-    for (let fillerCount = paddingNeeded; fillerCount <= 4; fillerCount += 4) {
-      for (const selection of choose(candidates, fillerCount)) {
-        if (!preservesLeaderSpreads(selection)) continue;
-        const candidateScore = score(selection);
-        if (chosen === null || better(candidateScore, chosenScore)) {
-          chosen = selection;
-          chosenScore = candidateScore;
-        }
+    for (const selection of choose(candidates, paddingNeeded)) {
+      if (!preservesRectoOpeners(selection) || !preservesLeaderSpreads(selection)) continue;
+      const score = hierarchyScore(selection);
+      if (chosen === null || betterScore(score, chosenScore)) {
+        chosen = selection;
+        chosenScore = score;
       }
-      if (chosen !== null) break;
     }
-    if (chosen === null) throw new Error(`No natural-boundary filler plan preserves all Leader spreads from base padding ${paddingNeeded}.`);
 
+    if (chosen === null) {
+      const leaders = expectedLeaderPairs.map(([left, right]) => [
+        left, pages.indexOf(leaderPageByName.get(left)) + 1,
+        right, pages.indexOf(leaderPageByName.get(right)) + 1,
+      ]);
+      const rectos = protectedRectoPages.map(page => [page.dataset.anchor || page.className, pages.indexOf(page) + 1]);
+      const available = candidates.map(candidate => [candidate.label, candidate.tier, candidate.index + 1]);
+      throw new Error(`No ${paddingNeeded}-plate natural-boundary plan preserves recto openers and Leader spreads. Leaders=${JSON.stringify(leaders)} Rectos=${JSON.stringify(rectos)} Candidates=${JSON.stringify(available)}`);
+    }
+
+    // Insert from the end toward the front so the original candidate indices
+    // stay valid while the selected layout plan is applied.
     chosen.sort((a, b) => b.index - a.index);
     for (const candidate of chosen) {
       const plate = intentionalBlank('');
       const appended = pages.pop();
       if (appended !== plate) throw new Error('Hero plate insertion lost page order.');
-      plate.dataset.heroPlateFor = candidate.anchor;
+      plate.dataset.heroPlateFor = candidate.label;
+      plate.dataset.heroPlateTier = String(candidate.tier);
+      plate.dataset.heroPlateKind = candidate.kind;
       pages.splice(candidate.index, 0, plate);
       candidate.page.before(plate);
     }'''
