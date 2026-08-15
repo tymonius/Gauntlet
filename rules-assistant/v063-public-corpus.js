@@ -1,4 +1,5 @@
 import { buildRulesCorpus } from "./local-search.js";
+import { normalizeV063LastStandText, normalizeV063LastStandValue } from "./v063-last-stand-language.js";
 
 export const V063_RULES_VERSION = "v0.6.3";
 export const V063_VERSION_LABEL = "Gauntlet v0.6.3";
@@ -57,11 +58,15 @@ export async function loadV063RulesCorpus({
   if (canonicalHash !== CLEAN_V063_CANONICAL_DATA_SHA256) throw new Error(`v0.6.3 canonical-data source hash mismatch: ${canonicalHash}`);
   const rulebookMarkdown = new TextDecoder().decode(rulebookBytes);
   const canonicalData = JSON.parse(new TextDecoder().decode(canonicalBytes));
+
+  // Certification applies to the raw recovered bytes. Publication terminology is
+  // corrected only after those bytes pass their integrity and structural checks.
   validateV063Inputs({ rulebookMarkdown, canonicalData });
   const publishedRulebookMarkdown = publicRulebookSource(rulebookMarkdown);
+  const publishedCanonicalData = normalizeV063LastStandValue(canonicalData);
 
   const corpus = buildRulesCorpus({
-    canonicalData,
+    canonicalData: publishedCanonicalData,
     rulebookMarkdown: publishedRulebookMarkdown,
     siteOrigin: inferOrigin(urls.rulebookUrl),
     canonicalDataUrl: urls.canonicalDataUrl,
@@ -77,7 +82,7 @@ export async function loadV063RulesCorpus({
   corpus.currentPublicRelease = "v0.6.3";
   corpus.authoritySetId = CLEAN_V063_AUTHORITY_SET_ID;
   corpus.sourceUrls = urls;
-  corpus.data = canonicalData;
+  corpus.data = publishedCanonicalData;
   corpus.documents = corpus.documents.map((document) => {
     if (document.kind === "rulebook") {
       return {
@@ -149,10 +154,14 @@ function inferOrigin(value) {
 }
 
 function publicRulebookSource(source) {
-  return String(source || '').replace('**Version 0.6.3 — Clean Reconstruction Candidate**', '**Version 0.6.3**').replace(/^> \*\*Authority candidate, not current\/public rules\.\*\*[^\n]*\n\n/m, '');
+  return normalizeV063LastStandText(source)
+    .replace('**Version 0.6.3 — Clean Reconstruction Candidate**', '**Version 0.6.3**')
+    .replace(/^> \*\*Authority candidate, not current\/public rules\.\*\*[^\n]*\n\n/m, '');
 }
+
 async function sha256(bytes) {
   const digest = await crypto.subtle.digest('SHA-256', bytes);
   return [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, '0')).join('');
 }
+
 export const V063_AUTHORITY_SET_ID = CLEAN_V063_AUTHORITY_SET_ID;
