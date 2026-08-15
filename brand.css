@@ -50,9 +50,9 @@ footer > div:first-child > strong:first-child {
   line-height: 0 !important;
 }
 
-/* Keep the global site chrome visually identical even on tools whose content areas use different maximum widths. */
+/* Keep the global site chrome visually consistent without forcing every page onto one content width. Most public pages use the 1180px shell; wide tool headers can opt into their own maximum via --gauntlet-header-max-width. */
 :is(.site-header, .global-header, .rulebook-header, .arbiter-header) {
-  width: min(1180px, calc(100% - 40px)) !important;
+  width: min(var(--gauntlet-header-max-width, 1180px), calc(100% - 40px)) !important;
   margin-inline: auto !important;
   min-height: 86px !important;
   display: flex !important;
@@ -62,6 +62,11 @@ footer > div:first-child > strong:first-child {
   border-bottom: 1px solid var(--line, rgba(49, 42, 32, 0.2)) !important;
   position: relative;
   z-index: 2;
+}
+
+/* The Deckbuilder's global-header belongs to its wider 1380px work surface. */
+.global-header {
+  --gauntlet-header-max-width: 1380px;
 }
 
 :is(.site-header, .global-header, .rulebook-header, .arbiter-header) > :is(nav, .header-actions) {
