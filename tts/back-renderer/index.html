@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <title>Gauntlet TTS Card Back Renderer</title>
+  <style>*{box-sizing:border-box}html,body{margin:0;background:transparent}</style>
+  <link rel="stylesheet" href="/design-tokens.css">
+  <link rel="stylesheet" href="/card-design/card-back.css">
+</head>
+<body>
+  <main id="renderTarget">
+    <div data-gauntlet-card-back></div>
+  </main>
+  <script>
+    const faction = new URLSearchParams(window.location.search).get('faction') || 'intelligence';
+    document.querySelector('[data-gauntlet-card-back]').dataset.cardBackFaction = faction;
+  </script>
+  <script type="module" src="/card-design/card-back.js"></script>
+</body>
+</html>
