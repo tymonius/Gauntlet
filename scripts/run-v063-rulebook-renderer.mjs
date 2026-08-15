@@ -55,5 +55,55 @@ replaceOnce(
   "      bodyFamily: getComputedStyle(document.querySelector('.production-flow p:not(.flavor-overline), .body-copy')).fontFamily,",
 );
 
+// CSS font stacks alone do not prove that the intended face actually loaded.
+// Record real FontFaceSet availability for Inter, and the numbered Leader pages
+// so the current publication contract can protect facing Leader spreads.
+replaceOnce(
+  'utility font report',
+  "      utilityFamily: getComputedStyle(document.querySelector('.running-head')).fontFamily,",
+  `      utilityFamily: getComputedStyle(document.querySelector('.running-head')).fontFamily,
+      interLoaded: document.fonts.check('400 12px Inter') && document.fonts.check('700 12px Inter'),
+      leaderPages: [...document.querySelectorAll('#reader-root > .leader-page')].map(page => ({
+        leader: page.querySelector('.leader-name')?.textContent?.trim() || '',
+        pageNumber: Number(page.dataset.page),
+      })),`,
+);
+
+replaceOnce(
+  'utility font assertion',
+  `  if (!result.utilityFamily.includes('Inter')) {
+    throw new Error(\`Approved utility typography was not retained: \${result.utilityFamily}\`);
+  }`,
+  `  if (!result.utilityFamily.includes('Inter')) {
+    throw new Error(\`Approved utility typography was not retained: \${result.utilityFamily}\`);
+  }
+  if (!result.interLoaded) {
+    throw new Error('Inter is named in the approved utility stack but is not actually loaded.');
+  }
+
+  const expectedLeaderPairs = [
+    ['General', 'Commandant'],
+    ['Ambassador', 'Senator'],
+    ['Banker', 'Executive'],
+    ['Ranger', 'Spymaster'],
+    ['Alchemist', 'Spirit Walker'],
+    ['Grand Inquisitor', 'Witch Hunter'],
+  ];
+  if (result.leaderPages.length !== 12) {
+    throw new Error(\`Expected 12 dedicated Leader pages; found \${result.leaderPages.length}.\`);
+  }
+  const leaderPageByName = new Map(result.leaderPages.map(item => [item.leader, item.pageNumber]));
+  for (const [leftLeader, rightLeader] of expectedLeaderPairs) {
+    const leftPage = leaderPageByName.get(leftLeader);
+    const rightPage = leaderPageByName.get(rightLeader);
+    if (!leftPage || !rightPage) {
+      throw new Error(\`Leader spread is missing \${leftLeader} or \${rightLeader}.\`);
+    }
+    if (leftPage % 2 !== 0 || rightPage !== leftPage + 1) {
+      throw new Error(\`Leader pair must share a facing spread: \${leftLeader} p.\${leftPage}, \${rightLeader} p.\${rightPage}.\`);
+    }
+  }`,
+);
+
 await writeFile(runtimePath, source, 'utf8');
 await import(`${runtimePath.href}?run=${Date.now()}`);
