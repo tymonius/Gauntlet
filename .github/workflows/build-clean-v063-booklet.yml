@@ -24,7 +24,6 @@ jobs:
             /scripts/run-v063-rulebook-renderer.mjs
             /scripts/render-clean-v063-booklet.mjs
             /scripts/validate-clean-v063-booklet.mjs
-            /rulebook/player-facing-rewrites.json
             /rulebook-design/
             /rulebook-production/
             /releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md
