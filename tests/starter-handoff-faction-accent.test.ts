@@ -14,10 +14,12 @@ describe("starter handoff faction accent", () => {
     expect(css).toContain("overflow:hidden");
   });
 
-  it("uses the imported faction color for the panel border, including ready state", () => {
+  it("uses the imported faction color for the panel border and loaded status", () => {
     expect(css).toContain("border-top:6px solid var(--starter-faction-color,#8f1f25)");
     expect(css).toContain(".starter-handoff-panel.is-ready{border-top-color:var(--starter-faction-color,#8f1f25)}");
+    expect(css).toContain(".starter-handoff-copy .is-success{color:var(--starter-faction-color,#236946)");
     expect(css).not.toContain(".starter-handoff-panel.is-ready{border-top-color:#2b7551}");
+    expect(css).not.toContain(".starter-handoff-copy .is-success{color:#236946");
   });
 
   it("binds the panel accent to the imported faction", () => {
