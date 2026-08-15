@@ -1,0 +1,67 @@
+name: Publish current Rulebook booklet
+
+on:
+  workflow_dispatch:
+  # Bootstrap this publication fix from its feature branch. This branch trigger is
+  # removed after the approved binary is materialized; future publication is manual.
+  push:
+    branches:
+      - fix/publish-current-rulebook-booklet
+
+permissions:
+  contents: write
+
+jobs:
+  publish-booklet:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - name: Checkout publication source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Use Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Rulebook production dependencies
+        run: |
+          npm install
+          npm install --no-save --package-lock=false pdf-lib
+          npx playwright install --with-deps chromium
+
+      - name: Install publication utility font
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-inter
+          fc-match Inter
+
+      - name: Build and validate approved Rulebook booklet
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/build-v063-rulebook-production.py
+          node --check scripts/run-v063-rulebook-renderer.mjs
+          node --check scripts/render-clean-v063-booklet.mjs
+          node --check scripts/validate-clean-v063-booklet.mjs
+          node scripts/render-clean-v063-booklet.mjs
+          node scripts/validate-clean-v063-booklet.mjs
+
+      - name: Materialize approved booklet into current release payload
+        run: node scripts/materialize-clean-v063-booklet.mjs
+
+      - name: Validate current public publication contract
+        run: |
+          node scripts/validate-current-public-contract.mjs
+          node scripts/validate-current-rulebook-booklet-provenance.mjs
+
+      - name: Commit public booklet payload to this branch
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          node scripts/commit-generated-files.mjs \
+            "Publish approved v0.6.3 Rulebook booklet" -- \
+            releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook_Booklet.pdf \
+            releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Manifest.json
