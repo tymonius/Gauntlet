@@ -1,0 +1,132 @@
+[
+  {
+    "label": "Chapter 11 procedure heading",
+    "old": "## Adopted v0.6.3 card procedures",
+    "new": "## Card procedures"
+  },
+  {
+    "label": "Battle heading changelog",
+    "old": "v0.6.3 no longer uses **Battle** as a printed effect heading.",
+    "new": "**Battle** is not an effect heading. Gambit and Tactic effects use the headings below."
+  },
+  {
+    "label": "Gambit Tactic layout note",
+    "old": "- **Gambit/Tactic** means the same printed effect is available when the card is committed as either a Gambit or a Tactic. On the card face, this heading is stacked as `Gambit/` over `Tactic` to preserve the narrow heading column.",
+    "new": "- **Gambit/Tactic** means the same printed effect is available when the card is committed as either a Gambit or a Tactic."
+  },
+  {
+    "label": "Gambit Tactic authoring prose",
+    "old": "In general prose, use **Gambit effect**, **Tactic effect**, or **Gambit or Tactic effect** as applicable. When a card directly refers to its own printed **Gambit/Tactic** heading, it may say **its Gambit/Tactic effect**.",
+    "new": "A reference to a card's **Gambit/Tactic effect** means the effect printed under that heading."
+  },
+  {
+    "label": "inherent Bank printing note",
+    "old": "This inherent Action does not need to be printed on the card.",
+    "new": "A card has this Bank Action whenever it has an **Asset** effect, even if the Action is not printed separately."
+  },
+  {
+    "label": "Asset heading changelog",
+    "old": "**Asset is the only banked-card effect heading in v0.6.3.** Asset text may be continuous, triggered, optional, or expressly usable as an Action while the card is banked. The former **Activate** heading is retired. An Asset ability that says `as an Action` still uses the applicable Action permission.",
+    "new": "**Asset** is the banked-card effect heading. Asset text may be continuous, triggered, optional, or expressly usable as an Action while the card is banked. An Asset ability that says `as an Action` still uses the applicable Action permission."
+  },
+  {
+    "label": "implicit Bank authoring note",
+    "old": "Cards whose only printed Action was `Bank this card.` therefore omit that Action section in v0.6.3.",
+    "new": "If an Asset card has no special banking procedure, use the inherent Bank Action above."
+  },
+  {
+    "label": "free procedure authoring examples",
+    "old": "Cards therefore do not need phrases such as:\n\n- `without spending an Action`;\n- `without spending another Action`;\n- `without taking an Action`; or\n- `without taking additional Actions`.",
+    "new": "This remains true even when the card does not explicitly say that the procedure is free of an Action cost."
+  },
+  {
+    "label": "battle scope heading",
+    "old": "#### Battle scope in standard v0.6.3",
+    "new": "#### Battle scope"
+  },
+  {
+    "label": "battle scope release wording",
+    "old": "The standard v0.6.3 game is 1v1, so every battle involves both players. A battle-timed effect on a player's card therefore does not need to say `in a battle involving you`. The printed timing and other conditions still determine whether the effect can apply.",
+    "new": "Gauntlet is a two-player game, so every battle involves both players. A battle-timed effect on one of your cards applies to a battle involving you whenever its timing and other conditions are satisfied."
+  },
+  {
+    "label": "movement authoring note",
+    "old": "Cards therefore do not need affirmative text saying that granted movement may start or create a battle. Negative exceptions remain printed.",
+    "new": "Granted movement may create a pending battle or initiate a legal Last Stand unless the effect expressly prohibits it."
+  },
+  {
+    "label": "Sanction authoring note",
+    "old": "A Sanction may state additional removal conditions. Cards therefore do not need to repeat identification of the refusing opponent or the default expiration after later acceptance.",
+    "new": "A Sanction may state additional removal conditions. Unless it says otherwise, the opponent whose refusal caused it to enter play remains the associated opponent, and later acceptance by that opponent causes the default expiration above."
+  },
+  {
+    "label": "Asset Removal authoring note",
+    "old": "Cards should still use the clearest natural instruction for the physical result. For example, `discard 1 Asset` is preferable to forcing the word `Remove` into the sentence when discard is the actual instruction. Use **Remove/Removed** when another rule or effect cares that involuntary Asset loss occurred.",
+    "new": "An instruction such as `discard 1 Asset` causes Removal when the loss is involuntary even if the word **Remove** does not appear in that instruction."
+  },
+  {
+    "label": "Asset ownership style guide",
+    "old": "#### Asset ownership language\n\nWhen ownership is already clear from the sentence, prefer:\n\n- `your Asset` / `your Assets`;\n- `opposing Asset` / `opposing Assets`; and\n- `their Asset` / `their Assets`.\n\nDo not write `Asset you control`, `Assets you control`, `Asset they control`, or equivalent control boilerplate unless a genuine ownership or control ambiguity requires it.\n\n",
+    "new": ""
+  },
+  {
+    "label": "compact shorthand authoring intro",
+    "old": "Routine quantitative instructions may use compact shorthand when timing, subject, source, and eligible set remain unambiguous.",
+    "new": "The following shorthand has the listed rules meaning whenever timing, subject, source, and eligible set are unambiguous."
+  },
+  {
+    "label": "Reserve source authoring note",
+    "old": "**Reserve is the default Tactic source.** Do not print `from Reserve` merely to restate the default. Print another source only when it overrides or narrows the default, such as:",
+    "new": "**Reserve is the default Tactic source.** If an effect names another source, that source overrides or narrows the default. Examples include:"
+  },
+  {
+    "label": "draw shorthand authoring note",
+    "old": "If another player receives the draw, identify that player. If the cards go somewhere other than the Hand, state that destination instead of using this shorthand.\n\nOptional compound procedures may remain in natural language when shorthand would obscure what is optional.",
+    "new": "If an effect identifies another player, that player draws the cards. If an effect names another destination, put the cards in that destination instead of the Hand."
+  },
+  {
+    "label": "resource shorthand authoring note",
+    "old": "Do **not** use negative resource shorthand for costs, payments, losses, or reductions when their rules meaning differs. Continue to write `spend`, `pay`, `lose`, or the applicable instruction.",
+    "new": "Negative resource shorthand does not represent costs, payments, losses, or reductions. Follow the applicable `spend`, `pay`, `lose`, or other instruction instead."
+  },
+  {
+    "label": "advantage authoring intro",
+    "old": "Card faces retain natural instruction wording:",
+    "new": "The following phrases grant the listed number of instances:"
+  },
+  {
+    "label": "advantage authoring note",
+    "old": "The words `Advantage`, `Double Advantage`, and `Disadvantage` may still be used as rules terms when discussing the mechanic, but card-facing instructions use the natural `gain ...` form unless another sentence structure requires equivalent wording.\n\n",
+    "new": ""
+  },
+  {
+    "label": "Front Line shorthand authoring note",
+    "old": "Use **`Advance Front Line N`**, not `+N Front Line`, to advance the Front Line by N Territories.\n\nCard-specific qualifications such as `if able` and replacement of Occupation remain printed when they matter.",
+    "new": "**`Advance Front Line N`** advances the Front Line by N Territories. `+N Front Line` has no defined rules meaning. Any stated qualification such as `if able`, or any replacement of Occupation, still applies."
+  },
+  {
+    "label": "condition prefix authoring note",
+    "old": "When a condition governs the entire following clause, cards may use concise prefixes such as:",
+    "new": "When a condition prefix appears before a clause, it governs that entire clause. Common prefixes include:"
+  },
+  {
+    "label": "condition prefix style note",
+    "old": "The prefix scopes only the clause that follows it. More complex conditions remain in natural language.",
+    "new": "The prefix scopes only the clause that follows it."
+  },
+  {
+    "label": "reroll authoring note",
+    "old": "Cards therefore do not need to repeat `use the new result` or `you must use the new result` after a reroll instruction.\n\n",
+    "new": ""
+  },
+  {
+    "label": "copied effect authoring note",
+    "old": "Cards therefore do not need phrases such as `as though you played it`, `as though you controlled it`, repeated instructions to leave the source card in its zone, or card-specific reminders to remake choices and repay costs.\n\n",
+    "new": ""
+  },
+  {
+    "label": "no-winner authoring note",
+    "old": "Cards that end a battle without a winner therefore do not need to restate ordinary cleanup, that withdrawal is not a loss, or that already-applied effects remain applied.\n\n",
+    "new": ""
+  }
+]
