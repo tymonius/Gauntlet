@@ -41,6 +41,24 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
+          sparse-checkout-cone-mode: false
+          sparse-checkout: |
+            .github/workflows/validate-v063-last-stand-language.yml
+            scripts/validate-v063-last-stand-language.mjs
+            rules-assistant/v063-last-stand-language.js
+            docs/Gauntlet_v0.6.3_Cross_Surface_Closeout_Matrix.md
+            docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md
+            docs/Gauntlet_v0.6.3_Implementation_Ledger.md
+            docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md
+            docs/Gauntlet_v0.6.3_Shared_Rules_Test_Matrix.md
+            index.html
+            start/index.html
+            factions/military/index.html
+            releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md
+            releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Canonical_Data.json
+            v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json
+            artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md
+            artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json
       - uses: actions/setup-node@v4
         with:
           node-version: 22
