@@ -12,9 +12,6 @@ function replaceOnce(label, original, replacement) {
   source = source.replace(original, replacement);
 }
 
-// v0.6.3 keeps the approved chapter architecture but renamed two shared-rule
-// chapters. Preserve the renderer's exact-anchor validation using current
-// authoritative names rather than deleting or weakening the check.
 replaceOnce(
   'Chapter 5 required anchor',
   "  '5. Actions and Assets',",
@@ -26,8 +23,6 @@ replaceOnce(
   "  '8. Front Line, Occupation, and Capture',",
 );
 
-// Carry forward the two production-runtime corrections used by the approved
-// v0.6.1 wrapper. These are validation/readiness fixes, not layout changes.
 const headingOriginal = `        const next = heading.nextElementSibling;
         const headingRect = heading.getBoundingClientRect();
         const nearBottom = headingRect.bottom > flowRect.bottom - 34;
@@ -46,18 +41,12 @@ const readyCorrected = `    () => document.documentElement.dataset.paginationRea
 replaceOnce('heading validation correction', headingOriginal, headingCorrected);
 replaceOnce('postprocess readiness correction', readyOriginal, readyCorrected);
 
-// The approved renderer's body-font probe selected the first paragraph on the
-// document, which is a deliberate P22 Declaration decorative overline. Probe an
-// actual reading paragraph so the current wrapper can enforce Caslon correctly.
 replaceOnce(
   'reading-font probe',
   "      bodyFamily: getComputedStyle(document.querySelector('.production-flow p, .body-copy')).fontFamily,",
   "      bodyFamily: getComputedStyle(document.querySelector('.production-flow p:not(.flavor-overline), .body-copy')).fontFamily,",
 );
 
-// CSS font stacks alone do not prove that the intended face actually loaded.
-// Record real FontFaceSet availability for Inter, and the numbered Leader pages
-// so the current publication contract can protect facing Leader spreads.
 replaceOnce(
   'utility font report',
   "      utilityFamily: getComputedStyle(document.querySelector('.running-head')).fontFamily,",
@@ -66,7 +55,8 @@ replaceOnce(
       leaderPages: [...document.querySelectorAll('#reader-root > .leader-page')].map(page => ({
         leader: page.querySelector('.leader-name')?.textContent?.trim() || '',
         pageNumber: Number(page.dataset.page),
-      })),`,
+      })),
+      heroPlateSources: [...document.querySelectorAll('#reader-root > .intentional-blank .hero-plate img')].map(image => image.getAttribute('src')),`,
 );
 
 replaceOnce(
@@ -102,6 +92,12 @@ replaceOnce(
     if (leftPage % 2 !== 0 || rightPage !== leftPage + 1) {
       throw new Error(\`Leader pair must share a facing spread: \${leftLeader} p.\${leftPage}, \${rightLeader} p.\${rightPage}.\`);
     }
+  }
+
+  const expectedHeroPlates = ['hero sketch 2.png', 'hero sketch 3.png', 'hero sketch 4.png'];
+  const actualHeroPlates = result.heroPlateSources.map(source => decodeURIComponent(source || '').split('/').at(-1)).sort();
+  if (report.intentionalBlanks !== 3 || JSON.stringify(actualHeroPlates) !== JSON.stringify(expectedHeroPlates)) {
+    throw new Error(\`Expected exactly the three unused hero filler sketches; found \${JSON.stringify(actualHeroPlates)} across \${report.intentionalBlanks} filler pages.\`);
   }`,
 );
 
