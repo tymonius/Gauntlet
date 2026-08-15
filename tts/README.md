@@ -1,18 +1,24 @@
 # Gauntlet Tabletop Simulator assets
 
-This directory contains the supported export path from the published Gauntlet v0.6.3 data and production card renderers to Tabletop Simulator-ready raster assets.
+This directory contains the supported export path from Gauntlet's **current published release** and shared production renderers to Tabletop Simulator-ready raster assets.
 
-## Source discipline
+## Release-driven source discipline
 
-The current TTS catalog reads the published canonical dataset directly:
+The TTS pipeline does not hard-code a game version. It resolves the current release from the same repository metadata used by publication:
 
-- `releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json`
-- approved playable-card artwork under `images/artwork/cards/`
-- the shared production playable-card renderer under `card-design/` and `tts/renderer/`
-- the shared production card-back component under `card-design/card-back.css` and `card-design/card-back.js`
-- the shared Territory renderer under `card-design/territory-card.css` and `tts/territory-renderer/`
+- `config/release-lifecycle.json` declares which release is current and publicly cut over;
+- `config/github-release-contract.json` must agree on that release and identifies its published canonical-data asset;
+- `scripts/tts-current-catalog.mjs` validates that agreement, finds the canonical dataset, and derives the versioned output path.
 
-The older v0.6.2 generator files remain in `scripts/` only as historical tooling. The supported npm commands below use the v0.6.3 pipeline.
+The exporters then consume:
+
+- the resolved current canonical dataset;
+- approved playable-card artwork under `images/artwork/cards/`;
+- the shared production playable-card renderer under `card-design/` and `tts/renderer/`;
+- the shared production card-back component under `card-design/card-back.css` and `card-design/card-back.js`;
+- the shared Territory renderer under `card-design/territory-card.css` and `tts/territory-renderer/`.
+
+A release cutover should therefore require **no TTS script fork, rename, count update, or version-string edit**. Advancing the normal release lifecycle and GitHub release contract is enough for the supported TTS commands to follow the new current release.
 
 ## Commands
 
@@ -25,13 +31,13 @@ npm run tts:territories
 npm run tts:build
 ```
 
-- `tts:check` validates the published v0.6.3 catalog, canonical counts, IDs, and Territory export contract without writing raster output.
-- `tts:catalog` writes deterministic v0.6.3 catalog JSON/browser data under `tts/generated/v0.6.3/`.
-- `tts:cards` renders all 128 playable-card faces, six production faction back assets, two 10 × 7 TTS face sheets, and `manifest.json`.
-- `tts:territories` renders all 25 landscape Territories/Arenas, one 7 × 4 face sheet, the temporary landscape Territory back, and `territory-manifest.json`.
+- `tts:check` resolves the current release and validates its canonical cards, Territories, IDs, release metadata, and artwork coverage without writing raster output.
+- `tts:catalog` writes deterministic catalog JSON/browser data under both `tts/generated/<current-release>/` and the generated `tts/generated/current/` alias used by the render surfaces.
+- `tts:cards` renders every current playable-card face, six production faction back assets, as many 10 × 7 TTS face sheets as necessary, and `manifest.json`.
+- `tts:territories` renders every current landscape Territory/Arena, as many 7 × 4 sheets as necessary, the temporary landscape Territory back, and `territory-manifest.json`.
 - `tts:build` runs both raster exporters.
 
-The generated directory is intentionally ignored by Git. GitHub Actions uploads it as a review artifact rather than committing derived PNGs.
+The generated directory is intentionally ignored by Git. GitHub Actions uploads the complete `tts/generated/` tree as a review artifact instead of committing derived PNGs.
 
 ## Playable-card backs
 
@@ -57,24 +63,36 @@ The face sheets remain shared across all players. A future TTS save/mod publishe
 - 4000 × 3920 pixels per sheet
 - `BackIsHidden: true`
 - `UniqueBack: false`
-- six selectable faction back files under `tts/generated/v0.6.3/backs/`
+- six selectable faction back files under `tts/generated/<current-release>/backs/`
+- sheet count derived from the current canonical card count
 
-`manifest.json` records deterministic TTS CardIDs, face-sheet positions, all six back variants, and the player-faction back policy.
+`manifest.json` records deterministic TTS CardIDs, face-sheet positions, all six back variants, the resolved release authority, and the player-faction back policy.
 
 ## Territory sheet contract
 
 Territories and Arenas use the current 3.5 × 2.5-inch landscape production face renderer.
 
 - 7 columns × 4 rows
-- 27 face slots plus the final hidden-card image
+- 27 Territory face slots per sheet plus the final hidden-card image
 - 560 × 400 pixels per Territory
 - 3920 × 1600 pixels per sheet
-- deck ID 50, separate from playable-card deck IDs
+- deterministic deck IDs beginning at 50, separate from playable-card deck IDs
+- additional sheets/deck IDs created automatically if the current Territory pool grows beyond 27 cards
 - `BackIsHidden: true`
 - `UniqueBack: false`
 
 The Territory back is still explicitly temporary; designing a production landscape back is separate from the now-finished playable-card backs.
 
+## Release durability contract
+
+For an ordinary future release, TTS should continue working when the release process does these things:
+
+1. update `config/release-lifecycle.json` so the new release is `current` with `public_cutover: true`;
+2. update `config/github-release-contract.json` so `current_release.tag` matches and its `assets` list contains the new canonical-data JSON;
+3. publish the canonical data and any new artwork/rendering changes through the normal shared surfaces.
+
+The TTS resolver fails closed if the two release authorities disagree or if the current GitHub release contract does not publish a canonical-data asset. Card and Territory counts are read from the canonical data rather than duplicated in exporter constants.
+
 ## Remaining TTS work
 
-These exports deliberately contain no hosted asset URLs and do not yet constitute a playable TTS save. The next layer is the mod publisher/table implementation: host the generated sheets and backs, build CustomDeck/Deck objects from the manifests, construct the twelve starter decks with the correct player-faction back, and assemble the Gauntlet table/save definition.
+These exports deliberately contain no hosted asset URLs and do not yet constitute a playable TTS save. The next layer is the mod publisher/table implementation: host the generated sheets and backs, build CustomDeck/Deck objects from the manifests, construct the current starter decks with the correct player-faction back, and assemble the Gauntlet table/save definition.
