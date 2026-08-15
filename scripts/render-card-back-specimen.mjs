@@ -63,20 +63,28 @@ async function main() {
       const wordmark = element.querySelector('.gauntlet-card-back__wordmark');
       const wordmarkRect = wordmark.getBoundingClientRect();
       const wordmarkStyle = getComputedStyle(wordmark);
+      const pattern = element.querySelector('.gauntlet-card-back__pattern');
+      const patternStyle = getComputedStyle(pattern);
       const symbols = [...element.querySelectorAll('.gauntlet-card-back__symbol')];
+      const firstSymbolStyle = symbols[0] ? getComputedStyle(symbols[0]) : null;
       return {
         width: rect.width,
         height: rect.height,
         frameInset: frameRect.left - rect.left,
+        frameRadius: getComputedStyle(frame).borderRadius,
         symbolCount: symbols.length,
         symbolsMasked: symbols.every(symbol => {
           const style = getComputedStyle(symbol);
           return (style.maskImage || style.webkitMaskImage) !== 'none';
         }),
+        symbolBackground: firstSymbolStyle?.backgroundColor || '',
+        patternTransform: patternStyle.transform,
         wordmarkWidth: wordmarkRect.width,
         wordmarkHeight: wordmarkRect.height,
+        wordmarkFrameClearance: (frameRect.height - wordmarkRect.height) / 2,
         wordmarkMask: wordmarkStyle.maskImage || wordmarkStyle.webkitMaskImage,
         background: getComputedStyle(element).backgroundColor,
+        fieldBackground: getComputedStyle(element, '::after').backgroundColor,
       };
     });
 
@@ -86,11 +94,20 @@ async function main() {
     if (Math.abs(metrics.frameInset - 36) > 0.25) {
       throw new Error(`Card-back frame inset is ${metrics.frameInset}px; expected 36px (3/8in).`);
     }
+    if (metrics.frameRadius !== '12px') {
+      throw new Error(`Card-back gold frame does not match the 1/8in card corner radius: ${JSON.stringify(metrics)}.`);
+    }
     if (metrics.symbolCount !== 266 || !metrics.symbolsMasked || metrics.wordmarkMask === 'none') {
       throw new Error(`Card-back assets failed to render: ${JSON.stringify(metrics)}.`);
     }
-    if (metrics.wordmarkHeight < 260 || metrics.wordmarkWidth > 72) {
-      throw new Error(`Card-back wordmark did not render as the large rotated treatment: ${JSON.stringify(metrics)}.`);
+    if (metrics.patternTransform === 'none') {
+      throw new Error(`Card-back tiling field is not rotated as a single background: ${JSON.stringify(metrics)}.`);
+    }
+    if (metrics.symbolBackground !== 'rgba(0, 0, 0, 0.24)' || metrics.fieldBackground !== 'rgb(32, 33, 36)') {
+      throw new Error(`Card-back pattern contrast is not dark-on-charcoal: ${JSON.stringify(metrics)}.`);
+    }
+    if (metrics.wordmarkHeight < 230 || metrics.wordmarkWidth > 66 || metrics.wordmarkHeight <= metrics.wordmarkWidth || metrics.wordmarkFrameClearance < 12) {
+      throw new Error(`Card-back wordmark did not render as the large rotated treatment with frame breathing room: ${JSON.stringify(metrics)}.`);
     }
 
     await back.screenshot({ path: join(OUTPUT, 'universal-card-back.png'), omitBackground: true });
