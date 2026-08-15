@@ -149,7 +149,7 @@ body{background:radial-gradient(circle at 10% 5%,rgba(143,31,37,.1),transparent 
   z-index:1;
   display:none;
   width:100%;
-  max-width:190px;
+  max-width:260px;
   aspect-ratio:4/5;
   align-self:start;
   justify-self:start;
@@ -157,8 +157,8 @@ body{background:radial-gradient(circle at 10% 5%,rgba(143,31,37,.1),transparent 
   background-position:center;
   background-size:contain;
   background-repeat:no-repeat;
-  border:1px solid var(--start-line);
-  box-shadow:0 10px 24px rgba(54,42,25,.11);
+  border:1px solid rgba(49,42,32,.38);
+  box-shadow:0 0 0 3px rgba(255,252,244,.8),0 14px 30px rgba(54,42,25,.2);
 }
 .selected-choice::after{
   content:"";
@@ -190,14 +190,15 @@ body{background:radial-gradient(circle at 10% 5%,rgba(143,31,37,.1),transparent 
 .choice-section:has(input[name="leader"][value="grand-inquisitor"]:checked) .selected-choice::before{background-image:url("../images/grand inquisitor.png")}
 .choice-section:has(input[name="leader"][value="witch-hunter"]:checked) .selected-choice::before{background-image:url("../images/witch hunter.png")}
 @media(min-width:901px){
-  .choice-section:has(input[name="leader"]:checked) .selected-choice{grid-template-columns:minmax(160px,.38fr) minmax(0,1fr) minmax(300px,.85fr)}
+  .choice-section:has(input[name="leader"]:checked) .selected-choice{grid-template-columns:minmax(230px,260px) minmax(0,1fr) minmax(300px,.85fr)}
 }
 @media(min-width:621px) and (max-width:900px){
-  .choice-section:has(input[name="leader"]:checked) .selected-choice{grid-template-columns:190px minmax(0,1fr)}
+  .choice-section:has(input[name="leader"]:checked) .selected-choice{grid-template-columns:230px minmax(0,1fr)}
   .choice-section:has(input[name="leader"]:checked) .starter-preview{grid-column:1/-1}
+  .selected-choice::before{max-width:230px}
 }
 @media(max-width:620px){
   .choice-section:has(input[name="leader"]:checked) .selected-choice{grid-template-columns:1fr}
-  .selected-choice::before{max-width:190px}
+  .selected-choice::before{max-width:240px}
   .selected-choice::after{bottom:-2.5rem;width:290px}
 }
