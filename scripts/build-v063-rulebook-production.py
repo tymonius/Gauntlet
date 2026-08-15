@@ -3,7 +3,6 @@
 
 from __future__ import annotations
 
-import json
 import re
 import sys
 from pathlib import Path
@@ -11,7 +10,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 PRODUCTION = ROOT / "rulebook-production"
 CURRENT_RULEBOOK = ROOT / "releases" / "v0.6.3-reconstructed" / "Gauntlet_v0.6.3_Rulebook.md"
-PLAYER_FACING_REWRITES = ROOT / "rulebook" / "player-facing-rewrites.json"
 PRODUCTION_SOURCE = PRODUCTION / ".v063-production-source.md"
 HTML = PRODUCTION / "full-rulebook.html"
 RUNTIME_PAGINATOR = PRODUCTION / ".paginate_rulebook_runtime.mjs"
@@ -33,30 +31,9 @@ def replace_required(source: str, old: str, new: str, label: str, expected: int 
     return source.replace(old, new)
 
 
-def apply_player_facing_rewrites(source: str) -> str:
-    rewrites = json.loads(PLAYER_FACING_REWRITES.read_text(encoding="utf-8"))
-    if not isinstance(rewrites, list) or not rewrites:
-        raise RuntimeError("Player-facing Rulebook rewrite contract is empty or invalid.")
-    result = source
-    for rewrite in rewrites:
-        label, old, new = rewrite.get("label"), rewrite.get("old"), rewrite.get("new")
-        expected = rewrite.get("expected", 1)
-        if not isinstance(label, str) or not isinstance(old, str) or not isinstance(new, str) or not isinstance(expected, int):
-            raise RuntimeError("Player-facing Rulebook rewrite entry is malformed.")
-        result = replace_required(result, old, new, label, expected)
-
-    start = result.find("# 11. Detailed Card and Timing Rules")
-    end = result.find("# 12. Overlays and Other Shared Card Rules", start)
-    if start < 0 or end < 0:
-        raise RuntimeError("Could not isolate player-facing Chapter 11.")
-    chapter = result[start:end]
-    for phrase in ("v0.6.3", "Cards therefore do not need", "Cards should", "Do not print", "The former "):
-        if phrase in chapter:
-            raise RuntimeError(f"Player-facing Chapter 11 still contains internal/editorial language: {phrase}")
-    return result
-
-
 def build_presentation_source(source: str) -> str:
+    """Restore production-only Leader hierarchy and approved portrait references."""
+
     output: list[str] = []
     names = set(LEADERS)
     leader_count = 0
@@ -258,7 +235,7 @@ def adapt_signature_padding(paginator: str) -> str:
 
 def main() -> None:
     current_source = CURRENT_RULEBOOK.read_text(encoding="utf-8")
-    production_source = build_presentation_source(apply_player_facing_rewrites(current_source))
+    production_source = build_presentation_source(current_source)
     PRODUCTION_SOURCE.write_text(production_source, encoding="utf-8")
     build_rulebook.RULEBOOK = PRODUCTION_SOURCE
     build_complete_rulebook.main()
@@ -276,7 +253,7 @@ def main() -> None:
     paginator = adapt_hero_plate_pool(paginator)
     paginator = adapt_signature_padding(paginator)
     RUNTIME_PAGINATOR.write_text(paginator, encoding="utf-8")
-    print("adapted approved Rulebook production to v0.6.3 with player-facing editorial normalization, hierarchical filler planning, and unique hero filler art")
+    print("adapted approved Rulebook production to v0.6.3 with wording-neutral presentation transforms, hierarchical filler planning, and unique hero filler art")
 
 
 if __name__ == "__main__":
