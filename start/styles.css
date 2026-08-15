@@ -157,7 +157,7 @@ body{background:radial-gradient(circle at 10% 5%,rgba(143,31,37,.1),transparent 
   background-position:center;
   background-size:contain;
   background-repeat:no-repeat;
-  border:1px solid rgba(49,42,32,.38);
+  border:2px solid var(--selected-faction-color,var(--start-line));
   box-shadow:0 0 0 3px rgba(255,252,244,.8),0 14px 30px rgba(54,42,25,.2);
 }
 .selected-choice::after{
