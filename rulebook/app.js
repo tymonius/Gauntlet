@@ -2,7 +2,6 @@ import { renderMarkdown } from './markdown.js';
 
 const SOURCE_URL = '/artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md';
 const SOURCE_SHA256 = '7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643';
-const PLAYER_FACING_REWRITES_URL = './player-facing-rewrites.json';
 const PUBLISHED_SOURCE_URL = '../releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md';
 const PDF_URL = '../releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.pdf';
 const content = document.querySelector('[data-rulebook-content]');
@@ -278,51 +277,16 @@ function publicRulebookSource(source) {
     .replace(/^> \*\*Authority candidate, not current\/public rules\.\*\*[^\n]*\n\n/m, '');
 }
 
-function applyPlayerFacingRewrites(source, rewrites) {
-  if (!Array.isArray(rewrites) || rewrites.length === 0) {
-    throw new Error('Player-facing Rulebook rewrites are missing or invalid.');
-  }
-
-  let result = source;
-  for (const rewrite of rewrites) {
-    if (!rewrite || typeof rewrite.label !== 'string' || typeof rewrite.old !== 'string' || typeof rewrite.new !== 'string') {
-      throw new Error('Player-facing Rulebook rewrite entry is malformed.');
-    }
-    const count = result.split(rewrite.old).length - 1;
-    if (count !== 1) {
-      throw new Error(`Expected exactly one ${rewrite.label} source block; found ${count}.`);
-    }
-    result = result.replace(rewrite.old, rewrite.new);
-  }
-
-  const chapterStart = result.indexOf('# 11. Detailed Card and Timing Rules');
-  const chapterEnd = result.indexOf('# 12. Overlays and Other Shared Card Rules', chapterStart);
-  if (chapterStart < 0 || chapterEnd < 0) throw new Error('Could not isolate player-facing Chapter 11.');
-  const chapter = result.slice(chapterStart, chapterEnd);
-  for (const phrase of ['v0.6.3', 'Cards therefore do not need', 'Cards should', 'Do not print', 'The former ']) {
-    if (chapter.includes(phrase)) {
-      throw new Error(`Player-facing Chapter 11 still contains internal/editorial language: ${phrase}`);
-    }
-  }
-  return result;
-}
-
 async function loadRulebook() {
   initializeControls();
 
   try {
-    const [response, rewritesResponse] = await Promise.all([
-      fetch(SOURCE_URL, { cache: 'no-store' }),
-      fetch(PLAYER_FACING_REWRITES_URL, { cache: 'no-store' }),
-    ]);
+    const response = await fetch(SOURCE_URL, { cache: 'no-store' });
     if (!response.ok) throw new Error(`Rulebook source returned ${response.status}`);
-    if (!rewritesResponse.ok) throw new Error(`Player-facing Rulebook rewrites returned ${rewritesResponse.status}`);
     const bytes = await response.arrayBuffer();
     const actualHash = await sha256(bytes);
     if (actualHash !== SOURCE_SHA256) throw new Error(`Rulebook source hash mismatch: ${actualHash}`);
-    const rewrites = await rewritesResponse.json();
-    const decoded = new TextDecoder().decode(bytes);
-    const markdown = applyPlayerFacingRewrites(publicRulebookSource(decoded), rewrites);
+    const markdown = publicRulebookSource(new TextDecoder().decode(bytes));
     const rendered = renderMarkdown(markdown);
 
     content.innerHTML = rendered.html;
