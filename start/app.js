@@ -176,14 +176,23 @@
 
   async function loadStarterDecks() {
     try {
-      const response = await fetch("../deckbuilder/starter-decks.json", { cache: "no-store" });
-      if (!response.ok) throw new Error(`Starter deck library returned ${response.status}.`);
-      const data = await response.json();
-      state.starterDecks = Array.isArray(data.decks) ? data.decks : [];
+      const module = await import("../v0.6.3/data/starter-decks-candidate.js");
+      const decks = module?.V063_STARTER_CATALOG?.decks;
+      if (!Array.isArray(decks)) throw new Error("The v0.6.3 starter catalog did not contain a deck list.");
+      state.starterDecks = decks;
       state.starterLoadError = null;
-    } catch (error) {
-      console.error(error);
-      state.starterLoadError = error;
+    } catch (primaryError) {
+      try {
+        const response = await fetch("../deckbuilder/starter-decks.json", { cache: "no-store" });
+        if (!response.ok) throw new Error(`Starter deck library returned ${response.status}.`);
+        const data = await response.json();
+        state.starterDecks = Array.isArray(data.decks) ? data.decks : [];
+        state.starterLoadError = null;
+      } catch (fallbackError) {
+        console.error(primaryError);
+        console.error(fallbackError);
+        state.starterLoadError = fallbackError;
+      }
     }
   }
 
