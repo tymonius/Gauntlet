@@ -21,7 +21,6 @@
   <link rel="preconnect" href="https://p.typekit.net" crossorigin />
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
   <link rel="stylesheet" href="../design-tokens.css?v=20260815-2" />
-  <link rel="stylesheet" href="../developer-tools.css?v=20260815-2" />
   <link rel="stylesheet" href="card-design.css" />
   <link rel="stylesheet" href="card-design-refinement.css" />
   <link rel="stylesheet" href="card-back.css" />
@@ -31,14 +30,9 @@
   <link rel="stylesheet" href="rite-card.css" />
   <link rel="stylesheet" href="territory-card.css" />
   <link rel="stylesheet" href="card-review.css" />
-  <link rel="stylesheet" href="card-catalog-shell.css?v=20260815-2" />
-  <style>
-    @media screen and (min-width: 981px) {
-      .catalog-jumpbar { top: 0; }
-      .developer-catalog-main .card-section,
-      .developer-catalog-main .review-faction-block { scroll-margin-top: 68px; }
-    }
-  </style>
+  <link rel="stylesheet" href="../site.css?v=20260815-3" media="screen" />
+  <link rel="stylesheet" href="../developer-tools.css?v=20260815-3" media="screen" />
+  <link rel="stylesheet" href="card-catalog-shell.css?v=20260815-3" />
   <script src="card-review.js" defer></script>
   <script type="module" src="proposal-card.js"></script>
   <script type="module" src="rite-card.js"></script>
@@ -46,26 +40,18 @@
   <script src="card-design.js" defer></script>
 </head>
 <body class="faction-specimen-page developer-catalog-page">
-  <header class="developer-catalog-header screen-only">
-    <div class="developer-catalog-header-inner">
-      <div class="developer-catalog-branding">
-        <a class="brand" href="../" aria-label="Gauntlet home"></a>
-        <div class="developer-catalog-context" aria-label="Current developer tool">
-          <span>Developer tools</span>
-          <strong>Card review</strong>
-        </div>
-      </div>
-      <nav aria-label="Developer navigation">
-        <a href="../#tools">Developer tools</a>
-        <a href="../playtest/analysis/">Analysis</a>
-        <a href="../playtest/host/">Host home</a>
-        <button type="button" onclick="window.print()">Print cards</button>
-      </nav>
-    </div>
+  <header class="site-header developer-site-header screen-only">
+    <a class="brand" href="../" aria-label="Gauntlet home"></a>
+    <nav aria-label="Developer navigation">
+      <a href="../#tools">Developer tools</a>
+      <a href="../playtest/analysis/">Analysis</a>
+      <a href="../playtest/host/">Host home</a>
+      <a href="#" onclick="window.print(); return false;">Print cards</a>
+    </nav>
   </header>
 
   <main class="developer-catalog-main">
-    <section class="section-shell developer-catalog-hero screen-only" aria-labelledby="catalog-title">
+    <section class="section-shell developer-catalog-hero analysis-hero screen-only" aria-labelledby="catalog-title">
       <div class="catalog-hero-copy">
         <p class="eyebrow">Canonical v0.6.3 · developer review surface</p>
         <h1 id="catalog-title">Card review <span>catalog.</span></h1>
@@ -202,16 +188,16 @@
     </section>
   </main>
 
-  <footer class="developer-catalog-footer screen-only">
-    <div class="developer-footer-brand">
+  <footer class="screen-only">
+    <div>
       <strong>Gauntlet</strong>
       <p>Private developer surface · unpublished playtest project.</p>
     </div>
     <div class="footer-links">
       <a href="../">Main site</a>
       <a href="../#tools">Developer tools</a>
-      <a href="../playtest/analysis/">Playtest Analysis</a>
-      <a href="../playtest/host/">Host Home</a>
+      <a href="../playtest/analysis/">Playtest analysis</a>
+      <a href="../playtest/host/">Host home</a>
       <a href="https://github.com/tymonius/Gauntlet">GitHub</a>
     </div>
     <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
