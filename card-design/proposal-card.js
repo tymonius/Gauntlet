@@ -5,12 +5,12 @@ const EXPECTED_PROPOSAL_COUNT = 9;
 const root = document.querySelector('#proposalReviewSections');
 
 function esc(value) {
-  return String(value ?? '').replace(/[&<>'"]/g, character => ({
+  return String(value ?? '').replace(/[&<>'\"]/g, character => ({
     '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;',
     "'": '&#39;',
-    '"': '&quot;',
+    '\"': '&quot;',
   })[character]);
 }
 
@@ -102,3 +102,8 @@ async function renderProposalCatalog() {
 }
 
 await renderProposalCatalog();
+
+// Proposal data is fetched asynchronously. If it arrives after the native load
+// event, replay the established card preparation lifecycle so these late-added
+// cards still receive parchment loading, fitting, and inspection behavior.
+if (document.readyState === 'complete') window.dispatchEvent(new Event('load'));
