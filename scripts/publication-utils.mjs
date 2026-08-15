@@ -1,6 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import { normalizeV063LastStandText, normalizeV063LastStandValue } from '../rules-assistant/v063-last-stand-language.js';
 
 // Publication retry after #644 synchronized the approved Mystics Rite completion artwork regression.
 
@@ -78,8 +79,13 @@ export function currentize(html, title, description, canonicalUrl) {
   return withCanonical(out, canonicalUrl);
 }
 export function publicAuthorityNote(source) {
-  return source.replace('**Version 0.6.3 — Clean Reconstruction Candidate**', '**Version 0.6.3**')
+  return normalizeV063LastStandText(source)
+    .replace('**Version 0.6.3 — Clean Reconstruction Candidate**', '**Version 0.6.3**')
     .replace(/^> \*\*Authority candidate, not current\/public rules\.\*\*[^\n]*\n\n/m, '');
+}
+export function publicCanonicalData(source) {
+  const value = typeof source === 'string' ? JSON.parse(source) : source;
+  return normalizeV063LastStandValue(value);
 }
 export function publicFactionGuide(source) { return source.replace(/^> \*\*Clean v0\.6\.3[^\n]*\n\n/m, ''); }
 export function publicGeneratedReference(source, kind) {
