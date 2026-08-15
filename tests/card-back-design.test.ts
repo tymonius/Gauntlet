@@ -22,7 +22,7 @@ describe("universal playable-card back", () => {
     expect(css).toContain("--card-back-border-outline: #111111;");
     expect(css).toContain("--card-back-border-rule: rgba(255, 255, 250, 0.34);");
     expect(css).toContain("inset: 0.075in;");
-    expect(css).toContain("inset: 0.375in;");
+    expect(css).toContain("inset: calc(0.375in - 1px);");
     expect(css).toContain("--card-back-gold: var(--developer-gold-soft, #d7b783);");
     expect(css).toContain("border-radius: 0.125in;");
   });
