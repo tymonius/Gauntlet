@@ -227,27 +227,46 @@ def adapt_glossary_pagination(paginator: str) -> str:
     return replace_required(paginator, old, new, "approved single-page Glossary function")
 
 
+def adapt_hero_plate_pool(paginator: str) -> str:
+    """Use each of the three unused approved hero sketches exactly once."""
+
+    old = """  const heroSources = ['../images/sketches/hero sketch.png'];
+  const source = heroSources[heroPlateIndex % heroSources.length];
+  heroPlateIndex += 1;"""
+    new = """  const heroSources = [
+    '../images/sketches/hero-sketches/hero sketch 2.png',
+    '../images/sketches/hero-sketches/hero sketch 3.png',
+    '../images/sketches/hero-sketches/hero sketch 4.png',
+  ];
+  if (heroPlateIndex >= heroSources.length) throw new Error('More than three hero filler plates were required.');
+  const source = heroSources[heroPlateIndex];
+  heroPlateIndex += 1;"""
+    return replace_required(paginator, old, new, "single repeated hero-plate source")
+
+
+def adapt_leader_spreads(paginator: str) -> str:
+    """Insert a hero plate when necessary so each faction's Leaders face one another."""
+
+    old = """  if (before.length) paginateTokens(before, context);
+  segments.forEach(segment => buildLeaderPage(faction, segment));"""
+    new = """  if (before.length) paginateTokens(before, context);
+  if ((pages.length + 1) % 2 !== 0) intentionalBlank(`${faction} Leader spread`);
+  segments.forEach(segment => buildLeaderPage(faction, segment));"""
+    return replace_required(paginator, old, new, "Leader-pair pagination block")
+
+
 def adapt_signature_padding(paginator: str) -> str:
-    """Distribute required signature padding at Part boundaries with unused hero art."""
+    """Place any residual signature padding after all faction Leader spreads."""
 
     old = "    while ((pages.length + 2) % 4 !== 0) intentionalBlank('Booklet pagination');"
     new = r'''    const paddingNeeded = (4 - ((pages.length + 2) % 4)) % 4;
     const paddingPlans = {
       0: [],
-      1: [
-        ['Part IV — Reference', '../images/sketches/hero-sketches/hero sketch 4.png'],
-      ],
-      2: [
-        ['Part II — Complete Shared Rules', '../images/sketches/hero-sketches/hero sketch 2.png'],
-        ['Part III — Factions', '../images/sketches/hero-sketches/hero sketch 3.png'],
-      ],
-      3: [
-        ['Part II — Complete Shared Rules', '../images/sketches/hero-sketches/hero sketch 2.png'],
-        ['Part III — Factions', '../images/sketches/hero-sketches/hero sketch 3.png'],
-        ['Part IV — Reference', '../images/sketches/hero-sketches/hero sketch 4.png'],
-      ],
+      1: ['Part IV — Reference'],
+      2: ['Part IV — Reference', 'Glossary'],
+      3: ['Part IV — Reference', 'Quick Turn Reference', 'Glossary'],
     };
-    for (const [boundary, source] of paddingPlans[paddingNeeded]) {
+    for (const boundary of paddingPlans[paddingNeeded]) {
       const boundaryPage = anchors.get(boundary);
       if (!boundaryPage) throw new Error(`Cannot place signature hero plate before ${boundary}.`);
       const boundaryIndex = pages.indexOf(boundaryPage);
@@ -255,10 +274,6 @@ def adapt_signature_padding(paginator: str) -> str:
       const plate = intentionalBlank('');
       const appended = pages.pop();
       if (appended !== plate) throw new Error('Hero plate insertion lost page order.');
-      const image = plate.querySelector('.hero-plate img');
-      if (!image) throw new Error('Hero plate image slot is missing.');
-      image.src = source;
-      image.alt = '';
       plate.dataset.heroPlateFor = boundary;
       pages.splice(boundaryIndex, 0, plate);
     }'''
@@ -305,13 +320,15 @@ def main() -> None:
     )
     paginator = paginator.replace("Gauntlet v0.6.1", "Gauntlet v0.6.3")
     paginator = adapt_glossary_pagination(paginator)
+    paginator = adapt_hero_plate_pool(paginator)
+    paginator = adapt_leader_spreads(paginator)
     paginator = adapt_signature_padding(paginator)
     RUNTIME_PAGINATOR.write_text(paginator, encoding="utf-8")
 
     print(
         f"adapted approved Rulebook production system to {CURRENT_RULEBOOK.relative_to(ROOT)} "
         "with shared player-facing editorial normalization, 12 presentation-only Leader sketches, "
-        "approved Leader-page hierarchy, content-aware Glossary continuation, and distributed signature hero plates"
+        "facing Leader-pair pagination, content-aware Glossary continuation, and three unique hero filler plates"
     )
 
 
