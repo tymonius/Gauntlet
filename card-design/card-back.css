@@ -1,5 +1,5 @@
 :root {
-  --card-back-charcoal: #202124;
+  --card-back-field: #202124;
   --card-back-pattern: rgba(0, 0, 0, 0.42);
   --card-back-gold: var(--developer-gold-soft, #d7b783);
   --card-back-wordmark: #fff9f1;
@@ -11,18 +11,84 @@
   --card-back-surface-opacity: 0.055;
 }
 
+/* Faction color studies use the exact front-card border system, then carry a
+   darker version of that same faction hue through the entire inner field. */
+.gauntlet-card-back[data-card-back-faction="military"],
+.gauntlet-card-back-bleed-proof[data-card-back-faction="military"] {
+  --card-back-field: #7b1e22;
+  --card-back-border: #9e262c;
+  --card-back-border-outline: #5f1418;
+  --card-back-border-rule: rgba(255, 244, 226, 0.38);
+}
+
+.gauntlet-card-back[data-card-back-faction="diplomats"],
+.gauntlet-card-back-bleed-proof[data-card-back-faction="diplomats"] {
+  --card-back-field: #1e3e71;
+  --card-back-border: #264f91;
+  --card-back-border-outline: #17345f;
+  --card-back-border-rule: rgba(244, 248, 255, 0.38);
+}
+
+.gauntlet-card-back[data-card-back-faction="financiers"],
+.gauntlet-card-back-bleed-proof[data-card-back-faction="financiers"] {
+  --card-back-field: #1b5735;
+  --card-back-border: #227044;
+  --card-back-border-outline: #124429;
+  --card-back-border-rule: rgba(242, 255, 246, 0.38);
+}
+
+.gauntlet-card-back[data-card-back-faction="intelligence"],
+.gauntlet-card-back-bleed-proof[data-card-back-faction="intelligence"] {
+  --card-back-field: #202124;
+  --card-back-border: #282827;
+  --card-back-border-outline: #111111;
+  --card-back-border-rule: rgba(255, 255, 250, 0.34);
+}
+
+.gauntlet-card-back[data-card-back-faction="mystics"],
+.gauntlet-card-back-bleed-proof[data-card-back-faction="mystics"] {
+  --card-back-field: #492962;
+  --card-back-border: #5d347e;
+  --card-back-border-outline: #38204e;
+  --card-back-border-rule: rgba(251, 244, 255, 0.38);
+}
+
+.gauntlet-card-back[data-card-back-faction="inquisition"],
+.gauntlet-card-back-bleed-proof[data-card-back-faction="inquisition"] {
+  --card-back-field: #815f1e;
+  --card-back-border: #a67a27;
+  --card-back-border-outline: #66470e;
+  --card-back-border-rule: rgba(255, 249, 225, 0.42);
+}
+
 .card-back-review-section {
   padding-bottom: clamp(2.5rem, 5vw, 4.5rem);
 }
 
 .card-back-review-shell {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(3, 2.5in);
+  gap: 0.42in 0.34in;
+  width: max-content;
+  max-width: none;
+  margin-inline: auto;
   justify-content: center;
-  padding: clamp(1.5rem, 4vw, 3rem) 0;
+  padding: clamp(1.5rem, 4vw, 3rem) 1rem;
 }
 
 .card-back-specimen {
   margin: 0;
+}
+
+.card-back-specimen figcaption {
+  margin-top: 0.09in;
+  color: var(--page-muted, #6d645b);
+  font-family: var(--font-interface);
+  font-size: 0.62rem;
+  font-weight: 750;
+  letter-spacing: 0.08em;
+  text-align: center;
+  text-transform: uppercase;
 }
 
 .gauntlet-card-back {
@@ -39,7 +105,7 @@
   -webkit-print-color-adjust: exact;
 }
 
-/* Match the production Intelligence front's outer frame geometry exactly. */
+/* Mirror the selected faction front's outer frame geometry exactly. */
 .gauntlet-card-back::before {
   position: absolute;
   z-index: 4;
@@ -56,7 +122,7 @@
   inset: 0.075in;
   border: 1px solid var(--card-back-border-outline);
   border-radius: 0.055in;
-  background: var(--card-back-charcoal);
+  background: var(--card-back-field);
   content: "";
   pointer-events: none;
 }
@@ -70,8 +136,8 @@
   pointer-events: none;
 }
 
-/* Very low-amplitude deterministic grain keeps the charcoal from reading as a
-   mathematically flat screen fill without becoming visible grunge. */
+/* Very low-amplitude deterministic grain keeps the colored field from reading
+   as a mathematically flat screen fill without becoming visible grunge. */
 .gauntlet-card-back__pattern-window::after {
   position: absolute;
   z-index: 1;
@@ -171,8 +237,8 @@
   mask: url("../images/Gauntlet.svg") center / contain no-repeat;
 }
 
-/* Production proof helper: 1/8in of solid charcoal extends beyond every trim
-   edge so normal cutting variation cannot expose paper/white at the card edge. */
+/* Production proof helper: 1/8in of the selected faction border color extends
+   beyond every trim edge so normal cutting variation cannot expose paper. */
 .gauntlet-card-back-bleed-proof {
   box-sizing: border-box;
   display: grid;
