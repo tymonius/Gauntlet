@@ -14,7 +14,7 @@ assert.equal(manifest.target, 'gauntlet-v0.6.3-rulebook-booklet');
 assert.equal(manifest.authority_set_id, '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49');
 assert.equal(manifest.source.publication_transform_verified_exact, true);
 assert.equal(manifest.source.certified_rulebook.sha256, '7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643');
-assert.equal(manifest.source.published_rulebook.sha256, '62bf0bc51c69818d0cffbd3906af01bf13abaf4fea2dd59e8678f239a68e265a');
+assert.equal(manifest.source.published_rulebook.sha256, '9bbde08376daea4558581ef598a07b0d3a8fc21666809890d846114229bc44c2');
 assert.equal(manifest.artwork.cover.path, 'images/sketches/hero-sketches/hero sketch.png');
 const expectedPaddingOrder = [
   'images/sketches/hero-sketches/hero sketch 2.png',
@@ -33,14 +33,8 @@ assert.equal(manifest.imposition.pairs.length, manifest.counts.imposed_sides);
 
 const expectedPairs = [];
 for (let sheet = 0; sheet < manifest.counts.logical_pages / 4; sheet += 1) {
-  expectedPairs.push([
-    manifest.counts.logical_pages - (sheet * 2),
-    1 + (sheet * 2),
-  ]);
-  expectedPairs.push([
-    2 + (sheet * 2),
-    manifest.counts.logical_pages - 1 - (sheet * 2),
-  ]);
+  expectedPairs.push([manifest.counts.logical_pages - (sheet * 2), 1 + (sheet * 2)]);
+  expectedPairs.push([2 + (sheet * 2), manifest.counts.logical_pages - 1 - (sheet * 2)]);
 }
 assert.deepEqual(manifest.imposition.pairs, expectedPairs, 'Booklet imposition order drifted.');
 
