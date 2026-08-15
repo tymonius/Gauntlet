@@ -45,7 +45,15 @@ jobs:
           sparse-checkout: |
             .github/workflows/validate-v063-last-stand-language.yml
             scripts/validate-v063-last-stand-language.mjs
+            scripts/build-clean-v063-publication-arbiter-web.mjs
+            scripts/build-clean-v063-publication-core-web.mjs
+            scripts/build-clean-v063-publication-release.mjs
+            scripts/generate-v063-canonical-data-candidate.mjs
+            scripts/publication-utils.mjs
+            rulebook/app.js
+            rules-assistant/rules-deterministic-v063.js
             rules-assistant/v063-last-stand-language.js
+            rules-assistant/v063-public-corpus.js
             docs/Gauntlet_v0.6.3_Cross_Surface_Closeout_Matrix.md
             docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md
             docs/Gauntlet_v0.6.3_Implementation_Ledger.md
