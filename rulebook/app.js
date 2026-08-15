@@ -1,4 +1,5 @@
 import { renderMarkdown } from './markdown.js';
+import { normalizeV063LastStandText } from '../rules-assistant/v063-last-stand-language.js';
 
 const SOURCE_URL = '/artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md';
 const SOURCE_SHA256 = '7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643';
@@ -272,7 +273,7 @@ async function sha256(bytes) {
 }
 
 function publicRulebookSource(source) {
-  return source
+  return normalizeV063LastStandText(source)
     .replace('**Version 0.6.3 — Clean Reconstruction Candidate**', '**Version 0.6.3**')
     .replace(/^> \*\*Authority candidate, not current\/public rules\.\*\*[^\n]*\n\n/m, '');
 }
