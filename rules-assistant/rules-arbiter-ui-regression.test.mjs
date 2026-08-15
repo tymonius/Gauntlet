@@ -30,7 +30,26 @@ describe("Rules Arbiter welcome and compact UI regressions", () => {
 
     expect(css).toMatch(/\.ga-rules-suggestions\s*\{[\s\S]*display:\s*grid;/);
     expect(css).toMatch(/grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\);/);
-    expect(css).toMatch(/overflow-x:\s*visible;/);
+    expect(css).toMatch(/overflow:\s*visible;/);
     expect(css).toMatch(/\.ga-rules-suggestion\s*\{[\s\S]*max-width:\s*none;/);
+  });
+
+  test("widget uses the current square editorial design language", () => {
+    const css = readFileSync(`${HERE}/widget.css`, "utf8");
+    const feedbackCss = readFileSync(`${HERE}/feedback.css`, "utf8");
+
+    expect(css).toContain('@import url("https://use.typekit.net/vgm6nwi.css");');
+    expect(css).toMatch(/--ga-reading:\s*"adobe-caslon-pro"/);
+    expect(css).toMatch(/\.ga-rules-panel\s*\{[\s\S]*border-top:\s*5px solid var\(--ga-crimson\);[\s\S]*border-radius:\s*0;/);
+    expect(css).toMatch(/\.ga-rules-header\s*\{[\s\S]*background:\s*var\(--ga-paper\);/);
+    expect(css).toMatch(/\.ga-rules-message\s*\{[\s\S]*border-radius:\s*0;[\s\S]*box-shadow:\s*none;/);
+    expect(css).toMatch(/\.ga-rules-input-row textarea\s*\{[\s\S]*border-radius:\s*0;/);
+    expect(css).toMatch(/\.ga-rules-send\s*\{[\s\S]*border-radius:\s*0;[\s\S]*background:\s*var\(--ga-crimson\);/);
+    expect(css).toMatch(/\.ga-rules-suggestion\s*\{[\s\S]*border-radius:\s*0;/);
+    expect(feedbackCss).toMatch(/\.ga-rules-feedback button\s*\{[\s\S]*border-radius:\s*0;/);
+    expect(feedbackCss).toMatch(/\.ga-rules-feedback-comment textarea\s*\{[\s\S]*border-radius:\s*0;/);
+    expect(css).not.toContain("border-radius: 999px");
+    expect(css).not.toContain("linear-gradient");
+    expect(feedbackCss).not.toContain("border-radius: 8px");
   });
 });
