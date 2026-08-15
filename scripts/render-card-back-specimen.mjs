@@ -63,6 +63,9 @@ async function main() {
       const wordmark = element.querySelector('.gauntlet-card-back__wordmark');
       const wordmarkRect = wordmark.getBoundingClientRect();
       const wordmarkStyle = getComputedStyle(wordmark);
+      const patternWindow = element.querySelector('.gauntlet-card-back__pattern-window');
+      const patternWindowRect = patternWindow.getBoundingClientRect();
+      const patternWindowStyle = getComputedStyle(patternWindow);
       const pattern = element.querySelector('.gauntlet-card-back__pattern');
       const patternStyle = getComputedStyle(pattern);
       const firstRow = element.querySelector('.gauntlet-card-back__pattern-row');
@@ -78,6 +81,8 @@ async function main() {
         height: rect.height,
         frameInset: frameRect.left - rect.left,
         frameRadius: getComputedStyle(frame).borderRadius,
+        patternWindowInset: patternWindowRect.left - rect.left,
+        patternWindowOverflow: patternWindowStyle.overflow,
         symbolCount: symbols.length,
         symbolsMasked: symbols.every(symbol => {
           const style = getComputedStyle(symbol);
@@ -103,6 +108,9 @@ async function main() {
     }
     if (metrics.frameRadius !== '12px') {
       throw new Error(`Card-back gold frame does not match the 1/8in card corner radius: ${JSON.stringify(metrics)}.`);
+    }
+    if (Math.abs(metrics.patternWindowInset - 7.2) > 0.25 || metrics.patternWindowOverflow !== 'hidden' || metrics.background !== 'rgb(40, 40, 39)') {
+      throw new Error(`Card-back faction-color border is not opaque around the tiled field: ${JSON.stringify(metrics)}.`);
     }
     if (metrics.symbolCount !== 667 || !metrics.symbolsMasked || metrics.wordmarkMask === 'none') {
       throw new Error(`Card-back assets failed to render: ${JSON.stringify(metrics)}.`);
