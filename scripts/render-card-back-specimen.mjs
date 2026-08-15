@@ -61,6 +61,7 @@ async function main() {
       const frame = element.querySelector('.gauntlet-card-back__frame');
       const frameRect = frame.getBoundingClientRect();
       const wordmark = element.querySelector('.gauntlet-card-back__wordmark');
+      const wordmarkRect = wordmark.getBoundingClientRect();
       const wordmarkStyle = getComputedStyle(wordmark);
       const symbols = [...element.querySelectorAll('.gauntlet-card-back__symbol')];
       return {
@@ -72,6 +73,8 @@ async function main() {
           const style = getComputedStyle(symbol);
           return (style.maskImage || style.webkitMaskImage) !== 'none';
         }),
+        wordmarkWidth: wordmarkRect.width,
+        wordmarkHeight: wordmarkRect.height,
         wordmarkMask: wordmarkStyle.maskImage || wordmarkStyle.webkitMaskImage,
         background: getComputedStyle(element).backgroundColor,
       };
@@ -83,8 +86,11 @@ async function main() {
     if (Math.abs(metrics.frameInset - 36) > 0.25) {
       throw new Error(`Card-back frame inset is ${metrics.frameInset}px; expected 36px (3/8in).`);
     }
-    if (metrics.symbolCount !== 42 || !metrics.symbolsMasked || metrics.wordmarkMask === 'none') {
+    if (metrics.symbolCount !== 266 || !metrics.symbolsMasked || metrics.wordmarkMask === 'none') {
       throw new Error(`Card-back assets failed to render: ${JSON.stringify(metrics)}.`);
+    }
+    if (metrics.wordmarkHeight < 260 || metrics.wordmarkWidth > 72) {
+      throw new Error(`Card-back wordmark did not render as the large rotated treatment: ${JSON.stringify(metrics)}.`);
     }
 
     await back.screenshot({ path: join(OUTPUT, 'universal-card-back.png'), omitBackground: true });
