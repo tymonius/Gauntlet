@@ -13,14 +13,14 @@
 .faction-inquisition { --faction: #a67a27; --faction-dark: #66470e; --faction-soft: rgba(166,122,39,.13); --faction-symbol: url("/images/faction-symbols/inquisition.svg"); }
 
 /* Echo the Start-page selected-faction treatment as a deliberate opening accent:
- * stronger than a watermark, smaller than the page, offset and partly off-canvas. */
+ * large, stronger than a watermark, offset and partly off-canvas. */
 body.faction-page { overflow-x: hidden; }
 body.faction-page::after {
   content: "";
   position: absolute;
-  right: -120px;
-  top: 150px;
-  width: min(50vw, 640px);
+  right: -420px;
+  top: 110px;
+  width: min(92vw, 1320px);
   aspect-ratio: 1;
   background: var(--faction);
   -webkit-mask: var(--faction-symbol) center / contain no-repeat;
@@ -237,7 +237,7 @@ body.faction-page::after {
 }
 
 @media (max-width: 620px) {
-  body.faction-page::after { top: 130px; right: -180px; width: 430px; opacity: .075; }
+  body.faction-page::after { top: 90px; right: -430px; width: 860px; opacity: .075; }
   .faction-hero, .factions-intro, .faction-hub-grid { width: min(100% - 28px, 1180px); }
   .faction-hero { padding: 58px 0 76px; }
   .faction-facts { grid-template-columns: 1fr; }
