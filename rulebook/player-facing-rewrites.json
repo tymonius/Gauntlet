@@ -57,7 +57,8 @@
   {
     "label": "Sanction authoring note",
     "old": "A Sanction may state additional removal conditions. Cards therefore do not need to repeat identification of the refusing opponent or the default expiration after later acceptance.",
-    "new": "A Sanction may state additional removal conditions. Unless it says otherwise, the opponent whose refusal caused it to enter play remains the associated opponent, and later acceptance by that opponent causes the default expiration above."
+    "new": "A Sanction may state additional removal conditions. Unless it says otherwise, the opponent whose refusal caused it to enter play remains the associated opponent, and later acceptance by that opponent causes the default expiration above.",
+    "expected": 2
   },
   {
     "label": "Asset Removal authoring note",
