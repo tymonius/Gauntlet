@@ -7,11 +7,17 @@ const FACTIONS = Object.freeze([
   'inquisition',
 ]);
 
-const ROW_OFFSETS = Object.freeze([0, 3, 1, 4, 2, 5, 0]);
+const PATTERN_ROWS = 19;
+const PATTERN_COLUMNS = 14;
+const ROW_SEQUENCE = Object.freeze([0, 3, 1, 4, 2, 5]);
 
 function patternMarkup() {
-  return ROW_OFFSETS.map((offset) => {
-    const symbols = FACTIONS.map((_, index) => FACTIONS[(index + offset) % FACTIONS.length]);
+  return Array.from({ length: PATTERN_ROWS }, (_, rowIndex) => {
+    const offset = ROW_SEQUENCE[rowIndex % ROW_SEQUENCE.length];
+    const symbols = Array.from(
+      { length: PATTERN_COLUMNS },
+      (_, index) => FACTIONS[(index + offset) % FACTIONS.length],
+    );
     return `<div class="gauntlet-card-back__pattern-row">${symbols
       .map((faction) => `<span class="gauntlet-card-back__symbol ${faction}"></span>`)
       .join('')}</div>`;
