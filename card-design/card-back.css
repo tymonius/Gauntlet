@@ -56,17 +56,23 @@
   pointer-events: none;
 }
 
-.gauntlet-card-back__pattern {
+.gauntlet-card-back__pattern-window {
   position: absolute;
   z-index: 1;
+  inset: 0.075in;
+  overflow: hidden;
+  border-radius: 0.055in;
+  pointer-events: none;
+}
+
+.gauntlet-card-back__pattern {
+  position: absolute;
   inset: -0.55in;
   display: grid;
   grid-template-rows: repeat(29, 1fr);
   align-items: center;
-  overflow: hidden;
-  transform: rotate(-12deg);
+  transform: rotate(78deg);
   transform-origin: center;
-  pointer-events: none;
 }
 
 .gauntlet-card-back__pattern-row {
