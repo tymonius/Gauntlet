@@ -1,14 +1,16 @@
 .ga-rules-feedback {
   margin-top: 11px;
   padding-top: 10px;
-  border-top: 1px solid rgba(100, 72, 42, 0.18);
-  font: 12px/1.4 system-ui, sans-serif;
+  border-top: 1px solid var(--ga-line, #b9b2a7);
+  font-family: var(--ga-ui, Inter, ui-sans-serif, system-ui, sans-serif);
+  font-size: 11px;
+  line-height: 1.4;
 }
 
 .ga-rules-feedback > p:first-child {
   margin: 0 0 7px;
-  color: #5c5145;
-  font-weight: 750;
+  color: var(--ga-muted, #5f5a53);
+  font-weight: 800;
 }
 
 .ga-rules-feedback-buttons,
@@ -21,16 +23,21 @@
 .ga-rules-feedback button {
   min-height: 30px;
   padding: 5px 9px;
-  border: 1px solid rgba(108, 72, 31, 0.4);
-  border-radius: 8px;
-  background: rgba(255, 251, 240, 0.78);
-  color: #5a3d20;
+  border: 1px solid var(--ga-line, #b9b2a7);
+  border-radius: 0;
+  background: transparent;
+  color: var(--ga-ink, #171514);
   cursor: pointer;
-  font: 750 11px/1 system-ui, sans-serif;
+  font-family: var(--ga-ui, Inter, ui-sans-serif, system-ui, sans-serif);
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
 }
 
 .ga-rules-feedback button:hover {
-  background: rgba(198, 154, 75, 0.16);
+  border-color: var(--ga-crimson, #8f1f25);
+  background: rgba(143, 31, 37, 0.045);
+  color: var(--ga-crimson-dark, #5f1418);
 }
 
 .ga-rules-feedback button:disabled {
@@ -51,9 +58,10 @@
 .ga-rules-feedback-comment label {
   display: grid;
   gap: 4px;
-  color: #5c5145;
-  font-size: 11px;
-  font-weight: 750;
+  color: var(--ga-muted, #5f5a53);
+  font-family: var(--ga-ui, Inter, ui-sans-serif, system-ui, sans-serif);
+  font-size: 10px;
+  font-weight: 800;
 }
 
 .ga-rules-feedback-comment textarea {
@@ -61,19 +69,22 @@
   min-height: 58px;
   max-height: 120px;
   resize: vertical;
-  border: 1px solid #a88658;
-  border-radius: 8px;
+  border: 1px solid var(--ga-line-dark, #69645d);
+  border-radius: 0;
   background: #fffdf8;
-  color: #211c17;
+  color: var(--ga-ink, #171514);
   padding: 8px 9px;
-  font: 12px/1.35 system-ui, sans-serif;
+  font-family: var(--ga-ui, Inter, ui-sans-serif, system-ui, sans-serif);
+  font-size: 12px;
+  line-height: 1.35;
 }
 
 .ga-rules-feedback-status {
   min-height: 17px;
   margin: 7px 0 0;
-  color: #684b28;
-  font-size: 11px;
+  color: var(--ga-muted, #5f5a53);
+  font-family: var(--ga-ui, Inter, ui-sans-serif, system-ui, sans-serif);
+  font-size: 10px;
 }
 
 .ga-rules-feedback.is-complete > p:first-child,
