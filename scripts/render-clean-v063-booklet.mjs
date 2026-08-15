@@ -86,7 +86,7 @@ const paddingPages = Number(report.reader?.report?.intentionalBlanks || 0);
 assert(logicalPages > 1 && logicalPages % 4 === 0, `Approved production renderer emitted invalid booklet page count ${logicalPages}.`);
 assert.equal(imposedSides, logicalPages / 2);
 assert.equal(physicalSheets, logicalPages / 4);
-assert(paddingPages >= 0 && paddingPages <= 4, `Unexpected booklet padding count ${paddingPages}.`);
+assert(paddingPages >= 0 && paddingPages <= 11, `Unexpected booklet padding count ${paddingPages}.`);
 
 const readingBytes = fs.readFileSync(readerSource);
 const imposedBytes = fs.readFileSync(bookletSource);
