@@ -4,6 +4,14 @@
   const leaderId = String(params.get("leader") || "").trim();
   const faction = FACTIONS.find(item => item.id === factionId && item.status === "ready");
   const requestedLeader = faction?.leaders.find(item => item.id === leaderId);
+  const STARTER_FACTION_COLORS = {
+    military: "#9e262c",
+    diplomats: "#264f91",
+    financiers: "#227044",
+    intelligence: "#282827",
+    mystics: "#5d347e",
+    inquisition: "#a67a27"
+  };
 
   if (faction) {
     state.factionId = faction.id;
@@ -41,6 +49,8 @@
     panel = document.createElement("section");
     panel.id = "starterHandoffPanel";
     panel.className = "panel starter-handoff-panel";
+    panel.style.setProperty("--starter-faction-color", STARTER_FACTION_COLORS[faction.id] || "#8f1f25");
+    panel.style.setProperty("--starter-faction-symbol", `url("../images/faction-symbols/${faction.id}.svg")`);
     panel.innerHTML = `
       <div class="starter-handoff-copy">
         <p class="eyebrow">New-player print mode</p>
