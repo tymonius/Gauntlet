@@ -93,7 +93,7 @@ export function replacePlayerFacingChapter11(source, chapter11 = read(PLAYER_CHA
 }
 export function applyPlayerFacingRulebookCorrections(source) {
   const internalSanctionGuidance = 'A Sanction may state additional removal conditions. Cards therefore do not need to repeat identification of the refusing opponent or the default expiration after later acceptance.';
-  const playerSanctionRule = 'A Sanction may state additional removal conditions. Apply those conditions together with the default removal rule above unless the Sanction says otherwise.';
+  const playerSanctionRule = 'Additional printed removal conditions also apply unless the Sanction says otherwise.';
   const count = source.split(internalSanctionGuidance).length - 1;
   if (count !== 1) throw new Error(`Expected exactly one remaining internal Sanction guidance paragraph after Chapter 11 replacement; found ${count}.`);
   return source.replace(internalSanctionGuidance, playerSanctionRule);
