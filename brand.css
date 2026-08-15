@@ -1,16 +1,6 @@
 /* Shared Gauntlet wordmark treatment. The eight SVG layers reproduce the canonical supplied vector artwork. */
-.brand {
-  gap: 0 !important;
-  min-width: 0;
-}
-
-.brand::before {
-  content: "";
-  display: block;
-  width: 154px;
-  aspect-ratio: 1871.79 / 493.58;
-  flex: 0 0 auto;
-  background-image:
+:root {
+  --gauntlet-wordmark-images:
     url("/assets/wordmark/gauntlet-wordmark-layer-1.svg"),
     url("/assets/wordmark/gauntlet-wordmark-layer-2.svg"),
     url("/assets/wordmark/gauntlet-wordmark-layer-3.svg"),
@@ -19,6 +9,21 @@
     url("/assets/wordmark/gauntlet-wordmark-layer-6.svg"),
     url("/assets/wordmark/gauntlet-wordmark-layer-7.svg"),
     url("/assets/wordmark/gauntlet-wordmark-layer-8.svg");
+  --gauntlet-wordmark-ratio: 1871.79 / 493.58;
+}
+
+.brand {
+  gap: 0 !important;
+  min-width: 0;
+}
+
+.brand::before {
+  content: "";
+  display: block;
+  width: 240px;
+  aspect-ratio: var(--gauntlet-wordmark-ratio);
+  flex: 0 0 auto;
+  background-image: var(--gauntlet-wordmark-images);
   background-position: center;
   background-repeat: no-repeat;
   background-size: contain;
@@ -41,8 +46,33 @@
   border: 0 !important;
 }
 
+/* Replace the source rulebook's display-title text with the canonical wordmark without changing the source markdown or heading semantics. */
+.rulebook-content > h1:first-child {
+  width: min(100%, 560px);
+  aspect-ratio: var(--gauntlet-wordmark-ratio);
+  margin: 0 0 26px;
+  padding: 0;
+  border: 0;
+  background-image: var(--gauntlet-wordmark-images);
+  background-position: left center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  color: transparent;
+  font-size: 0;
+  line-height: 0;
+}
+
+.rulebook-content > h1:first-child .heading-anchor {
+  display: none;
+}
+
 @media (max-width: 620px) {
   .brand::before {
-    width: 132px;
+    width: 180px;
+  }
+
+  .rulebook-content > h1:first-child {
+    width: min(100%, 430px);
+    margin-bottom: 22px;
   }
 }
