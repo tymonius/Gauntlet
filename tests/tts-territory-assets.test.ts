@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const generator = readFileSync("scripts/generate-tts-territory-assets.mjs", "utf8");
+const generator = readFileSync("scripts/generate-v063-tts-territory-assets.mjs", "utf8");
 const renderer = readFileSync("tts/territory-renderer/territory-renderer.js", "utf8");
 const rendererStyles = readFileSync("tts/territory-renderer/territory-renderer.css", "utf8");
 const playableStyles = readFileSync("card-design/card-design.css", "utf8");
@@ -144,8 +144,8 @@ describe("TTS Territory assets", () => {
   });
 
   it("exposes separate and combined npm commands", () => {
-    expect(packageJson.scripts["tts:cards"]).toBe("node scripts/generate-tts-card-assets.mjs");
-    expect(packageJson.scripts["tts:territories"]).toBe("node scripts/generate-tts-territory-assets.mjs");
+    expect(packageJson.scripts["tts:cards"]).toBe("node scripts/generate-v063-tts-card-assets.mjs");
+    expect(packageJson.scripts["tts:territories"]).toBe("node scripts/generate-v063-tts-territory-assets.mjs");
     expect(packageJson.scripts["tts:build"]).toBe("npm run tts:cards && npm run tts:territories");
   });
 });
