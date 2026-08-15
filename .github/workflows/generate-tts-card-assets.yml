@@ -1,6 +1,22 @@
 name: Generate TTS card assets
 
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/generate-tts-card-assets.yml'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'scripts/generate-v063-tts-card-assets.mjs'
+      - 'scripts/generate-v063-tts-territory-assets.mjs'
+      - 'scripts/tts-v063-catalog.mjs'
+      - 'tts/**'
+      - 'card-design/**'
+      - 'releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json'
+      - 'images/Gauntlet.svg'
+      - 'images/faction-symbols/**'
+      - 'images/artwork/cards/**'
+      - 'images/artwork/territories/**'
+      - 'images/artwork/card-backgrounds/**'
   workflow_dispatch:
     inputs:
       strict_artwork:
@@ -23,25 +39,32 @@ jobs:
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             package.json
+            package-lock.json
             design-tokens.css
-            scripts/generate-tts-card-assets.mjs
-            scripts/generate-tts-territory-assets.mjs
+            scripts/generate-v063-tts-card-assets.mjs
+            scripts/generate-v063-tts-territory-assets.mjs
+            scripts/tts-v063-catalog.mjs
             tts
             card-design
-            releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json
+            releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json
+            images/Gauntlet.svg
+            images/faction-symbols
             images/artwork/cards
+            images/artwork/territories
             images/artwork/card-backgrounds
       - uses: actions/setup-node@v4
         with:
           node-version: 22
       - run: npm install
       - run: npx playwright install --with-deps chromium
-      - name: Generate playable card sheets
-        run: npm run tts:cards -- ${{ inputs.strict_artwork && '--strict-art' || '' }}
+      - name: Validate current TTS sources
+        run: npm run tts:check
+      - name: Generate playable card sheets and production backs
+        run: npm run tts:cards -- ${{ github.event_name == 'workflow_dispatch' && inputs.strict_artwork && '--strict-art' || '' }}
       - name: Generate Territory sheet
         run: npm run tts:territories
       - uses: actions/upload-artifact@v4
         with:
-          name: gauntlet-v062-tts-card-assets
-          path: tts/generated/v0.6.2/
+          name: gauntlet-v063-tts-card-assets
+          path: tts/generated/v0.6.3/
           if-no-files-found: error
