@@ -56,7 +56,11 @@ replaceOnce(
         leader: page.querySelector('.leader-name')?.textContent?.trim() || '',
         pageNumber: Number(page.dataset.page),
       })),
-      heroPlateSources: [...document.querySelectorAll('#reader-root > .intentional-blank .hero-plate img')].map(image => image.getAttribute('src')),`,
+      heroPlateSources: [...document.querySelectorAll('#reader-root > .intentional-blank .hero-plate img')].map(image => image.getAttribute('src')),
+      heroPlatePlacements: [...document.querySelectorAll('#reader-root > .intentional-blank')].map(page => ({
+        label: page.dataset.heroPlateFor || '',
+        nextClass: page.nextElementSibling?.className || '',
+      })),`,
 );
 
 replaceOnce(
@@ -98,6 +102,13 @@ replaceOnce(
   const actualHeroPlates = result.heroPlateSources.map(source => decodeURIComponent(source || '').split('/').at(-1)).sort();
   if (report.intentionalBlanks !== 3 || JSON.stringify(actualHeroPlates) !== JSON.stringify(expectedHeroPlates)) {
     throw new Error(\`Expected exactly the three unused hero filler sketches; found \${JSON.stringify(actualHeroPlates)} across \${report.intentionalBlanks} filler pages.\`);
+  }
+
+  const naturalBoundaryClasses = ['faction-opener', 'part-opener', 'quick-reference-page', 'glossary-page'];
+  for (const placement of result.heroPlatePlacements) {
+    if (!naturalBoundaryClasses.some(className => placement.nextClass.split(/\\s+/).includes(className))) {
+      throw new Error(\`Hero filler plate interrupts a content section instead of preceding a natural boundary: \${JSON.stringify(placement)}.\`);
+    }
   }`,
 );
 
