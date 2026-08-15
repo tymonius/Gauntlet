@@ -53,6 +53,7 @@ jobs:
             scripts/publication-utils.mjs
             rulebook/app.js
             rulebook/player-facing/chapter-11.md
+            rulebook/player-facing/corrections.js
             rules-assistant/rules-deterministic-v063.js
             rules-assistant/v063-last-stand-language.js
             rules-assistant/v063-public-corpus.js
@@ -64,6 +65,8 @@ jobs:
             index.html
             start/index.html
             factions/military/index.html
+            factions/financiers/index.html
+            factions/inquisition/index.html
             releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md
             releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Canonical_Data.json
             v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json
