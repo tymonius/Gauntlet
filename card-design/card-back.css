@@ -1,7 +1,10 @@
 :root {
   --card-back-charcoal: #202124;
-  --card-back-pattern: rgba(255, 255, 255, 0.065);
+  --card-back-pattern: rgba(0, 0, 0, 0.24);
   --card-back-gold: var(--developer-gold-soft, #d7b783);
+  --card-back-border: #282827;
+  --card-back-border-outline: #111111;
+  --card-back-border-rule: rgba(255, 255, 250, 0.34);
 }
 
 .card-back-review-section {
@@ -23,21 +26,46 @@
   width: 2.5in;
   height: 3.5in;
   overflow: hidden;
+  border: 1px solid var(--card-back-border-outline);
   border-radius: 0.125in;
-  background: var(--card-back-charcoal);
+  background: var(--card-back-border);
   box-shadow: 0 0.12in 0.28in rgba(21, 18, 15, 0.24);
   isolation: isolate;
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
 }
 
+.gauntlet-card-back::before {
+  position: absolute;
+  z-index: 4;
+  inset: 0.03in;
+  border: 0.5px solid var(--card-back-border-rule);
+  border-radius: 0.09in;
+  content: "";
+  pointer-events: none;
+}
+
+.gauntlet-card-back::after {
+  position: absolute;
+  z-index: 0;
+  inset: 0.075in;
+  border: 1px solid var(--card-back-border-outline);
+  border-radius: 0.055in;
+  background: var(--card-back-charcoal);
+  content: "";
+  pointer-events: none;
+}
+
 .gauntlet-card-back__pattern {
   position: absolute;
-  inset: -0.07in;
+  z-index: 1;
+  inset: -0.55in;
   display: grid;
   grid-template-rows: repeat(19, 1fr);
   align-items: center;
   overflow: hidden;
+  transform: rotate(-12deg);
+  transform-origin: center;
   pointer-events: none;
 }
 
@@ -86,16 +114,19 @@
 
 .gauntlet-card-back__frame {
   position: absolute;
+  z-index: 2;
   inset: 0.375in;
   border: 1px solid var(--card-back-gold);
+  border-radius: 0.125in;
   pointer-events: none;
 }
 
 .gauntlet-card-back__wordmark {
   position: absolute;
+  z-index: 3;
   top: 50%;
   left: 50%;
-  width: 2.72in;
+  width: 2.45in;
   aspect-ratio: 1871.79 / 493.58;
   transform: translate(-50%, -50%) rotate(90deg);
   background: #fff;
