@@ -2,9 +2,6 @@ name: Publish current Rulebook booklet
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - fix/rulebook-cover-sketch-edge
 
 permissions:
   contents: write
@@ -68,6 +65,6 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         run: |
           node scripts/commit-generated-files.mjs \
-            "Publish approved v0.6.3 Rulebook booklet with cover edge fix" -- \
+            "Publish approved v0.6.3 Rulebook booklet with official wordmark" -- \
             releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook_Booklet.pdf \
             releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Manifest.json
