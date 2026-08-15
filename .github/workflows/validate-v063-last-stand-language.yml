@@ -44,6 +44,8 @@ jobs:
           sparse-checkout-cone-mode: false
           sparse-checkout: |
             .github/workflows/validate-v063-last-stand-language.yml
+            .github/workflows/pr-quality-gate.yml
+            .github/workflows/build-clean-v063-booklet.yml
             scripts/validate-v063-last-stand-language.mjs
             scripts/validate-v063-player-rulebook.mjs
             scripts/build-clean-v063-publication-arbiter-web.mjs
