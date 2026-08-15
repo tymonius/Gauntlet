@@ -80,12 +80,30 @@ export function addDeveloperToolChrome(html, origin = DEFAULT_SITE_ORIGIN) {
     .replace(/<\/body>/i, `${footer}\n</body>`);
 }
 
-export function allowSiteImages(contentSecurityPolicy, origin = DEFAULT_SITE_ORIGIN) {
-  if (!contentSecurityPolicy || contentSecurityPolicy.includes(origin)) return contentSecurityPolicy;
-  if (/\bimg-src\b/i.test(contentSecurityPolicy)) {
-    return contentSecurityPolicy.replace(/(\bimg-src\b[^;]*)/i, `$1 ${origin}`);
+function addCspSources(contentSecurityPolicy, directive, sources) {
+  if (!contentSecurityPolicy) return contentSecurityPolicy;
+  const pattern = new RegExp(`(\\b${directive}\\b[^;]*)`, "i");
+  const currentMatch = contentSecurityPolicy.match(pattern);
+  const currentDirective = currentMatch?.[1] || "";
+  const missing = sources.filter((source) => !currentDirective.includes(source));
+  if (!missing.length) return contentSecurityPolicy;
+
+  if (currentMatch) {
+    return contentSecurityPolicy.replace(pattern, `$1 ${missing.join(" ")}`);
   }
-  return `${contentSecurityPolicy.trim().replace(/;?$/, ";")} img-src 'self' data: ${origin};`;
+  return `${contentSecurityPolicy.trim().replace(/;?$/, ";")} ${directive} ${missing.join(" ")};`;
+}
+
+export function allowSiteImages(contentSecurityPolicy, origin = DEFAULT_SITE_ORIGIN) {
+  return addCspSources(contentSecurityPolicy, "img-src", [origin]);
+}
+
+export function allowSiteAssets(contentSecurityPolicy, origin = DEFAULT_SITE_ORIGIN) {
+  let policy = contentSecurityPolicy;
+  policy = addCspSources(policy, "style-src", [origin, "https://use.typekit.net"]);
+  policy = addCspSources(policy, "font-src", ["https://use.typekit.net", "https://p.typekit.net"]);
+  policy = addCspSources(policy, "img-src", [origin, "https://p.typekit.net"]);
+  return policy;
 }
 
 function rewriteVersionedPath(request) {
@@ -163,7 +181,7 @@ export default {
       const response = await v061Worker.fetch(request, env, context);
       const origin = siteOrigin(env);
       const headers = new Headers(response.headers);
-      const contentSecurityPolicy = allowSiteImages(headers.get("Content-Security-Policy"), origin);
+      const contentSecurityPolicy = allowSiteAssets(headers.get("Content-Security-Policy"), origin);
       if (contentSecurityPolicy) headers.set("Content-Security-Policy", contentSecurityPolicy);
       return new Response(addDeveloperToolChrome(addSiteFaviconLinks(ADMIN_PAGE, origin), origin), {
         status: response.status,
