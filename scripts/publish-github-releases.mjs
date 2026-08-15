@@ -35,6 +35,13 @@ const run = (command, args, options = {}) => {
 run(process.execPath, ['scripts/validate-github-release-contract.mjs']);
 run('git', ['fetch', 'origin', '--tags', '--force']);
 
+const remoteMainHead = () => {
+  const result = run('git', ['ls-remote', 'origin', 'refs/heads/main']);
+  const [sha] = result.stdout.trim().split(/\s+/);
+  if (!sha) throw new Error('Unable to resolve origin/main while evaluating release publication freshness.');
+  return sha;
+};
+
 const tagTarget = (tag) => {
   const result = run('git', ['rev-list', '-n', '1', `refs/tags/${tag}`], { allowFailure: true });
   return result.status === 0 ? result.stdout.trim() : null;
@@ -116,6 +123,13 @@ const current = contract.current_release;
 let currentTarget = tagTarget(current.tag);
 let currentRelease = releaseView(current.tag);
 
+const deferIfMainAdvanced = (phase) => {
+  const latestMain = remoteMainHead();
+  if (latestMain === publishedSha) return false;
+  console.log(`Deferring ${current.tag} publication ${phase}: this workflow targets ${publishedSha}, but origin/main is now ${latestMain}. A newer main workflow will verify and publish the release.`);
+  return true;
+};
+
 const verifyLive = () => {
   console.log(`Running deployed publication verification before creating or repairing ${current.tag}.`);
   const result = spawnSync(process.execPath, [current.live_verification_script], {
@@ -127,9 +141,15 @@ const verifyLive = () => {
     },
   });
   if (result.status !== 0) {
+    if (deferIfMainAdvanced('after live verification was superseded')) {
+      process.stdout.write(result.stdout || '');
+      process.stderr.write(result.stderr || '');
+      return false;
+    }
     throw new Error(`Live publication verification failed before ${current.tag} GitHub publication:\n${result.stdout || ''}${result.stderr || ''}`);
   }
   process.stdout.write(result.stdout || '');
+  return true;
 };
 
 const createCurrentRelease = (target) => {
@@ -147,7 +167,19 @@ const createCurrentRelease = (target) => {
 
 if (!currentTarget) {
   if (currentRelease) throw new Error(`${current.tag} has a GitHub Release but no Git tag.`);
-  verifyLive();
+
+  if (deferIfMainAdvanced('before live verification')) {
+    process.exit(0);
+  }
+
+  if (!verifyLive()) {
+    process.exit(0);
+  }
+
+  if (deferIfMainAdvanced('after live verification')) {
+    process.exit(0);
+  }
+
   console.log(`Publishing current ${current.tag} from verified main commit ${publishedSha}.`);
   createCurrentRelease(publishedSha);
   run('git', ['fetch', 'origin', '--tags', '--force']);
@@ -159,7 +191,9 @@ if (!currentTarget) {
     throw new Error(`${current.tag} tag target ${currentTarget} is not an ancestor of current main ${publishedSha}.`);
   }
   if (!currentRelease) {
-    verifyLive();
+    if (!verifyLive()) {
+      process.exit(0);
+    }
     console.log(`Repairing missing GitHub Release for existing current tag ${current.tag}.`);
     createCurrentRelease(currentTarget);
     currentRelease = releaseView(current.tag);
