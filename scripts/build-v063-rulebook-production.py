@@ -87,14 +87,7 @@ def apply_player_facing_rewrites(source: str) -> str:
 
 
 def build_presentation_source(source: str) -> str:
-    """Restore old production-only Leader hierarchy/art references.
-
-    The input has already passed the shared player-facing normalization. v0.6.3
-    moved Leader names from H2 to H3 beneath a shared H2 "Leaders" wrapper and
-    removed sketch Markdown from rules authority. PR #434's approved paginator
-    deliberately recognizes H2 Leader sections with image tokens. Convert only
-    that structural/presentation layer in a transient source file.
-    """
+    """Restore old production-only Leader hierarchy/art references."""
 
     output: list[str] = []
     leader_names = set(LEADERS)
@@ -228,7 +221,7 @@ def adapt_glossary_pagination(paginator: str) -> str:
 
 
 def adapt_hero_plate_pool(paginator: str) -> str:
-    """Use each of the three unused approved hero sketches exactly once."""
+    """Use the unused approved hero sketches instead of repeating the cover art."""
 
     old = """  const heroSources = ['../images/sketches/hero sketch.png'];
   const source = heroSources[heroPlateIndex % heroSources.length];
@@ -244,52 +237,113 @@ def adapt_hero_plate_pool(paginator: str) -> str:
     return replace_required(paginator, old, new, "single repeated hero-plate source")
 
 
-def adapt_leader_spreads(paginator: str) -> str:
-    """Correct Leader-page parity only at natural faction boundaries."""
-
-    old_opener = """  buildFactionOpener(section, number, faction, howHeading, howTokens, completeHeading, tableToken);"""
-    new_opener = """  const factionOpenerPage = buildFactionOpener(section, number, faction, howHeading, howTokens, completeHeading, tableToken);"""
-    paginator = replace_required(paginator, old_opener, new_opener, "faction opener page capture")
-
-    old_leaders = """  if (before.length) paginateTokens(before, context);
-  segments.forEach(segment => buildLeaderPage(faction, segment));"""
-    new_leaders = """  if (before.length) paginateTokens(before, context);
-  if ((pages.length + 1) % 2 !== 0) {
-    const openerIndex = pages.indexOf(factionOpenerPage);
-    if (openerIndex < 0) throw new Error(`Cannot place ${faction} parity plate before its faction opener.`);
-    const plate = intentionalBlank(`${faction} Leader spread`);
-    const appended = pages.pop();
-    if (appended !== plate) throw new Error('Faction parity plate insertion lost page order.');
-    plate.dataset.heroPlateFor = `${faction} faction boundary`;
-    pages.splice(openerIndex, 0, plate);
-    factionOpenerPage.before(plate);
-  }
-  segments.forEach(segment => buildLeaderPage(faction, segment));"""
-    return replace_required(paginator, old_leaders, new_leaders, "Leader-pair pagination block")
-
-
 def adapt_signature_padding(paginator: str) -> str:
-    """Place residual signature padding only at natural Part/reference boundaries."""
+    """Globally place filler pages at the highest natural hierarchy that preserves spreads."""
 
     old = "    while ((pages.length + 2) % 4 !== 0) intentionalBlank('Booklet pagination');"
     new = r'''    const paddingNeeded = (4 - ((pages.length + 2) % 4)) % 4;
-    const paddingPlans = {
-      0: [],
-      1: ['Part IV — Reference'],
-      2: ['Part IV — Reference', 'Glossary'],
-      3: ['Part IV — Reference', 'Quick Turn Reference', 'Glossary'],
+    const candidateByPage = new Map();
+    const addCandidate = (anchor, tier) => {
+      const page = anchors.get(anchor);
+      if (!page) return;
+      const existing = candidateByPage.get(page);
+      if (!existing || tier < existing.tier) candidateByPage.set(page, { anchor, page, tier });
     };
-    for (const boundary of paddingPlans[paddingNeeded]) {
-      const boundaryPage = anchors.get(boundary);
-      if (!boundaryPage) throw new Error(`Cannot place signature hero plate before ${boundary}.`);
-      const boundaryIndex = pages.indexOf(boundaryPage);
-      if (boundaryIndex < 0) throw new Error(`Signature boundary page is not in reading order: ${boundary}.`);
+
+    // Hierarchy: between Parts first, then between numbered chapters, then
+    // major reference sections. Part I is the beginning of the body, not a
+    // between-Part boundary, so it is deliberately excluded from tier 0.
+    Object.keys(metadata.parts)
+      .filter(title => title !== 'Part I — Learn to Play')
+      .forEach(title => addCandidate(title, 0));
+    metadata.chapters
+      .filter(chapter => chapter.number !== null)
+      .forEach(chapter => addCandidate(chapter.heading, 1));
+    ['Quick Turn Reference', 'Glossary'].forEach(title => addCandidate(title, 2));
+
+    const candidates = [...candidateByPage.values()]
+      .map(candidate => ({ ...candidate, index: pages.indexOf(candidate.page) }))
+      .filter(candidate => candidate.index >= 0)
+      .sort((a, b) => a.tier - b.tier || a.index - b.index);
+
+    const expectedLeaderPairs = [
+      ['General', 'Commandant'],
+      ['Ambassador', 'Senator'],
+      ['Banker', 'Executive'],
+      ['Ranger', 'Spymaster'],
+      ['Alchemist', 'Spirit Walker'],
+      ['Grand Inquisitor', 'Witch Hunter'],
+    ];
+    const leaderPageByName = new Map(
+      pages
+        .filter(page => page.classList.contains('leader-page'))
+        .map(page => [page.querySelector('.leader-name')?.textContent?.trim() || '', page])
+    );
+
+    const choose = (items, count, start = 0, prefix = [], output = []) => {
+      if (prefix.length === count) { output.push([...prefix]); return output; }
+      for (let index = start; index <= items.length - (count - prefix.length); index += 1) {
+        prefix.push(items[index]);
+        choose(items, count, index + 1, prefix, output);
+        prefix.pop();
+      }
+      return output;
+    };
+
+    const virtualPageNumber = (page, selection) => {
+      const baseIndex = pages.indexOf(page);
+      const precedingFillers = selection.filter(candidate => candidate.index <= baseIndex).length;
+      return baseIndex + 1 + precedingFillers;
+    };
+
+    const preservesLeaderSpreads = selection => expectedLeaderPairs.every(([leftLeader, rightLeader]) => {
+      const leftPage = leaderPageByName.get(leftLeader);
+      const rightPage = leaderPageByName.get(rightLeader);
+      if (!leftPage || !rightPage) return false;
+      const left = virtualPageNumber(leftPage, selection);
+      const right = virtualPageNumber(rightPage, selection);
+      return left % 2 === 0 && right === left + 1;
+    });
+
+    const hierarchyScore = selection => {
+      const counts = [0, 0, 0];
+      selection.forEach(candidate => { counts[candidate.tier] += 1; });
+      return counts;
+    };
+    const betterScore = (left, right) => {
+      if (!right) return true;
+      for (let tier = 0; tier < left.length; tier += 1) {
+        if (left[tier] !== right[tier]) return left[tier] > right[tier];
+      }
+      return false;
+    };
+
+    let chosen = [];
+    let chosenScore = null;
+    if (paddingNeeded > 0) {
+      for (const selection of choose(candidates, paddingNeeded)) {
+        if (!preservesLeaderSpreads(selection)) continue;
+        const score = hierarchyScore(selection);
+        if (betterScore(score, chosenScore)) {
+          chosen = selection;
+          chosenScore = score;
+        }
+      }
+      if (chosen.length !== paddingNeeded) {
+        throw new Error(`No natural-boundary placement for ${paddingNeeded} filler page(s) preserves all Leader spreads.`);
+      }
+    }
+
+    // Insert from the end of the document toward the front so original indices
+    // remain stable while moving each newly-created hero plate into position.
+    chosen.sort((a, b) => b.index - a.index);
+    for (const candidate of chosen) {
       const plate = intentionalBlank('');
       const appended = pages.pop();
       if (appended !== plate) throw new Error('Hero plate insertion lost page order.');
-      plate.dataset.heroPlateFor = boundary;
-      pages.splice(boundaryIndex, 0, plate);
-      boundaryPage.before(plate);
+      plate.dataset.heroPlateFor = candidate.anchor;
+      pages.splice(candidate.index, 0, plate);
+      candidate.page.before(plate);
     }'''
     return replace_required(paginator, old, new, "end-loaded booklet padding loop")
 
@@ -335,15 +389,13 @@ def main() -> None:
     paginator = paginator.replace("Gauntlet v0.6.1", "Gauntlet v0.6.3")
     paginator = adapt_glossary_pagination(paginator)
     paginator = adapt_hero_plate_pool(paginator)
-    paginator = adapt_leader_spreads(paginator)
     paginator = adapt_signature_padding(paginator)
     RUNTIME_PAGINATOR.write_text(paginator, encoding="utf-8")
 
     print(
         f"adapted approved Rulebook production system to {CURRENT_RULEBOOK.relative_to(ROOT)} "
         "with shared player-facing editorial normalization, 12 presentation-only Leader sketches, "
-        "facing Leader-pair pagination corrected only at faction boundaries, content-aware Glossary continuation, "
-        "and three unique hero filler plates"
+        "content-aware Glossary continuation, hierarchical filler placement, and unique hero filler art"
     )
 
 
