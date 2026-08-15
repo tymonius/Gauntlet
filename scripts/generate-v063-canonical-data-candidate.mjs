@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
+import { normalizeV063LastStandValue } from '../rules-assistant/v063-last-stand-language.js';
 
 const root = process.cwd();
 const cardCandidatePath = path.join(root, 'artifacts/v0.6.3/Gauntlet_v0.6.3_Card_Text_Candidate.json');
@@ -14,8 +15,8 @@ const generalCards = fs.readFileSync(path.join(root, 'docs/Gauntlet_v0.6.3_Gener
 for (const marker of [
   'Draw four cards, choose one card from those four, and place it face up in your Discard Pile.',
   'After seeing your opening Hand and opening discard, secretly arrange your three Territory Cards',
-  'A player runs the Gauntlet and wins immediately when that player either captures the Territory at the opponent\'s end of the Gauntlet or wins the opponent\'s Last Stand.',
-  'The advancing player does not need to control or have captured the final Territory before initiating the Last Stand.',
+  'A player runs the Gauntlet and wins immediately when that player either captures the Territory at the opponent\'s end of the Gauntlet or forces the opponent to make a Last Stand and wins the resulting battle.',
+  'The advancing player does not need to control or have captured the final Territory before forcing the opponent to make a Last Stand.',
   'The attacker must receive another movement sequence from a rule or effect.',
 ]) {
   assert(shared.includes(marker), `Shared-rules source is missing required canonical-data marker: ${marker}`);
@@ -104,10 +105,10 @@ data.battlefield = {
   ...data.battlefield,
   starting_position: "Each Player Token begins on the Territory at that player's own end of the Gauntlet. Setup placement is not movement and does not count as entering.",
   capture: "During Capture, if your token is on or beyond the next opposing Territory immediately beyond your Front Line, add that Territory to your Front Line. Normal Capture advances the Front Line by at most one Territory per turn. Capturing the Territory at the opponent's end immediately runs the Gauntlet and wins.",
-  victory: "Run the Gauntlet and win immediately by either capturing the Territory at the opponent's end or winning the opponent's Last Stand.",
+  victory: "Run the Gauntlet and win immediately by either capturing the Territory at the opponent's end or forcing the opponent to make a Last Stand and winning the resulting battle.",
   last_stand: {
     ...data.battlefield.last_stand,
-    access: "After the opponent is forced beyond their own end, an attacker on the opponent's final Territory may initiate the Last Stand by using a separate legal movement sequence to Advance beyond that end.",
+    access: "After the opponent is forced beyond their own end, an attacker on the opponent's final Territory may force the opponent to make a Last Stand by using a separate legal movement sequence to Advance beyond that end.",
     final_territory_control_required: false,
     final_territory_capture_required: false,
     separate_movement_sequence_required: true,
@@ -206,6 +207,7 @@ data.normalization = {
   },
 };
 
+const normalizedData = normalizeV063LastStandValue(data);
 fs.mkdirSync(outputDir, { recursive: true });
-fs.writeFileSync(outputPath, JSON.stringify(data, null, 2) + '\n', 'utf8');
-console.log(`Generated ${path.relative(root, outputPath)} with ${data.cards.length} cards and ${data.territories.length} Territories.`);
+fs.writeFileSync(outputPath, JSON.stringify(normalizedData, null, 2) + '\n', 'utf8');
+console.log(`Generated ${path.relative(root, outputPath)} with ${normalizedData.cards.length} cards and ${normalizedData.territories.length} Territories.`);
