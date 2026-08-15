@@ -187,6 +187,40 @@ function validateCardMetrics(faction, metrics) {
   }
 }
 
+async function validateSharedInspector(page, source, cloneSelector, label) {
+  await source.scrollIntoViewIfNeeded();
+  await page.waitForFunction(selector => document.querySelector(selector)?.classList.contains('card-inspectable'), cloneSelector === '.gauntlet-card-back' ? '[data-gauntlet-card-back][data-card-back-faction="intelligence"]' : '.leader-card');
+  await source.click();
+
+  const dialog = page.locator('.card-inspection-dialog[open]').first();
+  await dialog.waitFor();
+  const inspection = await dialog.evaluate((element, selector) => {
+    const clone = element.querySelector(`.card-inspection-clone${selector}`);
+    const cloneRect = clone?.getBoundingClientRect();
+    const sourceStage = element.querySelector('.card-inspection-stage');
+    const stageRect = sourceStage?.getBoundingClientRect();
+    return {
+      open: element.open,
+      position: getComputedStyle(element).position,
+      hasClone: Boolean(clone),
+      cloneWidth: cloneRect?.width || 0,
+      cloneHeight: cloneRect?.height || 0,
+      stageWidth: stageRect?.width || 0,
+      stageHeight: stageRect?.height || 0,
+    };
+  }, cloneSelector);
+
+  if (!inspection.open || inspection.position !== 'fixed' || !inspection.hasClone) {
+    throw new Error(`${label} did not open in the shared fixed card inspector: ${JSON.stringify(inspection)}.`);
+  }
+  if (inspection.cloneWidth <= 240 || inspection.cloneHeight <= 336 || inspection.stageWidth <= 240 || inspection.stageHeight <= 336) {
+    throw new Error(`${label} inspector did not enlarge the selected card: ${JSON.stringify(inspection)}.`);
+  }
+
+  await dialog.locator('.card-inspection-close').click();
+  await page.waitForFunction(() => !document.querySelector('.card-inspection-dialog[open]'));
+}
+
 async function main() {
   const { chromium } = await import('playwright');
   await mkdir(OUTPUT, { recursive: true });
@@ -217,6 +251,12 @@ async function main() {
 
     const intelligenceBack = page.locator('[data-gauntlet-card-back][data-card-back-faction="intelligence"]');
     await intelligenceBack.screenshot({ path: join(OUTPUT, 'universal-card-back.png'), omitBackground: true });
+
+    /* Regression coverage for the review interaction itself, not just static
+       specimen geometry. Both the existing Leader path and the new card-back
+       path must use the same fixed viewport inspector and enlarge correctly. */
+    await validateSharedInspector(page, intelligenceBack, '.gauntlet-card-back', 'Card back');
+    await validateSharedInspector(page, page.locator('.leader-card').first(), '.leader-card', 'Leader card');
 
     for (const faction of Object.keys(FACTIONS)) {
       await page.evaluate(factionName => {
