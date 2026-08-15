@@ -22,6 +22,8 @@ jobs:
             /package-lock.json
             /scripts/render-clean-v063-booklet.mjs
             /scripts/validate-clean-v063-booklet.mjs
+            /scripts/publication-utils.mjs
+            /rules-assistant/v063-last-stand-language.js
             /rulebook/markdown.js
             /artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md
             /releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md
