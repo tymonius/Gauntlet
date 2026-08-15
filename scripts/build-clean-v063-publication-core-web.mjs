@@ -2,7 +2,7 @@ import {
   AUTHORITY_SET_ID, RULEBOOK_SHA256, CANONICAL_SHA256, STARTERS_SHA256,
   RELEASE_DIR, CLEAN, RULEBOOK_SOURCE, CANONICAL_SOURCE, STARTERS_SOURCE, factionGuides,
   read, readBytes, hashFile, syncText, syncBytes, prune, copyText, currentize,
-  publicAuthorityNote, publicFactionGuide, finish
+  publicAuthorityNote, publicCanonicalData, publicFactionGuide, finish
 } from './publication-utils.mjs';
 
 if (hashFile(RULEBOOK_SOURCE) !== RULEBOOK_SHA256) throw new Error('Certified Rulebook hash drifted before publication.');
@@ -14,7 +14,7 @@ for (const [label, route, authorityDir, file] of factionGuides) {
   const publishedName = label === 'Diplomats' ? 'Diplomat' : label === 'Financiers' ? 'Financier' : label;
   syncText(`${RELEASE_DIR}/faction-guides/${route}/Gauntlet_v0.6.3_${publishedName}_Faction_Guide.md`, publicFactionGuide(read(`${CLEAN}/faction-guides/${authorityDir}/${file}`)));
 }
-syncBytes(`${RELEASE_DIR}/Gauntlet_v0.6.3_Canonical_Data.json`, readBytes(CANONICAL_SOURCE));
+syncText(`${RELEASE_DIR}/Gauntlet_v0.6.3_Canonical_Data.json`, JSON.stringify(publicCanonicalData(read(CANONICAL_SOURCE)), null, 2));
 syncBytes(`${RELEASE_DIR}/Gauntlet_v0.6.3_Starter_Decks.json`, readBytes(STARTERS_SOURCE));
 
 prune('rulebook', new Set(['index.html','app.js','markdown.js','styles.css','publication.css']));
@@ -30,8 +30,9 @@ copyText(`${CLEAN}/browser-rulebook/index.html`, 'rulebook/index.html', (html) =
   .replace(/<span class="reconstruction-note">[^<]*<\/span>/, '<span class="reconstruction-note">This browser view verifies the certified source before rendering.</span>')
   .replace(/<p><strong>Gauntlet clean v0\.6\.3<\/strong>[^<]*<code>[^<]*<\/code>\.<\/p>/, `<p><strong>Gauntlet v0.6.3</strong> · Current canonical playtest edition · authority <code>${AUTHORITY_SET_ID}</code>.</p>`));
 copyText(`${CLEAN}/browser-rulebook/app.js`, 'rulebook/app.js', (app) => app
+  .replace("import { renderMarkdown } from './markdown.js';", "import { renderMarkdown } from './markdown.js';\nimport { normalizeV063LastStandText } from '../rules-assistant/v063-last-stand-language.js';")
   .replace("const SOURCE_URL = '../rulebook/Gauntlet_v0.6.3_Rulebook.md';", `const SOURCE_URL = '/${RULEBOOK_SOURCE}';\nconst SOURCE_SHA256 = '${RULEBOOK_SHA256}';\nconst PUBLISHED_SOURCE_URL = '../releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md';`)
-  .replace('async function loadRulebook() {', `async function sha256(bytes) {\n  const digest = await crypto.subtle.digest('SHA-256', bytes);\n  return [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, '0')).join('');\n}\n\nfunction publicRulebookSource(source) {\n  return source\n    .replace('**Version 0.6.3 — Clean Reconstruction Candidate**', '**Version 0.6.3**')\n    .replace(/^> \\*\\*Authority candidate, not current\\/public rules\\.\\*\\*[^\\n]*\\n\\n/m, '');\n}\n\nasync function loadRulebook() {`)
+  .replace('async function loadRulebook() {', `async function sha256(bytes) {\n  const digest = await crypto.subtle.digest('SHA-256', bytes);\n  return [...new Uint8Array(digest)].map((value) => value.toString(16).padStart(2, '0')).join('');\n}\n\nfunction publicRulebookSource(source) {\n  return normalizeV063LastStandText(source)\n    .replace('**Version 0.6.3 — Clean Reconstruction Candidate**', '**Version 0.6.3**')\n    .replace(/^> \\*\\*Authority candidate, not current\\/public rules\\.\\*\\*[^\\n]*\\n\\n/m, '');\n}\n\nasync function loadRulebook() {`)
   .replace("const markdown = await response.text();\n    const rendered = renderMarkdown(markdown);", "const bytes = await response.arrayBuffer();\n    const actualHash = await sha256(bytes);\n    if (actualHash !== SOURCE_SHA256) throw new Error(`Rulebook source hash mismatch: ${actualHash}`);\n    const markdown = publicRulebookSource(new TextDecoder().decode(bytes));\n    const rendered = renderMarkdown(markdown);")
   .replace('Clean v0.6.3 reconstruction · ${sectionCount} sections · authority ${AUTHORITY_SET_ID.slice(0, 8)}… · rendered from certified Markdown', 'v0.6.3 · ${sectionCount} sections · authority ${AUTHORITY_SET_ID.slice(0, 8)}… · verified canonical source')
   .replace('certified clean-v0.6.3 Markdown source', 'published v0.6.3 Rulebook source')
