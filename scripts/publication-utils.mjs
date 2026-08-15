@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { normalizeV063LastStandText, normalizeV063LastStandValue } from '../rules-assistant/v063-last-stand-language.js';
+import { applyV063PlayerFacingRulebookCorrections } from '../rulebook/player-facing/corrections.js';
 
 // Publication retry after #644 synchronized the approved Mystics Rite completion artwork regression.
 
@@ -92,11 +93,7 @@ export function replacePlayerFacingChapter11(source, chapter11 = read(PLAYER_CHA
   return `${source.slice(0, start)}${replacement}\n\n${source.slice(end)}`;
 }
 export function applyPlayerFacingRulebookCorrections(source) {
-  const internalSanctionGuidance = 'A Sanction may state additional removal conditions. Cards therefore do not need to repeat identification of the refusing opponent or the default expiration after later acceptance.';
-  const playerSanctionRule = 'Additional printed removal conditions also apply unless the Sanction says otherwise.';
-  const count = source.split(internalSanctionGuidance).length - 1;
-  if (count !== 1) throw new Error(`Expected exactly one remaining internal Sanction guidance paragraph after Chapter 11 replacement; found ${count}.`);
-  return source.replace(internalSanctionGuidance, playerSanctionRule);
+  return applyV063PlayerFacingRulebookCorrections(source);
 }
 export function publicAuthorityNote(source) {
   const normalized = normalizeV063LastStandText(source)

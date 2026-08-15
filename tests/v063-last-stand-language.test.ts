@@ -4,6 +4,7 @@ import crypto from 'node:crypto';
 import { describe, expect, it } from 'vitest';
 import {
   findV063LastStandTerminologyViolations,
+  normalizeV063LastStandOnlyText,
   normalizeV063LastStandText,
   normalizeV063LastStandValue,
 } from '../rules-assistant/v063-last-stand-language.js';
@@ -36,19 +37,19 @@ describe('PR #171 Last Stand terminology', () => {
       "Conduct the Last Stand",
       "The final Territory does not need to be controlled or already captured before that Last Stand can be initiated.",
     ].join('\n');
-    const normalized = normalizeV063LastStandText(legacy);
+    const normalized = normalizeV063LastStandOnlyText(legacy);
 
     expect(normalized).toContain('force your opponent to make a Last Stand and win the resulting battle');
     expect(normalized).toContain('force the opponent to make a Last Stand');
     expect(normalized).toContain('Conduct the resulting battle');
     expect(normalized).toContain('before the opponent can be forced to make a Last Stand');
     expect(findV063LastStandTerminologyViolations(normalized)).toEqual([]);
-    expect(normalizeV063LastStandText(normalized)).toBe(normalized);
+    expect(normalizeV063LastStandOnlyText(normalized)).toBe(normalized);
   });
 
   it.each(currentTextSurfaces)('%s contains only the approved terminology', (relative) => {
     const text = read(relative);
-    expect(normalizeV063LastStandText(text), `${relative} would still be changed by the PR #171 normalizer`).toBe(text);
+    expect(normalizeV063LastStandOnlyText(text), `${relative} would still be changed by the PR #171 normalizer`).toBe(text);
     expect(findV063LastStandTerminologyViolations(text), relative).toEqual([]);
   });
 
@@ -66,8 +67,22 @@ describe('PR #171 Last Stand terminology', () => {
     expect(sha256(rulebookPath)).toBe('7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643');
     expect(sha256(canonicalPath)).toBe('641c813366a8bcb52f9cb505ada640994d416024deed1f71a6ec59fb24ed2c4c');
 
-    expect(findV063LastStandTerminologyViolations(normalizeV063LastStandText(read(rulebookPath)))).toEqual([]);
-    expect(findV063LastStandTerminologyViolations(normalizeV063LastStandText(read(canonicalPath)))).toEqual([]);
+    expect(findV063LastStandTerminologyViolations(normalizeV063LastStandOnlyText(read(rulebookPath)))).toEqual([]);
+    expect(findV063LastStandTerminologyViolations(normalizeV063LastStandOnlyText(read(canonicalPath)))).toEqual([]);
+  });
+
+  it('composes the broader player-facing Rulebook corrections in the public prose normalizer', () => {
+    const legacy = [
+      'Both routes are the normal shared victory condition. Rules and player-facing text may distinguish the **capture route** from the **Last Stand battle route**, but both are running the Gauntlet.',
+      'During an Denouement, you may spend 1 Action.',
+      '**Asset is the only banked-card effect heading in v0.6.3.**',
+    ].join('\n');
+    const normalized = normalizeV063LastStandText(legacy);
+
+    expect(normalized).toContain('The capture route and Last Stand battle route both count as running the Gauntlet.');
+    expect(normalized).toContain('During Denouement, you may spend 1 Action.');
+    expect(normalized).toContain('**Asset is the only banked-card effect heading.**');
+    expect(normalizeV063LastStandText(normalized)).toBe(normalized);
   });
 
   it('applies publication terminology only after live authority verification', () => {
