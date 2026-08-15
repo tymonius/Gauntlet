@@ -7,9 +7,9 @@ const FACTIONS = Object.freeze([
   'inquisition',
 ]);
 
-const PATTERN_ROWS = 29;
-const PATTERN_COLUMNS = 23;
-const ROW_SEQUENCE = Object.freeze([0, 3, 1, 4, 2, 5]);
+const PATTERN_ROWS = 36;
+const PATTERN_COLUMNS = 36;
+const ROW_SEQUENCE = Object.freeze([0, 3, 1, 4, 2, 5, 2, 4, 0, 5, 1, 3]);
 
 function patternMarkup() {
   return Array.from({ length: PATTERN_ROWS }, (_, rowIndex) => {
