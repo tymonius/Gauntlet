@@ -80,6 +80,39 @@ function normalizeRef(fromRoute, ref) {
   return new URL(ref, `https://gauntlet.invalid${fromRoute}`).pathname;
 }
 
+function normalizeNavigationRef(fromRoute, ref) {
+  if (!ref || /^(?:https?:|mailto:|tel:|data:|javascript:)/i.test(ref)) return null;
+  const url = new URL(ref, `https://gauntlet.invalid${fromRoute}`);
+  return `${url.pathname}${url.hash}`;
+}
+
+function primaryNavigationLinks(html, route) {
+  const nav = html.match(/<nav\b[^>]*aria-label=(['"])Primary navigation\1[^>]*>([\s\S]*?)<\/nav>/i);
+  assert(nav, `${route} is missing the canonical primary navigation element.`);
+  return [...nav[2].matchAll(/<a\b[^>]*href=(['"])(.*?)\1[^>]*>([\s\S]*?)<\/a>/gi)].map((match) => ({
+    href: normalizeNavigationRef(route, match[2]),
+    label: match[3].replace(/<[^>]+>/g, '').replace(/\s+/g, ' ').trim(),
+  }));
+}
+
+function brandHomeRef(html, route) {
+  const brand = html.match(/<a\b[^>]*class=(['"])[^'"]*\bbrand\b[^'"]*\1[^>]*>/i)?.[0];
+  assert(brand, `${route} is missing the shared brand link.`);
+  assert(/\baria-label=(['"])Gauntlet home\1/i.test(brand), `${route} brand link must use the shared accessible name.`);
+  const href = brand.match(/\bhref=(['"])(.*?)\1/i)?.[2];
+  return normalizeNavigationRef(route, href);
+}
+
+const canonicalPrimaryNavigation = [
+  { href: '/start/', label: 'Start' },
+  { href: '/#game', label: 'Game' },
+  { href: '/rulebook/', label: 'Rules' },
+  { href: '/factions/', label: 'Factions' },
+  { href: '/deckbuilder/', label: 'Deckbuilder' },
+  { href: '/card-reference/', label: 'Card Reference' },
+  { href: '/rules-arbiter/', label: 'Rules Arbiter' },
+];
+
 const lifecycle = JSON.parse(await getText('/config/release-lifecycle.json'));
 const currentVersion = lifecycle.current_release;
 assert(currentVersion, 'Release lifecycle does not define current_release.');
@@ -147,6 +180,15 @@ for (const route of uniqueCorePages) {
   }
 }
 
+for (const [route, html] of pages) {
+  assert.deepEqual(
+    primaryNavigationLinks(html, route),
+    canonicalPrimaryNavigation,
+    `${route} primary navigation drifted from the canonical global header.`,
+  );
+  assert.equal(brandHomeRef(html, route), '/', `${route} brand link does not return to the site root.`);
+}
+
 const rulebookRoute = manifest.public_routes?.rulebook || '/rulebook/';
 const rulebook = pages.get(rulebookRoute) ?? await getText(rulebookRoute);
 const rulebookRefs = htmlRefs(rulebook).map((ref) => normalizeRef(rulebookRoute, ref)).filter(Boolean);
@@ -195,4 +237,4 @@ for (const normalized of localReferences) {
   }
 }
 
-console.log(`Current public contract passed${remoteBase ? ` against ${remoteBase}` : ' against the repository'}: ${currentVersion}, release landing/changelog, booklet integrity, resolvable player links, canonical faction symbols, withdrawn-route isolation, and defined typography tokens.`);
+console.log(`Current public contract passed${remoteBase ? ` against ${remoteBase}` : ' against the repository'}: ${currentVersion}, canonical global header navigation, release landing/changelog, booklet integrity, resolvable player links, canonical faction symbols, withdrawn-route isolation, and defined typography tokens.`);
