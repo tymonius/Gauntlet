@@ -1,7 +1,7 @@
 import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
-const generator = readFileSync("scripts/generate-v063-tts-territory-assets.mjs", "utf8");
+const generator = readFileSync("scripts/generate-tts-territory-assets.mjs", "utf8");
 const renderer = readFileSync("tts/territory-renderer/territory-renderer.js", "utf8");
 const rendererStyles = readFileSync("tts/territory-renderer/territory-renderer.css", "utf8");
 const playableStyles = readFileSync("card-design/card-design.css", "utf8");
@@ -109,17 +109,20 @@ describe("TTS Territory assets", () => {
     expect(dedicatedSpecimenPage).toContain('aria-label="High Ground Territory card-front prototype"');
   });
 
-  it("packs the canonical pool into a seven by four sheet", () => {
+  it("packs Territories into as many seven-by-four sheets as the current pool requires", () => {
     expect(generator).toContain("const SHEET_COLUMNS = 7");
     expect(generator).toContain("const SHEET_ROWS = 4");
     expect(generator).toContain("const HIDDEN_SLOT = SHEET_COLUMNS * SHEET_ROWS - 1");
-    expect(generator).toContain("Expected 25 canonical Territories");
-    expect(generator).toContain("Expected four canonical Arenas");
+    expect(generator).toContain("const TERRITORIES_PER_SHEET = HIDDEN_SLOT");
+    expect(generator).toContain("const sheetGroups = chunk(catalog.territories, TERRITORIES_PER_SHEET)");
+    expect(generator).not.toContain("Expected 25 canonical Territories");
+    expect(generator).not.toContain("Expected four canonical Arenas");
   });
 
-  it("uses separate deterministic Territory IDs", () => {
-    expect(generator).toContain("const DECK_ID = 50");
-    expect(generator).toContain("ttsCardId: DECK_ID * 100 + index");
+  it("uses separate deterministic Territory deck IDs across dynamically created sheets", () => {
+    expect(generator).toContain("const FIRST_DECK_ID = 50");
+    expect(generator).toContain("const deckId = FIRST_DECK_ID + sheetIndex");
+    expect(generator).toContain("ttsCardId: deckId * 100 + index");
     expect(generator).toContain("territory-manifest.json");
     expect(generator).toContain("territory-back.png");
   });
@@ -143,9 +146,9 @@ describe("TTS Territory assets", () => {
     expect(generator).toContain("Territory text does not fit the approved landscape frame");
   });
 
-  it("exposes separate and combined npm commands", () => {
-    expect(packageJson.scripts["tts:cards"]).toBe("node scripts/generate-v063-tts-card-assets.mjs");
-    expect(packageJson.scripts["tts:territories"]).toBe("node scripts/generate-v063-tts-territory-assets.mjs");
+  it("exposes stable release-agnostic npm commands", () => {
+    expect(packageJson.scripts["tts:cards"]).toBe("node scripts/generate-tts-card-assets.mjs");
+    expect(packageJson.scripts["tts:territories"]).toBe("node scripts/generate-tts-territory-assets.mjs");
     expect(packageJson.scripts["tts:build"]).toBe("npm run tts:cards && npm run tts:territories");
   });
 });
