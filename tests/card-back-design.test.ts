@@ -35,7 +35,7 @@ describe("universal playable-card back", () => {
     expect(css).toContain("aspect-ratio: 1871.79 / 493.58;");
   });
 
-  it("clips one tightly packed tiling field inside the opaque border and rotates the field another 90 degrees clockwise", () => {
+  it("clips one tightly packed, overscanned, interlocked tiling field inside the opaque border", () => {
     for (const faction of [
       "military",
       "diplomats",
@@ -47,14 +47,18 @@ describe("universal playable-card back", () => {
       expect(renderer).toContain(`'${faction}'`);
       expect(css).toContain(`../images/faction-symbols/${faction}.svg`);
     }
-    expect(renderer).toContain("const PATTERN_ROWS = 29;");
-    expect(renderer).toContain("const PATTERN_COLUMNS = 23;");
+    expect(renderer).toContain("const PATTERN_ROWS = 36;");
+    expect(renderer).toContain("const PATTERN_COLUMNS = 36;");
     expect(renderer).toContain('class="gauntlet-card-back__pattern-window"');
     expect(css).toMatch(/\.gauntlet-card-back__pattern-window\s*\{[^}]*inset: 0\.075in;[^}]*overflow: hidden;/s);
-    expect(css).toContain("inset: -0.55in;");
-    expect(css).toContain("grid-template-rows: repeat(29, 1fr);");
-    expect(css).toContain("grid-template-columns: repeat(23, 1fr);");
-    expect(css).toContain("transform: rotate(78deg);");
+    expect(css).toContain("width: 5.4in;");
+    expect(css).toContain("height: 5.4in;");
+    expect(css).toContain("grid-template-rows: repeat(36, 0.132in);");
+    expect(css).toContain("grid-template-columns: repeat(36, 0.145in);");
+    expect(css).toContain("transform: translate(-50%, -50%) rotate(78deg);");
+    expect(css).toContain("translateX(0.0725in)");
+    expect(css).toContain("translateX(0.03625in)");
+    expect(css).toContain("translateX(0.10875in)");
     expect(css).toContain("width: 0.135in;");
     expect(css).toContain("--card-back-pattern: rgba(0, 0, 0, 0.42);");
     expect(css).not.toMatch(/\.gauntlet-card-back__symbol\s*\{[^}]*rotate\(/s);
