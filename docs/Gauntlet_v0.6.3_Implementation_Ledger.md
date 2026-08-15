@@ -92,9 +92,9 @@ When a player wins a battle on the Territory at the opponent's end and forces th
 
 A player may force the opponent to make a Last Stand by using a **separate legal movement sequence** to Advance beyond the opponent's end of the Gauntlet while that opponent is beyond the Gauntlet.
 
-The final Territory does not need to be controlled or already captured before that Last Stand can be initiated. Token position, the opponent's beyond-the-Gauntlet position, and the new legal Advance are sufficient.
+The final Territory does not need to be controlled or already captured before the opponent can be forced to make a Last Stand. Token position, the opponent's beyond-the-Gauntlet position, and the new legal Advance are sufficient.
 
-The battle that first forced the opponent beyond the Gauntlet still ends the movement sequence that created it. The attacker therefore needs an effect or rule that directly permits another movement sequence before they can immediately force a Last Stand.
+The battle that first forced the opponent beyond the Gauntlet still ends the movement sequence that created it. The attacker therefore needs an effect or rule that directly permits another movement sequence before they can immediately force the opponent to make a Last Stand.
 
 If the attacker does not force the opponent to make a Last Stand, they may remain on the opposing final Territory. The opponent receives the normal opportunity to Counterattack or otherwise dislodge them. If the attacker later captures that final Territory, the capture route wins immediately.
 
@@ -108,7 +108,7 @@ All other Last Stand rules—including defender status, Defensive Edge, battle p
 
 The two Military Leaders should now have visibly different normal-victory strengths:
 
-- the **General** can exploit follow-up movement and chain-battle effects to pursue a displaced opponent into an immediate Last Stand;
+- the **General** can exploit follow-up movement and chain-battle effects to immediately force a displaced opponent to make a Last Stand;
 - the **Commandant** can exploit immediate-capture effects to consolidate the final Territory and win through capture.
 
 Do not add a final-Territory exception that removes the Commandant's capture payoff or makes the General's movement route the only accelerated normal victory.
@@ -256,7 +256,7 @@ The v0.6.3 implementation is not complete until:
 - opening selection occurs before Territory arrangement;
 - the first-player roll occurs only after both opening selection and Territory arrangement are complete;
 - setup placement is expressly not entering a Territory;
-- both capture of the opponent's final Territory and victory in the opponent's Last Stand are described as running the Gauntlet;
+- both capture of the opponent's final Territory and victory in the resulting Last Stand battle are described as running the Gauntlet;
 - immediate-capture effects can legally win on the final Territory;
 - Last Stand access does not require prior control of the final Territory;
 - a separate legal movement sequence is still required after the battle that forces the opponent beyond the Gauntlet;
