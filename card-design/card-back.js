@@ -7,6 +7,15 @@ const FACTIONS = Object.freeze([
   'inquisition',
 ]);
 
+const FACTION_LABELS = Object.freeze({
+  military: 'Military',
+  diplomats: 'Diplomats',
+  financiers: 'Financiers',
+  intelligence: 'Intelligence',
+  mystics: 'Mystics',
+  inquisition: 'Inquisition',
+});
+
 const PATTERN_ROWS = 36;
 const PATTERN_COLUMNS = 36;
 const ROW_SEQUENCE = Object.freeze([0, 3, 1, 4, 2, 5, 2, 4, 0, 5, 1, 3]);
@@ -26,9 +35,13 @@ function patternMarkup() {
 
 export function renderCardBack(element) {
   if (!(element instanceof HTMLElement)) return;
+  const requestedFaction = element.dataset.cardBackFaction?.trim().toLowerCase();
+  const faction = FACTIONS.includes(requestedFaction) ? requestedFaction : 'intelligence';
+
+  element.dataset.cardBackFaction = faction;
   element.classList.add('gauntlet-card-back');
   element.setAttribute('role', 'img');
-  element.setAttribute('aria-label', 'Universal Gauntlet playable-card back');
+  element.setAttribute('aria-label', `${FACTION_LABELS[faction]} colorway of the Gauntlet playable-card back`);
   element.innerHTML = `
     <div class="gauntlet-card-back__pattern-window" aria-hidden="true">
       <div class="gauntlet-card-back__pattern">${patternMarkup()}</div>
