@@ -9,8 +9,6 @@ import {
 const root = process.cwd();
 const write = process.argv.includes('--write');
 
-// Current/adopted source and player-facing surfaces only. Certified reconstruction
-// inputs and withdrawn/versioned release evidence are intentionally excluded.
 const targets = [
   'docs/Gauntlet_v0.6.3_Cross_Surface_Closeout_Matrix.md',
   'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md',
@@ -61,9 +59,6 @@ for (const relativePath of targets) {
   failures += reportViolations(relativePath, normalized);
 }
 
-// The certified clean-v0.6.3 inputs are immutable evidence. Prove that the same
-// publication transform converts them into compliant current/public language,
-// but never rewrite those files here.
 for (const relativePath of certifiedInputs) {
   const normalized = normalizeV063LastStandText(read(relativePath));
   const count = reportViolations(`${relativePath} (after publication transform)`, normalized);
@@ -71,18 +66,9 @@ for (const relativePath of certifiedInputs) {
 }
 
 const requiredAssertions = [
-  [
-    'docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md',
-    'force the opponent to make a Last Stand and win the resulting battle',
-  ],
-  [
-    'releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md',
-    'The resulting contest is a **Last Stand battle**.',
-  ],
-  [
-    'releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Canonical_Data.json',
-    'force the opponent to make a Last Stand',
-  ],
+  ['docs/Gauntlet_v0.6.3_Shared_Rules_Candidate.md', 'force the opponent to make a Last Stand and win the resulting battle'],
+  ['releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md', 'The resulting contest is a Last Stand battle.'],
+  ['releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Canonical_Data.json', 'force the opponent to make a Last Stand'],
 ];
 
 for (const [relativePath, required] of requiredAssertions) {
