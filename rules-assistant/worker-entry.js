@@ -12,6 +12,7 @@ import { handleReviewIntelligence } from "./review-intelligence.js";
 const ADMIN_PAGE = ADMIN_PAGE_WITH_RULES_INTELLIGENCE || ADMIN_PAGE_WITH_INCREMENTAL_EXPORT;
 const DEFAULT_SITE_ORIGIN = "https://gauntlet.run";
 const FAVICON_VERSION = "20260804-1";
+const DEVELOPER_THEME_VERSION = "20260815-1";
 
 function siteOrigin(env) {
   try {
@@ -33,6 +34,50 @@ export function addSiteFaviconLinks(html, origin = DEFAULT_SITE_ORIGIN) {
   const viewportPattern = /(<meta\b[^>]*\bname=["']viewport["'][^>]*>)/i;
   if (viewportPattern.test(html)) return html.replace(viewportPattern, `$1\n${links}`);
   return html.replace(/<head\b[^>]*>/i, `$&\n${links}`);
+}
+
+export function addDeveloperToolChrome(html, origin = DEFAULT_SITE_ORIGIN) {
+  if (html.includes("developer-site-header") || html.includes("developer-tools.css")) return html;
+
+  const styles = [
+    `  <link rel="preconnect" href="https://use.typekit.net">`,
+    `  <link rel="preconnect" href="https://p.typekit.net" crossorigin>`,
+    `  <link rel="stylesheet" href="${origin}/site.css">`,
+    `  <link rel="stylesheet" href="${origin}/developer-tools.css?v=${DEVELOPER_THEME_VERSION}">`
+  ].join("\n");
+
+  const header = `<header class="site-header developer-site-header">
+    <a class="brand" href="${origin}/" aria-label="Gauntlet home">
+      <span class="brand-mark" aria-hidden="true">G</span>
+      <span>Gauntlet</span>
+    </a>
+    <nav aria-label="Developer navigation">
+      <a href="${origin}/playtest/analysis/">Playtest Analysis</a>
+      <a href="${origin}/playtest/host/">Host Home</a>
+      <a href="${origin}/rulebook/">Rules</a>
+      <a href="${origin}/">Main site</a>
+    </nav>
+  </header>`;
+
+  const footer = `<footer class="developer-site-footer">
+    <div>
+      <strong>Gauntlet</strong>
+      <p>Unpublished pre-release playtest project.</p>
+    </div>
+    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  </footer>`;
+
+  return html
+    .replace(/<\/head>/i, `${styles}\n</head>`)
+    .replace(/<body([^>]*)>/i, (_match, attrs) => {
+      const bodyAttrs = String(attrs || "");
+      if (/\bclass\s*=/.test(bodyAttrs)) {
+        return `<body${bodyAttrs.replace(/\bclass\s*=\s*(["'])(.*?)\1/i, (_classMatch, quote, classes) => `class=${quote}${classes} developer-page developer-rules-page${quote}`)}>`;
+      }
+      return `<body${bodyAttrs} class="developer-page developer-rules-page">`;
+    })
+    .replace(/<body([^>]*)>/i, `$&\n${header}`)
+    .replace(/<\/body>/i, `${footer}\n</body>`);
 }
 
 export function allowSiteImages(contentSecurityPolicy, origin = DEFAULT_SITE_ORIGIN) {
@@ -118,8 +163,9 @@ export default {
       const response = await v061Worker.fetch(request, env, context);
       const origin = siteOrigin(env);
       const headers = new Headers(response.headers);
-      headers.set("Content-Security-Policy", allowSiteImages(headers.get("Content-Security-Policy"), origin));
-      return new Response(addSiteFaviconLinks(ADMIN_PAGE, origin), {
+      const contentSecurityPolicy = allowSiteImages(headers.get("Content-Security-Policy"), origin);
+      if (contentSecurityPolicy) headers.set("Content-Security-Policy", contentSecurityPolicy);
+      return new Response(addDeveloperToolChrome(addSiteFaviconLinks(ADMIN_PAGE, origin), origin), {
         status: response.status,
         statusText: response.statusText,
         headers
