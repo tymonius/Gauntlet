@@ -20,8 +20,8 @@
   <link rel="preconnect" href="https://use.typekit.net" />
   <link rel="preconnect" href="https://p.typekit.net" crossorigin />
   <link rel="stylesheet" href="https://use.typekit.net/vgm6nwi.css" />
-  <link rel="stylesheet" href="../design-tokens.css" />
-  <link rel="stylesheet" href="../developer-tools.css" />
+  <link rel="stylesheet" href="../design-tokens.css?v=20260815-2" />
+  <link rel="stylesheet" href="../developer-tools.css?v=20260815-2" />
   <link rel="stylesheet" href="card-design.css" />
   <link rel="stylesheet" href="card-design-refinement.css" />
   <link rel="stylesheet" href="faction-specimens.css" />
@@ -30,106 +30,145 @@
   <link rel="stylesheet" href="rite-card.css" />
   <link rel="stylesheet" href="territory-card.css" />
   <link rel="stylesheet" href="card-review.css" />
-  <link rel="stylesheet" href="card-catalog-shell.css" />
+  <link rel="stylesheet" href="card-catalog-shell.css?v=20260815-2" />
   <script src="card-review.js" defer></script>
   <script type="module" src="proposal-card.js"></script>
   <script type="module" src="rite-card.js"></script>
   <script src="card-design.js" defer></script>
 </head>
 <body class="faction-specimen-page developer-catalog-page">
-  <header class="site-header developer-site-header screen-only">
-    <a class="brand-link" href="../" aria-label="Return to Gauntlet home">
-      <span class="brand-mark" aria-hidden="true">G</span>
-      <span>Gauntlet</span>
-    </a>
-    <nav aria-label="Card review navigation">
-      <a href="#playable-cards">Playable cards</a>
-      <a href="#leader-cards">Leaders</a>
-      <a href="#proposal-cards">Proposals</a>
-      <a href="#rite-cards">Rites</a>
-      <a href="#territories">Territories</a>
-      <button type="button" onclick="window.print()">Print at 100%</button>
-    </nav>
+  <header class="developer-catalog-header screen-only">
+    <div class="developer-catalog-header-inner">
+      <div class="developer-catalog-branding">
+        <a class="brand" href="../" aria-label="Gauntlet home"></a>
+        <div class="developer-catalog-context" aria-label="Current developer tool">
+          <span>Developer tools</span>
+          <strong>Card review</strong>
+        </div>
+      </div>
+      <nav aria-label="Developer navigation">
+        <a href="../#tools">Developer tools</a>
+        <a href="../playtest/analysis/">Analysis</a>
+        <a href="../playtest/host/">Host home</a>
+        <button type="button" onclick="window.print()">Print cards</button>
+      </nav>
+    </div>
   </header>
 
   <main class="developer-catalog-main">
-    <section class="intro section-shell developer-catalog-hero screen-only">
-      <p class="eyebrow">v0.6.3 · complete visual review</p>
-      <h1>Card review catalog</h1>
-      <p class="intro-copy">One review surface for the complete current card system and supplemental faction components. Every playable card uses the v0.6.3 production renderer; all twelve Leaders use the shared Leader frame; all nine Diplomat Proposals appear alongside their ratified Treaty Article state; all three Mystics Rites appear beside their completed progression-reference state; all twenty-five Territories use the production landscape renderer; and future supplemental components can be developed here against the same visual language. Click any card for a larger inspection view, then click its artwork to inspect the original uncropped image.</p>
-      <div class="status-row" aria-label="Review catalog status">
-        <span><strong data-playable-count>128</strong> playable cards</span>
-        <span>12 Leader cards</span>
-        <span>6 approved faction symbols</span>
-        <span><strong data-proposal-count>9</strong> Proposal / Treaty Article pairs</span>
-        <span><strong data-rite-count>3</strong> Rite / completed-Rite pairs</span>
-        <span><strong data-territory-count>25</strong> Territory cards</span>
-        <span><strong data-arena-count>4</strong> Arenas</span>
-        <span>Artwork gaps remain reviewable</span>
-        <span>Production geometry</span>
+    <section class="section-shell developer-catalog-hero screen-only" aria-labelledby="catalog-title">
+      <div class="catalog-hero-copy">
+        <p class="eyebrow">Canonical v0.6.3 · developer review surface</p>
+        <h1 id="catalog-title">Card review <span>catalog.</span></h1>
+        <p class="intro-copy">Inspect the complete production card system in one place: playable cards, Leaders, Diplomat Proposals and Treaty Articles, Mystics Rites, Territories, and Arenas. Production renderers and geometry stay intact while this surrounding workspace provides the review and inspection tools.</p>
       </div>
-      <nav class="card-review-nav" aria-label="Jump to card group">
-        <a href="#playable-neutral">Neutral</a>
-        <a href="#playable-military">Military</a>
-        <a href="#playable-diplomats">Diplomats</a>
-        <a href="#playable-financiers">Financiers</a>
-        <a href="#playable-intelligence">Intelligence</a>
-        <a href="#playable-mystics">Mystics</a>
-        <a href="#playable-inquisition">Inquisition</a>
-        <a href="#leader-cards">Leaders</a>
-        <a href="#proposal-cards">Proposals</a>
-        <a href="#rite-cards">Rites</a>
-        <a href="#territories-standard">Territories</a>
-        <a href="#territories-arenas">Arenas</a>
-      </nav>
+      <aside class="catalog-overview" aria-label="Catalog snapshot">
+        <p class="catalog-overview-label">Catalog snapshot</p>
+        <dl class="catalog-metrics">
+          <div><dt data-playable-count>128</dt><dd>Playable cards</dd></div>
+          <div><dt>12</dt><dd>Leader cards</dd></div>
+          <div><dt data-territory-count>25</dt><dd>Territories <span><strong data-arena-count>4</strong> arenas</span></dd></div>
+          <div><dt><span data-proposal-count>9</span> / <span data-rite-count>3</span></dt><dd>Proposal / Rite pairs</dd></div>
+        </dl>
+        <p class="catalog-overview-note">Artwork gaps remain visible for review. Card geometry, renderer behavior, and print output are unchanged.</p>
+      </aside>
     </section>
+
+    <div class="catalog-jumpbar screen-only">
+      <div class="catalog-jumpbar-inner">
+        <span class="catalog-jump-label">Catalog</span>
+        <nav class="catalog-primary-nav" aria-label="Catalog sections">
+          <a href="#playable-cards">Playable</a>
+          <a href="#leader-cards">Leaders</a>
+          <a href="#proposal-cards">Proposals</a>
+          <a href="#rite-cards">Rites</a>
+          <a href="#territories">Territories</a>
+        </nav>
+        <span class="catalog-jump-divider" aria-hidden="true"></span>
+        <span class="catalog-jump-label">Playable factions</span>
+        <nav class="catalog-faction-nav" aria-label="Playable-card factions">
+          <a href="#playable-neutral">Neutral</a>
+          <a href="#playable-military">Military</a>
+          <a href="#playable-diplomats">Diplomats</a>
+          <a href="#playable-financiers">Financiers</a>
+          <a href="#playable-intelligence">Intelligence</a>
+          <a href="#playable-mystics">Mystics</a>
+          <a href="#playable-inquisition">Inquisition</a>
+        </nav>
+      </div>
+    </div>
 
     <!-- The legacy class intentionally suppresses card-design.js's old twelve-card
          long-card insertion. This section supersedes it with the full catalog. -->
     <section id="playable-cards" class="card-section long-card-review-section" aria-labelledby="cards-title">
       <div class="section-shell card-section-heading screen-only">
-        <p class="section-label">Complete production set</p>
-        <h2 id="cards-title">All playable cards</h2>
-        <p>All <span data-playable-count>128</span> v0.6.3 playable cards, grouped by allegiance and rendered through the same production path used by the release audit. Cards without committed artwork remain visible so their frame, text fit, and eventual illustration can be reviewed in context.</p>
+        <div>
+          <p class="section-label">Complete production set</p>
+          <h2 id="cards-title">All playable cards</h2>
+        </div>
+        <p>All <span data-playable-count>128</span> v0.6.3 playable cards, grouped by allegiance and rendered through the production path used by the release audit. Missing artwork stays visible so frame, text fit, and eventual illustration can still be reviewed in context.</p>
       </div>
       <div id="playableReviewSections"></div>
     </section>
 
     <section id="leader-cards" class="card-section" aria-labelledby="leaders-title">
       <div class="section-shell card-section-heading screen-only">
-        <p class="section-label">Faction dashboards</p>
-        <h2 id="leaders-title">All Leader cards</h2>
-        <p>The complete twelve-Leader set, grouped by faction. These use the same production Leader grammar established by General and Commandant, with the current faction-specific abilities, resources, victory reminders, portraits, the approved six-symbol faction set, and metadata tints.</p>
+        <div>
+          <p class="section-label">Faction dashboards</p>
+          <h2 id="leaders-title">All Leader cards</h2>
+        </div>
+        <p>The complete twelve-Leader set, grouped by faction, with current abilities, resources, victory reminders, portraits, approved faction symbols, and metadata tints.</p>
       </div>
       <div id="leaderReviewSections"></div>
     </section>
 
     <section id="proposal-cards" class="card-section" aria-labelledby="proposals-title">
       <div class="section-shell card-section-heading screen-only">
-        <p class="section-label">Complete Diplomat component set</p>
-        <h2 id="proposals-title">Diplomat Proposals / Treaty Articles</h2>
-        <p>All <span data-proposal-count>9</span> canonical v0.6.3 Proposals, in canonical order, each shown beside its ratified Treaty Article state. The unratified face uses the standard Diplomat card grammar with an artwork window; the ratified Treaty Article preserves the full Proposal text and Influence Stake while replacing the artwork with the formal ratification field and wax seal.</p>
+        <div>
+          <p class="section-label">Diplomat components</p>
+          <h2 id="proposals-title">Proposals / Treaty Articles</h2>
+        </div>
+        <p>All <span data-proposal-count>9</span> canonical Proposals in order, each beside its ratified Treaty Article state. Review both faces together without changing the production Diplomat card grammar.</p>
       </div>
       <div id="proposalReviewSections"></div>
     </section>
 
     <section id="rite-cards" class="card-section" aria-labelledby="rites-title">
       <div class="section-shell card-section-heading screen-only">
-        <p class="section-label">Mystics supplemental component set</p>
-        <h2 id="rites-title">Mystics Rites</h2>
-        <p>All <span data-rite-count>3</span> double-sided Rites: Rite of Echoes, Rite of Blood, and Rite of Crossing. Each incomplete face uses the shared faction-component grammar with a Mystics artwork window and Rite instructions. The completed face replaces the illustration with an inked ritual diagram and turns the lower field into a progression reference for Invocation, Transmutation, Convergence, and the Ritual of Ascendance.</p>
+        <div>
+          <p class="section-label">Mystics components</p>
+          <h2 id="rites-title">Mystics Rites</h2>
+        </div>
+        <p>All <span data-rite-count>3</span> double-sided Rites—Echoes, Blood, and Crossing—with the incomplete ritual face and completed progression-reference face shown as a pair.</p>
       </div>
       <div id="riteReviewSections"></div>
     </section>
 
     <section id="territories" class="card-section territory-specimen-section" aria-labelledby="territory-title">
       <div class="section-shell card-section-heading screen-only">
-        <p class="section-label">Complete landscape set</p>
-        <h2 id="territory-title">All Territory cards</h2>
-        <p>All <span data-territory-count>25</span> canonical landscape cards: twenty-one standard Territories and <span data-arena-count>4</span> Arenas. Each uses the production Territory renderer and the current v0.6.3 canonical text; cards without committed artwork retain the approved pending-art treatment.</p>
+        <div>
+          <p class="section-label">Complete landscape set</p>
+          <h2 id="territory-title">Territories &amp; Arenas</h2>
+        </div>
+        <p>All <span data-territory-count>25</span> canonical landscape cards, including <span data-arena-count>4</span> Arenas, using the production Territory renderer and current v0.6.3 text.</p>
       </div>
       <div id="territoryReviewSections"></div>
     </section>
   </main>
+
+  <footer class="developer-catalog-footer screen-only">
+    <div class="developer-footer-brand">
+      <strong>Gauntlet</strong>
+      <p>Private developer surface · unpublished playtest project.</p>
+    </div>
+    <div class="footer-links">
+      <a href="../">Main site</a>
+      <a href="../#tools">Developer tools</a>
+      <a href="../playtest/analysis/">Playtest Analysis</a>
+      <a href="../playtest/host/">Host Home</a>
+      <a href="https://github.com/tymonius/Gauntlet">GitHub</a>
+    </div>
+    <p class="copyright">Copyright © 2026 Tymon Scott. All rights reserved.</p>
+  </footer>
 </body>
 </html>
