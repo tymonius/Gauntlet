@@ -1,24 +1,16 @@
 import { readFileSync } from 'node:fs';
 import { describe, expect, it } from 'vitest';
+import {
+  STANDARD_CARD_HEADINGS,
+  normalizeV063CardsForPresentation,
+} from '../card-design/v063-card-heading-normalizer.js';
 
-const canonicalPath = 'artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Canonical_Data.json';
-const rulebookPath = 'artifacts/v0.6.3/release-candidate/Gauntlet_v0.6.3_Rulebook.md';
+const canonicalPath = 'artifacts/reconstruction/clean-v0.6.3/downstream/canonical-data.json';
+const generalRulesPath = 'docs/Gauntlet_v0.6.3_General_Card_Rules_Candidate.md';
 const canonical = JSON.parse(readFileSync(canonicalPath, 'utf8'));
-const rulebook = readFileSync(rulebookPath, 'utf8');
-const cards = new Map(canonical.cards.map((card: any) => [card.id, card]));
-
-const standardHeadings = [
-  'Action',
-  'Asset',
-  'Gambit',
-  'Tactic',
-  'Gambit/Tactic',
-  'Mission',
-  'Overlay',
-  'Terms',
-  'Sanctions',
-  'Reaction',
-];
+const generalRules = readFileSync(generalRulesPath, 'utf8');
+const normalizedCards = normalizeV063CardsForPresentation(canonical.cards);
+const cards = new Map(normalizedCards.map((card: any) => [card.id, card]));
 
 const retiredOnStandardCards = ['Text', 'Placement', 'Aftermath', 'Accepted', 'Refused'];
 
@@ -29,11 +21,10 @@ function labels(id: string) {
 }
 
 describe('v0.6.3 standard-card heading vocabulary', () => {
-  it('uses only the approved standard-card headings', () => {
-    const present = new Set(canonical.cards.flatMap((card: any) => card.effects.map((effect: any) => effect.label)));
-    expect([...present].filter((label) => !standardHeadings.includes(String(label)))).toEqual([]);
+  it('uses only the approved standard-card headings in the rendered projection', () => {
+    const present = new Set(normalizedCards.flatMap((card: any) => card.effects.map((effect: any) => effect.label)));
+    expect([...present].filter((label) => !STANDARD_CARD_HEADINGS.includes(String(label)))).toEqual([]);
     for (const retired of retiredOnStandardCards) expect(present.has(retired)).toBe(false);
-    expect(canonical.card_rules.effect_headings.standard_card_headings).toEqual(standardHeadings);
   });
 
   it('normalizes Overlay placement and persistent text', () => {
@@ -52,7 +43,7 @@ describe('v0.6.3 standard-card heading vocabulary', () => {
     expect(labels('diplomats-demilitarized-zone')).toEqual(['Reaction', 'Overlay']);
   });
 
-  it('keeps Accepted and Refused as inline Terms outcomes on ordinary cards', () => {
+  it('keeps Accepted and Refused as inline outcomes on ordinary cards', () => {
     expect(labels('diplomats-diplomatic-latitude')).toEqual(['Terms']);
     expect(labels('diplomats-good-faith')).toEqual(['Asset']);
     expect(labels('diplomats-gunboat-diplomacy')).toEqual(['Terms', 'Gambit/Tactic']);
@@ -73,20 +64,17 @@ describe('v0.6.3 standard-card heading vocabulary', () => {
     }
   });
 
-  it('defines Terms, Reaction, and Sanctions shared procedures', () => {
-    expect(canonical.card_rules.terms_effect.action_required_by_default).toBe(false);
-    expect(canonical.card_rules.reaction.play_from_hand_at_printed_trigger).toBe(true);
-    expect(canonical.card_rules.reaction.action_required_by_default).toBe(false);
-    expect(canonical.card_rules.sanctions.play_from_hand).toBe(true);
-    expect(canonical.card_rules.sanctions.action_required_by_default).toBe(false);
-    expect(canonical.card_rules.sanctions.cost_by_default).toBe('none');
-    expect(canonical.card_rules.sanctions.card_text_may_override_timing_or_procedure).toBe(true);
+  it('documents Terms, Reaction, and Sanctions as shared card procedures', () => {
+    expect(generalRules).toContain('## 5. Terms, Reactions, and Sanctions');
+    expect(generalRules).toContain('A **Terms** effect is used at the point printed on the card while its owner is offering Terms.');
+    expect(generalRules).toContain('A **Reaction** is played from Hand when its printed trigger occurs.');
+    expect(generalRules).toContain('you may play a Sanction from your Hand at no cost unless that Sanction says otherwise');
+    expect(generalRules).toContain('They are not separate standard-card effect headings.');
   });
 
-  it('states the shared procedures in the release-candidate Rulebook', () => {
-    expect(rulebook).toContain('**Terms:** use at the printed point while offering Terms');
-    expect(rulebook).toContain('**Reaction:** play from Hand when its printed trigger occurs');
-    expect(rulebook).toContain('you may play a Sanction from your Hand at no cost unless that Sanction says otherwise');
-    expect(rulebook).toContain('They are not separate standard-card effect headings.');
+  it('leaves the reconstructed authority source immutable', () => {
+    const original = new Map(canonical.cards.map((card: any) => [card.id, card]));
+    expect(original.get('neutral-bombardment')?.effects?.[0]?.label).toBe('Placement');
+    expect(original.get('inquisition-martyrdom')?.effects?.[0]?.label).toBe('Aftermath');
   });
 });
