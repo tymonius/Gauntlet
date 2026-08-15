@@ -63,6 +63,44 @@ for (const required of [
   if (!chapter11.includes(required)) fail(`Player-facing Chapter 11 lost required rule meaning: ${JSON.stringify(required)}`);
 }
 
+for (const phrase of [
+  'State these effects in terms of the procedure the player may perform.',
+  'Faction references must group Faction Actions separately from Faction Abilities',
+  'Use **Onset** as the formal stage name.',
+  'interpret or rewrite it to:',
+  'Rules and player-facing text may distinguish',
+  'inherited Last Stand battle rules',
+  'clean faction authority',
+  'perspective-dependent **you** or **your**',
+  'an Denouement',
+  'Counterintelligence does not prevent the reveal',
+  'banked-card effect heading in v0.6.3',
+  'apply unchanged',
+  'Cards therefore do not need to repeat identification of the refusing opponent',
+  'a successful purchase also gives you control of that Territory',
+  "At the beginning of the opponent's turn, after their normal start-of-turn draw attempt",
+]) {
+  if (published.includes(phrase)) fail(`Player-facing Rulebook still contains rejected wording: ${JSON.stringify(phrase)}`);
+}
+
+for (const required of [
+  "Unless an effect expressly says otherwise, a capture effect outside the normal Capture step advances that player's Front Line by one Territory and cannot create non-contiguous control.",
+  'The capture route and Last Stand battle route both count as running the Gauntlet.',
+  'Conduct the resulting battle normally. The defender has Defensive Edge while making a Last Stand unless an effect removes it.',
+  'Reference cards summarize procedures but do not replace the complete faction rules in this Rulebook.',
+  'When resolving a Proposal, follow the player roles named in its Accepted or Refused effect.',
+  'If the purchase succeeds and that Territory is immediately beyond your Front Line, capture it.',
+  'Otherwise, Hostile Takeover does not change Territory control.',
+  "If the opponent is unable to draw to start their turn because both their Draw Pile and Discard Pile are empty, immediately win through **Purification**.",
+  'Playing or setting a card face up does not count as revealing it.',
+  'Counterintelligence therefore does not prevent effects like Watchtower that cause a card to be played or set face up.',
+  'Additional printed removal conditions also apply unless the Sanction says otherwise.',
+  '**Asset is the only banked-card effect heading.**',
+  'Normal Deed purchase costs, caps, procedures, income rules, and Controlling Interest rules apply.',
+]) {
+  if (!published.includes(required)) fail(`Player-facing Rulebook lost approved readthrough wording: ${JSON.stringify(required)}`);
+}
+
 const app = read('rulebook/app.js');
 if (!app.includes("const CHAPTER_11_URL = './player-facing/chapter-11.md';")) {
   fail('Browser Rulebook does not load the reviewed player-facing Chapter 11 source.');
@@ -75,10 +113,22 @@ if (verifyIndex < 0 || applyIndex < 0 || verifyIndex >= applyIndex) {
 if (!read('scripts/publication-utils.mjs').includes('replacePlayerFacingChapter11(normalized)')) {
   fail('Semantic Rulebook publication does not apply the reviewed Chapter 11 replacement.');
 }
+if (!read('rules-assistant/v063-last-stand-language.js').includes("applyV063PlayerFacingRulebookCorrections")) {
+  fail('Browser and Rules Arbiter normalization do not share the player-facing Rulebook correction source.');
+}
+
+const financierPage = read('factions/financiers/index.html');
+if (!financierPage.includes('If the purchase succeeds and that Territory is immediately beyond your Front Line, capture it; otherwise, the purchase does not change Territory control.')) {
+  fail('Financiers public faction page does not reflect contiguous Hostile Takeover capture.');
+}
+const inquisitionPage = read('factions/inquisition/index.html');
+if (!inquisitionPage.includes('If the opponent is unable to draw to start their turn because both their Draw Pile and Discard Pile are empty, the Inquisition wins immediately.')) {
+  fail('Inquisition public faction page does not reflect approved Purification wording.');
+}
 
 if (failures) {
   console.error(`Player-facing v0.6.3 Rulebook validation failed with ${failures} issue(s).`);
   process.exit(1);
 }
 
-console.log('Validated certified Rulebook integrity and self-contained player-facing Chapter 11 publication layer.');
+console.log('Validated certified Rulebook integrity, reviewed Chapter 11, and full player-facing readthrough corrections.');
