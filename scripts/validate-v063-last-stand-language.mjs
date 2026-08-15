@@ -4,7 +4,7 @@ import path from 'node:path';
 import process from 'node:process';
 import {
   findV063LastStandTerminologyViolations,
-  normalizeV063LastStandText,
+  normalizeV063LastStandOnlyText,
 } from '../rules-assistant/v063-last-stand-language.js';
 
 const root = process.cwd();
@@ -79,7 +79,7 @@ let failures = 0;
 
 for (const relativePath of targets) {
   const original = read(relativePath);
-  const normalized = normalizeV063LastStandText(original);
+  const normalized = normalizeV063LastStandOnlyText(original);
   if (normalized !== original) {
     console.error(`${relativePath}: contains v0.6.3 Last Stand wording that the shared PR #171 transform would change`);
     failures += 1;
@@ -95,7 +95,7 @@ for (const [relativePath, expectedHash] of certifiedInputs) {
     console.error(`${relativePath}: certified hash drifted: ${actualHash}`);
     failures += 1;
   }
-  failures += reportViolations(`${relativePath} (after publication transform)`, normalizeV063LastStandText(read(relativePath)));
+  failures += reportViolations(`${relativePath} (after publication transform)`, normalizeV063LastStandOnlyText(read(relativePath)));
 }
 
 for (const [relativePath, required] of [
