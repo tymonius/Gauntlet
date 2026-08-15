@@ -39,7 +39,7 @@ replaceOnce(
   );`,
   `  let paginationReady = false;
   for (let attempt = 0; attempt < 480; attempt += 1) {
-    if (errors.length) throw new Error(\`${mode} Rulebook browser errors before pagination completed:\\n\${errors.join('\\n')}\`);
+    if (errors.length) throw new Error(\`\${mode} Rulebook browser errors before pagination completed:\\n\${errors.join('\\n')}\`);
     paginationReady = await page.evaluate(() =>
       document.documentElement.dataset.paginationReady === 'true' &&
       document.documentElement.dataset.postprocessReady === 'true'
@@ -47,7 +47,7 @@ replaceOnce(
     if (paginationReady) break;
     await new Promise(resolve => setTimeout(resolve, 250));
   }
-  if (!paginationReady) throw new Error(\`${mode} Rulebook pagination did not complete within 120 seconds.\`);`,
+  if (!paginationReady) throw new Error(\`\${mode} Rulebook pagination did not complete within 120 seconds.\`);`,
 );
 replaceOnce(
   'reading-font probe',
