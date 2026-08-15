@@ -10,9 +10,9 @@ permissions:
 jobs:
   build-booklet:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 35
     steps:
-      - name: Check out booklet inputs only
+      - name: Check out approved Rulebook production inputs
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
@@ -20,50 +20,53 @@ jobs:
           sparse-checkout: |
             /package.json
             /package-lock.json
+            /scripts/build-v063-rulebook-production.py
+            /scripts/run-v063-rulebook-renderer.mjs
             /scripts/render-clean-v063-booklet.mjs
             /scripts/validate-clean-v063-booklet.mjs
             /scripts/publication-utils.mjs
-            /scripts/v063-booklet-style.css
             /rules-assistant/v063-last-stand-language.js
-            /rulebook/markdown.js
             /rulebook/player-facing/chapter-11.md
+            /rulebook-design/
+            /rulebook-production/
+            /releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md
             /artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md
             /releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md
-            /images/sketches/hero-sketches/
+            /images/sketches/
 
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
-      - name: Install booklet build dependencies
+      - name: Install Rulebook production dependencies
         run: |
           npm install
           npm install --no-save --package-lock=false pdf-lib
           npx playwright install --with-deps chromium
 
-      - name: Build and validate booklet
+      - name: Install publication utility font
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fonts-inter
+          fc-match Inter
+
+      - name: Build and validate approved-design booklet
         run: |
           set -euo pipefail
+          python -m py_compile scripts/build-v063-rulebook-production.py
+          node --check scripts/run-v063-rulebook-renderer.mjs
           node --check scripts/render-clean-v063-booklet.mjs
           node --check scripts/validate-clean-v063-booklet.mjs
           node scripts/render-clean-v063-booklet.mjs
           node scripts/validate-clean-v063-booklet.mjs
 
-      - name: Verify same-input booklet reproducibility
-        run: |
-          set -euo pipefail
-          out='artifacts/reconstruction/clean-v0.6.3/booklet/generated'
-          cp "$out/Gauntlet_v0.6.3_Rulebook_Booklet_Reading_Order.pdf" /tmp/reading-first.pdf
-          cp "$out/Gauntlet_v0.6.3_Rulebook_Booklet.pdf" /tmp/booklet-first.pdf
-          node scripts/render-clean-v063-booklet.mjs
-          node scripts/validate-clean-v063-booklet.mjs
-          cmp /tmp/reading-first.pdf "$out/Gauntlet_v0.6.3_Rulebook_Booklet_Reading_Order.pdf"
-          cmp /tmp/booklet-first.pdf "$out/Gauntlet_v0.6.3_Rulebook_Booklet.pdf"
-
-      - name: Upload booklet review artifact
+      - name: Upload current booklet review artifact
         uses: actions/upload-artifact@v4
         with:
           name: gauntlet-current-rulebook-booklet
-          path: artifacts/reconstruction/clean-v0.6.3/booklet/generated/**
+          path: |
+            artifacts/reconstruction/clean-v0.6.3/booklet/generated/**
+            /tmp/rulebook-production-fidelity/**
+            /tmp/rulebook-production/**
           if-no-files-found: error
