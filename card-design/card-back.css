@@ -115,7 +115,7 @@
 .gauntlet-card-back__frame {
   position: absolute;
   z-index: 2;
-  inset: 0.375in;
+  inset: calc(0.375in - 1px);
   border: 1px solid var(--card-back-gold);
   border-radius: 0.125in;
   pointer-events: none;
