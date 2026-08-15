@@ -15,6 +15,8 @@ test("wraps the Rules Arbiter admin page in Gauntlet Developer Tools chrome", ()
   expect(html).toContain('grid-template-columns: minmax(360px, .8fr) minmax(0, 1.2fr)');
   expect(html).toContain('href="https://gauntlet.run/playtest/analysis/"');
   expect(html).toContain('class="developer-site-footer"');
+  expect(html).toContain('class="brand footer-brand"');
+  expect(html).toContain('aria-label="Gauntlet home"');
 });
 
 test("does not apply the Developer Tools chrome twice", () => {
