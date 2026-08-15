@@ -6,10 +6,12 @@ import { pathToFileURL } from 'node:url';
 import { chromium } from 'playwright';
 import { PDFDocument } from 'pdf-lib';
 import { renderMarkdown } from '../rulebook/markdown.js';
+import { publicAuthorityNote } from './publication-utils.mjs';
 
 const root = process.cwd();
 const cleanRulebookPath = 'artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md';
 const publishedRulebookPath = 'releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md';
+const stylePath = 'scripts/v063-booklet-style.css';
 const outDir = 'artifacts/reconstruction/clean-v0.6.3/booklet/generated';
 const htmlPath = `${outDir}/Gauntlet_v0.6.3_Rulebook_Booklet_Source.html`;
 const contentPdfPath = `${outDir}/Gauntlet_v0.6.3_Rulebook_Half_Letter_Content.pdf`;
@@ -17,7 +19,7 @@ const readingPdfPath = `${outDir}/Gauntlet_v0.6.3_Rulebook_Booklet_Reading_Order
 const imposedPdfPath = `${outDir}/Gauntlet_v0.6.3_Rulebook_Booklet.pdf`;
 const manifestPath = `${outDir}/Gauntlet_v0.6.3_Rulebook_Booklet_Manifest.json`;
 const cleanRulebookSha256 = '7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643';
-const publishedRulebookSha256 = '62bf0bc51c69818d0cffbd3906af01bf13abaf4fea2dd59e8678f239a68e265a';
+const publishedRulebookSha256 = '9bbde08376daea4558581ef598a07b0d3a8fc21666809890d846114229bc44c2';
 const authoritySetId = '64c8d65c2e63df1ed4d74d16178688c8bf7ead1cd6408496b2e423a2d4d7df49';
 const publicationDate = new Date('2026-08-14T00:00:00.000Z');
 const halfWidth = 396;
@@ -57,12 +59,9 @@ const stabilizeMetadata = (pdf, title, subject) => {
 
 const cleanRulebook = read(cleanRulebookPath);
 assert.equal(hash(cleanRulebook), cleanRulebookSha256, 'Certified clean Rulebook hash drifted.');
-const derivedPublished = cleanRulebook
-  .replace('**Version 0.6.3 — Clean Reconstruction Candidate**', '**Version 0.6.3**')
-  .replace(/^> \*\*Authority candidate, not current\/public rules\.\*\*[^\n]*\n\n/m, '');
 const publishedRulebook = read(publishedRulebookPath);
 assert.equal(hash(publishedRulebook), publishedRulebookSha256, 'Published v0.6.3 Rulebook hash drifted.');
-assert.equal(derivedPublished, publishedRulebook, 'Published Rulebook is no longer the exact publication transform of certified clean authority.');
+assert.equal(publicAuthorityNote(cleanRulebook), publishedRulebook, 'Published Rulebook is no longer the exact publication transform of certified clean authority.');
 
 for (const asset of [coverAsset, ...paddingAssets]) {
   assert(fs.existsSync(path.join(root, asset)), `Missing booklet artwork: ${asset}`);
@@ -72,39 +71,14 @@ const bodyMarkdown = publishedRulebook.replace(/^# GAUNTLET\n\n## Official Ruleb
 assert.notEqual(bodyMarkdown, publishedRulebook, 'Could not separate the publication title block for the booklet cover.');
 const { html: ruleHtml } = renderMarkdown(bodyMarkdown);
 const coverUrl = pathToFileURL(path.join(root, coverAsset)).href;
-
+const css = read(stylePath);
 const html = `<!doctype html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <title>Gauntlet v0.6.3 Official Rulebook - Booklet Edition</title>
 <style>
-@page { size: 5.5in 8.5in; margin: .38in .4in .45in; }
-* { box-sizing: border-box; }
-html, body { margin: 0; padding: 0; background: white; color: #251b17; }
-body { font-family: Georgia, "Times New Roman", serif; font-size: 9.25pt; line-height: 1.34; }
-.cover { height: 7.67in; break-after: page; page-break-after: always; display: flex; flex-direction: column; overflow: hidden; }
-.cover-kicker { margin: .08in 0 0; font: 700 8pt/1.2 Arial, sans-serif; letter-spacing: .13em; text-transform: uppercase; color: #7d2b2f; }
-.cover h1 { margin: .16in 0 0; font: 400 35pt/.92 Georgia, "Times New Roman", serif; letter-spacing: .08em; }
-.cover h2 { margin: .08in 0 0; font: 400 18pt/1.05 Georgia, "Times New Roman", serif; }
-.cover-version { margin: .12in 0 0; font: 700 9pt/1.2 Arial, sans-serif; color: #6d6158; }
-.cover-rule { width: 1.35in; border: 0; border-top: 3px solid #7d2b2f; margin: .24in 0 0; }
-.cover-art { margin-top: auto; width: 100%; max-height: 4.35in; object-fit: contain; object-position: center bottom; display: block; }
-.rulebook h1 { margin: .25in 0 .09in; color: #7d2b2f; font-size: 17pt; line-height: 1.08; break-after: avoid; page-break-after: avoid; }
-.rulebook h2 { margin: .19in 0 .07in; font-size: 13pt; line-height: 1.12; break-after: avoid; page-break-after: avoid; }
-.rulebook h3 { margin: .15in 0 .05in; font-size: 10.5pt; line-height: 1.15; break-after: avoid; page-break-after: avoid; }
-.rulebook h4, .rulebook h5, .rulebook h6 { margin: .13in 0 .04in; font-size: 9.5pt; break-after: avoid; page-break-after: avoid; }
-.rulebook p { margin: .06in 0 .09in; orphans: 3; widows: 3; }
-.rulebook ul, .rulebook ol { margin: .06in 0 .1in; padding-left: .25in; }
-.rulebook li { margin: .025in 0; }
-.rulebook blockquote { margin: .1in 0; padding: .06in .12in; border-left: 3px solid #7d2b2f; background: #f3e4dc; break-inside: avoid; }
-.rulebook table { width: 100%; margin: .1in 0 .16in; border-collapse: collapse; font-size: 7.7pt; break-inside: avoid; }
-.rulebook th, .rulebook td { padding: .045in .055in; border: 1px solid #b9aa9d; vertical-align: top; }
-.rulebook th { background: #f3e4dc; color: #7d2b2f; text-align: left; }
-.rulebook hr { margin: .2in 0; border: 0; border-top: 1px solid #b9aa9d; }
-.rulebook code { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: .9em; }
-.rulebook a { color: inherit; text-decoration-thickness: .5px; }
-</style>
+${css}</style>
 </head>
 <body>
 <section class="cover">
@@ -162,21 +136,13 @@ const selectedPaddingAssets = paddingAssets.slice(0, paddingCount);
 const reading = await PDFDocument.create();
 const copiedContent = await reading.copyPages(contentPdf, contentPdf.getPageIndices());
 for (const page of copiedContent) reading.addPage(page);
-
 for (const asset of selectedPaddingAssets) {
   const page = reading.addPage([halfWidth, halfHeight]);
   const image = await reading.embedPng(bytes(asset));
-  const maxWidth = halfWidth - 72;
-  const maxHeight = halfHeight - 72;
-  const scale = Math.min(maxWidth / image.width, maxHeight / image.height);
+  const scale = Math.min((halfWidth - 72) / image.width, (halfHeight - 72) / image.height);
   const width = image.width * scale;
   const height = image.height * scale;
-  page.drawImage(image, {
-    x: (halfWidth - width) / 2,
-    y: (halfHeight - height) / 2,
-    width,
-    height,
-  });
+  page.drawImage(image, { x: (halfWidth - width) / 2, y: (halfHeight - height) / 2, width, height });
 }
 stabilizeMetadata(reading, 'Gauntlet v0.6.3 Official Rulebook - Booklet Reading Order', 'Half-letter reading order; includes signature artwork padding when required');
 const readingBytes = await reading.save();
@@ -185,14 +151,13 @@ write(readingPdfPath, readingBytes);
 const logicalPages = reading.getPageCount();
 assert.equal(logicalPages % 4, 0, 'Booklet logical page count is not a multiple of four.');
 const imposed = await PDFDocument.create();
-const impositionPairs = [];
 const embeddedLogical = await imposed.embedPages(reading.getPages());
+const impositionPairs = [];
 for (let sheet = 0; sheet < logicalPages / 4; sheet += 1) {
-  const pairs = [
+  for (const [leftIndex, rightIndex] of [
     [logicalPages - 1 - (sheet * 2), sheet * 2],
     [1 + (sheet * 2), logicalPages - 2 - (sheet * 2)],
-  ];
-  for (const [leftIndex, rightIndex] of pairs) {
+  ]) {
     const spread = imposed.addPage([sheetWidth, sheetHeight]);
     spread.drawPage(embeddedLogical[leftIndex], { x: 0, y: 0, width: halfWidth, height: halfHeight });
     spread.drawPage(embeddedLogical[rightIndex], { x: halfWidth, y: 0, width: halfWidth, height: halfHeight });
@@ -217,10 +182,7 @@ const manifest = {
     padding: selectedPaddingAssets.map((asset, index) => ({ logical_page: contentPages + index + 1, path: asset, sha256: fileHash(asset) })),
     padding_preference: paddingAssets,
   },
-  geometry_points: {
-    logical_page: [halfWidth, halfHeight],
-    imposed_side: [sheetWidth, sheetHeight],
-  },
+  geometry_points: { logical_page: [halfWidth, halfHeight], imposed_side: [sheetWidth, sheetHeight] },
   counts: {
     content_pages: contentPages,
     padding_pages: paddingCount,
@@ -228,10 +190,7 @@ const manifest = {
     imposed_sides: imposed.getPageCount(),
     physical_sheets: logicalPages / 4,
   },
-  imposition: {
-    duplex_flip: 'short-edge',
-    pairs: impositionPairs,
-  },
+  imposition: { duplex_flip: 'short-edge', pairs: impositionPairs },
   outputs: [
     { role: 'half-letter-content', path: contentPdfPath, sha256: hash(contentBytes), bytes: contentBytes.length, pages: contentPages },
     { role: 'reading-order', path: readingPdfPath, sha256: hash(readingBytes), bytes: readingBytes.length, pages: logicalPages },
