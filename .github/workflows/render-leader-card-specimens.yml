@@ -5,6 +5,8 @@ on:
     paths:
       - "card-design/index.html"
       - "card-design/leaders.html"
+      - "card-design/card-back.css"
+      - "card-design/card-back.js"
       - "card-design/card-review.js"
       - "card-design/card-review.css"
       - "card-design/card-review-render.html"
@@ -26,9 +28,11 @@ on:
       - "tts/territory-renderer/**"
       - "design-tokens.css"
       - "images/*.png"
+      - "images/*.svg"
       - "images/faction-symbols/*.svg"
       - "images/artwork/territories/*"
       - "images/artwork/supplemental/**"
+      - "scripts/render-card-back-specimen.mjs"
       - "scripts/render-leader-card-specimens.mjs"
       - "scripts/validate-territory-mobile-render.mjs"
       - "scripts/validate-rite-card-render.mjs"
@@ -51,6 +55,8 @@ jobs:
       - run: npx playwright install --with-deps chromium webkit
       - name: Render and validate card review catalog
         run: node scripts/render-leader-card-specimens.mjs
+      - name: Render and validate universal card back
+        run: node scripts/render-card-back-specimen.mjs
       - name: Validate Territory mobile render stability
         run: |
           python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/gauntlet-territory-server.log 2>&1 &
