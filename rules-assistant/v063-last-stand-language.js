@@ -1,3 +1,5 @@
+import { applyV063PlayerFacingRulebookCorrections } from '../rulebook/player-facing/corrections.js';
+
 // PR #171 established that the defender makes a Last Stand; the resulting
 // contest is a Last Stand battle. Players win or lose the battle, not the
 // Last Stand. Keep this transform explicit and idempotent so certified source
@@ -71,7 +73,7 @@ function replaceLiteral(source, from, to) {
   return source.includes(from) ? source.split(from).join(to) : source;
 }
 
-export function normalizeV063LastStandText(value) {
+export function normalizeV063LastStandOnlyText(value) {
   let text = String(value ?? '');
   for (const [from, to] of V063_LAST_STAND_REPLACEMENTS) {
     text = replaceLiteral(text, from, to);
@@ -79,8 +81,15 @@ export function normalizeV063LastStandText(value) {
   return text;
 }
 
+// Legacy public-text entrypoint retained for existing Browser Rulebook and
+// Rules Arbiter imports. Public prose receives both the PR #171 terminology
+// correction and the reviewed full-Rulebook player-facing correction layer.
+export function normalizeV063LastStandText(value) {
+  return applyV063PlayerFacingRulebookCorrections(normalizeV063LastStandOnlyText(value));
+}
+
 export function normalizeV063LastStandValue(value) {
-  if (typeof value === 'string') return normalizeV063LastStandText(value);
+  if (typeof value === 'string') return normalizeV063LastStandOnlyText(value);
   if (Array.isArray(value)) return value.map(normalizeV063LastStandValue);
   if (value && typeof value === 'object') {
     return Object.fromEntries(Object.entries(value).map(([key, child]) => [key, normalizeV063LastStandValue(child)]));
