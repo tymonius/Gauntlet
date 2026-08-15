@@ -1,0 +1,36 @@
+import { readFileSync } from "node:fs";
+import { fileURLToPath } from "node:url";
+import { describe, expect, test } from "vitest";
+import { presentRulesAnswer } from "./answer-presentation.js";
+
+const HERE = fileURLToPath(new URL(".", import.meta.url));
+
+describe("Rules Arbiter welcome and compact UI regressions", () => {
+  test("welcome copy is never collapsed into Details and exceptions", () => {
+    const welcome = "Ask me about the v0.6.3 rulebook, cards, Leaders, faction systems, Territories, Gambits, Tactics, battle timing, or victory conditions. If the written rules leave a genuine gap, I will issue a provisional ruling so play can continue.";
+
+    expect(presentRulesAnswer({ answer: welcome, rulingStatus: "welcome" })).toEqual({
+      answer: welcome,
+      details: ""
+    });
+  });
+
+  test("generic sentence splitting preserves dotted version numbers", () => {
+    const presented = presentRulesAnswer({
+      answer: "Gauntlet v0.6.3 uses the current rules. This is the second sentence needed for the primary answer. A third sentence belongs in the collapsed details.",
+      rulingStatus: "explicit"
+    });
+
+    expect(presented.answer).toBe("Gauntlet v0.6.3 uses the current rules. This is the second sentence needed for the primary answer.");
+    expect(presented.details).toBe("A third sentence belongs in the collapsed details.");
+  });
+
+  test("suggested questions wrap into the panel instead of creating a horizontal scroller", () => {
+    const css = readFileSync(`${HERE}/answer-presentation.css`, "utf8");
+
+    expect(css).toMatch(/\.ga-rules-suggestions\s*\{[\s\S]*display:\s*grid;/);
+    expect(css).toMatch(/grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\);/);
+    expect(css).toMatch(/overflow-x:\s*visible;/);
+    expect(css).toMatch(/\.ga-rules-suggestion\s*\{[\s\S]*max-width:\s*none;/);
+  });
+});
