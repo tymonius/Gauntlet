@@ -34,6 +34,41 @@
   display: none !important;
 }
 
+/* Keep the global site chrome visually identical even on tools whose content areas use different maximum widths. */
+:is(.site-header, .global-header, .rulebook-header, .arbiter-header) {
+  width: min(1180px, calc(100% - 40px)) !important;
+  margin-inline: auto !important;
+  min-height: 86px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 24px !important;
+  border-bottom: 1px solid var(--line, rgba(49, 42, 32, 0.2)) !important;
+  position: relative;
+  z-index: 2;
+}
+
+:is(.site-header, .global-header, .rulebook-header, .arbiter-header) > :is(nav, .header-actions) {
+  display: flex !important;
+  align-items: center !important;
+  gap: 24px !important;
+  flex-wrap: nowrap;
+  font-family: var(--font-interface, var(--sans, Inter, ui-sans-serif, system-ui, sans-serif)) !important;
+}
+
+:is(.site-header, .global-header, .rulebook-header, .arbiter-header) > :is(nav, .header-actions) a {
+  color: var(--muted, #655f56);
+  font-size: 0.9rem !important;
+  font-weight: 650 !important;
+  text-decoration: none;
+}
+
+:is(.site-header, .global-header, .rulebook-header, .arbiter-header) > :is(nav, .header-actions) a:hover,
+:is(.site-header, .global-header, .rulebook-header, .arbiter-header) > :is(nav, .header-actions) a:focus-visible,
+:is(.site-header, .global-header, .rulebook-header, .arbiter-header) > :is(nav, .header-actions) a[aria-current="page"] {
+  color: var(--crimson, var(--accent, #8f1f25));
+}
+
 /* Replace the source rulebook's display-title text with the canonical wordmark without changing the source markdown or heading semantics. */
 .rulebook-content > h1:first-child {
   width: min(100%, 560px);
@@ -52,6 +87,12 @@
 
 .rulebook-content > h1:first-child .heading-anchor {
   display: none;
+}
+
+@media (max-width: 900px) {
+  :is(.site-header, .global-header, .rulebook-header, .arbiter-header) > :is(nav, .header-actions) {
+    display: none !important;
+  }
 }
 
 @media (max-width: 620px) {

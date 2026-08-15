@@ -91,7 +91,7 @@ describe("standalone new-player onboarding", () => {
 
   it("keeps the current v0.6.3 start path as the homepage first-time call to action", () => {
     const homepage = read("index.html");
-    expect(homepage).toContain('<a href="start/">Start</a>');
+    expect(homepage).toContain('<a href="/start/">Start</a>');
     expect(homepage).toContain('<a class="button primary" href="start/">Start playing</a>');
     expect(homepage).toContain("Current canonical playtest edition · v0.6.3");
     expect(homepage).toContain("New-player setup");
