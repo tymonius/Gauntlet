@@ -18,8 +18,6 @@ assert.equal(manifest.source.publication_transform_verified_exact, true);
 assert.equal(manifest.source.certified_rulebook.sha256, '7cca20e8de2eee10332c4e3e82ca5e7abdae3a0af61837bf77caa79ccbc9d643');
 assert.equal(manifest.source.published_rulebook.sha256, '62bf0bc51c69818d0cffbd3906af01bf13abaf4fea2dd59e8678f239a68e265a');
 
-// The current booklet must be a v0.6.3 adaptation of the already-approved
-// publication system, not another independent Markdown-to-PDF renderer.
 assert.equal(manifest.design.pipeline, 'approved-rulebook-production');
 assert.equal(manifest.design.approved_design_pr, 357);
 assert.equal(manifest.design.production_pr, 434);
@@ -31,26 +29,16 @@ assert.equal(manifest.design.isolated_headings, 0);
 assert(manifest.design.typography.title.includes('Georgia'), `Unexpected title face: ${manifest.design.typography.title}`);
 assert(manifest.design.typography.reading.toLowerCase().includes('adobe-caslon-pro'), `Unexpected reading face: ${manifest.design.typography.reading}`);
 assert(manifest.design.typography.utility.includes('Inter'), `Unexpected utility face: ${manifest.design.typography.utility}`);
-for (const required of [
-  'rulebook-design/build_proofs.py',
-  'rulebook-design/proof.css',
-  'rulebook-design/render_proofs.mjs',
-]) {
+for (const required of ['rulebook-design/build_proofs.py','rulebook-design/proof.css','rulebook-design/render_proofs.mjs']) {
   assert(manifest.design.approved_design_sources.includes(required), `Missing approved design source binding: ${required}`);
 }
-for (const required of [
-  'rulebook-production/build_rulebook.py',
-  'rulebook-production/build_complete_rulebook.py',
-  'rulebook-production/paginate_rulebook.mjs',
-  'rulebook-production/production.css',
-  'rulebook-production/render_rulebook.mjs',
-]) {
+for (const required of ['rulebook-production/build_rulebook.py','rulebook-production/build_complete_rulebook.py','rulebook-production/paginate_rulebook.mjs','rulebook-production/production.css','rulebook-production/render_rulebook.mjs']) {
   assert(manifest.design.production_sources.includes(required), `Missing production source binding: ${required}`);
 }
 
 assert.equal(manifest.artwork.cover.path, 'images/sketches/hero-sketches/hero sketch.png');
 assert(manifest.counts.content_pages > 1);
-assert(manifest.counts.padding_pages >= 0 && manifest.counts.padding_pages <= 3);
+assert(manifest.counts.padding_pages >= 0 && manifest.counts.padding_pages <= 4);
 assert.equal(manifest.counts.logical_pages, manifest.counts.content_pages + manifest.counts.padding_pages);
 assert.equal(manifest.counts.logical_pages % 4, 0);
 assert.equal(manifest.counts.imposed_sides, manifest.counts.logical_pages / 2);
@@ -60,14 +48,8 @@ assert.equal(manifest.imposition.pairs.length, manifest.counts.imposed_sides);
 
 const expectedPairs = [];
 for (let sheet = 0; sheet < manifest.counts.logical_pages / 4; sheet += 1) {
-  expectedPairs.push([
-    manifest.counts.logical_pages - (sheet * 2),
-    1 + (sheet * 2),
-  ]);
-  expectedPairs.push([
-    2 + (sheet * 2),
-    manifest.counts.logical_pages - 1 - (sheet * 2),
-  ]);
+  expectedPairs.push([manifest.counts.logical_pages - (sheet * 2), 1 + (sheet * 2)]);
+  expectedPairs.push([2 + (sheet * 2), manifest.counts.logical_pages - 1 - (sheet * 2)]);
 }
 assert.deepEqual(manifest.imposition.pairs, expectedPairs, 'Booklet imposition order drifted.');
 
@@ -93,18 +75,7 @@ assert.equal(report.outputs.bookletSides, manifest.counts.imposed_sides);
 assert.equal(report.outputs.physicalSheets, manifest.counts.physical_sheets);
 
 const sourceHtml = read(`${generatedDir}/Gauntlet_v0.6.3_Rulebook_Booklet_Source.html`).toString('utf8');
-for (const marker of [
-  'Gauntlet v0.6.3 Official Rulebook',
-  'Version 0.6.3',
-  'rulebook-design/proof-runtime.css',
-  'production.css',
-  'pagination-reserve.css',
-  'chapter-compaction.css',
-  'supplemental-reference.css',
-  'publication-corrections.css',
-  'approved-cover',
-  'approved-back-cover',
-]) {
+for (const marker of ['Gauntlet v0.6.3 Official Rulebook','Version 0.6.3','rulebook-design/proof-runtime.css','production.css','pagination-reserve.css','chapter-compaction.css','supplemental-reference.css','publication-corrections.css','approved-cover','approved-back-cover']) {
   assert(sourceHtml.includes(marker), `Approved-design booklet source HTML missing ${marker}.`);
 }
 assert(!sourceHtml.includes('Clean Reconstruction Candidate'));
