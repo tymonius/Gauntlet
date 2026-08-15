@@ -1,0 +1,48 @@
+/* Shared Gauntlet wordmark treatment. The eight SVG layers reproduce the canonical supplied vector artwork. */
+.brand {
+  gap: 0 !important;
+  min-width: 0;
+}
+
+.brand::before {
+  content: "";
+  display: block;
+  width: 154px;
+  aspect-ratio: 1871.79 / 493.58;
+  flex: 0 0 auto;
+  background-image:
+    url("/assets/wordmark/gauntlet-wordmark-layer-1.svg"),
+    url("/assets/wordmark/gauntlet-wordmark-layer-2.svg"),
+    url("/assets/wordmark/gauntlet-wordmark-layer-3.svg"),
+    url("/assets/wordmark/gauntlet-wordmark-layer-4.svg"),
+    url("/assets/wordmark/gauntlet-wordmark-layer-5.svg"),
+    url("/assets/wordmark/gauntlet-wordmark-layer-6.svg"),
+    url("/assets/wordmark/gauntlet-wordmark-layer-7.svg"),
+    url("/assets/wordmark/gauntlet-wordmark-layer-8.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+/* Retain the existing text as the accessible fallback while replacing the visual placeholder. */
+.brand > .brand-mark {
+  display: none !important;
+}
+
+.brand > span:last-child {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+@media (max-width: 620px) {
+  .brand::before {
+    width: 132px;
+  }
+}
