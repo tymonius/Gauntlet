@@ -30,7 +30,9 @@ export function renderCardBack(element) {
   element.setAttribute('role', 'img');
   element.setAttribute('aria-label', 'Universal Gauntlet playable-card back');
   element.innerHTML = `
-    <div class="gauntlet-card-back__pattern" aria-hidden="true">${patternMarkup()}</div>
+    <div class="gauntlet-card-back__pattern-window" aria-hidden="true">
+      <div class="gauntlet-card-back__pattern">${patternMarkup()}</div>
+    </div>
     <div class="gauntlet-card-back__frame" aria-hidden="true"></div>
     <div class="gauntlet-card-back__wordmark" aria-hidden="true"></div>
   `;
