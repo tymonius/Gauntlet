@@ -40,14 +40,14 @@ export function resolveV063DeterministicRuling({ question } = {}) {
   }
   if ((has(q, "run the gauntlet") || has(q, "win") || has(q, "victory")) && (has(q, "two") || has(q, "ways") || has(q, "route") || has(q, "last stand"))) {
     return ruling("Run the Gauntlet", "victory routes",
-      "There are two equal normal ways to run the Gauntlet: capture the Territory at your opponent's end, or win your opponent's Last Stand. Either wins immediately.",
+      "There are two equal normal ways to run the Gauntlet: capture the Territory at your opponent's end, or force your opponent to make a Last Stand and win the resulting battle. Either wins immediately.",
       "Faction-specific alternate victories remain separate unless their rules say otherwise.",
       "victory");
   }
   if (has(q, "last stand") && (has(q, "capture") || has(q, "control") || has(q, "movement") || has(q, "advance") || has(q, "immediate"))) {
     return ruling("Last Stand", "access",
-      "You do not need to control or capture the final Territory before forcing a Last Stand. You do need a separate legal movement sequence after the battle that forced the opponent beyond the Gauntlet.",
-      "If you are on the opponent's final Territory and the opponent is beyond their own end, use that new movement sequence to Advance beyond the Gauntlet and initiate the Last Stand. Unused movement from the battle-creating sequence cannot carry forward.",
+      "You do not need to control or capture the final Territory before forcing the opponent to make a Last Stand. You do need a separate legal movement sequence after the battle that forced the opponent beyond the Gauntlet.",
+      "If you are on the opponent's final Territory and the opponent is beyond their own end, use that new movement sequence to Advance beyond the Gauntlet and force the opponent to make a Last Stand. Unused movement from the battle-creating sequence cannot carry forward.",
       "victory");
   }
   if ((has(q, "deck") || has(q, "draw pile")) && (has(q, "mean") || has(q, "difference") || has(q, "playable deck") || has(q, "term"))) {
