@@ -109,7 +109,7 @@ async function main() {
     if (metrics.frameRadius !== '12px') {
       throw new Error(`Card-back gold frame does not match the 1/8in card corner radius: ${JSON.stringify(metrics)}.`);
     }
-    if (Math.abs(metrics.patternWindowInset - 7.2) > 0.25 || metrics.patternWindowOverflow !== 'hidden' || metrics.background !== 'rgb(40, 40, 39)') {
+    if (Math.abs(metrics.patternWindowInset - 8.2) > 0.25 || metrics.patternWindowOverflow !== 'hidden' || metrics.background !== 'rgb(40, 40, 39)') {
       throw new Error(`Card-back faction-color border is not opaque around the tiled field: ${JSON.stringify(metrics)}.`);
     }
     if (metrics.symbolCount !== 667 || !metrics.symbolsMasked || metrics.wordmarkMask === 'none') {
