@@ -1,0 +1,405 @@
+/* Card review catalog shell.
+   Keeps production card geometry isolated while aligning the private review UI
+   with Gauntlet's shared developer-tool and public-site design language. */
+
+@media screen {
+  body.developer-catalog-page {
+    --catalog-shell: min(1180px, calc(100% - 40px));
+    --catalog-panel: rgba(255, 252, 244, .86);
+    --catalog-panel-strong: rgba(255, 252, 244, .97);
+    --catalog-rule: rgba(92, 68, 38, .28);
+    --catalog-muted: #675f54;
+    --catalog-gold: var(--developer-gold, #a37338);
+    --catalog-gold-dark: var(--developer-gold-dark, #795426);
+    --catalog-gold-soft: var(--developer-gold-soft, #d7b783);
+    --catalog-charcoal: var(--developer-charcoal, #1c1916);
+    --catalog-cream: var(--developer-cream, #fff8ed);
+    min-width: 320px;
+    color: var(--page-ink);
+    background:
+      radial-gradient(circle at 12% 6%, rgba(163, 115, 56, .11), transparent 28rem),
+      linear-gradient(180deg, #f7f1e5 0%, var(--page-paper) 48%, #ede4d4 100%);
+  }
+
+  /* Header: same restrained site chrome used by the other private tools. */
+  body.developer-catalog-page .site-header.developer-site-header {
+    position: sticky;
+    z-index: 30;
+    top: 0;
+    min-height: 68px;
+    padding: 0 clamp(18px, 3vw, 42px);
+    border-bottom: 1px solid rgba(92, 68, 38, .22);
+    background: rgba(247, 241, 229, .94);
+    box-shadow: 0 8px 24px rgba(41, 30, 16, .055);
+    backdrop-filter: blur(14px);
+  }
+
+  body.developer-catalog-page .brand-link {
+    gap: .72rem;
+    color: var(--catalog-charcoal);
+    font-family: var(--font-display-historical);
+    font-size: 1.2rem;
+    font-weight: 400;
+    letter-spacing: .015em;
+  }
+
+  body.developer-catalog-page .brand-mark {
+    width: 2.1rem;
+    height: 2.1rem;
+    border: 1px solid var(--catalog-gold-dark);
+    color: var(--catalog-gold-dark);
+    font-family: var(--font-display-historical);
+    font-size: 1.42rem;
+  }
+
+  body.developer-catalog-page .site-header nav {
+    gap: .25rem;
+  }
+
+  body.developer-catalog-page .site-header nav a,
+  body.developer-catalog-page .site-header button {
+    min-height: 40px;
+    padding: 0 .72rem;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    color: var(--catalog-muted);
+    font-family: var(--font-interface);
+    font-size: .74rem;
+    font-weight: 750;
+    letter-spacing: .015em;
+    text-decoration: none;
+  }
+
+  body.developer-catalog-page .site-header nav a:hover,
+  body.developer-catalog-page .site-header nav a:focus-visible {
+    border-bottom-color: var(--catalog-gold);
+    background: transparent;
+    color: var(--catalog-charcoal);
+    outline: none;
+  }
+
+  body.developer-catalog-page .site-header button {
+    min-height: 42px;
+    margin-left: .35rem;
+    padding-inline: 15px;
+    border: 1px solid var(--catalog-charcoal);
+    border-radius: 2px;
+    background: var(--catalog-charcoal);
+    color: var(--catalog-cream);
+    cursor: pointer;
+    transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+  }
+
+  body.developer-catalog-page .site-header button:hover,
+  body.developer-catalog-page .site-header button:focus-visible {
+    transform: translateY(-1px);
+    border-color: var(--catalog-gold-dark);
+    background: #27221d;
+    color: var(--catalog-cream);
+    box-shadow: 0 9px 20px rgba(41, 30, 16, .11);
+    outline: 2px solid rgba(163, 115, 56, .2);
+    outline-offset: 2px;
+  }
+
+  body.developer-catalog-page .developer-catalog-main {
+    padding: 48px 0 96px;
+  }
+
+  /* Hero: private-tool charcoal/gold treatment, with the site's typography roles. */
+  body.developer-catalog-page .section-shell,
+  body.developer-catalog-page .review-shell {
+    width: var(--catalog-shell);
+  }
+
+  body.developer-catalog-page .developer-catalog-hero {
+    margin: 0 auto 72px;
+    padding: clamp(34px, 5vw, 54px);
+    color: var(--catalog-cream);
+    border: 1px solid rgba(163, 115, 56, .48);
+    border-top: 6px solid var(--catalog-gold);
+    background:
+      linear-gradient(135deg, rgba(255, 255, 255, .045), transparent 42%),
+      var(--catalog-charcoal);
+    box-shadow: var(--developer-shadow, 0 18px 48px rgba(41, 30, 16, .12));
+  }
+
+  body.developer-catalog-page .developer-catalog-hero .eyebrow {
+    margin-bottom: 10px;
+    color: var(--catalog-gold-soft);
+    font-family: var(--font-interface);
+    font-size: .76rem;
+    font-weight: 800;
+    letter-spacing: .14em;
+  }
+
+  body.developer-catalog-page .developer-catalog-hero h1 {
+    max-width: 14ch;
+    margin: 0;
+    color: var(--catalog-cream);
+    font-family: var(--font-display-web);
+    font-size: clamp(3.5rem, 7.5vw, 6.4rem);
+    font-weight: 500;
+    line-height: .88;
+    letter-spacing: -.05em;
+  }
+
+  body.developer-catalog-page .developer-catalog-hero .intro-copy {
+    max-width: 820px;
+    margin-top: 22px;
+    color: rgba(255, 248, 237, .75);
+    font-family: var(--font-reading);
+    font-size: clamp(1rem, 1.8vw, 1.13rem);
+    line-height: 1.67;
+  }
+
+  body.developer-catalog-page .status-row {
+    gap: 8px;
+    margin-top: 28px;
+  }
+
+  body.developer-catalog-page .status-row span {
+    padding: 7px 9px;
+    border: 1px solid rgba(215, 183, 131, .28);
+    border-radius: 2px;
+    background: rgba(255, 255, 255, .045);
+    color: rgba(255, 248, 237, .72);
+    font-family: var(--font-interface);
+    font-size: .66rem;
+    font-weight: 750;
+    letter-spacing: .055em;
+  }
+
+  body.developer-catalog-page .status-row strong {
+    color: var(--catalog-gold-soft);
+  }
+
+  body.developer-catalog-page .card-review-nav {
+    gap: 7px;
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px solid rgba(215, 183, 131, .22);
+  }
+
+  body.developer-catalog-page .card-review-nav a {
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 10px;
+    border: 1px solid rgba(215, 183, 131, .3);
+    border-radius: 2px;
+    color: rgba(255, 248, 237, .78);
+    font-size: .66rem;
+    font-weight: 750;
+    letter-spacing: .045em;
+    transition: border-color .16s ease, background .16s ease, color .16s ease;
+  }
+
+  body.developer-catalog-page .card-review-nav a:hover,
+  body.developer-catalog-page .card-review-nav a:focus-visible {
+    border-color: var(--catalog-gold-soft);
+    background: rgba(215, 183, 131, .1);
+    color: var(--catalog-cream);
+    outline: none;
+  }
+
+  /* Section hierarchy: compact editorial panels rather than free-floating headings. */
+  body.developer-catalog-page .card-section {
+    overflow-x: auto;
+    padding: 0 0 clamp(72px, 9vw, 118px);
+  }
+
+  body.developer-catalog-page .card-section-heading {
+    margin: 0 auto 42px;
+    padding: clamp(24px, 3vw, 34px);
+    border: 1px solid var(--catalog-rule);
+    border-top: 4px solid var(--catalog-gold);
+    background: var(--catalog-panel);
+    box-shadow: 0 14px 38px rgba(55, 38, 18, .07);
+  }
+
+  body.developer-catalog-page .section-label {
+    margin-bottom: 8px;
+    color: var(--catalog-gold-dark);
+    font-family: var(--font-interface);
+    font-size: .7rem;
+    font-weight: 800;
+    letter-spacing: .12em;
+  }
+
+  body.developer-catalog-page .card-section-heading h2,
+  body.developer-catalog-page .review-shell h2,
+  body.developer-catalog-page .evaluation h2 {
+    color: var(--catalog-charcoal);
+    font-family: var(--font-display-web);
+    font-size: clamp(2.35rem, 4.7vw, 4.35rem);
+    font-weight: 500;
+    line-height: .96;
+    letter-spacing: -.04em;
+  }
+
+  body.developer-catalog-page .card-section-heading p:last-child {
+    max-width: 760px;
+    margin-top: 14px;
+    color: var(--catalog-muted);
+    font-family: var(--font-reading);
+    font-size: 1rem;
+    line-height: 1.62;
+  }
+
+  /* Faction / component group headings use the same understated utility grammar. */
+  body.developer-catalog-page .review-faction-block {
+    width: var(--catalog-shell);
+    margin-bottom: clamp(52px, 7vw, 86px);
+  }
+
+  body.developer-catalog-page .review-faction-heading {
+    align-items: end;
+    margin-bottom: 24px;
+    padding: 0 0 12px;
+    border-bottom: 1px solid var(--catalog-rule);
+  }
+
+  body.developer-catalog-page .review-faction-heading::before {
+    width: 34px;
+    height: 3px;
+    flex: none;
+    align-self: center;
+    margin-right: 2px;
+    background: var(--catalog-gold);
+    content: "";
+  }
+
+  body.developer-catalog-page .review-faction-heading h3 {
+    flex: 1;
+    color: var(--catalog-charcoal);
+    font-family: var(--font-display-web);
+    font-size: clamp(1.85rem, 3.5vw, 2.85rem);
+    font-weight: 500;
+    letter-spacing: -.025em;
+  }
+
+  body.developer-catalog-page .review-faction-heading span {
+    color: var(--catalog-muted);
+    font-size: .68rem;
+    font-weight: 800;
+    letter-spacing: .09em;
+  }
+
+  body.developer-catalog-page .review-note {
+    margin-top: -22px;
+    color: var(--catalog-muted);
+    font-family: var(--font-reading);
+    font-size: .9rem;
+  }
+
+  /* Small labels should read as catalog metadata, not mini-card titles. */
+  body.developer-catalog-page .review-card-label,
+  body.developer-catalog-page .leader-review-label,
+  body.developer-catalog-page .territory-review-label,
+  body.developer-catalog-page .specimen-label {
+    color: var(--catalog-muted);
+    font-family: var(--font-interface);
+  }
+
+  body.developer-catalog-page .review-card-label strong,
+  body.developer-catalog-page .leader-review-label strong,
+  body.developer-catalog-page .territory-review-label strong,
+  body.developer-catalog-page .specimen-label strong {
+    color: var(--catalog-charcoal);
+    font-weight: 750;
+  }
+
+  /* Keep review cards visually separate from the page rather than adding new chrome. */
+  body.developer-catalog-page .full-card-review-frame,
+  body.developer-catalog-page .leader-review-grid .gauntlet-card,
+  body.developer-catalog-page .territory-review-frame {
+    filter: drop-shadow(0 12px 18px rgba(41, 30, 16, .08));
+  }
+
+  body.developer-catalog-page .territory-specimen-section {
+    padding-top: 0;
+  }
+
+  /* Inspection controls use the same rectilinear private-tool language. */
+  body.developer-catalog-page .card-inspection-close {
+    width: 44px;
+    height: 44px;
+    border: 1px solid rgba(215, 183, 131, .46);
+    border-radius: 2px;
+    background: rgba(28, 25, 22, .92);
+    color: var(--catalog-cream);
+    font-size: 1.65rem;
+  }
+
+  body.developer-catalog-page .card-inspection-close:hover,
+  body.developer-catalog-page .card-inspection-close:focus-visible {
+    border-color: var(--catalog-gold-soft);
+    background: #27221d;
+    outline: 2px solid rgba(215, 183, 131, .28);
+  }
+
+  @media (max-width: 980px) {
+    body.developer-catalog-page .site-header.developer-site-header {
+      align-items: flex-start;
+      flex-direction: column;
+      padding-block: 12px;
+    }
+
+    body.developer-catalog-page .site-header nav {
+      width: 100%;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    body.developer-catalog-page .site-header nav a,
+    body.developer-catalog-page .site-header button {
+      flex: none;
+      white-space: nowrap;
+    }
+  }
+
+  @media (max-width: 820px) {
+    body.developer-catalog-page {
+      --catalog-shell: min(100% - 24px, 1180px);
+    }
+
+    body.developer-catalog-page .developer-catalog-main {
+      padding-top: 24px;
+    }
+
+    body.developer-catalog-page .developer-catalog-hero {
+      margin-bottom: 48px;
+      padding: 30px 24px;
+    }
+
+    body.developer-catalog-page .developer-catalog-hero h1 {
+      font-size: clamp(3.1rem, 14vw, 5rem);
+    }
+
+    body.developer-catalog-page .card-section-heading {
+      padding: 22px 20px;
+    }
+
+    body.developer-catalog-page .review-faction-heading::before {
+      display: none;
+    }
+  }
+
+  @media (max-width: 580px) {
+    body.developer-catalog-page .brand-link span:last-child {
+      display: none;
+    }
+
+    body.developer-catalog-page .status-row span {
+      flex: 1 1 calc(50% - 8px);
+    }
+
+    body.developer-catalog-page .review-faction-heading {
+      align-items: flex-start;
+      flex-direction: column;
+      gap: 5px;
+    }
+  }
+}
