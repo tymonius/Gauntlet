@@ -26,6 +26,7 @@ jobs:
             /scripts/v063-booklet-style.css
             /rules-assistant/v063-last-stand-language.js
             /rulebook/markdown.js
+            /rulebook/player-facing/chapter-11.md
             /artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md
             /releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md
             /images/sketches/hero-sketches/
