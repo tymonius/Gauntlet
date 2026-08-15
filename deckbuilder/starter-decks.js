@@ -1,5 +1,6 @@
 (() => {
   const STARTER_DECK_SOURCE = "starter-decks.json";
+  const STARTER_TIP_SOURCE = "starter-first-game-tips.json";
   let starterDecks = [];
   let loadError = null;
 
@@ -32,10 +33,18 @@
     installStarterPrintTips();
 
     try {
-      const response = await fetch(STARTER_DECK_SOURCE, { cache: "no-store" });
-      if (!response.ok) throw new Error(`Failed to load ${STARTER_DECK_SOURCE}: ${response.status}`);
-      const data = await response.json();
-      starterDecks = Array.isArray(data.decks) ? data.decks : [];
+      const [deckResponse, tipResponse] = await Promise.all([
+        fetch(STARTER_DECK_SOURCE, { cache: "no-store" }),
+        fetch(STARTER_TIP_SOURCE, { cache: "no-store" })
+      ]);
+      if (!deckResponse.ok) throw new Error(`Failed to load ${STARTER_DECK_SOURCE}: ${deckResponse.status}`);
+      if (!tipResponse.ok) throw new Error(`Failed to load ${STARTER_TIP_SOURCE}: ${tipResponse.status}`);
+      const [data, tipData] = await Promise.all([deckResponse.json(), tipResponse.json()]);
+      const tips = tipData?.tips && typeof tipData.tips === "object" ? tipData.tips : {};
+      starterDecks = (Array.isArray(data.decks) ? data.decks : []).map(deck => ({
+        ...deck,
+        firstGameTip: deck.firstGameTip || tips[deck.id] || ""
+      }));
     } catch (error) {
       console.error(error);
       loadError = error;
