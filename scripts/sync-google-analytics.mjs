@@ -9,6 +9,7 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "playtest/session/index.html",
   "playtest/batch/index.html",
   "playtest/player-mat/index.html",
+  "images/tools/mystics_rite_completed_P22_compositor_v2.html",
   "artifacts/reconstruction/clean-v0.6.3/browser-rulebook/index.html",
   "artifacts/reconstruction/clean-v0.6.3/rules-arbiter/index.html",
   "artifacts/reconstruction/clean-v0.6.3/card-reference/index.html",
@@ -20,7 +21,17 @@ const ANALYTICS_EXCLUDED_FILES = new Set([
   "artifacts/reconstruction/clean-v0.6.3/faction-pages/mystics/index.html",
   "artifacts/reconstruction/clean-v0.6.3/faction-pages/inquisition/index.html",
   "artifacts/reconstruction/clean-v0.6.3/start/index.html",
-  "artifacts/reconstruction/clean-v0.6.3/deckbuilder/index.html"
+  "artifacts/reconstruction/clean-v0.6.3/deckbuilder/index.html",
+  // Redirect shim; analytics belongs on the canonical /v0.6.3/ landing page.
+  "releases/v0.6.3-reconstructed/index.html",
+  // Versioned development/review surfaces are not public analytics pages.
+  "v0.6.3/changes/index.html",
+  "v0.6.3/deckbuilder/index.html",
+  "v0.6.3/quick-reference/index.html",
+  "v0.6.3/reference/index.html",
+  "v0.6.3/rulebook/index.html",
+  "v0.6.3/rules-arbiter/index.html",
+  "v0.6.3/start/index.html"
 ]);
 
 const GOOGLE_TAG = `  <!-- Google tag (gtag.js) -->
@@ -67,7 +78,7 @@ if (CHECK_ONLY && missing.length) {
   for (const file of missing) console.error(`- ${file}`);
   process.exitCode = 1;
 } else if (CHECK_ONLY) {
-  console.log(`Google Analytics tag ${MEASUREMENT_ID} is present in all ${eligibleFiles.length} eligible HTML files; ${ANALYTICS_EXCLUDED_FILES.size} private or print-only pages are intentionally excluded.`);
+  console.log(`Google Analytics tag ${MEASUREMENT_ID} is present in all ${eligibleFiles.length} eligible HTML files; ${ANALYTICS_EXCLUDED_FILES.size} private, redirect, development, or print-only pages are intentionally excluded.`);
 } else {
   console.log(`Added Google Analytics tag ${MEASUREMENT_ID} to ${updated} HTML files.`);
 }
