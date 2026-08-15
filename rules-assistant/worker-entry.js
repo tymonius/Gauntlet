@@ -43,7 +43,24 @@ export function addDeveloperToolChrome(html, origin = DEFAULT_SITE_ORIGIN) {
     `  <link rel="preconnect" href="https://use.typekit.net">`,
     `  <link rel="preconnect" href="https://p.typekit.net" crossorigin>`,
     `  <link rel="stylesheet" href="${origin}/site.css">`,
-    `  <link rel="stylesheet" href="${origin}/developer-tools.css?v=${DEVELOPER_THEME_VERSION}">`
+    `  <link rel="stylesheet" href="${origin}/developer-tools.css?v=${DEVELOPER_THEME_VERSION}">`,
+    `  <style id="rules-admin-layout-fix">
+    .developer-rules-page #dashboard > header {
+      grid-template-columns: minmax(360px, .8fr) minmax(0, 1.2fr);
+    }
+    .developer-rules-page #dashboard > header .actions {
+      min-width: 0;
+      justify-content: flex-end;
+    }
+    @media (max-width: 820px) {
+      .developer-rules-page #dashboard > header {
+        grid-template-columns: 1fr;
+      }
+      .developer-rules-page #dashboard > header .actions {
+        justify-content: flex-start;
+      }
+    }
+  </style>`
   ].join("\n");
 
   const header = `<header class="site-header developer-site-header">
