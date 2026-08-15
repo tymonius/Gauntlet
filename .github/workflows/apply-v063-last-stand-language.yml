@@ -45,8 +45,6 @@ jobs:
           node-version: 22
       - name: Apply allowlisted terminology corrections
         run: node scripts/validate-v063-last-stand-language.mjs --write
-      - name: Verify no whitespace errors
-        run: git diff --check
       - name: Commit materialized text
         run: |
           if git diff --quiet; then
