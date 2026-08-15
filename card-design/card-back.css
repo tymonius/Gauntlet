@@ -1,0 +1,198 @@
+:root {
+  --card-back-charcoal: #202124;
+  --card-back-pattern: rgba(0, 0, 0, 0.42);
+  --card-back-gold: var(--developer-gold-soft, #d7b783);
+  --card-back-wordmark: #fff9f1;
+  --card-back-border: #282827;
+  --card-back-border-outline: #111111;
+  --card-back-border-rule: rgba(255, 255, 250, 0.34);
+  --card-back-frame-weight: 0.75pt;
+  --card-back-bleed: 0.125in;
+  --card-back-surface-opacity: 0.055;
+}
+
+.card-back-review-section {
+  padding-bottom: clamp(2.5rem, 5vw, 4.5rem);
+}
+
+.card-back-review-shell {
+  display: flex;
+  justify-content: center;
+  padding: clamp(1.5rem, 4vw, 3rem) 0;
+}
+
+.card-back-specimen {
+  margin: 0;
+}
+
+.gauntlet-card-back {
+  position: relative;
+  width: 2.5in;
+  height: 3.5in;
+  overflow: hidden;
+  border: 1px solid var(--card-back-border-outline);
+  border-radius: 0.125in;
+  background: var(--card-back-border);
+  box-shadow: 0 0.12in 0.28in rgba(21, 18, 15, 0.24);
+  isolation: isolate;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+/* Match the production Intelligence front's outer frame geometry exactly. */
+.gauntlet-card-back::before {
+  position: absolute;
+  z-index: 4;
+  inset: 0.03in;
+  border: 0.5px solid var(--card-back-border-rule);
+  border-radius: 0.09in;
+  content: "";
+  pointer-events: none;
+}
+
+.gauntlet-card-back::after {
+  position: absolute;
+  z-index: 0;
+  inset: 0.075in;
+  border: 1px solid var(--card-back-border-outline);
+  border-radius: 0.055in;
+  background: var(--card-back-charcoal);
+  content: "";
+  pointer-events: none;
+}
+
+.gauntlet-card-back__pattern-window {
+  position: absolute;
+  z-index: 1;
+  inset: 0.075in;
+  overflow: hidden;
+  border-radius: 0.055in;
+  pointer-events: none;
+}
+
+/* Very low-amplitude deterministic grain keeps the charcoal from reading as a
+   mathematically flat screen fill without becoming visible grunge. */
+.gauntlet-card-back__pattern-window::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.72' numOctaves='3' seed='17' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.82'/%3E%3C/svg%3E");
+  background-size: 0.8in 0.8in;
+  content: "";
+  mix-blend-mode: soft-light;
+  opacity: var(--card-back-surface-opacity);
+}
+
+.gauntlet-card-back__pattern {
+  position: absolute;
+  z-index: 0;
+  top: 50%;
+  left: 50%;
+  width: 5.4in;
+  height: 5.4in;
+  display: grid;
+  grid-template-rows: repeat(36, 0.132in);
+  align-content: center;
+  transform: translate(-50%, -50%) rotate(78deg);
+  transform-origin: center;
+}
+
+.gauntlet-card-back__pattern-row {
+  display: grid;
+  grid-template-columns: repeat(36, 0.145in);
+  align-items: center;
+  justify-content: center;
+  justify-items: center;
+}
+
+.gauntlet-card-back__pattern-row:nth-child(4n + 2) {
+  transform: translateX(0.0725in);
+}
+
+.gauntlet-card-back__pattern-row:nth-child(4n + 3) {
+  transform: translateX(0.03625in);
+}
+
+.gauntlet-card-back__pattern-row:nth-child(4n) {
+  transform: translateX(0.10875in);
+}
+
+.gauntlet-card-back__symbol {
+  width: 0.135in;
+  height: 0.135in;
+  background: var(--card-back-pattern);
+  -webkit-mask: var(--card-back-symbol) center / contain no-repeat;
+  mask: var(--card-back-symbol) center / contain no-repeat;
+}
+
+.gauntlet-card-back__symbol.military {
+  --card-back-symbol: url("../images/faction-symbols/military.svg");
+}
+
+.gauntlet-card-back__symbol.diplomats {
+  --card-back-symbol: url("../images/faction-symbols/diplomats.svg");
+}
+
+.gauntlet-card-back__symbol.financiers {
+  --card-back-symbol: url("../images/faction-symbols/financiers.svg");
+}
+
+.gauntlet-card-back__symbol.intelligence {
+  --card-back-symbol: url("../images/faction-symbols/intelligence.svg");
+}
+
+.gauntlet-card-back__symbol.mystics {
+  --card-back-symbol: url("../images/faction-symbols/mystics.svg");
+}
+
+.gauntlet-card-back__symbol.inquisition {
+  --card-back-symbol: url("../images/faction-symbols/inquisition.svg");
+}
+
+.gauntlet-card-back__frame {
+  position: absolute;
+  z-index: 2;
+  inset: calc(0.25in - 1px);
+  border: var(--card-back-frame-weight) solid var(--card-back-gold);
+  border-radius: 0.125in;
+  pointer-events: none;
+}
+
+.gauntlet-card-back__wordmark {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  left: 50%;
+  width: 2.45in;
+  aspect-ratio: 1871.79 / 493.58;
+  transform: translate(-50%, -50%) rotate(90deg);
+  background: var(--card-back-wordmark);
+  -webkit-mask: url("../images/Gauntlet.svg") center / contain no-repeat;
+  mask: url("../images/Gauntlet.svg") center / contain no-repeat;
+}
+
+/* Production proof helper: 1/8in of solid charcoal extends beyond every trim
+   edge so normal cutting variation cannot expose paper/white at the card edge. */
+.gauntlet-card-back-bleed-proof {
+  box-sizing: border-box;
+  display: grid;
+  width: calc(2.5in + var(--card-back-bleed) + var(--card-back-bleed));
+  height: calc(3.5in + var(--card-back-bleed) + var(--card-back-bleed));
+  padding: var(--card-back-bleed);
+  place-items: center;
+  background: var(--card-back-border);
+}
+
+.gauntlet-card-back-bleed-proof .gauntlet-card-back {
+  box-shadow: none;
+}
+
+@media print {
+  .card-back-review-shell {
+    padding: 0;
+  }
+
+  .gauntlet-card-back {
+    box-shadow: none;
+  }
+}
