@@ -10,6 +10,7 @@ const root = process.cwd();
 const cleanRulebookPath = 'artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md';
 const publishedRulebookPath = 'releases/v0.6.3-reconstructed/Gauntlet_v0.6.3_Rulebook.md';
 const playerChapter11Path = 'rulebook/player-facing/chapter-11.md';
+const playerProductionInputPath = 'rulebook-production/.v063-player-facing-input.md';
 const outDir = 'artifacts/reconstruction/clean-v0.6.3/booklet/generated';
 const sourceHtmlPath = `${outDir}/Gauntlet_v0.6.3_Rulebook_Booklet_Source.html`;
 const readingPdfPath = `${outDir}/Gauntlet_v0.6.3_Rulebook_Booklet_Reading_Order.pdf`;
@@ -73,14 +74,15 @@ fs.rmSync(productionDir, { recursive: true, force: true });
 run('python', ['rulebook-design/build_proofs.py']);
 run('python', ['rulebook-production/build_fidelity_gate.py']);
 
-// Verify recovered evidence first, then apply the reviewed player-facing layer
-// only to the transient production input. The checked-in release source is
-// restored as soon as the approved production source has been constructed.
-fs.writeFileSync(path.join(root, publishedRulebookPath), playerRulebook, 'utf8');
+// Verify immutable recovered evidence first. Then hand the complete reviewed
+// player-facing Rulebook to the approved production adapter through a dedicated
+// transient input. The checked-in reconstructed release source is never mutated.
+write(playerProductionInputPath, playerRulebook);
 try {
+  assert.equal(read(playerProductionInputPath), playerRulebook, 'Transient player-facing Rulebook input changed before production.');
   run('python', ['scripts/build-v063-rulebook-production.py']);
 } finally {
-  fs.writeFileSync(path.join(root, publishedRulebookPath), publishedRulebook, 'utf8');
+  fs.rmSync(path.join(root, playerProductionInputPath), { force: true });
 }
 
 const server = spawn('python', ['-m', 'http.server', '8000'], { cwd: root, env: process.env, stdio: ['ignore', 'ignore', 'inherit'] });
