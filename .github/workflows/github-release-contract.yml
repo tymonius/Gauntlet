@@ -1,0 +1,63 @@
+name: GitHub release contract
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "config/github-release-contract.json"
+      - "config/release-lifecycle.json"
+      - "docs/releases/github/**"
+      - "scripts/validate-github-release-contract.mjs"
+      - "scripts/publish-github-releases.mjs"
+      - "scripts/verify-*-live-publication.mjs"
+      - "releases/**"
+      - ".github/workflows/github-release-contract.yml"
+      - ".github/workflows/current-publication-contract.yml"
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: github-release-contract-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: Validate GitHub release contract
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Validate lifecycle and release metadata
+        run: node scripts/validate-github-release-contract.mjs
+
+  publish:
+    name: Publish missing contracted releases
+    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      pages: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Backfill, publish, and audit GitHub releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/publish-github-releases.mjs
