@@ -2,7 +2,7 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 const factionIds = ["military", "diplomats", "financiers", "intelligence", "mystics", "inquisition"];
-const app = readFileSync("deckbuilder/app.js", "utf8");
+const handoff = readFileSync("deckbuilder/starter-handoff.js", "utf8");
 
 describe("faction guide to Deckbuilder handoff", () => {
   it("passes the current faction through every Deckbuilder link on each faction guide", () => {
@@ -13,11 +13,11 @@ describe("faction guide to Deckbuilder handoff", () => {
     }
   });
 
-  it("applies a valid faction query before initial Deckbuilder rendering", () => {
-    expect(app).toContain("applyUrlSelection();");
-    expect(app).toContain('const requestedFactionId = String(params.get("faction") || "").trim();');
-    expect(app).toContain('const requestedLeaderId = String(params.get("leader") || "").trim();');
-    expect(app).toContain("state.factionId = faction.id;");
-    expect(app).toContain('state.leaderId = leader?.id || faction.leaders[0]?.id || "";');
+  it("applies a valid faction query before the Deckbuilder initializes", () => {
+    expect(handoff).toContain('const factionId = String(params.get("faction") || "").trim();');
+    expect(handoff).toContain('const leaderId = String(params.get("leader") || "").trim();');
+    expect(handoff).toContain("state.factionId = faction.id;");
+    expect(handoff).toContain('state.leaderId = requestedLeader?.id || faction.leaders[0]?.id || "";');
+    expect(handoff.indexOf('if (faction) {')).toBeLessThan(handoff.indexOf('if (params.get("starter") !== "1") return;'));
   });
 });
