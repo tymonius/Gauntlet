@@ -76,13 +76,10 @@ A card may have several printed effects. The way it is used determines which eff
 - **Gambit:** set from Hand during a battle.
 - **Tactic:** choose from Reserve during a battle.
 - **Gambit/Tactic:** the same printed effect is available when the card is committed as either a Gambit or a Tactic.
-- **Mission:** an Intelligence Mission completion condition or effect, governed by the Intelligence faction rules.
-- **Overlay:** the effect that applies while that card is placed on a Territory as an Overlay.
-- **Terms:** use at the printed point while offering Terms; it does not require an Action unless the card says otherwise.
-- **Sanctions:** after an opponent refuses your Terms, you may immediately play a Sanction from Hand at no cost unless the card says otherwise.
-- **Reaction:** play from Hand when its printed trigger occurs; it does not require an Action unless the card says otherwise.
 
-Only the printed effect being used applies unless a rule says otherwise. A Gambit, Tactic, or Gambit/Tactic effect with no later printed timing applies at that role's normal reveal stage. Terms, Sanctions, Reactions, Missions, and Overlays use their printed timing and applicable shared or faction rules.
+Only the printed effect being used applies unless a rule says otherwise. A Gambit, Tactic, or Gambit/Tactic effect with no later printed timing applies at that role's normal reveal stage.
+
+Faction cards may contain other headings. Those headings use the procedure stated in the relevant faction rules and do not make a card eligible as a Gambit or Tactic unless it also has a Gambit, Tactic, or Gambit/Tactic effect.
 
 ## Play area and zones
 
@@ -785,30 +782,16 @@ Multiple applicable `+N Reserve` and `+N Tactic` instructions add together unles
 
 ---
 
-### 5. Terms, Reactions, and Sanctions
-
-### Terms effects
-
-A **Terms** effect is used at the point printed on the card while its owner is offering Terms. Using a Terms effect does not spend or require an Action unless the card expressly says otherwise.
-
-Outcome words such as **Accepted —** and **Refused —** may appear inside a Terms effect to divide its resolution. They are not separate standard-card effect headings.
-
-### Reactions
-
-A **Reaction** is played from Hand when its printed trigger occurs. Playing a Reaction does not spend or require an Action unless the card expressly says otherwise. Resolve the Reaction at the timing printed on the card.
-
-### Sanctions
+### 5. Sanctions
 
 A card whose title begins **Sanctions:** is a **Sanction**.
-
-Immediately after an opponent refuses your Terms, you may play a Sanction from your Hand at no cost unless that Sanction says otherwise. The Sanction's printed text determines whether it is banked, placed as an Overlay, or resolves in another way. A Sanction may also override this default timing or procedure.
 
 When a Sanction is played, placed, or banked because an opponent refused its owner's Terms:
 
 - that opponent remains associated with that Sanction for as long as it remains in play; and
 - unless the Sanction says otherwise, after that opponent accepts the owner's Terms, put the Sanction in its owner's Discard Pile.
 
-A Sanction may state additional removal conditions. Cards therefore do not need to repeat the refusal trigger, identification of the refusing opponent, no-cost play, or the default expiration after later acceptance.
+A Sanction may state additional removal conditions. Cards therefore do not need to repeat identification of the refusing opponent or the default expiration after later acceptance.
 
 ---
 
