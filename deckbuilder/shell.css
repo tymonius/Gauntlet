@@ -1,0 +1,13 @@
+/* The Deckbuilder uses a wider work surface than the standard public pages.
+ * Keep its header aligned to that 1380px content shell instead of forcing the
+ * shared 1180px site width. The explicit width is also a safe fallback while
+ * older cached copies of brand.css are still in circulation. */
+.global-header{
+  --gauntlet-header-max-width:1380px;
+  width:min(1380px,calc(100% - 40px))!important;
+  margin-inline:auto!important;
+}
+
+@media(max-width:760px){
+  .global-header{width:min(100% - 28px,1380px)!important}
+}
