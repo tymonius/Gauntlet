@@ -122,7 +122,9 @@
 .newsletter-note {
   margin: 14px 0 0;
   color: rgba(255, 248, 237, .58);
+  font-family: var(--reading);
   font-size: .76rem;
+  font-style: italic;
   line-height: 1.55;
 }
 
