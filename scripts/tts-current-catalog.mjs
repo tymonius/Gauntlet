@@ -95,6 +95,51 @@ export async function loadCurrentStarterDecks() {
   return Object.freeze({ release, starterDecks });
 }
 
+export async function loadCurrentLeaders() {
+  const release = await resolveCurrentTtsRelease();
+  const canonical = await readJson(release.canonicalDataSource);
+
+  if (!Array.isArray(canonical.factions) || !canonical.factions.length) {
+    throw new Error(`Canonical data is missing factions: ${release.canonicalDataSource}.`);
+  }
+
+  const leaders = [];
+  const keys = new Set();
+  for (const faction of canonical.factions) {
+    const factionId = slugify(faction.id || faction.name);
+    if (!PLAYABLE_BACK_FACTIONS.includes(factionId)) {
+      throw new Error(`Unknown canonical faction for TTS Leader export: ${faction.id || faction.name || 'missing'}.`);
+    }
+    if (!Array.isArray(faction.leaders) || !faction.leaders.length) {
+      throw new Error(`Canonical faction ${factionId} does not declare Leaders.`);
+    }
+
+    for (const leader of faction.leaders) {
+      const name = String(leader?.name || '').trim();
+      const id = slugify(leader?.id || name);
+      if (!name || !id) throw new Error(`Canonical faction ${factionId} contains a Leader without a usable name/id.`);
+      const key = `${factionId}:${id}`;
+      if (keys.has(key)) throw new Error(`Duplicate canonical Leader key detected: ${key}.`);
+      keys.add(key);
+      leaders.push(Object.freeze({
+        id,
+        kind: 'leader',
+        name,
+        faction: factionId,
+        factionLabel: faction.name || factionId,
+        canonicalImage: leader.image || null,
+        source: faction.source || release.canonicalDataSource,
+      }));
+    }
+  }
+
+  return Object.freeze({
+    release,
+    canonicalDataVersion: canonical.version || null,
+    leaders: Object.freeze(leaders),
+  });
+}
+
 function sectionsFromEffects(effects) {
   const sections = {};
   for (const effect of effects || []) {

@@ -10,6 +10,7 @@ on:
       - 'config/github-release-contract.json'
       - 'scripts/generate-tts-card-assets.mjs'
       - 'scripts/generate-tts-territory-assets.mjs'
+      - 'scripts/generate-tts-leader-assets.mjs'
       - 'scripts/generate-tts-starter-decks.mjs'
       - 'scripts/tts-current-catalog.mjs'
       - 'tts/**'
@@ -20,6 +21,18 @@ on:
       - 'images/artwork/cards/**'
       - 'images/artwork/territories/**'
       - 'images/artwork/card-backgrounds/**'
+      - 'images/general.png'
+      - 'images/commandant.png'
+      - 'images/ambassador.png'
+      - 'images/senator.png'
+      - 'images/banker.png'
+      - 'images/executive.png'
+      - 'images/ranger.png'
+      - 'images/spymaster.png'
+      - 'images/alchemist.png'
+      - 'images/spirit walker.png'
+      - 'images/grand inquisitor.png'
+      - 'images/witch hunter.png'
   workflow_dispatch:
     inputs:
       strict_artwork:
@@ -48,6 +61,7 @@ jobs:
             config/github-release-contract.json
             scripts/generate-tts-card-assets.mjs
             scripts/generate-tts-territory-assets.mjs
+            scripts/generate-tts-leader-assets.mjs
             scripts/generate-tts-starter-decks.mjs
             scripts/tts-current-catalog.mjs
             tts
@@ -58,6 +72,18 @@ jobs:
             images/artwork/cards
             images/artwork/territories
             images/artwork/card-backgrounds
+            images/general.png
+            images/commandant.png
+            images/ambassador.png
+            images/senator.png
+            images/banker.png
+            images/executive.png
+            images/ranger.png
+            images/spymaster.png
+            images/alchemist.png
+            images/spirit walker.png
+            images/grand inquisitor.png
+            images/witch hunter.png
       - uses: actions/setup-node@v4
         with:
           node-version: 22
@@ -69,6 +95,8 @@ jobs:
         run: npm run tts:cards -- ${{ github.event_name == 'workflow_dispatch' && inputs.strict_artwork && '--strict-art' || '' }}
       - name: Generate Territory sheets
         run: npm run tts:territories
+      - name: Generate Leader cards
+        run: npm run tts:leaders
       - name: Assemble current starter decks
         run: npm run tts:starters
       - uses: actions/upload-artifact@v4

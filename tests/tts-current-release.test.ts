@@ -6,6 +6,7 @@ const githubReleaseContract = JSON.parse(readFileSync('config/github-release-con
 const catalogSource = readFileSync('scripts/tts-current-catalog.mjs', 'utf8');
 const cardGenerator = readFileSync('scripts/generate-tts-card-assets.mjs', 'utf8');
 const territoryGenerator = readFileSync('scripts/generate-tts-territory-assets.mjs', 'utf8');
+const leaderGenerator = readFileSync('scripts/generate-tts-leader-assets.mjs', 'utf8');
 const starterGenerator = readFileSync('scripts/generate-tts-starter-decks.mjs', 'utf8');
 const cardRenderer = readFileSync('tts/renderer/index.html', 'utf8');
 const territoryRenderer = readFileSync('tts/territory-renderer/index.html', 'utf8');
@@ -18,6 +19,7 @@ const supportedPipelineText = [
   catalogSource,
   cardGenerator,
   territoryGenerator,
+  leaderGenerator,
   starterGenerator,
   cardRenderer,
   territoryRenderer,
@@ -57,30 +59,34 @@ describe('durable current-release TTS pipeline', () => {
 
   it('contains no release-number literals in the supported TTS pipeline', () => {
     expect(supportedPipelineText).not.toMatch(/v0\.6\.[0-9]+/);
-    expect(packageJson.scripts['tts:check']).toBe('node scripts/generate-tts-card-assets.mjs --check && node scripts/generate-tts-territory-assets.mjs --check && node scripts/generate-tts-starter-decks.mjs --check');
+    expect(packageJson.scripts['tts:check']).toBe('node scripts/generate-tts-card-assets.mjs --check && node scripts/generate-tts-territory-assets.mjs --check && node scripts/generate-tts-leader-assets.mjs --check && node scripts/generate-tts-starter-decks.mjs --check');
     expect(packageJson.scripts['tts:catalog']).toBe('node scripts/generate-tts-card-assets.mjs --catalog-only');
     expect(packageJson.scripts['tts:cards']).toBe('node scripts/generate-tts-card-assets.mjs');
     expect(packageJson.scripts['tts:territories']).toBe('node scripts/generate-tts-territory-assets.mjs');
+    expect(packageJson.scripts['tts:leaders']).toBe('node scripts/generate-tts-leader-assets.mjs');
     expect(packageJson.scripts['tts:starters']).toBe('node scripts/generate-tts-starter-decks.mjs');
   });
 
-  it('does not duplicate release-specific card, Territory, or starter-deck counts', () => {
+  it('does not duplicate release-specific card, Territory, Leader, or starter-deck counts', () => {
     expect(catalogSource).not.toContain('EXPECTED_COUNTS');
     expect(catalogSource).not.toContain('neutral: 50');
     expect(cardGenerator).not.toContain('128');
     expect(territoryGenerator).not.toContain('Expected 25 canonical Territories');
     expect(territoryGenerator).not.toContain('Expected four canonical Arenas');
+    expect(leaderGenerator).not.toMatch(/Expected 12|=== 12|!== 12/);
     expect(starterGenerator).not.toMatch(/Expected 12|=== 12|!== 12/);
     expect(catalogSource).toContain('counts.playableCards = cardsWithArtwork.length');
     expect(catalogSource).toContain('counts.territories = territories.length');
+    expect(leaderGenerator).toContain('leaderCount: records.length');
     expect(starterGenerator).toContain('deckCount: decks.length');
   });
 
-  it('uses a generated current alias so browser and starter consumers do not need a release-path edit', () => {
+  it('uses a generated current alias so browser and manifest consumers do not need a release-path edit', () => {
     expect(catalogSource).toContain("join(ROOT, 'tts', 'generated', 'current')");
     expect(catalogSource).toContain("writeFile(join(CURRENT_ALIAS_ROOT, 'catalog.js'), catalogJs)");
     expect(cardRenderer).toContain('/tts/generated/current/catalog.js');
     expect(territoryRenderer).toContain('/tts/generated/current/catalog.js');
+    expect(leaderGenerator).toContain("join(CURRENT_ALIAS_ROOT, 'leader-manifest.json')");
     expect(starterGenerator).toContain("join(CURRENT_ALIAS_ROOT, 'starter-deck-manifest.json')");
   });
 
@@ -108,13 +114,15 @@ describe('durable current-release TTS pipeline', () => {
     expect(readme).toContain("must use that player's faction back");
   });
 
-  it('allows playable, Territory, and starter-deck counts to grow without a release-specific rewrite', () => {
+  it('allows playable, Territory, Leader, and starter-deck counts to grow without a release-specific rewrite', () => {
     expect(cardGenerator).toContain('const sheets = chunk(catalog.playableCards, CARDS_PER_SHEET)');
     expect(territoryGenerator).toContain('const sheetGroups = chunk(catalog.territories, TERRITORIES_PER_SHEET)');
     expect(territoryGenerator).toContain('const deckId = FIRST_DECK_ID + sheetIndex');
+    expect(catalogSource).toContain('for (const leader of faction.leaders)');
+    expect(leaderGenerator).toContain('for (let index = 0; index < leaders.length; index += 1)');
     expect(starterGenerator).toContain('starterDecks.decks.map((deck) =>');
     expect(readme).toContain('additional sheets/deck IDs created automatically');
-    expect(readme).toContain('does not hard-code the number of starter decks');
+    expect(readme).toContain('does not hard-code the number of starter decks or Leaders');
   });
 
   it('keeps CI release-agnostic and watches release authority changes', () => {
@@ -122,7 +130,9 @@ describe('durable current-release TTS pipeline', () => {
     expect(workflow).toContain("'config/github-release-contract.json'");
     expect(workflow).toContain("'releases/**'");
     expect(workflow).toContain('scripts/tts-current-catalog.mjs');
+    expect(workflow).toContain('scripts/generate-tts-leader-assets.mjs');
     expect(workflow).toContain('scripts/generate-tts-starter-decks.mjs');
+    expect(workflow).toContain('Generate Leader cards');
     expect(workflow).toContain('Assemble current starter decks');
     expect(workflow).toContain('name: gauntlet-current-tts-card-assets');
     expect(workflow).toContain('path: tts/generated/');
