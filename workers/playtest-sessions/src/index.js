@@ -1,7 +1,9 @@
 const DEFAULT_ORIGIN = "https://gauntlet.run";
-const CURRENT_RULES_VERSION = "v0.6.1";
+const CURRENT_RULES_VERSION = "v0.6.3";
+const GAME_SERIAL_PREFIX = "G063";
+const EVENT_SERIAL_PREFIX = "EV063";
 const TOKEN_PATTERN = /^[A-Za-z0-9_-]{24,96}$/;
-const SERIAL_PATTERN = /^G061-[A-Z0-9]{6,12}$/;
+const SERIAL_PATTERN = /^G063-[A-Z0-9]{6,12}$/;
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const FACTION_LEADERS = Object.freeze({
   military: ["General", "Commandant"],
@@ -116,10 +118,10 @@ async function createSession(request, env, headers) {
     throw new HttpError(400, `This service creates ${CURRENT_RULES_VERSION} sessions only.`);
   }
 
-  const sessionKind = body.sessionKind === "event" ? "event" : "game";
+  const sessionKind = body.sessionKind === "event" || body.type === "event" ? "event" : "game";
   const serial = body.sheetSerial
     ? await requireUniqueSerial(cleanSerial(body.sheetSerial), env.DB)
-    : await uniqueSerial(env.DB);
+    : await uniqueSerial(env.DB, sessionKind === "event" ? EVENT_SERIAL_PREFIX : GAME_SERIAL_PREFIX);
   const record = await createSessionRecord(env.DB, {
     rulesVersion,
     serial,
@@ -860,9 +862,9 @@ async function requireUniqueSerial(serial, db) {
   return serial;
 }
 
-async function uniqueSerial(db) {
+async function uniqueSerial(db, prefix = GAME_SERIAL_PREFIX) {
   for (let attempt = 0; attempt < 8; attempt += 1) {
-    const serial = `G061-${randomCode(8)}`;
+    const serial = `${prefix}-${randomCode(8)}`;
     const existing = await db.prepare(
       "SELECT 1 AS found FROM playtest_sessions WHERE sheet_serial = ?"
     ).bind(serial).first();
@@ -936,7 +938,7 @@ async function readJson(request) {
 
 export function cleanSerial(value) {
   const serial = cleanString(value, 32).toUpperCase();
-  if (!SERIAL_PATTERN.test(serial)) throw new HttpError(400, "Invalid v0.6.1 sheet serial");
+  if (!SERIAL_PATTERN.test(serial)) throw new HttpError(400, "Invalid v0.6.3 sheet serial");
   return serial;
 }
 
