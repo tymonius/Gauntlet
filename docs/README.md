@@ -2,23 +2,28 @@
 
 This directory contains the active design, testing, setting, and source-card documents for Gauntlet.
 
-For the current playable release, begin with the [v0.6.2 release package](../releases/v0.6.2/README.md). v0.6.1 and earlier packages remain available only for historical reference.
+For the current playable release, begin with the [v0.6.3 release package](../releases/v0.6.3/README.md). v0.6.2 and earlier packages remain available for historical reference.
 
-## Canonical v0.6.2 sources
+## Canonical v0.6.3 sources
 
 These files govern the current published playtest game:
 
-1. [Official Rulebook](../releases/v0.6.2/Gauntlet_v0.6.2_Rulebook.md) — shared rules.
-2. [Faction and Component Guide](../releases/v0.6.2/Gauntlet_v0.6.2_Faction_and_Component_Guide.md) — faction rules, Leaders, supplemental components, and faction procedures.
-3. [Complete Card and Territory Reference](../releases/v0.6.2/Gauntlet_v0.6.2_Complete_Card_Reference.md) — exact playable-card, Territory, Arena, Leader, and component text.
-4. [Canonical Data](../releases/v0.6.2/Gauntlet_v0.6.2_Canonical_Data.json) — generated structured data; do not edit independently.
-5. [Reference Guide](../releases/v0.6.2/Gauntlet_v0.6.2_Reference_Guide.md) — compact play reference derived from the governing sources.
-6. [First Game Guide](../releases/v0.6.2/Gauntlet_v0.6.2_First_Game_Guide.md) — first-game setup, teaching sequence, and faction introductions.
-7. [Release Notes](../releases/v0.6.2/Gauntlet_v0.6.2_Release_Notes.md) and [Returning Player Changes](../releases/v0.6.2/Gauntlet_v0.6.2_Returning_Player_Changes.md) — release explanation and changes from v0.6.1.
+1. [Official Rulebook](../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md) — shared rules.
+2. [Faction and Component Guide](../releases/v0.6.3/Gauntlet_v0.6.3_Faction_and_Component_Guide.md) — faction rules, Leaders, supplemental components, and faction procedures.
+3. [Complete Card and Territory Reference](../releases/v0.6.3/Gauntlet_v0.6.3_Complete_Card_Reference.md) — exact playable-card, Territory, Arena, Leader, and component text.
+4. [Canonical Data](../releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json) — generated structured data; do not edit independently.
+5. [Reference Guide](../releases/v0.6.3/Gauntlet_v0.6.3_Reference_Guide.md) — compact play reference derived from the governing sources.
+6. [First Game Guide](../releases/v0.6.3/Gauntlet_v0.6.3_First_Game_Guide.md) — first-game setup, teaching sequence, and faction introductions.
+7. [Release Notes](../releases/v0.6.3/Gauntlet_v0.6.3_Release_Notes.md) and [Returning Player Changes](../releases/v0.6.3/Gauntlet_v0.6.3_Returning_Player_Changes.md) — release explanation and changes from v0.6.2.
+8. [Formal Playtest Sheet](../releases/v0.6.3/Gauntlet_v0.6.3_Formal_Playtest_Sheet.pdf) — tagged playtest instrument for the release.
 
-When a derived PDF, printable sheet, Deckbuilder entry, or digital implementation conflicts with these sources, correct the governing source and regenerate the derived artifact.
+When a derived PDF, printable sheet, Deckbuilder entry, Rules Arbiter surface, or digital implementation conflicts with these sources, correct the governing source and regenerate or synchronize the derived artifact.
 
-## v0.6.2 implementation records
+## Historical implementation records
+
+The v0.6.1 and v0.6.2 implementation records below preserve the decisions and validation work used to assemble those releases. They are provenance, not current authority.
+
+### v0.6.2
 
 - [v0.6.2 Shared Rules Candidate](Gauntlet_v0.6.2_Shared_Rules_Candidate.md) — adopted Wave A player-facing and technical text for the turn, Action, movement, pending-battle, Terms, Onset, Defensive Edge, Tiebreak Roll, Front Line, withdrawal, and retreat systems.
 - [v0.6.2 Shared Reference Candidate](Gauntlet_v0.6.2_Shared_Reference_Candidate.md) — compact tableside form of the adopted Wave A shared rules.
@@ -34,12 +39,15 @@ When a derived PDF, printable sheet, Deckbuilder entry, or digital implementatio
 - [v0.6.2 Wave C Review Checklist](Gauntlet_v0.6.2_Wave_C_Review_Checklist.md) — review gate for starter legality, Leader identity, early access, teaching sequence, faction presentation, and release boundaries.
 - [v0.6.2 Wave D Test Matrix](Gauntlet_v0.6.2_Wave_D_Test_Matrix.md) — 48 normative structured-data, candidate-surface, starter-handoff, generated-reference, and release-integrity scenarios.
 - [v0.6.2 Wave D Review Checklist](Gauntlet_v0.6.2_Wave_D_Review_Checklist.md) — review gate for the effective 128-card data source, versioned Start and Deckbuilder surfaces, generated reference, and immutable v0.6.1 boundary.
-- [v0.6.2 Candidate Player Surfaces](../v0.6.2/) — versioned Start, Deckbuilder, canonical-data download, and generated reference built from immutable v0.6.1 plus the merged Wave A–C sources.
+- [v0.6.2 Candidate Player Surfaces](../v0.6.2/) — versioned candidate surfaces assembled during the v0.6.2 cutover.
 - [v0.6.2 Implementation Ledger](Gauntlet_v0.6.2_Implementation_Ledger.md) — adopted post-playtest changes, release dependencies, ordered propagation waves, and validation gates used to assemble the release.
+
+### v0.6.1
+
 - [v0.6.1 Implementation Ledger](Gauntlet_v0.6.1_Implementation_Ledger.md) — approved first-playtest corrections and synchronization checklist.
 - [v0.6.1 Rulebook Layering Standard](Gauntlet_v0.6.1_Rulebook_Layering_Standard.md) — approved **How it works / Complete rules** structure for combining first-game teaching with technical reference.
 
-These implementation records preserve decisions and production history. They do not override the canonical release sources and may be archived when they no longer serve a continuing development or provenance purpose.
+These records may be archived when they no longer serve a continuing development or provenance purpose. They never override the current release package.
 
 ## Active development documents and tools
 
@@ -57,11 +65,13 @@ These implementation records preserve decisions and production history. They do 
 - [Illustration Environmental Detail Guardrails](Gauntlet_Illustration_Environmental_Detail_Guardrails.md) — approved rules for flags, signage, visible writing, environmental labeling, scene density, and card-size focal clarity.
 - [Faction Card Design Guide](Gauntlet_v0.6_Faction_Card_Design_Guide.md) — standards for faction-card pools and future revisions.
 - [Playtest Targets and Metrics](Gauntlet_Playtest_Targets_and_Metrics.md) — complete evidence targets and thresholds for controlled testing.
-- [One-Page Playtest Sheet](../playtest/) — the routine paper questionnaire, designed to be printed and completed by hand.
+- [Playtest Tools](../playtest/) — routine paper questionnaire and coded-session workflow; see that README for the current v0.6.1 service-migration limitation.
+- [Rules Arbiter Adjudication Guide](../rules-assistant/Rules_Arbiter_Adjudication_Guide.md) — current v0.6.3 ruling and adjudication policy.
 - [Leader Design Bible](Gauntlet_v0.6_Leader_Design_Bible.md) — current individual Leader art, silhouette, prop, pose, and miniature direction.
 - [Spirit Walker Visual Design Update](Gauntlet_Spirit_Walker_Visual_Design_Update.md) — canonical redesign supplement superseding older Spirit Walker portrait and character guidance where they conflict.
 - [Lore Development Notes](Gauntlet_Lore_Development_Notes.md) — incremental setting development.
 - [Digital Roadmap](Gauntlet_Digital_Roadmap.md) — future canonical engine and interface direction.
+- [Digital Prototype Roadmap](Gauntlet_Digital_Prototype_Roadmap.md) — current status and migration requirements for the legacy digital prototype.
 - [v0.7 Parking Lot](Gauntlet_v0.7_Parking_Lot.md) — deferred modules and post-v0.6 concepts that have not entered active development.
 - [Game Design Glossary](Game_Design_Glossary.md) — general design vocabulary.
 
