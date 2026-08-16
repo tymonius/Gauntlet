@@ -17,9 +17,9 @@ describe('current public faction overviews', () => {
   test('use the root current tools rather than versioned release routes', () => {
     for (const path of factionPaths) {
       const html = read(path);
-      expect(html).toContain('href="../../rulebook/"');
-      expect(html).toContain('href="../../deckbuilder/"');
-      expect(html).not.toMatch(/href="\.\.\/\.\.\/(?:v\d|releases\/v)[^"]+\/(?:rulebook|deckbuilder)\//i);
+      expect(html).toContain('href="/rulebook/"');
+      expect(html).toContain('href="/deckbuilder/"');
+      expect(html).not.toMatch(/href="(?:\.\.\/\.\.\/|\/)(?:v\d|releases\/v)[^"]+\/(?:rulebook|deckbuilder)\//i);
     }
   });
 
