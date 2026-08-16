@@ -191,6 +191,7 @@ function trackerFace(component, faction, factionLabel) {
         <strong>0 = fully covered</strong>
         <span>Place ${esc(cover)} over this card. Slide it upward until its bottom edge aligns with the line above the current value.</span>
       </div>
+      <footer class="card-footer tracker-footer"><span>${esc(factionLabel)}</span><span>Tracker</span><span>v0.6.3</span></footer>
     </div>
   </article>`;
 }
