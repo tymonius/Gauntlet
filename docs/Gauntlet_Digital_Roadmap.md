@@ -1,9 +1,9 @@
 # Gauntlet Digital Roadmap
 
-**Status:** Active post-v0.6.0 roadmap.  
+**Status:** Active post-v0.6.3 roadmap.  
 **Purpose:** Define the path from the current physical-game sources and browser tools to a versioned digital rules implementation.
 
-The [official v0.6.0 rulebook](../releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md), definitive faction guides, Neutral pool, and Territory pool remain authoritative. Digital behavior must follow those sources and generated canonical data.
+The [official v0.6.3 rulebook](../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md), [Faction and Component Guide](../releases/v0.6.3/Gauntlet_v0.6.3_Faction_and_Component_Guide.md), [Complete Card and Territory Reference](../releases/v0.6.3/Gauntlet_v0.6.3_Complete_Card_Reference.md), and generated canonical data are authoritative. Digital behavior must follow those sources.
 
 The detailed legacy-to-v0.6 subsystem assessment and acceptance criteria are maintained in the [v0.6 Digital Migration Audit](Gauntlet_v0.6_Digital_Migration_Audit.md).
 
@@ -13,11 +13,13 @@ The detailed legacy-to-v0.6 subsystem assessment and acceptance criteria are mai
 
 ### Canonical content
 
-- `releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json`
-- canonical Markdown rule and card sources
+- `releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json`
+- `releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md`
+- `releases/v0.6.3/Gauntlet_v0.6.3_Faction_and_Component_Guide.md`
+- `releases/v0.6.3/Gauntlet_v0.6.3_Complete_Card_Reference.md`
 - generated release manifest
 
-This layer defines versioned content and identifiers.
+This layer defines the current versioned content and identifiers.
 
 ### Browser tools
 
@@ -31,21 +33,21 @@ These tools build Decks and render physical components. They are production tool
 - `src/`
 - `data/`
 
-These files preserve a pre-v0.6 TypeScript experiment and starter data. They remain useful for architecture and tests but do not implement the canonical faction-era game.
+These files preserve an earlier TypeScript experiment and starter data. They remain useful for architecture and tests but must not be treated as an implementation of the current v0.6.3 rules unless explicitly synchronized and validated against the release sources.
 
 ---
 
 ## 2. Next supported target
 
-The next engine milestone should support **v0.6.0 explicitly** rather than extending the legacy mixed-version state.
+The next engine milestone should support **v0.6.3 explicitly** rather than extending the legacy mixed-version state.
 
 Before adding more interfaces:
 
-1. define a versioned schema generated from canonical data;
+1. define a versioned schema generated from v0.6.3 canonical data;
 2. map every shared rule to a legal state transition;
 3. model player-specific hidden information;
-4. implement setup, turns, movement, battles, occupation, control, capture, and Last Stand;
-5. represent normal card destinations and Battle Hands exactly;
+4. implement setup, turns, movement, battles, occupation, control, capture, and running the Gauntlet;
+5. represent Gambits, Reserves, Tactics, and normal card destinations exactly;
 6. identify unsupported card effects explicitly; and
 7. save the rules version with every game, Deck, and log.
 
@@ -70,10 +72,10 @@ Canonical content generation, engine logic, and interface code should remain sep
 - setup and Deck validation;
 - turn sequence and Action Opportunities;
 - movement and occupied-position battles;
-- Battle Hand formation and commitments;
-- Defender's Advantage and the separate Last Stand bonus;
+- Gambit, Reserve, and Tactic handling;
+- current battle tiebreak and defensive procedures;
 - retreat, occupation, capture, and running the Gauntlet;
-- Draw Pile, hand, Battle Hand, Discard Pile, Graveyard, and Asset Bank;
+- Draw Pile, Hand, Reserve, Discard Pile, Graveyard, and Asset Bank;
 - Assets, Overlays, and Territory orientation.
 
 ### Phase B — shared card framework
@@ -104,6 +106,6 @@ A faction is not complete until its additional victory condition, trackers, hidd
 
 ## 5. Validation
 
-Every implementation change should be checked against canonical source text, generated counts, deterministic replay tests, hidden-information boundaries, card-destination invariants, victory-route tests, matched physical-game examples, and [Playtest Targets and Metrics](Gauntlet_Playtest_Targets_and_Metrics.md).
+Every implementation change should be checked against the v0.6.3 canonical source text, generated counts, deterministic replay tests, hidden-information boundaries, card-destination invariants, victory-route tests, matched physical-game examples, and [Playtest Targets and Metrics](Gauntlet_Playtest_Targets_and_Metrics.md).
 
 Engine behavior never overrides the physical rules. An implementation mismatch is either a software defect or evidence that the source rule needs clarification.
