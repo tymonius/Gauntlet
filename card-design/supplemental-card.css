@@ -140,6 +140,14 @@
   --tracker-line-soft: color-mix(in srgb, var(--component-accent-ink) 38%, transparent);
 }
 
+/* Trackers are instruments rather than ordinary information cards. They
+   deliberately omit the metadata footer so the full lower face remains usable
+   as tracking travel. This also protects the design if a future shared renderer
+   injects a generic card footer. */
+.sliding-tracker-card .card-footer {
+  display: none !important;
+}
+
 .sliding-tracker-card .tracker-interior {
   position: relative;
   display: block;
@@ -207,6 +215,14 @@
   text-overflow: clip;
   text-transform: uppercase;
   white-space: nowrap;
+}
+
+/* The tracker title rail is deliberately single-line. Operation Progress is
+   the one current tracker name that exceeds the standard title measure, so fit
+   it without changing the size of every other tracker heading. */
+#supplemental-intelligence-operation-progress-tracker .tracker-heading h3 {
+  font-size: 10.8pt;
+  letter-spacing: 0.018em;
 }
 
 .tracker-heading p {
