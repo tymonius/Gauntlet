@@ -9,6 +9,7 @@ const territoryGenerator = readFileSync('scripts/generate-tts-territory-assets.m
 const leaderGenerator = readFileSync('scripts/generate-tts-leader-assets.mjs', 'utf8');
 const starterGenerator = readFileSync('scripts/generate-tts-starter-decks.mjs', 'utf8');
 const releaseStager = readFileSync('scripts/stage-tts-release-assets.mjs', 'utf8');
+const savePublisher = readFileSync('scripts/generate-tts-save.mjs', 'utf8');
 const cardRenderer = readFileSync('tts/renderer/index.html', 'utf8');
 const territoryRenderer = readFileSync('tts/territory-renderer/index.html', 'utf8');
 const backRenderer = readFileSync('tts/back-renderer/index.html', 'utf8');
@@ -23,6 +24,7 @@ const supportedPipelineText = [
   leaderGenerator,
   starterGenerator,
   releaseStager,
+  savePublisher,
   cardRenderer,
   territoryRenderer,
   workflow,
@@ -50,6 +52,7 @@ describe('durable current-release TTS pipeline', () => {
     expect(catalogSource).toContain("assets.find((asset) => /_Starter_Decks\\.json$/i.test(asset))");
     expect(catalogSource).toContain('Release metadata disagrees');
     expect(releaseStager).toContain('resolveCurrentTtsRelease');
+    expect(savePublisher).toContain('resolveCurrentTtsRelease');
   });
 
   it('treats artifact internal build labels as provenance rather than the public release selector', () => {
@@ -62,13 +65,15 @@ describe('durable current-release TTS pipeline', () => {
 
   it('contains no release-number literals in the supported TTS pipeline', () => {
     expect(supportedPipelineText).not.toMatch(/v0\.6\.[0-9]+/);
-    expect(packageJson.scripts['tts:check']).toBe('node scripts/generate-tts-card-assets.mjs --check && node scripts/generate-tts-territory-assets.mjs --check && node scripts/generate-tts-leader-assets.mjs --check && node scripts/generate-tts-starter-decks.mjs --check');
+    expect(packageJson.scripts['tts:check']).toBe('node scripts/generate-tts-card-assets.mjs --check && node scripts/generate-tts-territory-assets.mjs --check && node scripts/generate-tts-leader-assets.mjs --check && node scripts/generate-tts-starter-decks.mjs --check && node scripts/generate-tts-save.mjs --check');
     expect(packageJson.scripts['tts:catalog']).toBe('node scripts/generate-tts-card-assets.mjs --catalog-only');
     expect(packageJson.scripts['tts:cards']).toBe('node scripts/generate-tts-card-assets.mjs');
     expect(packageJson.scripts['tts:territories']).toBe('node scripts/generate-tts-territory-assets.mjs');
     expect(packageJson.scripts['tts:leaders']).toBe('node scripts/generate-tts-leader-assets.mjs');
     expect(packageJson.scripts['tts:starters']).toBe('node scripts/generate-tts-starter-decks.mjs');
     expect(packageJson.scripts['tts:release:stage']).toBe('node scripts/stage-tts-release-assets.mjs');
+    expect(packageJson.scripts['tts:save']).toBe('node scripts/generate-tts-save.mjs');
+    expect(packageJson.scripts['tts:package']).toBe('npm run tts:build && npm run tts:release:stage && npm run tts:save');
   });
 
   it('does not duplicate release-specific card, Territory, Leader, or starter-deck counts', () => {
@@ -80,10 +85,12 @@ describe('durable current-release TTS pipeline', () => {
     expect(leaderGenerator).not.toMatch(/Expected 12|=== 12|!== 12/);
     expect(starterGenerator).not.toMatch(/Expected 12|=== 12|!== 12/);
     expect(releaseStager).not.toMatch(/Expected 12|=== 12|!== 12/);
+    expect(savePublisher).not.toMatch(/Expected 12|=== 12|!== 12/);
     expect(catalogSource).toContain('counts.playableCards = cardsWithArtwork.length');
     expect(catalogSource).toContain('counts.territories = territories.length');
     expect(leaderGenerator).toContain('leaderCount: records.length');
     expect(starterGenerator).toContain('deckCount: decks.length');
+    expect(savePublisher).toContain('starters.map((starter, index) => buildStarterKit');
   });
 
   it('uses a generated current alias so browser and manifest consumers do not need a release-path edit', () => {
@@ -93,6 +100,7 @@ describe('durable current-release TTS pipeline', () => {
     expect(territoryRenderer).toContain('/tts/generated/current/catalog.js');
     expect(leaderGenerator).toContain("join(CURRENT_ALIAS_ROOT, 'leader-manifest.json')");
     expect(starterGenerator).toContain("join(CURRENT_ALIAS_ROOT, 'starter-deck-manifest.json')");
+    expect(savePublisher).toContain("join(CURRENT_ALIAS_ROOT, 'Gauntlet_TTS_Review_Scaffold.json')");
   });
 
   it('renders all six production backs from the shared reviewed component', () => {
@@ -115,7 +123,9 @@ describe('durable current-release TTS pipeline', () => {
     expect(starterGenerator).toContain("const backFile = `backs/${faction}.png`");
     expect(starterGenerator).toContain("assignment: 'player-faction'");
     expect(starterGenerator).toContain('neutralCardsUsePlayerFactionBack: true');
-    expect(readme).toContain("including Neutral cards");
+    expect(savePublisher).toContain('BackIsHidden: true');
+    expect(savePublisher).toContain('UniqueBack: false');
+    expect(readme).toContain('including Neutral cards');
     expect(readme).toContain("must use that player's faction back");
   });
 
@@ -128,6 +138,7 @@ describe('durable current-release TTS pipeline', () => {
     expect(starterGenerator).toContain('starterDecks.decks.map((deck) =>');
     expect(releaseStager).toContain('for (const sheet of cardManifest.sheets || [])');
     expect(releaseStager).toContain('for (const leader of leaderManifest.leaders || [])');
+    expect(savePublisher).toContain('const rows = Math.ceil(total / 2)');
     expect(readme).toContain('additional sheets/deck IDs created automatically');
     expect(readme).toContain('does not hard-code the number of starter decks or Leaders');
   });
@@ -140,9 +151,11 @@ describe('durable current-release TTS pipeline', () => {
     expect(workflow).toContain('scripts/generate-tts-leader-assets.mjs');
     expect(workflow).toContain('scripts/generate-tts-starter-decks.mjs');
     expect(workflow).toContain('scripts/stage-tts-release-assets.mjs');
+    expect(workflow).toContain('scripts/generate-tts-save.mjs');
     expect(workflow).toContain('Generate Leader cards');
     expect(workflow).toContain('Assemble current starter decks');
     expect(workflow).toContain('Stage hosted TTS release assets');
+    expect(workflow).toContain('Generate TTS review scaffold');
     expect(workflow).toContain('name: gauntlet-current-tts-card-assets');
     expect(workflow).toContain('path: tts/generated/');
     expect(workflow).not.toMatch(/gauntlet-v0?63|v0\.6\.3/);
