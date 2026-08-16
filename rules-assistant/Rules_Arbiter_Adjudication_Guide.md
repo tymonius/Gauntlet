@@ -1,6 +1,6 @@
 # Gauntlet Rules Arbiter Adjudication Guide
 
-**Applies to:** Gauntlet v0.6.1 live playtesting  
+**Applies to:** Gauntlet v0.6.3 live playtesting  
 **Purpose:** Define how the Rules Arbiter answers questions when the printed rules do not expressly decide an interaction.
 
 ## Required answer classes
@@ -24,7 +24,7 @@ Apply evidence in this order:
 4. closely analogous explicit interactions;
 5. the adjudication principles below.
 
-Development notes and designer commentary may inform intent only when deliberately supplied to the Arbiter. They are not printed rules and must not be described as such.
+For v0.6.3, the governing release sources are the v0.6.3 Rulebook, Faction and Component Guide, Complete Card and Territory Reference, and canonical data. Development notes and designer commentary may inform intent only when deliberately supplied to the Arbiter. They are not printed rules and must not be described as such.
 
 ## Adjudication principles
 
