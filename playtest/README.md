@@ -46,7 +46,7 @@ G063-ABCD2345
 
 Game-night event containers use the `EV063-…` prefix. The session service reports `v0.6.3` from its health endpoint and stores the rules version with each session.
 
-Older v0.6.1 records are not rewritten during the cutover. Reading an existing session returns the rules version and serial already stored with that record, which preserves historical attribution and allows the session page to request the matching versioned Rules Arbiter behavior.
+Older v0.6.1 records are not rewritten during the cutover. Reading an existing session returns the rules version and serial already stored with that record, preserving historical attribution. They are historical records, not a supported path for creating new v0.6.1 sessions or new current play through the legacy ruleset.
 
 ### Coded batch procedure
 
@@ -85,7 +85,7 @@ The session page allows participants to:
 
 A session opened with its private host URL also exposes the close-and-retire control. Closed sessions remain readable but reject new participants and playtest events.
 
-The session page uses the session record's stored rules version when asking the Rules Arbiter. New v0.6.3 sessions therefore use the current Arbiter, while a legacy v0.6.1 session can continue to use its explicitly versioned historical route.
+The session page displays the rules version stored on the session record. The embedded unversioned Rules Arbiter is the current v0.6.3 Arbiter; legacy v0.6.1 session records are retained for historical review rather than automatically reopening historical adjudication behavior. Explicitly versioned Arbiter routes remain separate compatibility/history surfaces.
 
 ## What the sheet captures
 
@@ -138,7 +138,7 @@ Every linked Arbiter record should retain:
 - whether the ruling changed play; and
 - reviewer correction or follow-up.
 
-The session service links interactions into the playtest-session records. The unversioned public Rules Arbiter follows v0.6.3, while explicitly versioned legacy routes remain available for historical sessions. Version attribution comes from the stored session record rather than being inferred only from a serial prefix.
+The session service links interactions into the playtest-session records. New formal sessions are v0.6.3 and therefore align with the current unversioned Arbiter. Explicitly versioned legacy Arbiter routes remain available as separate historical/compatibility surfaces; the existence of a stored `G061-…` record does not automatically switch the current embedded widget to a legacy ruleset.
 
 The Rules Arbiter must not invent precedence. Where the current adjudication system makes a provisional ruling, it must distinguish that ruling from written canon and retain it for review.
 
