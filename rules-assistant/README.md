@@ -1,6 +1,6 @@
 # Gauntlet Rules Assistant
 
-A rules-only assistant for the canonical Gauntlet v0.6.0 playtest edition.
+A rules-only assistant for the canonical Gauntlet v0.6.3 playtest edition.
 
 The public widget is framework-free and can be loaded on any Gauntlet browser page. It first tries the configured AI endpoint. If the endpoint is unavailable, it falls back to direct lexical retrieval from the canonical JSON and rulebook so players still receive relevant source passages without exposing an API key.
 
@@ -22,8 +22,8 @@ When a Cloudflare D1 database is attached, the Worker also records live website 
 
 The assistant reads the live canonical sources from `gauntlet.run`:
 
-1. `releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md`
-2. `releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json`
+1. `releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md`
+2. `releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json`
 3. the governing source paths attached to canonical cards, Territories, factions, and components
 
 The model is instructed to use only retrieved passages, apply specific-over-general precedence, distinguish explicit rules from interpretations, and state when the rules do not resolve a question.
