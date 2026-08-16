@@ -59,7 +59,7 @@
   display: flex;
   align-items: center;
   gap: 0.055in;
-  color: var(--card-ink-soft);
+  color: var(--card-ink-soft, rgba(54, 47, 39, 0.72));
   font-family: var(--sans);
   font-size: 5.8pt;
   font-weight: 800;
