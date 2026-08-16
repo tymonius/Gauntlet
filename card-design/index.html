@@ -15,7 +15,7 @@
   <link rel="icon" type="image/x-icon" href="/favicon.ico?v=20260804-1" sizes="any" />
   <link rel="apple-touch-icon" href="/apple-touch-icon.png?v=20260804-1" />
   <meta name="robots" content="noindex,nofollow" />
-  <meta name="description" content="Internal Gauntlet v0.6.3 visual review catalog for card-back colorways, every playable card, Leader, Territory, Diplomat Proposal / Treaty Article, and Mystics Rite / Ritual component." />
+  <meta name="description" content="Internal Gauntlet v0.6.3 visual review catalog for card-back colorways, every playable card, Leader, Territory, faction reference and tracker card, Deed, Diplomat Proposal / Treaty Article, and Mystics Rite / Ritual component." />
   <title>Gauntlet Card Review Catalog</title>
   <link rel="preconnect" href="https://use.typekit.net" />
   <link rel="preconnect" href="https://p.typekit.net" crossorigin />
@@ -28,6 +28,7 @@
   <link rel="stylesheet" href="leader-card.css" />
   <link rel="stylesheet" href="proposal-card.css" />
   <link rel="stylesheet" href="rite-card.css" />
+  <link rel="stylesheet" href="supplemental-card.css" />
   <link rel="stylesheet" href="territory-card.css" />
   <link rel="stylesheet" href="card-review.css" />
   <link rel="stylesheet" href="../site.css?v=20260815-3" media="screen" />
@@ -36,6 +37,7 @@
   <script src="card-review.js" defer></script>
   <script type="module" src="proposal-card.js"></script>
   <script type="module" src="rite-card.js"></script>
+  <script type="module" src="supplemental-card.js"></script>
   <script type="module" src="card-back.js"></script>
   <script src="card-design.js" defer></script>
 </head>
@@ -55,7 +57,7 @@
       <div class="catalog-hero-copy">
         <p class="eyebrow">Canonical v0.6.3 · developer review surface</p>
         <h1 id="catalog-title">Card review <span>catalog.</span></h1>
-        <p class="intro-copy">Inspect the complete production card system in one place: the card-back color studies, playable cards, Leaders, Diplomat Proposals and Treaty Articles, Mystics Rites and Ritual, Territories, and Arenas. Production renderers and geometry stay intact while this surrounding workspace provides the review and inspection tools.</p>
+        <p class="intro-copy">Inspect the complete production card system in one place: the card-back color studies, playable cards, Leaders, faction reference and tracker cards, Financier Deeds, Diplomat Proposals and Treaty Articles, Mystics Rites and Ritual, Territories, and Arenas. Production renderers and geometry stay intact while this surrounding workspace provides the review and inspection tools.</p>
       </div>
       <aside class="catalog-overview" aria-label="Catalog snapshot">
         <p class="catalog-overview-label">Catalog snapshot</p>
@@ -65,7 +67,7 @@
           <div><dt data-territory-count>25</dt><dd>Territories <span><strong data-arena-count>4</strong> arenas</span></dd></div>
           <div><dt><span data-proposal-count>9</span> / <span data-rite-count>3</span></dt><dd>Proposal / Rite pairs <span><strong data-ritual-count>1</strong> Ritual</span></dd></div>
         </dl>
-        <p class="catalog-overview-note">Artwork gaps remain visible for review. Card geometry, renderer behavior, and print output are unchanged.</p>
+        <p class="catalog-overview-note">Artwork and component-design gaps remain visible for review. Card geometry, renderer behavior, and print output are unchanged.</p>
       </aside>
     </section>
 
@@ -78,6 +80,7 @@
           <a href="#leader-cards">Leaders</a>
           <a href="#proposal-cards">Proposals</a>
           <a href="#rite-cards">Rites</a>
+          <a href="#supplemental-cards">Supplemental</a>
           <a href="#territories">Territories</a>
         </nav>
         <span class="catalog-jump-divider" aria-hidden="true"></span>
@@ -174,6 +177,17 @@
         <p>All <span data-rite-count>3</span> double-sided Rites—Echoes, Blood, and Crossing—plus the single-sided Ritual of Ascendance victory card. The Rites show their incomplete and completed faces together; the Ritual uses the standard playable-card back because completing it immediately wins the game.</p>
       </div>
       <div id="riteReviewSections"></div>
+    </section>
+
+    <section id="supplemental-cards" class="card-section" aria-labelledby="supplemental-title">
+      <div class="section-shell card-section-heading screen-only">
+        <div>
+          <p class="section-label">Required faction components</p>
+          <h2 id="supplemental-title">Other supplemental cards</h2>
+        </div>
+        <p><span data-supplemental-design-count>13</span> additional unique card designs account for <span data-supplemental-physical-count>20</span> physical supplemental cards beyond Leaders, Proposals, Rites, and the Ritual. Finished renderers can replace these reserved production-size slots one component at a time without letting an unresolved card disappear from the design backlog.</p>
+      </div>
+      <div id="supplementalReviewSections"></div>
     </section>
 
     <section id="territories" class="card-section territory-specimen-section" aria-labelledby="territory-title">
