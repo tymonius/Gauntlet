@@ -1,6 +1,17 @@
-name: Deploy Playtest Session Worker
+name: Validate and Deploy Playtest Session Worker
 
 on:
+  pull_request:
+    paths:
+      - "workers/playtest-sessions/**"
+      - "rules-assistant/migrations/**"
+      - "rules-assistant/local-search.js"
+      - "rules-assistant/v063-public-corpus.js"
+      - "playtest/**"
+      - "scripts/validate_v063_playtest_sessions.py"
+      - "scripts/test_v063_formal_session_e2e.mjs"
+      - "package.json"
+      - ".github/workflows/deploy-playtest-sessions.yml"
   push:
     branches:
       - main
@@ -9,8 +20,10 @@ on:
       - "rules-assistant/migrations/**"
       - "rules-assistant/local-search.js"
       - "rules-assistant/v063-public-corpus.js"
+      - "playtest/**"
       - "scripts/validate_v063_playtest_sessions.py"
       - "scripts/test_v063_formal_session_e2e.mjs"
+      - "package.json"
       - ".github/workflows/deploy-playtest-sessions.yml"
   workflow_dispatch:
     inputs:
@@ -29,11 +42,39 @@ permissions:
   contents: read
 
 concurrency:
-  group: deploy-playtest-sessions-production
-  cancel-in-progress: false
+  group: playtest-sessions-${{ github.event_name == 'pull_request' && format('pr-{0}', github.event.pull_request.number) || 'production' }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out validation revision
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Validate playtest session service
+        run: |
+          npm run test:playtest-sessions
+          npm run test:formal-session-e2e
+          npm run test:tracked-session-e2e
+          python scripts/validate_v063_playtest_sessions.py
+
   deploy:
+    if: ${{ github.event_name != 'pull_request' }}
+    needs: validate
     runs-on: ubuntu-latest
     environment: production
     env:
@@ -58,17 +99,10 @@ jobs:
           test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not configured"; exit 1; }
           test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "CLOUDFLARE_ACCOUNT_ID is not configured"; exit 1; }
 
-      - name: Install validation and Worker tooling
+      - name: Install Worker tooling
         run: |
           npm install
           npm install --no-save wrangler@4
-
-      - name: Validate playtest session service
-        run: |
-          npm run test:playtest-sessions
-          npm run test:formal-session-e2e
-          npm run test:tracked-session-e2e
-          python scripts/validate_v063_playtest_sessions.py
 
       - name: Apply shared D1 migrations
         if: ${{ github.event_name == 'push' || inputs.apply_migrations }}
