@@ -29,7 +29,7 @@ test("production entry preserves review, admin, and normal answer routes", () =>
   expect(entry).toContain('request.method === "GET" && url.pathname === "/api/admin/interactions"');
   expect(entry).toContain("return handleReviewIntelligence(request, env)");
   expect(entry).toContain('request.method === "GET" && ["/admin", "/admin/"].includes(url.pathname)');
-  expect(entry).toContain("new Response(addSiteFaviconLinks(ADMIN_PAGE, origin)");
+  expect(entry).toContain("new Response(addDeveloperToolChrome(addSiteFaviconLinks(ADMIN_PAGE, origin), origin)");
   expect(entry).toContain("return smartWorker.fetch(request, env, context)");
   expect(entry).toContain("return reliableWorker.fetch(request, env, context)");
 });
