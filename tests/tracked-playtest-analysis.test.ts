@@ -5,6 +5,7 @@ const read = (path: string) => readFileSync(path, "utf8");
 const page = read("playtest/analysis/index.html");
 const app = read("playtest/analysis/app.js");
 const styles = read("playtest/analysis/styles.css");
+const developerStyles = read("developer-tools.css");
 const worker = read("workers/playtest-sessions/src/analysis.js");
 const integrityWorker = read("workers/playtest-sessions/src/integrity.js");
 const journalWorker = read("workers/playtest-sessions/src/journal.js");
@@ -101,12 +102,15 @@ describe("compiled tracked playtest analysis", () => {
     expect(integrityApp).toContain('action: "restore"');
     expect(integrityApp).not.toContain("localStorage");
     expect(integrityApp).not.toContain("sessionStorage");
-    expect(integrityStyles).toContain("[hidden]{display:none!important}");
+    expect(integrityStyles).toMatch(/\[hidden\]\s*\{\s*display:\s*none\s*!important;\s*\}/);
+    expect(integrityStyles).toContain("Component styling is shared with Playtest Analysis");
   });
 
-  it("uses the host visual language and deploys through the complete wrapper chain", () => {
-    expect(styles).toContain("--analysis-gold");
-    expect(styles).toContain("--analysis-ink");
+  it("uses the shared developer visual language and deploys through the complete wrapper chain", () => {
+    expect(styles).toContain('@import url("../../developer-tools.css');
+    expect(developerStyles).toContain("--developer-gold");
+    expect(developerStyles).toContain("--developer-charcoal");
+    expect(developerStyles).toContain(".analysis-hero");
     expect(wrangler).toContain('main = "src/completeness.js"');
     expect(completenessWorker).toContain('import closureWorker from "./closure.js"');
     expect(closureWorker).toContain('import journalWorker from "./journal.js"');
