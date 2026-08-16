@@ -60,10 +60,11 @@ const canonicalData = {
   ]
 };
 
-test("uses v0.6.1 canonical source URLs", () => {
+test("uses v0.6.3 canonical source URLs by default", () => {
   const urls = defaultSourceUrls("https://example.test");
-  expect(urls.canonicalDataUrl).toContain("releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json");
-  expect(urls.rulebookUrl).toContain("releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md");
+  expect(urls.canonicalDataUrl).toContain("releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json");
+  expect(urls.rulebookUrl).toContain("releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md");
+  expect(urls.rulebookPdfUrl).toContain("releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.pdf");
   expect(urls.rulebookBrowserUrl).toBe("https://example.test/rulebook/");
 });
 
