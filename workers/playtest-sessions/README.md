@@ -1,8 +1,11 @@
 # Gauntlet Playtest Session Service
 
-Cloudflare Worker and D1-backed API for v0.6.1 onboarding events and uniquely coded formal game sessions.
+**Implementation baseline:** v0.6.1  
+**Current canonical tabletop release:** v0.6.3 — Third Playtest Revision
 
-The service now separates two different records:
+This Cloudflare Worker and D1-backed API was built for the v0.6.1 onboarding and coded formal-session workflow and has **not yet been migrated to v0.6.3**. The runtime still reports `v0.6.1`, and generated/accepted sheet serials use the `G061-…` format. Do not treat those runtime labels as the current rules authority; v0.6.3 is the governing tabletop release. Migrating the service version, serial format, tests, and linked session assumptions is separate runtime work.
+
+The service separates two different records:
 
 - an **event session** is the shared game-night invitation, onboarding roster, and organizer dashboard;
 - a **game session** is one particular match between up to two players, opened from one unique table or sheet QR code.
@@ -113,9 +116,11 @@ The session page intercepts successful Rules Arbiter responses and links them wi
 
 The event record rejects game activity and Rules Arbiter links, preventing questions from multiple simultaneous matches from being combined.
 
+Because the session service still identifies itself as v0.6.1, formal-session version attribution must not be assumed to be v0.6.3 until the runtime migration is complete. The unversioned public Rules Arbiter itself follows the current v0.6.3 release.
+
 ## Organizer workflow
 
-The private onboarding host page now contains two distinct sections:
+The private onboarding host page contains two distinct sections:
 
 - **Game-night roster:** each participant's latest faction and Leader choice;
 - **Table sessions:** child game creation, QR rendering, player-seat status, closure, printing, and public-link manifest download.
@@ -140,6 +145,8 @@ Closing event registration freezes onboarding but does not prevent the host from
 
 ## Production setup
 
+These steps describe the service **as currently implemented**, including its v0.6.1 version label:
+
 1. Review and apply all four remote migrations in numeric order.
 2. Deploy this directory as a separate Cloudflare Worker project using `wrangler.toml`.
 3. Set `SESSION_ADMIN_TOKEN` with `wrangler secret put` or the Cloudflare dashboard.
@@ -147,3 +154,5 @@ Closing event registration freezes onboarding but does not prevent the host from
 5. Test event onboarding, identity continuity, roster fallback, child-game creation, two-seat limits, player-attributed Arbiter linkage, child closure, and standalone coded sheets.
 6. Deploy the static onboarding and session pages only after the Worker and migration are live.
 7. Generate table QR codes only after the production endpoint passes the above checks.
+
+A future v0.6.3 migration must update the runtime constant, serial contract, associated tests, and these production checks together rather than changing only the documentation label.
