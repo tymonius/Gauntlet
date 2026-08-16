@@ -1,0 +1,71 @@
+import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { describe, expect, it } from 'vitest';
+
+const exporter = readFileSync('scripts/generate-tts-leader-assets.mjs', 'utf8');
+const catalogSource = readFileSync('scripts/tts-current-catalog.mjs', 'utf8');
+const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
+const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
+const readme = readFileSync('tts/README.md', 'utf8');
+
+describe('TTS Leader assets', () => {
+  it('derives the current Leader roster from release-driven canonical faction data', () => {
+    expect(catalogSource).toContain('export async function loadCurrentLeaders()');
+    expect(catalogSource).toContain('resolveCurrentTtsRelease()');
+    expect(catalogSource).toContain('canonical.factions');
+    expect(catalogSource).toContain('faction.leaders');
+    expect(exporter).toContain('loadCurrentLeaders');
+    expect(exporter).not.toMatch(/v0\.6\.[0-9]+/);
+  });
+
+  it('renders the shared production Leader surface instead of duplicating Leader rules', () => {
+    expect(exporter).toContain("page.goto(`${baseUrl}/card-design/`");
+    expect(exporter).toContain("#${leader.faction}-${leader.id} .gauntlet-card");
+    expect(exporter).toContain("document.querySelectorAll('#leaderReviewSections .card-art img')");
+    expect(exporter).toContain("metrics.footer.at(-1) !== version");
+    expect(exporter).toContain('fitWarning');
+    expect(exporter).not.toContain('Materia Prima');
+    expect(exporter).not.toContain('Guardians of the Circle');
+    expect(readme).toContain('does not maintain a second copy of Leader rules or layout');
+  });
+
+  it('captures exact 400 by 560 Leader rasters without fractional-position inflation', () => {
+    expect(exporter).toContain('const CARD_WIDTH = 400');
+    expect(exporter).toContain('const CARD_HEIGHT = 560');
+    expect(exporter).toContain("scale: 'device'");
+    expect(exporter).toContain('width: CSS_CARD_WIDTH');
+    expect(exporter).toContain('height: CSS_CARD_HEIGHT');
+    expect(exporter).toContain('pngDimensions(await readFile(outputPath))');
+    expect(exporter).toContain('Leader raster has unexpected dimensions');
+    expect(exporter).toContain("boxShadow: 'none'");
+  });
+
+  it('emits deterministic one-card TTS objects with production faction backs', () => {
+    expect(exporter).toContain('const FIRST_LEADER_DECK_ID = 100');
+    expect(exporter).toContain('cardId: deckId * 100');
+    expect(exporter).toContain('numWidth: 1');
+    expect(exporter).toContain('numHeight: 1');
+    expect(exporter).toContain('backIsHidden: true');
+    expect(exporter).toContain('uniqueBack: false');
+    expect(exporter).toContain("const backFile = `backs/${leader.faction}.png`");
+    expect(exporter).toContain("'leader-manifest.json'");
+  });
+
+  it('is wired into source checks, full builds, CI, and review artifacts', () => {
+    expect(packageJson.scripts['tts:leaders']).toBe('node scripts/generate-tts-leader-assets.mjs');
+    expect(packageJson.scripts['tts:check']).toContain('generate-tts-leader-assets.mjs --check');
+    expect(packageJson.scripts['tts:build']).toContain('npm run tts:leaders');
+    expect(workflow).toContain('scripts/generate-tts-leader-assets.mjs');
+    expect(workflow).toContain('Generate Leader cards');
+    expect(workflow).toContain('run: npm run tts:leaders');
+    expect(workflow).toContain('path: tts/generated/');
+    expect(readme).toContain('## Leader asset contract');
+  });
+
+  it('accepts the current published Leader source end to end', () => {
+    const output = execFileSync(process.execPath, ['scripts/generate-tts-leader-assets.mjs', '--check'], {
+      encoding: 'utf8',
+    });
+    expect(output).toContain('Current TTS Leader source check passed');
+  });
+});

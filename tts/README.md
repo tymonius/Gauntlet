@@ -16,10 +16,11 @@ The exporters then consume:
 - the resolved current starter-deck dataset;
 - approved playable-card artwork under `images/artwork/cards/`;
 - the shared production playable-card renderer under `card-design/` and `tts/renderer/`;
+- the shared production Leader faces and portraits from the unified `card-design/` review surface;
 - the shared production card-back component under `card-design/card-back.css` and `card-design/card-back.js`;
 - the shared Territory renderer under `card-design/territory-card.css` and `tts/territory-renderer/`.
 
-A release cutover should therefore require **no TTS script fork, rename, count update, or version-string edit**. Advancing the normal release lifecycle and GitHub release contract is enough for the supported TTS commands to follow the new current release.
+A release cutover should therefore require **no TTS script fork, rename, count update, or version-string edit**. Advancing the normal release lifecycle and GitHub release contract is enough for the supported TTS commands to follow the new current release, provided the shared production render surfaces have also been advanced to that release. Leader export deliberately fails if the rendered Leader footer still identifies an older release.
 
 ## Commands
 
@@ -29,16 +30,18 @@ npm run tts:catalog
 npx playwright install chromium
 npm run tts:cards
 npm run tts:territories
+npm run tts:leaders
 npm run tts:starters
 npm run tts:build
 ```
 
-- `tts:check` resolves the current release and validates its canonical cards, Territories, published starter decks, IDs, construction limits, release metadata, and artwork coverage without writing raster output.
+- `tts:check` resolves the current release and validates its canonical cards, Territories, Leaders, published starter decks, IDs, construction limits, release metadata, and artwork coverage without writing raster output.
 - `tts:catalog` writes deterministic catalog JSON/browser data under both `tts/generated/<current-release>/` and the generated `tts/generated/current/` alias used by the render surfaces.
 - `tts:cards` renders every current playable-card face, six production faction back assets, as many 10 × 7 TTS face sheets as necessary, and `manifest.json`.
 - `tts:territories` renders every current landscape Territory/Arena, as many 7 × 4 sheets as necessary, the temporary landscape Territory back, and `territory-manifest.json`.
-- `tts:starters` joins the current published starter-deck source to those generated card/Territory manifests and writes `starter-deck-manifest.json` under both the versioned output and `tts/generated/current/`.
-- `tts:build` renders cards and Territories, then assembles the starter decks from the exact manifests produced by that build.
+- `tts:leaders` resolves the current canonical Leader roster, validates it against the shared production Leader surface, renders every Leader face, and writes `leader-manifest.json`.
+- `tts:starters` joins the current published starter-deck source to the generated card, Territory, and Leader manifests and writes `starter-deck-manifest.json` under both the versioned output and `tts/generated/current/`.
+- `tts:build` renders cards, Territories, and Leaders, then assembles the starter decks from the exact manifests produced by that build.
 
 The generated directory is intentionally ignored by Git. GitHub Actions uploads the complete `tts/generated/` tree as a review artifact instead of committing derived PNGs.
 
@@ -86,13 +89,31 @@ Territories and Arenas use the current 3.5 × 2.5-inch landscape production face
 
 The Territory back is still explicitly temporary; designing a production landscape back is separate from the now-finished playable-card backs.
 
+## Leader asset contract
+
+Leader export does not maintain a second copy of Leader rules or layout. The current canonical data supplies the faction/Leader roster, while `/card-design/` supplies the production face, rules text, portrait, faction treatment, and card geometry.
+
+For every current Leader, `tts:leaders`:
+
+- resolves a stable Leader ID from the canonical Leader name;
+- requires a matching Leader face under the matching faction on the production review surface;
+- requires the production face to fit the standard 400 × 560 portrait-card raster with no fit warning;
+- requires the Leader portrait to load successfully;
+- requires the rendered footer version to match the current published release;
+- reuses that Leader's production faction back;
+- assigns a deterministic one-card CustomDeck ID beginning at 100, separate from playable-card and Territory deck IDs; and
+- writes the face to `tts/generated/<current-release>/leaders/<faction>-<leader-id>.png`.
+
+`leader-manifest.json` records the current Leader roster, deterministic TTS CardIDs, face files, faction back files, 1 × 1 CustomDeck geometry, source provenance, and back policy. The same manifest is mirrored under `tts/generated/current/`.
+
 ## Starter-deck assembly contract
 
-The starter assembler does **not** duplicate face-sheet placement logic. It validates the published starter-deck source against the current canonical catalog, then joins each selected card and Territory to the CardIDs and sheet records in the manifests produced by `tts:cards` and `tts:territories`.
+The starter assembler does **not** duplicate face-sheet placement logic. It validates the published starter-deck source against the current canonical catalog and Leader roster, then joins each selected card, Territory, and Leader to the CardIDs and records in the manifests produced by `tts:cards`, `tts:territories`, and `tts:leaders`.
 
 For every current starter deck, `starter-deck-manifest.json` records:
 
 - starter ID, display name, faction, and Leader ID;
+- the exact rendered Leader object and its TTS CardID/face/back references;
 - the faction back file that must be applied to the whole playable deck;
 - canonical card IDs, quantities, costs, factions, and generated TTS CardIDs;
 - an expanded `deckCardIds` list ready for later Deck construction;
@@ -100,7 +121,7 @@ For every current starter deck, `starter-deck-manifest.json` records:
 - selected Territory IDs and their generated TTS CardIDs;
 - recommended Territory order and setup guidance from the published starter source.
 
-Source validation derives its limits from the starter artifact's own `construction` object. It verifies card count, deckbuilding value, faction legality, Unique-card copy limits, Territory count, Arena limits, and that recommended Territory order contains exactly the selected Territories. It does not hard-code the number of starter decks.
+Source validation derives its limits from the starter artifact's own `construction` object. It verifies card count, deckbuilding value, faction legality, Unique-card copy limits, Territory count, Arena limits, Leader/faction legality, and that recommended Territory order contains exactly the selected Territories. It does not hard-code the number of starter decks or Leaders.
 
 ## Release durability contract
 
@@ -108,10 +129,10 @@ For an ordinary future release, TTS should continue working when the release pro
 
 1. update `config/release-lifecycle.json` so the new release is `current` with `public_cutover: true`;
 2. update `config/github-release-contract.json` so `current_release.tag` matches and its `assets` list contains the new canonical-data and starter-deck JSON files;
-3. publish those data files and any new artwork/rendering changes through the normal shared surfaces.
+3. publish those data files and any new artwork/rendering changes through the normal shared surfaces, including the production Leader faces.
 
-The TTS resolver fails closed if the two release authorities disagree or if the current GitHub release contract does not publish the required source assets. Card, Territory, and starter-deck counts are read from current release data rather than duplicated in exporter constants.
+The TTS resolver fails closed if the two release authorities disagree or if the current GitHub release contract does not publish the required source assets. Card, Territory, Leader, and starter-deck counts are read from current release data rather than duplicated in exporter constants.
 
 ## Remaining TTS work
 
-These exports deliberately contain no hosted asset URLs and do not yet constitute a playable TTS save. The next layer is the mod publisher/table implementation: host the generated sheets and backs, translate the starter manifest into real CustomDeck/Deck objects, add Leader components, and assemble the Gauntlet table/save definition.
+These exports deliberately contain no hosted asset URLs and do not yet constitute a playable TTS save. The next layer is the mod publisher/table implementation: host the generated sheets, backs, Leader faces, and Territory assets; translate the starter manifest into real CustomDeck/Deck objects; add the remaining required table/component objects; and assemble the Gauntlet table/save definition.

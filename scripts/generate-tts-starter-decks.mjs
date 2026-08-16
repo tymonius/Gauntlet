@@ -4,6 +4,7 @@ import { pathToFileURL } from 'node:url';
 import {
   buildCatalog,
   CURRENT_ALIAS_ROOT,
+  loadCurrentLeaders,
   loadCurrentStarterDecks,
   PLAYABLE_BACK_FACTIONS,
   ROOT,
@@ -24,11 +25,25 @@ function indexUniqueByName(items, label) {
   return index;
 }
 
-function validateStarterDecks(starterDecks, catalog) {
+function indexLeaders(leaders, label) {
+  const index = new Map();
+  for (const leader of leaders || []) {
+    const faction = String(leader?.faction || '').trim().toLowerCase();
+    const id = String(leader?.id || '').trim().toLowerCase();
+    if (!faction || !id) throw new Error(`${label} contains a Leader without faction/id.`);
+    const key = `${faction}:${id}`;
+    if (index.has(key)) throw new Error(`${label} contains duplicate Leader key ${key}.`);
+    index.set(key, leader);
+  }
+  return index;
+}
+
+function validateStarterDecks(starterDecks, catalog, leaders) {
   const decks = starterDecks.decks || [];
   const construction = starterDecks.construction || {};
   const cardByName = indexUniqueByName(catalog.playableCards, 'Canonical playable-card catalog');
   const territoryByName = indexUniqueByName(catalog.territories, 'Canonical Territory catalog');
+  const leaderByKey = indexLeaders(leaders, 'Canonical Leader catalog');
   const deckIds = new Set();
 
   for (const deck of decks) {
@@ -39,7 +54,11 @@ function validateStarterDecks(starterDecks, catalog) {
     if (!PLAYABLE_BACK_FACTIONS.includes(faction)) {
       throw new Error(`Starter deck ${deck.id} has unsupported factionId ${deck.factionId}.`);
     }
-    if (!String(deck.leaderId || '').trim()) throw new Error(`Starter deck ${deck.id} does not declare leaderId.`);
+    const leaderId = String(deck.leaderId || '').trim().toLowerCase();
+    if (!leaderId) throw new Error(`Starter deck ${deck.id} does not declare leaderId.`);
+    if (!leaderByKey.has(`${faction}:${leaderId}`)) {
+      throw new Error(`Starter deck ${deck.id} references unknown ${faction} Leader "${deck.leaderId}".`);
+    }
     if (!Array.isArray(deck.cards) || !deck.cards.length) throw new Error(`Starter deck ${deck.id} has no cards.`);
 
     let cardCount = 0;
@@ -100,7 +119,7 @@ function validateStarterDecks(starterDecks, catalog) {
     }
   }
 
-  return { cardByName, territoryByName };
+  return { cardByName, territoryByName, leaderByKey };
 }
 
 function flattenCardManifest(manifest) {
@@ -176,21 +195,45 @@ function makeTerritoryReference(territory, render) {
   };
 }
 
-function buildStarterManifest(starterDecks, catalog, cardManifest, territoryManifest) {
-  const { cardByName, territoryByName } = validateStarterDecks(starterDecks, catalog);
+function makeLeaderReference(leader, render) {
+  return {
+    id: leader.id,
+    name: leader.name,
+    faction: leader.faction,
+    factionLabel: leader.factionLabel,
+    tts: { ...render.tts },
+  };
+}
+
+function buildStarterManifest(starterDecks, catalog, leaders, cardManifest, territoryManifest, leaderManifest) {
+  const { cardByName, territoryByName, leaderByKey } = validateStarterDecks(starterDecks, catalog, leaders);
   const renderedCards = flattenCardManifest(cardManifest);
   const renderedTerritories = flattenTerritoryManifest(territoryManifest);
+  const renderedLeaders = indexLeaders(leaderManifest.leaders, 'Rendered Leader manifest');
 
-  if (cardManifest.gameVersion !== catalog.gameVersion || territoryManifest.gameVersion !== catalog.gameVersion) {
+  if (
+    cardManifest.gameVersion !== catalog.gameVersion
+    || territoryManifest.gameVersion !== catalog.gameVersion
+    || leaderManifest.gameVersion !== catalog.gameVersion
+  ) {
     throw new Error(`Generated TTS manifests do not match current release ${catalog.gameVersion}.`);
   }
 
   const decks = starterDecks.decks.map((deck) => {
     const faction = String(deck.factionId).trim().toLowerCase();
+    const leaderId = String(deck.leaderId).trim().toLowerCase();
     const backFile = `backs/${faction}.png`;
     if (!cardManifest.backVariants?.[faction] || cardManifest.backVariants[faction].file !== backFile) {
       throw new Error(`Generated card manifest does not provide the ${faction} production back required by ${deck.id}.`);
     }
+
+    const canonicalLeader = leaderByKey.get(`${faction}:${leaderId}`);
+    const renderedLeader = renderedLeaders.get(`${faction}:${leaderId}`);
+    if (!renderedLeader) throw new Error(`Rendered Leader manifest is missing ${faction}:${leaderId} required by ${deck.id}.`);
+    if (renderedLeader.tts?.backFile !== backFile) {
+      throw new Error(`Rendered Leader ${faction}:${leaderId} does not use the ${faction} production back required by ${deck.id}.`);
+    }
+    const leader = makeLeaderReference(canonicalLeader, renderedLeader);
 
     const cards = deck.cards.map((entry) => {
       const card = cardByName.get(entry.name);
@@ -230,7 +273,8 @@ function buildStarterManifest(starterDecks, catalog, cardManifest, territoryMani
       id: deck.id,
       name: deck.name,
       factionId: faction,
-      leaderId: deck.leaderId,
+      leaderId,
+      leader,
       recommendedFirstLeader: Boolean(deck.recommendedFirstLeader),
       summary: deck.summary || '',
       strategy: deck.strategy || '',
@@ -253,7 +297,7 @@ function buildStarterManifest(starterDecks, catalog, cardManifest, territoryMani
   });
 
   return {
-    schemaVersion: 1,
+    schemaVersion: 2,
     gameVersion: catalog.gameVersion,
     release: catalog.release,
     source: {
@@ -269,31 +313,33 @@ function buildStarterManifest(starterDecks, catalog, cardManifest, territoryMani
 }
 
 async function readGeneratedManifests(outputRoot) {
-  const [cardManifest, territoryManifest] = await Promise.all([
+  const [cardManifest, territoryManifest, leaderManifest] = await Promise.all([
     readFile(join(outputRoot, 'manifest.json'), 'utf8').then(JSON.parse),
     readFile(join(outputRoot, 'territory-manifest.json'), 'utf8').then(JSON.parse),
+    readFile(join(outputRoot, 'leader-manifest.json'), 'utf8').then(JSON.parse),
   ]).catch((error) => {
     if (error.code === 'ENOENT') {
-      throw new Error('Starter-deck assembly requires current card and Territory manifests. Run npm run tts:cards and npm run tts:territories first, or use npm run tts:build.');
+      throw new Error('Starter-deck assembly requires current card, Territory, and Leader manifests. Run npm run tts:cards, npm run tts:territories, and npm run tts:leaders first, or use npm run tts:build.');
     }
     throw error;
   });
-  return { cardManifest, territoryManifest };
+  return { cardManifest, territoryManifest, leaderManifest };
 }
 
 async function main() {
   const checkOnly = process.argv.includes('--check');
   const catalog = await buildCatalog();
   const { release, starterDecks } = await loadCurrentStarterDecks();
-  validateStarterDecks(starterDecks, catalog);
+  const { leaders } = await loadCurrentLeaders();
+  validateStarterDecks(starterDecks, catalog, leaders);
 
   if (checkOnly) {
     console.log(`Current TTS starter-deck source check passed for ${catalog.gameVersion}: ${starterDecks.decks.length} starter decks.`);
     return;
   }
 
-  const { cardManifest, territoryManifest } = await readGeneratedManifests(release.outputRoot);
-  const manifest = buildStarterManifest(starterDecks, catalog, cardManifest, territoryManifest);
+  const { cardManifest, territoryManifest, leaderManifest } = await readGeneratedManifests(release.outputRoot);
+  const manifest = buildStarterManifest(starterDecks, catalog, leaders, cardManifest, territoryManifest, leaderManifest);
   const outputPath = join(release.outputRoot, 'starter-deck-manifest.json');
   const aliasPath = join(CURRENT_ALIAS_ROOT, 'starter-deck-manifest.json');
   await writeFile(outputPath, jsonText(manifest));
