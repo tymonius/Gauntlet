@@ -17,9 +17,9 @@ describe("approved faction symbols", () => {
     expect(military).toContain("<path");
   });
 
-  it("uses the simplified laurel wreath for Diplomats", () => {
-    expect(diplomats).toContain('viewBox="0 0 64 64"');
-    expect(diplomats).toContain('fill-rule="evenodd"');
+  it("uses the approved laurel wreath for Diplomats", () => {
+    expect(diplomats).toContain('viewBox="0 0 1139.86 945.34"');
+    expect((diplomats.match(/<path/g) || []).length).toBeGreaterThanOrEqual(2);
     expect(diplomats).not.toContain("<ellipse");
   });
 
