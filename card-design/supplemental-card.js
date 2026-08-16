@@ -132,12 +132,12 @@ const SUPPLEMENTAL_COMPONENTS = Object.freeze([
 const root = document.querySelector('#supplementalReviewSections');
 
 function esc(value) {
-  return String(value ?? '').replace(/[&<>'\"]/g, character => ({
+  return String(value ?? '').replace(/[&<>'"]/g, character => ({
     '&': '&amp;',
     '<': '&lt;',
     '>': '&gt;',
     "'": '&#39;',
-    '\"': '&quot;',
+    '"': '&quot;',
   })[character]);
 }
 
