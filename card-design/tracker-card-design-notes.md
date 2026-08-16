@@ -6,7 +6,7 @@ The covering Leader or Reference Card is the pointer.
 - For a positive value, slide the covering card upward until its **bottom edge** aligns with the registration line immediately above the current value band.
 - The exposed band below that line states the value in large text, e.g. **1 COMMAND**, **2 COMMAND**.
 - Trackers remain face-up and public.
-- Tracker cards retain the standard faction metadata footer for visual and production consistency with the rest of the card set. The tracking scale is laid out above that reserved footer space rather than overlapping it.
+- Tracker cards retain the standard faction metadata footer for visual and production consistency with the rest of the card set: **FACTION · TRACKER · VERSION**. The tracking scale is laid out above that reserved footer space rather than overlapping it.
 - All tracker cards use the same full-size 2.5 × 3.5 inch supplemental-card geometry and faction parchment treatment.
 - Scale travel is range-specific so short tracks remain compact while dense tracks still have legible value bands.
 
