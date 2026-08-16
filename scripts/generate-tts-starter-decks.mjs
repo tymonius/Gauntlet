@@ -1,0 +1,311 @@
+import { readFile, writeFile } from 'node:fs/promises';
+import { join, relative } from 'node:path';
+import { pathToFileURL } from 'node:url';
+import {
+  buildCatalog,
+  CURRENT_ALIAS_ROOT,
+  loadCurrentStarterDecks,
+  PLAYABLE_BACK_FACTIONS,
+  ROOT,
+} from './tts-current-catalog.mjs';
+
+function jsonText(value) {
+  return `${JSON.stringify(value, null, 2)}\n`;
+}
+
+function indexUniqueByName(items, label) {
+  const index = new Map();
+  for (const item of items) {
+    const name = String(item?.name || '').trim();
+    if (!name) throw new Error(`${label} contains an item without a name.`);
+    if (index.has(name)) throw new Error(`${label} contains duplicate name "${name}"; starter-deck name references would be ambiguous.`);
+    index.set(name, item);
+  }
+  return index;
+}
+
+function validateStarterDecks(starterDecks, catalog) {
+  const decks = starterDecks.decks || [];
+  const construction = starterDecks.construction || {};
+  const cardByName = indexUniqueByName(catalog.playableCards, 'Canonical playable-card catalog');
+  const territoryByName = indexUniqueByName(catalog.territories, 'Canonical Territory catalog');
+  const deckIds = new Set();
+
+  for (const deck of decks) {
+    if (!deck.id || deckIds.has(deck.id)) throw new Error(`Starter deck has a missing or duplicate id: ${deck.id || 'missing'}.`);
+    deckIds.add(deck.id);
+
+    const faction = String(deck.factionId || '').trim().toLowerCase();
+    if (!PLAYABLE_BACK_FACTIONS.includes(faction)) {
+      throw new Error(`Starter deck ${deck.id} has unsupported factionId ${deck.factionId}.`);
+    }
+    if (!String(deck.leaderId || '').trim()) throw new Error(`Starter deck ${deck.id} does not declare leaderId.`);
+    if (!Array.isArray(deck.cards) || !deck.cards.length) throw new Error(`Starter deck ${deck.id} has no cards.`);
+
+    let cardCount = 0;
+    let deckbuildingValue = 0;
+    for (const entry of deck.cards) {
+      const quantity = Number(entry.quantity);
+      if (!Number.isInteger(quantity) || quantity <= 0) {
+        throw new Error(`Starter deck ${deck.id} has invalid quantity for ${entry.name}: ${entry.quantity}.`);
+      }
+
+      const card = cardByName.get(entry.name);
+      if (!card) throw new Error(`Starter deck ${deck.id} references unknown card "${entry.name}".`);
+      if (card.faction !== 'neutral' && card.faction !== faction) {
+        throw new Error(`Starter deck ${deck.id} (${faction}) illegally contains ${card.faction} card "${card.name}".`);
+      }
+      if (card.unique && Number.isInteger(construction.uniqueCopyLimit) && quantity > construction.uniqueCopyLimit) {
+        throw new Error(`Starter deck ${deck.id} exceeds the unique-copy limit for "${card.name}".`);
+      }
+
+      cardCount += quantity;
+      deckbuildingValue += Number(card.cost || 0) * quantity;
+    }
+
+    if (Number.isInteger(deck.cardCount) && deck.cardCount !== cardCount) {
+      throw new Error(`Starter deck ${deck.id} declares ${deck.cardCount} cards but resolves to ${cardCount}.`);
+    }
+    if (Number.isInteger(construction.minimumCards) && cardCount < construction.minimumCards) {
+      throw new Error(`Starter deck ${deck.id} has ${cardCount} cards; minimum is ${construction.minimumCards}.`);
+    }
+    if (Number.isFinite(deck.deckbuildingValue) && Number(deck.deckbuildingValue) !== deckbuildingValue) {
+      throw new Error(`Starter deck ${deck.id} declares deckbuilding value ${deck.deckbuildingValue} but resolves to ${deckbuildingValue}.`);
+    }
+    if (Number.isFinite(construction.maximumDeckbuildingValue) && deckbuildingValue > Number(construction.maximumDeckbuildingValue)) {
+      throw new Error(`Starter deck ${deck.id} has deckbuilding value ${deckbuildingValue}; maximum is ${construction.maximumDeckbuildingValue}.`);
+    }
+
+    if (!Array.isArray(deck.territories)) throw new Error(`Starter deck ${deck.id} does not declare Territories.`);
+    if (Number.isInteger(construction.territoryCount) && deck.territories.length !== construction.territoryCount) {
+      throw new Error(`Starter deck ${deck.id} has ${deck.territories.length} Territories; expected ${construction.territoryCount}.`);
+    }
+
+    let arenaCount = 0;
+    for (const name of deck.territories) {
+      const territory = territoryByName.get(name);
+      if (!territory) throw new Error(`Starter deck ${deck.id} references unknown Territory "${name}".`);
+      if (territory.arena) arenaCount += 1;
+    }
+    if (Number.isInteger(construction.maximumArenas) && arenaCount > construction.maximumArenas) {
+      throw new Error(`Starter deck ${deck.id} contains ${arenaCount} Arenas; maximum is ${construction.maximumArenas}.`);
+    }
+
+    if (Array.isArray(deck.recommendedTerritoryOrder)) {
+      const expected = [...deck.territories].sort();
+      const recommended = [...deck.recommendedTerritoryOrder].sort();
+      if (expected.length !== recommended.length || expected.some((name, index) => name !== recommended[index])) {
+        throw new Error(`Starter deck ${deck.id} recommended Territory order does not contain exactly its selected Territories.`);
+      }
+    }
+  }
+
+  return { cardByName, territoryByName };
+}
+
+function flattenCardManifest(manifest) {
+  const result = new Map();
+  for (const sheet of manifest.sheets || []) {
+    for (const card of sheet.cards || []) {
+      result.set(card.id, {
+        ...card,
+        sheetNumber: sheet.sheetNumber,
+        deckId: sheet.deckId,
+        faceFile: sheet.faceFile,
+        numWidth: sheet.numWidth,
+        numHeight: sheet.numHeight,
+      });
+    }
+  }
+  return result;
+}
+
+function flattenTerritoryManifest(manifest) {
+  const result = new Map();
+  for (const sheet of manifest.sheets || []) {
+    for (const territory of sheet.cards || []) {
+      result.set(territory.id, {
+        ...territory,
+        sheetNumber: sheet.sheetNumber,
+        deckId: sheet.deckId,
+        faceFile: sheet.faceFile,
+        backFile: sheet.backFile,
+        numWidth: sheet.numWidth,
+        numHeight: sheet.numHeight,
+      });
+    }
+  }
+  return result;
+}
+
+function makePlayableReference(card, render, quantity) {
+  return {
+    id: card.id,
+    name: card.name,
+    quantity,
+    faction: card.faction,
+    cost: card.cost,
+    unique: card.unique,
+    tts: {
+      cardId: render.ttsCardId,
+      deckId: render.deckId,
+      sheetNumber: render.sheetNumber,
+      index: render.index,
+      faceFile: render.faceFile,
+      numWidth: render.numWidth,
+      numHeight: render.numHeight,
+    },
+  };
+}
+
+function makeTerritoryReference(territory, render) {
+  return {
+    id: territory.id,
+    name: territory.name,
+    arena: territory.arena,
+    tts: {
+      cardId: render.ttsCardId,
+      deckId: render.deckId,
+      sheetNumber: render.sheetNumber,
+      index: render.index,
+      faceFile: render.faceFile,
+      backFile: render.backFile,
+      numWidth: render.numWidth,
+      numHeight: render.numHeight,
+    },
+  };
+}
+
+function buildStarterManifest(starterDecks, catalog, cardManifest, territoryManifest) {
+  const { cardByName, territoryByName } = validateStarterDecks(starterDecks, catalog);
+  const renderedCards = flattenCardManifest(cardManifest);
+  const renderedTerritories = flattenTerritoryManifest(territoryManifest);
+
+  if (cardManifest.gameVersion !== catalog.gameVersion || territoryManifest.gameVersion !== catalog.gameVersion) {
+    throw new Error(`Generated TTS manifests do not match current release ${catalog.gameVersion}.`);
+  }
+
+  const decks = starterDecks.decks.map((deck) => {
+    const faction = String(deck.factionId).trim().toLowerCase();
+    const backFile = `backs/${faction}.png`;
+    if (!cardManifest.backVariants?.[faction] || cardManifest.backVariants[faction].file !== backFile) {
+      throw new Error(`Generated card manifest does not provide the ${faction} production back required by ${deck.id}.`);
+    }
+
+    const cards = deck.cards.map((entry) => {
+      const card = cardByName.get(entry.name);
+      const render = renderedCards.get(card.id);
+      if (!render) throw new Error(`Rendered card manifest is missing ${card.id} required by ${deck.id}.`);
+      return makePlayableReference(card, render, Number(entry.quantity));
+    });
+
+    const territories = deck.territories.map((name) => {
+      const territory = territoryByName.get(name);
+      const render = renderedTerritories.get(territory.id);
+      if (!render) throw new Error(`Rendered Territory manifest is missing ${territory.id} required by ${deck.id}.`);
+      return makeTerritoryReference(territory, render);
+    });
+
+    const faceSheetMap = new Map();
+    for (const card of cards) {
+      const tts = card.tts;
+      if (!faceSheetMap.has(tts.deckId)) {
+        faceSheetMap.set(tts.deckId, {
+          deckId: tts.deckId,
+          faceFile: tts.faceFile,
+          numWidth: tts.numWidth,
+          numHeight: tts.numHeight,
+          backFile,
+          backIsHidden: true,
+          uniqueBack: false,
+        });
+      }
+    }
+
+    const deckCardIds = cards.flatMap((card) => Array.from({ length: card.quantity }, () => card.tts.cardId));
+    const orderNames = Array.isArray(deck.recommendedTerritoryOrder) ? deck.recommendedTerritoryOrder : deck.territories;
+    const territoryBySelectedName = new Map(territories.map((territory) => [territory.name, territory]));
+
+    return {
+      id: deck.id,
+      name: deck.name,
+      factionId: faction,
+      leaderId: deck.leaderId,
+      recommendedFirstLeader: Boolean(deck.recommendedFirstLeader),
+      summary: deck.summary || '',
+      strategy: deck.strategy || '',
+      signatureCards: deck.signatureCards || [],
+      cardCount: deckCardIds.length,
+      deckbuildingValue: cards.reduce((sum, card) => sum + Number(card.cost || 0) * card.quantity, 0),
+      back: {
+        faction,
+        file: backFile,
+        assignment: 'player-faction',
+        neutralCardsUsePlayerFactionBack: true,
+      },
+      cards,
+      deckCardIds,
+      faceSheets: [...faceSheetMap.values()].sort((a, b) => a.deckId - b.deckId),
+      territories,
+      recommendedTerritoryOrder: orderNames.map((name) => territoryBySelectedName.get(name).id),
+      territoryOrderGuidance: deck.territoryOrderGuidance || null,
+    };
+  });
+
+  return {
+    schemaVersion: 1,
+    gameVersion: catalog.gameVersion,
+    release: catalog.release,
+    source: {
+      starterDecks: catalog.release.starterDecksSource,
+      starterDeckDataVersion: starterDecks.version || null,
+      starterDeckDataStatus: starterDecks.status || null,
+    },
+    construction: starterDecks.construction || {},
+    backPolicy: cardManifest.backPolicy,
+    deckCount: decks.length,
+    decks,
+  };
+}
+
+async function readGeneratedManifests(outputRoot) {
+  const [cardManifest, territoryManifest] = await Promise.all([
+    readFile(join(outputRoot, 'manifest.json'), 'utf8').then(JSON.parse),
+    readFile(join(outputRoot, 'territory-manifest.json'), 'utf8').then(JSON.parse),
+  ]).catch((error) => {
+    if (error.code === 'ENOENT') {
+      throw new Error('Starter-deck assembly requires current card and Territory manifests. Run npm run tts:cards and npm run tts:territories first, or use npm run tts:build.');
+    }
+    throw error;
+  });
+  return { cardManifest, territoryManifest };
+}
+
+async function main() {
+  const checkOnly = process.argv.includes('--check');
+  const catalog = await buildCatalog();
+  const { release, starterDecks } = await loadCurrentStarterDecks();
+  validateStarterDecks(starterDecks, catalog);
+
+  if (checkOnly) {
+    console.log(`Current TTS starter-deck source check passed for ${catalog.gameVersion}: ${starterDecks.decks.length} starter decks.`);
+    return;
+  }
+
+  const { cardManifest, territoryManifest } = await readGeneratedManifests(release.outputRoot);
+  const manifest = buildStarterManifest(starterDecks, catalog, cardManifest, territoryManifest);
+  const outputPath = join(release.outputRoot, 'starter-deck-manifest.json');
+  const aliasPath = join(CURRENT_ALIAS_ROOT, 'starter-deck-manifest.json');
+  await writeFile(outputPath, jsonText(manifest));
+  await writeFile(aliasPath, jsonText(manifest));
+  console.log(`Assembled ${manifest.deckCount} current TTS starter decks to ${relative(ROOT, outputPath)}.`);
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    console.error(error.stack || error.message || error);
+    process.exitCode = 1;
+  });
+}
+
+export { buildStarterManifest, validateStarterDecks };
