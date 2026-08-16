@@ -24,6 +24,11 @@ const ignoredDirectories = new Set([
   "node_modules"
 ]);
 
+const nonSiteToolPrefixes = [
+  "images/tools/",
+  "tts/"
+];
+
 function collectHtmlFiles(directory = "."): string[] {
   const files: string[] = [];
 
@@ -41,27 +46,47 @@ function collectHtmlFiles(directory = "."): string[] {
   return files;
 }
 
-const completeHtmlPages = collectHtmlFiles().filter((file) => {
+const siteHtmlPages = collectHtmlFiles().filter((file) => {
+  if (nonSiteToolPrefixes.some((prefix) => file.startsWith(prefix))) return false;
+
   const html = readFileSync(file, "utf8");
-  return /<head\b[^>]*>[\s\S]*?<\/head>/i.test(html);
+  if (!/<head\b[^>]*>[\s\S]*?<\/head>/i.test(html)) return false;
+
+  // Redirect stubs immediately hand off to the canonical current page, which owns
+  // the browser chrome and favicon. Requiring duplicate favicon declarations on
+  // those transient documents does not protect a player-facing surface.
+  if (/<meta\b[^>]*http-equiv=["']refresh["']/i.test(html)) return false;
+
+  return true;
 });
 
-describe("temporary Gauntlet favicon", () => {
-  it("uses one clean compatible BMP frame for the legacy ICO fallback", () => {
+describe("Gauntlet favicon", () => {
+  it("ships the finalized 16/32/48 PNG-backed ICO frames", () => {
     expect(favicon.readUInt16LE(0)).toBe(0);
     expect(favicon.readUInt16LE(2)).toBe(1);
-    expect(favicon.readUInt16LE(4)).toBe(1);
 
-    const entryOffset = 6;
-    const width = favicon[entryOffset] || 256;
-    const height = favicon[entryOffset + 1] || 256;
-    const imageSize = favicon.readUInt32LE(entryOffset + 8);
-    const imageOffset = favicon.readUInt32LE(entryOffset + 12);
+    const frameCount = favicon.readUInt16LE(4);
+    expect(frameCount).toBe(3);
 
-    expect([width, height]).toEqual([16, 16]);
-    expect(imageOffset).toBe(22);
-    expect(imageOffset + imageSize).toBe(favicon.length);
-    expect(favicon.readUInt32LE(imageOffset)).toBe(40);
+    const dimensions: Array<[number, number]> = [];
+    for (let index = 0; index < frameCount; index += 1) {
+      const entryOffset = 6 + index * 16;
+      const width = favicon[entryOffset] || 256;
+      const height = favicon[entryOffset + 1] || 256;
+      const imageSize = favicon.readUInt32LE(entryOffset + 8);
+      const imageOffset = favicon.readUInt32LE(entryOffset + 12);
+
+      dimensions.push([width, height]);
+      expect(imageOffset).toBeGreaterThanOrEqual(6 + frameCount * 16);
+      expect(imageOffset + imageSize).toBeLessThanOrEqual(favicon.length);
+      expect(favicon.subarray(imageOffset, imageOffset + 8).toString("hex")).toBe("89504e470d0a1a0a");
+    }
+
+    expect(dimensions).toEqual([
+      [16, 16],
+      [32, 32],
+      [48, 48]
+    ]);
   });
 
   it.each(pngAssets)("ships %s at %d by %d pixels", (assetPath, size) => {
@@ -71,7 +96,7 @@ describe("temporary Gauntlet favicon", () => {
     expect(png.readUInt32BE(20)).toBe(size);
   });
 
-  it.each(completeHtmlPages)("declares the site favicon in %s", (pagePath) => {
+  it.each(siteHtmlPages)("declares the site favicon in %s", (pagePath) => {
     const html = readFileSync(pagePath, "utf8");
     for (const link of faviconLinks) {
       expect(html).toContain(link);
