@@ -6,9 +6,9 @@ Gauntlet is a two-player tactical card-and-territory game about deck constructio
 
 ## Canonical release
 
-**Current canonical version:** v0.6.1 — First Playtest Revision
+**Current canonical version:** v0.6.3 — Third Playtest Revision
 
-The complete package is under [`releases/v0.6.1/`](releases/v0.6.1/):
+The complete package is under [`releases/v0.6.3/`](releases/v0.6.3/):
 
 - official rulebook in Markdown, a color reader PDF, and a grayscale-compatible imposed color booklet PDF;
 - quick-reference guide;
@@ -48,25 +48,24 @@ To run the Gauntlet, a player must defeat the opponent on their final Territory,
 
 ## Playtest tools
 
-- [Gauntlet v0.6.1 Browser Rulebook](https://gauntlet.run/rulebook/) — searchable, responsive rendering of the complete canonical rulebook with direct section links and integrated Rules Arbiter access.
-- [Gauntlet v0.6.1 Rulebook (PDF)](releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf) — the complete official rules for the current release.
-- [Gauntlet v0.6.1 Imposed Booklet (PDF)](releases/v0.6.1/Gauntlet_v0.6.1_Rulebook_Booklet.pdf) — color, grayscale-compatible, and ordered for Letter duplex printing with short-edge flip.
-- [Gauntlet v0.6.1 Rules Arbiter](https://gauntlet.run/#rules-assistant) — ask about rules, cards, Leaders, faction systems, Territories, timing, and victory conditions using canonical v0.6.1 sources.
-- [Gauntlet v0.6.1 Deckbuilder](https://gauntlet.run/deckbuilder/) — load a recommended Leader Deck or build, validate, save, export, randomize, and print a complete package containing its Leader, Territories, playable cards, and required faction components.
-- [Gauntlet v0.6.1 Printable Playtest Sheet (PDF)](playtest/Gauntlet_v0.6.1_Playtest_Sheet.pdf) — one-page paper questionnaire designed to be printed and completed by hand.
-- [Playtest Sheet browser page](https://gauntlet.run/playtest/) — preview the sheet and print or save it directly from a browser.
+- [Gauntlet v0.6.3 Browser Rulebook](https://gauntlet.run/rulebook/) — searchable, responsive rendering of the complete canonical rulebook with direct section links and integrated Rules Arbiter access.
+- [Gauntlet v0.6.3 Rulebook (PDF)](releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.pdf) — the complete official rules for the current release.
+- [Gauntlet v0.6.3 Imposed Booklet (PDF)](releases/v0.6.3/Gauntlet_v0.6.3_Rulebook_Booklet.pdf) — color, grayscale-compatible, and ordered for Letter duplex printing with short-edge flip.
+- [Gauntlet v0.6.3 Rules Arbiter](https://gauntlet.run/#rules-assistant) — ask about rules, cards, Leaders, faction systems, Territories, timing, and victory conditions using canonical v0.6.3 sources.
+- [Gauntlet v0.6.3 Deckbuilder](https://gauntlet.run/deckbuilder/) — load a recommended Leader Deck or build, validate, save, export, randomize, and print a complete package containing its Leader, Territories, playable cards, and required faction components.
+- [Gauntlet v0.6.3 Formal Playtest Sheet (PDF)](releases/v0.6.3/Gauntlet_v0.6.3_Formal_Playtest_Sheet.pdf) — printable paper questionnaire for structured playtest feedback.
+- [Playtest browser page](https://gauntlet.run/playtest/) — access current playtest resources and browser tools.
 
 Scan to open the v0.6 Deckbuilder:
 
-<img src="images/qr/gauntlet-v0.6-deckbuilder.svg" alt="QR code for the Gauntlet v0.6.1 Deckbuilder" width="180">
+<img src="images/qr/gauntlet-v0.6-deckbuilder.svg" alt="QR code for the Gauntlet v0.6.3 Deckbuilder" width="180">
 
 ## Canonical source hierarchy
 
-1. [`releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md`](releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md) governs shared rules.
-2. The six definitive faction guides under [`releases/v0.6.1/faction-guides/`](releases/v0.6.1/faction-guides/) govern faction-specific rules and exact faction-card text.
-3. [`docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md`](docs/Gauntlet_v0.6.1_Neutral_Card_Pool.md) governs exact Neutral-card text.
-4. [`docs/Gauntlet_v0.6.1_Territory_Pool.md`](docs/Gauntlet_v0.6.1_Territory_Pool.md) governs exact Territory and Arena text.
-5. `Gauntlet_v0.6.1_Canonical_Data.json` is generated from those sources and must not be edited independently.
+1. [`releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md`](releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md) governs shared rules.
+2. [`releases/v0.6.3/Gauntlet_v0.6.3_Faction_and_Component_Guide.md`](releases/v0.6.3/Gauntlet_v0.6.3_Faction_and_Component_Guide.md) provides the synchronized faction and supplemental-component reference.
+3. [`releases/v0.6.3/Gauntlet_v0.6.3_Complete_Card_Reference.md`](releases/v0.6.3/Gauntlet_v0.6.3_Complete_Card_Reference.md) provides the complete playable-card and Territory reference for the release.
+4. [`releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json`](releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json) is the machine-readable canonical release data and must not be edited independently of its governing sources.
 
 Generated PDFs, printable sheets, and Deckbuilder output are derived production artifacts. The retired DOCX files remain only as historical release artifacts and are not maintained. If a derived file conflicts with its governing source, correct the source and regenerate the supported artifact.
 
@@ -74,7 +73,7 @@ Generated PDFs, printable sheets, and Deckbuilder output are derived production 
 
 ### `releases/`
 
-Versioned canonical and historical release packages. The current package is [`releases/v0.6.1/`](releases/v0.6.1/).
+Versioned canonical and historical release packages. The current package is [`releases/v0.6.3/`](releases/v0.6.3/).
 
 ### `docs/`
 
@@ -98,7 +97,7 @@ Historical v0.5 Deckbuilder.
 
 ### `rulebook/`
 
-Responsive browser rulebook. It renders the canonical v0.6.1 Markdown source directly, with search, anchored navigation, print support, and Rules Arbiter access.
+Responsive browser rulebook. It renders the canonical v0.6.3 Markdown source directly, with search, anchored navigation, print support, and Rules Arbiter access.
 
 ### `rules-assistant/`
 
@@ -165,7 +164,7 @@ Submitted comments, corrections, suggestions, and playtest feedback may be used 
 
 ## New-player onboarding
 
-- [First-Game Guide](releases/v0.6.1/Gauntlet_v0.6.1_First_Game_Guide.md)
-- [Faction Introductions](releases/v0.6.1/Gauntlet_v0.6.1_Faction_Introductions.md)
-- [Printable Playtest Sheet](playtest/)
+- [First-Game Guide](releases/v0.6.3/Gauntlet_v0.6.3_First_Game_Guide.md)
+- [Faction and Component Guide](releases/v0.6.3/Gauntlet_v0.6.3_Faction_and_Component_Guide.md)
+- [Formal Playtest Sheet](releases/v0.6.3/Gauntlet_v0.6.3_Formal_Playtest_Sheet.pdf)
 - [Player Mat and Zone Reference](playtest/player-mat/)
