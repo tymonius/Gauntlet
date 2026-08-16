@@ -149,6 +149,7 @@ describe("TTS Territory assets", () => {
   it("exposes stable release-agnostic npm commands", () => {
     expect(packageJson.scripts["tts:cards"]).toBe("node scripts/generate-tts-card-assets.mjs");
     expect(packageJson.scripts["tts:territories"]).toBe("node scripts/generate-tts-territory-assets.mjs");
-    expect(packageJson.scripts["tts:build"]).toBe("npm run tts:cards && npm run tts:territories");
+    expect(packageJson.scripts["tts:starters"]).toBe("node scripts/generate-tts-starter-decks.mjs");
+    expect(packageJson.scripts["tts:build"]).toBe("npm run tts:cards && npm run tts:territories && npm run tts:starters");
   });
 });

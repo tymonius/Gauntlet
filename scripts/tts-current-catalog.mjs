@@ -81,6 +81,20 @@ export async function resolveCurrentTtsRelease() {
   });
 }
 
+export async function loadCurrentStarterDecks() {
+  const release = await resolveCurrentTtsRelease();
+  if (!release.starterDecksSource) {
+    throw new Error(`${GITHUB_RELEASE_CONTRACT_SOURCE} does not publish a starter-deck asset for ${release.version}.`);
+  }
+
+  const starterDecks = await readJson(release.starterDecksSource);
+  if (!Array.isArray(starterDecks.decks) || !starterDecks.decks.length) {
+    throw new Error(`Starter-deck data is missing decks: ${release.starterDecksSource}.`);
+  }
+
+  return Object.freeze({ release, starterDecks });
+}
+
 function sectionsFromEffects(effects) {
   const sections = {};
   for (const effect of effects || []) {

@@ -10,6 +10,7 @@ on:
       - 'config/github-release-contract.json'
       - 'scripts/generate-tts-card-assets.mjs'
       - 'scripts/generate-tts-territory-assets.mjs'
+      - 'scripts/generate-tts-starter-decks.mjs'
       - 'scripts/tts-current-catalog.mjs'
       - 'tts/**'
       - 'card-design/**'
@@ -47,6 +48,7 @@ jobs:
             config/github-release-contract.json
             scripts/generate-tts-card-assets.mjs
             scripts/generate-tts-territory-assets.mjs
+            scripts/generate-tts-starter-decks.mjs
             scripts/tts-current-catalog.mjs
             tts
             card-design
@@ -67,6 +69,8 @@ jobs:
         run: npm run tts:cards -- ${{ github.event_name == 'workflow_dispatch' && inputs.strict_artwork && '--strict-art' || '' }}
       - name: Generate Territory sheets
         run: npm run tts:territories
+      - name: Assemble current starter decks
+        run: npm run tts:starters
       - uses: actions/upload-artifact@v4
         with:
           name: gauntlet-current-tts-card-assets
