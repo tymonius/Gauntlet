@@ -15,6 +15,7 @@ REQUIRED = [
     "rules-assistant/migrations/0002_review_export_checkpoints.sql",
     "rules-assistant/migrations/0003_playtest_sessions.sql",
     "rules-assistant/migrations/0004_event_game_sessions.sql",
+    "rules-assistant/migrations/0005_tracked_playtests.sql",
     "rules-assistant/worker-entry.js",
     "rules-assistant/worker-v061.js",
     "rules-assistant/worker-v063.js",
@@ -26,6 +27,7 @@ REQUIRED = [
     "workers/playtest-sessions/README.md",
     "workers/playtest-sessions/src/index.js",
     "workers/playtest-sessions/src/index.test.mjs",
+    "workers/playtest-sessions/src/tracked.js",
     "playtest/README.md",
     "playtest/index.html",
     "playtest/host/index.html",
@@ -45,7 +47,10 @@ REQUIRED = [
     "playtest/batch/styles.css",
     "playtest/batch/qrcode-loader.js",
     "playtest/batch/app.js",
+    "playtest/tracked/index.html",
+    "playtest/tracked/app.js",
     "scripts/test_v063_formal_session_e2e.mjs",
+    "scripts/test_tracked_playtest_e2e.mjs",
     "package.json",
 ]
 
@@ -96,6 +101,15 @@ def main() -> int:
             "ADD COLUMN seat_index INTEGER",
             "ADD COLUMN participant_id TEXT",
             "ADD COLUMN playtest_participant_id TEXT",
+        ],
+        errors,
+    )
+    require_markers(
+        "rules-assistant/migrations/0005_tracked_playtests.sql",
+        [
+            "CREATE TABLE IF NOT EXISTS playtest_session_results",
+            "CREATE TABLE IF NOT EXISTS playtest_participant_responses",
+            "CREATE TABLE IF NOT EXISTS playtest_public_creation_limits",
         ],
         errors,
     )
@@ -158,6 +172,23 @@ def main() -> int:
         errors.append("playtest session Worker still declares v0.6.1 as current")
     if "G061-${randomCode" in session_worker:
         errors.append("playtest session Worker still generates G061 serials for new sessions")
+
+    require_markers(
+        "workers/playtest-sessions/src/tracked.js",
+        [
+            'const CURRENT_RULES_VERSION = "v0.6.3"',
+            'const serial = `G063-${randomCode(8)}`',
+            "trackedPlaytestsSupported: true",
+            "automaticTrackedClosureSupported: true",
+            "rulesVersion: CURRENT_RULES_VERSION",
+        ],
+        errors,
+    )
+    tracked_worker = read("workers/playtest-sessions/src/tracked.js")
+    if 'const CURRENT_RULES_VERSION = "v0.6.1"' in tracked_worker:
+        errors.append("tracked playtest Worker still declares v0.6.1 as current")
+    if "G061-${randomCode" in tracked_worker:
+        errors.append("tracked playtest Worker still generates G061 serials")
 
     require_markers(
         "playtest/host/create-event.js",
@@ -249,6 +280,15 @@ def main() -> int:
         ],
         errors,
     )
+    require_markers(
+        "playtest/tracked/app.js",
+        [
+            'api("/api/tracked-games"',
+            "storeRulesContext()",
+            "installRulesInteractionLinker()",
+        ],
+        errors,
+    )
 
     require_markers(
         "scripts/test_v063_formal_session_e2e.mjs",
@@ -263,6 +303,17 @@ def main() -> int:
         ],
         errors,
     )
+    require_markers(
+        "scripts/test_tracked_playtest_e2e.mjs",
+        [
+            'health.version, "v0.6.3"',
+            'created.rulesVersion, "v0.6.3"',
+            "/^G063-",
+            "'v0.6.3', 'explicit'",
+            'title: "v0.6.3 Rulebook"',
+        ],
+        errors,
+    )
 
     session_toml = read("workers/playtest-sessions/wrangler.toml")
     rules_toml = read("rules-assistant/wrangler.toml")
@@ -272,6 +323,8 @@ def main() -> int:
         errors.append("Playtest session Worker must use the same D1 database as the Rules Arbiter")
     if 'main = "worker-entry.js"' not in rules_toml:
         errors.append("Rules Arbiter wrangler.toml must deploy the integrated worker-entry.js wrapper")
+    if 'main = "src/completeness.js"' not in session_toml:
+        errors.append("Playtest session wrangler.toml must deploy the complete production Worker chain")
     if "SESSION_ADMIN_TOKEN" in session_toml:
         errors.append("SESSION_ADMIN_TOKEN must be a Worker secret, not committed in wrangler.toml")
     if "ALLOWED_ORIGINS" not in session_toml:
@@ -294,6 +347,7 @@ def main() -> int:
         "test:rules-assistant",
         "test:playtest-sessions",
         "test:formal-session-e2e",
+        "test:tracked-session-e2e",
         "test:deckbuilder",
     ]
     for script in required_scripts:
@@ -301,6 +355,8 @@ def main() -> int:
             errors.append(f"package.json is missing {script}")
     if "test_v063_formal_session_e2e.mjs" not in scripts.get("test:formal-session-e2e", ""):
         errors.append("test:formal-session-e2e does not target the v0.6.3 end-to-end test")
+    if "test_tracked_playtest_e2e.mjs" not in scripts.get("test:tracked-session-e2e", ""):
+        errors.append("test:tracked-session-e2e does not target the tracked end-to-end test")
 
     worker_package = json.loads(read("workers/playtest-sessions/package.json"))
     worker_scripts = worker_package.get("scripts") or {}
@@ -312,8 +368,8 @@ def main() -> int:
         return fail(errors)
 
     print(
-        "Validated v0.6.3 formal playtest sessions: current runtime versioning, G063/EV063 serials, "
-        "event-scoped onboarding, two-seat table games, player-attributed Rules Arbiter linkage, "
+        "Validated v0.6.3 formal and tracked playtest sessions: current runtime versioning, G063/EV063 serials, "
+        "event-scoped onboarding, public tracked games, two-seat sessions, player-attributed Rules Arbiter linkage, "
         "current browser fallback sources, privacy-safe QR rendering, and explicit legacy-read compatibility."
     )
     return 0
