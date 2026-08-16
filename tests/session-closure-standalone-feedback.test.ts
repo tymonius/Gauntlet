@@ -11,7 +11,7 @@ const feedbackStyles = read("playtest/feedback/styles.css");
 const worker = read("workers/playtest-sessions/src/closure.js");
 const completenessWorker = read("workers/playtest-sessions/src/completeness.js");
 const wrangler = read("workers/playtest-sessions/wrangler.toml");
-const deployment = read(".github/workflows/deploy-v061-workers.yml");
+const deployment = read(".github/workflows/deploy-playtest-sessions.yml");
 
 describe("manual session closure and standalone feedback", () => {
   it("lets only the creator close or cancel an open tracked session", () => {
