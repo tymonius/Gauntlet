@@ -167,13 +167,33 @@
 
   .catalog-jumpbar-inner {
     width: 100%;
-    min-height: 58px;
-    padding: 8px 14px;
-    display: flex;
+    min-height: 0;
+    padding: 6px 14px 7px;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas:
+      "catalog-label primary"
+      "faction-label factions";
     align-items: center;
-    gap: 8px;
-    overflow-x: auto;
-    scrollbar-width: thin;
+    column-gap: 8px;
+    row-gap: 0;
+    overflow: visible;
+  }
+
+  .catalog-jumpbar-inner > .catalog-jump-label:first-of-type {
+    grid-area: catalog-label;
+  }
+
+  .catalog-jumpbar-inner > .catalog-jump-label:last-of-type {
+    grid-area: faction-label;
+  }
+
+  .catalog-primary-nav {
+    grid-area: primary;
+  }
+
+  .catalog-faction-nav {
+    grid-area: factions;
   }
 
   .catalog-jump-label {
@@ -188,24 +208,22 @@
   }
 
   .catalog-jump-divider {
-    width: 1px;
-    height: 26px;
-    flex: 0 0 auto;
-    margin-inline: 8px;
-    background: var(--catalog-line);
+    display: none;
   }
 
   .catalog-jumpbar nav {
     display: flex;
+    flex: 1 1 auto;
+    flex-wrap: wrap;
     align-items: center;
+    min-width: 0;
     gap: 2px;
-    flex: 0 0 auto;
     font-family: var(--sans);
   }
 
   .catalog-jumpbar a {
-    min-height: 36px;
-    padding: 0 9px;
+    min-height: 30px;
+    padding: 0 7px;
     display: inline-flex;
     align-items: center;
     border: 0;
