@@ -5,7 +5,7 @@
 
 This Cloudflare Worker and D1-backed API powers the onboarding and coded formal-session workflow for the current v0.6.3 playtest release. New game sessions use `G063-…` serials; new game-night event containers use `EV063-…` serials. The runtime reports `v0.6.3` from `/health` and stores the rules version with every session.
 
-Existing v0.6.1 records are not rewritten during the cutover. Reads return each record's persisted rules version and serial, so historical sessions retain their original attribution and can continue to use explicitly versioned Rules Arbiter compatibility routes.
+Existing v0.6.1 records are not rewritten during the cutover. Reads return each record's persisted rules version and serial, so historical sessions retain their original attribution. New v0.6.1 session creation is not supported by the current service.
 
 The service separates two different records:
 
@@ -120,7 +120,7 @@ The session page intercepts successful Rules Arbiter responses and links them wi
 
 The event record rejects game activity and Rules Arbiter links, preventing questions from multiple simultaneous matches from being combined.
 
-The session page passes the stored session rules version when it asks the Rules Arbiter. Current sessions therefore use v0.6.3, while a historical v0.6.1 session can still resolve through the explicitly versioned v0.6.1 compatibility route.
+New sessions use v0.6.3 and therefore align with the current unversioned Rules Arbiter. Stored v0.6.1 sessions remain readable historical records, but the current session page does not automatically switch its embedded Arbiter to the legacy ruleset merely because a stored record is v0.6.1. Explicitly versioned Rules Arbiter routes remain separate compatibility/history surfaces.
 
 ## Organizer workflow
 
