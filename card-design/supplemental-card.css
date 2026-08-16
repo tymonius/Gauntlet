@@ -154,7 +154,7 @@
 .tracker-watermark {
   z-index: 1 !important;
   right: 0.20in;
-  bottom: 0.48in;
+  bottom: 0.32in;
   width: 1.72in;
   height: 1.72in;
   background: var(--component-accent-ink);
@@ -211,10 +211,11 @@
 
 /* The tracker title rail is deliberately single-line. Operation Progress is
    the one current tracker name that exceeds the standard title measure, so fit
-   it without changing the size of every other tracker heading. */
+   it against the actual production-card width rather than relying on the
+   scaled-down catalog thumbnail to hide clipping. */
 #supplemental-intelligence-operation-progress-tracker .tracker-heading h3 {
-  font-size: 10.8pt;
-  letter-spacing: 0.018em;
+  font-size: 10.1pt;
+  letter-spacing: 0.006em;
 }
 
 .tracker-heading p {
@@ -264,7 +265,7 @@
 
 .tracker-scale {
   right: 0.09in;
-  bottom: 0.38in;
+  bottom: 0.18in;
   left: 0.09in;
   height: var(--tracker-scale-height);
 }
