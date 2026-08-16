@@ -1,6 +1,7 @@
 # Gauntlet Digital Prototype Roadmap
 
-**Status:** Active development roadmap and audit snapshot.  
+**Status:** Active development roadmap and current migration snapshot.  
+**Current tabletop authority:** v0.6.3 — Third Playtest Revision  
 **Scope:** Machine-readable game data, rules engine, CLI, GUI, playtest telemetry, and future remote play.
 
 ---
@@ -13,8 +14,8 @@ The digital project exists to reduce the friction of Gauntlet playtesting:
 - remote or asynchronous testing;
 - automatic enforcement of difficult timing and destination rules;
 - rapid card-text iteration;
-- structured logs and telemetry;
-- a shared source of truth between printable cards, deckbuilder, simulator, and digital play.
+- structured logs and telemetry; and
+- a shared source of truth between printable cards, Deckbuilder, Rules Arbiter, simulator, and digital play.
 
 The digital prototype should remain a testing tool before it becomes a polished commercial game client.
 
@@ -22,41 +23,37 @@ The digital prototype should remain a testing tool before it becomes a polished 
 
 ## 2. Product layers
 
-Treat the digital work as related but distinct layers.
-
 ### A. Canonical game data
 
-Versioned machine-readable records for:
+The current published machine-readable source is:
 
-- cards;
-- Territories;
-- factions;
-- leaders;
-- deck-construction rules;
-- recommended decks;
-- global game configuration;
-- timing and destination metadata.
+- `releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json`
+
+It is generated from the v0.6.3 governing release sources and carries the current cards, Territories, factions, Leaders, deck-construction data, and related identifiers. It is authoritative for the published v0.6.3 release but must not be edited independently of its governing sources.
 
 ### B. Deckbuilder
 
-A lightweight static browser tool for constructing, validating, saving, importing, exporting, and printing decks.
+The public Deckbuilder is a browser production tool for constructing, validating, saving, importing, exporting, and printing Decks. The current public default follows v0.6.3 release data.
 
-The deckbuilder is not the rules engine.
+Historical pre-faction modes and saved Deck formats may remain available for compatibility, but they must stay explicitly versioned. Old v0.5 Decks must never be silently treated as v0.6.3 Decks.
 
 ### C. Rules engine
 
-Framework-neutral TypeScript state and reducer logic for:
+The `/src` tree contains framework-neutral engine scaffolding and testable state logic. It preserves substantial earlier implementation work, but it is **not yet a complete v0.6.3 digital edition**.
+
+A current engine must own:
 
 - hidden and public information;
 - legal actions;
 - turn flow;
 - movement;
 - battles;
-- card commitment and battle draw;
+- Gambits, Reserves, and Tactics;
 - card destinations;
 - Actions, Assets, and Overlays;
 - occupation and capture;
 - Asset-bank limits;
+- faction resources and additional victory systems; and
 - win-condition evaluation.
 
 ### D. Development interfaces
@@ -69,100 +66,51 @@ Framework-neutral TypeScript state and reducer logic for:
 
 ## 3. Current repository status
 
-The repository already contains more than an initial data stub.
+### Canonical release data exists
 
-### Deckbuilder
+The earlier roadmap statement that no canonical v0.6 dataset existed is obsolete. v0.6.3 is published with canonical JSON, rulebook, faction/component rules, a complete card and Territory reference, starter Deck data, and release manifests.
 
-The `/deckbuilder` app supports the v0.5 pre-faction ruleset, including:
+Digital implementation work must therefore synchronize to the published v0.6.3 package rather than reconstructing current rules from card-review notes or stale v0.5 records.
 
-- canonical card and Territory loading;
-- search and filtering;
-- duplicates;
-- card-count and point validation;
-- Territory and Arena rules;
-- unique-card limits;
-- local saves;
-- JSON import/export;
-- text export;
-- print-to-PDF layout.
+### Legacy data starter
 
-The intended v0.6 upgrade is a separate rules/data mode using the shared UI shell. Old v0.5 decks should not be silently migrated into v0.6.
+The `/data` folder contains early machine-readable starter records and schema notes. It is legacy scaffolding, not current authority. Reuse schema ideas where useful, but do not let `/data` override the v0.6.3 release sources.
 
-### Data starter
+### TypeScript engine scaffold
 
-The `/data` folder contains early machine-readable starter records and schema notes. It is not the current authoritative v0.6 card source.
+The `/src` tree includes earlier work on authoritative and public/private state views, setup validation, turn and battle reducers, draw and reshuffle behavior, card cancellation and destinations, an Action framework, Asset-bank enforcement, Territory occupation/capture, win-condition evaluation, CLI logging, and browser development interfaces.
 
-### TypeScript engine
+Those milestones remain useful architecture and regression evidence. Their existence does not prove v0.6.3 compatibility. Old fixture Decks, identifiers, terminology, and rule assumptions must be audited explicitly against the current release.
 
-The `/src` tree contains framework-neutral engine scaffolding and testable state logic.
-
-Implemented development milestones include:
-
-- authoritative and public/private state views;
-- setup validation and initialization;
-- turn and battle reducers;
-- battle commitments and battle draw;
-- partial draws and reshuffling;
-- Homeland Advantage and Heartland defense;
-- card cancellation and destination handling;
-- initial specific Battle effects;
-- Action-card framework and legal Action affordances;
-- Asset-bank enforcement and persistent Assets;
-- player-selected Asset-bank discard-down;
-- Territory occupation, capture, and control changes;
-- centralized win-condition evaluation;
-- start-of-turn automation;
-- guided CLI;
-- CLI session logging;
-- browser development GUI.
-
-The former Condition zone has been removed from the state model, reducers, public/private views, CLI, GUI, and affected tests. Persistent v0.6 effects must use Assets, Territory Overlays, immediate resolution, or explicit card-specific self-tracking.
-
-The root package scripts currently expose:
-
-```text
-npm run dev:cli
-npm run dev:gui
-npm test
-npm run typecheck
-```
-
-### Important limitation
-
-The CLI and GUI still initialize small `0.5.6-dev` example decks with placeholders. The existence of an engine feature does not prove that the full current card pool or v0.6 factions are implemented correctly.
-
-The prototype is an engine and interface scaffold, not yet a complete digital edition.
+The former Condition-zone removal remains a durable architectural direction: persistent current effects should use the current canonical mechanisms—such as Assets, Territory Overlays, immediate resolution, or explicit card-specific state—rather than reintroducing a generic Condition zone.
 
 ---
 
 ## 4. Source-of-truth rules
 
-Avoid maintaining several manually divergent card databases.
+Avoid maintaining several manually divergent current card databases.
 
-### Versioned authority
+For v0.6.3 digital work, use this hierarchy:
 
-For a released ruleset, the matching canonical release data should control card names, costs, text, deck limits, and Territory data.
+1. `releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md` for shared rules;
+2. `releases/v0.6.3/Gauntlet_v0.6.3_Faction_and_Component_Guide.md` for faction and supplemental-component rules;
+3. `releases/v0.6.3/Gauntlet_v0.6.3_Complete_Card_Reference.md` for exact playable-card, Territory, Leader, and component text; and
+4. `releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json` as the generated machine-readable release dataset.
 
-For v0.6 development:
+The implementation must not invent current text from stale v0.5 data, superseded working rules, or old implementation ledgers.
 
-- approved card-review decisions live in the Card Review Log and Metadata registry until canonical v0.6 data is created;
-- approved Territory wording and general rules live in the Territory review files and Working Rules;
-- the digital engine must not invent final v0.6 text from stale v0.5 records;
-- a v0.6 digital mode should not be declared current until its data and rules implementation are synchronized with the v0.6 working sources.
+### Saved deck and game compatibility
 
-No canonical v0.6 dataset exists yet because several exact card texts, Intelligence Missions, and faction packages remain unresolved.
-
-### Saved deck compatibility
-
-Every saved deck should permanently record:
+Every saved Deck or game should permanently record:
 
 - game version;
-- ruleset mode;
-- faction and leader, where applicable;
+- ruleset mode where needed;
+- faction and Leader;
 - card IDs and quantities;
-- Territory IDs.
+- Territory IDs; and
+- any engine/schema version needed to replay the state safely.
 
-Do not automatically migrate decks across a major rules boundary such as v0.5 to v0.6. Offer explicit import, conversion review, or read-only legacy mode instead.
+Do not automatically migrate Decks or saved games across a major rules boundary. Offer explicit conversion review or read-only legacy behavior instead.
 
 ---
 
@@ -189,16 +137,16 @@ Do not block useful playtesting until every card is executable.
 
 Prioritize:
 
-1. battle sequence;
+1. current turn and battle sequence;
 2. card destinations;
-3. movement, occupation, and capture;
+3. movement, occupation, capture, and running the Gauntlet;
 4. Asset-bank limits;
-5. common Actions and Assets;
-6. Territory effects and Overlays;
-7. faction resources and victory systems;
+5. common Actions, Assets, and Overlays;
+6. Territory effects;
+7. faction resources and victory systems; and
 8. unusual card exceptions.
 
-Unimplemented effects must be visible and explicit. The engine should not silently pretend an unknown card has resolved correctly.
+Unimplemented effects must be visible and explicit. The engine must never silently pretend an unknown card has resolved correctly.
 
 ### Deterministic logs
 
@@ -208,102 +156,80 @@ A development session should be reproducible where practical through:
 - deck order or seed;
 - ordered action log;
 - errors and rejected actions;
-- final state;
+- final state; and
 - rules/data version.
 
 ---
 
-## 6. Physical-rule clarifications discovered digitally
+## 6. Historical rules-clarity evidence
 
-Digital implementation exposed several rules that required explicit physical clarification. These are now documented in the v0.5.7 clarification file:
+Earlier digital implementation exposed several physical-rule ambiguities and helped drive later published clarifications. Historical v0.5.7 and v0.6 implementation notes remain useful regression evidence for issues such as draw/reshuffle behavior, hidden commitments, card destinations, persistent effects, cancellation/negation, copied effects, movement, and Territory state.
 
-- Homeland Advantage applies while defending any controlled space.
-- Heartland defense separately grants +1.
-- tied battles reroll unless Homeland Advantage resolves the tie.
-- draw as many cards as possible and reshuffle only the discard pile.
-- partial draws are legal.
-- battle-draw amount may be modified.
-- players may pass during hand commitment and may play fewer battle-drawn cards than allowed.
-- battle-drawn cards are not hand commitments.
-- Watchtower reveals the attacker's normal hand commitment to both players.
-- canceled hand commitments return to hand; canceled battle-drawn cards go to discard.
+Treat those records as provenance. Current expected behavior must be derived from v0.6.3, not from the historical wording itself.
 
-v0.6 development has also clarified:
-
-- Action-card plays and Battle hand commitments use independent allowances;
-- voluntary Asset removal uses an Action opportunity;
-- Conditions do not exist in v0.6;
-- Territory printed effects are governed by face-up state and their own text;
-- Ruins are Territory Overlays and only one may occupy a Territory;
-- negated cards have no effect but normally retain their destination;
-- effects that resolve another Battle effect cannot recurse through another such effect.
-
-Continue treating digital implementation as a rules-clarity test. Any ambiguity found by code should be resolved in physical rules documentation, not only buried in engine behavior.
+Continue using digital implementation as a rules-clarity test: when code exposes a genuine ambiguity in the current sources, resolve it in the physical rules pipeline rather than burying the answer only in engine behavior.
 
 ---
 
 ## 7. Current audit findings
 
-### Documented/current
+### Current and authoritative
 
-- Static v0.5 deckbuilder requirements and major UI decisions.
-- Separate v0.5 and v0.6+ data/rules modes.
-- Version-tagged saved decks and no silent cross-version migration.
-- Framework-neutral engine direction.
-- CLI and GUI development entry points.
-- v0.5.7 physical rules clarifications discovered through implementation.
-- Full v0.6 playable-card and Territory review checkpoints.
-- Condition retirement in the active rules and development state model.
-- Current `/src` implementation status and limitations in `src/README.md`.
+- v0.6.3 canonical release data exists.
+- The public release and browser-tool defaults target v0.6.3.
+- Current governing rules are versioned and available in the release package.
+- Saved Decks and games must remain version-tagged.
+- The framework-neutral engine direction and public/private state boundary remain valid.
 
-### Documented/stale or transitional
+### Legacy or transitional
 
-- `/data` remains starter scaffolding rather than current v0.6 canonical data.
-- Development examples still identify themselves as `0.5.6-dev` even though v0.5.7 is the latest pre-faction release and v0.6 development is active.
-- The implemented card subset still uses some v0.5 IDs and behavior that must be replaced or versioned before a v0.6-development mode is authoritative.
+- `/data` remains starter/legacy scaffolding rather than current canonical data.
+- `/src` contains useful engine scaffolding but requires a complete v0.6.3 compatibility audit.
+- Some development fixtures and effect handlers may still use pre-faction or earlier-v0.6 identifiers, terminology, or behavior.
+- Version-specific historical tests and routes should remain version-specific rather than being globally renamed to v0.6.3.
 
-### Work-in-progress
+### Work in progress
 
-- full current card/Territory implementation;
-- full v0.5.7 synchronization;
-- canonical v0.6 data;
-- v0.6 faction implementation;
+- full v0.6.3 engine synchronization;
+- complete current card and Territory effect coverage;
+- complete faction and Leader systems;
 - persistent game save/load;
+- reproducible telemetry tied to the current playtest standard;
 - remote multiplayer;
-- polished UI;
-- automated playtest telemetry dashboard.
+- polished player UI; and
+- automated playtest analysis.
 
 ---
 
 ## 8. Next implementation sequence
 
-1. Choose the next supported digital rules target explicitly: complete v0.5.7 or begin a separate v0.6-development mode.
-2. Resolve the remaining v0.6 exact-text and faction-package blockers before treating any v0.6 data as canonical.
-3. Replace placeholder development decks with validated canonical deck data for the chosen mode.
-4. Run an end-to-end guided game through the GUI and log every missing or incorrect interaction.
-5. Implement the remaining common Territory and card effects in priority order.
-6. Add clear placeholders or manual-resolution hooks for effects not yet automated.
-7. Add playtest telemetry based on `Gauntlet_Playtest_Targets_and_Metrics.md`.
-8. Add save/load for local sessions.
-9. Add network transport only after authoritative/private-state boundaries are stable.
-10. Build polished player onboarding only after the ruleset selected for the client is reasonably frozen.
+1. Make v0.6.3 the explicit supported engine target.
+2. Generate or load engine-facing content from the v0.6.3 canonical dataset rather than legacy starter records.
+3. Audit every existing reducer, fixture, identifier, and automated effect against the current rules.
+4. Replace placeholder or legacy example Decks with validated v0.6.3 Deck data.
+5. Run an end-to-end guided game and log every missing or incorrect interaction.
+6. Implement remaining common Territory, card, faction, and Leader effects in priority order.
+7. Add explicit manual-resolution hooks for effects not yet automated.
+8. Add playtest telemetry based on `Gauntlet_Playtest_Targets_and_Metrics.md`.
+9. Add version-safe save/load for local sessions.
+10. Add network transport only after authoritative/private-state boundaries and deterministic replay are stable.
 
 ---
 
-## 9. Definition of a useful playable prototype
+## 9. Definition of a useful v0.6.3 playable prototype
 
-A digital build is ready for meaningful remote or local playtesting when it can:
+A digital build is ready for meaningful remote or local v0.6.3 playtesting when it can:
 
-- create legal decks from a named canonical version;
-- initialize a complete six-Territory board;
-- enforce hidden hands and commitments;
-- execute normal turn and battle flow;
-- handle partial draws and destinations;
-- resolve occupation, counterattack, capture, and Heartland victory;
-- enforce Asset-bank capacity and discard choices;
-- represent persistent effects through Assets and Overlays without a Condition zone;
-- identify every unimplemented effect before it matters;
-- save a reproducible log;
+- create legal Decks from the v0.6.3 canonical data;
+- initialize the complete current board state;
+- enforce hidden Hands, Gambits, Reserves, and Tactics correctly;
+- execute the current turn and battle flow;
+- handle draws, reshuffles, destinations, cancellation, and negation correctly;
+- resolve occupation, counterattack, capture, and running the Gauntlet;
+- enforce Asset-bank capacity and persistent state;
+- implement or visibly flag every current card, Territory, faction, Leader, and supplemental-component effect;
+- evaluate all current victory routes;
+- save a reproducible, version-tagged log; and
 - complete a full game without direct state editing.
 
 It does not need final art, animation, matchmaking, accounts, or a commercial-grade interface to meet this milestone.

@@ -1,9 +1,9 @@
 # Gauntlet Playtest Targets and Metrics
 
-**Status:** Active v0.6 testing standard; v0.6.1 workflow revisions in progress.  
+**Status:** Active v0.6.3 testing standard.  
 **Purpose:** Define what to record, what healthy play should look like, and what evidence is required before changing canonical rules or card text.
 
-Use this document with the current official rulebook, [Development Status](Gauntlet_Development_Status.md), and the active [v0.6.1 Implementation Ledger](Gauntlet_v0.6.1_Implementation_Ledger.md).
+Use this document with the [current v0.6.3 rulebook](../releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md), [Development Status](Gauntlet_Development_Status.md), and the current source hierarchy in [docs/README.md](README.md). Older implementation ledgers remain historical provenance rather than active testing authority.
 
 ---
 
@@ -47,6 +47,8 @@ Record the following for every completed or stopped session.
 
 Each printed formal-playtest sheet should have a unique single-use QR code. The first scan creates the linked digital session; later scans join it. All Rules Arbiter questions asked through that session should be linked automatically. Closing the session retires the code. A short human-readable serial should remain available for damaged-code fallback and manual reconciliation.
 
+The current coded-session service still identifies itself as v0.6.1 and uses `G061-…` serials pending migration. Record the actual tabletop rules version separately; do not infer it from that legacy service serial.
+
 ### Time record
 
 Record separately:
@@ -89,7 +91,7 @@ For a stopped game, record the same state at the stopping point where practical,
 
 - battles initiated by each player;
 - battles won while attacking and defending;
-- tied battles resolved by Defender's Advantage;
+- tied battles resolved by the governing v0.6.3 battle rules;
 - withdrawals, retreats, and additional-position retreats;
 - Territories occupied, captured, and recaptured;
 - Action Opportunities used before and after movement;
@@ -121,12 +123,12 @@ For every Arbiter question, retain:
 - answer shown to the player;
 - rules version;
 - cited source and section;
-- classification as **Explicit**, **Inferred**, or **Unresolved**;
+- answer classification and confidence;
 - session and sheet serial;
 - whether the ruling changed play; and
 - reviewer correction or follow-up, if any.
 
-The Arbiter must not invent precedence. An unresolved interaction should remain unresolved until the governing source is amended.
+The Arbiter must distinguish written canon from interpretation or a provisional table ruling. A later canonical clarification supersedes a provisional ruling.
 
 ---
 
@@ -170,7 +172,7 @@ Investigate when:
 - one effect category dominates all choices;
 - information effects make hidden choices effectively irrelevant;
 - chain battles create excessive downtime or unavoidable collapse; or
-- Defender's Advantage makes attacking controlled Territories consistently futile.
+- the governing defensive rules make attacking controlled Territories consistently futile.
 
 ### Card flow
 
@@ -193,7 +195,7 @@ Track separately:
 2. successful occupation through the opponent's counterattack turn;
 3. capture of the final Territory;
 4. attempts to advance beyond the Gauntlet; and
-5. Last Stand battles won by the attacker and defender.
+5. final run-the-Gauntlet battles won by the attacker and defender where applicable under the current rules.
 
 Investigate when the sequence is commonly misunderstood, rarely completed after reaching the final Territory, or routinely bypassed by effects not intended to replace it.
 

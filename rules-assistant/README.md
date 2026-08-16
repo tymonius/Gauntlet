@@ -1,8 +1,10 @@
 # Gauntlet Rules Assistant
 
-A rules-only assistant for the canonical Gauntlet v0.6.0 playtest edition.
+The unversioned public Rules Arbiter serves the canonical Gauntlet v0.6.3 playtest edition. Explicitly versioned legacy routes remain available for historical and compatibility purposes.
 
-The public widget is framework-free and can be loaded on any Gauntlet browser page. It first tries the configured AI endpoint. If the endpoint is unavailable, it falls back to direct lexical retrieval from the canonical JSON and rulebook so players still receive relevant source passages without exposing an API key.
+The public widget is framework-free and can be loaded on any Gauntlet browser page. It first tries the configured AI endpoint. The unversioned Worker routes current requests to the v0.6.3 implementation.
+
+> **Migration note:** the generic browser-side `local-search.js` fallback is still pinned to v0.6.1 source paths. Until that fallback and its tests are migrated, a request that cannot reach the Worker must not be treated as a v0.6.3-authoritative answer. This README documents that limitation rather than changing runtime behavior.
 
 When a Cloudflare D1 database is attached, the Worker also records live website questions and answers, accepts optional player feedback, and exposes a token-protected review dashboard. The database starts empty. It does **not** import development chats, historical conversations, or curated regression questions.
 
@@ -11,24 +13,26 @@ When a Cloudflare D1 database is attached, the Worker also records live website 
 - `widget.js` — floating accessible chat panel, anonymous session grouping, feedback controls, and API/fallback orchestration.
 - `widget.css` — isolated responsive widget styling.
 - `feedback.css` — feedback-control styling loaded automatically by the widget.
-- `local-search.js` — shared canonical-source loader, document builder, and lexical retrieval.
-- `worker.js` — Cloudflare Worker backend using the OpenAI Responses API, D1 interaction logging, feedback, exports, and admin APIs.
-- `admin-page.js` — private review dashboard served by the Worker at `/admin`.
+- `local-search.js` — legacy browser-side source loader and lexical fallback; currently pinned to v0.6.1 pending migration.
+- `worker-entry.js` — routes the unversioned public Rules Arbiter to the current v0.6.3 Worker while preserving versioned legacy routes.
+- `worker-v063.js` — current v0.6.3 Rules Arbiter Worker.
+- `worker-v061.js` and v0.6.2-specific files — retained versioned implementations and compatibility/history surfaces.
+- `admin-page.js` and related admin modules — private review dashboards served by the Worker.
 - `migrations/` — D1 schema migrations.
 - `wrangler.toml` — Worker deployment configuration.
-- `local-search.test.mjs` and `worker.test.mjs` — focused Vitest regression tests.
+- focused Vitest regression suites — current and version-specific behavior checks.
 
 ## Source policy
 
-The assistant reads the live canonical sources from `gauntlet.run`:
+For the unversioned public v0.6.3 Rules Arbiter, the governing live sources are:
 
-1. `releases/v0.6.0/Gauntlet_v0.6.0_Rulebook.md`
-2. `releases/v0.6.0/Gauntlet_v0.6.0_Canonical_Data.json`
-3. the governing source paths attached to canonical cards, Territories, factions, and components
+1. `releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md`
+2. `releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json`
+3. the governing v0.6.3 source paths attached to canonical cards, Territories, factions, and components
 
 The model is instructed to use only retrieved passages, apply specific-over-general precedence, distinguish explicit rules from interpretations, and state when the rules do not resolve a question.
 
-Because the corpus is fetched at request time and cached by the runtime, approved source changes become available without rebuilding a vector store.
+Explicit v0.6.1 and v0.6.2 routes intentionally continue to use their matching historical sources. The generic `local-search.js` fallback is the remaining exception: it still loads v0.6.1 and should be migrated before it is presented as a current-version fallback.
 
 ## Interaction data
 
@@ -72,7 +76,7 @@ The corresponding feedback endpoint is inferred automatically by replacing `/api
 </script>
 ```
 
-When the AI endpoint is not reachable, the widget automatically enters direct source-lookup mode. Local source-lookup answers are not centrally logged because no server request succeeds.
+When the AI endpoint is not reachable, the widget may enter direct source-lookup mode. Until `local-search.js` is migrated from v0.6.1, that fallback is a legacy compatibility path rather than a current v0.6.3 authority. Local source-lookup answers are not centrally logged because no server request succeeds.
 
 ## Deploying the backend
 
@@ -157,7 +161,7 @@ npm run test:rules-assistant
 python3 -m http.server 8000
 ```
 
-Open `http://localhost:8000/`. With no backend configured, the widget should return canonical source excerpts. Run `wrangler dev` in a second terminal to exercise AI answers locally.
+Open `http://localhost:8000/`. With no backend configured, direct source lookup currently exercises the legacy v0.6.1 fallback. Run `wrangler dev` in a second terminal to exercise the current Worker behavior locally.
 
 For local D1 testing after the binding is configured:
 
@@ -177,4 +181,4 @@ For production, configure an OpenAI project budget and rate limits. The Worker a
 - returns only source IDs that were supplied to the model;
 - continues answering when D1 logging is unavailable;
 - requires a secret bearer token for all review and export APIs; and
-- falls back to static source lookup when the AI service is unavailable.
+- preserves versioned historical routes alongside the current unversioned v0.6.3 route.
