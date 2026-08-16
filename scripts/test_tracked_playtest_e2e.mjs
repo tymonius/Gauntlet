@@ -97,6 +97,7 @@ function auth(player, value = {}) {
 
 try {
   const health = await json(await call("/health"), 200);
+  assert.equal(health.version, "v0.6.3");
   assert.equal(health.trackedPlaytestsSupported, true);
   assert.equal(health.digitalFeedbackSupported, true);
   assert.equal(health.automaticTrackedClosureSupported, true);
@@ -111,6 +112,8 @@ try {
       selectionSource: "standalone-onboarding"
     }
   }), 201);
+  assert.equal(created.rulesVersion, "v0.6.3");
+  assert.match(created.sheetSerial, /^G063-[A-Z0-9]{8}$/);
   assert.match(created.joinToken, /^[A-Za-z0-9_-]{24,96}$/);
   assert.match(created.participantToken, /^[A-Za-z0-9_-]{24,96}$/);
   assert.equal(created.seatIndex, 1);
@@ -119,6 +122,7 @@ try {
   assert.equal(created.reviewUrl, `${created.joinUrl}&host=${encodeURIComponent(created.hostKey)}`);
 
   const initial = await json(await call(`/api/tracked-games/${created.joinToken}`), 200);
+  assert.equal(initial.rulesVersion, "v0.6.3");
   assert.equal(initial.lifecycleState, "joining");
   assert.equal(initial.playerCount, 1);
   assert.equal(initial.players[0].displayName, "Alice");
@@ -161,12 +165,12 @@ try {
   await db.prepare(`INSERT INTO rules_interactions
     (id, session_id, sequence_index, created_at, updated_at, question, answer,
      game_version, ruling_status, confidence, answer_mode, source_count)
-    VALUES (?, ?, 1, ?, ?, ?, ?, 'v0.6.1', 'explicit', 'high', 'retrieval_only', 1)`)
+    VALUES (?, ?, 1, ?, ?, ?, ?, 'v0.6.3', 'explicit', 'high', 'retrieval_only', 1)`)
     .bind(
       interactionId,
       "tracked-e2e-arbiter",
-      "2026-08-02T00:00:00.000Z",
-      "2026-08-02T00:00:00.000Z",
+      "2026-08-16T00:00:00.000Z",
+      "2026-08-16T00:00:00.000Z",
       "When is a Territory captured?",
       "At the start of your next turn, if you still occupy it."
     ).run();
@@ -178,7 +182,7 @@ try {
       classification: "explicit",
       question: "When is a Territory captured?",
       answer: "At the start of your next turn, if you still occupy it.",
-      sources: [{ title: "v0.6.1 Rulebook", section: "Capture" }]
+      sources: [{ title: "v0.6.3 Rulebook", section: "Capture" }]
     })
   }), 201);
   assert.equal(linked.participantId, playerTwo.participantId);
@@ -288,7 +292,7 @@ try {
   assert.deepEqual(finalReview.responses.map((response) => response.displayName), ["Alice", "Ben"]);
   assert.equal(finalReview.events.some((event) => event.eventType === "tracked_session_submitted"), true);
 
-  console.log("Validated public tracked creation -> two player seats -> authenticated milestones -> player-attributed Arbiter linkage -> shared result -> two private responses -> automatic closure -> private review/export data.");
+  console.log("Validated v0.6.3 public tracked creation -> two player seats -> authenticated milestones -> player-attributed Arbiter linkage -> shared result -> two private responses -> automatic closure -> private review/export data.");
 } finally {
   db.close();
 }
