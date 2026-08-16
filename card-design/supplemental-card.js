@@ -77,9 +77,9 @@ const SUPPLEMENTAL_COMPONENTS = Object.freeze([
         id: 'intel-tracker',
         name: 'Intel Tracker',
         type: 'Sliding tracker card',
-        detail: 'Provides a practical 0–20 physical tracking scale for uncapped Intel beneath the Operations Reference Card.',
+        detail: 'Provides a practical 0–12 physical tracking scale for uncapped Intel beneath the Operations Reference Card.',
         quantity: 1,
-        tracker: { max: 20, cover: 'Operations Reference', scaleHeight: 1.96, labelSize: 5.3 },
+        tracker: { max: 12, cover: 'Operations Reference', scaleHeight: 2.08, labelSize: 7.2 },
       },
       {
         id: 'operation-progress-tracker',
