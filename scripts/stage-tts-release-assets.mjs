@@ -1,0 +1,198 @@
+import { createHash } from 'node:crypto';
+import { copyFile, mkdir, readFile, rm, stat, writeFile } from 'node:fs/promises';
+import { basename, join, relative } from 'node:path';
+import { pathToFileURL } from 'node:url';
+import { resolveCurrentTtsRelease, ROOT } from './tts-current-catalog.mjs';
+
+const DEFAULT_REPOSITORY = 'tymonius/Gauntlet';
+const STAGING_ROOT = join(ROOT, 'tts', 'generated', 'release-assets');
+
+function jsonText(value) {
+  return `${JSON.stringify(value, null, 2)}\n`;
+}
+
+function assetPrefix(version) {
+  return `Gauntlet_${version}_TTS`;
+}
+
+function safeSegment(value) {
+  return String(value ?? '')
+    .trim()
+    .replace(/[^A-Za-z0-9_-]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
+async function readJson(path) {
+  return JSON.parse(await readFile(path, 'utf8'));
+}
+
+async function sha256(path) {
+  return createHash('sha256').update(await readFile(path)).digest('hex');
+}
+
+async function ensureFile(path) {
+  const info = await stat(path).catch((error) => {
+    if (error.code === 'ENOENT') throw new Error(`Required TTS release asset is missing: ${relative(ROOT, path)}`);
+    throw error;
+  });
+  if (!info.isFile()) throw new Error(`Expected a file for TTS release publication: ${relative(ROOT, path)}`);
+  return info;
+}
+
+function releaseUrl(repository, tag, name) {
+  return `https://github.com/${repository}/releases/download/${tag}/${encodeURIComponent(name)}`;
+}
+
+function addAsset(records, seenNames, sourceFile, releaseAsset, kind, metadata = {}) {
+  if (seenNames.has(releaseAsset)) throw new Error(`Duplicate staged TTS release asset name: ${releaseAsset}`);
+  seenNames.add(releaseAsset);
+  records.push({ sourceFile, releaseAsset, kind, ...metadata });
+}
+
+async function stageReleaseAssets() {
+  const release = await resolveCurrentTtsRelease();
+  const outputRoot = release.outputRoot;
+  const repository = String(process.env.TTS_RELEASE_REPOSITORY || process.env.GITHUB_REPOSITORY || DEFAULT_REPOSITORY).trim();
+  if (!/^[^/\s]+\/[^/\s]+$/.test(repository)) {
+    throw new Error(`Invalid TTS release repository ${JSON.stringify(repository)}; expected owner/repo.`);
+  }
+
+  const [cardManifest, territoryManifest, leaderManifest, starterManifest] = await Promise.all([
+    readJson(join(outputRoot, 'manifest.json')),
+    readJson(join(outputRoot, 'territory-manifest.json')),
+    readJson(join(outputRoot, 'leader-manifest.json')),
+    readJson(join(outputRoot, 'starter-deck-manifest.json')),
+  ]).catch((error) => {
+    if (error.code === 'ENOENT') {
+      throw new Error('TTS release staging requires a complete current build. Run npm run tts:build first.');
+    }
+    throw error;
+  });
+
+  for (const [label, manifest] of [
+    ['playable-card manifest', cardManifest],
+    ['Territory manifest', territoryManifest],
+    ['Leader manifest', leaderManifest],
+    ['starter-deck manifest', starterManifest],
+  ]) {
+    if (manifest.gameVersion !== release.version) {
+      throw new Error(`${label} targets ${manifest.gameVersion || 'no version'}; current release is ${release.version}.`);
+    }
+  }
+
+  const prefix = assetPrefix(release.version);
+  const records = [];
+  const seenNames = new Set();
+
+  for (const sheet of cardManifest.sheets || []) {
+    addAsset(
+      records,
+      seenNames,
+      sheet.faceFile,
+      `${prefix}_Playable_Sheet_${String(sheet.sheetNumber).padStart(2, '0')}.png`,
+      'playable-face-sheet',
+      { sheetNumber: sheet.sheetNumber, deckId: sheet.deckId, numWidth: sheet.numWidth, numHeight: sheet.numHeight },
+    );
+  }
+
+  for (const [faction, back] of Object.entries(cardManifest.backVariants || {})) {
+    addAsset(
+      records,
+      seenNames,
+      back.file,
+      `${prefix}_Back_${safeSegment(faction)}.png`,
+      'playable-back',
+      { faction },
+    );
+  }
+
+  for (const sheet of territoryManifest.sheets || []) {
+    addAsset(
+      records,
+      seenNames,
+      sheet.faceFile,
+      `${prefix}_Territory_Sheet_${String(sheet.sheetNumber).padStart(2, '0')}.png`,
+      'territory-face-sheet',
+      { sheetNumber: sheet.sheetNumber, deckId: sheet.deckId, numWidth: sheet.numWidth, numHeight: sheet.numHeight },
+    );
+  }
+  if (!territoryManifest.sheets?.length) throw new Error('Territory manifest contains no sheets to publish.');
+  addAsset(records, seenNames, territoryManifest.sheets[0].backFile, `${prefix}_Territory_Back.png`, 'territory-back', {
+    temporary: Boolean(territoryManifest.temporaryBack),
+  });
+
+  for (const leader of leaderManifest.leaders || []) {
+    addAsset(
+      records,
+      seenNames,
+      leader.tts?.faceFile,
+      `${prefix}_Leader_${safeSegment(leader.faction)}_${safeSegment(leader.id)}.png`,
+      'leader-face',
+      { id: leader.id, name: leader.name, faction: leader.faction, cardId: leader.tts?.cardId, deckId: leader.tts?.deckId },
+    );
+  }
+
+  const manifestFiles = [
+    ['manifest.json', `${prefix}_Card_Manifest.json`, 'card-manifest'],
+    ['territory-manifest.json', `${prefix}_Territory_Manifest.json`, 'territory-manifest'],
+    ['leader-manifest.json', `${prefix}_Leader_Manifest.json`, 'leader-manifest'],
+    ['starter-deck-manifest.json', `${prefix}_Starter_Deck_Manifest.json`, 'starter-deck-manifest'],
+  ];
+  for (const [sourceFile, releaseAsset, kind] of manifestFiles) {
+    addAsset(records, seenNames, sourceFile, releaseAsset, kind);
+  }
+
+  await rm(STAGING_ROOT, { recursive: true, force: true });
+  await mkdir(STAGING_ROOT, { recursive: true });
+
+  const staged = [];
+  for (const record of records) {
+    if (!record.sourceFile) throw new Error(`TTS release asset ${record.releaseAsset} has no source file.`);
+    const sourcePath = join(outputRoot, record.sourceFile);
+    const info = await ensureFile(sourcePath);
+    const targetPath = join(STAGING_ROOT, record.releaseAsset);
+    await copyFile(sourcePath, targetPath);
+    staged.push({
+      ...record,
+      bytes: info.size,
+      sha256: await sha256(sourcePath),
+      url: releaseUrl(repository, release.version, record.releaseAsset),
+    });
+  }
+
+  const releaseManifestName = `${prefix}_Release_Assets.json`;
+  const releaseManifest = {
+    schemaVersion: 1,
+    gameVersion: release.version,
+    repository,
+    releaseTag: release.version,
+    releasePage: `https://github.com/${repository}/releases/tag/${release.version}`,
+    sourceOutput: relative(ROOT, outputRoot).replaceAll('\\', '/'),
+    publication: {
+      host: 'github-release-assets',
+      mutableAssetNames: true,
+      note: 'The publication workflow replaces only these deterministic TTS-named assets on the existing current GitHub Release. The release tag itself is not moved.',
+    },
+    assetCount: staged.length,
+    assets: staged,
+    bySourceFile: Object.fromEntries(staged.map((asset) => [asset.sourceFile, asset.url])),
+  };
+
+  await writeFile(join(STAGING_ROOT, releaseManifestName), jsonText(releaseManifest));
+  return { release, releaseManifest, releaseManifestName };
+}
+
+async function main() {
+  const { release, releaseManifest, releaseManifestName } = await stageReleaseAssets();
+  console.log(`Staged ${releaseManifest.assetCount} TTS network assets for ${release.version} in ${relative(ROOT, STAGING_ROOT)}.`);
+  console.log(`Hosted URL manifest: ${releaseManifestName}`);
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  main().catch((error) => {
+    console.error(error.stack || error.message || error);
+    process.exitCode = 1;
+  });
+}
+
+export { STAGING_ROOT, stageReleaseAssets };

@@ -43,6 +43,7 @@
     "tts:territories": "node scripts/generate-tts-territory-assets.mjs",
     "tts:leaders": "node scripts/generate-tts-leader-assets.mjs",
     "tts:starters": "node scripts/generate-tts-starter-decks.mjs",
+    "tts:release:stage": "node scripts/stage-tts-release-assets.mjs",
     "tts:build": "npm run tts:cards && npm run tts:territories && npm run tts:leaders && npm run tts:starters",
     "preview:v063:cards": "node scripts/generate-v063-production-card-preview.mjs",
     "media:check": "node scripts/generate-card-media-assets.mjs --check && node scripts/generate-card-media-compositions.mjs --check",
