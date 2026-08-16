@@ -231,8 +231,8 @@ def main() -> int:
     require_markers(
         "playtest/session/app-core.js",
         [
-            "record.rulesVersion",
-            "rulesVersion: state.expectedRulesVersion",
+            "el.rulesVersion.textContent = session.rulesVersion",
+            "storeFormalContext(session)",
             "installRulesInteractionLinker",
             "/arbiter",
         ],
@@ -258,8 +258,8 @@ def main() -> int:
             "/^EV063-",
             "/^G063-",
             'body: { rulesVersion: "v0.6.1" }',
-            'rulesVersion, "v0.6.1"',
-            'sheetSerial, "G061-LEGACY1"',
+            'legacyRead.rulesVersion, "v0.6.1"',
+            'legacyRead.sheetSerial, "G061-LEGACY1"',
         ],
         errors,
     )
