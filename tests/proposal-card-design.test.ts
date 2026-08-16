@@ -28,8 +28,9 @@ describe("Diplomat Proposal / Treaty Article catalog", () => {
     expect(reviewPage).toContain('href="#proposal-cards"');
     expect(reviewPage).toContain('href="proposal-card.css"');
     expect(reviewPage).toContain('type="module" src="proposal-card.js"');
-    expect(reviewPage).toContain("<strong data-proposal-count>9</strong> Proposal / Treaty Article pairs");
-    expect(reviewPage).toContain("All <span data-proposal-count>9</span> canonical v0.6.3 Proposals");
+    expect(reviewPage).toContain('<span data-proposal-count>9</span> / <span data-rite-count>3</span>');
+    expect(reviewPage).toContain("Proposal / Rite pairs");
+    expect(reviewPage).toContain("All <span data-proposal-count>9</span> canonical Proposals in order");
   });
 
   it("renders every published v0.6.3 Proposal directly from canonical data", () => {

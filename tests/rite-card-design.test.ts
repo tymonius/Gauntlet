@@ -17,15 +17,17 @@ const riteArtworkPaths = [
 ];
 
 describe("Mystics Rite card prototypes", () => {
-  it("adds all three double-sided Rites to the unified card-review page", () => {
+  it("adds all three double-sided Rites and the Ritual to the unified card-review page", () => {
     expect(reviewPage).toContain('id="rite-cards"');
     expect(reviewPage).toContain('id="riteReviewSections"');
     expect(reviewPage).toContain('href="#rite-cards"');
     expect(reviewPage).toContain('href="rite-card.css"');
     expect(reviewPage).toContain('type="module" src="rite-card.js"');
-    expect(reviewPage).toContain("<strong data-rite-count>3</strong> Rite / completed-Rite pairs");
+    expect(reviewPage).toContain('<span data-rite-count>3</span> double-sided Rites');
+    expect(reviewPage).toContain('<strong data-ritual-count>1</strong> Ritual');
     for (const name of riteNames) expect(riteRenderer).toContain(`name: '${name}'`);
     expect(riteRenderer).toContain("RITES.map(reviewPair).join('')");
+    expect(riteRenderer).toContain("ritualReview()");
   });
 
   it("reuses the shared faction-component title-bar grammar without a decorative medallion", () => {
@@ -49,7 +51,7 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteRenderer).toContain("clean-v0.6.3/faction-guides/mystics/Gauntlet_v0.6.3_Mystics_Faction_Guide.md");
   });
 
-  it("uses the uploaded artwork on all three incomplete Rite faces", () => {
+  it("uses the uploaded artwork on all three incomplete Rite faces while leaving Ritual artwork explicitly pending", () => {
     for (const path of riteArtworkPaths) expect(existsSync(path)).toBe(true);
     expect(riteRenderer).toContain("const RITE_ART_ROOT = '../images/artwork/cards/mystics/rites-and-rituals'");
     expect(riteRenderer).toContain("artwork: `${RITE_ART_ROOT}/rite-of-echoes.png`");
@@ -57,7 +59,8 @@ describe("Mystics Rite card prototypes", () => {
     expect(riteRenderer).toContain("artwork: `${RITE_ART_ROOT}/rite-of-crossing.png`");
     expect(riteRenderer).toContain('class="card-art has-image" aria-label="Artwork for ${esc(rite.name)}"');
     expect(riteRenderer).toContain('<img src="${esc(rite.artwork)}"');
-    expect(riteRenderer).not.toContain("Artwork pending");
+    expect(riteRenderer).toContain("function ritualArtwork()");
+    expect(riteRenderer).toContain("Artwork pending for ${esc(RITUAL.name)}");
   });
 
   it("turns every completed face into the same count-based progression reference", () => {

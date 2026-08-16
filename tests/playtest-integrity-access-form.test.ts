@@ -3,12 +3,14 @@ import { describe, expect, it } from "vitest";
 
 const page = readFileSync("playtest/analysis/integrity/index.html", "utf8");
 const styles = readFileSync("playtest/analysis/integrity/styles.css", "utf8");
+const developerStyles = readFileSync("developer-tools.css", "utf8");
 
 describe("playtest integrity access form", () => {
   it("keeps each label and input together as one grid item", () => {
     expect(page.match(/class="access-field"/g)?.length).toBe(2);
-    expect(styles).toContain(".access-field{display:grid");
-    expect(styles).not.toContain(".access-panel form label{grid-row:1}");
+    expect(developerStyles).toContain(".access-field { display: grid;");
+    expect(styles).toContain("Component styling is shared with Playtest Analysis");
+    expect(developerStyles).not.toContain(".access-panel form label{grid-row:1}");
   });
 
   it("distinguishes the facilitator key from editable reviewer attribution", () => {
@@ -22,11 +24,11 @@ describe("playtest integrity access form", () => {
     expect(page.match(/data-lpignore="true"/g)?.length).toBe(2);
   });
 
-  it("keeps both fields readable and responsive", () => {
-    expect(styles).toContain("background:#fffaf0");
-    expect(styles).toContain("color:#171512");
-    expect(styles).toContain("input:-webkit-autofill");
-    expect(styles).toContain("@media(max-width:620px)");
-    expect(styles).toContain(".access-panel form{grid-template-columns:1fr}");
+  it("keeps both fields readable and responsive through the shared developer stylesheet", () => {
+    expect(developerStyles).toContain("background: #fffaf0;");
+    expect(developerStyles).toContain("color: var(--ink);");
+    expect(developerStyles).toContain("@media (max-width: 620px)");
+    expect(developerStyles).toContain(".integrity-main .access-panel form { grid-template-columns: 1fr; }");
+    expect(developerStyles).toContain(".access-field input { width: 100%; min-height: 46px;");
   });
 });
