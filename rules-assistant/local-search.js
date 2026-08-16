@@ -28,10 +28,10 @@ const QUERY_ALIASES = {
   win: ["victory", "last stand", "run the gauntlet"]
 };
 
-const CANONICAL_DATA_PATH = "releases/v0.6.1/Gauntlet_v0.6.1_Canonical_Data.json";
-const RULEBOOK_PATH = "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.md";
+const CANONICAL_DATA_PATH = "releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json";
+const RULEBOOK_PATH = "releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md";
 const RULEBOOK_BROWSER_PATH = "rulebook/";
-const RULEBOOK_PDF_PATH = "releases/v0.6.1/Gauntlet_v0.6.1_Rulebook.pdf";
+const RULEBOOK_PDF_PATH = "releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.pdf";
 
 export function defaultSourceUrls(siteOrigin = "https://gauntlet.run") {
   const origin = siteOrigin.replace(/\/$/, "");
@@ -106,7 +106,7 @@ export function buildRulesCorpus({
   ];
 
   return {
-    version: canonicalData?.version || "v0.6.1",
+    version: canonicalData?.version || "v0.6.3",
     generatedAt: new Date().toISOString(),
     documents: deduplicateDocuments(documents)
   };
@@ -227,7 +227,7 @@ export function buildCanonicalDocuments(canonicalData, siteOrigin = "https://gau
     documents.unshift(finalizeDocument({
       id: "canonical:release-summary",
       kind: "canonical",
-      title: `Canonical ${canonicalData.version || "v0.6.1"} release summary`,
+      title: `Canonical ${canonicalData.version || "v0.6.3"} release summary`,
       heading: "Release summary",
       body: summaryText,
       sourcePath: CANONICAL_DATA_PATH,
@@ -268,7 +268,7 @@ export function retrieveRules(corpus, query, options = {}) {
     }));
 }
 
-export function buildLocalFallbackAnswer(query, results, version = "v0.6.1") {
+export function buildLocalFallbackAnswer(query, results, version = "v0.6.3") {
   if (!results.length) {
     return {
       answer: `I could not find a close match in the ${version} canonical sources. The current rules may not specify this clearly.`,

@@ -1,9 +1,11 @@
 # Gauntlet Playtest Session Service
 
-**Implementation baseline:** v0.6.1  
+**Implementation baseline:** v0.6.3 — Third Playtest Revision  
 **Current canonical tabletop release:** v0.6.3 — Third Playtest Revision
 
-This Cloudflare Worker and D1-backed API was built for the v0.6.1 onboarding and coded formal-session workflow and has **not yet been migrated to v0.6.3**. The runtime still reports `v0.6.1`, and generated/accepted sheet serials use the `G061-…` format. Do not treat those runtime labels as the current rules authority; v0.6.3 is the governing tabletop release. Migrating the service version, serial format, tests, and linked session assumptions is separate runtime work.
+This Cloudflare Worker and D1-backed API powers the onboarding and coded formal-session workflow for the current v0.6.3 playtest release. New game sessions use `G063-…` serials; new game-night event containers use `EV063-…` serials. The runtime reports `v0.6.3` from `/health` and stores the rules version with every session.
+
+Existing v0.6.1 records are not rewritten during the cutover. Reads return each record's persisted rules version and serial, so historical sessions retain their original attribution. New v0.6.1 session creation is not supported by the current service.
 
 The service separates two different records:
 
@@ -81,6 +83,8 @@ The batch generator sends that secret as a bearer token. It is entered for the c
 | `POST` | `/api/sessions/:gameToken/arbiter` | Link a Rules Arbiter interaction to the game and asking player |
 | `POST` | `/api/sessions/:token/close` | Close registration or retire a standalone/game code; requires that session's host key |
 
+New `/api/sessions` requests accept only the current `v0.6.3` creation version. Reads are version-preserving rather than version-normalizing: an older record remains older data.
+
 ## Player workflow
 
 ### Before game night
@@ -116,7 +120,7 @@ The session page intercepts successful Rules Arbiter responses and links them wi
 
 The event record rejects game activity and Rules Arbiter links, preventing questions from multiple simultaneous matches from being combined.
 
-Because the session service still identifies itself as v0.6.1, formal-session version attribution must not be assumed to be v0.6.3 until the runtime migration is complete. The unversioned public Rules Arbiter itself follows the current v0.6.3 release.
+New sessions use v0.6.3 and therefore align with the current unversioned Rules Arbiter. Stored v0.6.1 sessions remain readable historical records, but the current session page does not automatically switch its embedded Arbiter to the legacy ruleset merely because a stored record is v0.6.1. Explicitly versioned Rules Arbiter routes remain separate compatibility/history surfaces.
 
 ## Organizer workflow
 
@@ -145,14 +149,11 @@ Closing event registration freezes onboarding but does not prevent the host from
 
 ## Production setup
 
-These steps describe the service **as currently implemented**, including its v0.6.1 version label:
-
 1. Review and apply all four remote migrations in numeric order.
 2. Deploy this directory as a separate Cloudflare Worker project using `wrangler.toml`.
 3. Set `SESSION_ADMIN_TOKEN` with `wrangler secret put` or the Cloudflare dashboard.
-4. Confirm `/health` reports v0.6.1 with `database`, `sessionCreationConfigured`, `onboardingSupported`, `eventGamesSupported`, and `playerAttributionSupported` all true.
-5. Test event onboarding, identity continuity, roster fallback, child-game creation, two-seat limits, player-attributed Arbiter linkage, child closure, and standalone coded sheets.
-6. Deploy the static onboarding and session pages only after the Worker and migration are live.
-7. Generate table QR codes only after the production endpoint passes the above checks.
-
-A future v0.6.3 migration must update the runtime constant, serial contract, associated tests, and these production checks together rather than changing only the documentation label.
+4. Confirm `/health` reports v0.6.3 with `database`, `sessionCreationConfigured`, `onboardingSupported`, `eventGamesSupported`, and `playerAttributionSupported` all true.
+5. Test current standalone creation (`G063-…`), current event creation (`EV063-…`), event onboarding, identity continuity, roster fallback, child-game creation, two-seat limits, player-attributed Arbiter linkage, child closure, and coded sheets.
+6. Confirm at least one stored v0.6.1 session can still be read and returns its original version/serial without rewriting the record.
+7. Deploy the static onboarding, host, batch, and session pages only after the Worker passes the above checks.
+8. Generate table QR codes only after the production endpoint passes the above checks.

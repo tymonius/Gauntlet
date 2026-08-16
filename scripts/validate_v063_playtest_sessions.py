@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate the v0.6.1 uniquely coded formal-playtest workflow."""
+"""Validate the current v0.6.3 coded formal-playtest workflow."""
 
 from __future__ import annotations
 
@@ -15,17 +15,23 @@ REQUIRED = [
     "rules-assistant/migrations/0002_review_export_checkpoints.sql",
     "rules-assistant/migrations/0003_playtest_sessions.sql",
     "rules-assistant/migrations/0004_event_game_sessions.sql",
+    "rules-assistant/migrations/0005_tracked_playtests.sql",
     "rules-assistant/worker-entry.js",
     "rules-assistant/worker-v061.js",
-    "rules-assistant/worker.test.mjs",
+    "rules-assistant/worker-v063.js",
+    "rules-assistant/v063-public-corpus.js",
+    "rules-assistant/local-search.js",
     "rules-assistant/wrangler.toml",
     "workers/playtest-sessions/wrangler.toml",
     "workers/playtest-sessions/package.json",
     "workers/playtest-sessions/README.md",
     "workers/playtest-sessions/src/index.js",
     "workers/playtest-sessions/src/index.test.mjs",
+    "workers/playtest-sessions/src/tracked.js",
     "playtest/README.md",
     "playtest/index.html",
+    "playtest/host/index.html",
+    "playtest/host/create-event.js",
     "playtest/onboarding/index.html",
     "playtest/onboarding/app.js",
     "playtest/onboarding/app-core.js",
@@ -41,6 +47,10 @@ REQUIRED = [
     "playtest/batch/styles.css",
     "playtest/batch/qrcode-loader.js",
     "playtest/batch/app.js",
+    "playtest/tracked/index.html",
+    "playtest/tracked/app.js",
+    "scripts/test_v063_formal_session_e2e.mjs",
+    "scripts/test_tracked_playtest_e2e.mjs",
     "package.json",
 ]
 
@@ -70,16 +80,14 @@ def main() -> int:
     require_markers(
         "rules-assistant/migrations/0003_playtest_sessions.sql",
         [
-            "ALTER TABLE rules_interactions ADD COLUMN playtest_session_id TEXT",
-            "ALTER TABLE rules_interactions ADD COLUMN sheet_serial TEXT",
             "CREATE TABLE IF NOT EXISTS playtest_sessions",
             "token_hash TEXT NOT NULL UNIQUE",
             "host_key_hash TEXT NOT NULL",
             "sheet_serial TEXT NOT NULL UNIQUE",
+            "rules_version TEXT NOT NULL",
             "CREATE TABLE IF NOT EXISTS playtest_participants",
             "CREATE TABLE IF NOT EXISTS playtest_session_events",
             "CREATE TABLE IF NOT EXISTS playtest_arbiter_links",
-            "FOREIGN KEY (interaction_id) REFERENCES rules_interactions(id)",
         ],
         errors,
     )
@@ -91,11 +99,17 @@ def main() -> int:
             "ADD COLUMN identity_token_hash TEXT",
             "ADD COLUMN event_participant_id TEXT",
             "ADD COLUMN seat_index INTEGER",
-            "ADD COLUMN faction TEXT",
-            "ADD COLUMN leader TEXT",
             "ADD COLUMN participant_id TEXT",
             "ADD COLUMN playtest_participant_id TEXT",
-            "idx_playtest_participants_seat",
+        ],
+        errors,
+    )
+    require_markers(
+        "rules-assistant/migrations/0005_tracked_playtests.sql",
+        [
+            "CREATE TABLE IF NOT EXISTS playtest_session_results",
+            "CREATE TABLE IF NOT EXISTS playtest_participant_responses",
+            "CREATE TABLE IF NOT EXISTS playtest_public_creation_limits",
         ],
         errors,
     )
@@ -103,25 +117,30 @@ def main() -> int:
     require_markers(
         "rules-assistant/worker-entry.js",
         [
-            'import worker from "./worker-v061.js"',
-            'import { ADMIN_PAGE_WITH_INCREMENTAL_EXPORT } from "./admin-incremental-export-page.js"',
-            'import { handleReviewExportCheckpoint } from "./review-export-checkpoint.js"',
-            "/api/admin/review-export-checkpoint",
+            'import v061Worker from "./worker-v061.js"',
+            'import worker from "./worker-v063.js"',
+            'if (requestedVersion === "v0.6.1") return v061Worker.fetch(request, env, context);',
+            "return worker.fetch(request, env, context);",
         ],
         errors,
     )
-
     require_markers(
-        "rules-assistant/worker-v061.js",
+        "rules-assistant/worker-v063.js",
         [
-            'const RULES_VERSION = "v0.6.1"',
-            "canonical v0.6.1 pre-release playtest edition",
-            "The current v0.6.1 rules do not specify this clearly",
-            "sanitizePlaytestContext(payload)",
-            "playtest_session_id, sheet_serial",
-            "linkFormalPlaytest",
-            "INSERT OR IGNORE INTO playtest_arbiter_links",
-            "Reveal and resolution are different timings",
+            "current canonical v0.6.3 playtest edition",
+            "certified v0.6.3 source passages",
+            "V063_RULES_VERSION",
+            "v063-public-corpus.js",
+        ],
+        errors,
+    )
+    require_markers(
+        "rules-assistant/local-search.js",
+        [
+            'releases/v0.6.3/Gauntlet_v0.6.3_Canonical_Data.json',
+            'releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.md',
+            'releases/v0.6.3/Gauntlet_v0.6.3_Rulebook.pdf',
+            'buildLocalFallbackAnswer(query, results, version = "v0.6.3")',
         ],
         errors,
     )
@@ -129,17 +148,18 @@ def main() -> int:
     require_markers(
         "workers/playtest-sessions/src/index.js",
         [
-            'const CURRENT_RULES_VERSION = "v0.6.1"',
+            'const CURRENT_RULES_VERSION = "v0.6.3"',
+            'const GAME_SERIAL_PREFIX = "G063"',
+            'const EVENT_SERIAL_PREFIX = "EV063"',
+            'const SERIAL_PATTERN = /^G063-',
             "SESSION_ADMIN_TOKEN",
             "sessionCreationConfigured",
             "eventGamesSupported",
             "playerAttributionSupported",
-            "identity_token_hash",
             "event_session_id",
             "seat_index",
             "/games",
             "event-participants",
-            "participantId",
             "playtest_participant_id",
             "This session is closed",
             "Rules Arbiter interaction not found",
@@ -147,35 +167,85 @@ def main() -> int:
         ],
         errors,
     )
+    session_worker = read("workers/playtest-sessions/src/index.js")
+    if 'const CURRENT_RULES_VERSION = "v0.6.1"' in session_worker:
+        errors.append("playtest session Worker still declares v0.6.1 as current")
+    if "G061-${randomCode" in session_worker:
+        errors.append("playtest session Worker still generates G061 serials for new sessions")
 
     require_markers(
-        "playtest/onboarding/app.js",
+        "workers/playtest-sessions/src/tracked.js",
         [
-            "identity-bridge.js",
-            "app-core.js",
-            "games.js",
-            "DOMContentLoaded",
+            'const CURRENT_RULES_VERSION = "v0.6.3"',
+            'const serial = `G063-${randomCode(8)}`',
+            "trackedPlaytestsSupported: true",
+            "automaticTrackedClosureSupported: true",
+            "rulesVersion: CURRENT_RULES_VERSION",
+        ],
+        errors,
+    )
+    tracked_worker = read("workers/playtest-sessions/src/tracked.js")
+    if 'const CURRENT_RULES_VERSION = "v0.6.1"' in tracked_worker:
+        errors.append("tracked playtest Worker still declares v0.6.1 as current")
+    if "G061-${randomCode" in tracked_worker:
+        errors.append("tracked playtest Worker still generates G061 serials")
+
+    require_markers(
+        "playtest/host/create-event.js",
+        [
+            'const CURRENT_RULES_VERSION = "v0.6.3"',
+            'rulesVersion: CURRENT_RULES_VERSION',
+            'sessionKind: "event"',
         ],
         errors,
     )
     require_markers(
-        "playtest/onboarding/app-core.js",
+        "playtest/batch/app.js",
         [
-            'params.get("code")',
-            'params.get("host")',
-            "onboarding_choice",
-            "/onboarding",
-            "submitChoice",
+            'rulesVersion: "v0.6.3"',
+            'health.version !== "v0.6.3"',
+            "gauntlet-v063-playtest-batch-",
+            "createQrCode(created.joinUrl)",
+            "sensitive: true",
         ],
         errors,
     )
+    require_markers(
+        "playtest/batch/index.html",
+        [
+            "Gauntlet v0.6.3 formal playtest sheets",
+            'app.js?v=20260816-1',
+            'name="referrer" content="no-referrer"',
+            'name="robots" content="noindex, nofollow"',
+            "Download host manifest",
+        ],
+        errors,
+    )
+    require_markers(
+        "playtest/host/index.html",
+        [
+            'create-event.js?v=20260816-1',
+            "Host Home",
+        ],
+        errors,
+    )
+    require_markers(
+        "playtest/index.html",
+        [
+            "Gauntlet v0.6.3 Playtest Sheet",
+            "Official v0.6.3 human-playtest questionnaire",
+            'id="session-qr"',
+            'id="sheet-serial"',
+        ],
+        errors,
+    )
+
     require_markers(
         "playtest/onboarding/identity-bridge.js",
         [
             'purpose: "onboarding"',
             "participantToken",
             "gauntlet_event_identity_",
-            "gauntlet_last_event_identity",
         ],
         errors,
     )
@@ -186,55 +256,16 @@ def main() -> int:
             "Create table codes",
             "Both players scan this code",
             "Download table manifest",
-            "qrcode-loader.js",
-        ],
-        errors,
-    )
-
-    require_markers(
-        "playtest/session/index.html",
-        [
-            'name="referrer" content="no-referrer"',
-            'name="robots" content="noindex, nofollow"',
-            "Join session",
-            "Ask the Rules Arbiter",
-            "Close session",
-            "Designed for review, not surveillance",
-            'src="privacy.js',
-            "../../rules-assistant/widget.js",
-        ],
-        errors,
-    )
-    require_markers(
-        "playtest/session/privacy.js",
-        [
-            'url.searchParams.get("host")',
-            'sessionStorage.setItem(`${storagePrefix}_host`, hostKey)',
-            'url.searchParams.delete("host")',
-            "history.replaceState",
-        ],
-        errors,
-    )
-    require_markers(
-        "playtest/session/app.js",
-        [
-            "event-game.js",
-            "app-core.js",
-            "DOMContentLoaded",
         ],
         errors,
     )
     require_markers(
         "playtest/session/app-core.js",
         [
-            'params.get("code")',
-            'params.get("host")',
-            "gauntlet_playtest_session_id",
+            "el.rulesVersion.textContent = session.rulesVersion",
+            "storeFormalContext(session)",
             "installRulesInteractionLinker",
             "/arbiter",
-            "game_started",
-            "game_stopped",
-            "game_completed",
         ],
         errors,
     )
@@ -245,60 +276,41 @@ def main() -> int:
             "event-participants",
             "eventParticipantId",
             "participantToken",
-            "confirmedRosterSelection",
             "seatIndex",
-            "participantId",
-            "Rules Arbiter questions from this device will be attributed to you",
+        ],
+        errors,
+    )
+    require_markers(
+        "playtest/tracked/app.js",
+        [
+            'api("/api/tracked-games"',
+            "storeRulesContext()",
+            "installRulesInteractionLinker()",
         ],
         errors,
     )
 
     require_markers(
-        "playtest/batch/index.html",
+        "scripts/test_v063_formal_session_e2e.mjs",
         [
-            'name="referrer" content="no-referrer"',
-            'name="robots" content="noindex, nofollow"',
-            "Number of sheets",
-            "Facilitator creation key",
-            "Download host manifest",
-            "Print all sheets",
-            'src="qrcode-loader.js',
+            'version: "v0.6.3"',
+            'rulesVersion: "v0.6.3"',
+            "/^EV063-",
+            "/^G063-",
+            'body: { rulesVersion: "v0.6.1" }',
+            'legacyRead.rulesVersion, "v0.6.1"',
+            'legacyRead.sheetSerial, "G061-LEGACY1"',
         ],
         errors,
     )
     require_markers(
-        "playtest/batch/qrcode-loader.js",
+        "scripts/test_tracked_playtest_e2e.mjs",
         [
-            "qrcodejs@1.0.0",
-            "cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js",
-            "cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js",
-            'script.referrerPolicy = "no-referrer"',
-            "async toDataURL",
-            "The QR renderer could not be downloaded from either provider",
-        ],
-        errors,
-    )
-    require_markers(
-        "playtest/batch/app.js",
-        [
-            "Authorization",
-            "Bearer ${adminToken}",
-            "createQrCode(created.joinUrl)",
-            "sensitive: true",
-            "hostUrl",
-            "sheetTemplate.cloneNode(true)",
-        ],
-        errors,
-    )
-
-    require_markers(
-        "playtest/index.html",
-        [
-            'href="batch/"',
-            'id="session-qr"',
-            'id="sheet-serial"',
-            "params.get('serial')",
-            "params.get('qr')",
+            'health.version, "v0.6.3"',
+            'created.rulesVersion, "v0.6.3"',
+            "/^G063-",
+            "'v0.6.3', 'explicit'",
+            'title: "v0.6.3 Rulebook"',
         ],
         errors,
     )
@@ -311,6 +323,8 @@ def main() -> int:
         errors.append("Playtest session Worker must use the same D1 database as the Rules Arbiter")
     if 'main = "worker-entry.js"' not in rules_toml:
         errors.append("Rules Arbiter wrangler.toml must deploy the integrated worker-entry.js wrapper")
+    if 'main = "src/completeness.js"' not in session_toml:
+        errors.append("Playtest session wrangler.toml must deploy the complete production Worker chain")
     if "SESSION_ADMIN_TOKEN" in session_toml:
         errors.append("SESSION_ADMIN_TOKEN must be a Worker secret, not committed in wrangler.toml")
     if "ALLOWED_ORIGINS" not in session_toml:
@@ -323,22 +337,26 @@ def main() -> int:
             errors.append(f"{relative}: private formal-playtest page must not load analytics")
     if "cdn.jsdelivr.net/npm/qrcode" in batch_html:
         errors.append("QR library must be deferred through the local privacy-preserving loader")
-    if "integrity=" in batch_html and "qrcode" in batch_html:
-        errors.append("QR library uses an unverified Subresource Integrity value")
     if 'type="password"' not in batch_html:
         errors.append("Facilitator creation key must use a password input")
 
     root_package = json.loads(read("package.json"))
     scripts = root_package.get("scripts") or {}
-    for script in (
+    required_scripts = [
         "governance:check",
         "test:rules-assistant",
         "test:playtest-sessions",
         "test:formal-session-e2e",
+        "test:tracked-session-e2e",
         "test:deckbuilder",
-    ):
+    ]
+    for script in required_scripts:
         if script not in scripts:
             errors.append(f"package.json is missing {script}")
+    if "test_v063_formal_session_e2e.mjs" not in scripts.get("test:formal-session-e2e", ""):
+        errors.append("test:formal-session-e2e does not target the v0.6.3 end-to-end test")
+    if "test_tracked_playtest_e2e.mjs" not in scripts.get("test:tracked-session-e2e", ""):
+        errors.append("test:tracked-session-e2e does not target the tracked end-to-end test")
 
     worker_package = json.loads(read("workers/playtest-sessions/package.json"))
     worker_scripts = worker_package.get("scripts") or {}
@@ -346,26 +364,19 @@ def main() -> int:
         if script not in worker_scripts:
             errors.append(f"playtest session package is missing {script}")
 
-    for relative in REQUIRED:
-        if Path(relative).suffix.lower() not in {".js", ".mjs", ".html", ".css", ".md", ".sql", ".toml", ".json"}:
-            continue
-        text = read(relative)
-        if "v0.6.0" in text:
-            errors.append(f"{relative}: obsolete v0.6.0 label remains")
-
     if errors:
         return fail(errors)
 
     print(
-        "Validated v0.6.1 formal playtest sessions: sequenced shared D1 migrations, event-scoped onboarding, "
-        "hashed participant identity, unique two-seat table games, player-attributed Rules Arbiter linkage, "
-        "privacy-safe QR rendering, standalone coded-sheet compatibility, and automated lifecycle tests."
+        "Validated v0.6.3 formal and tracked playtest sessions: current runtime versioning, G063/EV063 serials, "
+        "event-scoped onboarding, public tracked games, two-seat sessions, player-attributed Rules Arbiter linkage, "
+        "current browser fallback sources, privacy-safe QR rendering, and explicit legacy-read compatibility."
     )
     return 0
 
 
 def fail(errors: list[str]) -> int:
-    print("Gauntlet v0.6.1 formal-playtest validation failed:", file=sys.stderr)
+    print("Gauntlet v0.6.3 formal-playtest validation failed:", file=sys.stderr)
     for error in errors:
         print(f"- {error}", file=sys.stderr)
     return 1

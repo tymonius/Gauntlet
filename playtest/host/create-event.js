@@ -3,6 +3,7 @@
     window.GAUNTLET_PLAYTEST_SESSION_ENDPOINT ||
     "https://gauntlet-playtest-sessions.tymon-scott.workers.dev"
   ).replace(/\/$/, "");
+  const CURRENT_RULES_VERSION = "v0.6.3";
   const LABEL_STORAGE_KEY = "gauntlet_playtest_host_event_labels_v1";
   const registry = window.GauntletHostRegistry;
   if (!registry) return;
@@ -106,7 +107,7 @@
     const response = await fetch(`${API_ORIGIN}/health`, { cache: "no-store" });
     if (!response.ok) throw new Error(`Session service health check failed (${response.status}).`);
     const health = await response.json();
-    if (health.version !== "v0.6.1") throw new Error(`Session service reports ${health.version || "an unknown version"}.`);
+    if (health.version !== CURRENT_RULES_VERSION) throw new Error(`Session service reports ${health.version || "an unknown version"}.`);
     if (!health.database) throw new Error("Session service database is not configured.");
     if (!health.sessionCreationConfigured) throw new Error("Session creation is not configured.");
     if (!health.onboardingSupported || !health.eventGamesSupported) {
@@ -122,7 +123,8 @@
         "Content-Type": "application/json"
       },
       body: JSON.stringify({
-        rulesVersion: "v0.6.1",
+        rulesVersion: CURRENT_RULES_VERSION,
+        sessionKind: "event",
         metadata: {
           generatedFrom: "playtest-host-home",
           intendedUse: "game-night-event",
