@@ -11,8 +11,44 @@ import {
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
-const rulebookHtml = await fs.readFile(path.join(root, "v0.6.3/rulebook/index.html"), "utf8");
+const rulebookMarkdown = await fs.readFile(
+  path.join(root, "artifacts/reconstruction/clean-v0.6.3/rulebook/Gauntlet_v0.6.3_Rulebook.md"),
+  "utf8"
+);
 const canonicalJson = await fs.readFile(path.join(root, "v0.6.3/data/Gauntlet_v0.6.3_Canonical_Data_Candidate.json"), "utf8");
+
+// The old /v0.6.3/rulebook/ review route now redirects to the published current
+// Rulebook. Keep this historical candidate parser covered by a deterministic
+// release-doc fixture built from the preserved clean v0.6.3 Rulebook source.
+const rulebookHtml = markdownToReleaseDocHtml(rulebookMarkdown);
+
+function escapeHtml(value) {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function markdownToReleaseDocHtml(markdown) {
+  const body = String(markdown)
+    .split(/\r?\n/)
+    .map((line) => {
+      const heading = line.match(/^(#{1,5})\s+(.+)$/);
+      if (heading) {
+        const level = Math.min(6, heading[1].length + 1);
+        return `<h${level}>${escapeHtml(heading[2])}</h${level}>`;
+      }
+      if (line.trim() === "---") return "<hr>";
+      if (line.startsWith("> ")) return `<blockquote><p>${escapeHtml(line.slice(2))}</p></blockquote>`;
+      if (line.startsWith("- ")) return `<li>${escapeHtml(line.slice(2))}</li>`;
+      if (!line.trim()) return "";
+      return `<p>${escapeHtml(line)}</p>`;
+    })
+    .join("\n");
+  return `<article class="release-doc">${body}</article>`;
+}
 
 function fakeFetch(url) {
   const text = String(url);
@@ -35,7 +71,7 @@ async function corpus() {
 }
 
 describe("v0.6.3 development Rules Arbiter corpus", () => {
-  it("reconstructs the candidate Rulebook from the browser review page", () => {
+  it("reconstructs the candidate Rulebook from a preserved release-doc fixture", () => {
     const markdown = candidateRulebookHtmlToMarkdown(rulebookHtml);
     expect(markdown).toContain("# GAUNTLET");
     expect(markdown).toContain("## Official Rulebook");

@@ -20,12 +20,12 @@ const CORE_PLAYER_HTML = [
   "rules-arbiter/index.html"
 ];
 
-const GLOBAL_TOOL_LINKS = [
-  "../rulebook/",
-  "../factions/",
-  "../deckbuilder/",
-  "../card-reference/",
-  "../rules-arbiter/"
+const GLOBAL_TOOL_TARGETS = [
+  "rulebook/index.html",
+  "factions/index.html",
+  "deckbuilder/index.html",
+  "card-reference/index.html",
+  "rules-arbiter/index.html"
 ];
 
 function visibleText(html: string) {
@@ -49,15 +49,32 @@ function localTarget(fromFile: string, ref: string) {
   if (!withoutFragment) return null;
 
   const decoded = decodeURIComponent(withoutFragment);
+  if (decoded === "/") return "index.html";
+
   let target = decoded.startsWith("/")
     ? path.normalize(decoded.slice(1))
     : path.normalize(path.join(path.dirname(fromFile), decoded));
 
-  if (!target || target === ".") target = "index.html";
+  if (!target || target === ".") return "index.html";
   if (decoded.endsWith("/") || (existsSync(target) && statSync(target).isDirectory())) {
     target = path.join(target, "index.html");
   }
   return target;
+}
+
+function resolvedTargets(file: string) {
+  return new Set(
+    staticRefs(read(file))
+      .map(ref => localTarget(file, ref))
+      .filter((target): target is string => Boolean(target))
+  );
+}
+
+function expectNavigationTargets(file: string, expectedTargets: string[]) {
+  const targets = resolvedTargets(file);
+  for (const target of expectedTargets) {
+    expect(targets.has(target), `${file} lacks navigation to ${target}`).toBe(true);
+  }
 }
 
 describe("current v0.6.3 player-site closeout", () => {
@@ -87,20 +104,23 @@ describe("current v0.6.3 player-site closeout", () => {
 
   it("restores coherent primary navigation on the rules and reference tools", () => {
     for (const file of ["card-reference/index.html", "rules-arbiter/index.html"]) {
-      const html = read(file);
-      for (const href of GLOBAL_TOOL_LINKS) expect(html, `${file} lacks ${href}`).toContain(`href="${href}"`);
+      expectNavigationTargets(file, GLOBAL_TOOL_TARGETS);
     }
 
-    const deckbuilder = read("deckbuilder/index.html");
-    for (const href of ["../rulebook/", "../factions/", "../card-reference/", "../rules-arbiter/"]) {
-      expect(deckbuilder, `deckbuilder/index.html lacks ${href}`).toContain(`href="${href}"`);
-    }
-    expect(deckbuilder).toContain('<a href="./" aria-current="page">Deckbuilder</a>');
+    expectNavigationTargets("deckbuilder/index.html", [
+      "rulebook/index.html",
+      "factions/index.html",
+      "card-reference/index.html",
+      "rules-arbiter/index.html"
+    ]);
+    expect(resolvedTargets("deckbuilder/index.html").has("deckbuilder/index.html")).toBe(true);
 
-    const rulebook = read("rulebook/index.html");
-    for (const href of ["../factions/", "../deckbuilder/", "../card-reference/", "../rules-arbiter/"]) {
-      expect(rulebook, `rulebook/index.html lacks ${href}`).toContain(`href="${href}"`);
-    }
+    expectNavigationTargets("rulebook/index.html", [
+      "factions/index.html",
+      "deckbuilder/index.html",
+      "card-reference/index.html",
+      "rules-arbiter/index.html"
+    ]);
   });
 
   it("keeps the Card Reference on current v0.6.3 data without exposing reconstruction UI", () => {
@@ -114,7 +134,7 @@ describe("current v0.6.3 player-site closeout", () => {
     expect(app).toContain("gameplay.territories.length !== 25");
     expect(app).toContain('secondLine?.name !== "Second Line"');
     expect(app).toContain('smugglersRun?.name !== "Smuggler\'s Run"');
-    expect(app).toContain('const RULEBOOK_URL = \'../rulebook/\';');
+    expect(app).toContain("const RULEBOOK_URL = '../rulebook/';");
     expect(app).not.toContain("../browser-rulebook/");
     expect(app).not.toContain("View clean canonical authority");
     expect(app).not.toContain("This reconstruction");
