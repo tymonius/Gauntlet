@@ -1,7 +1,7 @@
 # Gauntlet Playtest Tools
 
 **Current canonical tabletop release:** v0.6.3 — Third Playtest Revision  
-**Coded-session service baseline:** v0.6.1 pending runtime migration
+**Coded-session service baseline:** v0.6.3
 
 Public pages:
 
@@ -11,7 +11,7 @@ Public pages:
 
 This directory contains the routine human-playtest questionnaire and its linked formal-session workflow. For the tagged v0.6.3 release artifact, use [`releases/v0.6.3/Gauntlet_v0.6.3_Formal_Playtest_Sheet.pdf`](../releases/v0.6.3/Gauntlet_v0.6.3_Formal_Playtest_Sheet.pdf).
 
-The browser pages and coded-session infrastructure are active development surfaces rather than immutable release artifacts. The session Worker still reports v0.6.1 and uses `G061-…` serials; those labels are a known migration blocker and must not be mistaken for the current rules version. The unversioned public Rules Arbiter follows v0.6.3.
+The browser pages and coded-session infrastructure are active development surfaces rather than immutable release artifacts. New sessions created by the live workflow use the v0.6.3 runtime contract, while older stored sessions retain their persisted rules version and remain addressable by their existing session tokens.
 
 ## Printable sheet
 
@@ -36,15 +36,17 @@ The batch generator creates the digital session before printing. Scanning a shee
 
 The human-readable serial is a fallback for damaged QR codes, manual session lookup, and reconciliation between a paper sheet and digital records.
 
-### Current coded-session limitation
+### Version and serial contract
 
-The session service was implemented for v0.6.1 and has not yet completed its v0.6.3 migration. Its current runtime contract still uses serials such as:
+New v0.6.3 standalone and table-game sessions use serials such as:
 
 ```text
-G061-000123
+G063-ABCD2345
 ```
 
-and reports `v0.6.1` from its health/session metadata. Preserve that format while using the current service. Migrating the runtime constant, serial pattern, tests, and stored-session version assumptions must happen together before new sessions can be represented as v0.6.3-native.
+Game-night event containers use the `EV063-…` prefix. The session service reports `v0.6.3` from its health endpoint and stores the rules version with each session.
+
+Older v0.6.1 records are not rewritten during the cutover. Reading an existing session returns the rules version and serial already stored with that record, which preserves historical attribution and allows the session page to request the matching versioned Rules Arbiter behavior.
 
 ### Coded batch procedure
 
@@ -62,14 +64,12 @@ The QR contains only the public join URL. The host key and host URL appear only 
 The single-sheet print source accepts optional query parameters:
 
 ```text
-/playtest/?serial=G061-000123&qr=<URL-ENCODED-QR-IMAGE-URL>
+/playtest/?serial=G063-ABCD2345&qr=<URL-ENCODED-QR-IMAGE-URL>
 ```
 
 - `serial` replaces the blank sheet-serial line.
 - `qr` supplies the QR-code image displayed in the reserved square.
 - With neither parameter, the page renders a blank reusable worksheet with a placeholder QR area.
-
-`G061-…` is shown here because it is the current session-service contract, not because v0.6.1 remains the canonical tabletop release.
 
 The batch generator does not depend on remote QR-image URLs. It creates QR images in the browser and inserts them directly into cloned copies of the governing sheet template.
 
@@ -85,7 +85,7 @@ The session page allows participants to:
 
 A session opened with its private host URL also exposes the close-and-retire control. Closed sessions remain readable but reject new participants and playtest events.
 
-Because the session service still carries v0.6.1 metadata, session records should not be described as v0.6.3-native until that runtime migration is complete. The rules question itself is handled by the current unversioned Rules Arbiter unless an explicitly versioned legacy route is requested.
+The session page uses the session record's stored rules version when asking the Rules Arbiter. New v0.6.3 sessions therefore use the current Arbiter, while a legacy v0.6.1 session can continue to use its explicitly versioned historical route.
 
 ## What the sheet captures
 
@@ -138,7 +138,7 @@ Every linked Arbiter record should retain:
 - whether the ruling changed play; and
 - reviewer correction or follow-up.
 
-The session service links interactions into the playtest-session records. Legacy v0.6.1 routes remain available for compatibility, while the unversioned public Rules Arbiter follows v0.6.3. Do not infer the Arbiter rules version solely from a legacy `G061-…` session serial.
+The session service links interactions into the playtest-session records. The unversioned public Rules Arbiter follows v0.6.3, while explicitly versioned legacy routes remain available for historical sessions. Version attribution comes from the stored session record rather than being inferred only from a serial prefix.
 
 The Rules Arbiter must not invent precedence. Where the current adjudication system makes a provisional ruling, it must distinguish that ruling from written canon and retain it for review.
 
