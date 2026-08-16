@@ -122,22 +122,23 @@ These bullets are historical provenance, not a statement that v0.6.1 remains cur
 
 ### 8. Playtest and Rules Arbiter infrastructure
 
-The coded formal-playtest workflow was introduced during the v0.6.1 revision work. Its architecture remains useful, but its runtime versioning is not fully synchronized with the current release.
+The coded formal-playtest workflow was introduced during the v0.6.1 revision work and has now been cut over to the current v0.6.3 release contract.
 
 Current state:
 
 - the unversioned public Rules Arbiter routes to v0.6.3;
 - explicitly versioned older Arbiter routes remain available as historical/compatibility surfaces;
-- the generic browser-side Rules Assistant fallback still loads v0.6.1 sources and must be migrated before it is a valid v0.6.3 fallback;
-- the playtest-session Worker still hard-codes `v0.6.1` and `G061-…` serials; and
-- the tagged v0.6.3 Formal Playtest Sheet is the current release artifact.
+- the generic browser-side Rules Assistant fallback defaults to the v0.6.3 canonical Rulebook and canonical data;
+- the playtest-session Worker creates v0.6.3 sessions, using `G063-…` serials for game sessions and `EV063-…` serials for game-night event containers;
+- Host Home and the coded batch generator require the v0.6.3 session service and create v0.6.3 records; and
+- stored legacy sessions retain their persisted rules version and serial when read, so historical attribution is not rewritten during the cutover.
 
-Required migration work:
+Validation priorities:
 
-- migrate the playtest-session runtime version, serial contract, tests, and linked-session assumptions to v0.6.3 or to a version-neutral contract;
-- migrate the Rules Assistant browser fallback to the current release source policy;
-- verify session-to-Arbiter version attribution so a legacy session serial cannot mislabel a current ruling; and
-- rerun end-to-end sheet, scan, join, ruling, session closure, and post-closure rejection tests after the runtime changes.
+- keep the current formal-session end-to-end test aligned with v0.6.3 creation, onboarding, table games, Arbiter linkage, closure, and serial generation;
+- retain a compatibility assertion that a stored v0.6.1 record is still readable with its original version and serial;
+- verify the deployed Worker health endpoint reports v0.6.3 before generating new QR codes; and
+- continue checking that session-to-Arbiter version attribution comes from the stored session record rather than being inferred only from a serial prefix.
 
 ### 9. Playable digital implementation
 
