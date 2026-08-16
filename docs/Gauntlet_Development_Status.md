@@ -138,7 +138,7 @@ Validation priorities:
 - keep the current formal-session end-to-end test aligned with v0.6.3 creation, onboarding, table games, Arbiter linkage, closure, and serial generation;
 - retain a compatibility assertion that a stored v0.6.1 record is still readable with its original version and serial;
 - verify the deployed Worker health endpoint reports v0.6.3 before generating new QR codes; and
-- continue checking that session-to-Arbiter version attribution comes from the stored session record rather than being inferred only from a serial prefix.
+- keep legacy session records as historical evidence rather than automatically re-adjudicating them through a legacy ruleset in the current session UI.
 
 ### 9. Playable digital implementation
 
