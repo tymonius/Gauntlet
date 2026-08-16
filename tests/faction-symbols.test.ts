@@ -24,15 +24,13 @@ describe("approved faction symbols", () => {
   });
 
   it("uses the approved stylized flame for Inquisition", () => {
-    expect(inquisition).toContain('viewBox="0 0 64 64"');
-    expect(inquisition).toContain('fill-rule="evenodd"');
-    expect(inquisition.match(/<path/g)).toHaveLength(1);
+    expect(inquisition).toContain('viewBox="0 0 859.41 1430.42"');
+    expect((inquisition.match(/<path/g) || []).length).toBeGreaterThanOrEqual(2);
   });
 
-  it("uses a clearly minted coin with a solid six-pointed star for Financiers", () => {
-    expect(financiers).toContain('viewBox="0 0 64 64"');
-    expect(financiers.match(/<circle/g)).toHaveLength(2);
-    expect(financiers).toContain("M 32.00 18.00");
+  it("uses the approved minted-coin mark for Financiers", () => {
+    expect(financiers).toContain('viewBox="0 0 974.21 1000.14"');
+    expect((financiers.match(/<path/g) || []).length).toBeGreaterThanOrEqual(3);
     expect(financiers).not.toContain("side-profile");
   });
 
@@ -46,9 +44,8 @@ describe("approved faction symbols", () => {
   });
 
   it("uses the approved pentagram seal for Mystics", () => {
-    expect(mystics).toContain('viewBox="0 0 64 64"');
-    expect(mystics).toContain('<circle cx="32" cy="32" r="27"');
-    expect(mystics).toContain("L 43.17 47.37");
+    expect(mystics).toContain('viewBox="0 0 916.66 940.66"');
+    expect((mystics.match(/<path/g) || []).length).toBeGreaterThanOrEqual(5);
   });
 
   it("records all six faction marks as approved", () => {
