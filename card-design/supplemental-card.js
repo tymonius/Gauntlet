@@ -7,9 +7,9 @@ const SUPPLEMENTAL_COMPONENTS = Object.freeze([
         id: 'command-tracker',
         name: 'Command Tracker',
         type: 'Sliding tracker card',
-        detail: 'Tracks 0–2 Command beneath the selected Military Leader Card.',
+        detail: 'Tracks Command beneath the selected Military Leader Card. The printed scale includes headroom beyond the current v0.6.3 maximum of 2 for durable future effects.',
         quantity: 1,
-        tracker: { max: 2, cover: 'Leader Card', scaleHeight: 0.55 },
+        tracker: { max: 4, cover: 'Leader Card', scaleHeight: 1.18, labelSize: 11.2 },
       },
     ],
   },
@@ -23,7 +23,7 @@ const SUPPLEMENTAL_COMPONENTS = Object.freeze([
         type: 'Sliding tracker card',
         detail: 'Tracks 0–10 Influence beneath the selected Diplomat Leader Card.',
         quantity: 1,
-        tracker: { max: 10, cover: 'Leader Card', scaleHeight: 1.8 },
+        tracker: { max: 10, cover: 'Leader Card', scaleHeight: 2.08, labelSize: 7.9 },
       },
       {
         id: 'diplomat-reference',
@@ -77,17 +77,17 @@ const SUPPLEMENTAL_COMPONENTS = Object.freeze([
         id: 'intel-tracker',
         name: 'Intel Tracker',
         type: 'Sliding tracker card',
-        detail: 'Provides a 0–20 physical tracking scale for Intel beneath the Operations Reference Card.',
+        detail: 'Provides a practical 0–20 physical tracking scale for uncapped Intel beneath the Operations Reference Card.',
         quantity: 1,
-        tracker: { max: 20, cover: 'Operations Reference', scaleHeight: 2.22 },
+        tracker: { max: 20, cover: 'Operations Reference', scaleHeight: 2.40, labelSize: 5.65 },
       },
       {
         id: 'operation-progress-tracker',
         name: 'Operation Progress Tracker',
         type: 'Sliding tracker card',
-        detail: 'Provides a 0–8 physical tracking scale beneath the Mission Reference Card.',
+        detail: 'Provides a practical 0–8 physical tracking scale for uncapped Operation Progress beneath the Mission Reference Card.',
         quantity: 1,
-        tracker: { max: 8, cover: 'Mission Reference', scaleHeight: 1.55 },
+        tracker: { max: 8, cover: 'Mission Reference', scaleHeight: 1.84, labelSize: 6.8 },
       },
     ],
   },
@@ -128,7 +128,7 @@ const SUPPLEMENTAL_COMPONENTS = Object.freeze([
         type: 'Sliding tracker card',
         detail: 'Tracks 0–4 Conviction beneath the selected Inquisition Leader Card.',
         quantity: 1,
-        tracker: { max: 4, cover: 'Leader Card', scaleHeight: 0.9 },
+        tracker: { max: 4, cover: 'Leader Card', scaleHeight: 1.18, labelSize: 10.4 },
       },
     ],
   },
@@ -159,36 +159,37 @@ function placeholderArtwork(component, faceLabel = '') {
   </figure>`;
 }
 
-function trackerMarks(component) {
+function trackerMarks(component, resourceName) {
   const { max } = component.tracker;
   return Array.from({ length: max }, (_, index) => index + 1).map(value => {
-    const position = max === 1 ? 0 : ((value - 1) / (max - 1)) * 100;
+    const linePosition = (value / max) * 100;
+    const bandBottom = ((value - 1) / max) * 100;
     const major = max <= 4 || value === max || value % 5 === 0;
-    return `<div class="tracker-mark${major ? ' tracker-mark-major' : ''}" style="--tracker-position:${position.toFixed(4)}%">
+    return `<div class="tracker-mark${major ? ' tracker-mark-major' : ''}" style="--tracker-line-position:${linePosition.toFixed(4)}%;--tracker-band-bottom:${bandBottom.toFixed(4)}%">
       <span class="tracker-registration-line" aria-hidden="true"></span>
-      <span class="tracker-value">${value}</span>
+      <strong class="tracker-band-label">${value} ${esc(resourceName)}</strong>
     </div>`;
   }).join('');
 }
 
 function trackerFace(component, faction, factionLabel) {
-  const { max, cover, scaleHeight } = component.tracker;
+  const { max, cover, scaleHeight, labelSize } = component.tracker;
   const resourceName = component.name.replace(/\s+Tracker$/, '');
-  return `<article class="gauntlet-card faction-component-card sliding-tracker-card ${esc(faction)}-card" data-faction="${esc(faction)}" aria-label="${esc(component.name)} sliding tracker, 0 through ${max}">
+  return `<article class="gauntlet-card faction-component-card sliding-tracker-card ${esc(faction)}-card" data-faction="${esc(faction)}" aria-label="${esc(component.name)} sliding tracker, physical scale 0 through ${max}">
     <div class="card-interior tracker-interior">
       <span class="tracker-watermark" aria-hidden="true"></span>
       <header class="tracker-heading">
         <span class="tracker-faction-emblem" aria-hidden="true"></span>
         <span class="tracker-faction-name">${esc(factionLabel)}</span>
         <h3>${esc(resourceName)}</h3>
-        <p>Sliding tracker · 0–${max}</p>
+        <p>Physical scale · 0–${max}</p>
       </header>
-      <div class="tracker-scale" style="--tracker-scale-height:${Number(scaleHeight)}in" aria-label="Registration lines 1 through ${max}">
-        ${trackerMarks(component)}
+      <div class="tracker-scale" style="--tracker-scale-height:${Number(scaleHeight)}in;--tracker-max:${max};--tracker-label-size:${Number(labelSize)}pt" aria-label="Registration bands 1 through ${max}">
+        ${trackerMarks(component, resourceName)}
       </div>
       <div class="tracker-instructions">
         <strong>0 = fully covered</strong>
-        <span>Place ${esc(cover)} over this card. Slide it upward until its bottom edge aligns with the current value.</span>
+        <span>Place ${esc(cover)} over this card. Slide it upward until its bottom edge aligns with the line above the current value.</span>
       </div>
     </div>
   </article>`;
@@ -224,7 +225,7 @@ function componentFace(component, faction, factionLabel, faceLabel = '') {
 function componentSpecimen(component, faction, factionLabel) {
   const quantity = Number(component.quantity) || 1;
   const quantityText = quantity > 1 ? `×${quantity} physical copies` : component.doubleSided ? '2 faces · 1 physical card' : '1 physical card';
-  const statusText = component.tracker ? `Designed · 0–${component.tracker.max}` : quantityText;
+  const statusText = component.tracker ? `Designed · physical 0–${component.tracker.max}` : quantityText;
 
   if (component.doubleSided) {
     return `<section class="supplemental-review-item supplemental-review-pair" id="supplemental-${esc(faction)}-${esc(component.id)}">
