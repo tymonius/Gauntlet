@@ -50,6 +50,16 @@
   grid-template-columns: minmax(0, 2.5in);
 }
 
+/* site.css intentionally styles the public page footer with a constrained
+   width and auto margins. Card metadata also uses semantic <footer> elements,
+   so keep those global page rules from leaking into production card faces. */
+.developer-catalog-page .gauntlet-card footer,
+.developer-catalog-page .territory-card footer {
+  width: auto;
+  max-width: none;
+  margin: 0;
+}
+
 .supplemental-placeholder-card {
   --rules-scale: 1;
 }
@@ -120,14 +130,14 @@
 }
 
 /* ---------- Sliding trackers ----------
-   The covering Leader / Reference card is the pointer. At zero this card is
-   completely hidden. For any positive value, slide the cover upward until its
-   bottom edge sits directly on the relevant registration rule. */
+   The covering Leader / Reference card is the pointer. At zero the tracker is
+   completely hidden. Each printed registration line is the TOP edge of its
+   value band; the band immediately below it states the current value in large
+   type. Slide the cover until its bottom edge sits on that line. */
 
 .sliding-tracker-card {
   --tracker-line: color-mix(in srgb, var(--component-accent-ink) 72%, #4b3c2f 28%);
   --tracker-line-soft: color-mix(in srgb, var(--component-accent-ink) 38%, transparent);
-  --tracker-number-bg: color-mix(in srgb, var(--card-parchment-light) 82%, white 18%);
 }
 
 .sliding-tracker-card .tracker-interior {
@@ -144,11 +154,11 @@
 .tracker-watermark {
   z-index: 1 !important;
   right: 0.20in;
-  bottom: 0.40in;
+  bottom: 0.32in;
   width: 1.72in;
   height: 1.72in;
   background: var(--component-accent-ink);
-  opacity: 0.045;
+  opacity: 0.04;
   -webkit-mask: var(--faction-symbol) center / contain no-repeat;
   mask: var(--faction-symbol) center / contain no-repeat;
 }
@@ -246,25 +256,21 @@
 
 .tracker-scale {
   right: 0.09in;
-  bottom: 0.29in;
+  bottom: 0.18in;
   left: 0.09in;
   height: var(--tracker-scale-height);
 }
 
 .tracker-mark {
-  position: absolute;
-  right: 0;
-  bottom: var(--tracker-position);
-  left: 0;
-  height: 0;
+  position: static;
 }
 
 .tracker-registration-line {
   position: absolute;
-  top: 0;
-  right: 0.34in;
+  right: 0.02in;
+  bottom: var(--tracker-line-position);
   left: 0.02in;
-  border-top: 0.65px solid var(--tracker-line-soft);
+  border-top: 0.75px solid var(--tracker-line-soft);
 }
 
 .tracker-mark-major .tracker-registration-line {
@@ -272,39 +278,48 @@
   border-top-color: var(--tracker-line);
 }
 
-.tracker-registration-line::before {
+.tracker-registration-line::before,
+.tracker-registration-line::after {
   position: absolute;
-  top: -0.026in;
-  left: 0;
-  width: 0.075in;
+  top: -0.03in;
+  width: 0.09in;
   border-top: 1.15px solid var(--tracker-line);
   content: "";
-  transform: translateY(0.026in);
+  transform: translateY(0.03in);
 }
 
-.tracker-value {
+.tracker-registration-line::before {
+  left: 0;
+}
+
+.tracker-registration-line::after {
+  right: 0;
+}
+
+.tracker-band-label {
   position: absolute;
-  top: 0.016in;
-  right: 0.015in;
-  display: grid;
-  min-width: 0.25in;
-  height: 0.082in;
-  place-items: center;
-  border: 0.65px solid var(--tracker-line-soft);
-  border-radius: 0.02in;
-  background: var(--tracker-number-bg);
-  box-shadow: 0 0.01in 0.025in rgba(50, 35, 22, 0.09);
+  right: 0.06in;
+  bottom: var(--tracker-band-bottom);
+  left: 0.06in;
+  display: flex;
+  height: calc(100% / var(--tracker-max));
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   color: var(--component-accent-ink);
-  font-family: var(--font-interface);
-  font-size: 4.4pt;
-  font-weight: 850;
-  letter-spacing: 0.015em;
-  line-height: 1;
+  font-family: var(--font-display-historical);
+  font-size: var(--tracker-label-size);
+  font-style: normal;
+  font-weight: 400;
+  letter-spacing: 0.045em;
+  line-height: 0.9;
+  text-align: center;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
 
-.tracker-mark-major .tracker-value {
-  border-color: var(--tracker-line);
-  font-size: 4.8pt;
+.tracker-mark-major .tracker-band-label {
+  font-weight: 500;
 }
 
 @media screen and (max-width: 760px) {
@@ -339,7 +354,7 @@
   .tracker-faction-emblem,
   .tracker-watermark,
   .tracker-registration-line,
-  .tracker-value {
+  .tracker-band-label {
     print-color-adjust: exact;
   }
 }
