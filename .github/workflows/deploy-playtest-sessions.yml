@@ -1,0 +1,138 @@
+name: Deploy Playtest Session Worker
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "workers/playtest-sessions/**"
+      - "rules-assistant/migrations/**"
+      - "rules-assistant/local-search.js"
+      - "rules-assistant/v063-public-corpus.js"
+      - "scripts/validate_v063_playtest_sessions.py"
+      - "scripts/test_v063_formal_session_e2e.mjs"
+      - ".github/workflows/deploy-playtest-sessions.yml"
+  workflow_dispatch:
+    inputs:
+      apply_migrations:
+        description: Apply pending shared D1 migrations before deployment
+        required: true
+        type: boolean
+        default: true
+      refresh_session_secret:
+        description: Reapply SESSION_ADMIN_TOKEN from the GitHub production secret
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-playtest-sessions-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - name: Check out deployment revision
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Verify Cloudflare deployment secrets
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "CLOUDFLARE_API_TOKEN is not configured"; exit 1; }
+          test -n "$CLOUDFLARE_ACCOUNT_ID" || { echo "CLOUDFLARE_ACCOUNT_ID is not configured"; exit 1; }
+
+      - name: Install validation and Worker tooling
+        run: |
+          npm install
+          npm install --no-save wrangler@4
+
+      - name: Validate playtest session service
+        run: |
+          npm run test:playtest-sessions
+          npm run test:formal-session-e2e
+          npm run test:tracked-session-e2e
+          python scripts/validate_v063_playtest_sessions.py
+
+      - name: Apply shared D1 migrations
+        if: ${{ github.event_name == 'push' || inputs.apply_migrations }}
+        run: >-
+          npx wrangler d1 migrations apply gauntlet-rules-assistant
+          --remote
+          --config rules-assistant/wrangler.toml
+
+      - name: Deploy playtest session service
+        run: npx wrangler deploy --config workers/playtest-sessions/wrangler.toml
+
+      - name: Refresh facilitator session-creation secret
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.refresh_session_secret }}
+        env:
+          PLAYTEST_SESSION_ADMIN_TOKEN: ${{ secrets.PLAYTEST_SESSION_ADMIN_TOKEN }}
+        run: |
+          test -n "$PLAYTEST_SESSION_ADMIN_TOKEN" || { echo "PLAYTEST_SESSION_ADMIN_TOKEN is not configured"; exit 1; }
+          printf '%s' "$PLAYTEST_SESSION_ADMIN_TOKEN" |
+            npx wrangler secret put SESSION_ADMIN_TOKEN \
+            --config workers/playtest-sessions/wrangler.toml
+
+      - name: Verify production health endpoint
+        run: |
+          curl --fail --retry 8 --retry-delay 4 --retry-all-errors \
+            https://gauntlet-playtest-sessions.tymon-scott.workers.dev/health \
+            -o /tmp/session-health.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          sessions = json.loads(Path('/tmp/session-health.json').read_text())
+          if not sessions.get('ok') or sessions.get('version') != 'v0.6.3':
+              raise SystemExit(f'Playtest session health failed: {sessions}')
+          if not sessions.get('database'):
+              raise SystemExit(f'Playtest session D1 binding unavailable: {sessions}')
+          if not sessions.get('sessionCreationConfigured'):
+              raise SystemExit(f'Playtest session creation secret unavailable: {sessions}')
+          if not sessions.get('trackedPlaytestsSupported'):
+              raise SystemExit(f'Tracked playtests unavailable: {sessions}')
+          if not sessions.get('digitalFeedbackSupported'):
+              raise SystemExit(f'Digital feedback unavailable: {sessions}')
+          if not sessions.get('automaticTrackedClosureSupported'):
+              raise SystemExit(f'Automatic tracked closure unavailable: {sessions}')
+          if not sessions.get('compiledAnalysisSupported'):
+              raise SystemExit(f'Compiled playtest analysis unavailable: {sessions}')
+          if sessions.get('analysisExportSchema') != 'gauntlet-tracked-analysis-v1':
+              raise SystemExit(f'Unexpected analysis export schema: {sessions}')
+          if not sessions.get('analysisExclusionsSupported'):
+              raise SystemExit(f'Playtest data-integrity controls unavailable: {sessions}')
+          if sessions.get('analysisExclusionSchema') != 'gauntlet-playtest-integrity-v1':
+              raise SystemExit(f'Unexpected exclusion schema: {sessions}')
+          if not sessions.get('playtestJournalSupported'):
+              raise SystemExit(f'Playtest journal unavailable: {sessions}')
+          if not sessions.get('retrospectiveFeedbackSupported'):
+              raise SystemExit(f'Retrospective feedback unavailable: {sessions}')
+          if not sessions.get('privatePlayerNotesSupported'):
+              raise SystemExit(f'Private player notes unavailable: {sessions}')
+          if not sessions.get('manualSessionClosureSupported'):
+              raise SystemExit(f'Manual session closure unavailable: {sessions}')
+          if not sessions.get('sessionCancellationSupported'):
+              raise SystemExit(f'Session cancellation unavailable: {sessions}')
+          if not sessions.get('standaloneFeedbackSupported'):
+              raise SystemExit(f'Standalone feedback unavailable: {sessions}')
+          if not sessions.get('completeStandaloneContextSupported'):
+              raise SystemExit(f'Complete standalone context unavailable: {sessions}')
+          print('Verified production v0.6.3 playtest sessions, journals, closure controls, complete standalone feedback, compiled analysis, and audited exclusions.')
+          PY
