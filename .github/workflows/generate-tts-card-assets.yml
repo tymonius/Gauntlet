@@ -12,6 +12,7 @@ on:
       - 'scripts/generate-tts-territory-assets.mjs'
       - 'scripts/generate-tts-leader-assets.mjs'
       - 'scripts/generate-tts-starter-decks.mjs'
+      - 'scripts/stage-tts-release-assets.mjs'
       - 'scripts/tts-current-catalog.mjs'
       - 'tts/**'
       - 'card-design/**'
@@ -40,6 +41,11 @@ on:
         required: false
         default: false
         type: boolean
+      publish_release_assets:
+        description: Upload the staged TTS network assets to the current GitHub Release
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -63,6 +69,7 @@ jobs:
             scripts/generate-tts-territory-assets.mjs
             scripts/generate-tts-leader-assets.mjs
             scripts/generate-tts-starter-decks.mjs
+            scripts/stage-tts-release-assets.mjs
             scripts/tts-current-catalog.mjs
             tts
             card-design
@@ -99,8 +106,67 @@ jobs:
         run: npm run tts:leaders
       - name: Assemble current starter decks
         run: npm run tts:starters
+      - name: Stage hosted TTS release assets
+        run: npm run tts:release:stage
       - uses: actions/upload-artifact@v4
         with:
           name: gauntlet-current-tts-card-assets
           path: tts/generated/
           if-no-files-found: error
+
+  publish:
+    name: Publish TTS assets to current GitHub Release
+    if: github.event_name == 'workflow_dispatch' && inputs.publish_release_assets && github.ref == 'refs/heads/main'
+    needs: render
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: gauntlet-current-tts-card-assets
+          path: tts-output
+      - name: Upload deterministic TTS network assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          manifest="$(find tts-output/release-assets -maxdepth 1 -type f -name 'Gauntlet_*_TTS_Release_Assets.json' -print -quit)"
+          test -n "$manifest"
+          tag="$(node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(m.releaseTag)" "$manifest")"
+          repo="$(node -e "const fs=require('fs');const m=JSON.parse(fs.readFileSync(process.argv[1],'utf8'));process.stdout.write(m.repository)" "$manifest")"
+          test "$repo" = "$GITHUB_REPOSITORY"
+          gh release view "$tag" --repo "$repo" >/dev/null
+          mapfile -t assets < <(find tts-output/release-assets -maxdepth 1 -type f -print | sort)
+          test "${#assets[@]}" -gt 1
+          gh release upload "$tag" --repo "$repo" --clobber "${assets[@]}"
+      - name: Verify published TTS asset URLs
+        shell: bash
+        run: |
+          set -euo pipefail
+          manifest="$(find tts-output/release-assets -maxdepth 1 -type f -name 'Gauntlet_*_TTS_Release_Assets.json' -print -quit)"
+          node - "$manifest" <<'NODE'
+          const fs = require('fs');
+          const manifest = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+          const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+          (async () => {
+            for (const asset of manifest.assets) {
+              let lastStatus = 0;
+              for (let attempt = 1; attempt <= 5; attempt += 1) {
+                const response = await fetch(asset.url, { redirect: 'follow' });
+                lastStatus = response.status;
+                if (response.ok) break;
+                if (attempt < 5) await sleep(2000 * attempt);
+              }
+              if (lastStatus < 200 || lastStatus >= 300) {
+                throw new Error(`Published TTS asset is not reachable (${lastStatus}): ${asset.url}`);
+              }
+            }
+            console.log(`Verified ${manifest.assets.length} hosted TTS asset URLs for ${manifest.releaseTag}.`);
+          })().catch((error) => {
+            console.error(error.stack || error.message || error);
+            process.exitCode = 1;
+          });
+          NODE

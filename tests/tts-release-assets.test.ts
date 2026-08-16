@@ -1,0 +1,66 @@
+import { readFileSync } from 'node:fs';
+import { describe, expect, it } from 'vitest';
+
+const stager = readFileSync('scripts/stage-tts-release-assets.mjs', 'utf8');
+const workflow = readFileSync('.github/workflows/generate-tts-card-assets.yml', 'utf8');
+const packageJson = JSON.parse(readFileSync('package.json', 'utf8'));
+const readme = readFileSync('tts/README.md', 'utf8');
+
+describe('TTS GitHub Release asset hosting', () => {
+  it('stages only the network assets referenced by the generated TTS manifests', () => {
+    expect(stager).toContain('resolveCurrentTtsRelease');
+    expect(stager).toContain("readJson(join(outputRoot, 'manifest.json'))");
+    expect(stager).toContain("readJson(join(outputRoot, 'territory-manifest.json'))");
+    expect(stager).toContain("readJson(join(outputRoot, 'leader-manifest.json'))");
+    expect(stager).toContain("readJson(join(outputRoot, 'starter-deck-manifest.json'))");
+    expect(stager).toContain('for (const sheet of cardManifest.sheets || [])');
+    expect(stager).toContain('Object.entries(cardManifest.backVariants || {})');
+    expect(stager).toContain('for (const sheet of territoryManifest.sheets || [])');
+    expect(stager).toContain('for (const leader of leaderManifest.leaders || [])');
+    expect(stager).not.toContain("join(outputRoot, 'cards')");
+    expect(stager).not.toContain("join(outputRoot, 'territories')");
+  });
+
+  it('gives every staged file a deterministic current-release download URL and digest', () => {
+    expect(stager).toContain('https://github.com/${repository}/releases/download/${tag}/');
+    expect(stager).toContain("createHash('sha256')");
+    expect(stager).toContain('bytes: info.size');
+    expect(stager).toContain('sha256: await sha256(sourcePath)');
+    expect(stager).toContain('bySourceFile: Object.fromEntries');
+    expect(stager).toContain("host: 'github-release-assets'");
+    expect(stager).not.toMatch(/v0\.6\.[0-9]+/);
+  });
+
+  it('uses deterministic release-safe names for every TTS network asset family', () => {
+    expect(stager).toContain('_Playable_Sheet_');
+    expect(stager).toContain('_Back_');
+    expect(stager).toContain('_Territory_Sheet_');
+    expect(stager).toContain('_Territory_Back.png');
+    expect(stager).toContain('_Leader_');
+    expect(stager).toContain('_Card_Manifest.json');
+    expect(stager).toContain('_Territory_Manifest.json');
+    expect(stager).toContain('_Leader_Manifest.json');
+    expect(stager).toContain('_Starter_Deck_Manifest.json');
+    expect(stager).toContain('_Release_Assets.json');
+  });
+
+  it('keeps publication an explicit main-branch workflow action', () => {
+    expect(packageJson.scripts['tts:release:stage']).toBe('node scripts/stage-tts-release-assets.mjs');
+    expect(workflow).toContain('publish_release_assets:');
+    expect(workflow).toContain("if: github.event_name == 'workflow_dispatch' && inputs.publish_release_assets && github.ref == 'refs/heads/main'");
+    expect(workflow).toContain('name: Stage hosted TTS release assets');
+    expect(workflow).toContain('run: npm run tts:release:stage');
+    expect(workflow).toContain("gh release view \"$tag\" --repo \"$repo\"");
+    expect(workflow).toContain("gh release upload \"$tag\" --repo \"$repo\" --clobber");
+    expect(workflow).not.toContain('gh release create');
+  });
+
+  it('verifies hosted URLs after upload without moving the release tag', () => {
+    expect(workflow).toContain('Verify published TTS asset URLs');
+    expect(workflow).toContain("fetch(asset.url, { redirect: 'follow' })");
+    expect(workflow).toContain('Verified ${manifest.assets.length} hosted TTS asset URLs');
+    expect(stager).toContain('The release tag itself is not moved.');
+    expect(readme).toContain('GitHub Release asset hosting');
+    expect(readme).toContain('does not move or recreate the release tag');
+  });
+});

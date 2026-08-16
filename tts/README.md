@@ -33,6 +33,7 @@ npm run tts:territories
 npm run tts:leaders
 npm run tts:starters
 npm run tts:build
+npm run tts:release:stage
 ```
 
 - `tts:check` resolves the current release and validates its canonical cards, Territories, Leaders, published starter decks, IDs, construction limits, release metadata, and artwork coverage without writing raster output.
@@ -42,6 +43,7 @@ npm run tts:build
 - `tts:leaders` resolves the current canonical Leader roster, validates it against the shared production Leader surface, renders every Leader face, and writes `leader-manifest.json`.
 - `tts:starters` joins the current published starter-deck source to the generated card, Territory, and Leader manifests and writes `starter-deck-manifest.json` under both the versioned output and `tts/generated/current/`.
 - `tts:build` renders cards, Territories, and Leaders, then assembles the starter decks from the exact manifests produced by that build.
+- `tts:release:stage` reads those exact manifests and stages only the files a networked TTS save needs under `tts/generated/release-assets/`, with deterministic GitHub Release filenames, SHA-256 digests, and stable download URLs.
 
 The generated directory is intentionally ignored by Git. GitHub Actions uploads the complete `tts/generated/` tree as a review artifact instead of committing derived PNGs.
 
@@ -123,16 +125,34 @@ For every current starter deck, `starter-deck-manifest.json` records:
 
 Source validation derives its limits from the starter artifact's own `construction` object. It verifies card count, deckbuilding value, faction legality, Unique-card copy limits, Territory count, Arena limits, Leader/faction legality, and that recommended Territory order contains exactly the selected Territories. It does not hard-code the number of starter decks or Leaders.
 
+## GitHub Release asset hosting
+
+The network-hosting layer deliberately publishes only assets that Tabletop Simulator needs to request directly. It does **not** upload the per-card or per-Territory intermediate PNG directories. `tts:release:stage` instead follows the generated manifests and stages:
+
+- playable-card face sheets;
+- the six production faction backs;
+- Territory face sheets and the current Territory back;
+- the individual rendered Leader faces;
+- the card, Territory, Leader, and starter-deck manifests; and
+- a release-asset manifest mapping every generated source path to its deterministic public download URL.
+
+Every staged network asset records its byte size and SHA-256 digest. Filenames include the current release tag and the component family so repeated publication can safely replace the TTS assets for that same release without colliding with the ordinary rulebook/data release files.
+
+Publication is explicit rather than automatic. Run the **Generate TTS card assets** workflow from `main` with `publish_release_assets` enabled. The workflow first performs the complete render/assembly/staging pipeline, then verifies that the current GitHub Release already exists, uploads the staged files with deterministic names, and verifies that every URL in the release-asset manifest is publicly reachable. The publication job does not move or recreate the release tag and does not create a new GitHub Release.
+
+Pull requests run the same staging step but receive only the ordinary Actions review artifact; they cannot publish hosted assets.
+
 ## Release durability contract
 
 For an ordinary future release, TTS should continue working when the release process does these things:
 
 1. update `config/release-lifecycle.json` so the new release is `current` with `public_cutover: true`;
 2. update `config/github-release-contract.json` so `current_release.tag` matches and its `assets` list contains the new canonical-data and starter-deck JSON files;
-3. publish those data files and any new artwork/rendering changes through the normal shared surfaces, including the production Leader faces.
+3. publish those data files and any new artwork/rendering changes through the normal shared surfaces, including the production Leader faces;
+4. run the TTS asset workflow with release publication enabled after the new GitHub Release exists.
 
-The TTS resolver fails closed if the two release authorities disagree or if the current GitHub release contract does not publish the required source assets. Card, Territory, Leader, and starter-deck counts are read from current release data rather than duplicated in exporter constants.
+The TTS resolver fails closed if the two release authorities disagree or if the current GitHub release contract does not publish the required source assets. Card, Territory, Leader, and starter-deck counts are read from current release data rather than duplicated in exporter constants. Release-asset staging also fails closed if any generated manifest targets a different game version or references a missing file.
 
 ## Remaining TTS work
 
-These exports deliberately contain no hosted asset URLs and do not yet constitute a playable TTS save. The next layer is the mod publisher/table implementation: host the generated sheets, backs, Leader faces, and Territory assets; translate the starter manifest into real CustomDeck/Deck objects; add the remaining required table/component objects; and assemble the Gauntlet table/save definition.
+The pipeline can now produce a deterministic set of public hosted URLs for the card sheets, backs, Territory assets, Leaders, and manifests. The remaining layer is the actual mod/table publisher: translate the starter manifest and hosted-asset manifest into real `CustomDeck`/`Deck` objects, add the remaining required table/component objects, and assemble the Gauntlet Tabletop Simulator save definition.
